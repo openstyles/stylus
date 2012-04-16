@@ -1,0 +1,117 @@
+<style>
+	body {
+		width: 200px;
+	}
+	#no-styles {
+		font-style: italic;
+	}
+	.disabled {
+		color: #BBB;
+	}
+	.disabled .disable {
+		display: none;
+	}
+	.enabled .enable {
+		display: none;
+	}
+	.style-name {
+		font-weight: bold;
+	}
+	.actions {
+		font-size: x-small;
+	}
+	a, a:visited {
+		color: black;
+	}
+	.entry {
+		padding-bottom: 0.5em;
+		margin-bottom: 0.5em;
+		border-bottom: 1px solid black;
+	}
+	#find-styles, #manage-styles {
+		font-size: smaller;
+	}
+	#find-styles {
+		margin-bottom: 0.5em;
+	}
+</style>
+
+<script src="localization.js"></script>
+<script src="storage.js"></script>
+<script src="messaging.js"></script>
+
+<script>
+	var styleTemplate = document.createElement("div");
+	styleTemplate.innerHTML = "<div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id=' onclick='return openLink(event);'>" + t('editStyleLabel') + "</a> <a href='#' class='enable' onclick='enable(event, true);return false;'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable' onclick='enable(event, false);return false;'>" + t('disableStyleLabel') + "</a> <a href='#' class='delete' onclick='doDelete(event);return false;'>" + t('deleteStyleLabel') + "</a></div>";
+
+	chrome.tabs.getSelected(null, function(tab) {
+//alert('here');
+		getStyles({matchUrl: tab.url}, showStyles);
+		document.querySelector("#find-styles a").href = "http://userstyles.org/styles/browse/all/" + encodeURIComponent(tab.url);
+	});
+
+	function showStyles(styles) {
+		var installed = document.getElementById("installed");
+		if (styles.length == 0) {
+			installed.innerHTML = "<div class='entry' id='no-styles'>" + t('noStylesForSite') + "</div>";
+		}
+		styles.map(createStyleElement).forEach(function(e) {
+			installed.appendChild(e);
+		});
+	}
+
+	function createStyleElement(style) {
+		var e = styleTemplate.cloneNode(true);
+		e.setAttribute("class", "entry " + (style.enabled == "true" ? "enabled" : "disabled"));
+		e.setAttribute("style-id", style.id);
+		var styleName = e.querySelector(".style-name");
+		styleName.appendChild(document.createTextNode(style.name));
+		var editLink = e.querySelector(".style-edit-link");
+		editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
+		return e;
+	}
+
+	function enable(event, enabled) {
+		var id = getId(event);
+		enableStyle(id, enabled);
+	}
+
+	function doDelete() {
+		if (!confirm(t('deleteStyleConfirm'))) {
+			return;
+		}
+		var id = getId(event);
+		deleteStyle(id);
+	}
+
+	function getId(event) {
+		var e = event.target;
+		while (e) {
+			if (e.hasAttribute("style-id")) {
+				return e.getAttribute("style-id");
+			}
+			e = e.parentNode;
+		}
+		return null;
+	}
+
+	function openLink(event) {
+		chrome.tabs.create({url: event.target.href});
+		return false;
+	}
+
+	function handleUpdate(style) {
+		var installed = document.getElementById("installed");
+		installed.replaceChild(createStyleElement(style), installed.querySelector("[style-id='" + style.id + "']"));
+	}
+
+	function handleDelete(id) {
+		var installed = document.getElementById("installed");
+		installed.removeChild(installed.querySelector("[style-id='" + id + "']"));
+	}
+</script>
+
+<div id="installed"></div>
+
+<div id="find-styles"><a href="#" onclick="return openLink(event);"><script>o('findStylesForSite')</script></a></div>
+<div id="manage-styles"><a href="manage.html" target="_new"><script>o('openManage')</script></a></div>

@@ -1,0 +1,175 @@
+{
+	"addStyleLabel": {
+		"message": "编写新的样式"
+	},
+	"addStyleTitle": {
+		"message": "添加样式"
+	},
+	"appliesAdd": {
+		"message": "添加"
+	},
+	"appliesDisplay": {
+		"message": "应用到: $applies$",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "以及更多"
+	},
+	"appliesDomainOption": {
+		"message": "指定域上的URL"
+	},
+	"appliesHelp": {
+		"message": "使用“应用到”来控制这个样式应用到哪些地址上。"
+	},
+	"appliesLabel": {
+		"message": "应用到"
+	},
+	"appliesRegexpOption": {
+		"message": "匹配正则的URL"
+	},
+	"appliesRemove": {
+		"message": "移除"
+	},
+	"appliesSpecify": {
+		"message": "指定站点"
+	},
+	"appliesToEverything": {
+		"message": "所有站点"
+	},
+	"appliesUrlOption": {
+		"message": "地址"
+	},
+	"appliesUrlPrefixOption": {
+		"message": "以指定地址开始"
+	},
+	"checkAllUpdates": {
+		"message": "检查所有样式的更新"
+	},
+	"checkForUpdate": {
+		"message": "检查更新"
+	},
+	"checkingForUpdate": {
+		"message": "检查中..."
+	},
+	"deleteStyleLabel": {
+		"message": "删除"
+	},
+	"deleteStyleConfirm": {
+		"message": "确定要删除这个样式吗?"
+	},
+	"description": {
+		"message": "Stylish，一个用户样式管理器，帮助您重新定义网页样式。Stylish易于为Google，Facebook，Youtube，Orkut以及其它各类型网站安装样式和主题。"
+	},
+	"disableStyleLabel": {
+		"message": "禁用"
+	},
+	"editStyleHeading": {
+		"message": "编辑样式"
+	},
+	"editStyleLabel": {
+		"message": "编辑"
+	},
+	"editStyleTitle": {
+		"message": "编辑样式 $stylename$",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"enableStyleLabel": {
+		"message": "启用"
+	},
+	"findStylesForSite": {
+		"message": "查找更多适合此站点的样式"
+	},
+	"helpAlt": {
+		"message": "帮助"
+	},
+	"installUpdate": {
+		"message": "安装更新"
+	},
+	"manageHeading": {
+		"message": "已安装的样式"
+	},
+	"manageText": {
+		"message": "访问 <a href='http:\/\/userstyles.org'>userstyles.org<\/a> 查找预定义的样式. 如果您需要帮助，请访问 <a href='http:\/\/forum.userstyles.org'>论坛<\/a>."
+	},
+	"manageTitle": {
+		"message": "Stylish"
+	},
+	"noStylesForSite": {
+		"message": "当前站点上没有已安装的样式"
+	},
+	"openManage": {
+		"message": "管理已安装样式"
+	},
+	"sectionAdd": {
+		"message": "添加新节"
+	},
+	"sectionCode": {
+		"message": "代码"
+	},
+	"sectionHelp": {
+		"message": "样式节允许你定义多个样式段落并将它们应用于不同的站点匹配规则上。例如，一个样式可以更改使用一个方式来更改主页，而此时其它的样式段可以更改站点的其它部分。"
+	},
+	"sectionRemove": {
+		"message": "移除节"
+	},
+	"styleCancelEditLabel": {
+		"message": "返回到管理"
+	},
+	"styleChangesNotSaved": {
+		"message": "您已经修改了此样式，但尚未保存"
+	},
+	"styleEnabledLabel": {
+		"message": "已启用"
+	},
+	"styleInstall": {
+		"message": "安装 '$stylename$' 到 Stylish?",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMissingName": {
+		"message": "请输入名称."
+	},
+	"styleNameLabel": {
+		"message": "名称"
+	},
+	"styleSaveLabel": {
+		"message": "保存"
+	},
+	"styleSectionsTitle": {
+		"message": "样式节"
+	},
+	"styleToMozillaFormat": {
+		"message": "转换为Mozilla格式"
+	},
+	"styleToMozillaFormatHelp": {
+		"message": "用于Firefox上的Stylish的Mozilla格式样式代码可以在 userstyles.org 上提交"
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "更新失败 - 服务器了返回代码 $code$.",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "更新失败 - 服务器无法访问."
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "已经是最新的."
+	},
+	"updateCompleted": {
+		"message": "更新完成."
+	}
+}

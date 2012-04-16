@@ -1,0 +1,108 @@
+<html>
+	<head>
+		<style type="text/css">
+			body {
+				margin: 0px;
+				font: 12px arial,sans-serif;
+			}
+			#header {
+				height: 100%;
+				width: 250px;
+				position: fixed;
+				top: 0px;
+				padding: 15px;
+				border-right: 1px dashed #AAA;
+			}
+			.notmac #header {
+				-webkit-box-shadow: 0px 0px 50px -18px black;
+			}
+			#sections {
+				padding-left: 290px;
+			}
+			h2 {
+				margin-top: 8px;
+			}
+			#basic-info {
+				margin-bottom: 12px;
+			}
+			#name {
+				width: 185px;
+			}
+			#sections > div {
+				margin: 10px;
+				padding: 0px 15px;
+			}
+			#sections > div:not(:first-child) {
+				border-top: 2px solid black;
+			}
+			span {
+				cursor: pointer;
+				color: #999;
+			}
+			
+			label {
+				display: inline-block;
+				width: 10em;
+				vertical-align: top;
+			}
+			#header label {
+				width: 60px;
+			}
+			.code {
+				height: 10em;
+				width: 40em;
+			}
+			.applies-to ul {
+				display: inline-block;
+				margin: 0;
+			}
+			.applies-to li {
+				list-style-type: none;
+			}
+			.applies-to li .add-applies-to {
+				display: none;
+			}
+			.applies-to li:last-child .add-applies-to {
+				display: inline;
+			}
+			body > section > *:not(h2) {
+				padding-left: 15px;
+			}
+			#sections > div {
+				padding-top: 1em;
+				padding-bottom: 1em;
+			}
+			#sections > div:only-of-type .remove-section {
+				display: none;
+			}
+			#sections > div .add-section {
+				display: none;
+			}
+			#sections > div:last-of-type .add-section {
+				display: inline;
+			}
+			.applies-to img {
+				vertical-align: bottom;
+			}
+		</style>
+		<script src="localization.js"></script>
+		<script src="storage.js"></script>
+		<script src="messaging.js"></script>
+		<script src="edit.js"></script>
+	</head>
+	<body>
+		<div id="header">
+			<h1 id="heading"></h1>
+			<section id="basic-info">
+				<div><label for="name"><script>o("styleNameLabel")</script></label><input id="name" onchange="makeDirty()"><div>
+				<div><label for="enabled"><script>o("styleEnabledLabel")</script></label><input type="checkbox" id="enabled" onchange="makeDirty()"></div>
+			</section>
+			<button onclick="showMozillaFormat()"><script>o("styleToMozillaFormat")</script></button><img id="to-mozilla-help" src="help.png" onclick="showToMozillaHelp()"><br><br>
+			<button onclick="save()"><script>o("styleSaveLabel")</script></button>
+			<a href="manage.html"><button><script>o("styleCancelEditLabel")</script></button></a>
+		</div>
+		<section id="sections">
+			<h2><script>o("styleSectionsTitle")</script> <img id="sections-help" src="help.png" onclick="showSectionHelp()"></h2>
+		</section>
+	</body>
+</html>

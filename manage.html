@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<title></title>
+		<style>
+			body {
+				margin: 0px;
+				font: 12px arial,sans-serif;
+			}
+			a, a:visited {
+				color: #555;
+				-webkit-transition: color 0.5s;
+			}
+			a:hover {
+				color: #999;
+			}
+			#header {
+				height: 100%;
+				width: 250px;
+				position: fixed;
+				top: 0px;
+				padding: 15px;
+				border-right: 1px dashed #AAA;
+			}
+			#header {
+				-webkit-box-shadow: 0px 0px 50px -18px black;
+			}
+			#installed {
+				padding-left: 280px;
+			}
+			.enabled, .disabled {
+				margin: 10px;
+				padding: 0px 15px;
+			}
+			.enabled:not(:first-child), .disabled:not(:first-child) {
+				border-top: 2px solid gray;
+			}
+			.applies-to, .actions {
+				padding-left: 15px;
+			}
+			.actions > * {
+				margin-right: 5px;
+			}
+			.applies-to-extra {
+				font-weight: bold;
+			}
+			.disabled h2::after {
+				content: " (Disabled)";
+			}
+			.disabled {
+				opacity: 0.5;
+			}
+			.disabled .disable {
+				display: none;
+			}
+			.enabled .enable {
+				display: none;
+			}
+			
+			/* Default, no update buttons */
+			.update, .check-update {
+				display: none;
+			}
+			/* Check update button for things that can*/
+			*[style-update-url] .check-update {
+				display: inline;
+			}
+			/* Update check in progress */
+			.checking-update .check-update {
+				display: none;
+			}
+			/* Updates available */
+			.can-update .update {
+				display: inline;
+			}
+			.can-update .check-update {
+				display: none;
+			}
+			/* Updates not available */
+			.no-update .check-update {
+				display: none;
+			}
+			/* Updates done */
+			.update-done .check-update {
+				display: none;
+			}
+		</style>
+		<script src="localization.js"></script>
+		<script src="storage.js"></script>
+		<script src="messaging.js"></script>
+		<script src="manage.js"></script>
+	</head>
+	<body>
+		<div id="header">
+			<img src="128.png">
+			<h1><script>o("manageHeading")</script></h1>
+			<p><script>o("manageText")</script></p>
+			<p><button onclick="checkUpdateAll()"><script>o("checkAllUpdates")</script></button></p>
+			<p><a href="edit.html"><button><script>o("addStyleLabel")</script></button></a></p>
+		</div>
+		<div id="installed"></div>
+	</body>
+</html>

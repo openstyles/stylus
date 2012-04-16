@@ -1,0 +1,148 @@
+{
+	"addStyleTitle": {
+		"message": "Añadir Estilo"
+	},
+	"appliesAdd": {
+		"message": "Añadir"
+	},
+	"appliesDisplay": {
+		"message": "Aplica para: $applies$",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "y más"
+	},
+	"appliesDomainOption": {
+		"message": "URL en el dominio"
+	},
+	"appliesHelp": {
+		"message": "Use los controles de \"Aplicar a\" para limitar a cuales URL aplica el código en esta sección."
+	},
+	"appliesLabel": {
+		"message": "Aplica a"
+	},
+	"appliesRemove": {
+		"message": "Eliminar"
+	},
+	"appliesSpecify": {
+		"message": "Especificar"
+	},
+	"appliesToEverything": {
+		"message": "Todo"
+	},
+	"appliesUrlOption": {
+		"message": "URL"
+	},
+	"appliesUrlPrefixOption": {
+		"message": "URL comenzando con"
+	},
+	"checkForUpdate": {
+		"message": "Revisar actualizaciones"
+	},
+	"checkingForUpdate": {
+		"message": "Verificando..."
+	},
+	"deleteStyleLabel": {
+		"message": "Borrar"
+	},
+	"deleteStyleConfirm": {
+		"message": "¿Estás seguro de que quieres eliminar este estilo?"
+	},
+	"disableStyleLabel": {
+		"message": "Desactivar"
+	},
+	"editStyleHeading": {
+		"message": "Editar Estilo"
+	},
+	"editStyleLabel": {
+		"message": "Editar"
+	},
+	"editStyleTitle": {
+		"message": "Editar Estilo $stylename$",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"enableStyleLabel": {
+		"message": "Activar"
+	},
+	"findStylesForSite": {
+		"message": "Encontrar más estilos para este sitio."
+	},
+	"helpAlt": {
+		"message": "Ayuda"
+	},
+	"installUpdate": {
+		"message": "Instalar actualización"
+	},
+	"manageHeading": {
+		"message": "Estilos Instalados"
+	},
+	"manageTitle": {
+		"message": "Stylish"
+	},
+	"noStylesForSite": {
+		"message": "No hay estilos instalados para este sitio."
+	},
+	"sectionAdd": {
+		"message": "Añadir otra sección"
+	},
+	"sectionHelp": {
+		"message": "Las secciones te permiten definir diferentes trozos de código a ser aplicados a diferentes juegos de URL en el mismo estilo. Por ejemplo, un estilo particular puede cambiar la página de inicio de un sitio de una forma, mientras cambia el resto del sitio de otra."
+	},
+	"sectionRemove": {
+		"message": "Eliminar sección"
+	},
+	"styleCancelEditLabel": {
+		"message": "Atrás para manejar"
+	},
+	"styleChangesNotSaved": {
+		"message": "Has realizado cambios a este estilo sin guardar."
+	},
+	"styleEnabledLabel": {
+		"message": "Activado"
+	},
+	"styleInstall": {
+		"message": "¿Instalar \"$stylename$\" en Stylish?",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMissingName": {
+		"message": "Ingrese un nombre."
+	},
+	"styleNameLabel": {
+		"message": "Nombre"
+	},
+	"styleSaveLabel": {
+		"message": "Guardar"
+	},
+	"styleSectionsTitle": {
+		"message": "Secciones"
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "Actualización fallida - el servidor respondió con el código $code$.",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "Actualización fallida - no se encuentra el servidor."
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "El estilo se actualizó."
+	},
+	"updateCompleted": {
+		"message": "Actualización completa."
+	}
+}

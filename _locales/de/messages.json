@@ -1,0 +1,151 @@
+{
+	"addStyleTitle": {
+		"message": "Neuer Stil"
+	},
+	"appliesAdd": {
+		"message": "Hinzufügen"
+	},
+	"appliesDisplay": {
+		"message": "Wird angewendet auf: $applies$",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "und mehr"
+	},
+	"appliesDomainOption": {
+		"message": "URLs auf der Domäne"
+	},
+	"appliesHelp": {
+		"message": "Nutzen Sie \"Anwenden auf\" um festzulegen, auf welche URLs der Code in diesem Abschnitt angewendet wird."
+	},
+	"appliesLabel": {
+		"message": "Anwenden auf"
+	},
+	"appliesRemove": {
+		"message": "Entfernen"
+	},
+	"appliesSpecify": {
+		"message": "Genauer..."
+	},
+	"appliesToEverything": {
+		"message": "Alles"
+	},
+	"appliesUrlOption": {
+		"message": "URL"
+	},
+	"appliesUrlPrefixOption": {
+		"message": "URLs beginnend mit"
+	},
+	"checkForUpdate": {
+		"message": "Nach Update suchen"
+	},
+	"checkingForUpdate": {
+		"message": "Suche..."
+	},
+	"deleteStyleLabel": {
+		"message": "Entfernen"
+	},
+	"deleteStyleConfirm": {
+		"message": "Möchten Sie diesen Stil wirklich entfernen?"
+	},
+	"disableStyleLabel": {
+		"message": "Deaktivieren"
+	},
+	"editStyleHeading": {
+		"message": "Stil bearbeiten"
+	},
+	"editStyleLabel": {
+		"message": "Bearbeiten"
+	},
+	"editStyleTitle": {
+		"message": "\"$stylename$\" bearbeiten",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"enableStyleLabel": {
+		"message": "Aktivieren"
+	},
+	"findStylesForSite": {
+		"message": "Stile für diese Seite suchen"
+	},
+	"helpAlt": {
+		"message": "Hilfe"
+	},
+	"installUpdate": {
+		"message": "Update installieren"
+	},
+	"manageHeading": {
+		"message": "Installierte Stile"
+	},
+	"manageTitle": {
+		"message": "Stylish"
+	},
+	"noStylesForSite": {
+		"message": "Für diese Seite wurden keine Stile installiert."
+	},
+	"sectionAdd": {
+		"message": "Neuen Abschnitt hinzufügen"
+	},
+	"sectionCode": {
+		"message": "Code"
+	},
+	"sectionHelp": {
+		"message": "Abschnitte unterteilen den Code eines Stils in verschiedene Teile, die auf verschiedene URLs angewendet werden. So könnte z.B. ein Stil die Startseite einer Website anders gestalten als den Rest der Website."
+	},
+	"sectionRemove": {
+		"message": "Abschnitt löschen"
+	},
+	"styleCancelEditLabel": {
+		"message": "Zurück zur Übersicht"
+	},
+	"styleChangesNotSaved": {
+		"message": "Sie haben Änderungen an diesem Stil noch nicht gespeichert."
+	},
+	"styleEnabledLabel": {
+		"message": "Aktiviert"
+	},
+	"styleInstall": {
+		"message": "Möchten Sie \"$stylename$\" mit Stylish installieren?",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMissingName": {
+		"message": "Geben Sie einen Namen ein."
+	},
+	"styleNameLabel": {
+		"message": "Name"
+	},
+	"styleSaveLabel": {
+		"message": "Speichern"
+	},
+	"styleSectionsTitle": {
+		"message": "Abschnitte"
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "Update gescheitert - Server meldet Code $code$.",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "Update gescheitert - Server nicht erreichbar."
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "Stil ist aktuell."
+	},
+	"updateCompleted": {
+		"message": "Update fertiggestellt."
+	}
+}

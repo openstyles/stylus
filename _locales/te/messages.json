@@ -1,0 +1,55 @@
+{
+	"appliesAdd": {
+		"message": "చేర్చు"
+	},
+	"appliesDisplay": {
+		"message": "వేటికి వర్తిస్తుంది; $applies$",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "ఇంకా మరిన్ని"
+	},
+	"appliesRemove": {
+		"message": "తొలగించు"
+	},
+	"appliesToEverything": {
+		"message": "అన్నిటికీ"
+	},
+	"deleteStyleLabel": {
+		"message": "తొలగించు"
+	},
+	"deleteStyleConfirm": {
+		"message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?"
+	},
+	"disableStyleLabel": {
+		"message": "అచేతనించు"
+	},
+	"editStyleLabel": {
+		"message": "మార్చు"
+	},
+	"enableStyleLabel": {
+		"message": "చేతనించు"
+	},
+	"helpAlt": {
+		"message": "సహాయం"
+	},
+	"manageHeading": {
+		"message": "స్థాపిత శైలులు"
+	},
+	"manageTitle": {
+		"message": "స్టైలిష్"
+	},
+	"styleNameLabel": {
+		"message": "పేరు"
+	},
+	"styleSaveLabel": {
+		"message": "భద్రపరచు"
+	},
+	"styleSectionsTitle": {
+		"message": "విభాగాలు"
+	}
+}
