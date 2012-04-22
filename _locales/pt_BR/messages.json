@@ -1,6 +1,6 @@
 {
   "styleInstall": {
-    "message": "¿Quieres instalar \"$stylename$\" en Stylish?",
+    "message": "Instalar \"$stylename$\" no Stylish?",
     "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
@@ -9,15 +9,15 @@
     }
   },
   "appliesUrlPrefixOption": {
-    "message": "URL que empiezan por",
+    "message": "URLs que começam com",
     "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "appliesRemove": {
-    "message": "Eliminar",
+    "message": "Remover",
     "description": "Label for the button to remove an 'applies' entry"
   },
   "updateCompleted": {
-    "message": "Actualización terminada",
+    "message": "Atualização concluída.",
     "description": "Text that displays when an update completed"
   },
   "appliesSpecify": {
@@ -25,19 +25,19 @@
     "description": "Label for the button to make a style apply only to specific sites"
   },
   "manageText": {
-    "message": "Accede a la página <a href='http://userstyles.org'>userstyles.org</a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http://forum.userstyles.org'>el foro</a> si necesitas ayuda.",
+    "message": "Visite <a href='http://userstyles.org'>userstyles.org</a> para obter estilos pré-fabricados. Se precisar de ajuda, peça no <a href='http://forum.userstyles.org'>fórum</a>.",
     "description": "Help text on the manage page"
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Error de actualización: no se puede acceder al servidor.",
+    "message": "A atualização falhou - servidor inacessível.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "styleToMozillaFormatHelp": {
-    "message": "El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+    "message": "O formato Mozilla do código pode ser usado com o Stylish para Firefox e pode ser enviado para userstyles.org.",
     "description": "Help info for the button that converts the code to Mozilla format"
   },
   "sectionRemove": {
-    "message": "Eliminar sección",
+    "message": "Remover seção",
     "description": "Label for the button to remove a section"
   },
   "editStyleLabel": {
@@ -45,15 +45,15 @@
     "description": "Label for the button to go to the edit style page"
   },
   "enableStyleLabel": {
-    "message": "Habilitar",
+    "message": "Ativar",
     "description": "Label for the button to enable a style"
   },
   "appliesLabel": {
-    "message": "Se aplica a",
+    "message": "Aplica-se a",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "sectionHelp": {
-    "message": "Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
+    "message": "As seções permitem definir diferentes partes de código para aplicar a diferentes conjuntos de URLs no mesmo estilo. Por exemplo, um único estilo poderia alterar a página inicial de um site de uma forma, enquanto alteraria o resto do site de outra forma.",
     "description": "Help text for sections"
   },
   "appliesUrlOption": {
@@ -61,11 +61,11 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+    "message": "Mude o estilo da web com o Stylish, um gerenciador de estilos do usuário. O Stylish permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites.",
     "description": "Extension description"
   },
   "addStyleLabel": {
-    "message": "Escribir nuevo estilo",
+    "message": "Gravar novo estilo",
     "description": "Label for the button to go to the add style page"
   },
   "sectionCode": {
@@ -77,15 +77,15 @@
     "description": "Heading for the manage page"
   },
   "styleNameLabel": {
-    "message": "Nombre",
+    "message": "Nome",
     "description": "Label for the name of styles"
   },
   "deleteStyleLabel": {
-    "message": "Eliminar",
+    "message": "Excluir",
     "description": "Label for the button to delete a style"
   },
   "checkingForUpdate": {
-    "message": "Comprobando...",
+    "message": "Verificando...",
     "description": "Text to display when checking a style for an update"
   },
   "manageTitle": {
@@ -93,39 +93,39 @@
     "description": "Title for the manage page"
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "y otros muchos sitios",
+    "message": "e mais",
     "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "sectionAdd": {
-    "message": "Añadir otra sección",
+    "message": "Adicionar outra seção",
     "description": "Label for the button to add a section"
   },
   "installUpdate": {
-    "message": "Instalar actualización",
+    "message": "Instalar atualização",
     "description": "Label for the button to install an update for a single style"
   },
   "styleToMozillaFormat": {
-    "message": "Al formato de Mozilla",
+    "message": "Para formato Mozilla",
     "description": "Label for the button that converts the code to Mozilla format"
   },
   "styleEnabledLabel": {
-    "message": "Habilitado",
+    "message": "Ativado",
     "description": "Label for the enabled state of styles"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "El estilo está actualizado.",
+    "message": "O estilo está atualizado.",
     "description": "Text that displays when an update check completed and no update is available"
   },
   "helpAlt": {
-    "message": "Ayuda",
+    "message": "Ajuda",
     "description": "Alternate text for help buttons"
   },
   "addStyleTitle": {
-    "message": "Añadir estilo",
+    "message": "Adicionar estilo",
     "description": "Title of the page for adding styles"
   },
   "appliesAdd": {
-    "message": "Añadir",
+    "message": "Adicionar",
     "description": "Label for the button to add an 'applies' entry"
   },
   "editStyleHeading": {
@@ -133,34 +133,34 @@
     "description": "Title of the page for editing styles"
   },
   "desc": {
-    "message": "Los estilos de usuario son temas para sitios web que te permiten controlar tu experiencia de navegación personalizando sitios web. Puedes eliminar contenido irrelevante, modificar colores o cambiar por completo el diseño de todo el sitio.\n\nStylish te permite gestionar fácilmente estilos de usuario. Puedes añadir estilos, eliminarlos, habilitarlos, inhabilitarlos y organizarlos simplemente haciendo clic un par de veces con el ratón sin necesidad de editar código ni utilizar opciones de configuración difíciles de encontrar. El sitio web complementario de Stylish, userstyles.org, aloja cientos de miles de estilos de usuario desarrollados por otros usuarios de Stylish que puedes probar.\n\nEn términos técnicos para usuarios expertos, Stylish y userstyles.org son como Greasemonkey para CSS y como userscripts.org para JavaScript.\n\n*** Si buscas ayuda, plantea una pregunta en la página del foro http://forum.userstyles.org, ya que no puedo responderte si publicas tu pregunta aquí."
+    "message": "Os estilos do usuário são temas para sites. Eles capacitam sua experiência de navegação, permitindo a personalização dos sites. Retire conteúdo irrelevante, altere as cores ou redesenhe completamente todo o site. \n\nO Stylish permite gerenciar facilmente os estilos do usuário. Adicione, exclua, ative, desative e organize com alguns cliques de um mouse, sem código para editar, sem configuração obscura para encontrar. O site complementar do Stylish, o userstyles.org, hospeda dezenas de milhares de estilos do usuário, feitos por outros usuários do Stylish, que você pode experimentar. \n\nEm termos técnicos, pense da seguinte maneira: o Stylish e o userstyles.org são para CSS o que o Greasemonkey e o userscripts.org são para JavaScript. \n\n*** Se estiver procurando ajuda, peça no http://forum.userstyles.org. Não posso te responder se você postar aqui."
   },
   "appliesDomainOption": {
-    "message": "URL en el dominio",
+    "message": "URLs no domínio",
     "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesRegexpOption": {
-    "message": "URL que coinciden con la expresión regular",
+    "message": "URLs que correspondem a regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "styleCancelEditLabel": {
-    "message": "Volver al gestor",
+    "message": "Voltar ao gerenciamento",
     "description": "Label for cancel button for style editing"
   },
   "appliesToEverything": {
-    "message": "Todos los sitios",
+    "message": "Tudo",
     "description": "Text displayed for styles that apply to all sites"
   },
   "appliesHelp": {
-    "message": "Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
+    "message": "Use os controles \"Aplica-se a\" para limitar a quais URLs o código desta seção se aplica.",
     "description": "Help text for 'applies to' section"
   },
   "styleSaveLabel": {
-    "message": "Guardar",
+    "message": "Salvar",
     "description": "Label for save button for style editing"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Error de actualización: el servidor ha respondido con el código $code$.",
+    "message": "A atualização falhou - o  servidor respondeu com código $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
@@ -169,11 +169,11 @@
     }
   },
   "disableStyleLabel": {
-    "message": "Inhabilitar",
+    "message": "Desativar",
     "description": "Label for the button to disable a style"
   },
   "appliesDisplay": {
-    "message": "Se aplica a: $applies$",
+    "message": "Aplica-se a: $applies$",
     "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
@@ -182,15 +182,15 @@
     }
   },
   "styleMissingName": {
-    "message": "Introduce un nombre.",
+    "message": "Insira um nome.",
     "description": "Error displayed when user saves without providing a name"
   },
   "openManage": {
-    "message": "Gestionar estilos instalados",
+    "message": "Gerenciar estilos instalados.",
     "description": "Link to open the manage page."
   },
   "checkForUpdate": {
-    "message": "Buscar actualizaciones",
+    "message": "Verificar atualizações",
     "description": "Label for the button to check a single style for an update"
   },
   "editStyleTitle": {
@@ -203,27 +203,27 @@
     }
   },
   "checkAllUpdates": {
-    "message": "Comprobar todos los estilos para buscar actualizaciones",
+    "message": "Verificar atualizações para todos os estilos",
     "description": "Label for the button to check all styles for updates"
   },
   "styleChangesNotSaved": {
-    "message": "Has realizado cambios en este estilo sin guardarlos.",
+    "message": "Você fez alterações neste estilo sem salvar.",
     "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleSectionsTitle": {
-    "message": "Secciones",
+    "message": "Seções",
     "description": "Title for the style sections section"
   },
   "noStylesForSite": {
-    "message": "No hay estilos instalados para este sitio.",
+    "message": "Nenhum estilo instalado para este site.",
     "description": "Text displayed when no styles are installed for the current site"
   },
   "findStylesForSite": {
-    "message": "Buscar más estilos para este sitio",
+    "message": "Procurar mais estilos para este site.",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "deleteStyleConfirm": {
-    "message": "¿Seguro que quieres eliminar este estilo?",
+    "message": "Tem certeza de que deseja excluir este estilo?",
     "description": "Confirmation before deleting a style"
   }
 }

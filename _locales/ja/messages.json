@@ -1,6 +1,6 @@
 {
   "styleInstall": {
-    "message": "¿Quieres instalar \"$stylename$\" en Stylish?",
+    "message": "「$stylename$」を Stylish にインストールしますか？",
     "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
@@ -9,51 +9,51 @@
     }
   },
   "appliesUrlPrefixOption": {
-    "message": "URL que empiezan por",
+    "message": "次で始まる URL",
     "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "appliesRemove": {
-    "message": "Eliminar",
+    "message": "削除",
     "description": "Label for the button to remove an 'applies' entry"
   },
   "updateCompleted": {
-    "message": "Actualización terminada",
+    "message": "更新が完了しました",
     "description": "Text that displays when an update completed"
   },
   "appliesSpecify": {
-    "message": "Especificar",
+    "message": "個別指定",
     "description": "Label for the button to make a style apply only to specific sites"
   },
   "manageText": {
-    "message": "Accede a la página <a href='http://userstyles.org'>userstyles.org</a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http://forum.userstyles.org'>el foro</a> si necesitas ayuda.",
+    "message": "既に作成済みのスタイルについては、<a href='http://userstyles.org'>userstyles.org</a> をご覧ください。ご質問がある場合には、<a href='http://forum.userstyles.org'>userstyles.org のフォーラム</a>でお問い合わせください。",
     "description": "Help text on the manage page"
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Error de actualización: no se puede acceder al servidor.",
+    "message": "更新に失敗しました - サーバーに到達できません。",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "styleToMozillaFormatHelp": {
-    "message": "El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+    "message": "Mozilla 形式のコードは、Stylish for Firefox で使用することができ、userstyles.org に投稿することができます。",
     "description": "Help info for the button that converts the code to Mozilla format"
   },
   "sectionRemove": {
-    "message": "Eliminar sección",
+    "message": "セクションを削除",
     "description": "Label for the button to remove a section"
   },
   "editStyleLabel": {
-    "message": "Editar",
+    "message": "編集",
     "description": "Label for the button to go to the edit style page"
   },
   "enableStyleLabel": {
-    "message": "Habilitar",
+    "message": "有効化",
     "description": "Label for the button to enable a style"
   },
   "appliesLabel": {
-    "message": "Se aplica a",
+    "message": "適用先",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "sectionHelp": {
-    "message": "Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
+    "message": "セクションを利用すると、1 つのスタイルの中で複数のコードを定義し、それぞれ異なる URL に適用することができます。たとえば、単一のスタイルで、サイトのトップページの表示方法と他のページの表示方法を変えることができます。",
     "description": "Help text for sections"
   },
   "appliesUrlOption": {
@@ -61,31 +61,31 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+    "message": "Stylish はユーザー スタイルを管理するツールで、ウェブのスタイルを変更することができます。Stylish を利用すると、Google、Facebook、YouTube、orkut など、さまざまなサイトに対応したテーマやスキンを簡単にインストールできます。",
     "description": "Extension description"
   },
   "addStyleLabel": {
-    "message": "Escribir nuevo estilo",
+    "message": "新しいスタイルを作成",
     "description": "Label for the button to go to the add style page"
   },
   "sectionCode": {
-    "message": "Código",
+    "message": "コード",
     "description": "Label for the code for a section"
   },
   "manageHeading": {
-    "message": "Estilos instalados",
+    "message": "インストール済みのスタイル",
     "description": "Heading for the manage page"
   },
   "styleNameLabel": {
-    "message": "Nombre",
+    "message": "名前",
     "description": "Label for the name of styles"
   },
   "deleteStyleLabel": {
-    "message": "Eliminar",
+    "message": "削除",
     "description": "Label for the button to delete a style"
   },
   "checkingForUpdate": {
-    "message": "Comprobando...",
+    "message": "チェック中...",
     "description": "Text to display when checking a style for an update"
   },
   "manageTitle": {
@@ -93,74 +93,74 @@
     "description": "Title for the manage page"
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "y otros muchos sitios",
+    "message": "サイトを追加",
     "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "sectionAdd": {
-    "message": "Añadir otra sección",
+    "message": "他のセクションを追加",
     "description": "Label for the button to add a section"
   },
   "installUpdate": {
-    "message": "Instalar actualización",
+    "message": "アップデートをインストール",
     "description": "Label for the button to install an update for a single style"
   },
   "styleToMozillaFormat": {
-    "message": "Al formato de Mozilla",
+    "message": "Mozilla 形式に変換",
     "description": "Label for the button that converts the code to Mozilla format"
   },
   "styleEnabledLabel": {
-    "message": "Habilitado",
+    "message": "有効",
     "description": "Label for the enabled state of styles"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "El estilo está actualizado.",
+    "message": "スタイルは最新の状態です。",
     "description": "Text that displays when an update check completed and no update is available"
   },
   "helpAlt": {
-    "message": "Ayuda",
+    "message": "ヘルプ",
     "description": "Alternate text for help buttons"
   },
   "addStyleTitle": {
-    "message": "Añadir estilo",
+    "message": "スタイルを追加",
     "description": "Title of the page for adding styles"
   },
   "appliesAdd": {
-    "message": "Añadir",
+    "message": "追加",
     "description": "Label for the button to add an 'applies' entry"
   },
   "editStyleHeading": {
-    "message": "Editar estilo",
+    "message": "スタイルを編集",
     "description": "Title of the page for editing styles"
   },
   "desc": {
-    "message": "Los estilos de usuario son temas para sitios web que te permiten controlar tu experiencia de navegación personalizando sitios web. Puedes eliminar contenido irrelevante, modificar colores o cambiar por completo el diseño de todo el sitio.\n\nStylish te permite gestionar fácilmente estilos de usuario. Puedes añadir estilos, eliminarlos, habilitarlos, inhabilitarlos y organizarlos simplemente haciendo clic un par de veces con el ratón sin necesidad de editar código ni utilizar opciones de configuración difíciles de encontrar. El sitio web complementario de Stylish, userstyles.org, aloja cientos de miles de estilos de usuario desarrollados por otros usuarios de Stylish que puedes probar.\n\nEn términos técnicos para usuarios expertos, Stylish y userstyles.org son como Greasemonkey para CSS y como userscripts.org para JavaScript.\n\n*** Si buscas ayuda, plantea una pregunta en la página del foro http://forum.userstyles.org, ya que no puedo responderte si publicas tu pregunta aquí."
+    "message": "ユーザー スタイルはウェブサイトのテーマです。ユーザー スタイルを通じて、ウェブサイトを自由にカスタマイズすることができます。不要なコンテンツの削除や色の変更はもちろん、サイト全体のデザインを完全に変更することも可能です。\n\nStylish を利用すると、ユーザー スタイルを簡単に管理することができます。マウスを数回クリックするだけで、追加、削除、有効化、無効化、整理などの操作を行うことができます。コードの編集は不要で、設定方法も明瞭です。Stylish ユーザーが集まるウェブサイト「userstyles.org」では、さまざまな Stylish ユーザーが作成した膨大な数のユーザー スタイルが公開されており、自由に試すことができます。\n\n技術的には、Greasemonkey と userscripts.org が JavaScript をベースとしているのに対し、Stylish と userstyles.org は CSS をベースとしています。\n\n*** ご質問がある場合には、userstyles.org のフォーラム（http://forum.userstyles.org）でお問い合わせください。ここに投稿しても、回答を得ることはできません。"
   },
   "appliesDomainOption": {
-    "message": "URL en el dominio",
+    "message": "ドメイン上の URL",
     "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesRegexpOption": {
-    "message": "URL que coinciden con la expresión regular",
+    "message": "正規表現に一致する URL",
     "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "styleCancelEditLabel": {
-    "message": "Volver al gestor",
+    "message": "管理画面に戻る",
     "description": "Label for cancel button for style editing"
   },
   "appliesToEverything": {
-    "message": "Todos los sitios",
+    "message": "すべて",
     "description": "Text displayed for styles that apply to all sites"
   },
   "appliesHelp": {
-    "message": "Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
+    "message": "[適用先] を使用すると、このセクションのコードが適用される URL を制限することができます。",
     "description": "Help text for 'applies to' section"
   },
   "styleSaveLabel": {
-    "message": "Guardar",
+    "message": "保存",
     "description": "Label for save button for style editing"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Error de actualización: el servidor ha respondido con el código $code$.",
+    "message": "更新に失敗しました - サーバーが応答コード「$code$」を返しています。",
     "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
@@ -169,11 +169,11 @@
     }
   },
   "disableStyleLabel": {
-    "message": "Inhabilitar",
+    "message": "無効化",
     "description": "Label for the button to disable a style"
   },
   "appliesDisplay": {
-    "message": "Se aplica a: $applies$",
+    "message": "適用先: $applies$",
     "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
@@ -182,19 +182,19 @@
     }
   },
   "styleMissingName": {
-    "message": "Introduce un nombre.",
+    "message": "名前を入力してください。",
     "description": "Error displayed when user saves without providing a name"
   },
   "openManage": {
-    "message": "Gestionar estilos instalados",
+    "message": "インストール済みのスタイルを管理",
     "description": "Link to open the manage page."
   },
   "checkForUpdate": {
-    "message": "Buscar actualizaciones",
+    "message": "アップデートをチェック",
     "description": "Label for the button to check a single style for an update"
   },
   "editStyleTitle": {
-    "message": "Editar estilo $stylename$",
+    "message": "スタイル「$stylename$」を編集",
     "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
@@ -203,27 +203,27 @@
     }
   },
   "checkAllUpdates": {
-    "message": "Comprobar todos los estilos para buscar actualizaciones",
+    "message": "すべてのスタイルのアップデートをチェック",
     "description": "Label for the button to check all styles for updates"
   },
   "styleChangesNotSaved": {
-    "message": "Has realizado cambios en este estilo sin guardarlos.",
+    "message": "このスタイルは変更されていますが、保存されていません。",
     "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleSectionsTitle": {
-    "message": "Secciones",
+    "message": "セクション",
     "description": "Title for the style sections section"
   },
   "noStylesForSite": {
-    "message": "No hay estilos instalados para este sitio.",
+    "message": "このサイト用のスタイルはインストールされていません。",
     "description": "Text displayed when no styles are installed for the current site"
   },
   "findStylesForSite": {
-    "message": "Buscar más estilos para este sitio",
+    "message": "このサイト用の他のスタイルを検索",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "deleteStyleConfirm": {
-    "message": "¿Seguro que quieres eliminar este estilo?",
+    "message": "このスタイルを削除してもよろしいですか？",
     "description": "Confirmation before deleting a style"
   }
 }
