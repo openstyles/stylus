@@ -82,7 +82,7 @@ function getStyles(options, callback) {
 					}
 					// now add in global ones
 					getGlobalStyleIds(function(ids) {
-						style_ids = style_ids.concat(ids);
+						style_ids = uniqueArray(style_ids.concat(ids));
 						loadStyles(style_ids, options.enabled, options.url, callback);
 					});
 				});
@@ -91,6 +91,12 @@ function getStyles(options, callback) {
 			}
 		}, reportError);
 	}, reportError);
+}
+
+function uniqueArray(ar) {
+	return ar.filter(function(s, i, a){
+		return i === a.lastIndexOf(s);
+	});
 }
 
 function getCache(callback) {
