@@ -226,7 +226,8 @@ function toMozillaFormat() {
 		}
 		var mf = "@-moz-document ";
 		mf += section.meta.map(function(meta) {
-			return meta[0] + "(\"" + meta[1].replace("\\", "\\\\") + "\")";
+			// escape the meta according to css rules
+			return meta[0] + "(\"" + meta[1].replace(/\\/g, "\\\\") + "\")";
 		}).join(", ");
 		return mf + " {\n" + section.code + "\n}";
 	}).join("\n\n");
