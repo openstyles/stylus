@@ -2,8 +2,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	switch (request.name) {
 		case "getStylesToApply":
 			getStyles({matchUrl: sender.tab.url, enabled: true}, function(r) {
-				chrome.browserAction.setBadgeText({text: getBadgeText(r), tabId: sender.tab.id});
 				sendResponse(r);
+				chrome.browserAction.setBadgeText({text: getBadgeText(r), tabId: sender.tab.id});
 			});
 			break;
 		case "getStylesForUrl":

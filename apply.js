@@ -29,7 +29,7 @@ function removeStyle(id) {
 		e.parentNode.removeChild(e);
 	}
 }
-	
+
 function applyStyle(s) {
 	var style = document.createElement("style");
 	style.setAttribute("id", "stylish-" + s.id);
@@ -50,56 +50,27 @@ function filterSection(section) {
 	if (!section.urls && !section.urlPrefixes && !section.domains && !section.regexps) {
 		return true;
 	}
-	if (section.urls) {
-		var found = false;
-		section.urls.forEach(function(url) {
-			if (url == location.href) {
-				found = true;
-				return;
-			}
-		});
-		if (found) {
-			return true;
-		}
+	if (section.urls && section.urls.some(function(url) {
+			return url == location.href;
+	})) {
+		return true;
 	}
-	if (section.urlPrefixes) {
-		var found = false;
-		section.urlPrefixes.forEach(function(urlPrefix) {
-			if (location.href.indexOf(urlPrefix) == 0) {
-				found = true;
-				return;
-			}
-		});
-		if (found) {
-			return true;
-		}
+	if (section.urlPrefixes && section.urlPrefixes.some(function(urlPrefix) {
+		return location.href.indexOf(urlPrefix) == 0;
+	})) {
+		return true;
 	}
 	if (section.domains) {
-		var found = false;
 		var currentDomains = getDomains(location.href);
-		section.domains.forEach(function(domain) {
-			if (currentDomains.indexOf(domain) >= 0) {
-				found = true;
-				return;
-			}
-		});
-		if (found) {
+		if (section.domains.some(function(domain) {
+			return currentDomains.indexOf(domain) >= 0;
+		})) {
 			return true;
 		}
 	}
-	if (section.regexps) {
-		var found = false;
-		section.regexps.forEach(function(regexp) {
-			if ((new RegExp(regexp)).test(location.href)) {
-				found = true;
-				return;
-			}
-		});
-		if (found) {
-			return true;
-		}
-	}
-	return false;
+	return section.regexps && section.regexps.some(function(regexp) {
+		return (new RegExp(regexp)).test(location.href);
+	});
 }
 
 function getDomains(url) {
