@@ -216,7 +216,7 @@ function saveComplete() {
 }
 
 function showMozillaFormat() {
-	var w = window.open("data:text/plain," + encodeURIComponent(toMozillaFormat()));
+	var w = window.open("data:text/plain;charset=UTF-8," + encodeURIComponent(toMozillaFormat()));
 }
 
 function toMozillaFormat() {
