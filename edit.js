@@ -2,14 +2,14 @@ var styleId = null;
 var dirty = false;
 
 var appliesToTemplate = document.createElement("li");
-appliesToTemplate.innerHTML = '<select name="applies-type" onchange="makeDirty()"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" onchange="makeDirty()"><button onclick="removeAppliesTo(event)" class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to" onclick="addAppliesTo(this.parentNode.parentNode)">' + t("appliesAdd") + '</button>';
+appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
 
 var appliesToEverythingTemplate = document.createElement("li");
 appliesToEverythingTemplate.className = "applies-to-everything";
-appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button class="add-applies-to" onclick="addAppliesTo(this.parentNode.parentNode)">' + t("appliesSpecify") + '</button>'
+appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button class="add-applies-to">' + t("appliesSpecify") + '</button>'
 
 var sectionTemplate = document.createElement("div");
-sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code" onchange="makeDirty()"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img src="help.png" onclick="showAppliesToHelp()" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section" onclick="removeSection(event)">' + t('sectionRemove') + '</button><button class="add-section" onclick="addSection()">' + t('sectionAdd') + '</button>';
+sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
 
 function makeDirty() {
 	dirty = true;
@@ -30,23 +30,36 @@ function addAppliesTo(list, name, value) {
 		e = appliesToTemplate.cloneNode(true);
 		e.querySelector("[name=applies-type]").value = name;
 		e.querySelector("[name=applies-value]").value = value;
+		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
+		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else if (showingEverything || list.hasChildNodes()) {
 		e = appliesToTemplate.cloneNode(true);
 		if (list.hasChildNodes()) {
 			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
 		}
+		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
+		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else {
 		e = appliesToEverythingTemplate.cloneNode(true);
 	}
+	e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
 	list.appendChild(e);
 }
 
 function addSection(section) {
 	var div = sectionTemplate.cloneNode(true);
+	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
+	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
+	div.querySelector(".add-section").addEventListener("click", function() {addSection()}, false);
+
 	var appliesTo = div.querySelector(".applies-to-list");
 
 	if (section) {
-		div.querySelector(".code").value = section.code;
+		var codeElement = div.querySelector(".code");
+		codeElement.value = section.code;
+		codeElement.addEventListener("change", makeDirty, false);
 		if (section.urls) {
 			section.urls.forEach(function(url) {
 				addAppliesTo(appliesTo, "url", url);
@@ -82,7 +95,9 @@ function removeAppliesTo(event) {
 	var appliesToList = event.target.parentNode.parentNode;
 	appliesToList.removeChild(event.target.parentNode);
 	if (!appliesToList.hasChildNodes()) {
-		appliesToList.appendChild(appliesToEverythingTemplate);
+		var e = appliesToEverythingTemplate.cloneNode(true);
+		e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
+		appliesToList.appendChild(e);
 	}
 	makeDirty();
 }
@@ -106,7 +121,7 @@ function init() {
 	}
 	// This is an edit
 	var id = idMatch[1];
-	getStyles({id: id}, function(styles) {
+	chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 		var style = styles[0];
 		styleId = style.id;
 		initWithStyle(style);
@@ -117,7 +132,7 @@ function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("heading").innerHTML = t("editStyleHeading");
-	initTitle(style);
+	initTitle(style.name);
 	// if this was done in response to an update, we need to clear existing sections
 	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
 		div.parentNode.removeChild(div);
@@ -125,8 +140,8 @@ function initWithStyle(style) {
 	style.sections.forEach(addSection);
 }
 
-function initTitle(style) {
-	document.title = t('editStyleTitle', [style.name]);
+function initTitle(name) {
+	document.title = t('editStyleTitle', [name]);
 }
 
 function validate() {
@@ -145,31 +160,14 @@ function save() {
 	}
 	var name = document.getElementById("name").value;
 	var enabled = document.getElementById("enabled").checked;
-	getDatabase(function(db) {
-		db.transaction(function (t) {
-			var sections = getSections();
-			if (styleId == null) {
-				t.executeSql('INSERT INTO styles (name, enabled) VALUES (?, ?);', [name, enabled]);
-				sections.forEach(function(s) {
-					t.executeSql("INSERT INTO sections (style_id, code) SELECT id, ? FROM styles ORDER BY id DESC LIMIT 1;", [s.code]);
-					s.meta.forEach(function(m) {
-						t.executeSql("INSERT INTO section_meta (section_id, name, value) SELECT id, ?, ? FROM sections ORDER BY id DESC LIMIT 1;", [m[0], m[1]]);
-					});
-				});
-			} else {
-				t.executeSql('UPDATE styles SET name = ?, enabled = ? WHERE id = ?;', [name, enabled, styleId]);
-				t.executeSql('DELETE FROM section_meta WHERE section_id IN (SELECT id FROM sections WHERE style_id = ?);', [styleId]);
-				t.executeSql('DELETE FROM sections WHERE style_id = ?;', [styleId]);
-				sections.forEach(function(s) {
-					t.executeSql("INSERT INTO sections (style_id, code) VALUES (?, ?);", [styleId, s.code]);
-					s.meta.forEach(function(m) {
-						t.executeSql("INSERT INTO section_meta (section_id, name, value) SELECT id, ?, ? FROM sections ORDER BY id DESC LIMIT 1;", [m[0], m[1]]);
-					});
-				});
-			}
-			dirty = false;
-		}, reportError, saveComplete);
-	}, reportError);
+	var request = {
+		method: "saveStyle",
+		id: styleId,
+		name: name,
+		enabled: enabled,
+		sections: getSections(),
+	};
+	chrome.extension.sendMessage(request, saveComplete);
 }
 
 function getSections() {
@@ -179,13 +177,15 @@ function getSections() {
 		if (/^\s*$/.test(code)) {
 			return;
 		}
-		sections.push({code: code, meta: getMeta(div)});
+		var meta = getMeta(div);
+		meta.code = code;
+		sections.push(meta);
 	});
 	return sections;
 }
 
 function getMeta(e) {
-	var meta = [];
+	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
 	Array.prototype.forEach.call(e.querySelector(".applies-to-list").childNodes, function(li) {
 		if (li.className == appliesToEverythingTemplate.className) {
 			return;
@@ -193,26 +193,33 @@ function getMeta(e) {
 		var a = li.querySelector("[name=applies-type]").value;
 		var b = li.querySelector("[name=applies-value]").value;
 		if (a && b) {
-			meta.push([a, b]);
+			switch (a) {
+				case "url":
+					meta.urls.push(b);
+					break;
+				case "url-prefix":
+					meta.urlPrefixes.push(b);
+					break;
+				case "domain":
+					meta.domains.push(b);
+					break;
+				case "regexp":
+					meta.regexps.push(b);
+					break;
+			}
 		}
 	});
 	return meta;
 }
 
-function saveComplete() {
-	if (styleId == null) {
-		// Load the style id
-		getDatabase(function(db) {
-			db.readTransaction(function (t) {
-				t.executeSql('SELECT id FROM styles ORDER BY id DESC LIMIT 1', [], function(t, r) {
-					styleId = r.rows.item(0).id;
-					notifySave(true);
-				}, reportError)
-			}, reportError)
-		});
-		return;
+function saveComplete(id) {
+	// Go from new style URL to edit style URL
+	if (location.href.indexOf("id=") == -1) {
+		// give the code above a moment before we kill the page
+		setTimeout(function() {location.href = "edit.html?id=" + id;}, 200);
+	} else {
+		initTitle(document.getElementById("name").value);
 	}
-	notifySave(false);
 }
 
 function showMozillaFormat() {
@@ -233,20 +240,6 @@ function toMozillaFormat() {
 	}).join("\n\n");
 }
 
-function notifySave(newStyle) {
-	chrome.extension.sendRequest({name: "styleChanged"});
-	getStyles({id: styleId}, function(styles) {
-		if (newStyle) {
-			notifyAllTabs({name:"styleAdded", style: styles[0]});
-			// give the code above a moment before we kill the page
-			setTimeout(function() {location.href = "edit.html?id=" + styleId;}, 200);
-		} else {
-			initTitle(styles[0]);
-			notifyAllTabs({name:"styleUpdated", style: styles[0]});
-		}
-	});
-}
-
 function showSectionHelp() {
 	showHelp(t("sectionHelp"));
 }
@@ -263,11 +256,12 @@ function showHelp(text) {
 	alert(text);
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var installed = document.getElementById("installed");
 	switch(request.name) {
 		case "styleUpdated":
 			initWithStyle(request.style);
+			dirty = false;
 			break;
 		case "styleDeleted":
 			if (styleId == request.id) {
@@ -276,3 +270,17 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
+
+tE("name-label", "styleNameLabel");
+tE("enabled-label", "styleEnabledLabel");
+tE("to-mozilla", "styleToMozillaFormat");
+tE("save-button", "styleSaveLabel");
+tE("cancel-button", "styleCancelEditLabel");
+tE("sections-heading", "styleSectionsTitle");
+document.getElementById("name").addEventListener("change", makeDirty, false);
+document.getElementById("enabled").addEventListener("change", makeDirty, false);
+document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
+document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+document.getElementById("save-button").addEventListener("click", save, false);
+document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
+

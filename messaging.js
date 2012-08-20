@@ -2,7 +2,7 @@ function notifyAllTabs(request) {
 	chrome.windows.getAll({populate: true}, function(windows) {
 		windows.forEach(function(win) {
 			win.tabs.forEach(function(tab) {
-				chrome.tabs.sendRequest(tab.id, request);
+				chrome.tabs.sendMessage(tab.id, request);
 				updateBadgeText(tab);
 			});
 		});
@@ -10,12 +10,13 @@ function notifyAllTabs(request) {
 }
 
 function updateBadgeText(tab) {
-	getStyles({matchUrl: tab.url}, function(styles) {
-		chrome.browserAction.setBadgeText({text: getBadgeText(styles), tabId: tab.id});
+	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, function(styles) {
+		var t = getBadgeText(styles);
+		console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
+		chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
 	});
 }
 
 function getBadgeText(styles) {
-	var e = styles.filter(function(style) { return style.enabled == "true"; });
-	return e.length == 0 ? "" : ("" + e.length);
+	return styles.length == 0 ? "" : ("" + styles.length);
 }

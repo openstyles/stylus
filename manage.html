@@ -87,16 +87,18 @@
 		<script src="localization.js"></script>
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
-		<script src="manage.js"></script>
 	</head>
 	<body>
+
 		<div id="header">
 			<img src="128.png">
-			<h1><script>o("manageHeading")</script></h1>
-			<p><script>o("manageText")</script></p>
-			<p><button onclick="checkUpdateAll()"><script>o("checkAllUpdates")</script></button></p>
-			<p><a href="edit.html"><button><script>o("addStyleLabel")</script></button></a></p>
+			<h1 id="manage-heading"></h1>
+			<p id="manage-text"></p>
+			<p><button id="check-all-updates"></button></p>
+			<p><a href="edit.html"><button id="add-style-label"></button></a></p>
 		</div>
 		<div id="installed"></div>
+
+		<script src="manage.js"></script>
 	</body>
 </html>

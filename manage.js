@@ -1,12 +1,11 @@
-
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<h2 class='style-name'></h2><p class='applies-to'></p><p class='actions'><a class='style-edit-link' href='edit.html?id='><button>" + t('editStyleLabel') + "</button></a><button class='enable' onclick='enable(event, true)'>" + t('enableStyleLabel') + "</button><button class='disable' onclick='enable(event, false)'>" + t('disableStyleLabel') + "</button><button class='delete' onclick='doDelete(event)'>" + t('deleteStyleLabel') + "</button><button class='check-update' onclick='doCheckUpdate(event)'>" + t('checkForUpdate') + "</button><button class='update' onclick='doUpdate(event)'>" + t('installUpdate') + "</button><span class='update-note'></span></p>";
+styleTemplate.innerHTML = "<h2 class='style-name'></h2><p class='applies-to'></p><p class='actions'><a class='style-edit-link' href='edit.html?id='><button>" + t('editStyleLabel') + "</button></a><button class='enable'>" + t('enableStyleLabel') + "</button><button class='disable'>" + t('disableStyleLabel') + "</button><button class='delete'>" + t('deleteStyleLabel') + "</button><button class='check-update'>" + t('checkForUpdate') + "</button><button class='update'>" + t('installUpdate') + "</button><span class='update-note'></span></p>";
 
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
-appliesToExtraTemplate.innerHTML = t('appliesDisplayTruncatedSuffix');
+appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 
-getStyles({}, showStyles);
+chrome.extension.sendMessage({method: "getStyles"}, showStyles);
 
 function showStyles(styles) {
 	var installed = document.getElementById("installed");
@@ -80,6 +79,11 @@ function createStyleElement(style) {
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
+	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
+	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
+	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
+	e.querySelector(".update").addEventListener("click", doUpdate, false);
+	e.querySelector(".delete").addEventListener("click", doDelete, false);
 	return e;
 }
 
@@ -111,19 +115,16 @@ function getStyleElement(event) {
 	return null;
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch(request.name) {
 		case "styleUpdated":
 			handleUpdate(request.style);
-			sendResponse({});
 			break;
 		case "styleAdded":
 			installed.appendChild(createStyleElement(request.style));
-			sendResponse({});
 			break;
 		case "styleDeleted":
 			handleDelete(request.id);
-			sendResponse({});
 			break;
 	}
 });
@@ -168,7 +169,7 @@ function checkUpdate(element) {
 }
 
 function checkNeedsUpdate(id, serverJson) {
-	getStyles({id: id}, function(styles) {
+	chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 		var style = styles[0];
 		if (codeIsEqual(style.sections, serverJson.sections)) {
 			handleNeedsUpdate("no", id, serverJson);
@@ -199,10 +200,7 @@ function handleNeedsUpdate(needsUpdate, id, serverJson) {
 
 function doUpdate(event) {
 	var element = getStyleElement(event);
-	var o = {};
-	o.id = element.getAttribute('style-id');
-	o.sections = element.updatedCode.sections;
-	saveFromJSON(o, function() {
+	chrome.extension.sendMessage({method: "saveStyle", id: element.getAttribute('style-id'), sections: element.updatedCode.sections}, function() {
 		element.updatedCode = "";
 		element.className = element.className.replace("can-update", "update-done");
 		element.querySelector(".update-note").innerHTML = t('updateCompleted');
@@ -279,3 +277,9 @@ function getType(o) {
 }
 
 document.title = t("manageTitle");
+tE("manage-heading", "manageHeading");
+tE("manage-text", "manageText", null, false);
+tE("check-all-updates", "checkAllUpdates");
+tE("add-style-label", "addStyleLabel");
+
+document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);

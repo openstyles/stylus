@@ -1,7 +1,9 @@
 {
   "name": "Stylish",
-  "version": "0.10",
+  "version": "1.0",
   "description": "__MSG_description__",
+	"homepage_url": "http://userstyles.org",
+	"manifest_version": 2,
   "icons": {
 		"16": "16.png",
   	"48": "48.png",
@@ -9,10 +11,11 @@
   },
   "permissions": [
     "tabs",
-    "http://userstyles.org/",
-    "http://userstyles.local/"
+    "http://userstyles.org/"
   ],
-  "background_page": "background.html",
+  "background": {
+		"page": "background.html"
+	},
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
@@ -21,7 +24,7 @@
       "js": ["apply.js"]
     },
     {
-      "matches": ["http://userstyles.org/*", "http://userstyles.local/*"],
+      "matches": ["http://userstyles.org/*"],
       "run_at": "document_end",
       "all_frames": false,
       "js": ["install.js"]

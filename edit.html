@@ -35,11 +35,6 @@
 			#sections > div:not(:first-child) {
 				border-top: 2px solid black;
 			}
-			span {
-				cursor: pointer;
-				color: #999;
-			}
-			
 			label {
 				display: inline-block;
 				width: 10em;
@@ -86,23 +81,21 @@
 			}
 		</style>
 		<script src="localization.js"></script>
-		<script src="storage.js"></script>
-		<script src="messaging.js"></script>
-		<script src="edit.js"></script>
 	</head>
 	<body>
 		<div id="header">
 			<h1 id="heading"></h1>
 			<section id="basic-info">
-				<div><label for="name"><script>o("styleNameLabel")</script></label><input id="name" onchange="makeDirty()"><div>
-				<div><label for="enabled"><script>o("styleEnabledLabel")</script></label><input type="checkbox" id="enabled" onchange="makeDirty()"></div>
+				<div><label for="name" id="name-label"></label><input id="name"><div>
+				<div><label for="enabled" id="enabled-label"></label><input type="checkbox" id="enabled"></div>
 			</section>
-			<button onclick="showMozillaFormat()"><script>o("styleToMozillaFormat")</script></button><img id="to-mozilla-help" src="help.png" onclick="showToMozillaHelp()"><br><br>
-			<button onclick="save()"><script>o("styleSaveLabel")</script></button>
-			<a href="manage.html"><button><script>o("styleCancelEditLabel")</script></button></a>
+			<button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"><br><br>
+			<button id="save-button"></button>
+			<a href="manage.html"><button id="cancel-button"></button></a>
 		</div>
 		<section id="sections">
-			<h2><script>o("styleSectionsTitle")</script> <img id="sections-help" src="help.png" onclick="showSectionHelp()"></h2>
+			<h2><span id="sections-heading"></span> <img id="sections-help" src="help.png"></h2>
 		</section>
+		<script src="edit.js"></script>
 	</body>
 </html>
