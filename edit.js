@@ -212,11 +212,12 @@ function getMeta(e) {
 	return meta;
 }
 
-function saveComplete(id) {
+function saveComplete(style) {
+	dirty = false;
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		// give the code above a moment before we kill the page
-		setTimeout(function() {location.href = "edit.html?id=" + id;}, 200);
+		setTimeout(function() {location.href = "edit.html?id=" + style.id;}, 200);
 	} else {
 		initTitle(document.getElementById("name").value);
 	}
@@ -260,8 +261,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var installed = document.getElementById("installed");
 	switch(request.name) {
 		case "styleUpdated":
-			initWithStyle(request.style);
-			dirty = false;
+			if (styleId == request.id) {
+				initWithStyle(request.style);
+				dirty = false;
+			} 
 			break;
 		case "styleDeleted":
 			if (styleId == request.id) {
