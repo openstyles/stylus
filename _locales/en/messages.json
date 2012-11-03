@@ -157,6 +157,10 @@
 		"message": "Remove section",
 		"description": "Label for the button to remove a section"
 	},
+	"styleBadRegexp": {
+		"message": "Regexp is invalid.",
+		"description": "Validation message for a bad regexp in a style"
+	},
 	"styleCancelEditLabel": {
 		"message": "Back to manage",
 		"description": "Label for cancel button for style editing"

@@ -149,6 +149,30 @@ function validate() {
 	if (name == "") {
 		return t("styleMissingName");
 	}
+	// validate the regexps
+	if (Array.prototype.some.call(document.querySelectorAll(".applies-to-list"), function(list) {
+		return Array.prototype.some.call(list.childNodes, function(li) {
+			if (li.className == appliesToEverythingTemplate.className) {
+				return false;
+			}
+			var valueElement = li.querySelector("[name=applies-value]");
+			var a = li.querySelector("[name=applies-type]").value;
+			var b = valueElement.value;
+			if (a && b) {
+				if (a == "regexp") {
+					try {
+						new RegExp(b);
+					} catch (ex) {
+						valueElement.focus();
+						return true;
+					}
+				}
+			}
+			return false;
+		});
+	})) {
+		return t("styleBadRegexp");
+	}
 	return null;
 }
 

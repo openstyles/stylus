@@ -159,7 +159,13 @@ function sectionAppliesToUrl(section, url) {
 		if (regexp[regexp.length - 1] != "$") {
 			regexp += "$";
 		}
-		return (new RegExp(regexp)).test(url);
+		try {
+			var re = new RegExp(regexp);
+		} catch (ex) {
+			console.log(section.id + "'s regexp '" + regexp + "' is not valid");
+			return false;
+		}
+		return (re).test(url);
 	})) {
 		console.log(section.id + " applies to " + url + " due to regexp rules");
 		return true;
