@@ -11,6 +11,15 @@ appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button cla
 var sectionTemplate = document.createElement("div");
 sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
 
+
+var editors = [] // array of all CodeMirror instances
+// replace given textarea with the CodeMirror editor
+function setupCodeMirror(textarea) {
+  var cm = CodeMirror.fromTextArea(textarea, { mode: 'css' });
+  editors.push(cm);
+}
+
+
 function makeDirty() {
 	dirty = true;
 }
@@ -89,6 +98,7 @@ function addSection(section) {
 
 	var sections = document.getElementById("sections");
 	sections.appendChild(div);
+  setupCodeMirror(div.querySelector('.code'));
 }
 
 function removeAppliesTo(event) {
@@ -310,4 +320,3 @@ document.getElementById("to-mozilla").addEventListener("click", showMozillaForma
 document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 document.getElementById("save-button").addEventListener("click", save, false);
 document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
-
