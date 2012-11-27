@@ -15,7 +15,11 @@ sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea cl
 var editors = [] // array of all CodeMirror instances
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea) {
-  var cm = CodeMirror.fromTextArea(textarea, { mode: 'css' });
+  var cm = CodeMirror.fromTextArea(textarea, {
+    mode: 'css',
+    lineNumbers: true,
+    lineWrapping: true
+  });
   editors.push(cm);
 }
 
@@ -187,6 +191,11 @@ function validate() {
 }
 
 function save() {
+  // save the contents of the CodeMirror editors back into the textareas
+  for(var i=0; i < editors.length; i++) {
+    editors[i].save();
+  }
+
 	var error = validate();
 	if (error) {
 		alert(error);
