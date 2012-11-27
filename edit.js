@@ -253,15 +253,17 @@ function showMozillaFormat() {
 
 function toMozillaFormat() {
 	return getSections().map(function(section) {
-		if (section.meta.length == 0) {
+		if (section.urls.length == 0 && section.urlPrefixes.length == 0 && section.domains.length == 0 && section.regexps.length == 0) {
 			return section.code;
 		}
-		var mf = "@-moz-document ";
-		mf += section.meta.map(function(meta) {
-			// escape the meta according to css rules
-			return meta[0] + "(\"" + meta[1].replace(/\\/g, "\\\\") + "\")";
-		}).join(", ");
-		return mf + " {\n" + section.code + "\n}";
+		var propertyToCss = {"urls": "url", "urlPrefixes": "url-prefix", "domains": "domain", "regexps": "regexp"};
+		var cssMds = [];
+		for (var i in propertyToCss) {
+			cssMds = cssMds.concat(section[i].map(function(v) {
+				return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+			}));
+		}
+		return "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}";
 	}).join("\n\n");
 }
 
