@@ -41,11 +41,18 @@ function getResource(url, callback) {
 		return;
 	}
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", url, true);
 	xhr.onreadystatechange = function() {
 	  if (xhr.readyState == 4 && callback) {
 	    callback(xhr.responseText);
 	  }
 	}
-	xhr.send();
+	if (url.length > 2000) {
+		var parts = url.split("?");
+		xhr.open("POST", parts[0], true);
+		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr.send(parts[1]);
+	} else {
+		xhr.open("GET", url, true);
+		xhr.send();
+	}
 }
