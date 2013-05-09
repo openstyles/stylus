@@ -155,6 +155,15 @@
 	"styleToMozillaFormatHelp": {
 		"message": "用于Firefox上的Stylish的Mozilla格式样式代码可以在 userstyles.org 上提交"
 	},
+	"styleUpdate": {
+		"message": "你確定要更新 '$stylename$' 嗎？",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
 	"updateCheckFailBadResponseCode": {
 		"message": "更新失败 - 服务器了返回代码 $code$.",
 		"placeholders": {

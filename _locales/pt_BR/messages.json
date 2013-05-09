@@ -8,6 +8,15 @@
       }
     }
   },
+	"styleUpdate": {
+		"message": "Tem certeza que quer atualizar \"$stylename$\"?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
   "appliesUrlPrefixOption": {
     "message": "URLs que começam com",
     "description": "Option to make the style apply to the entered string as a URL prefix"

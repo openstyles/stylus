@@ -206,6 +206,15 @@
 		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
 		"description": "Help info for the button that converts the code to Mozilla format"
 	},
+	"styleUpdate": {
+		"message": "Are you sure you want to update '$stylename$'?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update failed - server responded with code $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",

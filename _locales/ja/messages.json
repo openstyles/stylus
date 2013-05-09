@@ -8,6 +8,15 @@
       }
     }
   },
+	"styleUpdate": {
+		"message": "本当に「$stylename$」を更新しますか？",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
   "appliesUrlPrefixOption": {
     "message": "次で始まる URL",
     "description": "Option to make the style apply to the entered string as a URL prefix"

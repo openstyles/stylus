@@ -8,6 +8,15 @@
       }
     }
   },
+	"styleUpdate": {
+		"message": "你确定要更新 '$stylename$' 吗？",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
   "appliesUrlPrefixOption": {
     "message": "网址前缀",
     "description": "Option to make the style apply to the entered string as a URL prefix"
