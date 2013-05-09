@@ -2,9 +2,52 @@ chrome.extension.sendMessage({method: "getStyles", url: getMeta("stylish-id-url"
 	if (response.length == 0) {
 		sendEvent("styleCanBeInstalledChrome");
 	} else {
-		sendEvent("styleAlreadyInstalledChrome");
+		var installedStyle = response[0];
+		// maybe an update is needed
+		getResource(getMeta("stylish-code-chrome"), function(code) {
+			// this would indicate a failure (a style with settings?).
+			if (code == null) {
+				sendEvent("styleCanBeUpdatedChrome");
+			}
+			var json = JSON.parse(code);
+			if (json.sections.length == installedStyle.sections.length) {
+				if (json.sections.every(function(section) {
+					return installedStyle.sections.some(function(installedSection) {
+						return sectionsAreEqual(section, installedSection);
+					});
+				})) {
+					// everything's the same
+					sendEvent("styleAlreadyInstalledChrome");
+					return;
+				};
+			}
+			sendEvent("styleCanBeUpdatedChrome");
+		});
 	}
 });
+
+function sectionsAreEqual(a, b) {
+	if (a.code != b.code) {
+		return false;
+	}
+	return ["urls", "urlPrefixes", "domains", "regexps"].every(function(attribute) {
+		return arraysAreEqual(a[attribute], b[attribute]);
+	});
+}
+
+function arraysAreEqual(a, b) {
+	// treat empty array and undefined as equivalent
+	if (typeof a == "undefined")
+		return (typeof b == "undefined") || (b.length == 0);
+	if (typeof b == "undefined")
+		return (typeof a == "undefined") || (a.length == 0);
+	if (a.length != b.length) {
+		return false;
+	}
+	return a.every(function(entry) {
+		return b.indexOf(entry) != -1;
+	});
+}
 
 function sendEvent(type) {
 	var stylishEvent = document.createEvent("Events");
@@ -28,6 +71,21 @@ document.addEventListener("stylishInstallChrome", function() {
 	});
 }, false);
 
+document.addEventListener("stylishUpdateChrome", function() {
+	chrome.extension.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}, function(response) {
+		var style = response[0];
+		if (confirm(chrome.i18n.getMessage('styleUpdate', [style.name]))) {
+			getResource(getMeta("stylish-code-chrome"), function(code) {
+				var json = JSON.parse(code);
+				chrome.extension.sendMessage({method: "saveStyle", id: style.id, sections: json.sections}, function() {
+					sendEvent("styleInstalledChrome");
+				});
+			});
+		}	
+	});
+}, false);
+
+
 function getMeta(name) {
 	var e = document.querySelector("link[rel='" + name + "']");
 	return e ? e.getAttribute("href") : null;
@@ -42,9 +100,13 @@ function getResource(url, callback) {
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
-	  if (xhr.readyState == 4 && callback) {
-	    callback(xhr.responseText);
-	  }
+		if (xhr.readyState == 4 && callback) {
+			if (xhr.status >= 400) {
+				callback(null);
+			} else {
+		    callback(xhr.responseText);
+			}
+		}
 	}
 	if (url.length > 2000) {
 		var parts = url.split("?");

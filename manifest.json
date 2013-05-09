@@ -24,7 +24,7 @@
       "js": ["apply.js"]
     },
     {
-      "matches": ["http://userstyles.org/*"],
+      "matches": ["http://userstyles.org/*", "http://userstyles.local/*"],
       "run_at": "document_end",
       "all_frames": false,
       "js": ["install.js"]
