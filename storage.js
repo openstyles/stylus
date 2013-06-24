@@ -11,6 +11,8 @@ function getDatabase(ready, error) {
 		dbV12(stylishDb, error, ready);
 	} else if (stylishDb.version == "1.2") {
 		dbV13(stylishDb, error, ready);
+	} else if (stylishDb.version == "1.3") {
+		dbV14(stylishDb, error, ready);
 	} else {
 	  ready(stylishDb);
 	}
@@ -48,6 +50,12 @@ function dbV13(d, error, done) {
 		// clear out orphans
 		t.executeSql('DELETE FROM section_meta WHERE section_id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
 		t.executeSql('DELETE FROM sections WHERE id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
+	}, error, function() { done(d)});
+}
+
+function dbV14(d, error, done) {
+	d.changeVersion(d.version, '1.4', function (t) {
+		t.executeSql('UPDATE styles SET url = null WHERE url = "undefined";');
 	}, error, function() { done(d)});
 }
 
