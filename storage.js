@@ -4,7 +4,12 @@ function getDatabase(ready, error) {
 		ready(stylishDb);
 		return;
 	}
-	stylishDb = openDatabase('stylish', '', 'Stylish Styles', 5*1024*1024);
+	try {
+		stylishDb = openDatabase('stylish', '', 'Stylish Styles', 5*1024*1024);
+	} catch (ex) {
+		error();
+		throw ex;
+	}
 	if (stylishDb.version == "1.0" || stylishDb.version == "") {
 		dbV11(stylishDb, error, ready);
 	} else if (stylishDb.version == "1.1") {

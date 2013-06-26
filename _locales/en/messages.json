@@ -72,6 +72,10 @@
 		"message": "Checking...",
 		"description": "Text to display when checking a style for an update"
 	},
+	"dbError": {
+		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"description": "Prompt when a DB error is encountered"
+	},
 	"deleteStyleLabel": {
 		"message": "Delete",
 		"description": "Label for the button to delete a style"

@@ -21,6 +21,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "styleChanged":
 			cachedStyles = null;
 			break;
+		case "healthCheck":
+			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
+			break;
 	}
 });
 
