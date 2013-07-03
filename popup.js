@@ -48,7 +48,7 @@ function doDelete() {
 }
 
 function getBrowser() {
-	if (navigator.userAgent.indexOf("Opera") > -1) {
+	if (navigator.userAgent.indexOf("OPR") > -1) {
 		return "Opera";
 	}
 	return "Chrome";
