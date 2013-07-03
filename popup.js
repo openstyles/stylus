@@ -37,11 +37,21 @@ function enable(event, enabled) {
 }
 
 function doDelete() {
-	if (!confirm(t('deleteStyleConfirm'))) {
-		return;
+	// Opera can't do confirms in popups
+	if (getBrowser() != "Opera") {
+		if (!confirm(t('deleteStyleConfirm'))) {
+			return;
+		}
 	}
 	var id = getId(event);
 	deleteStyle(id);
+}
+
+function getBrowser() {
+	if (navigator.userAgent.indexOf("Opera") > -1) {
+		return "Opera";
+	}
+	return "Chrome";
 }
 
 function getId(event) {
