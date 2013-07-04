@@ -66,8 +66,9 @@ function getId(event) {
 }
 
 function openLink(event) {
+	event.preventDefault();
 	chrome.tabs.create({url: event.target.href});
-	return false;
+	//return false;
 }
 
 function handleUpdate(style) {
@@ -84,4 +85,5 @@ tE("open-manage-link", "openManage");
 tE("find-styles-link", "findStylesForSite");
 
 document.getElementById("find-styles-link").addEventListener("click", openLink, false);
+document.getElementById("open-manage-link").addEventListener("click", openLink, false);
 
