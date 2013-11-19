@@ -33,7 +33,14 @@ function applyStyle(s) {
 }
 
 function applySections(style, sections) {
-	var styleElement = document.createElement("style");
+	var styleElement;
+	if (document.documentElement instanceof SVGSVGElement) {
+		// SVG document, make an SVG style element.
+		styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+	} else {
+		// This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
+		styleElement = document.createElement("style");
+	}
 	styleElement.setAttribute("id", "stylish-" + style.id);
 	styleElement.setAttribute("class", "stylish");
 	styleElement.setAttribute("type", "text/css");
