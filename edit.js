@@ -129,6 +129,8 @@ function init() {
 	if (idMatch == null || idMatch.length != 2) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
 		addSection();
+		// default to enabled
+		document.getElementById("enabled").checked = true
 		document.title = t("addStyleTitle");
 		tE("heading", "addStyleTitle");
 		return;
