@@ -18,6 +18,8 @@ function getDatabase(ready, error) {
 		dbV13(stylishDb, error, ready);
 	} else if (stylishDb.version == "1.3") {
 		dbV14(stylishDb, error, ready);
+	} else if (stylishDb.version == "1.4") {
+		dbV15(stylishDb, error, ready);
 	} else {
 	  ready(stylishDb);
 	}
@@ -61,6 +63,12 @@ function dbV13(d, error, done) {
 function dbV14(d, error, done) {
 	d.changeVersion(d.version, '1.4', function (t) {
 		t.executeSql('UPDATE styles SET url = null WHERE url = "undefined";');
+	}, error, function() { done(d)});
+}
+
+function dbV15(d, error, done) {
+	d.changeVersion(d.version, '1.5', function (t) {
+		t.executeSql('ALTER TABLE styles ADD COLUMN originalMd5 TEXT NULL;');
 	}, error, function() { done(d)});
 }
 

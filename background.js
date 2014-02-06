@@ -89,7 +89,7 @@ function getStyles(options, callback) {
 					}
 					var metaValue = values.metaValue;
 					if (currentStyle == null || currentStyle.id != values.id) {
-						currentStyle = {id: values.id, url: values.url, updateUrl: values.updateUrl, md5Url: values.md5Url, name: values.name, enabled: values.enabled, sections: []};
+						currentStyle = {id: values.id, url: values.url, updateUrl: values.updateUrl, md5Url: values.md5Url, name: values.name, enabled: values.enabled, originalMd5: values.originalMd5, sections: []};
 						cachedStyles.push(currentStyle);
 					}
 					if (currentSection == null || currentSection.id != values.section_id) {
@@ -199,15 +199,18 @@ function saveStyle(o, callback) {
 				if ("md5Url" in o) {
 					t.executeSql('UPDATE styles SET md5Url = ? WHERE id = ?;', [o.md5Url, o.id]);
 				}
+				if ("originalMd5" in o) {
+					t.executeSql('UPDATE styles SET originalMd5 = ? WHERE id = ?;', [o.originalMd5, o.id]);
+				}
 			} else {
 				// create a new record
 				// set optional things to null if they're undefined
-				["updateUrl", "md5Url", "url"].filter(function(att) {
+				["updateUrl", "md5Url", "url", "originalMd5"].filter(function(att) {
 					return !(att in o);
 				}).forEach(function(att) {
 					o[att] = null;
 				});
-				t.executeSql('INSERT INTO styles (name, enabled, url, updateUrl, md5Url) VALUES (?, ?, ?, ?, ?);', [o.name, true, o.url, o.updateUrl, o.md5Url]);
+				t.executeSql('INSERT INTO styles (name, enabled, url, updateUrl, md5Url, originalMd5) VALUES (?, ?, ?, ?, ?, ?);', [o.name, true, o.url, o.updateUrl, o.md5Url, o.originalMd5]);
 			}
 
 			if ("sections" in o) {

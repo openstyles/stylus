@@ -1,6 +1,8 @@
 var styleTemplate = document.createElement("div");
 styleTemplate.innerHTML = "<h2 class='style-name'></h2><p class='applies-to'></p><p class='actions'><a class='style-edit-link' href='edit.html?id='><button>" + t('editStyleLabel') + "</button></a><button class='enable'>" + t('enableStyleLabel') + "</button><button class='disable'>" + t('disableStyleLabel') + "</button><button class='delete'>" + t('deleteStyleLabel') + "</button><button class='check-update'>" + t('checkForUpdate') + "</button><button class='update'>" + t('installUpdate') + "</button><span class='update-note'></span></p>";
 
+var lastUpdatedStyleId = null;
+
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
 appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
@@ -20,6 +22,12 @@ function createStyleElement(style) {
 	e.setAttribute("style-id", style.id);
 	if (style.updateUrl) {
 		e.setAttribute("style-update-url", style.updateUrl);
+	}
+	if (style.md5Url) {
+		e.setAttribute("style-md5-url", style.md5Url);
+	}
+	if (style.originalMd5) {
+		e.setAttribute("style-original-md5", style.originalMd5);
 	}
 	
 	var styleName = e.querySelector(".style-name");
@@ -131,7 +139,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
 function handleUpdate(style) {
 	var installed = document.getElementById("installed");
-	installed.replaceChild(createStyleElement(style), installed.querySelector("[style-id='" + style.id + "']"));
+	var element = createStyleElement(style);
+	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
+	if (style.id == lastUpdatedStyleId) {
+		lastUpdatedStyleId = null;
+		element.className = element.className += " update-done";
+		element.querySelector(".update-note").innerHTML = t('updateCompleted');
+	};
 }
 
 function handleDelete(id) {
@@ -152,31 +166,78 @@ function checkUpdate(element) {
 	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
 	var id = element.getAttribute("style-id");
 	var url = element.getAttribute("style-update-url");
+	var md5Url = element.getAttribute("style-md5-url");
+	var originalMd5 = element.getAttribute("style-original-md5");
+
+	function handleSuccess(forceUpdate, serverJson) {
+		chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
+			var style = styles[0];
+			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
+				handleNeedsUpdate("no", id, serverJson);
+			} else {
+				handleNeedsUpdate("yes", id, serverJson);
+			}
+		});
+	}
+
+	function handleFailure(status) {
+		if (status == 0) {
+			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
+		} else {
+			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null);
+		}
+	}
+
+	if (!md5Url || !originalMd5) {
+		checkUpdateFullCode(url, false, handleSuccess, handleFailure)
+	} else {
+		checkUpdateMd5(originalMd5, md5Url, function(needsUpdate) {
+			if (needsUpdate) {
+				// If the md5 shows a change we will update regardless of whether the code looks different
+				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
+			} else {
+				handleNeedsUpdate("no", id, null);
+			}
+		}, handleFailure);
+	}
+}
+
+function checkUpdateFullCode(url, forceUpdate, successCallback, failureCallback) {
+	download(url, function(responseText) {
+		successCallback(forceUpdate, JSON.parse(responseText));
+	}, failureCallback);
+}
+
+function checkUpdateMd5(originalMd5, md5Url, successCallback, failureCallback) {
+	download(md5Url, function(responseText) {
+		if (responseText.length != 32) {
+			failureCallback(-1);
+			return;
+		}
+		successCallback(responseText != originalMd5);
+	}, failureCallback);
+}
+
+function download(url, successCallback, failureCallback) {
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", url, true);	
 	xhr.onreadystatechange = function (aEvt) {  
 		if (xhr.readyState == 4) {  
 			if (xhr.status == 200) {
-				checkNeedsUpdate(id, JSON.parse(xhr.responseText));
-			} else if (xhr.status == 0) {
-				handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
+				successCallback(xhr.responseText)
 			} else {
-				handleNeedsUpdate(t('updateCheckFailBadResponseCode', [xhr.status]), id, null);
+				failureCallback(xhr.status);
 			}
 		}
-	};  
-	xhr.send(null);
-}
-
-function checkNeedsUpdate(id, serverJson) {
-	chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
-		var style = styles[0];
-		if (codeIsEqual(style.sections, serverJson.sections)) {
-			handleNeedsUpdate("no", id, serverJson);
-		} else {
-			handleNeedsUpdate("yes", id, serverJson);
-		}
-	});
+	}
+	if (url.length > 2000) {
+		var parts = url.split("?");
+		xhr.open("POST", parts[0], true);
+		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr.send(parts[1]);
+	} else {
+		xhr.open("GET", url, true);
+		xhr.send();
+	}
 }
 
 function handleNeedsUpdate(needsUpdate, id, serverJson) {
@@ -200,11 +261,16 @@ function handleNeedsUpdate(needsUpdate, id, serverJson) {
 
 function doUpdate(event) {
 	var element = getStyleElement(event);
-	chrome.extension.sendMessage({method: "saveStyle", id: element.getAttribute('style-id'), sections: element.updatedCode.sections}, function() {
-		element.updatedCode = "";
-		element.className = element.className.replace("can-update", "update-done");
-		element.querySelector(".update-note").innerHTML = t('updateCompleted');
-	});
+
+	var updatedCode = element.updatedCode;
+	// update everything but name
+	delete updatedCode.name;
+	updatedCode.id = element.getAttribute('style-id');
+	updatedCode.method = "saveStyle";
+
+	// updating the UI will be handled by the general update listener
+	lastUpdatedStyleId = updatedCode.id;
+	chrome.extension.sendMessage(updatedCode);
 }
 
 function codeIsEqual(a, b) {

@@ -4,25 +4,37 @@ chrome.extension.sendMessage({method: "getStyles", url: getMeta("stylish-id-url"
 	} else {
 		var installedStyle = response[0];
 		// maybe an update is needed
-		getResource(getMeta("stylish-code-chrome"), function(code) {
-			// this would indicate a failure (a style with settings?).
-			if (code == null) {
-				sendEvent("styleCanBeUpdatedChrome");
-			}
-			var json = JSON.parse(code);
-			if (json.sections.length == installedStyle.sections.length) {
-				if (json.sections.every(function(section) {
-					return installedStyle.sections.some(function(installedSection) {
-						return sectionsAreEqual(section, installedSection);
-					});
-				})) {
-					// everything's the same
-					sendEvent("styleAlreadyInstalledChrome");
-					return;
-				};
-			}
-			sendEvent("styleCanBeUpdatedChrome");
-		});
+		// use the md5 if available
+		var md5Url = getMeta("stylish-md5-url");
+		if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
+			getResource(md5Url, function(md5) {
+				if (md5 == installedStyle.originalMd5) {
+					sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
+				} else {
+					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+				}
+			});
+		} else {
+			getResource(getMeta("stylish-code-chrome"), function(code) {
+				// this would indicate a failure (a style with settings?).
+				if (code == null) {
+					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+				}
+				var json = JSON.parse(code);
+				if (json.sections.length == installedStyle.sections.length) {
+					if (json.sections.every(function(section) {
+						return installedStyle.sections.some(function(installedSection) {
+							return sectionsAreEqual(section, installedSection);
+						});
+					})) {
+						// everything's the same
+						sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
+						return;
+					};
+				}
+				sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
+			});
+		}
 	}
 });
 
@@ -49,9 +61,11 @@ function arraysAreEqual(a, b) {
 	});
 }
 
-function sendEvent(type) {
-	var stylishEvent = document.createEvent("Events");
-	stylishEvent.initEvent(type, false, false, document.defaultView, null);
+function sendEvent(type, data) {
+	if (typeof data == "undefined") {
+		data = null;
+	}
+	var stylishEvent = new CustomEvent(type, {detail: data});
 	document.dispatchEvent(stylishEvent);
 }
 
@@ -77,7 +91,9 @@ document.addEventListener("stylishUpdateChrome", function() {
 		if (confirm(chrome.i18n.getMessage('styleUpdate', [style.name]))) {
 			getResource(getMeta("stylish-code-chrome"), function(code) {
 				var json = JSON.parse(code);
-				chrome.extension.sendMessage({method: "saveStyle", id: style.id, sections: json.sections}, function() {
+				json.method = "saveStyle";
+				json.id = style.id;
+				chrome.extension.sendMessage(json, function() {
 					sendEvent("styleInstalledChrome");
 				});
 			});
