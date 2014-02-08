@@ -10,11 +10,15 @@ function notifyAllTabs(request) {
 }
 
 function updateBadgeText(tab) {
-	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, function(styles) {
-		var t = getBadgeText(styles);
-		console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
-		chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-	});
+	if (localStorage["show-badge"] == "true") {
+		chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, function(styles) {
+			var t = getBadgeText(styles);
+			console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
+			chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
+		});
+	} else {
+		chrome.browserAction.setBadgeText({text: "", tabId: tab.id});
+	}
 }
 
 function getBadgeText(styles) {

@@ -3,12 +3,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "getStyles":
 			getStyles(request, function(r) {
 				sendResponse(r);
-				if (request.updateBadge) {
-					var t = getBadgeText(r);
-					console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") badge text set to '" + t + "'.");
-					chrome.browserAction.setBadgeText({text: t, tabId: sender.tab.id});
-				} else {
-					console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") doesn't get badge text.");
+				if (localStorage["show-badge"] == "true") {
+					if (request.updateBadge) {
+						var t = getBadgeText(r);
+						console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") badge text set to '" + t + "'.");
+						chrome.browserAction.setBadgeText({text: t, tabId: sender.tab.id});
+					} else {
+						console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") doesn't get badge text.");
+					}
 				}
 			});
 			return true;
@@ -293,3 +295,5 @@ function getDomains(url) {
 	return domains;
 }
 
+// Get the DB so that any first run actions will be performed immediately when the background page loads.
+getDatabase(function() {}, reportError);

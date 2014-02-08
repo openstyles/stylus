@@ -1,6 +1,7 @@
 var stylishDb = null;
 function getDatabase(ready, error) {
-	if (stylishDb != null) {
+	console.log("getting tha db");
+	if (stylishDb != null && stylishDb.version == "1.5") {
 		ready(stylishDb);
 		return;
 	}
@@ -57,19 +58,22 @@ function dbV13(d, error, done) {
 		// clear out orphans
 		t.executeSql('DELETE FROM section_meta WHERE section_id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
 		t.executeSql('DELETE FROM sections WHERE id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
-	}, error, function() { done(d)});
+	}, error, function() { dbV14(d, error, done)});
 }
 
 function dbV14(d, error, done) {
 	d.changeVersion(d.version, '1.4', function (t) {
 		t.executeSql('UPDATE styles SET url = null WHERE url = "undefined";');
-	}, error, function() { done(d)});
+	}, error, function() { dbV15(d, error, done)});
 }
 
 function dbV15(d, error, done) {
+	if (!("show-badge" in localStorage)) {
+		localStorage["show-badge"] = true;
+	}
 	d.changeVersion(d.version, '1.5', function (t) {
 		t.executeSql('ALTER TABLE styles ADD COLUMN originalMd5 TEXT NULL;');
-	}, error, function() { done(d)});
+	}, error, function() { done(d, error, done)});
 }
 
 function enableStyle(id, enabled) {

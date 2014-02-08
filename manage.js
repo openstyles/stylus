@@ -14,6 +14,8 @@ function showStyles(styles) {
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
+	// prefs may be defaulted in storage.js - at this point they'll have been loaded
+	loadPrefs();
 }
 
 function createStyleElement(style) {
@@ -342,10 +344,37 @@ function getType(o) {
 	throw "Not supported - " + o;
 }
 
+function isCheckbox(el) {
+	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
+}
+
+function changePref(event) {
+	var el = event.target;
+	localStorage[el.id] = isCheckbox(el) ? el.checked : el.value;
+	notifyAllTabs({method: "prefChanged"});
+}
+
+function loadPrefs() {
+	["show-badge"].forEach(function(id) {
+		var value = localStorage[id];
+		var el = document.getElementById(id);
+		if (isCheckbox(el)) {
+			if (value == "true") {
+				el.checked = true;
+			}
+		} else {
+			el.value = value;
+		}
+		el.addEventListener("change", changePref);
+	});
+}
+
 document.title = t("manageTitle");
 tE("manage-heading", "manageHeading");
 tE("manage-text", "manageText", null, false);
 tE("check-all-updates", "checkAllUpdates");
 tE("add-style-label", "addStyleLabel");
+tE("options-heading", "optionsHeading");
+tE("show-badge-label", "prefShowBadge");
 
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
