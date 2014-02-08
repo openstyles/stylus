@@ -1,6 +1,5 @@
 var stylishDb = null;
 function getDatabase(ready, error) {
-	console.log("getting tha db");
 	if (stylishDb != null && stylishDb.version == "1.5") {
 		ready(stylishDb);
 		return;

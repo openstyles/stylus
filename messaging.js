@@ -11,11 +11,17 @@ function notifyAllTabs(request) {
 
 function updateBadgeText(tab) {
 	if (localStorage["show-badge"] == "true") {
-		chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, function(styles) {
+		function stylesReceived(styles) {
 			var t = getBadgeText(styles);
 			console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 			chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-		});
+		}
+		// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
+		if (typeof getStyles != "undefined") {
+			getStyles({matchUrl: tab.url, enabled: true}, stylesReceived);
+		} else {
+			chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, stylesReceived);
+		}
 	} else {
 		chrome.browserAction.setBadgeText({text: "", tabId: tab.id});
 	}
