@@ -60,10 +60,6 @@
     "message": "عنوان URL",
     "description": "Option to make the style apply to the entered string as a URL"
   },
-  "description": {
-    "message": "يمكنك تغيير نمط الويب باستخدام Stylish، وهي أداة لإدارة أنماط المستخدم. وتتيح Stylish لك بسهولة تثبيت المظاهر والأشكال الخارجية لكل من Google، وFacebook وYouTube وOrkut فضلاً عن الكثير جدًا من مواقع الويب الأخرى.",
-    "description": "Extension description"
-  },
   "addStyleLabel": {
     "message": "كتابة نمط جديد",
     "description": "Label for the button to go to the add style page"

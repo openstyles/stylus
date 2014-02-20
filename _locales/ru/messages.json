@@ -70,7 +70,7 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylish. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",
+    "message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylish.",
     "description": "Extension description"
   },
   "addStyleLabel": {

@@ -70,7 +70,7 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Gestalten Sie das Web mit dem Nutzerstil-Manager Stylish neu. Mit Stylish können Sie ganz einfach Designs für Google, Facebook, YouTube, orkut und viele andere Websites installieren.",
+    "message": "Gestalten Sie das Web mit dem Nutzerstil-Manager Stylish neu.",
     "description": "Extension description"
   },
   "addStyleLabel": {

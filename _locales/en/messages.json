@@ -85,7 +85,7 @@
 		"description": "Confirmation before deleting a style"
 	},
 	"description": {
-		"message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for Google, Facebook, YouTube, Orkut, and many, many other sites.",
+		"message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for many popular sites.",
 		"description": "Extension description"
 	},
 	"disableStyleLabel": {

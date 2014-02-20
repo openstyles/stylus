@@ -70,7 +70,7 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Mude o estilo da web com o Stylish, um gerenciador de estilos do usuário. O Stylish permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites.",
+    "message": "Mude o estilo da web com o Stylish, um gerenciador de estilos do usuário.",
     "description": "Extension description"
   },
   "addStyleLabel": {

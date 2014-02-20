@@ -61,7 +61,7 @@
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "description": {
-    "message": "Kullanıcı stil yöneticisi Stylish ile Web'in stilini yenileyin. Stylish Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır.",
+    "message": "Kullanıcı stil yöneticisi Stylish ile Web'in stilini yenileyin.",
     "description": "Extension description"
   },
   "addStyleLabel": {
