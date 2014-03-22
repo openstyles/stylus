@@ -11,7 +11,8 @@
 	},
 	"permissions": [
 		"tabs",
-		"http://userstyles.org/"
+		"http://userstyles.org/",
+		"https://userstyles.org/"
 	],
 	"background": {
 		"page": "background.html"
@@ -24,7 +25,7 @@
 			"js": ["apply.js"]
 		},
 		{
-			"matches": ["http://userstyles.org/*", "http://userstyles.local/*"],
+			"matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
 			"run_at": "document_end",
 			"all_frames": false,
 			"js": ["install.js"]
