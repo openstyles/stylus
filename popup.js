@@ -1,5 +1,5 @@
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
+styleTemplate.innerHTML = "<input class='checker' type='checkbox'></input><div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
 
 chrome.tabs.getSelected(null, function(tab) {
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
@@ -18,6 +18,16 @@ function showStyles(styles) {
 
 function createStyleElement(style) {
 	var e = styleTemplate.cloneNode(true);
+	var checkbox = e.querySelector(".checker");
+		checkbox.setAttribute("type","checkbox");
+		checkbox.setAttribute("class","checker")
+		if (style.enabled == "true") {
+			checkbox.checked = true;
+		}
+		else {
+			checkbox.checked = false;
+		}
+
 	e.setAttribute("class", "entry " + (style.enabled == "true" ? "enabled" : "disabled"));
 	e.setAttribute("style-id", style.id);
 	var styleName = e.querySelector(".style-name");
@@ -25,8 +35,13 @@ function createStyleElement(style) {
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	editLink.addEventListener("click", openLink, false);
-	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function() { enable(event, false); }, false);
+
+	if (checkbox.checked == true) {
+		(checkbox).addEventListener("click", function() { enable(event, false); }, false);
+	}
+	else {
+		(checkbox).addEventListener("click", function() { enable(event, true); }, false);
+	}
 	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
 	return e;
 }
