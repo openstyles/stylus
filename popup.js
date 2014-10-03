@@ -19,8 +19,6 @@ function showStyles(styles) {
 function createStyleElement(style) {
 	var e = styleTemplate.cloneNode(true);
 	var checkbox = e.querySelector(".checker");
-		checkbox.setAttribute("type","checkbox");
-		checkbox.setAttribute("class","checker")
 		if (style.enabled == "true") {
 			checkbox.checked = true;
 		}
