@@ -34,11 +34,13 @@ function createStyleElement(style) {
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	editLink.addEventListener("click", openLink, false);
 
-	if (checkbox.checked == true) {
-		(checkbox, styleName).addEventListener("click", function() { enable(event, false); }, false);
+	if (checkbox.checked) {
+		styleName.addEventListener("click", function() { enable(event, false); }, false);
+		checkbox.addEventListener("click", function() { enable(event, false); }, false);
 	}
 	else {
-		(checkbox, styleName).addEventListener("click", function() { enable(event, true); }, false);
+		styleName.addEventListener("click", function() { enable(event, true); }, false);
+		checkbox.addEventListener("click", function() { enable(event, true); }, false);
 	}
 	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
 	return e;
