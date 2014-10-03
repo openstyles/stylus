@@ -1,0 +1,152 @@
+{
+  "addStyleLabel":{
+    "message":"Γράψτε νέο στυλ",
+    "description":"Label for the button to go to the add style page"
+  },
+  "addStyleTitle":{
+    "message":"Προσθήκη στυλ",
+    "description":"Title of the page for adding styles"
+  },
+  "appliesAdd":{
+    "message":"Προσθήκη",
+    "description":"Label for the button to add an 'applies' entry"
+  },
+  "appliesDisplay":{
+    "message":"Ισχύει για: $applies$",
+    "description":"Text on the manage screen to describe what the style applies to",
+    "placeholders":{
+      "applies":{
+        "content":"$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix":{
+    "message":"και πολλά άλλα",
+    "description":"Text added to appliesDisplay when there are more sites for the style than are displayed"
+  },
+  "appliesLabel":{
+    "message":"Ισχύει για",
+    "description":"Label for 'applies to' fields on the edit\/add screen"
+  },
+  "appliesRemove":{
+    "message":"Αφαίρεση",
+    "description":"Label for the button to remove an 'applies' entry"
+  },
+  "appliesSpecify":{
+    "message":"Καθορισμός",
+    "description":"Label for the button to make a style apply only to specific sites"
+  },
+  "appliesToEverything":{
+    "message":"Τα πάντα",
+    "description":"Text displayed for styles that apply to all sites"
+  },
+  "appliesUrlOption":{
+    "message":"URL",
+    "description":"Option to make the style apply to the entered string as a URL"
+  },
+  "checkForUpdate":{
+    "message":"Έλεγχος για ενημερώσεις",
+    "description":"Label for the button to check a single style for an update"
+  },
+  "checkingForUpdate":{
+    "message":"Έλεγχος...",
+    "description":"Text to display when checking a style for an update"
+  },
+  "deleteStyleLabel":{
+    "message":"Διαγραφή",
+    "description":"Label for the button to delete a style"
+  },
+  "disableStyleLabel":{
+    "message":"Απενεργοποίηση",
+    "description":"Label for the button to disable a style"
+  },
+  "editStyleHeading":{
+    "message":"Επεξεργασία Στυλ",
+    "description":"Title of the page for editing styles"
+  },
+  "editStyleLabel":{
+    "message":"Επεξεργασία",
+    "description":"Label for the button to go to the edit style page"
+  },
+  "enableStyleLabel":{
+    "message":"Ενεργοποίηση",
+    "description":"Label for the button to enable a style"
+  },
+  "helpAlt":{
+    "message":"Βοήθεια",
+    "description":"Alternate text for help buttons"
+  },
+  "installUpdate":{
+    "message":"Εγκατάσταση ενημέρωσης",
+    "description":"Label for the button to install an update for a single style"
+  },
+  "manageHeading":{
+    "message":"Εγκατεστημένα Στυλ",
+    "description":"Heading for the manage page"
+  },
+  "manageTitle":{
+    "message":"Κομψή",
+    "description":"Title for the manage page"
+  },
+  "sectionCode":{
+    "message":"Κώδικας",
+    "description":"Label for the code for a section"
+  },
+  "sectionRemove":{
+    "message":"Αφαίρεση ενότητας",
+    "description":"Label for the button to remove a section"
+  },
+  "styleBadRegexp":{
+    "message":"Το Regexp δεν είναι έγκυρο.",
+    "description":"Validation message for a bad regexp in a style"
+  },
+  "styleCancelEditLabel":{
+    "message":"Πίσω στη διαχείριση",
+    "description":"Label for cancel button for style editing"
+  },
+  "styleEnabledLabel":{
+    "message":"Ενεργοποιημένη",
+    "description":"Label for the enabled state of styles"
+  },
+  "styleMissingName":{
+    "message":"Εισάγετε ένα όνομα.",
+    "description":"Error displayed when user saves without providing a name"
+  },
+  "styleNameLabel":{
+    "message":"Όνομα",
+    "description":"Label for the name of styles"
+  },
+  "styleSaveLabel":{
+    "message":"Αποθήκευση",
+    "description":"Label for save button for style editing"
+  },
+  "styleSectionsTitle":{
+    "message":"Ενότητες",
+    "description":"Title for the style sections section"
+  },
+  "styleToMozillaFormat":{
+    "message":"Σε μορφή Mozilla",
+    "description":"Label for the button that converts the code to Mozilla format"
+  },
+  "updateCheckFailBadResponseCode":{
+    "message":"Αποτυχία ενημέρωσης - ο διακομιστής ανταποκρίθηκε με κωδικό $code$.",
+    "description":"Text that displays when an update check failed because the response code indicates an error",
+    "placeholders":{
+      "code":{
+        "content":"$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable":{
+    "message":"Αποτυχία ενημέρωσης - απρόσιτος διακομιστής.",
+    "description":"Text that displays when an update check failed because the update server is unreachable"
+  },
+  "updateCheckSucceededNoUpdate":{
+    "message":"Το στυλ είναι ενημερωμένο.",
+    "description":"Text that displays when an update check completed and no update is available"
+  },
+  "updateCompleted":{
+    "message":"Η ενημέρωση ολοκληρώθηκε.",
+    "description":"Text that displays when an update completed"
+  }
+}

@@ -1,18 +1,18 @@
 {
   "addStyleLabel":{
-    "message":"Escribir nuevo estilo",
+    "message":"Lägg till ny stil",
     "description":"Label for the button to go to the add style page"
   },
   "addStyleTitle":{
-    "message":"Añadir estilo",
+    "message":"Lägg till stil",
     "description":"Title of the page for adding styles"
   },
   "appliesAdd":{
-    "message":"Añadir",
+    "message":"Lägg till",
     "description":"Label for the button to add an 'applies' entry"
   },
   "appliesDisplay":{
-    "message":"Se aplica a: $applies$",
+    "message":"Gäller för: $applies$",
     "description":"Text on the manage screen to describe what the style applies to",
     "placeholders":{
       "applies":{
@@ -21,79 +21,83 @@
     }
   },
   "appliesDisplayTruncatedSuffix":{
-    "message":"y otros muchos sitios",
+    "message":"och mer",
     "description":"Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption":{
-    "message":"URL en el dominio",
+    "message":"Webbadresser på domän",
     "description":"Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp":{
-    "message":"Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
+    "message":"Använd \"Gäller\" för att begränsa vilka webbadresser den här koden kommer gälla.",
     "description":"Help text for 'applies to' section"
   },
   "appliesLabel":{
-    "message":"Se aplica a",
+    "message":"Gäller",
     "description":"Label for 'applies to' fields on the edit\/add screen"
   },
   "appliesRegexpOption":{
-    "message":"URL que coinciden con la expresión regular",
+    "message":"Webbadresser på regexp",
     "description":"Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove":{
-    "message":"Eliminar",
+    "message":"Ta bort",
     "description":"Label for the button to remove an 'applies' entry"
   },
   "appliesSpecify":{
-    "message":"Especificar",
+    "message":"Ange",
     "description":"Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything":{
-    "message":"Todos los sitios",
+    "message":"Överallt",
     "description":"Text displayed for styles that apply to all sites"
   },
+  "appliesUrlOption":{
+    "message":"Webbadress",
+    "description":"Option to make the style apply to the entered string as a URL"
+  },
   "appliesUrlPrefixOption":{
-    "message":"URL que empiezan por",
+    "message":"Webbadresser som börjar med",
     "description":"Option to make the style apply to the entered string as a URL prefix"
   },
   "checkAllUpdates":{
-    "message":"Comprobar todos los estilos para buscar actualizaciones",
+    "message":"Sök efter uppdateringar för alla stilar",
     "description":"Label for the button to check all styles for updates"
   },
   "checkForUpdate":{
-    "message":"Buscar actualizaciones",
+    "message":"Sök efter uppdatering",
     "description":"Label for the button to check a single style for an update"
   },
   "checkingForUpdate":{
-    "message":"Comprobando...",
+    "message":"Kontrollerar...",
     "description":"Text to display when checking a style for an update"
   },
   "deleteStyleLabel":{
-    "message":"Eliminar",
+    "message":"Ta bort",
     "description":"Label for the button to delete a style"
   },
   "deleteStyleConfirm":{
-    "message":"¿Seguro que quieres eliminar este estilo?",
+    "message":"Är du säker på att du vill ta bort denna stil?",
     "description":"Confirmation before deleting a style"
   },
   "description":{
-    "message":"Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+    "message":"Designa om webben med Stylish, en stilhanterare för användare. Stylish låter dig enkelt installera stilar och teman för Google, Facebook, YouTube, Orkut och många, många andra sidor.",
     "description":"Extension description"
   },
   "disableStyleLabel":{
-    "message":"Inhabilitar",
+    "message":"Inaktivera",
     "description":"Label for the button to disable a style"
   },
   "editStyleHeading":{
-    "message":"Editar estilo",
+    "message":"Ändra stil",
     "description":"Title of the page for editing styles"
   },
   "editStyleLabel":{
-    "message":"Editar",
+    "message":"Ändra",
     "description":"Label for the button to go to the edit style page"
   },
   "editStyleTitle":{
-    "message":"Editar estilo $stylename$",
+    "message":"Ändra stil $stylename$",
     "description":"Title of the page for editing styles",
     "placeholders":{
       "stylename":{
@@ -102,67 +106,75 @@
     }
   },
   "enableStyleLabel":{
-    "message":"Habilitar",
+    "message":"Aktivera",
     "description":"Label for the button to enable a style"
   },
   "findStylesForSite":{
-    "message":"Buscar más estilos para este sitio",
+    "message":"Hitta fler stilar för den här webbplatsen.",
     "description":"Text for a link that gets a list of styles for the current site"
   },
   "helpAlt":{
-    "message":"Ayuda",
+    "message":"Hjälp",
     "description":"Alternate text for help buttons"
   },
   "installUpdate":{
-    "message":"Instalar actualización",
+    "message":"Installera uppdatering",
     "description":"Label for the button to install an update for a single style"
   },
   "manageHeading":{
-    "message":"Estilos instalados",
+    "message":"Installerade stilar",
     "description":"Heading for the manage page"
   },
   "manageText":{
-    "message":"Accede a la página <a href='http:\/\/userstyles.org'>userstyles.org<\/a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http:\/\/forum.userstyles.org'>el foro<\/a> si necesitas ayuda.",
+    "message":"Besök <a href='http:\/\/userstyles.org'>userstyles.org<\/a> för färdiga stilar. Fråga i <a href='http:\/\/forum.userstyles.org'>forumet<\/a> om du behöver hjälp.",
     "description":"Help text on the manage page"
   },
+  "manageTitle":{
+    "message":"Stylish",
+    "description":"Title for the manage page"
+  },
   "noStylesForSite":{
-    "message":"No hay estilos instalados para este sitio.",
+    "message":"Ingen stilar installerade för den här webbplatsen.",
     "description":"Text displayed when no styles are installed for the current site"
   },
   "openManage":{
-    "message":"Gestionar estilos instalados",
+    "message":"Hantera installerade stilar.",
     "description":"Link to open the manage page."
   },
   "sectionAdd":{
-    "message":"Añadir otra sección",
+    "message":"Lägga till ett avsnitt",
     "description":"Label for the button to add a section"
   },
   "sectionCode":{
-    "message":"Código",
+    "message":"Kod",
     "description":"Label for the code for a section"
   },
   "sectionHelp":{
-    "message":"Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
+    "message":"Med sektioner kan du definiera olika delar av koden som gäller vid olika webbadresser i samma stil. En enda stil kan till exempel ändra hemsidan för en webbplats på ett sätt, medan du ändrar resten av en webbplats på ett annat sätt.",
     "description":"Help text for sections"
   },
   "sectionRemove":{
-    "message":"Eliminar sección",
+    "message":"Ta bort avsnitt",
     "description":"Label for the button to remove a section"
   },
+  "styleBadRegexp":{
+    "message":"Regexp är ogiltig.",
+    "description":"Validation message for a bad regexp in a style"
+  },
   "styleCancelEditLabel":{
-    "message":"Volver al gestor",
+    "message":"Tillbaka",
     "description":"Label for cancel button for style editing"
   },
   "styleChangesNotSaved":{
-    "message":"Has realizado cambios en este estilo sin guardarlos.",
+    "message":"Du har gjort ändringar i denna stil utan att spara.",
     "description":"Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleEnabledLabel":{
-    "message":"Habilitado",
+    "message":"Aktiverad",
     "description":"Label for the enabled state of styles"
   },
   "styleInstall":{
-    "message":"¿Quieres instalar \"$stylename$\" en Stylish?",
+    "message":"Installera \"$stylename$\" i Stylish?",
     "description":"Confirmation when installing a style",
     "placeholders":{
       "stylename":{
@@ -171,31 +183,31 @@
     }
   },
   "styleMissingName":{
-    "message":"Introduce un nombre.",
+    "message":"Ange namn.",
     "description":"Error displayed when user saves without providing a name"
   },
   "styleNameLabel":{
-    "message":"Nombre",
+    "message":"Namn",
     "description":"Label for the name of styles"
   },
   "styleSaveLabel":{
-    "message":"Guardar",
+    "message":"Spara",
     "description":"Label for save button for style editing"
   },
   "styleSectionsTitle":{
-    "message":"Secciones",
+    "message":"Avsnitt",
     "description":"Title for the style sections section"
   },
   "styleToMozillaFormat":{
-    "message":"Al formato de Mozilla",
+    "message":"Till Mozilla-format",
     "description":"Label for the button that converts the code to Mozilla format"
   },
   "styleToMozillaFormatHelp":{
-    "message":"El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+    "message":"Mozilla-koden kan användas med Stylish för Firefox och kan lämnas till userstyles.org.",
     "description":"Help info for the button that converts the code to Mozilla format"
   },
   "updateCheckFailBadResponseCode":{
-    "message":"Error de actualización: el servidor ha respondido con el código $code$.",
+    "message":"Det gick inte att uppdatera - servern svarade med koden $code$.",
     "description":"Text that displays when an update check failed because the response code indicates an error",
     "placeholders":{
       "code":{
@@ -204,15 +216,15 @@
     }
   },
   "updateCheckFailServerUnreachable":{
-    "message":"Error de actualización: no se puede acceder al servidor.",
+    "message":"Det gick inte att uppdatera - servern inte kan nås.",
     "description":"Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSucceededNoUpdate":{
-    "message":"El estilo está actualizado.",
+    "message":"Stilen är redan uppdaterad.",
     "description":"Text that displays when an update check completed and no update is available"
   },
   "updateCompleted":{
-    "message":"Actualización terminada",
+    "message":"Uppdateringen slutförd.",
     "description":"Text that displays when an update completed"
   }
 }

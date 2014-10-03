@@ -1,18 +1,18 @@
 {
   "addStyleLabel":{
-    "message":"Escribir nuevo estilo",
+    "message":"Uusi Tyyli",
     "description":"Label for the button to go to the add style page"
   },
   "addStyleTitle":{
-    "message":"Añadir estilo",
+    "message":"Lisää Tyyli",
     "description":"Title of the page for adding styles"
   },
   "appliesAdd":{
-    "message":"Añadir",
+    "message":"Lisää",
     "description":"Label for the button to add an 'applies' entry"
   },
   "appliesDisplay":{
-    "message":"Se aplica a: $applies$",
+    "message":"Kooskee: $applies$",
     "description":"Text on the manage screen to describe what the style applies to",
     "placeholders":{
       "applies":{
@@ -21,79 +21,83 @@
     }
   },
   "appliesDisplayTruncatedSuffix":{
-    "message":"y otros muchos sitios",
+    "message":"ja lisää",
     "description":"Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption":{
-    "message":"URL en el dominio",
+    "message":"URL ositteita domainilla",
     "description":"Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp":{
-    "message":"Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
+    "message":"Käytä 'Koskee' kontrolleja rajoittaaksesi mitä URL osoitteisiin tämä osio koodista koskee.",
     "description":"Help text for 'applies to' section"
   },
   "appliesLabel":{
-    "message":"Se aplica a",
+    "message":"Koskee",
     "description":"Label for 'applies to' fields on the edit\/add screen"
   },
   "appliesRegexpOption":{
-    "message":"URL que coinciden con la expresión regular",
+    "message":"URL ositteet jotka vastaavat regexpiä",
     "description":"Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove":{
-    "message":"Eliminar",
+    "message":"Poista",
     "description":"Label for the button to remove an 'applies' entry"
   },
   "appliesSpecify":{
-    "message":"Especificar",
+    "message":"Tarkenna",
     "description":"Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything":{
-    "message":"Todos los sitios",
+    "message":"Kaikki",
     "description":"Text displayed for styles that apply to all sites"
   },
+  "appliesUrlOption":{
+    "message":"URL",
+    "description":"Option to make the style apply to the entered string as a URL"
+  },
   "appliesUrlPrefixOption":{
-    "message":"URL que empiezan por",
+    "message":"URL osoitteet jotka alkavat",
     "description":"Option to make the style apply to the entered string as a URL prefix"
   },
   "checkAllUpdates":{
-    "message":"Comprobar todos los estilos para buscar actualizaciones",
+    "message":"Tarkista kaikki tyylit päivityksien varalta",
     "description":"Label for the button to check all styles for updates"
   },
   "checkForUpdate":{
-    "message":"Buscar actualizaciones",
+    "message":"Hae päivityksiä",
     "description":"Label for the button to check a single style for an update"
   },
   "checkingForUpdate":{
-    "message":"Comprobando...",
+    "message":"Tarkistetaan...",
     "description":"Text to display when checking a style for an update"
   },
   "deleteStyleLabel":{
-    "message":"Eliminar",
+    "message":"Poista",
     "description":"Label for the button to delete a style"
   },
   "deleteStyleConfirm":{
-    "message":"¿Seguro que quieres eliminar este estilo?",
+    "message":"Oletko varma että haluat poistaa tämän tyylin?",
     "description":"Confirmation before deleting a style"
   },
   "description":{
-    "message":"Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+    "message":"Uudelleen stailaa netti Stylishillä, käyttäjän tyyli hallintapaneelilla. Stylish antaa sinun helposti asentaa teemoja ja skinejä palvelluille kuten Google, Facebook, YouTube, Orkut, ja monelle, monelle muulle sivustolle.",
     "description":"Extension description"
   },
   "disableStyleLabel":{
-    "message":"Inhabilitar",
+    "message":"Poista Käytöstä",
     "description":"Label for the button to disable a style"
   },
   "editStyleHeading":{
-    "message":"Editar estilo",
+    "message":"Muokkaa Tyyliä",
     "description":"Title of the page for editing styles"
   },
   "editStyleLabel":{
-    "message":"Editar",
+    "message":"Muokkaa",
     "description":"Label for the button to go to the edit style page"
   },
   "editStyleTitle":{
-    "message":"Editar estilo $stylename$",
+    "message":"Muokkaa Tyyliä $stylename$",
     "description":"Title of the page for editing styles",
     "placeholders":{
       "stylename":{
@@ -102,67 +106,75 @@
     }
   },
   "enableStyleLabel":{
-    "message":"Habilitar",
+    "message":"Aktivoi",
     "description":"Label for the button to enable a style"
   },
   "findStylesForSite":{
-    "message":"Buscar más estilos para este sitio",
+    "message":"Hae lisää tyylejä tälle sivustolle.",
     "description":"Text for a link that gets a list of styles for the current site"
   },
   "helpAlt":{
-    "message":"Ayuda",
+    "message":"Apu",
     "description":"Alternate text for help buttons"
   },
   "installUpdate":{
-    "message":"Instalar actualización",
+    "message":"Asenna päivitys",
     "description":"Label for the button to install an update for a single style"
   },
   "manageHeading":{
-    "message":"Estilos instalados",
+    "message":"Asennetut Tyylit",
     "description":"Heading for the manage page"
   },
   "manageText":{
-    "message":"Accede a la página <a href='http:\/\/userstyles.org'>userstyles.org<\/a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http:\/\/forum.userstyles.org'>el foro<\/a> si necesitas ayuda.",
+    "message":"Käy osoitteessa <a href='http:\/\/userstyles.org'> userstyles.org<\/a> saadaksesi valmiita tyylejä. Kysy <a href='http:\/\/forum.userstyles.org'> foorumista <\/a> jos tarvitset apua.",
     "description":"Help text on the manage page"
   },
+  "manageTitle":{
+    "message":"Tyylikäs",
+    "description":"Title for the manage page"
+  },
   "noStylesForSite":{
-    "message":"No hay estilos instalados para este sitio.",
+    "message":"Ei asennettuja tyylejä tällä sivustolla.",
     "description":"Text displayed when no styles are installed for the current site"
   },
   "openManage":{
-    "message":"Gestionar estilos instalados",
+    "message":"Hallitse asennettuja tyylejä.",
     "description":"Link to open the manage page."
   },
   "sectionAdd":{
-    "message":"Añadir otra sección",
+    "message":"Lisää uusi osio",
     "description":"Label for the button to add a section"
   },
   "sectionCode":{
-    "message":"Código",
+    "message":"Koodi",
     "description":"Label for the code for a section"
   },
   "sectionHelp":{
-    "message":"Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
+    "message":"Osiot antavat sinun tarkentaa koodin eri osia niin että ne koskevat eri URL osoitteita samassa tyylissä. Esimerkiksi, yksi tyyli voi muokata kotisivua yhdellä tavalla kun se muokkaa koko muuta sivustoa toisella tavalla.",
     "description":"Help text for sections"
   },
   "sectionRemove":{
-    "message":"Eliminar sección",
+    "message":"Poista osio",
     "description":"Label for the button to remove a section"
   },
+  "styleBadRegexp":{
+    "message":"Regexp ei kelpaa.",
+    "description":"Validation message for a bad regexp in a style"
+  },
   "styleCancelEditLabel":{
-    "message":"Volver al gestor",
+    "message":"Takaisin hallintapaneeliin",
     "description":"Label for cancel button for style editing"
   },
   "styleChangesNotSaved":{
-    "message":"Has realizado cambios en este estilo sin guardarlos.",
+    "message":"Olet tehnyt muutoksia tähän tyyliin tallentamatta.",
     "description":"Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleEnabledLabel":{
-    "message":"Habilitado",
+    "message":"Aktivoitu",
     "description":"Label for the enabled state of styles"
   },
   "styleInstall":{
-    "message":"¿Quieres instalar \"$stylename$\" en Stylish?",
+    "message":"Asennetaanko '$stylename$' Stylishiin?",
     "description":"Confirmation when installing a style",
     "placeholders":{
       "stylename":{
@@ -171,31 +183,31 @@
     }
   },
   "styleMissingName":{
-    "message":"Introduce un nombre.",
+    "message":"Syötä nimi.",
     "description":"Error displayed when user saves without providing a name"
   },
   "styleNameLabel":{
-    "message":"Nombre",
+    "message":"Nimi",
     "description":"Label for the name of styles"
   },
   "styleSaveLabel":{
-    "message":"Guardar",
+    "message":"Tallenna",
     "description":"Label for save button for style editing"
   },
   "styleSectionsTitle":{
-    "message":"Secciones",
+    "message":"Osiot",
     "description":"Title for the style sections section"
   },
   "styleToMozillaFormat":{
-    "message":"Al formato de Mozilla",
+    "message":"Mozilla formattiin",
     "description":"Label for the button that converts the code to Mozilla format"
   },
   "styleToMozillaFormatHelp":{
-    "message":"El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+    "message":"Mozilla formaattia koodista voidaan käyttää Stylish Firefoxille ohjelmassa ja voidaan lähettää userstyles.orgiin.",
     "description":"Help info for the button that converts the code to Mozilla format"
   },
   "updateCheckFailBadResponseCode":{
-    "message":"Error de actualización: el servidor ha respondido con el código $code$.",
+    "message":"Päivitys epäonnistui - palvelin vastasi koodilla $code$.",
     "description":"Text that displays when an update check failed because the response code indicates an error",
     "placeholders":{
       "code":{
@@ -204,15 +216,15 @@
     }
   },
   "updateCheckFailServerUnreachable":{
-    "message":"Error de actualización: no se puede acceder al servidor.",
+    "message":"Päivitys epäonnistui - ei voitu yhdistää palvelimeen.",
     "description":"Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSucceededNoUpdate":{
-    "message":"El estilo está actualizado.",
+    "message":"Tyyli on ajan tasalla.",
     "description":"Text that displays when an update check completed and no update is available"
   },
   "updateCompleted":{
-    "message":"Actualización terminada",
+    "message":"Päivitys suoritettu.",
     "description":"Text that displays when an update completed"
   }
 }
