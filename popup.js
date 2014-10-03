@@ -35,10 +35,10 @@ function createStyleElement(style) {
 	editLink.addEventListener("click", openLink, false);
 
 	if (checkbox.checked == true) {
-		(checkbox).addEventListener("click", function() { enable(event, false); }, false);
+		(checkbox, styleName).addEventListener("click", function() { enable(event, false); }, false);
 	}
 	else {
-		(checkbox).addEventListener("click", function() { enable(event, true); }, false);
+		(checkbox, styleName).addEventListener("click", function() { enable(event, true); }, false);
 	}
 	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
 	return e;
@@ -99,4 +99,3 @@ tE("find-styles-link", "findStylesForSite");
 
 document.getElementById("find-styles-link").addEventListener("click", openLink, false);
 document.getElementById("open-manage-link").addEventListener("click", openLink, false);
-
