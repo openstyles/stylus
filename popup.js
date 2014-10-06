@@ -1,5 +1,5 @@
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<input class='checker' type='checkbox'></input><div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
+styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
 
 chrome.tabs.getSelected(null, function(tab) {
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
@@ -19,12 +19,7 @@ function showStyles(styles) {
 function createStyleElement(style) {
 	var e = styleTemplate.cloneNode(true);
 	var checkbox = e.querySelector(".checker");
-		if (style.enabled == "true") {
-			checkbox.checked = true;
-		}
-		else {
-			checkbox.checked = false;
-		}
+	checkbox.checked = style.enabled == "true";
 
 	e.setAttribute("class", "entry " + (style.enabled == "true" ? "enabled" : "disabled"));
 	e.setAttribute("style-id", style.id);
@@ -34,14 +29,11 @@ function createStyleElement(style) {
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	editLink.addEventListener("click", openLink, false);
 
-	if (checkbox.checked) {
-		styleName.addEventListener("click", function() { enable(event, false); }, false);
-		checkbox.addEventListener("click", function() { enable(event, false); }, false);
-	}
-	else {
-		styleName.addEventListener("click", function() { enable(event, true); }, false);
-		checkbox.addEventListener("click", function() { enable(event, true); }, false);
-	}
+	// the checkbox will not toggle itself after clicking the name, but calling enable will regenerate it
+	styleName.addEventListener("click", function() { enable(event, !event.target.previousSibling.checked); }, false);
+	// clicking the checkbox will toggle it, and this will run after that happens
+	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
+
 	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
 	return e;
 }
