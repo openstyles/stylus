@@ -20,6 +20,7 @@
 	"content_scripts": [
 		{
 			"matches": ["http://*/*", "https://*/*"],
+			"match_about_blank": true,
 			"run_at": "document_start",
 			"all_frames": true,
 			"js": ["apply.js"]
