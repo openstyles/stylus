@@ -47,7 +47,7 @@ function getStyles(options, callback) {
 			if (id != null && style.id != id) {
 				return false;
 			}
-			if (matchUrl != null && getApplicableSections(style, matchUrl) == 0) {
+			if (matchUrl != null && getApplicableSections(style, matchUrl).length == 0) {
 				return false;
 			}
 			return true;
@@ -132,8 +132,8 @@ function getApplicableSections(style, url) {
 }
 
 function sectionAppliesToUrl(section, url) {
-	// only http and https allowed
-	if (url.indexOf("http") != 0) {
+	// only http, https, and file allowed
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
@@ -286,6 +286,9 @@ function saveFromJSONStyleReloaded(updateType, style, callback) {
 }
 
 function getDomains(url) {
+	if (url.indexOf("file:") == 0) {
+		return [];
+	}
 	var d = /.*?:\/*([^\/]+)/.exec(url)[1];
 	var domains = [d];
 	while (d.indexOf(".") != -1) {

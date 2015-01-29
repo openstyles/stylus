@@ -19,7 +19,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["http://*/*", "https://*/*"],
+			"matches": ["http://*/*", "https://*/*", "file:///*"],
 			"run_at": "document_start",
 			"all_frames": true,
 			"js": ["apply.js"]
