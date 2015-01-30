@@ -295,18 +295,5 @@ function saveFromJSONStyleReloaded(updateType, style, callback) {
 	}
 }
 
-function getDomains(url) {
-	if (url.indexOf("file:") == 0) {
-		return [];
-	}
-	var d = /.*?:\/*([^\/]+)/.exec(url)[1];
-	var domains = [d];
-	while (d.indexOf(".") != -1) {
-		d = d.substring(d.indexOf(".") + 1);
-		domains.push(d);
-	}
-	return domains;
-}
-
 // Get the DB so that any first run actions will be performed immediately when the background page loads.
 getDatabase(function() {}, reportError);

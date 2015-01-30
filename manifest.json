@@ -11,6 +11,7 @@
 	},
 	"permissions": [
 		"tabs",
+		"webNavigation",
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],

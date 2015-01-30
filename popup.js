@@ -1,9 +1,54 @@
 var styleTemplate = document.createElement("div");
 styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
 
+var writeStyleTemplate = document.createElement("a");
+writeStyleTemplate.className = "write-style-link";
+
 chrome.tabs.getSelected(null, function(tab) {
+	var urlWillWork = /^(file|http|https):.*/.test(tab.url);
+
+	if (!urlWillWork) {
+		["installed", "find-styles", "write-style"].forEach(function(id) {
+			document.getElementById(id).style.display = "none";
+		});
+		document.getElementById("unavailable").style.display = "block";
+		return;
+	}
+
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
-	document.querySelector("#find-styles a").href = "http://userstyles.org/styles/browse/all/" + encodeURIComponent(tab.url);
+	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent(tab.url);
+
+	// Write new style links
+	var writeStyleLinks = []
+
+	// For this URL
+	var urlLink = writeStyleTemplate.cloneNode(true);
+	urlLink.href = "edit.html?url=" + encodeURIComponent(tab.url);
+	urlLink.appendChild(document.createTextNode(t("writeStyleForURL")));
+	writeStyleLinks.push(urlLink);
+	document.querySelector("#write-style").appendChild(urlLink)
+
+	// For domain
+	var domains = getDomains(tab.url)
+	domains.forEach(function(domain) {
+		// Don't include TLD
+		if (domains.length > 1 && domain.indexOf(".") == -1) {
+			return;
+		}
+		var domainLink = writeStyleTemplate.cloneNode(true);
+		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
+		domainLink.appendChild(document.createTextNode(domain));
+		writeStyleLinks.push(domainLink);
+	});
+
+	var writeStyle = document.querySelector("#write-style");
+	writeStyleLinks.forEach(function(link, index) {
+		if (index > 0) {
+			writeStyle.appendChild(document.createTextNode(" "));
+		}
+		link.addEventListener("click", openLink, false);
+		writeStyle.appendChild(link);
+	});
 });
 
 function showStyles(styles) {
@@ -89,7 +134,10 @@ function handleDelete(id) {
 }
 
 tE("open-manage-link", "openManage");
+tE("write-style-for", "writeStyleFor");
 tE("find-styles-link", "findStylesForSite");
+tE("unavailable", "stylishUnavailableForURL");
 
-document.getElementById("find-styles-link").addEventListener("click", openLink, false);
-document.getElementById("open-manage-link").addEventListener("click", openLink, false);
+["find-styles-link", "open-manage-link"].forEach(function(id) {
+	document.getElementById(id).addEventListener("click", openLink, false);
+});

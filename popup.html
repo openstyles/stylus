@@ -26,11 +26,14 @@
 				margin-bottom: 0.5em;
 				border-bottom: 1px solid black;
 			}
-			#find-styles, #manage-styles {
+			#find-styles, #write-style, #manage-styles {
 				font-size: smaller;
 			}
-			#find-styles {
-				margin-bottom: 0.5em;
+			#find-styles, #write-style, #unavailable {
+				margin-bottom: 0.75em;
+			}
+			#unavailable {
+				display: none;
 			}
 		</style>
 
@@ -41,9 +44,12 @@
 </head>
 <body id="stylish-popup">
 
+	<div id="unavailable"></div>
+
 	<div id="installed"></div>
 
 	<div id="find-styles"><a id="find-styles-link" href="#"></a></div>
+	<div id="write-style"><span id="write-style-for"></span></div>
 	<div id="manage-styles"><a id="open-manage-link" href="manage.html"></a></div>
 
 	<script src="popup.js"></script>

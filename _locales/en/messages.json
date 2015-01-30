@@ -227,6 +227,10 @@
 			}
 		}
 	},
+	"stylishUnavailableForURL": {
+		"message": "(Stylish does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update failed - server responded with code $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
@@ -247,5 +251,13 @@
 	"updateCompleted": {
 		"message": "Update completed.",
 		"description": "Text that displays when an update completed"
+	},
+	"writeStyleFor": {
+		"message": "Write style for: ",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"writeStyleForURL": {
+		"message": "this URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	}
 }

@@ -125,10 +125,16 @@ window.addEventListener("load", init, false);
 
 function init() {
 	tE("sections-help", "helpAlt", "alt");
-	var idMatch = /[&\?]id=([0-9]+)/.exec(location.href)
-	if (idMatch == null || idMatch.length != 2) { // match should be 2 - one for the whole thing, one for the parentheses
+	var params = getParams();
+	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
-		addSection();
+		var section = {code: ""}
+		if (params.domain) {
+			section.domains = [params.domain];
+		} else if (params.url) {
+			section.urls = [params.url];
+		}
+		addSection(section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
 		document.title = t("addStyleTitle");
@@ -136,8 +142,7 @@ function init() {
 		return;
 	}
 	// This is an edit
-	var id = idMatch[1];
-	chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
+	chrome.extension.sendMessage({method: "getStyles", id: params.id}, function(styles) {
 		var style = styles[0];
 		styleId = style.id;
 		initWithStyle(style);
@@ -302,6 +307,19 @@ function showToMozillaHelp() {
 
 function showHelp(text) {
 	alert(text);
+}
+
+function getParams() {
+	var params = {};
+	var urlParts = location.href.split("?", 2);
+	if (urlParts.length == 1) {
+		return params;
+	}
+	urlParts[1].split("&").forEach(function(keyValue) {
+		var splitKeyValue = keyValue.split("=", 2);
+		params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
+	});
+	return params;
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
