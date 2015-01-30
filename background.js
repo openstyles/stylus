@@ -129,12 +129,12 @@ function fixBoolean(b) {
 	return null;
 }
 
-const namespacePattern = /^\s*@namespace\s+([a-zA-Z]+\s+)?url\(\"?http:\/\/www.w3.org\/1999\/xhtml\"?\);?\s*$/;
+const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 function getApplicableSections(style, url) {
 	var sections = style.sections.filter(function(section) {
 		return sectionAppliesToUrl(section, url);
 	});
-	// ignore if it's just a namespace
+	// ignore if it's just namespaces
 	if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
 		return [];
 	}
