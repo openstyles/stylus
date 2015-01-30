@@ -10,6 +10,7 @@ appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 chrome.extension.sendMessage({method: "getStyles"}, showStyles);
 
 function showStyles(styles) {
+	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	var installed = document.getElementById("installed");
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
