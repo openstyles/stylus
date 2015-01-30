@@ -1,6 +1,4 @@
-chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, updateBadge: window == window.top}, function(response) {
-	response.forEach(applyStyle);
-});
+chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, asHash: true}, applyStyles);
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch(request.name) {
@@ -12,7 +10,12 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			//fallthrough
 		case "styleAdded":
 			if (request.style.enabled == "true") {
-				applyStyle(request.style);
+				chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
+			}
+			break;
+		case "styleApply":
+			for (var styleId in request.styles) {
+				applySections(styleId, request.styles[styleId]);
 			}
 	}
 });
@@ -24,16 +27,18 @@ function removeStyle(id) {
 	}
 }
 
-function applyStyle(s) {
-	chrome.extension.sendMessage({method: "getStyleApplies", style: s, url: location.href}, function(response) {
-		if (response && response.length > 0) {
-			applySections(s, response);
-		}
-	});
+function applyStyles(styleHash) {
+	for (var styleId in styleHash) {
+		applySections(styleId, styleHash[styleId]);
+	}
 }
 
-function applySections(style, sections) {
-	var styleElement;
+function applySections(styleId, sections) {
+	var styleElement = document.getElementById("stylish-" + styleId);
+	// Already there.
+	if (styleElement) {
+		return;
+	}
 	if (document.documentElement instanceof SVGSVGElement) {
 		// SVG document, make an SVG style element.
 		styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
@@ -41,7 +46,7 @@ function applySections(style, sections) {
 		// This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
 		styleElement = document.createElement("style");
 	}
-	styleElement.setAttribute("id", "stylish-" + style.id);
+	styleElement.setAttribute("id", "stylish-" + styleId);
 	styleElement.setAttribute("class", "stylish");
 	styleElement.setAttribute("type", "text/css");
 	styleElement.appendChild(document.createTextNode(sections.map(function(section) {

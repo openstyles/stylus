@@ -1,21 +1,19 @@
+// This happens right away, sometimes so fast that the content script isn't even ready. That's
+// why the content script also asks for this stuff.
+chrome.webNavigation.onCommitted.addListener(function(data) {
+	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
+		chrome.tabs.sendMessage(data.tabId, {name: "styleApply", styles: styleHash});
+		// Don't show the badge for frames
+		if (data.frameId == 0) {
+			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
+		}
+	});
+});
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
-			getStyles(request, function(r) {
-				sendResponse(r);
-				if (localStorage["show-badge"] == "true") {
-					if (request.updateBadge) {
-						var t = getBadgeText(r);
-						console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") badge text set to '" + t + "'.");
-						chrome.browserAction.setBadgeText({text: t, tabId: sender.tab.id});
-					} else {
-						console.log("Tab " + sender.tab.id + " (" + sender.tab.url + ") doesn't get badge text.");
-					}
-				}
-			});
-			return true;
-		case "getStyleApplies":
-			sendResponse(getApplicableSections(request.style, request.url));
+			getStyles(request, sendResponse);
 			return true;
 		case "saveStyle":
 			saveStyle(request, sendResponse);
@@ -35,23 +33,35 @@ function getStyles(options, callback) {
 	var url = "url" in options ? options.url : null;
 	var id = "id" in options ? options.id : null;
 	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
+	// Return as a hash from style to applicable sections? Can only be used with matchUrl.
+	var asHash = "asHash" in options ? options.asHash : false;
 
 	var callCallback = function() {
-		callback(cachedStyles.filter(function(style) {
+		var styles = asHash ? {} : [];
+		cachedStyles.forEach(function(style) {
 			if (enabled != null && fixBoolean(style.enabled) != enabled) {
-				return false;
+				return;
 			}
 			if (url != null && style.url != url) {
-				return false;
+				return;
 			}
 			if (id != null && style.id != id) {
-				return false;
+				return;
 			}
-			if (matchUrl != null && getApplicableSections(style, matchUrl).length == 0) {
-				return false;
+			if (matchUrl != null) {
+				var applicableSections = getApplicableSections(style, matchUrl);
+				if (applicableSections.length > 0) {
+					if (asHash) {
+						styles[style.id] = applicableSections;
+					} else {
+						styles.push(style)
+					}
+				}
+			} else {
+				styles.push(style);
 			}
-			return true;
-		}));
+		});
+		callback(styles);
 	}
 
 	if (cachedStyles) {
