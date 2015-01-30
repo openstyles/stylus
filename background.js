@@ -104,15 +104,17 @@ function getStyles(options, callback) {
 						currentStyle = {id: values.id, url: values.url, updateUrl: values.updateUrl, md5Url: values.md5Url, name: values.name, enabled: values.enabled, originalMd5: values.originalMd5, sections: []};
 						cachedStyles.push(currentStyle);
 					}
-					if (currentSection == null || currentSection.id != values.section_id) {
-						currentSection = {id: values.section_id, code: values.code};
-						currentStyle.sections.push(currentSection);
-					}
-					if (metaName && metaValue) {
-						if (currentSection[metaName]) {
-							currentSection[metaName].push(metaValue);
-						} else {
-							currentSection[metaName] = [metaValue];
+					if (values.section_id != null) {
+						if (currentSection == null || currentSection.id != values.section_id) {
+							currentSection = {id: values.section_id, code: values.code};
+							currentStyle.sections.push(currentSection);
+						}
+						if (metaName && metaValue) {
+							if (currentSection[metaName]) {
+								currentSection[metaName].push(metaValue);
+							} else {
+								currentSection[metaName] = [metaValue];
+							}
 						}
 					}
 				}
