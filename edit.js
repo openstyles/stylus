@@ -29,7 +29,7 @@ function makeDirty() {
 }
 
 window.onbeforeunload = function() {
-	return dirty ? t('styleChangesNotSaved') : null;	
+	return dirty ? t('styleChangesNotSaved') : null;
 }
 
 function addAppliesTo(list, name, value) {
@@ -311,7 +311,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			if (styleId == request.id) {
 				initWithStyle(request.style);
 				dirty = false;
-			} 
+			}
 			break;
 		case "styleDeleted":
 			if (styleId == request.id) {
