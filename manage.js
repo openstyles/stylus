@@ -31,7 +31,7 @@ function createStyleElement(style) {
 	if (style.originalMd5) {
 		e.setAttribute("style-original-md5", style.originalMd5);
 	}
-	
+
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));
 	if (style.url) {
@@ -222,8 +222,8 @@ function checkUpdateMd5(originalMd5, md5Url, successCallback, failureCallback) {
 
 function download(url, successCallback, failureCallback) {
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function (aEvt) {  
-		if (xhr.readyState == 4) {  
+	xhr.onreadystatechange = function (aEvt) {
+		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
 				successCallback(xhr.responseText)
 			} else {
