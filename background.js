@@ -297,3 +297,16 @@ function saveFromJSONStyleReloaded(updateType, style, callback) {
 
 // Get the DB so that any first run actions will be performed immediately when the background page loads.
 getDatabase(function() {}, reportError);
+
+// When an edit page gets attached or detached, remember its state so we can do the same to the next one to open.
+var editFullUrl = chrome.extension.getURL("edit.html");
+chrome.tabs.onAttached.addListener(function(tabId, data) {
+	chrome.tabs.get(tabId, function(tabData) {
+		if (tabData.url.indexOf(editFullUrl) == 0) {
+			chrome.windows.get(tabData.windowId, {populate: true}, function(win) {
+				// If there's only one tab in this window, it's been dragged to new window
+				localStorage['openEditInWindow'] = win.tabs.length == 1 ? "true" : "false";
+			});
+		}
+	});
+});

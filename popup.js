@@ -46,7 +46,7 @@ chrome.tabs.getSelected(null, function(tab) {
 		if (index > 0) {
 			writeStyle.appendChild(document.createTextNode(" "));
 		}
-		link.addEventListener("click", openLink, false);
+		link.addEventListener("click", openLinkInTabOrWindow, false);
 		writeStyle.appendChild(link);
 	});
 });
@@ -117,10 +117,18 @@ function getId(event) {
 	return null;
 }
 
+function openLinkInTabOrWindow(event) {
+	event.preventDefault();
+	if (localStorage['openEditInWindow'] == 'true') {
+		chrome.windows.create({url: event.target.href});
+	} else {
+		chrome.tabs.create({url: event.target.href});
+	}
+}
+
 function openLink(event) {
 	event.preventDefault();
 	chrome.tabs.create({url: event.target.href});
-	//return false;
 }
 
 function handleUpdate(style) {
