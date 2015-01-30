@@ -72,7 +72,7 @@ function createStyleElement(style) {
 	styleName.appendChild(document.createTextNode(style.name));
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", openLink, false);
+	editLink.addEventListener("click", openLinkInTabOrWindow, false);
 
 	// the checkbox will not toggle itself after clicking the name, but calling enable will regenerate it
 	styleName.addEventListener("click", function() { enable(event, !event.target.previousSibling.checked); }, false);
