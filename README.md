@@ -10,7 +10,7 @@ See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in the fo
 
 ## Contributing
 
-The source is hosted on [GitHub](https://github.com/JasonBarnabe/stylish-chrome) and pull requests are welcome. Translations can be done on [Crowdin](https://crowdin.com/project/stylish-for-chrome) but are welcome as pull requests as well.
+The source is hosted on [GitHub](https://github.com/JasonBarnabe/stylish-chrome) and pull requests are welcome. Translations can be done on [Transifex](https://www.transifex.com/projects/p/stylish-for-chrome/) but are welcome as pull requests as well.
 
 ## License
 
