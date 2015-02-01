@@ -52,9 +52,5 @@ function applySections(styleId, sections) {
 	styleElement.appendChild(document.createTextNode(sections.map(function(section) {
 		return section.code;
 	}).join("\n")));
-	if (document.head) {
-		document.head.appendChild(styleElement);
-	} else {
-		document.documentElement.appendChild(styleElement);
-	}
+	document.documentElement.appendChild(styleElement);
 }
