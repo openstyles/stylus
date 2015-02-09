@@ -1,230 +1,238 @@
 {
-  "addStyleLabel":{
-    "message":"写入新样式",
-    "description":"Label for the button to go to the add style page"
-  },
-  "addStyleTitle":{
-    "message":"添加样式",
-    "description":"Title of the page for adding styles"
-  },
-  "appliesAdd":{
-    "message":"添加",
-    "description":"Label for the button to add an 'applies' entry"
-  },
-  "appliesDisplay":{
-    "message":"应用对象：$applies$",
-    "description":"Text on the manage screen to describe what the style applies to",
-    "placeholders":{
-      "applies":{
-        "content":"$1"
-      }
+    "appliesToEverything": {
+        "message": "全部",
+        "description": "Text displayed for styles that apply to all sites"
+    },
+    "enableStyleLabel": {
+        "message": "启用",
+        "description": "Label for the button to enable a style"
+    },
+    "styleMissingName": {
+        "message": "输入名称。",
+        "description": "Error displayed when user saves without providing a name"
+    },
+    "appliesDomainOption": {
+        "message": "该域上的网址",
+        "description": "Option to make the style apply to the entered string as a domain"
+    },
+    "checkForUpdate": {
+        "message": "检查是否有更新",
+        "description": "Label for the button to check a single style for an update"
+    },
+    "helpAlt": {
+        "message": "帮助",
+        "description": "Alternate text for help buttons"
+    },
+    "findStylesForSite": {
+        "message": "查找适合此网站的更多样式。",
+        "description": "Text for a link that gets a list of styles for the current site"
+    },
+    "manageHeading": {
+        "message": "已安装的样式",
+        "description": "Heading for the manage page"
+    },
+    "styleEnabledLabel": {
+        "message": "已启用",
+        "description": "Label for the enabled state of styles"
+    },
+    "styleToMozillaFormatHelp": {
+        "message": "Mozilla 格式的代码可以与 Stylish 一起用于 Firefox，并可提交至 userstyles.org。",
+        "description": "Help info for the button that converts the code to Mozilla format"
+    },
+    "sectionAdd": {
+        "message": "添加其他部分",
+        "description": "Label for the button to add a section"
+    },
+    "styleSaveLabel": {
+        "message": "保存",
+        "description": "Label for save button for style editing"
+    },
+    "writeStyleForURL": {
+        "message": "这个URL",
+        "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    },
+    "appliesAdd": {
+        "message": "添加",
+        "description": "Label for the button to add an 'applies' entry"
+    },
+    "appliesRegexpOption": {
+        "message": "与该正则表达式匹配的网址",
+        "description": "Option to make the style apply to the entered string as a regular expression"
+    },
+    "styleInstall": {
+        "message": "要将“$stylename$”安装到 Stylish 中吗？",
+        "description": "Confirmation when installing a style"
+    },
+    "manageText": {
+        "message": "请访问 <a href='http://userstyles.org'>userstyles.org</a> 以获取预制样式。如果您需要帮助，请到<a href='http://forum.userstyles.org'>论坛</a>发帖提问。",
+        "description": "Help text on the manage page"
+    },
+    "disableStyleLabel": {
+        "message": "停用",
+        "description": "Label for the button to disable a style"
+    },
+    "prefShowBadge": {
+        "message": "在工具栏按钮上显示对当前站点生效的样式数目",
+        "description": "Label for the checkbox controlling toolbar badge text."
+    },
+    "styleCancelEditLabel": {
+        "message": "返回进行管理操作",
+        "description": "Label for cancel button for style editing"
+    },
+    "styleChangesNotSaved": {
+        "message": "您已对此样式进行了更改，但尚未保存。",
+        "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    },
+    "updateCheckFailServerUnreachable": {
+        "message": "更新失败 - 无法访问服务器。",
+        "description": "Text that displays when an update check failed because the update server is unreachable"
+    },
+    "deleteStyleConfirm": {
+        "message": "确定要删除此样式吗？",
+        "description": "Confirmation before deleting a style"
+    },
+    "styleBadRegexp": {
+        "message": "正则表达式无效。",
+        "description": "Validation message for a bad regexp in a style"
+    },
+    "optionsHeading": {
+        "message": "选项",
+        "description": "Heading for options section on manage page."
+    },
+    "appliesDisplay": {
+        "message": "应用对象：$applies$",
+        "description": "Text on the manage screen to describe what the style applies to"
+    },
+    "styleUpdate": {
+        "message": "您确定要更新 '$stylename$'?",
+        "description": "Confirmation when updating a style"
+    },
+    "styleSectionsTitle": {
+        "message": "部分",
+        "description": "Title for the style sections section"
+    },
+    "editStyleTitle": {
+        "message": "修改样式“$stylename$”",
+        "description": "Title of the page for editing styles"
+    },
+    "updateCheckSucceededNoUpdate": {
+        "message": "样式已是最新版本。",
+        "description": "Text that displays when an update check completed and no update is available"
+    },
+    "appliesUrlPrefixOption": {
+        "message": "网址前缀",
+        "description": "Option to make the style apply to the entered string as a URL prefix"
+    },
+    "sectionHelp": {
+        "message": "各部分可让您定义不同的代码段，以通过同一样式应用到不同的网址组。例如，某个单一样式能以一种方式更改网站首页，同时以另一种方式更改网站的其余部分。",
+        "description": "Help text for sections"
+    },
+    "noStylesForSite": {
+        "message": "未对此网站安装任何样式。",
+        "description": "Text displayed when no styles are installed for the current site"
+    },
+    "appliesDisplayTruncatedSuffix": {
+        "message": "等等",
+        "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    },
+    "appliesRemove": {
+        "message": "删除",
+        "description": "Label for the button to remove an 'applies' entry"
+    },
+    "manageTitle": {
+        "message": "Stylish",
+        "description": "Title for the manage page"
+    },
+    "writeStyleFor": {
+        "message": "编写样式给：",
+        "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    },
+    "appliesLabel": {
+        "message": "应用对象：",
+        "description": "Label for 'applies to' fields on the edit/add screen"
+    },
+    "openManage": {
+        "message": "管理已安装的样式。",
+        "description": "Link to open the manage page."
+    },
+    "updateCheckFailBadResponseCode": {
+        "message": "更新失败 - 服务器响应代码为 $code$。",
+        "description": "Text that displays when an update check failed because the response code indicates an error"
+    },
+    "appliesSpecify": {
+        "message": "指定",
+        "description": "Label for the button to make a style apply only to specific sites"
+    },
+    "installUpdate": {
+        "message": "安装更新",
+        "description": "Label for the button to install an update for a single style"
+    },
+    "stylishUnavailableForURL": {
+        "message": "(Stylish在这样的页面上不工作)",
+        "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+    },
+    "sectionRemove": {
+        "message": "删除此部分",
+        "description": "Label for the button to remove a section"
+    },
+    "updateCompleted": {
+        "message": "更新已完成。",
+        "description": "Text that displays when an update completed"
+    },
+    "checkingForUpdate": {
+        "message": "正在检查更新...",
+        "description": "Text to display when checking a style for an update"
+    },
+    "sectionCode": {
+        "message": "代码",
+        "description": "Label for the code for a section"
+    },
+    "appliesHelp": {
+        "message": "使用“应用对象”控件来限制此部分中的代码所应用到的网址。",
+        "description": "Help text for 'applies to' section"
+    },
+    "editStyleHeading": {
+        "message": "修改样式",
+        "description": "Title of the page for editing styles"
+    },
+    "appliesUrlOption": {
+        "message": "网址",
+        "description": "Option to make the style apply to the entered string as a URL"
+    },
+    "addStyleTitle": {
+        "message": "添加样式",
+        "description": "Title of the page for adding styles"
+    },
+    "dbError": {
+        "message": "应用Stylish数据库时发生了一个错误。您想要访问包含可能的解决方案的网站吗？",
+        "description": "Prompt when a DB error is encountered"
+    },
+    "checkAllUpdates": {
+        "message": "对所有样式检查是否有更新",
+        "description": "Label for the button to check all styles for updates"
+    },
+    "styleToMozillaFormat": {
+        "message": "转换为 Mozilla 格式",
+        "description": "Label for the button that converts the code to Mozilla format"
+    },
+    "deleteStyleLabel": {
+        "message": "删除",
+        "description": "Label for the button to delete a style"
+    },
+    "addStyleLabel": {
+        "message": "写入新样式",
+        "description": "Label for the button to go to the add style page"
+    },
+    "editStyleLabel": {
+        "message": "修改",
+        "description": "Label for the button to go to the edit style page"
+    },
+    "styleNameLabel": {
+        "message": "名称",
+        "description": "Label for the name of styles"
+    },
+    "description": {
+        "message": "Stylish 是一款用户样式管理器，可让您调整网页的样式。它可让您轻松地为 Google、Facebook、YouTube、Orkut 和其他许多网站安装主题背景和皮肤。",
+        "description": "Extension description"
     }
-  },
-  "appliesDisplayTruncatedSuffix":{
-    "message":"等等",
-    "description":"Text added to appliesDisplay when there are more sites for the style than are displayed"
-  },
-  "appliesDomainOption":{
-    "message":"该域上的网址",
-    "description":"Option to make the style apply to the entered string as a domain"
-  },
-  "appliesHelp":{
-    "message":"使用“应用对象”控件来限制此部分中的代码所应用到的网址。",
-    "description":"Help text for 'applies to' section"
-  },
-  "appliesLabel":{
-    "message":"应用对象：",
-    "description":"Label for 'applies to' fields on the edit\/add screen"
-  },
-  "appliesRegexpOption":{
-    "message":"与该正则表达式匹配的网址",
-    "description":"Option to make the style apply to the entered string as a regular expression"
-  },
-  "appliesRemove":{
-    "message":"删除",
-    "description":"Label for the button to remove an 'applies' entry"
-  },
-  "appliesSpecify":{
-    "message":"指定",
-    "description":"Label for the button to make a style apply only to specific sites"
-  },
-  "appliesToEverything":{
-    "message":"全部",
-    "description":"Text displayed for styles that apply to all sites"
-  },
-  "appliesUrlOption":{
-    "message":"网址",
-    "description":"Option to make the style apply to the entered string as a URL"
-  },
-  "appliesUrlPrefixOption":{
-    "message":"网址前缀",
-    "description":"Option to make the style apply to the entered string as a URL prefix"
-  },
-  "checkAllUpdates":{
-    "message":"对所有样式检查是否有更新",
-    "description":"Label for the button to check all styles for updates"
-  },
-  "checkForUpdate":{
-    "message":"检查是否有更新",
-    "description":"Label for the button to check a single style for an update"
-  },
-  "checkingForUpdate":{
-    "message":"正在检查更新...",
-    "description":"Text to display when checking a style for an update"
-  },
-  "deleteStyleLabel":{
-    "message":"删除",
-    "description":"Label for the button to delete a style"
-  },
-  "deleteStyleConfirm":{
-    "message":"确定要删除此样式吗？",
-    "description":"Confirmation before deleting a style"
-  },
-  "description":{
-    "message":"Stylish 是一款用户样式管理器，可让您调整网页的样式。它可让您轻松地为 Google、Facebook、YouTube、Orkut 和其他许多网站安装主题背景和皮肤。",
-    "description":"Extension description"
-  },
-  "disableStyleLabel":{
-    "message":"停用",
-    "description":"Label for the button to disable a style"
-  },
-  "editStyleHeading":{
-    "message":"修改样式",
-    "description":"Title of the page for editing styles"
-  },
-  "editStyleLabel":{
-    "message":"修改",
-    "description":"Label for the button to go to the edit style page"
-  },
-  "editStyleTitle":{
-    "message":"修改样式“$stylename$”",
-    "description":"Title of the page for editing styles",
-    "placeholders":{
-      "stylename":{
-        "content":"$1"
-      }
-    }
-  },
-  "enableStyleLabel":{
-    "message":"启用",
-    "description":"Label for the button to enable a style"
-  },
-  "findStylesForSite":{
-    "message":"查找适合此网站的更多样式。",
-    "description":"Text for a link that gets a list of styles for the current site"
-  },
-  "helpAlt":{
-    "message":"帮助",
-    "description":"Alternate text for help buttons"
-  },
-  "installUpdate":{
-    "message":"安装更新",
-    "description":"Label for the button to install an update for a single style"
-  },
-  "manageHeading":{
-    "message":"已安装的样式",
-    "description":"Heading for the manage page"
-  },
-  "manageText":{
-    "message":"请访问 <a href='http:\/\/userstyles.org'>userstyles.org<\/a> 以获取预制样式。如果您需要帮助，请到<a href='http:\/\/forum.userstyles.org'>论坛<\/a>发帖提问。",
-    "description":"Help text on the manage page"
-  },
-  "manageTitle":{
-    "message":"Stylish",
-    "description":"Title for the manage page"
-  },
-  "noStylesForSite":{
-    "message":"未对此网站安装任何样式。",
-    "description":"Text displayed when no styles are installed for the current site"
-  },
-  "openManage":{
-    "message":"管理已安装的样式。",
-    "description":"Link to open the manage page."
-  },
-  "sectionAdd":{
-    "message":"添加其他部分",
-    "description":"Label for the button to add a section"
-  },
-  "sectionCode":{
-    "message":"代码",
-    "description":"Label for the code for a section"
-  },
-  "sectionHelp":{
-    "message":"各部分可让您定义不同的代码段，以通过同一样式应用到不同的网址组。例如，某个单一样式能以一种方式更改网站首页，同时以另一种方式更改网站的其余部分。",
-    "description":"Help text for sections"
-  },
-  "sectionRemove":{
-    "message":"删除此部分",
-    "description":"Label for the button to remove a section"
-  },
-  "styleBadRegexp":{
-    "message":"正则表达式无效。",
-    "description":"Validation message for a bad regexp in a style"
-  },
-  "styleCancelEditLabel":{
-    "message":"返回进行管理操作",
-    "description":"Label for cancel button for style editing"
-  },
-  "styleChangesNotSaved":{
-    "message":"您已对此样式进行了更改，但尚未保存。",
-    "description":"Text for the prompt when changes are made to a style and the user tries to leave without saving"
-  },
-  "styleEnabledLabel":{
-    "message":"已启用",
-    "description":"Label for the enabled state of styles"
-  },
-  "styleInstall":{
-    "message":"要将“$stylename$”安装到 Stylish 中吗？",
-    "description":"Confirmation when installing a style",
-    "placeholders":{
-      "stylename":{
-        "content":"$1"
-      }
-    }
-  },
-  "styleMissingName":{
-    "message":"输入名称。",
-    "description":"Error displayed when user saves without providing a name"
-  },
-  "styleNameLabel":{
-    "message":"名称",
-    "description":"Label for the name of styles"
-  },
-  "styleSaveLabel":{
-    "message":"保存",
-    "description":"Label for save button for style editing"
-  },
-  "styleSectionsTitle":{
-    "message":"部分",
-    "description":"Title for the style sections section"
-  },
-  "styleToMozillaFormat":{
-    "message":"转换为 Mozilla 格式",
-    "description":"Label for the button that converts the code to Mozilla format"
-  },
-  "styleToMozillaFormatHelp":{
-    "message":"Mozilla 格式的代码可以与 Stylish 一起用于 Firefox，并可提交至 userstyles.org。",
-    "description":"Help info for the button that converts the code to Mozilla format"
-  },
-  "updateCheckFailBadResponseCode":{
-    "message":"更新失败 - 服务器响应代码为 $code$。",
-    "description":"Text that displays when an update check failed because the response code indicates an error",
-    "placeholders":{
-      "code":{
-        "content":"$1"
-      }
-    }
-  },
-  "updateCheckFailServerUnreachable":{
-    "message":"更新失败 - 无法访问服务器。",
-    "description":"Text that displays when an update check failed because the update server is unreachable"
-  },
-  "updateCheckSucceededNoUpdate":{
-    "message":"样式已是最新版本。",
-    "description":"Text that displays when an update check completed and no update is available"
-  },
-  "updateCompleted":{
-    "message":"更新已完成。",
-    "description":"Text that displays when an update completed"
-  }
 }
