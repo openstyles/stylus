@@ -144,8 +144,8 @@ function getApplicableSections(style, url) {
 }
 
 function sectionAppliesToUrl(section, url) {
-	// only http, https, and file allowed
-	if (url.indexOf("http") != 0 && url.indexOf("file") != 0) {
+	// only http, https, file, and chrome-extension allowed
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {

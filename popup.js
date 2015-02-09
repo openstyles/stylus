@@ -5,7 +5,7 @@ var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
 chrome.tabs.getSelected(null, function(tab) {
-	var urlWillWork = /^(file|http|https):.*/.test(tab.url);
+	var urlWillWork = /^(file|http|https|chrome\-extension):.*/.test(tab.url);
 
 	if (!urlWillWork) {
 		["installed", "find-styles", "write-style"].forEach(function(id) {
