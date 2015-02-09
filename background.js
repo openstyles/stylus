@@ -2,7 +2,7 @@
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(function(data) {
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
-		chrome.tabs.sendMessage(data.tabId, {name: "styleApply", styles: styleHash});
+		chrome.tabs.sendMessage(data.tabId, {method: "styleApply", styles: styleHash});
 		// Don't show the badge for frames
 		if (data.frameId == 0) {
 			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
@@ -291,7 +291,7 @@ function saveFromJSONComplete(id, callback) {
 }
 
 function saveFromJSONStyleReloaded(updateType, style, callback) {
-	notifyAllTabs({name:updateType, style: style});
+	notifyAllTabs({method: updateType, style: style});
 	if (callback) {
 		callback(style);
 	}

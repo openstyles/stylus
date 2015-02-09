@@ -153,6 +153,10 @@
 		"message": "Show number of styles active for the current site on the toolbar button",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
+	"prefSmartIndent": {
+		"message": "Use smart indentation",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
 	"sectionAdd": {
 		"message": "Add another section",
 		"description": "Label for the button to add a section"

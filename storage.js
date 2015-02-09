@@ -21,7 +21,17 @@ function getDatabase(ready, error) {
 	} else if (stylishDb.version == "1.4") {
 		dbV15(stylishDb, error, ready);
 	} else {
-	  ready(stylishDb);
+		defaultPrefs();
+		ready(stylishDb);
+	}
+}
+
+function defaultPrefs() {
+	if (!("show-badge" in localStorage)) {
+		localStorage["show-badge"] = true;
+	}
+	if (!("smart-indent" in localStorage)) {
+		localStorage["smart-indent"] = true;
 	}
 }
 
@@ -67,12 +77,9 @@ function dbV14(d, error, done) {
 }
 
 function dbV15(d, error, done) {
-	if (!("show-badge" in localStorage)) {
-		localStorage["show-badge"] = true;
-	}
 	d.changeVersion(d.version, '1.5', function (t) {
 		t.executeSql('ALTER TABLE styles ADD COLUMN originalMd5 TEXT NULL;');
-	}, error, function() { done(d, error, done)});
+	}, error, function() { dbV15(d, error, done)});
 }
 
 function enableStyle(id, enabled) {
@@ -83,7 +90,7 @@ function enableStyle(id, enabled) {
 			chrome.extension.sendMessage({method: "styleChanged"});
 			chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 				handleUpdate(styles[0]);
-				notifyAllTabs({name:"styleUpdated", style: styles[0]});
+				notifyAllTabs({method:"styleUpdated", style: styles[0]});
 			});
 		});
 	});
@@ -98,7 +105,7 @@ function deleteStyle(id) {
 		}, reportError, function() {
 			chrome.extension.sendMessage({method: "styleChanged"});
 			handleDelete(id);
-			notifyAllTabs({name:"styleDeleted", id: id});
+			notifyAllTabs({method: "styleDeleted", id: id});
 		});
 	});
 }
@@ -123,4 +130,40 @@ function getDomains(url) {
 		domains.push(d);
 	}
 	return domains;
+}
+
+function getType(o) {
+	if (typeof o == "undefined" || typeof o == "string") {
+		return typeof o;
+	}
+	if (o instanceof Array) {
+		return "array";
+	}
+	throw "Not supported - " + o;
+}
+
+function isCheckbox(el) {
+	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
+}
+
+function changePref(event) {
+	var el = event.target;
+	var value = isCheckbox(el) ? el.checked : el.value;
+	localStorage[el.id] = value
+	notifyAllTabs({method: "prefChanged", prefName: el.id, value: value});
+}
+
+function loadPrefs(prefNames) {
+	prefNames.forEach(function(id) {
+		var value = localStorage[id];
+		var el = document.getElementById(id);
+		if (isCheckbox(el)) {
+			if (value == "true") {
+				el.checked = true;
+			}
+		} else {
+			el.value = value;
+		}
+		el.addEventListener("change", changePref);
+	});
 }

@@ -15,8 +15,7 @@ function showStyles(styles) {
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
-	// prefs may be defaulted in storage.js - at this point they'll have been loaded
-	loadPrefs();
+	loadPrefs(["show-badge"]);
 }
 
 function createStyleElement(style) {
@@ -127,7 +126,7 @@ function getStyleElement(event) {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	switch(request.name) {
+	switch (request.method) {
 		case "styleUpdated":
 			handleUpdate(request.style);
 			break;
@@ -333,41 +332,6 @@ function jsonEquals(a, b, property) {
 	if (type == "string") {
 		return a[property] == b[property];
 	}
-}
-
-function getType(o) {
-	if (typeof o == "undefined" || typeof o == "string") {
-		return typeof o;
-	}
-	if (o instanceof Array) {
-		return "array";
-	}
-	throw "Not supported - " + o;
-}
-
-function isCheckbox(el) {
-	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
-}
-
-function changePref(event) {
-	var el = event.target;
-	localStorage[el.id] = isCheckbox(el) ? el.checked : el.value;
-	notifyAllTabs({method: "prefChanged"});
-}
-
-function loadPrefs() {
-	["show-badge"].forEach(function(id) {
-		var value = localStorage[id];
-		var el = document.getElementById(id);
-		if (isCheckbox(el)) {
-			if (value == "true") {
-				el.checked = true;
-			}
-		} else {
-			el.value = value;
-		}
-		el.addEventListener("change", changePref);
-	});
 }
 
 document.title = t("manageTitle");

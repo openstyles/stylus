@@ -1,8 +1,8 @@
 <html>
 	<head>
-    <script src="codemirror/lib/codemirror.js"></script>
-    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
-    <script src="codemirror/mode/css/css.js"></script>
+		<script src="codemirror/lib/codemirror.js"></script>
+		<link rel="stylesheet" href="codemirror/lib/codemirror.css">
+		<script src="codemirror/mode/css/css.js"></script>
 		<style type="text/css">
 			body {
 				margin: 0px;
@@ -22,7 +22,7 @@
 			#sections {
 				padding-left: 290px;
 			}
-			h2 {
+			#sections h2 {
 				margin-top: 8px;
 			}
 			#basic-info {
@@ -38,7 +38,7 @@
 			#sections > div:not(:first-child) {
 				border-top: 2px solid black;
 			}
-			label {
+			#basic-info label {
 				display: inline-block;
 				width: 10em;
 				vertical-align: top;
@@ -50,9 +50,9 @@
 				height: 10em;
 				width: 40em;
 			}
-      .CodeMirror {
-        border: solid #CCC 1px;
-      }
+			.CodeMirror {
+				border: solid #CCC 1px;
+			}
 			.applies-to ul {
 				display: inline-block;
 				margin: 0;
@@ -86,6 +86,8 @@
 				vertical-align: bottom;
 			}
 		</style>
+		<script src="storage.js"></script>
+		<script src="messaging.js"></script>
 		<script src="localization.js"></script>
 	</head>
 	<body id="stylish-edit">
@@ -98,6 +100,10 @@
 			<button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"><br><br>
 			<button id="save-button"></button>
 			<a href="manage.html"><button id="cancel-button"></button></a>
+			<div id="options">
+				<h2 id="options-heading"></h2>
+				<input id="smart-indent" type="checkbox"><label id="smart-indent-label" for="smart-indent"></label>
+			</div>
 		</div>
 		<section id="sections">
 			<h2><span id="sections-heading"></span> <img id="sections-help" src="help.png"></h2>

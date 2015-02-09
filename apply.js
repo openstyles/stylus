@@ -1,7 +1,7 @@
 chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, asHash: true}, applyStyles);
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	switch(request.name) {
+	switch (request.method) {
 		case "styleDeleted":
 			removeStyle(request.id);
 			break;

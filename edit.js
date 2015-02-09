@@ -15,14 +15,14 @@ sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea cl
 var editors = [] // array of all CodeMirror instances
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea) {
-  var cm = CodeMirror.fromTextArea(textarea, {
-    mode: 'css',
-    lineNumbers: true,
-    lineWrapping: true
-  });
-  editors.push(cm);
+	var cm = CodeMirror.fromTextArea(textarea, {
+		mode: 'css',
+		lineNumbers: true,
+		lineWrapping: true,
+		smartIndent: localStorage["smart-indent"] == null || localStorage["smart-indent"] == "true"
+	});
+	editors.push(cm);
 }
-
 
 function makeDirty() {
 	dirty = true;
@@ -125,6 +125,7 @@ window.addEventListener("load", init, false);
 
 function init() {
 	tE("sections-help", "helpAlt", "alt");
+	loadPrefs(["smart-indent"]);
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
@@ -324,7 +325,7 @@ function getParams() {
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var installed = document.getElementById("installed");
-	switch(request.name) {
+	switch (request.method) {
 		case "styleUpdated":
 			if (styleId == request.id) {
 				initWithStyle(request.style);
@@ -336,6 +337,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 				window.close();
 				break;
 			}
+			break;
+		case "prefChanged":
+			if (request.prefName == "smart-indent") {
+				editors.forEach(function(editor) {
+					editor.setOption("smartIndent", request.value);
+				});
+			}
 	}
 });
 
@@ -345,6 +353,9 @@ tE("to-mozilla", "styleToMozillaFormat");
 tE("save-button", "styleSaveLabel");
 tE("cancel-button", "styleCancelEditLabel");
 tE("sections-heading", "styleSectionsTitle");
+tE("options-heading", "optionsHeading");
+tE("smart-indent-label", "prefSmartIndent");
+
 document.getElementById("name").addEventListener("change", makeDirty, false);
 document.getElementById("enabled").addEventListener("change", makeDirty, false);
 document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
