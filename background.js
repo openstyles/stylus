@@ -1,6 +1,7 @@
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(function(data) {
+	if (data.frameId !== 0) return;
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		chrome.tabs.sendMessage(data.tabId, {method: "styleApply", styles: styleHash});
 		// Don't show the badge for frames
