@@ -52,6 +52,7 @@ chrome.tabs.getSelected(null, function(tab) {
 });
 
 function showStyles(styles) {
+	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	var installed = document.getElementById("installed");
 	if (styles.length == 0) {
 		installed.innerHTML = "<div class='entry' id='no-styles'>" + t('noStylesForSite') + "</div>";
