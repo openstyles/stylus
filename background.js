@@ -156,23 +156,23 @@ function sectionAppliesToUrl(section, url) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
-		console.log(section.id + " is global");
+		//console.log(section.id + " is global");
 		return true;
 	}
 	if (section.urls && section.urls.indexOf(url) != -1) {
-		console.log(section.id + " applies to " + url + " due to URL rules");
+		//console.log(section.id + " applies to " + url + " due to URL rules");
 		return true;
 	}
 	if (section.urlPrefixes && section.urlPrefixes.some(function(prefix) {
 		return url.indexOf(prefix) == 0;
 	})) {
-		console.log(section.id + " applies to " + url + " due to URL prefix rules");
+		//console.log(section.id + " applies to " + url + " due to URL prefix rules");
 		return true;
 	}
 	if (section.domains && getDomains(url).some(function(domain) {
 		return section.domains.indexOf(domain) != -1;
 	})) {
-		console.log(section.id + " applies due to " + url + " due to domain rules");
+		//console.log(section.id + " applies due to " + url + " due to domain rules");
 		return true;
 	}
 	if (section.regexps && section.regexps.some(function(regexp) {
@@ -191,10 +191,10 @@ function sectionAppliesToUrl(section, url) {
 		}
 		return (re).test(url);
 	})) {
-		console.log(section.id + " applies to " + url + " due to regexp rules");
+		//console.log(section.id + " applies to " + url + " due to regexp rules");
 		return true;
 	}
-	console.log(section.id + " does not apply due to " + url);
+	//console.log(section.id + " does not apply due to " + url);
 	return false;
 }
 
