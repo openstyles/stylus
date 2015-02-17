@@ -1,5 +1,5 @@
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='style-name'></div><div class='actions'><a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
+styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='style-name'></div><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -78,6 +78,8 @@ function createStyleElement(style) {
 	styleName.addEventListener("click", function() { enable(event, !event.target.previousSibling.checked); }, false);
 	// clicking the checkbox will toggle it, and this will run after that happens
 	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
+	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
+	e.querySelector(".disable").addEventListener("click", function() { enable(event, false); }, false);
 
 	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
 	return e;
