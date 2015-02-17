@@ -1,7 +1,13 @@
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(function(data) {
-	if (data.frameId !== 0) return;
+	// Until Chrome 41, we can't target a frame with a message
+	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
+	// so a style affecting a page with an iframe will affect the main page as well.
+	// Skip doing this for frames for now, which can result in flicker.
+	if (data.frameId != 0) {
+		return;
+	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		chrome.tabs.sendMessage(data.tabId, {method: "styleApply", styles: styleHash});
 		// Don't show the badge for frames
