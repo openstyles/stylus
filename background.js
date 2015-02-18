@@ -1,7 +1,13 @@
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(function(data) {
-	if (data.frameId !== 0) return;
+	// Until Chrome 41, we can't target a frame with a message
+	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
+	// so a style affecting a page with an iframe will affect the main page as well.
+	// Skip doing this for frames for now, which can result in flicker.
+	if (data.frameId != 0) {
+		return;
+	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		chrome.tabs.sendMessage(data.tabId, {method: "styleApply", styles: styleHash});
 		// Don't show the badge for frames
@@ -150,23 +156,23 @@ function sectionAppliesToUrl(section, url) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
-		console.log(section.id + " is global");
+		//console.log(section.id + " is global");
 		return true;
 	}
 	if (section.urls && section.urls.indexOf(url) != -1) {
-		console.log(section.id + " applies to " + url + " due to URL rules");
+		//console.log(section.id + " applies to " + url + " due to URL rules");
 		return true;
 	}
 	if (section.urlPrefixes && section.urlPrefixes.some(function(prefix) {
 		return url.indexOf(prefix) == 0;
 	})) {
-		console.log(section.id + " applies to " + url + " due to URL prefix rules");
+		//console.log(section.id + " applies to " + url + " due to URL prefix rules");
 		return true;
 	}
 	if (section.domains && getDomains(url).some(function(domain) {
 		return section.domains.indexOf(domain) != -1;
 	})) {
-		console.log(section.id + " applies due to " + url + " due to domain rules");
+		//console.log(section.id + " applies due to " + url + " due to domain rules");
 		return true;
 	}
 	if (section.regexps && section.regexps.some(function(regexp) {
@@ -185,10 +191,10 @@ function sectionAppliesToUrl(section, url) {
 		}
 		return (re).test(url);
 	})) {
-		console.log(section.id + " applies to " + url + " due to regexp rules");
+		//console.log(section.id + " applies to " + url + " due to regexp rules");
 		return true;
 	}
-	console.log(section.id + " does not apply due to " + url);
+	//console.log(section.id + " does not apply due to " + url);
 	return false;
 }
 

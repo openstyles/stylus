@@ -153,9 +153,10 @@ function changePref(event) {
 	notifyAllTabs({method: "prefChanged", prefName: el.id, value: value});
 }
 
-function loadPrefs(prefNames) {
-	prefNames.forEach(function(id) {
-		var value = localStorage[id];
+// Accepts a hash of pref name to default value
+function loadPrefs(prefs) {
+	for (var id in prefs) {
+		var value = typeof localStorage[id] == "undefined" ? prefs[id] : localStorage[id];
 		var el = document.getElementById(id);
 		if (isCheckbox(el)) {
 			if (value == "true") {
@@ -165,5 +166,5 @@ function loadPrefs(prefNames) {
 			el.value = value;
 		}
 		el.addEventListener("change", changePref);
-	});
+	}
 }

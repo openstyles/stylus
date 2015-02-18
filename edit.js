@@ -19,7 +19,7 @@ function setupCodeMirror(textarea) {
 		mode: 'css',
 		lineNumbers: true,
 		lineWrapping: true,
-		smartIndent: localStorage["smart-indent"] == null || localStorage["smart-indent"] == "true"
+		smartIndent: (typeof localStorage["smart-indent"] == "undefined") || localStorage["smart-indent"] == "true"
 	});
 	editors.push(cm);
 }
@@ -125,7 +125,7 @@ window.addEventListener("load", init, false);
 
 function init() {
 	tE("sections-help", "helpAlt", "alt");
-	loadPrefs(["smart-indent"]);
+	loadPrefs({"smart-indent": "true"});
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
