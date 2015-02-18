@@ -19,7 +19,9 @@ chrome.tabs.getSelected(null, function(tab) {
 	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : tab.url);
 
 	// Write new style links
-	var writeStyleLinks = []
+	var writeStyleLinks = [],
+	    container = document.createElement('span');
+	container.id = "match";
 
 	// For this URL
 	var urlLink = writeStyleTemplate.cloneNode(true);
@@ -38,17 +40,19 @@ chrome.tabs.getSelected(null, function(tab) {
 		var domainLink = writeStyleTemplate.cloneNode(true);
 		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
 		domainLink.appendChild(document.createTextNode(domain));
+		domainLink.setAttribute("subdomain", domain.substring(0, domain.indexOf(".")));
 		writeStyleLinks.push(domainLink);
 	});
 
 	var writeStyle = document.querySelector("#write-style");
 	writeStyleLinks.forEach(function(link, index) {
 		if (index > 0) {
-			writeStyle.appendChild(document.createTextNode(" "));
+			container.appendChild(document.createTextNode(" "));
 		}
 		link.addEventListener("click", openLinkInTabOrWindow, false);
-		writeStyle.appendChild(link);
+		container.appendChild(link);
 	});
+	writeStyle.appendChild(container);
 });
 
 function showStyles(styles) {
