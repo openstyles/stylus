@@ -5,7 +5,7 @@ var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
 chrome.tabs.getSelected(null, function(tab) {
-	var urlWillWork = /^(file|http|https|chrome\-extension):.*/.test(tab.url);
+	var urlWillWork = /^(file|http|https|chrome\-extension):.*/.exec(tab.url);
 
 	if (!urlWillWork) {
 		["installed", "find-styles", "write-style"].forEach(function(id) {
@@ -16,7 +16,7 @@ chrome.tabs.getSelected(null, function(tab) {
 	}
 
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
-	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent(tab.url);
+	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : tab.url);
 
 	// Write new style links
 	var writeStyleLinks = []
