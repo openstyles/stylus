@@ -86,15 +86,24 @@
 				vertical-align: bottom;
 			}
 			
-			@media(max-width:570px) {
+			@media(max-width:737px) {
 				#header {
 					height: auto;
 					position: inherit;
-					width: 100%;
+					width: auto;
+					border-right: none;
 				}
-
+			
 				#sections {
 					padding-left: 0px;
+				}
+			
+				#sections-heading {
+					padding-left: 8px;
+				}
+			
+				body > section > *:not(h2) {
+					padding-left: 8px;
 				}
 			}
 		</style>
