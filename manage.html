@@ -83,6 +83,23 @@
 			.update-done .check-update {
 				display: none;
 			}
+
+			@media(max-width:675px) {
+				#header {
+					height: auto;
+					position: inherit;
+					width: auto;
+					border-right: none;
+				}
+
+				#installed {
+					padding-left: 0px;
+				}
+
+				.enabled, .disabled {
+					margin: 0px;
+				}
+			}
 		</style>
 		<script src="localization.js"></script>
 		<script src="health.js"></script>
