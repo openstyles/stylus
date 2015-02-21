@@ -85,6 +85,32 @@
 			.applies-to img {
 				vertical-align: bottom;
 			}
+			
+			@media(max-width:737px) {
+				#header {
+					height: auto;
+					position: inherit;
+					width: auto;
+					border-right: none;
+					padding-left: 8px;
+				}
+
+				#sections {
+					padding-left: 0px;
+				}
+
+				#sections > div {
+					padding: 0px;
+				}
+	
+				#sections-heading {
+					padding-left: 8px;
+				}
+
+				body > section > *:not(h2) {
+					padding-left: 8px;
+				}
+			}
 		</style>
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
