@@ -319,3 +319,20 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 		}
 	});
 });
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+	var now = new Date();
+	console.log("%conHistoryStateUpdate %s: %s(%s)\n url=%s", "color:olive", now.toTimeString().substr(0,8),
+		details.transitionType, details.transitionQualifiers.join(" "), details.url);
+	var request = {
+		enabled: true,
+		matchUrl: details.url,
+		asHash: true
+	};
+	getStyles(request, function(r) {
+		chrome.tabs.sendMessage(details.tabId, {method: "styleReplaceAll", styles: r});
+		if (details.frameId === 0 && localStorage["show-badge"] === "true") {
+			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(r)), tabId: details.tabId});
+		}
+	});
+});
