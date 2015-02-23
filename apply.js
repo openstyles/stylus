@@ -17,6 +17,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			for (var styleId in request.styles) {
 				applySections(styleId, request.styles[styleId]);
 			}
+			break;
+		case "styleReplaceAll":
+			replaceAll(request.styles);
+			break;
 	}
 });
 
@@ -53,4 +57,11 @@ function applySections(styleId, sections) {
 		return section.code;
 	}).join("\n")));
 	document.documentElement.appendChild(styleElement);
+}
+
+function replaceAll(newStyles) {
+	Array.prototype.forEach.call(document.querySelectorAll("STYLE.stylish"), function(style) {
+		style.parentNode.removeChild(style);
+	});
+	applyStyles(newStyles);
 }
