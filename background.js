@@ -1,6 +1,8 @@
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
-chrome.webNavigation.onCommitted.addListener(function(data) {
+chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
+chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
 	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
 	// so a style affecting a page with an iframe will affect the main page as well.
@@ -9,13 +11,13 @@ chrome.webNavigation.onCommitted.addListener(function(data) {
 		return;
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
-		chrome.tabs.sendMessage(data.tabId, {method: "styleApply", styles: styleHash});
+		chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		// Don't show the badge for frames
 		if (data.frameId == 0) {
 			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
 		}
 	});
-});
+}
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
