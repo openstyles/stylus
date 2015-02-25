@@ -3,7 +3,30 @@
 		<script src="codemirror/lib/codemirror.js"></script>
 		<link rel="stylesheet" href="codemirror/lib/codemirror.css">
 		<script src="codemirror/mode/css/css.js"></script>
+
+		<link rel="stylesheet" href="codemirror/addon/dialog/dialog.css">
+		<link rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css">
+		<script src="codemirror/addon/scroll/annotatescrollbar.js"></script>
+		<script src="codemirror/addon/search/matchesonscrollbar.js"></script>
+		<script src="codemirror/addon/dialog/dialog.js"></script>
+		<script src="codemirror/addon/search/searchcursor.js"></script>
+		<script src="codemirror/addon/search/search.js"></script>
+
+		<link rel="stylesheet" href="codemirror/addon/fold/foldgutter.css" />
+		<script src="codemirror/addon/fold/foldcode.js"></script>
+		<script src="codemirror/addon/fold/foldgutter.js"></script>
+		<script src="codemirror/addon/fold/brace-fold.js"></script>
+		<script src="codemirror/addon/fold/comment-fold.js"></script>
+
+		<script src="codemirror/addon/edit/matchbrackets.js"></script>
+
+		<link rel="stylesheet" href="codemirror/addon/lint/lint.css" />
+		<script src="csslint/csslint.js"></script>
+		<script src="codemirror/addon/lint/lint.js"></script>
+		<script src="codemirror/addon/lint/css-lint.js"></script>
+
 		<style type="text/css">
+
 			body {
 				margin: 0px;
 				font: 12px arial,sans-serif;
@@ -85,7 +108,10 @@
 			.applies-to img {
 				vertical-align: bottom;
 			}
-			
+			.CodeMirror-lint-marker-warning {
+				display: none;
+			}
+
 			@media(max-width:737px) {
 				#header {
 					height: auto;
@@ -102,7 +128,7 @@
 				#sections > div {
 					padding: 0px;
 				}
-	
+
 				#sections-heading {
 					padding-left: 8px;
 				}
@@ -110,6 +136,7 @@
 				body > section > *:not(h2) {
 					padding-left: 8px;
 				}
+
 			}
 		</style>
 		<script src="storage.js"></script>

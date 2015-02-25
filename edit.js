@@ -19,6 +19,10 @@ function setupCodeMirror(textarea) {
 		mode: 'css',
 		lineNumbers: true,
 		lineWrapping: true,
+		foldGutter: true,
+		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
+		matchBrackets: true,
+		lint: CodeMirror.lint.css,
 		smartIndent: (typeof localStorage["smart-indent"] == "undefined") || localStorage["smart-indent"] == "true"
 	});
 	editors.push(cm);
