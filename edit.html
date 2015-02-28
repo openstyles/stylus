@@ -76,18 +76,43 @@
 			.CodeMirror {
 				border: solid #CCC 1px;
 			}
+			.applies-to {
+				display: flex;
+			}
+			.applies-to label {
+				flex: auto;
+				margin-top: 0.25em;
+			}
 			.applies-to ul {
-				display: inline-block;
+				flex: auto;
+				flex-grow: 99;
 				margin: 0;
+				padding: 0;
 			}
 			.applies-to li {
+				display: flex;
 				list-style-type: none;
+				align-items: center;
+				margin-bottom: 0.4em;
+			}
+			.applies-to li > * {
+				flex: auto;
+				min-height: 1.7em;
+				margin-left: 0.4em;
 			}
 			.applies-to li .add-applies-to {
-				display: none;
+				visibility: hidden;
+				text-align: left;
 			}
 			.applies-to li:last-child .add-applies-to {
-				display: inline;
+				visibility: visible
+			}
+			.applies-to li .add-applies-to:first-child {
+				margin-left: 1em;
+			}
+			.applies-to li .applies-value {
+				flex-grow: 99;
+				padding-left: 0.5ex;
 			}
 			body > section > *:not(h2) {
 				padding-left: 15px;
@@ -104,6 +129,7 @@
 			}
 			#sections > div:last-of-type .add-section {
 				display: inline;
+				margin-left: 0.4em;
 			}
 			.applies-to img {
 				vertical-align: bottom;
