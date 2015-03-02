@@ -168,3 +168,53 @@ function loadPrefs(prefs) {
 		el.addEventListener("change", changePref);
 	}
 }
+
+var prefs = {
+// NB: localStorage["not_key"] is undefined, localStorage.getItem("not_key") is null
+
+	// defaults
+	"openEditInWindow": false, // new editor opens in a own browser window
+	"show-badge": false,       // display text on popup menu icon
+	"smart-indent": true,      // CodeMirror smart indent
+
+	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
+	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
+
+	"popup.enabledFirst": true,  // display enabled styles before disabled styles
+	"manage.enabledFirst": true, // display enabled styles before disabled styles
+
+	"observer.observeFrameContent": false, // [hh] add MutationObserver inside IFRAMEs
+	"observer.observeFrameLoad": false,    // [hh] add onLoad listener to IFRAMEs
+	// https://github.com/JasonBarnabe/stylish-chrome/pull/39#issuecomment-76681235
+
+	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
+	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
+
+	getPref: function(key, ifUndefined) {
+	// Returns localStorage[key], ifUndefined, this[key], or undefined
+	//   as type of ifUndefined, this[key], or localStorage[key]
+		if (ifUndefined === undefined) ifUndefined = this[key]; // default value
+		var value = localStorage[key];
+		if (undefined === value) { // no user preference
+			if (ifUndefined === undefined) console.error(this.NO_DEFAULT_PREFERENCE, key);
+			return ifUndefined;
+		}
+		switch (typeof ifUndefined) {
+			case "boolean": return value.toLowerCase() === "true";
+			case "number": return Number(value);
+			case "object": return JSON.parse(value);
+			case "string": break;
+			case "undefined":  console.warn(this.NO_DEFAULT_PREFERENCE, key); break;
+			default: console.error(UNHANDLED_DATA_TYPE, key, typeof ifUndefined);
+		}
+		return value;
+	},
+	setPref: function(key, value) {
+		if (!(key in this)) console.warn(this.NO_DEFAULT_PREFERENCE, key);
+		if (value === undefined) localStorage.removeItem(key);
+		else localStorage.setItem(key, JSON.stringify(value));
+
+		notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+	},
+	removePref: function(key) { setPref(key, undefined) }
+};
