@@ -316,7 +316,7 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 		if (tabData.url.indexOf(editFullUrl) == 0) {
 			chrome.windows.get(tabData.windowId, {populate: true}, function(win) {
 				// If there's only one tab in this window, it's been dragged to new window
-				localStorage['openEditInWindow'] = win.tabs.length == 1 ? "true" : "false";
+				prefs.setPref('openEditInWindow', win.tabs.length == 1);
 			});
 		}
 	});

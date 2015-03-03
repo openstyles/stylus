@@ -21,17 +21,7 @@ function getDatabase(ready, error) {
 	} else if (stylishDb.version == "1.4") {
 		dbV15(stylishDb, error, ready);
 	} else {
-		defaultPrefs();
 		ready(stylishDb);
-	}
-}
-
-function defaultPrefs() {
-	if (!("show-badge" in localStorage)) {
-		localStorage["show-badge"] = true;
-	}
-	if (!("smart-indent" in localStorage)) {
-		localStorage["smart-indent"] = true;
 	}
 }
 
@@ -148,20 +138,16 @@ function isCheckbox(el) {
 
 function changePref(event) {
 	var el = event.target;
-	var value = isCheckbox(el) ? el.checked : el.value;
-	localStorage[el.id] = value
-	notifyAllTabs({method: "prefChanged", prefName: el.id, value: value});
+	prefs.setPref(el.id, isCheckbox(el) ? el.checked : el.value);
 }
 
 // Accepts a hash of pref name to default value
 function loadPrefs(prefs) {
 	for (var id in prefs) {
-		var value = typeof localStorage[id] == "undefined" ? prefs[id] : localStorage[id];
+		var value = this.prefs.getPref(id);
 		var el = document.getElementById(id);
 		if (isCheckbox(el)) {
-			if (value == "true") {
-				el.checked = true;
-			}
+			el.checked = value;
 		} else {
 			el.value = value;
 		}
@@ -174,7 +160,7 @@ var prefs = {
 
 	// defaults
 	"openEditInWindow": false, // new editor opens in a own browser window
-	"show-badge": false,       // display text on popup menu icon
+	"show-badge": true,        // display text on popup menu icon
 	"smart-indent": true,      // CodeMirror smart indent
 
 	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
