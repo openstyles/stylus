@@ -60,6 +60,11 @@
 			.breadcrumbs > .write-style-link:nth-last-child(2)::after {content: none}
 				/* "forward slash" before path ("this URL") */
 			.breadcrumbs > .write-style-link:last-child::before {content: "\200b/"}
+			.breadcrumbs > .write-style-link:last-child:first-child::before,
+			.breadcrumbs > .write-style-link[subdomain=""] + .write-style-link::before {content: none}
+			
+				/* suppress TLD-only link */
+			.breadcrumbs > .write-style-link[subdomain=""] {display: none}
 
 				/* :hover style */
 			.breadcrumbs.url\(\) > .write-style-link, /* :hover or :focus on "this URL" sets class="url()" */

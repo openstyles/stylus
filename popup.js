@@ -51,7 +51,7 @@ chrome.tabs.getSelected(null, function(tab) {
 		var domainLink = writeStyleTemplate.cloneNode(true);
 		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
 		domainLink.appendChild(document.createTextNode(domain));
-		domainLink.title = "domain($)".replace("$", domain);
+		domainLink.title = "domain(\"$\")".replace("$", domain);
 		domainLink.setAttribute("subdomain", domain.substring(0, domain.indexOf(".")));
 		writeStyleLinks.push(domainLink);
 	});
