@@ -25,6 +25,8 @@ function setupCodeMirror(textarea) {
 		lint: CodeMirror.lint.css,
 		smartIndent: (typeof localStorage["smart-indent"] == "undefined") || localStorage["smart-indent"] == "true"
 	});
+	cm.lastChange = cm.changeGeneration();
+	cm.on("change", indicateCodeChange);
 	editors.push(cm);
 }
 
@@ -33,8 +35,28 @@ function makeDirty() {
 }
 
 window.onbeforeunload = function() {
-	return dirty ? t('styleChangesNotSaved') : null;
+	return dirty || isCodeDirty() ? t('styleChangesNotSaved') : null;
 }
+
+function isCodeDirty() {
+	for(var i=0; i < editors.length; i++) {
+		if (!editors[i].isClean(editors[i].lastChange)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function indicateCodeChange(cm) {
+	var clean = cm.isClean(cm.lastChange);
+	if (clean != cm.lastClean) {
+		cm.lastClean = clean;
+		var label = cm.getTextArea().previousElementSibling;
+		if (label) {
+			label.textContent = label.textContent.replace(/\*?$/, clean ? '' : '*');
+		}
+	}
+};
 
 function addAppliesTo(list, name, value) {
 	var showingEverything = list.querySelector(".applies-to-everything") != null;
@@ -203,10 +225,10 @@ function validate() {
 }
 
 function save() {
-  // save the contents of the CodeMirror editors back into the textareas
-  for(var i=0; i < editors.length; i++) {
-    editors[i].save();
-  }
+	// save the contents of the CodeMirror editors back into the textareas
+	for (var i=0; i < editors.length; i++) {
+		editors[i].save();
+	}
 
 	var error = validate();
 	if (error) {
@@ -269,6 +291,13 @@ function getMeta(e) {
 
 function saveComplete(style) {
 	dirty = false;
+
+	for(var i=0; i < editors.length; i++) {
+		var cm = editors[i];
+		cm.lastChange = cm.changeGeneration(true);
+		indicateCodeChange(cm);
+	}
+
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		// give the code above a moment before we kill the page
