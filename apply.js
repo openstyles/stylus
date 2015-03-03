@@ -3,10 +3,10 @@ chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enab
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleDeleted":
-			removeStyle(request.id);
+			removeStyle(request.id, document);
 			break;
 		case "styleUpdated":
-			removeStyle(request.style.id);
+			removeStyle(request.style.id, document);
 			//fallthrough
 		case "styleAdded":
 			if (request.style.enabled == "true") {
@@ -24,11 +24,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-function removeStyle(id) {
-	var e = document.getElementById("stylish-" + id);
+function removeStyle(id, doc) {
+	var e = doc.getElementById("stylish-" + id);
 	if (e) {
 		e.parentNode.removeChild(e);
 	}
+	getDynamicIFrames(doc).forEach(function(iframe) {
+		removeStyle(id, iframe.contentDocument);
+	});
 }
 
 function applyStyles(styleHash) {
@@ -56,12 +59,57 @@ function applySections(styleId, sections) {
 	styleElement.appendChild(document.createTextNode(sections.map(function(section) {
 		return section.code;
 	}).join("\n")));
-	document.documentElement.appendChild(styleElement);
+	addStyleElement(styleElement, document);
 }
 
-function replaceAll(newStyles) {
-	Array.prototype.forEach.call(document.querySelectorAll("STYLE.stylish"), function(style) {
+function addStyleElement(styleElement, doc) {
+	doc.documentElement.appendChild(doc.importNode(styleElement, true));
+	getDynamicIFrames(doc).forEach(function(iframe) {
+		addStyleElement(styleElement, iframe.contentDocument);
+	});
+}
+
+// Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
+function getDynamicIFrames(doc) {
+	return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
+}
+
+function iframeIsDynamic(f) {
+	var href;
+	try {
+		href = f.contentDocument.location.href;
+	} catch (ex) {
+		// Cross-origin, so it's not a dynamic iframe
+		return false;
+	}
+	return href == document.location.href || href.indexOf("about:") == 0;
+}
+
+function replaceAll(newStyles, doc) {
+	Array.prototype.forEach.call(doc.querySelectorAll("STYLE.stylish"), function(style) {
 		style.parentNode.removeChild(style);
 	});
 	applyStyles(newStyles);
+	getDynamicIFrames(doc).forEach(function(iframe) {
+		replaceAll(newStyles, iframe.contentDocument);
+	});
 }
+
+// Observe dynamic IFRAMEs being added
+var iframeObserver = new MutationObserver(function(mutations) {
+	var styles = document.querySelectorAll('STYLE.stylish');
+	if (styles.length == 0) {
+		return;
+	}
+	mutations.filter(function(mutation) {
+		return "childList" === mutation.type;
+	}).forEach(function(mutation) {
+		Array.prototype.filter.call(mutation.addedNodes, function(node) { return "IFRAME" === node.tagName; }).filter(iframeIsDynamic).forEach(function(iframe) {
+			var doc = f.contentDocument;
+			styles.forEach(function(style) {
+				document.documentElement.appendChild(doc.importNode(style, true));
+			});
+		});
+	});
+});
+iframeObserver.observe(document, {childList: true, subtree: true});
