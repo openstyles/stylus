@@ -36,6 +36,45 @@
 			.enable, .disable {
 				display: none;
 			}
+
+		/* 'New style' links */
+			#write-style-for {margin-right: .6ex}
+			.write-style-link {margin-left: .6ex}
+			.write-style-link::before, .write-style-link::after {font-size: x-small}
+			.write-style-link::before {content: "\00ad"} /* "soft" hyphen */
+			#match {overflow-wrap: break-word;}
+
+			/* "breadcrumbs" 'new style' links */
+			.breadcrumbs > .write-style-link {margin-left: 0}
+			.breadcrumbs:hover a {color: #bbb; text-decoration: none}
+
+				/* use just the subdomain name instead of the full domain name */
+			.breadcrumbs > .write-style-link[subdomain]:not(:nth-last-child(2)) {font-size: 0}
+			.breadcrumbs > .write-style-link[subdomain]:not(:nth-last-child(2))::before {
+				content: attr(subdomain);
+			}
+
+				/* "dot" after each subdomain name */
+			.breadcrumbs > .write-style-link[subdomain]::after {content: "."}
+				/* no "dot" after top-level domain */
+			.breadcrumbs > .write-style-link:nth-last-child(2)::after {content: none}
+				/* "forward slash" before path ("this URL") */
+			.breadcrumbs > .write-style-link:last-child::before {content: "\200b/"}
+			.breadcrumbs > .write-style-link:last-child:first-child::before,
+			.breadcrumbs > .write-style-link[subdomain=""] + .write-style-link::before {content: none}
+			
+				/* suppress TLD-only link */
+			.breadcrumbs > .write-style-link[subdomain=""] {display: none}
+
+				/* :hover style */
+			.breadcrumbs.url\(\) > .write-style-link, /* :hover or :focus on "this URL" sets class="url()" */
+			.breadcrumbs > .write-style-link:hover,
+			.breadcrumbs > .write-style-link:focus,
+			.breadcrumbs > .write-style-link:hover ~ .write-style-link[subdomain],
+			.breadcrumbs > .write-style-link:focus ~ .write-style-link[subdomain] {
+				color: inherit;
+				text-decoration: underline;
+			}
 		</style>
 
 		<script src="localization.js"></script>

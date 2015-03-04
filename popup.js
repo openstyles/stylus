@@ -19,14 +19,27 @@ chrome.tabs.getSelected(null, function(tab) {
 	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : tab.url);
 
 	// Write new style links
-	var writeStyleLinks = []
+	var writeStyleLinks = [],
+	    container = document.createElement('span');
+	container.id = "match";
 
 	// For this URL
 	var urlLink = writeStyleTemplate.cloneNode(true);
 	urlLink.href = "edit.html?url=" + encodeURIComponent(tab.url);
-	urlLink.appendChild(document.createTextNode(t("writeStyleForURL")));
+	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
+		localStorage["popup.breadcrumbs.usePath"] !== "true"
+		? t("writeStyleForURL").replace(/ /g, "\u00a0")
+		: /\/\/[^/]+\/(.*)/.exec(tab.url)[1]
+	));
+	urlLink.title = "url(\"$\")".replace("$", tab.url);
 	writeStyleLinks.push(urlLink);
 	document.querySelector("#write-style").appendChild(urlLink)
+	if (localStorage["popup.breadcrumbs"] !== "false") { // switchable; default=enabled
+		urlLink.addEventListener("mouseenter", function(event) { this.parentNode.classList.add("url()") }, false);
+		urlLink.addEventListener("focus", function(event) { this.parentNode.classList.add("url()") }, false);
+		urlLink.addEventListener("mouseleave", function(event) { this.parentNode.classList.remove("url()") }, false);
+		urlLink.addEventListener("blur", function(event) { this.parentNode.classList.remove("url()") }, false);
+	}
 
 	// For domain
 	var domains = getDomains(tab.url)
@@ -38,17 +51,21 @@ chrome.tabs.getSelected(null, function(tab) {
 		var domainLink = writeStyleTemplate.cloneNode(true);
 		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
 		domainLink.appendChild(document.createTextNode(domain));
+		domainLink.title = "domain(\"$\")".replace("$", domain);
+		domainLink.setAttribute("subdomain", domain.substring(0, domain.indexOf(".")));
 		writeStyleLinks.push(domainLink);
 	});
 
 	var writeStyle = document.querySelector("#write-style");
 	writeStyleLinks.forEach(function(link, index) {
-		if (index > 0) {
-			writeStyle.appendChild(document.createTextNode(" "));
-		}
 		link.addEventListener("click", openLinkInTabOrWindow, false);
-		writeStyle.appendChild(link);
+		container.appendChild(link);
 	});
+	if (localStorage["popup.breadcrumbs"] !== "false") {
+		container.classList.add("breadcrumbs");
+		container.appendChild(container.removeChild(container.firstChild));
+	}
+	writeStyle.appendChild(container);
 });
 
 function showStyles(styles) {
