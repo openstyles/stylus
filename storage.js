@@ -21,17 +21,7 @@ function getDatabase(ready, error) {
 	} else if (stylishDb.version == "1.4") {
 		dbV15(stylishDb, error, ready);
 	} else {
-		defaultPrefs();
 		ready(stylishDb);
-	}
-}
-
-function defaultPrefs() {
-	if (!("show-badge" in localStorage)) {
-		localStorage["show-badge"] = true;
-	}
-	if (!("smart-indent" in localStorage)) {
-		localStorage["smart-indent"] = true;
 	}
 }
 
@@ -148,23 +138,69 @@ function isCheckbox(el) {
 
 function changePref(event) {
 	var el = event.target;
-	var value = isCheckbox(el) ? el.checked : el.value;
-	localStorage[el.id] = value
-	notifyAllTabs({method: "prefChanged", prefName: el.id, value: value});
+	prefs.setPref(el.id, isCheckbox(el) ? el.checked : el.value);
 }
 
 // Accepts a hash of pref name to default value
 function loadPrefs(prefs) {
 	for (var id in prefs) {
-		var value = typeof localStorage[id] == "undefined" ? prefs[id] : localStorage[id];
+		var value = this.prefs.getPref(id);
 		var el = document.getElementById(id);
 		if (isCheckbox(el)) {
-			if (value == "true") {
-				el.checked = true;
-			}
+			el.checked = value;
 		} else {
 			el.value = value;
 		}
 		el.addEventListener("change", changePref);
 	}
 }
+
+var prefs = {
+// NB: localStorage["not_key"] is undefined, localStorage.getItem("not_key") is null
+
+	// defaults
+	"openEditInWindow": false, // new editor opens in a own browser window
+	"show-badge": true,        // display text on popup menu icon
+	"smart-indent": true,      // CodeMirror smart indent
+
+	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
+	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
+
+	"popup.enabledFirst": true,  // display enabled styles before disabled styles
+	"manage.enabledFirst": true, // display enabled styles before disabled styles
+
+	"observer.observeFrameContent": false, // [hh] add MutationObserver inside IFRAMEs
+	"observer.observeFrameLoad": false,    // [hh] add onLoad listener to IFRAMEs
+	// https://github.com/JasonBarnabe/stylish-chrome/pull/39#issuecomment-76681235
+
+	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
+	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
+
+	getPref: function(key, ifUndefined) {
+	// Returns localStorage[key], ifUndefined, this[key], or undefined
+	//   as type of ifUndefined, this[key], or localStorage[key]
+		if (ifUndefined === undefined) ifUndefined = this[key]; // default value
+		var value = localStorage[key];
+		if (undefined === value) { // no user preference
+			if (ifUndefined === undefined) console.error(this.NO_DEFAULT_PREFERENCE, key);
+			return ifUndefined;
+		}
+		switch (typeof ifUndefined) {
+			case "boolean": return value.toLowerCase() === "true";
+			case "number": return Number(value);
+			case "object": return JSON.parse(value);
+			case "string": break;
+			case "undefined":  console.warn(this.NO_DEFAULT_PREFERENCE, key); break;
+			default: console.error(UNHANDLED_DATA_TYPE, key, typeof ifUndefined);
+		}
+		return value;
+	},
+	setPref: function(key, value) {
+		if (!(key in this)) console.warn(this.NO_DEFAULT_PREFERENCE, key);
+		if (value === undefined) localStorage.removeItem(key);
+		else localStorage.setItem(key, JSON.stringify(value));
+
+		notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+	},
+	removePref: function(key) { setPref(key, undefined) }
+};

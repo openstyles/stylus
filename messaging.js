@@ -10,7 +10,7 @@ function notifyAllTabs(request) {
 }
 
 function updateBadgeText(tab) {
-	if (localStorage["show-badge"] == "true") {
+	if (prefs.getPref("show-badge")) {
 		function stylesReceived(styles) {
 			var t = getBadgeText(styles);
 			console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");

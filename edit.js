@@ -24,7 +24,7 @@ function setupCodeMirror(textarea) {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
-		smartIndent: (typeof localStorage["smart-indent"] == "undefined") || localStorage["smart-indent"] == "true",
+		smartIndent: prefs.getPref("smart-indent"),
 		extraKeys: {"Ctrl-Space": "autocomplete"}
 	});
 	editors.push(cm);

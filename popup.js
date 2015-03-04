@@ -143,7 +143,7 @@ function getId(event) {
 
 function openLinkInTabOrWindow(event) {
 	event.preventDefault();
-	if (localStorage['openEditInWindow'] == 'true') {
+	if (prefs.getPref('openEditInWindow', false)) {
 		chrome.windows.create({url: event.target.href});
 	} else {
 		chrome.tabs.create({url: event.target.href});
