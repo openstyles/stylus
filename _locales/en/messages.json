@@ -129,9 +129,21 @@
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"manageFilters": {
+		"message": "Filters",
+		"description": "Label for filters container"
+	},
 	"manageHeading": {
 		"message": "Installed Styles",
 		"description": "Heading for the manage page"
+	},
+	"manageOnlyEnabled": {
+		"message": "Only enabled styles",
+		"description": "Checkbox to show only enabled styles"
+	},
+	"manageOnlyEdited": {
+		"message": "Only edited styles",
+		"description": "Checkbox to show only locally edited styles"
 	},
 	"manageText": {
 		"message": "Visit <a href='http:\/\/userstyles.org'>userstyles.org<\/a> for pre-made styles. Ask in <a href='http:\/\/forum.userstyles.org'>the forum<\/a> if you need help.",

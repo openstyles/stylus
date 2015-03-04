@@ -8,6 +8,11 @@ appliesToExtraTemplate.className = "applies-to-extra";
 appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 
 chrome.extension.sendMessage({method: "getStyles"}, showStyles);
+loadPrefs({
+	"manage.onlyEnabled": false,
+	"manage.onlyEdited": false,
+	"show-badge": true
+});
 
 function showStyles(styles) {
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
@@ -15,7 +20,6 @@ function showStyles(styles) {
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
-	loadPrefs({"show-badge": true});
 }
 
 function createStyleElement(style) {
@@ -341,5 +345,21 @@ tE("check-all-updates", "checkAllUpdates");
 tE("add-style-label", "addStyleLabel");
 tE("options-heading", "optionsHeading");
 tE("show-badge-label", "prefShowBadge");
+tE("manage.onlyEnabled-label", "manageOnlyEnabled");
+tE("manage.onlyEdited-label", "manageOnlyEdited");
+tE("filters", "manageFilters");
 
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
+
+function onFilterChange (className, event) {
+	var container = document.getElementById("installed"),
+	    control = event.target;
+	if (control.checked) container.classList.add(className);
+	else container.classList.remove(className);
+}
+function initFilter(className, node) {
+	node.addEventListener("change", onFilterChange.bind(undefined, className), false);
+	onFilterChange(className, {target: node});
+}
+initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
+initFilter("edited-only", document.getElementById("manage.onlyEdited"));
