@@ -125,13 +125,20 @@ function openLinkInTabOrWindow(event) {
 	if (localStorage['openEditInWindow'] == 'true') {
 		chrome.windows.create({url: event.target.href});
 	} else {
-		chrome.tabs.create({url: event.target.href});
+		openLink(event);
 	}
 }
 
 function openLink(event) {
 	event.preventDefault();
-	chrome.tabs.create({url: event.target.href});
+	chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+		if (tabs && tabs.length && tabs[0].url.match(/^chrome:\/\/newtab\/?$/)) {
+			chrome.tabs.update({url: event.target.href});
+			close(); // close the popup
+		} else {
+			chrome.tabs.create({url: event.target.href});
+		}
+	});
 }
 
 function handleUpdate(style) {
