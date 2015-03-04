@@ -97,7 +97,7 @@ function replaceAll(newStyles, doc) {
 
 // Observe dynamic IFRAMEs being added
 var iframeObserver = new MutationObserver(function(mutations) {
-	var styles = document.querySelectorAll('STYLE.stylish');
+	var styles = Array.prototype.slice.call(document.querySelectorAll('STYLE.stylish'));
 	if (styles.length == 0) {
 		return;
 	}
@@ -105,9 +105,9 @@ var iframeObserver = new MutationObserver(function(mutations) {
 		return "childList" === mutation.type;
 	}).forEach(function(mutation) {
 		Array.prototype.filter.call(mutation.addedNodes, function(node) { return "IFRAME" === node.tagName; }).filter(iframeIsDynamic).forEach(function(iframe) {
-			var doc = f.contentDocument;
+			var doc = iframe.contentDocument;
 			styles.forEach(function(style) {
-				document.documentElement.appendChild(doc.importNode(style, true));
+				doc.documentElement.appendChild(doc.importNode(style, true));
 			});
 		});
 	});
