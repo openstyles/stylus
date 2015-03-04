@@ -27,14 +27,14 @@ chrome.tabs.getSelected(null, function(tab) {
 	var urlLink = writeStyleTemplate.cloneNode(true);
 	urlLink.href = "edit.html?url=" + encodeURIComponent(tab.url);
 	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
-		localStorage["popup.breadcrumbs.usePath"] !== "true"
+		prefs.getPref("popup.breadcrumbs.usePath")
 		? t("writeStyleForURL").replace(/ /g, "\u00a0")
 		: /\/\/[^/]+\/(.*)/.exec(tab.url)[1]
 	));
 	urlLink.title = "url(\"$\")".replace("$", tab.url);
 	writeStyleLinks.push(urlLink);
 	document.querySelector("#write-style").appendChild(urlLink)
-	if (localStorage["popup.breadcrumbs"] !== "false") { // switchable; default=enabled
+	if (prefs.getPref("popup.breadcrumbs")) { // switchable; default=enabled
 		urlLink.addEventListener("mouseenter", function(event) { this.parentNode.classList.add("url()") }, false);
 		urlLink.addEventListener("focus", function(event) { this.parentNode.classList.add("url()") }, false);
 		urlLink.addEventListener("mouseleave", function(event) { this.parentNode.classList.remove("url()") }, false);
@@ -61,7 +61,7 @@ chrome.tabs.getSelected(null, function(tab) {
 		link.addEventListener("click", openLinkInTabOrWindow, false);
 		container.appendChild(link);
 	});
-	if (localStorage["popup.breadcrumbs"] !== "false") {
+	if (prefs.getPref("popup.breadcrumbs")) {
 		container.classList.add("breadcrumbs");
 		container.appendChild(container.removeChild(container.firstChild));
 	}
@@ -69,7 +69,7 @@ chrome.tabs.getSelected(null, function(tab) {
 });
 
 function showStyles(styles) {
-	var enabledFirst = localStorage["popup.enabledFirst"] !== "false";
+	var enabledFirst = prefs.getPref("popup.enabledFirst");
 	styles.sort(function(a, b) {
 		if (enabledFirst && a.enabled !== b.enabled) return !(a.enabled < b.enabled) ? -1 : 1;
 		return a.name.localeCompare(b.name);
