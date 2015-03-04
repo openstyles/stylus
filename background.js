@@ -13,7 +13,7 @@ function webNavigationListener(method, data) {
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		// Don't show the badge for frames
-		if (data.frameId == 0) {
+		if (data.frameId == 0 && prefs.getPref("show-badge")) {
 			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
 		}
 	});
