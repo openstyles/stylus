@@ -92,6 +92,10 @@
 		"message": "Disable",
 		"description": "Label for the button to disable a style"
 	},
+	"editGotoLine": {
+		"message": "Goto line (or line:col)",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
 	"editStyleHeading": {
 		"message": "Edit Style",
 		"description": "Title of the page for editing styles"

@@ -25,7 +25,25 @@ function setupCodeMirror(textarea) {
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
 		smartIndent: prefs.getPref("smart-indent"),
+		keyMap: "sublime",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
+	});
+	cm.addKeyMap({
+		"Ctrl-G": function(cm) {
+			var cur = cm.getCursor();
+			cm.openDialog(t('editGotoLine') + ': <input type="text" style="width: 5em"/>', function(str) {
+				var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
+				if (m) {
+					cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
+				}
+			}, {value: cur.line+1});
+		},
+		"Alt-PageDown": function(cm) {
+			editors[(editors.indexOf(cm) + 1) % editors.length].focus();
+		},
+		"Alt-PageUp": function(cm) {
+			editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length].focus();
+		}
 	});
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
