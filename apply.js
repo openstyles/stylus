@@ -19,7 +19,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "styleReplaceAll":
-			replaceAll(request.styles);
+			replaceAll(request.styles, document);
 			break;
 	}
 });
