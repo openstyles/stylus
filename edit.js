@@ -47,6 +47,20 @@ function setupCodeMirror(textarea) {
 	});
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
+
+	// ensure the entire section is visible on focus
+	cm.on("focus", function(cm) {
+		var section = cm.display.wrapper.parentNode;
+		var bounds = section.getBoundingClientRect();
+		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
+			if (bounds.top > window.innerHeight || bounds.top < 0) {
+				section.scrollIntoView();
+			} else {
+				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
+			}
+		}
+	});
+
 	editors.push(cm);
 }
 
@@ -167,6 +181,88 @@ function removeSection(event) {
 	makeDirty();
 }
 
+function setupGlobalSearch() {
+	var originalCommand = {
+		find: CodeMirror.commands.find,
+		findNext: CodeMirror.commands.findNext,
+		findPrev: CodeMirror.commands.findPrev
+	}
+
+	function shouldIgnoreCase(query) { // treat all-lowercase non-regexp queries as case-insensitive
+		return typeof query == "string" && query == query.toLowerCase();
+	}
+
+	function find(activeCM) {
+		var originalOpenDialog = activeCM.openDialog;
+		activeCM.openDialog = function(template, callback, options) {
+			originalOpenDialog.call(activeCM, template, function(query) {
+				activeCM.openDialog = originalOpenDialog;
+				callback(query);
+				var state = activeCM.state.search;
+				if (editors.length == 1 || !state.query) {
+					return;
+				}
+				for (var i=0; i < editors.length; i++) {
+					var cm = editors[i];
+					if (cm == activeCM) {
+						continue;
+					}
+					cm.execCommand("clearSearch");
+					cm.state.search = {
+						query: state.query,
+						overlay: state.overlay,
+						annotate: cm.showMatchesOnScrollbar(state.query, shouldIgnoreCase(state.query))
+					}
+					cm.addOverlay(state.overlay);
+				}
+				if (CodeMirror.cmpPos(activeCM.state.search.posFrom, activeCM.state.search.posTo) == 0) {
+					findNext(activeCM);
+				}
+			}, options);
+		}
+		originalCommand.find(activeCM);
+	}
+
+	function findNext(activeCM, reverse) {
+		if (!activeCM.state.search || !activeCM.state.search.query) {
+			find(activeCM);
+			return;
+		}
+		var pos = activeCM.getCursor();
+		// check if the search term is currently selected in the editor
+		var m = activeCM.getSelection().match(activeCM.state.search.query);
+		if (m && m[0].length == activeCM.getSelection().length) {
+			pos = activeCM.getCursor(reverse ? "from" : "to");
+			activeCM.setSelection(activeCM.getCursor());
+		}
+
+		for (var i=0, cm=activeCM; i < editors.length; i++) {
+			var state = cm.state.search;
+			if (cm != activeCM) {
+				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
+			}
+			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
+			if (searchCursor.find(reverse) || editors.length == 1) {
+				if (editors.length > 1) {
+					cm.focus();
+				}
+				// speedup the original findNext
+				state.posFrom = reverse ? searchCursor.to() : searchCursor.from();
+				state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
+				originalCommand[reverse ? "findPrev" : "findNext"](cm);
+				return;
+			}
+			cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
+		}
+		// nothing found so far, so call the original search with wrap-around
+		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
+	}
+
+	CodeMirror.commands.find = find;
+	CodeMirror.commands.findNext = function(cm) { findNext(cm) }
+	CodeMirror.commands.findPrev = function(cm) { findNext(cm, true) }
+}
+
 window.addEventListener("load", init, false);
 
 function init() {
@@ -208,6 +304,7 @@ function initWithStyle(style) {
 		div.parentNode.removeChild(div);
 	});
 	style.sections.forEach(addSection);
+	setupGlobalSearch();
 }
 
 function initTitle(name) {
