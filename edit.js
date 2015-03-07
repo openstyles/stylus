@@ -29,6 +29,20 @@ function setupCodeMirror(textarea) {
 	});
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
+
+	// ensure the entire section is visible on focus
+	cm.on("focus", function(cm) {
+		var section = cm.display.wrapper.parentNode;
+		var bounds = section.getBoundingClientRect();
+		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
+			if (bounds.top > window.innerHeight || bounds.top < 0) {
+				section.scrollIntoView();
+			} else {
+				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
+			}
+		}
+	});
+
 	editors.push(cm);
 }
 
