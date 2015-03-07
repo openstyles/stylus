@@ -162,6 +162,8 @@ function init() {
 			section.domains = [params.domain];
 		} else if (params.url) {
 			section.urls = [params.url];
+		} else if (params["url-prefix"]) {
+			section.urlPrefixes = [params["url-prefix"]];
 		}
 		addSection(section);
 		// default to enabled

@@ -25,13 +25,13 @@ chrome.tabs.getSelected(null, function(tab) {
 
 	// For this URL
 	var urlLink = writeStyleTemplate.cloneNode(true);
-	urlLink.href = "edit.html?url=" + encodeURIComponent(tab.url);
+	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(tab.url);
 	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
 		prefs.getPref("popup.breadcrumbs.usePath")
 		? t("writeStyleForURL").replace(/ /g, "\u00a0")
 		: /\/\/[^/]+\/(.*)/.exec(tab.url)[1]
 	));
-	urlLink.title = "url(\"$\")".replace("$", tab.url);
+	urlLink.title = "url-prefix(\"$\")".replace("$", tab.url);
 	writeStyleLinks.push(urlLink);
 	document.querySelector("#write-style").appendChild(urlLink)
 	if (prefs.getPref("popup.breadcrumbs")) { // switchable; default=enabled
