@@ -151,6 +151,7 @@ function loadPrefs(prefs) {
 		} else {
 			el.value = value;
 		}
+		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
 		el.addEventListener("change", changePref);
 	}
 }
@@ -191,10 +192,20 @@ var prefs = {
 	},
 	setPref: function(key, value) {
 		if (!(key in this)) console.warn(this.NO_DEFAULT_PREFERENCE, key);
-		if (value === undefined) localStorage.removeItem(key);
-		else localStorage.setItem(key, "string" === typeof value ? value : JSON.stringify(value));
+		var oldValue = this.getPref(key);
 
-		notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+		if (undefined === value || this[key] === value) {
+			localStorage.removeItem(key); // (deleted || default)
+		} else {
+			var strValue = ("string" === typeof value ||
+			               undefined === value) ? value : JSON.stringify(value);
+			localStorage.setItem(key, strValue);
+		}
+
+		var newValue = this.getPref(key);
+		if (newValue !== oldValue) {
+			notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+		}
 	},
 	removePref: function(key) { setPref(key, undefined) }
 };
