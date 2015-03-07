@@ -27,7 +27,7 @@ chrome.tabs.getSelected(null, function(tab) {
 	var urlLink = writeStyleTemplate.cloneNode(true);
 	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(tab.url);
 	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
-		prefs.getPref("popup.breadcrumbs.usePath")
+		!prefs.getPref("popup.breadcrumbs.usePath")
 		? t("writeStyleForURL").replace(/ /g, "\u00a0")
 		: /\/\/[^/]+\/(.*)/.exec(tab.url)[1]
 	));

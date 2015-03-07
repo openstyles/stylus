@@ -15,7 +15,7 @@ function showStyles(styles) {
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
-	loadPrefs({"show-badge": "true"});
+	loadPrefs({"show-badge": true});
 }
 
 function createStyleElement(style) {
