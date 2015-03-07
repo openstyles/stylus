@@ -284,6 +284,7 @@ function init() {
 		document.getElementById("enabled").checked = true
 		document.title = t("addStyleTitle");
 		tE("heading", "addStyleTitle");
+		setupGlobalSearch();
 		return;
 	}
 	// This is an edit
