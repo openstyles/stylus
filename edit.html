@@ -173,6 +173,16 @@
 				}
 
 			}
+
+			/* editor options */
+			[type="number"] {
+				max-width: 2.8em;
+				text-align: right;
+			}
+			table, input, select {
+				font-size: inherit;
+			}
+			table td:first-child {min-width: 60px}
 		</style>
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
@@ -191,7 +201,34 @@
 			<a href="manage.html"><button id="cancel-button"></button></a>
 			<div id="options">
 				<h2 id="options-heading"></h2>
-				<input id="smart-indent" type="checkbox"><label id="smart-indent-label" for="smart-indent"></label>
+				<table cols="2">
+				<tr>
+					<td colspan="2">
+						<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
+						<label id="lineWrapping-label" for="editor.lineWrapping"></label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
+						<label id="smartIndent-label" for="editor.smartIndent"></label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
+						<label id="indentWithTabs-label" for="editor.indentWithTabs"></label>
+					</td>
+				</tr>
+				<tr>
+					<td><label id="tabSize-label" for="editor.tabSize"></label></td>
+					<td><input data-option="tabSize" id="editor.tabSize" type="number" min="0"></td>
+				</tr>
+				<tr>
+					<td><label id="keyMap-label" for="editor.keyMap"></label></td>
+					<td><select data-option="keyMap" id="editor.keyMap"></select></td>
+				</tr>
+			</table>
 			</div>
 		</div>
 		<section id="sections">

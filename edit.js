@@ -12,11 +12,13 @@ appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button cla
 var sectionTemplate = document.createElement("div");
 sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
 
+var editors = []; // array of all CodeMirror instances
+function initCodeMirror() {
+	var CM = CodeMirror;
 
-var editors = [] // array of all CodeMirror instances
-// replace given textarea with the CodeMirror editor
-function setupCodeMirror(textarea) {
-	var cm = CodeMirror.fromTextArea(textarea, {
+	// default option values
+	var userOptions = prefs.getPref("editor.options");
+	var stylishOptions = {
 		mode: 'css',
 		lineNumbers: true,
 		lineWrapping: true,
@@ -24,26 +26,70 @@ function setupCodeMirror(textarea) {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
-		smartIndent: prefs.getPref("smart-indent"),
 		keyMap: "sublime",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
+	};
+	mergeOptions(stylishOptions, CM.defaults);
+	mergeOptions(userOptions, CM.defaults);
+
+	function mergeOptions(source, target) {
+		for (var key in source) target[key] = source[key];
+		return target;
+	}
+
+	// additional commands
+	var cc = CM.commands;
+	cc.jumpToLine = jumpToLine;
+	cc.nextBuffer = nextBuffer;
+	cc.prevBuffer = prevBuffer;
+	// cc.save = save;
+
+	// user option values
+	CM.getOption = function (o) {
+		return CodeMirror.defaults[o];
+	}
+	CM.setOption = function (o, v) {
+		CodeMirror.defaults[o] = v;
+		editors.forEach(function(editor) {
+			editor.setOption(o, v);
+		});
+	}
+
+	// initialize global editor controls
+	document.getElementById("options").addEventListener("change", acmeEventListener, false);
+
+	var keymapControl = document.getElementById("editor.keyMap");
+	Object.keys(CodeMirror.keyMap).sort().forEach(function(map) {
+		keymapControl.appendChild(document.createElement("option")).textContent = map;
 	});
+
+	var controlPrefs = {},
+	    controlOptions = ["smartIndent", "indentWithTabs", "tabSize", "keyMap", "lineWrapping"];
+	controlOptions.forEach(function(option) {
+		controlPrefs["editor." + option] = CM.defaults[option];
+		tE(option + "-label", "cm_" + option);
+	});
+	loadPrefs(controlPrefs);
+
+}
+initCodeMirror();
+
+function acmeEventListener(event) {
+	var option = event.target.dataset.option;
+	console.log("acmeEventListener heard %s on %s", event.type, event.target.id);
+	if (!option) console.error("acmeEventListener: no 'cm_option' %O", event.target);
+	else CodeMirror.setOption(option, event.target[isCheckbox(event.target) ? "checked" : "value"]);
+
+	if ("tabSize" === option) CodeMirror.setOption("indentUnit", CodeMirror.getOption("tabSize"));
+}
+
+// replace given textarea with the CodeMirror editor
+function setupCodeMirror(textarea) {
+	var cm = CodeMirror.fromTextArea(textarea);
 	cm.addKeyMap({
-		"Ctrl-G": function(cm) {
-			var cur = cm.getCursor();
-			cm.openDialog(t('editGotoLine') + ': <input type="text" style="width: 5em"/>', function(str) {
-				var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
-				if (m) {
-					cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
-				}
-			}, {value: cur.line+1});
-		},
-		"Alt-PageDown": function(cm) {
-			editors[(editors.indexOf(cm) + 1) % editors.length].focus();
-		},
-		"Alt-PageUp": function(cm) {
-			editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length].focus();
-		}
+		"Ctrl-G": "jumpToLine",
+		"Alt-PageDown": "nextBuffer",
+		"Alt-PageUp": "prevBuffer"
 	});
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
@@ -325,11 +371,27 @@ function setupGlobalSearch() {
 	CodeMirror.commands.findPrev = function(cm) { findNext(cm, true) }
 }
 
+function jumpToLine(cm) {
+	var cur = cm.getCursor();
+	cm.openDialog(t('editGotoLine') + ': <input type="text" style="width: 5em"/>', function(str) {
+		var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
+		if (m) {
+			cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
+		}
+	}, {value: cur.line+1});
+}
+
+function nextBuffer(cm) {
+	editors[(editors.indexOf(cm) + 1) % editors.length].focus();
+}
+function prevBuffer(cm) {
+	editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length].focus();
+}
+
 window.addEventListener("load", init, false);
 
 function init() {
 	tE("sections-help", "helpAlt", "alt");
-	loadPrefs({"smart-indent": true});
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
@@ -554,10 +616,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "prefChanged":
-			if (request.prefName == "smart-indent") {
-				editors.forEach(function(editor) {
-					editor.setOption("smartIndent", request.value);
-				});
+			if (request.prefName == "editor.smartIndent") {
+				CodeMirror.setOption("smartIndent", request.value);
 			}
 	}
 });
@@ -569,7 +629,6 @@ tE("save-button", "styleSaveLabel");
 tE("cancel-button", "styleCancelEditLabel");
 tE("sections-heading", "styleSectionsTitle");
 tE("options-heading", "optionsHeading");
-tE("smart-indent-label", "prefSmartIndent");
 
 document.getElementById("name").addEventListener("change", makeDirty, false);
 document.getElementById("enabled").addEventListener("change", makeDirty, false);

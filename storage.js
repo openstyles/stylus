@@ -162,14 +162,20 @@ var prefs = {
 	// defaults
 	"openEditInWindow": false, // new editor opens in a own browser window
 	"show-badge": true,        // display text on popup menu icon
-	"smart-indent": true,      // CodeMirror smart indent
 
 	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
 	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
 	"popup.enabledFirst": true,  // display enabled styles before disabled styles
 
 	"manage.onlyEnabled": false, // display only enabled styles
-	"manage.onlyEdited": false,// display only styles created locally
+	"manage.onlyEdited": false,  // display only styles created locally
+	
+	"editor.options": null,    // CodeMirror.defaults.*
+	"editor.lineWrapping": true,   // word wrap
+	"editor.smartIndent": true,    // "smart" indent
+	"editor.indentWithTabs": false,// smart indent with tabs
+	"editor.tabSize": 4,           // tab width, in spaces
+	"editor.keyMap": "sublime",    // keymap
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
