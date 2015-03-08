@@ -177,7 +177,12 @@ function removeAppliesTo(event) {
 }
 
 function removeSection(event) {
-	event.target.parentNode.parentNode.removeChild(event.target.parentNode);
+    var section = event.target.parentNode;
+    var cm = section.querySelector(".CodeMirror-wrap");
+    if (cm && editors.indexOf(cm.CodeMirror) >= 0) {
+        editors.splice(editors.indexOf(cm.CodeMirror), 1);
+    }
+	section.parentNode.removeChild(section);
 	makeDirty();
 }
 
