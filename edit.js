@@ -1,5 +1,6 @@
 var styleId = null;
 var dirty = false;
+var lockScroll; // ensure the section doesn't jump when clicking selected text
 
 var appliesToTemplate = document.createElement("li");
 appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
@@ -53,16 +54,52 @@ function setupCodeMirror(textarea) {
 		var section = cm.display.wrapper.parentNode;
 		var bounds = section.getBoundingClientRect();
 		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-			if (bounds.top > window.innerHeight || bounds.top < 0) {
-				section.scrollIntoView();
+			lockScroll = null;
+			if (bounds.top < 0) {
+				window.scrollBy(0, bounds.top - 1);
 			} else {
 				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
 			}
+
+			// prevent possible double fire of selection change event induced by window.scrollBy
+			var selectionChangeCount = 0, selection;
+			function beforeSelectionChange(cm, obj) {
+				if (++selectionChangeCount == 1) {
+					selection = obj.ranges;
+				} else {
+					obj.update(selection);
+					cm.off("beforeSelectionChange", beforeSelectionChange);
+				}
+			}
+			cm.on("beforeSelectionChange", beforeSelectionChange);
+			setTimeout(function() {
+				cm.off("beforeSelectionChange", beforeSelectionChange)
+			}, 200);
 		}
+	});
+
+	// ensure the section doesn't jump when clicking selected text
+	cm.on("cursorActivity", function(cm) {
+		setTimeout(function() {
+			lockScroll = {
+				windowScrollY: window.scrollY,
+				editor: cm,
+				editorScrollInfo: cm.getScrollInfo()
+			}
+		}, 0);
 	});
 
 	editors.push(cm);
 }
+
+// ensure the section doesn't jump when clicking selected text
+document.addEventListener("scroll", function(e) {
+	if (lockScroll && lockScroll.windowScrollY != window.scrollY) {
+		window.scrollTo(0, lockScroll.windowScrollY);
+		lockScroll.editor.scrollTo(lockScroll.editorScrollInfo.left, lockScroll.editorScrollInfo.top);
+		lockScroll = null;
+	}
+});
 
 function makeDirty() {
 	dirty = true;
