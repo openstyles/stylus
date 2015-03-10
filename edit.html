@@ -67,6 +67,10 @@
 			#sections > div:not(:first-child) {
 				border-top: 2px solid black;
 			}
+			.dirty > label::before {
+				content: "*";
+				font-weight: bold;
+			}
 			#basic-info label {
 				display: inline-block;
 				width: 10em;
