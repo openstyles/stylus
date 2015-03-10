@@ -85,10 +85,7 @@ function indicateCodeChange(cm) {
 	var clean = cm.isClean(cm.lastChange);
 	if (clean != cm.lastClean) {
 		cm.lastClean = clean;
-		var label = cm.getTextArea().previousElementSibling;
-		if (label) {
-			label.textContent = label.textContent.replace(/\*?$/, clean ? '' : '*');
-		}
+		cm.getTextArea().parentNode.classList[clean ? "remove" : "add"]("dirty");
 	}
 };
 
