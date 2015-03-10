@@ -144,13 +144,14 @@ function changePref(event) {
 // Accepts a hash of pref name to default value
 function loadPrefs(prefs) {
 	for (var id in prefs) {
-		var value = this.prefs.getPref(id);
+		var value = this.prefs.getPref(id, prefs[id]);
 		var el = document.getElementById(id);
 		if (isCheckbox(el)) {
 			el.checked = value;
 		} else {
 			el.value = value;
 		}
+		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
 		el.addEventListener("change", changePref);
 	}
 }
@@ -165,13 +166,7 @@ var prefs = {
 
 	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
 	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
-
 	"popup.enabledFirst": true,  // display enabled styles before disabled styles
-	"manage.enabledFirst": true, // display enabled styles before disabled styles
-
-	"observer.observeFrameContent": false, // [hh] add MutationObserver inside IFRAMEs
-	"observer.observeFrameLoad": false,    // [hh] add onLoad listener to IFRAMEs
-	// https://github.com/JasonBarnabe/stylish-chrome/pull/39#issuecomment-76681235
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
@@ -197,10 +192,20 @@ var prefs = {
 	},
 	setPref: function(key, value) {
 		if (!(key in this)) console.warn(this.NO_DEFAULT_PREFERENCE, key);
-		if (value === undefined) localStorage.removeItem(key);
-		else localStorage.setItem(key, JSON.stringify(value));
+		var oldValue = this.getPref(key);
 
-		notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+		if (undefined === value || this[key] === value) {
+			localStorage.removeItem(key); // (deleted || default)
+		} else {
+			var strValue = ("string" === typeof value ||
+			               undefined === value) ? value : JSON.stringify(value);
+			localStorage.setItem(key, strValue);
+		}
+
+		var newValue = this.getPref(key);
+		if (newValue !== oldValue) {
+			notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+		}
 	},
 	removePref: function(key) { setPref(key, undefined) }
 };
