@@ -144,7 +144,10 @@ function getId(event) {
 function openLinkInTabOrWindow(event) {
 	event.preventDefault();
 	if (prefs.getPref('openEditInWindow', false)) {
-		chrome.windows.create({url: event.target.href});
+		var options = {url: event.target.href}
+		var wp = prefs.getPref('windowPosition', {});
+		for (var k in wp) options[k] = wp[k];
+		chrome.windows.create(options);
 	} else {
 		openLink(event);
 	}

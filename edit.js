@@ -69,6 +69,12 @@ function makeDirty() {
 }
 
 window.onbeforeunload = function() {
+	prefs.setPref('windowPosition', {
+		left: screenLeft,
+		top: screenTop,
+		width: outerWidth,
+		height: outerHeight
+	});
 	return dirty || isCodeDirty() ? t('styleChangesNotSaved') : null;
 }
 
