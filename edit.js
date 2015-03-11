@@ -154,7 +154,7 @@ function addAppliesTo(list, name, value) {
 		e.querySelector("[name=applies-type]").value = name;
 		e.querySelector("[name=applies-value]").value = value;
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
 		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else if (showingEverything || list.hasChildNodes()) {
 		e = appliesToTemplate.cloneNode(true);
@@ -162,7 +162,7 @@ function addAppliesTo(list, name, value) {
 			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
 		}
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
 		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else {
 		e = appliesToEverythingTemplate.cloneNode(true);
