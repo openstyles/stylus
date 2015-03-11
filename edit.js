@@ -101,6 +101,13 @@ document.addEventListener("scroll", function(e) {
 	}
 });
 
+document.addEventListener("keydown", function(e) {
+	if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.keyCode == 83) {
+		e.preventDefault();
+		save();
+	}
+});
+
 function makeDirty() {
 	dirty = true;
 }
