@@ -216,10 +216,11 @@ function addSection(event, section) {
 	} else {
 		sections.appendChild(div);
 	}
-	var cm = setupCodeMirror(div.querySelector('.code'));
+	setupCodeMirror(div.querySelector('.code'));
 	if (section) {
 		var index = Array.prototype.indexOf.call(sections.children, section);
-		editors.splice(index, 0, editors.pop());
+        var cm = editors.pop();
+		editors.splice(index, 0, cm);
 		cm.focus();
 	}
 }
