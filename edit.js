@@ -16,7 +16,6 @@ sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea cl
 var editors = [] // array of all CodeMirror instances
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea) {
-	CodeMirror.commands.save = function(cm) { save() }
 	var cm = CodeMirror.fromTextArea(textarea, {
 		mode: 'css',
 		lineNumbers: true,
