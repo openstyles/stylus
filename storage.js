@@ -167,6 +167,7 @@ var prefs = {
 	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
 	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
 	"popup.enabledFirst": true,  // display enabled styles before disabled styles
+	"popup.stylesFirst": true,  // display enabled styles before disabled styles
 
 	"manage.onlyEnabled": false, // display only enabled styles
 	"manage.onlyEdited": false,// display only styles created locally
