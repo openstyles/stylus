@@ -4565,9 +4565,12 @@ function PropertyValuePart(text, line, col){
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
-    } else if (/^["'][^"']*["']/.test(text)){    //string
+//    } else if (/^["'][^"']*["']/.test(text)){    //string
+//        this.type   = "string";
+//        this.value  = eval(text);
+    } else if (/^(["'])[^\1]*\1/.test(text)){    //string
         this.type   = "string";
-        this.value  = eval(text);
+        this.value  = /^(["'])([^\1]*)\1/.exec(text)[2];
     } else if (Colors[text.toLowerCase()]){  //named color
         this.type   = "color";
         temp        = Colors[text.toLowerCase()].substring(1);
