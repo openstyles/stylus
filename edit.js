@@ -171,11 +171,11 @@ function addAppliesTo(list, name, value) {
 	list.appendChild(e);
 }
 
-function addSection(section) {
+function addSection(event, section) {
 	var div = sectionTemplate.cloneNode(true);
 	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
 	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
-	div.querySelector(".add-section").addEventListener("click", function() {addSection()}, false);
+	div.querySelector(".add-section").addEventListener("click", addSection, false);
 
 	var appliesTo = div.querySelector(".applies-to-list");
 
@@ -211,8 +211,18 @@ function addSection(section) {
 	}
 
 	var sections = document.getElementById("sections");
-	sections.appendChild(div);
-  setupCodeMirror(div.querySelector('.code'));
+	var section = event ? event.target.parentNode : null;
+	if (event && section.nextElementSibling) {
+		sections.insertBefore(div, section.nextElementSibling);
+	} else {
+		sections.appendChild(div);
+	}
+	var cm = setupCodeMirror(div.querySelector('.code'));
+	if (section) {
+		var index = Array.prototype.indexOf.call(sections.children, section);
+		editors.splice(index, 0, editors.pop());
+		cm.focus();
+	}
 }
 
 function removeAppliesTo(event) {
@@ -334,7 +344,7 @@ function init() {
 		} else if (params["url-prefix"]) {
 			section.urlPrefixes = [params["url-prefix"]];
 		}
-		addSection(section);
+		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
 		document.title = t("addStyleTitle");
@@ -359,7 +369,7 @@ function initWithStyle(style) {
 	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
 		div.parentNode.removeChild(div);
 	});
-	style.sections.forEach(addSection);
+	style.sections.forEach(function(section) { addSection(null, section) });
 	setupGlobalSearch();
 }
 
