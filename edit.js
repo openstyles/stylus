@@ -1,5 +1,6 @@
 var styleId = null;
 var dirty = false;
+var lockScroll; // ensure the section doesn't jump when clicking selected text
 
 var appliesToTemplate = document.createElement("li");
 appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
@@ -15,7 +16,6 @@ sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea cl
 var editors = [] // array of all CodeMirror instances
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea) {
-	CodeMirror.commands.save = function(cm) { save() }
 	var cm = CodeMirror.fromTextArea(textarea, {
 		mode: 'css',
 		lineNumbers: true,
@@ -53,22 +53,71 @@ function setupCodeMirror(textarea) {
 		var section = cm.display.wrapper.parentNode;
 		var bounds = section.getBoundingClientRect();
 		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-			if (bounds.top > window.innerHeight || bounds.top < 0) {
-				section.scrollIntoView();
+			lockScroll = null;
+			if (bounds.top < 0) {
+				window.scrollBy(0, bounds.top - 1);
 			} else {
 				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
 			}
+
+			// prevent possible double fire of selection change event induced by window.scrollBy
+			var selectionChangeCount = 0, selection;
+			function beforeSelectionChange(cm, obj) {
+				if (++selectionChangeCount == 1) {
+					selection = obj.ranges;
+				} else {
+					obj.update(selection);
+					cm.off("beforeSelectionChange", beforeSelectionChange);
+				}
+			}
+			cm.on("beforeSelectionChange", beforeSelectionChange);
+			setTimeout(function() {
+				cm.off("beforeSelectionChange", beforeSelectionChange)
+			}, 200);
 		}
+	});
+
+	// ensure the section doesn't jump when clicking selected text
+	cm.on("cursorActivity", function(cm) {
+		setTimeout(function() {
+			lockScroll = {
+				windowScrollY: window.scrollY,
+				editor: cm,
+				editorScrollInfo: cm.getScrollInfo()
+			}
+		}, 0);
 	});
 
 	editors.push(cm);
 }
+
+// ensure the section doesn't jump when clicking selected text
+document.addEventListener("scroll", function(e) {
+	if (lockScroll && lockScroll.windowScrollY != window.scrollY) {
+		window.scrollTo(0, lockScroll.windowScrollY);
+		lockScroll.editor.scrollTo(lockScroll.editorScrollInfo.left, lockScroll.editorScrollInfo.top);
+		lockScroll = null;
+	}
+});
+
+document.addEventListener("keydown", function(e) {
+	if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.keyCode == 83) {
+		e.preventDefault();
+		save();
+	}
+});
 
 function makeDirty() {
 	dirty = true;
 }
 
 window.onbeforeunload = function() {
+	prefs.setPref('windowPosition', {
+		left: screenLeft,
+		top: screenTop,
+		width: outerWidth,
+		height: outerHeight
+	});
 	return dirty || isCodeDirty() ? t('styleChangesNotSaved') : null;
 }
 
@@ -101,7 +150,7 @@ function addAppliesTo(list, name, value) {
 		e.querySelector("[name=applies-type]").value = name;
 		e.querySelector("[name=applies-value]").value = value;
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
 		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else if (showingEverything || list.hasChildNodes()) {
 		e = appliesToTemplate.cloneNode(true);
@@ -109,7 +158,7 @@ function addAppliesTo(list, name, value) {
 			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
 		}
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("change", makeDirty, false);
+		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
 		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else {
 		e = appliesToEverythingTemplate.cloneNode(true);
@@ -118,11 +167,11 @@ function addAppliesTo(list, name, value) {
 	list.appendChild(e);
 }
 
-function addSection(section) {
+function addSection(event, section) {
 	var div = sectionTemplate.cloneNode(true);
 	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
 	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
-	div.querySelector(".add-section").addEventListener("click", function() {addSection()}, false);
+	div.querySelector(".add-section").addEventListener("click", addSection, false);
 
 	var appliesTo = div.querySelector(".applies-to-list");
 
@@ -158,8 +207,19 @@ function addSection(section) {
 	}
 
 	var sections = document.getElementById("sections");
-	sections.appendChild(div);
-  setupCodeMirror(div.querySelector('.code'));
+	var section = event ? event.target.parentNode : null;
+	if (event && section.nextElementSibling) {
+		sections.insertBefore(div, section.nextElementSibling);
+	} else {
+		sections.appendChild(div);
+	}
+	setupCodeMirror(div.querySelector('.code'));
+	if (section) {
+		var index = Array.prototype.indexOf.call(sections.children, section);
+        var cm = editors.pop();
+		editors.splice(index, 0, cm);
+		cm.focus();
+	}
 }
 
 function removeAppliesTo(event) {
@@ -174,7 +234,12 @@ function removeAppliesTo(event) {
 }
 
 function removeSection(event) {
-	event.target.parentNode.parentNode.removeChild(event.target.parentNode);
+    var section = event.target.parentNode;
+    var cm = section.querySelector(".CodeMirror-wrap");
+    if (cm && editors.indexOf(cm.CodeMirror) >= 0) {
+        editors.splice(editors.indexOf(cm.CodeMirror), 1);
+    }
+	section.parentNode.removeChild(section);
 	makeDirty();
 }
 
@@ -276,11 +341,12 @@ function init() {
 		} else if (params["url-prefix"]) {
 			section.urlPrefixes = [params["url-prefix"]];
 		}
-		addSection(section);
+		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
 		document.title = t("addStyleTitle");
 		tE("heading", "addStyleTitle");
+		setupGlobalSearch();
 		return;
 	}
 	// This is an edit
@@ -300,7 +366,7 @@ function initWithStyle(style) {
 	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
 		div.parentNode.removeChild(div);
 	});
-	style.sections.forEach(addSection);
+	style.sections.forEach(function(section) { addSection(null, section) });
 	setupGlobalSearch();
 }
 
