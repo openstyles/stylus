@@ -33,6 +33,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "healthCheck":
 			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
 			break;
+		case "openURL":
+			openURL(request);
+			break;
 	}
 });
 
@@ -321,3 +324,22 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 		}
 	});
 });
+
+function openURL(options) {
+	chrome.tabs.query({currentWindow: true, url: options.url}, function(tabs) {
+		// switch to an existing tab with the requested url
+		if (tabs.length) {
+			chrome.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
+		} else {
+			delete options.method;
+			chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+				// re-use an active new tab page
+				if (tabs.length && tabs[0].url.match(/^chrome:\/\/newtab\/?$/)) {
+					chrome.tabs.update(options);
+				} else {
+					chrome.tabs.create(options);
+				}
+			});
+		}
+	});
+}
