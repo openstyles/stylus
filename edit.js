@@ -489,7 +489,11 @@ function initWithStyle(style) {
 	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
 		div.parentNode.removeChild(div);
 	});
-	style.sections.forEach(function(section) { addSection(null, section) });
+	style.sections.forEach(function(section) {
+		setTimeout(function() {
+			addSection(null, section)
+		}, 0);
+	});
 	setupGlobalSearch();
 	setCleanGlobal(null);
 	initTitle();
