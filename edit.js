@@ -3,6 +3,7 @@
 var styleId = null;
 var dirty = false;
 var lockScroll; // ensure the section doesn't jump when clicking selected text
+var isSeparateWindow;
 
 var appliesToTemplate = document.createElement("li");
 appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
@@ -218,13 +219,19 @@ document.addEventListener("keydown", function(e) {
 	}
 });
 
+chrome.tabs.query({currentWindow: true}, function(tabs) {
+	isSeparateWindow = tabs.length == 1;
+});
+
 window.onbeforeunload = function() {
-	prefs.setPref('windowPosition', {
-		left: screenLeft,
-		top: screenTop,
-		width: outerWidth,
-		height: outerHeight
-	});
+	if (isSeparateWindow) {
+		prefs.setPref('windowPosition', {
+			left: screenLeft,
+			top: screenTop,
+			width: outerWidth,
+			height: outerHeight
+		});
+	}
 	document.activeElement.blur();
 	return !isCleanGlobal() ? t('styleChangesNotSaved') : null;
 }
@@ -308,7 +315,7 @@ function addSection(event, section) {
 	setupCodeMirror(div.querySelector('.code'));
 	if (section) {
 		var index = Array.prototype.indexOf.call(sections.children, section);
-        var cm = editors.pop();
+		var cm = editors.pop();
 		editors.splice(index, 0, cm);
 		cm.focus();
 	}
