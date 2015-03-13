@@ -329,7 +329,7 @@ window.addEventListener("load", init, false);
 
 function init() {
 	tE("sections-help", "helpAlt", "alt");
-	loadPrefs({"smart-indent": "true"});
+	loadPrefs({"smart-indent": true});
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
