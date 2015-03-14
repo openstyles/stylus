@@ -94,7 +94,7 @@ function initCodeMirror() {
 		lint: CodeMirror.lint.css,
 		keyMap: "sublime",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
-	};
+	}
 	mergeOptions(stylishOptions, CM.defaults);
 	mergeOptions(userOptions, CM.defaults);
 
@@ -108,7 +108,20 @@ function initCodeMirror() {
 	cc.jumpToLine = jumpToLine;
 	cc.nextBuffer = nextBuffer;
 	cc.prevBuffer = prevBuffer;
-	// cc.save = save;
+
+	var cssHintHandler = CM.hint.css;
+	CM.hint.css = function(cm) {
+		var cursor = cm.getCursor();
+		var token = cm.getTokenAt(cursor);
+		if (token.state.state === "prop" && "!important".indexOf(token.string) === 0) {
+			return {
+				from: CM.Pos(cursor.line, token.start),
+				to: CM.Pos(cursor.line, token.end),
+				list: ["!important"]
+			}
+		}
+		return cssHintHandler(cm);
+	}
 
 	// user option values
 	CM.getOption = function (o) {
