@@ -173,35 +173,6 @@ function setupCodeMirror(textarea) {
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
 
-	// ensure the entire section is visible on focus
-	cm.on("focus", function(cm) {
-		var section = cm.display.wrapper.parentNode;
-		var bounds = section.getBoundingClientRect();
-		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-			lockScroll = null;
-			if (bounds.top < 0) {
-				window.scrollBy(0, bounds.top - 1);
-			} else {
-				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
-			}
-
-			// prevent possible double fire of selection change event induced by window.scrollBy
-			var selectionChangeCount = 0, selection;
-			function beforeSelectionChange(cm, obj) {
-				if (++selectionChangeCount == 1) {
-					selection = obj.ranges;
-				} else {
-					obj.update(selection);
-					cm.off("beforeSelectionChange", beforeSelectionChange);
-				}
-			}
-			cm.on("beforeSelectionChange", beforeSelectionChange);
-			setTimeout(function() {
-				cm.off("beforeSelectionChange", beforeSelectionChange)
-			}, 200);
-		}
-	});
-
 	// ensure the section doesn't jump when clicking selected text
 	cm.on("cursorActivity", function(cm) {
 		setTimeout(function() {
@@ -363,6 +334,19 @@ function removeSection(event) {
 	setCleanItem(section, !section.defaultValue);
 }
 
+function makeSectionVisible(cm) {
+	var section = cm.display.wrapper.parentNode;
+	var bounds = section.getBoundingClientRect();
+	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
+		lockScroll = null;
+		if (bounds.top < 0) {
+			window.scrollBy(0, bounds.top - 1);
+		} else {
+			window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
+		}
+	}
+}
+
 function setupGlobalSearch() {
 	var originalCommand = {
 		find: CodeMirror.commands.find,
@@ -426,6 +410,7 @@ function setupGlobalSearch() {
 			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
 			if (searchCursor.find(reverse) || editors.length == 1) {
 				if (editors.length > 1) {
+					makeSectionVisible(cm);
 					cm.focus();
 				}
 				// speedup the original findNext
@@ -456,10 +441,14 @@ function jumpToLine(cm) {
 }
 
 function nextBuffer(cm) {
-	editors[(editors.indexOf(cm) + 1) % editors.length].focus();
+	var cm = editors[(editors.indexOf(cm) + 1) % editors.length];
+	makeSectionVisible(cm);
+	cm.focus();
 }
 function prevBuffer(cm) {
-	editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length].focus();
+	var cm = editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length];
+	makeSectionVisible(cm);
+	cm.focus();
 }
 
 window.addEventListener("load", init, false);
