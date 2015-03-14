@@ -168,6 +168,9 @@ var prefs = {
 	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
 	"popup.enabledFirst": true,  // display enabled styles before disabled styles
 
+	"manage.onlyEnabled": false, // display only enabled styles
+	"manage.onlyEdited": false,// display only styles created locally
+
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
 
