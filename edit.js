@@ -1,3 +1,5 @@
+"use strict";
+
 var styleId = null;
 var dirty = false;
 var lockScroll; // ensure the section doesn't jump when clicking selected text
@@ -12,10 +14,91 @@ appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button cla
 var sectionTemplate = document.createElement("div");
 sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
 
+document.addEventListener("change", function(event) {
+	var node = event.target;
+	if (node.type && !node.form) { // INPUTs that aren't in a FORM are stylesheet
+		switch (node.type) {
+			case "checkbox":
+				clean(node, node.checked === node.defaultChecked);
+				break;
+			case "text":
+			case "select-one":
+			case "select-multiple":
+				clean(node, node.value === node.defaultValue);
+				break;
+		}
+	}
+});
+
+var clean = (function Clean() {
+	var items = {},
+	    __clean = true;
+	function isCleanGlobal(lastChange) {
+		if (typeof lastChange === "boolean") {
+			var wasClean = __clean;
+			__clean = !lastChange ? false : Object.keys(items).every(function(item) {
+				return items[item]
+			});
+			if (wasClean !== __clean) initTitle();
+		}
+		return __clean;
+	}
+	function isCleanItem(item, clean) {
+		if (item instanceof HTMLElement) {
+			var node = item;
+			item = node.id;
+		}
+		if (typeof clean === "boolean") {
+			if (node) {
+				if (!item) item = node.id = Date.now().toString(32).substr(-6);
+				node.classList[clean ? "remove" : "add"]("dirty");
+			}
+			var wasClean = items[item];
+			items[item] = clean;
+			if (wasClean !== clean) isCleanGlobal(clean);
+		}
+		return items[item];
+	}
+	function initialize(form) {
+		if (!form) form = null;
+		Array.prototype.forEach.call(document.querySelectorAll("input, select"), function(node) {
+			if (node.form === form) {
+				if ("checkbox" === node.type) {
+					node.defaultChecked = node.checked;
+				} else {
+					node.defaultValue = node.value;
+				}
+				node.classList.remove("dirty");
+				delete items[node.id];
+			}
+		});
+		editors.forEach(function(cm) {
+			cm.lastChange = cm.changeGeneration();
+			indicateCodeChange(cm);
+		});
+		// NB: items set with isClean(string, bool) aren't touched
+
+		isCleanGlobal(true);
+	}
+	function isClean() {
+	// isClean() return global clean status
+	// isClean(bool) update global status
+	// isClean(element) get element clean status
+	// isClean(element, bool) update element status
+		switch (arguments.length) {
+			case 0: return isCleanGlobal();
+			case 1: return ("boolean" === typeof arguments[0] ? isCleanGlobal : isCleanItem)(arguments[0]);
+			default: return isCleanItem.apply(this, arguments);
+		}
+	}
+	isClean.initialize = initialize;
+	isClean.items = items;
+	return isClean;
+})();
+
 var editors = []; // array of all CodeMirror instances
 function initCodeMirror() {
 	var CM = CodeMirror;
-
 	// default option values
 	var userOptions = prefs.getPref("editor.options");
 	var stylishOptions = {
@@ -153,10 +236,6 @@ document.addEventListener("keydown", function(e) {
 	}
 });
 
-function makeDirty() {
-	dirty = true;
-}
-
 window.onbeforeunload = function() {
 	prefs.setPref('windowPosition', {
 		left: screenLeft,
@@ -164,25 +243,13 @@ window.onbeforeunload = function() {
 		width: outerWidth,
 		height: outerHeight
 	});
-	return dirty || isCodeDirty() ? t('styleChangesNotSaved') : null;
-}
-
-function isCodeDirty() {
-	for(var i=0; i < editors.length; i++) {
-		if (!editors[i].isClean(editors[i].lastChange)) {
-			return true;
-		}
-	}
-	return false;
+	document.activeElement.blur();
+	return !clean() ? t('styleChangesNotSaved') : null;
 }
 
 function indicateCodeChange(cm) {
-	var clean = cm.isClean(cm.lastChange);
-	if (clean != cm.lastClean) {
-		cm.lastClean = clean;
-		cm.getTextArea().parentNode.classList[clean ? "remove" : "add"]("dirty");
-	}
-};
+	clean(cm.getTextArea().parentNode, cm.isClean(cm.lastChange));
+}
 
 function addAppliesTo(list, name, value) {
 	var showingEverything = list.querySelector(".applies-to-everything") != null;
@@ -196,16 +263,12 @@ function addAppliesTo(list, name, value) {
 		e.querySelector("[name=applies-type]").value = name;
 		e.querySelector("[name=applies-value]").value = value;
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
-		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else if (showingEverything || list.hasChildNodes()) {
 		e = appliesToTemplate.cloneNode(true);
 		if (list.hasChildNodes()) {
 			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
 		}
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
-		e.querySelector(".applies-value").addEventListener("input", makeDirty, false);
-		e.querySelector(".applies-type").addEventListener("change", makeDirty, false);
 	} else {
 		e = appliesToEverythingTemplate.cloneNode(true);
 	}
@@ -224,7 +287,8 @@ function addSection(event, section) {
 	if (section) {
 		var codeElement = div.querySelector(".code");
 		codeElement.value = section.code;
-		codeElement.addEventListener("change", makeDirty, false);
+		// codeElement.addEventListener("change", makeDirty, false);
+		// // Why is this here? Is it possible for CM to not load?
 		if (section.urls) {
 			section.urls.forEach(function(url) {
 				addAppliesTo(appliesTo, "url", url);
@@ -269,24 +333,31 @@ function addSection(event, section) {
 }
 
 function removeAppliesTo(event) {
-	var appliesToList = event.target.parentNode.parentNode;
-	appliesToList.removeChild(event.target.parentNode);
+	var appliesTo = event.target.parentNode,
+	    appliesToList = appliesTo.parentNode;
+	appliesToList.removeChild(appliesTo);
 	if (!appliesToList.hasChildNodes()) {
 		var e = appliesToEverythingTemplate.cloneNode(true);
 		e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
 		appliesToList.appendChild(e);
 	}
-	makeDirty();
+	Array.prototype.forEach.call(appliesTo.querySelectorAll(".dirty"), function(node) {
+		clean(node, true);
+	});
 }
 
 function removeSection(event) {
     var section = event.target.parentNode;
-    var cm = section.querySelector(".CodeMirror-wrap");
-    if (cm && editors.indexOf(cm.CodeMirror) >= 0) {
-        editors.splice(editors.indexOf(cm.CodeMirror), 1);
+    var wrapper = section.querySelector(".CodeMirror-wrap");
+	var idx = editors.indexOf(wrapper && wrapper.CodeMirror);
+    if (idx >= 0) {
+        editors.splice(idx, 1);
+		clean(wrapper.parentNode, true);
     }
 	section.parentNode.removeChild(section);
-	makeDirty();
+	Array.prototype.forEach.call(section.querySelectorAll(".dirty"), function(node) {
+		clean(node, true);
+	});
 }
 
 function setupGlobalSearch() {
@@ -406,9 +477,11 @@ function init() {
 		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
-		document.title = t("addStyleTitle");
+		// document.title = t("addStyleTitle");
 		tE("heading", "addStyleTitle");
 		setupGlobalSearch();
+		clean.initialize(null);
+		initTitle();
 		return;
 	}
 	// This is an edit
@@ -423,17 +496,23 @@ function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("heading").innerHTML = t("editStyleHeading");
-	initTitle(style.name);
 	// if this was done in response to an update, we need to clear existing sections
 	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
 		div.parentNode.removeChild(div);
 	});
 	style.sections.forEach(function(section) { addSection(null, section) });
 	setupGlobalSearch();
+	clean.initialize(null);
+	initTitle();
 }
 
-function initTitle(name) {
-	document.title = t('editStyleTitle', [name]);
+function initTitle(name, dirty) {
+	const DIRTY_TITLE = "* $";
+
+	if (typeof name !== "string") name = document.getElementById("name").defaultValue;
+	if (typeof dirty !== "boolean") dirty = !clean();
+	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
+	document.title = !dirty ? title : DIRTY_TITLE.replace("$", title);
 }
 
 function validate() {
@@ -534,20 +613,15 @@ function getMeta(e) {
 }
 
 function saveComplete(style) {
-	dirty = false;
-
-	for(var i=0; i < editors.length; i++) {
-		var cm = editors[i];
-		cm.lastChange = cm.changeGeneration(true);
-		indicateCodeChange(cm);
-	}
+	styleId = style.id;
+	clean.initialize(null);
 
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		// give the code above a moment before we kill the page
 		setTimeout(function() {location.href = "edit.html?id=" + style.id;}, 200);
 	} else {
-		initTitle(document.getElementById("name").value);
+		initTitle();
 	}
 }
 
@@ -630,8 +704,6 @@ tE("cancel-button", "styleCancelEditLabel");
 tE("sections-heading", "styleSectionsTitle");
 tE("options-heading", "optionsHeading");
 
-document.getElementById("name").addEventListener("change", makeDirty, false);
-document.getElementById("enabled").addEventListener("change", makeDirty, false);
 document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 document.getElementById("save-button").addEventListener("click", save, false);
