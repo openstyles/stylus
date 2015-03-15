@@ -19,82 +19,58 @@ document.addEventListener("change", function(event) {
 	if (node.type && !node.form) { // INPUTs that aren't in a FORM are stylesheet
 		switch (node.type) {
 			case "checkbox":
-				clean(node, node.checked === node.defaultChecked);
+				setCleanItem(node, node.checked === node.defaultChecked);
 				break;
 			case "text":
 			case "select-one":
 			case "select-multiple":
-				clean(node, node.value === node.defaultValue);
+				setCleanItem(node, node.value === node.defaultValue);
 				break;
 		}
 	}
 });
 
-var clean = (function Clean() {
-	var items = {},
-	    __clean = true;
-	function isCleanGlobal(lastChange) {
-		if (typeof lastChange === "boolean") {
-			var wasClean = __clean;
-			__clean = !lastChange ? false : Object.keys(items).every(function(item) {
-				return items[item]
-			});
-			if (wasClean !== __clean) initTitle();
-		}
-		return __clean;
-	}
-	function isCleanItem(item, clean) {
-		if (item instanceof HTMLElement) {
-			var node = item;
-			item = node.id;
-		}
-		if (typeof clean === "boolean") {
-			if (node) {
-				if (!item) item = node.id = Date.now().toString(32).substr(-6);
-				node.classList[clean ? "remove" : "add"]("dirty");
-			}
-			var wasClean = items[item];
-			items[item] = clean;
-			if (wasClean !== clean) isCleanGlobal(clean);
-		}
-		return items[item];
-	}
-	function initialize(form) {
-		if (!form) form = null;
-		Array.prototype.forEach.call(document.querySelectorAll("input, select"), function(node) {
-			if (node.form === form) {
-				if ("checkbox" === node.type) {
-					node.defaultChecked = node.checked;
-				} else {
-					node.defaultValue = node.value;
-				}
-				node.classList.remove("dirty");
-				delete items[node.id];
-			}
-		});
-		editors.forEach(function(cm) {
-			cm.lastChange = cm.changeGeneration();
-			indicateCodeChange(cm);
-		});
-		// NB: items set with isClean(string, bool) aren't touched
+// Set .dirty on stylesheet contributors that have changed
+var items = {};
+function isCleanItem(node) {
+	return items[node.id];
+}
+function setCleanItem(node, clean) {
+	var id = node.id;
+	if (!id) id = node.id = Date.now().toString(32).substr(-6);
+	items[id] = clean;
 
-		isCleanGlobal(true);
-	}
-	function isClean() {
-	// isClean() return global clean status
-	// isClean(bool) update global status
-	// isClean(element) get element clean status
-	// isClean(element, bool) update element status
-		switch (arguments.length) {
-			case 0: return isCleanGlobal();
-			case 1: return ("boolean" === typeof arguments[0] ? isCleanGlobal : isCleanItem)(arguments[0]);
-			default: return isCleanItem.apply(this, arguments);
+	if (clean) node.classList.remove("dirty");
+	else node.classList.add("dirty");
+
+	initTitle();
+}
+function isCleanGlobal() {
+	return Object.keys(items)
+				 .every(function(item) { return items[item] });
+}
+function setCleanGlobal(form) {
+	if (!form) form = null;
+	Array.prototype.forEach.call(document.querySelectorAll("input, select"), function(node) {
+		if (node.form === form) {
+			if ("checkbox" === node.type) {
+				node.defaultChecked = node.checked;
+			} else {
+				node.defaultValue = node.value;
+			}
+
+			node.classList.remove("dirty");
+			delete items[node.id];
 		}
-	}
-	isClean.initialize = initialize;
-	isClean.items = items;
-	return isClean;
-})();
+	});
+
+	editors.forEach(function(cm) {
+		cm.lastChange = cm.changeGeneration();
+		indicateCodeChange(cm);
+	});
+
+	initTitle();
+}
 
 var editors = []; // array of all CodeMirror instances
 function initCodeMirror() {
@@ -244,11 +220,11 @@ window.onbeforeunload = function() {
 		height: outerHeight
 	});
 	document.activeElement.blur();
-	return !clean() ? t('styleChangesNotSaved') : null;
+	return !isCleanGlobal() ? t('styleChangesNotSaved') : null;
 }
 
 function indicateCodeChange(cm) {
-	clean(cm.getTextArea().parentNode, cm.isClean(cm.lastChange));
+	setCleanItem(cm.getTextArea().parentNode, cm.isClean(cm.lastChange));
 }
 
 function addAppliesTo(list, name, value) {
@@ -342,7 +318,7 @@ function removeAppliesTo(event) {
 		appliesToList.appendChild(e);
 	}
 	Array.prototype.forEach.call(appliesTo.querySelectorAll(".dirty"), function(node) {
-		clean(node, true);
+		setCleanItem(node, true);
 	});
 }
 
@@ -352,11 +328,11 @@ function removeSection(event) {
 	var idx = editors.indexOf(wrapper && wrapper.CodeMirror);
     if (idx >= 0) {
         editors.splice(idx, 1);
-		clean(wrapper.parentNode, true);
+		setCleanItem(wrapper.parentNode, true);
     }
 	section.parentNode.removeChild(section);
 	Array.prototype.forEach.call(section.querySelectorAll(".dirty"), function(node) {
-		clean(node, true);
+		setCleanItem(node, true);
 	});
 }
 
@@ -477,10 +453,9 @@ function init() {
 		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
-		// document.title = t("addStyleTitle");
 		tE("heading", "addStyleTitle");
 		setupGlobalSearch();
-		clean.initialize(null);
+		setCleanGlobal(null);
 		initTitle();
 		return;
 	}
@@ -502,15 +477,15 @@ function initWithStyle(style) {
 	});
 	style.sections.forEach(function(section) { addSection(null, section) });
 	setupGlobalSearch();
-	clean.initialize(null);
+	setCleanGlobal(null);
 	initTitle();
 }
 
-function initTitle(name, dirty) {
+function initTitle() {
 	const DIRTY_TITLE = "* $";
 
-	if (typeof name !== "string") name = document.getElementById("name").defaultValue;
-	if (typeof dirty !== "boolean") dirty = !clean();
+	var name = document.getElementById("name").defaultValue;
+	var dirty = !isCleanGlobal();
 	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
 	document.title = !dirty ? title : DIRTY_TITLE.replace("$", title);
 }
@@ -614,7 +589,7 @@ function getMeta(e) {
 
 function saveComplete(style) {
 	styleId = style.id;
-	clean.initialize(null);
+	setCleanGlobal(null);
 
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
