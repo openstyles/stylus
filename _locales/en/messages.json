@@ -185,6 +185,10 @@
 		"message": "Options",
 		"description": "Heading for options section on manage page."
 	},
+	"popupStylesFirst": {
+		"message": "List styles before commands in the toolbar button menu",
+		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+	},
 	"prefShowBadge": {
 		"message": "Show number of styles active for the current site on the toolbar button",
 		"description": "Label for the checkbox controlling toolbar badge text."

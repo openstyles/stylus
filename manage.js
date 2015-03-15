@@ -348,6 +348,7 @@ tE("show-badge-label", "prefShowBadge");
 tE("manage.onlyEnabled-label", "manageOnlyEnabled");
 tE("manage.onlyEdited-label", "manageOnlyEdited");
 tE("filters", "manageFilters");
+tE("stylesFirst-label", "popupStylesFirst");
 
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
 
@@ -363,3 +364,5 @@ function initFilter(className, node) {
 }
 initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
 initFilter("edited-only", document.getElementById("manage.onlyEdited"));
+
+loadPrefs({"popup.stylesFirst": true});

@@ -4,15 +4,16 @@ styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='st
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
+if (!prefs.getPref("popup.stylesFirst")) {
+	document.body.insertBefore(document.querySelector("body > .actions"), document.getElementById("installed"));
+}
+
 chrome.tabs.getSelected(null, function(tab) {
-	var urlWillWork = /^(file|http|https|chrome\-extension):.*/.exec(tab.url);
+	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(tab.url);
 
 	if (!urlWillWork) {
-		["installed", "find-styles", "write-style"].forEach(function(id) {
-			document.getElementById(id).style.display = "none";
-		});
-		document.getElementById("unavailable").style.display = "block";
-		return;
+		document.body.classList.add("blocked");
+		tE("unavailable", "stylishUnavailableForURL");
 	}
 
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
@@ -178,7 +179,6 @@ function handleDelete(id) {
 tE("open-manage-link", "openManage");
 tE("write-style-for", "writeStyleFor");
 tE("find-styles-link", "findStylesForSite");
-tE("unavailable", "stylishUnavailableForURL");
 
 ["find-styles-link", "open-manage-link"].forEach(function(id) {
 	document.getElementById(id).addEventListener("click", openLink, false);

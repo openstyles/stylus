@@ -21,17 +21,47 @@
 			a, a:visited {
 				color: black;
 			}
+
 			.entry {
-				padding-bottom: 0.5em;
-				margin-bottom: 0.5em;
+				padding: 0.5em 0;
 				border-bottom: 1px solid black;
 			}
+			.entry:first-child {
+				padding-top: 0;
+			}
+			.entry:last-child {
+				border-bottom: none;
+			}
+			body > DIV {
+				border-bottom: 1px solid black;
+			}
+			body > DIV:last-of-type,
+			body.blocked > DIV {
+				border-bottom: none;
+			}
+			#installed {
+				margin-top: 0.5em;
+			}
+			body > .actions {
+				margin-top: 0.5em;
+			}
+
 			.actions > div, #unavailable {
 				margin-bottom: 0.75em;
 			}
+
 			#unavailable {
+				border: none;
+			}
+			#unavailable:empty {
 				display: none;
 			}
+			body.blocked #installed,
+			body.blocked #find-styles,
+			body.blocked #write-style {
+				display: none;
+			}
+
 			/* Never shown, but can be enabled with a style */
 			.enable, .disable {
 				display: none;
