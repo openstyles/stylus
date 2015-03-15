@@ -188,11 +188,52 @@ function doCheckUpdate(event) {
 	checkUpdate(getStyleElement(event));
 }
 
-function checkUpdateAll() {
-	Array.prototype.forEach.call(document.querySelectorAll("[style-update-url]"), checkUpdate);
+function applyUpdateAll() {
+	var btnApply = document.getElementById("apply-all-updates");
+	btnApply.disabled = true;
+	setTimeout(function() {
+		btnApply.style.display = "none";
+		btnApply.disabled = false;
+	}, 1000);
+
+	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
+		button.click();
+	});
 }
 
-function checkUpdate(element) {
+function checkUpdateAll() {
+	var btnCheck = document.getElementById("check-all-updates");
+	var btnApply = document.getElementById("apply-all-updates");
+	var noUpdates = document.getElementById("update-all-no-updates");
+
+	btnCheck.disabled = true;
+	btnApply.classList.add("hidden");
+	noUpdates.classList.add("hidden");
+
+	var elements = document.querySelectorAll("[style-update-url]");
+	var toCheckCount = elements.length;
+	var updatableCount = 0;
+	Array.prototype.forEach.call(elements, function(element) {
+		checkUpdate(element, function(success) {
+			if (success) {
+				++updatableCount;
+			}
+			if (--toCheckCount == 0) {
+				btnCheck.disabled = false;
+				if (updatableCount) {
+					btnApply.classList.remove("hidden");
+				} else {
+					noUpdates.classList.remove("hidden");
+					setTimeout(function() {
+						noUpdates.classList.add("hidden");
+					}, 10000);
+				}
+			}
+		});
+	});
+}
+
+function checkUpdate(element, callback) {
 	element.querySelector(".update-note").innerHTML = t('checkingForUpdate');
 	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
 	var id = element.getAttribute("style-id");
@@ -203,10 +244,15 @@ function checkUpdate(element) {
 	function handleSuccess(forceUpdate, serverJson) {
 		chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 			var style = styles[0];
+			var needsUpdate = false;
 			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
 				handleNeedsUpdate("no", id, serverJson);
 			} else {
 				handleNeedsUpdate("yes", id, serverJson);
+				needsUpdate = true;
+			}
+			if (callback) {
+				callback(needsUpdate);
 			}
 		});
 	}
@@ -216,6 +262,9 @@ function checkUpdate(element) {
 			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
 		} else {
 			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null);
+		}
+		if (callback) {
+			callback(false);
 		}
 	}
 
@@ -228,6 +277,9 @@ function checkUpdate(element) {
 				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
 			} else {
 				handleNeedsUpdate("no", id, null);
+				if (callback) {
+					callback(false);
+				}
 			}
 		}, handleFailure);
 	}
@@ -367,6 +419,8 @@ document.title = t("manageTitle");
 tE("manage-heading", "manageHeading");
 tE("manage-text", "manageText", null, false);
 tE("check-all-updates", "checkAllUpdates");
+tE("apply-all-updates", "applyAllUpdates");
+tE("update-all-no-updates", "updateAllCheckSucceededNoUpdate");
 tE("add-style-label", "addStyleLabel");
 tE("options-heading", "optionsHeading");
 tE("show-badge-label", "prefShowBadge");
@@ -376,6 +430,7 @@ tE("filters", "manageFilters");
 tE("stylesFirst-label", "popupStylesFirst");
 
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
+document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll, false);
 
 function onFilterChange (className, event) {
 	var container = document.getElementById("installed"),
