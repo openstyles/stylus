@@ -46,8 +46,13 @@ function setCleanItem(node, clean) {
 	initTitle();
 }
 function isCleanGlobal() {
-	return Object.keys(items)
-				 .every(function(item) { return items[item] });
+	var clean = Object.keys(items)
+				      .every(function(item) { return items[item] });
+
+	if (clean) document.body.classList.remove("dirty");
+	else document.body.classList.add("dirty");
+
+	return clean;
 }
 function setCleanGlobal(form) {
 	if (!form) form = null;
@@ -66,6 +71,7 @@ function setCleanGlobal(form) {
 
 	editors.forEach(function(cm) {
 		cm.lastChange = cm.changeGeneration();
+		cm.getTextArea().parentNode.defaultValue = cm.lastChange;
 		indicateCodeChange(cm);
 	});
 
@@ -317,8 +323,8 @@ function removeAppliesTo(event) {
 		e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
 		appliesToList.appendChild(e);
 	}
-	Array.prototype.forEach.call(appliesTo.querySelectorAll(".dirty"), function(node) {
-		setCleanItem(node, true);
+	Array.prototype.forEach.call(appliesTo.querySelectorAll("input, select"), function(node) {
+		setCleanItem(node, !node.defaultValue);
 	});
 }
 
@@ -331,9 +337,10 @@ function removeSection(event) {
 		setCleanItem(wrapper.parentNode, true);
     }
 	section.parentNode.removeChild(section);
-	Array.prototype.forEach.call(section.querySelectorAll(".dirty"), function(node) {
-		setCleanItem(node, true);
+	Array.prototype.forEach.call(section.querySelectorAll("input, select"), function(node) {
+		setCleanItem(node, !node.defaultValue);
 	});
+	setCleanItem(section, !section.defaultValue);
 }
 
 function setupGlobalSearch() {
