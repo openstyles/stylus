@@ -14,6 +14,7 @@ function webNavigationListener(method, data) {
 		chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		// Don't show the badge for frames
 		if (data.frameId == 0 && prefs.getPref("show-badge")) {
+			delete styleHash.disableAll;
 			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
 		}
 	});
@@ -49,7 +50,7 @@ function getStyles(options, callback) {
 	var asHash = "asHash" in options ? options.asHash : false;
 
 	var callCallback = function() {
-		var styles = asHash ? {} : [];
+		var styles = asHash ? {disableAll: prefs.getPref("disableAll", false)} : [];
 		cachedStyles.forEach(function(style) {
 			if (enabled != null && fixBoolean(style.enabled) != enabled) {
 				return;

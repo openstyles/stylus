@@ -14,9 +14,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "styleApply":
-			for (var styleId in request.styles) {
-				applySections(styleId, request.styles[styleId]);
-			}
+			applyStyles(request.styles);
 			break;
 		case "styleReplaceAll":
 			replaceAll(request.styles, document);
@@ -24,8 +22,29 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "realURL":
 			sendResponse(location.href);
 			break;
+		case "styleDisableAll":
+			disableAll(request.disableAll);
+			break;
 	}
 });
+
+var g_disableAll = false;
+function disableAll(disable) {
+	if (!disable === !g_disableAll) return;
+	g_disableAll = disable;
+	disableSheets(g_disableAll, document);
+
+	function disableSheets(disable, doc) {
+		Array.prototype.forEach.call(doc.styleSheets, function(stylesheet) {
+			if (stylesheet.ownerNode.classList.contains("stylish")) {
+				stylesheet.disabled = disable;
+			}
+		});
+		getDynamicIFrames(doc).forEach(function(iframe) {
+			disableSheets(disable, iframe.contentDocument);
+		});
+	}
+}
 
 function removeStyle(id, doc) {
 	var e = doc.getElementById("stylish-" + id);
@@ -38,6 +57,11 @@ function removeStyle(id, doc) {
 }
 
 function applyStyles(styleHash) {
+	if ("disableAll" in styleHash) {
+		disableAll(styleHash.disableAll);
+		delete styleHash.disableAll;
+	}
+
 	for (var styleId in styleHash) {
 		applySections(styleId, styleHash[styleId]);
 	}
@@ -66,7 +90,8 @@ function applySections(styleId, sections) {
 }
 
 function addStyleElement(styleElement, doc) {
-	doc.documentElement.appendChild(doc.importNode(styleElement, true));
+	doc.documentElement.appendChild(doc.importNode(styleElement, true))
+	  .disabled = g_disableAll;
 	getDynamicIFrames(doc).forEach(function(iframe) {
 		addStyleElement(styleElement, iframe.contentDocument);
 	});
@@ -110,9 +135,10 @@ var iframeObserver = new MutationObserver(function(mutations) {
 		Array.prototype.filter.call(mutation.addedNodes, function(node) { return "IFRAME" === node.tagName; }).filter(iframeIsDynamic).forEach(function(iframe) {
 			var doc = iframe.contentDocument;
 			styles.forEach(function(style) {
-				doc.documentElement.appendChild(doc.importNode(style, true));
+				doc.documentElement.appendChild(doc.importNode(style, true))
+				  .disabled = g_disableAll;
 			});
 		});
 	});
 });
-iframeObserver.observe(document, {childList: true, subtree: true});
+iframeObserver.observe(document, {childList: true, subtree: true});

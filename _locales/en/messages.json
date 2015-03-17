@@ -112,6 +112,10 @@
 		"message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for many popular sites.",
 		"description": "Extension description"
 	},
+	"disableAllStyles": {
+		"message": "Turn all styles off",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
 	"disableStyleLabel": {
 		"message": "Disable",
 		"description": "Label for the button to disable a style"

@@ -162,6 +162,7 @@ var prefs = {
 	// defaults
 	"openEditInWindow": false, // new editor opens in a own browser window
 	"show-badge": true,        // display text on popup menu icon
+	"disableAll": false,       // boss key
 
 	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
 	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"

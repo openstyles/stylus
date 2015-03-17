@@ -25,6 +25,7 @@ function updatePopUp(url) {
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
 		tE("unavailable", "stylishUnavailableForURL");
+		return;
 	}
 
 	chrome.extension.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
@@ -184,7 +185,13 @@ function handleDelete(id) {
 tE("open-manage-link", "openManage");
 tE("write-style-for", "writeStyleFor");
 tE("find-styles-link", "findStylesForSite");
+tE("disableAll-label", "disableAllStyles");
 
 ["find-styles-link", "open-manage-link"].forEach(function(id) {
 	document.getElementById(id).addEventListener("click", openLink, false);
+});
+
+loadPrefs({"disableAll": false})
+document.getElementById("disableAll").addEventListener("change", function(event) {
+	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
 });
