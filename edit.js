@@ -408,7 +408,7 @@ function setupGlobalSearch() {
 				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
 			}
 			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
-			if (searchCursor.find(reverse) || editors.length == 1) {
+			if (searchCursor.find(reverse)) {
 				if (editors.length > 1) {
 					makeSectionVisible(cm);
 					cm.focus();
