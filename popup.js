@@ -8,16 +8,27 @@ if (!prefs.getPref("popup.stylesFirst")) {
 	document.body.insertBefore(document.querySelector("body > .actions"), document.getElementById("installed"));
 }
 
-chrome.tabs.getSelected(null, function(tab) {
-	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(tab.url);
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+	// Only one is active, I hope
+	var tab = tabs[0];
 
+	// The new tab lies about what it is.
+	if (tab.url == "chrome://newtab/") {
+		chrome.tabs.sendMessage(tab.id, {method: "realURL"}, null, updatePopUp);
+	} else {
+		updatePopUp(tab.url);
+	}
+});
+
+function updatePopUp(url) {
+	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(url);
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
 		tE("unavailable", "stylishUnavailableForURL");
 	}
 
-	chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url}, showStyles);
-	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : tab.url);
+	chrome.extension.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
+	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : url);
 
 	// Write new style links
 	var writeStyleLinks = [],
@@ -26,13 +37,13 @@ chrome.tabs.getSelected(null, function(tab) {
 
 	// For this URL
 	var urlLink = writeStyleTemplate.cloneNode(true);
-	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(tab.url);
+	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(url);
 	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
 		!prefs.getPref("popup.breadcrumbs.usePath")
 		? t("writeStyleForURL").replace(/ /g, "\u00a0")
-		: /\/\/[^/]+\/(.*)/.exec(tab.url)[1]
+		: /\/\/[^/]+\/(.*)/.exec(url)[1]
 	));
-	urlLink.title = "url-prefix(\"$\")".replace("$", tab.url);
+	urlLink.title = "url-prefix(\"$\")".replace("$", url);
 	writeStyleLinks.push(urlLink);
 	document.querySelector("#write-style").appendChild(urlLink)
 	if (prefs.getPref("popup.breadcrumbs")) { // switchable; default=enabled
@@ -43,7 +54,7 @@ chrome.tabs.getSelected(null, function(tab) {
 	}
 
 	// For domain
-	var domains = getDomains(tab.url)
+	var domains = getDomains(url)
 	domains.forEach(function(domain) {
 		// Don't include TLD
 		if (domains.length > 1 && domain.indexOf(".") == -1) {
@@ -67,7 +78,7 @@ chrome.tabs.getSelected(null, function(tab) {
 		container.appendChild(container.removeChild(container.firstChild));
 	}
 	writeStyle.appendChild(container);
-});
+}
 
 function showStyles(styles) {
 	var enabledFirst = prefs.getPref("popup.enabledFirst");
