@@ -60,6 +60,10 @@
 		"message": "URLs starting with",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
+	"applyAllUpdates": {
+		"message": "Apply all updates",
+		"description": "Label for the button to apply all detected updates"
+	},
 	"checkAllUpdates": {
 		"message": "Check all styles for updates",
 		"description": "Label for the button to check all styles for updates"
@@ -287,6 +291,10 @@
 	"updateCheckSucceededNoUpdate": {
 		"message": "Style is up to date.",
 		"description": "Text that displays when an update check completed and no update is available"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "All styles are up to date.",
+		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"updateCompleted": {
 		"message": "Update completed.",

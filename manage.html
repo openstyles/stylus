@@ -3,7 +3,7 @@
 		<title></title>
 		<style>
 			body {
-				margin: 0px;
+				margin: 0;
 				font: 12px arial,sans-serif;
 			}
 			a, a:visited {
@@ -17,12 +17,12 @@
 				height: 100%;
 				width: 250px;
 				position: fixed;
-				top: 0px;
+				top: 0;
 				padding: 15px;
 				border-right: 1px dashed #AAA;
 			}
 			#header {
-				-webkit-box-shadow: 0px 0px 50px -18px black;
+				-webkit-box-shadow: 0 0 50px -18px black;
 			}
 			#installed {
 				position: relative;
@@ -30,7 +30,7 @@
 			}
 			[style-id] {
 				margin: 10px;
-				padding: 0px 15px;
+				padding: 0 15px;
 			}
 			[style-id] {
 				border-top: 2px solid gray;
@@ -102,11 +102,11 @@
 				}
 
 				#installed {
-					margin-left: 0px;
+					margin-left: 0;
 				}
 
 				[style-id] {
-					margin: 0px;
+					margin: 0;
 				}
 			}
 
@@ -140,6 +140,10 @@
 				<div><input id="manage.onlyEdited" type="checkbox"><label id="manage.onlyEdited-label" for="manage.onlyEdited"></label></div>
 			</fieldset>
 			<p><button id="check-all-updates"></button></p>
+			<p>
+				<button id="apply-all-updates" class="hidden"></button>
+				<span id="update-all-no-updates" class="hidden"></span>
+			</p>
 			<p><a href="edit.html"><button id="add-style-label"></button></a></p>
 			<div id="options">
 				<h2 id="options-heading"></h2>

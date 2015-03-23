@@ -93,6 +93,31 @@ function createStyleElement(style) {
 	}
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
+	editLink.addEventListener("click", function(event) {
+		if (!event.altKey) {
+			var left = event.button == 0, middle = event.button == 1,
+				shift = event.shiftKey, ctrl = event.ctrlKey;
+			var openWindow = left && shift && !ctrl;
+			var openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
+			var openForegroundTab = (middle && shift) || (left && ctrl && shift);
+			if (openWindow || openBackgroundTab || openForegroundTab) {
+				event.preventDefault();
+				event.stopPropagation();
+				var url = event.target.href || event.target.parentNode.href;
+				if (openWindow) {
+					var options = prefs.getPref('windowPosition', {});
+					options.url = url;
+					chrome.windows.create(options);
+				} else {
+					chrome.extension.sendMessage({
+						method: "openURL",
+						url: url,
+						active: openForegroundTab
+					});
+				}
+			}
+		}
+	});
 	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
 	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
 	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
@@ -163,11 +188,52 @@ function doCheckUpdate(event) {
 	checkUpdate(getStyleElement(event));
 }
 
-function checkUpdateAll() {
-	Array.prototype.forEach.call(document.querySelectorAll("[style-update-url]"), checkUpdate);
+function applyUpdateAll() {
+	var btnApply = document.getElementById("apply-all-updates");
+	btnApply.disabled = true;
+	setTimeout(function() {
+		btnApply.style.display = "none";
+		btnApply.disabled = false;
+	}, 1000);
+
+	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
+		button.click();
+	});
 }
 
-function checkUpdate(element) {
+function checkUpdateAll() {
+	var btnCheck = document.getElementById("check-all-updates");
+	var btnApply = document.getElementById("apply-all-updates");
+	var noUpdates = document.getElementById("update-all-no-updates");
+
+	btnCheck.disabled = true;
+	btnApply.classList.add("hidden");
+	noUpdates.classList.add("hidden");
+
+	var elements = document.querySelectorAll("[style-update-url]");
+	var toCheckCount = elements.length;
+	var updatableCount = 0;
+	Array.prototype.forEach.call(elements, function(element) {
+		checkUpdate(element, function(success) {
+			if (success) {
+				++updatableCount;
+			}
+			if (--toCheckCount == 0) {
+				btnCheck.disabled = false;
+				if (updatableCount) {
+					btnApply.classList.remove("hidden");
+				} else {
+					noUpdates.classList.remove("hidden");
+					setTimeout(function() {
+						noUpdates.classList.add("hidden");
+					}, 10000);
+				}
+			}
+		});
+	});
+}
+
+function checkUpdate(element, callback) {
 	element.querySelector(".update-note").innerHTML = t('checkingForUpdate');
 	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
 	var id = element.getAttribute("style-id");
@@ -178,10 +244,15 @@ function checkUpdate(element) {
 	function handleSuccess(forceUpdate, serverJson) {
 		chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 			var style = styles[0];
+			var needsUpdate = false;
 			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
 				handleNeedsUpdate("no", id, serverJson);
 			} else {
 				handleNeedsUpdate("yes", id, serverJson);
+				needsUpdate = true;
+			}
+			if (callback) {
+				callback(needsUpdate);
 			}
 		});
 	}
@@ -191,6 +262,9 @@ function checkUpdate(element) {
 			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
 		} else {
 			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null);
+		}
+		if (callback) {
+			callback(false);
 		}
 	}
 
@@ -203,6 +277,9 @@ function checkUpdate(element) {
 				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
 			} else {
 				handleNeedsUpdate("no", id, null);
+				if (callback) {
+					callback(false);
+				}
 			}
 		}, handleFailure);
 	}
@@ -342,6 +419,8 @@ document.title = t("manageTitle");
 tE("manage-heading", "manageHeading");
 tE("manage-text", "manageText", null, false);
 tE("check-all-updates", "checkAllUpdates");
+tE("apply-all-updates", "applyAllUpdates");
+tE("update-all-no-updates", "updateAllCheckSucceededNoUpdate");
 tE("add-style-label", "addStyleLabel");
 tE("options-heading", "optionsHeading");
 tE("show-badge-label", "prefShowBadge");
@@ -351,6 +430,7 @@ tE("filters", "manageFilters");
 tE("stylesFirst-label", "popupStylesFirst");
 
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
+document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll, false);
 
 function onFilterChange (className, event) {
 	var container = document.getElementById("installed"),

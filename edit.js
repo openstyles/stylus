@@ -1,84 +1,88 @@
 "use strict";
 
 var styleId = null;
-var dirty = false;
-var lockScroll; // ensure the section doesn't jump when clicking selected text
+var dirty = {};       // only the actually dirty items here
+var editors = [];     // array of all CodeMirror instances
+var lockScroll;       // temporary focus-jump-on-click fix, TODO: revert c084ea3 once CM is updated
+var isSeparateWindow; // used currrently to determine if the window size/pos should be remembered
 
+// direct & reverse mapping of @-moz-document keywords and internal property names
+var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
+var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
+
+// templates
 var appliesToTemplate = document.createElement("li");
-appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
+appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type style-contributor"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value style-contributor"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
 
 var appliesToEverythingTemplate = document.createElement("li");
 appliesToEverythingTemplate.className = "applies-to-everything";
-appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button class="add-applies-to">' + t("appliesSpecify") + '</button>'
+appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button class="add-applies-to">' + t("appliesSpecify") + '</button>';
 
 var sectionTemplate = document.createElement("div");
 sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
 
-document.addEventListener("change", function(event) {
-	var node = event.target;
-	if (node.type && !node.form) { // INPUTs that aren't in a FORM are stylesheet
-		switch (node.type) {
-			case "checkbox":
-				setCleanItem(node, node.checked === node.defaultChecked);
-				break;
-			case "text":
-			case "select-one":
-			case "select-multiple":
-				setCleanItem(node, node.value === node.defaultValue);
-				break;
-		}
-	}
+
+// make querySelectorAll enumeration code readable
+["forEach", "some", "indexOf"].forEach(function(method) {
+	NodeList.prototype[method]= Array.prototype[method];
 });
 
+function onChange(event) {
+	var node = event.target;
+	if ("savedValue" in node) {
+		var currentValue = "checkbox" === node.type ? node.checked : node.value;
+		setCleanItem(node, node.savedValue === currentValue);
+	} else {
+		// the manually added section's applies-to is dirty only when the value is non-empty
+		setCleanItem(node, node.localName != "input" || !node.value.trim());
+		delete node.savedValue; // only valid when actually saved
+	}
+	updateTitle();
+}
+
 // Set .dirty on stylesheet contributors that have changed
-var items = {};
-function isCleanItem(node) {
-	return items[node.id];
+function setDirtyClass(node, isDirty) {
+	node.classList.toggle("dirty", isDirty);
 }
-function setCleanItem(node, clean) {
-	var id = node.id;
-	if (!id) id = node.id = Date.now().toString(32).substr(-6);
-	items[id] = clean;
 
-	if (clean) node.classList.remove("dirty");
-	else node.classList.add("dirty");
+function setCleanItem(node, isClean) {
+	if (!node.id) {
+		node.id = Date.now().toString(32).substr(-6);
+	}
 
-	initTitle();
+	if (isClean) {
+		delete dirty[node.id];
+		node.savedValue = "checkbox" === node.type ? node.checked : node.value;
+	} else {
+		dirty[node.id] = true;
+	}
+
+	setDirtyClass(node, !isClean);
 }
+
 function isCleanGlobal() {
-	var clean = Object.keys(items)
-				      .every(function(item) { return items[item] });
-
-	if (clean) document.body.classList.remove("dirty");
-	else document.body.classList.add("dirty");
-
+	var clean = Object.keys(dirty).length == 0;
+	setDirtyClass(document.body, !clean);
 	return clean;
 }
-function setCleanGlobal(form) {
-	if (!form) form = null;
-	Array.prototype.forEach.call(document.querySelectorAll("input, select"), function(node) {
-		if (node.form === form) {
-			if ("checkbox" === node.type) {
-				node.defaultChecked = node.checked;
-			} else {
-				node.defaultValue = node.value;
-			}
 
-			node.classList.remove("dirty");
-			delete items[node.id];
-		}
-	});
-
-	editors.forEach(function(cm) {
-		cm.lastChange = cm.changeGeneration();
-		cm.getTextArea().parentNode.defaultValue = cm.lastChange;
-		indicateCodeChange(cm);
-	});
-
-	initTitle();
+function setCleanGlobal() {
+	document.querySelectorAll("#header, #sections > div").forEach(setCleanSection);
+	dirty = {}; // forget the dirty applies-to ids from a deleted section after the style was saved
 }
 
-var editors = []; // array of all CodeMirror instances
+function setCleanSection(section) {
+	section.querySelectorAll(".style-contributor").forEach(function(node) { setCleanItem(node, true) });
+
+	// #header section has no codemirror
+	var wrapper = section.querySelector(".CodeMirror");
+	if (wrapper) {
+		var cm = wrapper.CodeMirror;
+		section.savedValue = cm.changeGeneration();
+		indicateCodeChange(cm);
+	}
+}
+
 function initCodeMirror() {
 	var CM = CodeMirror;
 	// default option values
@@ -93,7 +97,7 @@ function initCodeMirror() {
 		lint: CodeMirror.lint.css,
 		keyMap: "sublime",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
-	};
+	}
 	mergeOptions(stylishOptions, CM.defaults);
 	mergeOptions(userOptions, CM.defaults);
 
@@ -105,9 +109,22 @@ function initCodeMirror() {
 	// additional commands
 	var cc = CM.commands;
 	cc.jumpToLine = jumpToLine;
-	cc.nextBuffer = nextBuffer;
-	cc.prevBuffer = prevBuffer;
-	// cc.save = save;
+	cc.nextBuffer = function(cm) { nextPrevBuffer(cm, 1) };
+	cc.prevBuffer = function(cm) { nextPrevBuffer(cm, -1) };
+
+	var cssHintHandler = CM.hint.css;
+	CM.hint.css = function(cm) {
+		var cursor = cm.getCursor();
+		var token = cm.getTokenAt(cursor);
+		if (token.state.state === "prop" && "!important".indexOf(token.string) === 0) {
+			return {
+				from: CM.Pos(cursor.line, token.start),
+				to: CM.Pos(cursor.line, token.end),
+				list: ["!important"]
+			}
+		}
+		return cssHintHandler(cm);
+	}
 
 	// user option values
 	CM.getOption = function (o) {
@@ -149,7 +166,7 @@ function acmeEventListener(event) {
 }
 
 // replace given textarea with the CodeMirror editor
-function setupCodeMirror(textarea) {
+function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
 	cm.addKeyMap({
 		"Ctrl-G": "jumpToLine",
@@ -158,35 +175,6 @@ function setupCodeMirror(textarea) {
 	});
 	cm.lastChange = cm.changeGeneration();
 	cm.on("change", indicateCodeChange);
-
-	// ensure the entire section is visible on focus
-	cm.on("focus", function(cm) {
-		var section = cm.display.wrapper.parentNode;
-		var bounds = section.getBoundingClientRect();
-		if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-			lockScroll = null;
-			if (bounds.top < 0) {
-				window.scrollBy(0, bounds.top - 1);
-			} else {
-				window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
-			}
-
-			// prevent possible double fire of selection change event induced by window.scrollBy
-			var selectionChangeCount = 0, selection;
-			function beforeSelectionChange(cm, obj) {
-				if (++selectionChangeCount == 1) {
-					selection = obj.ranges;
-				} else {
-					obj.update(selection);
-					cm.off("beforeSelectionChange", beforeSelectionChange);
-				}
-			}
-			cm.on("beforeSelectionChange", beforeSelectionChange);
-			setTimeout(function() {
-				cm.off("beforeSelectionChange", beforeSelectionChange)
-			}, 200);
-		}
-	});
 
 	// ensure the section doesn't jump when clicking selected text
 	cm.on("cursorActivity", function(cm) {
@@ -199,7 +187,14 @@ function setupCodeMirror(textarea) {
 		}, 0);
 	});
 
-	editors.push(cm);
+	editors.splice(index || editors.length, 0, cm);
+	return cm;
+}
+
+function indicateCodeChange(cm) {
+	var section = cm.getTextArea().parentNode;
+	setCleanItem(section, cm.isClean(section.savedValue));
+	updateTitle();
 }
 
 // ensure the section doesn't jump when clicking selected text
@@ -211,26 +206,28 @@ document.addEventListener("scroll", function(e) {
 	}
 });
 
-document.addEventListener("keydown", function(e) {
+window.addEventListener("keydown", function(e) {
 	if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.keyCode == 83) {
 		e.preventDefault();
 		save();
 	}
 });
 
+chrome.tabs.query({currentWindow: true}, function(tabs) {
+	isSeparateWindow = tabs.length == 1;
+});
+
 window.onbeforeunload = function() {
-	prefs.setPref('windowPosition', {
-		left: screenLeft,
-		top: screenTop,
-		width: outerWidth,
-		height: outerHeight
-	});
+	if (isSeparateWindow) {
+		prefs.setPref('windowPosition', {
+			left: screenLeft,
+			top: screenTop,
+			width: outerWidth,
+			height: outerHeight
+		});
+	}
 	document.activeElement.blur();
 	return !isCleanGlobal() ? t('styleChangesNotSaved') : null;
-}
-
-function indicateCodeChange(cm) {
-	setCleanItem(cm.getTextArea().parentNode, cm.isClean(cm.lastChange));
 }
 
 function addAppliesTo(list, name, value) {
@@ -264,83 +261,85 @@ function addSection(event, section) {
 	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
 	div.querySelector(".add-section").addEventListener("click", addSection, false);
 
+	var codeElement = div.querySelector(".code");
 	var appliesTo = div.querySelector(".applies-to-list");
+	var appliesToAdded = false;
 
 	if (section) {
-		var codeElement = div.querySelector(".code");
 		codeElement.value = section.code;
-		// codeElement.addEventListener("change", makeDirty, false);
-		// // Why is this here? Is it possible for CM to not load?
-		if (section.urls) {
-			section.urls.forEach(function(url) {
-				addAppliesTo(appliesTo, "url", url);
-			});
+		for (var i in propertyToCss) {
+			if (section[i]) {
+				section[i].forEach(function(url) {
+					addAppliesTo(appliesTo, propertyToCss[i], url);
+					appliesToAdded = true;
+				});
+			}
 		}
-		if (section.urlPrefixes) {
-			section.urlPrefixes.forEach(function(url) {
-				addAppliesTo(appliesTo, "url-prefix", url);
-			});
-		}
-		if (section.domains) {
-			section.domains.forEach(function(d) {
-				addAppliesTo(appliesTo, "domain", d);
-			});
-		}
-		if (section.regexps) {
-			section.regexps.forEach(function(d) {
-				addAppliesTo(appliesTo, "regexp", d);
-			});
-		}
-		if (!section.urls && !section.urlPrefixes && !section.domains && !section.regexps) {
-			addAppliesTo(appliesTo);
-		}
-	} else {
+	}
+	if (!appliesToAdded) {
 		addAppliesTo(appliesTo);
 	}
 
+	appliesTo.addEventListener("change", onChange);
+	appliesTo.addEventListener("input", onChange);
+
 	var sections = document.getElementById("sections");
-	var section = event ? event.target.parentNode : null;
-	if (event && section.nextElementSibling) {
-		sections.insertBefore(div, section.nextElementSibling);
+	if (event) {
+		var clickedSection = event.target.parentNode;
+		sections.insertBefore(div, clickedSection.nextElementSibling);
+		var newIndex = document.querySelectorAll("#sections > div").indexOf(clickedSection) + 1;
+		setupCodeMirror(codeElement, newIndex).focus();
 	} else {
 		sections.appendChild(div);
+		setupCodeMirror(codeElement);
 	}
-	setupCodeMirror(div.querySelector('.code'));
-	if (section) {
-		var index = Array.prototype.indexOf.call(sections.children, section);
-        var cm = editors.pop();
-		editors.splice(index, 0, cm);
-		cm.focus();
-	}
+
+	setCleanSection(div);
 }
 
 function removeAppliesTo(event) {
 	var appliesTo = event.target.parentNode,
 	    appliesToList = appliesTo.parentNode;
-	appliesToList.removeChild(appliesTo);
+	removeAreaAndSetDirty(appliesTo);
 	if (!appliesToList.hasChildNodes()) {
-		var e = appliesToEverythingTemplate.cloneNode(true);
-		e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
-		appliesToList.appendChild(e);
+		addAppliesTo(appliesToList);
 	}
-	Array.prototype.forEach.call(appliesTo.querySelectorAll("input, select"), function(node) {
-		setCleanItem(node, !node.defaultValue);
-	});
 }
 
 function removeSection(event) {
-    var section = event.target.parentNode;
-    var wrapper = section.querySelector(".CodeMirror-wrap");
-	var idx = editors.indexOf(wrapper && wrapper.CodeMirror);
-    if (idx >= 0) {
-        editors.splice(idx, 1);
-		setCleanItem(wrapper.parentNode, true);
-    }
-	section.parentNode.removeChild(section);
-	Array.prototype.forEach.call(section.querySelectorAll("input, select"), function(node) {
-		setCleanItem(node, !node.defaultValue);
+	var section = event.target.parentNode;
+	var cm = section.querySelector(".CodeMirror").CodeMirror;
+	removeAreaAndSetDirty(section);
+	editors.splice(editors.indexOf(cm), 1);
+}
+
+function removeAreaAndSetDirty(area) {
+	area.querySelectorAll('.style-contributor').some(function(node) {
+		if (node.savedValue) {
+			// it's a saved section, so make it dirty and stop the enumeration
+			setCleanItem(area, false);
+			return true;
+		} else {
+			// it's an empty section, so undirty the applies-to items,
+			// otherwise orphaned ids would keep the style dirty
+			setCleanItem(node, true);
+		}
 	});
-	setCleanItem(section, !section.defaultValue);
+	updateTitle();
+	area.parentNode.removeChild(area);
+}
+
+function makeSectionVisible(cm) {
+	var section = cm.display.wrapper.parentNode;
+	var bounds = section.getBoundingClientRect();
+	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
+		lockScroll = null;
+		if (bounds.top < 0) {
+			window.scrollBy(0, bounds.top - 1);
+		} else {
+			window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
+		}
+	}
 }
 
 function setupGlobalSearch() {
@@ -404,8 +403,9 @@ function setupGlobalSearch() {
 				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
 			}
 			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
-			if (searchCursor.find(reverse) || editors.length == 1) {
+			if (searchCursor.find(reverse)) {
 				if (editors.length > 1) {
+					makeSectionVisible(cm);
 					cm.focus();
 				}
 				// speedup the original findNext
@@ -435,11 +435,10 @@ function jumpToLine(cm) {
 	}, {value: cur.line+1});
 }
 
-function nextBuffer(cm) {
-	editors[(editors.indexOf(cm) + 1) % editors.length].focus();
-}
-function prevBuffer(cm) {
-	editors[(editors.indexOf(cm) - 1 + editors.length) % editors.length].focus();
+function nextPrevBuffer(cm, direction) {
+	cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
+	makeSectionVisible(cm);
+	cm.focus();
 }
 
 window.addEventListener("load", init, false);
@@ -450,20 +449,16 @@ function init() {
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
 		var section = {code: ""}
-		if (params.domain) {
-			section.domains = [params.domain];
-		} else if (params.url) {
-			section.urls = [params.url];
-		} else if (params["url-prefix"]) {
-			section.urlPrefixes = [params["url-prefix"]];
+		for (var i in CssToProperty) {
+			if (params[i]) {
+				section[CssToProperty[i]] = [params[i]];
+			}
 		}
 		addSection(null, section);
 		// default to enabled
 		document.getElementById("enabled").checked = true
 		tE("heading", "addStyleTitle");
-		setupGlobalSearch();
-		setCleanGlobal(null);
-		initTitle();
+		initHooks();
 		return;
 	}
 	// This is an edit
@@ -479,22 +474,35 @@ function initWithStyle(style) {
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("heading").innerHTML = t("editStyleHeading");
 	// if this was done in response to an update, we need to clear existing sections
-	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
+	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
 	});
-	style.sections.forEach(function(section) { addSection(null, section) });
-	setupGlobalSearch();
-	setCleanGlobal(null);
-	initTitle();
+	style.sections.forEach(function(section) {
+		setTimeout(function() {
+			addSection(null, section)
+		}, 0);
+	});
+	initHooks();
 }
 
-function initTitle() {
+function initHooks() {
+	document.querySelectorAll("#header .style-contributor").forEach(function(node) {
+		node.addEventListener("change", onChange);
+		node.addEventListener("input", onChange);
+	});
+
+	setupGlobalSearch();
+	setCleanGlobal();
+	updateTitle();
+}
+
+function updateTitle() {
 	const DIRTY_TITLE = "* $";
 
-	var name = document.getElementById("name").defaultValue;
-	var dirty = !isCleanGlobal();
+	var name = document.getElementById("name").savedValue;
+	var clean = isCleanGlobal();
 	var title = styleId === null ? t("addStyleTitle") : t('editStyleTitle', [name]);
-	document.title = !dirty ? title : DIRTY_TITLE.replace("$", title);
+	document.title = clean ? title : DIRTY_TITLE.replace("$", title);
 }
 
 function validate() {
@@ -503,18 +511,18 @@ function validate() {
 		return t("styleMissingName");
 	}
 	// validate the regexps
-	if (Array.prototype.some.call(document.querySelectorAll(".applies-to-list"), function(list) {
-		return Array.prototype.some.call(list.childNodes, function(li) {
+	if (document.querySelectorAll(".applies-to-list").some(function(list) {
+		return list.childNodes.some(function(li) {
 			if (li.className == appliesToEverythingTemplate.className) {
 				return false;
 			}
 			var valueElement = li.querySelector("[name=applies-value]");
-			var a = li.querySelector("[name=applies-type]").value;
-			var b = valueElement.value;
-			if (a && b) {
-				if (a == "regexp") {
+			var type = li.querySelector("[name=applies-type]").value;
+			var value = valueElement.value;
+			if (type && value) {
+				if (type == "regexp") {
 					try {
-						new RegExp(b);
+						new RegExp(value);
 					} catch (ex) {
 						valueElement.focus();
 						return true;
@@ -547,19 +555,19 @@ function save() {
 		id: styleId,
 		name: name,
 		enabled: enabled,
-		sections: getSections(),
+		sections: getSections()
 	};
 	chrome.extension.sendMessage(request, saveComplete);
 }
 
 function getSections() {
 	var sections = [];
-	Array.prototype.forEach.call(document.querySelectorAll("#sections > div"), function(div) {
-		var code = div.querySelector(".code").value;
-		if (/^\s*$/.test(code)) {
+	document.querySelectorAll("#sections > div").forEach(function(div) {
+		var meta = getMeta(div);
+		var code = div.querySelector(".CodeMirror").CodeMirror.getValue();
+		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
 			return;
 		}
-		var meta = getMeta(div);
 		meta.code = code;
 		sections.push(meta);
 	});
@@ -567,28 +575,16 @@ function getSections() {
 }
 
 function getMeta(e) {
-	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
-	Array.prototype.forEach.call(e.querySelector(".applies-to-list").childNodes, function(li) {
+	var meta = {};
+	e.querySelector(".applies-to-list").childNodes.forEach(function(li) {
 		if (li.className == appliesToEverythingTemplate.className) {
 			return;
 		}
-		var a = li.querySelector("[name=applies-type]").value;
-		var b = li.querySelector("[name=applies-value]").value;
-		if (a && b) {
-			switch (a) {
-				case "url":
-					meta.urls.push(b);
-					break;
-				case "url-prefix":
-					meta.urlPrefixes.push(b);
-					break;
-				case "domain":
-					meta.domains.push(b);
-					break;
-				case "regexp":
-					meta.regexps.push(b);
-					break;
-			}
+		var type = li.querySelector("[name=applies-type]").value;
+		var value = li.querySelector("[name=applies-value]").value;
+		if (type && value) {
+			var property = CssToProperty[type];
+			meta[property] ? meta[property].push(value) : meta[property] = [value];
 		}
 	});
 	return meta;
@@ -596,34 +592,32 @@ function getMeta(e) {
 
 function saveComplete(style) {
 	styleId = style.id;
-	setCleanGlobal(null);
+	setCleanGlobal();
 
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		// give the code above a moment before we kill the page
 		setTimeout(function() {location.href = "edit.html?id=" + style.id;}, 200);
 	} else {
-		initTitle();
+		updateTitle();
 	}
 }
 
 function showMozillaFormat() {
-	var w = window.open("data:text/plain;charset=UTF-8," + encodeURIComponent(toMozillaFormat()));
+	window.open("data:text/plain;charset=UTF-8," + encodeURIComponent(toMozillaFormat()));
 }
 
 function toMozillaFormat() {
 	return getSections().map(function(section) {
-		if (section.urls.length == 0 && section.urlPrefixes.length == 0 && section.domains.length == 0 && section.regexps.length == 0) {
-			return section.code;
-		}
-		var propertyToCss = {"urls": "url", "urlPrefixes": "url-prefix", "domains": "domain", "regexps": "regexp"};
 		var cssMds = [];
 		for (var i in propertyToCss) {
-			cssMds = cssMds.concat(section[i].map(function(v) {
-				return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
-			}));
+			if (section[i]) {
+				cssMds = cssMds.concat(section[i].map(function (v){
+					return propertyToCss[i] + "(\"" + v.replace(/\\/g, "\\\\") + "\")";
+				}));
+			}
 		}
-		return "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}";
+		return cssMds.length ? "@-moz-document " + cssMds.join(", ") + " {\n" + section.code + "\n}" : section.code;
 	}).join("\n\n");
 }
 
@@ -662,7 +656,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "styleUpdated":
 			if (styleId == request.id) {
 				initWithStyle(request.style);
-				dirty = false;
 			}
 			break;
 		case "styleDeleted":

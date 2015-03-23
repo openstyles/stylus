@@ -34,19 +34,19 @@
 		<style type="text/css">
 
 			body {
-				margin: 0px;
+				margin: 0;
 				font: 12px arial,sans-serif;
 			}
 			#header {
 				height: 100%;
 				width: 250px;
 				position: fixed;
-				top: 0px;
+				top: 0;
 				padding: 15px;
 				border-right: 1px dashed #AAA;
 			}
 			.notmac #header {
-				-webkit-box-shadow: 0px 0px 50px -18px black;
+				-webkit-box-shadow: 0 0 50px -18px black;
 			}
 			#sections {
 				padding-left: 290px;
@@ -62,7 +62,7 @@
 			}
 			#sections > div {
 				margin: 10px;
-				padding: 0px 15px;
+				padding: 0 15px;
 			}
 			#sections > div:not(:first-child) {
 				border-top: 2px solid black;
@@ -78,6 +78,13 @@
 			}
 			#header label {
 				width: 60px;
+			}
+			#options .aligned {
+				display: table-row;
+			}
+			#options .aligned > * {
+				display: table-cell;
+				margin: 0.5ex 0 0 0;
 			}
 			.code {
 				height: 10em;
@@ -154,24 +161,68 @@
 					width: auto;
 					border-right: none;
 					padding-left: 8px;
+					padding-top: 8px;
 				}
-
+				#header section {
+					display: inline-block;
+					margin-bottom: 0.5em;
+				}
+				#header label {
+					width: auto;
+					vertical-align: baseline;
+					margin-right: .5em;
+				}
+				#header input[type="checkbox"] {
+					vertical-align: middle;
+				}
+				#name {
+					font-weight: bold;
+				}
+				h1, h2 {
+					display: none;
+				}
+				#basic-info > div {
+					display: inline-block;
+					margin-right: 1em;
+				}
+				#actions br {
+					display: none;
+				}
+				#actions img {
+					position: relative;
+					top: .2em;
+					margin-left: .2em;
+				}
+				#actions > * + button, #actions a {
+					margin-left: 1em;
+				}
+				#options {
+					display: flex;
+					flex-wrap: wrap;
+					align-items: baseline;
+				}
+				#options .option, #options .option > * {
+					flex: auto;
+					height: 1.8em;
+					margin: 0;
+					display: inline-block;
+					white-space: nowrap;
+				}
+				#options .option {
+					margin-right: 1em;
+				}
 				#sections {
-					padding-left: 0px;
+					padding-left: 0;
 				}
-
 				#sections > div {
-					padding: 0px;
+					padding: 0;
 				}
-
 				#sections-heading {
 					padding-left: 8px;
 				}
-
 				body > section > *:not(h2) {
 					padding-left: 8px;
 				}
-
 			}
 
 			/* editor options */
@@ -193,43 +244,38 @@
 		<div id="header">
 			<h1 id="heading"></h1>
 			<section id="basic-info">
-				<div><label for="name" id="name-label"></label><input id="name"><div>
-				<div><label for="enabled" id="enabled-label"></label><input type="checkbox" id="enabled"></div>
+				<div><label for="name" id="name-label"></label><input id="name" class="style-contributor"></div>
+				<div><label for="enabled" id="enabled-label"></label><input type="checkbox" id="enabled" class="style-contributor"></div>
 			</section>
-			<button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"><br><br>
-			<button id="save-button" title="Ctrl-S"></button>
-			<a href="manage.html"><button id="cancel-button"></button></a>
-			<form id="options">
+			<section id="actions">
+				<button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"><br><br>
+				<button id="from-mozilla">From Mozilla format</button><img id="from-mozilla-help" src="help.png"><br><br>
+				<button id="save-button" title="Ctrl-S"></button>
+				<a href="manage.html"><button id="cancel-button"></button></a>
+			</section>
+			<section id="options">
 				<h2 id="options-heading"></h2>
-				<table cols="2">
-				<tr>
-					<td colspan="2">
-						<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
-						<label id="lineWrapping-label" for="editor.lineWrapping"></label>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
-						<label id="smartIndent-label" for="editor.smartIndent"></label>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
-						<label id="indentWithTabs-label" for="editor.indentWithTabs"></label>
-					</td>
-				</tr>
-				<tr>
-					<td><label id="tabSize-label" for="editor.tabSize"></label></td>
-					<td><input data-option="tabSize" id="editor.tabSize" type="number" min="0"></td>
-				</tr>
-				<tr>
-					<td><label id="keyMap-label" for="editor.keyMap"></label></td>
-					<td><select data-option="keyMap" id="editor.keyMap"></select></td>
-				</tr>
-			</table>
-			</form>
+				<div class="option">
+					<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
+					<label id="lineWrapping-label" for="editor.lineWrapping"></label>
+				</div>
+				<div class="option">
+					<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
+					<label id="smartIndent-label" for="editor.smartIndent"></label>
+				</div>
+				<div class="option">
+					<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
+					<label id="indentWithTabs-label" for="editor.indentWithTabs"></label>
+				</div>
+				<div class="option aligned">
+					<label id="tabSize-label" for="editor.tabSize"></label>
+					<input data-option="tabSize" id="editor.tabSize" type="number" min="0">
+				</div>
+				<div class="option aligned">
+					<label id="keyMap-label" for="editor.keyMap"></label>
+					<select data-option="keyMap" id="editor.keyMap"></select>
+				</div>
+			</section>
 		</div>
 		<section id="sections">
 			<h2><span id="sections-heading"></span> <img id="sections-help" src="help.png"></h2>
