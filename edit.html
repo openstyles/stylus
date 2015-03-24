@@ -80,10 +80,6 @@
 			#options .aligned {
 				display: table-row;
 			}
-			#options .aligned > * {
-				display: table-cell;
-				margin: 0.5ex 0 0 0;
-			}
 			.code {
 				height: 10em;
 				width: 40em;
@@ -152,6 +148,13 @@
 				background: none;
 			}
 
+			@media(min-width: 738px) {
+				#options .aligned > * {
+					display: table-cell;
+					margin: 0.5ex 0 0 0;
+				}
+			}
+
 			@media(max-width:737px) {
 				#header {
 					height: auto;
@@ -210,19 +213,14 @@
 					margin-left: 1em;
 				}
 				#options {
-					display: flex;
-					flex-wrap: wrap;
-					align-items: baseline;
+					-webkit-column-count: 2;
 				}
-				#options .option, #options .option > * {
-					flex: auto;
-					height: 1.8em;
+				.option {
+					-webkit-column-break-inside: avoid;
+				}
+				.option label {
+					line-height: 20px;
 					margin: 0;
-					display: inline-block;
-					white-space: nowrap;
-				}
-				#options .option {
-					margin-right: 1em;
 				}
 				#sections {
 					padding-left: 0;
