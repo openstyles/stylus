@@ -619,6 +619,7 @@ function saveComplete(style) {
 	} else {
 		updateTitle();
 	}
+	chrome.extension.sendMessage({method: "updatePopup", reason: "styleUpdated", style: style});
 }
 
 function showMozillaFormat() {

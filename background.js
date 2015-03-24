@@ -40,6 +40,20 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
+chrome.commands.onCommand.addListener(function(command) {
+	switch (command) {
+		case "openManage":
+			openURL({url: chrome.extension.getURL("manage.html")});
+			break;
+		case "styleDisableAll":
+			var newState = !prefs.getPref("disableAll");
+			prefs.setPref("disableAll", newState);
+			notifyAllTabs({method: "styleDisableAll", disableAll: newState});
+			chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: newState});
+			break;
+	}
+});
+
 function getStyles(options, callback) {
 
 	var enabled = fixBoolean(options.enabled);
