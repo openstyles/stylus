@@ -62,7 +62,7 @@
 				margin: 10px;
 				padding: 0 15px;
 			}
-			#sections > div:not(:first-child) {
+			#sections > div:not(:first-of-type) {
 				border-top: 2px solid black;
 			}
 			.dirty > label::before {
@@ -162,7 +162,6 @@
 					padding-top: 8px;
 				}
 				#header section {
-					display: inline-block;
 					margin-bottom: 0.5em;
 				}
 				#header label {
@@ -173,15 +172,31 @@
 				#header input[type="checkbox"] {
 					vertical-align: middle;
 				}
-				#name {
-					font-weight: bold;
-				}
 				h1, h2 {
 					display: none;
 				}
-				#basic-info > div {
-					display: inline-block;
+				#basic-info {
+					display: flex;
+				}
+				#basic-info > div:not(:last-child) {
 					margin-right: 1em;
+				}
+				#basic-info > * {
+					flex: auto;
+				}
+				#basic-info > *:first-child {
+					flex-grow: 99;
+					display: flex;
+				}
+				#basic-info #name {
+					width: auto;
+					flex-grow: 99;
+				}
+				#basic-info #name-label {
+					line-height: 20px;
+				}
+				#actions {
+					padding: 1em 0;
 				}
 				#actions br {
 					display: none;
