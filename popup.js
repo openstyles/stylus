@@ -193,5 +193,6 @@ tE("disableAll-label", "disableAllStyles");
 
 loadPrefs({"disableAll": false})
 document.getElementById("disableAll").addEventListener("change", function(event) {
+	document.getElementById("installed").classList.toggle("disabled", event.target.checked);
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
 });
