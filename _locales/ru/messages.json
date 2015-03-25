@@ -174,10 +174,6 @@
     "message":"Введите название.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Название",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Сохранить",
     "description":"Label for save button for style editing"

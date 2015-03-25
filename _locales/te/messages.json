@@ -60,10 +60,6 @@
     "message":"స్టైలిష్",
     "description":"Title for the manage page"
   },
-  "styleNameLabel":{
-    "message":"పేరు",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"భద్రపరచు",
     "description":"Label for save button for style editing"

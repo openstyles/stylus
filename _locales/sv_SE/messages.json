@@ -186,10 +186,6 @@
     "message":"Ange namn.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Namn",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Spara",
     "description":"Label for save button for style editing"
