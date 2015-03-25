@@ -217,7 +217,9 @@ var prefs = {
 
 		var newValue = this.getPref(key);
 		if (newValue !== oldValue) {
-			notifyAllTabs({method: "prefChanged", prefName: key, value: value});
+			var message = {method: "prefChanged", prefName: key, value: value};
+			notifyAllTabs(message);
+			chrome.extension.sendMessage(message);
 		}
 	},
 	removePref: function(key) { setPref(key, undefined) }

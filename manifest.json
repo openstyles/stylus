@@ -12,6 +12,7 @@
 	"permissions": [
 		"tabs",
 		"webNavigation",
+		"contextMenus",
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],
