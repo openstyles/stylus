@@ -132,6 +132,21 @@
 			.CodeMirror-lint-mark-warning {
 				background: none;
 			}
+			.CodeMirror-vscrollbar {
+				margin-bottom: 8px; /* make space for resize-grip */
+			}
+			.resize-grip {
+				position: absolute;
+				display: block;
+				width: 8px;
+				height: 8px;
+				content: " ";
+				right: 0;
+				bottom: 0;
+				z-index: 99;
+				cursor: n-resize;
+				background: linear-gradient(-45deg, transparent 2px, rgba(0,0,0,0.5) 2px, transparent 3px, transparent 4.5px, rgba(0,0,0,0.5) 5px, transparent 5.5px);
+			}
 			/* applies-to */
 			.applies-to {
 				display: flex;
