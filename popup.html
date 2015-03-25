@@ -42,12 +42,18 @@
 			#installed {
 				margin-top: 0.5em;
 			}
+			#installed.disabled {
+				opacity: 0.5;
+			}
 			body > .actions {
 				margin-top: 0.5em;
 			}
 
 			.actions > div, #unavailable {
 				margin-bottom: 0.75em;
+			}
+			.actions input, .actions label {
+				vertical-align: middle;
 			}
 
 			#unavailable {
@@ -120,6 +126,10 @@
 	<div id="installed"></div>
 
 	<div class="actions">
+		<div id="disable-all-wrapper">
+			<input id="disableAll" type="checkbox">
+			<label id="disableAll-label" for="disableAll"></label>
+		</div>
 		<div id="find-styles"><a id="find-styles-link" href="#"></a></div>
 		<div id="manage-styles"><a id="open-manage-link" href="manage.html"></a></div>
 		<div id="write-style"><span id="write-style-for"></span></div>
