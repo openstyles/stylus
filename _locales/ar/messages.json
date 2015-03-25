@@ -178,10 +178,6 @@
     "message":"أدخل اسمًا.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"الاسم",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"حفظ",
     "description":"Label for save button for style editing"

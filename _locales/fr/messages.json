@@ -170,10 +170,6 @@
     "message":"Veuillez saisir un nom.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Nom",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Enregistrer",
     "description":"Label for save button for style editing"

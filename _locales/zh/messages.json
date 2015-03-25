@@ -140,9 +140,6 @@
 	"styleMissingName": {
 		"message": "请输入名称."
 	},
-	"styleNameLabel": {
-		"message": "名称"
-	},
 	"styleSaveLabel": {
 		"message": "保存"
 	},

@@ -178,10 +178,6 @@
     "message":"请输入名称.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"名称",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"保存",
     "description":"Label for save button for style editing"

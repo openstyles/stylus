@@ -671,7 +671,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-tE("name-label", "styleNameLabel");
+tE("name", "styleMissingName", "placeholder");
 tE("enabled-label", "styleEnabledLabel");
 tE("to-mozilla", "styleToMozillaFormat");
 tE("save-button", "styleSaveLabel");

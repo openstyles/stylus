@@ -174,10 +174,6 @@
     "message":"Bir ad girin.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Ad",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Kaydet",
     "description":"Label for save button for style editing"

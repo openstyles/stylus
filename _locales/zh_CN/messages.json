@@ -227,10 +227,6 @@
         "message": "修改",
         "description": "Label for the button to go to the edit style page"
     },
-    "styleNameLabel": {
-        "message": "名称",
-        "description": "Label for the name of styles"
-    },
     "description": {
         "message": "Stylish 是一款用户样式管理器，可让您调整网页的样式。它可让您轻松地为 Google、Facebook、YouTube、Orkut 和其他许多网站安装主题背景和皮肤。",
         "description": "Extension description"

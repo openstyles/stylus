@@ -186,10 +186,6 @@
     "message":"Syötä nimi.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Nimi",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Tallenna",
     "description":"Label for save button for style editing"

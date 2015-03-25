@@ -112,10 +112,6 @@
     "message":"Εισάγετε ένα όνομα.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Όνομα",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Αποθήκευση",
     "description":"Label for save button for style editing"

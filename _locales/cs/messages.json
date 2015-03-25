@@ -186,10 +186,6 @@
     "message":"Zadejte název.",
     "description":"Error displayed when user saves without providing a name"
   },
-  "styleNameLabel":{
-    "message":"Název",
-    "description":"Label for the name of styles"
-  },
   "styleSaveLabel":{
     "message":"Uložit",
     "description":"Label for save button for style editing"

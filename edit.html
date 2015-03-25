@@ -35,57 +35,93 @@
 
 			body {
 				margin: 0;
-				font: 12px arial,sans-serif;
+				font: 9pt arial,sans-serif;
 			}
+			/************ header ************/
 			#header {
 				height: 100%;
-				width: 250px;
+				width: 15rem;
 				position: fixed;
 				top: 0;
-				padding: 15px;
+				padding: 0.95rem;
 				border-right: 1px dashed #AAA;
-				-webkit-box-shadow: 0 0 50px -18px black;
+				-webkit-box-shadow: 0 0 3rem -1.2rem black;
 			}
 			#header h1 {
 				margin-top: 0;
 			}
 			#sections {
-				padding-left: 290px;
+				padding-left: 18rem;
 			}
 			#sections h2 {
-				margin-top: 8px;
+				margin-top: 0.5rem;
 			}
+			.aligned {
+				display: table-row;
+			}
+			.aligned > * {
+				display: table-cell;
+				margin-top: 0.1rem;
+				min-height: 1.4rem;
+			}
+			input[type="checkbox"] {
+				margin-left: 0.1rem;
+			}
+			/* basic info */
 			#basic-info {
-				margin-bottom: 12px;
+				margin-bottom: 1rem;
 			}
 			#name {
-				width: 185px;
+				width: 100%;
 			}
+			#enabled {
+				margin-left: 0;
+				vertical-align: middle;
+			}
+			#enabled-label {
+				vertical-align: middle;
+			}
+			/* actions */
+			#actions > * {
+				margin-right: 0.5rem;
+				margin-bottom: 0.5rem;
+				display: block;
+			}
+			#actions img {
+				margin-left: 0.2rem;
+				position: relative;
+				top: 0.2rem;
+			}
+			/* options */
+			#options [type="number"] {
+				max-width: 2.5rem;
+				text-align: right;
+			}
+			#options .option > * {
+				padding-right: 0.25rem;
+			}
+			/************ content ***********/
 			#sections > div {
-				margin: 10px;
-				padding: 0 15px;
+				margin: 0.7rem;
+				padding: 1rem;
 			}
 			#sections > div:not(:first-of-type) {
 				border-top: 2px solid black;
+			}
+			#sections > div:only-of-type .remove-section {
+				display: none;
+			}
+			#sections > div .add-section {
+				margin-left: 0.4rem;
 			}
 			.dirty > label::before {
 				content: "*";
 				font-weight: bold;
 			}
-			#basic-info label {
-				display: inline-block;
-				width: 10em;
-				vertical-align: top;
-			}
-			#header label {
-				width: 60px;
-			}
-			#options .aligned {
-				display: table-row;
-			}
+			/* code */
 			.code {
-				height: 10em;
-				width: 40em;
+				height: 10rem;
+				width: 40rem;
 			}
 			.CodeMirror {
 				border: solid #CCC 1px;
@@ -93,12 +129,16 @@
 			.CodeMirror-focused {
 				border-color: black;
 			}
+			.CodeMirror-lint-mark-warning {
+				background: none;
+			}
+			/* applies-to */
 			.applies-to {
 				display: flex;
 			}
 			.applies-to label {
 				flex: auto;
-				margin-top: 0.25em;
+				margin-top: 0.2rem;
 			}
 			.applies-to ul {
 				flex: auto;
@@ -110,12 +150,12 @@
 				display: flex;
 				list-style-type: none;
 				align-items: center;
-				margin-bottom: 0.4em;
+				margin-bottom: 0.35rem;
 			}
 			.applies-to li > *:not(button) {
 				flex: auto;
-				min-height: 1.7em;
-				margin-left: 0.4em;
+				min-height: 1.4rem;
+				margin-left: 0.35rem;
 			}
 			.applies-to li .add-applies-to {
 				visibility: hidden;
@@ -125,53 +165,27 @@
 				visibility: visible
 			}
 			.applies-to li .add-applies-to:first-child {
-				margin-left: 1em;
+				margin-left: 1rem;
 			}
 			.applies-to li .applies-value {
 				flex-grow: 99;
-				padding-left: 0.5ex;
-			}
-			body > section > *:not(h2) {
-				padding-left: 15px;
-			}
-			#sections > div {
-				padding-top: 1em;
-				padding-bottom: 1em;
-			}
-			#sections > div:only-of-type .remove-section {
-				display: none;
-			}
-			#sections > div .add-section {
-				margin-left: 0.4em;
+				padding-left: 0.2rem;
 			}
 			.applies-to img {
 				vertical-align: bottom;
 			}
-			.CodeMirror-lint-mark-warning {
-				background: none;
-			}
 
-			@media(min-width: 738px) {
-				#options .aligned > * {
-					display: table-cell;
-					margin: 0.5ex 0 0 0;
-				}
-			}
-
+			/************ reponsive layouts ************/
 			@media(max-width:737px) {
 				#header {
+					width: auto;
 					height: auto;
 					position: inherit;
-					width: auto;
 					border-right: none;
+					border-bottom: 1px dashed #AAA;
 				}
-				#header section {
-					margin-bottom: 0.5em;
-				}
-				#header label {
-					width: auto;
-					vertical-align: baseline;
-					margin-right: .5em;
+				#header section:not(:last-child) {
+					margin-bottom: 0.4rem;
 				}
 				#header input[type="checkbox"] {
 					vertical-align: middle;
@@ -181,9 +195,7 @@
 				}
 				#basic-info {
 					display: flex;
-				}
-				#basic-info > div:not(:last-child) {
-					margin-right: 1em;
+					align-items: baseline;
 				}
 				#basic-info > * {
 					flex: auto;
@@ -192,36 +204,42 @@
 					flex-grow: 99;
 					display: flex;
 				}
+				#basic-info > *:not(:last-child) {
+					margin-right: 0.8rem;
+				}
 				#basic-info #name {
 					width: auto;
 					flex-grow: 99;
 				}
-				#basic-info #name-label {
-					line-height: 20px;
-				}
 				#actions {
-					padding: 1em 0;
+					margin-top: 1rem;
 				}
-				#actions br {
-					display: none;
-				}
-				#actions img {
-					position: relative;
-					top: .2em;
-					margin-left: .2em;
-				}
-				#actions > * + button, #actions a {
-					margin-left: 1em;
+				#actions > * {
+					display: inline-block;
 				}
 				#options {
 					-webkit-column-count: 2;
+				}
+				#options .aligned > * {
+					margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
+					padding-right: 0.4rem;
+					vertical-align: baseline;
+					min-height: 1.4rem;
 				}
 				.option {
 					-webkit-column-break-inside: avoid;
 				}
 				.option label {
-					line-height: 20px;
+					line-height: 1.25rem;
 					margin: 0;
+				}
+				#options [type="number"] {
+					text-align: left; /* workaround the column flow bug in webkit */
+					padding-left: 0.2rem;
+				}
+				#options #tabSize-label {
+					position: relative;
+					top: 0.2rem;
 				}
 				#sections {
 					padding-left: 0;
@@ -229,23 +247,10 @@
 				#sections > div {
 					padding: 0;
 				}
-				#sections-heading {
-					padding-left: 8px;
-				}
-				body > section > *:not(h2) {
-					padding-left: 8px;
+				#sections > *:not(h2) {
+					padding-left: 0.4rem;
 				}
 			}
-
-			/* editor options */
-			[type="number"] {
-				max-width: 2.8em;
-				text-align: right;
-			}
-			table, input, select {
-				font-size: inherit;
-			}
-			table td:first-child {min-width: 60px}
 		</style>
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
@@ -256,13 +261,18 @@
 		<div id="header">
 			<h1 id="heading"></h1>
 			<section id="basic-info">
-				<div><label for="name" id="name-label"></label><input id="name" class="style-contributor"></div>
-				<div><label for="enabled" id="enabled-label"></label><input type="checkbox" id="enabled" class="style-contributor"></div>
+				<div id="basic-info-name">
+					<input id="name" class="style-contributor">
+				</div>
+				<div id="basic-info-enabled">
+					<input type="checkbox" id="enabled" class="style-contributor">
+					<label for="enabled" id="enabled-label"></label>
+				</div>
 			</section>
 			<section id="actions">
-				<button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"><br><br>
-				<button id="save-button" title="Ctrl-S"></button>
+				<div><button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"></div>
 				<a href="manage.html"><button id="cancel-button"></button></a>
+				<button id="save-button" title="Ctrl-S"></button>
 			</section>
 			<section id="options">
 				<h2 id="options-heading"></h2>
