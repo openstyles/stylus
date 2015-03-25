@@ -187,6 +187,24 @@ function setupCodeMirror(textarea, index) {
 		}, 0);
 	});
 
+	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
+	resizeGrip.className = "resize-grip";
+	resizeGrip.addEventListener("mousedown", function(e) {
+		e.preventDefault();
+		var cm = e.target.parentNode.CodeMirror;
+		var minHeight = cm.defaultTextHeight()
+			+ cm.display.lineDiv.offsetParent.offsetTop /* .CodeMirror-lines padding */
+			+ cm.display.wrapper.offsetHeight - cm.display.wrapper.scrollHeight /* borders */;
+		function resize(e) {
+			cm.setSize(null, Math.max(minHeight, cm.display.wrapper.scrollHeight + e.movementY));
+		}
+		document.addEventListener("mousemove", resize);
+		document.addEventListener("mouseup", function resizeStop() {
+			document.removeEventListener("mouseup", resizeStop);
+			document.removeEventListener("mousemove", resize);
+		});
+	});
+
 	editors.splice(index || editors.length, 0, cm);
 	return cm;
 }
