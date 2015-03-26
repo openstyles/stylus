@@ -178,6 +178,7 @@ function setupCodeMirror(textarea, index) {
 
 	// ensure the section doesn't jump when clicking selected text
 	cm.on("cursorActivity", function(cm) {
+		editors.lastActive = cm;
 		setTimeout(function() {
 			lockScroll = {
 				windowScrollY: window.scrollY,
@@ -204,6 +205,20 @@ function setupCodeMirror(textarea, index) {
 			document.removeEventListener("mousemove", resize);
 		});
 	});
+	// resizeGrip has enough space when scrollbars.horiz is visible
+	if (cm.display.scrollbars.horiz.style.display != "") {
+		cm.display.scrollbars.vert.style.marginBottom = "0";
+	}
+	// resizeGrip space adjustment in case a long line was entered/deleted by a user
+	new MutationObserver(function(mutations) {
+		var hScrollbar = mutations[0].target;
+		var hScrollbarVisible = hScrollbar.style.display != "";
+		var vScrollbar = hScrollbar.parentNode.CodeMirror.display.scrollbars.vert;
+		vScrollbar.style.marginBottom = hScrollbarVisible ? "0" : "";
+	}).observe(cm.display.scrollbars.horiz, {
+		attributes: true,
+		attributeFilter: ["style"]
+	});
 
 	editors.splice(index || editors.length, 0, cm);
 	return cm;
@@ -224,10 +239,21 @@ document.addEventListener("scroll", function(e) {
 	}
 });
 
-window.addEventListener("keydown", function(e) {
-	if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.keyCode == 83) {
-		e.preventDefault();
-		save();
+document.addEventListener("keydown", function(e) {
+	if (!e.altKey && e.keyCode >= 70 && e.keyCode <= 114) {
+		if (e.keyCode == 83 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { // Ctrl-S, Cmd-S
+			e.preventDefault();
+			e.stopPropagation();
+			save();
+		} else if (e.target.localName != "textarea") { // textareas are handled by CodeMirror
+			if (e.keyCode == 70 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { /* Ctrl-F, Cmd-F */
+				document.browserSearchHandler(e, "find");
+			} else if (e.keyCode == 71 && (e.ctrlKey || e.metaKey)) { /*Ctrl-G, Ctrl-Shift-G, Cmd-G, Cmd-Shift-G*/
+				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
+			} else if (e.keyCode == 114 && !e.ctrlKey && !e.metaKey) { /*F3, Shift-F3*/
+				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
+			}
+		}
 	}
 });
 
@@ -438,9 +464,47 @@ function setupGlobalSearch() {
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
 	}
 
+	function findPrev(cm) {
+		findNext(cm, true);
+	}
+
+	function getVisibleEditor() {
+		var linesVisible = 2; // closest editor should have at least # lines visible
+		function getScrollDistance(cm) {
+			var bounds = cm.display.wrapper.parentNode.getBoundingClientRect();
+			if (bounds.top < 0) {
+				return -bounds.top;
+			} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * linesVisible) {
+				return 0;
+			} else {
+				return bounds.top - bounds.height;
+			}
+		}
+		if (editors.lastActive && getScrollDistance(editors.lastActive) == 0) {
+			return editors.lastActive;
+		}
+		var sorted = editors
+			.map(function(cm, index) { return {cm: cm, distance: getScrollDistance(cm), index: index} })
+			.sort(function(a, b) { return Math.sign(a.distance - b.distance) || Math.sign(a.index - b.index)});
+		var cm = sorted[0].cm;
+		if (sorted[0].distance > 0) {
+			makeSectionVisible(cm)
+		}
+		cm.focus();
+		return cm;
+	}
+
+	document.browserSearchHandler = function(event, command) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!event.target.classList.contains("CodeMirror-search-field")) {
+			CodeMirror.commands[command](getVisibleEditor());
+		}
+	}
+
 	CodeMirror.commands.find = find;
-	CodeMirror.commands.findNext = function(cm) { findNext(cm) }
-	CodeMirror.commands.findPrev = function(cm) { findNext(cm, true) }
+	CodeMirror.commands.findNext = findNext;
+	CodeMirror.commands.findPrev = findPrev;
 }
 
 function jumpToLine(cm) {
