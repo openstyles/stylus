@@ -1,214 +1,286 @@
 {
-  "addStyleLabel":{
-    "message":"Escribir nuevo estilo",
-    "description":"Label for the button to go to the add style page"
-  },
-  "addStyleTitle":{
-    "message":"Añadir estilo",
-    "description":"Title of the page for adding styles"
-  },
-  "appliesAdd":{
-    "message":"Añadir",
-    "description":"Label for the button to add an 'applies' entry"
-  },
-  "appliesDisplay":{
-    "message":"Se aplica a: $applies$",
-    "description":"Text on the manage screen to describe what the style applies to",
-    "placeholders":{
-      "applies":{
-        "content":"$1"
-      }
+    "appliesToEverything": {
+        "message": "Todos los sitios",
+        "description": "Text displayed for styles that apply to all sites"
+    },
+    "manageOnlyEdited": {
+        "message": "Only edited styles",
+        "description": "Checkbox to show only locally edited styles"
+    },
+    "cm_tabSize": {
+        "message": "Tab size",
+        "description": "Label for the text box controlling tab size option for the style editor."
+    },
+    "enableStyleLabel": {
+        "message": "Habilitar",
+        "description": "Label for the button to enable a style"
+    },
+    "styleMissingName": {
+        "message": "Introduce un nombre.",
+        "description": "Error displayed when user saves without providing a name"
+    },
+    "appliesDomainOption": {
+        "message": "URL en el dominio",
+        "description": "Option to make the style apply to the entered string as a domain"
+    },
+    "checkForUpdate": {
+        "message": "Buscar actualizaciones",
+        "description": "Label for the button to check a single style for an update"
+    },
+    "updateAllCheckSucceededNoUpdate": {
+        "message": "All styles are up to date.",
+        "description": "Text that displays when an update all check completed and no updates are available"
+    },
+    "helpAlt": {
+        "message": "Ayuda",
+        "description": "Alternate text for help buttons"
+    },
+    "findStylesForSite": {
+        "message": "Buscar más estilos para este sitio",
+        "description": "Text for a link that gets a list of styles for the current site"
+    },
+    "manageHeading": {
+        "message": "Estilos instalados",
+        "description": "Heading for the manage page"
+    },
+    "styleEnabledLabel": {
+        "message": "Habilitado",
+        "description": "Label for the enabled state of styles"
+    },
+    "styleToMozillaFormatHelp": {
+        "message": "El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+        "description": "Help info for the button that converts the code to Mozilla format"
+    },
+    "sectionAdd": {
+        "message": "Añadir otra sección",
+        "description": "Label for the button to add a section"
+    },
+    "styleSaveLabel": {
+        "message": "Guardar",
+        "description": "Label for save button for style editing"
+    },
+    "writeStyleForURL": {
+        "message": "this URL",
+        "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    },
+    "appliesAdd": {
+        "message": "Añadir",
+        "description": "Label for the button to add an 'applies' entry"
+    },
+    "appliesRegexpOption": {
+        "message": "URL que coinciden con la expresión regular",
+        "description": "Option to make the style apply to the entered string as a regular expression"
+    },
+    "styleInstall": {
+        "message": "¿Quieres instalar \"$stylename$\" en Stylish?",
+        "description": "Confirmation when installing a style"
+    },
+    "manageText": {
+        "message": "Accede a la página <a href='http://userstyles.org'>userstyles.org</a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http://forum.userstyles.org'>el foro</a> si necesitas ayuda.",
+        "description": "Help text on the manage page"
+    },
+    "disableStyleLabel": {
+        "message": "Inhabilitar",
+        "description": "Label for the button to disable a style"
+    },
+    "prefShowBadge": {
+        "message": "Show number of styles active for the current site on the toolbar button",
+        "description": "Label for the checkbox controlling toolbar badge text."
+    },
+    "cm_lineWrapping": {
+        "message": "Word wrap",
+        "description": "Label for the checkbox controlling word wrap option for the style editor."
+    },
+    "styleCancelEditLabel": {
+        "message": "Volver al gestor",
+        "description": "Label for cancel button for style editing"
+    },
+    "styleChangesNotSaved": {
+        "message": "Has realizado cambios en este estilo sin guardarlos.",
+        "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    },
+    "updateCheckFailServerUnreachable": {
+        "message": "Error de actualización: no se puede acceder al servidor.",
+        "description": "Text that displays when an update check failed because the update server is unreachable"
+    },
+    "manageFilters": {
+        "message": "Filters",
+        "description": "Label for filters container"
+    },
+    "applyAllUpdates": {
+        "message": "Apply all updates",
+        "description": "Label for the button to apply all detected updates"
+    },
+    "deleteStyleConfirm": {
+        "message": "¿Seguro que quieres eliminar este estilo?",
+        "description": "Confirmation before deleting a style"
+    },
+    "styleBadRegexp": {
+        "message": "Regexp is invalid.",
+        "description": "Validation message for a bad regexp in a style"
+    },
+    "optionsHeading": {
+        "message": "Options",
+        "description": "Heading for options section on manage page."
+    },
+    "appliesDisplay": {
+        "message": "Se aplica a: $applies$",
+        "description": "Text on the manage screen to describe what the style applies to"
+    },
+    "styleUpdate": {
+        "message": "Are you sure you want to update '$stylename$'?",
+        "description": "Confirmation when updating a style"
+    },
+    "styleSectionsTitle": {
+        "message": "Secciones",
+        "description": "Title for the style sections section"
+    },
+    "editStyleTitle": {
+        "message": "Editar estilo $stylename$",
+        "description": "Title of the page for editing styles"
+    },
+    "updateCheckSucceededNoUpdate": {
+        "message": "El estilo está actualizado.",
+        "description": "Text that displays when an update check completed and no update is available"
+    },
+    "appliesUrlPrefixOption": {
+        "message": "URL que empiezan por",
+        "description": "Option to make the style apply to the entered string as a URL prefix"
+    },
+    "popupStylesFirst": {
+        "message": "List styles before commands in the toolbar button menu",
+        "description": "Label for the checkbox controlling section order in the toolbar button menu."
+    },
+    "sectionHelp": {
+        "message": "Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
+        "description": "Help text for sections"
+    },
+    "noStylesForSite": {
+        "message": "No hay estilos instalados para este sitio.",
+        "description": "Text displayed when no styles are installed for the current site"
+    },
+    "appliesDisplayTruncatedSuffix": {
+        "message": "y otros muchos sitios",
+        "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    },
+    "appliesRemove": {
+        "message": "Eliminar",
+        "description": "Label for the button to remove an 'applies' entry"
+    },
+    "manageTitle": {
+        "message": "Stylish",
+        "description": "Title for the manage page"
+    },
+    "writeStyleFor": {
+        "message": "Write style for: ",
+        "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    },
+    "appliesLabel": {
+        "message": "Se aplica a",
+        "description": "Label for 'applies to' fields on the edit/add screen"
+    },
+    "openManage": {
+        "message": "Gestionar estilos instalados",
+        "description": "Link to open the manage page."
+    },
+    "updateCheckFailBadResponseCode": {
+        "message": "Error de actualización: el servidor ha respondido con el código $code$.",
+        "description": "Text that displays when an update check failed because the response code indicates an error"
+    },
+    "appliesSpecify": {
+        "message": "Especificar",
+        "description": "Label for the button to make a style apply only to specific sites"
+    },
+    "installUpdate": {
+        "message": "Instalar actualización",
+        "description": "Label for the button to install an update for a single style"
+    },
+    "stylishUnavailableForURL": {
+        "message": "(Stylish does not work on pages like this.)",
+        "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+    },
+    "sectionRemove": {
+        "message": "Eliminar sección",
+        "description": "Label for the button to remove a section"
+    },
+    "disableAllStyles": {
+        "message": "Turn all styles off",
+        "description": "Label for the checkbox that turns all enabled styles off."
+    },
+    "updateCompleted": {
+        "message": "Actualización terminada",
+        "description": "Text that displays when an update completed"
+    },
+    "checkingForUpdate": {
+        "message": "Comprobando...",
+        "description": "Text to display when checking a style for an update"
+    },
+    "sectionCode": {
+        "message": "Código",
+        "description": "Label for the code for a section"
+    },
+    "cm_smartIndent": {
+        "message": "Use smart indentation",
+        "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    },
+    "appliesHelp": {
+        "message": "Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
+        "description": "Help text for 'applies to' section"
+    },
+    "editStyleHeading": {
+        "message": "Editar estilo",
+        "description": "Title of the page for editing styles"
+    },
+    "appliesUrlOption": {
+        "message": "URL",
+        "description": "Option to make the style apply to the entered string as a URL"
+    },
+    "addStyleTitle": {
+        "message": "Añadir estilo",
+        "description": "Title of the page for adding styles"
+    },
+    "dbError": {
+        "message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+        "description": "Prompt when a DB error is encountered"
+    },
+    "editGotoLine": {
+        "message": "Goto line (or line:col)",
+        "description": "Go to line or line:column on Ctrl-G in style code editor"
+    },
+    "checkAllUpdates": {
+        "message": "Comprobar todos los estilos para buscar actualizaciones",
+        "description": "Label for the button to check all styles for updates"
+    },
+    "styleToMozillaFormat": {
+        "message": "Al formato de Mozilla",
+        "description": "Label for the button that converts the code to Mozilla format"
+    },
+    "cm_keyMap": {
+        "message": "Keymap",
+        "description": "Label for the drop-down list controlling the keymap for the style editor."
+    },
+    "cm_indentWithTabs": {
+        "message": "Use tabs with smart indentation",
+        "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    },
+    "deleteStyleLabel": {
+        "message": "Eliminar",
+        "description": "Label for the button to delete a style"
+    },
+    "addStyleLabel": {
+        "message": "Escribir nuevo estilo",
+        "description": "Label for the button to go to the add style page"
+    },
+    "manageOnlyEnabled": {
+        "message": "Only enabled styles",
+        "description": "Checkbox to show only enabled styles"
+    },
+    "editStyleLabel": {
+        "message": "Editar",
+        "description": "Label for the button to go to the edit style page"
+    },
+    "description": {
+        "message": "Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+        "description": "Extension description"
     }
-  },
-  "appliesDisplayTruncatedSuffix":{
-    "message":"y otros muchos sitios",
-    "description":"Text added to appliesDisplay when there are more sites for the style than are displayed"
-  },
-  "appliesDomainOption":{
-    "message":"URL en el dominio",
-    "description":"Option to make the style apply to the entered string as a domain"
-  },
-  "appliesHelp":{
-    "message":"Utiliza los controles \"Se aplica a\" para limitar las URL a las que se aplica el código de esta sección.",
-    "description":"Help text for 'applies to' section"
-  },
-  "appliesLabel":{
-    "message":"Se aplica a",
-    "description":"Label for 'applies to' fields on the edit\/add screen"
-  },
-  "appliesRegexpOption":{
-    "message":"URL que coinciden con la expresión regular",
-    "description":"Option to make the style apply to the entered string as a regular expression"
-  },
-  "appliesRemove":{
-    "message":"Eliminar",
-    "description":"Label for the button to remove an 'applies' entry"
-  },
-  "appliesSpecify":{
-    "message":"Especificar",
-    "description":"Label for the button to make a style apply only to specific sites"
-  },
-  "appliesToEverything":{
-    "message":"Todos los sitios",
-    "description":"Text displayed for styles that apply to all sites"
-  },
-  "appliesUrlPrefixOption":{
-    "message":"URL que empiezan por",
-    "description":"Option to make the style apply to the entered string as a URL prefix"
-  },
-  "checkAllUpdates":{
-    "message":"Comprobar todos los estilos para buscar actualizaciones",
-    "description":"Label for the button to check all styles for updates"
-  },
-  "checkForUpdate":{
-    "message":"Buscar actualizaciones",
-    "description":"Label for the button to check a single style for an update"
-  },
-  "checkingForUpdate":{
-    "message":"Comprobando...",
-    "description":"Text to display when checking a style for an update"
-  },
-  "deleteStyleLabel":{
-    "message":"Eliminar",
-    "description":"Label for the button to delete a style"
-  },
-  "deleteStyleConfirm":{
-    "message":"¿Seguro que quieres eliminar este estilo?",
-    "description":"Confirmation before deleting a style"
-  },
-  "description":{
-    "message":"Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
-    "description":"Extension description"
-  },
-  "disableStyleLabel":{
-    "message":"Inhabilitar",
-    "description":"Label for the button to disable a style"
-  },
-  "editStyleHeading":{
-    "message":"Editar estilo",
-    "description":"Title of the page for editing styles"
-  },
-  "editStyleLabel":{
-    "message":"Editar",
-    "description":"Label for the button to go to the edit style page"
-  },
-  "editStyleTitle":{
-    "message":"Editar estilo $stylename$",
-    "description":"Title of the page for editing styles",
-    "placeholders":{
-      "stylename":{
-        "content":"$1"
-      }
-    }
-  },
-  "enableStyleLabel":{
-    "message":"Habilitar",
-    "description":"Label for the button to enable a style"
-  },
-  "findStylesForSite":{
-    "message":"Buscar más estilos para este sitio",
-    "description":"Text for a link that gets a list of styles for the current site"
-  },
-  "helpAlt":{
-    "message":"Ayuda",
-    "description":"Alternate text for help buttons"
-  },
-  "installUpdate":{
-    "message":"Instalar actualización",
-    "description":"Label for the button to install an update for a single style"
-  },
-  "manageHeading":{
-    "message":"Estilos instalados",
-    "description":"Heading for the manage page"
-  },
-  "manageText":{
-    "message":"Accede a la página <a href='http:\/\/userstyles.org'>userstyles.org<\/a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http:\/\/forum.userstyles.org'>el foro<\/a> si necesitas ayuda.",
-    "description":"Help text on the manage page"
-  },
-  "noStylesForSite":{
-    "message":"No hay estilos instalados para este sitio.",
-    "description":"Text displayed when no styles are installed for the current site"
-  },
-  "openManage":{
-    "message":"Gestionar estilos instalados",
-    "description":"Link to open the manage page."
-  },
-  "sectionAdd":{
-    "message":"Añadir otra sección",
-    "description":"Label for the button to add a section"
-  },
-  "sectionCode":{
-    "message":"Código",
-    "description":"Label for the code for a section"
-  },
-  "sectionHelp":{
-    "message":"Las secciones te permiten definir diferentes fragmentos de código para aplicarlos a distintos conjuntos de URL en el mismo estilo. Por ejemplo, un único estilo puede cambiar la página de inicio de un sitio de una forma y modificar el resto del sitio de otra.",
-    "description":"Help text for sections"
-  },
-  "sectionRemove":{
-    "message":"Eliminar sección",
-    "description":"Label for the button to remove a section"
-  },
-  "styleCancelEditLabel":{
-    "message":"Volver al gestor",
-    "description":"Label for cancel button for style editing"
-  },
-  "styleChangesNotSaved":{
-    "message":"Has realizado cambios en este estilo sin guardarlos.",
-    "description":"Text for the prompt when changes are made to a style and the user tries to leave without saving"
-  },
-  "styleEnabledLabel":{
-    "message":"Habilitado",
-    "description":"Label for the enabled state of styles"
-  },
-  "styleInstall":{
-    "message":"¿Quieres instalar \"$stylename$\" en Stylish?",
-    "description":"Confirmation when installing a style",
-    "placeholders":{
-      "stylename":{
-        "content":"$1"
-      }
-    }
-  },
-  "styleMissingName":{
-    "message":"Introduce un nombre.",
-    "description":"Error displayed when user saves without providing a name"
-  },
-  "styleSaveLabel":{
-    "message":"Guardar",
-    "description":"Label for save button for style editing"
-  },
-  "styleSectionsTitle":{
-    "message":"Secciones",
-    "description":"Title for the style sections section"
-  },
-  "styleToMozillaFormat":{
-    "message":"Al formato de Mozilla",
-    "description":"Label for the button that converts the code to Mozilla format"
-  },
-  "styleToMozillaFormatHelp":{
-    "message":"El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
-    "description":"Help info for the button that converts the code to Mozilla format"
-  },
-  "updateCheckFailBadResponseCode":{
-    "message":"Error de actualización: el servidor ha respondido con el código $code$.",
-    "description":"Text that displays when an update check failed because the response code indicates an error",
-    "placeholders":{
-      "code":{
-        "content":"$1"
-      }
-    }
-  },
-  "updateCheckFailServerUnreachable":{
-    "message":"Error de actualización: no se puede acceder al servidor.",
-    "description":"Text that displays when an update check failed because the update server is unreachable"
-  },
-  "updateCheckSucceededNoUpdate":{
-    "message":"El estilo está actualizado.",
-    "description":"Text that displays when an update check completed and no update is available"
-  },
-  "updateCompleted":{
-    "message":"Actualización terminada",
-    "description":"Text that displays when an update completed"
-  }
 }
