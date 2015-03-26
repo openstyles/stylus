@@ -181,6 +181,10 @@
 		"message": "Stylish",
 		"description": "Title for the manage page"
 	},
+	"menuShowBadge": {
+		"message": "Show active style count",
+		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
 	"noStylesForSite": {
 		"message": "No styles installed for this site.",
 		"description": "Text displayed when no styles are installed for the current site"

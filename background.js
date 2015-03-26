@@ -37,8 +37,53 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "openURL":
 			openURL(request);
 			break;
+		case "styleDisableAll":
+			chrome.contextMenus.update("disableAll", {checked: request.disableAll});
+			break;
+		case "prefChanged":
+			if (request.prefName == "show-badge") {
+				chrome.contextMenus.update("show-badge", {checked: request.value});
+			}
+			break;
 	}
 });
+
+chrome.commands.onCommand.addListener(function(command) {
+	switch (command) {
+		case "openManage":
+			openURL({url: chrome.extension.getURL("manage.html")});
+			break;
+		case "styleDisableAll":
+			disableAllStylesToggle();
+			chrome.contextMenus.update("disableAll", {checked: prefs.getPref("disableAll")});
+			break;
+	}
+});
+
+chrome.contextMenus.create({
+	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
+	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
+});
+chrome.contextMenus.create({
+	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
+	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
+});
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+	if (info.menuItemId == "disableAll") {
+		disableAllStylesToggle(info.checked);
+	} else {
+		prefs.setPref(info.menuItemId, info.checked);
+	}
+});
+
+function disableAllStylesToggle(newState) {
+	if (newState === undefined || newState === null) {
+		newState = !prefs.getPref("disableAll");
+	}
+	prefs.setPref("disableAll", newState);
+	notifyAllTabs({method: "styleDisableAll", disableAll: newState});
+	chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: newState});
+}
 
 function getStyles(options, callback) {
 

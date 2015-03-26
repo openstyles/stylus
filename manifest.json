@@ -12,11 +12,20 @@
 	"permissions": [
 		"tabs",
 		"webNavigation",
+		"contextMenus",
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],
 	"background": {
 		"page": "background.html"
+	},
+	"commands": {
+	  "openManage": {
+		"description": "__MSG_openManage__"
+	  },
+	  "styleDisableAll": {
+		"description": "__MSG_disableAllStyles__"
+	  }
 	},
 	"content_scripts": [
 		{

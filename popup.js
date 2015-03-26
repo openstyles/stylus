@@ -4,8 +4,10 @@ styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='st
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
+var installed = document.getElementById("installed");
+
 if (!prefs.getPref("popup.stylesFirst")) {
-	document.body.insertBefore(document.querySelector("body > .actions"), document.getElementById("installed"));
+	document.body.insertBefore(document.querySelector("body > .actions"), installed);
 }
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -87,7 +89,6 @@ function showStyles(styles) {
 		if (enabledFirst && a.enabled !== b.enabled) return !(a.enabled < b.enabled) ? -1 : 1;
 		return a.name.localeCompare(b.name);
 	});
-	var installed = document.getElementById("installed");
 	if (styles.length == 0) {
 		installed.innerHTML = "<div class='entry' id='no-styles'>" + t('noStylesForSite') + "</div>";
 	}
@@ -173,14 +174,39 @@ function openLink(event) {
 }
 
 function handleUpdate(style) {
-	var installed = document.getElementById("installed");
-	installed.replaceChild(createStyleElement(style), installed.querySelector("[style-id='" + style.id + "']"));
+	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
+	if (styleElement) {
+		installed.replaceChild(createStyleElement(style), styleElement);
+	}
 }
 
 function handleDelete(id) {
-	var installed = document.getElementById("installed");
-	installed.removeChild(installed.querySelector("[style-id='" + id + "']"));
+	var styleElement = installed.querySelector("[style-id='" + id + "']");
+	if (styleElement) {
+		installed.removeChild(styleElement);
+	}
 }
+
+function handleDisableAll(disableAll) {
+	installed.classList.toggle("disabled", disableAll);
+}
+
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	if (request.method == "updatePopup") {
+		switch (request.reason) {
+			case "styleUpdated":
+				handleUpdate(request.style);
+				break;
+			case "styleDeleted":
+				handleDelete(request.id);
+				break;
+			case "styleDisableAll":
+				document.getElementById("disableAll").checked = request.disableAll;
+				handleDisableAll(request.disableAll);
+				break;
+		}
+	}
+});
 
 tE("open-manage-link", "openManage");
 tE("write-style-for", "writeStyleFor");
@@ -191,8 +217,9 @@ tE("disableAll-label", "disableAllStyles");
 	document.getElementById(id).addEventListener("click", openLink, false);
 });
 
-loadPrefs({"disableAll": false})
+loadPrefs({"disableAll": false});
+handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
-	document.getElementById("installed").classList.toggle("disabled", event.target.checked);
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
+	chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: event.target.checked});
 });
