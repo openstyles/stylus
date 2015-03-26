@@ -135,6 +135,17 @@
 			.CodeMirror-vscrollbar {
 				margin-bottom: 8px; /* make space for resize-grip */
 			}
+			.CodeMirror-search-field {
+				-webkit-animation: highlight 3s ease-out;
+			}
+			@-webkit-keyframes highlight {
+				from {
+					background-color: #ff9;
+				}
+				to {
+					background-color: transparent;
+				}
+			}
 			.resize-grip {
 				position: absolute;
 				display: block;
