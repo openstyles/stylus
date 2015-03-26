@@ -1,16 +1,18 @@
 # Install transifex-ruby - https://rubygems.org/gems/transifex-ruby
 #
-# Create a file in the same directory called pull_locales_login.rb.
+# Create a file called pull_locales_login.rb.
 # Contents should be:
 #
 # Transifex.configure do |config|
 #   config.username = 'transifex.username'
 #   config.password = 'transifex.password'
 # end
+#
+# Update require_relative to point to this file.
 
 require 'transifex'
 require 'fileutils'
-require_relative 'pull_locales_login'
+require_relative '../stylish-chrome-bin/pull_locales_login'
 
 project_slug = 'stylish-for-chrome'
 
