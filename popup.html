@@ -60,6 +60,9 @@
 			#installed.disabled .style-name {
 				text-decoration: line-through;
 			}
+			#installed .actions a {
+				margin-right: 0.5em;
+			}
 			body > .actions {
 				margin-top: 0.5em;
 			}
@@ -73,6 +76,7 @@
 
 			#unavailable {
 				border: none;
+				display: none;
 			}
 			body.blocked #installed,
 			body.blocked #find-styles,
@@ -134,7 +138,7 @@
 </head>
 <body id="stylish-popup">
 
-	<div id="unavailable"><div class="left-gutter"></div><div class="main-controls"><span id="unavailable-message"></span></div></div>
+	<div id="unavailable"><div class="left-gutter"></div><div class="main-controls"><span id="unavailable-message" i18n-text="stylishUnavailableForURL"></span></div></div>
 
 	<div id="installed"></div>
 
@@ -144,14 +148,14 @@
 				<input id="disableAll" type="checkbox">
 			</div>
 			<div class="main-controls">
-				<label id="disableAll-label" for="disableAll"></label>
+				<label id="disableAll-label" for="disableAll" i18n-text="disableAllStyles"></label>
 			</div>
 		</div>
 		<div class="left-gutter"></div>
 		<div class="main-controls">
-			<div id="find-styles"><a id="find-styles-link" href="#"></a></div>
-			<div id="manage-styles"><a id="open-manage-link" href="manage.html"></a></div>
-			<div id="write-style"><span id="write-style-for"></span></div>
+			<div id="find-styles"><a id="find-styles-link" href="#" i18n-text="findStylesForSite"></a></div>
+			<div id="manage-styles"><a id="open-manage-link" href="manage.html" i18n-text="openManage"></a></div>
+			<div id="write-style"><span id="write-style-for" i18n-text="writeStyleFor"></span></div>
 		</div>
 	</div>
 

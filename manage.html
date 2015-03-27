@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title></title>
+		<title i18n-text="manageTitle"></title>
 		<style>
 			body {
 				margin: 0;
@@ -127,25 +127,24 @@
 		<script src="apply.js"></script>
 	</head>
 	<body id="stylish-manage">
-
 		<div id="header">
-			<h1 id="manage-heading"></h1>
-			<p id="manage-text"></p>
+			<h1 id="manage-heading" i18n-text="manageHeading"></h1>
+			<p id="manage-text" i18n-html="manageText"></p>
 			<fieldset>
-				<legend id="filters"></legend>
-				<div><input id="manage.onlyEnabled" type="checkbox"><label id="manage.onlyEnabled-label" for="manage.onlyEnabled"></label></div>
-				<div><input id="manage.onlyEdited" type="checkbox"><label id="manage.onlyEdited-label" for="manage.onlyEdited"></label></div>
+				<legend id="filters" i18n-text="manageFilters"></legend>
+				<div><input id="manage.onlyEnabled" type="checkbox"><label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label></div>
+				<div><input id="manage.onlyEdited" type="checkbox"><label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label></div>
 			</fieldset>
-			<p><button id="check-all-updates"></button></p>
+			<p><button id="check-all-updates" i18n-text="checkAllUpdates"></button></p>
 			<p>
-				<button id="apply-all-updates" class="hidden"></button>
-				<span id="update-all-no-updates" class="hidden"></span>
+				<button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+				<span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
 			</p>
-			<p><a href="edit.html"><button id="add-style-label"></button></a></p>
+			<p><a href="edit.html"><button id="add-style-label" i18n-text="addStyleLabel"></button></a></p>
 			<div id="options">
-				<h2 id="options-heading"></h2>
-				<input id="show-badge" type="checkbox"><label id="show-badge-label" for="show-badge"></label>
-				<div><input id="popup.stylesFirst" type="checkbox"><label id="stylesFirst-label" for="popup.stylesFirst"></label></div>
+				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
+				<input id="show-badge" type="checkbox"><label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label>
+				<div><input id="popup.stylesFirst" type="checkbox"><label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label></div>
 			</div>
 		</div>
 		<div id="installed"></div>

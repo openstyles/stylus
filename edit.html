@@ -285,47 +285,47 @@
 	</head>
 	<body id="stylish-edit">
 		<div id="header">
-			<h1 id="heading"></h1>
+			<h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
 			<section id="basic-info">
 				<div id="basic-info-name">
-					<input id="name" class="style-contributor">
+					<input id="name" class="style-contributor" i18n-placeholder="styleMissingName">
 				</div>
 				<div id="basic-info-enabled">
 					<input type="checkbox" id="enabled" class="style-contributor">
-					<label for="enabled" id="enabled-label"></label>
+					<label for="enabled" id="enabled-label" i18n-text="styleEnabledLabel"></label>
 				</div>
 			</section>
 			<section id="actions">
-				<div><button id="to-mozilla"></button><img id="to-mozilla-help" src="help.png"></div>
-				<div><a href="manage.html"><button id="cancel-button"></button></a></div>
-				<div><button id="save-button" title="Ctrl-S"></button></div>
+				<div><button id="to-mozilla" i18n-text="styleToMozillaFormat"></button><img id="to-mozilla-help" src="help.png"></div>
+				<div><a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a></div>
+				<div><button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button></div>
 			</section>
 			<section id="options">
-				<h2 id="options-heading"></h2>
+				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
 				<div class="option">
 					<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
-					<label id="lineWrapping-label" for="editor.lineWrapping"></label>
+					<label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
 				</div>
 				<div class="option">
 					<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
-					<label id="smartIndent-label" for="editor.smartIndent"></label>
+					<label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
 				</div>
 				<div class="option">
 					<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
-					<label id="indentWithTabs-label" for="editor.indentWithTabs"></label>
+					<label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
 				</div>
 				<div class="option aligned">
-					<label id="tabSize-label" for="editor.tabSize"></label>
+					<label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
 					<input data-option="tabSize" id="editor.tabSize" type="number" min="0">
 				</div>
 				<div class="option aligned">
-					<label id="keyMap-label" for="editor.keyMap"></label>
+					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 					<select data-option="keyMap" id="editor.keyMap"></select>
 				</div>
 			</section>
 		</div>
 		<section id="sections">
-			<h2><span id="sections-heading"></span> <img id="sections-help" src="help.png"></h2>
+			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="help.png" i18n-alt="helpAlt"></h2>
 		</section>
 		<script src="edit.js"></script>
 	</body>
