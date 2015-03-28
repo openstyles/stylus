@@ -47,6 +47,9 @@ var sectionTemplate = tHTML('\
 	</div>\
 ');
 
+var findTemplate = t("search") + ': <input type="text" style="width: 10em" class="CodeMirror-search-field"/>&nbsp;' +
+	'<span style="color: #888" class="CodeMirror-search-hint">(' + t("searchRegexp") + ')</span>';
+
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
@@ -441,7 +444,7 @@ function setupGlobalSearch() {
 	function find(activeCM) {
 		var originalOpenDialog = activeCM.openDialog;
 		activeCM.openDialog = function(template, callback, options) {
-			originalOpenDialog.call(activeCM, template, function(query) {
+			originalOpenDialog.call(activeCM, findTemplate, function(query) {
 				activeCM.openDialog = originalOpenDialog;
 				callback(query);
 				var state = activeCM.state.search;

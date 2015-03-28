@@ -205,6 +205,14 @@
 		"message": "Show number of styles active for the current site on the toolbar button",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
+	"search": {
+		"message": "Search",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"searchRegexp": {
+		"message": "Use /re/ syntax for regexp search",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
 	"sectionAdd": {
 		"message": "Add another section",
 		"description": "Label for the button to add a section"
