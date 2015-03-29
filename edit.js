@@ -468,7 +468,7 @@ function setupGlobalSearch() {
 		findNext(cm, true);
 	}
 
-	function getVisibleEditor() {
+	function getVisibleEditor(activeElement) {
 		var linesVisible = 2; // closest editor should have at least # lines visible
 		function getScrollDistance(cm) {
 			var bounds = cm.display.wrapper.parentNode.getBoundingClientRect();
@@ -478,6 +478,17 @@ function setupGlobalSearch() {
 				return 0;
 			} else {
 				return bounds.top - bounds.height;
+			}
+		}
+		if (activeElement && activeElement.className.indexOf("applies-") >= 0) {
+			for (var section = activeElement; section.parentNode; section = section.parentNode) {
+				var cmWrapper = section.querySelector(".CodeMirror");
+				if (cmWrapper) {
+					if (getScrollDistance(cmWrapper.CodeMirror) == 0) {
+						return cmWrapper.CodeMirror;
+					}
+					break;
+				}
 			}
 		}
 		if (editors.lastActive && getScrollDistance(editors.lastActive) == 0) {
@@ -498,7 +509,7 @@ function setupGlobalSearch() {
 		event.preventDefault();
 		event.stopPropagation();
 		if (!event.target.classList.contains("CodeMirror-search-field")) {
-			CodeMirror.commands[command](getVisibleEditor());
+			CodeMirror.commands[command](getVisibleEditor(event.target));
 		}
 	}
 
