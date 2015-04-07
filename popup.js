@@ -177,6 +177,10 @@ function handleUpdate(style) {
 	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
 	if (styleElement) {
 		installed.replaceChild(createStyleElement(style), styleElement);
+	} else if (chrome.extension.getBackgroundPage().getApplicableSections(style, location.href).length) {
+		// a new style for the current url is installed
+		document.getElementById("unavailable").style.display = "none";
+		installed.appendChild(createStyleElement(style));
 	}
 }
 
