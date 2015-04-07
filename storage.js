@@ -81,7 +81,6 @@ function enableStyle(id, enabled) {
 			chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
 				handleUpdate(styles[0]);
 				notifyAllTabs({method: "styleUpdated", style: styles[0]});
-				chrome.extension.sendMessage({method: "updatePopup", reason: "styleUpdated", style: styles[0]});
 			});
 		});
 	});
@@ -95,7 +94,6 @@ function deleteStyle(id) {
 			t.executeSql("DELETE FROM styles WHERE id = ?;", [id]);
 		}, reportError, function() {
 			chrome.extension.sendMessage({method: "styleChanged"});
-			chrome.extension.sendMessage({method: "updatePopup", reason: "styleDeleted", id: id});
 			handleDelete(id);
 			notifyAllTabs({method: "styleDeleted", id: id});
 		});

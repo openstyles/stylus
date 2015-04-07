@@ -6,7 +6,8 @@ if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	switch (request.method) {
+	// Also handle special request just for the pop-up
+	switch (request.method == "updatePopup" ? request.reason : request.method) {
 		case "styleDeleted":
 			removeStyle(request.id, document);
 			break;

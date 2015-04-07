@@ -177,6 +177,10 @@ function handleUpdate(style) {
 	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
 	if (styleElement) {
 		installed.replaceChild(createStyleElement(style), styleElement);
+	} else if (chrome.extension.getBackgroundPage().getApplicableSections(style, location.href).length) {
+		// a new style for the current url is installed
+		document.getElementById("unavailable").style.display = "none";
+		installed.appendChild(createStyleElement(style));
 	}
 }
 
@@ -221,5 +225,4 @@ loadPrefs({"disableAll": false});
 handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
-	chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: event.target.checked});
 });
