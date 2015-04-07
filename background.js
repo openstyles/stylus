@@ -82,7 +82,6 @@ function disableAllStylesToggle(newState) {
 	}
 	prefs.setPref("disableAll", newState);
 	notifyAllTabs({method: "styleDisableAll", disableAll: newState});
-	chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: newState});
 }
 
 function getStyles(options, callback) {

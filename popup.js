@@ -221,5 +221,4 @@ loadPrefs({"disableAll": false});
 handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
-	chrome.extension.sendMessage({method: "updatePopup", reason: "styleDisableAll", disableAll: event.target.checked});
 });
