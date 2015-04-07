@@ -1,4 +1,9 @@
-chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, asHash: true}, applyStyles);
+var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
+if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
+	chrome.extension.getBackgroundPage().getStyles(request, applyStyles);
+} else {
+	chrome.extension.sendMessage(request, applyStyles);
+}
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
