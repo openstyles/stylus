@@ -115,7 +115,7 @@ function getDomains(url) {
 	if (url.indexOf("file:") == 0) {
 		return [];
 	}
-	var d = /.*?:\/*([^\/]+)/.exec(url)[1];
+	var d = /.*?:\/*([^\/:]+)/.exec(url)[1];
 	var domains = [d];
 	while (d.indexOf(".") != -1) {
 		d = d.substring(d.indexOf(".") + 1);
