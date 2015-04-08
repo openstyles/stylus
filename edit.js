@@ -52,7 +52,12 @@ function setCleanItem(node, isClean) {
 
 	if (isClean) {
 		delete dirty[node.id];
-		node.savedValue = "checkbox" === node.type ? node.checked : node.value;
+		// A div would indicate a section
+		if (node.nodeName.toLowerCase() == "div") {
+			node.savedValue = getCodeMirrorForSection(node).changeGeneration();
+		} else {
+			node.savedValue = "checkbox" === node.type ? node.checked : node.value;
+		}
 	} else {
 		dirty[node.id] = true;
 	}
@@ -75,9 +80,8 @@ function setCleanSection(section) {
 	section.querySelectorAll(".style-contributor").forEach(function(node) { setCleanItem(node, true) });
 
 	// #header section has no codemirror
-	var wrapper = section.querySelector(".CodeMirror");
-	if (wrapper) {
-		var cm = wrapper.CodeMirror;
+	var cm = getCodeMirrorForSection(section)
+	if (cm) {
 		section.savedValue = cm.changeGeneration();
 		indicateCodeChange(cm);
 	}
@@ -225,9 +229,22 @@ function setupCodeMirror(textarea, index) {
 }
 
 function indicateCodeChange(cm) {
-	var section = cm.getTextArea().parentNode;
+	var section = getSectionForCodeMirror(cm);
 	setCleanItem(section, cm.isClean(section.savedValue));
 	updateTitle();
+}
+
+function getSectionForCodeMirror(cm) {
+	return cm.getTextArea().parentNode;
+}
+
+function getCodeMirrorForSection(section) {
+	// #header section has no codemirror
+	var wrapper = section.querySelector(".CodeMirror");
+	if (wrapper) {
+		return wrapper.CodeMirror;
+	}
+	return null;
 }
 
 // ensure the section doesn't jump when clicking selected text
