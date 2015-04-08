@@ -1,5 +1,5 @@
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<input class='checker' type='checkbox'><div class='style-name'></div><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div>";
+styleTemplate.innerHTML = "<div class='left-gutter'><input class='checker' type='checkbox'></div><div class='main-controls'><div class='style-name'></div><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div></div>";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -26,7 +26,7 @@ function updatePopUp(url) {
 	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(url);
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
-		tE("unavailable", "stylishUnavailableForURL");
+		tE("unavailable-message", "stylishUnavailableForURL");
 		return;
 	}
 

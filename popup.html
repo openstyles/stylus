@@ -22,6 +22,19 @@
 				color: black;
 			}
 
+			.left-gutter {
+				display: table-cell;
+				width: 16px;
+				vertical-align: top;
+			}
+			.left-gutter input {
+				margin-top: 0;
+				margin-left: 0;
+			}
+			.main-controls {
+				display: table-cell;
+			}
+
 			.entry {
 				padding: 0.5em 0;
 				border-bottom: 1px solid black;
@@ -49,7 +62,7 @@
 				margin-top: 0.5em;
 			}
 
-			.actions > div, #unavailable {
+			.actions > div:not(:last-child), .actions > .main-controls > div:not(:last-child), #unavailable:not(:last-child) {
 				margin-bottom: 0.75em;
 			}
 			.actions input, .actions label {
@@ -59,12 +72,10 @@
 			#unavailable {
 				border: none;
 			}
-			#unavailable:empty {
-				display: none;
-			}
 			body.blocked #installed,
 			body.blocked #find-styles,
-			body.blocked #write-style {
+			body.blocked #write-style,
+			body:not(.blocked) #unavailable {
 				display: none;
 			}
 
@@ -121,18 +132,25 @@
 </head>
 <body id="stylish-popup">
 
-	<div id="unavailable"></div>
+	<div id="unavailable"><div class="left-gutter"></div><div class="main-controls"><span id="unavailable-message"></span></div></div>
 
 	<div id="installed"></div>
 
 	<div class="actions">
 		<div id="disable-all-wrapper">
-			<input id="disableAll" type="checkbox">
-			<label id="disableAll-label" for="disableAll"></label>
+			<div class="left-gutter">
+				<input id="disableAll" type="checkbox">
+			</div>
+			<div class="main-controls">
+				<label id="disableAll-label" for="disableAll"></label>
+			</div>
 		</div>
-		<div id="find-styles"><a id="find-styles-link" href="#"></a></div>
-		<div id="manage-styles"><a id="open-manage-link" href="manage.html"></a></div>
-		<div id="write-style"><span id="write-style-for"></span></div>
+		<div class="left-gutter"></div>
+		<div class="main-controls">
+			<div id="find-styles"><a id="find-styles-link" href="#"></a></div>
+			<div id="manage-styles"><a id="open-manage-link" href="manage.html"></a></div>
+			<div id="write-style"><span id="write-style-for"></span></div>
+		</div>
 	</div>
 
 	<script src="popup.js"></script>
