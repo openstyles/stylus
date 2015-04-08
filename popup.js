@@ -1,5 +1,5 @@
 var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<div class='left-gutter'><input class='checker' type='checkbox'></div><div class='main-controls'><div class='style-name'></div><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div></div>";
+styleTemplate.innerHTML = "<div class='left-gutter'><input class='checker' type='checkbox'></div><div class='main-controls'><label class='style-name'></label><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div></div>";
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -100,12 +100,14 @@ function showStyles(styles) {
 function createStyleElement(style) {
 	var e = styleTemplate.cloneNode(true);
 	var checkbox = e.querySelector(".checker");
+	checkbox.id = "style-" + style.id;
 	checkbox.checked = style.enabled == "true";
 
 	e.setAttribute("class", "entry " + (style.enabled == "true" ? "enabled" : "disabled"));
 	e.setAttribute("style-id", style.id);
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));
+	styleName.setAttribute("for", "style-" + style.id);
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	editLink.addEventListener("click", openLinkInTabOrWindow, false);
