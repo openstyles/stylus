@@ -178,6 +178,7 @@ var prefs = {
 	"editor.indentWithTabs": false,// smart indent with tabs
 	"editor.tabSize": 4,           // tab width, in spaces
 	"editor.keyMap": "sublime",    // keymap
+	"editor.theme": "default",     // CSS theme
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",

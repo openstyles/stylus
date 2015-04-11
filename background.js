@@ -392,3 +392,17 @@ function openURL(options) {
 		}
 	});
 }
+
+var codeMirrorThemes = [chrome.i18n.getMessage("default")];
+chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
+	rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
+		themeDir.createReader().readEntries(function(entries) {
+			entries
+				.filter(function(entry) { return entry.isFile })
+				.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
+				.forEach(function(entry) {
+					codeMirrorThemes.push(entry.name.replace(/\.css$/, ""));
+				});
+		});
+	});
+});

@@ -128,6 +128,7 @@ function initCodeMirror() {
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
 		keyMap: "sublime",
+		theme: "default",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
 	}
 	mergeOptions(stylishOptions, CM.defaults);
@@ -169,31 +170,70 @@ function initCodeMirror() {
 		});
 	}
 
+	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->loadPrefs()
+	var theme = prefs.getPref("editor.theme");
+	var themes = chrome.extension.getBackgroundPage().codeMirrorThemes;
+	document.getElementById("cm-theme").href = themes.indexOf(theme) <= 0 ? "" : "codemirror/theme/" + theme + ".css";
+
 	// initialize global editor controls
-	document.getElementById("options").addEventListener("change", acmeEventListener, false);
-
-	var keymapControl = document.getElementById("editor.keyMap");
-	Object.keys(CodeMirror.keyMap).sort().forEach(function(map) {
-		keymapControl.appendChild(document.createElement("option")).textContent = map;
+	document.addEventListener("DOMContentLoaded", function() {
+		function concatOption(html, option) {
+			return html + "<option>" + option + "</option>";
+		}
+		document.getElementById("editor.theme").innerHTML = themes.reduce(concatOption, "");
+		document.getElementById("editor.keyMap").innerHTML = Object.keys(CM.keyMap).sort().reduce(concatOption, "");
+		var controlPrefs = {};
+		document.querySelectorAll("#options *[data-option][id^='editor.']").forEach(function(option) {
+			controlPrefs[option.id] = CM.defaults[option.dataset.option];
+		});
+		document.getElementById("options").addEventListener("change", acmeEventListener, false);
+		loadPrefs(controlPrefs);
 	});
-
-	var controlPrefs = {},
-	    controlOptions = ["smartIndent", "indentWithTabs", "tabSize", "keyMap", "lineWrapping"];
-	controlOptions.forEach(function(option) {
-		controlPrefs["editor." + option] = CM.defaults[option];
-	});
-	loadPrefs(controlPrefs);
-
 }
 initCodeMirror();
 
 function acmeEventListener(event) {
-	var option = event.target.dataset.option;
-	console.log("acmeEventListener heard %s on %s", event.type, event.target.id);
-	if (!option) console.error("acmeEventListener: no 'cm_option' %O", event.target);
-	else CodeMirror.setOption(option, event.target[isCheckbox(event.target) ? "checked" : "value"]);
-
-	if ("tabSize" === option) CodeMirror.setOption("indentUnit", CodeMirror.getOption("tabSize"));
+	var el = event.target;
+	var option = el.dataset.option;
+	//console.log("acmeEventListener heard %s on %s", event.type, el.id);
+	if (!option) {
+		console.error("acmeEventListener: no 'cm_option' %O", el);
+		return;
+	}
+	var value = el.type == "checkbox" ? el.checked : el.value;
+	switch (option) {
+		case "tabSize":
+			CodeMirror.setOption("indentUnit", value);
+			break;
+		case "theme":
+			var themeLink = document.getElementById("cm-theme");
+			// use non-localized "default" internally
+			if (!value || el.selectedIndex <= 0) {
+				value = "default";
+				if (prefs.getPref(el.id) != value) {
+					prefs.setPref(el.id, value);
+				}
+				themeLink.href = "";
+				el.selectedIndex = 0;
+				break;
+			}
+			var url = chrome.extension.getURL("codemirror/theme/" + value + ".css");
+			if (themeLink.href == url) { // preloaded in initCodeMirror()
+				break;
+			}
+			// avoid flicker: wait for the second stylesheet to load, then apply the theme
+			document.head.insertAdjacentHTML("beforeend",
+				'<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
+			(function() {
+				setTimeout(function() {
+					CodeMirror.setOption(option, value);
+					themeLink.remove();
+					document.getElementById("cm-theme2").id = "cm-theme";
+				}, 100);
+			})();
+			return;
+	}
+	CodeMirror.setOption(option, value);
 }
 
 // replace given textarea with the CodeMirror editor
@@ -626,6 +666,10 @@ function initHooks() {
 		node.addEventListener("change", onChange);
 		node.addEventListener("input", onChange);
 	});
+	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
+	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+	document.getElementById("save-button").addEventListener("click", save, false);
+	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 
 	setupGlobalSearch();
 	setCleanGlobal();
@@ -806,8 +850,3 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
-document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
-document.getElementById("save-button").addEventListener("click", save, false);
-document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
