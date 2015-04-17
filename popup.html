@@ -48,6 +48,7 @@
 			}
 			body > DIV {
 				border-bottom: 1px solid black;
+				padding-bottom: 2px;
 			}
 			body > DIV:last-of-type,
 			body.blocked > DIV {
@@ -63,7 +64,7 @@
 				margin-top: 0.5em;
 			}
 
-			.actions > div:not(:last-child), .actions > .main-controls > div:not(:last-child), #unavailable:not(:last-child) {
+			.actions > div:not(:last-child):not(#disable-all-wrapper), .actions > .main-controls > div:not(:last-child), #unavailable:not(:last-child), #unavailable + .actions {
 				margin-bottom: 0.75em;
 			}
 			.actions input, .actions label {
