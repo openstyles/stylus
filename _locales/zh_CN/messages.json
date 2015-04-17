@@ -87,6 +87,10 @@
         "message": "在工具栏按钮上显示对当前站点生效的样式数目",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "显示生效的样式计数",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
         "message": "Word wrap",
         "description": "Label for the checkbox controlling word wrap option for the style editor."
@@ -204,7 +208,7 @@
         "description": "Label for the button to remove a section"
     },
     "disableAllStyles": {
-        "message": "Turn all styles off",
+        "message": "关闭所有样式",
         "description": "Label for the checkbox that turns all enabled styles off."
     },
     "updateCompleted": {

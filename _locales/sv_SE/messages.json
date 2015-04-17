@@ -1,14 +1,14 @@
 {
     "appliesToEverything": {
-        "message": "Överallt",
+        "message": "Allt",
         "description": "Text displayed for styles that apply to all sites"
     },
     "manageOnlyEdited": {
-        "message": "Only edited styles",
+        "message": "Endast ändrade stilar",
         "description": "Checkbox to show only locally edited styles"
     },
     "cm_tabSize": {
-        "message": "Tab size",
+        "message": "Flikstorlek",
         "description": "Label for the text box controlling tab size option for the style editor."
     },
     "enableStyleLabel": {
@@ -16,19 +16,19 @@
         "description": "Label for the button to enable a style"
     },
     "styleMissingName": {
-        "message": "Ange namn.",
+        "message": "Ange ett namn.",
         "description": "Error displayed when user saves without providing a name"
     },
     "appliesDomainOption": {
-        "message": "Webbadresser på domän",
+        "message": "URL:er på domänen",
         "description": "Option to make the style apply to the entered string as a domain"
     },
     "checkForUpdate": {
-        "message": "Sök efter uppdatering",
+        "message": "Leta efter uppdatering",
         "description": "Label for the button to check a single style for an update"
     },
     "updateAllCheckSucceededNoUpdate": {
-        "message": "All styles are up to date.",
+        "message": "Alla stilar är fullt uppdaterade.",
         "description": "Text that displays when an update all check completed and no updates are available"
     },
     "helpAlt": {
@@ -36,11 +36,11 @@
         "description": "Alternate text for help buttons"
     },
     "findStylesForSite": {
-        "message": "Hitta fler stilar för den här webbplatsen.",
+        "message": "Hitta fler stilar för denna sida.",
         "description": "Text for a link that gets a list of styles for the current site"
     },
     "manageHeading": {
-        "message": "Installerade stilar",
+        "message": "Installerade Stilar",
         "description": "Heading for the manage page"
     },
     "styleEnabledLabel": {
@@ -48,11 +48,11 @@
         "description": "Label for the enabled state of styles"
     },
     "styleToMozillaFormatHelp": {
-        "message": "Mozilla-koden kan användas med Stylish för Firefox och kan lämnas till userstyles.org.",
+        "message": "Mozilla-formatet av koden fungerar i Stylish till Firefox samt vid uppladdandet till userstyles.org.",
         "description": "Help info for the button that converts the code to Mozilla format"
     },
     "sectionAdd": {
-        "message": "Lägga till ett avsnitt",
+        "message": "Lägg till ytterligare en sektion",
         "description": "Label for the button to add a section"
     },
     "styleSaveLabel": {
@@ -60,7 +60,7 @@
         "description": "Label for save button for style editing"
     },
     "writeStyleForURL": {
-        "message": "this URL",
+        "message": "denna URL",
         "description": "Text for link in toolbar pop-up to write a new style for the current URL"
     },
     "appliesAdd": {
@@ -68,11 +68,11 @@
         "description": "Label for the button to add an 'applies' entry"
     },
     "appliesRegexpOption": {
-        "message": "Webbadresser på regexp",
+        "message": "URL:er som matchar regexp:en",
         "description": "Option to make the style apply to the entered string as a regular expression"
     },
     "styleInstall": {
-        "message": "Installera \"$stylename$\" i Stylish?",
+        "message": "Installera '$stylename$' in i Stylish?",
         "description": "Confirmation when installing a style"
     },
     "manageText": {
@@ -84,15 +84,19 @@
         "description": "Label for the button to disable a style"
     },
     "prefShowBadge": {
-        "message": "Show number of styles active for the current site on the toolbar button",
+        "message": "Visa antalet aktiva stilar för den nuvarande sidan på verktygsfältsikonen",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Visa antalet aktiva stilar",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
-        "message": "Word wrap",
+        "message": "Radbrytning",
         "description": "Label for the checkbox controlling word wrap option for the style editor."
     },
     "styleCancelEditLabel": {
-        "message": "Tillbaka",
+        "message": "Återgå till hantera",
         "description": "Label for cancel button for style editing"
     },
     "styleChangesNotSaved": {
@@ -100,15 +104,15 @@
         "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
     },
     "updateCheckFailServerUnreachable": {
-        "message": "Det gick inte att uppdatera - servern inte kan nås.",
+        "message": "Uppdateringen misslyckades - server onåbar.",
         "description": "Text that displays when an update check failed because the update server is unreachable"
     },
     "manageFilters": {
-        "message": "Filters",
+        "message": "Filter",
         "description": "Label for filters container"
     },
     "applyAllUpdates": {
-        "message": "Apply all updates",
+        "message": "Verkställ alla uppdateringar",
         "description": "Label for the button to apply all detected updates"
     },
     "deleteStyleConfirm": {
@@ -116,11 +120,11 @@
         "description": "Confirmation before deleting a style"
     },
     "styleBadRegexp": {
-        "message": "Regexp är ogiltig.",
+        "message": "Regexp:en är ogiltig.",
         "description": "Validation message for a bad regexp in a style"
     },
     "optionsHeading": {
-        "message": "Options",
+        "message": "Alternativ",
         "description": "Heading for options section on manage page."
     },
     "appliesDisplay": {
@@ -128,35 +132,35 @@
         "description": "Text on the manage screen to describe what the style applies to"
     },
     "styleUpdate": {
-        "message": "Are you sure you want to update '$stylename$'?",
+        "message": "Är du säker på att du vill uppdatera '$stylename$'?",
         "description": "Confirmation when updating a style"
     },
     "styleSectionsTitle": {
-        "message": "Avsnitt",
+        "message": "Sektioner",
         "description": "Title for the style sections section"
     },
     "editStyleTitle": {
-        "message": "Ändra stil $stylename$",
+        "message": "Ändra i Stil $stylename$",
         "description": "Title of the page for editing styles"
     },
     "updateCheckSucceededNoUpdate": {
-        "message": "Stilen är redan uppdaterad.",
+        "message": "Stilen är fullt uppdaterad.",
         "description": "Text that displays when an update check completed and no update is available"
     },
     "appliesUrlPrefixOption": {
-        "message": "Webbadresser som börjar med",
+        "message": "URL:er som börjar på",
         "description": "Option to make the style apply to the entered string as a URL prefix"
     },
     "popupStylesFirst": {
-        "message": "List styles before commands in the toolbar button menu",
+        "message": "Lista stilar före kommandon i verktygsfältets knappmeny",
         "description": "Label for the checkbox controlling section order in the toolbar button menu."
     },
     "sectionHelp": {
-        "message": "Med sektioner kan du definiera olika delar av koden som gäller vid olika webbadresser i samma stil. En enda stil kan till exempel ändra hemsidan för en webbplats på ett sätt, medan du ändrar resten av en webbplats på ett annat sätt.",
+        "message": "Sektioner låter dig definiera olika sorters kod som påverkar olika URL:er i samma stil. Till exempel, en stil kan ändra en viss hemsida på ett sätt, samtidigt som den ändrar andra delar på en helt annan sida.",
         "description": "Help text for sections"
     },
     "noStylesForSite": {
-        "message": "Ingen stilar installerade för den här webbplatsen.",
+        "message": "Inga stilar installerade för denna sida.",
         "description": "Text displayed when no styles are installed for the current site"
     },
     "appliesDisplayTruncatedSuffix": {
@@ -172,11 +176,11 @@
         "description": "Title for the manage page"
     },
     "writeStyleFor": {
-        "message": "Write style for: ",
+        "message": "Skapa stil för:",
         "description": "Label for toolbar pop-up that precedes the links to write a new style"
     },
     "appliesLabel": {
-        "message": "Gäller",
+        "message": "Gäller för",
         "description": "Label for 'applies to' fields on the edit/add screen"
     },
     "openManage": {
@@ -184,11 +188,11 @@
         "description": "Link to open the manage page."
     },
     "updateCheckFailBadResponseCode": {
-        "message": "Det gick inte att uppdatera - servern svarade med koden $code$.",
+        "message": "Uppdateringen misslyckades - servern svarade med kod $code$.",
         "description": "Text that displays when an update check failed because the response code indicates an error"
     },
     "appliesSpecify": {
-        "message": "Ange",
+        "message": "Specificera",
         "description": "Label for the button to make a style apply only to specific sites"
     },
     "installUpdate": {
@@ -196,23 +200,23 @@
         "description": "Label for the button to install an update for a single style"
     },
     "stylishUnavailableForURL": {
-        "message": "(Stylish does not work on pages like this.)",
+        "message": "(Stylish fungerar inte på sidor som dessa.)",
         "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
     },
     "sectionRemove": {
-        "message": "Ta bort avsnitt",
+        "message": "Ta bort sektion",
         "description": "Label for the button to remove a section"
     },
     "disableAllStyles": {
-        "message": "Turn all styles off",
+        "message": "Stäng av alla stilar",
         "description": "Label for the checkbox that turns all enabled styles off."
     },
     "updateCompleted": {
-        "message": "Uppdateringen slutförd.",
+        "message": "Uppdatering slutförd.",
         "description": "Text that displays when an update completed"
     },
     "checkingForUpdate": {
-        "message": "Kontrollerar...",
+        "message": "Letar...",
         "description": "Text to display when checking a style for an update"
     },
     "sectionCode": {
@@ -220,19 +224,19 @@
         "description": "Label for the code for a section"
     },
     "cm_smartIndent": {
-        "message": "Use smart indentation",
+        "message": "Använd smart indrag",
         "description": "Label for the checkbox controlling smart indentation option for the style editor."
     },
     "appliesHelp": {
-        "message": "Använd \"Gäller\" för att begränsa vilka webbadresser den här koden kommer gälla.",
+        "message": "Använd 'Gäller för' alternativet för att begränsa vilka URL:er koden i denna sektion gäller för.",
         "description": "Help text for 'applies to' section"
     },
     "editStyleHeading": {
-        "message": "Ändra stil",
+        "message": "Ändra i Stil",
         "description": "Title of the page for editing styles"
     },
     "appliesUrlOption": {
-        "message": "Webbadress",
+        "message": "URL",
         "description": "Option to make the style apply to the entered string as a URL"
     },
     "addStyleTitle": {
@@ -240,27 +244,27 @@
         "description": "Title of the page for adding styles"
     },
     "dbError": {
-        "message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+        "message": "Ett fel inträffades vid hanteringen av Stylish-databasen. Skulle du vilja besöka en sida med eventuella lösningar?",
         "description": "Prompt when a DB error is encountered"
     },
     "editGotoLine": {
-        "message": "Goto line (or line:col)",
+        "message": "Gå till rad (eller rad:kol)",
         "description": "Go to line or line:column on Ctrl-G in style code editor"
     },
     "checkAllUpdates": {
-        "message": "Sök efter uppdateringar för alla stilar",
+        "message": "Leta igenom alla stilar efter uppdateringar",
         "description": "Label for the button to check all styles for updates"
     },
     "styleToMozillaFormat": {
-        "message": "Till Mozilla-format",
+        "message": "Till Mozilla-formatet",
         "description": "Label for the button that converts the code to Mozilla format"
     },
     "cm_keyMap": {
-        "message": "Keymap",
+        "message": "Nyckelkarta",
         "description": "Label for the drop-down list controlling the keymap for the style editor."
     },
     "cm_indentWithTabs": {
-        "message": "Use tabs with smart indentation",
+        "message": "Använd flikar med smart indrag",
         "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
     },
     "deleteStyleLabel": {
@@ -268,11 +272,11 @@
         "description": "Label for the button to delete a style"
     },
     "addStyleLabel": {
-        "message": "Lägg till ny stil",
+        "message": "Skriv ny stil",
         "description": "Label for the button to go to the add style page"
     },
     "manageOnlyEnabled": {
-        "message": "Only enabled styles",
+        "message": "Endast aktiverade stilar",
         "description": "Checkbox to show only enabled styles"
     },
     "editStyleLabel": {
@@ -280,7 +284,7 @@
         "description": "Label for the button to go to the edit style page"
     },
     "description": {
-        "message": "Designa om webben med Stylish, en stilhanterare för användare. Stylish låter dig enkelt installera stilar och teman för Google, Facebook, YouTube, Orkut och många, många andra sidor.",
+        "message": "Style:a om webben med Stylish, en användarstils-hanterare. Stylish låter dig enkelt installera teman och skal för många populära sidor.",
         "description": "Extension description"
     }
 }

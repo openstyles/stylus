@@ -87,6 +87,10 @@
         "message": "Aantal actieve stijlen voor de huidige website weergeven op de werkbalkknop",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Teller voor actieve stijlen weergeven",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
         "message": "Woordomslag",
         "description": "Label for the checkbox controlling word wrap option for the style editor."

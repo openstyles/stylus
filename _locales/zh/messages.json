@@ -87,6 +87,10 @@
         "message": "Show number of styles active for the current site on the toolbar button",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Show active style count",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
         "message": "Word wrap",
         "description": "Label for the checkbox controlling word wrap option for the style editor."

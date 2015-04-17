@@ -8,7 +8,7 @@
         "description": "Checkbox to show only locally edited styles"
     },
     "cm_tabSize": {
-        "message": "Tab size",
+        "message": "Размер табуляции",
         "description": "Label for the text box controlling tab size option for the style editor."
     },
     "enableStyleLabel": {
@@ -28,7 +28,7 @@
         "description": "Label for the button to check a single style for an update"
     },
     "updateAllCheckSucceededNoUpdate": {
-        "message": "All styles are up to date.",
+        "message": "Все стили актуальных версий.",
         "description": "Text that displays when an update all check completed and no updates are available"
     },
     "helpAlt": {
@@ -87,8 +87,12 @@
         "message": "Показывать на кнопке в тулбаре количество активных стилей для открытого сайта ",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Число активных стилей",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
-        "message": "Word wrap",
+        "message": "Перенос по словам",
         "description": "Label for the checkbox controlling word wrap option for the style editor."
     },
     "styleCancelEditLabel": {
@@ -108,7 +112,7 @@
         "description": "Label for filters container"
     },
     "applyAllUpdates": {
-        "message": "Apply all updates",
+        "message": "Применить все обновления",
         "description": "Label for the button to apply all detected updates"
     },
     "deleteStyleConfirm": {
@@ -148,7 +152,7 @@
         "description": "Option to make the style apply to the entered string as a URL prefix"
     },
     "popupStylesFirst": {
-        "message": "List styles before commands in the toolbar button menu",
+        "message": "Показывать список стилей перед командами в интерфейсе тулбара",
         "description": "Label for the checkbox controlling section order in the toolbar button menu."
     },
     "sectionHelp": {
@@ -204,7 +208,7 @@
         "description": "Label for the button to remove a section"
     },
     "disableAllStyles": {
-        "message": "Turn all styles off",
+        "message": "Выключить все стили",
         "description": "Label for the checkbox that turns all enabled styles off."
     },
     "updateCompleted": {
@@ -220,7 +224,7 @@
         "description": "Label for the code for a section"
     },
     "cm_smartIndent": {
-        "message": "Use smart indentation",
+        "message": "Умные отступы",
         "description": "Label for the checkbox controlling smart indentation option for the style editor."
     },
     "appliesHelp": {
@@ -256,11 +260,11 @@
         "description": "Label for the button that converts the code to Mozilla format"
     },
     "cm_keyMap": {
-        "message": "Keymap",
+        "message": "Раскладка",
         "description": "Label for the drop-down list controlling the keymap for the style editor."
     },
     "cm_indentWithTabs": {
-        "message": "Use tabs with smart indentation",
+        "message": "Умные отступы при помощи табуляции",
         "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
     },
     "deleteStyleLabel": {

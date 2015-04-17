@@ -4,11 +4,11 @@
         "description": "Text displayed for styles that apply to all sites"
     },
     "manageOnlyEdited": {
-        "message": "Only edited styles",
+        "message": "Μόνο επεξεργασμενα στυλ",
         "description": "Checkbox to show only locally edited styles"
     },
     "cm_tabSize": {
-        "message": "Tab size",
+        "message": "Μέγεθος καρτέλας",
         "description": "Label for the text box controlling tab size option for the style editor."
     },
     "enableStyleLabel": {
@@ -20,7 +20,7 @@
         "description": "Error displayed when user saves without providing a name"
     },
     "appliesDomainOption": {
-        "message": "URLs on the domain",
+        "message": "URL στον τομέα",
         "description": "Option to make the style apply to the entered string as a domain"
     },
     "checkForUpdate": {
@@ -28,7 +28,7 @@
         "description": "Label for the button to check a single style for an update"
     },
     "updateAllCheckSucceededNoUpdate": {
-        "message": "All styles are up to date.",
+        "message": "Όλα τα στυλ είναι ενημερωμένα.",
         "description": "Text that displays when an update all check completed and no updates are available"
     },
     "helpAlt": {
@@ -36,7 +36,7 @@
         "description": "Alternate text for help buttons"
     },
     "findStylesForSite": {
-        "message": "Find more styles for this site.",
+        "message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα.",
         "description": "Text for a link that gets a list of styles for the current site"
     },
     "manageHeading": {
@@ -48,11 +48,11 @@
         "description": "Label for the enabled state of styles"
     },
     "styleToMozillaFormatHelp": {
-        "message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
+        "message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org.",
         "description": "Help info for the button that converts the code to Mozilla format"
     },
     "sectionAdd": {
-        "message": "Add another section",
+        "message": "Προσθήκη ένος άλλου τμήματος",
         "description": "Label for the button to add a section"
     },
     "styleSaveLabel": {
@@ -60,7 +60,7 @@
         "description": "Label for save button for style editing"
     },
     "writeStyleForURL": {
-        "message": "this URL",
+        "message": "αυτή την διεύθυνση URL",
         "description": "Text for link in toolbar pop-up to write a new style for the current URL"
     },
     "appliesAdd": {
@@ -68,15 +68,15 @@
         "description": "Label for the button to add an 'applies' entry"
     },
     "appliesRegexpOption": {
-        "message": "URLs matching the regexp",
+        "message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση",
         "description": "Option to make the style apply to the entered string as a regular expression"
     },
     "styleInstall": {
-        "message": "Install '$stylename$' into Stylish?",
+        "message": "Εγκατάσταση του '$stylename$' στο Stylish;",
         "description": "Confirmation when installing a style"
     },
     "manageText": {
-        "message": "Visit <a href='http://userstyles.org'>userstyles.org</a> for pre-made styles. Ask in <a href='http://forum.userstyles.org'>the forum</a> if you need help.",
+        "message": "Επισκεφθείτε <a href='http://userstyles.org'> userstyles.org </a> για προ-made στυλ. Ρωτήστε στο <a href='http://forum.userstyles.org'> η </a> forum αν χρειάζεστε βοήθεια.",
         "description": "Help text on the manage page"
     },
     "disableStyleLabel": {
@@ -84,11 +84,15 @@
         "description": "Label for the button to disable a style"
     },
     "prefShowBadge": {
-        "message": "Show number of styles active for the current site on the toolbar button",
+        "message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Εμφάνιση ενεργους καταμέτρησης στυλ",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
-        "message": "Word wrap",
+        "message": "Αναδίπλωση λέξεων",
         "description": "Label for the checkbox controlling word wrap option for the style editor."
     },
     "styleCancelEditLabel": {
@@ -96,7 +100,7 @@
         "description": "Label for cancel button for style editing"
     },
     "styleChangesNotSaved": {
-        "message": "You've made changes to this style without saving.",
+        "message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση.",
         "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
     },
     "updateCheckFailServerUnreachable": {
@@ -104,15 +108,15 @@
         "description": "Text that displays when an update check failed because the update server is unreachable"
     },
     "manageFilters": {
-        "message": "Filters",
+        "message": "Φίλτρα",
         "description": "Label for filters container"
     },
     "applyAllUpdates": {
-        "message": "Apply all updates",
+        "message": "Εφαρμογή όλων των ενημερώσεων",
         "description": "Label for the button to apply all detected updates"
     },
     "deleteStyleConfirm": {
-        "message": "Are you sure you want to delete this style?",
+        "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;",
         "description": "Confirmation before deleting a style"
     },
     "styleBadRegexp": {
@@ -120,7 +124,7 @@
         "description": "Validation message for a bad regexp in a style"
     },
     "optionsHeading": {
-        "message": "Options",
+        "message": "Επιλογές",
         "description": "Heading for options section on manage page."
     },
     "appliesDisplay": {
@@ -128,7 +132,7 @@
         "description": "Text on the manage screen to describe what the style applies to"
     },
     "styleUpdate": {
-        "message": "Are you sure you want to update '$stylename$'?",
+        "message": "Είστε σίγουροι ότι θέλετε να ενημερώσετε το '$stylename$';",
         "description": "Confirmation when updating a style"
     },
     "styleSectionsTitle": {
@@ -136,7 +140,7 @@
         "description": "Title for the style sections section"
     },
     "editStyleTitle": {
-        "message": "Edit Style $stylename$",
+        "message": "Επεξεργασία του στυλ $stylename$",
         "description": "Title of the page for editing styles"
     },
     "updateCheckSucceededNoUpdate": {
@@ -144,19 +148,19 @@
         "description": "Text that displays when an update check completed and no update is available"
     },
     "appliesUrlPrefixOption": {
-        "message": "URLs starting with",
+        "message": "Διευθύνσεις URL που αρχίζουν με",
         "description": "Option to make the style apply to the entered string as a URL prefix"
     },
     "popupStylesFirst": {
-        "message": "List styles before commands in the toolbar button menu",
+        "message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων",
         "description": "Label for the checkbox controlling section order in the toolbar button menu."
     },
     "sectionHelp": {
-        "message": "Sections let you define different pieces of code to apply to different sets of URLs in the same style. For example, a single style could change the homepage of a site one way, while changing the rest of a site another way.",
+        "message": "Ενότητες σας επιτρέπουν να ορίσετε διαφορετικά κομμάτια του κώδικα για να εφαρμόζονται σε διαφορετικά σύνολα των διευθύνσεων URL στο ίδιο στυλ. Για παράδειγμα, ένα ενιαίο ύφος θα μπορούσε να αλλάξει την αρχική σελίδα ενός ιστότοπου με έναν τρόπο, ενώ αλλάζει το υπόλοιπο μιας τοποθεσίας ένας άλλος τρόπος.",
         "description": "Help text for sections"
     },
     "noStylesForSite": {
-        "message": "No styles installed for this site.",
+        "message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα.",
         "description": "Text displayed when no styles are installed for the current site"
     },
     "appliesDisplayTruncatedSuffix": {
@@ -172,7 +176,7 @@
         "description": "Title for the manage page"
     },
     "writeStyleFor": {
-        "message": "Write style for: ",
+        "message": "Γράψτε νέο στυλ για:",
         "description": "Label for toolbar pop-up that precedes the links to write a new style"
     },
     "appliesLabel": {
@@ -180,7 +184,7 @@
         "description": "Label for 'applies to' fields on the edit/add screen"
     },
     "openManage": {
-        "message": "Manage installed styles.",
+        "message": "Διαχείριση εγκατεστημένων στυλ.",
         "description": "Link to open the manage page."
     },
     "updateCheckFailBadResponseCode": {
@@ -196,7 +200,7 @@
         "description": "Label for the button to install an update for a single style"
     },
     "stylishUnavailableForURL": {
-        "message": "(Stylish does not work on pages like this.)",
+        "message": "(To Stylish δεν λειτουργεί σε σελίδες όπως αυτή.)",
         "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
     },
     "sectionRemove": {
@@ -204,7 +208,7 @@
         "description": "Label for the button to remove a section"
     },
     "disableAllStyles": {
-        "message": "Turn all styles off",
+        "message": "Απενεργοποιηση ολων των στυλ",
         "description": "Label for the checkbox that turns all enabled styles off."
     },
     "updateCompleted": {
@@ -220,11 +224,11 @@
         "description": "Label for the code for a section"
     },
     "cm_smartIndent": {
-        "message": "Use smart indentation",
+        "message": "Χρήση έξυπνης εσοχής",
         "description": "Label for the checkbox controlling smart indentation option for the style editor."
     },
     "appliesHelp": {
-        "message": "Use the 'Applies to' controls to limit what URLs the code in this section applies to.",
+        "message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται.",
         "description": "Help text for 'applies to' section"
     },
     "editStyleHeading": {
@@ -240,15 +244,15 @@
         "description": "Title of the page for adding styles"
     },
     "dbError": {
-        "message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+        "message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;",
         "description": "Prompt when a DB error is encountered"
     },
     "editGotoLine": {
-        "message": "Goto line (or line:col)",
+        "message": "Μετάβαση στη γραμμή (ή line:col)",
         "description": "Go to line or line:column on Ctrl-G in style code editor"
     },
     "checkAllUpdates": {
-        "message": "Check all styles for updates",
+        "message": "Έλεγχος όλων των στυλ για ενημερώσεις",
         "description": "Label for the button to check all styles for updates"
     },
     "styleToMozillaFormat": {
@@ -260,7 +264,7 @@
         "description": "Label for the drop-down list controlling the keymap for the style editor."
     },
     "cm_indentWithTabs": {
-        "message": "Use tabs with smart indentation",
+        "message": "Χρήση καρτελών με έξυπνη εσοχή",
         "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
     },
     "deleteStyleLabel": {
@@ -272,7 +276,7 @@
         "description": "Label for the button to go to the add style page"
     },
     "manageOnlyEnabled": {
-        "message": "Only enabled styles",
+        "message": "Μόνο ενεργοποιημένα στυλ",
         "description": "Checkbox to show only enabled styles"
     },
     "editStyleLabel": {
@@ -280,7 +284,7 @@
         "description": "Label for the button to go to the edit style page"
     },
     "description": {
-        "message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for many popular sites.",
+        "message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylish, έναν διαχειριστή στυλ. Το Stylish σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες.",
         "description": "Extension description"
     }
 }

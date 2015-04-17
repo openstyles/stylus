@@ -4,11 +4,11 @@
         "description": "Text displayed for styles that apply to all sites"
     },
     "manageOnlyEdited": {
-        "message": "Only edited styles",
+        "message": "Pouze upravené styly.",
         "description": "Checkbox to show only locally edited styles"
     },
     "cm_tabSize": {
-        "message": "Tab size",
+        "message": "Velikost tabulátorů",
         "description": "Label for the text box controlling tab size option for the style editor."
     },
     "enableStyleLabel": {
@@ -28,7 +28,7 @@
         "description": "Label for the button to check a single style for an update"
     },
     "updateAllCheckSucceededNoUpdate": {
-        "message": "All styles are up to date.",
+        "message": "Všechny styly jsou aktuální.",
         "description": "Text that displays when an update all check completed and no updates are available"
     },
     "helpAlt": {
@@ -60,7 +60,7 @@
         "description": "Label for save button for style editing"
     },
     "writeStyleForURL": {
-        "message": "this URL",
+        "message": "tato URL",
         "description": "Text for link in toolbar pop-up to write a new style for the current URL"
     },
     "appliesAdd": {
@@ -84,11 +84,15 @@
         "description": "Label for the button to disable a style"
     },
     "prefShowBadge": {
-        "message": "Show number of styles active for the current site on the toolbar button",
+        "message": "Zobrazit počet aktivních stylů pro současnou stránku u tlačítka v panelu nástrojů",
         "description": "Label for the checkbox controlling toolbar badge text."
     },
+    "menuShowBadge": {
+        "message": "Zobrazit počet aktivních stylů",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
     "cm_lineWrapping": {
-        "message": "Word wrap",
+        "message": "Zalamování slov",
         "description": "Label for the checkbox controlling word wrap option for the style editor."
     },
     "styleCancelEditLabel": {
@@ -104,11 +108,11 @@
         "description": "Text that displays when an update check failed because the update server is unreachable"
     },
     "manageFilters": {
-        "message": "Filters",
+        "message": "Filtry",
         "description": "Label for filters container"
     },
     "applyAllUpdates": {
-        "message": "Apply all updates",
+        "message": "Použít všechny aktualizace",
         "description": "Label for the button to apply all detected updates"
     },
     "deleteStyleConfirm": {
@@ -120,7 +124,7 @@
         "description": "Validation message for a bad regexp in a style"
     },
     "optionsHeading": {
-        "message": "Options",
+        "message": "Možnosti",
         "description": "Heading for options section on manage page."
     },
     "appliesDisplay": {
@@ -128,7 +132,7 @@
         "description": "Text on the manage screen to describe what the style applies to"
     },
     "styleUpdate": {
-        "message": "Are you sure you want to update '$stylename$'?",
+        "message": "Určitě chcete aktualizovat '$stylename$'?",
         "description": "Confirmation when updating a style"
     },
     "styleSectionsTitle": {
@@ -148,7 +152,7 @@
         "description": "Option to make the style apply to the entered string as a URL prefix"
     },
     "popupStylesFirst": {
-        "message": "List styles before commands in the toolbar button menu",
+        "message": "Vypsat styly před příkazy v menu pod tlačítkem na panelu nástrojů",
         "description": "Label for the checkbox controlling section order in the toolbar button menu."
     },
     "sectionHelp": {
@@ -156,7 +160,7 @@
         "description": "Help text for sections"
     },
     "noStylesForSite": {
-        "message": "Pro tento web zde není žádný styl.",
+        "message": "Pro tento web není nainstalován žádný styl.",
         "description": "Text displayed when no styles are installed for the current site"
     },
     "appliesDisplayTruncatedSuffix": {
@@ -172,7 +176,7 @@
         "description": "Title for the manage page"
     },
     "writeStyleFor": {
-        "message": "Write style for: ",
+        "message": "Napsat nový styl",
         "description": "Label for toolbar pop-up that precedes the links to write a new style"
     },
     "appliesLabel": {
@@ -196,7 +200,7 @@
         "description": "Label for the button to install an update for a single style"
     },
     "stylishUnavailableForURL": {
-        "message": "(Stylish does not work on pages like this.)",
+        "message": "(Stylish nefunguje na těchto stránkách.)",
         "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
     },
     "sectionRemove": {
@@ -204,7 +208,7 @@
         "description": "Label for the button to remove a section"
     },
     "disableAllStyles": {
-        "message": "Turn all styles off",
+        "message": "Vypnout všechny styly.",
         "description": "Label for the checkbox that turns all enabled styles off."
     },
     "updateCompleted": {
@@ -220,7 +224,7 @@
         "description": "Label for the code for a section"
     },
     "cm_smartIndent": {
-        "message": "Use smart indentation",
+        "message": "Použít chytré odsazení",
         "description": "Label for the checkbox controlling smart indentation option for the style editor."
     },
     "appliesHelp": {
@@ -240,11 +244,11 @@
         "description": "Title of the page for adding styles"
     },
     "dbError": {
-        "message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+        "message": "Nastala chyba při používání Stylish databáze. Chcete navštívit webovou stránku s možnými řešeními?",
         "description": "Prompt when a DB error is encountered"
     },
     "editGotoLine": {
-        "message": "Goto line (or line:col)",
+        "message": "Přejít na řádek (nebo na line:col)",
         "description": "Go to line or line:column on Ctrl-G in style code editor"
     },
     "checkAllUpdates": {
@@ -256,11 +260,11 @@
         "description": "Label for the button that converts the code to Mozilla format"
     },
     "cm_keyMap": {
-        "message": "Keymap",
+        "message": "Přiřazení kláves",
         "description": "Label for the drop-down list controlling the keymap for the style editor."
     },
     "cm_indentWithTabs": {
-        "message": "Use tabs with smart indentation",
+        "message": "Použít tabulátory s chytrým odsazením",
         "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
     },
     "deleteStyleLabel": {
@@ -272,7 +276,7 @@
         "description": "Label for the button to go to the add style page"
     },
     "manageOnlyEnabled": {
-        "message": "Only enabled styles",
+        "message": "Pouze povolené styly",
         "description": "Checkbox to show only enabled styles"
     },
     "editStyleLabel": {
