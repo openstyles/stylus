@@ -73,7 +73,8 @@
     },
     "styleInstall": {
         "message": "安装 '$stylename$' 到 Stylish?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "manageText": {
         "message": "访问 <a href='http://userstyles.org'>userstyles.org</a> 查找预定义的样式. 如果您需要帮助，请访问 <a href='http://forum.userstyles.org'>论坛</a>.",
@@ -129,11 +130,13 @@
     },
     "appliesDisplay": {
         "message": "应用到: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {"applies": {"content": "$1"}}
     },
     "styleUpdate": {
         "message": "Are you sure you want to update '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "styleSectionsTitle": {
         "message": "样式节",
@@ -141,7 +144,8 @@
     },
     "editStyleTitle": {
         "message": "编辑样式 $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "updateCheckSucceededNoUpdate": {
         "message": "已经是最新的.",
@@ -189,7 +193,8 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "更新失败 - 服务器了返回代码 $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {"code": {"content": "$1"}}
     },
     "appliesSpecify": {
         "message": "指定站点",

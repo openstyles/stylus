@@ -188,7 +188,7 @@ function fixBoolean(b) {
 	return null;
 }
 
-const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
+var namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 function getApplicableSections(style, url) {
 	var sections = style.sections.filter(function(section) {
 		return sectionAppliesToUrl(section, url);
