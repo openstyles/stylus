@@ -607,7 +607,7 @@ function initHooks() {
 }
 
 function updateTitle() {
-	const DIRTY_TITLE = "* $";
+	var DIRTY_TITLE = "* $";
 
 	var name = document.getElementById("name").savedValue;
 	var clean = isCleanGlobal();
