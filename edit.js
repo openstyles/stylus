@@ -489,8 +489,26 @@ function setupGlobalSearch() {
 		findPrev: CodeMirror.commands.findPrev
 	}
 
+	var curState; // cm.state.search for last used 'find'
+
 	function shouldIgnoreCase(query) { // treat all-lowercase non-regexp queries as case-insensitive
 		return typeof query == "string" && query == query.toLowerCase();
+	}
+
+	function updateState(cm, newState) {
+		if (!newState) {
+			if (cm.state.search) {
+				return cm.state.search;
+			}
+			newState = curState;
+		}
+		cm.state.search = {
+			query: newState.query,
+			overlay: newState.overlay,
+			annotate: cm.showMatchesOnScrollbar(newState.query, shouldIgnoreCase(newState.query))
+		}
+		cm.addOverlay(newState.overlay);
+		return cm.state.search;
 	}
 
 	function find(activeCM) {
@@ -499,24 +517,17 @@ function setupGlobalSearch() {
 			originalOpenDialog.call(activeCM, findTemplate, function(query) {
 				activeCM.openDialog = originalOpenDialog;
 				callback(query);
-				var state = activeCM.state.search;
-				if (editors.length == 1 || !state.query) {
+				curState = activeCM.state.search;
+				if (editors.length == 1 || !curState.query) {
 					return;
 				}
-				for (var i=0; i < editors.length; i++) {
-					var cm = editors[i];
-					if (cm == activeCM) {
-						continue;
+				editors.forEach(function(cm) {
+					if (cm != activeCM) {
+						cm.execCommand("clearSearch");
+						updateState(cm, curState);
 					}
-					cm.execCommand("clearSearch");
-					cm.state.search = {
-						query: state.query,
-						overlay: state.overlay,
-						annotate: cm.showMatchesOnScrollbar(state.query, shouldIgnoreCase(state.query))
-					}
-					cm.addOverlay(state.overlay);
-				}
-				if (CodeMirror.cmpPos(activeCM.state.search.posFrom, activeCM.state.search.posTo) == 0) {
+				});
+				if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) == 0) {
 					findNext(activeCM);
 				}
 			}, options);
@@ -525,20 +536,16 @@ function setupGlobalSearch() {
 	}
 
 	function findNext(activeCM, reverse) {
-		if (!activeCM.state.search || !activeCM.state.search.query) {
+		var state = updateState(activeCM);
+		if (!state || !state.query) {
 			find(activeCM);
 			return;
 		}
-		var pos = activeCM.getCursor();
-		// check if the search term is currently selected in the editor
-		var m = activeCM.getSelection().match(activeCM.state.search.query);
-		if (m && m[0].length == activeCM.getSelection().length) {
-			pos = activeCM.getCursor(reverse ? "from" : "to");
-			activeCM.setSelection(activeCM.getCursor());
-		}
+		var pos = activeCM.getCursor(reverse ? "from" : "to");
+		activeCM.setSelection(activeCM.getCursor()); // clear the selection, don't move the cursor
 
 		for (var i=0, cm=activeCM; i < editors.length; i++) {
-			var state = cm.state.search;
+			state = updateState(cm);
 			if (cm != activeCM) {
 				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
 			}
