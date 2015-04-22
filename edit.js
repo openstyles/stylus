@@ -426,7 +426,9 @@ function addSection(event, section) {
 		var clickedSection = event.target.parentNode;
 		sections.insertBefore(div, clickedSection.nextElementSibling);
 		var newIndex = document.querySelectorAll("#sections > div").indexOf(clickedSection) + 1;
-		setupCodeMirror(codeElement, newIndex).focus();
+		var cm = setupCodeMirror(codeElement, newIndex);
+		makeSectionVisible(cm);
+		cm.focus()
 	} else {
 		sections.appendChild(div);
 		setupCodeMirror(codeElement);
