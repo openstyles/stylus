@@ -73,7 +73,8 @@
     },
     "styleInstall": {
         "message": "¿Quieres instalar \"$stylename$\" en Stylish?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "manageText": {
         "message": "Accede a la página <a href='http://userstyles.org'>userstyles.org</a> para consultar estilos desarrollados previamente. Plantea una pregunta en <a href='http://forum.userstyles.org'>el foro</a> si necesitas ayuda.",
@@ -129,11 +130,13 @@
     },
     "appliesDisplay": {
         "message": "Se aplica a: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {"applies": {"content": "$1"}}
     },
     "styleUpdate": {
         "message": "Are you sure you want to update '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "styleSectionsTitle": {
         "message": "Secciones",
@@ -141,7 +144,8 @@
     },
     "editStyleTitle": {
         "message": "Editar estilo $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {"stylename": {"content": "$1"}}
     },
     "updateCheckSucceededNoUpdate": {
         "message": "El estilo está actualizado.",
@@ -189,7 +193,8 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Error de actualización: el servidor ha respondido con el código $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {"code": {"content": "$1"}}
     },
     "appliesSpecify": {
         "message": "Especificar",
