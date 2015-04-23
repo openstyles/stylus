@@ -50,10 +50,18 @@ var sectionTemplate = tHTML('\
 var findTemplate = t("search") + ': <input type="text" style="width: 10em" class="CodeMirror-search-field"/>&nbsp;' +
 	'<span style="color: #888" class="CodeMirror-search-hint">(' + t("searchRegexp") + ')</span>';
 
+var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-field" type="text" style="width: 5em"/>';
+
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
 });
+
+// reroute handling to nearest editor when keypress resolves to one of these commands
+var commandsToReroute = {
+	save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
+	find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+};
 
 function onChange(event) {
 	var node = event.target;
@@ -117,6 +125,8 @@ function setCleanSection(section) {
 
 function initCodeMirror() {
 	var CM = CodeMirror;
+	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
+
 	// default option values
 	var userOptions = prefs.getPref("editor.options");
 	var stylishOptions = {
@@ -127,9 +137,12 @@ function initCodeMirror() {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
-		keyMap: "sublime",
 		theme: "default",
-		extraKeys: {"Ctrl-Space": "autocomplete"}
+		keyMap: isWindowsOS ? "sublime" : "default",
+		extraKeys: { // independent of current keyMap
+			"Alt-PageDown": "nextEditor",
+			"Alt-PageUp": "prevEditor"
+		}
 	}
 	mergeOptions(stylishOptions, CM.defaults);
 	mergeOptions(userOptions, CM.defaults);
@@ -140,11 +153,54 @@ function initCodeMirror() {
 	}
 
 	// additional commands
-	var cc = CM.commands;
-	cc.jumpToLine = jumpToLine;
-	cc.nextBuffer = function(cm) { nextPrevBuffer(cm, 1) };
-	cc.prevBuffer = function(cm) { nextPrevBuffer(cm, -1) };
+	CM.commands.jumpToLine = jumpToLine;
+	CM.commands.nextEditor = function(cm) { nextPrevEditor(cm, 1) };
+	CM.commands.prevEditor = function(cm) { nextPrevEditor(cm, -1) };
+	CM.commands.save = save;
 
+	// "basic" keymap only has basic keys by design, so we skip it
+
+	CM.keyMap.sublime["Ctrl-G"] = "jumpToLine";
+	CM.keyMap.emacsy["Ctrl-G"] = "jumpToLine";
+	CM.keyMap.pcDefault["Ctrl-J"] = "jumpToLine";
+	CM.keyMap.macDefault["Cmd-J"] = "jumpToLine";
+
+	CM.keyMap.pcDefault["Ctrl-Space"] = "autocomplete"; // will be used by "sublime" on PC via fallthrough
+	CM.keyMap.macDefault["Alt-Space"] = "autocomplete"; // OSX uses Ctrl-Space and Cmd-Space for something else
+	CM.keyMap.emacsy["Alt-/"] = "autocomplete"; // copied from "emacs" keymap
+	// "vim" and "emacs" define their own autocomplete hotkeys
+
+	if (isWindowsOS) {
+		// "pcDefault" keymap on Windows should have F3/Shift-F3
+		CM.keyMap.pcDefault["F3"] = "findNext";
+		CM.keyMap.pcDefault["Shift-F3"] = "findPrev";
+
+		// try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
+		["N", "T", "W"].forEach(function(char) {
+			[{from: "Ctrl-", to: ["Alt-", "Ctrl-Alt-"]},
+			 {from: "Shift-Ctrl-", to: ["Ctrl-Alt-", "Shift-Ctrl-Alt-"]} // Note: modifier order in CM is S-C-A
+			].forEach(function(remap) {
+				var oldKey = remap.from + char;
+				Object.keys(CM.keyMap).forEach(function(keyMapName) {
+					var keyMap = CM.keyMap[keyMapName];
+					var command = keyMap[oldKey];
+					if (!command) {
+						return;
+					}
+					remap.to.some(function(newMod) {
+						var newKey = newMod + char;
+						if (!(newKey in keyMap)) {
+							delete keyMap[oldKey];
+							keyMap[newKey] = command;
+							return true;
+						}
+					});
+				});
+			});
+		});
+	}
+
+	// TODO: remove when CM 5.1.0+ is used
 	var cssHintHandler = CM.hint.css;
 	CM.hint.css = function(cm) {
 		var cursor = cm.getCursor();
@@ -249,14 +305,10 @@ function acmeEventListener(event) {
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
-	cm.addKeyMap({
-		"Ctrl-G": "jumpToLine",
-		"Alt-PageDown": "nextBuffer",
-		"Alt-PageUp": "prevBuffer"
-	});
-	cm.lastChange = cm.changeGeneration();
+
 	cm.on("change", indicateCodeChange);
 
+	// TODO: remove when CM 5.1.0+ is used
 	// ensure the section doesn't jump when clicking selected text
 	cm.on("cursorActivity", function(cm) {
 		editors.lastActive = cm;
@@ -325,6 +377,7 @@ function getCodeMirrorForSection(section) {
 }
 
 // ensure the section doesn't jump when clicking selected text
+// TODO: remove when CM 5.1.0+ is used
 document.addEventListener("scroll", function(e) {
 	if (lockScroll && lockScroll.windowScrollY != window.scrollY) {
 		window.scrollTo(0, lockScroll.windowScrollY);
@@ -333,20 +386,26 @@ document.addEventListener("scroll", function(e) {
 	}
 });
 
-document.addEventListener("keydown", function(e) {
-	if (!e.altKey && e.keyCode >= 70 && e.keyCode <= 114) {
-		if (e.keyCode == 83 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { // Ctrl-S, Cmd-S
-			e.preventDefault();
-			e.stopPropagation();
-			save();
-		} else if (e.target.localName != "textarea") { // textareas are handled by CodeMirror
-			if (e.keyCode == 70 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { /* Ctrl-F, Cmd-F */
-				document.browserSearchHandler(e, "find");
-			} else if (e.keyCode == 71 && (e.ctrlKey || e.metaKey)) { /*Ctrl-G, Ctrl-Shift-G, Cmd-G, Cmd-Shift-G*/
-				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
-			} else if (e.keyCode == 114 && !e.ctrlKey && !e.metaKey) { /*F3, Shift-F3*/
-				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
+// prevent the browser from seeing hotkeys that should be handled by nearest editor
+document.addEventListener("keydown", function(event) {
+	if (event.target.localName == "textarea") {
+		return; // let CodeMirror handle it
+	}
+	var keyName = CodeMirror.keyName(event);
+	if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
+	 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+
+	function handleCommand(command) {
+		if (commandsToReroute[command] === true) {
+			var cm = getEditorInSight(event.target);
+			if (command != "save") {
+				cm.focus();
 			}
+			CodeMirror.commands[command](cm);
+			return true;
 		}
 	}
 });
@@ -571,51 +630,6 @@ function setupGlobalSearch() {
 		findNext(cm, true);
 	}
 
-	function getVisibleEditor(activeElement) {
-		var linesVisible = 2; // closest editor should have at least # lines visible
-		function getScrollDistance(cm) {
-			var bounds = cm.display.wrapper.parentNode.getBoundingClientRect();
-			if (bounds.top < 0) {
-				return -bounds.top;
-			} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * linesVisible) {
-				return 0;
-			} else {
-				return bounds.top - bounds.height;
-			}
-		}
-		if (activeElement && activeElement.className.indexOf("applies-") >= 0) {
-			for (var section = activeElement; section.parentNode; section = section.parentNode) {
-				var cmWrapper = section.querySelector(".CodeMirror");
-				if (cmWrapper) {
-					if (getScrollDistance(cmWrapper.CodeMirror) == 0) {
-						return cmWrapper.CodeMirror;
-					}
-					break;
-				}
-			}
-		}
-		if (editors.lastActive && getScrollDistance(editors.lastActive) == 0) {
-			return editors.lastActive;
-		}
-		var sorted = editors
-			.map(function(cm, index) { return {cm: cm, distance: getScrollDistance(cm), index: index} })
-			.sort(function(a, b) { return Math.sign(a.distance - b.distance) || Math.sign(a.index - b.index)});
-		var cm = sorted[0].cm;
-		if (sorted[0].distance > 0) {
-			makeSectionVisible(cm)
-		}
-		cm.focus();
-		return cm;
-	}
-
-	document.browserSearchHandler = function(event, command) {
-		event.preventDefault();
-		event.stopPropagation();
-		if (!event.target.classList.contains("CodeMirror-search-field")) {
-			CodeMirror.commands[command](getVisibleEditor(event.target));
-		}
-	}
-
 	CodeMirror.commands.find = find;
 	CodeMirror.commands.findNext = findNext;
 	CodeMirror.commands.findPrev = findPrev;
@@ -623,7 +637,7 @@ function setupGlobalSearch() {
 
 function jumpToLine(cm) {
 	var cur = cm.getCursor();
-	cm.openDialog(t('editGotoLine') + ': <input type="text" style="width: 5em"/>', function(str) {
+	cm.openDialog(jumpToLineTemplate, function(str) {
 		var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
 		if (m) {
 			cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
@@ -631,10 +645,42 @@ function jumpToLine(cm) {
 	}, {value: cur.line+1});
 }
 
-function nextPrevBuffer(cm, direction) {
+function nextPrevEditor(cm, direction) {
 	cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
 	makeSectionVisible(cm);
 	cm.focus();
+}
+
+function getEditorInSight(nearbyElement) {
+	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
+	var cm;
+	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
+		cm = getCodeMirrorForSection(querySelectorParent(nearbyElement, "#sections > div"));
+	} else {
+		cm = editors.lastActive;
+	}
+	if (!cm || offscreenDistance(cm) > 0) {
+		var sorted = editors
+			.map(function(cm, index) { return {cm: cm, distance: offscreenDistance(cm), index: index} })
+			.sort(function(a, b) { return a.distance - b.distance || a.index - b.index });
+		cm = sorted[0].cm;
+		if (sorted[0].distance > 0) {
+			makeSectionVisible(cm)
+		}
+	}
+	return cm;
+
+	function offscreenDistance(cm) {
+		var LINES_VISIBLE = 2; // closest editor should have at least # lines visible
+		var bounds = getSectionForCodeMirror(cm).getBoundingClientRect();
+		if (bounds.top < 0) {
+			return -bounds.top;
+		} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
+			return 0;
+		} else {
+			return bounds.top - bounds.height;
+		}
+	}
 }
 
 window.addEventListener("load", init, false);
@@ -875,3 +921,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
+
+function querySelectorParent(node, selector) {
+	var parent = node.parentNode;
+	while (parent && parent.matches && !parent.matches(selector))
+		parent = parent.parentNode;
+	return parent.matches ? parent : null; // null for the root document.DOCUMENT_NODE
+}
