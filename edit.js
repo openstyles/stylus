@@ -3,7 +3,6 @@
 var styleId = null;
 var dirty = {};       // only the actually dirty items here
 var editors = [];     // array of all CodeMirror instances
-var lockScroll;       // temporary focus-jump-on-click fix, TODO: revert c084ea3 once CM is updated
 var isSeparateWindow; // used currrently to determine if the window size/pos should be remembered
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
@@ -200,21 +199,6 @@ function initCodeMirror() {
 		});
 	}
 
-	// TODO: remove when CM 5.1.0+ is used
-	var cssHintHandler = CM.hint.css;
-	CM.hint.css = function(cm) {
-		var cursor = cm.getCursor();
-		var token = cm.getTokenAt(cursor);
-		if (token.state.state === "prop" && "!important".indexOf(token.string) === 0) {
-			return {
-				from: CM.Pos(cursor.line, token.start),
-				to: CM.Pos(cursor.line, token.end),
-				list: ["!important"]
-			}
-		}
-		return cssHintHandler(cm);
-	}
-
 	// user option values
 	CM.getOption = function (o) {
 		return CodeMirror.defaults[o];
@@ -307,19 +291,7 @@ function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
 
 	cm.on("change", indicateCodeChange);
-
-	// TODO: remove when CM 5.1.0+ is used
-	// ensure the section doesn't jump when clicking selected text
-	cm.on("cursorActivity", function(cm) {
-		editors.lastActive = cm;
-		setTimeout(function() {
-			lockScroll = {
-				windowScrollY: window.scrollY,
-				editor: cm,
-				editorScrollInfo: cm.getScrollInfo()
-			}
-		}, 0);
-	});
+	cm.on("blur", function(cm) { editors.lastActive = cm });
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -375,16 +347,6 @@ function getCodeMirrorForSection(section) {
 	}
 	return null;
 }
-
-// ensure the section doesn't jump when clicking selected text
-// TODO: remove when CM 5.1.0+ is used
-document.addEventListener("scroll", function(e) {
-	if (lockScroll && lockScroll.windowScrollY != window.scrollY) {
-		window.scrollTo(0, lockScroll.windowScrollY);
-		lockScroll.editor.scrollTo(lockScroll.editorScrollInfo.left, lockScroll.editorScrollInfo.top);
-		lockScroll = null;
-	}
-});
 
 // prevent the browser from seeing hotkeys that should be handled by nearest editor
 document.addEventListener("keydown", function(event) {
@@ -529,10 +491,9 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
-	var section = cm.display.wrapper.parentNode;
+	var section = getSectionForCodeMirror(cm);
 	var bounds = section.getBoundingClientRect();
 	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-		lockScroll = null;
 		if (bounds.top < 0) {
 			window.scrollBy(0, bounds.top - 1);
 		} else {
