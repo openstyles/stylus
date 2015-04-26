@@ -703,6 +703,7 @@ function initHooks() {
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
+	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 
 	setupGlobalSearch();
 	setCleanGlobal();
@@ -835,19 +836,90 @@ function toMozillaFormat() {
 }
 
 function showSectionHelp() {
-	showHelp(t("sectionHelp"));
+	showHelp(t("styleSectionsTitle"), t("sectionHelp"));
 }
 
 function showAppliesToHelp() {
-	showHelp(t("appliesHelp"));
+	showHelp(t("appliesLabel"), t("appliesHelp"));
 }
 
 function showToMozillaHelp() {
-	showHelp(t("styleToMozillaFormatHelp"));
+	showHelp(t("styleToMozillaFormat"), t("styleToMozillaFormatHelp"));
 }
 
-function showHelp(text) {
-	alert(text);
+function showKeyMapHelp() {
+	var keyMap = mergeKeyMaps({}, prefs.getPref("editor.keyMap"), CodeMirror.defaults.extraKeys);
+	var keyMapSorted = Object.keys(keyMap)
+		.map(function(key) { return {key: key, cmd: keyMap[key]} })
+		.sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1 });
+	showHelp(t("cm_keyMap") + ": " + prefs.getPref("editor.keyMap"),
+		'<table class="keymap-list">' +
+			"<thead><tr><th><input></th><th><input></th></tr></thead>" +
+			"<tbody>" + keyMapSorted.map(function(value) {
+				return "<tr><td>" + value.key + "</td><td>" + value.cmd + "</td></tr>";
+			}).join("") +
+			"</tbody>" +
+		"</table>");
+	document.querySelector("#help-popup table").addEventListener("input", function(event) {
+		var input = event.target;
+		var query = new RegExp(input.value.replace(/([{}()\[\]\/\\.+?^$:=*!|])/g, "\\$1"), "gi");
+		var col = input.parentNode.cellIndex;
+		this.tBodies[0].childNodes.forEach(function(row) {
+			var cell = row.children[col];
+			if (query.test(cell.textContent)) {
+				row.style.display = "";
+				cell.innerHTML = cell.textContent.replace(query, "<mark>$&</mark>");
+			} else {
+				row.style.display = "none";
+			}
+		});
+	});
+
+	function mergeKeyMaps(merged) {
+		[].slice.call(arguments, 1).forEach(function(keyMap) {
+			if (typeof keyMap == "string") {
+				keyMap = CodeMirror.keyMap[keyMap];
+			}
+			Object.keys(keyMap).forEach(function(key) {
+				var cmd = keyMap[key];
+				// filter out '...', 'attach', etc. (hotkeys start with an uppercase letter)
+				if (!merged[key] && !key.match(/^[a-z]/) && cmd != "...") {
+					if (typeof cmd == "function") {
+						// for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
+						// for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
+						cmd = cmd.toString().replace(/^function.*?\{[\s\r\n]*([\s\S]+?)[\s\r\n]*\}$/, "$1");
+						merged[key] = cmd.length <= 200 ? cmd : cmd.substr(0, 200) + "...";
+					} else {
+						merged[key] = cmd;
+					}
+				}
+			});
+			if (keyMap.fallthrough) {
+				merged = mergeKeyMaps(merged, keyMap.fallthrough);
+			}
+		});
+		return merged;
+	}
+}
+
+function showHelp(title, text) {
+	var div = document.getElementById("help-popup");
+	div.querySelector(".contents").innerHTML = text;
+	div.querySelector(".title").innerHTML = title;
+
+	if (getComputedStyle(div).display == "none") {
+		document.addEventListener("keydown", closeHelp);
+		div.querySelector(".close-icon").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
+	}
+
+	div.style.display = "block";
+
+	function closeHelp(e) {
+		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
+			div.style.display = "";
+			document.removeEventListener("keydown", closeHelp);
+		}
+	}
 }
 
 function getParams() {
