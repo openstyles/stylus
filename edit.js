@@ -372,6 +372,15 @@ document.addEventListener("keydown", function(event) {
 	}
 });
 
+// Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
+document.addEventListener("wheel", function(event) {
+	if (event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
+		// Chrome scrolls horizontally when Shift is pressed but on some PCs this might be different
+		window.scrollBy(0, event.deltaX || event.deltaY);
+		event.preventDefault();
+	}
+});
+
 chrome.tabs.query({currentWindow: true}, function(tabs) {
 	isSeparateWindow = tabs.length == 1;
 });
@@ -851,6 +860,7 @@ function showKeyMapHelp() {
 	var keyMap = mergeKeyMaps({}, prefs.getPref("editor.keyMap"), CodeMirror.defaults.extraKeys);
 	var keyMapSorted = Object.keys(keyMap)
 		.map(function(key) { return {key: key, cmd: keyMap[key]} })
+		.concat([{key: "Shift-Ctrl-Wheel", cmd: "scrollWindow"}])
 		.sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1 });
 	showHelp(t("cm_keyMap") + ": " + prefs.getPref("editor.keyMap"),
 		'<table class="keymap-list">' +
