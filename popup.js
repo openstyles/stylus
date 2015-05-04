@@ -1,5 +1,19 @@
-var styleTemplate = document.createElement("div");
-styleTemplate.innerHTML = "<div class='left-gutter'><input class='checker' type='checkbox'></div><div class='main-controls'><label class='style-name'></label><div class='actions'><a href='#' class='enable'>" + t('enableStyleLabel') + "</a> <a href='#' class='disable'>" + t('disableStyleLabel') + "</a> <a class='style-edit-link' href='edit.html?id='>" + t('editStyleLabel') + "</a> <a href='#' class='delete'>" + t('deleteStyleLabel') + "</a></div></div>";
+var styleTemplate = tHTML('\
+	<div>\
+		<div class="left-gutter">\
+			<input class="checker" type="checkbox">\
+		</div>\
+		<div class="main-controls">\
+			<label class="style-name"></label>\
+			<div class="actions">\
+				<a href="#" class="enable" i18n-text="enableStyleLabel"></a>\
+				<a href="#" class="disable" i18n-text="disableStyleLabel"></a>\
+				<a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>\
+				<a href="#" class="delete" i18n-text="deleteStyleLabel"></a>\
+			</div>\
+		</div>\
+	</div>\
+');
 
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
@@ -26,7 +40,7 @@ function updatePopUp(url) {
 	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(url);
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
-		tE("unavailable-message", "stylishUnavailableForURL");
+		document.getElementById("unavailable").style.display = "block";
 		return;
 	}
 
@@ -213,11 +227,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		}
 	}
 });
-
-tE("open-manage-link", "openManage");
-tE("write-style-for", "writeStyleFor");
-tE("find-styles-link", "findStylesForSite");
-tE("disableAll-label", "disableAllStyles");
 
 ["find-styles-link", "open-manage-link"].forEach(function(id) {
 	document.getElementById(id).addEventListener("click", openLink, false);

@@ -11,16 +11,44 @@ var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", 
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
 // templates
-var appliesToTemplate = document.createElement("li");
-appliesToTemplate.innerHTML = '<select name="applies-type" class="applies-type style-contributor"><option value="url">' + t("appliesUrlOption") + '</option><option value="url-prefix">' + t("appliesUrlPrefixOption") + '</option><option value="domain">' + t("appliesDomainOption") + '</option><option value="regexp">' + t("appliesRegexpOption") + '</option></select><input name="applies-value" class="applies-value style-contributor"><button class="remove-applies-to">' + t("appliesRemove") + '</button><button class="add-applies-to">' + t("appliesAdd") + '</button>';
+var appliesToTemplate = tHTML('\
+	<li>\
+		<select name="applies-type" class="applies-type style-contributor">\
+			<option value="url" i18n-text="appliesUrlOption"></option>\
+			<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>\
+			<option value="domain" i18n-text="appliesDomainOption"></option>\
+			<option value="regexp" i18n-text="appliesRegexpOption"></option>\
+		</select>\
+		<input name="applies-value" class="applies-value style-contributor">\
+		<button class="remove-applies-to" i18n-text="appliesRemove"></button>\
+		<button class="add-applies-to" i18n-text="appliesAdd"></button>\
+	</li>\
+');
 
-var appliesToEverythingTemplate = document.createElement("li");
-appliesToEverythingTemplate.className = "applies-to-everything";
-appliesToEverythingTemplate.innerHTML = t("appliesToEverything") + ' <button class="add-applies-to">' + t("appliesSpecify") + '</button>';
+var appliesToEverythingTemplate = tHTML('\
+	<li class="applies-to-everything" i18n-html="appliesToEverything")>\
+		<button class="add-applies-to" i18n-text="appliesSpecify"></button>\
+	</li>\
+');
 
-var sectionTemplate = document.createElement("div");
-sectionTemplate.innerHTML = '<label>' + t('sectionCode') + '</label><textarea class="code"></textarea><br><div class="applies-to"><label>' + t("appliesLabel") + ' <img class="applies-to-help" src="help.png" alt="' + t('helpAlt') + '"></label><ul class="applies-to-list"></ul></div><button class="remove-section">' + t('sectionRemove') + '</button><button class="add-section">' + t('sectionAdd') + '</button>';
+var sectionTemplate = tHTML('\
+	<div>\
+		<label i18n-text="sectionCode"></label>\
+		<textarea class="code"></textarea>\
+		<br>\
+		<div class="applies-to">\
+			<label i18n-text="appliesLabel">\
+				&nbsp;<img class="applies-to-help" src="help.png" i18n-alt="helpAlt">\
+			</label>\
+			<ul class="applies-to-list"></ul>\
+		</div>\
+		<button class="remove-section" i18n-text="sectionRemove"></button>\
+		<button class="add-section" i18n-text="sectionAdd"></button>\
+	</div>\
+');
 
+var findTemplate = t("search") + ': <input type="text" style="width: 10em" class="CodeMirror-search-field"/>&nbsp;' +
+	'<span style="color: #888" class="CodeMirror-search-hint">(' + t("searchRegexp") + ')</span>';
 
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf"].forEach(function(method) {
@@ -153,7 +181,6 @@ function initCodeMirror() {
 	    controlOptions = ["smartIndent", "indentWithTabs", "tabSize", "keyMap", "lineWrapping"];
 	controlOptions.forEach(function(option) {
 		controlPrefs["editor." + option] = CM.defaults[option];
-		tE(option + "-label", "cm_" + option);
 	});
 	loadPrefs(controlPrefs);
 
@@ -417,7 +444,7 @@ function setupGlobalSearch() {
 	function find(activeCM) {
 		var originalOpenDialog = activeCM.openDialog;
 		activeCM.openDialog = function(template, callback, options) {
-			originalOpenDialog.call(activeCM, template, function(query) {
+			originalOpenDialog.call(activeCM, findTemplate, function(query) {
 				activeCM.openDialog = originalOpenDialog;
 				callback(query);
 				var state = activeCM.state.search;
@@ -554,7 +581,6 @@ function nextPrevBuffer(cm, direction) {
 window.addEventListener("load", init, false);
 
 function init() {
-	tE("sections-help", "helpAlt", "alt");
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
@@ -582,7 +608,7 @@ function init() {
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
-	document.getElementById("heading").innerHTML = t("editStyleHeading");
+	tE("heading", "editStyleHeading", null, false);
 	// if this was done in response to an update, we need to clear existing sections
 	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
@@ -780,14 +806,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-tE("name", "styleMissingName", "placeholder");
-tE("enabled-label", "styleEnabledLabel");
-tE("to-mozilla", "styleToMozillaFormat");
-tE("save-button", "styleSaveLabel");
-tE("cancel-button", "styleCancelEditLabel");
-tE("sections-heading", "styleSectionsTitle");
-tE("options-heading", "optionsHeading");
 
 document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
