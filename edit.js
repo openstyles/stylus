@@ -372,6 +372,13 @@ document.addEventListener("keydown", function(event) {
 	}
 });
 
+// remind Chrome to repaint a previously invisible editor box by toggling any element's transform
+// this bug is present in some versions of Chrome (v37-40 or something)
+document.addEventListener("scroll", function(event) {
+	var style = document.getElementById("name").style;
+	style.webkitTransform = style.webkitTransform ? "" : "scale(1)";
+});
+
 // Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
 document.addEventListener("wheel", function(event) {
 	if (event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
