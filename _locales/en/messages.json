@@ -104,9 +104,9 @@
 		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
-	"default": {
+	"defaultTheme": {
 		"message": "default",
-		"description": "Default item in various lists"
+		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"deleteStyleLabel": {
 		"message": "Delete",

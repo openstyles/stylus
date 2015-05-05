@@ -176,22 +176,22 @@ function initCodeMirror() {
 
 	// initialize global editor controls
 	document.addEventListener("DOMContentLoaded", function() {
-		function concatOption(html, option) {
-			return html + "<option>" + option + "</option>";
+		function optionsHtmlFromArray(options) {
+			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
 		}
-		var bg = chrome.extension.getBackgroundPage();
 		var themeControl = document.getElementById("editor.theme");
+		var bg = chrome.extension.getBackgroundPage();
 		if (bg && bg.codeMirrorThemes) {
-			themeControl.innerHTML = bg.codeMirrorThemes.reduce(concatOption, "");
+			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
 		} else {
 			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-			themeControl.innerHTML = concatOption("", theme == "default" ? t(theme) : theme);
+			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
 			getCodeMirrorThemes(function(themes) {
-				themeControl.innerHTML = themes.reduce(concatOption, "");
+				themeControl.innerHTML = optionsHtmlFromArray(themes);
 				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
 			});
 		}
-		document.getElementById("editor.keyMap").innerHTML = Object.keys(CM.keyMap).sort().reduce(concatOption, "");
+		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 		var controlPrefs = {};
 		document.querySelectorAll("#options *[data-option][id^='editor.']").forEach(function(option) {
 			controlPrefs[option.id] = CM.defaults[option.dataset.option];
@@ -218,7 +218,7 @@ function acmeEventListener(event) {
 		case "theme":
 			var themeLink = document.getElementById("cm-theme");
 			// use non-localized "default" internally
-			if (!value || value == "default" || value == t("default")) {
+			if (!value || value == "default" || value == t("defaultTheme")) {
 				value = "default";
 				if (prefs.getPref(el.id) != value) {
 					prefs.setPref(el.id, value);

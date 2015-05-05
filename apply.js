@@ -1,6 +1,10 @@
 requestStyles();
 
 function requestStyles() {
+	// If this is a Stylish page (Edit Style or Manage Styles),
+	// we'll request the styles directly to minimize delay and flicker,
+	// unless Chrome still starts up and the background page isn't fully loaded.
+	// (Note: in this case the function may be invoked again from applyStyles.)
 	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
 	if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
 		var bg = chrome.extension.getBackgroundPage();
