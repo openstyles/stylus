@@ -172,15 +172,25 @@ function initCodeMirror() {
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->loadPrefs()
 	var theme = prefs.getPref("editor.theme");
-	var themes = chrome.extension.getBackgroundPage().codeMirrorThemes;
-	document.getElementById("cm-theme").href = themes.indexOf(theme) <= 0 ? "" : "codemirror/theme/" + theme + ".css";
+	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
 
 	// initialize global editor controls
 	document.addEventListener("DOMContentLoaded", function() {
 		function concatOption(html, option) {
 			return html + "<option>" + option + "</option>";
 		}
-		document.getElementById("editor.theme").innerHTML = themes.reduce(concatOption, "");
+		var bg = chrome.extension.getBackgroundPage();
+		var themeControl = document.getElementById("editor.theme");
+		if (bg && bg.codeMirrorThemes) {
+			themeControl.innerHTML = bg.codeMirrorThemes.reduce(concatOption, "");
+		} else {
+			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
+			themeControl.innerHTML = concatOption("", theme == "default" ? t(theme) : theme);
+			getCodeMirrorThemes(function(themes) {
+				themeControl.innerHTML = themes.reduce(concatOption, "");
+				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
+			});
+		}
 		document.getElementById("editor.keyMap").innerHTML = Object.keys(CM.keyMap).sort().reduce(concatOption, "");
 		var controlPrefs = {};
 		document.querySelectorAll("#options *[data-option][id^='editor.']").forEach(function(option) {
@@ -208,7 +218,7 @@ function acmeEventListener(event) {
 		case "theme":
 			var themeLink = document.getElementById("cm-theme");
 			// use non-localized "default" internally
-			if (!value || el.selectedIndex <= 0) {
+			if (!value || value == "default" || value == t("default")) {
 				value = "default";
 				if (prefs.getPref(el.id) != value) {
 					prefs.setPref(el.id, value);
@@ -638,11 +648,18 @@ function init() {
 		return;
 	}
 	// This is an edit
-	chrome.extension.sendMessage({method: "getStyles", id: params.id}, function(styles) {
-		var style = styles[0];
-		styleId = style.id;
-		initWithStyle(style);
-	});
+	requestStyle();
+	function requestStyle() {
+		chrome.extension.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
+			if (!styles) { // Chrome is starting up and shows edit.html
+				requestStyle();
+				return;
+			}
+			var style = styles[0];
+			styleId = style.id;
+			initWithStyle(style);
+		});
+	}
 }
 
 function initWithStyle(style) {
@@ -831,7 +848,6 @@ function getParams() {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	var installed = document.getElementById("installed");
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId == request.id) {

@@ -223,3 +223,22 @@ var prefs = {
 	},
 	removePref: function(key) { setPref(key, undefined) }
 };
+
+function getCodeMirrorThemes(callback) {
+	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
+		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
+			themeDir.createReader().readEntries(function(entries) {
+				var themes = [chrome.i18n.getMessage("default")];
+				entries
+					.filter(function(entry) { return entry.isFile })
+					.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
+					.forEach(function(entry) {
+						themes.push(entry.name.replace(/\.css$/, ""));
+					});
+				if (callback) {
+					callback(themes);
+				}
+			});
+		});
+	});
+}

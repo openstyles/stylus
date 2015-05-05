@@ -28,6 +28,10 @@ loadPrefs({
 });
 
 function showStyles(styles) {
+	if (!styles) { // Chrome is starting up
+		chrome.extension.sendMessage({method: "getStyles"}, showStyles);
+		return;
+	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	var installed = document.getElementById("installed");
 	styles.map(createStyleElement).forEach(function(e) {
