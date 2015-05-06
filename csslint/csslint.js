@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build: v0.10.0 07-May-2015 01:08:02 */
+/* Build: v0.10.0 07-May-2015 02:11:31 */
 var exports = exports || {};
 var CSSLint = (function(){
 /*!
@@ -47,9 +47,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.5, Build time: 7-May-2014 03:37:38 */
+/* Version v0.2.5dev+PR, Build time: 6-May-2015 08:03:14 */
 var parserlib = {};
 (function(){
+
 
 /**
  * A generic base to inherit from for any object
@@ -405,6 +406,7 @@ StringReader.prototype = {
     }
 
 };
+
 /**
  * Type to use when a syntax error occurs.
  * @class SyntaxError
@@ -921,6 +923,8 @@ TokenStreamBase.prototype = {
 };
 
 
+
+
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -929,6 +933,8 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
+
+
 /*
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
@@ -952,13 +958,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.5, Build time: 7-May-2014 03:37:38 */
+/* Version v0.2.5dev+PR, Build time: 6-May-2015 08:03:14 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
+
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -1177,6 +1184,7 @@ function Combinator(text, line, col){
 Combinator.prototype = new SyntaxUnit();
 Combinator.prototype.constructor = Combinator;
 
+
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a media feature, such as max-width:500.
@@ -1208,6 +1216,7 @@ function MediaFeature(name, value){
 
 MediaFeature.prototype = new SyntaxUnit();
 MediaFeature.prototype.constructor = MediaFeature;
+
 
 /*global SyntaxUnit, Parser*/
 /**
@@ -1251,6 +1260,7 @@ function MediaQuery(modifier, mediaType, features, line, col){
 
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
+
 
 /*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
     PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
@@ -1379,6 +1389,10 @@ Parser.prototype = function(){
                                 break;
                             case Tokens.VIEWPORT_SYM:
                                 this._viewport();
+                                this._skipCruft();
+                                break;
+                            case Tokens.DOCUMENT_SYM:
+                                this._document();
                                 this._skipCruft();
                                 break;
                             case Tokens.UNKNOWN_SYM:  //unknown @ rule
@@ -1622,6 +1636,8 @@ Parser.prototype = function(){
                         this._font_face();
                     } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
                         this._viewport();
+                    } else if (tokenStream.peek() == Tokens.DOCUMENT_SYM){
+                        this._document();
                     } else if (!this._ruleset()){
                         break;
                     }
@@ -1779,6 +1795,8 @@ Parser.prototype = function(){
                  *   ;
                  */
                 var tokenStream = this._tokenStream;
+
+                this._readWhitespace();
 
                 tokenStream.mustMatch(Tokens.IDENT);
 
@@ -2001,6 +2019,92 @@ Parser.prototype = function(){
                         col:    col
                     });
 
+            },
+
+            _document: function(){
+                /*
+                 * document
+                 *   : DOCUMENT_SYM S*
+                 *     _document_function [ ',' S* _document_function ]* S*
+                 *     '{' S* ruleset* '}'
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    token,
+                    tt,
+                    functions = [],
+                    prefix = "";
+
+                tokenStream.mustMatch(Tokens.DOCUMENT_SYM);
+                token = tokenStream.token();
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
+                    prefix = RegExp.$1;
+                }
+
+                this._readWhitespace();
+                functions.push(this._document_function());
+
+                while(tokenStream.match(Tokens.COMMA)) {
+                    this._readWhitespace();
+                    functions.push(this._document_function());
+                }
+
+                tokenStream.mustMatch(Tokens.LBRACE);
+                this._readWhitespace();
+
+                this.fire({
+                    type:      "startdocument",
+                    functions: functions,
+                    prefix:    prefix,
+                    line:      token.startLine,
+                    col:       token.startCol
+                });
+
+                while(true) {
+                    if (tokenStream.peek() == Tokens.PAGE_SYM){
+                        this._page();
+                    } else if (tokenStream.peek() == Tokens.FONT_FACE_SYM){
+                        this._font_face();
+                    } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
+                        this._viewport();
+                    } else if (tokenStream.peek() == Tokens.MEDIA_SYM){
+                        this._media();
+                    } else if (!this._ruleset()){
+                        break;
+                    }
+                }
+
+                tokenStream.mustMatch(Tokens.RBRACE);
+                this._readWhitespace();
+
+                this.fire({
+                    type:      "enddocument",
+                    functions: functions,
+                    prefix:    prefix,
+                    line:      token.startLine,
+                    col:       token.startCol
+                });
+            },
+
+            _document_function: function(){
+                /*
+                 * document_function
+                 *   : function | URI S*
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    value;
+
+                if (tokenStream.match(Tokens.URI)) {
+                    value = tokenStream.token().value;
+                    this._readWhitespace();
+                } else {
+                    value = this._function();
+                }
+
+                return value;
             },
 
             _operator: function(inFunction){
@@ -3545,6 +3649,7 @@ nth
          ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
 */
+
 /*global Validation, ValidationTypes, ValidationError*/
 var Properties = {
 
@@ -3556,7 +3661,7 @@ var Properties = {
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
     "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
-    "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical | inherit",
     "animation"                     : 1,
     "animation-delay"               : { multi: "<time>", comma: true },
     "animation-direction"           : { multi: "normal | alternate", comma: true },
@@ -3640,7 +3745,7 @@ var Properties = {
     "background-position"           : { multi: "<bg-position>", comma: true },
     "background-repeat"             : { multi: "<repeat-style>" },
     "background-size"               : { multi: "<bg-size>", comma: true },
-    "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "baseline-shift"                : "baseline | sub | super | <percentage> | <length> | inherit",
     "behavior"                      : 1,
     "binding"                       : 1,
     "bleed"                         : "<length>",
@@ -3761,6 +3866,7 @@ var Properties = {
     "-moz-box-ordinal-group"        : "<integer>",
     "-moz-box-orient"               : "horizontal | vertical | inline-axis | block-axis | inherit",
     "-moz-box-pack"                 : "start | end | center | justify",
+    "-o-box-decoration-break"       : "slice | clone",
     "-webkit-box-align"             : "start | end | center | baseline | stretch",
     "-webkit-box-decoration-break"  : "slice |clone",
     "-webkit-box-direction"         : "normal | reverse | inherit",
@@ -3770,6 +3876,7 @@ var Properties = {
     "-webkit-box-ordinal-group"     : "<integer>",
     "-webkit-box-orient"            : "horizontal | vertical | inline-axis | block-axis | inherit",
     "-webkit-box-pack"              : "start | end | center | justify",
+    "box-decoration-break"          : "slice | clone",
     "box-shadow"                    : function (expression) {
         var result      = false,
             part;
@@ -3792,8 +3899,13 @@ var Properties = {
     "caption-side"                  : "top | bottom | inherit",
     "clear"                         : "none | right | left | both | inherit",
     "clip"                          : 1,
+    "clip-path"                     : 1,
+    "clip-rule"                     : "nonzero | evenodd | inherit",
     "color"                         : "<color> | inherit",
+    "color-interpolation"           : "auto | sRGB | linearRGB | inherit",
+    "color-interpolation-filters"   : "auto | sRGB | linearRGB | inherit",
     "color-profile"                 : 1,
+    "color-rendering"               : "auto | optimizeSpeed | optimizeQuality | inherit",
     "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
     "column-gap"                    : "<length> | normal",
@@ -3815,8 +3927,8 @@ var Properties = {
 
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
-    "dominant-baseline"             : 1,
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
+    "dominant-baseline"             : "auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge | inherit",
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
@@ -3827,8 +3939,12 @@ var Properties = {
     //E
     "elevation"                     : "<angle> | below | level | above | higher | lower | inherit",
     "empty-cells"                   : "show | hide | inherit",
+    "enable-background"             : 1,
 
     //F
+    "fill"                          : 1,
+    "fill-opacity"                  : "<number> | inherit",
+    "fill-rule"                     : "nonzero | evenodd | inherit",
     "filter"                        : 1,
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
@@ -3854,29 +3970,51 @@ var Properties = {
     "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
     "float"                         : "left | right | none | inherit",
     "float-offset"                  : 1,
+    "flood-color"                   : 1,
+    "flood-opacity"                 : "<number> | inherit",
     "font"                          : 1,
     "font-family"                   : 1,
+    "font-feature-settings"         : "<feature-tag-value> | normal | inherit",
+    "font-kerning"                  : "auto | normal | none | initial | inherit | unset",
     "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
     "font-size-adjust"              : "<number> | none | inherit",
     "font-stretch"                  : "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit",
     "font-style"                    : "normal | italic | oblique | inherit",
     "font-variant"                  : "normal | small-caps | inherit",
+    "font-variant-caps"             : "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps",
+    "font-variant-position"         : "normal | sub | super | inherit | initial | unset",
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
 
     //G
+    "glyph-orientation-horizontal"  : "<angle> | inherit",
+    "glyph-orientation-vertical"    : "auto | <angle> | inherit",
+    "grid"                          : 1,
+    "grid-area"                     : 1,
+    "grid-auto-columns"             : 1,
+    "grid-auto-flow"                : 1,
+    "grid-auto-position"            : 1,
+    "grid-auto-rows"                : 1,
     "grid-cell-stacking"            : "columns | rows | layer",
     "grid-column"                   : 1,
     "grid-columns"                  : 1,
     "grid-column-align"             : "start | end | center | stretch",
     "grid-column-sizing"            : 1,
+    "grid-column-start"             : 1,
+    "grid-column-end"               : 1,
     "grid-column-span"              : "<integer>",
     "grid-flow"                     : "none | rows | columns",
     "grid-layer"                    : "<integer>",
     "grid-row"                      : 1,
     "grid-rows"                     : 1,
     "grid-row-align"                : "start | end | center | stretch",
+    "grid-row-start"                : 1,
+    "grid-row-end"                  : 1,
     "grid-row-span"                 : "<integer>",
     "grid-row-sizing"               : 1,
+    "grid-template"                 : 1,
+    "grid-template-areas"           : 1,
+    "grid-template-columns"         : 1,
+    "grid-template-rows"            : 1,
 
     //H
     "hanging-punctuation"           : 1,
@@ -3891,17 +4029,22 @@ var Properties = {
     //I
     "icon"                          : 1,
     "image-orientation"             : "angle | auto",
-    "image-rendering"               : 1,
+    "image-rendering"               : "auto | optimizeSpeed | optimizeQuality | inherit",
     "image-resolution"              : 1,
+    "ime-mode"                      : "auto | normal | active | inactive | disabled | inherit",
     "inline-box-align"              : "initial | last | <integer>",
 
     //J
     "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
     "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
+    //K
+    "kerning"                       : "auto | <length> | inherit",
+
     //L
     "left"                          : "<margin-width> | inherit",
     "letter-spacing"                : "<length> | normal | inherit",
+    "lighting-color"                : 1,
     "line-height"                   : "<number> | <length> | <percentage> | normal | inherit",
     "line-break"                    : "auto | loose | normal | strict",
     "line-stacking"                 : 1,
@@ -3922,11 +4065,16 @@ var Properties = {
     "mark"                          : 1,
     "mark-after"                    : 1,
     "mark-before"                   : 1,
+    "marker"                        : 1,
+    "marker-end"                    : 1,
+    "marker-mid"                    : 1,
+    "marker-start"                  : 1,
     "marks"                         : 1,
     "marquee-direction"             : 1,
     "marquee-play-count"            : 1,
     "marquee-speed"                 : 1,
     "marquee-style"                 : 1,
+    "mask"                          : 1,
     "max-height"                    : "<length> | <percentage> | <content-sizing> | none | inherit",
     "max-width"                     : "<length> | <percentage> | <content-sizing> | none | inherit",
     "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit",
@@ -3941,6 +4089,8 @@ var Properties = {
     "nav-up"                        : 1,
 
     //O
+    "object-fit"                    : "fill | contain | cover | none | scale-down",
+    "object-position"               : "<bg-position>",
     "opacity"                       : "<number> | inherit",
     "order"                         : "<integer>",
     "-webkit-order"                 : "<integer>",
@@ -4000,6 +4150,7 @@ var Properties = {
     "ruby-span"                     : 1,
 
     //S
+    "shape-rendering"               : "auto | optimizeSpeed | crispEdges | geometricPrecision | inherit",
     "size"                          : 1,
     "speak"                         : "normal | none | spell-out | inherit",
     "speak-header"                  : "once | always | inherit",
@@ -4007,17 +4158,29 @@ var Properties = {
     "speak-punctuation"             : "code | none | inherit",
     "speech-rate"                   : 1,
     "src"                           : 1,
+    "stop-color"                    : 1,
+    "stop-opacity"                  : "<number> | inherit",
     "stress"                        : 1,
     "string-set"                    : 1,
+    "stroke"                        : 1,
+    "stroke-dasharray"              : 1,
+    "stroke-dashoffset"             : "<percentage> | <length> | inherit",
+    "stroke-linecap"                : "butt | round | square | inherit",
+    "stroke-linejoin"               : "miter | round | bevel | inherit",
+    "stroke-miterlimit"             : "<number> | inherit",
+    "stroke-opacity"                : "<number> | inherit",
+    "stroke-width"                  : "<percentage> | <length> | inherit",
 
+    //T
     "table-layout"                  : "auto | fixed | inherit",
     "tab-size"                      : "<integer> | <length>",
     "target"                        : 1,
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
-    "text-align"                    : "left | right | center | justify | inherit" ,
+    "text-align"                    : "left | right | center | justify | match-parent | start | end | inherit" ,
     "text-align-last"               : 1,
+    "text-anchor"                   : "start | middle | end | inherit",
     "text-decoration"               : 1,
     "text-emphasis"                 : 1,
     "text-height"                   : 1,
@@ -4047,7 +4210,7 @@ var Properties = {
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
 
     //V
-    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length> | inherit",
     "visibility"                    : "visible | hidden | collapse | inherit",
     "voice-balance"                 : 1,
     "voice-duration"                : 1,
@@ -4064,6 +4227,7 @@ var Properties = {
     "white-space-collapse"          : 1,
     "widows"                        : "<integer> | inherit",
     "width"                         : "<length> | <percentage> | <content-sizing> | auto | inherit",
+    "will-change"                   : { multi: "<ident>", comma: true },
     "word-break"                    : "normal | keep-all | break-all",
     "word-spacing"                  : "<length> | normal | inherit",
     "word-wrap"                     : "normal | break-word",
@@ -4073,6 +4237,7 @@ var Properties = {
     "z-index"                       : "<integer> | auto | inherit",
     "zoom"                          : "<number> | <percentage> | normal"
 };
+
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
@@ -4103,6 +4268,7 @@ PropertyName.prototype.constructor = PropertyName;
 PropertyName.prototype.toString = function(){
     return (this.hack ? this.hack : "") + this.text;
 };
+
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
@@ -4131,6 +4297,7 @@ function PropertyValue(parts, line, col){
 
 PropertyValue.prototype = new SyntaxUnit();
 PropertyValue.prototype.constructor = PropertyValue;
+
 
 /*global SyntaxUnit, Parser*/
 /**
@@ -4256,6 +4423,7 @@ PropertyValueIterator.prototype.restore = function(){
         this._i = this._marks.pop();
     }
 };
+
 
 /*global SyntaxUnit, Parser, Colors*/
 /**
@@ -4431,6 +4599,7 @@ PropertyValuePart.prototype.constructor = PropertyValuePart;
 PropertyValuePart.fromToken = function(token){
     return new PropertyValuePart(token.value, token.startLine, token.startCol);
 };
+
 var Pseudos = {
     ":first-letter": 1,
     ":first-line":   1,
@@ -4479,6 +4648,7 @@ function Selector(parts, line, col){
 Selector.prototype = new SyntaxUnit();
 Selector.prototype.constructor = Selector;
 
+
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a selector string, meaning a single set of
@@ -4521,6 +4691,7 @@ function SelectorPart(elementName, modifiers, text, line, col){
 SelectorPart.prototype = new SyntaxUnit();
 SelectorPart.prototype.constructor = SelectorPart;
 
+
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a selector modifier string, meaning a class name, element name,
@@ -4556,6 +4727,7 @@ function SelectorSubPart(text, type, line, col){
 
 SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
+
 
 /*global Pseudos, SelectorPart*/
 /**
@@ -4680,6 +4852,7 @@ Specificity.calculate = function(selector){
 
     return new Specificity(0, b, c, d);
 };
+
 /*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
@@ -5192,17 +5365,18 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     identOrFunctionToken: function(first, startLine, startCol){
         var reader  = this._reader,
             ident   = this.readName(first),
-            tt      = Tokens.IDENT;
+            tt      = Tokens.IDENT,
+            uriFns  = ["url(", "url-prefix(", "domain("];
 
         //if there's a left paren immediately after, it's a URI or function
         if (reader.peek() == "("){
             ident += reader.read();
-            if (ident.toLowerCase() == "url("){
+            if (uriFns.indexOf(ident.toLowerCase()) > -1){
                 tt = Tokens.URI;
                 ident = this.readURI(ident);
 
                 //didn't find a valid URL or there's no closing paren
-                if (ident.toLowerCase() == "url("){
+                if (uriFns.indexOf(ident.toLowerCase()) > -1){
                     tt = Tokens.FUNCTION;
                 }
             } else {
@@ -5684,6 +5858,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     }
 });
 
+
 var Tokens  = [
 
     /*
@@ -5717,7 +5892,8 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
-    { name: "VIEWPORT_SYM", text: ["@viewport", "@-ms-viewport"]},
+    { name: "VIEWPORT_SYM", text: ["@viewport", "@-ms-viewport", "@-o-viewport"]},
+    { name: "DOCUMENT_SYM", text: ["@document", "@-moz-document"]},
     { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
 
@@ -5892,6 +6068,7 @@ var Tokens  = [
     };
 
 })();
+
 
 
 
@@ -6229,7 +6406,7 @@ var ValidationTypes = {
         },
 
         "<color>": function(part){
-            return part.type == "color" || part == "transparent";
+            return part.type == "color" || part == "transparent" || part == "currentColor";
         },
 
         "<number>": function(part){
@@ -6310,6 +6487,10 @@ var ValidationTypes = {
 
         "<flex-wrap>": function(part){
             return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
+        },
+
+        "<feature-tag-value>": function(part){
+            return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
         }
     },
 
@@ -6528,6 +6709,8 @@ var ValidationTypes = {
     }
 };
 
+
+
 parserlib.css = {
 Colors              :Colors,
 Combinator          :Combinator,
@@ -6547,11 +6730,15 @@ ValidationError     :ValidationError
 };
 })();
 
+
+
+
 (function(){
 for(var prop in parserlib){
 exports[prop] = parserlib[prop];
 }
 })();
+
 
 var clone = (function() {
 'use strict';
