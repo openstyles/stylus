@@ -162,4 +162,4 @@ var iframeObserver = new MutationObserver(function(mutations) {
 		});
 	});
 });
-iframeObserver.observe(document, {childList: true, subtree: true});
+iframeObserver.observe(document, {childList: true, subtree: true});
