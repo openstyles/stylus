@@ -128,6 +128,7 @@ function initCodeMirror() {
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
 		keyMap: "sublime",
+		theme: "default",
 		extraKeys: {"Ctrl-Space": "autocomplete"}
 	}
 	mergeOptions(stylishOptions, CM.defaults);
@@ -169,31 +170,80 @@ function initCodeMirror() {
 		});
 	}
 
+	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->loadPrefs()
+	var theme = prefs.getPref("editor.theme");
+	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
+
 	// initialize global editor controls
-	document.getElementById("options").addEventListener("change", acmeEventListener, false);
-
-	var keymapControl = document.getElementById("editor.keyMap");
-	Object.keys(CodeMirror.keyMap).sort().forEach(function(map) {
-		keymapControl.appendChild(document.createElement("option")).textContent = map;
+	document.addEventListener("DOMContentLoaded", function() {
+		function optionsHtmlFromArray(options) {
+			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
+		}
+		var themeControl = document.getElementById("editor.theme");
+		var bg = chrome.extension.getBackgroundPage();
+		if (bg && bg.codeMirrorThemes) {
+			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
+		} else {
+			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
+			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
+			getCodeMirrorThemes(function(themes) {
+				themeControl.innerHTML = optionsHtmlFromArray(themes);
+				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
+			});
+		}
+		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+		var controlPrefs = {};
+		document.querySelectorAll("#options *[data-option][id^='editor.']").forEach(function(option) {
+			controlPrefs[option.id] = CM.defaults[option.dataset.option];
+		});
+		document.getElementById("options").addEventListener("change", acmeEventListener, false);
+		loadPrefs(controlPrefs);
 	});
-
-	var controlPrefs = {},
-	    controlOptions = ["smartIndent", "indentWithTabs", "tabSize", "keyMap", "lineWrapping"];
-	controlOptions.forEach(function(option) {
-		controlPrefs["editor." + option] = CM.defaults[option];
-	});
-	loadPrefs(controlPrefs);
-
 }
 initCodeMirror();
 
 function acmeEventListener(event) {
-	var option = event.target.dataset.option;
-	console.log("acmeEventListener heard %s on %s", event.type, event.target.id);
-	if (!option) console.error("acmeEventListener: no 'cm_option' %O", event.target);
-	else CodeMirror.setOption(option, event.target[isCheckbox(event.target) ? "checked" : "value"]);
-
-	if ("tabSize" === option) CodeMirror.setOption("indentUnit", CodeMirror.getOption("tabSize"));
+	var el = event.target;
+	var option = el.dataset.option;
+	//console.log("acmeEventListener heard %s on %s", event.type, el.id);
+	if (!option) {
+		console.error("acmeEventListener: no 'cm_option' %O", el);
+		return;
+	}
+	var value = el.type == "checkbox" ? el.checked : el.value;
+	switch (option) {
+		case "tabSize":
+			CodeMirror.setOption("indentUnit", value);
+			break;
+		case "theme":
+			var themeLink = document.getElementById("cm-theme");
+			// use non-localized "default" internally
+			if (!value || value == "default" || value == t("defaultTheme")) {
+				value = "default";
+				if (prefs.getPref(el.id) != value) {
+					prefs.setPref(el.id, value);
+				}
+				themeLink.href = "";
+				el.selectedIndex = 0;
+				break;
+			}
+			var url = chrome.extension.getURL("codemirror/theme/" + value + ".css");
+			if (themeLink.href == url) { // preloaded in initCodeMirror()
+				break;
+			}
+			// avoid flicker: wait for the second stylesheet to load, then apply the theme
+			document.head.insertAdjacentHTML("beforeend",
+				'<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
+			(function() {
+				setTimeout(function() {
+					CodeMirror.setOption(option, value);
+					themeLink.remove();
+					document.getElementById("cm-theme2").id = "cm-theme";
+				}, 100);
+			})();
+			return;
+	}
+	CodeMirror.setOption(option, value);
 }
 
 // replace given textarea with the CodeMirror editor
@@ -598,11 +648,18 @@ function init() {
 		return;
 	}
 	// This is an edit
-	chrome.extension.sendMessage({method: "getStyles", id: params.id}, function(styles) {
-		var style = styles[0];
-		styleId = style.id;
-		initWithStyle(style);
-	});
+	requestStyle();
+	function requestStyle() {
+		chrome.extension.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
+			if (!styles) { // Chrome is starting up and shows edit.html
+				requestStyle();
+				return;
+			}
+			var style = styles[0];
+			styleId = style.id;
+			initWithStyle(style);
+		});
+	}
 }
 
 function initWithStyle(style) {
@@ -626,6 +683,10 @@ function initHooks() {
 		node.addEventListener("change", onChange);
 		node.addEventListener("input", onChange);
 	});
+	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
+	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+	document.getElementById("save-button").addEventListener("click", save, false);
+	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 
 	setupGlobalSearch();
 	setCleanGlobal();
@@ -787,7 +848,6 @@ function getParams() {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	var installed = document.getElementById("installed");
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId == request.id) {
@@ -806,8 +866,3 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
-document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
-document.getElementById("save-button").addEventListener("click", save, false);
-document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);

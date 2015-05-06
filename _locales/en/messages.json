@@ -96,9 +96,17 @@
 		"message": "Tab size",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
+	"cm_theme": {
+		"message": "Theme",
+		"description": "Label for the style editor's CSS theme."
+	},
 	"dbError": {
 		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"defaultTheme": {
+		"message": "default",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"deleteStyleLabel": {
 		"message": "Delete",

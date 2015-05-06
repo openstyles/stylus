@@ -178,6 +178,7 @@ var prefs = {
 	"editor.indentWithTabs": false,// smart indent with tabs
 	"editor.tabSize": 4,           // tab width, in spaces
 	"editor.keyMap": "sublime",    // keymap
+	"editor.theme": "default",     // CSS theme
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
@@ -222,3 +223,22 @@ var prefs = {
 	},
 	removePref: function(key) { setPref(key, undefined) }
 };
+
+function getCodeMirrorThemes(callback) {
+	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
+		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
+			themeDir.createReader().readEntries(function(entries) {
+				var themes = [chrome.i18n.getMessage("defaultTheme")];
+				entries
+					.filter(function(entry) { return entry.isFile })
+					.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
+					.forEach(function(entry) {
+						themes.push(entry.name.replace(/\.css$/, ""));
+					});
+				if (callback) {
+					callback(themes);
+				}
+			});
+		});
+	});
+}

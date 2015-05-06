@@ -1,7 +1,18 @@
-var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
-if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
-	chrome.extension.getBackgroundPage().getStyles(request, applyStyles);
-} else {
+requestStyles();
+
+function requestStyles() {
+	// If this is a Stylish page (Edit Style or Manage Styles),
+	// we'll request the styles directly to minimize delay and flicker,
+	// unless Chrome still starts up and the background page isn't fully loaded.
+	// (Note: in this case the function may be invoked again from applyStyles.)
+	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
+	if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
+		var bg = chrome.extension.getBackgroundPage();
+		if (bg && bg.getStyles) {
+			bg.getStyles(request, applyStyles);
+			return;
+		}
+	}
 	chrome.extension.sendMessage(request, applyStyles);
 }
 
@@ -63,6 +74,10 @@ function removeStyle(id, doc) {
 }
 
 function applyStyles(styleHash) {
+	if (!styleHash) { // Chrome is starting up
+		requestStyles();
+		return;
+	}
 	if ("disableAll" in styleHash) {
 		disableAll(styleHash.disableAll);
 		delete styleHash.disableAll;

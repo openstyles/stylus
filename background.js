@@ -392,3 +392,8 @@ function openURL(options) {
 		}
 	});
 }
+
+var codeMirrorThemes;
+getCodeMirrorThemes(function(themes) {
+	 codeMirrorThemes = themes;
+});

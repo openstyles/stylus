@@ -276,12 +276,25 @@
 				#sections > *:not(h2) {
 					padding-left: 0.4rem;
 				}
+				.applies-type {
+					width: 30%;
+				}
+			}
+			@media(max-width:500px) {
+				#options {
+					-webkit-column-count: 1;
+				}
+				#options #tabSize-label {
+					position: static;
+				}
 			}
 		</style>
+		<link id="cm-theme" rel="stylesheet">
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
 		<script src="localization.js"></script>
 		<script src="apply.js"></script>
+		<script src="edit.js"></script>
 	</head>
 	<body id="stylish-edit">
 		<div id="header">
@@ -322,11 +335,14 @@
 					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 					<select data-option="keyMap" id="editor.keyMap"></select>
 				</div>
+				<div class="option aligned">
+					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+					<select data-option="theme" id="editor.theme"></select>
+				</div>
 			</section>
 		</div>
 		<section id="sections">
 			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="help.png" i18n-alt="helpAlt"></h2>
 		</section>
-		<script src="edit.js"></script>
 	</body>
 </html>
