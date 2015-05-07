@@ -220,9 +220,11 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			case "styleDeleted":
 				handleDelete(request.id);
 				break;
-			case "styleDisableAll":
-				document.getElementById("disableAll").checked = request.disableAll;
-				handleDisableAll(request.disableAll);
+			case "prefChanged":
+				if (request.prefName == "disableAll") {
+					document.getElementById("disableAll").checked = request.value;
+					handleDisableAll(request.value);
+				}
 				break;
 		}
 	}
@@ -236,4 +238,5 @@ loadPrefs({"disableAll": false});
 handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
+	handleDisableAll(event.target.checked);
 });
