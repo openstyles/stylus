@@ -193,10 +193,14 @@ function handleUpdate(style) {
 	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
 	if (styleElement) {
 		installed.replaceChild(createStyleElement(style), styleElement);
-	} else if (chrome.extension.getBackgroundPage().getApplicableSections(style, location.href).length) {
-		// a new style for the current url is installed
-		document.getElementById("unavailable").style.display = "none";
-		installed.appendChild(createStyleElement(style));
+	} else {
+		chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+			if (tabs.length && chrome.extension.getBackgroundPage().getApplicableSections(style, tabs[0].url).length) {
+				// a new style for the current url is installed
+				document.getElementById("unavailable").style.display = "none";
+				installed.appendChild(createStyleElement(style));
+			}
+		});
 	}
 }
 
@@ -214,6 +218,7 @@ function handleDisableAll(disableAll) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
+			case "styleAdded":
 			case "styleUpdated":
 				handleUpdate(request.style);
 				break;
