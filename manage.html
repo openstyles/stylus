@@ -119,6 +119,15 @@
 			.enabled-only > .disabled, .edited-only > [style-update-url] {
 				display: none;
 			}
+
+			#search {
+				width: calc(100% - 4px);
+				margin: 0.25rem 4px 0;
+				border-radius: 0.25rem;
+				padding-left: 0.25rem;
+				border-width: 1px;
+			}
+
 		</style>
 		<script src="localization.js"></script>
 		<script src="health.js"></script>
@@ -134,6 +143,7 @@
 				<legend id="filters" i18n-text="manageFilters"></legend>
 				<div><input id="manage.onlyEnabled" type="checkbox"><label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label></div>
 				<div><input id="manage.onlyEdited" type="checkbox"><label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label></div>
+				<div><input id="search" type="search" i18n-placeholder="searchStyles"></div>
 			</fieldset>
 			<p><button id="check-all-updates" i18n-text="checkAllUpdates"></button></p>
 			<p>
