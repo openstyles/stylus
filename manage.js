@@ -15,6 +15,7 @@ var styleTemplate = tHTML('\
 ');
 
 var lastUpdatedStyleId = null;
+var installed = document.getElementById("installed");
 
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
@@ -33,7 +34,6 @@ function showStyles(styles) {
 		return;
 	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
-	var installed = document.getElementById("installed");
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
@@ -186,7 +186,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 function handleUpdate(style) {
-	var installed = document.getElementById("installed");
 	var element = createStyleElement(style);
 	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
 	if (style.id == lastUpdatedStyleId) {
@@ -197,7 +196,6 @@ function handleUpdate(style) {
 }
 
 function handleDelete(id) {
-	var installed = document.getElementById("installed");
 	installed.removeChild(installed.querySelector("[style-id='" + id + "']"));
 }
 
@@ -436,10 +434,7 @@ document.getElementById("check-all-updates").addEventListener("click", checkUpda
 document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll, false);
 
 function onFilterChange (className, event) {
-	var container = document.getElementById("installed"),
-	    control = event.target;
-	if (control.checked) container.classList.add(className);
-	else container.classList.remove(className);
+	installed.classList.toggle(className, event.target.checked);
 }
 function initFilter(className, node) {
 	node.addEventListener("change", onFilterChange.bind(undefined, className), false);
