@@ -548,6 +548,12 @@ function setupGlobalSearch() {
 	}
 
 	function find(activeCM) {
+		editors.lastActive = activeCM;
+		var cm = getEditorInSight();
+		if (cm != activeCM) {
+			cm.focus();
+			activeCM = cm;
+		}
 		var originalOpenDialog = activeCM.openDialog;
 		activeCM.openDialog = function(template, callback, options) {
 			originalOpenDialog.call(activeCM, findTemplate, function(query) {
