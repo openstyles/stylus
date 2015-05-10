@@ -362,11 +362,7 @@ document.addEventListener("keydown", function(event) {
 
 	function handleCommand(command) {
 		if (commandsToReroute[command] === true) {
-			var cm = getEditorInSight(event.target);
-			if (command != "save") {
-				cm.focus();
-			}
-			CodeMirror.commands[command](cm);
+			CodeMirror.commands[command](getEditorInSight(event.target));
 			return true;
 		}
 	}
@@ -586,9 +582,16 @@ function setupGlobalSearch() {
 		var pos = activeCM.getCursor(reverse ? "from" : "to");
 		activeCM.setSelection(activeCM.getCursor()); // clear the selection, don't move the cursor
 
+		var rxQuery = typeof state.query == "object"
+			? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? "i" : "");
+
+		if (document.activeElement && document.activeElement.name == "applies-value"
+			&& searchAppliesTo(activeCM)) {
+			return;
+		}
 		for (var i=0, cm=activeCM; i < editors.length; i++) {
 			state = updateState(cm);
-			if (cm != activeCM) {
+			if (!cm.hasFocus()) {
 				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
 			}
 			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
@@ -602,11 +605,38 @@ function setupGlobalSearch() {
 				state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
 				originalCommand[reverse ? "findPrev" : "findNext"](cm);
 				return;
+			} else if (!reverse && searchAppliesTo(cm)) {
+				return;
 			}
 			cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
+			if (reverse && searchAppliesTo(cm)) {
+				return;
+			}
 		}
 		// nothing found so far, so call the original search with wrap-around
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
+
+		function searchAppliesTo(cm) {
+			var inputs = [].slice.call(getSectionForCodeMirror(cm).querySelectorAll(".applies-value"));
+			if (reverse) {
+				inputs = inputs.reverse();
+			}
+			inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
+			return inputs.some(function(input) {
+				var match = rxQuery.exec(input.value);
+				if (match) {
+					input.focus();
+					var end = match.index + match[0].length;
+					// scroll selected part into view in long inputs,
+					// works only outside of current event handlers chain, hence timeout=0
+					setTimeout(function() {
+						input.setSelectionRange(end, end);
+						input.setSelectionRange(match.index, end)
+					}, 0);
+					return true;
+				}
+			});
+		}
 	}
 
 	function findPrev(cm) {
@@ -885,7 +915,7 @@ function showKeyMapHelp() {
 		"</table>");
 	document.querySelector("#help-popup table").addEventListener("input", function(event) {
 		var input = event.target;
-		var query = new RegExp(input.value.replace(/([{}()\[\]\/\\.+?^$:=*!|])/g, "\\$1"), "gi");
+		var query = stringAsRegExp(input.value, "gi");
 		var col = input.parentNode.cellIndex;
 		this.tBodies[0].childNodes.forEach(function(row) {
 			var cell = row.children[col];
@@ -983,4 +1013,8 @@ function querySelectorParent(node, selector) {
 	while (parent && parent.matches && !parent.matches(selector))
 		parent = parent.parentNode;
 	return parent.matches ? parent : null; // null for the root document.DOCUMENT_NODE
+}
+
+function stringAsRegExp(s, flags) {
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
 }
