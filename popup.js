@@ -181,6 +181,7 @@ function openLinkInTabOrWindow(event) {
 	} else {
 		openLink(event);
 	}
+	close();
 }
 
 function openLink(event) {
