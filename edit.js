@@ -3,7 +3,6 @@
 var styleId = null;
 var dirty = {};       // only the actually dirty items here
 var editors = [];     // array of all CodeMirror instances
-var lockScroll;       // temporary focus-jump-on-click fix, TODO: revert c084ea3 once CM is updated
 var isSeparateWindow; // used currrently to determine if the window size/pos should be remembered
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
@@ -50,10 +49,18 @@ var sectionTemplate = tHTML('\
 var findTemplate = t("search") + ': <input type="text" style="width: 10em" class="CodeMirror-search-field"/>&nbsp;' +
 	'<span style="color: #888" class="CodeMirror-search-hint">(' + t("searchRegexp") + ')</span>';
 
+var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-field" type="text" style="width: 5em"/>';
+
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
 });
+
+// reroute handling to nearest editor when keypress resolves to one of these commands
+var commandsToReroute = {
+	save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
+	find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+};
 
 function onChange(event) {
 	var node = event.target;
@@ -117,6 +124,8 @@ function setCleanSection(section) {
 
 function initCodeMirror() {
 	var CM = CodeMirror;
+	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
+
 	// default option values
 	var userOptions = prefs.getPref("editor.options");
 	var stylishOptions = {
@@ -127,9 +136,12 @@ function initCodeMirror() {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
-		keyMap: "sublime",
 		theme: "default",
-		extraKeys: {"Ctrl-Space": "autocomplete"}
+		keyMap: isWindowsOS ? "sublime" : "default",
+		extraKeys: { // independent of current keyMap
+			"Alt-PageDown": "nextEditor",
+			"Alt-PageUp": "prevEditor"
+		}
 	}
 	mergeOptions(stylishOptions, CM.defaults);
 	mergeOptions(userOptions, CM.defaults);
@@ -140,23 +152,51 @@ function initCodeMirror() {
 	}
 
 	// additional commands
-	var cc = CM.commands;
-	cc.jumpToLine = jumpToLine;
-	cc.nextBuffer = function(cm) { nextPrevBuffer(cm, 1) };
-	cc.prevBuffer = function(cm) { nextPrevBuffer(cm, -1) };
+	CM.commands.jumpToLine = jumpToLine;
+	CM.commands.nextEditor = function(cm) { nextPrevEditor(cm, 1) };
+	CM.commands.prevEditor = function(cm) { nextPrevEditor(cm, -1) };
+	CM.commands.save = save;
 
-	var cssHintHandler = CM.hint.css;
-	CM.hint.css = function(cm) {
-		var cursor = cm.getCursor();
-		var token = cm.getTokenAt(cursor);
-		if (token.state.state === "prop" && "!important".indexOf(token.string) === 0) {
-			return {
-				from: CM.Pos(cursor.line, token.start),
-				to: CM.Pos(cursor.line, token.end),
-				list: ["!important"]
-			}
-		}
-		return cssHintHandler(cm);
+	// "basic" keymap only has basic keys by design, so we skip it
+
+	CM.keyMap.sublime["Ctrl-G"] = "jumpToLine";
+	CM.keyMap.emacsy["Ctrl-G"] = "jumpToLine";
+	CM.keyMap.pcDefault["Ctrl-J"] = "jumpToLine";
+	CM.keyMap.macDefault["Cmd-J"] = "jumpToLine";
+
+	CM.keyMap.pcDefault["Ctrl-Space"] = "autocomplete"; // will be used by "sublime" on PC via fallthrough
+	CM.keyMap.macDefault["Alt-Space"] = "autocomplete"; // OSX uses Ctrl-Space and Cmd-Space for something else
+	CM.keyMap.emacsy["Alt-/"] = "autocomplete"; // copied from "emacs" keymap
+	// "vim" and "emacs" define their own autocomplete hotkeys
+
+	if (isWindowsOS) {
+		// "pcDefault" keymap on Windows should have F3/Shift-F3
+		CM.keyMap.pcDefault["F3"] = "findNext";
+		CM.keyMap.pcDefault["Shift-F3"] = "findPrev";
+
+		// try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
+		["N", "T", "W"].forEach(function(char) {
+			[{from: "Ctrl-", to: ["Alt-", "Ctrl-Alt-"]},
+			 {from: "Shift-Ctrl-", to: ["Ctrl-Alt-", "Shift-Ctrl-Alt-"]} // Note: modifier order in CM is S-C-A
+			].forEach(function(remap) {
+				var oldKey = remap.from + char;
+				Object.keys(CM.keyMap).forEach(function(keyMapName) {
+					var keyMap = CM.keyMap[keyMapName];
+					var command = keyMap[oldKey];
+					if (!command) {
+						return;
+					}
+					remap.to.some(function(newMod) {
+						var newKey = newMod + char;
+						if (!(newKey in keyMap)) {
+							delete keyMap[oldKey];
+							keyMap[newKey] = command;
+							return true;
+						}
+					});
+				});
+			});
+		});
 	}
 
 	// user option values
@@ -249,25 +289,9 @@ function acmeEventListener(event) {
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
-	cm.addKeyMap({
-		"Ctrl-G": "jumpToLine",
-		"Alt-PageDown": "nextBuffer",
-		"Alt-PageUp": "prevBuffer"
-	});
-	cm.lastChange = cm.changeGeneration();
-	cm.on("change", indicateCodeChange);
 
-	// ensure the section doesn't jump when clicking selected text
-	cm.on("cursorActivity", function(cm) {
-		editors.lastActive = cm;
-		setTimeout(function() {
-			lockScroll = {
-				windowScrollY: window.scrollY,
-				editor: cm,
-				editorScrollInfo: cm.getScrollInfo()
-			}
-		}, 0);
-	});
+	cm.on("change", indicateCodeChange);
+	cm.on("blur", function(cm) { editors.lastActive = cm });
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -324,30 +348,39 @@ function getCodeMirrorForSection(section) {
 	return null;
 }
 
-// ensure the section doesn't jump when clicking selected text
-document.addEventListener("scroll", function(e) {
-	if (lockScroll && lockScroll.windowScrollY != window.scrollY) {
-		window.scrollTo(0, lockScroll.windowScrollY);
-		lockScroll.editor.scrollTo(lockScroll.editorScrollInfo.left, lockScroll.editorScrollInfo.top);
-		lockScroll = null;
+// prevent the browser from seeing hotkeys that should be handled by nearest editor
+document.addEventListener("keydown", function(event) {
+	if (event.target.localName == "textarea") {
+		return; // let CodeMirror handle it
+	}
+	var keyName = CodeMirror.keyName(event);
+	if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
+	 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+
+	function handleCommand(command) {
+		if (commandsToReroute[command] === true) {
+			CodeMirror.commands[command](getEditorInSight(event.target));
+			return true;
+		}
 	}
 });
 
-document.addEventListener("keydown", function(e) {
-	if (!e.altKey && e.keyCode >= 70 && e.keyCode <= 114) {
-		if (e.keyCode == 83 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { // Ctrl-S, Cmd-S
-			e.preventDefault();
-			e.stopPropagation();
-			save();
-		} else if (e.target.localName != "textarea") { // textareas are handled by CodeMirror
-			if (e.keyCode == 70 && (e.ctrlKey || e.metaKey) && !e.shiftKey) { /* Ctrl-F, Cmd-F */
-				document.browserSearchHandler(e, "find");
-			} else if (e.keyCode == 71 && (e.ctrlKey || e.metaKey)) { /*Ctrl-G, Ctrl-Shift-G, Cmd-G, Cmd-Shift-G*/
-				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
-			} else if (e.keyCode == 114 && !e.ctrlKey && !e.metaKey) { /*F3, Shift-F3*/
-				document.browserSearchHandler(e, e.shiftKey ? "findPrev" : "findNext");
-			}
-		}
+// remind Chrome to repaint a previously invisible editor box by toggling any element's transform
+// this bug is present in some versions of Chrome (v37-40 or something)
+document.addEventListener("scroll", function(event) {
+	var style = document.getElementById("name").style;
+	style.webkitTransform = style.webkitTransform ? "" : "scale(1)";
+});
+
+// Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
+document.addEventListener("wheel", function(event) {
+	if (event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
+		// Chrome scrolls horizontally when Shift is pressed but on some PCs this might be different
+		window.scrollBy(0, event.deltaX || event.deltaY);
+		event.preventDefault();
 	}
 });
 
@@ -426,7 +459,9 @@ function addSection(event, section) {
 		var clickedSection = event.target.parentNode;
 		sections.insertBefore(div, clickedSection.nextElementSibling);
 		var newIndex = document.querySelectorAll("#sections > div").indexOf(clickedSection) + 1;
-		setupCodeMirror(codeElement, newIndex).focus();
+		var cm = setupCodeMirror(codeElement, newIndex);
+		makeSectionVisible(cm);
+		cm.focus()
 	} else {
 		sections.appendChild(div);
 		setupCodeMirror(codeElement);
@@ -468,10 +503,9 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
-	var section = cm.display.wrapper.parentNode;
+	var section = getSectionForCodeMirror(cm);
 	var bounds = section.getBoundingClientRect();
 	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
-		lockScroll = null;
 		if (bounds.top < 0) {
 			window.scrollBy(0, bounds.top - 1);
 		} else {
@@ -487,34 +521,51 @@ function setupGlobalSearch() {
 		findPrev: CodeMirror.commands.findPrev
 	}
 
+	var curState; // cm.state.search for last used 'find'
+
 	function shouldIgnoreCase(query) { // treat all-lowercase non-regexp queries as case-insensitive
 		return typeof query == "string" && query == query.toLowerCase();
 	}
 
+	function updateState(cm, newState) {
+		if (!newState) {
+			if (cm.state.search) {
+				return cm.state.search;
+			}
+			newState = curState;
+		}
+		cm.state.search = {
+			query: newState.query,
+			overlay: newState.overlay,
+			annotate: cm.showMatchesOnScrollbar(newState.query, shouldIgnoreCase(newState.query))
+		}
+		cm.addOverlay(newState.overlay);
+		return cm.state.search;
+	}
+
 	function find(activeCM) {
+		editors.lastActive = activeCM;
+		var cm = getEditorInSight();
+		if (cm != activeCM) {
+			cm.focus();
+			activeCM = cm;
+		}
 		var originalOpenDialog = activeCM.openDialog;
 		activeCM.openDialog = function(template, callback, options) {
 			originalOpenDialog.call(activeCM, findTemplate, function(query) {
 				activeCM.openDialog = originalOpenDialog;
 				callback(query);
-				var state = activeCM.state.search;
-				if (editors.length == 1 || !state.query) {
+				curState = activeCM.state.search;
+				if (editors.length == 1 || !curState.query) {
 					return;
 				}
-				for (var i=0; i < editors.length; i++) {
-					var cm = editors[i];
-					if (cm == activeCM) {
-						continue;
+				editors.forEach(function(cm) {
+					if (cm != activeCM) {
+						cm.execCommand("clearSearch");
+						updateState(cm, curState);
 					}
-					cm.execCommand("clearSearch");
-					cm.state.search = {
-						query: state.query,
-						overlay: state.overlay,
-						annotate: cm.showMatchesOnScrollbar(state.query, shouldIgnoreCase(state.query))
-					}
-					cm.addOverlay(state.overlay);
-				}
-				if (CodeMirror.cmpPos(activeCM.state.search.posFrom, activeCM.state.search.posTo) == 0) {
+				});
+				if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) == 0) {
 					findNext(activeCM);
 				}
 			}, options);
@@ -523,21 +574,24 @@ function setupGlobalSearch() {
 	}
 
 	function findNext(activeCM, reverse) {
-		if (!activeCM.state.search || !activeCM.state.search.query) {
+		var state = updateState(activeCM);
+		if (!state || !state.query) {
 			find(activeCM);
 			return;
 		}
-		var pos = activeCM.getCursor();
-		// check if the search term is currently selected in the editor
-		var m = activeCM.getSelection().match(activeCM.state.search.query);
-		if (m && m[0].length == activeCM.getSelection().length) {
-			pos = activeCM.getCursor(reverse ? "from" : "to");
-			activeCM.setSelection(activeCM.getCursor());
-		}
+		var pos = activeCM.getCursor(reverse ? "from" : "to");
+		activeCM.setSelection(activeCM.getCursor()); // clear the selection, don't move the cursor
 
+		var rxQuery = typeof state.query == "object"
+			? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? "i" : "");
+
+		if (document.activeElement && document.activeElement.name == "applies-value"
+			&& searchAppliesTo(activeCM)) {
+			return;
+		}
 		for (var i=0, cm=activeCM; i < editors.length; i++) {
-			var state = cm.state.search;
-			if (cm != activeCM) {
+			state = updateState(cm);
+			if (!cm.hasFocus()) {
 				pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
 			}
 			var searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
@@ -551,60 +605,42 @@ function setupGlobalSearch() {
 				state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
 				originalCommand[reverse ? "findPrev" : "findNext"](cm);
 				return;
+			} else if (!reverse && searchAppliesTo(cm)) {
+				return;
 			}
 			cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
+			if (reverse && searchAppliesTo(cm)) {
+				return;
+			}
 		}
 		// nothing found so far, so call the original search with wrap-around
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
+
+		function searchAppliesTo(cm) {
+			var inputs = [].slice.call(getSectionForCodeMirror(cm).querySelectorAll(".applies-value"));
+			if (reverse) {
+				inputs = inputs.reverse();
+			}
+			inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
+			return inputs.some(function(input) {
+				var match = rxQuery.exec(input.value);
+				if (match) {
+					input.focus();
+					var end = match.index + match[0].length;
+					// scroll selected part into view in long inputs,
+					// works only outside of current event handlers chain, hence timeout=0
+					setTimeout(function() {
+						input.setSelectionRange(end, end);
+						input.setSelectionRange(match.index, end)
+					}, 0);
+					return true;
+				}
+			});
+		}
 	}
 
 	function findPrev(cm) {
 		findNext(cm, true);
-	}
-
-	function getVisibleEditor(activeElement) {
-		var linesVisible = 2; // closest editor should have at least # lines visible
-		function getScrollDistance(cm) {
-			var bounds = cm.display.wrapper.parentNode.getBoundingClientRect();
-			if (bounds.top < 0) {
-				return -bounds.top;
-			} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * linesVisible) {
-				return 0;
-			} else {
-				return bounds.top - bounds.height;
-			}
-		}
-		if (activeElement && activeElement.className.indexOf("applies-") >= 0) {
-			for (var section = activeElement; section.parentNode; section = section.parentNode) {
-				var cmWrapper = section.querySelector(".CodeMirror");
-				if (cmWrapper) {
-					if (getScrollDistance(cmWrapper.CodeMirror) == 0) {
-						return cmWrapper.CodeMirror;
-					}
-					break;
-				}
-			}
-		}
-		if (editors.lastActive && getScrollDistance(editors.lastActive) == 0) {
-			return editors.lastActive;
-		}
-		var sorted = editors
-			.map(function(cm, index) { return {cm: cm, distance: getScrollDistance(cm), index: index} })
-			.sort(function(a, b) { return Math.sign(a.distance - b.distance) || Math.sign(a.index - b.index)});
-		var cm = sorted[0].cm;
-		if (sorted[0].distance > 0) {
-			makeSectionVisible(cm)
-		}
-		cm.focus();
-		return cm;
-	}
-
-	document.browserSearchHandler = function(event, command) {
-		event.preventDefault();
-		event.stopPropagation();
-		if (!event.target.classList.contains("CodeMirror-search-field")) {
-			CodeMirror.commands[command](getVisibleEditor(event.target));
-		}
 	}
 
 	CodeMirror.commands.find = find;
@@ -614,7 +650,7 @@ function setupGlobalSearch() {
 
 function jumpToLine(cm) {
 	var cur = cm.getCursor();
-	cm.openDialog(t('editGotoLine') + ': <input type="text" style="width: 5em"/>', function(str) {
+	cm.openDialog(jumpToLineTemplate, function(str) {
 		var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
 		if (m) {
 			cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
@@ -622,10 +658,42 @@ function jumpToLine(cm) {
 	}, {value: cur.line+1});
 }
 
-function nextPrevBuffer(cm, direction) {
+function nextPrevEditor(cm, direction) {
 	cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
 	makeSectionVisible(cm);
 	cm.focus();
+}
+
+function getEditorInSight(nearbyElement) {
+	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
+	var cm;
+	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
+		cm = getCodeMirrorForSection(querySelectorParent(nearbyElement, "#sections > div"));
+	} else {
+		cm = editors.lastActive;
+	}
+	if (!cm || offscreenDistance(cm) > 0) {
+		var sorted = editors
+			.map(function(cm, index) { return {cm: cm, distance: offscreenDistance(cm), index: index} })
+			.sort(function(a, b) { return a.distance - b.distance || a.index - b.index });
+		cm = sorted[0].cm;
+		if (sorted[0].distance > 0) {
+			makeSectionVisible(cm)
+		}
+	}
+	return cm;
+
+	function offscreenDistance(cm) {
+		var LINES_VISIBLE = 2; // closest editor should have at least # lines visible
+		var bounds = getSectionForCodeMirror(cm).getBoundingClientRect();
+		if (bounds.top < 0) {
+			return -bounds.top;
+		} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
+			return 0;
+		} else {
+			return bounds.top - bounds.height;
+		}
+	}
 }
 
 window.addEventListener("load", init, false);
@@ -687,6 +755,7 @@ function initHooks() {
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
+	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 
 	setupGlobalSearch();
 	setCleanGlobal();
@@ -819,19 +888,91 @@ function toMozillaFormat() {
 }
 
 function showSectionHelp() {
-	showHelp(t("sectionHelp"));
+	showHelp(t("styleSectionsTitle"), t("sectionHelp"));
 }
 
 function showAppliesToHelp() {
-	showHelp(t("appliesHelp"));
+	showHelp(t("appliesLabel"), t("appliesHelp"));
 }
 
 function showToMozillaHelp() {
-	showHelp(t("styleToMozillaFormatHelp"));
+	showHelp(t("styleToMozillaFormat"), t("styleToMozillaFormatHelp"));
 }
 
-function showHelp(text) {
-	alert(text);
+function showKeyMapHelp() {
+	var keyMap = mergeKeyMaps({}, prefs.getPref("editor.keyMap"), CodeMirror.defaults.extraKeys);
+	var keyMapSorted = Object.keys(keyMap)
+		.map(function(key) { return {key: key, cmd: keyMap[key]} })
+		.concat([{key: "Shift-Ctrl-Wheel", cmd: "scrollWindow"}])
+		.sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1 });
+	showHelp(t("cm_keyMap") + ": " + prefs.getPref("editor.keyMap"),
+		'<table class="keymap-list">' +
+			"<thead><tr><th><input></th><th><input></th></tr></thead>" +
+			"<tbody>" + keyMapSorted.map(function(value) {
+				return "<tr><td>" + value.key + "</td><td>" + value.cmd + "</td></tr>";
+			}).join("") +
+			"</tbody>" +
+		"</table>");
+	document.querySelector("#help-popup table").addEventListener("input", function(event) {
+		var input = event.target;
+		var query = stringAsRegExp(input.value, "gi");
+		var col = input.parentNode.cellIndex;
+		this.tBodies[0].childNodes.forEach(function(row) {
+			var cell = row.children[col];
+			if (query.test(cell.textContent)) {
+				row.style.display = "";
+				cell.innerHTML = cell.textContent.replace(query, "<mark>$&</mark>");
+			} else {
+				row.style.display = "none";
+			}
+		});
+	});
+
+	function mergeKeyMaps(merged) {
+		[].slice.call(arguments, 1).forEach(function(keyMap) {
+			if (typeof keyMap == "string") {
+				keyMap = CodeMirror.keyMap[keyMap];
+			}
+			Object.keys(keyMap).forEach(function(key) {
+				var cmd = keyMap[key];
+				// filter out '...', 'attach', etc. (hotkeys start with an uppercase letter)
+				if (!merged[key] && !key.match(/^[a-z]/) && cmd != "...") {
+					if (typeof cmd == "function") {
+						// for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
+						// for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
+						cmd = cmd.toString().replace(/^function.*?\{[\s\r\n]*([\s\S]+?)[\s\r\n]*\}$/, "$1");
+						merged[key] = cmd.length <= 200 ? cmd : cmd.substr(0, 200) + "...";
+					} else {
+						merged[key] = cmd;
+					}
+				}
+			});
+			if (keyMap.fallthrough) {
+				merged = mergeKeyMaps(merged, keyMap.fallthrough);
+			}
+		});
+		return merged;
+	}
+}
+
+function showHelp(title, text) {
+	var div = document.getElementById("help-popup");
+	div.querySelector(".contents").innerHTML = text;
+	div.querySelector(".title").innerHTML = title;
+
+	if (getComputedStyle(div).display == "none") {
+		document.addEventListener("keydown", closeHelp);
+		div.querySelector(".close-icon").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
+	}
+
+	div.style.display = "block";
+
+	function closeHelp(e) {
+		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
+			div.style.display = "";
+			document.removeEventListener("keydown", closeHelp);
+		}
+	}
 }
 
 function getParams() {
@@ -866,3 +1007,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
+
+function querySelectorParent(node, selector) {
+	var parent = node.parentNode;
+	while (parent && parent.matches && !parent.matches(selector))
+		parent = parent.parentNode;
+	return parent.matches ? parent : null; // null for the root document.DOCUMENT_NODE
+}
+
+function stringAsRegExp(s, flags) {
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
+}

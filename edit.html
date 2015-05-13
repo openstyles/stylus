@@ -30,6 +30,8 @@
 		<script src="codemirror/addon/hint/css-hint.js"></script>
 
 		<script src="codemirror/keymap/sublime.js"></script>
+		<script src="codemirror/keymap/emacs.js"></script>
+		<script src="codemirror/keymap/vim.js"></script>
 
 		<style type="text/css">
 
@@ -59,10 +61,15 @@
 			.aligned {
 				display: table-row;
 			}
-			.aligned > * {
+			.aligned > *:not(img) {
 				display: table-cell;
 				margin-top: 0.1rem;
 				min-height: 1.4rem;
+			}
+			img[src="help.png"] {
+				cursor: pointer;
+				vertical-align: middle;
+				margin-left: 0.2rem;
 			}
 			input[type="checkbox"] {
 				margin-left: 0.1rem;
@@ -85,11 +92,6 @@
 			#actions > * {
 				margin-right: 0.5rem;
 				margin-bottom: 0.5rem;
-			}
-			#actions img {
-				margin-left: 0.2rem;
-				position: relative;
-				top: 0.2rem;
 			}
 			/* options */
 			#options [type="number"] {
@@ -131,7 +133,7 @@
 			.CodeMirror-vscrollbar {
 				margin-bottom: 8px; /* make space for resize-grip */
 			}
-			.CodeMirror-search-field {
+			.CodeMirror-search-field, .CodeMirror-jump-field {
 				-webkit-animation: highlight 3s ease-out;
 			}
 			.CodeMirror-focused {
@@ -200,6 +202,55 @@
 			.applies-to img {
 				vertical-align: bottom;
 			}
+			/************ help popup ************/
+			#help-popup {
+				top: 3rem;
+				right: 3rem;
+				max-width: 50vw;
+				position: fixed;
+				display: none;
+				background-color: white;
+				box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
+				padding: 0.5rem;
+				z-index: 9999;
+			}
+			#help-popup .title {
+				font-weight: bold;
+				background-color: rgba(0,0,0,0.05);
+				margin: -0.5rem -0.5rem 0.5rem;
+				padding: 0.5rem;
+			}
+			#help-popup .contents {
+				max-height: calc(100vh - 8rem);
+				overflow-y: auto;
+			}
+			#help-popup .close-icon {
+				cursor: pointer;
+				width: 8px;
+				height: 8px;
+				position: absolute;
+				right: 0.5rem;
+				top: 0.75rem;
+				background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px), linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px);
+			}
+
+			.keymap-list {
+				font-size: 85%;
+				line-height: 1.0;
+				border-spacing: 0;
+				word-break: break-all;
+			}
+			.keymap-list input {
+				width: 100%;
+			}
+			.keymap-list tr:nth-child(odd) {
+				background-color: rgba(0, 0, 0, 0.07);
+			}
+			.keymap-list td:first-child {
+				white-space: nowrap;
+				font-family: monospace;
+				padding-right: 0.5rem;
+			}
 
 			/************ reponsive layouts ************/
 			@media(max-width:737px) {
@@ -246,7 +297,7 @@
 				#options {
 					-webkit-column-count: 2;
 				}
-				#options .aligned > * {
+				#options .aligned > *:not(img) {
 					margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
 					padding-right: 0.4rem;
 					vertical-align: baseline;
@@ -334,6 +385,7 @@
 				<div class="option aligned">
 					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 					<select data-option="keyMap" id="editor.keyMap"></select>
+					<img id="keyMap-help" src="help.png" i18n-alt="helpAlt">
 				</div>
 				<div class="option aligned">
 					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
@@ -344,5 +396,9 @@
 		<section id="sections">
 			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="help.png" i18n-alt="helpAlt"></h2>
 		</section>
+		<div id="help-popup">
+			<div class="title"></div><div class="close-icon"></div>
+			<div class="contents"></div>
+		</div>
 	</body>
 </html>
