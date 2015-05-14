@@ -2,6 +2,7 @@
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
 chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+chrome.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
 function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
 	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
@@ -11,19 +12,21 @@ function webNavigationListener(method, data) {
 		return;
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
-		chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
-		// Don't show the badge for frames
-		if (data.frameId == 0 && prefs.getPref("show-badge")) {
-			delete styleHash.disableAll;
-			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
+		if (method) {
+			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		}
+		updateIcon({id: data.tabId}, styleHash)
 	});
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
-			getStyles(request, sendResponse);
+			var styles = getStyles(request, sendResponse);
+			if (request.matchUrl && sender && sender.tab && sender.frameId == 0) {
+				// this is a main content frame, so update the icon
+				updateIcon(sender.tab, styles);
+			}
 			return true;
 		case "saveStyle":
 			saveStyle(request, sendResponse);
@@ -123,11 +126,11 @@ function getStyles(options, callback) {
 			}
 		});
 		callback(styles);
+		return styles;
 	}
 
 	if (cachedStyles) {
-		callCallback();
-		return;
+		return callCallback();
 	}
 
 	getDatabase(function(db) {
