@@ -122,12 +122,12 @@ function createStyleElement(style) {
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));
 	styleName.setAttribute("for", "style-" + style.id);
+	styleName.checkbox = checkbox;
 	var editLink = e.querySelector(".style-edit-link");
 	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
 	editLink.addEventListener("click", openLinkInTabOrWindow, false);
 
-	// the checkbox will not toggle itself after clicking the name, but calling enable will regenerate it
-	styleName.addEventListener("click", function() { enable(event, !event.target.previousSibling.checked); }, false);
+	styleName.addEventListener("click", function() { this.checkbox.click(); event.preventDefault(); });
 	// clicking the checkbox will toggle it, and this will run after that happens
 	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
 	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
@@ -181,6 +181,7 @@ function openLinkInTabOrWindow(event) {
 	} else {
 		openLink(event);
 	}
+	close();
 }
 
 function openLink(event) {
@@ -193,10 +194,14 @@ function handleUpdate(style) {
 	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
 	if (styleElement) {
 		installed.replaceChild(createStyleElement(style), styleElement);
-	} else if (chrome.extension.getBackgroundPage().getApplicableSections(style, location.href).length) {
-		// a new style for the current url is installed
-		document.getElementById("unavailable").style.display = "none";
-		installed.appendChild(createStyleElement(style));
+	} else {
+		chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+			if (tabs.length && chrome.extension.getBackgroundPage().getApplicableSections(style, tabs[0].url).length) {
+				// a new style for the current url is installed
+				document.getElementById("unavailable").style.display = "none";
+				installed.appendChild(createStyleElement(style));
+			}
+		});
 	}
 }
 
@@ -214,15 +219,18 @@ function handleDisableAll(disableAll) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
+			case "styleAdded":
 			case "styleUpdated":
 				handleUpdate(request.style);
 				break;
 			case "styleDeleted":
 				handleDelete(request.id);
 				break;
-			case "styleDisableAll":
-				document.getElementById("disableAll").checked = request.disableAll;
-				handleDisableAll(request.disableAll);
+			case "prefChanged":
+				if (request.prefName == "disableAll") {
+					document.getElementById("disableAll").checked = request.value;
+					handleDisableAll(request.value);
+				}
 				break;
 		}
 	}
@@ -236,4 +244,5 @@ loadPrefs({"disableAll": false});
 handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
 	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
+	handleDisableAll(event.target.checked);
 });
