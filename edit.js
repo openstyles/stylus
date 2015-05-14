@@ -907,27 +907,50 @@ function showKeyMapHelp() {
 		.sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1 });
 	showHelp(t("cm_keyMap") + ": " + prefs.getPref("editor.keyMap"),
 		'<table class="keymap-list">' +
-			"<thead><tr><th><input></th><th><input></th></tr></thead>" +
+			'<thead><tr><th><input placeholder="' + t("helpKeyMapHotkey") + '" type="search"></th>' +
+				'<th><input placeholder="' + t("helpKeyMapCommand") + '" type="search"></th></tr></thead>' +
 			"<tbody>" + keyMapSorted.map(function(value) {
 				return "<tr><td>" + value.key + "</td><td>" + value.cmd + "</td></tr>";
 			}).join("") +
 			"</tbody>" +
 		"</table>");
-	document.querySelector("#help-popup table").addEventListener("input", function(event) {
+
+	var table = document.querySelector("#help-popup table");
+	table.addEventListener("input", filterTable);
+
+	var inputs = table.querySelectorAll("input");
+	inputs[0].addEventListener("keydown", hotkeyHandler);
+	inputs[1].focus();
+
+	function hotkeyHandler(event) {
+		var keyName = CodeMirror.keyName(event);
+		if (keyName == "Esc" || keyName == "Tab" || keyName == "Shift-Tab") {
+			return;
+		}
+		event.preventDefault();
+		event.stopPropagation();
+		// normalize order of modifiers,
+		// for modifier-only keys ("Ctrl-Shift") a dummy main key has to be temporarily added
+		var keyMap = {};
+		keyMap[keyName.replace(/(Shift|Ctrl|Alt|Cmd)$/, "$&-dummy")] = "";
+		var normalizedKey = Object.keys(CodeMirror.normalizeKeyMap(keyMap))[0];
+		this.value = normalizedKey.replace("-dummy", "");
+		filterTable(event);
+	}
+	function filterTable(event) {
 		var input = event.target;
 		var query = stringAsRegExp(input.value, "gi");
 		var col = input.parentNode.cellIndex;
-		this.tBodies[0].childNodes.forEach(function(row) {
+		inputs[1 - col].value = "";
+		table.tBodies[0].childNodes.forEach(function(row) {
 			var cell = row.children[col];
-			if (query.test(cell.textContent)) {
-				row.style.display = "";
-				cell.innerHTML = cell.textContent.replace(query, "<mark>$&</mark>");
-			} else {
-				row.style.display = "none";
-			}
+			cell.innerHTML = cell.textContent.replace(query, "<mark>$&</mark>");
+			row.style.display = query.test(cell.textContent) ? "" : "none";
+			// clear highlight from the other column
+			cell = row.children[1 - col];
+			cell.innerHTML = cell.textContent;
 		});
-	});
-
+	}
 	function mergeKeyMaps(merged) {
 		[].slice.call(arguments, 1).forEach(function(keyMap) {
 			if (typeof keyMap == "string") {

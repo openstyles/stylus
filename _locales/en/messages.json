@@ -161,6 +161,14 @@
 		"message": "Help",
 		"description": "Alternate text for help buttons"
 	},
+	"helpKeyMapHotkey": {
+		"message": "Press a hotkey",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"helpKeyMapCommand": {
+		"message": "Type a command name",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
 	"installUpdate": {
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"
