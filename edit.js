@@ -159,20 +159,33 @@ function initCodeMirror() {
 
 	// "basic" keymap only has basic keys by design, so we skip it
 
-	CM.keyMap.sublime["Ctrl-G"] = "jumpToLine";
-	CM.keyMap.emacsy["Ctrl-G"] = "jumpToLine";
-	CM.keyMap.pcDefault["Ctrl-J"] = "jumpToLine";
-	CM.keyMap.macDefault["Cmd-J"] = "jumpToLine";
-
-	CM.keyMap.pcDefault["Ctrl-Space"] = "autocomplete"; // will be used by "sublime" on PC via fallthrough
-	CM.keyMap.macDefault["Alt-Space"] = "autocomplete"; // OSX uses Ctrl-Space and Cmd-Space for something else
-	CM.keyMap.emacsy["Alt-/"] = "autocomplete"; // copied from "emacs" keymap
-	// "vim" and "emacs" define their own autocomplete hotkeys
+	var extraKeysCommands = {};
+	if (userOptions && typeof userOptions.extraKeys == "object") {
+		Object.keys(userOptions.extraKeys).forEach(function(key) {
+			extraKeysCommands[userOptions.extraKeys[key]] = true;
+		});
+	}
+	if (!extraKeysCommands.jumpToLine) {
+		CM.keyMap.sublime["Ctrl-G"] = "jumpToLine";
+		CM.keyMap.emacsy["Ctrl-G"] = "jumpToLine";
+		CM.keyMap.pcDefault["Ctrl-J"] = "jumpToLine";
+		CM.keyMap.macDefault["Cmd-J"] = "jumpToLine";
+	}
+	if (!extraKeysCommands.autocomplete) {
+		CM.keyMap.pcDefault["Ctrl-Space"] = "autocomplete"; // will be used by "sublime" on PC via fallthrough
+		CM.keyMap.macDefault["Alt-Space"] = "autocomplete"; // OSX uses Ctrl-Space and Cmd-Space for something else
+		CM.keyMap.emacsy["Alt-/"] = "autocomplete"; // copied from "emacs" keymap
+		// "vim" and "emacs" define their own autocomplete hotkeys
+	}
 
 	if (isWindowsOS) {
 		// "pcDefault" keymap on Windows should have F3/Shift-F3
-		CM.keyMap.pcDefault["F3"] = "findNext";
-		CM.keyMap.pcDefault["Shift-F3"] = "findPrev";
+		if (!extraKeysCommands.findNext) {
+			CM.keyMap.pcDefault["F3"] = "findNext";
+		}
+		if (!extraKeysCommands.findPrev) {
+			CM.keyMap.pcDefault["Shift-F3"] = "findPrev";
+		}
 
 		// try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
 		["N", "T", "W"].forEach(function(char) {
