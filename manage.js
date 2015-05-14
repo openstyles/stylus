@@ -15,6 +15,7 @@ var styleTemplate = tHTML('\
 ');
 
 var lastUpdatedStyleId = null;
+var installed = document.getElementById("installed");
 
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
@@ -33,7 +34,6 @@ function showStyles(styles) {
 		return;
 	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
-	var installed = document.getElementById("installed");
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
@@ -186,7 +186,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 function handleUpdate(style) {
-	var installed = document.getElementById("installed");
 	var element = createStyleElement(style);
 	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
 	if (style.id == lastUpdatedStyleId) {
@@ -197,7 +196,6 @@ function handleUpdate(style) {
 }
 
 function handleDelete(id) {
-	var installed = document.getElementById("installed");
 	installed.removeChild(installed.querySelector("[style-id='" + id + "']"));
 }
 
@@ -432,14 +430,51 @@ function jsonEquals(a, b, property) {
 	}
 }
 
+function searchStyles(immediately) {
+	var query = document.getElementById("search").value.toLocaleLowerCase();
+	if (query == (searchStyles.lastQuery || "")) {
+		return;
+	}
+	searchStyles.lastQuery = query;
+	if (immediately) {
+		doSearch();
+	} else {
+		clearTimeout(searchStyles.timeout);
+		searchStyles.timeout = setTimeout(doSearch, 100);
+	}
+	function doSearch() {
+		chrome.extension.sendMessage({method: "getStyles"}, function(styles) {
+			styles.forEach(function(style) {
+				var el = document.querySelector("[style-id='" + style.id + "']");
+				if (el) {
+					el.style.display = !query || isMatchingText(style.name) || isMatchingStyle(style) ? "" : "none";
+				}
+			});
+		});
+	}
+	function isMatchingStyle(style) {
+		return style.sections.some(function(section) {
+			return Object.keys(section).some(function(key) {
+				var value = section[key];
+				switch (typeof value) {
+					case "string": return isMatchingText(value);
+					case "object": return value.some(isMatchingText);
+				}
+			});
+		});
+	}
+	function isMatchingText(text) {
+		return text.toLocaleLowerCase().indexOf(query) >= 0;
+	}
+}
+
 document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
 document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll, false);
+document.getElementById("search").addEventListener("input", searchStyles);
+searchStyles(true); // re-apply filtering on history Back
 
 function onFilterChange (className, event) {
-	var container = document.getElementById("installed"),
-	    control = event.target;
-	if (control.checked) container.classList.add(className);
-	else container.classList.remove(className);
+	installed.classList.toggle(className, event.target.checked);
 }
 function initFilter(className, node) {
 	node.addEventListener("change", onFilterChange.bind(undefined, className), false);

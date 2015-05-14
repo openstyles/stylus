@@ -221,6 +221,10 @@
 		"message": "Use /re/ syntax for regexp search",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"searchStyles": {
+		"message": "Search contents",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
 	"sectionAdd": {
 		"message": "Add another section",
 		"description": "Label for the button to add a section"
