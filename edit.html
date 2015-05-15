@@ -81,6 +81,16 @@
 			#name {
 				width: 100%;
 			}
+			#basic-info-name {
+				display: flex;
+				align-items: center;
+			}
+			#url {
+				margin-left: 0.25rem;
+			}
+			#url:not([href^="http"]) {
+				display: none;
+			}
 			#enabled {
 				margin-left: 0;
 				vertical-align: middle;
@@ -353,6 +363,7 @@
 			<section id="basic-info">
 				<div id="basic-info-name">
 					<input id="name" class="style-contributor" i18n-placeholder="styleMissingName">
+					<a id="url" target="_blank"><img src="world_go.png"></a>
 				</div>
 				<div id="basic-info-enabled">
 					<input type="checkbox" id="enabled" class="style-contributor">

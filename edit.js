@@ -746,6 +746,7 @@ function init() {
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
+	document.getElementById("url").href = style.url;
 	tE("heading", "editStyleHeading", null, false);
 	// if this was done in response to an update, we need to clear existing sections
 	document.querySelectorAll("#sections > div").forEach(function(div) {
