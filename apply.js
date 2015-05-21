@@ -1,3 +1,8 @@
+var g_disableAll = false;
+var g_styleElements = {};
+var iframeObserver;
+
+initObserver();
 requestStyles();
 
 function requestStyles() {
@@ -45,11 +50,20 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-var g_disableAll = false;
 function disableAll(disable) {
-	if (!disable === !g_disableAll) return;
+	if (!disable === !g_disableAll) {
+		return;
+	}
 	g_disableAll = disable;
+	if (g_disableAll) {
+		iframeObserver.disconnect();
+	}
+
 	disableSheets(g_disableAll, document);
+
+	if (!g_disableAll && document.readyState != "loading") {
+		iframeObserver.start();
+	}
 
 	function disableSheets(disable, doc) {
 		Array.prototype.forEach.call(doc.styleSheets, function(stylesheet) {
@@ -58,6 +72,10 @@ function disableAll(disable) {
 			}
 		});
 		getDynamicIFrames(doc).forEach(function(iframe) {
+			if (!disable) {
+				// update the IFRAME if it was created while the observer was disconnected
+				addDocumentStylesToIFrame(iframe);
+			}
 			disableSheets(disable, iframe.contentDocument);
 		});
 	}
@@ -65,8 +83,12 @@ function disableAll(disable) {
 
 function removeStyle(id, doc) {
 	var e = doc.getElementById("stylish-" + id);
+	delete g_styleElements["stylish-" + id];
 	if (e) {
-		e.parentNode.removeChild(e);
+		e.remove();
+	}
+	if (doc == document && Object.keys(g_styleElements).length == 0) {
+		iframeObserver.disconnect();
 	}
 	getDynamicIFrames(doc).forEach(function(iframe) {
 		removeStyle(id, iframe.contentDocument);
@@ -85,6 +107,13 @@ function applyStyles(styleHash) {
 
 	for (var styleId in styleHash) {
 		applySections(styleId, styleHash[styleId]);
+	}
+
+	if (Object.keys(g_styleElements).length) {
+		document.addEventListener("DOMContentLoaded", function() {
+			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
+		});
+		iframeObserver.start();
 	}
 }
 
@@ -108,14 +137,34 @@ function applySections(styleId, sections) {
 		return section.code;
 	}).join("\n")));
 	addStyleElement(styleElement, document);
+	g_styleElements[styleElement.id] = styleElement;
 }
 
 function addStyleElement(styleElement, doc) {
+	if (!doc.documentElement || doc.getElementById(styleElement.id)) {
+		return;
+	}
 	doc.documentElement.appendChild(doc.importNode(styleElement, true))
 	  .disabled = g_disableAll;
 	getDynamicIFrames(doc).forEach(function(iframe) {
-		addStyleElement(styleElement, iframe.contentDocument);
+		if (iframeIsLoadingSrcDoc(iframe)) {
+			addStyleToIFrameSrcDoc(iframe, styleElement);
+		} else {
+			addStyleElement(styleElement, iframe.contentDocument);
+		}
 	});
+}
+
+function addDocumentStylesToIFrame(iframe) {
+	var doc = iframe.contentDocument;
+	var srcDocIsLoading = iframeIsLoadingSrcDoc(iframe);
+	for (var id in g_styleElements) {
+		if (srcDocIsLoading) {
+			addStyleToIFrameSrcDoc(iframe, g_styleElements[id]);
+		} else {
+			addStyleElement(g_styleElements[id], doc);
+		}
+	}
 }
 
 // Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
@@ -134,32 +183,57 @@ function iframeIsDynamic(f) {
 	return href == document.location.href || href.indexOf("about:") == 0;
 }
 
+function iframeIsLoadingSrcDoc(f) {
+	return f.srcdoc && f.contentDocument.all.length <= 3;
+	// 3 nodes or less in total (html, head, body) == new empty iframe about to be overwritten by its 'srcdoc'
+}
+
+function addStyleToIFrameSrcDoc(iframe, styleElement) {
+	if (g_disableAll) {
+		return;
+	}
+	iframe.srcdoc += styleElement.outerHTML;
+	// make sure the style is added in case srcdoc was malformed
+	setTimeout(addStyleElement.bind(null, styleElement, iframe.contentDocument), 100);
+}
+
 function replaceAll(newStyles, doc) {
 	Array.prototype.forEach.call(doc.querySelectorAll("STYLE.stylish"), function(style) {
-		style.parentNode.removeChild(style);
+		style.remove();
 	});
-	applyStyles(newStyles);
+	if (doc == document) {
+		g_styleElements = {};
+		applyStyles(newStyles);
+	}
 	getDynamicIFrames(doc).forEach(function(iframe) {
 		replaceAll(newStyles, iframe.contentDocument);
 	});
 }
 
 // Observe dynamic IFRAMEs being added
-var iframeObserver = new MutationObserver(function(mutations) {
-	var styles = Array.prototype.slice.call(document.querySelectorAll('STYLE.stylish'));
-	if (styles.length == 0) {
-		return;
-	}
-	mutations.filter(function(mutation) {
-		return "childList" === mutation.type;
-	}).forEach(function(mutation) {
-		Array.prototype.filter.call(mutation.addedNodes, function(node) { return "IFRAME" === node.tagName; }).filter(iframeIsDynamic).forEach(function(iframe) {
-			var doc = iframe.contentDocument;
-			styles.forEach(function(style) {
-				doc.documentElement.appendChild(doc.importNode(style, true))
-				  .disabled = g_disableAll;
-			});
-		});
+function initObserver() {
+	iframeObserver = new MutationObserver(function(mutations) {
+		if (mutations.length > 1000) {
+			// use a much faster method for very complex pages with 100,000 mutations
+			// (observer usually receives 1k-10k mutations per call)
+			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
+			return;
+		}
+		for (var m = 0, ml = mutations.length; m < ml; m++) {
+			var mutation = mutations[m];
+			if (mutation.type === "childList") {
+				for (var n = 0, nodes = mutation.addedNodes, nl = nodes.length; n < nl; n++) {
+					var node = nodes[n];
+					if (node.localName === "iframe" && iframeIsDynamic(node)) {
+						addDocumentStylesToIFrame(node);
+					}
+				}
+			}
+		}
 	});
-});
-iframeObserver.observe(document, {childList: true, subtree: true});
+
+	iframeObserver.start = function() {
+		// will be ignored by browser if already observing
+		iframeObserver.observe(document, {childList: true, subtree: true});
+	}
+}
