@@ -22,6 +22,11 @@ chrome.browserAction.getBadgeBackgroundColor({}, function(color) {
 });
 
 function updateIcon(tab, styles) {
+	// while NTP is still loading only process the request for its main frame with a real url
+	// (but when it's loaded we should process style toggle requests from popups, for example)
+	if (tab.url == "chrome://newtab/" && tab.status != "complete") {
+		return;
+	}
 	if (styles) {
 		// check for not-yet-existing tabs e.g. omnibox instant search
 		chrome.tabs.get(tab.id, function() {
@@ -38,15 +43,17 @@ function updateIcon(tab, styles) {
 		});
 		return;
 	}
-	// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
-	if (typeof getStyles != "undefined") {
-		getStyles({matchUrl: tab.url, enabled: true}, stylesReceived);
-	} else {
-		chrome.extension.sendMessage({method: "getStyles", matchUrl: tab.url, enabled: true}, stylesReceived);
-	}
+	getTabRealURL(tab, function(url) {
+		// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
+		if (typeof getStyles != "undefined") {
+			getStyles({matchUrl: url, enabled: true}, stylesReceived);
+		} else {
+			chrome.extension.sendMessage({method: "getStyles", matchUrl: url, enabled: true}, stylesReceived);
+		}
+	});
 
 	function stylesReceived(styles) {
-		var disableAll = prefs.getPref("disableAll");
+		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.getPref("disableAll");
 		var postfix = styles.length == 0 || disableAll ? "w" : "";
 		chrome.browserAction.setIcon({
 			path: {19: "19" + postfix + ".png", 38: "38" + postfix + ".png"},
@@ -57,4 +64,31 @@ function updateIcon(tab, styles) {
 		chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : defaultBadgeColor});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 	}
+}
+
+function getActiveTab(callback) {
+	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+		callback(tabs[0]);
+	});
+}
+
+function getActiveTabRealURL(callback) {
+	getActiveTab(function(tab) {
+		getTabRealURL(tab, callback);
+	});
+}
+
+function getTabRealURL(tab, callback) {
+	if (tab.url != "chrome://newtab/") {
+		callback(tab.url);
+		return;
+	}
+	chrome.webNavigation.getAllFrames({tabId: tab.id}, function(frames) {
+		frames.some(function(frame) {
+			if (frame.parentFrameId == -1) { // parentless frame is the main frame
+				callback(frame.url);
+				return true;
+			}
+		});
+	});
 }

@@ -41,9 +41,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "styleReplaceAll":
 			replaceAll(request.styles, document);
 			break;
-		case "realURL":
-			sendResponse(location.href);
-			break;
 		case "styleDisableAll":
 			disableAll(request.disableAll);
 			break;

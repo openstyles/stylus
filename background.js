@@ -15,7 +15,7 @@ function webNavigationListener(method, data) {
 		if (method) {
 			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		}
-		updateIcon({id: data.tabId}, styleHash)
+		updateIcon({id: data.tabId, url: data.url}, styleHash);
 	});
 }
 
@@ -23,8 +23,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
-			if (request.matchUrl && sender && sender.tab && sender.frameId == 0) {
-				// this is a main content frame, so update the icon
+			// check if this is a main content frame style enumeration
+			if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0) {
 				updateIcon(sender.tab, styles);
 			}
 			return true;
@@ -65,15 +65,15 @@ chrome.commands.onCommand.addListener(function(command) {
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-try {
+
 chrome.contextMenus.create({
 	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
-});
+}, function() { var clearError = chrome.runtime.lastError; });
 chrome.contextMenus.create({
 	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
-});
+}, function() { var clearError = chrome.runtime.lastError; });
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
@@ -81,7 +81,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 		prefs.setPref(info.menuItemId, info.checked);
 	}
 });
-} catch(e) {console.error(e)}
 
 function disableAllStylesToggle(newState) {
 	if (newState === undefined || newState === null) {
@@ -384,13 +383,9 @@ function openURL(options) {
 			chrome.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
 		} else {
 			delete options.method;
-			chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+			getActiveTab(function(tab) {
 				// re-use an active new tab page
-				if (tabs.length && tabs[0].url.match(/^chrome:\/\/newtab\/?$/)) {
-					chrome.tabs.update(options);
-				} else {
-					chrome.tabs.create(options);
-				}
+				chrome.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
 			});
 		}
 	});
