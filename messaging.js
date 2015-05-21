@@ -16,11 +16,6 @@ function notifyAllTabs(request) {
 	chrome.extension.sendMessage(reqPopup);
 }
 
-var defaultBadgeColor = "red";
-chrome.browserAction.getBadgeBackgroundColor({}, function(color) {
-	defaultBadgeColor = color;
-});
-
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
@@ -61,7 +56,7 @@ function updateIcon(tab, styles) {
 		});
 		var t = prefs.getPref("show-badge") && styles.length ? ("" + styles.length) : "";
 		chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-		chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : defaultBadgeColor});
+		chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 	}
 }
