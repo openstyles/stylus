@@ -14,8 +14,8 @@ function requestStyles() {
 	if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
 		var bg = chrome.extension.getBackgroundPage();
 		if (bg && bg.getStyles) {
+			// apply styles immediately, then proceed with a normal request that will update the icon
 			bg.getStyles(request, applyStyles);
-			return;
 		}
 	}
 	chrome.extension.sendMessage(request, applyStyles);
@@ -40,9 +40,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			break;
 		case "styleReplaceAll":
 			replaceAll(request.styles, document);
-			break;
-		case "realURL":
-			sendResponse(location.href);
 			break;
 		case "styleDisableAll":
 			disableAll(request.disableAll);

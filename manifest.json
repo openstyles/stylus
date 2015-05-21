@@ -5,7 +5,7 @@
 	"homepage_url": "https://userstyles.org",
 	"manifest_version": 2,
 	"icons": {
-	"16": "16.png",
+		"16": "16.png",
 		"48": "48.png",
 		"128": "128.png"
 	},
@@ -43,7 +43,10 @@
 	],
 	"options_page": "manage.html",
 	"browser_action": {
-		"default_icon": "19.png",
+		"default_icon": {
+			"19": "19w.png",
+			"38": "38w.png"
+		},
 		"default_title": "Stylish",
 		"default_popup": "popup.html"
 	},

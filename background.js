@@ -2,6 +2,7 @@
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
 chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+chrome.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
 function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
 	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
@@ -11,19 +12,21 @@ function webNavigationListener(method, data) {
 		return;
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
-		chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
-		// Don't show the badge for frames
-		if (data.frameId == 0 && prefs.getPref("show-badge")) {
-			delete styleHash.disableAll;
-			chrome.browserAction.setBadgeText({text: getBadgeText(Object.keys(styleHash)), tabId: data.tabId});
+		if (method) {
+			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
 		}
+		updateIcon({id: data.tabId, url: data.url}, styleHash);
 	});
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
-			getStyles(request, sendResponse);
+			var styles = getStyles(request, sendResponse);
+			// check if this is a main content frame style enumeration
+			if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0) {
+				updateIcon(sender.tab, styles);
+			}
 			return true;
 		case "saveStyle":
 			saveStyle(request, sendResponse);
@@ -62,15 +65,15 @@ chrome.commands.onCommand.addListener(function(command) {
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-try {
+
 chrome.contextMenus.create({
 	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
-});
+}, function() { var clearError = chrome.runtime.lastError; });
 chrome.contextMenus.create({
 	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
-});
+}, function() { var clearError = chrome.runtime.lastError; });
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
@@ -78,7 +81,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 		prefs.setPref(info.menuItemId, info.checked);
 	}
 });
-} catch(e) {console.error(e)}
 
 function disableAllStylesToggle(newState) {
 	if (newState === undefined || newState === null) {
@@ -123,11 +125,11 @@ function getStyles(options, callback) {
 			}
 		});
 		callback(styles);
+		return styles;
 	}
 
 	if (cachedStyles) {
-		callCallback();
-		return;
+		return callCallback();
 	}
 
 	getDatabase(function(db) {
@@ -381,13 +383,9 @@ function openURL(options) {
 			chrome.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
 		} else {
 			delete options.method;
-			chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+			getActiveTab(function(tab) {
 				// re-use an active new tab page
-				if (tabs.length && tabs[0].url.match(/^chrome:\/\/newtab\/?$/)) {
-					chrome.tabs.update(options);
-				} else {
-					chrome.tabs.create(options);
-				}
+				chrome.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
 			});
 		}
 	});

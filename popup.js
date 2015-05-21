@@ -24,17 +24,7 @@ if (!prefs.getPref("popup.stylesFirst")) {
 	document.body.insertBefore(document.querySelector("body > .actions"), installed);
 }
 
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-	// Only one is active, I hope
-	var tab = tabs[0];
-
-	// The new tab lies about what it is.
-	if (tab.url == "chrome://newtab/") {
-		chrome.tabs.sendMessage(tab.id, {method: "realURL"}, null, updatePopUp);
-	} else {
-		updatePopUp(tab.url);
-	}
-});
+getActiveTabRealURL(updatePopUp);
 
 function updatePopUp(url) {
 	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(url);
@@ -195,8 +185,8 @@ function handleUpdate(style) {
 	if (styleElement) {
 		installed.replaceChild(createStyleElement(style), styleElement);
 	} else {
-		chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
-			if (tabs.length && chrome.extension.getBackgroundPage().getApplicableSections(style, tabs[0].url).length) {
+		getActiveTabRealURL(function(url) {
+			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
 				// a new style for the current url is installed
 				document.getElementById("unavailable").style.display = "none";
 				installed.appendChild(createStyleElement(style));
