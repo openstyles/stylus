@@ -131,6 +131,14 @@
 				content: "*";
 				font-weight: bold;
 			}
+			#sections {
+				counter-reset: codebox;
+			}
+			#sections > div > label::after {
+				counter-increment: codebox;
+				content: counter(codebox);
+				margin-left: 0.25rem;
+			}
 			/* code */
 			.code {
 				height: 10rem;
@@ -262,6 +270,50 @@
 				white-space: nowrap;
 				font-family: monospace;
 				padding-right: 0.5rem;
+			}
+
+			/************ lint ************/
+			#lint {
+				display: none;
+			}
+			#lint > div {
+				overflow-y: auto;
+			}
+			#lint table {
+				font-size: 100%;
+				border-spacing: 0;
+				margin-bottom: 1rem;
+				line-height: 1.0;
+			}
+			#lint table:last-child {
+				margin-bottom: 0;
+			}
+			#lint caption {
+				text-align: left;
+				font-weight: bold;
+			}
+			#lint tbody {
+				font-size: 85%;
+				cursor: pointer;
+			}
+			#lint tr:hover {
+				background-color: rgba(0, 0, 0, 0.1);
+			}
+			#lint td[role="severity"] {
+				font-size: 0;
+				width: 16px;
+				padding-right: 0.25rem;
+			}
+			#lint td[role="line"], #lint td[role="sep"] {
+				text-align: right;
+				padding-right: 0;
+			}
+			#lint td[role="col"] {
+				text-align: left;
+				padding-right: 0.25rem;
+			}
+			#lint td[role="message"] {
+				text-align: left;
 			}
 
 			/************ reponsive layouts ************/
@@ -405,6 +457,7 @@
 					<select data-option="theme" id="editor.theme"></select>
 				</div>
 			</section>
+			<section id="lint"><h2 i18n-text="issues"><img id="lint-help" src="help.png" i18n-alt="helpAlt"></h2><div></div></section>
 		</div>
 		<section id="sections">
 			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="help.png" i18n-alt="helpAlt"></h2>

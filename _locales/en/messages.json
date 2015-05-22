@@ -173,6 +173,14 @@
 		"message": "Install update",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"issues": {
+		"message": "Issues",
+		"description": "Label for the CSSLint issues block on the style edit page"
+	},
+	"issuesHelp": {
+		"message": "The issues found by <a href='https:\/\/github.com\/CSSLint\/csslint' target='_blank'>CSSLint<\/a> with these rules enabled:",
+		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
 	"manageFilters": {
 		"message": "Filters",
 		"description": "Label for filters container"
