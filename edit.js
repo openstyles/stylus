@@ -481,6 +481,7 @@ function addSection(event, section) {
 	}
 
 	setCleanSection(div);
+	return div;
 }
 
 function removeAppliesTo(event) {
@@ -754,7 +755,7 @@ function initWithStyle(style) {
 	});
 	style.sections.forEach(function(section) {
 		setTimeout(function() {
-			addSection(null, section)
+			maximizeCodeHeight(addSection(null, section), editors.length == style.sections.length);
 		}, 0);
 	});
 	initHooks();
@@ -774,6 +775,50 @@ function initHooks() {
 	setupGlobalSearch();
 	setCleanGlobal();
 	updateTitle();
+}
+
+function maximizeCodeHeight(sectionDiv, isLast) {
+	var cm = getCodeMirrorForSection(sectionDiv);
+	var stats = maximizeCodeHeight.stats = maximizeCodeHeight.stats || {totalHeight: 0, deltas: []};
+	if (!stats.cmActualHeight) {
+		stats.cmActualHeight = getComputedHeight(cm.display.wrapper);
+	}
+	if (!stats.sectionMarginTop) {
+		stats.sectionMarginTop = parseFloat(getComputedStyle(sectionDiv).marginTop);
+	}
+	var sectionTop = sectionDiv.getBoundingClientRect().top - stats.sectionMarginTop;
+	if (!stats.firstSectionTop) {
+		stats.firstSectionTop = sectionTop;
+	}
+	var extrasHeight = getComputedHeight(sectionDiv) - stats.cmActualHeight;
+	var cmMaxHeight = window.innerHeight - extrasHeight - sectionTop - stats.sectionMarginTop;
+	var cmDesiredHeight = cm.display.sizer.clientHeight + 2*cm.defaultTextHeight();
+	var cmGrantableHeight = Math.max(stats.cmActualHeight, Math.min(cmMaxHeight, cmDesiredHeight));
+	stats.deltas.push(cmGrantableHeight - stats.cmActualHeight);
+	stats.totalHeight += cmGrantableHeight + extrasHeight;
+	if (!isLast) {
+		return;
+	}
+	stats.totalHeight += stats.firstSectionTop;
+	if (stats.totalHeight <= window.innerHeight) {
+		editors.forEach(function(cm, index) {
+			cm.setSize(null, stats.deltas[index] + stats.cmActualHeight);
+		});
+		return;
+	}
+	// scale heights to fill the gap between last section and bottom edge of the window
+	var sections = document.getElementById("sections");
+	var available = window.innerHeight - sections.getBoundingClientRect().bottom -
+		parseFloat(getComputedStyle(sections).marginBottom);
+	if (available <= 0) {
+		return;
+	}
+	var totalDelta = stats.deltas.reduce(function(sum, d) { return sum + d; }, 0);
+	var q = available / totalDelta;
+	var baseHeight = stats.cmActualHeight - stats.sectionMarginTop;
+	stats.deltas.forEach(function(delta, index) {
+		editors[index].setSize(null, baseHeight + Math.floor(q * delta));
+	});
 }
 
 function updateTitle() {
@@ -1054,4 +1099,10 @@ function querySelectorParent(node, selector) {
 
 function stringAsRegExp(s, flags) {
 	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
+}
+
+function getComputedHeight(el) {
+	var compStyle = getComputedStyle(el);
+	return el.getBoundingClientRect().height +
+		parseFloat(compStyle.marginTop) + parseFloat(compStyle.marginBottom);
 }
