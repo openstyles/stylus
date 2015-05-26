@@ -62,12 +62,19 @@
 
 (function() {
     function css_beautify(source_text, options) {
+        function defaultOption(opt, defaultValue) {
+            return opt === undefined ? defaultValue : opt;
+        }
         options = options || {};
         var indentSize = options.indent_size || 4;
         var indentCharacter = options.indent_char || ' ';
-        var selectorSeparatorNewline = (options.selector_separator_newline === undefined) ? true : options.selector_separator_newline;
-        var end_with_newline = (options.end_with_newline === undefined) ? false : options.end_with_newline;
-        var newline_between_rules = (options.newline_between_rules === undefined) ? true : options.newline_between_rules;
+        var selectorSeparatorNewline = defaultOption(options.selector_separator_newline, true);
+        var end_with_newline = defaultOption(options.end_with_newline, false);
+        var newline_between_rules = defaultOption(options.newline_between_rules, true);
+        var newline_between_properties = defaultOption(options.newline_between_properties, true);
+        var newline_before_open_brace = defaultOption(options.newline_before_open_brace, false);
+        var newline_after_open_brace = defaultOption(options.newline_after_open_brace, true);
+        var newline_before_close_brace = defaultOption(options.newline_before_close_brace, true);
 
         // compatibility
         if (typeof indentSize === "string") {
@@ -196,12 +203,12 @@
 
         var print = {};
         print["{"] = function(ch) {
-            print.singleSpace();
+            newline_before_open_brace ? output.push('\n') : print.singleSpace();
             output.push(ch);
-            print.newLine();
+            newline_after_open_brace ? print.newLine() : print.singleSpace();
         };
         print["}"] = function(ch) {
-            print.newLine();
+            newline_before_close_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
             print.newLine();
         };
@@ -356,7 +363,7 @@
                 output.push(eatString(ch));
             } else if (ch === ';') {
                 output.push(ch);
-                print.newLine();
+                newline_between_properties ? print.newLine() : print.singleSpace();
             } else if (ch === '(') { // may be a url
                 if (lookBack("url")) {
                     output.push(ch);
