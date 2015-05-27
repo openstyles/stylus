@@ -15,28 +15,32 @@ var styleTemplate = tHTML('\
 ');
 
 var lastUpdatedStyleId = null;
-var installed = document.getElementById("installed");
+var installed;
 
 var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
 appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 
 chrome.extension.sendMessage({method: "getStyles"}, showStyles);
-loadPrefs({
-	"manage.onlyEnabled": false,
-	"manage.onlyEdited": false,
-	"show-badge": true
-});
 
 function showStyles(styles) {
 	if (!styles) { // Chrome is starting up
 		chrome.extension.sendMessage({method: "getStyles"}, showStyles);
 		return;
 	}
+	if (!installed) {
+		// "getStyles" message callback is invoked before document is loaded,
+		// postpone the action until DOMContentLoaded is fired
+		document.stylishStyles = styles;
+		return;
+	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
+	if (history.state) {
+		window.scrollTo(0, history.state.scrollY);
+	}
 }
 
 function createStyleElement(style) {
@@ -132,6 +136,8 @@ function createStyleElement(style) {
 						active: openForegroundTab
 					});
 				}
+			} else {
+				history.replaceState({scrollY: window.scrollY}, document.title);
 			}
 		}
 	});
@@ -468,11 +474,6 @@ function searchStyles(immediately) {
 	}
 }
 
-document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll, false);
-document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll, false);
-document.getElementById("search").addEventListener("input", searchStyles);
-searchStyles(true); // re-apply filtering on history Back
-
 function onFilterChange (className, event) {
 	installed.classList.toggle(className, event.target.checked);
 }
@@ -480,7 +481,25 @@ function initFilter(className, node) {
 	node.addEventListener("change", onFilterChange.bind(undefined, className), false);
 	onFilterChange(className, {target: node});
 }
-initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
-initFilter("edited-only", document.getElementById("manage.onlyEdited"));
 
-loadPrefs({"popup.stylesFirst": true});
+document.addEventListener("DOMContentLoaded", function() {
+	installed = document.getElementById("installed");
+	if (document.stylishStyles) {
+		showStyles(document.stylishStyles);
+		delete document.stylishStyles;
+	}
+
+	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
+	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
+	document.getElementById("search").addEventListener("input", searchStyles);
+	searchStyles(true); // re-apply filtering on history Back
+
+	loadPrefs({
+		"manage.onlyEnabled": false,
+		"manage.onlyEdited": false,
+		"show-badge": true,
+		"popup.stylesFirst": true
+	});
+	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
+	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
+});
