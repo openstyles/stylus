@@ -161,6 +161,7 @@ var prefs = {
 
 	// defaults
 	"openEditInWindow": false, // new editor opens in a own browser window
+	"windowPosition": {},      // detached window position
 	"show-badge": true,        // display text on popup menu icon
 	"disableAll": false,       // boss key
 
@@ -171,7 +172,7 @@ var prefs = {
 
 	"manage.onlyEnabled": false, // display only enabled styles
 	"manage.onlyEdited": false,  // display only styles created locally
-	
+
 	"editor.options": null,    // CodeMirror.defaults.*
 	"editor.lineWrapping": true,   // word wrap
 	"editor.smartIndent": true,    // "smart" indent
@@ -241,4 +242,18 @@ function getCodeMirrorThemes(callback) {
 			});
 		});
 	});
+}
+
+function sessionStorageHash(name) {
+	var hash = {
+		value: {},
+		set: function(k, v) { this.value[k] = v; this.updateStorage(); },
+		unset: function(k) { delete this.value[k]; this.updateStorage(); },
+		updateStorage: function() {
+			sessionStorage[this.name] = JSON.stringify(this.value);
+		}
+	};
+	try { hash.value = JSON.parse(sessionStorage[name]); } catch(e) {}
+	Object.defineProperty(hash, "name", {value: name});
+	return hash;
 }

@@ -3,7 +3,7 @@
 var styleId = null;
 var dirty = {};       // only the actually dirty items here
 var editors = [];     // array of all CodeMirror instances
-var isSeparateWindow; // used currrently to determine if the window size/pos should be remembered
+var saveSizeOnClose;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
@@ -397,13 +397,26 @@ document.addEventListener("wheel", function(event) {
 	}
 });
 
-chrome.tabs.query({currentWindow: true}, function(tabs) {
-	isSeparateWindow = tabs.length == 1;
-});
+if (prefs.getPref("openEditInWindow")) {
+	chrome.tabs.query({currentWindow: true}, function(tabs) {
+		var windowId = tabs[0].windowId;
+		if (tabs.length == 1 && window.history.length == 1) {
+			sessionStorageHash("saveSizeOnClose").set(windowId, true);
+			saveSizeOnClose = true;
+		} else {
+			saveSizeOnClose = sessionStorageHash("saveSizeOnClose").value[windowId];
+		}
+		chrome.tabs.onRemoved.addListener(function(tabId, info) {
+			if (info.windowId == windowId && info.isWindowClosing) {
+				sessionStorageHash("saveSizeOnClose").unset(windowId);
+			}
+		});
+	});
+}
 
 window.onbeforeunload = function() {
-	if (isSeparateWindow) {
-		prefs.setPref('windowPosition', {
+	if (saveSizeOnClose) {
+		prefs.setPref("windowPosition", {
 			left: screenLeft,
 			top: screenTop,
 			width: outerWidth,
@@ -876,11 +889,9 @@ function saveComplete(style) {
 
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
-		// give the code above a moment before we kill the page
-		setTimeout(function() {location.href = "edit.html?id=" + style.id;}, 200);
-	} else {
-		updateTitle();
+		history.replaceState({}, document.title, "edit.html?id=" + style.id);
 	}
+	updateTitle();
 }
 
 function showMozillaFormat() {
