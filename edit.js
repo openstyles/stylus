@@ -136,6 +136,7 @@ function initCodeMirror() {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
+		styleActiveLine: true,
 		theme: "default",
 		keyMap: isWindowsOS ? "sublime" : "default",
 		extraKeys: { // independent of current keyMap
