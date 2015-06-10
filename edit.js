@@ -138,7 +138,7 @@ function initCodeMirror() {
 		lint: CodeMirror.lint.css,
 		styleActiveLine: true,
 		theme: "default",
-		keyMap: isWindowsOS ? "sublime" : "default",
+		keyMap: prefs.getPref("editor.keyMap"),
 		extraKeys: { // independent of current keyMap
 			"Alt-PageDown": "nextEditor",
 			"Alt-PageUp": "prevEditor"

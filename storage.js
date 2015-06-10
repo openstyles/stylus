@@ -178,7 +178,7 @@ var prefs = {
 	"editor.smartIndent": true,    // "smart" indent
 	"editor.indentWithTabs": false,// smart indent with tabs
 	"editor.tabSize": 4,           // tab width, in spaces
-	"editor.keyMap": "sublime",    // keymap
+	"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 	"editor.theme": "default",     // CSS theme
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
