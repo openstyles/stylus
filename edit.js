@@ -136,6 +136,7 @@ function initCodeMirror() {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		lint: CodeMirror.lint.css,
+		styleActiveLine: true,
 		theme: "default",
 		keyMap: isWindowsOS ? "sublime" : "default",
 		extraKeys: { // independent of current keyMap
@@ -156,6 +157,9 @@ function initCodeMirror() {
 	CM.commands.nextEditor = function(cm) { nextPrevEditor(cm, 1) };
 	CM.commands.prevEditor = function(cm) { nextPrevEditor(cm, -1) };
 	CM.commands.save = save;
+	CM.commands.blockComment = function(cm) {
+		cm.blockComment(cm.getCursor("from"), cm.getCursor("to"), {fullLines: false});
+	};
 
 	// "basic" keymap only has basic keys by design, so we skip it
 
@@ -176,6 +180,9 @@ function initCodeMirror() {
 		CM.keyMap.macDefault["Alt-Space"] = "autocomplete"; // OSX uses Ctrl-Space and Cmd-Space for something else
 		CM.keyMap.emacsy["Alt-/"] = "autocomplete"; // copied from "emacs" keymap
 		// "vim" and "emacs" define their own autocomplete hotkeys
+	}
+	if (!extraKeysCommands.blockComment) {
+		CM.keyMap.sublime["Shift-Ctrl-/"] = "blockComment";
 	}
 
 	if (isWindowsOS) {
