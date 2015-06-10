@@ -4,6 +4,7 @@ var styleId = null;
 var dirty = {};       // only the actually dirty items here
 var editors = [];     // array of all CodeMirror instances
 var saveSizeOnClose;
+var useHistoryBack;   // use browser history back when "back to manage" is clicked
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
@@ -404,21 +405,34 @@ document.addEventListener("wheel", function(event) {
 	}
 });
 
-if (prefs.getPref("openEditInWindow")) {
-	chrome.tabs.query({currentWindow: true}, function(tabs) {
-		var windowId = tabs[0].windowId;
+chrome.tabs.query({currentWindow: true}, function(tabs) {
+	var windowId = tabs[0].windowId;
+	if (prefs.getPref("openEditInWindow")) {
 		if (tabs.length == 1 && window.history.length == 1) {
 			sessionStorageHash("saveSizeOnClose").set(windowId, true);
 			saveSizeOnClose = true;
 		} else {
 			saveSizeOnClose = sessionStorageHash("saveSizeOnClose").value[windowId];
 		}
-		chrome.tabs.onRemoved.addListener(function(tabId, info) {
-			if (info.windowId == windowId && info.isWindowClosing) {
-				sessionStorageHash("saveSizeOnClose").unset(windowId);
-			}
-		});
+	}
+	chrome.tabs.onRemoved.addListener(function(tabId, info) {
+		sessionStorageHash("manageStylesHistory").unset(tabId);
+		if (info.windowId == windowId && info.isWindowClosing) {
+			sessionStorageHash("saveSizeOnClose").unset(windowId);
+		}
 	});
+});
+
+getActiveTab(function(tab) {
+	useHistoryBack = sessionStorageHash("manageStylesHistory").value[tab.id] == location.href;
+});
+
+function goBackToManage(event) {
+	if (useHistoryBack) {
+		event.stopPropagation();
+		event.preventDefault();
+		history.back();
+	}
 }
 
 window.onbeforeunload = function() {
@@ -791,6 +805,7 @@ function initHooks() {
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
+	document.getElementById("cancel-button").addEventListener("click", goBackToManage);
 
 	setupGlobalSearch();
 	setCleanGlobal();

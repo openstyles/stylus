@@ -121,10 +121,10 @@ function createStyleElement(style) {
 			var openWindow = left && shift && !ctrl;
 			var openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
 			var openForegroundTab = (middle && shift) || (left && ctrl && shift);
+			var url = event.target.href || event.target.parentNode.href;
+			event.preventDefault();
+			event.stopPropagation();
 			if (openWindow || openBackgroundTab || openForegroundTab) {
-				event.preventDefault();
-				event.stopPropagation();
-				var url = event.target.href || event.target.parentNode.href;
 				if (openWindow) {
 					var options = prefs.getPref('windowPosition', {});
 					options.url = url;
@@ -138,6 +138,10 @@ function createStyleElement(style) {
 				}
 			} else {
 				history.replaceState({scrollY: window.scrollY}, document.title);
+				getActiveTab(function(tab) {
+					sessionStorageHash("manageStylesHistory").set(tab.id, url);
+					location.href = url;
+				});
 			}
 		}
 	});
