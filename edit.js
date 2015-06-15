@@ -409,8 +409,12 @@ chrome.tabs.query({currentWindow: true}, function(tabs) {
 	var windowId = tabs[0].windowId;
 	if (prefs.getPref("openEditInWindow")) {
 		if (tabs.length == 1 && window.history.length == 1) {
-			sessionStorageHash("saveSizeOnClose").set(windowId, true);
-			saveSizeOnClose = true;
+			chrome.windows.getAll(function(windows) {
+				if (windows.length > 1) {
+					sessionStorageHash("saveSizeOnClose").set(windowId, true);
+					saveSizeOnClose = true;
+				}
+			});
 		} else {
 			saveSizeOnClose = sessionStorageHash("saveSizeOnClose").value[windowId];
 		}
