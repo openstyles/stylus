@@ -773,7 +773,7 @@ function initWithStyle(style) {
 	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
 	});
-	style.sections.forEach(function(section) {
+	(style.sections.length == 0 ? [{code: ""}] : style.sections).forEach(function(section) {
 		setTimeout(function() {
 			maximizeCodeHeight(addSection(null, section), editors.length == style.sections.length);
 		}, 0);
