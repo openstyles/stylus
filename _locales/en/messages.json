@@ -319,6 +319,14 @@
 		"message": "(Stylish does not work on pages like this.)",
 		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
 	},
+	"undo": {
+		"message": "Undo",
+		"description": "Button label"
+	},
+	"undoGlobal": {
+		"message": "Undo (global)",
+		"description": "CSS-beautify global Undo button label"
+	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update failed - server responded with code $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",

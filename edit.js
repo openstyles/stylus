@@ -828,6 +828,7 @@ function gotoLintIssue(event) {
 }
 
 function beautify(event) {
+	var undoCount = 1;
 	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
 		doBeautify();
 	} else {
@@ -860,7 +861,15 @@ function beautify(event) {
 			optionHtml("border: none;", "newline_between_properties", true) +
 			optionHtml("display: block;", "newline_before_close_brace", true) +
 			optionHtml("}", "newline_between_rules") +
-			"</div>");
+			"</div>" +
+			"<div><button role='undo'></button></div>");
+
+		var undoButton = document.querySelector("#help-popup button[role='undo']");
+		undoButton.textContent = t(scope.length == 1 ? "undo" : "undoGlobal");
+		undoButton.addEventListener("click", function() {
+			scope.forEach(CodeMirror.commands.undo);
+			undoButton.disabled = --undoCount == 0;
+		});
 
 		document.querySelector(".beautify-options").addEventListener("change", function(event) {
 			var value = event.target.selectedIndex > 0;
@@ -868,6 +877,8 @@ function beautify(event) {
 			prefs.setPref("editor.beautify", options);
 			event.target.parentNode.setAttribute("newline", value.toString());
 			doBeautify();
+			undoCount++;
+			undoButton.disabled = false;
 		});
 
 		function optionHtml(label, optionName, indent) {

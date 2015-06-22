@@ -330,6 +330,12 @@
 			.beautify-options div[newline="true"] + div span[indent] {
 				padding-left: 2rem;
 			}
+			.beautify-options:after {
+				clear: both;
+				display: block;
+				content: " ";
+				height: 1rem;
+			}
 			.beautify-options span {
 				font-weight: bold;
 			}
@@ -447,7 +453,7 @@
 				</div>
 			</section>
 			<section id="actions">
-				<div><button id="to-mozilla" i18n-text="styleToMozillaFormat"></button><img id="to-mozilla-help" src="help.png"> <button id="beautify" i18n-text="styleBeautify"></button></div>
+				<div><button id="beautify" i18n-text="styleBeautify"></button> <button id="to-mozilla" i18n-text="styleToMozillaFormat"></button><img id="to-mozilla-help" src="help.png"></div>
 				<div><a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a></div>
 				<div><button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button></div>
 			</section>
