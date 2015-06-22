@@ -925,11 +925,20 @@ function initWithStyle(style) {
 	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
 	});
-	(style.sections.length == 0 ? [{code: ""}] : style.sections).forEach(function(section) {
-		setTimeout(function() {
-			maximizeCodeHeight(addSection(null, section), editors.length == style.sections.length);
+	var queue = style.sections.length ? style.sections : [{code: ""}];
+	var queueStart = new Date().getTime();
+	// after 200ms the sections will be added asynchronously
+	while (new Date().getTime() - queueStart <= 200 && queue.length) {
+		maximizeCodeHeight(addSection(null, queue.shift()), !queue.length);
+	}
+	if (queue.length) {
+		setTimeout(function processQueue() {
+			maximizeCodeHeight(addSection(null, queue.shift()), !queue.length);
+			if (queue.length) {
+				setTimeout(processQueue, 0);
+			}
 		}, 0);
-	});
+	}
 	initHooks();
 }
 
