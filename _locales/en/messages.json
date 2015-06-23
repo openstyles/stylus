@@ -261,6 +261,10 @@
 		"message": "Regexp is invalid.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"styleBeautify": {
+		"message": "Beautify",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
 	"styleCancelEditLabel": {
 		"message": "Back to manage",
 		"description": "Label for cancel button for style editing"

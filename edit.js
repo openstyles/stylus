@@ -44,6 +44,7 @@ var sectionTemplate = tHTML('\
 		</div>\
 		<button class="remove-section" i18n-text="sectionRemove"></button>\
 		<button class="add-section" i18n-text="sectionAdd"></button>\
+		<button class="beautify-section" i18n-text="styleBeautify"></button>\
 	</div>\
 ');
 
@@ -483,6 +484,7 @@ function addSection(event, section) {
 	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
 	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
 	div.querySelector(".add-section").addEventListener("click", addSection, false);
+	div.querySelector(".beautify-section").addEventListener("click", beautify);
 
 	var codeElement = div.querySelector(".code");
 	var appliesTo = div.querySelector(".applies-to-list");
@@ -825,6 +827,61 @@ function gotoLintIssue(event) {
 	});
 }
 
+function beautify(event) {
+	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
+		doBeautify();
+	} else {
+		var script = document.head.appendChild(document.createElement("script"));
+		script.src = "beautify/beautify-css.js";
+		script.onload = doBeautify;
+	}
+	function doBeautify() {
+		var tabs = prefs.getPref("editor.indentWithTabs");
+		var options = prefs.getPref("editor.beautify");
+		options.indent_size = tabs ? 1 : prefs.getPref("editor.tabSize");
+		options.indent_char = tabs ? "\t" : " ";
+
+		var section = querySelectorParent(event.target, "#sections > div");
+		var scope = section ? [getCodeMirrorForSection(section)] : editors;
+		scope.forEach(function(cm) {
+			setTimeout(function() {
+				var text = cm.getValue();
+				var newText = exports.css_beautify(text, options);
+				if (newText != text) {
+					cm.setValue(newText);
+				}
+			}, 0);
+		});
+
+		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
+			optionHtml(".selector1,", "selector_separator_newline") +
+			optionHtml(".selector2,", "newline_before_open_brace") +
+			optionHtml("{", "newline_after_open_brace") +
+			optionHtml("border: none;", "newline_between_properties", true) +
+			optionHtml("display: block;", "newline_before_close_brace", true) +
+			optionHtml("}", "newline_between_rules") +
+			"</div>");
+
+		document.querySelector(".beautify-options").addEventListener("change", function(event) {
+			var value = event.target.selectedIndex > 0;
+			options[event.target.dataset.option] = value;
+			prefs.setPref("editor.beautify", options);
+			event.target.parentNode.setAttribute("newline", value.toString());
+			doBeautify();
+		});
+
+		function optionHtml(label, optionName, indent) {
+			var value = options[optionName];
+			return "<div newline='" + value.toString() + "'>" +
+				"<span" + (indent ? " indent" : "") + ">" + label + "</span>" +
+				"<select data-option='" + optionName + "'>" +
+					"<option" + (value ? "" : " selected") + ">&nbsp;</option>" +
+					"<option" + (value ? " selected" : "") + ">\\n</option>" +
+				"</select></div>";
+		}
+	}
+}
+
 window.addEventListener("load", init, false);
 
 function init() {
@@ -883,6 +940,7 @@ function initHooks() {
 	});
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);

@@ -180,6 +180,15 @@ var prefs = {
 	"editor.tabSize": 4,           // tab width, in spaces
 	"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 	"editor.theme": "default",     // CSS theme
+	"editor.beautify": {           // CSS beautifier
+		selector_separator_newline: true,
+		newline_before_open_brace: false,
+		newline_after_open_brace: true,
+		newline_between_properties: true,
+		newline_before_close_brace: true,
+		newline_between_rules: false,
+		end_with_newline: false
+	},
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
