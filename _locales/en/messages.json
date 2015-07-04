@@ -261,6 +261,10 @@
 		"message": "Regexp is invalid.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"styleBeautify": {
+		"message": "Beautify",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
 	"styleCancelEditLabel": {
 		"message": "Back to manage",
 		"description": "Label for cancel button for style editing"
@@ -314,6 +318,14 @@
 	"stylishUnavailableForURL": {
 		"message": "(Stylish does not work on pages like this.)",
 		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	},
+	"undo": {
+		"message": "Undo",
+		"description": "Button label"
+	},
+	"undoGlobal": {
+		"message": "Undo (global)",
+		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update failed - server responded with code $code$.",

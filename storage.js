@@ -173,50 +173,51 @@ var prefs = {
 	"manage.onlyEnabled": false, // display only enabled styles
 	"manage.onlyEdited": false,  // display only styles created locally
 
-	"editor.options": null,    // CodeMirror.defaults.*
+	"editor.options": {},          // CodeMirror.defaults.*
 	"editor.lineWrapping": true,   // word wrap
 	"editor.smartIndent": true,    // "smart" indent
 	"editor.indentWithTabs": false,// smart indent with tabs
 	"editor.tabSize": 4,           // tab width, in spaces
 	"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
 	"editor.theme": "default",     // CSS theme
+	"editor.beautify": {           // CSS beautifier
+		selector_separator_newline: true,
+		newline_before_open_brace: false,
+		newline_after_open_brace: true,
+		newline_between_properties: true,
+		newline_before_close_brace: true,
+		newline_between_rules: false,
+		end_with_newline: false
+	},
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
 
-	getPref: function(key, ifUndefined) {
-	// Returns localStorage[key], ifUndefined, this[key], or undefined
-	//   as type of ifUndefined, this[key], or localStorage[key]
-		if (ifUndefined === undefined) ifUndefined = this[key]; // default value
+	getPref: function(key, defaultValue) {
+	// Returns localStorage[key], defaultValue, this[key], or undefined
+	//   as type of defaultValue, this[key], or localStorage[key]
 		var value = localStorage[key];
-		if (undefined === value) { // no user preference
-			if (ifUndefined === undefined) console.error(this.NO_DEFAULT_PREFERENCE, key);
-			return ifUndefined;
+		if (value === undefined) {
+			return defaultValue === undefined ? shallowCopy(this[key]) : defaultValue;
 		}
-		switch (typeof ifUndefined) {
+		switch (typeof (defaultValue === undefined ? this[key] : defaultValue)) {
 			case "boolean": return value.toLowerCase() === "true";
 			case "number": return Number(value);
 			case "object": return JSON.parse(value);
 			case "string": break;
 			case "undefined":  console.warn(this.NO_DEFAULT_PREFERENCE, key); break;
-			default: console.error(UNHANDLED_DATA_TYPE, key, typeof ifUndefined);
+			default: console.error(UNHANDLED_DATA_TYPE, key, typeof defaultValue);
 		}
 		return value;
 	},
 	setPref: function(key, value) {
-		if (!(key in this)) console.warn(this.NO_DEFAULT_PREFERENCE, key);
-		var oldValue = this.getPref(key);
-
-		if (undefined === value || this[key] === value) {
-			localStorage.removeItem(key); // (deleted || default)
+		var oldValue = localStorage[key];
+		if (value === undefined || equal(value, this[key])) {
+			delete localStorage[key];
 		} else {
-			var strValue = ("string" === typeof value ||
-			               undefined === value) ? value : JSON.stringify(value);
-			localStorage.setItem(key, strValue);
+			localStorage[key] = typeof value == "string" ? value : JSON.stringify(value);
 		}
-
-		var newValue = this.getPref(key);
-		if (newValue !== oldValue) {
+		if (!equal(value, oldValue === undefined ? this[key] : oldValue)) {
 			var message = {method: "prefChanged", prefName: key, value: value};
 			notifyAllTabs(message);
 			chrome.extension.sendMessage(message);
@@ -256,4 +257,30 @@ function sessionStorageHash(name) {
 	try { hash.value = JSON.parse(sessionStorage[name]); } catch(e) {}
 	Object.defineProperty(hash, "name", {value: name});
 	return hash;
+}
+
+function shallowCopy(obj) {
+	if (typeof obj != "object") {
+		return obj;
+	}
+	var copy = {};
+	for (var k in obj) {
+		copy[k] = obj[k];
+	}
+	return copy;
+}
+
+function equal(a, b) {
+	if (!a || !b || typeof a != "object") {
+		return a === b;
+	}
+	if (Object.keys(a).length != Object.keys(b).length) {
+		return false;
+	}
+	for (var k in a) {
+		if (a[k] !== b[k]) {
+			return false;
+		}
+	}
+	return true;
 }

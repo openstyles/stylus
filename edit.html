@@ -124,7 +124,7 @@
 			#sections > div:only-of-type .remove-section {
 				display: none;
 			}
-			#sections > div .add-section {
+			#sections > div > button:not(:first-of-type) {
 				margin-left: 0.4rem;
 			}
 			.dirty > label::before {
@@ -248,10 +248,11 @@
 				cursor: pointer;
 				width: 8px;
 				height: 8px;
+				border: 8px solid transparent;
 				position: absolute;
-				right: 0.5rem;
-				top: 0.75rem;
-				background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px), linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px);
+				right: 4px;
+				top: 4px;
+				background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat, linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat;
 			}
 
 			.keymap-list {
@@ -314,6 +315,34 @@
 			}
 			#lint td[role="message"] {
 				text-align: left;
+			}
+
+			/************ CSS beautifier ************/
+			.beautify-options {
+				white-space: nowrap;
+				font-family: monospace;
+			}
+			.beautify-options div {
+				float: left;
+			}
+			.beautify-options div[newline="true"] + div {
+				clear: left;
+			}
+			.beautify-options div[newline="true"] + div span[indent] {
+				padding-left: 2rem;
+			}
+			.beautify-options:after {
+				clear: both;
+				display: block;
+				content: " ";
+				height: 1rem;
+			}
+			.beautify-options span {
+				font-weight: bold;
+			}
+			.beautify-options select {
+				border: none;
+				background-color: rgba(0, 0, 0, 0.05);
 			}
 
 			/************ reponsive layouts ************/
@@ -425,7 +454,7 @@
 				</div>
 			</section>
 			<section id="actions">
-				<div><button id="to-mozilla" i18n-text="styleToMozillaFormat"></button><img id="to-mozilla-help" src="help.png"></div>
+				<div><button id="beautify" i18n-text="styleBeautify"></button> <button id="to-mozilla" i18n-text="styleToMozillaFormat"></button><img id="to-mozilla-help" src="help.png"></div>
 				<div><a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a></div>
 				<div><button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button></div>
 			</section>
