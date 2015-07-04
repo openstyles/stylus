@@ -354,6 +354,7 @@ function indicateCodeChange(cm) {
 	var section = getSectionForCodeMirror(cm);
 	setCleanItem(section, cm.isClean(section.savedValue));
 	updateTitle();
+	updateLintReport(cm);
 }
 
 function getSectionForCodeMirror(cm) {
@@ -513,6 +514,7 @@ function addSection(event, section) {
 		var cm = setupCodeMirror(codeElement, newIndex);
 		makeSectionVisible(cm);
 		cm.focus()
+		renderLintReport();
 	} else {
 		sections.appendChild(div);
 		setupCodeMirror(codeElement);
@@ -536,6 +538,7 @@ function removeSection(event) {
 	var cm = section.querySelector(".CodeMirror").CodeMirror;
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
+	renderLintReport();
 }
 
 function removeAreaAndSetDirty(area) {
@@ -748,6 +751,80 @@ function getEditorInSight(nearbyElement) {
 	}
 }
 
+function updateLintReport(cm) {
+	var state = cm.state.lint;
+	clearTimeout(state.reportTimeout);
+	state.reportTimeout = setTimeout(update.bind(cm), (state.options.delay || 500) + 500);
+	function update() { // this == cm
+		var html = this.state.lint.marked.length == 0 ? "" : "<tbody>" +
+			this.state.lint.marked.map(function(mark) {
+				var info = mark.__annotation;
+				return "<tr class='" + info.severity + "'>" +
+					"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
+						info.severity + "</td>" +
+					"<td role='line'>" + (info.from.line+1) + "</td>" +
+					"<td role='sep'>:</td>" +
+					"<td role='col'>" + (info.from.ch+1) + "</td>" +
+					"<td role='message'>" + info.message.replace(/ at line \d.+$/, "") + "</td></tr>";
+			}).join("") + "</tbody>";
+		if (this.state.lint.html != html) {
+			this.state.lint.html = html;
+			renderLintReport(true);
+		}
+	}
+}
+
+function renderLintReport(blockChanged) {
+	var container = document.getElementById("lint");
+	var content = container.children[1];
+	var label = t("sectionCode");
+	var newContent = content.cloneNode(false);
+	editors.forEach(function(cm, index) {
+		if (cm.state.lint.html) {
+			var newBlock = newContent.appendChild(document.createElement("table"));
+			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
+			newBlock.innerHTML = html;
+			newBlock.cm = cm;
+			if (!blockChanged) {
+				var block = content.children[newContent.children.length - 1];
+				blockChanged = !block || cm != block.cm || html != block.innerHTML;
+			}
+		}
+	});
+	if (blockChanged || newContent.children.length != content.children.length) {
+		container.replaceChild(newContent, content);
+		container.style.display = newContent.children.length ? "block" : "none";
+		resizeLintReport(null, newContent);
+	}
+}
+
+function resizeLintReport(event, content) {
+	content = content || document.getElementById("lint").children[1];
+	if (content.children.length) {
+		var header = document.getElementById("header");
+		var headerHeight = parseFloat(getComputedStyle(header).height);
+		var contentTop = content.getBoundingClientRect().top - header.getBoundingClientRect().top;
+		var newMaxHeight = Math.max(100, headerHeight - contentTop) + "px";
+		if (newMaxHeight != content.style.maxHeight) {
+			content.style.maxHeight = newMaxHeight;
+		}
+	}
+}
+
+function gotoLintIssue(event) {
+	var issue = querySelectorParent(event.target, "tr");
+	if (!issue) {
+		return;
+	}
+	var block = querySelectorParent(issue, "table");
+	makeSectionVisible(block.cm);
+	block.cm.focus();
+	block.cm.setSelection({
+		line: parseInt(issue.querySelector("td[role='line']").textContent) - 1,
+		ch: parseInt(issue.querySelector("td[role='col']").textContent) - 1
+	});
+}
+
 window.addEventListener("load", init, false);
 
 function init() {
@@ -810,6 +887,9 @@ function initHooks() {
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
 	document.getElementById("keyMap-help").addEventListener("click", showKeyMapHelp, false);
 	document.getElementById("cancel-button").addEventListener("click", goBackToManage);
+	document.getElementById("lint-help").addEventListener("click", showLintHelp);
+	document.getElementById("lint").addEventListener("click", gotoLintIssue);
+	window.addEventListener("resize", resizeLintReport);
 
 	setupGlobalSearch();
 	setCleanGlobal();
@@ -1072,6 +1152,14 @@ function showKeyMapHelp() {
 		});
 		return merged;
 	}
+}
+
+function showLintHelp() {
+	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
+		CSSLint.getRules().map(function(rule) {
+			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
+		}).join("") + "</ul"
+	);
 }
 
 function showHelp(title, text) {
