@@ -1236,7 +1236,7 @@ function showLintHelp() {
 	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
 		CSSLint.getRules().map(function(rule) {
 			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
-		}).join("") + "</ul"
+		}).join("") + "</ul>"
 	);
 }
 
