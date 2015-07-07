@@ -828,7 +828,6 @@ function gotoLintIssue(event) {
 }
 
 function beautify(event) {
-	var undoCount = 1;
 	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
 		doBeautify();
 	} else {
@@ -844,15 +843,6 @@ function beautify(event) {
 
 		var section = querySelectorParent(event.target, "#sections > div");
 		var scope = section ? [getCodeMirrorForSection(section)] : editors;
-		scope.forEach(function(cm) {
-			setTimeout(function() {
-				var text = cm.getValue();
-				var newText = exports.css_beautify(text, options);
-				if (newText != text) {
-					cm.setValue(newText);
-				}
-			}, 0);
-		});
 
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
 			optionHtml(".selector1,", "selector_separator_newline") +
@@ -867,8 +857,31 @@ function beautify(event) {
 		var undoButton = document.querySelector("#help-popup button[role='undo']");
 		undoButton.textContent = t(scope.length == 1 ? "undo" : "undoGlobal");
 		undoButton.addEventListener("click", function() {
-			scope.forEach(CodeMirror.commands.undo);
-			undoButton.disabled = --undoCount == 0;
+			var undoable = false;
+			scope.forEach(function(cm) {
+				if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
+					delete cm.beautifyChange[cm.changeGeneration()];
+					cm.undo();
+					undoable |= cm.beautifyChange[cm.changeGeneration()];
+				}
+			});
+			undoButton.disabled = !undoable;
+		});
+
+		scope.forEach(function(cm) {
+			setTimeout(function() {
+				var text = cm.getValue();
+				var newText = exports.css_beautify(text, options);
+				if (newText != text) {
+					if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
+						// clear the list if last change wasn't a css-beautify
+						cm.beautifyChange = {};
+					}
+					cm.setValue(newText);
+					cm.beautifyChange[cm.changeGeneration()] = true;
+					undoButton.disabled = false;
+				}
+			}, 0);
 		});
 
 		document.querySelector(".beautify-options").addEventListener("change", function(event) {
@@ -877,8 +890,6 @@ function beautify(event) {
 			prefs.setPref("editor.beautify", options);
 			event.target.parentNode.setAttribute("newline", value.toString());
 			doBeautify();
-			undoCount++;
-			undoButton.disabled = false;
 		});
 
 		function optionHtml(label, optionName, indent) {
@@ -1236,7 +1247,7 @@ function showLintHelp() {
 	showHelp(t("issues"), t("issuesHelp") + "<ul>" +
 		CSSLint.getRules().map(function(rule) {
 			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
-		}).join("") + "</ul"
+		}).join("") + "</ul>"
 	);
 }
 
