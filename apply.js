@@ -1,6 +1,7 @@
 var g_disableAll = false;
 var g_styleElements = {};
 var iframeObserver;
+var retiredStyleIds = [];
 
 initObserver();
 requestStyles();
@@ -28,8 +29,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			removeStyle(request.id, document);
 			break;
 		case "styleUpdated":
-			removeStyle(request.style.id, document);
-			//fallthrough
+			if (request.style.enabled == "true") {
+				retireStyle(request.style.id);
+				// fallthrough to "styleAdded"
+			} else {
+				removeStyle(request.style.id, document);
+				break;
+			}
 		case "styleAdded":
 			if (request.style.enabled == "true") {
 				chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
@@ -92,6 +98,27 @@ function removeStyle(id, doc) {
 	});
 }
 
+// to avoid page flicker when the style is updated
+// instead of removing it immediately we rename its ID and queue it
+// to be deleted in applyStyles after a new version is fetched and applied
+function retireStyle(id, doc) {
+	var deadID = "ghost-" + id;
+	if (!doc) {
+		doc = document;
+		retiredStyleIds.push(deadID);
+		delete g_styleElements["stylish-" + id];
+		// in case something went wrong and new style was never applied
+		setTimeout(removeStyle.bind(null, deadID, doc), 1000);
+	}
+	var e = doc.getElementById("stylish-" + id);
+	if (e) {
+		e.id = "stylish-" + deadID;
+	}
+	getDynamicIFrames(doc).forEach(function(iframe) {
+		retireStyle(id, iframe.contentDocument);
+	});
+}
+
 function applyStyles(styleHash) {
 	if (!styleHash) { // Chrome is starting up
 		requestStyles();
@@ -111,6 +138,14 @@ function applyStyles(styleHash) {
 			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
 		});
 		iframeObserver.start();
+	}
+
+	if (retiredStyleIds.length) {
+		setTimeout(function() {
+			while (retiredStyleIds.length) {
+				removeStyle(retiredStyleIds.shift(), document);
+			}
+		}, 0);
 	}
 }
 
@@ -194,17 +229,22 @@ function addStyleToIFrameSrcDoc(iframe, styleElement) {
 	setTimeout(addStyleElement.bind(null, styleElement, iframe.contentDocument), 100);
 }
 
-function replaceAll(newStyles, doc) {
-	Array.prototype.forEach.call(doc.querySelectorAll("STYLE.stylish"), function(style) {
-		style.remove();
-	});
-	if (doc == document) {
-		g_styleElements = {};
-		applyStyles(newStyles);
+function replaceAll(newStyles, doc, pass2) {
+	var oldStyles = [].slice.call(doc.querySelectorAll("STYLE.stylish" + (pass2 ? "[id$='-ghost']" : "")));
+	if (!pass2) {
+		oldStyles.forEach(function(style) { style.id += "-ghost"; });
 	}
 	getDynamicIFrames(doc).forEach(function(iframe) {
-		replaceAll(newStyles, iframe.contentDocument);
+		replaceAll(newStyles, iframe.contentDocument, pass2);
 	});
+	if (doc == document && !pass2) {
+		g_styleElements = {};
+		applyStyles(newStyles);
+		replaceAll(newStyles, doc, true);
+	}
+	if (pass2) {
+		oldStyles.forEach(function(style) { style.remove(); });
+	}
 }
 
 // Observe dynamic IFRAMEs being added
