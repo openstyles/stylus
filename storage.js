@@ -262,14 +262,16 @@ function sessionStorageHash(name) {
 }
 
 function shallowCopy(obj) {
-	if (typeof obj != "object") {
-		return obj;
+	return typeof obj == "object" ? shallowMerge(obj, {}) : obj;
+}
+
+function shallowMerge(from, to) {
+	if (typeof from == "object" && typeof to == "object") {
+		for (var k in from) {
+			to[k] = from[k];
+		}
 	}
-	var copy = {};
-	for (var k in obj) {
-		copy[k] = obj[k];
-	}
-	return copy;
+	return to;
 }
 
 function equal(a, b) {

@@ -24,6 +24,8 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	return r;
 }
 
+Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
 	commands: {
@@ -134,13 +136,8 @@ function initCodeMirror() {
 			"Alt-PageUp": "prevEditor"
 		}
 	}
-	mergeOptions(stylishOptions, CM.defaults);
-	mergeOptions(userOptions, CM.defaults);
-
-	function mergeOptions(source, target) {
-		for (var key in source) target[key] = source[key];
-		return target;
-	}
+	shallowMerge(stylishOptions, CM.defaults);
+	shallowMerge(userOptions, CM.defaults);
 
 	// additional commands
 	CM.commands.jumpToLine = jumpToLine;
@@ -353,7 +350,7 @@ function indicateCodeChange(cm) {
 }
 
 function getSectionForCodeMirror(cm) {
-	return cm.getTextArea().parentNode;
+	return cm.display.wrapper.parentNode;
 }
 
 function getCodeMirrorForSection(section) {
@@ -1086,6 +1083,7 @@ function initHooks() {
 	});
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
@@ -1253,7 +1251,9 @@ function saveComplete(style) {
 }
 
 function showMozillaFormat() {
-	window.open("data:text/plain;charset=UTF-8," + encodeURIComponent(toMozillaFormat()));
+	var popup = showCodeMirrorPopup(t("styleToMozillaFormatTitle"), "", {readOnly: true});
+	popup.codebox.setValue(toMozillaFormat());
+	popup.codebox.execCommand("selectAll");
 }
 
 function toMozillaFormat() {
@@ -1270,6 +1270,147 @@ function toMozillaFormat() {
 	}).join("\n\n");
 }
 
+function fromMozillaFormat() {
+	var popup = showCodeMirrorPopup(t("styleFromMozillaFormatPrompt"), tHTML("<div>\
+		<button name='import-append' i18n-text='importAppendLabel' i18n-title='importAppendTooltip'></button>\
+		<button name='import-replace' i18n-text='importReplaceLabel' i18n-title='importReplaceTooltip'></button>\
+		</div>").innerHTML);
+
+	var contents = popup.querySelector(".contents");
+	contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
+	popup.codebox.focus();
+
+	popup.querySelector("[name='import-append']").addEventListener("click", doImport);
+	popup.querySelector("[name='import-replace']").addEventListener("click", doImport);
+
+	popup.codebox.on("change", function() {
+		clearTimeout(popup.mozillaTimeout);
+		popup.mozillaTimeout = setTimeout(function() {
+			popup.classList.toggle("ready", trimNewLines(popup.codebox.getValue()));
+		}, 100);
+	});
+
+	function doImport() {
+		var replaceOldStyle = this.name == "import-replace";
+		popup.querySelector(".close-icon").click();
+		var mozStyle = trimNewLines(popup.codebox.getValue());
+		var parser = new exports.css.Parser(), lines = mozStyle.split("\n");
+		var sectionStack = [{code: "", cursor: {line: 1, col: 1}}];
+		var errors = "", oldSectionCount = editors.length;
+
+		parser.addListener("startdocument", function(e) {
+			var outerText = getRange(sectionStack.last.cursor, (--e.col, e));
+			var gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
+			var section = {code: "", cursor: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
+			// move last comment before @-moz-document inside the section
+			if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
+				section.code = gapComment[1] + "\n";
+				outerText = trimNewLines(outerText.substring(0, gapComment.index));
+			}
+			addContinuation(sectionStack.last, outerText);
+			e.functions.forEach(function(f) {
+				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
+				var aType = CssToProperty[m[1]];
+				var aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
+				(section[aType] = section[aType] || []).push(aValue);
+			});
+			sectionStack.push(section);
+		});
+
+		parser.addListener("enddocument", function(e) {
+			var cursor = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
+			var section = sectionStack.pop();
+			addContinuation(section, getRange(section.cursor, cursor));
+			sectionStack.last.cursor = (++cursor.col, cursor);
+			doAddSection(section);
+		});
+
+		parser.addListener("endstylesheet", function() {
+			// add nonclosed (broken) outer sections except for the global one
+			sectionStack.slice(1).forEach(doAddSection);
+
+			if (!replaceOldStyle) {
+				var lastOldCM = editors[oldSectionCount - 1];
+				var lastOldSection = getSectionForCodeMirror(lastOldCM);
+				var addAfter = {target: lastOldSection.querySelector(".add-section")};
+
+				if (oldSectionCount < editors.length
+				&& lastOldCM.getValue() == ""
+				&& lastOldSection.querySelector(".applies-to-everything")) {
+					removeSection(addAfter);
+					oldSectionCount--;
+				}
+			} else {
+				var addAfter = {target: getSectionForCodeMirror(editors[0]).previousElementSibling.firstElementChild};
+			}
+
+			var globalSection = sectionStack[0];
+			addContinuation(globalSection,
+				getRange(sectionStack.last.cursor, {line: lines.length, col: lines.last.length + 1}));
+			// only add global section if it contains actual code
+			if (globalSection.code
+					.replace("@namespace url(http://www.w3.org/1999/xhtml);", "") /* strip boilerplate NS */
+					.replace(/\/\*[\s\S]*?\*\//g, "") /* strip comments */
+					.replace(/[\s\n]/g, "")) { /* strip all whitespace including new lines */
+				setCleanItem(addSection(addAfter, {code: globalSection.code}), false);
+			}
+
+			delete maximizeCodeHeight.stats;
+			editors.forEach(function(cm, i) {
+				maximizeCodeHeight(getSectionForCodeMirror(cm), i == editors.length - 1);
+			});
+
+			makeSectionVisible(editors[oldSectionCount]);
+			editors[oldSectionCount].focus();
+			if (errors) {
+				showHelp(t("issues"), errors);
+			}
+		});
+
+		parser.addListener("error", function(e) {
+			errors += e.line + ":" + e.col + " " + e.message.replace(/ at line \d.+$/, "") + "<br>";
+		});
+
+		parser.parse(mozStyle);
+
+		function getRange(start, end) {
+			if (start.line == end.line) {
+				return lines[start.line - 1].substring(start.col - 1, end.col - 1).trim();
+			} else {
+				return trimNewLines(lines[start.line - 1].substr(start.col - 1) + "\n" +
+					lines.slice(start.line, end.line - 1).join("\n") +
+					"\n" + lines[end.line - 1].substring(0, end.col - 1));
+			}
+		}
+		function doAddSection(section) {
+			if (replaceOldStyle && oldSectionCount > 0) {
+				oldSectionCount = 0;
+				editors.slice(0).reverse().forEach(function(cm) {
+					removeSection({target: getSectionForCodeMirror(cm).firstElementChild});
+				});
+			}
+			setCleanItem(addSection(null, section), false);
+		}
+	}
+	function backtrackTo(parser, tokenType, startEnd) {
+		var tokens = parser._tokenStream._lt;
+		for (var i = tokens.length - 2; i >= 0; --i) {
+			if (tokens[i].type == tokenType) {
+				return {line: tokens[i][startEnd+"Line"], col: tokens[i][startEnd+"Col"]};
+			}
+		}
+	}
+	function trimNewLines(s) {
+		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
+	}
+	function addContinuation(section, addendum) {
+		section.code = section.code && addendum
+			? section.code + "\n/**************************/\n" + addendum
+			: section.code || addendum;
+		return section.code;
+	}
+}
+
 function showSectionHelp() {
 	showHelp(t("styleSectionsTitle"), t("sectionHelp"));
 }
@@ -1279,7 +1420,7 @@ function showAppliesToHelp() {
 }
 
 function showToMozillaHelp() {
-	showHelp(t("styleToMozillaFormat"), t("styleToMozillaFormatHelp"));
+	showHelp(t("styleMozillaFormatHeading"), t("styleToMozillaFormatHelp"));
 }
 
 function showKeyMapHelp() {
@@ -1371,6 +1512,7 @@ function showLintHelp() {
 
 function showHelp(title, text) {
 	var div = document.getElementById("help-popup");
+	div.style.cssText = "";
 	div.querySelector(".contents").innerHTML = text;
 	div.querySelector(".title").innerHTML = title;
 
@@ -1380,13 +1522,38 @@ function showHelp(title, text) {
 	}
 
 	div.style.display = "block";
+	return div;
 
 	function closeHelp(e) {
 		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
 			div.style.display = "";
+			document.querySelector(".contents").innerHTML = "";
 			document.removeEventListener("keydown", closeHelp);
 		}
 	}
+}
+
+function showCodeMirrorPopup(title, html, options) {
+	var popup = showHelp(title, html);
+	popup.style.width = popup.style.maxWidth = "calc(100vw - 7rem)";
+
+	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge(options, {
+		mode: "css",
+		lineNumbers: true,
+		lineWrapping: true,
+		foldGutter: true,
+		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
+		matchBrackets: true,
+		lint: {getAnnotations: CodeMirror.lint.css, delay: 0},
+		styleActiveLine: true,
+		theme: prefs.getPref("editor.theme"),
+		keyMap: prefs.getPref("editor.keyMap")
+	}));
+	popup.codebox.focus();
+	popup.codebox.setSize(null, "70vh");
+	popup.codebox.on("focus", function() { hotkeyRerouter.setState(false) });
+	popup.codebox.on("blur", function() { hotkeyRerouter.setState(true) });
+	return popup;
 }
 
 function getParams() {
