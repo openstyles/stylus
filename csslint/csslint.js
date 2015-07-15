@@ -2061,21 +2061,24 @@ Parser.prototype = function(){
                     col:       token.startCol
                 });
 
-                while(true) {
-                    if (tokenStream.peek() == Tokens.PAGE_SYM){
-                        this._page();
-                    } else if (tokenStream.peek() == Tokens.FONT_FACE_SYM){
-                        this._font_face();
-                    } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
-                        this._viewport();
-                    } else if (tokenStream.peek() == Tokens.MEDIA_SYM){
-                        this._media();
-                    } else if (!this._ruleset()){
-                        break;
+                var ok = true;
+                while(ok) {
+                    switch (tokenStream.peek()) {
+                        case Tokens.PAGE_SYM:       this._page(); break;
+                        case Tokens.FONT_FACE_SYM:  this._font_face(); break;
+                        case Tokens.VIEWPORT_SYM:   this._viewport(); break;
+                        case Tokens.MEDIA_SYM:      this._media(); break;
+                        case Tokens.KEYFRAMES_SYM:  this._keyframes(); break;
+                        case Tokens.DOCUMENT_SYM:   this._document(); break;
+                        default:
+                            if (!this._ruleset()) {
+                                ok = false;
+                            }
                     }
                 }
 
                 tokenStream.mustMatch(Tokens.RBRACE);
+                token = tokenStream.token();
                 this._readWhitespace();
 
                 this.fire({
@@ -3259,6 +3262,7 @@ Parser.prototype = function(){
 
                 this._readWhitespace();
                 tokenStream.mustMatch(Tokens.RBRACE);
+                this._readWhitespace();
 
             },
 
