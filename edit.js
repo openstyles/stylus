@@ -18,6 +18,12 @@ var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "doma
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
+// Chrome pre-41 polyfill
+Element.prototype.closest = Element.prototype.closest || function(selector) {
+	for (var e = this; e && !e.matches(selector); e = e.parentElement) {}
+	return e;
+};
+
 Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	var r = this.slice(-amount, this.length);
 	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
@@ -353,13 +359,18 @@ function getSectionForCodeMirror(cm) {
 	return cm.display.wrapper.parentNode;
 }
 
+function getSectionForChild(e) {
+	return e.closest("#sections > div");
+}
+
+function getSections() {
+	return document.querySelectorAll("#sections > div");
+}
+
 function getCodeMirrorForSection(section) {
 	// #header section has no codemirror
 	var wrapper = section.querySelector(".CodeMirror");
-	if (wrapper) {
-		return wrapper.CodeMirror;
-	}
-	return null;
+	return wrapper && wrapper.CodeMirror;
 }
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
@@ -487,7 +498,7 @@ function addSection(event, section) {
 	if (event) {
 		var clickedSection = event.target.parentNode;
 		sections.insertBefore(div, clickedSection.nextElementSibling);
-		var newIndex = document.querySelectorAll("#sections > div").indexOf(clickedSection) + 1;
+		var newIndex = getSections().indexOf(clickedSection) + 1;
 		var cm = setupCodeMirror(codeElement, newIndex);
 		makeSectionVisible(cm);
 		cm.focus()
@@ -512,7 +523,7 @@ function removeAppliesTo(event) {
 
 function removeSection(event) {
 	var section = event.target.parentNode;
-	var cm = section.querySelector(".CodeMirror").CodeMirror;
+	var cm = getCodeMirrorForSection(section);
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
 	renderLintReport();
@@ -789,7 +800,7 @@ function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
 	var cm;
 	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
-		cm = getCodeMirrorForSection(querySelectorParent(nearbyElement, "#sections > div"));
+		cm = getCodeMirrorForSection(getSectionForChild(nearbyElement));
 	} else {
 		cm = editors.lastActive;
 	}
@@ -922,11 +933,11 @@ function resizeLintReport(event, content) {
 }
 
 function gotoLintIssue(event) {
-	var issue = querySelectorParent(event.target, "tr");
+	var issue = event.target.closest("tr");
 	if (!issue) {
 		return;
 	}
-	var block = querySelectorParent(issue, "table");
+	var block = issue.closest("table");
 	makeSectionVisible(block.cm);
 	block.cm.focus();
 	block.cm.setSelection({
@@ -949,7 +960,7 @@ function beautify(event) {
 		options.indent_size = tabs ? 1 : prefs.getPref("editor.tabSize");
 		options.indent_char = tabs ? "\t" : " ";
 
-		var section = querySelectorParent(event.target, "#sections > div");
+		var section = getSectionForChild(event.target);
 		var scope = section ? [getCodeMirrorForSection(section)] : editors;
 
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
@@ -1052,9 +1063,7 @@ function initWithStyle(style) {
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("url").href = style.url;
 	// if this was done in response to an update, we need to clear existing sections
-	document.querySelectorAll("#sections > div").forEach(function(div) {
-		div.parentNode.removeChild(div);
-	});
+	getSections().forEach(function(div) { div.remove(); });
 	var queue = style.sections.length ? style.sections : [{code: ""}];
 	var queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
@@ -1203,16 +1212,16 @@ function save() {
 		id: styleId,
 		name: name,
 		enabled: enabled,
-		sections: getSections()
+		sections: getSectionsHashes()
 	};
 	chrome.extension.sendMessage(request, saveComplete);
 }
 
-function getSections() {
+function getSectionsHashes() {
 	var sections = [];
-	document.querySelectorAll("#sections > div").forEach(function(div) {
+	getSections().forEach(function(div) {
 		var meta = getMeta(div);
-		var code = div.querySelector(".CodeMirror").CodeMirror.getValue();
+		var code = getCodeMirrorForSection(div).getValue();
 		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
 			return;
 		}
@@ -1257,7 +1266,7 @@ function showMozillaFormat() {
 }
 
 function toMozillaFormat() {
-	return getSections().map(function(section) {
+	return getSectionsHashes().map(function(section) {
 		var cssMds = [];
 		for (var i in propertyToCss) {
 			if (section[i]) {
@@ -1588,13 +1597,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-function querySelectorParent(node, selector) {
-	var parent = node.parentNode;
-	while (parent && parent.matches && !parent.matches(selector))
-		parent = parent.parentNode;
-	return parent.matches ? parent : null; // null for the root document.DOCUMENT_NODE
-}
 
 function stringAsRegExp(s, flags) {
 	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
