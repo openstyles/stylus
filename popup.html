@@ -61,7 +61,7 @@
 				text-decoration: line-through;
 			}
 			#installed .actions a {
-				margin-right: 0.5em;
+				margin-right: 0.2em;
 			}
 			body > .actions {
 				margin-top: 0.5em;
@@ -115,7 +115,7 @@
 			.breadcrumbs > .write-style-link:last-child::before {content: "\200b/"}
 			.breadcrumbs > .write-style-link:last-child:first-child::before,
 			.breadcrumbs > .write-style-link[subdomain=""] + .write-style-link::before {content: none}
-			
+
 				/* suppress TLD-only link */
 			.breadcrumbs > .write-style-link[subdomain=""] {display: none}
 
@@ -129,6 +129,23 @@
 				text-decoration: underline;
 			}
 		</style>
+
+		<template data-id="style">
+			<div>
+				<div class="left-gutter">
+					<input class="checker" type="checkbox">
+				</div>
+				<div class="main-controls">
+					<label class="style-name"></label>
+					<div class="actions">
+						<a href="#" class="enable" i18n-text="enableStyleLabel"></a>
+						<a href="#" class="disable" i18n-text="disableStyleLabel"></a>
+						<a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
+						<a href="#" class="delete" i18n-text="deleteStyleLabel"></a>
+					</div>
+				</div>
+			</div>
+		</template>
 
 		<script src="localization.js"></script>
 		<script src="health.js"></script>

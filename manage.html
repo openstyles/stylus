@@ -46,9 +46,6 @@
 			.applies-to, .actions {
 				padding-left: 15px;
 			}
-			.actions > * {
-				margin-right: 5px;
-			}
 			.applies-to-extra {
 				font-weight: bold;
 			}
@@ -129,6 +126,23 @@
 			}
 
 		</style>
+
+		<template data-id="style">
+			<div>
+				<h2 class="style-name"></h2>
+				<p class="applies-to"></p>
+				<p class="actions">
+					<a class="style-edit-link" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>
+					<button class="enable" i18n-text="enableStyleLabel"></button>
+					<button class="disable" i18n-text="disableStyleLabel"></button>
+					<button class="delete" i18n-text="deleteStyleLabel"></button>
+					<button class="check-update" i18n-text="checkForUpdate"></button>
+					<button class="update" i18n-text="installUpdate"></button>
+					<span class="update-note"></span>
+				</p>
+			</div>
+		</template>
+
 		<script src="localization.js"></script>
 		<script src="health.js"></script>
 		<script src="storage.js"></script>
