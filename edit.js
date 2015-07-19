@@ -1013,6 +1013,7 @@ function init() {
 		return;
 	}
 	// This is an edit
+	tE("heading", "editStyleHeading", null, false);
 	requestStyle();
 	function requestStyle() {
 		chrome.extension.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
@@ -1031,7 +1032,6 @@ function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("url").href = style.url;
-	tE("heading", "editStyleHeading", null, false);
 	// if this was done in response to an update, we need to clear existing sections
 	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
@@ -1225,6 +1225,7 @@ function saveComplete(style) {
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
+		tE("heading", "editStyleHeading", null, false);
 	}
 	updateTitle();
 }
