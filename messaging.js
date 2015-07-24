@@ -76,14 +76,9 @@ function getActiveTabRealURL(callback) {
 function getTabRealURL(tab, callback) {
 	if (tab.url != "chrome://newtab/") {
 		callback(tab.url);
-		return;
-	}
-	chrome.webNavigation.getAllFrames({tabId: tab.id}, function(frames) {
-		frames.some(function(frame) {
-			if (frame.parentFrameId == -1) { // parentless frame is the main frame
-				callback(frame.url);
-				return true;
-			}
+	} else {
+		chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, function(frame) {
+			frame && callback(frame.url);
 		});
-	});
+	}
 }
