@@ -58,6 +58,9 @@ var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-fi
 	NodeList.prototype[method]= Array.prototype[method];
 });
 
+// Chrome pre-34
+Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var commandsToReroute = {
 	save: true, jumpToLine: true, nextEditor: true, prevEditor: true,

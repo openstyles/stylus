@@ -76,7 +76,7 @@ chrome.commands.onCommand.addListener(function(command) {
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-
+try {
 chrome.contextMenus.create({
 	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
@@ -85,6 +85,7 @@ chrome.contextMenus.create({
 	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
 	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
 }, function() { var clearError = chrome.runtime.lastError; });
+} catch(e) {}
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
