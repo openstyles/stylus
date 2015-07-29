@@ -318,7 +318,7 @@
       }
     }
     gutters.style.display = i ? "" : "none";
-    updateGutterSpace(cm);
+    setTimeout(updateGutterSpace.bind(null, cm), 0);
   }
 
   function updateGutterSpace(cm) {
