@@ -952,8 +952,8 @@ function initWithStyle(style) {
 	});
 	var queue = style.sections.length ? style.sections : [{code: ""}];
 	var queueStart = new Date().getTime();
-	// after 200ms the sections will be added asynchronously
-	while (new Date().getTime() - queueStart <= 200 && queue.length) {
+	// after 100ms the sections will be added asynchronously
+	while (new Date().getTime() - queueStart <= 100 && queue.length) {
 		maximizeCodeHeight(addSection(null, queue.shift()), !queue.length);
 	}
 	if (queue.length) {
