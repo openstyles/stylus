@@ -69,7 +69,7 @@ function dbV14(d, error, done) {
 function dbV15(d, error, done) {
 	d.changeVersion(d.version, '1.5', function (t) {
 		t.executeSql('ALTER TABLE styles ADD COLUMN originalMd5 TEXT NULL;');
-	}, error, function() { dbV15(d, error, done)});
+	}, error, function() { done(d); });
 }
 
 function enableStyle(id, enabled) {
