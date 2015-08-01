@@ -1,10 +1,10 @@
 var frameIdMessageable;
-try {
+runTryCatch(function() {
 	chrome.tabs.sendMessage(0, {}, {frameId: 0}, function() {
 		var clearError = chrome.runtime.lastError;
 		frameIdMessageable = true;
 	});
-} catch(e) {}
+});
 
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
@@ -76,16 +76,17 @@ chrome.commands.onCommand.addListener(function(command) {
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-try {
-chrome.contextMenus.create({
-	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
-	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
-}, function() { var clearError = chrome.runtime.lastError; });
-chrome.contextMenus.create({
-	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
-	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
-}, function() { var clearError = chrome.runtime.lastError; });
-} catch(e) {}
+runTryCatch(function() {
+	chrome.contextMenus.create({
+		id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
+	}, function() { var clearError = chrome.runtime.lastError });
+	chrome.contextMenus.create({
+		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
+	}, function() { var clearError = chrome.runtime.lastError });
+});
+
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
@@ -251,13 +252,12 @@ function sectionAppliesToUrl(section, url) {
 		if (regexp[regexp.length - 1] != "$") {
 			regexp += "$";
 		}
-		try {
-			var re = new RegExp(regexp);
-		} catch (ex) {
+		var re = runTryCatch(function() { return new RegExp(regexp) });
+		if (re) {
+			return (re).test(url);
+		} else {
 			console.log(section.id + "'s regexp '" + regexp + "' is not valid");
-			return false;
 		}
-		return (re).test(url);
 	})) {
 		//console.log(section.id + " applies to " + url + " due to regexp rules");
 		return true;
@@ -401,6 +401,13 @@ function openURL(options) {
 			});
 		}
 	});
+}
+
+// js engine can't optimize the entire function if it contains try-catch
+// so we should keep it isolated from normal code in a minimal wrapper
+function runTryCatch(func) {
+	try { return func() }
+	catch(e) {}
 }
 
 var codeMirrorThemes;
