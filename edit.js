@@ -62,9 +62,30 @@ var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-fi
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
-var commandsToReroute = {
-	save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
-	find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+var hotkeyRerouter = {
+	commands: {
+		save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
+		find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+	},
+	setState: function(enable) {
+		setTimeout(function() {
+			document[(enable ? "add" : "remove") + "EventListener"]("keydown", hotkeyRerouter.eventHandler);
+		}, 0);
+	},
+	eventHandler: function(event) {
+		var keyName = CodeMirror.keyName(event);
+		if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
+		 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		function handleCommand(command) {
+			if (hotkeyRerouter.commands[command] === true) {
+				CodeMirror.commands[command](getEditorInSight(event.target));
+				return true;
+			}
+		}
+	}
 };
 
 function onChange(event) {
@@ -264,6 +285,8 @@ function initCodeMirror() {
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
 		loadPrefs(controlPrefs);
 	});
+
+	hotkeyRerouter.setState(true);
 }
 initCodeMirror();
 
@@ -316,7 +339,11 @@ function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
 
 	cm.on("change", indicateCodeChange);
-	cm.on("blur", function(cm) { editors.lastActive = cm });
+	cm.on("blur", function(cm) {
+		editors.lastActive = cm;
+		hotkeyRerouter.setState(true);
+	});
+	cm.on("focus", hotkeyRerouter.setState.bind(null, false));
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -373,26 +400,6 @@ function getCodeMirrorForSection(section) {
 	}
 	return null;
 }
-
-// prevent the browser from seeing hotkeys that should be handled by nearest editor
-document.addEventListener("keydown", function(event) {
-	if (event.target.localName == "textarea") {
-		return; // let CodeMirror handle it
-	}
-	var keyName = CodeMirror.keyName(event);
-	if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
-	 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
-		event.preventDefault();
-		event.stopPropagation();
-	}
-
-	function handleCommand(command) {
-		if (commandsToReroute[command] === true) {
-			CodeMirror.commands[command](getEditorInSight(event.target));
-			return true;
-		}
-	}
-});
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
 // this bug is present in some versions of Chrome (v37-40 or something)
