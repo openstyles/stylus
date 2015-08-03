@@ -778,7 +778,7 @@ function updateLintReport(cm, delay) {
 		// by settings its internal delay to 1ms and restoring it back later
 		var lintOpt = editors[0].state.lint.options;
 		setTimeout((function(opt, delay) {
-			opt.delay = delay;
+			opt.delay = delay == 1 ? opt.delay : delay; // options object is shared between editors
 			update(this);
 		}).bind(cm, lintOpt, lintOpt.delay), delay);
 		lintOpt.delay = 1;
