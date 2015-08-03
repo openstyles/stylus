@@ -161,7 +161,8 @@ function initCodeMirror() {
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
-		lint: CodeMirror.lint.css,
+		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.getPref("editor.lintDelay")},
+		lintReportDelay: prefs.getPref("editor.lintReportDelay"),
 		styleActiveLine: true,
 		theme: "default",
 		keyMap: prefs.getPref("editor.keyMap"),
@@ -784,16 +785,28 @@ function updateLintReport(cm, delay) {
 		lintOpt.delay = 1;
 		return;
 	}
+	// user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
+	// or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
+	var postponeNewIssues = delay == undefined;
 	var state = cm.state.lint;
 	clearTimeout(state.reportTimeout);
-	state.reportTimeout = setTimeout(update.bind(cm), (state.options.delay || 500) + 4500);
+	state.reportTimeout = setTimeout(update.bind(cm), state.options.delay + 100);
+
 	function update() { // this == cm
 		var scope = this ? [this] : editors;
 		var changed = false;
+		var fixedOldIssues = false;
 		scope.forEach(function(cm) {
+			var oldMarkers = cm.state.lint.markedLast || {};
+			var newMarkers = {};
 			var html = cm.state.lint.marked.length == 0 ? "" : "<tbody>" +
 				cm.state.lint.marked.map(function(mark) {
 					var info = mark.__annotation;
+					var pos = info.from.line + "," + info.from.ch;
+					if (oldMarkers[pos] == info.message) {
+						delete oldMarkers[pos];
+					}
+					newMarkers[pos] = info.message;
 					return "<tr class='" + info.severity + "'>" +
 						"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
 							info.severity + "</td>" +
@@ -802,13 +815,22 @@ function updateLintReport(cm, delay) {
 						"<td role='col'>" + (info.from.ch+1) + "</td>" +
 						"<td role='message'>" + info.message.replace(/ at line \d.+$/, "") + "</td></tr>";
 				}).join("") + "</tbody>";
+			cm.state.lint.markedLast = newMarkers;
+			fixedOldIssues |= Object.keys(oldMarkers).length > 0;
 			if (cm.state.lint.html != html) {
 				cm.state.lint.html = html;
 				changed = true;
 			}
 		});
 		if (changed) {
-			renderLintReport(true);
+			clearTimeout(state ? state.renderTimeout : undefined);
+			if (!postponeNewIssues || fixedOldIssues) {
+				renderLintReport(true);
+			} else {
+				state.renderTimeout = setTimeout(function() {
+					renderLintReport(true);
+				}, CodeMirror.defaults.lintReportDelay);
+			}
 		}
 	}
 }
@@ -1001,7 +1023,7 @@ function initWithStyle(style) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(getCodeMirrorForSection(sectionDiv), 500);
+		updateLintReport(getCodeMirrorForSection(sectionDiv), prefs.getPref("editor.lintDelay"));
 	}
 }
 
