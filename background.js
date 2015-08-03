@@ -1,3 +1,11 @@
+var frameIdMessageable;
+runTryCatch(function() {
+	chrome.tabs.sendMessage(0, {}, {frameId: 0}, function() {
+		var clearError = chrome.runtime.lastError;
+		frameIdMessageable = true;
+	});
+});
+
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
@@ -7,15 +15,18 @@ function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
 	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
 	// so a style affecting a page with an iframe will affect the main page as well.
-	// Skip doing this for frames for now, which can result in flicker.
-	if (data.frameId != 0) {
+	// Skip doing this for frames in pre-41 to prevent page flicker.
+	if (data.frameId != 0 && !frameIdMessageable) {
 		return;
 	}
 	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
 		if (method) {
-			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash});
+			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash},
+				frameIdMessageable ? {frameId: data.frameId} : undefined);
 		}
-		updateIcon({id: data.tabId, url: data.url}, styleHash);
+		if (data.frameId == 0) {
+			updateIcon({id: data.tabId, url: data.url}, styleHash);
+		}
 	});
 }
 
@@ -65,15 +76,17 @@ chrome.commands.onCommand.addListener(function(command) {
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
+runTryCatch(function() {
+	chrome.contextMenus.create({
+		id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
+	}, function() { var clearError = chrome.runtime.lastError });
+	chrome.contextMenus.create({
+		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
+	}, function() { var clearError = chrome.runtime.lastError });
+});
 
-chrome.contextMenus.create({
-	id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
-	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
-}, function() { var clearError = chrome.runtime.lastError; });
-chrome.contextMenus.create({
-	id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
-	type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
-}, function() { var clearError = chrome.runtime.lastError; });
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
@@ -239,13 +252,12 @@ function sectionAppliesToUrl(section, url) {
 		if (regexp[regexp.length - 1] != "$") {
 			regexp += "$";
 		}
-		try {
-			var re = new RegExp(regexp);
-		} catch (ex) {
+		var re = runTryCatch(function() { return new RegExp(regexp) });
+		if (re) {
+			return (re).test(url);
+		} else {
 			console.log(section.id + "'s regexp '" + regexp + "' is not valid");
-			return false;
 		}
-		return (re).test(url);
 	})) {
 		//console.log(section.id + " applies to " + url + " due to regexp rules");
 		return true;
@@ -389,6 +401,13 @@ function openURL(options) {
 			});
 		}
 	});
+}
+
+// js engine can't optimize the entire function if it contains try-catch
+// so we should keep it isolated from normal code in a minimal wrapper
+function runTryCatch(func) {
+	try { return func() }
+	catch(e) {}
 }
 
 var codeMirrorThemes;

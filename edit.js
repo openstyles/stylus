@@ -58,10 +58,34 @@ var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-fi
 	NodeList.prototype[method]= Array.prototype[method];
 });
 
+// Chrome pre-34
+Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
-var commandsToReroute = {
-	save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
-	find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+var hotkeyRerouter = {
+	commands: {
+		save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
+		find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+	},
+	setState: function(enable) {
+		setTimeout(function() {
+			document[(enable ? "add" : "remove") + "EventListener"]("keydown", hotkeyRerouter.eventHandler);
+		}, 0);
+	},
+	eventHandler: function(event) {
+		var keyName = CodeMirror.keyName(event);
+		if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
+		 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		function handleCommand(command) {
+			if (hotkeyRerouter.commands[command] === true) {
+				CodeMirror.commands[command](getEditorInSight(event.target));
+				return true;
+			}
+		}
+	}
 };
 
 function onChange(event) {
@@ -261,6 +285,8 @@ function initCodeMirror() {
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
 		loadPrefs(controlPrefs);
 	});
+
+	hotkeyRerouter.setState(true);
 }
 initCodeMirror();
 
@@ -313,7 +339,11 @@ function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea);
 
 	cm.on("change", indicateCodeChange);
-	cm.on("blur", function(cm) { editors.lastActive = cm });
+	cm.on("blur", function(cm) {
+		editors.lastActive = cm;
+		hotkeyRerouter.setState(true);
+	});
+	cm.on("focus", hotkeyRerouter.setState.bind(null, false));
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -370,26 +400,6 @@ function getCodeMirrorForSection(section) {
 	}
 	return null;
 }
-
-// prevent the browser from seeing hotkeys that should be handled by nearest editor
-document.addEventListener("keydown", function(event) {
-	if (event.target.localName == "textarea") {
-		return; // let CodeMirror handle it
-	}
-	var keyName = CodeMirror.keyName(event);
-	if ("handled" == CodeMirror.lookupKey(keyName, CodeMirror.getOption("keyMap"), handleCommand)
-	 || "handled" == CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand)) {
-		event.preventDefault();
-		event.stopPropagation();
-	}
-
-	function handleCommand(command) {
-		if (commandsToReroute[command] === true) {
-			CodeMirror.commands[command](getEditorInSight(event.target));
-			return true;
-		}
-	}
-});
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
 // this bug is present in some versions of Chrome (v37-40 or something)
@@ -451,7 +461,11 @@ window.onbeforeunload = function() {
 		});
 	}
 	document.activeElement.blur();
-	return !isCleanGlobal() ? t('styleChangesNotSaved') : null;
+	if (isCleanGlobal()) {
+		return;
+	}
+	updateLintReport(null, 0);
+	return confirm(t('styleChangesNotSaved'));
 }
 
 function addAppliesTo(list, name, value) {
@@ -753,24 +767,47 @@ function getEditorInSight(nearbyElement) {
 	}
 }
 
-function updateLintReport(cm) {
+function updateLintReport(cm, delay) {
+	if (delay == 0) {
+		// immediately show pending csslint messages in onbeforeunload and save
+		update.call(cm);
+		return;
+	}
+	if (delay > 0) {
+		// give csslint some time to find the issues, e.g. 500 (1/10 of our default 5s)
+		// by settings its internal delay to 1ms and restoring it back later
+		var lintOpt = editors[0].state.lint.options;
+		setTimeout((function(opt, delay) {
+			opt.delay = delay;
+			update(this);
+		}).bind(cm, lintOpt, lintOpt.delay), delay);
+		lintOpt.delay = 1;
+		return;
+	}
 	var state = cm.state.lint;
 	clearTimeout(state.reportTimeout);
-	state.reportTimeout = setTimeout(update.bind(cm), (state.options.delay || 500) + 500);
+	state.reportTimeout = setTimeout(update.bind(cm), (state.options.delay || 500) + 4500);
 	function update() { // this == cm
-		var html = this.state.lint.marked.length == 0 ? "" : "<tbody>" +
-			this.state.lint.marked.map(function(mark) {
-				var info = mark.__annotation;
-				return "<tr class='" + info.severity + "'>" +
-					"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
-						info.severity + "</td>" +
-					"<td role='line'>" + (info.from.line+1) + "</td>" +
-					"<td role='sep'>:</td>" +
-					"<td role='col'>" + (info.from.ch+1) + "</td>" +
-					"<td role='message'>" + info.message.replace(/ at line \d.+$/, "") + "</td></tr>";
-			}).join("") + "</tbody>";
-		if (this.state.lint.html != html) {
-			this.state.lint.html = html;
+		var scope = this ? [this] : editors;
+		var changed = false;
+		scope.forEach(function(cm) {
+			var html = cm.state.lint.marked.length == 0 ? "" : "<tbody>" +
+				cm.state.lint.marked.map(function(mark) {
+					var info = mark.__annotation;
+					return "<tr class='" + info.severity + "'>" +
+						"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
+							info.severity + "</td>" +
+						"<td role='line'>" + (info.from.line+1) + "</td>" +
+						"<td role='sep'>:</td>" +
+						"<td role='col'>" + (info.from.ch+1) + "</td>" +
+						"<td role='message'>" + info.message.replace(/ at line \d.+$/, "") + "</td></tr>";
+				}).join("") + "</tbody>";
+			if (cm.state.lint.html != html) {
+				cm.state.lint.html = html;
+				changed = true;
+			}
+		});
+		if (changed) {
 			renderLintReport(true);
 		}
 	}
@@ -949,19 +986,23 @@ function initWithStyle(style) {
 	});
 	var queue = style.sections.length ? style.sections : [{code: ""}];
 	var queueStart = new Date().getTime();
-	// after 200ms the sections will be added asynchronously
-	while (new Date().getTime() - queueStart <= 200 && queue.length) {
-		maximizeCodeHeight(addSection(null, queue.shift()), !queue.length);
+	// after 100ms the sections will be added asynchronously
+	while (new Date().getTime() - queueStart <= 100 && queue.length) {
+		add();
 	}
-	if (queue.length) {
-		setTimeout(function processQueue() {
-			maximizeCodeHeight(addSection(null, queue.shift()), !queue.length);
-			if (queue.length) {
-				setTimeout(processQueue, 0);
-			}
-		}, 0);
-	}
+	(function processQueue() {
+		if (queue.length) {
+			add();
+			setTimeout(processQueue, 0);
+		}
+	})();
 	initHooks();
+
+	function add() {
+		var sectionDiv = addSection(null, queue.shift());
+		maximizeCodeHeight(sectionDiv, !queue.length);
+		updateLintReport(getCodeMirrorForSection(sectionDiv), 500);
+	}
 }
 
 function initHooks() {
@@ -1071,6 +1112,8 @@ function validate() {
 }
 
 function save() {
+	updateLintReport(null, 0);
+
 	// save the contents of the CodeMirror editors back into the textareas
 	for (var i=0; i < editors.length; i++) {
 		editors[i].save();

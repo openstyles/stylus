@@ -271,7 +271,7 @@ function shallowCopy(obj) {
 }
 
 function equal(a, b) {
-	if (!a || !b || typeof a != "object") {
+	if (!a || !b || typeof a != "object" || typeof b != "object") {
 		return a === b;
 	}
 	if (Object.keys(a).length != Object.keys(b).length) {

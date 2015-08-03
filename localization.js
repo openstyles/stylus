@@ -35,13 +35,14 @@ function tNodeList(nodes) {
 		if (node.nodeType != 1) { // not an ELEMENT_NODE
 			continue;
 		}
-		for (var a = 0; a < node.attributes.length; a++) {
-			var name = node.attributes[a].nodeName;
+		for (var a = node.attributes.length - 1; a >= 0; a--) {
+			var attr = node.attributes[a];
+			var name = attr.nodeName;
 			if (name.indexOf("i18n-") != 0) {
 				continue;
 			}
 			name = name.substr(5); // "i18n-".length
-			var value = t(node.attributes[a].nodeValue);
+			var value = t(attr.nodeValue);
 			switch (name) {
 				case "text":
 					node.insertBefore(document.createTextNode(value), node.firstChild);
@@ -52,6 +53,7 @@ function tNodeList(nodes) {
 				default:
 					node.setAttribute(name, value);
 			}
+			node.removeAttributeNode(attr);
 		}
 	}
 }
@@ -69,5 +71,6 @@ function tDocLoader() {
 	observer.observe(document, {subtree: true, childList: true});
 	document.addEventListener("DOMContentLoaded", function() {
 		observer.disconnect();
+		tNodeList(document.querySelectorAll("*"));
 	});
 }
