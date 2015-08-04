@@ -216,6 +216,13 @@ function initObserver() {
 			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
 			return;
 		}
+		// move the check out of current execution context
+		// because some same-domain (!) iframes fail to load when their "contentDocument" is accessed (!)
+		// namely gmail's old chat iframe talkgadget.google.com
+		setTimeout(process.bind(null, mutations), 0);
+	});
+
+	function process(mutations) {
 		for (var m = 0, ml = mutations.length; m < ml; m++) {
 			var mutation = mutations[m];
 			if (mutation.type === "childList") {
@@ -227,7 +234,7 @@ function initObserver() {
 				}
 			}
 		}
-	});
+	}
 
 	iframeObserver.start = function() {
 		// will be ignored by browser if already observing
