@@ -189,6 +189,8 @@ var prefs = {
 		newline_between_rules: false,
 		end_with_newline: false
 	},
+	"editor.lintDelay": 500,        // lint gutter marker update delay, ms
+	"editor.lintReportDelay": 4500, // lint report update delay, ms
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
