@@ -10,49 +10,6 @@ var useHistoryBack;   // use browser history back when "back to manage" is click
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
-// templates
-var appliesToTemplate = tHTML('\
-	<li>\
-		<select name="applies-type" class="applies-type style-contributor">\
-			<option value="url" i18n-text="appliesUrlOption"></option>\
-			<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>\
-			<option value="domain" i18n-text="appliesDomainOption"></option>\
-			<option value="regexp" i18n-text="appliesRegexpOption"></option>\
-		</select>\
-		<input name="applies-value" class="applies-value style-contributor">\
-		<button class="remove-applies-to" i18n-text="appliesRemove"></button>\
-		<button class="add-applies-to" i18n-text="appliesAdd"></button>\
-	</li>\
-');
-
-var appliesToEverythingTemplate = tHTML('\
-	<li class="applies-to-everything" i18n-html="appliesToEverything")>\
-		<button class="add-applies-to" i18n-text="appliesSpecify"></button>\
-	</li>\
-');
-
-var sectionTemplate = tHTML('\
-	<div>\
-		<label i18n-text="sectionCode"></label>\
-		<textarea class="code"></textarea>\
-		<br>\
-		<div class="applies-to">\
-			<label i18n-text="appliesLabel">\
-				&nbsp;<img class="applies-to-help" src="help.png" i18n-alt="helpAlt">\
-			</label>\
-			<ul class="applies-to-list"></ul>\
-		</div>\
-		<button class="remove-section" i18n-text="sectionRemove"></button>\
-		<button class="add-section" i18n-text="sectionAdd"></button>\
-		<button class="beautify-section" i18n-text="styleBeautify"></button>\
-	</div>\
-');
-
-var findTemplate = t("search") + ': <input type="text" style="width: 10em" class="CodeMirror-search-field"/>&nbsp;' +
-	'<span style="color: #888" class="CodeMirror-search-hint">(' + t("searchRegexp") + ')</span>';
-
-var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-field" type="text" style="width: 5em"/>';
-
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
@@ -60,6 +17,12 @@ var jumpToLineTemplate = t('editGotoLine') + ': <input class="CodeMirror-jump-fi
 
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
+
+Array.prototype.rotate = function(amount) { // negative amount == rotate left
+	var r = this.slice(-amount, this.length);
+	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
+	return r;
+}
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -476,25 +439,25 @@ function addAppliesTo(list, name, value) {
 	}
 	var e;
 	if (name && value) {
-		e = appliesToTemplate.cloneNode(true);
+		e = template.appliesTo.cloneNode(true);
 		e.querySelector("[name=applies-type]").value = name;
 		e.querySelector("[name=applies-value]").value = value;
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
 	} else if (showingEverything || list.hasChildNodes()) {
-		e = appliesToTemplate.cloneNode(true);
+		e = template.appliesTo.cloneNode(true);
 		if (list.hasChildNodes()) {
 			e.querySelector("[name=applies-type]").value = list.querySelector("li:last-child [name='applies-type']").value;
 		}
 		e.querySelector(".remove-applies-to").addEventListener("click", removeAppliesTo, false);
 	} else {
-		e = appliesToEverythingTemplate.cloneNode(true);
+		e = template.appliesToEverything.cloneNode(true);
 	}
 	e.querySelector(".add-applies-to").addEventListener("click", function() {addAppliesTo(this.parentNode.parentNode)}, false);
 	list.appendChild(e);
 }
 
 function addSection(event, section) {
-	var div = sectionTemplate.cloneNode(true);
+	var div = template.section.cloneNode(true);
 	div.querySelector(".applies-to-help").addEventListener("click", showAppliesToHelp, false);
 	div.querySelector(".remove-section").addEventListener("click", removeSection, false);
 	div.querySelector(".add-section").addEventListener("click", addSection, false);
@@ -589,8 +552,11 @@ function setupGlobalSearch() {
 	var originalCommand = {
 		find: CodeMirror.commands.find,
 		findNext: CodeMirror.commands.findNext,
-		findPrev: CodeMirror.commands.findPrev
+		findPrev: CodeMirror.commands.findPrev,
+		replace: CodeMirror.commands.replace
 	}
+	var originalOpenDialog = CodeMirror.prototype.openDialog;
+	var originalOpenConfirm = CodeMirror.prototype.openConfirm;
 
 	var curState; // cm.state.search for last used 'find'
 
@@ -614,33 +580,43 @@ function setupGlobalSearch() {
 		return cm.state.search;
 	}
 
-	function find(activeCM) {
+	// temporarily overrides the original openDialog with the provided template's innerHTML
+	function customizeOpenDialog(cm, template, callback) {
+		cm.openDialog = function(tmpl, cb, opt) {
+			// invoke 'callback' and bind 'this' to the original callback
+			originalOpenDialog.call(cm, template.innerHTML, callback.bind(cb), opt);
+		};
+		setTimeout(function() { cm.openDialog = originalOpenDialog; }, 0);
+	}
+
+	function focusClosestCM(activeCM) {
 		editors.lastActive = activeCM;
 		var cm = getEditorInSight();
 		if (cm != activeCM) {
 			cm.focus();
-			activeCM = cm;
 		}
-		var originalOpenDialog = activeCM.openDialog;
-		activeCM.openDialog = function(template, callback, options) {
-			originalOpenDialog.call(activeCM, findTemplate, function(query) {
-				activeCM.openDialog = originalOpenDialog;
-				callback(query);
-				curState = activeCM.state.search;
-				if (editors.length == 1 || !curState.query) {
-					return;
+		return cm;
+
+	}
+
+	function find(activeCM) {
+		activeCM = focusClosestCM(activeCM);
+		customizeOpenDialog(activeCM, template.find, function(query) {
+			this(query);
+			curState = activeCM.state.search;
+			if (editors.length == 1 || !curState.query) {
+				return;
+			}
+			editors.forEach(function(cm) {
+				if (cm != activeCM) {
+					cm.execCommand("clearSearch");
+					updateState(cm, curState);
 				}
-				editors.forEach(function(cm) {
-					if (cm != activeCM) {
-						cm.execCommand("clearSearch");
-						updateState(cm, curState);
-					}
-				});
-				if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) == 0) {
-					findNext(activeCM);
-				}
-			}, options);
-		}
+			});
+			if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) == 0) {
+				findNext(activeCM);
+			}
+		});
 		originalCommand.find(activeCM);
 	}
 
@@ -714,14 +690,90 @@ function setupGlobalSearch() {
 		findNext(cm, true);
 	}
 
+	function replace(activeCM, all) {
+		var queue, query, replacement;
+		activeCM = focusClosestCM(activeCM);
+		customizeOpenDialog(activeCM, template[all ? "replaceAll" : "replace"], function(txt) {
+			query = txt;
+			customizeOpenDialog(activeCM, template.replaceWith, function(txt) {
+				replacement = txt;
+				queue = editors.rotate(-editors.indexOf(activeCM));
+				all ? editors.forEach(doReplace) : doReplace();
+			});
+			this(query);
+		});
+		originalCommand.replace(activeCM, all);
+
+		function doReplace() {
+			var cm = queue.shift();
+			if (!cm) {
+				if (!all) {
+					editors.lastActive.focus();
+				}
+				return;
+			}
+			// hide the first two dialogs (replace, replaceWith)
+			cm.openDialog = function(tmpl, callback, opt) {
+				cm.openDialog = function(tmpl, callback, opt) {
+					cm.openDialog = originalOpenDialog;
+					if (all) {
+						callback(replacement);
+					} else {
+						doConfirm(cm);
+						callback(replacement);
+						if (!cm.getWrapperElement().querySelector(".CodeMirror-dialog")) {
+							// no dialog == nothing found in the current CM, move to the next
+							doReplace();
+						}
+					}
+				};
+				callback(query);
+			};
+			originalCommand.replace(cm, all);
+		}
+		function doConfirm(cm) {
+			var wrapAround = false;
+			var origPos = cm.getCursor();
+			cm.openConfirm = function overrideConfirm(tmpl, callbacks, opt) {
+				var ovrCallbacks = callbacks.map(function(callback) {
+					return function() {
+						makeSectionVisible(cm);
+						cm.openConfirm = overrideConfirm;
+						setTimeout(function() { cm.openConfirm = originalOpenConfirm; }, 0);
+
+						var pos = cm.getCursor();
+						callback();
+						var cmp = CodeMirror.cmpPos(cm.getCursor(), pos);
+						wrapAround |= cmp <= 0;
+
+						var dlg = cm.getWrapperElement().querySelector(".CodeMirror-dialog");
+						if (!dlg || cmp == 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
+							if (dlg) {
+								dlg.remove();
+							}
+							doReplace();
+						}
+					}
+				});
+				originalOpenConfirm.call(cm, template.replaceConfirm.innerHTML, ovrCallbacks, opt);
+			};
+		}
+	}
+
+	function replaceAll(cm) {
+		replace(cm, true);
+	}
+
 	CodeMirror.commands.find = find;
 	CodeMirror.commands.findNext = findNext;
 	CodeMirror.commands.findPrev = findPrev;
+	CodeMirror.commands.replace = replace;
+	CodeMirror.commands.replaceAll = replaceAll;
 }
 
 function jumpToLine(cm) {
 	var cur = cm.getCursor();
-	cm.openDialog(jumpToLineTemplate, function(str) {
+	cm.openDialog(template.jumpToLine.innerHTML, function(str) {
 		var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
 		if (m) {
 			cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
@@ -961,6 +1013,7 @@ function init() {
 		return;
 	}
 	// This is an edit
+	tE("heading", "editStyleHeading", null, false);
 	requestStyle();
 	function requestStyle() {
 		chrome.extension.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
@@ -979,7 +1032,6 @@ function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("url").href = style.url;
-	tE("heading", "editStyleHeading", null, false);
 	// if this was done in response to an update, we need to clear existing sections
 	document.querySelectorAll("#sections > div").forEach(function(div) {
 		div.parentNode.removeChild(div);
@@ -1087,7 +1139,7 @@ function validate() {
 	// validate the regexps
 	if (document.querySelectorAll(".applies-to-list").some(function(list) {
 		return list.childNodes.some(function(li) {
-			if (li.className == appliesToEverythingTemplate.className) {
+			if (li.className == template.appliesToEverything.className) {
 				return false;
 			}
 			var valueElement = li.querySelector("[name=applies-value]");
@@ -1153,7 +1205,7 @@ function getSections() {
 function getMeta(e) {
 	var meta = {};
 	e.querySelector(".applies-to-list").childNodes.forEach(function(li) {
-		if (li.className == appliesToEverythingTemplate.className) {
+		if (li.className == template.appliesToEverything.className) {
 			return;
 		}
 		var type = li.querySelector("[name=applies-type]").value;
@@ -1173,6 +1225,7 @@ function saveComplete(style) {
 	// Go from new style URL to edit style URL
 	if (location.href.indexOf("id=") == -1) {
 		history.replaceState({}, document.title, "edit.html?id=" + style.id);
+		tE("heading", "editStyleHeading", null, false);
 	}
 	updateTitle();
 }

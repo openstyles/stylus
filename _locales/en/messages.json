@@ -100,6 +100,18 @@
 		"message": "Theme",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"confirmNo": {
+		"message": "No",
+		"description": "'No' button in a confirm dialog"
+	},
+	"confirmStop": {
+		"message": "Stop",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"confirmYes": {
+		"message": "Yes",
+		"description": "'Yes' button in a confirm dialog"
+	},
 	"dbError": {
 		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
@@ -228,6 +240,18 @@
 	"prefShowBadge": {
 		"message": "Show number of styles active for the current site on the toolbar button",
 		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"replace": {
+		"message": "Replace",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"replaceAll": {
+		"message": "Replace all",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"replaceWith": {
+		"message": "Replace with",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"search": {
 		"message": "Search",

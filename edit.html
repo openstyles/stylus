@@ -125,7 +125,7 @@
 				display: none;
 			}
 			#sections > div > button:not(:first-of-type) {
-				margin-left: 0.4rem;
+				margin-left: 0.2rem;
 			}
 			.dirty > label::before {
 				content: "*";
@@ -153,19 +153,28 @@
 			.CodeMirror-vscrollbar {
 				margin-bottom: 8px; /* make space for resize-grip */
 			}
-			.CodeMirror-search-field, .CodeMirror-jump-field {
+			.CodeMirror-dialog {
 				-webkit-animation: highlight 3s ease-out;
 			}
 			.CodeMirror-focused {
 				outline: -webkit-focus-ring-color auto 5px;
 				outline-offset: -2px;
 			}
+			.CodeMirror-search-field {
+				width: 10em;
+			}
+			.CodeMirror-jump-field {
+				width: 5em;
+			}
+			.CodeMirror-search-hint {
+				color: #888;
+			}
 			@-webkit-keyframes highlight {
 				from {
 					background-color: #ff9;
 				}
 				to {
-					background-color: transparent;
+					background-color: none;
 				}
 			}
 			.resize-grip {
@@ -434,6 +443,71 @@
 			}
 		</style>
 		<link id="cm-theme" rel="stylesheet">
+
+		<template data-id="appliesTo">
+			<li>
+				<select name="applies-type" class="applies-type style-contributor">
+					<option value="url" i18n-text="appliesUrlOption"></option>
+					<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
+					<option value="domain" i18n-text="appliesDomainOption"></option>
+					<option value="regexp" i18n-text="appliesRegexpOption"></option>
+				</select>
+				<input name="applies-value" class="applies-value style-contributor">
+				<button class="remove-applies-to" i18n-text="appliesRemove"></button>
+				<button class="add-applies-to" i18n-text="appliesAdd"></button>
+			</li>
+		</template>
+		<template data-id="appliesToEverything">
+			<li class="applies-to-everything" i18n-html="appliesToEverything">
+				<button class="add-applies-to" i18n-text="appliesSpecify"></button>
+			</li>
+		</template>
+		<template data-id="section">
+			<div>
+				<label i18n-text="sectionCode"></label>
+				<textarea class="code"></textarea>
+				<br>
+				<div class="applies-to">
+					<label i18n-text="appliesLabel">
+						<img class="applies-to-help" src="help.png" i18n-alt="helpAlt">
+					</label>
+					<ul class="applies-to-list"></ul>
+				</div>
+				<button class="remove-section" i18n-text="sectionRemove"></button>
+				<button class="add-section" i18n-text="sectionAdd"></button>
+				<button class="beautify-section" i18n-text="styleBeautify"></button>
+			</div>
+		</template>
+		<template data-id="find">
+			<span i18n-text="search">: <input type="text" class="CodeMirror-search-field">
+				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+			</span>
+		</template>
+		<template data-id="replace">
+			<span i18n-text="replace">: <input type="text" class="CodeMirror-search-field">
+				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+			</span>
+		</template>
+		<template data-id="replaceAll">
+			<span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field">
+				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+			</span>
+		</template>
+		<template data-id="replaceWith">
+			<span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field">
+			</span>
+		</template>
+		<template data-id="replaceConfirm">
+			<span i18n-text="replace">?
+				<button i18n-text="confirmYes"></button>
+				<button i18n-text="confirmNo"></button>
+				<button i18n-text="confirmStop"></button>
+			</span>
+		</template>
+		<template data-id="jumpToLine">
+			<span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+		</template>
+
 		<script src="storage.js"></script>
 		<script src="messaging.js"></script>
 		<script src="localization.js"></script>

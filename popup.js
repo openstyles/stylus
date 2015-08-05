@@ -1,20 +1,3 @@
-var styleTemplate = tHTML('\
-	<div>\
-		<div class="left-gutter">\
-			<input class="checker" type="checkbox">\
-		</div>\
-		<div class="main-controls">\
-			<label class="style-name"></label>\
-			<div class="actions">\
-				<a href="#" class="enable" i18n-text="enableStyleLabel"></a>\
-				<a href="#" class="disable" i18n-text="disableStyleLabel"></a>\
-				<a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>\
-				<a href="#" class="delete" i18n-text="deleteStyleLabel"></a>\
-			</div>\
-		</div>\
-	</div>\
-');
-
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
@@ -102,7 +85,7 @@ function showStyles(styles) {
 }
 
 function createStyleElement(style) {
-	var e = styleTemplate.cloneNode(true);
+	var e = template.style.cloneNode(true);
 	var checkbox = e.querySelector(".checker");
 	checkbox.id = "style-" + style.id;
 	checkbox.checked = style.enabled == "true";

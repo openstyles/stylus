@@ -1,19 +1,3 @@
-var styleTemplate = tHTML('\
-	<div>\
-		<h2 class="style-name"></h2>\
-		<p class="applies-to"></p>\
-		<p class="actions">\
-			<a class="style-edit-link" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>\
-			<button class="enable" i18n-text="enableStyleLabel"></button>\
-			<button class="disable" i18n-text="disableStyleLabel"></button>\
-			<button class="delete" i18n-text="deleteStyleLabel"></button>\
-			<button class="check-update" i18n-text="checkForUpdate"></button>\
-			<button class="update" i18n-text="installUpdate"></button>\
-			<span class="update-note"></span>\
-		</p>\
-	</div>\
-');
-
 var lastUpdatedStyleId = null;
 var installed;
 
@@ -44,7 +28,7 @@ function showStyles(styles) {
 }
 
 function createStyleElement(style) {
-	var e = styleTemplate.cloneNode(true);
+	var e = template.style.cloneNode(true);
 	e.setAttribute("class", style.enabled == "true" ? "enabled" : "disabled");
 	e.setAttribute("style-id", style.id);
 	if (style.updateUrl) {

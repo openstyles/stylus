@@ -1,3 +1,4 @@
+var template = {};
 tDocLoader();
 
 function t(key, params) {
@@ -33,6 +34,11 @@ function tNodeList(nodes) {
 	for (var n = 0; n < nodes.length; n++) {
 		var node = nodes[n];
 		if (node.nodeType != 1) { // not an ELEMENT_NODE
+			continue;
+		}
+		if (node.localName == "template") {
+			tNodeList(node.content.querySelectorAll("*"));
+			template[node.dataset.id] = node.content.firstElementChild;
 			continue;
 		}
 		for (var a = node.attributes.length - 1; a >= 0; a--) {
