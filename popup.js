@@ -10,7 +10,7 @@ if (!prefs.getPref("popup.stylesFirst")) {
 getActiveTabRealURL(updatePopUp);
 
 function updatePopUp(url) {
-	var urlWillWork = /^(file|http|https|chrome\-extension):/.exec(url);
+	var urlWillWork = /^(file|http|https|ftps?|chrome\-extension):/.exec(url);
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
 		document.getElementById("unavailable").style.display = "block";
