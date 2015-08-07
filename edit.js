@@ -859,13 +859,17 @@ function updateLintReport(cm, delay) {
 						delete oldMarkers[pos];
 					}
 					newMarkers[pos] = info.message;
+					var message = escapeHtml(info.message.replace(/ at line \d.+$/, ""));
+					if (message.length > 100) {
+						message = message.substr(0, 100) + "...";
+					}
 					return "<tr class='" + info.severity + "'>" +
 						"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
 							info.severity + "</td>" +
 						"<td role='line'>" + (info.from.line+1) + "</td>" +
 						"<td role='sep'>:</td>" +
 						"<td role='col'>" + (info.from.ch+1) + "</td>" +
-						"<td role='message'>" + info.message.replace(/ at line \d.+$/, "") + "</td></tr>";
+						"<td role='message'>" + message + "</td></tr>";
 				}).join("") + "</tbody>";
 			cm.state.lint.markedLast = newMarkers;
 			fixedOldIssues |= Object.keys(oldMarkers).length > 0;
@@ -884,6 +888,10 @@ function updateLintReport(cm, delay) {
 				}, CodeMirror.defaults.lintReportDelay);
 			}
 		}
+	}
+	function escapeHtml(html) {
+		var chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': '&quot;', "'": '&#39;', "/": '&#x2F;'};
+		return html.replace(/[&<>"'\/]/g, function(char) { return chars[char] });
 	}
 }
 
