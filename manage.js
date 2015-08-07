@@ -389,38 +389,31 @@ function codeIsEqual(a, b) {
 }
 
 function jsonEquals(a, b, property) {
-	var type = getType(a[property]);
-	var typeB = getType(b[property]);
-	if (type != typeB) {
+	var aProp = a[property], typeA = getType(aProp);
+	var bProp = b[property], typeB = getType(bProp);
+	if (typeA != typeB) {
 		// consider empty arrays equivalent to lack of property
-		if ((type == "undefined" || (type == "array" && a[property].length == 0)) && (typeB == "undefined" || (typeB == "array" && b[property].length == 0))) {
+		if ((typeA == "undefined" || (typeA == "array" && aProp.length == 0)) && (typeB == "undefined" || (typeB == "array" && bProp.length == 0))) {
 			return true;
 		}
 		return false;
 	}
-	if (type == "undefined") {
+	if (typeA == "undefined") {
 		return true;
 	}
-	if (type == "array") {
-		if (a[property].length != b[property].length) {
+	if (typeA == "array") {
+		if (aProp.length != bProp.length) {
 			return false;
 		}
-		for (var i = 0; i < a.length; i++) {
-			var found = false;
-			for (var j = 0; j < b.length; j++) {
-				if (a[i] == b[j]) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
+		for (var i = 0; i < aProp.length; i++) {
+			if (bProp.indexOf(aProp[i]) == -1) {
 				return false;
 			}
 		}
 		return true;
 	}
-	if (type == "string") {
-		return a[property] == b[property];
+	if (typeA == "string") {
+		return aProp == bProp;
 	}
 }
 
