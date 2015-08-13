@@ -221,7 +221,7 @@ function getApplicableSections(style, url) {
 
 function sectionAppliesToUrl(section, url) {
 	// only http, https, file, and chrome-extension allowed
-	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0) {
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
