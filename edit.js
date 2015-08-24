@@ -18,11 +18,19 @@ var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "doma
 // Chrome pre-34
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
+// Chrome pre-41 polyfill
+Element.prototype.closest = Element.prototype.closest || function(selector) {
+	for (var e = this; e && !e.matches(selector); e = e.parentElement) {}
+	return e;
+};
+
 Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	var r = this.slice(-amount, this.length);
 	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
 	return r;
 }
+
+Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -134,13 +142,8 @@ function initCodeMirror() {
 			"Alt-PageUp": "prevEditor"
 		}
 	}
-	mergeOptions(stylishOptions, CM.defaults);
-	mergeOptions(userOptions, CM.defaults);
-
-	function mergeOptions(source, target) {
-		for (var key in source) target[key] = source[key];
-		return target;
-	}
+	shallowMerge(stylishOptions, CM.defaults);
+	shallowMerge(userOptions, CM.defaults);
 
 	// additional commands
 	CM.commands.jumpToLine = jumpToLine;
@@ -353,16 +356,21 @@ function indicateCodeChange(cm) {
 }
 
 function getSectionForCodeMirror(cm) {
-	return cm.getTextArea().parentNode;
+	return cm.display.wrapper.parentNode;
+}
+
+function getSectionForChild(e) {
+	return e.closest("#sections > div");
+}
+
+function getSections() {
+	return document.querySelectorAll("#sections > div");
 }
 
 function getCodeMirrorForSection(section) {
 	// #header section has no codemirror
 	var wrapper = section.querySelector(".CodeMirror");
-	if (wrapper) {
-		return wrapper.CodeMirror;
-	}
-	return null;
+	return wrapper && wrapper.CodeMirror;
 }
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
@@ -490,7 +498,7 @@ function addSection(event, section) {
 	if (event) {
 		var clickedSection = event.target.parentNode;
 		sections.insertBefore(div, clickedSection.nextElementSibling);
-		var newIndex = document.querySelectorAll("#sections > div").indexOf(clickedSection) + 1;
+		var newIndex = getSections().indexOf(clickedSection) + 1;
 		var cm = setupCodeMirror(codeElement, newIndex);
 		makeSectionVisible(cm);
 		cm.focus()
@@ -515,7 +523,7 @@ function removeAppliesTo(event) {
 
 function removeSection(event) {
 	var section = event.target.parentNode;
-	var cm = section.querySelector(".CodeMirror").CodeMirror;
+	var cm = getCodeMirrorForSection(section);
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
 	renderLintReport();
@@ -792,7 +800,7 @@ function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
 	var cm;
 	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
-		cm = getCodeMirrorForSection(querySelectorParent(nearbyElement, "#sections > div"));
+		cm = getCodeMirrorForSection(getSectionForChild(nearbyElement));
 	} else {
 		cm = editors.lastActive;
 	}
@@ -933,11 +941,11 @@ function resizeLintReport(event, content) {
 }
 
 function gotoLintIssue(event) {
-	var issue = querySelectorParent(event.target, "tr");
+	var issue = event.target.closest("tr");
 	if (!issue) {
 		return;
 	}
-	var block = querySelectorParent(issue, "table");
+	var block = issue.closest("table");
 	makeSectionVisible(block.cm);
 	block.cm.focus();
 	block.cm.setSelection({
@@ -960,7 +968,7 @@ function beautify(event) {
 		options.indent_size = tabs ? 1 : prefs.getPref("editor.tabSize");
 		options.indent_char = tabs ? "\t" : " ";
 
-		var section = querySelectorParent(event.target, "#sections > div");
+		var section = getSectionForChild(event.target);
 		var scope = section ? [getCodeMirrorForSection(section)] : editors;
 
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
@@ -1063,9 +1071,7 @@ function initWithStyle(style) {
 	document.getElementById("enabled").checked = style.enabled == "true";
 	document.getElementById("url").href = style.url;
 	// if this was done in response to an update, we need to clear existing sections
-	document.querySelectorAll("#sections > div").forEach(function(div) {
-		div.parentNode.removeChild(div);
-	});
+	getSections().forEach(function(div) { div.remove(); });
 	var queue = style.sections.length ? style.sections : [{code: ""}];
 	var queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
@@ -1094,6 +1100,7 @@ function initHooks() {
 	});
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
+	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
 	document.getElementById("beautify").addEventListener("click", beautify);
 	document.getElementById("save-button").addEventListener("click", save, false);
 	document.getElementById("sections-help").addEventListener("click", showSectionHelp, false);
@@ -1213,16 +1220,16 @@ function save() {
 		id: styleId,
 		name: name,
 		enabled: enabled,
-		sections: getSections()
+		sections: getSectionsHashes()
 	};
 	chrome.extension.sendMessage(request, saveComplete);
 }
 
-function getSections() {
+function getSectionsHashes() {
 	var sections = [];
-	document.querySelectorAll("#sections > div").forEach(function(div) {
+	getSections().forEach(function(div) {
 		var meta = getMeta(div);
-		var code = div.querySelector(".CodeMirror").CodeMirror.getValue();
+		var code = getCodeMirrorForSection(div).getValue();
 		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
 			return;
 		}
@@ -1261,11 +1268,13 @@ function saveComplete(style) {
 }
 
 function showMozillaFormat() {
-	window.open("data:text/plain;charset=UTF-8," + encodeURIComponent(toMozillaFormat()));
+	var popup = showCodeMirrorPopup(t("styleToMozillaFormatTitle"), "", {readOnly: true});
+	popup.codebox.setValue(toMozillaFormat());
+	popup.codebox.execCommand("selectAll");
 }
 
 function toMozillaFormat() {
-	return getSections().map(function(section) {
+	return getSectionsHashes().map(function(section) {
 		var cssMds = [];
 		for (var i in propertyToCss) {
 			if (section[i]) {
@@ -1278,6 +1287,147 @@ function toMozillaFormat() {
 	}).join("\n\n");
 }
 
+function fromMozillaFormat() {
+	var popup = showCodeMirrorPopup(t("styleFromMozillaFormatPrompt"), tHTML("<div>\
+		<button name='import-append' i18n-text='importAppendLabel' i18n-title='importAppendTooltip'></button>\
+		<button name='import-replace' i18n-text='importReplaceLabel' i18n-title='importReplaceTooltip'></button>\
+		</div>").innerHTML);
+
+	var contents = popup.querySelector(".contents");
+	contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
+	popup.codebox.focus();
+
+	popup.querySelector("[name='import-append']").addEventListener("click", doImport);
+	popup.querySelector("[name='import-replace']").addEventListener("click", doImport);
+
+	popup.codebox.on("change", function() {
+		clearTimeout(popup.mozillaTimeout);
+		popup.mozillaTimeout = setTimeout(function() {
+			popup.classList.toggle("ready", trimNewLines(popup.codebox.getValue()));
+		}, 100);
+	});
+
+	function doImport() {
+		var replaceOldStyle = this.name == "import-replace";
+		popup.querySelector(".close-icon").click();
+		var mozStyle = trimNewLines(popup.codebox.getValue());
+		var parser = new exports.css.Parser(), lines = mozStyle.split("\n");
+		var sectionStack = [{code: "", cursor: {line: 1, col: 1}}];
+		var errors = "", oldSectionCount = editors.length;
+
+		parser.addListener("startdocument", function(e) {
+			var outerText = getRange(sectionStack.last.cursor, (--e.col, e));
+			var gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
+			var section = {code: "", cursor: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
+			// move last comment before @-moz-document inside the section
+			if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
+				section.code = gapComment[1] + "\n";
+				outerText = trimNewLines(outerText.substring(0, gapComment.index));
+			}
+			addContinuation(sectionStack.last, outerText);
+			e.functions.forEach(function(f) {
+				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
+				var aType = CssToProperty[m[1]];
+				var aValue = aType != "regexps" ? m[3] : m[3].replace(/\\\\/g, "\\");
+				(section[aType] = section[aType] || []).push(aValue);
+			});
+			sectionStack.push(section);
+		});
+
+		parser.addListener("enddocument", function(e) {
+			var cursor = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
+			var section = sectionStack.pop();
+			addContinuation(section, getRange(section.cursor, cursor));
+			sectionStack.last.cursor = (++cursor.col, cursor);
+			doAddSection(section);
+		});
+
+		parser.addListener("endstylesheet", function() {
+			// add nonclosed (broken) outer sections except for the global one
+			sectionStack.slice(1).forEach(doAddSection);
+
+			if (!replaceOldStyle) {
+				var lastOldCM = editors[oldSectionCount - 1];
+				var lastOldSection = getSectionForCodeMirror(lastOldCM);
+				var addAfter = {target: lastOldSection.querySelector(".add-section")};
+
+				if (oldSectionCount < editors.length
+				&& lastOldCM.getValue() == ""
+				&& lastOldSection.querySelector(".applies-to-everything")) {
+					removeSection(addAfter);
+					oldSectionCount--;
+				}
+			} else {
+				var addAfter = {target: getSectionForCodeMirror(editors[0]).previousElementSibling.firstElementChild};
+			}
+
+			var globalSection = sectionStack[0];
+			addContinuation(globalSection,
+				getRange(sectionStack.last.cursor, {line: lines.length, col: lines.last.length + 1}));
+			// only add global section if it contains actual code
+			if (globalSection.code
+					.replace("@namespace url(http://www.w3.org/1999/xhtml);", "") /* strip boilerplate NS */
+					.replace(/\/\*[\s\S]*?\*\//g, "") /* strip comments */
+					.replace(/[\s\n]/g, "")) { /* strip all whitespace including new lines */
+				setCleanItem(addSection(addAfter, {code: globalSection.code}), false);
+			}
+
+			delete maximizeCodeHeight.stats;
+			editors.forEach(function(cm, i) {
+				maximizeCodeHeight(getSectionForCodeMirror(cm), i == editors.length - 1);
+			});
+
+			makeSectionVisible(editors[oldSectionCount]);
+			editors[oldSectionCount].focus();
+			if (errors) {
+				showHelp(t("issues"), errors);
+			}
+		});
+
+		parser.addListener("error", function(e) {
+			errors += e.line + ":" + e.col + " " + e.message.replace(/ at line \d.+$/, "") + "<br>";
+		});
+
+		parser.parse(mozStyle);
+
+		function getRange(start, end) {
+			if (start.line == end.line) {
+				return lines[start.line - 1].substring(start.col - 1, end.col - 1).trim();
+			} else {
+				return trimNewLines(lines[start.line - 1].substr(start.col - 1) + "\n" +
+					lines.slice(start.line, end.line - 1).join("\n") +
+					"\n" + lines[end.line - 1].substring(0, end.col - 1));
+			}
+		}
+		function doAddSection(section) {
+			if (replaceOldStyle && oldSectionCount > 0) {
+				oldSectionCount = 0;
+				editors.slice(0).reverse().forEach(function(cm) {
+					removeSection({target: getSectionForCodeMirror(cm).firstElementChild});
+				});
+			}
+			setCleanItem(addSection(null, section), false);
+		}
+	}
+	function backtrackTo(parser, tokenType, startEnd) {
+		var tokens = parser._tokenStream._lt;
+		for (var i = tokens.length - 2; i >= 0; --i) {
+			if (tokens[i].type == tokenType) {
+				return {line: tokens[i][startEnd+"Line"], col: tokens[i][startEnd+"Col"]};
+			}
+		}
+	}
+	function trimNewLines(s) {
+		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
+	}
+	function addContinuation(section, addendum) {
+		section.code = section.code && addendum
+			? section.code + "\n/**************************/\n" + addendum
+			: section.code || addendum;
+		return section.code;
+	}
+}
+
 function showSectionHelp() {
 	showHelp(t("styleSectionsTitle"), t("sectionHelp"));
 }
@@ -1287,7 +1437,7 @@ function showAppliesToHelp() {
 }
 
 function showToMozillaHelp() {
-	showHelp(t("styleToMozillaFormat"), t("styleToMozillaFormatHelp"));
+	showHelp(t("styleMozillaFormatHeading"), t("styleToMozillaFormatHelp"));
 }
 
 function showKeyMapHelp() {
@@ -1379,6 +1529,7 @@ function showLintHelp() {
 
 function showHelp(title, text) {
 	var div = document.getElementById("help-popup");
+	div.style.cssText = "";
 	div.querySelector(".contents").innerHTML = text;
 	div.querySelector(".title").innerHTML = title;
 
@@ -1388,13 +1539,38 @@ function showHelp(title, text) {
 	}
 
 	div.style.display = "block";
+	return div;
 
 	function closeHelp(e) {
 		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
 			div.style.display = "";
+			document.querySelector(".contents").innerHTML = "";
 			document.removeEventListener("keydown", closeHelp);
 		}
 	}
+}
+
+function showCodeMirrorPopup(title, html, options) {
+	var popup = showHelp(title, html);
+	popup.style.width = popup.style.maxWidth = "calc(100vw - 7rem)";
+
+	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge(options, {
+		mode: "css",
+		lineNumbers: true,
+		lineWrapping: true,
+		foldGutter: true,
+		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
+		matchBrackets: true,
+		lint: {getAnnotations: CodeMirror.lint.css, delay: 0},
+		styleActiveLine: true,
+		theme: prefs.getPref("editor.theme"),
+		keyMap: prefs.getPref("editor.keyMap")
+	}));
+	popup.codebox.focus();
+	popup.codebox.setSize(null, "70vh");
+	popup.codebox.on("focus", function() { hotkeyRerouter.setState(false) });
+	popup.codebox.on("blur", function() { hotkeyRerouter.setState(true) });
+	return popup;
 }
 
 function getParams() {
@@ -1429,13 +1605,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-function querySelectorParent(node, selector) {
-	var parent = node.parentNode;
-	while (parent && parent.matches && !parent.matches(selector))
-		parent = parent.parentNode;
-	return parent.matches ? parent : null; // null for the root document.DOCUMENT_NODE
-}
 
 function stringAsRegExp(s, flags) {
 	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);

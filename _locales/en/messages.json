@@ -165,6 +165,10 @@
 		"message": "Enable",
 		"description": "Label for the button to enable a style"
 	},
+	"exportLabel": {
+		"message": "Export",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
 	"findStylesForSite": {
 		"message": "Find more styles for this site.",
 		"description": "Text for a link that gets a list of styles for the current site"
@@ -180,6 +184,26 @@
 	"helpKeyMapCommand": {
 		"message": "Type a command name",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"importLabel": {
+		"message": "Import",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"importAppendLabel": {
+		"message": "Append to style",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"importAppendTooltip": {
+		"message": "Append the imported style to current style",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"importReplaceLabel": {
+		"message": "Overwrite style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"importReplaceTooltip": {
+		"message": "Discard contents of current style and overwrite it with the imported style",
+		"description": "Label for the button to import and overwrite current style"
 	},
 	"installUpdate": {
 		"message": "Install update",
@@ -322,13 +346,21 @@
 		"message": "Sections",
 		"description": "Title for the style sections section"
 	},
-	"styleToMozillaFormat": {
-		"message": "To Mozilla format",
-		"description": "Label for the button that converts the code to Mozilla format"
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla Format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Paste the Mozilla-format code",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"styleToMozillaFormatTitle": {
+		"message": "Style in Mozilla format",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"styleToMozillaFormatHelp": {
 		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
-		"description": "Help info for the button that converts the code to Mozilla format"
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleUpdate": {
 		"message": "Are you sure you want to update '$stylename$'?",
