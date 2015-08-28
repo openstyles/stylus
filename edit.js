@@ -1529,7 +1529,7 @@ function showLintHelp() {
 
 function showHelp(title, text) {
 	var div = document.getElementById("help-popup");
-	div.style.cssText = "";
+	div.classList.remove("big");
 	div.querySelector(".contents").innerHTML = text;
 	div.querySelector(".title").innerHTML = title;
 
@@ -1552,7 +1552,7 @@ function showHelp(title, text) {
 
 function showCodeMirrorPopup(title, html, options) {
 	var popup = showHelp(title, html);
-	popup.style.width = popup.style.maxWidth = "calc(100vw - 7rem)";
+	popup.classList.add("big");
 
 	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge(options, {
 		mode: "css",
@@ -1567,7 +1567,6 @@ function showCodeMirrorPopup(title, html, options) {
 		keyMap: prefs.getPref("editor.keyMap")
 	}));
 	popup.codebox.focus();
-	popup.codebox.setSize(null, "70vh");
 	popup.codebox.on("focus", function() { hotkeyRerouter.setState(false) });
 	popup.codebox.on("blur", function() { hotkeyRerouter.setState(true) });
 	return popup;
