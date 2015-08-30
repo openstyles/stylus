@@ -100,6 +100,7 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
 	var clean = Object.keys(dirty).length == 0;
 	setDirtyClass(document.body, !clean);
+	document.getElementById("save-button").disabled = clean;
 	return clean;
 }
 
