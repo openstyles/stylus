@@ -579,6 +579,9 @@ function setupGlobalSearch() {
 			if (cm.state.search) {
 				return cm.state.search;
 			}
+			if (!curState) {
+				return null;
+			}
 			newState = curState;
 		}
 		cm.state.search = {
