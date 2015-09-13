@@ -851,30 +851,32 @@ function updateLintReport(cm, delay) {
 	}
 	// user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
 	// or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
-	var postponeNewIssues = delay == undefined;
 	var state = cm.state.lint;
 	clearTimeout(state.reportTimeout);
 	state.reportTimeout = setTimeout(update.bind(cm), state.options.delay + 100);
+	state.postponeNewIssues = delay == undefined || delay == null;
 
 	function update() { // this == cm
 		var scope = this ? [this] : editors;
 		var changed = false;
 		var fixedOldIssues = false;
 		scope.forEach(function(cm) {
-			var oldMarkers = cm.state.lint.markedLast || {};
+			var state = cm.state.lint;
+			var oldMarkers = state.markedLast || {};
 			var newMarkers = {};
-			var html = cm.state.lint.marked.length == 0 ? "" : "<tbody>" +
-				cm.state.lint.marked.map(function(mark) {
+			var html = state.marked.length == 0 ? "" : "<tbody>" +
+				state.marked.map(function(mark) {
 					var info = mark.__annotation;
-					var pos = info.from.line + "," + info.from.ch;
-					if (oldMarkers[pos] == info.message) {
-						delete oldMarkers[pos];
-					}
-					newMarkers[pos] = info.message;
+					var isActiveLine = info.from.line == cm.getCursor().line;
+					var pos = isActiveLine ? "cursor" : (info.from.line + "," + info.from.ch);
 					var message = escapeHtml(info.message.replace(/ at line \d.+$/, ""));
 					if (message.length > 100) {
 						message = message.substr(0, 100) + "...";
 					}
+					if (isActiveLine || oldMarkers[pos] == message) {
+						delete oldMarkers[pos];
+					}
+					newMarkers[pos] = message;
 					return "<tr class='" + info.severity + "'>" +
 						"<td role='severity' class='CodeMirror-lint-marker-" + info.severity + "'>" +
 							info.severity + "</td>" +
@@ -883,16 +885,16 @@ function updateLintReport(cm, delay) {
 						"<td role='col'>" + (info.from.ch+1) + "</td>" +
 						"<td role='message'>" + message + "</td></tr>";
 				}).join("") + "</tbody>";
-			cm.state.lint.markedLast = newMarkers;
-			fixedOldIssues |= Object.keys(oldMarkers).length > 0;
-			if (cm.state.lint.html != html) {
-				cm.state.lint.html = html;
+			state.markedLast = newMarkers;
+			fixedOldIssues |= state.reportDisplayed && Object.keys(oldMarkers).length > 0;
+			if (state.html != html) {
+				state.html = html;
 				changed = true;
 			}
 		});
 		if (changed) {
 			clearTimeout(state ? state.renderTimeout : undefined);
-			if (!postponeNewIssues || fixedOldIssues) {
+			if (!state || !state.postponeNewIssues || fixedOldIssues) {
 				renderLintReport(true);
 			} else {
 				state.renderTimeout = setTimeout(function() {
@@ -907,7 +909,7 @@ function updateLintReport(cm, delay) {
 	}
 }
 
-function renderLintReport(blockChanged) {
+function renderLintReport(someBlockChanged) {
 	var container = document.getElementById("lint");
 	var content = container.children[1];
 	var label = t("sectionCode");
@@ -918,13 +920,14 @@ function renderLintReport(blockChanged) {
 			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
-			if (!blockChanged) {
-				var block = content.children[newContent.children.length - 1];
-				blockChanged = !block || cm != block.cm || html != block.innerHTML;
-			}
+
+			var block = content.children[newContent.children.length - 1];
+			blockChanged = !block || cm != block.cm || html != block.innerHTML;
+			someBlockChanged |= blockChanged;
+			cm.state.lint.reportDisplayed = blockChanged;
 		}
 	});
-	if (blockChanged || newContent.children.length != content.children.length) {
+	if (someBlockChanged || newContent.children.length != content.children.length) {
 		container.replaceChild(newContent, content);
 		container.style.display = newContent.children.length ? "block" : "none";
 		resizeLintReport(null, newContent);
