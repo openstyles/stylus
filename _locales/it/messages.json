@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "Installare \"$stylename$\" in Stylish?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "Visita il sito <a href='http://userstyles.org'>userstyles.org</a> per trovare stili già pronti. Utilizza <a href='http://forum.userstyles.org'>il forum</a> se hai bisogno di aiuto.",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "Applica a: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "Are you sure you want to update '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "Sezioni",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "Modifica dello stile $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "Lo stile è aggiornato.",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Aggiornamento non riuscito - il server ha risposto con il codice $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "Specifica",

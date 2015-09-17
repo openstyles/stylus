@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "Asennetaanko '$stylename$' Stylishiin?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "Käy osoitteessa <a href='http://userstyles.org'> userstyles.org</a> saadaksesi valmiita tyylejä. Kysy <a href='http://forum.userstyles.org'> foorumista </a> jos tarvitset apua.",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "Kooskee: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "Are you sure you want to update '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "Osiot",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "Muokkaa Tyyliä $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "Tyyli on ajan tasalla.",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Päivitys epäonnistui - palvelin vastasi koodilla $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "Tarkenna",

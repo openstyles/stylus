@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "Εγκατάσταση του '$stylename$' στο Stylish;",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "Επισκεφθείτε <a href='http://userstyles.org'> userstyles.org </a> για προ-made στυλ. Ρωτήστε στο <a href='http://forum.userstyles.org'> η </a> forum αν χρειάζεστε βοήθεια.",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "Ισχύει για: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "Είστε σίγουροι ότι θέλετε να ενημερώσετε το '$stylename$';",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "Ενότητες",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "Επεξεργασία του στυλ $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "Το στυλ είναι ενημερωμένο.",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Αποτυχία ενημέρωσης - ο διακομιστής ανταποκρίθηκε με κωδικό $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "Καθορισμός",

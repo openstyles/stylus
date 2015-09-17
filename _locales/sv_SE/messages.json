@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "Installera '$stylename$' in i Stylish?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "Besök <a href='http://userstyles.org'>userstyles.org</a> för färdiga stilar. Fråga i <a href='http://forum.userstyles.org'>forumet</a> om du behöver hjälp.",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "Gäller för: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "Är du säker på att du vill uppdatera '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "Sektioner",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "Ändra i Stil $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "Stilen är fullt uppdaterad.",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Uppdateringen misslyckades - servern svarade med kod $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "Specificera",

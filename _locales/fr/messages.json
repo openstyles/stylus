@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "Installer \"$stylename$\" dans Stylish ?",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "Pour obtenir des styles prédéfinis, rendez-vous sur <a href='http://userstyles.org'>userstyles.org</a>. Posez une question sur le <a href='http://forum.userstyles.org'>forum</a> si vous avez besoin d'aide.",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "S'applique à : $applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "Voulez-vous mettre à jour '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "Sections",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "Modifier le style $stylename$",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "Le style est à jour.",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "Échec de la mise à jour. Le serveur a renvoyé le $code$ $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "Préciser",
