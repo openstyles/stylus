@@ -109,7 +109,12 @@
     },
     "styleInstall": {
         "message": "要将“$stylename$”安装到 Stylish 中吗？",
-        "description": "Confirmation when installing a style"
+        "description": "Confirmation when installing a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "manageText": {
         "message": "请访问 <a href='http://userstyles.org'>userstyles.org</a> 以获取预制样式。如果您需要帮助，请到<a href='http://forum.userstyles.org'>论坛</a>发帖提问。",
@@ -173,11 +178,21 @@
     },
     "appliesDisplay": {
         "message": "应用对象：$applies$",
-        "description": "Text on the manage screen to describe what the style applies to"
+        "description": "Text on the manage screen to describe what the style applies to",
+        "placeholders": {
+            "applies": {
+                "content": "$1"
+            }
+        }
     },
     "styleUpdate": {
         "message": "您确定要更新 '$stylename$'?",
-        "description": "Confirmation when updating a style"
+        "description": "Confirmation when updating a style",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "styleSectionsTitle": {
         "message": "部分",
@@ -185,7 +200,12 @@
     },
     "editStyleTitle": {
         "message": "修改样式“$stylename$”",
-        "description": "Title of the page for editing styles"
+        "description": "Title of the page for editing styles",
+        "placeholders": {
+            "stylename": {
+                "content": "$1"
+            }
+        }
     },
     "updateCheckSucceededNoUpdate": {
         "message": "样式已是最新版本。",
@@ -249,7 +269,12 @@
     },
     "updateCheckFailBadResponseCode": {
         "message": "更新失败 - 服务器响应代码为 $code$。",
-        "description": "Text that displays when an update check failed because the response code indicates an error"
+        "description": "Text that displays when an update check failed because the response code indicates an error",
+        "placeholders": {
+            "code": {
+                "content": "$1"
+            }
+        }
     },
     "appliesSpecify": {
         "message": "指定",
