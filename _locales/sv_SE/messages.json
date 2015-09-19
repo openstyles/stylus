@@ -1,419 +1,419 @@
 {
-    "appliesToEverything": {
-        "message": "Allt",
-        "description": "Text displayed for styles that apply to all sites"
-    },
-    "defaultTheme": {
-        "message": "default",
-        "description": "Default CodeMirror CSS theme option on the edit style page"
-    },
-    "manageOnlyEdited": {
-        "message": "Endast ändrade stilar",
-        "description": "Checkbox to show only locally edited styles"
-    },
-    "exportLabel": {
-        "message": "Export",
-        "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-    },
-    "issues": {
-        "message": "Issues",
-        "description": "Label for the CSSLint issues block on the style edit page"
-    },
-    "cm_tabSize": {
-        "message": "Flikstorlek",
-        "description": "Label for the text box controlling tab size option for the style editor."
-    },
-    "enableStyleLabel": {
-        "message": "Aktivera",
-        "description": "Label for the button to enable a style"
-    },
-    "styleMissingName": {
-        "message": "Ange ett namn.",
-        "description": "Error displayed when user saves without providing a name"
-    },
-    "appliesDomainOption": {
-        "message": "URL:er på domänen",
-        "description": "Option to make the style apply to the entered string as a domain"
-    },
-    "checkForUpdate": {
-        "message": "Leta efter uppdatering",
-        "description": "Label for the button to check a single style for an update"
-    },
-    "importAppendLabel": {
-        "message": "Append to style",
-        "description": "Label for the button to import a style and append to the existing sections"
-    },
-    "updateAllCheckSucceededNoUpdate": {
-        "message": "Alla stilar är fullt uppdaterade.",
-        "description": "Text that displays when an update all check completed and no updates are available"
-    },
-    "styleFromMozillaFormatPrompt": {
-        "message": "Paste the Mozilla-format code",
-        "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-    },
-    "helpAlt": {
-        "message": "Hjälp",
-        "description": "Alternate text for help buttons"
-    },
-    "search": {
-        "message": "Search",
-        "description": "Label before the search input field in the editor shown on Ctrl-F"
-    },
-    "confirmYes": {
-        "message": "Yes",
-        "description": "'Yes' button in a confirm dialog"
-    },
-    "findStylesForSite": {
-        "message": "Hitta fler stilar för denna sida.",
-        "description": "Text for a link that gets a list of styles for the current site"
-    },
-    "manageHeading": {
-        "message": "Installerade Stilar",
-        "description": "Heading for the manage page"
-    },
-    "styleBeautify": {
-        "message": "Beautify",
-        "description": "Label for the CSS-beautifier button on the edit style page"
-    },
-    "styleEnabledLabel": {
-        "message": "Aktiverad",
-        "description": "Label for the enabled state of styles"
-    },
-    "styleToMozillaFormatHelp": {
-        "message": "Mozilla-formatet av koden fungerar i Stylish till Firefox samt vid uppladdandet till userstyles.org.",
-        "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-    },
-    "sectionAdd": {
-        "message": "Lägg till ytterligare en sektion",
-        "description": "Label for the button to add a section"
-    },
-    "styleSaveLabel": {
-        "message": "Spara",
-        "description": "Label for save button for style editing"
-    },
-    "confirmStop": {
-        "message": "Stop",
-        "description": "'Stop' button in a confirm dialog"
-    },
-    "writeStyleForURL": {
-        "message": "denna URL",
-        "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-    },
-    "appliesAdd": {
-        "message": "Lägg till",
-        "description": "Label for the button to add an 'applies' entry"
-    },
-    "appliesRegexpOption": {
-        "message": "URL:er som matchar regexp:en",
-        "description": "Option to make the style apply to the entered string as a regular expression"
-    },
-    "styleInstall": {
-        "message": "Installera '$stylename$' in i Stylish?",
-        "description": "Confirmation when installing a style",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "manageText": {
-        "message": "Besök <a href='http://userstyles.org'>userstyles.org</a> för färdiga stilar. Fråga i <a href='http://forum.userstyles.org'>forumet</a> om du behöver hjälp.",
-        "description": "Help text on the manage page"
-    },
-    "searchStyles": {
-        "message": "Search contents",
-        "description": "Label for the search filter textbox on the Manage styles page"
-    },
-    "disableStyleLabel": {
-        "message": "Inaktivera",
-        "description": "Label for the button to disable a style"
-    },
-    "prefShowBadge": {
-        "message": "Visa antalet aktiva stilar för den nuvarande sidan på verktygsfältsikonen",
-        "description": "Label for the checkbox controlling toolbar badge text."
-    },
-    "menuShowBadge": {
-        "message": "Visa antalet aktiva stilar",
-        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-    },
-    "cm_lineWrapping": {
-        "message": "Radbrytning",
-        "description": "Label for the checkbox controlling word wrap option for the style editor."
-    },
-    "styleCancelEditLabel": {
-        "message": "Återgå till hantera",
-        "description": "Label for cancel button for style editing"
-    },
-    "styleChangesNotSaved": {
-        "message": "Du har gjort ändringar i denna stil utan att spara.",
-        "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-    },
-    "importLabel": {
-        "message": "Import",
-        "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
-    },
-    "updateCheckFailServerUnreachable": {
-        "message": "Uppdateringen misslyckades - server onåbar.",
-        "description": "Text that displays when an update check failed because the update server is unreachable"
-    },
-    "manageFilters": {
-        "message": "Filter",
-        "description": "Label for filters container"
-    },
-    "applyAllUpdates": {
-        "message": "Verkställ alla uppdateringar",
-        "description": "Label for the button to apply all detected updates"
-    },
-    "deleteStyleConfirm": {
-        "message": "Är du säker på att du vill ta bort denna stil?",
-        "description": "Confirmation before deleting a style"
-    },
-    "styleBadRegexp": {
-        "message": "Regexp:en är ogiltig.",
-        "description": "Validation message for a bad regexp in a style"
-    },
-    "optionsHeading": {
-        "message": "Alternativ",
-        "description": "Heading for options section on manage page."
-    },
-    "appliesDisplay": {
-        "message": "Gäller för: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to",
-        "placeholders": {
-            "applies": {
-                "content": "$1"
-            }
-        }
-    },
-    "styleUpdate": {
-        "message": "Är du säker på att du vill uppdatera '$stylename$'?",
-        "description": "Confirmation when updating a style",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "styleSectionsTitle": {
-        "message": "Sektioner",
-        "description": "Title for the style sections section"
-    },
-    "editStyleTitle": {
-        "message": "Ändra i Stil $stylename$",
-        "description": "Title of the page for editing styles",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "updateCheckSucceededNoUpdate": {
-        "message": "Stilen är fullt uppdaterad.",
-        "description": "Text that displays when an update check completed and no update is available"
-    },
-    "appliesUrlPrefixOption": {
-        "message": "URL:er som börjar på",
-        "description": "Option to make the style apply to the entered string as a URL prefix"
-    },
-    "searchRegexp": {
-        "message": "Use /re/ syntax for regexp search",
-        "description": "Label after the search input field in the editor shown on Ctrl-F"
-    },
-    "importReplaceTooltip": {
-        "message": "Discard contents of current style and overwrite it with the imported style",
-        "description": "Label for the button to import and overwrite current style"
-    },
-    "popupStylesFirst": {
-        "message": "Lista stilar före kommandon i verktygsfältets knappmeny",
-        "description": "Label for the checkbox controlling section order in the toolbar button menu."
-    },
-    "sectionHelp": {
-        "message": "Sektioner låter dig definiera olika sorters kod som påverkar olika URL:er i samma stil. Till exempel, en stil kan ändra en viss hemsida på ett sätt, samtidigt som den ändrar andra delar på en helt annan sida.",
-        "description": "Help text for sections"
-    },
-    "noStylesForSite": {
-        "message": "Inga stilar installerade för denna sida.",
-        "description": "Text displayed when no styles are installed for the current site"
-    },
-    "appliesDisplayTruncatedSuffix": {
-        "message": "och mer",
-        "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-    },
-    "appliesRemove": {
-        "message": "Ta bort",
-        "description": "Label for the button to remove an 'applies' entry"
-    },
-    "styleToMozillaFormatTitle": {
-        "message": "Style in Mozilla format",
-        "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-    },
-    "manageTitle": {
-        "message": "Stylish",
-        "description": "Title for the manage page"
-    },
-    "writeStyleFor": {
-        "message": "Skapa stil för:",
-        "description": "Label for toolbar pop-up that precedes the links to write a new style"
-    },
-    "replace": {
-        "message": "Replace",
-        "description": "Label before the replace input field in the editor shown on Ctrl-H"
-    },
-    "appliesLabel": {
-        "message": "Gäller för",
-        "description": "Label for 'applies to' fields on the edit/add screen"
-    },
-    "openManage": {
-        "message": "Hantera installerade stilar.",
-        "description": "Link to open the manage page."
-    },
-    "updateCheckFailBadResponseCode": {
-        "message": "Uppdateringen misslyckades - servern svarade med kod $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error",
-        "placeholders": {
-            "code": {
-                "content": "$1"
-            }
-        }
-    },
-    "appliesSpecify": {
-        "message": "Specificera",
-        "description": "Label for the button to make a style apply only to specific sites"
-    },
-    "installUpdate": {
-        "message": "Installera uppdatering",
-        "description": "Label for the button to install an update for a single style"
-    },
-    "styleMozillaFormatHeading": {
-        "message": "Mozilla Format",
-        "description": "Heading for the section with buttons to import/export Mozilla format of the style"
-    },
-    "stylishUnavailableForURL": {
-        "message": "(Stylish fungerar inte på sidor som dessa.)",
-        "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
-    },
-    "sectionRemove": {
-        "message": "Ta bort sektion",
-        "description": "Label for the button to remove a section"
-    },
-    "disableAllStyles": {
-        "message": "Stäng av alla stilar",
-        "description": "Label for the checkbox that turns all enabled styles off."
-    },
-    "undoGlobal": {
-        "message": "Undo (global)",
-        "description": "CSS-beautify global Undo button label"
-    },
-    "updateCompleted": {
-        "message": "Uppdatering slutförd.",
-        "description": "Text that displays when an update completed"
-    },
-    "checkingForUpdate": {
-        "message": "Letar...",
-        "description": "Text to display when checking a style for an update"
-    },
-    "sectionCode": {
-        "message": "Kod",
-        "description": "Label for the code for a section"
-    },
-    "cm_smartIndent": {
-        "message": "Använd smart indrag",
-        "description": "Label for the checkbox controlling smart indentation option for the style editor."
-    },
-    "appliesHelp": {
-        "message": "Använd 'Gäller för' alternativet för att begränsa vilka URL:er koden i denna sektion gäller för.",
-        "description": "Help text for 'applies to' section"
-    },
-    "editStyleHeading": {
-        "message": "Ändra i Stil",
-        "description": "Title of the page for editing styles"
-    },
-    "appliesUrlOption": {
-        "message": "URL",
-        "description": "Option to make the style apply to the entered string as a URL"
-    },
-    "addStyleTitle": {
-        "message": "Lägg till stil",
-        "description": "Title of the page for adding styles"
-    },
-    "importReplaceLabel": {
-        "message": "Overwrite style",
-        "description": "Label for the button to import and overwrite current style"
-    },
-    "dbError": {
-        "message": "Ett fel inträffades vid hanteringen av Stylish-databasen. Skulle du vilja besöka en sida med eventuella lösningar?",
-        "description": "Prompt when a DB error is encountered"
-    },
-    "importAppendTooltip": {
-        "message": "Append the imported style to current style",
-        "description": "Tooltip for the button to import a style and append to the existing sections"
-    },
-    "helpKeyMapHotkey": {
-        "message": "Press a hotkey",
-        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-    },
-    "replaceAll": {
-        "message": "Replace all",
-        "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-    },
-    "editGotoLine": {
-        "message": "Gå till rad (eller rad:kol)",
-        "description": "Go to line or line:column on Ctrl-G in style code editor"
-    },
-    "checkAllUpdates": {
-        "message": "Leta igenom alla stilar efter uppdateringar",
-        "description": "Label for the button to check all styles for updates"
-    },
-    "issuesHelp": {
-        "message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-        "description": "Help popup message for the CSSLint issues block on the style edit page"
-    },
-    "confirmNo": {
-        "message": "No",
-        "description": "'No' button in a confirm dialog"
-    },
-    "undo": {
-        "message": "Undo",
-        "description": "Button label"
-    },
-    "cm_keyMap": {
-        "message": "Nyckelkarta",
-        "description": "Label for the drop-down list controlling the keymap for the style editor."
-    },
-    "cm_indentWithTabs": {
-        "message": "Använd flikar med smart indrag",
-        "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-    },
-    "replaceWith": {
-        "message": "Replace with",
-        "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
-    },
-    "deleteStyleLabel": {
-        "message": "Ta bort",
-        "description": "Label for the button to delete a style"
-    },
-    "addStyleLabel": {
-        "message": "Skriv ny stil",
-        "description": "Label for the button to go to the add style page"
-    },
-    "manageOnlyEnabled": {
-        "message": "Endast aktiverade stilar",
-        "description": "Checkbox to show only enabled styles"
-    },
-    "editStyleLabel": {
-        "message": "Ändra",
-        "description": "Label for the button to go to the edit style page"
-    },
-    "cm_theme": {
-        "message": "Theme",
-        "description": "Label for the style editor's CSS theme."
-    },
-    "helpKeyMapCommand": {
-        "message": "Type a command name",
-        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-    },
-    "description": {
-        "message": "Style:a om webben med Stylish, en användarstils-hanterare. Stylish låter dig enkelt installera teman och skal för många populära sidor.",
-        "description": "Extension description"
-    }
+	"appliesToEverything": {
+		"message": "Allt",
+		"description": "Text displayed for styles that apply to all sites"
+	},
+	"defaultTheme": {
+		"message": "default",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"manageOnlyEdited": {
+		"message": "Endast ändrade stilar",
+		"description": "Checkbox to show only locally edited styles"
+	},
+	"exportLabel": {
+		"message": "Export",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"issues": {
+		"message": "Issues",
+		"description": "Label for the CSSLint issues block on the style edit page"
+	},
+	"cm_tabSize": {
+		"message": "Flikstorlek",
+		"description": "Label for the text box controlling tab size option for the style editor."
+	},
+	"enableStyleLabel": {
+		"message": "Aktivera",
+		"description": "Label for the button to enable a style"
+	},
+	"styleMissingName": {
+		"message": "Ange ett namn.",
+		"description": "Error displayed when user saves without providing a name"
+	},
+	"appliesDomainOption": {
+		"message": "URL:er på domänen",
+		"description": "Option to make the style apply to the entered string as a domain"
+	},
+	"checkForUpdate": {
+		"message": "Leta efter uppdatering",
+		"description": "Label for the button to check a single style for an update"
+	},
+	"importAppendLabel": {
+		"message": "Append to style",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "Alla stilar är fullt uppdaterade.",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Paste the Mozilla-format code",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"helpAlt": {
+		"message": "Hjälp",
+		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Search",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"confirmYes": {
+		"message": "Yes",
+		"description": "'Yes' button in a confirm dialog"
+	},
+	"findStylesForSite": {
+		"message": "Hitta fler stilar för denna sida.",
+		"description": "Text for a link that gets a list of styles for the current site"
+	},
+	"manageHeading": {
+		"message": "Installerade Stilar",
+		"description": "Heading for the manage page"
+	},
+	"styleBeautify": {
+		"message": "Beautify",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
+	"styleEnabledLabel": {
+		"message": "Aktiverad",
+		"description": "Label for the enabled state of styles"
+	},
+	"styleToMozillaFormatHelp": {
+		"message": "Mozilla-formatet av koden fungerar i Stylish till Firefox samt vid uppladdandet till userstyles.org.",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+	},
+	"sectionAdd": {
+		"message": "Lägg till ytterligare en sektion",
+		"description": "Label for the button to add a section"
+	},
+	"styleSaveLabel": {
+		"message": "Spara",
+		"description": "Label for save button for style editing"
+	},
+	"confirmStop": {
+		"message": "Stop",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"writeStyleForURL": {
+		"message": "denna URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"appliesAdd": {
+		"message": "Lägg till",
+		"description": "Label for the button to add an 'applies' entry"
+	},
+	"appliesRegexpOption": {
+		"message": "URL:er som matchar regexp:en",
+		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"styleInstall": {
+		"message": "Installera '$stylename$' in i Stylish?",
+		"description": "Confirmation when installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"manageText": {
+		"message": "Besök <a href='http://userstyles.org'>userstyles.org</a> för färdiga stilar. Fråga i <a href='http://forum.userstyles.org'>forumet</a> om du behöver hjälp.",
+		"description": "Help text on the manage page"
+	},
+	"searchStyles": {
+		"message": "Search contents",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"disableStyleLabel": {
+		"message": "Inaktivera",
+		"description": "Label for the button to disable a style"
+	},
+	"prefShowBadge": {
+		"message": "Visa antalet aktiva stilar för den nuvarande sidan på verktygsfältsikonen",
+		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"menuShowBadge": {
+		"message": "Visa antalet aktiva stilar",
+		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"cm_lineWrapping": {
+		"message": "Radbrytning",
+		"description": "Label for the checkbox controlling word wrap option for the style editor."
+	},
+	"styleCancelEditLabel": {
+		"message": "Återgå till hantera",
+		"description": "Label for cancel button for style editing"
+	},
+	"styleChangesNotSaved": {
+		"message": "Du har gjort ändringar i denna stil utan att spara.",
+		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+	},
+	"importLabel": {
+		"message": "Import",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "Uppdateringen misslyckades - server onåbar.",
+		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"manageFilters": {
+		"message": "Filter",
+		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Verkställ alla uppdateringar",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"deleteStyleConfirm": {
+		"message": "Är du säker på att du vill ta bort denna stil?",
+		"description": "Confirmation before deleting a style"
+	},
+	"styleBadRegexp": {
+		"message": "Regexp:en är ogiltig.",
+		"description": "Validation message for a bad regexp in a style"
+	},
+	"optionsHeading": {
+		"message": "Alternativ",
+		"description": "Heading for options section on manage page."
+	},
+	"appliesDisplay": {
+		"message": "Gäller för: $applies$",
+		"description": "Text on the manage screen to describe what the style applies to",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleUpdate": {
+		"message": "Är du säker på att du vill uppdatera '$stylename$'?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleSectionsTitle": {
+		"message": "Sektioner",
+		"description": "Title for the style sections section"
+	},
+	"editStyleTitle": {
+		"message": "Ändra i Stil $stylename$",
+		"description": "Title of the page for editing styles",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "Stilen är fullt uppdaterad.",
+		"description": "Text that displays when an update check completed and no update is available"
+	},
+	"appliesUrlPrefixOption": {
+		"message": "URL:er som börjar på",
+		"description": "Option to make the style apply to the entered string as a URL prefix"
+	},
+	"searchRegexp": {
+		"message": "Use /re/ syntax for regexp search",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"importReplaceTooltip": {
+		"message": "Discard contents of current style and overwrite it with the imported style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"popupStylesFirst": {
+		"message": "Lista stilar före kommandon i verktygsfältets knappmeny",
+		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+	},
+	"sectionHelp": {
+		"message": "Sektioner låter dig definiera olika sorters kod som påverkar olika URL:er i samma stil. Till exempel, en stil kan ändra en viss hemsida på ett sätt, samtidigt som den ändrar andra delar på en helt annan sida.",
+		"description": "Help text for sections"
+	},
+	"noStylesForSite": {
+		"message": "Inga stilar installerade för denna sida.",
+		"description": "Text displayed when no styles are installed for the current site"
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "och mer",
+		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+	},
+	"appliesRemove": {
+		"message": "Ta bort",
+		"description": "Label for the button to remove an 'applies' entry"
+	},
+	"styleToMozillaFormatTitle": {
+		"message": "Style in Mozilla format",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"manageTitle": {
+		"message": "Stylish",
+		"description": "Title for the manage page"
+	},
+	"writeStyleFor": {
+		"message": "Skapa stil för:",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"replace": {
+		"message": "Replace",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"appliesLabel": {
+		"message": "Gäller för",
+		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openManage": {
+		"message": "Hantera installerade stilar.",
+		"description": "Link to open the manage page."
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "Uppdateringen misslyckades - servern svarade med kod $code$.",
+		"description": "Text that displays when an update check failed because the response code indicates an error",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesSpecify": {
+		"message": "Specificera",
+		"description": "Label for the button to make a style apply only to specific sites"
+	},
+	"installUpdate": {
+		"message": "Installera uppdatering",
+		"description": "Label for the button to install an update for a single style"
+	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla Format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
+	"stylishUnavailableForURL": {
+		"message": "(Stylish fungerar inte på sidor som dessa.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	},
+	"sectionRemove": {
+		"message": "Ta bort sektion",
+		"description": "Label for the button to remove a section"
+	},
+	"disableAllStyles": {
+		"message": "Stäng av alla stilar",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "Undo (global)",
+		"description": "CSS-beautify global Undo button label"
+	},
+	"updateCompleted": {
+		"message": "Uppdatering slutförd.",
+		"description": "Text that displays when an update completed"
+	},
+	"checkingForUpdate": {
+		"message": "Letar...",
+		"description": "Text to display when checking a style for an update"
+	},
+	"sectionCode": {
+		"message": "Kod",
+		"description": "Label for the code for a section"
+	},
+	"cm_smartIndent": {
+		"message": "Använd smart indrag",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
+	"appliesHelp": {
+		"message": "Använd 'Gäller för' alternativet för att begränsa vilka URL:er koden i denna sektion gäller för.",
+		"description": "Help text for 'applies to' section"
+	},
+	"editStyleHeading": {
+		"message": "Ändra i Stil",
+		"description": "Title of the page for editing styles"
+	},
+	"appliesUrlOption": {
+		"message": "URL",
+		"description": "Option to make the style apply to the entered string as a URL"
+	},
+	"addStyleTitle": {
+		"message": "Lägg till stil",
+		"description": "Title of the page for adding styles"
+	},
+	"importReplaceLabel": {
+		"message": "Overwrite style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"dbError": {
+		"message": "Ett fel inträffades vid hanteringen av Stylish-databasen. Skulle du vilja besöka en sida med eventuella lösningar?",
+		"description": "Prompt when a DB error is encountered"
+	},
+	"importAppendTooltip": {
+		"message": "Append the imported style to current style",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"helpKeyMapHotkey": {
+		"message": "Press a hotkey",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"replaceAll": {
+		"message": "Replace all",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"editGotoLine": {
+		"message": "Gå till rad (eller rad:kol)",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
+	"checkAllUpdates": {
+		"message": "Leta igenom alla stilar efter uppdateringar",
+		"description": "Label for the button to check all styles for updates"
+	},
+	"issuesHelp": {
+		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
+		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
+	"confirmNo": {
+		"message": "No",
+		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Undo",
+		"description": "Button label"
+	},
+	"cm_keyMap": {
+		"message": "Nyckelkarta",
+		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"cm_indentWithTabs": {
+		"message": "Använd flikar med smart indrag",
+		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+	},
+	"replaceWith": {
+		"message": "Replace with",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"deleteStyleLabel": {
+		"message": "Ta bort",
+		"description": "Label for the button to delete a style"
+	},
+	"addStyleLabel": {
+		"message": "Skriv ny stil",
+		"description": "Label for the button to go to the add style page"
+	},
+	"manageOnlyEnabled": {
+		"message": "Endast aktiverade stilar",
+		"description": "Checkbox to show only enabled styles"
+	},
+	"editStyleLabel": {
+		"message": "Ändra",
+		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Theme",
+		"description": "Label for the style editor's CSS theme."
+	},
+	"helpKeyMapCommand": {
+		"message": "Type a command name",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"description": {
+		"message": "Style:a om webben med Stylish, en användarstils-hanterare. Stylish låter dig enkelt installera teman och skal för många populära sidor.",
+		"description": "Extension description"
+	}
 }

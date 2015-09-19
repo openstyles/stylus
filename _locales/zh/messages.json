@@ -1,419 +1,419 @@
 {
-    "appliesToEverything": {
-        "message": "所有站点",
-        "description": "Text displayed for styles that apply to all sites"
-    },
-    "defaultTheme": {
-        "message": "default",
-        "description": "Default CodeMirror CSS theme option on the edit style page"
-    },
-    "manageOnlyEdited": {
-        "message": "Only edited styles",
-        "description": "Checkbox to show only locally edited styles"
-    },
-    "exportLabel": {
-        "message": "Export",
-        "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-    },
-    "issues": {
-        "message": "Issues",
-        "description": "Label for the CSSLint issues block on the style edit page"
-    },
-    "cm_tabSize": {
-        "message": "Tab size",
-        "description": "Label for the text box controlling tab size option for the style editor."
-    },
-    "enableStyleLabel": {
-        "message": "启用",
-        "description": "Label for the button to enable a style"
-    },
-    "styleMissingName": {
-        "message": "请输入名称.",
-        "description": "Error displayed when user saves without providing a name"
-    },
-    "appliesDomainOption": {
-        "message": "指定域上的URL",
-        "description": "Option to make the style apply to the entered string as a domain"
-    },
-    "checkForUpdate": {
-        "message": "检查更新",
-        "description": "Label for the button to check a single style for an update"
-    },
-    "importAppendLabel": {
-        "message": "Append to style",
-        "description": "Label for the button to import a style and append to the existing sections"
-    },
-    "updateAllCheckSucceededNoUpdate": {
-        "message": "All styles are up to date.",
-        "description": "Text that displays when an update all check completed and no updates are available"
-    },
-    "styleFromMozillaFormatPrompt": {
-        "message": "Paste the Mozilla-format code",
-        "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-    },
-    "helpAlt": {
-        "message": "帮助",
-        "description": "Alternate text for help buttons"
-    },
-    "search": {
-        "message": "Search",
-        "description": "Label before the search input field in the editor shown on Ctrl-F"
-    },
-    "confirmYes": {
-        "message": "Yes",
-        "description": "'Yes' button in a confirm dialog"
-    },
-    "findStylesForSite": {
-        "message": "查找更多适合此站点的样式",
-        "description": "Text for a link that gets a list of styles for the current site"
-    },
-    "manageHeading": {
-        "message": "已安装的样式",
-        "description": "Heading for the manage page"
-    },
-    "styleBeautify": {
-        "message": "Beautify",
-        "description": "Label for the CSS-beautifier button on the edit style page"
-    },
-    "styleEnabledLabel": {
-        "message": "已启用",
-        "description": "Label for the enabled state of styles"
-    },
-    "styleToMozillaFormatHelp": {
-        "message": "用于Firefox上的Stylish的Mozilla格式样式代码可以在 userstyles.org 上提交",
-        "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-    },
-    "sectionAdd": {
-        "message": "添加新节",
-        "description": "Label for the button to add a section"
-    },
-    "styleSaveLabel": {
-        "message": "保存",
-        "description": "Label for save button for style editing"
-    },
-    "confirmStop": {
-        "message": "Stop",
-        "description": "'Stop' button in a confirm dialog"
-    },
-    "writeStyleForURL": {
-        "message": "this URL",
-        "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-    },
-    "appliesAdd": {
-        "message": "添加",
-        "description": "Label for the button to add an 'applies' entry"
-    },
-    "appliesRegexpOption": {
-        "message": "匹配正则的URL",
-        "description": "Option to make the style apply to the entered string as a regular expression"
-    },
-    "styleInstall": {
-        "message": "安装 '$stylename$' 到 Stylish?",
-        "description": "Confirmation when installing a style",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "manageText": {
-        "message": "访问 <a href='http://userstyles.org'>userstyles.org</a> 查找预定义的样式. 如果您需要帮助，请访问 <a href='http://forum.userstyles.org'>论坛</a>.",
-        "description": "Help text on the manage page"
-    },
-    "searchStyles": {
-        "message": "Search contents",
-        "description": "Label for the search filter textbox on the Manage styles page"
-    },
-    "disableStyleLabel": {
-        "message": "禁用",
-        "description": "Label for the button to disable a style"
-    },
-    "prefShowBadge": {
-        "message": "Show number of styles active for the current site on the toolbar button",
-        "description": "Label for the checkbox controlling toolbar badge text."
-    },
-    "menuShowBadge": {
-        "message": "Show active style count",
-        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-    },
-    "cm_lineWrapping": {
-        "message": "Word wrap",
-        "description": "Label for the checkbox controlling word wrap option for the style editor."
-    },
-    "styleCancelEditLabel": {
-        "message": "返回到管理",
-        "description": "Label for cancel button for style editing"
-    },
-    "styleChangesNotSaved": {
-        "message": "您已经修改了此样式，但尚未保存",
-        "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-    },
-    "importLabel": {
-        "message": "Import",
-        "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
-    },
-    "updateCheckFailServerUnreachable": {
-        "message": "更新失败 - 服务器无法访问.",
-        "description": "Text that displays when an update check failed because the update server is unreachable"
-    },
-    "manageFilters": {
-        "message": "Filters",
-        "description": "Label for filters container"
-    },
-    "applyAllUpdates": {
-        "message": "Apply all updates",
-        "description": "Label for the button to apply all detected updates"
-    },
-    "deleteStyleConfirm": {
-        "message": "确定要删除这个样式吗?",
-        "description": "Confirmation before deleting a style"
-    },
-    "styleBadRegexp": {
-        "message": "Regexp is invalid.",
-        "description": "Validation message for a bad regexp in a style"
-    },
-    "optionsHeading": {
-        "message": "Options",
-        "description": "Heading for options section on manage page."
-    },
-    "appliesDisplay": {
-        "message": "应用到: $applies$",
-        "description": "Text on the manage screen to describe what the style applies to",
-        "placeholders": {
-            "applies": {
-                "content": "$1"
-            }
-        }
-    },
-    "styleUpdate": {
-        "message": "你確定要更新 '$stylename$' 嗎？",
-        "description": "Confirmation when updating a style",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "styleSectionsTitle": {
-        "message": "样式节",
-        "description": "Title for the style sections section"
-    },
-    "editStyleTitle": {
-        "message": "编辑样式 $stylename$",
-        "description": "Title of the page for editing styles",
-        "placeholders": {
-            "stylename": {
-                "content": "$1"
-            }
-        }
-    },
-    "updateCheckSucceededNoUpdate": {
-        "message": "已经是最新的.",
-        "description": "Text that displays when an update check completed and no update is available"
-    },
-    "appliesUrlPrefixOption": {
-        "message": "以指定地址开始",
-        "description": "Option to make the style apply to the entered string as a URL prefix"
-    },
-    "searchRegexp": {
-        "message": "Use /re/ syntax for regexp search",
-        "description": "Label after the search input field in the editor shown on Ctrl-F"
-    },
-    "importReplaceTooltip": {
-        "message": "Discard contents of current style and overwrite it with the imported style",
-        "description": "Label for the button to import and overwrite current style"
-    },
-    "popupStylesFirst": {
-        "message": "List styles before commands in the toolbar button menu",
-        "description": "Label for the checkbox controlling section order in the toolbar button menu."
-    },
-    "sectionHelp": {
-        "message": "样式节允许你定义多个样式段落并将它们应用于不同的站点匹配规则上。例如，一个样式可以更改使用一个方式来更改主页，而此时其它的样式段可以更改站点的其它部分。",
-        "description": "Help text for sections"
-    },
-    "noStylesForSite": {
-        "message": "当前站点上没有已安装的样式",
-        "description": "Text displayed when no styles are installed for the current site"
-    },
-    "appliesDisplayTruncatedSuffix": {
-        "message": "以及更多",
-        "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-    },
-    "appliesRemove": {
-        "message": "移除",
-        "description": "Label for the button to remove an 'applies' entry"
-    },
-    "styleToMozillaFormatTitle": {
-        "message": "Style in Mozilla format",
-        "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-    },
-    "manageTitle": {
-        "message": "Stylish",
-        "description": "Title for the manage page"
-    },
-    "writeStyleFor": {
-        "message": "Write style for: ",
-        "description": "Label for toolbar pop-up that precedes the links to write a new style"
-    },
-    "replace": {
-        "message": "Replace",
-        "description": "Label before the replace input field in the editor shown on Ctrl-H"
-    },
-    "appliesLabel": {
-        "message": "应用到",
-        "description": "Label for 'applies to' fields on the edit/add screen"
-    },
-    "openManage": {
-        "message": "管理已安装样式",
-        "description": "Link to open the manage page."
-    },
-    "updateCheckFailBadResponseCode": {
-        "message": "更新失败 - 服务器了返回代码 $code$.",
-        "description": "Text that displays when an update check failed because the response code indicates an error",
-        "placeholders": {
-            "code": {
-                "content": "$1"
-            }
-        }
-    },
-    "appliesSpecify": {
-        "message": "指定站点",
-        "description": "Label for the button to make a style apply only to specific sites"
-    },
-    "installUpdate": {
-        "message": "安装更新",
-        "description": "Label for the button to install an update for a single style"
-    },
-    "styleMozillaFormatHeading": {
-        "message": "Mozilla Format",
-        "description": "Heading for the section with buttons to import/export Mozilla format of the style"
-    },
-    "stylishUnavailableForURL": {
-        "message": "(Stylish does not work on pages like this.)",
-        "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
-    },
-    "sectionRemove": {
-        "message": "移除节",
-        "description": "Label for the button to remove a section"
-    },
-    "disableAllStyles": {
-        "message": "Turn all styles off",
-        "description": "Label for the checkbox that turns all enabled styles off."
-    },
-    "undoGlobal": {
-        "message": "Undo (global)",
-        "description": "CSS-beautify global Undo button label"
-    },
-    "updateCompleted": {
-        "message": "更新完成.",
-        "description": "Text that displays when an update completed"
-    },
-    "checkingForUpdate": {
-        "message": "检查中...",
-        "description": "Text to display when checking a style for an update"
-    },
-    "sectionCode": {
-        "message": "代码",
-        "description": "Label for the code for a section"
-    },
-    "cm_smartIndent": {
-        "message": "Use smart indentation",
-        "description": "Label for the checkbox controlling smart indentation option for the style editor."
-    },
-    "appliesHelp": {
-        "message": "使用“应用到”来控制这个样式应用到哪些地址上。",
-        "description": "Help text for 'applies to' section"
-    },
-    "editStyleHeading": {
-        "message": "编辑样式",
-        "description": "Title of the page for editing styles"
-    },
-    "appliesUrlOption": {
-        "message": "地址",
-        "description": "Option to make the style apply to the entered string as a URL"
-    },
-    "addStyleTitle": {
-        "message": "添加样式",
-        "description": "Title of the page for adding styles"
-    },
-    "importReplaceLabel": {
-        "message": "Overwrite style",
-        "description": "Label for the button to import and overwrite current style"
-    },
-    "dbError": {
-        "message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
-        "description": "Prompt when a DB error is encountered"
-    },
-    "importAppendTooltip": {
-        "message": "Append the imported style to current style",
-        "description": "Tooltip for the button to import a style and append to the existing sections"
-    },
-    "helpKeyMapHotkey": {
-        "message": "Press a hotkey",
-        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-    },
-    "replaceAll": {
-        "message": "Replace all",
-        "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-    },
-    "editGotoLine": {
-        "message": "Goto line (or line:col)",
-        "description": "Go to line or line:column on Ctrl-G in style code editor"
-    },
-    "checkAllUpdates": {
-        "message": "检查所有样式的更新",
-        "description": "Label for the button to check all styles for updates"
-    },
-    "issuesHelp": {
-        "message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-        "description": "Help popup message for the CSSLint issues block on the style edit page"
-    },
-    "confirmNo": {
-        "message": "No",
-        "description": "'No' button in a confirm dialog"
-    },
-    "undo": {
-        "message": "Undo",
-        "description": "Button label"
-    },
-    "cm_keyMap": {
-        "message": "Keymap",
-        "description": "Label for the drop-down list controlling the keymap for the style editor."
-    },
-    "cm_indentWithTabs": {
-        "message": "Use tabs with smart indentation",
-        "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-    },
-    "replaceWith": {
-        "message": "Replace with",
-        "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
-    },
-    "deleteStyleLabel": {
-        "message": "删除",
-        "description": "Label for the button to delete a style"
-    },
-    "addStyleLabel": {
-        "message": "编写新的样式",
-        "description": "Label for the button to go to the add style page"
-    },
-    "manageOnlyEnabled": {
-        "message": "Only enabled styles",
-        "description": "Checkbox to show only enabled styles"
-    },
-    "editStyleLabel": {
-        "message": "编辑",
-        "description": "Label for the button to go to the edit style page"
-    },
-    "cm_theme": {
-        "message": "Theme",
-        "description": "Label for the style editor's CSS theme."
-    },
-    "helpKeyMapCommand": {
-        "message": "Type a command name",
-        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-    },
-    "description": {
-        "message": "Stylish，一个用户样式管理器，帮助您重新定义网页样式。Stylish易于为Google，Facebook，Youtube，Orkut以及其它各类型网站安装样式和主题。",
-        "description": "Extension description"
-    }
+	"appliesToEverything": {
+		"message": "所有站点",
+		"description": "Text displayed for styles that apply to all sites"
+	},
+	"defaultTheme": {
+		"message": "default",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"manageOnlyEdited": {
+		"message": "Only edited styles",
+		"description": "Checkbox to show only locally edited styles"
+	},
+	"exportLabel": {
+		"message": "Export",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"issues": {
+		"message": "Issues",
+		"description": "Label for the CSSLint issues block on the style edit page"
+	},
+	"cm_tabSize": {
+		"message": "Tab size",
+		"description": "Label for the text box controlling tab size option for the style editor."
+	},
+	"enableStyleLabel": {
+		"message": "启用",
+		"description": "Label for the button to enable a style"
+	},
+	"styleMissingName": {
+		"message": "请输入名称.",
+		"description": "Error displayed when user saves without providing a name"
+	},
+	"appliesDomainOption": {
+		"message": "指定域上的URL",
+		"description": "Option to make the style apply to the entered string as a domain"
+	},
+	"checkForUpdate": {
+		"message": "检查更新",
+		"description": "Label for the button to check a single style for an update"
+	},
+	"importAppendLabel": {
+		"message": "Append to style",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "All styles are up to date.",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Paste the Mozilla-format code",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"helpAlt": {
+		"message": "帮助",
+		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Search",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"confirmYes": {
+		"message": "Yes",
+		"description": "'Yes' button in a confirm dialog"
+	},
+	"findStylesForSite": {
+		"message": "查找更多适合此站点的样式",
+		"description": "Text for a link that gets a list of styles for the current site"
+	},
+	"manageHeading": {
+		"message": "已安装的样式",
+		"description": "Heading for the manage page"
+	},
+	"styleBeautify": {
+		"message": "Beautify",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
+	"styleEnabledLabel": {
+		"message": "已启用",
+		"description": "Label for the enabled state of styles"
+	},
+	"styleToMozillaFormatHelp": {
+		"message": "用于Firefox上的Stylish的Mozilla格式样式代码可以在 userstyles.org 上提交",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+	},
+	"sectionAdd": {
+		"message": "添加新节",
+		"description": "Label for the button to add a section"
+	},
+	"styleSaveLabel": {
+		"message": "保存",
+		"description": "Label for save button for style editing"
+	},
+	"confirmStop": {
+		"message": "Stop",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"writeStyleForURL": {
+		"message": "this URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"appliesAdd": {
+		"message": "添加",
+		"description": "Label for the button to add an 'applies' entry"
+	},
+	"appliesRegexpOption": {
+		"message": "匹配正则的URL",
+		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"styleInstall": {
+		"message": "安装 '$stylename$' 到 Stylish?",
+		"description": "Confirmation when installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"manageText": {
+		"message": "访问 <a href='http://userstyles.org'>userstyles.org</a> 查找预定义的样式. 如果您需要帮助，请访问 <a href='http://forum.userstyles.org'>论坛</a>.",
+		"description": "Help text on the manage page"
+	},
+	"searchStyles": {
+		"message": "Search contents",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"disableStyleLabel": {
+		"message": "禁用",
+		"description": "Label for the button to disable a style"
+	},
+	"prefShowBadge": {
+		"message": "Show number of styles active for the current site on the toolbar button",
+		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"menuShowBadge": {
+		"message": "Show active style count",
+		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"cm_lineWrapping": {
+		"message": "Word wrap",
+		"description": "Label for the checkbox controlling word wrap option for the style editor."
+	},
+	"styleCancelEditLabel": {
+		"message": "返回到管理",
+		"description": "Label for cancel button for style editing"
+	},
+	"styleChangesNotSaved": {
+		"message": "您已经修改了此样式，但尚未保存",
+		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+	},
+	"importLabel": {
+		"message": "Import",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "更新失败 - 服务器无法访问.",
+		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"manageFilters": {
+		"message": "Filters",
+		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Apply all updates",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"deleteStyleConfirm": {
+		"message": "确定要删除这个样式吗?",
+		"description": "Confirmation before deleting a style"
+	},
+	"styleBadRegexp": {
+		"message": "Regexp is invalid.",
+		"description": "Validation message for a bad regexp in a style"
+	},
+	"optionsHeading": {
+		"message": "Options",
+		"description": "Heading for options section on manage page."
+	},
+	"appliesDisplay": {
+		"message": "应用到: $applies$",
+		"description": "Text on the manage screen to describe what the style applies to",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleUpdate": {
+		"message": "你確定要更新 '$stylename$' 嗎？",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleSectionsTitle": {
+		"message": "样式节",
+		"description": "Title for the style sections section"
+	},
+	"editStyleTitle": {
+		"message": "编辑样式 $stylename$",
+		"description": "Title of the page for editing styles",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "已经是最新的.",
+		"description": "Text that displays when an update check completed and no update is available"
+	},
+	"appliesUrlPrefixOption": {
+		"message": "以指定地址开始",
+		"description": "Option to make the style apply to the entered string as a URL prefix"
+	},
+	"searchRegexp": {
+		"message": "Use /re/ syntax for regexp search",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"importReplaceTooltip": {
+		"message": "Discard contents of current style and overwrite it with the imported style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"popupStylesFirst": {
+		"message": "List styles before commands in the toolbar button menu",
+		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+	},
+	"sectionHelp": {
+		"message": "样式节允许你定义多个样式段落并将它们应用于不同的站点匹配规则上。例如，一个样式可以更改使用一个方式来更改主页，而此时其它的样式段可以更改站点的其它部分。",
+		"description": "Help text for sections"
+	},
+	"noStylesForSite": {
+		"message": "当前站点上没有已安装的样式",
+		"description": "Text displayed when no styles are installed for the current site"
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "以及更多",
+		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+	},
+	"appliesRemove": {
+		"message": "移除",
+		"description": "Label for the button to remove an 'applies' entry"
+	},
+	"styleToMozillaFormatTitle": {
+		"message": "Style in Mozilla format",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"manageTitle": {
+		"message": "Stylish",
+		"description": "Title for the manage page"
+	},
+	"writeStyleFor": {
+		"message": "Write style for: ",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"replace": {
+		"message": "Replace",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"appliesLabel": {
+		"message": "应用到",
+		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openManage": {
+		"message": "管理已安装样式",
+		"description": "Link to open the manage page."
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "更新失败 - 服务器了返回代码 $code$.",
+		"description": "Text that displays when an update check failed because the response code indicates an error",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesSpecify": {
+		"message": "指定站点",
+		"description": "Label for the button to make a style apply only to specific sites"
+	},
+	"installUpdate": {
+		"message": "安装更新",
+		"description": "Label for the button to install an update for a single style"
+	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla Format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
+	"stylishUnavailableForURL": {
+		"message": "(Stylish does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+	},
+	"sectionRemove": {
+		"message": "移除节",
+		"description": "Label for the button to remove a section"
+	},
+	"disableAllStyles": {
+		"message": "Turn all styles off",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "Undo (global)",
+		"description": "CSS-beautify global Undo button label"
+	},
+	"updateCompleted": {
+		"message": "更新完成.",
+		"description": "Text that displays when an update completed"
+	},
+	"checkingForUpdate": {
+		"message": "检查中...",
+		"description": "Text to display when checking a style for an update"
+	},
+	"sectionCode": {
+		"message": "代码",
+		"description": "Label for the code for a section"
+	},
+	"cm_smartIndent": {
+		"message": "Use smart indentation",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
+	"appliesHelp": {
+		"message": "使用“应用到”来控制这个样式应用到哪些地址上。",
+		"description": "Help text for 'applies to' section"
+	},
+	"editStyleHeading": {
+		"message": "编辑样式",
+		"description": "Title of the page for editing styles"
+	},
+	"appliesUrlOption": {
+		"message": "地址",
+		"description": "Option to make the style apply to the entered string as a URL"
+	},
+	"addStyleTitle": {
+		"message": "添加样式",
+		"description": "Title of the page for adding styles"
+	},
+	"importReplaceLabel": {
+		"message": "Overwrite style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"dbError": {
+		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"description": "Prompt when a DB error is encountered"
+	},
+	"importAppendTooltip": {
+		"message": "Append the imported style to current style",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"helpKeyMapHotkey": {
+		"message": "Press a hotkey",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"replaceAll": {
+		"message": "Replace all",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"editGotoLine": {
+		"message": "Goto line (or line:col)",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
+	"checkAllUpdates": {
+		"message": "检查所有样式的更新",
+		"description": "Label for the button to check all styles for updates"
+	},
+	"issuesHelp": {
+		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
+		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
+	"confirmNo": {
+		"message": "No",
+		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Undo",
+		"description": "Button label"
+	},
+	"cm_keyMap": {
+		"message": "Keymap",
+		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"cm_indentWithTabs": {
+		"message": "Use tabs with smart indentation",
+		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+	},
+	"replaceWith": {
+		"message": "Replace with",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"deleteStyleLabel": {
+		"message": "删除",
+		"description": "Label for the button to delete a style"
+	},
+	"addStyleLabel": {
+		"message": "编写新的样式",
+		"description": "Label for the button to go to the add style page"
+	},
+	"manageOnlyEnabled": {
+		"message": "Only enabled styles",
+		"description": "Checkbox to show only enabled styles"
+	},
+	"editStyleLabel": {
+		"message": "编辑",
+		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Theme",
+		"description": "Label for the style editor's CSS theme."
+	},
+	"helpKeyMapCommand": {
+		"message": "Type a command name",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"description": {
+		"message": "Stylish，一个用户样式管理器，帮助您重新定义网页样式。Stylish易于为Google，Facebook，Youtube，Orkut以及其它各类型网站安装样式和主题。",
+		"description": "Extension description"
+	}
 }
