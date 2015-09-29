@@ -922,7 +922,7 @@ function renderLintReport(someBlockChanged) {
 			newBlock.cm = cm;
 
 			var block = content.children[newContent.children.length - 1];
-			blockChanged = !block || cm != block.cm || html != block.innerHTML;
+			var blockChanged = !block || cm != block.cm || html != block.innerHTML;
 			someBlockChanged |= blockChanged;
 			cm.state.lint.reportDisplayed = blockChanged;
 		}
