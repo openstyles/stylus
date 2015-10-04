@@ -13,6 +13,7 @@
 		"tabs",
 		"webNavigation",
 		"contextMenus",
+		"storage",
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],

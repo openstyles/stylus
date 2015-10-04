@@ -157,52 +157,52 @@ function loadPrefs(prefs) {
 }
 
 var prefs = {
-// NB: localStorage["not_key"] is undefined, localStorage.getItem("not_key") is null
+	defaults: {
+		"openEditInWindow": false,      // new editor opens in a own browser window
+		"windowPosition": {},           // detached window position
+		"show-badge": true,             // display text on popup menu icon
+		"disableAll": false,            // boss key
 
-	// defaults
-	"openEditInWindow": false, // new editor opens in a own browser window
-	"windowPosition": {},      // detached window position
-	"show-badge": true,        // display text on popup menu icon
-	"disableAll": false,       // boss key
+		"popup.breadcrumbs": true,      // display "New style" links as URL breadcrumbs
+		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
+		"popup.enabledFirst": true,     // display enabled styles before disabled styles
+		"popup.stylesFirst": true,      // display enabled styles before disabled styles
 
-	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
-	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
-	"popup.enabledFirst": true,  // display enabled styles before disabled styles
-	"popup.stylesFirst": true,  // display enabled styles before disabled styles
+		"manage.onlyEnabled": false,    // display only enabled styles
+		"manage.onlyEdited": false,     // display only styles created locally
 
-	"manage.onlyEnabled": false, // display only enabled styles
-	"manage.onlyEdited": false,  // display only styles created locally
-
-	"editor.options": {},          // CodeMirror.defaults.*
-	"editor.lineWrapping": true,   // word wrap
-	"editor.smartIndent": true,    // "smart" indent
-	"editor.indentWithTabs": false,// smart indent with tabs
-	"editor.tabSize": 4,           // tab width, in spaces
-	"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
-	"editor.theme": "default",     // CSS theme
-	"editor.beautify": {           // CSS beautifier
-		selector_separator_newline: true,
-		newline_before_open_brace: false,
-		newline_after_open_brace: true,
-		newline_between_properties: true,
-		newline_before_close_brace: true,
-		newline_between_rules: false,
-		end_with_newline: false
+		"editor.options": {},           // CodeMirror.defaults.*
+		"editor.lineWrapping": true,    // word wrap
+		"editor.smartIndent": true,     // "smart" indent
+		"editor.indentWithTabs": false, // smart indent with tabs
+		"editor.tabSize": 4,            // tab width, in spaces
+		"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
+		"editor.theme": "default",      // CSS theme
+		"editor.beautify": {            // CSS beautifier
+			selector_separator_newline: true,
+			newline_before_open_brace: false,
+			newline_after_open_brace: true,
+			newline_between_properties: true,
+			newline_before_close_brace: true,
+			newline_between_rules: false,
+			end_with_newline: false
+		},
+		"editor.lintDelay": 500,        // lint gutter marker update delay, ms
+		"editor.lintReportDelay": 4500, // lint report update delay, ms
 	},
-	"editor.lintDelay": 500,        // lint gutter marker update delay, ms
-	"editor.lintReportDelay": 4500, // lint report update delay, ms
 
 	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
 	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
 
 	getPref: function(key, defaultValue) {
-	// Returns localStorage[key], defaultValue, this[key], or undefined
-	//   as type of defaultValue, this[key], or localStorage[key]
+	// Returns localStorage[key], defaultValue, this.defaults[key], or undefined
+	//   as type of defaultValue, this.defaults[key], or localStorage[key]
 		var value = localStorage[key];
+		// NB: localStorage["not_key"] is undefined, localStorage.getItem("not_key") is null
 		if (value === undefined) {
-			return defaultValue === undefined ? shallowCopy(this[key]) : defaultValue;
+			return defaultValue === undefined ? shallowCopy(this.defaults[key]) : defaultValue;
 		}
-		switch (typeof (defaultValue === undefined ? this[key] : defaultValue)) {
+		switch (typeof (defaultValue === undefined ? this.defaults[key] : defaultValue)) {
 			case "boolean": return value.toLowerCase() === "true";
 			case "number": return Number(value);
 			case "object": return JSON.parse(value);
@@ -212,21 +212,60 @@ var prefs = {
 		}
 		return value;
 	},
-	setPref: function(key, value) {
+	getAllPrefs: function() {
+		var all = {}, me = this;
+		Object.keys(this.defaults).forEach(function(key) { all[key] = me.getPref(key) });
+		return all;
+	},
+	setPref: function(key, value, options) {
 		var oldValue = localStorage[key];
-		if (value === undefined || equal(value, this[key])) {
+		if (value === undefined || equal(value, this.defaults[key])) {
 			delete localStorage[key];
 		} else {
 			localStorage[key] = typeof value == "string" ? value : JSON.stringify(value);
 		}
-		if (!equal(value, oldValue === undefined ? this[key] : oldValue)) {
-			var message = {method: "prefChanged", prefName: key, value: value};
-			notifyAllTabs(message);
-			chrome.extension.sendMessage(message);
+		if (!equal(value, oldValue === undefined ? this.defaults[key] : oldValue)) {
+			this.broadcast(key, value, options);
+		}
+	},
+	broadcast: function(key, value, options) {
+		var message = {method: "prefChanged", prefName: key, value: value};
+		notifyAllTabs(message);
+		chrome.extension.sendMessage(message);
+		if (!options || !options.noSync) {
+			clearTimeout(this.syncTimeout);
+			this.syncTimeout = setTimeout((function() {
+				chrome.storage.sync.set({"settings": this.getAllPrefs()});
+			}).bind(this), 0);
 		}
 	},
 	removePref: function(key) { setPref(key, undefined) }
 };
+
+chrome.storage.sync.get({settings: prefs.getAllPrefs()}, function(result) {
+	Object.keys(prefs.defaults).forEach(function(key) {
+		if (key in result.settings) {
+			prefs.setPref(key, result.settings[key], {noSync: true});
+		}
+	});
+});
+
+chrome.storage.onChanged.addListener(function(changes, area) {
+	if (area == "sync" && "settings" in changes) {
+		var newSettings = changes.settings.newValue;
+		for (key in prefs.defaults) {
+			if (key in newSettings) {
+				prefs.setPref(key, newSettings[key], {noSync: true});
+			}
+		}
+	}
+});
+
+window.addEventListener("storage", function(event) {
+	if (event.storageArea == localStorage && event.key in prefs.defaults) {
+		prefs.broadcast(event.key, prefs.getPref(event.key));
+	}
+});
 
 function getCodeMirrorThemes(callback) {
 	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
