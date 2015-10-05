@@ -224,6 +224,10 @@ function sectionAppliesToUrl(section, url) {
 	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
 		return false;
 	}
+	// other extensions can't be styled
+	if (url.indexOf("chrome-extension") == 0 && url.indexOf(chrome.extension.getURL("")) != 0) {
+		return false;
+	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
 		//console.log(section.id + " is global");
 		return true;
