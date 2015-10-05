@@ -35,7 +35,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
 			// check if this is a main content frame style enumeration
-			if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0) {
+			if (request.matchUrl && !request.id
+			&& sender && sender.tab && sender.frameId == 0
+			&& sender.tab.url == request.matchUrl) {
 				updateIcon(sender.tab, styles);
 			}
 			return true;
