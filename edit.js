@@ -132,16 +132,16 @@ function initCodeMirror() {
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
-		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.getPref("editor.lintDelay")},
-		lintReportDelay: prefs.getPref("editor.lintReportDelay"),
+		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
+		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
 		theme: "default",
-		keyMap: prefs.getPref("editor.keyMap"),
+		keyMap: prefs.get("editor.keyMap"),
 		extraKeys: { // independent of current keyMap
 			"Alt-PageDown": "nextEditor",
 			"Alt-PageUp": "prevEditor"
 		}
-	}, prefs.getPref("editor.options"));
+	}, prefs.get("editor.options"));
 
 	// additional commands
 	CM.commands.jumpToLine = jumpToLine;
@@ -219,8 +219,8 @@ function initCodeMirror() {
 		});
 	}
 
-	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->loadPrefs()
-	var theme = prefs.getPref("editor.theme");
+	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
+	var theme = prefs.get("editor.theme");
 	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
 
 	// initialize global editor controls
@@ -242,7 +242,7 @@ function initCodeMirror() {
 		}
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
-		loadPrefs(
+		setupLivePrefs(
 			document.querySelectorAll("#options *[data-option][id^='editor.']")
 				.map(function(option) { return option.id })
 		);
@@ -270,8 +270,8 @@ function acmeEventListener(event) {
 			// use non-localized "default" internally
 			if (!value || value == "default" || value == t("defaultTheme")) {
 				value = "default";
-				if (prefs.getPref(el.id) != value) {
-					prefs.setPref(el.id, value);
+				if (prefs.get(el.id) != value) {
+					prefs.set(el.id, value);
 				}
 				themeLink.href = "";
 				el.selectedIndex = 0;
@@ -386,7 +386,7 @@ document.addEventListener("wheel", function(event) {
 
 chrome.tabs.query({currentWindow: true}, function(tabs) {
 	var windowId = tabs[0].windowId;
-	if (prefs.getPref("openEditInWindow")) {
+	if (prefs.get("openEditInWindow")) {
 		if (tabs.length == 1 && window.history.length == 1) {
 			chrome.windows.getAll(function(windows) {
 				if (windows.length > 1) {
@@ -420,7 +420,7 @@ function goBackToManage(event) {
 
 window.onbeforeunload = function() {
 	if (saveSizeOnClose) {
-		prefs.setPref("windowPosition", {
+		prefs.set("windowPosition", {
 			left: screenLeft,
 			top: screenTop,
 			width: outerWidth,
@@ -964,9 +964,9 @@ function beautify(event) {
 		script.onload = doBeautify;
 	}
 	function doBeautify() {
-		var tabs = prefs.getPref("editor.indentWithTabs");
-		var options = prefs.getPref("editor.beautify");
-		options.indent_size = tabs ? 1 : prefs.getPref("editor.tabSize");
+		var tabs = prefs.get("editor.indentWithTabs");
+		var options = prefs.get("editor.beautify");
+		options.indent_size = tabs ? 1 : prefs.get("editor.tabSize");
 		options.indent_char = tabs ? "\t" : " ";
 
 		var section = getSectionForChild(event.target);
@@ -1015,7 +1015,7 @@ function beautify(event) {
 		document.querySelector(".beautify-options").addEventListener("change", function(event) {
 			var value = event.target.selectedIndex > 0;
 			options[event.target.dataset.option] = value;
-			prefs.setPref("editor.beautify", options);
+			prefs.set("editor.beautify", options);
 			event.target.parentNode.setAttribute("newline", value.toString());
 			doBeautify();
 		});
@@ -1090,7 +1090,7 @@ function initWithStyle(style) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(getCodeMirrorForSection(sectionDiv), prefs.getPref("editor.lintDelay"));
+		updateLintReport(getCodeMirrorForSection(sectionDiv), prefs.get("editor.lintDelay"));
 	}
 }
 
@@ -1442,12 +1442,12 @@ function showToMozillaHelp() {
 }
 
 function showKeyMapHelp() {
-	var keyMap = mergeKeyMaps({}, prefs.getPref("editor.keyMap"), CodeMirror.defaults.extraKeys);
+	var keyMap = mergeKeyMaps({}, prefs.get("editor.keyMap"), CodeMirror.defaults.extraKeys);
 	var keyMapSorted = Object.keys(keyMap)
 		.map(function(key) { return {key: key, cmd: keyMap[key]} })
 		.concat([{key: "Shift-Ctrl-Wheel", cmd: "scrollWindow"}])
 		.sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1 });
-	showHelp(t("cm_keyMap") + ": " + prefs.getPref("editor.keyMap"),
+	showHelp(t("cm_keyMap") + ": " + prefs.get("editor.keyMap"),
 		'<table class="keymap-list">' +
 			'<thead><tr><th><input placeholder="' + t("helpKeyMapHotkey") + '" type="search"></th>' +
 				'<th><input placeholder="' + t("helpKeyMapCommand") + '" type="search"></th></tr></thead>' +
@@ -1564,8 +1564,8 @@ function showCodeMirrorPopup(title, html, options) {
 		matchBrackets: true,
 		lint: {getAnnotations: CodeMirror.lint.css, delay: 0},
 		styleActiveLine: true,
-		theme: prefs.getPref("editor.theme"),
-		keyMap: prefs.getPref("editor.keyMap")
+		theme: prefs.get("editor.theme"),
+		keyMap: prefs.get("editor.keyMap")
 	}, options));
 	popup.codebox.focus();
 	popup.codebox.on("focus", function() { hotkeyRerouter.setState(false) });

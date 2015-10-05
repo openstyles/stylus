@@ -136,13 +136,14 @@ function isCheckbox(el) {
 	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
 }
 
-// Accepts an array of pref names (values are fetched via prefs.getPref)
-function loadPrefs(IDs) {
+// Accepts an array of pref names (values are fetched via prefs.get)
+// and establishes a two-way connection between the document elements and the actual prefs
+function setupLivePrefs(IDs) {
 	var localIDs = {};
 	IDs.forEach(function(id) {
 		localIDs[id] = true;
 		updateElement(id).addEventListener("change", function() {
-			prefs.setPref(this.id, isCheckbox(this) ? this.checked : this.value);
+			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
 		});
 	});
 	chrome.extension.onMessage.addListener(function(request) {
@@ -152,7 +153,7 @@ function loadPrefs(IDs) {
 	});
 	function updateElement(id) {
 		var el = document.getElementById(id);
-		el[isCheckbox(el) ? "checked" : "value"] = prefs.getPref(id);
+		el[isCheckbox(el) ? "checked" : "value"] = prefs.get(id);
 		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
 		return el;
 	}
@@ -200,7 +201,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 
 	Object.defineProperty(this, "readOnlyValues", {value: {}});
 
-	Prefs.prototype.getPref = function(key, defaultValue) {
+	Prefs.prototype.get = function(key, defaultValue) {
 		if (key in values) {
 			return values[key];
 		}
@@ -213,11 +214,11 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		console.warn("No default preference for '%s'", key);
 	};
 
-	Prefs.prototype.getAllPrefs = function(key) {
+	Prefs.prototype.getAll = function(key) {
 		return deepCopy(values);
 	};
 
-	Prefs.prototype.setPref = function(key, value, options) {
+	Prefs.prototype.set = function(key, value, options) {
 		var oldValue = deepCopy(values[key]);
 		values[key] = value;
 		defineReadonlyProperty(this.readOnlyValues, key, value);
@@ -226,7 +227,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		}
 	};
 
-	Prefs.prototype.removePref = function(key) { me.setPref(key, undefined) };
+	Prefs.prototype.remove = function(key) { me.set(key, undefined) };
 
 	Prefs.prototype.broadcast = function(key, value, options) {
 		var message = {method: "prefChanged", prefName: key, value: value};
@@ -244,18 +245,18 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 	};
 
 	Object.keys(defaults).forEach(function(key) {
-		me.setPref(key, defaults[key], {noBroadcast: true});
+		me.set(key, defaults[key], {noBroadcast: true});
 	});
 
 	chrome.storage.sync.get("settings", function(result) {
 		var synced = result.settings;
 		for (var key in defaults) {
 			if (synced && (key in synced)) {
-				me.setPref(key, synced[key], {noSync: true});
+				me.set(key, synced[key], {noSync: true});
 			} else {
 				var value = tryMigrating(key);
 				if (value !== undefined) {
-					me.setPref(key, value);
+					me.set(key, value);
 				}
 			}
 		}
@@ -267,7 +268,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 			if (synced) {
 				for (key in defaults) {
 					if (key in synced) {
-						me.setPref(key, synced[key], {noSync: true});
+						me.set(key, synced[key], {noSync: true});
 					}
 				}
 			} else {
