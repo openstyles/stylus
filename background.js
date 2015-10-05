@@ -102,7 +102,6 @@ function disableAllStylesToggle(newState) {
 		newState = !prefs.getPref("disableAll");
 	}
 	prefs.setPref("disableAll", newState);
-	notifyAllTabs({method: "styleDisableAll", disableAll: newState});
 }
 
 function getStyles(options, callback) {

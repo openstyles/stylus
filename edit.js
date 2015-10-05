@@ -11,7 +11,7 @@ var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", 
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
 // make querySelectorAll enumeration code readable
-["forEach", "some", "indexOf"].forEach(function(method) {
+["forEach", "some", "indexOf", "map"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
 });
 
@@ -125,8 +125,7 @@ function initCodeMirror() {
 	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
 
 	// default option values
-	var userOptions = prefs.getPref("editor.options");
-	var stylishOptions = {
+	shallowMerge(CM.defaults, {
 		mode: 'css',
 		lineNumbers: true,
 		lineWrapping: true,
@@ -142,9 +141,7 @@ function initCodeMirror() {
 			"Alt-PageDown": "nextEditor",
 			"Alt-PageUp": "prevEditor"
 		}
-	}
-	shallowMerge(stylishOptions, CM.defaults);
-	shallowMerge(userOptions, CM.defaults);
+	}, prefs.getPref("editor.options"));
 
 	// additional commands
 	CM.commands.jumpToLine = jumpToLine;
@@ -158,11 +155,9 @@ function initCodeMirror() {
 	// "basic" keymap only has basic keys by design, so we skip it
 
 	var extraKeysCommands = {};
-	if (userOptions && typeof userOptions.extraKeys == "object") {
-		Object.keys(userOptions.extraKeys).forEach(function(key) {
-			extraKeysCommands[userOptions.extraKeys[key]] = true;
-		});
-	}
+	Object.keys(CM.defaults.extraKeys).forEach(function(key) {
+		extraKeysCommands[CM.defaults.extraKeys[key]] = true;
+	});
 	if (!extraKeysCommands.jumpToLine) {
 		CM.keyMap.sublime["Ctrl-G"] = "jumpToLine";
 		CM.keyMap.emacsy["Ctrl-G"] = "jumpToLine";
@@ -246,12 +241,11 @@ function initCodeMirror() {
 			});
 		}
 		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
-		var controlPrefs = {};
-		document.querySelectorAll("#options *[data-option][id^='editor.']").forEach(function(option) {
-			controlPrefs[option.id] = CM.defaults[option.dataset.option];
-		});
 		document.getElementById("options").addEventListener("change", acmeEventListener, false);
-		loadPrefs(controlPrefs);
+		loadPrefs(
+			document.querySelectorAll("#options *[data-option][id^='editor.']")
+				.map(function(option) { return option.id })
+		);
 	});
 
 	hotkeyRerouter.setState(true);
@@ -1561,7 +1555,7 @@ function showCodeMirrorPopup(title, html, options) {
 	var popup = showHelp(title, html);
 	popup.classList.add("big");
 
-	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge(options, {
+	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge({
 		mode: "css",
 		lineNumbers: true,
 		lineWrapping: true,
@@ -1572,7 +1566,7 @@ function showCodeMirrorPopup(title, html, options) {
 		styleActiveLine: true,
 		theme: prefs.getPref("editor.theme"),
 		keyMap: prefs.getPref("editor.keyMap")
-	}));
+	}, options));
 	popup.codebox.focus();
 	popup.codebox.on("focus", function() { hotkeyRerouter.setState(false) });
 	popup.codebox.on("blur", function() { hotkeyRerouter.setState(true) });

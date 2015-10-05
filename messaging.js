@@ -8,11 +8,7 @@ function notifyAllTabs(request) {
 		});
 	});
 	// notify all open popups
-	// use a shallow copy since the original `request` is still being processed
-	var reqPopup = {};
-	for (var k in request) reqPopup[k] = request[k];
-	reqPopup.reason = request.method;
-	reqPopup.method = "updatePopup";
+	var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
 	chrome.extension.sendMessage(reqPopup);
 }
 

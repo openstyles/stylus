@@ -185,10 +185,6 @@ function handleDelete(id) {
 	}
 }
 
-function handleDisableAll(disableAll) {
-	installed.classList.toggle("disabled", disableAll);
-}
-
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
@@ -199,12 +195,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			case "styleDeleted":
 				handleDelete(request.id);
 				break;
-			case "prefChanged":
-				if (request.prefName == "disableAll") {
-					document.getElementById("disableAll").checked = request.value;
-					handleDisableAll(request.value);
-				}
-				break;
 		}
 	}
 });
@@ -213,9 +203,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	document.getElementById(id).addEventListener("click", openLink, false);
 });
 
-loadPrefs({"disableAll": false});
-handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
-	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
-	handleDisableAll(event.target.checked);
+	installed.classList.toggle("disabled", prefs.getPref("disableAll"));
 });
+loadPrefs(["disableAll"]);
