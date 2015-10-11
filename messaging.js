@@ -49,10 +49,15 @@ function updateIcon(tab, styles) {
 		chrome.browserAction.setIcon({
 			path: {19: "19" + postfix + ".png", 38: "38" + postfix + ".png"},
 			tabId: tab.id
+		}, function() {
+			// if the tab was just closed an error may occur,
+			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
+			if (!chrome.runtime.lastError) {
+				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
+				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
+				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
+			}
 		});
-		var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
-		chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-		chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 	}
 }
