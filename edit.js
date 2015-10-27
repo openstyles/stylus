@@ -310,8 +310,16 @@ function setupCodeMirror(textarea, index) {
 	cm.on("blur", function(cm) {
 		editors.lastActive = cm;
 		hotkeyRerouter.setState(true);
+		setTimeout(function() {
+			var cm = editors.lastActive;
+			var childFocused = cm.display.wrapper.contains(document.activeElement);
+			cm.display.wrapper.classList.toggle("CodeMirror-active", childFocused);
+		}, 0);
 	});
-	cm.on("focus", hotkeyRerouter.setState.bind(null, false));
+	cm.on("focus", function() {
+		hotkeyRerouter.setState(false);
+		cm.display.wrapper.classList.add("CodeMirror-active");
+	});
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
