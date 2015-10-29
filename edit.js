@@ -608,6 +608,7 @@ function setupGlobalSearch() {
 			originalOpenDialog.call(cm, template.innerHTML, callback.bind(cb), opt);
 		};
 		setTimeout(function() { cm.openDialog = originalOpenDialog; }, 0);
+		refocusMinidialog(cm);
 	}
 
 	function focusClosestCM(activeCM) {
@@ -794,12 +795,26 @@ function setupGlobalSearch() {
 
 function jumpToLine(cm) {
 	var cur = cm.getCursor();
+	refocusMinidialog(cm);
 	cm.openDialog(template.jumpToLine.innerHTML, function(str) {
 		var m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
 		if (m) {
 			cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
 		}
 	}, {value: cur.line+1});
+}
+
+function refocusMinidialog(cm) {
+	var section = getSectionForCodeMirror(cm);
+	if (!section.querySelector(".CodeMirror-dialog")) {
+		return;
+	}
+	// close the currently opened minidialog
+	cm.focus();
+	// make sure to focus the input in newly opened minidialog
+	setTimeout(function() {
+		section.querySelector(".CodeMirror-dialog").focus();
+	}, 0);
 }
 
 function nextPrevEditor(cm, direction) {
