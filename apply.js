@@ -134,9 +134,7 @@ function applyStyles(styleHash) {
 	}
 
 	if (Object.keys(g_styleElements).length) {
-		document.addEventListener("DOMContentLoaded", function() {
-			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
-		});
+		document.addEventListener("DOMContentLoaded", addDocumentStylesToAllIFrames);
 		iframeObserver.start();
 	}
 
@@ -199,6 +197,10 @@ function addDocumentStylesToIFrame(iframe) {
 	}
 }
 
+function addDocumentStylesToAllIFrames() {
+	getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
+}
+
 // Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
 function getDynamicIFrames(doc) {
 	return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
@@ -253,7 +255,7 @@ function initObserver() {
 		if (mutations.length > 1000) {
 			// use a much faster method for very complex pages with 100,000 mutations
 			// (observer usually receives 1k-10k mutations per call)
-			getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
+			addDocumentStylesToAllIFrames();
 			return;
 		}
 		// move the check out of current execution context
