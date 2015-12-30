@@ -30,6 +30,25 @@ function webNavigationListener(method, data) {
 	});
 }
 
+// catch direct URL hash modifications not invoked via HTML5 history API
+var tabUrlHasHash = {};
+chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+	if (info.status == "loading" && info.url) {
+		if (info.url.indexOf('#') > 0) {
+			tabUrlHasHash[tabId] = true;
+		} else if (tabUrlHasHash[tabId]) {
+			delete tabUrlHasHash[tabId];
+		} else {
+			// do nothing since the tab neither had # before nor has # now
+			return;
+		}
+		webNavigationListener("styleReplaceAll", {tabId: tabId, frameId: 0, url: info.url});
+	}
+});
+chrome.tabs.onRemoved.addListener(function(tabId, info) {
+	delete tabUrlHasHash[tabId];
+});
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
