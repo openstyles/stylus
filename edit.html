@@ -447,6 +447,18 @@
 					position: relative;
 					top: 0.2rem;
 				}
+				#lint h2 {
+					display: block;
+					cursor: default;
+					margin-bottom: 0;
+				}
+				#lint > div {
+					max-height: 0;
+				}
+				#lint:hover > div {
+					margin-top: 1em;
+					max-height: 30vh;
+				}
 				#sections {
 					padding-left: 0;
 				}
@@ -594,7 +606,7 @@
 					<select data-option="theme" id="editor.theme"></select>
 				</div>
 			</section>
-			<section id="lint"><h2 i18n-text="issues"><img id="lint-help" src="help.png" i18n-alt="helpAlt"></h2><div></div></section>
+			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><img id="lint-help" src="help.png" i18n-alt="helpAlt"></h2><div></div></section>
 		</div>
 		<section id="sections">
 			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><img id="sections-help" src="help.png" i18n-alt="helpAlt"></h2>
