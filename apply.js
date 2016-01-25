@@ -142,8 +142,10 @@ function applyStyles(styleHash) {
 				document.head.appendChild(document.getElementById(id));
 			}
 		}
-		document.addEventListener("DOMContentLoaded", addDocumentStylesToAllIFrames);
-		iframeObserver.start();
+		document.addEventListener("DOMContentLoaded", function() {
+			addDocumentStylesToAllIFrames();
+			iframeObserver.start();
+		});
 	}
 
 	if (retiredStyleIds.length) {
