@@ -5,11 +5,11 @@ var appliesToExtraTemplate = document.createElement("span");
 appliesToExtraTemplate.className = "applies-to-extra";
 appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
 
-chrome.extension.sendMessage({method: "getStyles"}, showStyles);
+chrome.runtime.sendMessage({method: "getStyles"}, showStyles);
 
 function showStyles(styles) {
 	if (!styles) { // Chrome is starting up
-		chrome.extension.sendMessage({method: "getStyles"}, showStyles);
+		chrome.runtime.sendMessage({method: "getStyles"}, showStyles);
 		return;
 	}
 	if (!installed) {
@@ -114,7 +114,7 @@ function createStyleElement(style) {
 					options.url = url;
 					chrome.windows.create(options);
 				} else {
-					chrome.extension.sendMessage({
+					chrome.runtime.sendMessage({
 						method: "openURL",
 						url: url,
 						active: openForegroundTab
@@ -251,7 +251,7 @@ function checkUpdate(element, callback) {
 	var originalMd5 = element.getAttribute("style-original-md5");
 
 	function handleSuccess(forceUpdate, serverJson) {
-		chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
+		chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
 			var style = styles[0];
 			var needsUpdate = false;
 			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
@@ -362,7 +362,7 @@ function doUpdate(event) {
 
 	// updating the UI will be handled by the general update listener
 	lastUpdatedStyleId = updatedCode.id;
-	chrome.extension.sendMessage(updatedCode);
+	chrome.runtime.sendMessage(updatedCode);
 }
 
 function codeIsEqual(a, b) {
@@ -430,7 +430,7 @@ function searchStyles(immediately) {
 		searchStyles.timeout = setTimeout(doSearch, 100);
 	}
 	function doSearch() {
-		chrome.extension.sendMessage({method: "getStyles"}, function(styles) {
+		chrome.runtime.sendMessage({method: "getStyles"}, function(styles) {
 			styles.forEach(function(style) {
 				var el = document.querySelector("[style-id='" + style.id + "']");
 				if (el) {

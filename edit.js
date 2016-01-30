@@ -1079,7 +1079,7 @@ function init() {
 	tE("heading", "editStyleHeading", null, false);
 	requestStyle();
 	function requestStyle() {
-		chrome.extension.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
+		chrome.runtime.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
 			if (!styles) { // Chrome is starting up and shows edit.html
 				requestStyle();
 				return;
@@ -1247,7 +1247,7 @@ function save() {
 		enabled: enabled,
 		sections: getSectionsHashes()
 	};
-	chrome.extension.sendMessage(request, saveComplete);
+	chrome.runtime.sendMessage(request, saveComplete);
 }
 
 function getSectionsHashes() {

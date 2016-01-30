@@ -17,7 +17,7 @@ function updatePopUp(url) {
 		return;
 	}
 
-	chrome.extension.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
+	chrome.runtime.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
 	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : url);
 
 	// Write new style links
@@ -159,7 +159,7 @@ function openLinkInTabOrWindow(event) {
 
 function openLink(event) {
 	event.preventDefault();
-	chrome.extension.sendMessage({method: "openURL", url: event.target.href});
+	chrome.runtime.sendMessage({method: "openURL", url: event.target.href});
 	close();
 }
 

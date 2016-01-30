@@ -9,7 +9,7 @@ function notifyAllTabs(request) {
 	});
 	// notify all open popups
 	var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
-	chrome.extension.sendMessage(reqPopup);
+	chrome.runtime.sendMessage(reqPopup);
 }
 
 function updateIcon(tab, styles) {
@@ -39,7 +39,7 @@ function updateIcon(tab, styles) {
 		if (typeof getStyles != "undefined") {
 			getStyles({matchUrl: url, enabled: true}, stylesReceived);
 		} else {
-			chrome.extension.sendMessage({method: "getStyles", matchUrl: url, enabled: true}, stylesReceived);
+			chrome.runtime.sendMessage({method: "getStyles", matchUrl: url, enabled: true}, stylesReceived);
 		}
 	});
 

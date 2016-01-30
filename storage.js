@@ -77,8 +77,8 @@ function enableStyle(id, enabled) {
 		db.transaction(function (t) {
 			t.executeSql("UPDATE styles SET enabled = ? WHERE id = ?;", [enabled, id]);
 		}, reportError, function() {
-			chrome.extension.sendMessage({method: "styleChanged"});
-			chrome.extension.sendMessage({method: "getStyles", id: id}, function(styles) {
+			chrome.runtime.sendMessage({method: "styleChanged"});
+			chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
 				handleUpdate(styles[0]);
 				notifyAllTabs({method: "styleUpdated", style: styles[0]});
 			});
@@ -93,7 +93,7 @@ function deleteStyle(id) {
 			t.executeSql('DELETE FROM sections WHERE style_id = ?;', [id]);
 			t.executeSql("DELETE FROM styles WHERE id = ?;", [id]);
 		}, reportError, function() {
-			chrome.extension.sendMessage({method: "styleChanged"});
+			chrome.runtime.sendMessage({method: "styleChanged"});
 			handleDelete(id);
 			notifyAllTabs({method: "styleDeleted", id: id});
 		});
@@ -232,7 +232,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 	Prefs.prototype.broadcast = function(key, value, options) {
 		var message = {method: "prefChanged", prefName: key, value: value};
 		notifyAllTabs(message);
-		chrome.extension.sendMessage(message);
+		chrome.runtime.sendMessage(message);
 		if (key == "disableAll") {
 			notifyAllTabs({method: "styleDisableAll", disableAll: value});
 		}

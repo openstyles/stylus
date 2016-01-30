@@ -19,7 +19,7 @@ function requestStyles() {
 			bg.getStyles(request, applyStyles);
 		}
 	}
-	chrome.extension.sendMessage(request, applyStyles);
+	chrome.runtime.sendMessage(request, applyStyles);
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -38,7 +38,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 		case "styleAdded":
 			if (request.style.enabled == "true") {
-				chrome.extension.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
+				chrome.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
 			}
 			break;
 		case "styleApply":
