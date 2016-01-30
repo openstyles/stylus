@@ -136,96 +136,170 @@ function isCheckbox(el) {
 	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
 }
 
-function changePref(event) {
-	var el = event.target;
-	prefs.setPref(el.id, isCheckbox(el) ? el.checked : el.value);
-}
-
-// Accepts a hash of pref name to default value
-function loadPrefs(prefs) {
-	for (var id in prefs) {
-		var value = this.prefs.getPref(id, prefs[id]);
-		var el = document.getElementById(id);
-		if (isCheckbox(el)) {
-			el.checked = value;
-		} else {
-			el.value = value;
+// Accepts an array of pref names (values are fetched via prefs.get)
+// and establishes a two-way connection between the document elements and the actual prefs
+function setupLivePrefs(IDs) {
+	var localIDs = {};
+	IDs.forEach(function(id) {
+		localIDs[id] = true;
+		updateElement(id).addEventListener("change", function() {
+			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
+		});
+	});
+	chrome.extension.onMessage.addListener(function(request) {
+		if (request.prefName in localIDs) {
+			updateElement(request.prefName);
 		}
+	});
+	function updateElement(id) {
+		var el = document.getElementById(id);
+		el[isCheckbox(el) ? "checked" : "value"] = prefs.get(id);
 		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
-		el.addEventListener("change", changePref);
+		return el;
 	}
 }
 
-var prefs = {
-// NB: localStorage["not_key"] is undefined, localStorage.getItem("not_key") is null
+var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
+	var me = this;
 
-	// defaults
-	"openEditInWindow": false, // new editor opens in a own browser window
-	"windowPosition": {},      // detached window position
-	"show-badge": true,        // display text on popup menu icon
-	"disableAll": false,       // boss key
+	var defaults = {
+		"openEditInWindow": false,      // new editor opens in a own browser window
+		"windowPosition": {},           // detached window position
+		"show-badge": true,             // display text on popup menu icon
+		"disableAll": false,            // boss key
 
-	"popup.breadcrumbs": true, // display "New style" links as URL breadcrumbs
-	"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
-	"popup.enabledFirst": true,  // display enabled styles before disabled styles
-	"popup.stylesFirst": true,  // display enabled styles before disabled styles
+		"popup.breadcrumbs": true,      // display "New style" links as URL breadcrumbs
+		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
+		"popup.enabledFirst": true,     // display enabled styles before disabled styles
+		"popup.stylesFirst": true,      // display enabled styles before disabled styles
 
-	"manage.onlyEnabled": false, // display only enabled styles
-	"manage.onlyEdited": false,  // display only styles created locally
+		"manage.onlyEnabled": false,    // display only enabled styles
+		"manage.onlyEdited": false,     // display only styles created locally
 
-	"editor.options": {},          // CodeMirror.defaults.*
-	"editor.lineWrapping": true,   // word wrap
-	"editor.smartIndent": true,    // "smart" indent
-	"editor.indentWithTabs": false,// smart indent with tabs
-	"editor.tabSize": 4,           // tab width, in spaces
-	"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
-	"editor.theme": "default",     // CSS theme
-	"editor.beautify": {           // CSS beautifier
-		selector_separator_newline: true,
-		newline_before_open_brace: false,
-		newline_after_open_brace: true,
-		newline_between_properties: true,
-		newline_before_close_brace: true,
-		newline_between_rules: false,
-		end_with_newline: false
-	},
-	"editor.lintDelay": 500,        // lint gutter marker update delay, ms
-	"editor.lintReportDelay": 4500, // lint report update delay, ms
+		"editor.options": {},           // CodeMirror.defaults.*
+		"editor.lineWrapping": true,    // word wrap
+		"editor.smartIndent": true,     // "smart" indent
+		"editor.indentWithTabs": false, // smart indent with tabs
+		"editor.tabSize": 4,            // tab width, in spaces
+		"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
+		"editor.theme": "default",      // CSS theme
+		"editor.beautify": {            // CSS beautifier
+			selector_separator_newline: true,
+			newline_before_open_brace: false,
+			newline_after_open_brace: true,
+			newline_between_properties: true,
+			newline_before_close_brace: true,
+			newline_between_rules: false,
+			end_with_newline: false
+		},
+		"editor.lintDelay": 500,        // lint gutter marker update delay, ms
+		"editor.lintReportDelay": 4500, // lint report update delay, ms
+	};
+	var values = deepCopy(defaults);
 
-	NO_DEFAULT_PREFERENCE: "No default preference for '%s'",
-	UNHANDLED_DATA_TYPE: "Default '%s' is of type '%s' - what should be done with it?",
+	var syncTimeout; // see broadcast() function below
 
-	getPref: function(key, defaultValue) {
-	// Returns localStorage[key], defaultValue, this[key], or undefined
-	//   as type of defaultValue, this[key], or localStorage[key]
-		var value = localStorage[key];
-		if (value === undefined) {
-			return defaultValue === undefined ? shallowCopy(this[key]) : defaultValue;
+	Object.defineProperty(this, "readOnlyValues", {value: {}});
+
+	Prefs.prototype.get = function(key, defaultValue) {
+		if (key in values) {
+			return values[key];
 		}
-		switch (typeof (defaultValue === undefined ? this[key] : defaultValue)) {
-			case "boolean": return value.toLowerCase() === "true";
-			case "number": return Number(value);
-			case "object": return JSON.parse(value);
-			case "string": break;
-			case "undefined":  console.warn(this.NO_DEFAULT_PREFERENCE, key); break;
-			default: console.error(UNHANDLED_DATA_TYPE, key, typeof defaultValue);
+		if (defaultValue !== undefined) {
+			return defaultValue;
+		}
+		if (key in defaults) {
+			return defaults[key];
+		}
+		console.warn("No default preference for '%s'", key);
+	};
+
+	Prefs.prototype.getAll = function(key) {
+		return deepCopy(values);
+	};
+
+	Prefs.prototype.set = function(key, value, options) {
+		var oldValue = deepCopy(values[key]);
+		values[key] = value;
+		defineReadonlyProperty(this.readOnlyValues, key, value);
+		if ((!options || !options.noBroadcast) && !equal(value, oldValue)) {
+			me.broadcast(key, value, options);
+		}
+	};
+
+	Prefs.prototype.remove = function(key) { me.set(key, undefined) };
+
+	Prefs.prototype.broadcast = function(key, value, options) {
+		var message = {method: "prefChanged", prefName: key, value: value};
+		notifyAllTabs(message);
+		chrome.extension.sendMessage(message);
+		if (key == "disableAll") {
+			notifyAllTabs({method: "styleDisableAll", disableAll: value});
+		}
+		if (!options || !options.noSync) {
+			clearTimeout(syncTimeout);
+			syncTimeout = setTimeout(function() {
+				chrome.storage.sync.set({"settings": values});
+			}, 0);
+		}
+	};
+
+	Object.keys(defaults).forEach(function(key) {
+		me.set(key, defaults[key], {noBroadcast: true});
+	});
+
+	chrome.storage.sync.get("settings", function(result) {
+		var synced = result.settings;
+		for (var key in defaults) {
+			if (synced && (key in synced)) {
+				me.set(key, synced[key], {noSync: true});
+			} else {
+				var value = tryMigrating(key);
+				if (value !== undefined) {
+					me.set(key, value);
+				}
+			}
+		}
+	});
+
+	chrome.storage.onChanged.addListener(function(changes, area) {
+		if (area == "sync" && "settings" in changes) {
+			var synced = changes.settings.newValue;
+			if (synced) {
+				for (key in defaults) {
+					if (key in synced) {
+						me.set(key, synced[key], {noSync: true});
+					}
+				}
+			} else {
+				// user manually deleted our settings, we'll recreate them
+				chrome.storage.sync.set({"settings": values});
+			}
+		}
+	});
+
+	function tryMigrating(key) {
+		if (!(key in localStorage)) {
+			return undefined;
+		}
+		var value = localStorage[key];
+		delete localStorage[key];
+		localStorage["DEPRECATED: " + key] = value;
+		switch (typeof defaults[key]) {
+			case "boolean":
+				return value.toLowerCase() === "true";
+			case "number":
+				return Number(value);
+			case "object":
+				try {
+					return JSON.parse(value);
+				} catch(e) {
+					console.log("Cannot migrate from localStorage %s = '%s': %o", key, value, e);
+					return undefined;
+				}
 		}
 		return value;
-	},
-	setPref: function(key, value) {
-		var oldValue = localStorage[key];
-		if (value === undefined || equal(value, this[key])) {
-			delete localStorage[key];
-		} else {
-			localStorage[key] = typeof value == "string" ? value : JSON.stringify(value);
-		}
-		if (!equal(value, oldValue === undefined ? this[key] : oldValue)) {
-			var message = {method: "prefChanged", prefName: key, value: value};
-			notifyAllTabs(message);
-			chrome.extension.sendMessage(message);
-		}
-	},
-	removePref: function(key) { setPref(key, undefined) }
+	}
 };
 
 function getCodeMirrorThemes(callback) {
@@ -261,17 +335,42 @@ function sessionStorageHash(name) {
 	return hash;
 }
 
-function shallowCopy(obj) {
-	return typeof obj == "object" ? shallowMerge(obj, {}) : obj;
+function deepCopy(obj) {
+	if (!obj || typeof obj != "object") {
+		return obj;
+	} else {
+		var emptyCopy = Object.create(Object.getPrototypeOf(obj));
+		return deepMerge(emptyCopy, obj);
+	}
 }
 
-function shallowMerge(from, to) {
-	if (typeof from == "object" && typeof to == "object") {
-		for (var k in from) {
-			to[k] = from[k];
+function deepMerge(target, obj1 /* plus any number of object arguments */) {
+	for (var i = 1; i < arguments.length; i++) {
+		var obj = arguments[i];
+		for (var k in obj) {
+			// hasOwnProperty checking is not needed for our non-OOP stuff
+			var value = obj[k];
+			if (!value || typeof value != "object") {
+				target[k] = value;
+			} else if (k in target) {
+				deepMerge(target[k], value);
+			} else {
+				target[k] = deepCopy(value);
+			}
 		}
 	}
-	return to;
+	return target;
+}
+
+function shallowMerge(target, obj1 /* plus any number of object arguments */) {
+	for (var i = 1; i < arguments.length; i++) {
+		var obj = arguments[i];
+		for (var k in obj) {
+			target[k] = obj[k];
+			// hasOwnProperty checking is not needed for our non-OOP stuff
+		}
+	}
+	return target;
 }
 
 function equal(a, b) {
@@ -287,4 +386,10 @@ function equal(a, b) {
 		}
 	}
 	return true;
+}
+
+function defineReadonlyProperty(obj, key, value) {
+	var copy = deepCopy(value);
+	Object.freeze(copy);
+	Object.defineProperty(obj, key, {value: copy, configurable: true})
 }

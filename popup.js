@@ -3,7 +3,7 @@ writeStyleTemplate.className = "write-style-link";
 
 var installed = document.getElementById("installed");
 
-if (!prefs.getPref("popup.stylesFirst")) {
+if (!prefs.get("popup.stylesFirst")) {
 	document.body.insertBefore(document.querySelector("body > .actions"), installed);
 }
 
@@ -29,14 +29,14 @@ function updatePopUp(url) {
 	var urlLink = writeStyleTemplate.cloneNode(true);
 	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(url);
 	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
-		!prefs.getPref("popup.breadcrumbs.usePath")
+		!prefs.get("popup.breadcrumbs.usePath")
 		? t("writeStyleForURL").replace(/ /g, "\u00a0")
 		: /\/\/[^/]+\/(.*)/.exec(url)[1]
 	));
 	urlLink.title = "url-prefix(\"$\")".replace("$", url);
 	writeStyleLinks.push(urlLink);
 	document.querySelector("#write-style").appendChild(urlLink)
-	if (prefs.getPref("popup.breadcrumbs")) { // switchable; default=enabled
+	if (prefs.get("popup.breadcrumbs")) { // switchable; default=enabled
 		urlLink.addEventListener("mouseenter", function(event) { this.parentNode.classList.add("url()") }, false);
 		urlLink.addEventListener("focus", function(event) { this.parentNode.classList.add("url()") }, false);
 		urlLink.addEventListener("mouseleave", function(event) { this.parentNode.classList.remove("url()") }, false);
@@ -63,7 +63,7 @@ function updatePopUp(url) {
 		link.addEventListener("click", openLinkInTabOrWindow, false);
 		container.appendChild(link);
 	});
-	if (prefs.getPref("popup.breadcrumbs")) {
+	if (prefs.get("popup.breadcrumbs")) {
 		container.classList.add("breadcrumbs");
 		container.appendChild(container.removeChild(container.firstChild));
 	}
@@ -71,7 +71,7 @@ function updatePopUp(url) {
 }
 
 function showStyles(styles) {
-	var enabledFirst = prefs.getPref("popup.enabledFirst");
+	var enabledFirst = prefs.get("popup.enabledFirst");
 	styles.sort(function(a, b) {
 		if (enabledFirst && a.enabled !== b.enabled) return !(a.enabled < b.enabled) ? -1 : 1;
 		return a.name.localeCompare(b.name);
@@ -146,9 +146,9 @@ function getId(event) {
 
 function openLinkInTabOrWindow(event) {
 	event.preventDefault();
-	if (prefs.getPref('openEditInWindow', false)) {
+	if (prefs.get("openEditInWindow", false)) {
 		var options = {url: event.target.href}
-		var wp = prefs.getPref('windowPosition', {});
+		var wp = prefs.get("windowPosition", {});
 		for (var k in wp) options[k] = wp[k];
 		chrome.windows.create(options);
 	} else {
@@ -185,10 +185,6 @@ function handleDelete(id) {
 	}
 }
 
-function handleDisableAll(disableAll) {
-	installed.classList.toggle("disabled", disableAll);
-}
-
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
@@ -199,12 +195,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			case "styleDeleted":
 				handleDelete(request.id);
 				break;
-			case "prefChanged":
-				if (request.prefName == "disableAll") {
-					document.getElementById("disableAll").checked = request.value;
-					handleDisableAll(request.value);
-				}
-				break;
 		}
 	}
 });
@@ -213,9 +203,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	document.getElementById(id).addEventListener("click", openLink, false);
 });
 
-loadPrefs({"disableAll": false});
-handleDisableAll(prefs.getPref("disableAll"));
 document.getElementById("disableAll").addEventListener("change", function(event) {
-	notifyAllTabs({method: "styleDisableAll", disableAll: event.target.checked});
-	handleDisableAll(event.target.checked);
+	installed.classList.toggle("disabled", prefs.get("disableAll"));
 });
+setupLivePrefs(["disableAll"]);

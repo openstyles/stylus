@@ -110,7 +110,7 @@ function createStyleElement(style) {
 			event.stopPropagation();
 			if (openWindow || openBackgroundTab || openForegroundTab) {
 				if (openWindow) {
-					var options = prefs.getPref('windowPosition', {});
+					var options = prefs.get("windowPosition");
 					options.url = url;
 					chrome.windows.create(options);
 				} else {
@@ -475,12 +475,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("search").addEventListener("input", searchStyles);
 	searchStyles(true); // re-apply filtering on history Back
 
-	loadPrefs({
-		"manage.onlyEnabled": false,
-		"manage.onlyEdited": false,
-		"show-badge": true,
-		"popup.stylesFirst": true
-	});
+	setupLivePrefs([
+		"manage.onlyEnabled",
+		"manage.onlyEdited",
+		"show-badge",
+		"popup.stylesFirst"
+	]);
 	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
 	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
 });

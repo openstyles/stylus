@@ -54,7 +54,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
 			// check if this is a main content frame style enumeration
-			if (request.matchUrl && !request.id && sender && sender.tab && sender.frameId == 0) {
+			if (request.matchUrl && !request.id
+			&& sender && sender.tab && sender.frameId == 0
+			&& sender.tab.url == request.matchUrl) {
 				updateIcon(sender.tab, styles);
 			}
 			return true;
@@ -88,7 +90,7 @@ chrome.commands.onCommand.addListener(function(command) {
 			break;
 		case "styleDisableAll":
 			disableAllStylesToggle();
-			chrome.contextMenus.update("disableAll", {checked: prefs.getPref("disableAll")});
+			chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
 			break;
 	}
 });
@@ -98,11 +100,11 @@ chrome.commands.onCommand.addListener(function(command) {
 runTryCatch(function() {
 	chrome.contextMenus.create({
 		id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("show-badge")
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
 	}, function() { var clearError = chrome.runtime.lastError });
 	chrome.contextMenus.create({
 		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.getPref("disableAll")
+		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
 	}, function() { var clearError = chrome.runtime.lastError });
 });
 
@@ -110,16 +112,15 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
 	} else {
-		prefs.setPref(info.menuItemId, info.checked);
+		prefs.set(info.menuItemId, info.checked);
 	}
 });
 
 function disableAllStylesToggle(newState) {
 	if (newState === undefined || newState === null) {
-		newState = !prefs.getPref("disableAll");
+		newState = !prefs.get("disableAll");
 	}
-	prefs.setPref("disableAll", newState);
-	notifyAllTabs({method: "styleDisableAll", disableAll: newState});
+	prefs.set("disableAll", newState);
 }
 
 function getStyles(options, callback) {
@@ -132,7 +133,7 @@ function getStyles(options, callback) {
 	var asHash = "asHash" in options ? options.asHash : false;
 
 	var callCallback = function() {
-		var styles = asHash ? {disableAll: prefs.getPref("disableAll", false)} : [];
+		var styles = asHash ? {disableAll: prefs.get("disableAll", false)} : [];
 		cachedStyles.forEach(function(style) {
 			if (enabled != null && fixBoolean(style.enabled) != enabled) {
 				return;
@@ -241,6 +242,10 @@ function getApplicableSections(style, url) {
 function sectionAppliesToUrl(section, url) {
 	// only http, https, file, and chrome-extension allowed
 	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
+		return false;
+	}
+	// other extensions can't be styled
+	if (url.indexOf("chrome-extension") == 0 && url.indexOf(chrome.extension.getURL("")) != 0) {
 		return false;
 	}
 	if (!section.urls && !section.domains && !section.urlPrefixes && !section.regexps) {
@@ -401,7 +406,7 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 		if (tabData.url.indexOf(editFullUrl) == 0) {
 			chrome.windows.get(tabData.windowId, {populate: true}, function(win) {
 				// If there's only one tab in this window, it's been dragged to new window
-				prefs.setPref('openEditInWindow', win.tabs.length == 1);
+				prefs.set("openEditInWindow", win.tabs.length == 1);
 			});
 		}
 	});

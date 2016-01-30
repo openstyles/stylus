@@ -8,11 +8,7 @@ function notifyAllTabs(request) {
 		});
 	});
 	// notify all open popups
-	// use a shallow copy since the original `request` is still being processed
-	var reqPopup = {};
-	for (var k in request) reqPopup[k] = request[k];
-	reqPopup.reason = request.method;
-	reqPopup.method = "updatePopup";
+	var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
 	chrome.extension.sendMessage(reqPopup);
 }
 
@@ -48,15 +44,20 @@ function updateIcon(tab, styles) {
 	});
 
 	function stylesReceived(styles) {
-		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.getPref("disableAll");
+		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
 		var postfix = styles.length == 0 || disableAll ? "w" : "";
 		chrome.browserAction.setIcon({
 			path: {19: "19" + postfix + ".png", 38: "38" + postfix + ".png"},
 			tabId: tab.id
+		}, function() {
+			// if the tab was just closed an error may occur,
+			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
+			if (!chrome.runtime.lastError) {
+				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
+				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
+				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
+			}
 		});
-		var t = prefs.getPref("show-badge") && styles.length ? ("" + styles.length) : "";
-		chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-		chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 	}
 }

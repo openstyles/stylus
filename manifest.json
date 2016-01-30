@@ -13,11 +13,12 @@
 		"tabs",
 		"webNavigation",
 		"contextMenus",
+		"storage",
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],
 	"background": {
-		"page": "background.html"
+		"scripts": ["messaging.js", "storage.js", "background.js"]
 	},
 	"commands": {
 	  "openManage": {
