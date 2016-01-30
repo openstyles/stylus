@@ -239,7 +239,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		if (!options || !options.noSync) {
 			clearTimeout(syncTimeout);
 			syncTimeout = setTimeout(function() {
-				chrome.storage.sync.set({"settings": values});
+				getSync().set({"settings": values});
 			}, 0);
 		}
 	};
@@ -248,7 +248,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		me.set(key, defaults[key], {noBroadcast: true});
 	});
 
-	chrome.storage.sync.get("settings", function(result) {
+	getSync().get("settings", function(result) {
 		var synced = result.settings;
 		for (var key in defaults) {
 			if (synced && (key in synced)) {
@@ -273,7 +273,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 				}
 			} else {
 				// user manually deleted our settings, we'll recreate them
-				chrome.storage.sync.set({"settings": values});
+				getSync().set({"settings": values});
 			}
 		}
 	});
@@ -392,4 +392,25 @@ function defineReadonlyProperty(obj, key, value) {
 	var copy = deepCopy(value);
 	Object.freeze(copy);
 	Object.defineProperty(obj, key, {value: copy, configurable: true})
+}
+
+// Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
+function getSync() {
+	if ("sync" in chrome.storage) {
+		return chrome.storage.sync;
+	}
+	crappyStorage = {};
+	return {
+		get: function(key, callback) {
+			callback(crappyStorage[key] || {});
+		},
+		set: function(source, callback) {
+			for (var property in source) {
+					if (source.hasOwnProperty(property)) {
+							crappyStorage[property] = source[property];
+					}
+			}
+			callback();
+		}
+	}
 }
