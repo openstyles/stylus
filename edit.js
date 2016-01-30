@@ -937,12 +937,14 @@ function renderLintReport(someBlockChanged) {
 	var content = container.children[1];
 	var label = t("sectionCode");
 	var newContent = content.cloneNode(false);
+	var issueCount = 0;
 	editors.forEach(function(cm, index) {
 		if (cm.state.lint.html) {
 			var newBlock = newContent.appendChild(document.createElement("table"));
 			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
 			newBlock.cm = cm;
+			issueCount += newBlock.rows.length;
 
 			var block = content.children[newContent.children.length - 1];
 			var blockChanged = !block || cm != block.cm || html != block.innerHTML;
@@ -951,6 +953,7 @@ function renderLintReport(someBlockChanged) {
 		}
 	});
 	if (someBlockChanged || newContent.children.length != content.children.length) {
+		document.getElementById('issue-count').textContent = issueCount;
 		container.replaceChild(newContent, content);
 		container.style.display = newContent.children.length ? "block" : "none";
 		resizeLintReport(null, newContent);
@@ -960,10 +963,8 @@ function renderLintReport(someBlockChanged) {
 function resizeLintReport(event, content) {
 	content = content || document.getElementById("lint").children[1];
 	if (content.children.length) {
-		var header = document.getElementById("header");
-		var headerHeight = parseFloat(getComputedStyle(header).height);
-		var contentTop = content.getBoundingClientRect().top - header.getBoundingClientRect().top;
-		var newMaxHeight = Math.max(100, headerHeight - contentTop) + "px";
+		var bounds = content.getBoundingClientRect();
+		var newMaxHeight = bounds.bottom <= innerHeight ? '' : (innerHeight - bounds.top) + "px";
 		if (newMaxHeight != content.style.maxHeight) {
 			content.style.maxHeight = newMaxHeight;
 		}
