@@ -9,7 +9,10 @@ runTryCatch(function() {
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
 chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
-chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+// Not supported in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1239349
+if ("onHistoryStateUpdated" in chrome.webNavigation) {
+	chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
+}
 chrome.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
 function webNavigationListener(method, data) {
 	// Until Chrome 41, we can't target a frame with a message
