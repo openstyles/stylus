@@ -185,7 +185,7 @@ function handleDelete(id) {
 	}
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.method == "updatePopup") {
 		switch (request.reason) {
 			case "styleAdded":

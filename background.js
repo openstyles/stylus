@@ -49,7 +49,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	delete tabUrlHasHash[tabId];
 });
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);

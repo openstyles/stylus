@@ -165,7 +165,7 @@ function getStyleElement(event) {
 	return null;
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
 			handleUpdate(request.style);

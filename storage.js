@@ -146,7 +146,7 @@ function setupLivePrefs(IDs) {
 			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
 		});
 	});
-	chrome.extension.onMessage.addListener(function(request) {
+	chrome.runtime.onMessage.addListener(function(request) {
 		if (request.prefName in localIDs) {
 			updateElement(request.prefName);
 		}

@@ -22,7 +22,7 @@ function requestStyles() {
 	chrome.runtime.sendMessage(request, applyStyles);
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// Also handle special request just for the pop-up
 	switch (request.method == "updatePopup" ? request.reason : request.method) {
 		case "styleDeleted":

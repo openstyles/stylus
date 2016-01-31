@@ -1610,7 +1610,7 @@ function getParams() {
 	return params;
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId == request.id) {
