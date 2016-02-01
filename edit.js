@@ -979,6 +979,10 @@ function gotoLintIssue(event) {
 	});
 }
 
+function toggleLintReport() {
+	document.getElementById("lint").classList.toggle("collapsed");
+}
+
 function beautify(event) {
 	if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
 		doBeautify();
@@ -1134,6 +1138,11 @@ function initHooks() {
 	document.getElementById("lint-help").addEventListener("click", showLintHelp);
 	document.getElementById("lint").addEventListener("click", gotoLintIssue);
 	window.addEventListener("resize", resizeLintReport);
+
+	// touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
+	if ("ontouchstart" in document.body) {
+		document.querySelector("#lint h2").addEventListener("click", toggleLintReport);
+	}
 
 	setupGlobalSearch();
 	setCleanGlobal();
