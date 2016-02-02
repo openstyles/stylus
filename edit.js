@@ -84,9 +84,9 @@ function setCleanItem(node, isClean) {
 
 	if (isClean) {
 		delete dirty[node.id];
-		// A div would indicate a section
-		if (node.nodeName.toLowerCase() == "div") {
-			node.savedValue = getCodeMirrorForSection(node).changeGeneration();
+		// code sections have .CodeMirror property
+		if (node.CodeMirror) {
+			node.savedValue = node.CodeMirror.changeGeneration();
 		} else {
 			node.savedValue = "checkbox" === node.type ? node.checked : node.value;
 		}
@@ -113,7 +113,7 @@ function setCleanSection(section) {
 	section.querySelectorAll(".style-contributor").forEach(function(node) { setCleanItem(node, true) });
 
 	// #header section has no codemirror
-	var cm = getCodeMirrorForSection(section)
+	var cm = section.CodeMirror;
 	if (cm) {
 		section.savedValue = cm.changeGeneration();
 		indicateCodeChange(cm);
@@ -217,6 +217,10 @@ function initCodeMirror() {
 		editors.forEach(function(editor) {
 			editor.setOption(o, v);
 		});
+	}
+
+	CM.prototype.getSection = function() {
+		return this.display.wrapper.parentNode;
 	}
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
@@ -352,14 +356,10 @@ function setupCodeMirror(textarea, index) {
 }
 
 function indicateCodeChange(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	setCleanItem(section, cm.isClean(section.savedValue));
 	updateTitle();
 	updateLintReport(cm);
-}
-
-function getSectionForCodeMirror(cm) {
-	return cm.display.wrapper.parentNode;
 }
 
 function getSectionForChild(e) {
@@ -368,12 +368,6 @@ function getSectionForChild(e) {
 
 function getSections() {
 	return document.querySelectorAll("#sections > div");
-}
-
-function getCodeMirrorForSection(section) {
-	// #header section has no codemirror
-	var wrapper = section.querySelector(".CodeMirror");
-	return wrapper && wrapper.CodeMirror;
 }
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
@@ -499,7 +493,7 @@ function addSection(event, section) {
 
 	var sections = document.getElementById("sections");
 	if (event) {
-		var clickedSection = event.target.parentNode;
+		var clickedSection = getSectionForChild(event.target);
 		sections.insertBefore(div, clickedSection.nextElementSibling);
 		var newIndex = getSections().indexOf(clickedSection) + 1;
 		var cm = setupCodeMirror(codeElement, newIndex);
@@ -508,9 +502,10 @@ function addSection(event, section) {
 		renderLintReport();
 	} else {
 		sections.appendChild(div);
-		setupCodeMirror(codeElement);
+		var cm = setupCodeMirror(codeElement);
 	}
 
+	div.CodeMirror = cm;
 	setCleanSection(div);
 	return div;
 }
@@ -525,8 +520,8 @@ function removeAppliesTo(event) {
 }
 
 function removeSection(event) {
-	var section = event.target.parentNode;
-	var cm = getCodeMirrorForSection(section);
+	var section = getSectionForChild(event.target);
+	var cm = section.CodeMirror;
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
 	renderLintReport();
@@ -549,7 +544,7 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	var bounds = section.getBoundingClientRect();
 	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
 		if (bounds.top < 0) {
@@ -680,7 +675,7 @@ function setupGlobalSearch() {
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
 
 		function searchAppliesTo(cm) {
-			var inputs = [].slice.call(getSectionForCodeMirror(cm).querySelectorAll(".applies-value"));
+			var inputs = [].slice.call(cm.getSection().querySelectorAll(".applies-value"));
 			if (reverse) {
 				inputs = inputs.reverse();
 			}
@@ -799,7 +794,7 @@ function jumpToLine(cm) {
 }
 
 function refocusMinidialog(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	if (!section.querySelector(".CodeMirror-dialog")) {
 		return;
 	}
@@ -821,7 +816,7 @@ function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
 	var cm;
 	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
-		cm = getCodeMirrorForSection(getSectionForChild(nearbyElement));
+		cm = getSectionForChild(nearbyElement).CodeMirror;
 	} else {
 		cm = editors.lastActive;
 	}
@@ -838,7 +833,7 @@ function getEditorInSight(nearbyElement) {
 
 	function offscreenDistance(cm) {
 		var LINES_VISIBLE = 2; // closest editor should have at least # lines visible
-		var bounds = getSectionForCodeMirror(cm).getBoundingClientRect();
+		var bounds = cm.getSection().getBoundingClientRect();
 		if (bounds.top < 0) {
 			return -bounds.top;
 		} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
@@ -994,7 +989,7 @@ function beautify(event) {
 		options.indent_char = tabs ? "\t" : " ";
 
 		var section = getSectionForChild(event.target);
-		var scope = section ? [getCodeMirrorForSection(section)] : editors;
+		var scope = section ? [section.CodeMirror] : editors;
 
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
 			optionHtml(".selector1,", "selector_separator_newline") +
@@ -1114,7 +1109,7 @@ function initWithStyle(style) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(getCodeMirrorForSection(sectionDiv), prefs.get("editor.lintDelay"));
+		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
 	}
 }
 
@@ -1141,7 +1136,7 @@ function initHooks() {
 }
 
 function maximizeCodeHeight(sectionDiv, isLast) {
-	var cm = getCodeMirrorForSection(sectionDiv);
+	var cm = sectionDiv.CodeMirror;
 	var stats = maximizeCodeHeight.stats = maximizeCodeHeight.stats || {totalHeight: 0, deltas: []};
 	if (!stats.cmActualHeight) {
 		stats.cmActualHeight = getComputedHeight(cm.display.wrapper);
@@ -1254,7 +1249,7 @@ function getSectionsHashes() {
 	var sections = [];
 	getSections().forEach(function(div) {
 		var meta = getMeta(div);
-		var code = getCodeMirrorForSection(div).getValue();
+		var code = div.CodeMirror.getValue();
 		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
 			return;
 		}
@@ -1373,7 +1368,7 @@ function fromMozillaFormat() {
 
 			if (!replaceOldStyle) {
 				var lastOldCM = editors[oldSectionCount - 1];
-				var lastOldSection = getSectionForCodeMirror(lastOldCM);
+				var lastOldSection = lastOldCM.getSection();
 				var addAfter = {target: lastOldSection.querySelector(".add-section")};
 
 				if (oldSectionCount < editors.length
@@ -1383,7 +1378,7 @@ function fromMozillaFormat() {
 					oldSectionCount--;
 				}
 			} else {
-				var addAfter = {target: getSectionForCodeMirror(editors[0]).previousElementSibling.firstElementChild};
+				var addAfter = {target: editors[0].getSection().previousElementSibling.firstElementChild};
 			}
 
 			var globalSection = sectionStack[0];
@@ -1399,7 +1394,7 @@ function fromMozillaFormat() {
 
 			delete maximizeCodeHeight.stats;
 			editors.forEach(function(cm, i) {
-				maximizeCodeHeight(getSectionForCodeMirror(cm), i == editors.length - 1);
+				maximizeCodeHeight(cm.getSection(), i == editors.length - 1);
 			});
 
 			makeSectionVisible(editors[oldSectionCount]);
@@ -1428,7 +1423,7 @@ function fromMozillaFormat() {
 			if (replaceOldStyle && oldSectionCount > 0) {
 				oldSectionCount = 0;
 				editors.slice(0).reverse().forEach(function(cm) {
-					removeSection({target: getSectionForCodeMirror(cm).firstElementChild});
+					removeSection({target: cm.getSection().firstElementChild});
 				});
 			}
 			setCleanItem(addSection(null, section), false);
