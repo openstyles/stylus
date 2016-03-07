@@ -23,7 +23,7 @@
 		"https://userstyles.org/"
 	],
 	"background": {
-		"scripts": ["messaging.js", "storage.js", "background.js"]
+		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js"]
 	},
 	"commands": {
 	  "openManage": {

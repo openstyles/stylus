@@ -1093,7 +1093,7 @@ function init() {
 
 function initWithStyle(style) {
 	document.getElementById("name").value = style.name;
-	document.getElementById("enabled").checked = style.enabled == "true";
+	document.getElementById("enabled").checked = style.enabled;
 	document.getElementById("url").href = style.url;
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });

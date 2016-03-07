@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			removeStyle(request.id, document);
 			break;
 		case "styleUpdated":
-			if (request.style.enabled == "true") {
+			if (request.style.enabled) {
 				retireStyle(request.style.id);
 				// fallthrough to "styleAdded"
 			} else {
@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				break;
 			}
 		case "styleAdded":
-			if (request.style.enabled == "true") {
+			if (request.style.enabled) {
 				chrome.runtime.sendMessage({method: "getStyles", matchUrl: location.href, enabled: true, id: request.style.id, asHash: true}, applyStyles);
 			}
 			break;

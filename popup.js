@@ -88,9 +88,9 @@ function createStyleElement(style) {
 	var e = template.style.cloneNode(true);
 	var checkbox = e.querySelector(".checker");
 	checkbox.id = "style-" + style.id;
-	checkbox.checked = style.enabled == "true";
+	checkbox.checked = style.enabled;
 
-	e.setAttribute("class", "entry " + (style.enabled == "true" ? "enabled" : "disabled"));
+	e.setAttribute("class", "entry " + (style.enabled ? "enabled" : "disabled"));
 	e.setAttribute("style-id", style.id);
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));

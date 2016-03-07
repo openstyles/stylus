@@ -29,7 +29,7 @@ function showStyles(styles) {
 
 function createStyleElement(style) {
 	var e = template.style.cloneNode(true);
-	e.setAttribute("class", style.enabled == "true" ? "enabled" : "disabled");
+	e.setAttribute("class", style.enabled ? "enabled" : "disabled");
 	e.setAttribute("style-id", style.id);
 	if (style.updateUrl) {
 		e.setAttribute("style-update-url", style.updateUrl);
@@ -190,7 +190,10 @@ function handleUpdate(style) {
 }
 
 function handleDelete(id) {
-	installed.removeChild(installed.querySelector("[style-id='" + id + "']"));
+	var node = installed.querySelector("[style-id='" + id + "']");
+	if (node) {
+		installed.removeChild(node);
+	}
 }
 
 function doCheckUpdate(event) {

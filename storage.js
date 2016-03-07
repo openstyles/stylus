@@ -1,102 +1,144 @@
-var stylishDb = null;
 function getDatabase(ready, error) {
-	if (stylishDb != null && stylishDb.version == "1.5") {
-		ready(stylishDb);
-		return;
+	var dbOpenRequest = window.indexedDB.open("stylish", 2);
+	dbOpenRequest.onsuccess = function(e) {
+		ready(e.target.result);
+	};
+	dbOpenRequest.onerror = function(event) {
+		console.log(event.target.errorCode);
+		if (error) {
+			error(event);
+		}
+	};
+	dbOpenRequest.onupgradeneeded = function(event) {
+		if (event.oldVersion == 0) {
+			var os = event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
+			webSqlStorage.migrate();
+		}
 	}
-	try {
-		stylishDb = openDatabase('stylish', '', 'Stylish Styles', 5*1024*1024);
-	} catch (ex) {
-		error();
-		throw ex;
-	}
-	if (stylishDb.version == "1.0" || stylishDb.version == "") {
-		dbV11(stylishDb, error, ready);
-	} else if (stylishDb.version == "1.1") {
-		dbV12(stylishDb, error, ready);
-	} else if (stylishDb.version == "1.2") {
-		dbV13(stylishDb, error, ready);
-	} else if (stylishDb.version == "1.3") {
-		dbV14(stylishDb, error, ready);
-	} else if (stylishDb.version == "1.4") {
-		dbV15(stylishDb, error, ready);
-	} else {
-		ready(stylishDb);
-	}
+};
+
+function getStyles(options, callback) {
+	getDatabase(function(db) {
+		var tx = db.transaction(["styles"], "readonly");
+		var os = tx.objectStore("styles");
+		var all = [];
+		os.openCursor().onsuccess = function(event) {
+			var cursor = event.target.result;
+			if (cursor) {
+				var s = cursor.value
+				s.id = cursor.key
+				all.push(cursor.value);
+				cursor.continue();
+			} else {
+				callback(filterStyles(all, options));
+			}
+		};
+  }, null);
 }
 
-function dbV11(d, error, done) {
-	d.changeVersion(d.version, '1.1', function (t) {
-		t.executeSql('CREATE TABLE styles (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, url TEXT, updateUrl TEXT, md5Url TEXT, name TEXT NOT NULL, code TEXT NOT NULL, enabled INTEGER NOT NULL, originalCode TEXT NULL);');
-		t.executeSql('CREATE TABLE style_meta (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, style_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL);');
-		t.executeSql('CREATE INDEX style_meta_style_id ON style_meta (style_id);');
-	}, error, function() {dbV12(d, error, done)});
+function filterStyles(unfilteredStyles, options) {
+	var enabled = fixBoolean(options.enabled);
+	var url = "url" in options ? options.url : null;
+	var id = "id" in options ? Number(options.id) : null;
+	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
+	// Return as a hash from style to applicable sections? Can only be used with matchUrl.
+	var asHash = "asHash" in options ? options.asHash : false;
+
+	var styles = asHash ? {disableAll: prefs.get("disableAll", false)} : [];
+	unfilteredStyles.forEach(function(style) {
+		if (enabled != null && style.enabled != enabled) {
+			return;
+		}
+		if (url != null && style.url != url) {
+			return;
+		}
+		if (id != null && style.id != id) {
+			return;
+		}
+		if (matchUrl != null) {
+			var applicableSections = getApplicableSections(style, matchUrl);
+			if (applicableSections.length > 0) {
+				if (asHash) {
+					styles[style.id] = applicableSections;
+				} else {
+					styles.push(style)
+				}
+			}
+		} else {
+			styles.push(style);
+		}
+	});
+	return styles;
 }
 
-function dbV12(d, error, done) {
-	d.changeVersion(d.version, '1.2', function (t) {
-		// add section table
-		t.executeSql('CREATE TABLE sections (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, style_id INTEGER NOT NULL, code TEXT NOT NULL);');
-		t.executeSql('INSERT INTO sections (style_id, code) SELECT id, code FROM styles;');
-		// switch meta to sections
-		t.executeSql('DROP INDEX style_meta_style_id;');
-		t.executeSql('CREATE TABLE section_meta (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, section_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL);');
-		t.executeSql('INSERT INTO section_meta (section_id, name, value) SELECT s.id, sm.name, sm.value FROM sections s INNER JOIN style_meta sm ON sm.style_id = s.style_id;');
-		t.executeSql('CREATE INDEX section_meta_section_id ON section_meta (section_id);');
-		t.executeSql('DROP TABLE style_meta;');
-		// drop extra fields from styles table
-		t.executeSql('CREATE TABLE newstyles (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, url TEXT, updateUrl TEXT, md5Url TEXT, name TEXT NOT NULL, enabled INTEGER NOT NULL);');
-		t.executeSql('INSERT INTO newstyles (id, url, updateUrl, md5Url, name, enabled) SELECT id, url, updateUrl, md5Url, name, enabled FROM styles;');
-		t.executeSql('DROP TABLE styles;');
-		t.executeSql('ALTER TABLE newstyles RENAME TO styles;');
-	}, error, function() {dbV13(d, error, done)});
-}
+function saveStyle(o, callback) {
+	getDatabase(function(db) {
+		var tx = db.transaction(["styles"], "readwrite");
+		var os = tx.objectStore("styles");
 
-function dbV13(d, error, done) {
-	d.changeVersion(d.version, '1.3', function (t) {
-		// clear out orphans
-		t.executeSql('DELETE FROM section_meta WHERE section_id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
-		t.executeSql('DELETE FROM sections WHERE id IN (SELECT sections.id FROM sections LEFT JOIN styles ON styles.id = sections.style_id WHERE styles.id IS NULL);');
-	}, error, function() { dbV14(d, error, done)});
-}
+		// Update
+		if (o.id) {
+			var request = os.get(Number(o.id));
+			request.onsuccess = function(event) {
+				var style = request.result;
+				for (var prop in o) {
+					if (prop == "id") {
+						continue;
+					}
+					style[prop] = o[prop];
+				}
+				request = os.put(style);
+				request.onsuccess = function(event) {
+					notifyAllTabs({method: "styleUpdated", style: style});
+					if (callback) {
+						callback(style);
+					}
+				};
+			};
+			return;
+		}
 
-function dbV14(d, error, done) {
-	d.changeVersion(d.version, '1.4', function (t) {
-		t.executeSql('UPDATE styles SET url = null WHERE url = "undefined";');
-	}, error, function() { dbV15(d, error, done)});
-}
-
-function dbV15(d, error, done) {
-	d.changeVersion(d.version, '1.5', function (t) {
-		t.executeSql('ALTER TABLE styles ADD COLUMN originalMd5 TEXT NULL;');
-	}, error, function() { done(d); });
+		// Create
+		// Set optional things to null if they're undefined
+		["updateUrl", "md5Url", "url", "originalMd5"].filter(function(att) {
+			return !(att in o);
+		}).forEach(function(att) {
+			o[att] = null;
+		});
+		// Set to enabled if not set
+		if (!("enabled" in o)) {
+			o.enabled = true;
+		}
+		// Make sure it's not null - that makes indexeddb sad
+		delete o["id"];
+		var request = os.add(o);
+		request.onsuccess = function(event) {
+			// Give it the ID that was generated
+			o.id = event.target.result;
+			notifyAllTabs({method: "styleAdded", style: o});
+			if (callback) {
+				callback(o);
+			}
+		};
+	});
 }
 
 function enableStyle(id, enabled) {
-	getDatabase(function(db) {
-		db.transaction(function (t) {
-			t.executeSql("UPDATE styles SET enabled = ? WHERE id = ?;", [enabled, id]);
-		}, reportError, function() {
-			chrome.runtime.sendMessage({method: "styleChanged"});
-			chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
-				handleUpdate(styles[0]);
-				notifyAllTabs({method: "styleUpdated", style: styles[0]});
-			});
-		});
+	saveStyle({id: id, enabled: enabled}, function(style) {
+		handleUpdate(style);
+		notifyAllTabs({method: "styleUpdated", style: style});
 	});
 }
 
 function deleteStyle(id) {
 	getDatabase(function(db) {
-		db.transaction(function (t) {
-			t.executeSql('DELETE FROM section_meta WHERE section_id IN (SELECT id FROM sections WHERE style_id = ?);', [id]);
-			t.executeSql('DELETE FROM sections WHERE style_id = ?;', [id]);
-			t.executeSql("DELETE FROM styles WHERE id = ?;", [id]);
-		}, reportError, function() {
-			chrome.runtime.sendMessage({method: "styleChanged"});
+		var tx = db.transaction(["styles"], "readwrite");
+		var os = tx.objectStore("styles");
+		var request = os.delete(Number(id));
+		request.onsuccess = function(event) {
 			handleDelete(id);
 			notifyAllTabs({method: "styleDeleted", id: id});
-		});
+		};
 	});
 }
 
@@ -107,6 +149,13 @@ function reportError() {
 			console.log(arguments[i].message);
 		}
 	}
+}
+
+function fixBoolean(b) {
+	if (typeof b != "undefined") {
+		return b != "false";
+	}
+	return null;
 }
 
 function getDomains(url) {
@@ -132,8 +181,78 @@ function getType(o) {
 	throw "Not supported - " + o;
 }
 
+var namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
+function getApplicableSections(style, url) {
+	var sections = style.sections.filter(function(section) {
+		return sectionAppliesToUrl(section, url);
+	});
+	// ignore if it's just namespaces
+	if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
+		return [];
+	}
+	return sections;
+}
+
+function sectionAppliesToUrl(section, url) {
+	// only http, https, file, and chrome-extension allowed
+	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
+		return false;
+	}
+	// other extensions can't be styled
+	if (url.indexOf("chrome-extension") == 0 && url.indexOf(chrome.extension.getURL("")) != 0) {
+		return false;
+	}
+	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
+		//console.log(section.id + " is global");
+		return true;
+	}
+	if (section.urls.indexOf(url) != -1) {
+		//console.log(section.id + " applies to " + url + " due to URL rules");
+		return true;
+	}
+	if (section.urlPrefixes.some(function(prefix) {
+		return url.indexOf(prefix) == 0;
+	})) {
+		//console.log(section.id + " applies to " + url + " due to URL prefix rules");
+		return true;
+	}
+	if (section.domains.length > 0 && getDomains(url).some(function(domain) {
+		return section.domains.indexOf(domain) != -1;
+	})) {
+		//console.log(section.id + " applies due to " + url + " due to domain rules");
+		return true;
+	}
+	if (section.regexps.some(function(regexp) {
+		// we want to match the full url, so add ^ and $ if not already present
+		if (regexp[0] != "^") {
+			regexp = "^" + regexp;
+		}
+		if (regexp[regexp.length - 1] != "$") {
+			regexp += "$";
+		}
+		var re = runTryCatch(function() { return new RegExp(regexp) });
+		if (re) {
+			return (re).test(url);
+		} else {
+			console.log(section.id + "'s regexp '" + regexp + "' is not valid");
+		}
+	})) {
+		//console.log(section.id + " applies to " + url + " due to regexp rules");
+		return true;
+	}
+	//console.log(section.id + " does not apply due to " + url);
+	return false;
+}
+
 function isCheckbox(el) {
 	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
+}
+
+// js engine can't optimize the entire function if it contains try-catch
+// so we should keep it isolated from normal code in a minimal wrapper
+function runTryCatch(func) {
+	try { return func() }
+	catch(e) {}
 }
 
 // Accepts an array of pref names (values are fetched via prefs.get)
