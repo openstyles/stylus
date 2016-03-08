@@ -48,7 +48,7 @@ function tNodeList(nodes) {
 				continue;
 			}
 			name = name.substr(5); // "i18n-".length
-			var value = t(attr.nodeValue);
+			var value = t(attr.value);
 			switch (name) {
 				case "text":
 					node.insertBefore(document.createTextNode(value), node.firstChild);
@@ -59,7 +59,7 @@ function tNodeList(nodes) {
 				default:
 					node.setAttribute(name, value);
 			}
-			node.removeAttributeNode(attr);
+			node.removeAttribute(attr.nodeName);
 		}
 	}
 }

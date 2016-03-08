@@ -1,6 +1,10 @@
 var webSqlStorage = {
 
 	migrate: function() {
+		if (typeof openDatabase == "undefined") {
+			// No WebSQL - no migration!
+			return;
+		}
 		webSqlStorage.getStyles(function(styles) {
 			getDatabase(function(db) {
 				var tx = db.transaction(["styles"], "readwrite");

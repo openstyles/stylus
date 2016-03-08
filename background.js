@@ -83,17 +83,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-chrome.commands.onCommand.addListener(function(command) {
-	switch (command) {
-		case "openManage":
-			openURL({url: chrome.extension.getURL("manage.html")});
-			break;
-		case "styleDisableAll":
-			disableAllStylesToggle();
-			chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
-			break;
-	}
-});
+
+// Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
+if (("commands") in chrome) {
+	chrome.commands.onCommand.addListener(function(command) {
+		switch (command) {
+			case "openManage":
+				openURL({url: chrome.extension.getURL("manage.html")});
+				break;
+			case "styleDisableAll":
+				disableAllStylesToggle();
+				chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
+				break;
+		}
+	});
+}
 
 // contextMenus API is present in ancient Chrome but it throws an exception
 // upon encountering the unsupported parameter value "browser_action", so we have to catch it.
