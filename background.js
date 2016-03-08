@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
-if (("commands") in chrome) {
+if ("commands" in chrome) {
 	chrome.commands.onCommand.addListener(function(command) {
 		switch (command) {
 			case "openManage":
