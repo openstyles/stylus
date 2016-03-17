@@ -105,6 +105,14 @@ function saveStyle(o, callback) {
 		}).forEach(function(att) {
 			o[att] = null;
 		});
+		// Set other optional things to empty array if they're undefined
+		o.sections.forEach(function(section) {
+			["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
+				if (!section[property]) {
+					section[property] = [];
+				}
+			});
+		});
 		// Set to enabled if not set
 		if (!("enabled" in o)) {
 			o.enabled = true;

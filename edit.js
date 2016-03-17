@@ -1265,7 +1265,7 @@ function getSectionsHashes() {
 }
 
 function getMeta(e) {
-	var meta = {};
+	var meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
 	e.querySelector(".applies-to-list").childNodes.forEach(function(li) {
 		if (li.className == template.appliesToEverything.className) {
 			return;
@@ -1274,7 +1274,7 @@ function getMeta(e) {
 		var value = li.querySelector("[name=applies-value]").value;
 		if (type && value) {
 			var property = CssToProperty[type];
-			meta[property] ? meta[property].push(value) : meta[property] = [value];
+			meta[property].push(value);
 		}
 	});
 	return meta;
