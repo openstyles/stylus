@@ -31,6 +31,10 @@ var webSqlStorage = {
 
 	getStyles: function(callback) {
 		webSqlStorage.getDatabase(function(db) {
+			if (!db) {
+				callback([]);
+				return;
+			}
 			db.readTransaction(function (t) {
 				var where = "";
 				var params = [];
@@ -92,7 +96,12 @@ var webSqlStorage = {
 			error();
 			throw ex;
 		}
-		if (stylishDb.version == "1.0" || stylishDb.version == "") {
+		if (stylishDb.version == "") {
+			// It didn't already exist, we have nothing to migrate.
+			ready(null);
+			return;
+		}
+		if (stylishDb.version == "1.0") {
 			webSqlStorage.dbV11(stylishDb, error, ready);
 		} else if (stylishDb.version == "1.1") {
 			webSqlStorage.dbV12(stylishDb, error, ready);
