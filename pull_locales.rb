@@ -28,7 +28,12 @@ project.languages.each do |language|
 	project.resources.each do |resource|
 		c = resource.translation(code).content
 		file_name = "#{dir_name}/#{resource.name}"
-		completed = resource.stats(code).completed
+		begin
+			completed = resource.stats(code).completed
+		rescue Transifex::NotFound
+			puts "#{code} not found."
+			next
+		end
 		has_content ||= completed != "0%"
 		puts "Writing resource #{file_name}, #{completed} complete."
 		File.open(file_name, 'w') { |file| file.write(c) }
