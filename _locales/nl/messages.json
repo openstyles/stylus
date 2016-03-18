@@ -4,7 +4,7 @@
 		"description": "Text displayed for styles that apply to all sites"
 	},
 	"defaultTheme": {
-		"message": "default",
+		"message": "standaard",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"manageOnlyEdited": {
@@ -12,11 +12,11 @@
 		"description": "Checkbox to show only locally edited styles"
 	},
 	"exportLabel": {
-		"message": "Export",
+		"message": "Exporteren",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"issues": {
-		"message": "Issues",
+		"message": "Problemen",
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"cm_tabSize": {
@@ -40,7 +40,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"importAppendLabel": {
-		"message": "Append to style",
+		"message": "Toevoegen aan stijl",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"updateAllCheckSucceededNoUpdate": {
@@ -48,7 +48,7 @@
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "Paste the Mozilla-format code",
+		"message": "Plak de Mozilla-opmaakcode",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"helpAlt": {
@@ -56,11 +56,11 @@
 		"description": "Alternate text for help buttons"
 	},
 	"search": {
-		"message": "Search",
+		"message": "Zoeken",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"confirmYes": {
-		"message": "Yes",
+		"message": "Ja",
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
@@ -72,7 +72,7 @@
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
-		"message": "Beautify",
+		"message": "Mooier maken",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleEnabledLabel": {
@@ -92,7 +92,7 @@
 		"description": "Label for save button for style editing"
 	},
 	"confirmStop": {
-		"message": "Stop",
+		"message": "Stoppen",
 		"description": "'Stop' button in a confirm dialog"
 	},
 	"writeStyleForURL": {
@@ -121,7 +121,7 @@
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
-		"message": "Search contents",
+		"message": "Inhoud doorzoeken",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableStyleLabel": {
@@ -149,7 +149,7 @@
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
 	"importLabel": {
-		"message": "Import",
+		"message": "Importeren",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
@@ -216,11 +216,11 @@
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"searchRegexp": {
-		"message": "Use /re/ syntax for regexp search",
+		"message": "Gebruik /re/-syntax voor regexp-zoeken",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"importReplaceTooltip": {
-		"message": "Discard contents of current style and overwrite it with the imported style",
+		"message": "Verwerp de inhoud van de huidige stijl en overschrijf het met de geïmporteerde stijl",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"popupStylesFirst": {
@@ -244,7 +244,7 @@
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Style in Mozilla format",
+		"message": "Stijl in Mozilla-opmaak",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
@@ -256,7 +256,7 @@
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
 	},
 	"replace": {
-		"message": "Replace",
+		"message": "Vervangen",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"appliesLabel": {
@@ -285,7 +285,7 @@
 		"description": "Label for the button to install an update for a single style"
 	},
 	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
+		"message": "Mozilla-opmaak",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
@@ -301,7 +301,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"undoGlobal": {
-		"message": "Undo (global)",
+		"message": "Ongedaan maken (globaal)",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
@@ -337,7 +337,7 @@
 		"description": "Title of the page for adding styles"
 	},
 	"importReplaceLabel": {
-		"message": "Overwrite style",
+		"message": "Stijl overschrijven",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
@@ -345,15 +345,15 @@
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
-		"message": "Append the imported style to current style",
+		"message": "Voeg de geïmporteerde stijl toe aan de huidige stijl",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"helpKeyMapHotkey": {
-		"message": "Press a hotkey",
+		"message": "Druk op een sneltoets",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"replaceAll": {
-		"message": "Replace all",
+		"message": "Alles vervangen",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"editGotoLine": {
@@ -365,15 +365,15 @@
 		"description": "Label for the button to check all styles for updates"
 	},
 	"issuesHelp": {
-		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
+		"message": "De door CSSLint gevonden problemen, <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a>, met deze ingeschakelde regels:",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
 	"confirmNo": {
-		"message": "No",
+		"message": "Nee",
 		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
-		"message": "Undo",
+		"message": "Ongedaan maken",
 		"description": "Button label"
 	},
 	"cm_keyMap": {
@@ -385,7 +385,7 @@
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
-		"message": "Replace with",
+		"message": "Vervangen door",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
@@ -405,11 +405,11 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"cm_theme": {
-		"message": "Theme",
+		"message": "Thema",
 		"description": "Label for the style editor's CSS theme."
 	},
 	"helpKeyMapCommand": {
-		"message": "Type a command name",
+		"message": "Voer een naam in voor het commando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {

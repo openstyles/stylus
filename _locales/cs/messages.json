@@ -1,419 +1,394 @@
 {
-	"appliesToEverything": {
-		"message": "Vše",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"defaultTheme": {
-		"message": "výchozí",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
-	},
-	"manageOnlyEdited": {
-		"message": "Pouze upravené styly.",
-		"description": "Checkbox to show only locally edited styles"
-	},
-	"exportLabel": {
-		"message": "Exportovat",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"issues": {
-		"message": "Problémy",
-		"description": "Label for the CSSLint issues block on the style edit page"
-	},
-	"cm_tabSize": {
-		"message": "Velikost tabulátorů",
-		"description": "Label for the text box controlling tab size option for the style editor."
-	},
-	"enableStyleLabel": {
-		"message": "Povolit",
-		"description": "Label for the button to enable a style"
-	},
-	"styleMissingName": {
-		"message": "Zadejte název.",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"appliesDomainOption": {
-		"message": "URL adresy na doméně",
-		"description": "Option to make the style apply to the entered string as a domain"
-	},
-	"checkForUpdate": {
-		"message": "Zkontrolovat aktualizace",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"importAppendLabel": {
-		"message": "Připojit ke stylu",
-		"description": "Label for the button to import a style and append to the existing sections"
-	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "Všechny styly jsou aktuální.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Vložit kód v Mozilla-formátu",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-	},
-	"helpAlt": {
-		"message": "Nápověda",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Vyhledat",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"confirmYes": {
-		"message": "Ano",
-		"description": "'Yes' button in a confirm dialog"
-	},
-	"findStylesForSite": {
-		"message": "Najít styly pro tento web.",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"manageHeading": {
-		"message": "Nainstalované Styly",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Zkrášlit",
-		"description": "Label for the CSS-beautifier button on the edit style page"
-	},
-	"styleEnabledLabel": {
-		"message": "Povolen",
-		"description": "Label for the enabled state of styles"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Mozilla formát umožní použití stylu v prohlížeči Mozilla Firefox a jeho odeslání na userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"sectionAdd": {
-		"message": "Přidat další sekci",
-		"description": "Label for the button to add a section"
-	},
-	"styleSaveLabel": {
-		"message": "Uložit",
-		"description": "Label for save button for style editing"
-	},
-	"confirmStop": {
-		"message": "Zastavit",
-		"description": "'Stop' button in a confirm dialog"
-	},
-	"writeStyleForURL": {
-		"message": "tato URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
-	"appliesAdd": {
-		"message": "Přidat",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesRegexpOption": {
-		"message": "URL adresy odpovídající reg. výrazu",
-		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"styleInstall": {
-		"message": "Nainstalovat '$stylename$' do Stylish?",
-		"description": "Confirmation when installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"manageText": {
-		"message": "Na <a href='http://userstyles.org'>userstyles.org</a> najdete již vytvořené styly. Na <a href='http://forum.userstyles.org'>fóru</a> můžete požádat o pomoc.",
-		"description": "Help text on the manage page"
-	},
-	"searchStyles": {
-		"message": "Prohledat obsah",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
-	"disableStyleLabel": {
-		"message": "Zakázat",
-		"description": "Label for the button to disable a style"
-	},
-	"prefShowBadge": {
-		"message": "Zobrazit počet aktivních stylů pro současnou stránku u tlačítka v panelu nástrojů",
-		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"menuShowBadge": {
-		"message": "Zobrazit počet aktivních stylů",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-	},
-	"cm_lineWrapping": {
-		"message": "Zalamování slov",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
-	},
-	"styleCancelEditLabel": {
-		"message": "Zpět ke správě",
-		"description": "Label for cancel button for style editing"
-	},
-	"styleChangesNotSaved": {
-		"message": "Provedli jste změny tohoto stylu bez uložení.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"importLabel": {
-		"message": "Importovat",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
-	},
-	"updateCheckFailServerUnreachable": {
-		"message": "Aktualizace selhala - server je nedosažitelný.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"manageFilters": {
-		"message": "Filtry",
-		"description": "Label for filters container"
-	},
-	"applyAllUpdates": {
-		"message": "Použít všechny aktualizace",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"deleteStyleConfirm": {
-		"message": "Opravdu chcete tento styl smazat?",
-		"description": "Confirmation before deleting a style"
-	},
-	"styleBadRegexp": {
-		"message": "Tento regulérní výraz je neplatný.",
-		"description": "Validation message for a bad regexp in a style"
-	},
-	"optionsHeading": {
-		"message": "Možnosti",
-		"description": "Heading for options section on manage page."
-	},
-	"appliesDisplay": {
-		"message": "Platí pro: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleUpdate": {
-		"message": "Určitě chcete aktualizovat '$stylename$'?",
-		"description": "Confirmation when updating a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleSectionsTitle": {
-		"message": "Sekce",
-		"description": "Title for the style sections section"
-	},
-	"editStyleTitle": {
-		"message": "Upravit Styl $stylename$",
-		"description": "Title of the page for editing styles",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"updateCheckSucceededNoUpdate": {
-		"message": "Styl je aktuální.",
-		"description": "Text that displays when an update check completed and no update is available"
-	},
-	"appliesUrlPrefixOption": {
-		"message": "URL adresy začínající",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"searchRegexp": {
-		"message": "Použít /re/ syntaxi pro vyhledávání s regulérními výrazy",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
-	},
-	"importReplaceTooltip": {
-		"message": "Zahodit obsah současného stylu a přepsat ho importovaným stylem",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"popupStylesFirst": {
-		"message": "Vypsat styly před příkazy v menu pod tlačítkem na panelu nástrojů",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
-	},
-	"sectionHelp": {
-		"message": "Pomocí sekcí můžete v jednom stylu nadefinovat více částí kódu pro různé skupiny URL adres. Jeden styl pak může např. změnit hlavní stránku webu jinak, než jeho zbytek.",
-		"description": "Help text for sections"
-	},
-	"noStylesForSite": {
-		"message": "Pro tento web není nainstalován žádný styl.",
-		"description": "Text displayed when no styles are installed for the current site"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "a další",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "Odstranit",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Styl v Mozilla formátu",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylish",
-		"description": "Title for the manage page"
-	},
-	"writeStyleFor": {
-		"message": "Napsat nový styl",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
-	},
-	"replace": {
-		"message": "Nahradit",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
-	},
-	"appliesLabel": {
-		"message": "Platí pro",
-		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"openManage": {
-		"message": "Spravovat nainstalovné styly.",
-		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "Aktualizace selhala - server opověděl kódem $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesSpecify": {
-		"message": "Specifikovat",
-		"description": "Label for the button to make a style apply only to specific sites"
-	},
-	"installUpdate": {
-		"message": "Nainstalovat aktualizaci",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Formát",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylish nefunguje na těchto stránkách.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
-	},
-	"sectionRemove": {
-		"message": "Odstranit sekci",
-		"description": "Label for the button to remove a section"
-	},
-	"disableAllStyles": {
-		"message": "Vypnout všechny styly.",
-		"description": "Label for the checkbox that turns all enabled styles off."
-	},
-	"undoGlobal": {
-		"message": "Zpět (globálně)",
-		"description": "CSS-beautify global Undo button label"
-	},
-	"updateCompleted": {
-		"message": "Aktalizace dokončena.",
-		"description": "Text that displays when an update completed"
-	},
-	"checkingForUpdate": {
-		"message": "Kontroluji...",
-		"description": "Text to display when checking a style for an update"
-	},
-	"sectionCode": {
-		"message": "Kód",
-		"description": "Label for the code for a section"
-	},
-	"cm_smartIndent": {
-		"message": "Použít chytré odsazení",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"appliesHelp": {
-		"message": "Nastavte 'Platí pro', pokud chcete limitovat, na které URL adresy se použije kód v této sekci.",
-		"description": "Help text for 'applies to' section"
-	},
-	"editStyleHeading": {
-		"message": "Upravit Styl",
-		"description": "Title of the page for editing styles"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
-	},
-	"addStyleTitle": {
-		"message": "Přidat Styl",
-		"description": "Title of the page for adding styles"
-	},
-	"importReplaceLabel": {
-		"message": "Přepsat styl",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"dbError": {
-		"message": "Nastala chyba při používání Stylish databáze. Chcete navštívit webovou stránku s možnými řešeními?",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"importAppendTooltip": {
-		"message": "Připojit importovaný styl k současnému stylu",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"helpKeyMapHotkey": {
-		"message": "Stiskněte kláves. zkratku",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"replaceAll": {
-		"message": "Nahradit vše",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"editGotoLine": {
-		"message": "Přejít na řádek (nebo na line:col)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
-	},
-	"checkAllUpdates": {
-		"message": "Aktualizovat všechny styly",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"issuesHelp": {
-		"message": "Problémy nalezené aplikací <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> s těmito povolenými pravidly:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
-	},
-	"confirmNo": {
-		"message": "Ne",
-		"description": "'No' button in a confirm dialog"
-	},
-	"undo": {
-		"message": "Zpět",
-		"description": "Button label"
-	},
-	"cm_keyMap": {
-		"message": "Přiřazení kláves",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
-	},
-	"cm_indentWithTabs": {
-		"message": "Použít tabulátory s chytrým odsazením",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-	},
-	"replaceWith": {
-		"message": "Nahradit s",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
-	},
-	"deleteStyleLabel": {
-		"message": "Smazat",
-		"description": "Label for the button to delete a style"
-	},
-	"addStyleLabel": {
-		"message": "Napsat nový styl",
-		"description": "Label for the button to go to the add style page"
-	},
-	"manageOnlyEnabled": {
-		"message": "Pouze povolené styly",
-		"description": "Checkbox to show only enabled styles"
-	},
-	"editStyleLabel": {
-		"message": "Upravit",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"cm_theme": {
-		"message": "Schéma",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"helpKeyMapCommand": {
-		"message": "Napište název příkazu",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"description": {
-		"message": "Přestylujte web pomocí Stylish, manažeru uživatelských stylů. Stylish vám umožní nainstalovat témata a skiny pro mnoho populárních webů.",
-		"description": "Extension description"
-	}
+    "appliesToEverything": {
+        "message": "Vše",
+        "description": "Text displayed for styles that apply to all sites"
+    },
+    "defaultTheme": {
+        "message": "výchozí",
+        "description": "Default CodeMirror CSS theme option on the edit style page"
+    },
+    "manageOnlyEdited": {
+        "message": "Pouze upravené styly.",
+        "description": "Checkbox to show only locally edited styles"
+    },
+    "exportLabel": {
+        "message": "Exportovat",
+        "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    },
+    "issues": {
+        "message": "Problémy",
+        "description": "Label for the CSSLint issues block on the style edit page"
+    },
+    "cm_tabSize": {
+        "message": "Velikost tabulátorů",
+        "description": "Label for the text box controlling tab size option for the style editor."
+    },
+    "enableStyleLabel": {
+        "message": "Povolit",
+        "description": "Label for the button to enable a style"
+    },
+    "styleMissingName": {
+        "message": "Zadejte název.",
+        "description": "Error displayed when user saves without providing a name"
+    },
+    "appliesDomainOption": {
+        "message": "URL adresy na doméně",
+        "description": "Option to make the style apply to the entered string as a domain"
+    },
+    "checkForUpdate": {
+        "message": "Zkontrolovat aktualizace",
+        "description": "Label for the button to check a single style for an update"
+    },
+    "importAppendLabel": {
+        "message": "Připojit ke stylu",
+        "description": "Label for the button to import a style and append to the existing sections"
+    },
+    "updateAllCheckSucceededNoUpdate": {
+        "message": "Všechny styly jsou aktuální.",
+        "description": "Text that displays when an update all check completed and no updates are available"
+    },
+    "styleFromMozillaFormatPrompt": {
+        "message": "Vložit kód v Mozilla-formátu",
+        "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    },
+    "helpAlt": {
+        "message": "Nápověda",
+        "description": "Alternate text for help buttons"
+    },
+    "search": {
+        "message": "Vyhledat",
+        "description": "Label before the search input field in the editor shown on Ctrl-F"
+    },
+    "confirmYes": {
+        "message": "Ano",
+        "description": "'Yes' button in a confirm dialog"
+    },
+    "findStylesForSite": {
+        "message": "Najít styly pro tento web.",
+        "description": "Text for a link that gets a list of styles for the current site"
+    },
+    "manageHeading": {
+        "message": "Nainstalované Styly",
+        "description": "Heading for the manage page"
+    },
+    "styleBeautify": {
+        "message": "Zkrášlit",
+        "description": "Label for the CSS-beautifier button on the edit style page"
+    },
+    "styleEnabledLabel": {
+        "message": "Povolen",
+        "description": "Label for the enabled state of styles"
+    },
+    "styleToMozillaFormatHelp": {
+        "message": "Mozilla formát umožní použití stylu v prohlížeči Mozilla Firefox a jeho odeslání na userstyles.org.",
+        "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    },
+    "sectionAdd": {
+        "message": "Přidat další sekci",
+        "description": "Label for the button to add a section"
+    },
+    "styleSaveLabel": {
+        "message": "Uložit",
+        "description": "Label for save button for style editing"
+    },
+    "confirmStop": {
+        "message": "Zastavit",
+        "description": "'Stop' button in a confirm dialog"
+    },
+    "writeStyleForURL": {
+        "message": "tato URL",
+        "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    },
+    "appliesAdd": {
+        "message": "Přidat",
+        "description": "Label for the button to add an 'applies' entry"
+    },
+    "appliesRegexpOption": {
+        "message": "URL adresy odpovídající reg. výrazu",
+        "description": "Option to make the style apply to the entered string as a regular expression"
+    },
+    "styleInstall": {
+        "message": "Nainstalovat '$stylename$' do Stylish?",
+        "description": "Confirmation when installing a style"
+    },
+    "manageText": {
+        "message": "Na <a href='http://userstyles.org'>userstyles.org</a> najdete již vytvořené styly. Na <a href='http://forum.userstyles.org'>fóru</a> můžete požádat o pomoc.",
+        "description": "Help text on the manage page"
+    },
+    "searchStyles": {
+        "message": "Prohledat obsah",
+        "description": "Label for the search filter textbox on the Manage styles page"
+    },
+    "disableStyleLabel": {
+        "message": "Zakázat",
+        "description": "Label for the button to disable a style"
+    },
+    "prefShowBadge": {
+        "message": "Zobrazit počet aktivních stylů pro současnou stránku u tlačítka v panelu nástrojů",
+        "description": "Label for the checkbox controlling toolbar badge text."
+    },
+    "menuShowBadge": {
+        "message": "Zobrazit počet aktivních stylů",
+        "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    },
+    "cm_lineWrapping": {
+        "message": "Zalamování slov",
+        "description": "Label for the checkbox controlling word wrap option for the style editor."
+    },
+    "styleCancelEditLabel": {
+        "message": "Zpět ke správě",
+        "description": "Label for cancel button for style editing"
+    },
+    "styleChangesNotSaved": {
+        "message": "Provedli jste změny tohoto stylu bez uložení.",
+        "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    },
+    "importLabel": {
+        "message": "Importovat",
+        "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    },
+    "updateCheckFailServerUnreachable": {
+        "message": "Aktualizace selhala - server je nedosažitelný.",
+        "description": "Text that displays when an update check failed because the update server is unreachable"
+    },
+    "manageFilters": {
+        "message": "Filtry",
+        "description": "Label for filters container"
+    },
+    "applyAllUpdates": {
+        "message": "Použít všechny aktualizace",
+        "description": "Label for the button to apply all detected updates"
+    },
+    "deleteStyleConfirm": {
+        "message": "Opravdu chcete tento styl smazat?",
+        "description": "Confirmation before deleting a style"
+    },
+    "styleBadRegexp": {
+        "message": "Tento regulérní výraz je neplatný.",
+        "description": "Validation message for a bad regexp in a style"
+    },
+    "optionsHeading": {
+        "message": "Možnosti",
+        "description": "Heading for options section on manage page."
+    },
+    "appliesDisplay": {
+        "message": "Platí pro: $applies$",
+        "description": "Text on the manage screen to describe what the style applies to"
+    },
+    "styleUpdate": {
+        "message": "Určitě chcete aktualizovat '$stylename$'?",
+        "description": "Confirmation when updating a style"
+    },
+    "styleSectionsTitle": {
+        "message": "Sekce",
+        "description": "Title for the style sections section"
+    },
+    "editStyleTitle": {
+        "message": "Upravit Styl $stylename$",
+        "description": "Title of the page for editing styles"
+    },
+    "updateCheckSucceededNoUpdate": {
+        "message": "Styl je aktuální.",
+        "description": "Text that displays when an update check completed and no update is available"
+    },
+    "appliesUrlPrefixOption": {
+        "message": "URL adresy začínající",
+        "description": "Option to make the style apply to the entered string as a URL prefix"
+    },
+    "searchRegexp": {
+        "message": "Použít /re/ syntaxi pro vyhledávání s regulérními výrazy",
+        "description": "Label after the search input field in the editor shown on Ctrl-F"
+    },
+    "importReplaceTooltip": {
+        "message": "Zahodit obsah současného stylu a přepsat ho importovaným stylem",
+        "description": "Label for the button to import and overwrite current style"
+    },
+    "popupStylesFirst": {
+        "message": "Vypsat styly před příkazy v menu pod tlačítkem na panelu nástrojů",
+        "description": "Label for the checkbox controlling section order in the toolbar button menu."
+    },
+    "sectionHelp": {
+        "message": "Pomocí sekcí můžete v jednom stylu nadefinovat více částí kódu pro různé skupiny URL adres. Jeden styl pak může např. změnit hlavní stránku webu jinak, než jeho zbytek.",
+        "description": "Help text for sections"
+    },
+    "noStylesForSite": {
+        "message": "Pro tento web není nainstalován žádný styl.",
+        "description": "Text displayed when no styles are installed for the current site"
+    },
+    "appliesDisplayTruncatedSuffix": {
+        "message": "a další",
+        "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    },
+    "appliesRemove": {
+        "message": "Odstranit",
+        "description": "Label for the button to remove an 'applies' entry"
+    },
+    "styleToMozillaFormatTitle": {
+        "message": "Styl v Mozilla formátu",
+        "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    },
+    "manageTitle": {
+        "message": "Stylish",
+        "description": "Title for the manage page"
+    },
+    "writeStyleFor": {
+        "message": "Napsat nový styl",
+        "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    },
+    "replace": {
+        "message": "Nahradit",
+        "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    },
+    "appliesLabel": {
+        "message": "Platí pro",
+        "description": "Label for 'applies to' fields on the edit/add screen"
+    },
+    "openManage": {
+        "message": "Spravovat nainstalovné styly.",
+        "description": "Link to open the manage page."
+    },
+    "updateCheckFailBadResponseCode": {
+        "message": "Aktualizace selhala - server opověděl kódem $code$.",
+        "description": "Text that displays when an update check failed because the response code indicates an error"
+    },
+    "appliesSpecify": {
+        "message": "Specifikovat",
+        "description": "Label for the button to make a style apply only to specific sites"
+    },
+    "installUpdate": {
+        "message": "Nainstalovat aktualizaci",
+        "description": "Label for the button to install an update for a single style"
+    },
+    "styleMozillaFormatHeading": {
+        "message": "Mozilla Formát",
+        "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    },
+    "stylishUnavailableForURL": {
+        "message": "(Stylish nefunguje na těchto stránkách.)",
+        "description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+    },
+    "sectionRemove": {
+        "message": "Odstranit sekci",
+        "description": "Label for the button to remove a section"
+    },
+    "disableAllStyles": {
+        "message": "Vypnout všechny styly.",
+        "description": "Label for the checkbox that turns all enabled styles off."
+    },
+    "undoGlobal": {
+        "message": "Zpět (globálně)",
+        "description": "CSS-beautify global Undo button label"
+    },
+    "updateCompleted": {
+        "message": "Aktalizace dokončena.",
+        "description": "Text that displays when an update completed"
+    },
+    "checkingForUpdate": {
+        "message": "Kontroluji...",
+        "description": "Text to display when checking a style for an update"
+    },
+    "sectionCode": {
+        "message": "Kód",
+        "description": "Label for the code for a section"
+    },
+    "cm_smartIndent": {
+        "message": "Použít chytré odsazení",
+        "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    },
+    "appliesHelp": {
+        "message": "Nastavte 'Platí pro', pokud chcete limitovat, na které URL adresy se použije kód v této sekci.",
+        "description": "Help text for 'applies to' section"
+    },
+    "editStyleHeading": {
+        "message": "Upravit Styl",
+        "description": "Title of the page for editing styles"
+    },
+    "appliesUrlOption": {
+        "message": "URL",
+        "description": "Option to make the style apply to the entered string as a URL"
+    },
+    "addStyleTitle": {
+        "message": "Přidat Styl",
+        "description": "Title of the page for adding styles"
+    },
+    "importReplaceLabel": {
+        "message": "Přepsat styl",
+        "description": "Label for the button to import and overwrite current style"
+    },
+    "dbError": {
+        "message": "Nastala chyba při používání Stylish databáze. Chcete navštívit webovou stránku s možnými řešeními?",
+        "description": "Prompt when a DB error is encountered"
+    },
+    "importAppendTooltip": {
+        "message": "Připojit importovaný styl k současnému stylu",
+        "description": "Tooltip for the button to import a style and append to the existing sections"
+    },
+    "helpKeyMapHotkey": {
+        "message": "Stiskněte kláves. zkratku",
+        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    },
+    "replaceAll": {
+        "message": "Nahradit vše",
+        "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    },
+    "editGotoLine": {
+        "message": "Přejít na řádek (nebo na line:col)",
+        "description": "Go to line or line:column on Ctrl-G in style code editor"
+    },
+    "checkAllUpdates": {
+        "message": "Aktualizovat všechny styly",
+        "description": "Label for the button to check all styles for updates"
+    },
+    "issuesHelp": {
+        "message": "Problémy nalezené aplikací <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> s těmito povolenými pravidly:",
+        "description": "Help popup message for the CSSLint issues block on the style edit page"
+    },
+    "confirmNo": {
+        "message": "Ne",
+        "description": "'No' button in a confirm dialog"
+    },
+    "undo": {
+        "message": "Zpět",
+        "description": "Button label"
+    },
+    "cm_keyMap": {
+        "message": "Přiřazení kláves",
+        "description": "Label for the drop-down list controlling the keymap for the style editor."
+    },
+    "cm_indentWithTabs": {
+        "message": "Použít tabulátory s chytrým odsazením",
+        "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    },
+    "replaceWith": {
+        "message": "Nahradit s",
+        "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    },
+    "deleteStyleLabel": {
+        "message": "Smazat",
+        "description": "Label for the button to delete a style"
+    },
+    "addStyleLabel": {
+        "message": "Napsat nový styl",
+        "description": "Label for the button to go to the add style page"
+    },
+    "manageOnlyEnabled": {
+        "message": "Pouze povolené styly",
+        "description": "Checkbox to show only enabled styles"
+    },
+    "editStyleLabel": {
+        "message": "Upravit",
+        "description": "Label for the button to go to the edit style page"
+    },
+    "cm_theme": {
+        "message": "Schéma",
+        "description": "Label for the style editor's CSS theme."
+    },
+    "helpKeyMapCommand": {
+        "message": "Napište název příkazu",
+        "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    },
+    "description": {
+        "message": "Přestylujte web pomocí Stylish, manažeru uživatelských stylů. Stylish vám umožní nainstalovat témata a skiny pro mnoho populárních webů.",
+        "description": "Extension description"
+    }
 }
