@@ -84,9 +84,9 @@ function setCleanItem(node, isClean) {
 
 	if (isClean) {
 		delete dirty[node.id];
-		// A div would indicate a section
-		if (node.nodeName.toLowerCase() == "div") {
-			node.savedValue = getCodeMirrorForSection(node).changeGeneration();
+		// code sections have .CodeMirror property
+		if (node.CodeMirror) {
+			node.savedValue = node.CodeMirror.changeGeneration();
 		} else {
 			node.savedValue = "checkbox" === node.type ? node.checked : node.value;
 		}
@@ -113,7 +113,7 @@ function setCleanSection(section) {
 	section.querySelectorAll(".style-contributor").forEach(function(node) { setCleanItem(node, true) });
 
 	// #header section has no codemirror
-	var cm = getCodeMirrorForSection(section)
+	var cm = section.CodeMirror;
 	if (cm) {
 		section.savedValue = cm.changeGeneration();
 		indicateCodeChange(cm);
@@ -217,6 +217,10 @@ function initCodeMirror() {
 		editors.forEach(function(editor) {
 			editor.setOption(o, v);
 		});
+	}
+
+	CM.prototype.getSection = function() {
+		return this.display.wrapper.parentNode;
 	}
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
@@ -352,14 +356,10 @@ function setupCodeMirror(textarea, index) {
 }
 
 function indicateCodeChange(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	setCleanItem(section, cm.isClean(section.savedValue));
 	updateTitle();
 	updateLintReport(cm);
-}
-
-function getSectionForCodeMirror(cm) {
-	return cm.display.wrapper.parentNode;
 }
 
 function getSectionForChild(e) {
@@ -368,12 +368,6 @@ function getSectionForChild(e) {
 
 function getSections() {
 	return document.querySelectorAll("#sections > div");
-}
-
-function getCodeMirrorForSection(section) {
-	// #header section has no codemirror
-	var wrapper = section.querySelector(".CodeMirror");
-	return wrapper && wrapper.CodeMirror;
 }
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
@@ -499,7 +493,7 @@ function addSection(event, section) {
 
 	var sections = document.getElementById("sections");
 	if (event) {
-		var clickedSection = event.target.parentNode;
+		var clickedSection = getSectionForChild(event.target);
 		sections.insertBefore(div, clickedSection.nextElementSibling);
 		var newIndex = getSections().indexOf(clickedSection) + 1;
 		var cm = setupCodeMirror(codeElement, newIndex);
@@ -508,9 +502,10 @@ function addSection(event, section) {
 		renderLintReport();
 	} else {
 		sections.appendChild(div);
-		setupCodeMirror(codeElement);
+		var cm = setupCodeMirror(codeElement);
 	}
 
+	div.CodeMirror = cm;
 	setCleanSection(div);
 	return div;
 }
@@ -525,8 +520,8 @@ function removeAppliesTo(event) {
 }
 
 function removeSection(event) {
-	var section = event.target.parentNode;
-	var cm = getCodeMirrorForSection(section);
+	var section = getSectionForChild(event.target);
+	var cm = section.CodeMirror;
 	removeAreaAndSetDirty(section);
 	editors.splice(editors.indexOf(cm), 1);
 	renderLintReport();
@@ -549,7 +544,7 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	var bounds = section.getBoundingClientRect();
 	if ((bounds.bottom > window.innerHeight && bounds.top > 0) || (bounds.top < 0 && bounds.bottom < window.innerHeight)) {
 		if (bounds.top < 0) {
@@ -680,7 +675,7 @@ function setupGlobalSearch() {
 		originalCommand[reverse ? "findPrev" : "findNext"](activeCM);
 
 		function searchAppliesTo(cm) {
-			var inputs = [].slice.call(getSectionForCodeMirror(cm).querySelectorAll(".applies-value"));
+			var inputs = [].slice.call(cm.getSection().querySelectorAll(".applies-value"));
 			if (reverse) {
 				inputs = inputs.reverse();
 			}
@@ -799,7 +794,7 @@ function jumpToLine(cm) {
 }
 
 function refocusMinidialog(cm) {
-	var section = getSectionForCodeMirror(cm);
+	var section = cm.getSection();
 	if (!section.querySelector(".CodeMirror-dialog")) {
 		return;
 	}
@@ -821,7 +816,7 @@ function getEditorInSight(nearbyElement) {
 	// priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
 	var cm;
 	if (nearbyElement && nearbyElement.className.indexOf("applies-") >= 0) {
-		cm = getCodeMirrorForSection(getSectionForChild(nearbyElement));
+		cm = getSectionForChild(nearbyElement).CodeMirror;
 	} else {
 		cm = editors.lastActive;
 	}
@@ -838,7 +833,7 @@ function getEditorInSight(nearbyElement) {
 
 	function offscreenDistance(cm) {
 		var LINES_VISIBLE = 2; // closest editor should have at least # lines visible
-		var bounds = getSectionForCodeMirror(cm).getBoundingClientRect();
+		var bounds = cm.getSection().getBoundingClientRect();
 		if (bounds.top < 0) {
 			return -bounds.top;
 		} else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
@@ -998,7 +993,7 @@ function beautify(event) {
 		options.indent_char = tabs ? "\t" : " ";
 
 		var section = getSectionForChild(event.target);
-		var scope = section ? [getCodeMirrorForSection(section)] : editors;
+		var scope = section ? [section.CodeMirror] : editors;
 
 		showHelp(t("styleBeautify"), "<div class='beautify-options'>" +
 			optionHtml(".selector1,", "selector_separator_newline") +
@@ -1118,7 +1113,7 @@ function initWithStyle(style) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(getCodeMirrorForSection(sectionDiv), prefs.get("editor.lintDelay"));
+		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
 	}
 }
 
@@ -1150,7 +1145,7 @@ function initHooks() {
 }
 
 function maximizeCodeHeight(sectionDiv, isLast) {
-	var cm = getCodeMirrorForSection(sectionDiv);
+	var cm = sectionDiv.CodeMirror;
 	var stats = maximizeCodeHeight.stats = maximizeCodeHeight.stats || {totalHeight: 0, deltas: []};
 	if (!stats.cmActualHeight) {
 		stats.cmActualHeight = getComputedHeight(cm.display.wrapper);
@@ -1263,7 +1258,7 @@ function getSectionsHashes() {
 	var sections = [];
 	getSections().forEach(function(div) {
 		var meta = getMeta(div);
-		var code = getCodeMirrorForSection(div).getValue();
+		var code = div.CodeMirror.getValue();
 		if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
 			return;
 		}
@@ -1346,19 +1341,24 @@ function fromMozillaFormat() {
 		popup.querySelector(".close-icon").click();
 		var mozStyle = trimNewLines(popup.codebox.getValue());
 		var parser = new exports.css.Parser(), lines = mozStyle.split("\n");
-		var sectionStack = [{code: "", cursor: {line: 1, col: 1}}];
+		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
 		var errors = "", oldSectionCount = editors.length;
+		var firstAddedCM;
 
 		parser.addListener("startdocument", function(e) {
-			var outerText = getRange(sectionStack.last.cursor, (--e.col, e));
+			var outerText = getRange(sectionStack.last.start, (--e.col, e));
 			var gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-			var section = {code: "", cursor: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
+			var section = {code: "", start: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
 			// move last comment before @-moz-document inside the section
 			if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
 				section.code = gapComment[1] + "\n";
 				outerText = trimNewLines(outerText.substring(0, gapComment.index));
 			}
-			addContinuation(sectionStack.last, outerText);
+			if (outerText) {
+				sectionStack.last.code = outerText;
+				doAddSection(sectionStack.last);
+				sectionStack.last.code = "";
+			}
 			e.functions.forEach(function(f) {
 				var m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
 				var aType = CssToProperty[m[1]];
@@ -1369,50 +1369,27 @@ function fromMozillaFormat() {
 		});
 
 		parser.addListener("enddocument", function(e) {
-			var cursor = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
+			var end = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
 			var section = sectionStack.pop();
-			addContinuation(section, getRange(section.cursor, cursor));
-			sectionStack.last.cursor = (++cursor.col, cursor);
+			section.code += getRange(section.start, end);
+			sectionStack.last.start = (++end.col, end);
 			doAddSection(section);
 		});
 
 		parser.addListener("endstylesheet", function() {
-			// add nonclosed (broken) outer sections except for the global one
-			sectionStack.slice(1).forEach(doAddSection);
-
-			if (!replaceOldStyle) {
-				var lastOldCM = editors[oldSectionCount - 1];
-				var lastOldSection = getSectionForCodeMirror(lastOldCM);
-				var addAfter = {target: lastOldSection.querySelector(".add-section")};
-
-				if (oldSectionCount < editors.length
-				&& lastOldCM.getValue() == ""
-				&& lastOldSection.querySelector(".applies-to-everything")) {
-					removeSection(addAfter);
-					oldSectionCount--;
-				}
-			} else {
-				var addAfter = {target: getSectionForCodeMirror(editors[0]).previousElementSibling.firstElementChild};
-			}
-
-			var globalSection = sectionStack[0];
-			addContinuation(globalSection,
-				getRange(sectionStack.last.cursor, {line: lines.length, col: lines.last.length + 1}));
-			// only add global section if it contains actual code
-			if (globalSection.code
-					.replace("@namespace url(http://www.w3.org/1999/xhtml);", "") /* strip boilerplate NS */
-					.replace(/\/\*[\s\S]*?\*\//g, "") /* strip comments */
-					.replace(/[\s\n]/g, "")) { /* strip all whitespace including new lines */
-				setCleanItem(addSection(addAfter, {code: globalSection.code}), false);
-			}
+			// add nonclosed outer sections (either broken or the last global one)
+			var endOfText = {line: lines.length, col: lines.last.length + 1};
+			sectionStack.last.code += getRange(sectionStack.last.start, endOfText);
+			sectionStack.forEach(doAddSection);
 
 			delete maximizeCodeHeight.stats;
-			editors.forEach(function(cm, i) {
-				maximizeCodeHeight(getSectionForCodeMirror(cm), i == editors.length - 1);
+			editors.forEach(function(cm) {
+				maximizeCodeHeight(cm.getSection(), cm == editors.last);
 			});
 
-			makeSectionVisible(editors[oldSectionCount]);
-			editors[oldSectionCount].focus();
+			makeSectionVisible(firstAddedCM);
+			firstAddedCM.focus();
+
 			if (errors) {
 				showHelp(t("issues"), errors);
 			}
@@ -1426,7 +1403,7 @@ function fromMozillaFormat() {
 
 		function getRange(start, end) {
 			if (start.line == end.line) {
-				return lines[start.line - 1].substring(start.col - 1, end.col - 1).trim();
+				return lines[start.line - 1].substr(start.col - 1, end.col - start.col + 1).trim();
 			} else {
 				return trimNewLines(lines[start.line - 1].substr(start.col - 1) + "\n" +
 					lines.slice(start.line, end.line - 1).join("\n") +
@@ -1434,13 +1411,36 @@ function fromMozillaFormat() {
 			}
 		}
 		function doAddSection(section) {
-			if (replaceOldStyle && oldSectionCount > 0) {
-				oldSectionCount = 0;
-				editors.slice(0).reverse().forEach(function(cm) {
-					removeSection({target: getSectionForCodeMirror(cm).firstElementChild});
-				});
+			if (!firstAddedCM) {
+				if (!initFirstSection(section)) {
+					return;
+				}
+			}
+			// don't add empty sections
+			if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
+				return;
 			}
 			setCleanItem(addSection(null, section), false);
+			firstAddedCM = firstAddedCM || editors.last;
+		}
+		// do onetime housekeeping as the imported text is confirmed to be a valid style
+		function initFirstSection(section) {
+			// skip adding the first global section when there's no code/comments
+			if (!section.code.replace("@namespace url(http://www.w3.org/1999/xhtml);", "") /* ignore boilerplate NS */
+					.replace(/[\s\n]/g, "")) { /* ignore all whitespace including new lines */
+				return false;
+			}
+			if (replaceOldStyle) {
+				editors.slice(0).reverse().forEach(function(cm) {
+					removeSection({target: cm.getSection().firstElementChild});
+				});
+			} else if (!editors.last.getValue()) {
+				// nuke the last blank section
+				if (editors.last.getSection().querySelector(".applies-to-everything")) {
+					removeSection({target: editors.last.getSection()});
+				}
+			}
+			return true;
 		}
 	}
 	function backtrackTo(parser, tokenType, startEnd) {
@@ -1453,12 +1453,6 @@ function fromMozillaFormat() {
 	}
 	function trimNewLines(s) {
 		return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
-	}
-	function addContinuation(section, addendum) {
-		section.code = section.code && addendum
-			? section.code + "\n/**************************/\n" + addendum
-			: section.code || addendum;
-		return section.code;
 	}
 }
 
