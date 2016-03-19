@@ -36,38 +36,45 @@ function getStyles(options, callback) {
   }, null);
 }
 
-function filterStyles(unfilteredStyles, options) {
+function filterStyles(styles, options) {
 	var enabled = fixBoolean(options.enabled);
 	var url = "url" in options ? options.url : null;
 	var id = "id" in options ? Number(options.id) : null;
 	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
-	// Return as a hash from style to applicable sections? Can only be used with matchUrl.
-	var asHash = "asHash" in options ? options.asHash : false;
 
-	var styles = asHash ? {disableAll: prefs.get("disableAll", false)} : [];
-	unfilteredStyles.forEach(function(style) {
-		if (enabled != null && style.enabled != enabled) {
-			return;
-		}
-		if (url != null && style.url != url) {
-			return;
-		}
-		if (id != null && style.id != id) {
-			return;
-		}
-		if (matchUrl != null) {
-			var applicableSections = getApplicableSections(style, matchUrl);
-			if (applicableSections.length > 0) {
-				if (asHash) {
-					styles[style.id] = applicableSections;
-				} else {
-					styles.push(style)
+	if (enabled != null) {
+		styles = styles.filter(function(style) {
+			return style.enabled != enabled;
+		});
+	}
+	if (url != null) {
+		styles = styles.filter(function(style) {
+			return style.url != url;
+		});
+	}
+	if (id != null) {
+		styles = styles.filter(function(style) {
+			return style.id != id;
+		});
+	}
+	if (matchUrl != null) {
+		// Return as a hash from style to applicable sections? Can only be used with matchUrl.
+		var asHash = "asHash" in options ? options.asHash : false;
+		if (asHash) {
+			var h = {disableAll: prefs.get("disableAll", false)};
+			styles.forEach(function(style) {
+				var applicableSections = getApplicableSections(style, matchUrl);
+				if (applicableSections.length > 0) {
+					h[style.id] = applicableSections;
 				}
-			}
-		} else {
-			styles.push(style);
+			});
+			return h;
 		}
-	});
+		styles = styles.filter(function(style) {
+			var applicableSections = getApplicableSections(style, matchUrl);
+			return applicableSections.length > 0;
+		});
+	}
 	return styles;
 }
 

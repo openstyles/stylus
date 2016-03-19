@@ -44,13 +44,8 @@ function createStyleElement(style) {
 	var styleName = e.querySelector(".style-name");
 	styleName.appendChild(document.createTextNode(style.name));
 	if (style.url) {
-		var homepage = document.createElement("a");
+		var homepage = template.styleHomepage.cloneNode(true)
 		homepage.setAttribute("href", style.url);
-		homepage.setAttribute("target", "_blank");
-		var homepageImg = document.createElement("img");
-		homepageImg.src = "world_go.png";
-		homepageImg.alt = "*";
-		homepage.appendChild(homepageImg);
 		styleName.appendChild(document.createTextNode(" " ));
 		styleName.appendChild(homepage);
 	}
