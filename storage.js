@@ -44,17 +44,17 @@ function filterStyles(styles, options) {
 
 	if (enabled != null) {
 		styles = styles.filter(function(style) {
-			return style.enabled != enabled;
+			return style.enabled == enabled;
 		});
 	}
 	if (url != null) {
 		styles = styles.filter(function(style) {
-			return style.url != url;
+			return style.url == url;
 		});
 	}
 	if (id != null) {
 		styles = styles.filter(function(style) {
-			return style.id != id;
+			return style.id == id;
 		});
 	}
 	if (matchUrl != null) {
