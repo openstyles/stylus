@@ -17,7 +17,12 @@ function getDatabase(ready, error) {
 	}
 };
 
+var cachedStyles = null;
 function getStyles(options, callback) {
+	if (cachedStyles != null) {
+		callback(filterStyles(cachedStyles, options));
+		return;
+	}
 	getDatabase(function(db) {
 		var tx = db.transaction(["styles"], "readonly");
 		var os = tx.objectStore("styles");
@@ -30,10 +35,18 @@ function getStyles(options, callback) {
 				all.push(cursor.value);
 				cursor.continue();
 			} else {
+				cachedStyles = all;
 				callback(filterStyles(all, options));
 			}
 		};
   }, null);
+}
+
+function invalidateCache(andNotify) {
+	cachedStyles = null;
+	if (andNotify) {
+		chrome.runtime.sendMessage({method: "invalidateCache"});
+	}
 }
 
 function filterStyles(styles, options) {
@@ -97,6 +110,7 @@ function saveStyle(o, callback) {
 				request = os.put(style);
 				request.onsuccess = function(event) {
 					notifyAllTabs({method: "styleUpdated", style: style});
+					invalidateCache(true);
 					if (callback) {
 						callback(style);
 					}
@@ -128,6 +142,7 @@ function saveStyle(o, callback) {
 		delete o["id"];
 		var request = os.add(o);
 		request.onsuccess = function(event) {
+			invalidateCache(true);
 			// Give it the ID that was generated
 			o.id = event.target.result;
 			notifyAllTabs({method: "styleAdded", style: o});
@@ -152,6 +167,7 @@ function deleteStyle(id) {
 		var request = os.delete(Number(id));
 		request.onsuccess = function(event) {
 			handleDelete(id);
+			invalidateCache(true);
 			notifyAllTabs({method: "styleDeleted", id: id});
 		};
 	});

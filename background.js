@@ -66,6 +66,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		case "saveStyle":
 			saveStyle(request, sendResponse);
 			return true;
+		case "invalidateCache":
+			if (typeof invalidateCache != "undefined") {
+				invalidateCache(false);
+			}
+			break;
 		case "healthCheck":
 			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
 			break;
