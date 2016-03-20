@@ -234,7 +234,7 @@
 		"description": "Checkbox to show only locally edited styles"
 	},
 	"manageText": {
-		"message": "Visit <a href='http:\/\/userstyles.org'>userstyles.org<\/a> for pre-made styles. Ask in <a href='http:\/\/forum.userstyles.org'>the forum<\/a> if you need help.",
+		"message": "<a href='https:\/\/userstyles.org'>Get styles on userstyles.org<\/a> | <a href='https:\/\/userstyles.org\/help\/stylish_chrome'>Get help<\/a> | <a href='https:\/\/userstyles.org\/login\/policy'>Read the privacy policy</a>",
 		"description": "Help text on the manage page"
 	},
 	"manageTitle": {
