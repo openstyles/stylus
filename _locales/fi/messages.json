@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "Käy osoitteessa <a href='http://userstyles.org'> userstyles.org</a> saadaksesi valmiita tyylejä. Kysy <a href='http://forum.userstyles.org'> foorumista </a> jos tarvitset apua.",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a> | <a href='https://userstyles.org/login/policy'>Read the privacy policy</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {

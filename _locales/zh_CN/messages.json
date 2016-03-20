@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "请访问 <a href='http://userstyles.org'>userstyles.org</a> 以获取预制样式。如果您需要帮助，请到<a href='http://forum.userstyles.org'>论坛</a>发帖提问。",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a> | <a href='https://userstyles.org/login/policy'>Read the privacy policy</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {

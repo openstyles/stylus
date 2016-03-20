@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "Besuchen Sie <a href='http://userstyles.org'>userstyles.org</a> für weitere vorgefertigte Styles. Wenn Sie Hilfe benötigen, können Sie im <a href='http://forum.userstyles.org'>Forum</a> nachfragen.",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a> | <a href='https://userstyles.org/login/policy'>Read the privacy policy</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {

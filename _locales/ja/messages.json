@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "既に作成済みのスタイルについては、<a href='http://userstyles.org'>userstyles.org</a> をご覧ください。ご質問がある場合には、<a href='http://forum.userstyles.org'>userstyles.org のフォーラム</a>でお問い合わせください。",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a> | <a href='https://userstyles.org/login/policy'>Read the privacy policy</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
