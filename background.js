@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			break;
 		case "healthCheck":
 			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
-			break;
+			return true;
 		case "openURL":
 			openURL(request);
 			break;
