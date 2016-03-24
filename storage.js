@@ -317,6 +317,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		"windowPosition": {},           // detached window position
 		"show-badge": true,             // display text on popup menu icon
 		"disableAll": false,            // boss key
+		"analyticsEnabled": true,       // hit up GA on startup
 
 		"popup.breadcrumbs": true,      // display "New style" links as URL breadcrumbs
 		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"

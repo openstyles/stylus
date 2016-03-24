@@ -477,7 +477,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		"manage.onlyEnabled",
 		"manage.onlyEdited",
 		"show-badge",
-		"popup.stylesFirst"
+		"popup.stylesFirst",
+		"analyticsEnabled"
 	]);
 	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
 	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
