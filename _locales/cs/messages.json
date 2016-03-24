@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a> | <a href='https://userstyles.org/login/policy'>Read the privacy policy</a>",
+		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Získat pomoc</a> | <a href='https://userstyles.org/login/policy'>Přečíst zásady ochrany osobních údajů</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -355,6 +355,10 @@
 	"replaceAll": {
 		"message": "Nahradit vše",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"analyticsEnabled": {
+		"message": "Send anonymous data to Stylish developers for determining user counts",
+		"description": "Label for the enable analytics setting"
 	},
 	"editGotoLine": {
 		"message": "Přejít na řádek (nebo na line:col)",
