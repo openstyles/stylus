@@ -13,6 +13,10 @@ var webSqlStorage = {
 					webSqlStorage.cleanStyle(s)
 					os.add(s);
 				});
+				// While this was running, the styles were loaded from the (empty) indexed db
+				setTimeout(function() {
+					invalidateCache(true);
+				}, 500);
 			});
 		}, null);
 	},
