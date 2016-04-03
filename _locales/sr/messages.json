@@ -36,7 +36,7 @@
 		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
-		"message": "Претражи исправке",
+		"message": "Проверите ажурирање",
 		"description": "Label for the button to check a single style for an update"
 	},
 	"importAppendLabel": {
@@ -309,7 +309,7 @@
 		"description": "Text that displays when an update completed"
 	},
 	"checkingForUpdate": {
-		"message": "Тражење исправки...",
+		"message": "Проверавање...",
 		"description": "Text to display when checking a style for an update"
 	},
 	"sectionCode": {
@@ -357,7 +357,7 @@
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"analyticsEnabled": {
-		"message": "Send anonymous data to Stylish developers for determining user counts",
+		"message": "Шаљи анонимне податке програмерима Stylish проширења ради утврђивања броја корисника",
 		"description": "Label for the enable analytics setting"
 	},
 	"editGotoLine": {
@@ -365,7 +365,7 @@
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
 	"checkAllUpdates": {
-		"message": "Претражи исправке за све стилове",
+		"message": "Проверите ажурирања за све стилове",
 		"description": "Label for the button to check all styles for updates"
 	},
 	"issuesHelp": {

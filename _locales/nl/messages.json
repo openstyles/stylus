@@ -357,7 +357,7 @@
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"analyticsEnabled": {
-		"message": "Send anonymous data to Stylish developers for determining user counts",
+		"message": "Verstuur anonieme gegevens naar de Stylish-ontwikkelaars voor het bepalen van het aantal gebruikers",
 		"description": "Label for the enable analytics setting"
 	},
 	"editGotoLine": {
