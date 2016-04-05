@@ -541,7 +541,10 @@ function equal(a, b) {
 
 function defineReadonlyProperty(obj, key, value) {
 	var copy = deepCopy(value);
-	Object.freeze(copy);
+	// In ES6, freezing a literal is OK (it returns the same value), but in previous versions it's an exception.
+	if (typeof copy == "object") {
+		Object.freeze(copy);
+	}
 	Object.defineProperty(obj, key, {value: copy, configurable: true})
 }
 
