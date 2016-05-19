@@ -360,7 +360,7 @@ function doUpdate(event) {
 
 	// updating the UI will be handled by the general update listener
 	lastUpdatedStyleId = updatedCode.id;
-	chrome.runtime.sendMessage(updatedCode);
+	chrome.runtime.sendMessage(updatedCode, function () {});
 }
 
 function codeIsEqual(a, b) {
