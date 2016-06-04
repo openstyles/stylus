@@ -1616,12 +1616,12 @@ function getParams() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
-			if (styleId == request.id) {
+			if (styleId && styleId == request.style.id) {
 				initWithStyle(request.style);
 			}
 			break;
 		case "styleDeleted":
-			if (styleId == request.id) {
+			if (styleId && styleId == request.style.id) {
 				window.close();
 				break;
 			}
