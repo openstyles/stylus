@@ -47,7 +47,12 @@ function updateIcon(tab, styles) {
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
 		var postfix = styles.length == 0 || disableAll ? "w" : "";
 		chrome.browserAction.setIcon({
-			path: {19: "19" + postfix + ".png", 38: "38" + postfix + ".png"},
+			path: {
+				// Material Design 2016 new size is 16px
+				16: "16" + postfix + ".png", 32: "32" + postfix + ".png",
+				// Chromium forks or non-chromium browsers may still use the traditional 19px
+				19: "19" + postfix + ".png", 38: "38" + postfix + ".png",
+			},
 			tabId: tab.id
 		}, function() {
 			// if the tab was just closed an error may occur,
