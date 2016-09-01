@@ -51,6 +51,8 @@
 	"options_page": "manage.html",
 	"browser_action": {
 		"default_icon": {
+			"16": "16w.png",
+			"32": "32w.png",
 			"19": "19w.png",
 			"38": "38w.png"
 		},
