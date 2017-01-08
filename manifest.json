@@ -22,9 +22,8 @@
 		"http://userstyles.org/",
 		"https://userstyles.org/"
 	],
-	"content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
 	"background": {
-		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js", "analytics.js"]
+		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js"]
 	},
 	"commands": {
 	  "openManage": {
