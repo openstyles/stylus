@@ -356,10 +356,6 @@
 		"message": "Замени све",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
-	"analyticsEnabled": {
-		"message": "Шаљи анонимне податке програмерима Stylish проширења ради утврђивања броја корисника",
-		"description": "Label for the enable analytics setting"
-	},
 	"editGotoLine": {
 		"message": "Иди на ред (или line:col)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"

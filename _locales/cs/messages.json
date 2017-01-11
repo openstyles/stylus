@@ -356,10 +356,6 @@
 		"message": "Nahradit vše",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
-	"analyticsEnabled": {
-		"message": "Odesílat anonymní data vývojářům Stylish kvůli zjišťování počtu uživatelů",
-		"description": "Label for the enable analytics setting"
-	},
 	"editGotoLine": {
 		"message": "Přejít na řádek (nebo na line:col)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"

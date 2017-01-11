@@ -356,10 +356,6 @@
 		"message": "Alles vervangen",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
-	"analyticsEnabled": {
-		"message": "Verstuur anonieme gegevens naar de Stylish-ontwikkelaars voor het bepalen van het aantal gebruikers",
-		"description": "Label for the enable analytics setting"
-	},
 	"editGotoLine": {
 		"message": "Ga naar regel (of regel:kolom)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"

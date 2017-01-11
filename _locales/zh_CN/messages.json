@@ -356,10 +356,6 @@
 		"message": "全部替换",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
-	"analyticsEnabled": {
-		"message": "发送匿名数据到 Stylish 开发者以测定用户数量",
-		"description": "Label for the enable analytics setting"
-	},
 	"editGotoLine": {
 		"message": "跳转至行（或行:列）",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"

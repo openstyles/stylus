@@ -7,10 +7,6 @@
 		"message": "Add Style",
 		"description": "Title of the page for adding styles"
 	},
-	"analyticsEnabled": {
-		"message": "Send anonymous data to Stylish developers for determining user counts",
-		"description": "Label for the enable analytics setting"
-	},
 	"appliesAdd": {
 		"message": "Add",
 		"description": "Label for the button to add an 'applies' entry"
