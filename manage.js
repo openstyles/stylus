@@ -461,6 +461,37 @@ function initFilter(className, node) {
 	onFilterChange(className, {target: node});
 }
 
+function importStyles (e) {
+	var file = e.target.files[0];
+	var reader = new FileReader();
+	var styles = [];
+
+	function save () {
+		var style = styles.shift();
+		if (style) {
+			delete style.id;
+			saveStyle(style, save);
+		}
+		else {
+			window.location.reload()
+		}
+	}
+
+  reader.onloadend = function (evt) {
+    try {
+    	styles = JSON.parse(evt.target.result);
+    	save();
+    }
+    catch (e) {
+    	window.alert(e.message);
+    }
+  };
+  reader.onerror = function (e) {
+  	window.alert(e.message);
+  }
+  reader.readAsText(file)
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
 	if (document.stylishStyles) {
@@ -473,6 +504,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("search").addEventListener("input", searchStyles);
 	searchStyles(true); // re-apply filtering on history Back
 
+	document.getElementById('import').addEventListener('change', importStyles);
+
 	setupLivePrefs([
 		"manage.onlyEnabled",
 		"manage.onlyEdited",
@@ -482,4 +515,5 @@ document.addEventListener("DOMContentLoaded", function() {
 	]);
 	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
 	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
+
 });

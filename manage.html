@@ -187,6 +187,31 @@
 				<div><input id="popup.stylesFirst" type="checkbox"><label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label></div>
 				<div><input id="analyticsEnabled" type="checkbox"><label id="analyticsEnabled-label" for="analyticsEnabled" i18n-text="analyticsEnabled"></label></div>
 			</div>
+			<div>
+				<h2>Export Styles from Stylish extension</h2>
+				<ul>
+					<li>Open chrome://extensions in a browser tab</li>
+					<li>Turn developer mode on</li>
+					<li>Find Stylish extension and press "background page"</li>
+					<li>Copy this script in the console tab and press Enter key</li>
+<pre style='color:#000000;background:#eee; overflow: auto;'>getStyles({}, e => {
+  <span style='color:#7f0055; font-weight:bold; '>let</span> styles = JSON.stringify(e);
+  <span style='color:#7f0055; font-weight:bold; '>let</span> <span style='color:#7f0055; font-weight:bold; '>link</span> = document.createElement(<span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>a</span><span style='color:#2a00ff; '>'</span>);
+  <span style='color:#7f0055; font-weight:bold; '>let</span> data = <span style='color:#7f0055; font-weight:bold; '>new</span> Blob([styles], {type: <span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>text/plain;charset=utf-8;</span><span style='color:#2a00ff; '>'</span>});
+  <span style='color:#7f0055; font-weight:bold; '>link</span>.href = window.URL.createObjectURL(data);
+  <span style='color:#7f0055; font-weight:bold; '>link</span>.setAttribute(<span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>download</span><span style='color:#2a00ff; '>'</span>, <span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>styles.json</span><span style='color:#2a00ff; '>'</span>);
+  document.body.appendChild(<span style='color:#7f0055; font-weight:bold; '>link</span>);
+  <span style='color:#7f0055; font-weight:bold; '>link</span>.click();
+  document.body.removeChild(<span style='color:#7f0055; font-weight:bold; '>link</span>);
+});
+</pre>
+					<li>Use the import button to import "styles.json" file</li>
+				</ul>
+			</div>
+			<div>
+				<h2>Import Styles</h2>
+				<input id="import" type="file">
+			</div>
 			<p id="manage-text" i18n-html="manageText"></p>
 		</div>
 		<div id="installed"></div>
