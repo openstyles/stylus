@@ -97,7 +97,6 @@ function saveStyle(o, callback) {
 		var os = tx.objectStore("styles");
 
 		// Update
-		console.error(o)
 		if (o.id) {
 			var request = os.get(Number(o.id));
 			request.onsuccess = function(event) {

@@ -4,11 +4,6 @@
 	"description": "__MSG_description__",
 	"homepage_url": "https://userstyles.org",
 	"manifest_version": 2,
-	"applications": {
-		"gecko": {
-			"id": "{46551EC9-40F0-4e47-8E18-8E5CF550CFB8}"
-		}
-	},
 	"icons": {
 		"16": "16.png",
 		"48": "48.png",

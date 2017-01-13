@@ -492,6 +492,10 @@ function importStyles (e) {
   reader.readAsText(file)
 }
 
+function selectAll () {
+	document.execCommand('selectAll');
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
 	if (document.stylishStyles) {
@@ -504,7 +508,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("search").addEventListener("input", searchStyles);
 	searchStyles(true); // re-apply filtering on history Back
 
-	document.getElementById('import').addEventListener('change', importStyles);
+	document.querySelector('input[type=file]').addEventListener('change', importStyles);
+	document.querySelector('#import pre').addEventListener('click', selectAll);
 
 	setupLivePrefs([
 		"manage.onlyEnabled",
