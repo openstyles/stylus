@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla формат кода се може користити у Stylish за Firefox и може се послати на userstyles.org.",
+		"message": "Mozilla формат кода се може користити у Stylus за Firefox и може се послати на userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "Инсталирати '$stylename$' у Stylish?",
+		"message": "Инсталирати '$stylename$' у Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish не ради на страницама као што је ова.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus не ради на страницама као што је ова.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Уклони одељак",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Дошло је до грешке користећи Stylish базу података. Да ли желите да посетите веб страницу са могућим решењима?",
+		"message": "Дошло је до грешке користећи Stylus базу података. Да ли желите да посетите веб страницу са могућим решењима?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Измените стил интернет мреже управљачем корисничких стилова. Stylish вам омогућава да лако инсталирате теме и скинове за многе популарне сајтове.",
+		"message": "Измените стил интернет мреже управљачем корисничких стилова. Stylus вам омогућава да лако инсталирате теме и скинове за многе популарне сајтове.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

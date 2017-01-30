@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
+		"message": "The Mozilla format of the code can be used with Stylus for Firefox and can be submitted to userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "Install '$stylename$' into Stylish?",
+		"message": "Install '$stylename$' into Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Remove section",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for many popular sites.",
+		"message": "Restyle the web with Stylus, a user styles manager. Stylus lets you easily install themes and skins for many popular sites.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

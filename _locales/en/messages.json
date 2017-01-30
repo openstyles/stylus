@@ -113,7 +113,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"dbError": {
-		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"defaultTheme": {
@@ -129,7 +129,7 @@
 		"description": "Confirmation before deleting a style"
 	},
 	"description": {
-		"message": "Restyle the web with Stylish, a user styles manager. Stylish lets you easily install themes and skins for many popular sites.",
+		"message": "Restyle the web with Stylus, a user styles manager. Stylus lets you easily install themes and skins for many popular sites.",
 		"description": "Extension description"
 	},
 	"disableAllStyles": {
@@ -238,7 +238,7 @@
 		"description": "Help text on the manage page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"menuShowBadge": {
@@ -326,7 +326,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleInstall": {
-		"message": "Install '$stylename$' into Stylish?",
+		"message": "Install '$stylename$' into Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -359,7 +359,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "The Mozilla format of the code can be used with Stylish for Firefox and can be submitted to userstyles.org.",
+		"message": "The Mozilla format of the code can be used with Stylus for Firefox and can be submitted to userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"styleUpdate": {
@@ -372,8 +372,8 @@
 		}
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus can't affect this page.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"undo": {
 		"message": "Undo",
@@ -415,5 +415,11 @@
 	"writeStyleForURL": {
 		"message": "this URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

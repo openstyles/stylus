@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "Nainstalovat '$stylename$' do Stylish?",
+		"message": "Nainstalovat '$stylename$' do Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish nefunguje na těchto stránkách.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus nefunguje na těchto stránkách.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Odstranit sekci",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Nastala chyba při používání Stylish databáze. Chcete navštívit webovou stránku s možnými řešeními?",
+		"message": "Nastala chyba při používání Stylus databáze. Chcete navštívit webovou stránku s možnými řešeními?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Přestylujte web pomocí Stylish, manažeru uživatelských stylů. Stylish vám umožní nainstalovat témata a skiny pro mnoho populárních webů.",
+		"message": "Přestylujte web pomocí Stylus, manažeru uživatelských stylů. Stylus vám umožní nainstalovat témata a skiny pro mnoho populárních webů.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

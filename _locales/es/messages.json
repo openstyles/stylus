@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "El formato del código de Mozilla se puede utilizar con Stylish para Firefox y se puede enviar a la página userstyles.org.",
+		"message": "El formato del código de Mozilla se puede utilizar con Stylus para Firefox y se puede enviar a la página userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "¿Quieres instalar \"$stylename$\" en Stylish?",
+		"message": "¿Quieres instalar \"$stylename$\" en Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -129,7 +129,7 @@
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "Mostrar el número de estilos activos para la página actual en el botón de Stylish",
+		"message": "Mostrar el número de estilos activos para la página actual en el botón de Stylus",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"menuShowBadge": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish no funciona en páginas como ésta.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus no funciona en páginas como ésta.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Eliminar sección",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Ha ocurrido un error con la base de datos de Stylish. ¿Quieres visitar una página web con las posibles soluciones?",
+		"message": "Ha ocurrido un error con la base de datos de Stylus. ¿Quieres visitar una página web con las posibles soluciones?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Cambia el estilo de la Web con Stylish, un gestor de estilos de usuario. Stylish te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
+		"message": "Cambia el estilo de la Web con Stylus, un gestor de estilos de usuario. Stylus te permite instalar fácilmente temas y estilos para Google, Facebook, YouTube, orkut y muchos otros sitios.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Формат кода Mozilla можно использовать в сочетании с форматом Stylish для Firefox и отправлять на сайт userstyles.org.",
+		"message": "Формат кода Mozilla можно использовать в сочетании с форматом Stylus для Firefox и отправлять на сайт userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "Установить \"$stylename$\" в Stylish?",
+		"message": "Установить \"$stylename$\" в Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish не работает на таких страницах)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus не работает на таких страницах)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Удалить раздел",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Возникла ошибка доступа к базе данных Stylish. Хотите перейти на страницу с возможными способами решения?",
+		"message": "Возникла ошибка доступа к базе данных Stylus. Хотите перейти на страницу с возможными способами решения?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylish. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",
+		"message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylus. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

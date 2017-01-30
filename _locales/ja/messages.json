@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla 形式のコードは、Stylish for Firefox で使用することができ、userstyles.org に投稿することができます。",
+		"message": "Mozilla 形式のコードは、Stylus for Firefox で使用することができ、userstyles.org に投稿することができます。",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "「$stylename$」を Stylish にインストールしますか？",
+		"message": "「$stylename$」を Stylus にインストールしますか？",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "セクションを削除",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Stylish はユーザー スタイルを管理するツールで、ウェブのスタイルを変更することができます。Stylish を利用すると、Google、Facebook、YouTube、orkut など、さまざまなサイトに対応したテーマやスキンを簡単にインストールできます。",
+		"message": "Stylus はユーザー スタイルを管理するツールで、ウェブのスタイルを変更することができます。Stylus を利用すると、Google、Facebook、YouTube、orkut など、さまざまなサイトに対応したテーマやスキンを簡単にインストールできます。",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

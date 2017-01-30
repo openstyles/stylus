@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "De Mozilla-opmaak van de code kan worden gebruikt met Stylish voor Firefox en worden ingezonden naar userstyles.org.",
+		"message": "De Mozilla-opmaak van de code kan worden gebruikt met Stylus voor Firefox en worden ingezonden naar userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "'$stylename$' installeren in Stylish?",
+		"message": "'$stylename$' installeren in Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -248,7 +248,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
-		"message": "Stylish",
+		"message": "Stylus",
 		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish werkt niet op pagina's als deze.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus werkt niet op pagina's als deze.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Sectie verwijderen",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Er is een fout opgetreden bij het gebruiken van de Stylish-database. Wilt u een webpagina met mogelijke oplossingen bezoeken?",
+		"message": "Er is een fout opgetreden bij het gebruiken van de Stylus-database. Wilt u een webpagina met mogelijke oplossingen bezoeken?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Voorzie het web van een ander uiterlijk met Stylish, een gebruikersstijlbeheerder. Stylish stelt u in staat om eenvoudig thema's en stijlen te installeren voor vele populaire websites.",
+		"message": "Voorzie het web van een ander uiterlijk met Stylus, een gebruikersstijlbeheerder. Stylus stelt u in staat om eenvoudig thema's en stijlen te installeren voor vele populaire websites.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }

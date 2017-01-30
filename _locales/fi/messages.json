@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla formaattia koodista voidaan käyttää Stylish Firefoxille ohjelmassa ja voidaan lähettää userstyles.orgiin.",
+		"message": "Mozilla formaattia koodista voidaan käyttää Stylus Firefoxille ohjelmassa ja voidaan lähettää userstyles.orgiin.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -108,7 +108,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"styleInstall": {
-		"message": "Asennetaanko '$stylename$' Stylishiin?",
+		"message": "Asennetaanko '$stylename$' Stylusiin?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -289,8 +289,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylishUnavailableForURL": {
-		"message": "(Stylish does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylish can't affect"
+		"message": "(Stylus does not work on pages like this.)",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Poista osio",
@@ -341,7 +341,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "An error has occurred using the Stylish database. Would you like to visit a web page with possible solutions?",
+		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"importAppendTooltip": {
@@ -413,7 +413,13 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Uudelleen stailaa netti Stylishillä, käyttäjän tyyli hallintapaneelilla. Stylish antaa sinun helposti asentaa teemoja ja skinejä palvelluille kuten Google, Facebook, YouTube, Orkut, ja monelle, monelle muulle sivustolle.",
+		"message": "Uudelleen stailaa netti Stylusillä, käyttäjän tyyli hallintapaneelilla. Stylus antaa sinun helposti asentaa teemoja ja skinejä palvelluille kuten Google, Facebook, YouTube, Orkut, ja monelle, monelle muulle sivustolle.",
 		"description": "Extension description"
-	}
+	},
+    "bckpInstStyles": {
+        "message": "Export Styles"
+    },
+    "retrieveBckp": {
+        "message": "Import Styles"
+    }
 }
