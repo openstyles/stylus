@@ -1,8 +1,8 @@
 {
-	"name": "Stylish",
-	"version": "1.5.2",
+	"name": "Stylus",
+	"version": "1.0",
 	"description": "__MSG_description__",
-	"homepage_url": "https://userstyles.org",
+	"homepage_url": "https://github.com/schomery/stylish-chrome",
 	"manifest_version": 2,
 	"icons": {
 		"16": "16.png",
@@ -12,10 +12,14 @@
 	"permissions": [
 		"tabs",
 		"webNavigation",
+		"webRequest",
+		"webRequestBlocking",
 		"contextMenus",
 		"storage",
-		"http://userstyles.org/",
-		"https://userstyles.org/"
+		"*://*/*"
+	],
+	"optional_permissions": [
+		"downloads"
 	],
 	"background": {
 		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js"]
@@ -50,7 +54,7 @@
 			"19": "19w.png",
 			"38": "38w.png"
 		},
-		"default_title": "Stylish",
+		"default_title": "Stylus",
 		"default_popup": "popup.html"
 	},
 	"default_locale": "en"
