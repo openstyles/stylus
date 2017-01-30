@@ -205,32 +205,17 @@
 				<div><input id="show-badge" type="checkbox"><label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label></div>
 				<div><input id="popup.stylesFirst" type="checkbox"><label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label></div>
 			</div>
-			<div id="import">
-				<h2>Stylish Migration</h2>
-				<ul>
-					<li>1. Copy this script to the clipboard</li>
-<pre contenteditable="true">chrome.extension.getBackgroundPage().getStyles({}, e => {
-  <span style='color:#7f0055; font-weight:bold; '>let</span> styles = JSON.stringify(e);
-  <span style='color:#7f0055; font-weight:bold; '>let</span> <span style='color:#7f0055; font-weight:bold; '>link</span> = document.createElement(<span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>a</span><span style='color:#2a00ff; '>'</span>);
-  <span style='color:#7f0055; font-weight:bold; '>let</span> data = <span style='color:#7f0055; font-weight:bold; '>new</span> Blob([styles], {type: <span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>text/plain;charset=utf-8;</span><span style='color:#2a00ff; '>'</span>});
-  <span style='color:#7f0055; font-weight:bold; '>link</span>.href = window.URL.createObjectURL(data);
-  <span style='color:#7f0055; font-weight:bold; '>link</span>.setAttribute(<span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>download</span><span style='color:#2a00ff; '>'</span>, <span style='color:#2a00ff; '>'</span><span style='color:#2a00ff; '>styles.json</span><span style='color:#2a00ff; '>'</span>);
-  document.body.appendChild(<span style='color:#7f0055; font-weight:bold; '>link</span>);
-  <span style='color:#7f0055; font-weight:bold; '>link</span>.click();
-  document.body.removeChild(<span style='color:#7f0055; font-weight:bold; '>link</span>);
-});
-</pre>
-					<li>2. Right-Click the Stylish toolbar button and select "Inspect Popup"</li>
-					<li>3. Paste the script in the console tab and press Enter key</li>
-					<li>4. Use the import button to import "styles.json" file</li>
-				</ul>
-			</div>
-			<div>
-				<h2>Import Styles</h2>
-				<input type="file">
+			<div id="backup">
+				<h2>Backup</h2>
+				<span>Larger files may take a moment, be patient.<br><br>Editor styles require adding rules for Stylus.<br><br></span>
+				<button id="file-all-styles" i18n-text="bckpInstStyles"></button>
+				<button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
 			</div>
 			<p id="manage-text" i18n-html="manageText"></p>
 		</div>
 		<div id="installed"></div>
+		<script src="backup/fileSaveLoad.js"></script>
+		<script src="backup/manage/moment.min.js"></script>
+		<script src="backup/manage/fileSaveLoad.js"></script>
 	</body>
 </html>
