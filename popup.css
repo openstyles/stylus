@@ -79,6 +79,8 @@ body > .actions {
 #unavailable {
   border: none;
   display: none;
+  font-size: 14px;
+  text-indent: 6px;
 }
 body.blocked #installed,
 body.blocked #find-styles,
