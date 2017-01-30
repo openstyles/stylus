@@ -100,7 +100,12 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
 	var clean = Object.keys(dirty).length == 0;
 	setDirtyClass(document.body, !clean);
-	document.getElementById("save-button").disabled = clean;
+    var saveBtn = document.getElementById("save-button")
+    if (clean){
+        //saveBtn.removeAttribute('disabled');
+    }else{
+        //saveBtn.setAttribute('disabled', true);
+    }
 	return clean;
 }
 
@@ -211,17 +216,17 @@ function initCodeMirror() {
 	// user option values
 	CM.getOption = function (o) {
 		return CodeMirror.defaults[o];
-	}
+	};
 	CM.setOption = function (o, v) {
 		CodeMirror.defaults[o] = v;
 		editors.forEach(function(editor) {
 			editor.setOption(o, v);
 		});
-	}
+	};
 
 	CM.prototype.getSection = function() {
 		return this.display.wrapper.parentNode;
-	}
+	};
 
 	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
 	var theme = prefs.get("editor.theme");
@@ -435,7 +440,7 @@ window.onbeforeunload = function() {
 	}
 	updateLintReport(null, 0);
 	return confirm(t('styleChangesNotSaved'));
-}
+};
 
 function addAppliesTo(list, name, value) {
 	var showingEverything = list.querySelector(".applies-to-everything") != null;
@@ -528,7 +533,11 @@ function removeSection(event) {
 }
 
 function removeAreaAndSetDirty(area) {
-	area.querySelectorAll('.style-contributor').some(function(node) {
+	var contributors = area.querySelectorAll('.style-contributor');
+	if(!contributors.length){
+		setCleanItem(area, false);
+	}
+	contributors.some(function(node) {
 		if (node.savedValue) {
 			// it's a saved section, so make it dirty and stop the enumeration
 			setCleanItem(area, false);
@@ -561,7 +570,7 @@ function setupGlobalSearch() {
 		findNext: CodeMirror.commands.findNext,
 		findPrev: CodeMirror.commands.findPrev,
 		replace: CodeMirror.commands.replace
-	}
+	};
 	var originalOpenDialog = CodeMirror.prototype.openDialog;
 	var originalOpenConfirm = CodeMirror.prototype.openConfirm;
 
@@ -1616,12 +1625,13 @@ function getParams() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
-			if (styleId && styleId == request.style.id) {
+			if (styleId && styleId == request.id) {
 				initWithStyle(request.style);
 			}
 			break;
 		case "styleDeleted":
-			if (styleId && styleId == request.style.id) {
+			if (styleId && styleId == request.id) {
+				window.onbeforeunload = function() {};
 				window.close();
 				break;
 			}
