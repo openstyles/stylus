@@ -30,13 +30,17 @@ function getStyles(options, callback) {
 		os.openCursor().onsuccess = function(event) {
 			var cursor = event.target.result;
 			if (cursor) {
-				var s = cursor.value
-				s.id = cursor.key
+				var s = cursor.value;
+				s.id = cursor.key;
 				all.push(cursor.value);
 				cursor.continue();
 			} else {
 				cachedStyles = all;
-				callback(filterStyles(all, options));
+				try{
+					callback(filterStyles(all, options));
+				} catch(e){
+					// no error in console, it works
+				}
 			}
 		};
   }, null);
@@ -100,7 +104,7 @@ function saveStyle(o, callback) {
 		if (o.id) {
 			var request = os.get(Number(o.id));
 			request.onsuccess = function(event) {
-				var style = request.result;
+				var style = request.result || {};
 				for (var prop in o) {
 					if (prop == "id") {
 						continue;
