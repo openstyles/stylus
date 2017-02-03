@@ -31,16 +31,14 @@ function loadFromFile(formatToFilter){
         fileInput.initialValue = fileInput.value;
         fileInput.addEventListener('change', changeHandler);
         function changeHandler(){
-            if (fileInput.value != fileInput.initialValue){
+            if (fileInput.value !== fileInput.initialValue){
                 var fReader = new FileReader();
-                fReader.readAsDataURL(fileInput.files[0]);
-                fReader.onloadend = function(event){
+                fReader.onloadend = function (event){
                     fileInput.removeEventListener('change', changeHandler);
                     fileInput.remove();
-                    var b64text = event.target.result.split(",")[1],
-                        rawText = atob(b64text);
-                    resolve(rawText);
-                }
+                    resolve(event.target.result);
+                };
+                fReader.readAsText(fileInput.files[0], 'utf-8')
             }
         }
         fileInput.click();
