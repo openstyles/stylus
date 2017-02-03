@@ -60,7 +60,7 @@ function updateIcon(tab, styles) {
 			if (!chrome.runtime.lastError) {
 				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
 				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : [0, 0, 0, 0]});
+				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : '#6e6e6e'});
 			}
 		});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
