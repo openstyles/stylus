@@ -81,7 +81,7 @@ document.addEventListener("stylishInstallChrome", function() {
 				});
 			});
 			getResource(getMeta("stylish-install-ping-url-chrome"));
-		}	
+		}
 	});
 }, false);
 
@@ -97,7 +97,7 @@ document.addEventListener("stylishUpdateChrome", function() {
 					sendEvent("styleInstalledChrome");
 				});
 			});
-		}	
+		}
 	});
 }, false);
 
@@ -134,3 +134,15 @@ function getResource(url, callback) {
 		xhr.send();
 	}
 }
+
+/* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
+(function (es) {
+	es.forEach(e => {
+		e.textContent = 'Install with Stylus';
+	});
+})([...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]')]);
+(function (es) {
+	es.forEach(e => {
+		e.textContent = 'Update with Stylus';
+	});
+})([...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')]);
