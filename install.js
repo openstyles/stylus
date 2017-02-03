@@ -138,11 +138,15 @@ function getResource(url, callback) {
 /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
 (function (es) {
 	es.forEach(e => {
-		e.textContent = 'Install with Stylus';
+		[...e.childNodes].filter(n => n.nodeType == 3).forEach(n => {
+			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
+		});
 	});
 })([...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]')]);
 (function (es) {
 	es.forEach(e => {
-		e.textContent = 'Update with Stylus';
+		[...e.childNodes].filter(n => n.nodeType == 3).forEach(n => {
+			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
+		});
 	});
 })([...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')]);
