@@ -142,11 +142,7 @@ function getResource(url, callback) {
 			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
 		});
 	});
-})([...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]')]);
-(function (es) {
-	es.forEach(e => {
-		[...e.childNodes].filter(n => n.nodeType == 3).forEach(n => {
-			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
-		});
-	});
-})([...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')]);
+})([
+	...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]'),
+	...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')
+]);
