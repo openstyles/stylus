@@ -45,7 +45,7 @@ function onLoadFromFileClick(){
 function generateFileName(){
     var today = new Date();
     var dd = '0' + today.getDate();
-    var mm = '0' + today.getMonth() + 1;
+    var mm = '0' + (today.getMonth() + 1);
     var yyyy = today.getFullYear();
 
     dd = dd.substr(-2);
