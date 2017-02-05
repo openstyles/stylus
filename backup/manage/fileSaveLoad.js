@@ -43,5 +43,15 @@ function onLoadFromFileClick(){
 }
 
 function generateFileName(){
-    return "stylish-" + moment().format("MM-DD-YYYY") + STYLISH_DUMPFILE_EXTENSION;
+    var today = new Date();
+    var dd = '0' + today.getDate();
+    var mm = '0' + today.getMonth() + 1;
+    var yyyy = today.getFullYear();
+
+    dd = dd.substr(-2);
+    mm = mm.substr(-2);
+
+    today = mm + '-' + dd + '-' + yyyy;
+
+    return "stylish-" + today + STYLISH_DUMPFILE_EXTENSION;
 }
