@@ -1,22 +1,22 @@
-Stylish - a user style manager for Google Chrome and Opera.
+Stylus : Stylish fork for Chrome and Chrome-like things
 
 ## Releases
 
-Releases are available at [the Chrome Web Store](https://chrome.google.com/webstore/detail/stylish/fjnbnpbmkenffdnngjfgmeleoegfcffe) and [the Opera add-ons site](https://addons.opera.com/en/extensions/details/stylish/).
-
+Releases are available at [the Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)
 ## Help
 
 See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in the forum](https://forum.userstyles.org).
 
 ## Contributing
 
-The source is hosted on [GitHub](https://github.com/JasonBarnabe/stylish-chrome) and pull requests are welcome. Translations can be done on [Transifex](https://www.transifex.com/projects/p/stylish-for-chrome/) but are welcome as pull requests as well.
-
+The source is hosted on [GitHub](https://github.com/schomery/stylish-chrome) and pull requests are welcome.
 ## License
 
 For copyright status of the "codemirror" directory, see codemirror/LICENSE. Everything else is:
 
 Copyright (C) 2005-2014 Jason Barnabe <jason.barnabe@gmail.com>
+
+Copyright (C) 2017 Stylus Team
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
