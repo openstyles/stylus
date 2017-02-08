@@ -61,6 +61,7 @@
     this.timeout = null;
     this.hasGutter = hasGutter;
     this.onMouseOver = function(e) { onMouseOver(cm, e); };
+    this.waitingFor = 0
   }
 
   function parseOptions(_cm, options) {
@@ -115,15 +116,32 @@
     return tip;
   }
 
+  function lintAsync(cm, getAnnotations, passOptions) {
+    var state = cm.state.lint
+    var id = ++state.waitingFor
+    function abort() {
+      id = -1
+      cm.off("change", abort)
+    }
+    cm.on("change", abort)
+    getAnnotations(cm.getValue(), function(annotations, arg2) {
+      cm.off("change", abort)
+      if (state.waitingFor != id) return
+      if (arg2 && annotations instanceof CodeMirror) annotations = arg2
+      updateLinting(cm, annotations)
+    }, passOptions, cm);
+  }
+
   function startLinting(cm) {
     var state = cm.state.lint, options = state.options;
     var passOptions = options.options || options; // Support deprecated passing of `options` property in options
     var getAnnotations = options.getAnnotations || cm.getHelper(CodeMirror.Pos(0, 0), "lint");
     if (!getAnnotations) return;
-    if (options.async || getAnnotations.async)
-      getAnnotations(cm.getValue(), updateLinting, passOptions, cm);
-    else
+    if (options.async || getAnnotations.async) {
+      lintAsync(cm, getAnnotations, passOptions)
+    } else {
       updateLinting(cm, getAnnotations(cm.getValue(), passOptions, cm));
+    }
   }
 
   function updateLinting(cm, annotationsNotSorted) {
@@ -168,9 +186,14 @@
     state.timeout = setTimeout(function(){startLinting(cm);}, state.options.delay || 500);
   }
 
-  function popupSpanTooltip(ann, e) {
+  function popupTooltips(annotations, e) {
     var target = e.target || e.srcElement;
-    showTooltipFor(e, annotationTooltip(ann), target);
+    var tooltip = document.createDocumentFragment();
+    for (var i = 0; i < annotations.length; i++) {
+      var ann = annotations[i];
+      tooltip.appendChild(annotationTooltip(ann));
+    }
+    showTooltipFor(e, tooltip, target);
   }
 
   function onMouseOver(cm, e) {
@@ -178,16 +201,19 @@
     if (!/\bCodeMirror-lint-mark-/.test(target.className)) return;
     var box = target.getBoundingClientRect(), x = (box.left + box.right) / 2, y = (box.top + box.bottom) / 2;
     var spans = cm.findMarksAt(cm.coordsChar({left: x, top: y}, "client"));
+
+    var annotations = [];
     for (var i = 0; i < spans.length; ++i) {
       var ann = spans[i].__annotation;
-      if (ann) return popupSpanTooltip(ann, e);
+      if (ann) annotations.push(ann);
     }
+    if (annotations.length) popupTooltips(annotations, e);
   }
 
   CodeMirror.defineOption("lint", false, function(cm, val, old) {
     if (old && old != CodeMirror.Init) {
       clearMarks(cm);
-      if (!state.options.lintOnChange !== false)
+      if (cm.state.lint.options.lintOnChange !== false)
         cm.off("change", onChange);
       CodeMirror.off(cm.getWrapperElement(), "mouseover", cm.state.lint.onMouseOver);
       clearTimeout(cm.state.lint.timeout);
@@ -198,12 +224,12 @@
       var gutters = cm.getOption("gutters"), hasLintGutter = false;
       for (var i = 0; i < gutters.length; ++i) if (gutters[i] == GUTTER_ID) hasLintGutter = true;
       var state = cm.state.lint = new LintState(cm, parseOptions(cm, val), hasLintGutter);
-      if (!state.options.lintOnChange !== false)
+      if (state.options.lintOnChange !== false)
         cm.on("change", onChange);
-      if (state.options.tooltips != false)
+      if (state.options.tooltips != false && state.options.tooltips != "gutter")
         CodeMirror.on(cm.getWrapperElement(), "mouseover", state.onMouseOver);
 
-      state.timeout = setTimeout(function(){startLinting(cm);}, state.options.delay || 500);
+      startLinting(cm);
     }
   });
 
