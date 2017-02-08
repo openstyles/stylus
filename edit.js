@@ -1349,7 +1349,7 @@ function fromMozillaFormat() {
 		var replaceOldStyle = this.name == "import-replace";
 		popup.querySelector(".close-icon").click();
 		var mozStyle = trimNewLines(popup.codebox.getValue());
-		var parser = new exports.css.Parser(), lines = mozStyle.split("\n");
+		var parser = new parserlib.css.Parser(), lines = mozStyle.split("\n");
 		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
 		var errors = "", oldSectionCount = editors.length;
 		var firstAddedCM;
@@ -1357,7 +1357,7 @@ function fromMozillaFormat() {
 		parser.addListener("startdocument", function(e) {
 			var outerText = getRange(sectionStack.last.start, (--e.col, e));
 			var gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-			var section = {code: "", start: backtrackTo(this, exports.css.Tokens.LBRACE, "end")};
+			var section = {code: "", start: backtrackTo(this, parserlib.css.Tokens.LBRACE, "end")};
 			// move last comment before @-moz-document inside the section
 			if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
 				section.code = gapComment[1] + "\n";
@@ -1378,7 +1378,7 @@ function fromMozillaFormat() {
 		});
 
 		parser.addListener("enddocument", function(e) {
-			var end = backtrackTo(this, exports.css.Tokens.RBRACE, "start");
+			var end = backtrackTo(this, parserlib.css.Tokens.RBRACE, "start");
 			var section = sectionStack.pop();
 			section.code += getRange(section.start, end);
 			sectionStack.last.start = (++end.col, end);
