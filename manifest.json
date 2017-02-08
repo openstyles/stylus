@@ -22,7 +22,7 @@
 		"downloads"
 	],
 	"background": {
-		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js"]
+		"scripts": ["messaging.js", "storage-websql.js", "storage.js", "background.js", "update.js"]
 	},
 	"commands": {
 	  "openManage": {
