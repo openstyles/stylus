@@ -4,6 +4,9 @@ Stylish - a user style manager for Google Chrome and Opera.
 
 Releases are available at [the Chrome Web Store](https://chrome.google.com/webstore/detail/stylish/fjnbnpbmkenffdnngjfgmeleoegfcffe) and [the Opera add-ons site](https://addons.opera.com/en/extensions/details/stylish/).
 
+## Privacy
+This extension does not collect user data, metrics or browsing habits.
+
 ## Help
 
 See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in the forum](https://forum.userstyles.org).
