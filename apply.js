@@ -70,7 +70,7 @@ function disableAll(disable) {
 
 	function disableSheets(disable, doc) {
 		Array.prototype.forEach.call(doc.styleSheets, function(stylesheet) {
-			if (stylesheet.ownerNode.classList.contains("stylish")) {
+			if (stylesheet.ownerNode.classList.contains("stylus")) {
 				stylesheet.disabled = disable;
 			}
 		});
@@ -85,8 +85,8 @@ function disableAll(disable) {
 }
 
 function removeStyle(id, doc) {
-	var e = doc.getElementById("stylish-" + id);
-	delete g_styleElements["stylish-" + id];
+	var e = doc.getElementById("stylus-" + id);
+	delete g_styleElements["stylus-" + id];
 	if (e) {
 		e.remove();
 	}
@@ -106,13 +106,13 @@ function retireStyle(id, doc) {
 	if (!doc) {
 		doc = document;
 		retiredStyleIds.push(deadID);
-		delete g_styleElements["stylish-" + id];
+		delete g_styleElements["stylus-" + id];
 		// in case something went wrong and new style was never applied
 		setTimeout(removeStyle.bind(null, deadID, doc), 1000);
 	}
-	var e = doc.getElementById("stylish-" + id);
+	var e = doc.getElementById("stylus-" + id);
 	if (e) {
-		e.id = "stylish-" + deadID;
+		e.id = "stylus-" + deadID;
 	}
 	getDynamicIFrames(doc).forEach(function(iframe) {
 		retireStyle(id, iframe.contentDocument);
@@ -158,7 +158,7 @@ function applyStyles(styleHash) {
 }
 
 function applySections(styleId, sections) {
-	var styleElement = document.getElementById("stylish-" + styleId);
+	var styleElement = document.getElementById("stylus-" + styleId);
 	// Already there.
 	if (styleElement) {
 		return;
@@ -170,8 +170,8 @@ function applySections(styleId, sections) {
 		// This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
 		styleElement = document.createElement("style");
 	}
-	styleElement.setAttribute("id", "stylish-" + styleId);
-	styleElement.setAttribute("class", "stylish");
+	styleElement.setAttribute("id", "stylus-" + styleId);
+	styleElement.setAttribute("class", "stylus");
 	styleElement.setAttribute("type", "text/css");
 	styleElement.appendChild(document.createTextNode(sections.map(function(section) {
 		return section.code;
@@ -242,7 +242,7 @@ function addStyleToIFrameSrcDoc(iframe, styleElement) {
 }
 
 function replaceAll(newStyles, doc, pass2) {
-	var oldStyles = [].slice.call(doc.querySelectorAll("STYLE.stylish" + (pass2 ? "[id$='-ghost']" : "")));
+	var oldStyles = [].slice.call(doc.querySelectorAll("STYLE.stylus" + (pass2 ? "[id$='-ghost']" : "")));
 	if (!pass2) {
 		oldStyles.forEach(function(style) { style.id += "-ghost"; });
 	}
