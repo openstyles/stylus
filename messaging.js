@@ -45,7 +45,7 @@ function updateIcon(tab, styles) {
 
 	function stylesReceived(styles) {
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
-		var postfix = styles.length == 0 || disableAll ? "w" : "";
+		var postfix = disableAll ? "x" : "" || styles.length == 0 ? "w" : "";
 		chrome.browserAction.setIcon({
 			path: {
 				// Material Design 2016 new size is 16px
@@ -60,7 +60,7 @@ function updateIcon(tab, styles) {
 			if (!chrome.runtime.lastError) {
 				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
 				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
-				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "#aaa" : '#006666'});
+				chrome.browserAction.setBadgeBackgroundColor({color: disableAll ? "darkred" : '#006666'});
 			}
 		});
 		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
