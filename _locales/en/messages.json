@@ -422,7 +422,6 @@
   "retrieveBckp": {
       "message": "Import Styles"
   },
-  // options page
   "optionsBadgeNormal": {
     "message": "Badge background color"
   },
