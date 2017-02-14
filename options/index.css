@@ -1,0 +1,22 @@
+body {
+  margin: 10px;
+  font-family: "Helvetica Neue",Helvetica,sans-serif;
+  font-size: 12px;
+}
+
+table {
+  width: 100%;
+}
+td:last-child {
+  text-align: right;
+}
+
+input[type=number],
+button {
+  width: 80px;
+}
+
+.notes {
+  font-size: 90%;
+  color: #999;
+}

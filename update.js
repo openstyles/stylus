@@ -1,4 +1,4 @@
-/* globals getStyles, saveStyle */
+/* globals getStyles, saveStyle, prefs */
 'use strict';
 
 var update = {
@@ -11,7 +11,7 @@ var update = {
     req.onerror = req.ontimeout = () => callback();
     req.send(data);
   },
-  md5Check: (style, callback) => {
+  md5Check: (style, callback, skipped) => {
     let req = new XMLHttpRequest();
     req.open('GET', style.md5Url, true);
     req.onload = () => {
@@ -20,16 +20,16 @@ var update = {
         callback(style);
       }
       else {
-        console.log(`"${style.name}" style is up-to-date`);
+        skipped(`"${style.name}" style is up-to-date`);
       }
     };
-    req.onerror = req.ontimeout = () => console.log('Error validating MD5 checksum');
+    req.onerror = req.ontimeout = () => skipped('Error validating MD5 checksum');
     req.send();
   },
   list: (callback) => {
     getStyles({}, (styles) => callback(styles.filter(style => style.updateUrl)));
   },
-  perform: () => {
+  perform: (observe = function () {}) => {
     // from install.js
     function arraysAreEqual (a, b) {
       // treat empty array and undefined as equivalent
@@ -57,6 +57,7 @@ var update = {
     }
 
     update.list(styles => {
+      observe('count', styles.length);
       styles.forEach(style => update.md5Check(style, style => update.fetch(style.updateUrl, response => {
         if (response) {
           let json = JSON.parse(response);
@@ -65,20 +66,50 @@ var update = {
             if (json.sections.every((section) => {
               return style.sections.some(installedSection => sectionsAreEqual(section, installedSection));
             })) {
-              return console.log('everything is the same');
+              return observe('single-skipped', '2'); // everything is the same
             }
             json.method = 'saveStyle';
             json.id = style.id;
 
             saveStyle(json, function () {
-              console.log(`"${style.name}" style is updated`);
+              observe('single-updated', style.name);
             });
           }
           else {
-            console.log('style sections mismatch');
+            return observe('single-skipped', '3'); // style sections mismatch
           }
         }
-      })));
+      }), () => observe('single-skipped', '1')));
     });
   }
 };
+// automatically update all user-styles if "updateInterval" pref is set
+window.setTimeout(function () {
+  let id;
+  function run () {
+    update.perform(/*(cmd, value) => console.log(cmd, value)*/);
+    reset();
+  }
+  function reset () {
+    window.clearTimeout(id);
+    let interval = prefs.get('updateInterval');
+    // if interval === 0 => automatic update is disabled
+    if (interval) {
+      /* console.log('next update', interval); */
+      id = window.setTimeout(run, interval * 60 * 60 * 1000);
+    }
+  }
+  if (prefs.get('updateInterval')) {
+    run();
+  }
+  chrome.runtime.onMessage.addListener(request => {
+    // when user has changed the predefined time interval in the settings page
+    if (request.method === 'prefChanged' && request.prefName === 'updateInterval') {
+      reset();
+    }
+    // when user just manually checked for updates
+    if (request.method === 'resetInterval') {
+      reset();
+    }
+  });
+}, 10000);

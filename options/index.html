@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stylus Options</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="../localization.js"></script>
+</head>
+
+<body>
+  <h1 i18n-text="optionsCustomize"></h1>
+  <table>
+    <tbody>
+      <tr>
+        <td i18n-text="optionsBadgeNormal"></td>
+        <td><input type="color" id="badgeNormal"></td>
+      </tr>
+      <tr>
+        <td i18n-text="optionsBadgeDisabled"></td>
+        <td><input type="color" id="badgeDisabled"></td>
+      </tr>
+      <tr>
+        <td i18n-text="optionsUpdateInterval"><sup>1</sup></td>
+        <td><input type="number" min="0" id="updateInterval"></td>
+      </tr>
+    </tbody>
+  </table>
+  <div>
+    <button id="save">Save</button>
+    <span id="status"></span>
+  </div>
+
+  <h1 i18n-text="optionsActions"></h1>
+  <table>
+    <tbody>
+      <tr>
+        <td i18n-text="optionsOpenManager"></td>
+        <td><button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button></td>
+      </tr>
+      <tr>
+        <td i18n-text="optionsCheckUpdate"></td>
+        <td>
+          <span id="update-counter"></span>
+          <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="notes">
+    <hr>
+    1: <span i18n-text="optionsUpdateIntervalNote"></span>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

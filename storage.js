@@ -348,6 +348,11 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		},
 		"editor.lintDelay": 500,        // lint gutter marker update delay, ms
 		"editor.lintReportDelay": 4500, // lint report update delay, ms
+
+		"badgeDisabled": "darkred",     // badge background color when disabled
+		"badgeNormal": "#006666",       // badge background color
+
+		"updateInterval": 12            // user-style automatic update interval, hour
 	};
 	var values = deepCopy(defaults);
 

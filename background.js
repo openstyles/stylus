@@ -120,7 +120,8 @@ runTryCatch(function() {
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
-	} else {
+	}
+	else {
 		prefs.set(info.menuItemId, info.checked);
 	}
 });

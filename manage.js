@@ -238,6 +238,10 @@ function checkUpdateAll() {
 			}
 		});
 	});
+	// notify the automatic updater to reset the next automatic update accordingly
+	chrome.runtime.sendMessage({
+		method: 'resetInterval'
+	});
 }
 
 function checkUpdate(element, callback) {
