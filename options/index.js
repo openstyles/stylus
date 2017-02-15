@@ -85,4 +85,9 @@ document.addEventListener('click', e => {
       method: 'resetInterval'
     });
   }
+  else if (cmd === 'open-keyboard') {
+    chrome.tabs.create({
+      url: 'chrome://extensions/configureCommands'
+    });
+  }
 });
