@@ -429,10 +429,10 @@
     "message": "Badge background color (when disabled)"
   },
   "optionsUpdateInterval": {
-    "message": "Automatically check for user-style updates (in hours)"
+    "message": "Automatically check for and install all available userstyle updates (in hrs)"
   },
   "optionsUpdateIntervalNote": {
-    "message": "To disable the automatic user-style update checks, set interval to zero"
+    "message": "To disable the automatic userstyle update checks, set interval to zero"
   },
   "optionsCustomize": {
     "message": "UI Customizations"
@@ -443,11 +443,8 @@
   "optionsOpenManager": {
     "message": "Open styles manager"
   },
-  "optionsOpenManagerNote": {
-    "message": "Define a keyboard shortcut"
-  },
   "optionsCheckUpdate": {
-    "message": "Check for updates"
+    "message": "Check for and install all available updates"
   },
   "optionsOpen": {
     "message": "Open"
