@@ -447,6 +447,9 @@
   "optionsOpenManager": {
     "message": "Open styles manager"
   },
+  "optionsOpenManagerNote": {
+  "message": "Define a keyboard shortcut"
+  },
   "optionsCheckUpdate": {
     "message": "Check for and install all available updates"
   },
