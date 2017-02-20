@@ -132,6 +132,10 @@
     "message": "Restyle the web with Stylus, a user styles manager. Stylus lets you easily install themes and skins for many popular sites.",
     "description": "Extension description"
   },
+  "openStylesManager": {
+    "message": "Open styles manager",
+    "description": "Label for the style maanger opener in the browser action context menu."
+  },
   "disableAllStyles": {
     "message": "Turn all styles off",
     "description": "Label for the checkbox that turns all enabled styles off."

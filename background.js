@@ -115,14 +115,21 @@ runTryCatch(function() {
 		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
 		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
 	}, function() { var clearError = chrome.runtime.lastError });
+	chrome.contextMenus.create({
+		id: "open-manager", title: chrome.i18n.getMessage("openStylesManager"),
+		type: "normal", contexts: ["browser_action"]
+	}, function() {var clearError = chrome.runtime.lastError});
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	if (info.menuItemId == "disableAll") {
 		disableAllStylesToggle(info.checked);
 	}
-	else {
+	else if (info.menuItemId === 'show-badge') {
 		prefs.set(info.menuItemId, info.checked);
+	}
+	else if (info.menuItemId === 'open-manager') {
+		openURL({url: chrome.extension.getURL("manage.html")});
 	}
 });
 
