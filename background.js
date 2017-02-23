@@ -53,6 +53,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
@@ -83,6 +84,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		case "prefChanged":
 			if (request.prefName == "show-badge") {
 				chrome.contextMenus.update("show-badge", {checked: request.value});
+			}
+			else if (request.prefName === 'disableAll') {
+				chrome.contextMenus.update("disableAll", {checked: request.value});
 			}
 			break;
 	}
