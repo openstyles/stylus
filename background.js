@@ -53,7 +53,6 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
@@ -179,3 +178,10 @@ var codeMirrorThemes;
 getCodeMirrorThemes(function(themes) {
 	 codeMirrorThemes = themes;
 });
+
+// to-do, user-feedback (https://github.com/schomery/stylish-chrome/issues/22#issuecomment-279936160)
+(function (oV, nV) {
+	if (oV !== nV) {
+		prefs.set('version', nV);
+	}
+})(prefs.get('version', null), chrome.runtime.getManifest().version)
