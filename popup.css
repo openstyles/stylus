@@ -9,6 +9,9 @@ input[type=checkbox] {
 #no-styles {
   font-style: italic;
 }
+#popup-shortcuts-button {
+	margin-left: 4px;
+}
 .checker {
   display: inline;
 }

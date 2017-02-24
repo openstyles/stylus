@@ -204,16 +204,22 @@
 				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
 				<div><input id="show-badge" type="checkbox"><label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label></div>
 				<div><input id="popup.stylesFirst" type="checkbox"><label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label></div>
+				<div id="more-options">
+			    <h3 id="options-subheading" i18n-text="optionsSubheading"></h3>
+			    <button id="manage-options-button" i18n-text="openOptionsManage"></button>
+				<button id="shortcuts-button" i18n-text="openOptionsShortcuts"></button>
+			</div>
 			</div>
 			<div id="backup">
-				<h2>Backup</h2>
-				<span>Larger files may take a moment, be patient.<br><br></span>
+				<h2 id="backup" i18n-text="backupButtons"></h2>
+				<span id="backup-message" i18n-text="backupMessage"><br><br></span>
 				<button id="file-all-styles" i18n-text="bckpInstStyles"></button>
 				<button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
 			</div>
 			<p id="manage-text" i18n-html="manageText"></p>
 		</div>
 		<div id="installed"></div>
+		<script src="openOptions.js"></script>
 		<script src="backup/fileSaveLoad.js"></script>
 	</body>
 </html>

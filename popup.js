@@ -207,3 +207,19 @@ document.getElementById("disableAll").addEventListener("change", function(event)
 	installed.classList.toggle("disabled", prefs.get("disableAll"));
 });
 setupLivePrefs(["disableAll"]);
+
+document.querySelector('#popup-options-button').addEventListener("click", function() {
+    if (chrome.runtime.openOptionsPage) {
+        // Supported (Chrome 42+)
+        chrome.runtime.openOptionsPage();
+    } else {
+        // Fallback
+        window.open(chrome.runtime.getURL('options/index.html'));
+    }
+});
+
+document.querySelector('#popup-shortcuts-button').addEventListener("click", function() {
+    chrome.tabs.create({
+        'url': 'chrome://extensions/configureCommands'
+    });
+});
