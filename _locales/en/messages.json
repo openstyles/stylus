@@ -64,6 +64,14 @@
     "message": "Apply all updates",
     "description": "Label for the button to apply all detected updates"
   },
+  "backupButtons": {
+    "message": "Backup",
+    "description": "Heading for backup"
+  },
+  "backupMessage": {
+    "message": "Larger imported files may take a moment. Wait for a browser notification to appear.",
+    "description": "Message for backup"
+  },
   "checkAllUpdates": {
     "message": "Check all styles for updates",
     "description": "Label for the button to check all styles for updates"
@@ -257,9 +265,29 @@
     "message": "Manage installed styles.",
     "description": "Link to open the manage page."
   },
+  "openOptionsManage": {
+    "message": "Options UI",
+    "description": "Go to Options UI"
+  },
+  "openOptionsPopup": {
+    "message": "Options UI",
+    "description": "Go to Options UI"
+  },
+  "openOptionsShortcuts": {
+    "message": "Shortcuts",
+    "description": "Go to shortcut configuration"
+  },
+  "openShortcutsPopup": {
+    "message": "Shortcuts",
+    "description": "Go to shortcut configuration"
+  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."
+  },
+  "optionsSubheading": {
+    "message": "More Options",
+    "description": "Subheading for options section on manage page."
   },
   "popupStylesFirst": {
     "message": "List styles before commands in the toolbar button menu",
