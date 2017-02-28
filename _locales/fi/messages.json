@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "Hallitse asennettuja tyylejä.",
+		"message": "Hallitse asennettuja tyylejä",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Uudelleen stailaa netti Stylusillä, käyttäjän tyyli hallintapaneelilla. Stylus antaa sinun helposti asentaa teemoja ja skinejä palvelluille kuten Google, Facebook, YouTube, Orkut, ja monelle, monelle muulle sivustolle.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

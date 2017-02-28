@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "Geïnstalleerde stijlen beheren.",
+		"message": "Geïnstalleerde stijlen beheren",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Voorzie het web van een ander uiterlijk met Stylus, een gebruikersstijlbeheerder. Stylus stelt u in staat om eenvoudig thema's en stijlen te installeren voor vele populaire websites.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

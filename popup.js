@@ -199,7 +199,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 });
 
-["find-styles-link", "open-manage-link"].forEach(function(id) {
+["find-styles-link"].forEach(function(id) {
 	document.getElementById(id).addEventListener("click", openLink, false);
 });
 
@@ -207,6 +207,10 @@ document.getElementById("disableAll").addEventListener("change", function(event)
 	installed.classList.toggle("disabled", prefs.get("disableAll"));
 });
 setupLivePrefs(["disableAll"]);
+
+document.querySelector('#popup-manage-button').addEventListener("click", function() {
+    window.open(chrome.runtime.getURL('manage.html'));
+});
 
 document.querySelector('#popup-options-button').addEventListener("click", function() {
     if (chrome.runtime.openOptionsPage) {

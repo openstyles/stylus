@@ -156,6 +156,10 @@
     "message": "Goto line (or line:col)",
     "description": "Go to line or line:column on Ctrl-G in style code editor"
   },
+  "editorStylesButton": {
+    "message": "Find editor styles",
+    "description": "Find styles for the editor"
+  },
   "editStyleHeading": {
     "message": "Edit Style",
     "description": "Title of the page for editing styles"
@@ -262,7 +266,7 @@
     "description": "Text displayed when no styles are installed for the current site"
   },
   "openManage": {
-    "message": "Manage installed styles.",
+    "message": "Manage installed styles",
     "description": "Link to open the manage page."
   },
   "openOptionsManage": {
@@ -449,10 +453,10 @@
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "bckpInstStyles": {
-      "message": "Export Styles"
+      "message": "Export styles"
   },
   "retrieveBckp": {
-      "message": "Import Styles"
+      "message": "Import styles"
   },
   "optionsBadgeNormal": {
     "message": "Badge background color"

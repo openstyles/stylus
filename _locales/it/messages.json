@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "Gestisci gli stili installati.",
+		"message": "Gestisci gli stili installati",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Modifica lo stile del Web con Stylus, un gestore di stili utente. Stylus consente di installare facilmente temi e skin per Google, Facebook, YouTube, Orkut e moltissimi altri siti.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

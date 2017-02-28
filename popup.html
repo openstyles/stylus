@@ -1,56 +1,65 @@
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<link rel="stylesheet" href="popup.css">
 
-		<template data-id="style">
-			<div>
-				<div class="left-gutter">
-					<input class="checker" type="checkbox">
-				</div>
-				<div class="main-controls">
-					<label class="style-name"></label>
-					<div class="actions">
-						<a href="#" class="enable" i18n-text="enableStyleLabel"></a>
-						<a href="#" class="disable" i18n-text="disableStyleLabel"></a>
-						<a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
-						<a href="#" class="delete" i18n-text="deleteStyleLabel"></a>
-					</div>
-				</div>
-			</div>
-		</template>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="popup.css">
 
-		<script src="localization.js"></script>
-		<script src="health.js"></script>
-		<script src="storage.js"></script>
-		<script src="messaging.js"></script>
-		<script src="apply.js"></script>
+    <template data-id="style">
+        <div>
+            <div class="left-gutter">
+                <input class="checker" type="checkbox">
+            </div>
+            <div class="main-controls">
+                <label class="style-name"></label>
+                <div class="actions">
+                    <a href="#" class="enable" i18n-text="enableStyleLabel"></a>
+                    <a href="#" class="disable" i18n-text="disableStyleLabel"></a>
+                    <a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
+                    <a href="#" class="delete" i18n-text="deleteStyleLabel"></a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="localization.js"></script>
+    <script src="health.js"></script>
+    <script src="storage.js"></script>
+    <script src="messaging.js"></script>
+    <script src="apply.js"></script>
 </head>
+
 <body id="stylish-popup">
-
-	<div id="unavailable"><div class="main-controls"><span id="unavailable-message" i18n-text="stylishUnavailableForURL"></span></div></div>
-
-	<div id="installed"></div>
-
-	<div class="actions">
-		<div id="disable-all-wrapper">
-			<div class="left-gutter">
-				<input id="disableAll" type="checkbox">
-			</div>
-			<div class="main-controls">
-				<label id="disableAll-label" for="disableAll" i18n-text="disableAllStyles"></label>
-			</div>
-		</div>
-		<div class="left-gutter"></div>
-		<div class="main-controls">
-			<div id="find-styles"><a id="find-styles-link" href="#" i18n-text="findStylesForSite"></a></div>
-			<div id="manage-styles"><a id="open-manage-link" href="manage.html" i18n-text="openManage"></a></div>
-			<div id="popup-options"><button id="popup-options-button" i18n-text="openOptionsPopup"><button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button></div>
-			<div id="write-style"><span id="write-style-for" i18n-text="writeStyleFor"><br></span></div>
-		</div>
-	</div>
-
-	<script src="popup.js"></script>
-
+    <div id="unavailable">
+        <div class="main-controls"><span id="unavailable-message" i18n-text="stylishUnavailableForURL"></span>
+        </div>
+    </div>
+    <div id="installed"></div>
+    <div class="actions">
+        <div id="disable-all-wrapper">
+            <div class="left-gutter">
+                <input id="disableAll" type="checkbox">
+            </div>
+            <div class="main-controls">
+                <label id="disableAll-label" for="disableAll" i18n-text="disableAllStyles"></label>
+            </div>
+        </div>
+        <div class="left-gutter"></div>
+        <div class="main-controls">
+            <div id="manage-styles">
+                <button id="popup-manage-button" i18n-text="openManage"></button>
+            </div>
+            <div id="popup-options">
+                <button id="popup-options-button" i18n-text="openOptionsPopup">
+                    <button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button>
+            </div>
+            <div id="find-styles">
+                <a id="find-styles-link" href="#" i18n-text="findStylesForSite"></a>
+            </div>
+            <div id="write-style"><span id="write-style-for" i18n-text="writeStyleFor"><br></span>
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
 </body>
+
 </html>

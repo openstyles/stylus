@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Stylus，一个用户样式管理器，帮助您重新定义网页样式。Stylus易于为Google，Facebook，Youtube，Orkut以及其它各类型网站安装样式和主题。",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

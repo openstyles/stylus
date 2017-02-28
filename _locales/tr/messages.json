@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "Yüklü stilleri yönet.",
+		"message": "Yüklü stilleri yönet",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

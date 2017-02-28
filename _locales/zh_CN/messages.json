@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "管理已安装的样式。",
+		"message": "管理已安装的样式",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Stylus 是一个调整网页外观的用户样式管理器。它可让您轻松地为许多热门网站网站安装主题和皮肤。",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

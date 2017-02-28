@@ -8,8 +8,14 @@ document.querySelector('#manage-options-button').addEventListener("click", funct
     }
 });
 
-document.querySelector('#shortcuts-button').addEventListener("click", function() {
+document.querySelector('#manage-shortcuts-button').addEventListener("click", function() {
     chrome.tabs.create({
         'url': 'chrome://extensions/configureCommands'
+    });
+});
+
+document.querySelector('#editor-styles-button').addEventListener("click", function() {
+    chrome.tabs.create({
+        'url': 'https://userstyles.org/styles/browse/chrome-extension'
     });
 });

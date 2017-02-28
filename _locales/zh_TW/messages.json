@@ -415,11 +415,5 @@
 	"description": {
 		"message": "用Stylus（一個用戶樣式管理器）重塑網頁。 Stylus 讓你能為诸多主流網站輕鬆的安裝主題和皮膚。",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

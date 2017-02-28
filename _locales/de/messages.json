@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "Installierte Styles verwalten.",
+		"message": "Installierte Styles verwalten",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Gestalten Sie das Web mit Stylus, einem Manager für Benutzer-Styles, um. Stylus lässt Sie ganz einfach Themes und Skins für viele beliebte Webseiten installieren.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

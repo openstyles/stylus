@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Changez l'apparence du Web grâce à Stylus, un outil de gestion des styles utilisateur. Stylus vous permet d'installer facilement des thèmes et des habillages pour Google, Facebook, YouTube, orkut et bien d'autres sites encore.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

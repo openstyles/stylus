@@ -264,7 +264,7 @@
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openManage": {
-		"message": "إدارة الأنماط المثبتة.",
+		"message": "إدارة الأنماط المثبتة",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
@@ -415,11 +415,5 @@
 	"description": {
 		"message": "يمكنك تغيير نمط الويب باستخدام Stylus، وهي أداة لإدارة أنماط المستخدم. وتتيح Stylus لك بسهولة تثبيت المظاهر والأشكال الخارجية لكل من Google، وFacebook وYouTube وOrkut فضلاً عن الكثير جدًا من مواقع الويب الأخرى.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }

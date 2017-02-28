@@ -415,11 +415,5 @@
 	"description": {
 		"message": "Stylus はユーザー スタイルを管理するツールで、ウェブのスタイルを変更することができます。Stylus を利用すると、Google、Facebook、YouTube、orkut など、さまざまなサイトに対応したテーマやスキンを簡単にインストールできます。",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    },
-    "retrieveBckp": {
-        "message": "Import Styles"
-    }
+	}
 }
