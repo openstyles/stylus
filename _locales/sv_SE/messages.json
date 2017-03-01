@@ -415,8 +415,5 @@
 	"description": {
 		"message": "Style:a om webben med Stylus, en användarstils-hanterare. Stylus låter dig enkelt installera teman och skal för många populära sidor.",
 		"description": "Extension description"
-	},
-    "bckpInstStyles": {
-        "message": "Export Styles"
-    }
+	}
 }
