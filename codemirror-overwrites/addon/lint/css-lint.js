@@ -19,7 +19,7 @@ CodeMirror.registerHelper("lint", "css", function(text) {
   var found = [];
   if (!window.CSSLint) return found;
 
-  // STYLISH: hack start
+  /* STYLISH: hack start (part 1) */
   var rules = CSSLint.getRules();
   var allowedRules = ["display-property-grouping", "duplicate-properties", "empty-rules", "errors", "known-properties"];
   CSSLint.clearRules();
@@ -28,11 +28,28 @@ CodeMirror.registerHelper("lint", "css", function(text) {
       CSSLint.addRule(rule);
     }
   });
-  // STYLISH: hack end
+  /* STYLISH: hack end */
 
   var results = CSSLint.verify(text), messages = results.messages, message = null;
   for ( var i = 0; i < messages.length; i++) {
     message = messages[i];
+
+    /* STYLISH: hack start (part 2) */
+    if (message.type === 'warning') {
+       // @font-face {font-family: 'Ampersand'; unicode-range: U+26;}
+      if (message.message.indexOf('unicode-range') !== -1) {
+        continue;
+      }
+      else if ( // color: hsl(210, 100%, 2.2%);
+        message.message.startsWith('Expected (<color>) but found \'hsl') &&
+        /hsl\((\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\)/.test(message.message)
+      ) {
+        continue;
+      }
+      //
+    }
+    /* STYLISH: hack end */
+
     var startLine = message.line -1, endLine = message.line -1, startCol = message.col -1, endCol = message.col;
     found.push({
       from: CodeMirror.Pos(startLine, startCol),
