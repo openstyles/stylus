@@ -464,6 +464,9 @@
   "optionsBadgeDisabled": {
     "message": "Badge background color (when disabled)"
   },
+  "optionsPopupWidth": {
+    "message": "Popup width (in pixels)"
+  },
   "optionsUpdateInterval": {
     "message": "Automatically check for and install all available userstyle updates (in hrs)"
   },
