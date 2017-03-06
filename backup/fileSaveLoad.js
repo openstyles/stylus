@@ -5,20 +5,6 @@ var STYLISH_DUMP_FILE_EXT = '.txt';
 var STYLISH_DUMPFILE_EXTENSION = '.json';
 var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyy' + STYLISH_DUMP_FILE_EXT;
 
-function saveAsFile (text, fileName, dialog) {
-  fileName = fileName || STYLISH_DEFAULT_SAVE_NAME;
-  dialog = typeof dialog === 'boolean' ? dialog : true;
-
-  return new Promise(function (resolve) {
-    var fileContent = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-    chrome.downloads.download({
-      filename: fileName,
-      saveAs: true,
-      url: fileContent
-    }, resolve);
-  });
-}
-
 /**
  * !!works only when page has representation - backgound page won't work
  *
@@ -68,13 +54,14 @@ function generateFileName() {
 }
 
 document.getElementById('file-all-styles').addEventListener('click', function () {
-  chrome.permissions.request({permissions: ['downloads']}, function (granted) {
-    if (granted) {
-      getStyles({}, function (styles) {
-        var text = JSON.stringify(styles);
-        saveAsFile(text, generateFileName());
-      });
-    }
+  getStyles({}, function (styles) {
+    let text = JSON.stringify(styles);
+    let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
+
+    let a = document.createElement('a');
+    a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    a.setAttribute('download', fileName);
+    a.dispatchEvent(new MouseEvent('click'));
   });
 });
 
