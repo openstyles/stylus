@@ -40,9 +40,9 @@ CodeMirror.registerHelper("lint", "css", function(text) {
       if (message.message.indexOf('unicode-range') !== -1) {
         continue;
       }
-      else if ( // color: hsl(210, 100%, 2.2%);
+      else if ( // color: hsl(210, 100%, 2.2%); or color: hsla(210, 100%, 2.2%, 0.3);
         message.message.startsWith('Expected (<color>) but found \'hsl') &&
-        /hsl\((\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\)/.test(message.message)
+        /hsla?\(\s*(-?\d+)%?\s*,\s*(-?\d+)%\s*,\s*(-?\d+|-?\d*.\d+)%(\s*,\s*(-?\d+|-?\d*.\d+))?\s*\)/.test(message.message)
       ) {
         continue;
       }
