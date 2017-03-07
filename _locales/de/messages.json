@@ -409,7 +409,7 @@
 		"description": "Label for the style editor's CSS theme."
 	},
 	"helpKeyMapCommand": {
-    "message": "Befehlsnamen eingeben",
+		"message": "Befehlsnamen eingeben",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
