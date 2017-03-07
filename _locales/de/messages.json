@@ -4,7 +4,7 @@
 		"description": "Text displayed for styles that apply to all sites"
 	},
 	"defaultTheme": {
-		"message": "Standart",
+		"message": "Standard",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"manageOnlyEdited": {
