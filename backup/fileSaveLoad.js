@@ -3,7 +3,7 @@
 
 var STYLISH_DUMP_FILE_EXT = '.txt';
 var STYLISH_DUMPFILE_EXTENSION = '.json';
-var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyy' + STYLISH_DUMP_FILE_EXT;
+var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyyy' + STYLISH_DUMP_FILE_EXT;
 
 /**
  * !!works only when page has representation - backgound page won't work
@@ -58,10 +58,16 @@ document.getElementById('file-all-styles').addEventListener('click', function ()
     let text = JSON.stringify(styles);
     let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
 
-    let a = document.createElement('a');
-    a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-    a.setAttribute('download', fileName);
-    a.dispatchEvent(new MouseEvent('click'));
+    let url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    // for long URLs; https://github.com/schomery/stylish-chrome/issues/13#issuecomment-284582600
+    fetch(url)
+    .then(res => res.blob())
+    .then(blob => {
+      let a = document.createElement('a');
+      a.setAttribute('download', fileName);
+      a.setAttribute('href', URL.createObjectURL(blob));
+      a.dispatchEvent(new MouseEvent('click'));
+    });
   });
 });
 
