@@ -4,7 +4,7 @@ function restore () {
   chrome.runtime.getBackgroundPage(bg => {
     document.getElementById('badgeDisabled').value = bg.prefs.get('badgeDisabled');
     document.getElementById('badgeNormal').value = bg.prefs.get('badgeNormal');
-    document.getElementById('popupWidth').value = bg.prefs.get('popupWidth');
+    document.getElementById('popupWidth').value = localStorage.getItem('popupWidth') || '246';
     document.getElementById('updateInterval').value = bg.prefs.get('updateInterval');
   });
 }
@@ -13,7 +13,7 @@ function save () {
   chrome.runtime.getBackgroundPage(bg => {
     bg.prefs.set('badgeDisabled', document.getElementById('badgeDisabled').value);
     bg.prefs.set('badgeNormal', document.getElementById('badgeNormal').value);
-    bg.prefs.set('popupWidth', +document.getElementById('popupWidth').value);
+    localStorage.setItem('popupWidth', document.getElementById('popupWidth').value);
     bg.prefs.set(
       'updateInterval',
       Math.max(0, +document.getElementById('updateInterval').value)

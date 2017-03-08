@@ -229,4 +229,4 @@ document.querySelector('#popup-shortcuts-button').addEventListener("click", func
 });
 
 // popup width
-document.body.style.width = prefs.get('popupWidth') + 'px';
+document.body.style.width = (localStorage.getItem('popupWidth') || '246') + 'px';
