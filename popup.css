@@ -7,10 +7,7 @@ input[type=checkbox] {
   outline: none;
 }
 #disable-all-wrapper {
-  padding: 0.7em 0 0.7em;
-}
-#disable-all-wrapper .main-controls {
-  padding-top: 0.1em;
+  padding: 0.3em 0 0.6em;
 }
 #no-styles {
   font-style: italic;
