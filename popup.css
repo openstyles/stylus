@@ -24,7 +24,6 @@ input[type=checkbox] {
 .style-name {
   cursor: default;
   font-weight: bold;
-  margin-bottom: 2px;
   display: block;
 }
 a, a:visited {
@@ -37,6 +36,7 @@ a, a:visited {
   vertical-align: top;
 }
 .left-gutter input {
+  margin-bottom: 1px;
   margin-top: 0;
   margin-left: 0;
 }
@@ -66,7 +66,29 @@ body.blocked > DIV {
   text-decoration: line-through;
 }
 #installed .actions a {
-  margin-right: 0.2em;
+  text-decoration: none;
+}
+#installed .style-edit-link, #installed .delete {
+  height: 22px;
+  width: 22px;
+  -webkit-appearance: button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.svg-icon {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: hsl(0, 0%, 20%);
+}
+.svg-icon circle {
+  stroke: hsl(0, 0%, 20%);
+  stroke-width: 1;
 }
 body > .actions {
   margin-top: 0.5em;
