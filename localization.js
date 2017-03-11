@@ -53,6 +53,10 @@ function tNodeList(nodes) {
 				case "text":
 					node.insertBefore(document.createTextNode(value), node.firstChild);
 					break;
+				case "tooltip": {
+					node.setAttribute('title', value);
+					break;
+				}
 				case "html":
 					node.insertAdjacentHTML("afterbegin", value);
 					break;
