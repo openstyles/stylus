@@ -179,9 +179,20 @@ getCodeMirrorThemes(function(themes) {
 	 codeMirrorThemes = themes;
 });
 
-// to-do, user-feedback (https://github.com/schomery/stylish-chrome/issues/22#issuecomment-279936160)
-(function (oV, nV) {
-	if (oV !== nV) {
-		prefs.set('version', nV);
+// do not use prefs.get('version', null) as it might not yet be available
+chrome.storage.local.get('version', prefs => {
+	// Open FAQs page once after installation to guide new users,
+	// https://github.com/schomery/stylish-chrome/issues/22#issuecomment-279936160
+	if (!prefs.version) {
+		let version = chrome.runtime.getManifest().version;
+		chrome.storage.local.set({
+			version
+		}, () => {
+			window.setTimeout(() => {
+				chrome.tabs.create({
+					url: 'http://add0n.com/stylus.html?version=' + version + '&type=install'
+				});
+			}, 3000);
+		})
 	}
-})(prefs.get('version', null), chrome.runtime.getManifest().version)
+});
