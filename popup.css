@@ -62,13 +62,18 @@ body.blocked > DIV {
 #installed .disabled .style-name {
   text-decoration: line-through;
 }
+#installed .actions {
+  cursor: default;
+}
 #installed .actions a {
+  cursor: pointer;
   text-decoration: none;
 }
+#installed .style-edit-link {
+  margin-right: 2px;
+}
 #installed .style-edit-link, #installed .delete {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
 }
 .svg-icon {
   width: 16px;
@@ -78,12 +83,23 @@ body.blocked > DIV {
 .svg-icon path,
 .svg-icon polygon,
 .svg-icon rect {
-  fill: hsl(0, 0%, 40%);
+  fill: hsl(0, 0%, 30%);
+  transition: .5s;
 }
 .svg-icon circle {
-  stroke: hsl(0, 0%, 40%);
+  stroke: hsl(0, 0%, 30%);
   stroke-width: 1;
+  transition: .5s;
 }
+a:hover .svg-icon path,
+a:hover .svg-icon polygon,
+a:hover .svg-icon rect {
+  fill: hsl(0, 0%, 54%);
+}
+a:hover .svg-icon circle {
+  stroke: hsl(0, 0%, 54%);
+}
+
 body > .actions {
   margin-top: 0.5em;
 }
