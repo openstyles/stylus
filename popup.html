@@ -14,8 +14,16 @@
                 <div class="actions">
                     <a href="#" class="enable" i18n-text="enableStyleLabel"></a>
                     <a href="#" class="disable" i18n-text="disableStyleLabel"></a>
-                    <a class="style-edit-link" href="edit.html?id=" i18n-text="editStyleLabel"></a>
-                    <a href="#" class="delete" i18n-text="deleteStyleLabel"></a>
+                    <a class="style-edit-link" href="edit.html?id=" i18n-tooltip="editStyleLabel">
+                        <svg class="svg-icon" viewBox="0 0 14 16">
+                            <path fill-rule="evenodd" d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="delete" i18n-tooltip="deleteStyleLabel">
+                        <svg class="svg-icon" viewBox="0 0 14 16">
+                            <path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
@@ -45,19 +53,19 @@
         </div>
         <div class="left-gutter"></div>
         <div class="main-controls">
-            <div id="manage-styles">
-                <button id="popup-manage-button" i18n-text="openManage"></button>
-            </div>
-            <div id="popup-options">
-                <button id="popup-options-button" i18n-text="openOptionsPopup">
-                    <button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button>
-            </div>
             <div id="find-styles">
                 <a id="find-styles-link" href="#" i18n-text="findStylesForSite"></a>
             </div>
-            <div id="write-style"><span id="write-style-for" i18n-text="writeStyleFor"><br></span>
+            <div id="write-style">
+                <span id="write-style-for" i18n-text="writeStyleFor"><br></span>
             </div>
         </div>
+    <!-- Actions -->
+    <div id="popup-options">
+        <button id="popup-manage-button" i18n-text="openManage"></button>
+        <button id="popup-options-button" i18n-text="openOptionsPopup">
+        <button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button>
+    </div>
     </div>
     <script src="popup.js"></script>
 </body>

@@ -352,6 +352,8 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 		"badgeDisabled": "#8B0000",     // badge background color when disabled
 		"badgeNormal": "#006666",       // badge background color
 
+		"popupWidth": 240,              // popup width in pixels
+
 		"updateInterval": 0             // user-style automatic update interval, hour
 	};
 	var values = deepCopy(defaults);

@@ -13,7 +13,7 @@ function updatePopUp(url) {
 	var urlWillWork = /^(file|http|https|ftps?|chrome\-extension):/.exec(url);
 	if (!urlWillWork) {
 		document.body.classList.add("blocked");
-		document.getElementById("unavailable").style.display = "block";
+		document.getElementById("unavailable").style.display = "flex";
 		return;
 	}
 
@@ -227,3 +227,6 @@ document.querySelector('#popup-shortcuts-button').addEventListener("click", func
         'url': 'chrome://extensions/configureCommands'
     });
 });
+
+// popup width
+document.body.style.width = (localStorage.getItem('popupWidth') || '246') + 'px';

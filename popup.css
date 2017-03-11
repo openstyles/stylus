@@ -1,16 +1,13 @@
 body {
-  width: 200px;
-  font-size: 13px;
+  width: 252px;
+  font-size: 12px;
   font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
 input[type=checkbox] {
   outline: none;
 }
 #disable-all-wrapper {
-  padding: 0.2em 0 0.7em;	
-}
-#disable-all-wrapper .main-controls {
-  padding-top: 0.1em;
+  padding: 0.3em 0 0.6em;
 }
 #no-styles {
   font-style: italic;
@@ -24,11 +21,7 @@ input[type=checkbox] {
 .style-name {
   cursor: default;
   font-weight: bold;
-  margin-bottom: 2px;
   display: block;
-}
-.actions {
-  font-size: x-small;
 }
 a, a:visited {
   color: black;
@@ -40,6 +33,7 @@ a, a:visited {
   vertical-align: top;
 }
 .left-gutter input {
+  margin-bottom: 1px;
   margin-top: 0;
   margin-left: 0;
 }
@@ -49,14 +43,11 @@ a, a:visited {
 
 .entry {
   padding: 0.5em 0;
-  border-bottom: 1px solid black;
 }
 .entry:first-child {
   padding-top: 0;
 }
-.entry:last-child {
-  border-bottom: none;
-}
+
 body > DIV {
   border-bottom: 1px solid black;
   padding-bottom: 2px;
@@ -68,11 +59,30 @@ body.blocked > DIV {
 #installed {
   margin-top: 0.5em;
 }
-#installed.disabled .style-name {
+#installed .disabled .style-name {
   text-decoration: line-through;
 }
 #installed .actions a {
-  margin-right: 0.2em;
+  text-decoration: none;
+}
+#installed .style-edit-link, #installed .delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.svg-icon {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: hsl(0, 0%, 40%);
+}
+.svg-icon circle {
+  stroke: hsl(0, 0%, 40%);
+  stroke-width: 1;
 }
 body > .actions {
   margin-top: 0.5em;
@@ -87,7 +97,9 @@ body > .actions {
 
 #unavailable {
   border: none;
-  display: none;
+  display: none; /* flex */
+  align-items: center;
+  justify-content: center;
   font-size: 14px;
   text-indent: 6px;
 }
@@ -140,4 +152,55 @@ body:not(.blocked) #unavailable {
 .breadcrumbs > .write-style-link:focus ~ .write-style-link[subdomain] {
   color: inherit;
   text-decoration: underline;
+}
+
+  /* action buttons */
+#popup-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 1.2em 0;
+}
+#popup-options button {
+  margin: 0 2px;
+  width: 33%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+  /* margins */
+body {
+  margin: 0;
+}
+body>div:not(#installed) {
+  margin-left:0.75em;
+  margin-right:0.75em;
+}
+#unavailable {
+  margin-top: 0.75em;
+}
+#installed .entry {
+}
+  /* entries */
+#installed .entry {
+  display: flex;
+  align-items: center;
+  padding: 5px 0.75em;
+}
+#installed .entry:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+#installed .main-controls {
+  display: flex;
+  flex: 1;
+  width: calc(100% - 20px);
+  align-items: center;
+}
+#installed .main-controls label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 5px;
 }

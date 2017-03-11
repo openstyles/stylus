@@ -266,7 +266,7 @@
     "description": "Text displayed when no styles are installed for the current site"
   },
   "openManage": {
-    "message": "Manage installed styles",
+    "message": "Manage",
     "description": "Link to open the manage page."
   },
   "openOptionsManage": {
@@ -274,7 +274,7 @@
     "description": "Go to Options UI"
   },
   "openOptionsPopup": {
-    "message": "Options UI",
+    "message": "Options",
     "description": "Go to Options UI"
   },
   "openOptionsShortcuts": {
@@ -463,6 +463,9 @@
   },
   "optionsBadgeDisabled": {
     "message": "Badge background color (when disabled)"
+  },
+  "optionsPopupWidth": {
+    "message": "Popup width (in pixels)"
   },
   "optionsUpdateInterval": {
     "message": "Automatically check for and install all available userstyle updates (in hrs)"
