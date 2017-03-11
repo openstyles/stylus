@@ -84,7 +84,7 @@ body.blocked > DIV {
 .svg-icon polygon,
 .svg-icon rect {
   fill: hsl(0, 0%, 30%);
-  transition: .3s ease;
+  transition: .5s;
 }
 .svg-icon circle {
   stroke: hsl(0, 0%, 30%);
