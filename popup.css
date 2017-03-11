@@ -66,9 +66,6 @@ body.blocked > DIV {
   text-decoration: none;
 }
 #installed .style-edit-link, #installed .delete {
-  height: 22px;
-  width: 22px;
-  -webkit-appearance: button;
   display: inline-flex;
   align-items: center;
   justify-content: center;
