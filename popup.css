@@ -81,10 +81,10 @@ body.blocked > DIV {
 .svg-icon path,
 .svg-icon polygon,
 .svg-icon rect {
-  fill: hsl(0, 0%, 20%);
+  fill: hsl(0, 0%, 40%);
 }
 .svg-icon circle {
-  stroke: hsl(0, 0%, 20%);
+  stroke: hsl(0, 0%, 40%);
   stroke-width: 1;
 }
 body > .actions {
