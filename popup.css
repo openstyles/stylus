@@ -59,7 +59,7 @@ body.blocked > DIV {
 #installed {
   margin-top: 0.5em;
 }
-#installed .disabled .style-name {
+#installed.disabled .style-name {
   text-decoration: line-through;
 }
 #installed .actions {
