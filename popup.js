@@ -118,6 +118,8 @@ function enable(event, enabled) {
 function doDelete() {
 	document.getElementById('confirm').dataset.display = true;
 	let id = getId(event);
+	document.querySelector('#confirm b').textContent =
+		document.querySelector(`[style-id="${id}"] label`).textContent;
 	document.getElementById('confirm').dataset.id = id;
 
 }

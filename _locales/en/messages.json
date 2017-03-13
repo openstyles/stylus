@@ -137,7 +137,7 @@
     "description": "Confirmation before deleting a style"
   },
   "confirmOK": {
-    "message": "OK"
+    "message": "Delete"
   },
   "confirmCancel": {
     "message": "Cancel"

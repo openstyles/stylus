@@ -254,6 +254,12 @@ body>div:not(#installed) {
   flex: 1;
   padding: 0 10px;
 }
+#confirm>div>b {
+  padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #confirm>div>div {
   padding: 10px;
   direction: rtl;
