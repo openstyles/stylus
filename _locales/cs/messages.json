@@ -168,6 +168,12 @@
 		"message": "Opravdu chcete tento styl smazat?",
 		"description": "Confirmation before deleting a style"
 	},
+	"confirmOK": {
+		"message": "OK"
+	},
+	"confirmCancel": {
+		"message": "Cancel"
+	},
 	"styleBadRegexp": {
 		"message": "Tento regulérní výraz je neplatný.",
 		"description": "Validation message for a bad regexp in a style"

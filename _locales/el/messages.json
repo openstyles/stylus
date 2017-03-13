@@ -168,6 +168,12 @@
 		"message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;",
 		"description": "Confirmation before deleting a style"
 	},
+	"confirmOK": {
+		"message": "OK"
+	},
+	"confirmCancel": {
+		"message": "Cancel"
+	},
 	"styleBadRegexp": {
 		"message": "Το Regexp δεν είναι έγκυρο.",
 		"description": "Validation message for a bad regexp in a style"

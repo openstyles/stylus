@@ -116,15 +116,22 @@ function enable(event, enabled) {
 }
 
 function doDelete() {
-	// Opera can't do confirms in popups
-	if (getBrowser() != "Opera") {
-		if (!confirm(t('deleteStyleConfirm'))) {
-			return;
-		}
-	}
-	var id = getId(event);
-	deleteStyle(id);
+	document.getElementById('confirm').dataset.display = true;
+	let id = getId(event);
+	document.getElementById('confirm').dataset.id = id;
+
 }
+document.getElementById('confirm').addEventListener('click', e => {
+	let cmd = e.target.dataset.cmd;
+	if (cmd === 'ok') {
+		deleteStyle(document.getElementById('confirm').dataset.id);
+		window.close();
+	}
+	//
+	if (cmd) {
+		document.getElementById('confirm').dataset.display = false;
+	}
+});
 
 function getBrowser() {
 	if (navigator.userAgent.indexOf("OPR") > -1) {

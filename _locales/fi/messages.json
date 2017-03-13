@@ -168,6 +168,12 @@
 		"message": "Oletko varma että haluat poistaa tämän tyylin?",
 		"description": "Confirmation before deleting a style"
 	},
+	"confirmOK": {
+		"message": "OK"
+	},
+	"confirmCancel": {
+		"message": "Cancel"
+	},
 	"styleBadRegexp": {
 		"message": "Regexp ei kelpaa.",
 		"description": "Validation message for a bad regexp in a style"

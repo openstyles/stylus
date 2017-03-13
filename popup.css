@@ -220,3 +220,41 @@ body>div:not(#installed) {
   white-space: nowrap;
   padding-right: 5px;
 }
+  /* confirm */
+#confirm,
+#confirm>div>span {
+  align-items: center;
+  justify-content: center;
+}
+#confirm {
+  display: none; /* flex */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin:  0!important;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+#confirm[data-display=true] {
+  display: flex;
+}
+#confirm>div {
+  width: 80%;
+  height: 100px;
+  max-height: 80%;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border: solid 2px rgba(0, 0, 0, 0.5);
+}
+#confirm>div>span {
+  display: flex;
+  flex: 1;
+  padding: 0 10px;
+}
+#confirm>div>div {
+  padding: 10px;
+  direction: rtl;
+}

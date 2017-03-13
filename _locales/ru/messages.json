@@ -168,6 +168,12 @@
 		"message": "Удалить этот стиль?",
 		"description": "Confirmation before deleting a style"
 	},
+	"confirmOK": {
+		"message": "OK"
+	},
+	"confirmCancel": {
+		"message": "Cancel"
+	},
 	"styleBadRegexp": {
 		"message": "Ошибка в регулярном выражении.",
 		"description": "Validation message for a bad regexp in a style"

@@ -168,6 +168,12 @@
 		"message": "确定要删除此样式吗？",
 		"description": "Confirmation before deleting a style"
 	},
+	"confirmOK": {
+		"message": "OK"
+	},
+	"confirmCancel": {
+		"message": "Cancel"
+	},
 	"styleBadRegexp": {
 		"message": "正则表达式无效。",
 		"description": "Validation message for a bad regexp in a style"

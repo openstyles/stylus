@@ -136,6 +136,12 @@
     "message": "Are you sure you want to delete this style?",
     "description": "Confirmation before deleting a style"
   },
+  "confirmOK": {
+    "message": "OK"
+  },
+  "confirmCancel": {
+    "message": "Cancel"
+  },
   "description": {
     "message": "Restyle the web with Stylus, a user styles manager. Stylus lets you easily install themes and skins for many popular sites.",
     "description": "Extension description"
