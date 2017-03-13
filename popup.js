@@ -127,7 +127,7 @@ document.getElementById('confirm').addEventListener('click', e => {
 	let cmd = e.target.dataset.cmd;
 	if (cmd === 'ok') {
 		deleteStyle(document.getElementById('confirm').dataset.id, () => {
-			window.close();
+			//window.close();
 		});
 	}
 	//
