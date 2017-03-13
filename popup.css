@@ -1,6 +1,7 @@
 body {
   width: 252px;
   font-size: 12px;
+  height: 50px; /**/
   font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
 input[type=checkbox] {

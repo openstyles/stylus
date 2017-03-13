@@ -127,7 +127,13 @@ document.getElementById('confirm').addEventListener('click', e => {
 	let cmd = e.target.dataset.cmd;
 	if (cmd === 'ok') {
 		deleteStyle(document.getElementById('confirm').dataset.id, () => {
-			//window.close();
+			// update view with 'No styles installed for this site' message
+			if (document.getElementById('installed').children.length === 0) {
+				showStyles([]);
+			}
+			// force Chrome to minimize popup's height
+			document.body.style.height = '10px';
+			document.documentElement.style.height = '10px';
 		});
 	}
 	//
