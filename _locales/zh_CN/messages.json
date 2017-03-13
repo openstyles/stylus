@@ -7,9 +7,21 @@
 		"message": "默认",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
+	"bckpInstStyles": {
+		"message": "导出所有样式",
+		"description": ""
+	},
 	"manageOnlyEdited": {
 		"message": "仅修改过的样式",
 		"description": "Checkbox to show only locally edited styles"
+	},
+	"optionsUpdateInterval": {
+		"message": "每 N 小时，检查所有样式更新（0 为关闭检查）",
+		"description": ""
+	},
+	"optionsOpenManagerNote": {
+		"message": "设置键盘快捷键",
+		"description": ""
 	},
 	"exportLabel": {
 		"message": "导出",
@@ -18,6 +30,10 @@
 	"issues": {
 		"message": "问题",
 		"description": "Label for the CSSLint issues block on the style edit page"
+	},
+	"optionsBadgeNormal": {
+		"message": "样式计数背景颜色",
+		"description": ""
 	},
 	"cm_tabSize": {
 		"message": "标签尺寸",
@@ -39,12 +55,20 @@
 		"message": "检查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"openOptionsShortcuts": {
+		"message": "设置快捷键",
+		"description": "Go to shortcut configuration"
+	},
 	"importAppendLabel": {
 		"message": "追加到样式",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
+	"optionsOpenManager": {
+		"message": "打开样式管理器 ",
+		"description": ""
+	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "所有样式已是最新版本",
+		"message": "所有样式已是最新版本。",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"styleFromMozillaFormatPrompt": {
@@ -54,6 +78,10 @@
 	"helpAlt": {
 		"message": "帮助",
 		"description": "Alternate text for help buttons"
+	},
+	"confirmOK": {
+		"message": "确定",
+		"description": ""
 	},
 	"search": {
 		"message": "搜索",
@@ -91,6 +119,14 @@
 		"message": "保存",
 		"description": "Label for save button for style editing"
 	},
+	"confirmCancel": {
+		"message": "取消",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "导入所有样式",
+		"description": ""
+	},
 	"confirmStop": {
 		"message": "停止",
 		"description": "'Stop' button in a confirm dialog"
@@ -98,6 +134,10 @@
 	"writeStyleForURL": {
 		"message": "这个URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "附加选项",
+		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
 		"message": "添加",
@@ -115,6 +155,14 @@
 				"content": "$1"
 			}
 		}
+	},
+	"optionsBadgeDisabled": {
+		"message": "样式计数背景颜色（停用时）",
+		"description": ""
+	},
+	"optionsCheck": {
+		"message": "检查",
+		"description": ""
 	},
 	"manageText": {
 		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='https://userstyles.org/help/stylish_chrome'>获取帮助</a>",
@@ -164,15 +212,13 @@
 		"message": "应用全部更新",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"openShortcutsPopup": {
+		"message": "设置快捷键",
+		"description": "Go to shortcut configuration"
+	},
 	"deleteStyleConfirm": {
 		"message": "确定要删除此样式吗？",
 		"description": "Confirmation before deleting a style"
-	},
-	"confirmOK": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
 	},
 	"styleBadRegexp": {
 		"message": "正则表达式无效。",
@@ -190,6 +236,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"openStylesManager": {
+		"message": "打开样式管理器",
+		"description": "Label for the style maanger opener in the browser action context menu."
 	},
 	"styleUpdate": {
 		"message": "您确定要更新 '$stylename$'?",
@@ -269,6 +319,10 @@
 		"message": "应用对象：",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"openOptionsPopup": {
+		"message": "设置用户界面",
+		"description": "Go to Options UI"
+	},
 	"openManage": {
 		"message": "管理已安装的样式",
 		"description": "Link to open the manage page."
@@ -289,6 +343,10 @@
 	"installUpdate": {
 		"message": "安装更新",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"optionsCheckUpdate": {
+		"message": "检查所有样式更新",
+		"description": ""
 	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla 格式",
@@ -317,6 +375,10 @@
 	"checkingForUpdate": {
 		"message": "正在检查更新...",
 		"description": "Text to display when checking a style for an update"
+	},
+	"optionsCustomize": {
+		"message": "自定义用户界面",
+		"description": ""
 	},
 	"sectionCode": {
 		"message": "代码",
@@ -354,6 +416,14 @@
 		"message": "追加已导入样式到当前样式",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"editorStylesButton": {
+		"message": "查找编辑器样式",
+		"description": "Find styles for the editor"
+	},
+	"optionsOpen": {
+		"message": "打开",
+		"description": ""
+	},
 	"helpKeyMapHotkey": {
 		"message": "按下热键",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
@@ -361,6 +431,10 @@
 	"replaceAll": {
 		"message": "全部替换",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"optionsActions": {
+		"message": "接下来要做什么",
+		"description": ""
 	},
 	"editGotoLine": {
 		"message": "跳转至行（或行:列）",
@@ -370,9 +444,17 @@
 		"message": "检查所有样式更新",
 		"description": "Label for the button to check all styles for updates"
 	},
+	"openOptionsManage": {
+		"message": "设置用户界面",
+		"description": "Go to Options UI"
+	},
 	"issuesHelp": {
 		"message": "<a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> 在已启用的这些规则中找到问题：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
+	"optionsPopupWidth": {
+		"message": "样式管理弹出框宽度 px",
+		"description": ""
 	},
 	"confirmNo": {
 		"message": "否",
@@ -402,6 +484,14 @@
 		"message": "编写新样式",
 		"description": "Label for the button to go to the add style page"
 	},
+	"optionsUpdateIntervalNote": {
+		"message": "设置为 0 则关闭样式自动更新检查",
+		"description": ""
+	},
+	"backupButtons": {
+		"message": "备份",
+		"description": "Heading for backup"
+	},
 	"manageOnlyEnabled": {
 		"message": "仅已启用的样式",
 		"description": "Checkbox to show only enabled styles"
@@ -413,6 +503,10 @@
 	"cm_theme": {
 		"message": "主题",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"backupMessage": {
+		"message": "导入大文件可能耗时较长，请等待完成通知。",
+		"description": "Message for backup"
 	},
 	"helpKeyMapCommand": {
 		"message": "输入命令名称",
