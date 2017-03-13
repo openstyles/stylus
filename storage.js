@@ -164,7 +164,7 @@ function enableStyle(id, enabled) {
 	});
 }
 
-function deleteStyle(id) {
+function deleteStyle(id, callback = function (){}) {
 	getDatabase(function(db) {
 		var tx = db.transaction(["styles"], "readwrite");
 		var os = tx.objectStore("styles");
@@ -173,6 +173,7 @@ function deleteStyle(id) {
 			handleDelete(id);
 			invalidateCache(true);
 			notifyAllTabs({method: "styleDeleted", id: id});
+			callback();
 		};
 	});
 }
