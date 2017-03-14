@@ -48,7 +48,8 @@ a, a:visited {
   padding-top: 0;
 }
 
-body > DIV {
+#unavailable,
+#installed {
   border-bottom: 1px solid black;
   padding-bottom: 2px;
 }
