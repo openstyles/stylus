@@ -227,6 +227,7 @@ body>div:not(#installed) {
   justify-content: center;
 }
 #confirm {
+  z-index: 2147483647;
   display: none; /* flex */
   position: absolute;
   left: 0;

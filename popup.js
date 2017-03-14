@@ -82,6 +82,9 @@ function showStyles(styles) {
 	styles.map(createStyleElement).forEach(function(e) {
 		installed.appendChild(e);
 	});
+	// force Chrome to resize the popup
+	document.body.style.height = '10px';
+	document.documentElement.style.height = '10px';
 }
 
 function createStyleElement(style) {
@@ -126,8 +129,12 @@ function doDelete() {
 document.getElementById('confirm').addEventListener('click', e => {
 	let cmd = e.target.dataset.cmd;
 	if (cmd === 'ok') {
-		deleteStyle(document.getElementById('confirm').dataset.id);
-		window.close();
+		deleteStyle(document.getElementById('confirm').dataset.id, () => {
+			// update view with 'No styles installed for this site' message
+			if (document.getElementById('installed').children.length === 0) {
+				showStyles([]);
+			}
+		});
 	}
 	//
 	if (cmd) {

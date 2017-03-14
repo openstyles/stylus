@@ -37,6 +37,18 @@
 </head>
 
 <body id="stylus-popup">
+    <!-- confirm -->
+    <div id="confirm">
+        <div>
+            <b>Style's Name</b>
+            <span i18n-text="deleteStyleConfirm"></span>
+            <div>
+                <input type="button" i18n-value="confirmCancel" data-cmd="cancel">
+                <input type="button" i18n-value="confirmOK" data-cmd="ok">
+            </div>
+        </div>
+    </div>
+
     <div id="unavailable">
         <div class="main-controls"><span id="unavailable-message" i18n-text="stylishUnavailableForURL"></span>
         </div>
@@ -66,17 +78,6 @@
         <button id="popup-options-button" i18n-text="openOptionsPopup">
         <button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button>
     </div>
-    </div>
-    <!-- confirm -->
-    <div id="confirm">
-        <div>
-            <b>Style's Name</b>
-            <span i18n-text="deleteStyleConfirm"></span>
-            <div>
-                <input type="button" i18n-value="confirmCancel" data-cmd="cancel">
-                <input type="button" i18n-value="confirmOK" data-cmd="ok">
-            </div>
-        </div>
     </div>
     <script src="popup.js"></script>
 </body>
