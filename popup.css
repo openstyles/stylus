@@ -1,7 +1,6 @@
 body {
   width: 252px;
   font-size: 12px;
-  height: 50px; /**/
   font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
 input[type=checkbox] {
@@ -228,6 +227,7 @@ body>div:not(#installed) {
   justify-content: center;
 }
 #confirm {
+  z-index: 2147483647;
   display: none; /* flex */
   position: absolute;
   left: 0;
