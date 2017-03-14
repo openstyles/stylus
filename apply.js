@@ -22,7 +22,9 @@ function requestStyles() {
 	chrome.runtime.sendMessage(request, applyStyles);
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(applyOnMessage);
+
+function applyOnMessage(request, sender, sendResponse) {
 	// Also handle special request just for the pop-up
 	switch (request.method == "updatePopup" ? request.reason : request.method) {
 		case "styleDeleted":
@@ -51,7 +53,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			disableAll(request.disableAll);
 			break;
 	}
-});
+}
 
 function disableAll(disable) {
 	if (!disable === !g_disableAll) {
