@@ -199,10 +199,3 @@ chrome.storage.local.get('version', prefs => {
 		}
 	}
 });
-
-// bouncing back 'updatePopup' to popup
-chrome.runtime.onMessage.addListener((request, sender) => {
-	if (request.method === 'updatePopup') {
-		chrome.runtime.sendMessage(request);
-	}
-});
