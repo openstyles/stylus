@@ -184,16 +184,19 @@ chrome.storage.local.get('version', prefs => {
 	// Open FAQs page once after installation to guide new users,
 	// https://github.com/schomery/stylish-chrome/issues/22#issuecomment-279936160
 	if (!prefs.version) {
-		let version = chrome.runtime.getManifest().version;
-		chrome.storage.local.set({
-			version
-		}, () => {
-			window.setTimeout(() => {
-				chrome.tabs.create({
-					url: 'http://add0n.com/stylus.html?version=' + version + '&type=install'
-				});
-			}, 3000);
-		})
+		// do not display the FAQs page in development mode
+		if ('update_url' in chrome.runtime.getManifest()) {
+			let version = chrome.runtime.getManifest().version;
+			chrome.storage.local.set({
+				version
+			}, () => {
+				window.setTimeout(() => {
+					chrome.tabs.create({
+						url: 'http://add0n.com/stylus.html?version=' + version + '&type=install'
+					});
+				}, 3000);
+			})
+		}
 	}
 });
 
