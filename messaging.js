@@ -1,3 +1,6 @@
+// keep message channel open for sendResponse in chrome.runtime.onMessage listener
+const KEEP_CHANNEL_OPEN = true;
+
 function notifyAllTabs(request) {
 	chrome.windows.getAll({populate: true}, function(windows) {
 		windows.forEach(function(win) {
@@ -14,6 +17,29 @@ function notifyAllTabs(request) {
 	if (typeof applyOnMessage !== 'undefined') {
 		applyOnMessage(reqPopup);
 	}
+}
+
+function refreshAllTabs() {
+	return new Promise(resolve => {
+		chrome.windows.getAll({populate: true}, windows => {
+			windows.forEach((win, winIndex) => {
+				win.tabs.forEach((tab, tabIndex) => {
+					getStyles({matchUrl: tab.url, enabled: true, asHash: true}, styles => {
+						const message = {method: 'styleReplaceAll', styles};
+						if (tab.url == location.href && typeof applyOnMessage !== 'undefined') {
+							applyOnMessage(message);
+						} else {
+							chrome.tabs.sendMessage(tab.id, message);
+						}
+						updateIcon(tab, styles);
+						if (winIndex == windows.length - 1 && tabIndex == win.tabs.length - 1) {
+							resolve();
+						}
+					});
+				});
+			});
+		});
+	});
 }
 
 function updateIcon(tab, styles) {

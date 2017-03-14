@@ -71,7 +71,7 @@ var update = {
             json.method = 'saveStyle';
             json.id = style.id;
 
-            saveStyle(json, function () {
+            saveStyle(json).then(style => {
               observe('single-updated', style.name);
             });
           }
