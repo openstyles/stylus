@@ -95,72 +95,65 @@ function filterStyles(styles, options) {
 	return styles;
 }
 
-function saveStyle(o, callback) {
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readwrite");
-		var os = tx.objectStore("styles");
+function saveStyle(style, {notify = true} = {}) {
+	return new Promise(resolve => {
+		getDatabase(db => {
+			const tx = db.transaction(['styles'], 'readwrite');
+			const os = tx.objectStore('styles');
 
-		// Update
-		if (o.id) {
-			var request = os.get(Number(o.id));
-			request.onsuccess = function(event) {
-				var style = request.result || {};
-				for (var prop in o) {
-					if (prop == "id") {
-						continue;
-					}
-					style[prop] = o[prop];
-				}
-				request = os.put(style);
-				request.onsuccess = function(event) {
-					notifyAllTabs({method: "styleUpdated", style: style});
-					invalidateCache(true);
-					if (callback) {
-						callback(style);
-					}
+			// Update
+			if (style.id) {
+				style.id = Number(style.id);
+				os.get(style.id).onsuccess = eventGet => {
+					style = Object.assign({}, eventGet.target.result, style);
+					os.put(style).onsuccess = eventPut => {
+						style.id = style.id || eventPut.target.result;
+						if (notify) {
+							notifyAllTabs({method: 'styleUpdated', style});
+						}
+						invalidateCache(notify);
+						resolve(style);
+					};
 				};
-			};
-			return;
-		}
-
-		// Create
-		// Set optional things to null if they're undefined
-		["updateUrl", "md5Url", "url", "originalMd5"].filter(function(att) {
-			return !(att in o);
-		}).forEach(function(att) {
-			o[att] = null;
-		});
-		// Set other optional things to empty array if they're undefined
-		o.sections.forEach(function(section) {
-			["urls", "urlPrefixes", "domains", "regexps"].forEach(function(property) {
-				if (!section[property]) {
-					section[property] = [];
-				}
-			});
-		});
-		// Set to enabled if not set
-		if (!("enabled" in o)) {
-			o.enabled = true;
-		}
-		// Make sure it's not null - that makes indexeddb sad
-		delete o["id"];
-		var request = os.add(o);
-		request.onsuccess = function(event) {
-			invalidateCache(true);
-			// Give it the ID that was generated
-			o.id = event.target.result;
-			notifyAllTabs({method: "styleAdded", style: o});
-			if (callback) {
-				callback(o);
+				return;
 			}
-		};
+
+			// Create
+			style = Object.assign({
+				// Set optional things if they're undefined
+				enabled: true,
+				updateUrl: null,
+				md5Url: null,
+				url: null,
+				originalMd5: null,
+			}, style, {
+				// Set other optional things to empty array if they're undefined
+				sections: style.sections.map(section =>
+					Object.assign({
+						urls: [],
+						urlPrefixes: [],
+						domains: [],
+						regexps: [],
+					}, section)
+				),
+			})
+			// Make sure it's not null - that makes indexeddb sad
+			delete style.id;
+			os.add(style).onsuccess = event => {
+				invalidateCache(true);
+				// Give it the ID that was generated
+				style.id = event.target.result;
+				notifyAllTabs({method: 'styleAdded', style});
+				resolve(style);
+			};
+		});
 	});
 }
 
 function enableStyle(id, enabled) {
-	saveStyle({id: id, enabled: enabled}, function(style) {
+	saveStyle({id: id, enabled: enabled}).then(style => {
 		handleUpdate(style);
-		notifyAllTabs({method: "styleUpdated", style: style});
+		notifyAllTabs({method: "styleUpdated", style});
 	});
 }
 

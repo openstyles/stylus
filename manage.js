@@ -19,9 +19,7 @@ function showStyles(styles) {
 		return;
 	}
 	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
-	styles.map(createStyleElement).forEach(function(e) {
-		installed.appendChild(e);
-	});
+	styles.forEach(handleUpdate);
 	if (history.state) {
 		window.scrollTo(0, history.state.scrollY);
 	}
@@ -163,10 +161,8 @@ function getStyleElement(event) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
-			handleUpdate(request.style);
-			break;
 		case "styleAdded":
-			installed.appendChild(createStyleElement(request.style));
+			handleUpdate(request.style);
 			break;
 		case "styleDeleted":
 			handleDelete(request.id);
@@ -176,12 +172,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 function handleUpdate(style) {
 	var element = createStyleElement(style);
-	installed.replaceChild(element, installed.querySelector("[style-id='" + style.id + "']"));
+	var oldElement = installed.querySelector(`[style-id="${style.id}"]`);
+	if (!oldElement) {
+		installed.appendChild(element);
+		return;
+	}
+	installed.replaceChild(element, oldElement);
 	if (style.id == lastUpdatedStyleId) {
 		lastUpdatedStyleId = null;
-		element.className = element.className += " update-done";
-		element.querySelector(".update-note").innerHTML = t('updateCompleted');
-	};
+		element.className = element.className += ' update-done';
+		element.querySelector('.update-note').innerHTML = t('updateCompleted');
+	}
 }
 
 function handleDelete(id) {
@@ -465,41 +466,6 @@ function initFilter(className, node) {
 	onFilterChange(className, {target: node});
 }
 
-function importStyles (e) {
-	var file = e.target.files[0];
-	var reader = new FileReader();
-	var styles = [];
-
-	function save () {
-		var style = styles.shift();
-		if (style) {
-			delete style.id;
-			saveStyle(style, save);
-		}
-		else {
-			window.location.reload()
-		}
-	}
-
-  reader.onloadend = function (evt) {
-    try {
-    	styles = JSON.parse(evt.target.result);
-    	save();
-    }
-    catch (e) {
-    	window.alert(e.message);
-    }
-  };
-  reader.onerror = function (e) {
-  	window.alert(e.message);
-  }
-  reader.readAsText(file)
-}
-
-function selectAll () {
-	document.execCommand('selectAll');
-}
-
 document.addEventListener("DOMContentLoaded", function() {
 	installed = document.getElementById("installed");
 	if (document.stylishStyles) {
@@ -520,5 +486,4 @@ document.addEventListener("DOMContentLoaded", function() {
 	]);
 	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
 	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
-
 });

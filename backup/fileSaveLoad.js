@@ -1,4 +1,4 @@
-/* globals getStyles, saveStyle */
+/* globals getStyles, saveStyle, invalidateCache, refreshAllTabs, handleUpdate */
 'use strict';
 
 var STYLISH_DUMP_FILE_EXT = '.txt';
@@ -71,27 +71,26 @@ document.getElementById('file-all-styles').addEventListener('click', function ()
   });
 });
 
-document.getElementById('unfile-all-styles').addEventListener('click', function () {
-  loadFromFile(STYLISH_DUMPFILE_EXTENSION).then(function (rawText) {
-    var json = JSON.parse(rawText);
-    var i = 0, nextStyle;
+document.getElementById('unfile-all-styles').addEventListener('click', () => {
+  loadFromFile(STYLISH_DUMPFILE_EXTENSION).then(rawText => {
+    const json = JSON.parse(rawText);
+    const numStyles = json.length;
 
-    function done() {
-      window.alert(i + ' styles installed/updated');
-      location.reload();
-    }
+    invalidateCache(true);
+    proceed();
 
     function proceed() {
-      nextStyle = json[i++];
+      const nextStyle = json.shift();
       if (nextStyle) {
-        saveStyle(nextStyle, proceed);
-      }
-      else {
-        i--;
-        done();
+        saveStyle(nextStyle, {notify: false}).then(style => {
+          handleUpdate(style);
+          setTimeout(proceed, 0);
+        });
+      } else {
+        refreshAllTabs().then(() => {
+          setTimeout(alert, 100, numStyles + ' styles installed/updated');
+        });
       }
     }
-
-    proceed();
   });
 });

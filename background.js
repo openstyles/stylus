@@ -62,10 +62,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			&& sender.tab.url == request.matchUrl) {
 				updateIcon(sender.tab, styles);
 			}
-			return true;
+			return KEEP_CHANNEL_OPEN;
 		case "saveStyle":
-			saveStyle(request, sendResponse);
-			return true;
+			saveStyle(request).then(sendResponse);
+			return KEEP_CHANNEL_OPEN;
 		case "invalidateCache":
 			if (typeof invalidateCache != "undefined") {
 				invalidateCache(false);
@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			break;
 		case "healthCheck":
 			getDatabase(function() { sendResponse(true); }, function() { sendResponse(false); });
-			return true;
+			return KEEP_CHANNEL_OPEN;
 		case "openURL":
 			openURL(request);
 			break;
@@ -88,6 +88,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				chrome.contextMenus.update("disableAll", {checked: request.value});
 			}
 			break;
+		case "refreshAllTabs":
+			refreshAllTabs().then(sendResponse);
+			return KEEP_CHANNEL_OPEN;
 	}
 });
 
