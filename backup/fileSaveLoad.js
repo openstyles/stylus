@@ -55,7 +55,7 @@ function generateFileName() {
 
 document.getElementById('file-all-styles').addEventListener('click', function () {
   getStyles({}, function (styles) {
-    let text = JSON.stringify(styles);
+    let text = JSON.stringify(styles, null, '\t');
     let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
 
     let url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
