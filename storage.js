@@ -105,11 +105,13 @@ function saveStyle(style, {notify = true} = {}) {
 			if (style.id) {
 				style.id = Number(style.id);
 				os.get(style.id).onsuccess = eventGet => {
-					style = Object.assign({}, eventGet.target.result, style);
+					const oldStyle = Object.assign({}, eventGet.target.result);
+					const codeIsUpdated = !styleSectionsEqual(style, oldStyle);
+					style = Object.assign(oldStyle, style);
 					os.put(style).onsuccess = eventPut => {
 						style.id = style.id || eventPut.target.result;
 						if (notify) {
-							notifyAllTabs({method: 'styleUpdated', style});
+							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated});
 						}
 						invalidateCache(notify);
 						resolve(style);
@@ -576,6 +578,9 @@ function getSync() {
 }
 
 function styleSectionsEqual(styleA, styleB) {
+	if (!styleA.sections || !styleB.sections) {
+		return undefined;
+	}
 	if (styleA.sections.length != styleB.sections.length) {
 		return false;
 	}

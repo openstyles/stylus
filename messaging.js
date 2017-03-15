@@ -1,12 +1,15 @@
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
+const OWN_ORIGIN = chrome.runtime.getURL('');
 
 function notifyAllTabs(request) {
-	chrome.windows.getAll({populate: true}, function(windows) {
-		windows.forEach(function(win) {
-			win.tabs.forEach(function(tab) {
-				chrome.tabs.sendMessage(tab.id, request);
-				updateIcon(tab);
+	chrome.windows.getAll({populate: true}, windows => {
+		windows.forEach(win => {
+			win.tabs.forEach(tab => {
+				if (request.codeIsUpdated !== false || tab.url.startsWith(OWN_ORIGIN)) {
+					chrome.tabs.sendMessage(tab.id, request);
+					updateIcon(tab);
+				}
 			});
 		});
 	});
