@@ -521,17 +521,6 @@ function deepMerge(target, obj1 /* plus any number of object arguments */) {
 	return target;
 }
 
-function shallowMerge(target, obj1 /* plus any number of object arguments */) {
-	for (var i = 1; i < arguments.length; i++) {
-		var obj = arguments[i];
-		for (var k in obj) {
-			target[k] = obj[k];
-			// hasOwnProperty checking is not needed for our non-OOP stuff
-		}
-	}
-	return target;
-}
-
 function equal(a, b) {
 	if (!a || !b || typeof a != "object" || typeof b != "object") {
 		return a === b;
