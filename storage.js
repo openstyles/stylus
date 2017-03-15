@@ -574,3 +574,34 @@ function getSync() {
 		}
 	}
 }
+
+function styleSectionsEqual(styleA, styleB) {
+	if (styleA.sections.length != styleB.sections.length) {
+		return false;
+	}
+	const properties = ['code', 'urlPrefixes', 'urls', 'domains', 'regexps'];
+	return styleA.sections.every(sectionA =>
+		styleB.sections.some(sectionB =>
+			properties.every(property => sectionEquals(sectionA, sectionB, property))
+		)
+	);
+
+	function sectionEquals(a, b, property) {
+		const aProp = a[property], typeA = getType(aProp);
+		const bProp = b[property], typeB = getType(bProp);
+		if (typeA != typeB) {
+			// consider empty arrays equivalent to lack of property
+			return ((typeA == 'undefined' || (typeA == 'array' && aProp.length == 0)) &&
+				(typeB == 'undefined' || (typeB == 'array' && bProp.length == 0)));
+		}
+		if (typeA == 'undefined') {
+			return true;
+		}
+		if (typeA == 'array') {
+			return aProp.length == bProp.length && aProp.every(item => bProp.includes(item));
+		}
+		if (typeA == 'string') {
+			return aProp == bProp;
+		}
+	}
+}
