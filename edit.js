@@ -130,7 +130,7 @@ function initCodeMirror() {
 	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
 
 	// default option values
-	shallowMerge(CM.defaults, {
+	Object.assign(CM.defaults, {
 		mode: 'css',
 		lineNumbers: true,
 		lineWrapping: true,
@@ -1591,7 +1591,7 @@ function showCodeMirrorPopup(title, html, options) {
 	var popup = showHelp(title, html);
 	popup.classList.add("big");
 
-	popup.codebox = CodeMirror(popup.querySelector(".contents"), shallowMerge({
+	popup.codebox = CodeMirror(popup.querySelector(".contents"), Object.assign({
 		mode: "css",
 		lineNumbers: true,
 		lineWrapping: true,

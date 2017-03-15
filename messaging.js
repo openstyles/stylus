@@ -14,7 +14,7 @@ function notifyAllTabs(request) {
 		});
 	});
 	// notify all open popups
-	var reqPopup = shallowMerge({}, request, {method: "updatePopup", reason: request.method});
+	const reqPopup = Object.assign({}, request, {method: 'updatePopup', reason: request.method});
 	chrome.runtime.sendMessage(reqPopup);
 	// notify self: the message no longer is sent to the origin in new Chrome
 	if (typeof applyOnMessage !== 'undefined') {
