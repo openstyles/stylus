@@ -52,6 +52,9 @@ function applyOnMessage(request, sender, sendResponse) {
 		case "styleDisableAll":
 			disableAll(request.disableAll);
 			break;
+		case "ping":
+			sendResponse(true);
+			break;
 	}
 }
 

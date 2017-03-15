@@ -123,3 +123,12 @@ function getTabRealURL(tab, callback) {
 		});
 	}
 }
+
+function stringAsRegExp(s, flags) {
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
+}
+
+// expands * as .*?
+function wildcardAsRegExp(s, flags) {
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=!|]/g, "\\$&").replace(/\*/g, '.*?'), flags);
+}

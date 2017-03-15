@@ -1,3 +1,4 @@
+/* globals stringAsRegExp */
 "use strict";
 
 var styleId = null;
@@ -1642,10 +1643,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 	}
 });
-
-function stringAsRegExp(s, flags) {
-	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
-}
 
 function getComputedHeight(el) {
 	var compStyle = getComputedStyle(el);
