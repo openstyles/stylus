@@ -3,15 +3,14 @@ const KEEP_CHANNEL_OPEN = true;
 const OWN_ORIGIN = chrome.runtime.getURL('');
 
 function notifyAllTabs(request) {
-	chrome.windows.getAll({populate: true}, windows => {
-		windows.forEach(win => {
-			win.tabs.forEach(tab => {
-				if (request.codeIsUpdated !== false || tab.url.startsWith(OWN_ORIGIN)) {
-					chrome.tabs.sendMessage(tab.id, request);
-					updateIcon(tab);
-				}
-			});
-		});
+	// list all tabs including chrome-extension:// which can be ours
+	chrome.tabs.query({}, tabs => {
+		for (let tab of tabs) {
+			if (request.codeIsUpdated !== false || tab.url.startsWith(OWN_ORIGIN)) {
+				chrome.tabs.sendMessage(tab.id, request);
+				updateIcon(tab);
+			}
+		}
 	});
 	// notify all open popups
 	const reqPopup = Object.assign({}, request, {method: 'updatePopup', reason: request.method});
@@ -24,23 +23,23 @@ function notifyAllTabs(request) {
 
 function refreshAllTabs() {
 	return new Promise(resolve => {
-		chrome.windows.getAll({populate: true}, windows => {
-			windows.forEach((win, winIndex) => {
-				win.tabs.forEach((tab, tabIndex) => {
-					getStyles({matchUrl: tab.url, enabled: true, asHash: true}, styles => {
-						const message = {method: 'styleReplaceAll', styles};
-						if (tab.url == location.href && typeof applyOnMessage !== 'undefined') {
-							applyOnMessage(message);
-						} else {
-							chrome.tabs.sendMessage(tab.id, message);
-						}
-						updateIcon(tab, styles);
-						if (winIndex == windows.length - 1 && tabIndex == win.tabs.length - 1) {
-							resolve();
-						}
-					});
+		// list all tabs including chrome-extension:// which can be ours
+		chrome.tabs.query({}, tabs => {
+			const lastTab = tabs[tabs.length - 1];
+			for (let tab of tabs) {
+				getStyles({matchUrl: tab.url, enabled: true, asHash: true}, styles => {
+					const message = {method: 'styleReplaceAll', styles};
+					if (tab.url == location.href && typeof applyOnMessage !== 'undefined') {
+						applyOnMessage(message);
+					} else {
+						chrome.tabs.sendMessage(tab.id, message);
+					}
+					updateIcon(tab, styles);
+					if (tab == lastTab) {
+						resolve();
+					}
 				});
-			});
+			}
 		});
 	});
 }
