@@ -159,6 +159,36 @@
             overflow: auto;
             margin: 0 0 .5em 0;
         }
+        /* drag-n-drop on import button */
+        .dropzone:after {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            position: fixed;
+            padding: calc(50vh - 3em) calc(50vw - 5em);
+            content: attr(dragndrop-hint);
+            text-shadow: 1px 1px 10px black;
+            font-size: xx-large;
+            text-align: center;
+            animation: fadein 1s cubic-bezier(.03,.67,.08,.94);
+            animation-fill-mode: both;
+        }
+        .fadeout.dropzone:after {
+            animation: fadeout .25s ease-in-out;
+            animation-fill-mode: both;
+        }
+        @keyframes fadein {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes fadeout {
+            from { opacity: 1; }
+            to   { opacity: 0; }
+        }
     </style>
 
     <template data-id="style">
@@ -191,7 +221,7 @@
     <script src="manage.js"></script>
 </head>
 
-<body id="stylus-manage">
+<body id="stylus-manage" i18n-dragndrop-hint="backupMessage">
     <div id="header">
         <h1 id="manage-heading" i18n-text="manageHeading"></h1>
         <fieldset>
@@ -240,7 +270,7 @@
             </div>
         </div>
         <div id="backup">
-            <h2 id="backup" i18n-text="backupButtons"></h2>
+            <h2 id="backup-title" i18n-text="backupButtons"></h2>
             <span id="backup-message" i18n-text="backupMessage"></span>
             <p>
                 <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
