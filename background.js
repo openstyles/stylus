@@ -1,3 +1,5 @@
+/* globals wildcardAsRegExp, KEEP_CHANNEL_OPEN */
+
 var frameIdMessageable;
 runTryCatch(function() {
 	chrome.tabs.sendMessage(0, {}, {frameId: 0}, function() {
@@ -202,3 +204,41 @@ chrome.storage.local.get('version', prefs => {
 		}
 	}
 });
+
+// after the extension was enabled or just installed
+injectContentScripts({reason: 'update'});
+// after an actual update
+chrome.runtime.onInstalled.addListener(injectContentScripts);
+
+function injectContentScripts({reason, previousVersion, id, checkFirst} = {}) {
+	// reason: install, update, chrome_update, shared_module_update
+	// the "install" case is ignored because it was already handled by explicit invocation of this function
+	if (!/update/.test(reason)) {
+		return;
+  }
+	const contentScripts = chrome.app.getDetails().content_scripts;
+	for (let cs of contentScripts) {
+		cs.matches = cs.matches.map(m => m == '<all_urls>' ? m : wildcardAsRegExp(m));
+	}
+	chrome.tabs.query({url: '*://*/*'}, tabs => {
+		for (let tab of tabs) {
+			for (let cs of contentScripts) {
+				for (let m of cs.matches) {
+					if (m == '<all_urls>' || tab.url.match(m)) {
+						chrome.tabs.sendMessage(tab.id, {method: 'ping'}, pong => {
+							if (!pong) {
+								chrome.tabs.executeScript(tab.id, {
+									file: cs.js[0],
+									runAt: cs.run_at,
+									allFrames: cs.all_frames,
+								}, result => chrome.runtime.lastError); // ignore lastError just in case
+							}
+						});
+						// inject the content script just once
+						break;
+					}
+				}
+			}
+		}
+	});
+}
