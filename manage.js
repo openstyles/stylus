@@ -1,3 +1,4 @@
+/* globals styleSectionsEqual */
 var lastUpdatedStyleId = null;
 var installed;
 
@@ -257,7 +258,7 @@ function checkUpdate(element, callback) {
 		chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
 			var style = styles[0];
 			var needsUpdate = false;
-			if (!forceUpdate && codeIsEqual(style.sections, serverJson.sections)) {
+			if (!forceUpdate && styleSectionsEqual(style, serverJson)) {
 				handleNeedsUpdate("no", id, serverJson);
 			} else {
 				handleNeedsUpdate("yes", id, serverJson);
@@ -366,58 +367,6 @@ function doUpdate(event) {
 	// updating the UI will be handled by the general update listener
 	lastUpdatedStyleId = updatedCode.id;
 	chrome.runtime.sendMessage(updatedCode, function () {});
-}
-
-function codeIsEqual(a, b) {
-	if (a.length != b.length) {
-		return false;
-	}
-	var properties = ["code", "urlPrefixes", "urls", "domains", "regexps"];
-	for (var i = 0; i < a.length; i++) {
-		var found = false;
-		for (var j = 0; j < b.length; j++) {
-			var allEquals = properties.every(function(property) {
-				return jsonEquals(a[i], b[j], property);
-			});
-			if (allEquals) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			return false;
-		}
-	}
-	return true;
-}
-
-function jsonEquals(a, b, property) {
-	var aProp = a[property], typeA = getType(aProp);
-	var bProp = b[property], typeB = getType(bProp);
-	if (typeA != typeB) {
-		// consider empty arrays equivalent to lack of property
-		if ((typeA == "undefined" || (typeA == "array" && aProp.length == 0)) && (typeB == "undefined" || (typeB == "array" && bProp.length == 0))) {
-			return true;
-		}
-		return false;
-	}
-	if (typeA == "undefined") {
-		return true;
-	}
-	if (typeA == "array") {
-		if (aProp.length != bProp.length) {
-			return false;
-		}
-		for (var i = 0; i < aProp.length; i++) {
-			if (bProp.indexOf(aProp[i]) == -1) {
-				return false;
-			}
-		}
-		return true;
-	}
-	if (typeA == "string") {
-		return aProp == bProp;
-	}
 }
 
 function searchStyles(immediately) {
