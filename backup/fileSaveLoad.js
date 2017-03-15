@@ -5,37 +5,70 @@ var STYLISH_DUMP_FILE_EXT = '.txt';
 var STYLISH_DUMPFILE_EXTENSION = '.json';
 var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyyy' + STYLISH_DUMP_FILE_EXT;
 
-/**
- * !!works only when page has representation - backgound page won't work
- *
- * opens open file dialog,
- * gets selected file,
- * gets it's path,
- * gets content of it by ajax
- */
-function loadFromFile (formatToFilter) {
-  return new Promise(function (resolve) {
-    var fileInput = document.createElement('input');
-    fileInput.style = 'display: none;';
+function importFromFile({fileTypeFilter, file} = {}) {
+  return new Promise(resolve => {
+    const fileInput = document.createElement('input');
+    if (file) {
+      readFile();
+      return;
+    }
+    fileInput.style.display = 'none';
     fileInput.type = 'file';
-    fileInput.accept = formatToFilter || STYLISH_DUMP_FILE_EXT;
+    fileInput.accept = fileTypeFilter || STYLISH_DUMP_FILE_EXT;
     fileInput.acceptCharset = 'utf-8';
 
     document.body.appendChild(fileInput);
     fileInput.initialValue = fileInput.value;
-    function changeHandler() {
-      if (fileInput.value !== fileInput.initialValue) {
-        var fReader = new FileReader();
-        fReader.onloadend = function (event) {
-          fileInput.removeEventListener('change', changeHandler);
+    fileInput.onchange = readFile;
+    fileInput.click();
+
+    function readFile() {
+      if (file || fileInput.value !== fileInput.initialValue) {
+        file = file || fileInput.files[0];
+        if (file.size > 100*1000*1000) {
+          console.warn("100MB backup? I don't believe you.");
+          importFromString('').then(resolve);
+          return;
+        }
+        document.body.style.cursor = 'wait';
+        const fReader = new FileReader();
+        fReader.onloadend = event => {
           fileInput.remove();
-          resolve(event.target.result);
+          importFromString(event.target.result).then(numStyles => {
+            document.body.style.cursor = '';
+            resolve(numStyles);
+          });
         };
-        fReader.readAsText(fileInput.files[0], 'utf-8');
+        fReader.readAsText(file, 'utf-8');
       }
     }
-    fileInput.addEventListener('change', changeHandler);
-    fileInput.click();
+  });
+}
+
+function importFromString(jsonString) {
+  const json = runTryCatch(() => Array.from(JSON.parse(jsonString))) || [];
+  const numStyles = json.length;
+
+  if (numStyles) {
+    invalidateCache(true);
+  }
+
+  return new Promise(resolve => {
+    proceed();
+    function proceed() {
+      const nextStyle = json.shift();
+      if (nextStyle) {
+        saveStyle(nextStyle, {notify: false}).then(style => {
+          handleUpdate(style);
+          setTimeout(proceed, 0);
+        });
+      } else {
+        refreshAllTabs().then(() => {
+          setTimeout(alert, 100, numStyles + ' styles installed/updated');
+          resolve(numStyles);
+        });
+      }
+    }
   });
 }
 
@@ -53,7 +86,7 @@ function generateFileName() {
   return 'stylus-' + today + STYLISH_DUMPFILE_EXTENSION;
 }
 
-document.getElementById('file-all-styles').addEventListener('click', function () {
+document.getElementById('file-all-styles').onclick = () => {
   getStyles({}, function (styles) {
     let text = JSON.stringify(styles, null, '\t');
     let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
@@ -69,28 +102,46 @@ document.getElementById('file-all-styles').addEventListener('click', function ()
       a.dispatchEvent(new MouseEvent('click'));
     });
   });
-});
+};
 
-document.getElementById('unfile-all-styles').addEventListener('click', () => {
-  loadFromFile(STYLISH_DUMPFILE_EXTENSION).then(rawText => {
-    const json = JSON.parse(rawText);
-    const numStyles = json.length;
 
-    invalidateCache(true);
-    proceed();
+document.getElementById('unfile-all-styles').onclick = () => {
+  importFromFile({fileTypeFilter: STYLISH_DUMPFILE_EXTENSION});
+};
 
-    function proceed() {
-      const nextStyle = json.shift();
-      if (nextStyle) {
-        saveStyle(nextStyle, {notify: false}).then(style => {
-          handleUpdate(style);
-          setTimeout(proceed, 0);
-        });
-      } else {
-        refreshAllTabs().then(() => {
-          setTimeout(alert, 100, numStyles + ' styles installed/updated');
-        });
-      }
+const dropTarget = Object.assign(document.body, {
+  ondragover: event => {
+    const hasFiles = event.dataTransfer.types.includes('Files');
+    event.dataTransfer.dropEffect = hasFiles || event.target.type == 'search' ? 'copy' : 'none';
+    dropTarget.classList.toggle('dropzone', hasFiles);
+    if (hasFiles) {
+      event.preventDefault();
+      clearTimeout(dropTarget.fadeoutTimer);
+      dropTarget.classList.remove('fadeout');
     }
-  });
+  },
+  ondragend: event => {
+    dropTarget.classList.add('fadeout');
+    // transitionend event may not fire if the user switched to another tab so we'll use a timer
+    clearTimeout(dropTarget.fadeoutTimer);
+    dropTarget.fadeoutTimer = setTimeout(() => {
+      dropTarget.classList.remove('dropzone', 'fadeout');
+    }, 250);
+  },
+  ondragleave: event => {
+    // Chrome sets screen coords to 0 on Escape key pressed or mouse out of document bounds
+    if (!event.screenX && !event.screenX) {
+      dropTarget.ondragend();
+    }
+  },
+  ondrop: event => {
+    if (event.dataTransfer.files.length) {
+      event.preventDefault();
+      importFromFile({file: event.dataTransfer.files[0]}).then(() => {
+        dropTarget.classList.remove('dropzone');
+      });
+    } else {
+      dropTarget.ondragend();
+    }
+  },
 });
