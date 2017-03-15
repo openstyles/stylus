@@ -1,3 +1,6 @@
+// using ES5 syntax because ES6 is fast only since around Chrome 55
+// so we'll wait until Chrome 60 arguably before converting
+
 var g_disableAll = false;
 var g_styleElements = {};
 var iframeObserver;
@@ -266,7 +269,13 @@ function replaceAll(newStyles, doc, pass2) {
 
 // Observe dynamic IFRAMEs being added
 function initObserver() {
+	var orphanCheckTimer;
+
 	iframeObserver = new MutationObserver(function(mutations) {
+		clearTimeout(orphanCheckTimer);
+		// MutationObserver runs as a microtask so the timer won't fire until all queued mutations are fired
+		orphanCheckTimer = setTimeout(orphanCheck, 0);
+
 		if (mutations.length > 1000) {
 			// use a much faster method for very complex pages with 100,000 mutations
 			// (observer usually receives 1k-10k mutations per call)
@@ -296,5 +305,32 @@ function initObserver() {
 	iframeObserver.start = function() {
 		// will be ignored by browser if already observing
 		iframeObserver.observe(document, {childList: true, subtree: true});
+	}
+
+	function orphanCheck() {
+		orphanCheckTimer = 0;
+		var port = chrome.runtime.connect();
+		if (port) {
+			port.disconnect();
+			return;
+		}
+
+		// we're orphaned due to an extension update
+		// we can detach the mutation observer
+		// we can't detach chrome.runtime.onMessage because it's no longer connected internally
+		iframeObserver.disconnect();
+
+		// we can destroy global functions in this context to free up memory
+		var globals = Object.keys(window);
+		for (var i = 0, len = globals.length; i < len; i++) {
+			var key = globals[i];
+			var obj = window[key];
+			if (typeof obj == 'function' && !/native code/.test(obj)) {
+				window[key] = null;
+			}
+		}
+
+		// we can destroy global variables
+		g_styleElements = iframeObserver = retiredStyleIds = null;
 	}
 }
