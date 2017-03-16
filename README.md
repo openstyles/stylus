@@ -2,16 +2,23 @@ Stylus : Stylish fork for Chrome and Chrome-like things
 
 ## Releases
 
-Releases are available at [the Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)
+1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)
+2. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/)
+
+## Screen shot
+
+![screen shot](https://cloud.githubusercontent.com/assets/11704051/24002324/aefd19fe-0a75-11e7-8160-d8731d2a6d03.png)
+
 ## Help
 
-See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in the forum](https://forum.userstyles.org).
+See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userstyles.org forum](https://forum.userstyles.org). For Stylus specific questions and suggestions please use [review section](http://add0n.com/stylus.html#reviews) of the FAQs page.
 
 ## Contributing
 
 The source is hosted on [GitHub](https://github.com/schomery/stylish-chrome) and pull requests are welcome.
 
-You can Help us translate the Extension on [Transifex](https://www.transifex.com/github-7/Stylus).
+You can Help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus).
+
 ## License
 
 For copyright status of the "codemirror" directory, see codemirror/LICENSE. Everything else is:
