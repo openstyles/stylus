@@ -69,7 +69,7 @@
     "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "Larger imported files may take a moment. Wait for a browser notification to appear.",
+    "message": "Select a file or drag and drop to this page.",
     "description": "Message for backup"
   },
   "checkAllUpdates": {
@@ -135,6 +135,10 @@
   "deleteStyleConfirm": {
     "message": "Are you sure you want to delete this style?",
     "description": "Confirmation before deleting a style"
+  },
+  "dragDropMessage": {
+    "message": "Drop your backup file anywhere on this page to import.",
+    "description": "Drag'n'drop message"
   },
   "confirmOK": {
     "message": "Delete"
