@@ -1,3 +1,4 @@
+/* globals configureCommands */
 'use strict';
 
 function restore () {
@@ -88,8 +89,9 @@ document.addEventListener('click', e => {
     });
   }
   else if (cmd === 'open-keyboard') {
-    chrome.tabs.create({
-      url: 'chrome://extensions/configureCommands'
-    });
+    configureCommands.open();
   }
 });
+// overwrite the default URL if browser is Opera
+document.querySelector('[data-cmd="open-keyboard"]').textContent =
+  configureCommands.url;

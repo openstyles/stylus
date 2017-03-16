@@ -1,3 +1,5 @@
+/* globals configureCommands */
+
 var writeStyleTemplate = document.createElement("a");
 writeStyleTemplate.className = "write-style-link";
 
@@ -238,11 +240,7 @@ document.querySelector('#popup-options-button').addEventListener("click", functi
     }
 });
 
-document.querySelector('#popup-shortcuts-button').addEventListener("click", function() {
-    chrome.tabs.create({
-        'url': 'chrome://extensions/configureCommands'
-    });
-});
+document.querySelector('#popup-shortcuts-button').addEventListener("click", configureCommands.open);
 
 // popup width
 document.body.style.width = (localStorage.getItem('popupWidth') || '246') + 'px';

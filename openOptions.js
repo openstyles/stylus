@@ -1,3 +1,6 @@
+/* globals configureCommands */
+'use strict';
+
 document.querySelector('#manage-options-button').addEventListener("click", function() {
     if (chrome.runtime.openOptionsPage) {
         // Supported (Chrome 42+)
@@ -8,11 +11,7 @@ document.querySelector('#manage-options-button').addEventListener("click", funct
     }
 });
 
-document.querySelector('#manage-shortcuts-button').addEventListener("click", function() {
-    chrome.tabs.create({
-        'url': 'chrome://extensions/configureCommands'
-    });
-});
+document.querySelector('#manage-shortcuts-button').addEventListener("click", configureCommands.open);
 
 document.querySelector('#editor-styles-button').addEventListener("click", function() {
     chrome.tabs.create({

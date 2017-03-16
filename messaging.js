@@ -131,3 +131,16 @@ function stringAsRegExp(s, flags) {
 function wildcardAsRegExp(s, flags) {
 	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=!|]/g, "\\$&").replace(/\*/g, '.*?'), flags);
 }
+
+var configureCommands = {
+	get url () {
+		return navigator.userAgent.indexOf('OPR') > -1 ?
+			'opera://settings/configureCommands' :
+			'chrome://extensions/configureCommands'
+	},
+	open: () => {
+		chrome.tabs.create({
+			'url': configureCommands.url
+		});
+	}
+};
