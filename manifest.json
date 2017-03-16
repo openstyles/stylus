@@ -12,8 +12,6 @@
   "permissions": [
     "tabs",
     "webNavigation",
-    "webRequest",
-    "webRequestBlocking",
     "contextMenus",
     "storage",
     "*://*/*"
