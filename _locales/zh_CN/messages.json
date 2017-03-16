@@ -504,10 +504,6 @@
 		"message": "主题",
 		"description": "Label for the style editor's CSS theme."
 	},
-	"backupMessage": {
-		"message": "导入大文件可能耗时较长，请等待完成通知。",
-		"description": "Message for backup"
-	},
 	"helpKeyMapCommand": {
 		"message": "输入命令名称",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
