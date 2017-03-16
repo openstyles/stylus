@@ -498,10 +498,6 @@
 		"message": "Tema",
 		"description": "Label for the style editor's CSS theme."
 	},
-	"backupMessage": {
-		"message": "Los ficheros importados más grandes pueden tardar unos instantes. Espere a que aparezca una notificación del navegador.",
-		"description": "Message for backup"
-	},
 	"helpKeyMapCommand": {
 		"message": "Escriba un nombre de comando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
