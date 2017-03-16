@@ -118,7 +118,6 @@ body > .actions {
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  text-indent: 6px;
 }
 body.blocked #installed,
 body.blocked #find-styles,
