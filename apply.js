@@ -321,14 +321,24 @@ function initObserver() {
 		iframeObserver.disconnect();
 
 		// we can destroy global functions in this context to free up memory
-		var globals = Object.keys(window);
-		for (var i = 0, len = globals.length; i < len; i++) {
-			var key = globals[i];
-			var obj = window[key];
-			if (typeof obj == 'function' && !/native code/.test(obj)) {
-				window[key] = null;
-			}
-		}
+		[
+			'addDocumentStylesToAllIFrames',
+			'addDocumentStylesToIFrame',
+			'addStyleElement',
+			'addStyleToIFrameSrcDoc',
+			'applyOnMessage',
+			'applySections',
+			'applyStyles',
+			'disableAll',
+			'getDynamicIFrames',
+			'iframeIsDynamic',
+			'iframeIsLoadingSrcDoc',
+			'initObserver',
+			'removeStyle',
+			'replaceAll',
+			'requestStyles',
+			'retireStyle'
+		].forEach(fn => window[fn] = null);
 
 		// we can destroy global variables
 		g_styleElements = iframeObserver = retiredStyleIds = null;
