@@ -205,19 +205,9 @@ chrome.storage.local.get('version', prefs => {
 	}
 });
 
-// after the extension was enabled or just installed
-// reason = 'update' is needed becase our listener processes only 'update' events
-injectContentScripts({reason: 'update'});
+injectContentScripts();
 
-// after an actual update
-chrome.runtime.onInstalled.addListener(injectContentScripts);
-
-function injectContentScripts({reason, previousVersion, id} = {}) {
-	// reason: install, update, chrome_update, shared_module_update
-	// the "install" case is ignored because it was already handled by explicit invocation of this function
-	if (!/update/.test(reason)) {
-		return;
-  }
+function injectContentScripts() {
 	const contentScripts = chrome.app.getDetails().content_scripts;
 	for (let cs of contentScripts) {
 		cs.matches = cs.matches.map(m => m == '<all_urls>' ? m : wildcardAsRegExp(m));
