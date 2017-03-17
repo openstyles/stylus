@@ -19,7 +19,8 @@ function updatePopUp(url) {
 		return;
 	}
 
-	chrome.runtime.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
+	getStylesSafe({matchUrl: url}).then(showStyles);
+
 	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : url);
 
 	// Write new style links

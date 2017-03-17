@@ -17,83 +17,203 @@ function getDatabase(ready, error) {
 	}
 };
 
-var cachedStyles = null;
+
+// Let manage/popup/edit reuse background page variables
+// Note, only "var"-declared variables are visible from another extension page
+var cachedStyles = ((bg) => bg && bg.cache || {
+	bg,
+	list: null,
+	noCode: null,
+	byId: new Map(),
+	filters: new Map(),
+	mutex: {
+		inProgress: false,
+		onDone: [],
+	},
+})(chrome.extension.getBackgroundPage());
+
+
+// in case Chrome haven't yet loaded the bg page and displays our page like edit/manage
+function getStylesSafe(options) {
+	return new Promise(resolve => {
+		if (cachedStyles.bg) {
+			getStyles(options, resolve);
+			return;
+		}
+		chrome.runtime.sendMessage(Object.assign({method: 'getStyles'}, options), styles => {
+			if (!styles) {
+				resolve(getStylesSafe(options));
+			} else {
+				cachedStyles = chrome.extension.getBackgroundPage().cachedStyles;
+				resolve(styles);
+			}
+		});
+	});
+}
+
+
 function getStyles(options, callback) {
-	if (cachedStyles != null) {
-		callback(filterStyles(cachedStyles, options));
+	if (cachedStyles.list) {
+		callback(filterStyles(options));
 		return;
 	}
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readonly");
-		var os = tx.objectStore("styles");
-		var all = [];
-		os.openCursor().onsuccess = function(event) {
-			var cursor = event.target.result;
+	if (cachedStyles.mutex.inProgress) {
+		cachedStyles.mutex.onDone.push({options, callback});
+		return;
+	}
+	cachedStyles.mutex.inProgress = true;
+
+	const t0 = performance.now()
+	getDatabase(db => {
+		const tx = db.transaction(['styles'], 'readonly');
+		const os = tx.objectStore('styles');
+		const all = [];
+		os.openCursor().onsuccess = event => {
+			const cursor = event.target.result;
 			if (cursor) {
-				var s = cursor.value;
+				const s = cursor.value;
 				s.id = cursor.key;
 				all.push(cursor.value);
 				cursor.continue();
 			} else {
-				cachedStyles = all;
+				cachedStyles.list = all;
+				cachedStyles.noCode = [];
+				for (let style of all) {
+					const noCode = getStyleWithNoCode(style);
+					cachedStyles.noCode.push(noCode);
+					cachedStyles.byId.set(style.id, {style, noCode});
+				}
+				//console.log('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cache.mutex.onDone.map(e => JSON.stringify(e.options)))
 				try{
-					callback(filterStyles(all, options));
+					callback(filterStyles(options));
 				} catch(e){
 					// no error in console, it works
 				}
+
+				cachedStyles.mutex.inProgress = false;
+				for (let {options, callback} of cachedStyles.mutex.onDone) {
+					callback(filterStyles(options));
+				}
+				cachedStyles.mutex.onDone = [];
 			}
 		};
-  }, null);
+	}, null);
 }
 
-function invalidateCache(andNotify) {
-	cachedStyles = null;
+
+function getStyleWithNoCode(style) {
+	const stripped = Object.assign({}, style, {sections: []});
+	for (let section of style.sections) {
+		stripped.sections.push(Object.assign({}, section, {code: null}));
+	}
+	return stripped;
+}
+
+
+function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
+	// prevent double-add on echoed invalidation
+	const cached = added && cachedStyles.byId.get(added.id);
+	if (cached) {
+		return;
+	}
 	if (andNotify) {
-		chrome.runtime.sendMessage({method: "invalidateCache"});
+		chrome.runtime.sendMessage({method: 'invalidateCache', added, updated, deletedId});
 	}
-}
-
-function filterStyles(styles, options) {
-	var enabled = fixBoolean(options.enabled);
-	var url = "url" in options ? options.url : null;
-	var id = "id" in options ? Number(options.id) : null;
-	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
-
-	if (enabled != null) {
-		styles = styles.filter(function(style) {
-			return style.enabled == enabled;
-		});
+	if (!cachedStyles.list) {
+		return;
 	}
-	if (url != null) {
-		styles = styles.filter(function(style) {
-			return style.url == url;
-		});
-	}
-	if (id != null) {
-		styles = styles.filter(function(style) {
-			return style.id == id;
-		});
-	}
-	if (matchUrl != null) {
-		// Return as a hash from style to applicable sections? Can only be used with matchUrl.
-		var asHash = "asHash" in options ? options.asHash : false;
-		if (asHash) {
-			var h = {disableAll: prefs.get("disableAll", false)};
-			styles.forEach(function(style) {
-				var applicableSections = getApplicableSections(style, matchUrl);
-				if (applicableSections.length > 0) {
-					h[style.id] = applicableSections;
-				}
-			});
-			return h;
+	if (updated) {
+		const cached = cachedStyles.byId.get(updated.id);
+		if (cached) {
+			Object.assign(cached.style, updated);
+			Object.assign(cached.noCode, getStyleWithNoCode(updated));
+			//console.log('cache: updated', updated);
 		}
-		styles = styles.filter(function(style) {
-			var applicableSections = getApplicableSections(style, matchUrl);
-			return applicableSections.length > 0;
-		});
+		cachedStyles.filters.clear();
+		return;
 	}
-	return styles;
+	if (added) {
+		const noCode = getStyleWithNoCode(added);
+		cachedStyles.list.push(added);
+		cachedStyles.noCode.push(noCode);
+		cachedStyles.byId.set(added.id, {style: added, noCode});
+		//console.log('cache: added', added);
+		cachedStyles.filters.clear();
+		return;
+	}
+	if (deletedId != undefined) {
+		const deletedStyle = (cachedStyles.byId.get(deletedId) || {}).style;
+		if (deletedStyle) {
+			const cachedIndex = cachedStyles.list.indexOf(deletedStyle);
+			cachedStyles.list.splice(cachedIndex, 1);
+			cachedStyles.noCode.splice(cachedIndex, 1);
+			cachedStyles.byId.delete(deletedId);
+			//console.log('cache: deleted', deletedStyle);
+			cachedStyles.filters.clear();
+			return;
+		}
+	}
+	cachedStyles.list = null;
+	cachedStyles.noCode = null;
+	//console.log('cache cleared');
+	cachedStyles.filters.clear();
 }
+
+
+function filterStyles(options = {}) {
+	const t0 = performance.now()
+	const enabled = fixBoolean(options.enabled);
+	const url = 'url' in options ? options.url : null;
+	const id = 'id' in options ? Number(options.id) : null;
+	const matchUrl = 'matchUrl' in options ? options.matchUrl : null;
+	const code = 'code' in options ? options.code : true;
+	const asHash = 'asHash' in options ? options.asHash : false;
+
+	if (enabled == null
+		&& url == null
+		&& id == null
+		&& matchUrl == null
+		&& asHash != true) {
+		//console.log('%c%s filterStyles SKIPPED LOOP %s', 'color:gray', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+		return code ? cachedStyles.list : cachedStyles.noCode;
+	}
+
+	// add \t after url to prevent collisions (not sure it can actually happen though)
+	const cacheKey = '' + enabled + url + '\t' + id + matchUrl + '\t' + code + asHash;
+	const cached = cachedStyles.filters.get(cacheKey);
+	if (cached) {
+		//console.log('%c%s filterStyles REUSED RESPONSE %s', 'color:gray', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+		return asHash
+			? Object.assign({disableAll: prefs.get('disableAll', false)}, cached)
+			: cached;
+	}
+
+	const styles = id == null
+		? (code ? cachedStyles.list : cachedStyles.noCode)
+		: [code ? cachedStyles.byId.get(id).style : cachedStyles.byId.get(id).noCode];
+	const filtered = asHash ? {} : [];
+
+	for (let i = 0, style; (style = styles[i]); i++) {
+		if ((enabled == null || style.enabled == enabled)
+			&& (url == null || style.url == url)
+			&& (id == null || style.id == id)) {
+			const sections = (asHash || matchUrl != null) && getApplicableSections(style, matchUrl);
+			if (asHash) {
+				if (sections.length) {
+					filtered[style.id] = sections;
+				}
+			} else if (matchUrl == null || sections.length) {
+				filtered.push(style);
+			}
+		}
+	}
+	//console.log('%s filterStyles %s', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+	cachedStyles.filters.set(cacheKey, filtered);
+	return asHash
+		? Object.assign({disableAll: prefs.get('disableAll', false)}, filtered)
+		: filtered;
+}
+
 
 function saveStyle(style, {notify = true} = {}) {
 	return new Promise(resolve => {
@@ -101,19 +221,22 @@ function saveStyle(style, {notify = true} = {}) {
 			const tx = db.transaction(['styles'], 'readwrite');
 			const os = tx.objectStore('styles');
 
+			delete style.method;
+
 			// Update
 			if (style.id) {
 				style.id = Number(style.id);
 				os.get(style.id).onsuccess = eventGet => {
 					const oldStyle = Object.assign({}, eventGet.target.result);
-					const codeIsUpdated = !styleSectionsEqual(style, oldStyle);
+					const codeIsUpdated = 'sections' in style && !styleSectionsEqual(style, oldStyle);
 					style = Object.assign(oldStyle, style);
+					addMissingStyleTargets(style);
 					os.put(style).onsuccess = eventPut => {
 						style.id = style.id || eventPut.target.result;
+						invalidateCache(notify, {updated: style});
 						if (notify) {
 							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated});
 						}
-						invalidateCache(notify);
 						resolve(style);
 					};
 				};
@@ -121,6 +244,7 @@ function saveStyle(style, {notify = true} = {}) {
 			}
 
 			// Create
+			delete style.id;
 			style = Object.assign({
 				// Set optional things if they're undefined
 				enabled: true,
@@ -128,23 +252,12 @@ function saveStyle(style, {notify = true} = {}) {
 				md5Url: null,
 				url: null,
 				originalMd5: null,
-			}, style, {
-				// Set other optional things to empty array if they're undefined
-				sections: style.sections.map(section =>
-					Object.assign({
-						urls: [],
-						urlPrefixes: [],
-						domains: [],
-						regexps: [],
-					}, section)
-				),
-			})
-			// Make sure it's not null - that makes indexeddb sad
-			delete style.id;
+			}, style);
+			addMissingStyleTargets(style);
 			os.add(style).onsuccess = event => {
-				invalidateCache(true);
 				// Give it the ID that was generated
 				style.id = event.target.result;
+				invalidateCache(true, {added: style});
 				notifyAllTabs({method: 'styleAdded', style});
 				resolve(style);
 			};
@@ -152,12 +265,24 @@ function saveStyle(style, {notify = true} = {}) {
 	});
 }
 
-function enableStyle(id, enabled) {
-	saveStyle({id: id, enabled: enabled}).then(style => {
-		handleUpdate(style);
-		notifyAllTabs({method: "styleUpdated", style});
-	});
+
+function addMissingStyleTargets(style) {
+	style.sections = (style.sections || []).map(section =>
+		Object.assign({
+			urls: [],
+			urlPrefixes: [],
+			domains: [],
+			regexps: [],
+		}, section)
+	);
 }
+
+
+function enableStyle(id, enabled) {
+	saveStyle({id, enabled})
+		.then(handleUpdate);
+}
+
 
 function deleteStyle(id, callback = function (){}) {
 	getDatabase(function(db) {
@@ -166,12 +291,13 @@ function deleteStyle(id, callback = function (){}) {
 		var request = os.delete(Number(id));
 		request.onsuccess = function(event) {
 			handleDelete(id);
-			invalidateCache(true);
-			notifyAllTabs({method: "styleDeleted", id: id});
+			invalidateCache(true, {deletedId: id});
+			notifyAllTabs({method: "styleDeleted", id});
 			callback();
 		};
 	});
 }
+
 
 function reportError() {
 	for (i in arguments) {
@@ -182,12 +308,14 @@ function reportError() {
 	}
 }
 
+
 function fixBoolean(b) {
 	if (typeof b != "undefined") {
 		return b != "false";
 	}
 	return null;
 }
+
 
 function getDomains(url) {
 	if (url.indexOf("file:") == 0) {
@@ -202,6 +330,7 @@ function getDomains(url) {
 	return domains;
 }
 
+
 function getType(o) {
 	if (typeof o == "undefined" || typeof o == "string") {
 		return typeof o;
@@ -212,7 +341,8 @@ function getType(o) {
 	throw "Not supported - " + o;
 }
 
-var namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
+const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
+
 function getApplicableSections(style, url) {
 	var sections = style.sections.filter(function(section) {
 		return sectionAppliesToUrl(section, url);
@@ -223,6 +353,7 @@ function getApplicableSections(style, url) {
 	}
 	return sections;
 }
+
 
 function sectionAppliesToUrl(section, url) {
 	// only http, https, file, and chrome-extension allowed
@@ -274,6 +405,7 @@ function sectionAppliesToUrl(section, url) {
 	//console.log(section.id + " does not apply due to " + url);
 	return false;
 }
+
 
 function isCheckbox(el) {
 	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
@@ -462,6 +594,7 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 	}
 };
 
+
 function getCodeMirrorThemes(callback) {
 	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
 		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
@@ -481,6 +614,7 @@ function getCodeMirrorThemes(callback) {
 	});
 }
 
+
 function sessionStorageHash(name) {
 	var hash = {
 		value: {},
@@ -495,6 +629,7 @@ function sessionStorageHash(name) {
 	return hash;
 }
 
+
 function deepCopy(obj) {
 	if (!obj || typeof obj != "object") {
 		return obj;
@@ -503,6 +638,7 @@ function deepCopy(obj) {
 		return deepMerge(emptyCopy, obj);
 	}
 }
+
 
 function deepMerge(target, obj1 /* plus any number of object arguments */) {
 	for (var i = 1; i < arguments.length; i++) {
@@ -522,6 +658,7 @@ function deepMerge(target, obj1 /* plus any number of object arguments */) {
 	return target;
 }
 
+
 function equal(a, b) {
 	if (!a || !b || typeof a != "object" || typeof b != "object") {
 		return a === b;
@@ -537,6 +674,7 @@ function equal(a, b) {
 	return true;
 }
 
+
 function defineReadonlyProperty(obj, key, value) {
 	var copy = deepCopy(value);
 	// In ES6, freezing a literal is OK (it returns the same value), but in previous versions it's an exception.
@@ -546,7 +684,7 @@ function defineReadonlyProperty(obj, key, value) {
 	Object.defineProperty(obj, key, {value: copy, configurable: true})
 }
 
-// Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
+// Polyfill for Firefox < 53 https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
 function getSync() {
 	if ("sync" in chrome.storage) {
 		return chrome.storage.sync;
@@ -566,6 +704,7 @@ function getSync() {
 		}
 	}
 }
+
 
 function styleSectionsEqual(styleA, styleB) {
 	if (!styleA.sections || !styleB.sections) {

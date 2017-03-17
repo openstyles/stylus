@@ -1,36 +1,21 @@
 /* globals wildcardAsRegExp, KEEP_CHANNEL_OPEN */
 
-var frameIdMessageable;
-runTryCatch(function() {
-	chrome.tabs.sendMessage(0, {}, {frameId: 0}, function() {
-		var clearError = chrome.runtime.lastError;
-		frameIdMessageable = true;
-	});
-});
-
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
-chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, "styleApply"));
-// Not supported in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1239349
-if ("onHistoryStateUpdated" in chrome.webNavigation) {
-	chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, "styleReplaceAll"));
-}
+chrome.webNavigation.onCommitted.addListener(webNavigationListener.bind(this, 'styleApply'));
+chrome.webNavigation.onHistoryStateUpdated.addListener(webNavigationListener.bind(this, 'styleReplaceAll'));
 chrome.webNavigation.onBeforeNavigate.addListener(webNavigationListener.bind(this, null));
+
 function webNavigationListener(method, data) {
-	// Until Chrome 41, we can't target a frame with a message
-	// (https://developer.chrome.com/extensions/tabs#method-sendMessage)
-	// so a style affecting a page with an iframe will affect the main page as well.
-	// Skip doing this for frames in pre-41 to prevent page flicker.
-	if (data.frameId != 0 && !frameIdMessageable) {
-		return;
-	}
-	getStyles({matchUrl: data.url, enabled: true, asHash: true}, function(styleHash) {
-		if (method) {
-			chrome.tabs.sendMessage(data.tabId, {method: method, styles: styleHash},
-				frameIdMessageable ? {frameId: data.frameId} : undefined);
+	getStyles({matchUrl: data.url, enabled: true, asHash: true}, styles => {
+		// we can't inject chrome:// and chrome-extension:// pages except our own
+		// that request the styles on their own, so we'll only update the icon
+		if (method && !data.url.startsWith('chrome')) {
+			chrome.tabs.sendMessage(data.tabId, {method, styles}, {frameId: data.frameId});
 		}
+		// main page frame id is 0
 		if (data.frameId == 0) {
-			updateIcon({id: data.tabId, url: data.url}, styleHash);
+			updateIcon({id: data.tabId, url: data.url}, styles);
 		}
 	});
 }
@@ -70,7 +55,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			return KEEP_CHANNEL_OPEN;
 		case "invalidateCache":
 			if (typeof invalidateCache != "undefined") {
-				invalidateCache(false);
+				invalidateCache(false, request);
 			}
 			break;
 		case "healthCheck":

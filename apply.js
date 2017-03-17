@@ -9,20 +9,22 @@ var retiredStyleIds = [];
 initObserver();
 requestStyles();
 
-function requestStyles() {
+function requestStyles(options = {}) {
 	// If this is a Stylish page (Edit Style or Manage Styles),
 	// we'll request the styles directly to minimize delay and flicker,
 	// unless Chrome still starts up and the background page isn't fully loaded.
 	// (Note: in this case the function may be invoked again from applyStyles.)
-	var request = {method: "getStyles", matchUrl: location.href, enabled: true, asHash: true};
-	if (location.href.indexOf(chrome.extension.getURL("")) == 0) {
-		var bg = chrome.extension.getBackgroundPage();
-		if (bg && bg.getStyles) {
-			// apply styles immediately, then proceed with a normal request that will update the icon
-			bg.getStyles(request, applyStyles);
-		}
+	var request = Object.assign({
+		method: "getStyles",
+		matchUrl: location.href,
+		enabled: true,
+		asHash: true,
+	}, options);
+	if (typeof getStylesSafe !== 'undefined') {
+		getStylesSafe(request).then(applyStyles);
+	} else {
+		chrome.runtime.sendMessage(request, applyStyles);
 	}
-	chrome.runtime.sendMessage(request, applyStyles);
 }
 
 chrome.runtime.onMessage.addListener(applyOnMessage);
@@ -34,6 +36,10 @@ function applyOnMessage(request, sender, sendResponse) {
 			removeStyle(request.id, document);
 			break;
 		case "styleUpdated":
+			if (request.codeIsUpdated === false) {
+				applyStyleState(request.style.id, request.style.enabled, document);
+				break;
+			}
 			if (request.style.enabled) {
 				retireStyle(request.style.id);
 				// fallthrough to "styleAdded"
@@ -88,6 +94,20 @@ function disableAll(disable) {
 				addDocumentStylesToIFrame(iframe);
 			}
 			disableSheets(disable, iframe.contentDocument);
+		});
+	}
+}
+
+function applyStyleState(id, enabled, doc) {
+	var e = doc.getElementById("stylus-" + id);
+	if (!e) {
+		if (enabled) {
+			requestStyles({id});
+		}
+	} else {
+		e.sheet.disabled = !enabled;
+		getDynamicIFrames(doc).forEach(function(iframe) {
+			applyStyleState(id, iframe.contentDocument);
 		});
 	}
 }

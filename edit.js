@@ -1087,18 +1087,10 @@ function init() {
 	}
 	// This is an edit
 	tE("heading", "editStyleHeading", null, false);
-	requestStyle();
-	function requestStyle() {
-		chrome.runtime.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
-			if (!styles) { // Chrome is starting up and shows edit.html
-				requestStyle();
-				return;
-			}
-			var style = styles[0];
-			styleId = style.id;
-			initWithStyle(style);
-		});
-	}
+	getStylesSafe({id: params.id}).then(styles => {
+		styleId = styles[0].id;
+		initWithStyle(styles[0]);
+	});
 }
 
 function initWithStyle(style) {
@@ -1107,7 +1099,7 @@ function initWithStyle(style) {
 	document.getElementById("url").href = style.url;
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });
-	var queue = style.sections.length ? style.sections : [{code: ""}];
+	var queue = style.sections.length ? style.sections.slice() : [{code: ""}];
 	var queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
 	while (new Date().getTime() - queueStart <= 100 && queue.length) {

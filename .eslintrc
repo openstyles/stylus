@@ -12,6 +12,7 @@ env:
 globals:
   CodeMirror: false
   runTryCatch: true
+  getStylesSafe: true
   getStyles: true
   updateIcon: true
   saveStyle: true

@@ -4,12 +4,15 @@ const OWN_ORIGIN = chrome.runtime.getURL('');
 
 function notifyAllTabs(request) {
 	// list all tabs including chrome-extension:// which can be ours
+	if (request.codeIsUpdated === false && request.style) {
+		request = Object.assign({}, request, {
+			style: getStyleWithNoCode(request.style)
+    });
+	}
 	chrome.tabs.query({}, tabs => {
 		for (let tab of tabs) {
-			if (request.codeIsUpdated !== false || tab.url.startsWith(OWN_ORIGIN)) {
-				chrome.tabs.sendMessage(tab.id, request);
-				updateIcon(tab);
-			}
+			chrome.tabs.sendMessage(tab.id, request);
+			updateIcon(tab);
 		}
 	});
 	// notify all open popups
@@ -47,57 +50,59 @@ function refreshAllTabs() {
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
-	if (tab.url == "chrome://newtab/" && tab.status != "complete") {
+	if (tab.url == 'chrome://newtab/' && tab.status != 'complete') {
 		return;
 	}
 	if (styles) {
 		// check for not-yet-existing tabs e.g. omnibox instant search
-		chrome.tabs.get(tab.id, function() {
+		chrome.tabs.get(tab.id, () => {
 			if (!chrome.runtime.lastError) {
-				// for 'styles' asHash:true fake the length by counting numeric ids manually
-				if (styles.length === undefined) {
-					styles.length = 0;
-					for (var id in styles) {
-						styles.length += id.match(/^\d+$/) ? 1 : 0;
-					}
-				}
 				stylesReceived(styles);
 			}
 		});
 		return;
 	}
-	getTabRealURL(tab, function(url) {
-		// if we have access to this, call directly. a page sending a message to itself doesn't seem to work right.
-		if (typeof getStyles != "undefined") {
-			getStyles({matchUrl: url, enabled: true}, stylesReceived);
+	getTabRealURL(tab, url => {
+		// if we have access to this, call directly
+		// (Chrome no longer sends messages to the page itself)
+		const options = {method: 'getStyles', matchUrl: url, enabled: true, asHash: true};
+		if (typeof getStyles != 'undefined') {
+			getStyles(options, stylesReceived);
 		} else {
-			chrome.runtime.sendMessage({method: "getStyles", matchUrl: url, enabled: true}, stylesReceived);
+			chrome.runtime.sendMessage(options, stylesReceived);
 		}
 	});
 
 	function stylesReceived(styles) {
-		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
-		var postfix = disableAll ? "x" : styles.length == 0 ? "w" : "";
+		let numStyles = styles.length;
+		if (numStyles === undefined) {
+			// for 'styles' asHash:true fake the length by counting numeric ids manually
+			numStyles = 0;
+			for (let id of Object.keys(styles)) {
+				numStyles += id.match(/^\d+$/) ? 1 : 0;
+			}
+		}
+		const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
+		const postfix = disableAll ? 'x' : numStyles == 0 ? 'w' : '';
 		chrome.browserAction.setIcon({
 			path: {
 				// Material Design 2016 new size is 16px
-				16: "16" + postfix + ".png", 32: "32" + postfix + ".png",
+				16: '16' + postfix + '.png', 32: '32' + postfix + '.png',
 				// Chromium forks or non-chromium browsers may still use the traditional 19px
-				19: "19" + postfix + ".png", 38: "38" + postfix + ".png",
+				19: '19' + postfix + '.png', 38: '38' + postfix + '.png',
 			},
 			tabId: tab.id
-		}, function() {
+		}, () => {
 			// if the tab was just closed an error may occur,
 			// e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
 			if (!chrome.runtime.lastError) {
-				var t = prefs.get("show-badge") && styles.length ? ("" + styles.length) : "";
-				chrome.browserAction.setBadgeText({text: t, tabId: tab.id});
+				const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
+				chrome.browserAction.setBadgeText({text, tabId: tab.id});
 				chrome.browserAction.setBadgeBackgroundColor({
 					color: prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal')
 				});
 			}
 		});
-		//console.log("Tab " + tab.id + " (" + tab.url + ") badge text set to '" + t + "'.");
 	}
 }
 
