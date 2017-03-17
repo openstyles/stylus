@@ -1706,6 +1706,9 @@ Parser.prototype = function() {
                         case Tokens.DOCUMENT_SYM:
                             this._document();
                             break;
+                        case Tokens.SUPPORTS_SYM:
+                            this._supports();
+                            break;
                         default:
                             ok = Boolean(this._ruleset());
                     }
