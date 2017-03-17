@@ -1364,7 +1364,7 @@ function fromMozillaFormat() {
 				section.code = gapComment[1] + "\n";
 				outerText = trimNewLines(outerText.substring(0, gapComment.index));
 			}
-			if (outerText) {
+			if (outerText.trim()) {
 				sectionStack.last.code = outerText;
 				doAddSection(sectionStack.last);
 				sectionStack.last.code = "";
@@ -1411,13 +1411,15 @@ function fromMozillaFormat() {
 
 		parser.parse(mozStyle);
 
-		function getRange(start, end) {
-			if (start.line == end.line) {
-				return lines[start.line - 1].substr(start.col - 1, end.col - start.col + 1).trim();
+		function getRange( start, end) {
+			const L1 = start.line - 1, C1 = start.col - 1;
+			const L2 = end.line - 1, C2 = end.col - 1;
+			if (L1 == L2) {
+				return lines[L1].substr(C1, C2 - C1 + 1);
 			} else {
-				return trimNewLines(lines[start.line - 1].substr(start.col - 1) + "\n" +
-					lines.slice(start.line, end.line - 1).join("\n") +
-					"\n" + lines[end.line - 1].substring(0, end.col - 1));
+				const middle = lines.slice(L1 + 1, L2).join('\n');
+				return lines[L1].substr(C1) + '\n' + middle +
+					(L2 >= lines.length ? '' : ((middle ? '\n' : '') + lines[L2].substring(0, C2)));
 			}
 		}
 		function doAddSection(section) {
