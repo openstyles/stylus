@@ -2035,8 +2035,8 @@ Parser.prototype = function() {
                 /*
                  * simple_selector_sequence
                  *   : [ type_selector | universal ]
-                 *     [ HASH | class | attrib | pseudo | negation ]*
-                 *   | [ HASH | class | attrib | pseudo | negation ]+
+                 *     [ HASH | class | attrib | pseudo | any | negation ]*
+                 *   | [ HASH | class | attrib | pseudo | any | negation ]+
                  *   ;
                  */
 
@@ -2060,6 +2060,7 @@ Parser.prototype = function() {
                         this._class,
                         this._attrib,
                         this._pseudo,
+                        this._any,
                         this._negation
                     ],
                     i           = 0,
@@ -2383,6 +2384,39 @@ Parser.prototype = function() {
 
                 return value.length ? value : null;
 
+            },
+
+            //CSS3 Selectors
+            _any: function() {
+                /*
+                 * any
+                 *   : ANY S* any_arg S* ')'
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    line,
+                    col,
+                    value       = "",
+                    arg,
+                    subpart     = null;
+
+                if (tokenStream.match(Tokens.ANY)) {
+                    value = tokenStream.token().value;
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
+                    value += this._readWhitespace();
+                    arg = this._selectors_group();
+                    value += arg;
+                    value += this._readWhitespace();
+                    tokenStream.match(Tokens.RPAREN);
+                    value += tokenStream.token().value;
+
+                    subpart = new SelectorSubPart(value, "any", line, col);
+                    subpart.args.push(arg);
+                }
+
+                return subpart;
             },
 
             //CSS3 Selectors
@@ -4743,11 +4777,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
                 /*
                  * Potential tokens:
+                 * - ANY
                  * - NOT
                  * - CHAR
                  */
                 case ":":
-                    token = this.notToken(c, startLine, startCol);
+                    token = this.notOrAnyToken(c, startLine, startCol);
                     break;
 
                 /*
@@ -5153,7 +5188,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     /**
-     * Produces a NOT or CHAR token based on the specified information. The
+     * Produces a NOT or ANY or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
      * the correct token to create.
      * @param {String} first The first character in the token.
@@ -5162,7 +5197,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @return {Object} A token object.
      * @method notToken
      */
-    notToken: function(first, startLine, startCol) {
+    notOrAnyToken: function(first, startLine, startCol) {
         var reader      = this._reader,
             text        = first;
 
@@ -5171,10 +5206,20 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         if (text.toLowerCase() === ":not(") {
             return this.createToken(Tokens.NOT, text, startLine, startCol);
-        } else {
-            reader.reset();
-            return this.charToken(first, startLine, startCol);
         }
+        if (text.toLowerCase() === ":any(") {
+            return this.createToken(Tokens.ANY, text, startLine, startCol);
+        }
+        text += reader.readCount(5);
+        if (text.toLowerCase() === ":-moz-any(") {
+            return this.createToken(Tokens.ANY, text, startLine, startCol);
+        }
+        text += reader.readCount(3);
+        if (text.toLowerCase() === ":-webkit-any(") {
+            return this.createToken(Tokens.ANY, text, startLine, startCol);
+        }
+        reader.reset();
+        return this.charToken(first, startLine, startCol);
     },
 
     /**
@@ -5665,6 +5710,7 @@ var Tokens = module.exports = [
 
     // modifier
     { name: "NOT" },
+    { name: "ANY", text: ["any", "-webkit-any", "-moz-any"] },
 
     /*
      * Defined in CSS3 Paged Media
