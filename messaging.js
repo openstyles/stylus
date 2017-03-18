@@ -77,7 +77,7 @@ function updateIcon(tab, styles) {
 
 	function stylesReceived(styles) {
 		var disableAll = "disableAll" in styles ? styles.disableAll : prefs.get("disableAll");
-		var postfix = disableAll ? "x" : "" || styles.length == 0 ? "w" : "";
+		var postfix = disableAll ? "x" : styles.length == 0 ? "w" : "";
 		chrome.browserAction.setIcon({
 			path: {
 				// Material Design 2016 new size is 16px
