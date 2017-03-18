@@ -23,6 +23,10 @@ function notifyAllTabs(request) {
 	if (typeof applyOnMessage !== 'undefined') {
 		applyOnMessage(reqPopup);
 	}
+	// notify self: pref changed by background page
+	if (request.method == 'prefChanged' && typeof onBackgroundMessage !== 'undefined') {
+		onBackgroundMessage(request);
+	}
 }
 
 

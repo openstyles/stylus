@@ -584,9 +584,13 @@ var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
 				}
 			}
 		}
-		// make sure right click context menu is in the right state when prefs are loaded
-		chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
-		chrome.contextMenus.update("show-badge", {checked: prefs.get("show-badge")});
+		if (typeof contextMenus !== 'undefined') {
+			for (let id in contextMenus) {
+				if (typeof values[id] == 'boolean') {
+					me.broadcast(id, values[id], {noSync: true});
+				}
+			}
+		}
 	});
 
 	chrome.storage.onChanged.addListener(function(changes, area) {

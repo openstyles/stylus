@@ -21,6 +21,7 @@ function webNavigationListener(method, data) {
 }
 
 // catch direct URL hash modifications not invoked via HTML5 history API
+
 var tabUrlHasHash = {};
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	if (info.status == "loading" && info.url) {
@@ -39,7 +40,11 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	delete tabUrlHasHash[tabId];
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+// messaging
+
+chrome.runtime.onMessage.addListener(onBackgroundMessage);
+
+function onBackgroundMessage(request, sender, sendResponse) {
 	switch (request.method) {
 		case "getStyles":
 			var styles = getStyles(request, sendResponse);
@@ -65,78 +70,78 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			openURL(request);
 			break;
 		case "styleDisableAll":
-			chrome.contextMenus.update("disableAll", {checked: request.disableAll});
-			break;
+			// fallthru to prefChanged
+			request = {prefName: 'disableAll', value: request.disableAll};
 		case "prefChanged":
-			if (request.prefName == "show-badge") {
-				chrome.contextMenus.update("show-badge", {checked: request.value});
-			}
-			else if (request.prefName === 'disableAll') {
-				chrome.contextMenus.update("disableAll", {checked: request.value});
+			if (typeof request.value == 'boolean' && contextMenus[request.prefName]) {
+				chrome.contextMenus.update(request.prefName, {checked: request.value});
 			}
 			break;
 		case "refreshAllTabs":
 			refreshAllTabs().then(sendResponse);
 			return KEEP_CHANNEL_OPEN;
 	}
-});
+}
 
+// commands (global hotkeys)
 
+const browserCommands = {
+	openManage() {
+		openURL({url: '/manage.html'});
+	},
+	styleDisableAll(state) {
+		prefs.set('disableAll',
+			typeof state == 'boolean' ? state : !prefs.get('disableAll'));
+	},
+};
 // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
-if ("commands" in chrome) {
-	chrome.commands.onCommand.addListener(function(command) {
-		switch (command) {
-			case "openManage":
-				openURL({url: chrome.extension.getURL("manage.html")});
-				break;
-			case "styleDisableAll":
-				disableAllStylesToggle();
-				chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
-				break;
-		}
-	});
+if ('commands' in chrome) {
+	chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
 
-// contextMenus API is present in ancient Chrome but it throws an exception
-// upon encountering the unsupported parameter value "browser_action", so we have to catch it.
-runTryCatch(function() {
-	chrome.contextMenus.create({
-		id: "show-badge", title: chrome.i18n.getMessage("menuShowBadge"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("show-badge")
-	}, function() { var clearError = chrome.runtime.lastError });
-	chrome.contextMenus.create({
-		id: "disableAll", title: chrome.i18n.getMessage("disableAllStyles"),
-		type: "checkbox", contexts: ["browser_action"], checked: prefs.get("disableAll")
-	}, function() { var clearError = chrome.runtime.lastError });
-	chrome.contextMenus.create({
-		id: "open-manager", title: chrome.i18n.getMessage("openStylesManager"),
-		type: "normal", contexts: ["browser_action"]
-	}, function() {var clearError = chrome.runtime.lastError});
+// context menus
+
+const contextMenus = {
+	'show-badge': {
+		title: 'menuShowBadge',
+		click: info => prefs.set(info.menuItemId, info.checked),
+	},
+	'disableAll': {
+		title: 'disableAllStyles',
+		click: browserCommands.styleDisableAll,
+	},
+	'open-manager': {
+		title: 'openStylesManager',
+		click: browserCommands.openManage,
+	},
+};
+
+chrome.contextMenus.onClicked.addListener((info, tab) =>
+	contextMenus[info.menuItemId].click(info, tab));
+
+Object.keys(contextMenus).forEach(id => {
+	const item = Object.assign({id}, contextMenus[id]);
+	const prefValue = prefs.readOnlyValues[id];
+	const isBoolean = typeof prefValue == 'boolean';
+	item.title = chrome.i18n.getMessage(item.title);
+	if (isBoolean) {
+		item.type = 'checkbox';
+		item.checked = prefValue;
+	}
+	if (!item.contexts) {
+		item.contexts = ['browser_action'];
+	}
+	delete item.click;
+	chrome.contextMenus.create(item, ignoreChromeError);
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
-	if (info.menuItemId == "disableAll") {
-		disableAllStylesToggle(info.checked);
-	}
-	else if (info.menuItemId === 'show-badge') {
-		prefs.set(info.menuItemId, info.checked);
-	}
-	else if (info.menuItemId === 'open-manager') {
-		openURL({url: chrome.extension.getURL("manage.html")});
-	}
-});
 
-function disableAllStylesToggle(newState) {
-	if (newState === undefined || newState === null) {
-		newState = !prefs.get("disableAll");
-	}
-	prefs.set("disableAll", newState);
-}
-
-// Get the DB so that any first run actions will be performed immediately when the background page loads.
+// Get the DB so that any first run actions will be performed immediately
+// when the background page loads.
 getDatabase(function() {}, reportError);
 
-// When an edit page gets attached or detached, remember its state so we can do the same to the next one to open.
+// When an edit page gets attached or detached, remember its state
+// so we can do the same to the next one to open.
 var editFullUrl = chrome.extension.getURL("edit.html");
 chrome.tabs.onAttached.addListener(function(tabId, data) {
 	chrome.tabs.get(tabId, function(tabData) {
@@ -193,7 +198,7 @@ function injectContentScripts() {
 									file: cs.js[0],
 									runAt: cs.run_at,
 									allFrames: cs.all_frames,
-								}, result => chrome.runtime.lastError); // ignore lastError just in case
+								}, ignoreChromeError);
 							}
 						});
 						// inject the content script just once
@@ -203,4 +208,9 @@ function injectContentScripts() {
 			}
 		}
 	});
+}
+
+
+function ignoreChromeError() {
+	chrome.runtime.lastError;
 }
