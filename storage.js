@@ -20,7 +20,7 @@ function getDatabase(ready, error) {
 
 // Let manage/popup/edit reuse background page variables
 // Note, only "var"-declared variables are visible from another extension page
-var cachedStyles = ((bg) => bg && bg.cache || {
+var cachedStyles = ((bg) => bg && bg.cachedStyles || {
 	bg,
 	list: null,
 	noCode: null,
@@ -67,35 +67,27 @@ function getStyles(options, callback) {
 	getDatabase(db => {
 		const tx = db.transaction(['styles'], 'readonly');
 		const os = tx.objectStore('styles');
-		const all = [];
-		os.openCursor().onsuccess = event => {
-			const cursor = event.target.result;
-			if (cursor) {
-				const s = cursor.value;
-				s.id = cursor.key;
-				all.push(cursor.value);
-				cursor.continue();
-			} else {
-				cachedStyles.list = all;
-				cachedStyles.noCode = [];
-				for (let style of all) {
-					const noCode = getStyleWithNoCode(style);
-					cachedStyles.noCode.push(noCode);
-					cachedStyles.byId.set(style.id, {style, noCode});
-				}
-				//console.log('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cache.mutex.onDone.map(e => JSON.stringify(e.options)))
-				try{
-					callback(filterStyles(options));
-				} catch(e){
-					// no error in console, it works
-				}
-
-				cachedStyles.mutex.inProgress = false;
-				for (let {options, callback} of cachedStyles.mutex.onDone) {
-					callback(filterStyles(options));
-				}
-				cachedStyles.mutex.onDone = [];
+		os.getAll().onsuccess = event => {
+			cachedStyles.list = event.target.result || [];
+			cachedStyles.noCode = [];
+			cachedStyles.byId.clear();
+			for (let style of cachedStyles.list) {
+				const noCode = getStyleWithNoCode(style);
+				cachedStyles.noCode.push(noCode);
+				cachedStyles.byId.set(style.id, {style, noCode});
 			}
+			//console.log('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cachedStyles.mutex.onDone.map(e => JSON.stringify(e.options)))
+			try{
+				callback(filterStyles(options));
+			} catch(e){
+				// no error in console, it works
+			}
+
+			cachedStyles.mutex.inProgress = false;
+			for (let {options, callback} of cachedStyles.mutex.onDone) {
+				callback(filterStyles(options));
+			}
+			cachedStyles.mutex.onDone = [];
 		};
 	}, null);
 }
