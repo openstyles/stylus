@@ -150,10 +150,7 @@ function applyStyles(styleHash) {
 				document.head.appendChild(document.getElementById(id));
 			}
 		}
-		document.addEventListener("DOMContentLoaded", function() {
-			addDocumentStylesToAllIFrames();
-			iframeObserver.start();
-		});
+		document.addEventListener("DOMContentLoaded", onDOMContentLoaded);
 	}
 
 	if (retiredStyleIds.length) {
@@ -163,6 +160,11 @@ function applyStyles(styleHash) {
 			}
 		}, 0);
 	}
+}
+
+function onDOMContentLoaded() {
+	addDocumentStylesToAllIFrames();
+	iframeObserver.start();
 }
 
 function applySections(styleId, sections) {
@@ -317,9 +319,12 @@ function initObserver() {
 
 		// we're orphaned due to an extension update
 		// we can detach the mutation observer
-		// we can't detach chrome.runtime.onMessage because it's no longer connected internally
+		iframeObserver.takeRecords();
 		iframeObserver.disconnect();
 		iframeObserver = null;
+		// we can detach event listeners
+		document.removeEventListener("DOMContentLoaded", onDOMContentLoaded);
+		// we can't detach chrome.runtime.onMessage because it's no longer connected internally
 
 		// we can destroy global functions in this context to free up memory
 		[
