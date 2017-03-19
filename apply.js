@@ -319,6 +319,7 @@ function initObserver() {
 		// we can detach the mutation observer
 		// we can't detach chrome.runtime.onMessage because it's no longer connected internally
 		iframeObserver.disconnect();
+		iframeObserver = null;
 
 		// we can destroy global functions in this context to free up memory
 		[
