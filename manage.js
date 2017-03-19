@@ -132,7 +132,7 @@ function enable(event, enabled) {
 	enableStyle(id, enabled);
 }
 
-function doDelete() {
+function doDelete(event) {
 	if (!confirm(t('deleteStyleConfirm'))) {
 		return;
 	}

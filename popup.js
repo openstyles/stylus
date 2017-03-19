@@ -94,17 +94,17 @@ function createStyleElement(style) {
 	// reuse event function references
 	createStyleElement.events = createStyleElement.events || {
 		checkboxClick() {
-			enableStyle(getClickedStyleId(), this.checked);
+			enableStyle(getClickedStyleId(event), this.checked);
 		},
-		styleNameClick() {
+		styleNameClick(event) {
 			this.checkbox.click();
-			window.event.preventDefault();
+			event.preventDefault();
 		},
-		toggleClick() {
-			enableStyle(getClickedStyleId(), this.matches('.enable'));
+		toggleClick(event) {
+			enableStyle(getClickedStyleId(event), this.matches('.enable'));
 		},
 		deleteClick() {
-			doDelete();
+			doDelete(event);
     }
 	};
 	const entry = template.style.cloneNode(true);
@@ -144,9 +144,9 @@ function createStyleElement(style) {
 	return entry;
 }
 
-function doDelete() {
+function doDelete(event) {
 	document.getElementById('confirm').dataset.display = true;
-	const id = getClickedStyleId();
+	const id = getClickedStyleId(event);
 	document.querySelector('#confirm b').textContent =
 		document.querySelector(`[style-id="${id}"] label`).textContent;
 	document.getElementById('confirm').dataset.id = id;
@@ -168,8 +168,8 @@ document.getElementById('confirm').addEventListener('click', e => {
 	}
 });
 
-function getClickedStyleId() {
-	const entry = window.event.target.closest('.entry');
+function getClickedStyleId(event) {
+	const entry = event.target.closest('.entry');
 	return entry ? entry.styleId : null;
 }
 
