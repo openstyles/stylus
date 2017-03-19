@@ -138,6 +138,7 @@ function initCodeMirror() {
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
+		highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
 		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,

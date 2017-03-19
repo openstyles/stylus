@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css">
 		<script src="codemirror/addon/scroll/annotatescrollbar.js"></script>
 		<script src="codemirror/addon/search/matchesonscrollbar.js"></script>
+		<script src="codemirror/addon/search/match-highlighter.js"></script>
 		<script src="codemirror/addon/dialog/dialog.js"></script>
 		<script src="codemirror/addon/search/searchcursor.js"></script>
 		<script src="codemirror/addon/search/search.js"></script>
@@ -188,6 +189,13 @@
 			}
 			.CodeMirror-search-hint {
 				color: #888;
+			}
+			.cm-matchhighlight {
+				text-decoration: underline;
+				text-decoration-skip: ink;
+			}
+			.CodeMirror-selection-highlight-scrollbar {
+				background-color: rgba(144, 179, 214, 0.3);
 			}
 			@-webkit-keyframes highlight {
 				from {
