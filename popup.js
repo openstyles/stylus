@@ -91,44 +91,67 @@ function showStyles(styles) {
 }
 
 function createStyleElement(style) {
-	var e = template.style.cloneNode(true);
-	var checkbox = e.querySelector(".checker");
-	checkbox.id = "style-" + style.id;
-	checkbox.checked = style.enabled;
+	// reuse event function references
+	createStyleElement.events = createStyleElement.events || {
+		checkboxClick() {
+			enableStyle(getClickedStyleId(), this.checked);
+		},
+		styleNameClick() {
+			this.checkbox.click();
+			window.event.preventDefault();
+		},
+		toggleClick() {
+			enableStyle(getClickedStyleId(), this.matches('.enable'));
+		},
+		deleteClick() {
+			doDelete();
+    }
+	};
+	const entry = template.style.cloneNode(true);
+	entry.setAttribute('style-id', style.id);
+	Object.assign(entry, {
+		styleId: style.id,
+		className: ['entry', style.enabled ? 'enabled' : 'disabled'].join(' '),
+		onmousedown: openEditorOnMiddleclick,
+		onauxclick: openEditorOnMiddleclick,
+	});
 
-	e.setAttribute("class", "entry " + (style.enabled ? "enabled" : "disabled"));
-	e.setAttribute("style-id", style.id);
-	var styleName = e.querySelector(".style-name");
-	styleName.appendChild(document.createTextNode(style.name));
-	styleName.setAttribute("for", "style-" + style.id);
+	const checkbox = entry.querySelector('.checker');
+	Object.assign(checkbox, {
+		id: 'style-' + style.id,
+		checked: style.enabled,
+		onclick: createStyleElement.events.checkboxClick,
+	});
+
+	const editLink = entry.querySelector('.style-edit-link');
+	Object.assign(editLink, {
+		href: editLink.getAttribute('href') + style.id,
+		onclick: openLinkInTabOrWindow,
+	});
+
+	const styleName = entry.querySelector('.style-name');
+	Object.assign(styleName, {
+		htmlFor: 'style-' + style.id,
+		onclick: createStyleElement.events.styleNameClick,
+	});
 	styleName.checkbox = checkbox;
-	var editLink = e.querySelector(".style-edit-link");
-	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", openLinkInTabOrWindow, false);
+	styleName.appendChild(document.createTextNode(style.name));
 
-	styleName.addEventListener("click", function() { this.checkbox.click(); event.preventDefault(); });
-	// clicking the checkbox will toggle it, and this will run after that happens
-	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
-	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function() { enable(event, false); }, false);
+	entry.querySelector('.enable').onclick = createStyleElement.events.toggleClick;
+	entry.querySelector('.disable').onclick = createStyleElement.events.toggleClick;
+	entry.querySelector('.delete').onclick = createStyleElement.events.deleteClick;
 
-	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
-	return e;
-}
-
-function enable(event, enabled) {
-	var id = getId(event);
-	enableStyle(id, enabled);
+	return entry;
 }
 
 function doDelete() {
 	document.getElementById('confirm').dataset.display = true;
-	let id = getId(event);
+	const id = getClickedStyleId();
 	document.querySelector('#confirm b').textContent =
 		document.querySelector(`[style-id="${id}"] label`).textContent;
 	document.getElementById('confirm').dataset.id = id;
-
 }
+
 document.getElementById('confirm').addEventListener('click', e => {
 	let cmd = e.target.dataset.cmd;
 	if (cmd === 'ok') {
@@ -145,22 +168,9 @@ document.getElementById('confirm').addEventListener('click', e => {
 	}
 });
 
-function getBrowser() {
-	if (navigator.userAgent.indexOf("OPR") > -1) {
-		return "Opera";
-	}
-	return "Chrome";
-}
-
-function getId(event) {
-	var e = event.target;
-	while (e) {
-		if (e.hasAttribute("style-id")) {
-			return e.getAttribute("style-id");
-		}
-		e = e.parentNode;
-	}
-	return null;
+function getClickedStyleId() {
+	const entry = window.event.target.closest('.entry');
+	return entry ? entry.styleId : null;
 }
 
 function openLinkInTabOrWindow(event) {
@@ -174,6 +184,24 @@ function openLinkInTabOrWindow(event) {
 		openLink(event);
 	}
 	close();
+}
+
+function openEditorOnMiddleclick(event) {
+	if (event.button != 1) {
+		return;
+	}
+	// open an editor on middleclick
+	if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+		this.querySelector('.style-edit-link').click();
+		event.preventDefault();
+		return;
+	}
+	// prevent the popup being opened in a background tab
+	// when an irrelevant link was accidentally clicked
+	if (event.target.closest('a')) {
+		event.preventDefault();
+		return;
+	}
 }
 
 function openLink(event) {
