@@ -69,7 +69,9 @@ function sendEvent(type, data) {
 	document.dispatchEvent(stylishEvent);
 }
 
-document.addEventListener("stylishInstallChrome", function() {
+document.addEventListener("stylishUpdateChrome", stylishUpdateChrome);
+function stylishInstallChrome() {
+	orphanCheck();
 	getResource(getMeta("stylish-description"), function(name) {
 		if (confirm(chrome.i18n.getMessage('styleInstall', [name]))) {
 			getResource(getMeta("stylish-code-chrome"), function(code) {
@@ -83,9 +85,11 @@ document.addEventListener("stylishInstallChrome", function() {
 			getResource(getMeta("stylish-install-ping-url-chrome"));
 		}
 	});
-}, false);
+}
 
-document.addEventListener("stylishUpdateChrome", function() {
+document.addEventListener("stylishInstallChrome", stylishInstallChrome);
+function stylishUpdateChrome() {
+	orphanCheck();
 	chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}, function(response) {
 		var style = response[0];
 		if (confirm(chrome.i18n.getMessage('styleUpdate', [style.name]))) {
@@ -99,8 +103,7 @@ document.addEventListener("stylishUpdateChrome", function() {
 			});
 		}
 	});
-}, false);
-
+}
 
 function getMeta(name) {
 	var e = document.querySelector("link[rel='" + name + "']");
@@ -146,3 +149,32 @@ function getResource(url, callback) {
 	...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]'),
 	...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')
 ]);
+
+// orphaned content script check
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) =>
+	msg.method == 'ping' && sendResponse(true));
+
+function orphanCheck() {
+	var port = chrome.runtime.connect();
+	if (port) {
+		port.disconnect();
+		return;
+	}
+	// we're orphaned due to an extension update
+	// we can detach event listeners
+	document.removeEventListener('stylishUpdateChrome', stylishUpdateChrome);
+	document.removeEventListener('stylishInstallChrome', stylishInstallChrome);
+	// we can't detach chrome.runtime.onMessage because it's no longer connected internally
+	// we can destroy global functions in this context to free up memory
+	[
+		'arraysAreEqual',
+		'getMeta',
+		'getResource',
+		'orphanCheck',
+		'sectionsAreEqual',
+		'sendEvent',
+		'stylishUpdateChrome',
+		'stylishInstallChrome'
+	].forEach(fn => window[fn] = null);
+}
