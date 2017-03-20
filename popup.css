@@ -58,7 +58,9 @@ body.blocked > DIV {
   border-bottom: none;
 }
 #installed {
-  margin-top: 0.5em;
+  padding-top: 2px;
+  max-height: 434px; 
+  overflow-y: auto;
 }
 #installed.disabled .style-name {
   text-decoration: line-through;
