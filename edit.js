@@ -1066,23 +1066,26 @@ function beautify(event) {
 	}
 }
 
-window.addEventListener("load", init, false);
+document.addEventListener("DOMContentLoaded", init);
 
 function init() {
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
+		tE("heading", "addStyleTitle");
 		var section = {code: ""}
 		for (var i in CssToProperty) {
 			if (params[i]) {
 				section[CssToProperty[i]] = [params[i]];
 			}
 		}
-		addSection(null, section);
-		// default to enabled
-		document.getElementById("enabled").checked = true
-		tE("heading", "addStyleTitle");
-		initHooks();
+		onload = () => {
+			onload = null;
+			addSection(null, section);
+			// default to enabled
+			document.getElementById("enabled").checked = true
+			initHooks();
+		};
 		return;
 	}
 	// This is an edit
@@ -1090,14 +1093,25 @@ function init() {
 	getStylesSafe({id: params.id}).then(styles => {
 		const style = styles[0];
 		styleId = style.id;
-		initWithStyle({style});
+		setStyleMeta(style);
+		onload = () => {
+			onload = null;
+			initWithStyle({style});
+		};
+		if (document.readyState != 'loading') {
+			onload();
+		}
 	});
 }
 
-function initWithStyle({style, codeIsUpdated}) {
+function setStyleMeta(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
 	document.getElementById("url").href = style.url;
+}
+
+function initWithStyle({style, codeIsUpdated}) {
+	setStyleMeta(style);
 
 	if (codeIsUpdated === false) {
 		setCleanGlobal();
