@@ -309,7 +309,7 @@ function acmeEventListener(event) {
 
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
-	var cm = CodeMirror.fromTextArea(textarea);
+	var cm = CodeMirror.fromTextArea(textarea, {lint: null});
 
 	cm.on("change", indicateCodeChange);
 	cm.on("blur", function(cm) {
@@ -858,29 +858,25 @@ function getEditorInSight(nearbyElement) {
 function updateLintReport(cm, delay) {
 	if (delay == 0) {
 		// immediately show pending csslint messages in onbeforeunload and save
-		update.call(cm);
+		update(cm);
 		return;
 	}
 	if (delay > 0) {
-		// give csslint some time to find the issues, e.g. 500 (1/10 of our default 5s)
-		// by settings its internal delay to 1ms and restoring it back later
-		var lintOpt = editors[0].state.lint.options;
-		setTimeout((function(opt, delay) {
-			opt.delay = delay == 1 ? opt.delay : delay; // options object is shared between editors
-			update(this);
-		}).bind(cm, lintOpt, lintOpt.delay), delay);
-		lintOpt.delay = 1;
+		setTimeout(cm => { cm.performLint(); update(cm) }, delay, cm);
+		return;
+	}
+	var state = cm.state.lint;
+	if (!state) {
 		return;
 	}
 	// user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
 	// or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
-	var state = cm.state.lint;
 	clearTimeout(state.reportTimeout);
-	state.reportTimeout = setTimeout(update.bind(cm), state.options.delay + 100);
+	state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
 	state.postponeNewIssues = delay == undefined || delay == null;
 
-	function update() { // this == cm
-		var scope = this ? [this] : editors;
+	function update(cm) {
+		var scope = cm ? [cm] : editors;
 		var changed = false;
 		var fixedOldIssues = false;
 		scope.forEach(function(cm) {
@@ -939,7 +935,7 @@ function renderLintReport(someBlockChanged) {
 	var newContent = content.cloneNode(false);
 	var issueCount = 0;
 	editors.forEach(function(cm, index) {
-		if (cm.state.lint.html) {
+		if (cm.state.lint && cm.state.lint.html) {
 			var newBlock = newContent.appendChild(document.createElement("table"));
 			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
@@ -1138,7 +1134,11 @@ function initWithStyle({style, codeIsUpdated}) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
+		const cm = sectionDiv.CodeMirror;
+		setTimeout(() => {
+			cm.setOption('lint', CodeMirror.defaults.lint);
+			updateLintReport(cm, 0);
+		}, prefs.get("editor.lintDelay"));
 	}
 }
 
