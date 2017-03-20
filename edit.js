@@ -1088,15 +1088,23 @@ function init() {
 	// This is an edit
 	tE("heading", "editStyleHeading", null, false);
 	getStylesSafe({id: params.id}).then(styles => {
-		styleId = styles[0].id;
-		initWithStyle(styles[0]);
+		const style = styles[0];
+		styleId = style.id;
+		initWithStyle({style});
 	});
 }
 
-function initWithStyle(style) {
+function initWithStyle({style, codeIsUpdated}) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
 	document.getElementById("url").href = style.url;
+
+	if (codeIsUpdated === false) {
+		setCleanGlobal();
+		updateTitle();
+		return;
+	}
+
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });
 	var queue = style.sections.length ? style.sections.slice() : [{code: ""}];
@@ -1247,14 +1255,14 @@ function save() {
 	}
 	var name = document.getElementById("name").value;
 	var enabled = document.getElementById("enabled").checked;
-	var request = {
-		method: "saveStyle",
+	saveStyle({
 		id: styleId,
 		name: name,
 		enabled: enabled,
+		reason: 'editSave',
 		sections: getSectionsHashes()
-	};
-	chrome.runtime.sendMessage(request, saveComplete);
+	})
+		.then(saveComplete);
 }
 
 function getSectionsHashes() {
@@ -1621,8 +1629,8 @@ function getParams() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	switch (request.method) {
 		case "styleUpdated":
-			if (styleId && styleId == request.id) {
-				initWithStyle(request.style);
+			if (styleId && styleId == request.style.id && request.reason != 'editSave') {
+				initWithStyle(request);
 			}
 			break;
 		case "styleDeleted":

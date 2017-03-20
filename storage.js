@@ -213,7 +213,9 @@ function saveStyle(style, {notify = true} = {}) {
 			const tx = db.transaction(['styles'], 'readwrite');
 			const os = tx.objectStore('styles');
 
+			const reason = style.reason;
 			delete style.method;
+			delete style.reason;
 
 			// Update
 			if (style.id) {
@@ -227,7 +229,7 @@ function saveStyle(style, {notify = true} = {}) {
 						style.id = style.id || eventPut.target.result;
 						invalidateCache(notify, {updated: style});
 						if (notify) {
-							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated});
+							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated, reason});
 						}
 						resolve(style);
 					};
@@ -250,7 +252,7 @@ function saveStyle(style, {notify = true} = {}) {
 				// Give it the ID that was generated
 				style.id = event.target.result;
 				invalidateCache(true, {added: style});
-				notifyAllTabs({method: 'styleAdded', style});
+				notifyAllTabs({method: 'styleAdded', style, reason});
 				resolve(style);
 			};
 		});
