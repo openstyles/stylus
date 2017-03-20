@@ -1087,7 +1087,11 @@ function init() {
 	// This is an edit
 	tE("heading", "editStyleHeading", null, false);
 	getStylesSafe({id: params.id}).then(styles => {
-		const style = styles[0];
+		let style = styles[0];
+		if (!style) {
+			style = {id: null, sections: []};
+			history.replaceState({}, document.title, location.pathname);
+		}
 		styleId = style.id;
 		setStyleMeta(style);
 		onload = () => {

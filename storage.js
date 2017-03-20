@@ -182,9 +182,13 @@ function filterStyles(options = {}) {
 
 	const styles = id == null
 		? (code ? cachedStyles.list : cachedStyles.noCode)
-		: [code ? cachedStyles.byId.get(id).style : cachedStyles.byId.get(id).noCode];
+		: [(cachedStyles.byId.get(id) || {})[code ? 'style' : 'noCode']];
 	const filtered = asHash ? {} : [];
-
+	if (!styles) {
+		// may happen when users [accidentally] reopen an old URL
+		// of edit.html with a non-existent style id parameter
+		return filtered;
+	}
 	for (let i = 0, style; (style = styles[i]); i++) {
 		if ((enabled == null || style.enabled == enabled)
 			&& (url == null || style.url == url)
