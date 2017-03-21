@@ -277,23 +277,21 @@ function addMissingStyleTargets(style) {
 
 
 function enableStyle(id, enabled) {
-	saveStyle({id, enabled})
-		.then(handleUpdate);
+	return saveStyle({id, enabled});
 }
 
 
-function deleteStyle(id, callback = function (){}) {
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readwrite");
-		var os = tx.objectStore("styles");
-		var request = os.delete(Number(id));
-		request.onsuccess = function(event) {
-			handleDelete(id);
-			invalidateCache(true, {deletedId: id});
-			notifyAllTabs({method: "styleDeleted", id});
-			callback();
-		};
-	});
+function deleteStyle(id) {
+  return new Promise(resolve =>
+    getDatabase(db => {
+      const tx = db.transaction(['styles'], 'readwrite');
+      const os = tx.objectStore('styles');
+      os.delete(Number(id)).onsuccess = event => {
+        invalidateCache(true, {deletedId: id});
+        notifyAllTabs({method: 'styleDeleted', id});
+        resolve(id);
+      };
+    }));
 }
 
 

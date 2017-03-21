@@ -1,312 +1,128 @@
-<html>
+<html id="stylus">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title i18n-text="manageTitle"></title>
-    <style>
-        body {
-            margin: 0;
-            font: 12px arial, sans-serif;
-        }
-        a,
-        a:visited {
-            color: inherit;
-            opacity: .75;
-            -webkit-transition: opacity 0.5s;
-        }
-        a:hover,
-        a.homepage:hover {
-            opacity: .6;
-        }
-        a.homepage {
-            opacity: 1;
-        }
-        #header {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            padding: 15px;
-            border-right: 1px dashed #AAA;
-            -webkit-box-shadow: 0 0 50px -18px black;
-        }
-        #header h1 {
-            margin-top: 0;
-        }
-        #installed {
-            position: relative;
-            margin-left: 280px;
-        }
-        [style-id] {
-            margin: 10px;
-            padding: 0 15px;
-        }
-        [style-id] {
-            border-top: 2px solid gray;
-        }
-        #installed::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #fff;
-        }
-        .svg-icon {
-            cursor: pointer;
-            vertical-align: middle;
-            margin-left: 0.3rem;
-            margin-right: 0.3rem;
-            margin-top: -4px;
-            transition: opacity .5s;
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-        .style-name {
-            margin-top: .25em;
-            word-break: break-word;
-        }
-        .applies-to {
-            word-break: break-word;
-        }
-        .applies-to,
-        .actions {
-            padding-left: 15px;
-        }
-        .applies-to-extra {
-            font-weight: bold;
-        }
-        .disabled h2::after {
-            content: " (Disabled)";
-        }
-        .disabled {
-            opacity: 0.5;
-        }
-        .disabled .disable {
-            display: none;
-        }
-        .enabled .enable {
-            display: none;
-        }
-        .style-name a[target="_blank"] {
-            text-decoration: none;
-            color: inherit;
-        }
-        /* Default, no update buttons */
-        
-        .update,
-        .check-update {
-            display: none;
-        }
-        /* Check update button for things that can*/
-        
-        *[style-update-url] .check-update {
-            display: inline;
-        }
-        /* Update check in progress */
-        
-        .checking-update .check-update {
-            display: none;
-        }
-        /* Updates available */
-        
-        .can-update .update {
-            display: inline;
-        }
-        .can-update .check-update {
-            display: none;
-        }
-        /* Updates not available */
-        
-        .no-update .check-update {
-            display: none;
-        }
-        /* Updates done */
-        
-        .update-done .check-update {
-            display: none;
-        }
-        .hidden {
-            display: none
-        }
-        @media(max-width:675px) {
-            #header {
-                height: auto;
-                position: inherit;
-                width: auto;
-                border-right: none;
-            }
-            #installed {
-                margin-left: 0;
-            }
-            [style-id] {
-                margin: 0;
-            }
-        }
-        #header {
-            overflow: auto;
-            height: calc(100vh - 30px)
-        }
-        fieldset {
-            border-width: 1px;
-            border-radius: 6px;
-            margin: 1em 0;
-        }
-        .enabled-only > .disabled,
-        .edited-only > [style-update-url] {
-            display: none;
-        }
-        #search {
-            width: calc(100% - 4px);
-            margin: 0.25rem 4px 0;
-            border-radius: 0.25rem;
-            padding-left: 0.25rem;
-            border-width: 1px;
-        }
-        #import ul {
-            margin-left: 0;
-            padding-left: 0;
-            list-style: none;
-        }
-        #import li {
-            margin-bottom: .5em;
-        }
-        #import pre {
-            background: #eee;
-            overflow: auto;
-            margin: 0 0 .5em 0;
-        }
-        /* drag-n-drop on import button */
-        .dropzone:after {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            position: fixed;
-            padding: calc(50vh - 3em) calc(50vw - 5em);
-            content: attr(dragndrop-hint);
-            text-shadow: 1px 1px 10px black;
-            font-size: xx-large;
-            text-align: center;
-            animation: fadein 1s cubic-bezier(.03,.67,.08,.94);
-            animation-fill-mode: both;
-        }
-        .fadeout.dropzone:after {
-            animation: fadeout .25s ease-in-out;
-            animation-fill-mode: both;
-        }
-        @keyframes fadein {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes fadeout {
-            from { opacity: 1; }
-            to   { opacity: 0; }
-        }
-    </style>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title i18n-text="manageTitle"></title>
+  <link href="manage.css" rel="stylesheet">
 
-    <template data-id="style">
-        <div>
-            <h2 class="style-name"></h2>
-            <p class="applies-to"></p>
-            <p class="actions">
-                <a class="style-edit-link" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>
-                <button class="enable" i18n-text="enableStyleLabel"></button>
-                <button class="disable" i18n-text="disableStyleLabel"></button>
-                <button class="delete" i18n-text="deleteStyleLabel"></button>
-                <button class="check-update" i18n-text="checkForUpdate"></button>
-                <button class="update" i18n-text="installUpdate"></button>
-                <span class="update-note"></span>
-            </p>
-        </div>
-    </template>
-
-    <template data-id="styleHomepage">
-        <a target="_blank" class="homepage">
-            <svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg>
+  <template data-id="style">
+    <div class="entry">
+      <h2 class="style-name"><a href="edit.html?id="></a></h2>
+      <p class="applies-to"><span></span></p>
+      <p class="actions">
+        <a class="style-edit-link" href="edit.html?id=">
+          <button i18n-text="editStyleLabel"></button>
         </a>
-    </template>
+        <button class="enable" i18n-text="enableStyleLabel"></button>
+        <button class="disable" i18n-text="disableStyleLabel"></button>
+        <button class="delete" i18n-text="deleteStyleLabel"></button>
+        <button class="check-update" i18n-text="checkForUpdate"></button>
+        <button class="update" i18n-text="installUpdate"></button>
+        <span class="update-note"></span>
+      </p>
+    </div>
+  </template>
 
-    <script src="localization.js"></script>
-    <script src="health.js"></script>
-    <script src="storage.js"></script>
-    <script src="messaging.js"></script>
-    <script src="apply.js"></script>
-    <script src="manage.js"></script>
+  <template data-id="styleHomepage">
+    <a target="_blank" class="homepage">
+      <svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg>
+    </a>
+  </template>
+
+  <template data-id="appliesToTarget">
+    <span class="target"></span>
+  </template>
+
+  <template data-id="appliesToSeparator">
+    <span class="sep">, </span>
+  </template>
+
+  <template data-id="appliesToEverything">
+    <span class="target" i18n-text="appliesToEverything"></span>
+  </template>
+
+  <template data-id="extraAppliesTo">
+    <details class="applies-to-extra">
+      <summary i18n-html="appliesDisplayTruncatedSuffix"></summary>
+    </details>
+  </template>
+
+  <script src="health.js"></script>
+  <script src="storage.js"></script>
+  <script src="messaging.js"></script>
+  <script src="apply.js"></script>
+  <script src="localization.js"></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
-    <div id="header">
-        <h1 id="manage-heading" i18n-text="manageHeading"></h1>
-        <fieldset>
-            <legend id="filters" i18n-text="manageFilters"></legend>
-            <div>
-                <input id="manage.onlyEnabled" type="checkbox">
-                <label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label>
-            </div>
-            <div>
-                <input id="manage.onlyEdited" type="checkbox">
-                <label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label>
-            </div>
-            <div>
-                <input id="search" type="search" i18n-placeholder="searchStyles">
-            </div>
-        </fieldset>
-        <p>
-            <button id="check-all-updates" i18n-text="checkAllUpdates"></button>
-        </p>
-        <p>
-            <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-            <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-        </p>
-        <p>
-            <a href="edit.html">
-                <button id="add-style-label" i18n-text="addStyleLabel"></button>
-            </a>
-        </p>
-        <div id="options">
-            <h2 id="options-heading" i18n-text="optionsHeading"></h2>
-            <div>
-                <input id="show-badge" type="checkbox">
-                <label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label>
-            </div>
-            <div>
-                <input id="popup.stylesFirst" type="checkbox">
-                <label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label>
-            </div>
-            <div id="more-options">
-                <h3 id="options-subheading" i18n-text="optionsSubheading"></h3>
-                <button id="manage-options-button" i18n-text="openOptionsManage"></button>
-                <button id="manage-shortcuts-button" i18n-text="openOptionsShortcuts"></button>
-                <p>
-                    <button id="editor-styles-button" i18n-text="editorStylesButton"></button>
-                </p>
-            </div>
-        </div>
-        <div id="backup">
-            <h2 id="backup-title" i18n-text="backupButtons"></h2>
-            <span id="backup-message" i18n-text="backupMessage"></span>
-            <p>
-                <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
-                <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
-            </p>
-        </div>
-        <p id="manage-text" i18n-html="manageText"></p>
+<div id="header">
+  <h1 id="manage-heading" i18n-text="manageHeading"></h1>
+  <fieldset>
+    <legend id="filters" i18n-text="manageFilters"></legend>
+    <div>
+      <input id="manage.onlyEnabled" type="checkbox">
+      <label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label>
     </div>
-    <div id="installed"></div>
+    <div>
+      <input id="manage.onlyEdited" type="checkbox">
+      <label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label>
+    </div>
+    <div>
+      <input id="search" type="search" i18n-placeholder="searchStyles">
+    </div>
+  </fieldset>
+  <p>
+    <button id="check-all-updates" i18n-text="checkAllUpdates"></button>
+  </p>
+  <p>
+    <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+    <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
+  </p>
+  <p>
+    <a href="edit.html">
+      <button id="add-style-label" i18n-text="addStyleLabel"></button>
+    </a>
+  </p>
+  <div id="options">
+    <h2 id="options-heading" i18n-text="optionsHeading"></h2>
+    <div>
+      <input id="show-badge" type="checkbox">
+      <label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label>
+    </div>
+    <div>
+      <input id="popup.stylesFirst" type="checkbox">
+      <label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label>
+    </div>
+    <div id="more-options">
+      <h3 id="options-subheading" i18n-text="optionsSubheading"></h3>
+      <button id="manage-options-button" i18n-text="openOptionsManage"></button>
+      <button id="manage-shortcuts-button" i18n-text="openOptionsShortcuts"></button>
+      <p>
+        <button id="editor-styles-button" i18n-text="editorStylesButton"></button>
+      </p>
+    </div>
+  </div>
+  <div id="backup">
+    <h2 id="backup-title" i18n-text="backupButtons"></h2>
+    <span id="backup-message" i18n-text="backupMessage"></span>
+    <p>
+      <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
+      <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
+    </p>
+  </div>
+  <p id="manage-text" i18n-html="manageText"></p>
+</div>
+<div id="installed"></div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-        <symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
-            <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
-        </symbol>
-    </svg>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+  <symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
+    <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
+  </symbol>
+</svg>
 
-    <script src="openOptions.js"></script>
-    <script src="backup/fileSaveLoad.js"></script>
+<script src="manage.js"></script>
+<script src="openOptions.js"></script>
+<script src="backup/fileSaveLoad.js"></script>
 </body>
 
 </html>

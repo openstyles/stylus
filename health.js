@@ -1,4 +1,4 @@
-healthCheck();
+setTimeout(healthCheck, 0);
 
 function healthCheck() {
 	chrome.runtime.sendMessage({method: "healthCheck"}, function(ok) {

@@ -415,7 +415,7 @@ chrome.tabs.query({currentWindow: true}, function(tabs) {
 	});
 });
 
-getActiveTab(function(tab) {
+getActiveTab().then(tab => {
 	useHistoryBack = sessionStorageHash("manageStylesHistory").value[tab.id] == location.href;
 });
 

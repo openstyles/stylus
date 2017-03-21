@@ -1,275 +1,298 @@
-/* globals configureCommands */
+/* globals configureCommands, openURL */
 
-var writeStyleTemplate = document.createElement("a");
-writeStyleTemplate.className = "write-style-link";
+const RX_SUPPORTED_URLS = new RegExp(
+  `^(file|https?|ftps?):|^${OWN_ORIGIN}`);
+let installed;
 
-var installed = document.getElementById("installed");
 
-if (!prefs.get("popup.stylesFirst")) {
-	document.body.insertBefore(document.querySelector("body > .actions"), installed);
+getActiveTabRealURL().then(url => {
+  const isUrlSupported = RX_SUPPORTED_URLS.test(url);
+  Promise.all([
+    isUrlSupported ? getStylesSafe({matchUrl: url}) : null,
+    onDOMready().then(() => initPopup(isUrlSupported ? url : '')),
+  ])
+    .then(([styles]) => styles && showStyles(styles));
+});
+
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.method == 'updatePopup') {
+    switch (msg.reason) {
+      case 'styleAdded':
+      case 'styleUpdated':
+        handleUpdate(msg.style);
+        break;
+      case 'styleDeleted':
+        handleDelete(msg.id);
+        break;
+    }
+  }
+});
+
+
+function initPopup(url) {
+  installed = $('#installed');
+
+  // popup width
+  document.body.style.width =
+    Math.max(200, Math.min(800, Number(localStorage.popupWidth) || 246)) + 'px';
+
+  // confirm dialog
+  $('#confirm').onclick = e => {
+    const cmd = e.target.dataset.cmd;
+    if (cmd === 'ok') {
+      deleteStyle($('#confirm').dataset.id).then(() => {
+        // update view with 'No styles installed for this site' message
+        if ($('#installed').children.length === 0) {
+          showStyles([]);
+        }
+      });
+    }
+    //
+    if (cmd) {
+      $('#confirm').dataset.display = false;
+    }
+  };
+
+  // action buttons
+  $('#disableAll').onchange = () =>
+    installed.classList.toggle('disabled', prefs.get('disableAll'));
+  setupLivePrefs(['disableAll']);
+  $('#find-styles-link').onclick = openURLandHide;
+  $('#popup-manage-button').href = 'manage.html';
+  $('#popup-manage-button').onclick = openURLandHide;
+  $('#popup-options-button').onclick = () => chrome.runtime.openOptionsPage();
+  $('#popup-shortcuts-button').onclick = configureCommands.open;
+
+  // styles first?
+  if (!prefs.get('popup.stylesFirst')) {
+    document.body.insertBefore(
+      $('body > .actions'),
+      installed);
+  }
+
+  // find styles link
+  $('#find-styles a').href =
+    'https://userstyles.org/styles/browse/all/' +
+    encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
+
+  if (!url) {
+    document.body.classList.add('blocked');
+    return;
+  }
+
+  // Write new style links
+  const writeStyle = $('#write-style');
+  const matchTargets = document.createElement('span');
+  matchTargets.id = 'match';
+
+  // For this URL
+  const urlLink = template.writeStyle.cloneNode(true);
+  Object.assign(urlLink, {
+    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
+    title: `url-prefix("${url}")`,
+    textContent: prefs.get('popup.breadcrumbs.usePath')
+      ? new URL(url).pathname.slice(1)
+      : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+    onclick: openLinkInTabOrWindow,
+  });
+  if (prefs.get('popup.breadcrumbs')) {
+    urlLink.onmouseenter =
+      urlLink.onfocus = () => urlLink.parentNode.classList.add('url()');
+    urlLink.onmouseleave =
+      urlLink.onblur = () => urlLink.parentNode.classList.remove('url()');
+  }
+  matchTargets.appendChild(urlLink);
+
+  // For domain
+  const domains = getDomains(url);
+  for (let domain of domains) {
+    // Don't include TLD
+    if (domains.length > 1 && !domain.includes('.')) {
+      continue;
+    }
+    const domainLink = template.writeStyle.cloneNode(true);
+    Object.assign(domainLink, {
+      href: 'edit.html?domain=' + encodeURIComponent(domain),
+      textContent: domain,
+      title: `domain("${domain}")`,
+      onclick: openLinkInTabOrWindow,
+    });
+    domainLink.setAttribute('subdomain', domain.substring(0, domain.indexOf('.')));
+    matchTargets.appendChild(domainLink);
+  }
+
+  if (prefs.get('popup.breadcrumbs')) {
+    matchTargets.classList.add('breadcrumbs');
+    matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
+  }
+  writeStyle.appendChild(matchTargets);
 }
 
-getActiveTabRealURL(updatePopUp);
-
-function updatePopUp(url) {
-	var urlWillWork = /^(file|http|https|ftps?|chrome\-extension):/.exec(url);
-	if (!urlWillWork) {
-		document.body.classList.add("blocked");
-		document.getElementById("unavailable").style.display = "flex";
-		return;
-	}
-
-	getStylesSafe({matchUrl: url}).then(showStyles);
-
-	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : url);
-
-	// Write new style links
-	var writeStyleLinks = [],
-	    container = document.createElement('span');
-	container.id = "match";
-
-	// For this URL
-	var urlLink = writeStyleTemplate.cloneNode(true);
-	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(url);
-	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
-		!prefs.get("popup.breadcrumbs.usePath")
-		? t("writeStyleForURL").replace(/ /g, "\u00a0")
-		: /\/\/[^/]+\/(.*)/.exec(url)[1]
-	));
-	urlLink.title = "url-prefix(\"$\")".replace("$", url);
-	writeStyleLinks.push(urlLink);
-	document.querySelector("#write-style").appendChild(urlLink)
-	if (prefs.get("popup.breadcrumbs")) { // switchable; default=enabled
-		urlLink.addEventListener("mouseenter", function(event) { this.parentNode.classList.add("url()") }, false);
-		urlLink.addEventListener("focus", function(event) { this.parentNode.classList.add("url()") }, false);
-		urlLink.addEventListener("mouseleave", function(event) { this.parentNode.classList.remove("url()") }, false);
-		urlLink.addEventListener("blur", function(event) { this.parentNode.classList.remove("url()") }, false);
-	}
-
-	// For domain
-	var domains = getDomains(url)
-	domains.forEach(function(domain) {
-		// Don't include TLD
-		if (domains.length > 1 && domain.indexOf(".") == -1) {
-			return;
-		}
-		var domainLink = writeStyleTemplate.cloneNode(true);
-		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
-		domainLink.appendChild(document.createTextNode(domain));
-		domainLink.title = "domain(\"$\")".replace("$", domain);
-		domainLink.setAttribute("subdomain", domain.substring(0, domain.indexOf(".")));
-		writeStyleLinks.push(domainLink);
-	});
-
-	var writeStyle = document.querySelector("#write-style");
-	writeStyleLinks.forEach(function(link, index) {
-		link.addEventListener("click", openLinkInTabOrWindow, false);
-		container.appendChild(link);
-	});
-	if (prefs.get("popup.breadcrumbs")) {
-		container.classList.add("breadcrumbs");
-		container.appendChild(container.removeChild(container.firstChild));
-	}
-	writeStyle.appendChild(container);
-}
 
 function showStyles(styles) {
-	var enabledFirst = prefs.get("popup.enabledFirst");
-	styles.sort(function(a, b) {
-		if (enabledFirst && a.enabled !== b.enabled) return !(a.enabled < b.enabled) ? -1 : 1;
-		return a.name.localeCompare(b.name);
-	});
-	if (styles.length == 0) {
-		installed.innerHTML = "<div class='entry' id='no-styles'>" + t('noStylesForSite') + "</div>";
-	}
-	styles.map(createStyleElement).forEach(function(e) {
-		installed.appendChild(e);
-	});
-	// force Chrome to resize the popup
-	document.body.style.height = '10px';
-	document.documentElement.style.height = '10px';
+  if (!styles.length) {
+    installed.innerHTML =
+      `<div class="entry" id="no-styles">${t('noStylesForSite')}</div>`;
+  } else {
+    const enabledFirst = prefs.get('popup.enabledFirst');
+    styles.sort((a, b) =>
+      enabledFirst && a.enabled !== b.enabled
+        ? !(a.enabled < b.enabled) ? -1 : 1
+        : a.name.localeCompare(b.name));
+    const fragment = document.createDocumentFragment();
+    for (let style of styles) {
+      fragment.appendChild(createStyleElement(style));
+    }
+    installed.appendChild(fragment);
+  }
+  // force Chrome to resize the popup
+  document.body.style.height = '10px';
+  document.documentElement.style.height = '10px';
 }
+
 
 function createStyleElement(style) {
-	// reuse event function references
-	createStyleElement.events = createStyleElement.events || {
-		checkboxClick() {
-			enableStyle(getClickedStyleId(event), this.checked);
-		},
-		styleNameClick(event) {
-			this.checkbox.click();
-			event.preventDefault();
-		},
-		toggleClick(event) {
-			enableStyle(getClickedStyleId(event), this.matches('.enable'));
-		},
-		deleteClick() {
-			doDelete(event);
+  // reuse event listener function references
+  const listeners = createStyleElement.listeners = createStyleElement.listeners || {
+    checkboxClick() {
+      enableStyle(getClickedStyleId(event), this.checked)
+        .then(handleUpdate);
+    },
+    styleNameClick(event) {
+      this.checkbox.click();
+      event.preventDefault();
+    },
+    toggleClick(event) {
+      enableStyle(getClickedStyleId(event), this.matches('.enable'))
+        .then(handleUpdate);
+    },
+    deleteClick(event) {
+      doDelete(event);
     }
-	};
-	const entry = template.style.cloneNode(true);
-	entry.setAttribute('style-id', style.id);
-	Object.assign(entry, {
-		styleId: style.id,
-		className: ['entry', style.enabled ? 'enabled' : 'disabled'].join(' '),
-		onmousedown: openEditorOnMiddleclick,
-		onauxclick: openEditorOnMiddleclick,
-	});
+  };
+  const entry = template.style.cloneNode(true);
+  entry.setAttribute('style-id', style.id);
+  Object.assign(entry, {
+    styleId: style.id,
+    className: ['entry', style.enabled ? 'enabled' : 'disabled'].join(' '),
+    onmousedown: openEditorOnMiddleclick,
+    onauxclick: openEditorOnMiddleclick,
+  });
 
-	const checkbox = entry.querySelector('.checker');
-	Object.assign(checkbox, {
-		id: 'style-' + style.id,
-		checked: style.enabled,
-		onclick: createStyleElement.events.checkboxClick,
-	});
+  const checkbox = $('.checker', entry);
+  Object.assign(checkbox, {
+    id: 'style-' + style.id,
+    checked: style.enabled,
+    onclick: listeners.checkboxClick,
+  });
 
-	const editLink = entry.querySelector('.style-edit-link');
-	Object.assign(editLink, {
-		href: editLink.getAttribute('href') + style.id,
-		onclick: openLinkInTabOrWindow,
-	});
+  const editLink = $('.style-edit-link', entry);
+  Object.assign(editLink, {
+    href: editLink.getAttribute('href') + style.id,
+    onclick: openLinkInTabOrWindow,
+  });
 
-	const styleName = entry.querySelector('.style-name');
-	Object.assign(styleName, {
-		htmlFor: 'style-' + style.id,
-		onclick: createStyleElement.events.styleNameClick,
-	});
-	styleName.checkbox = checkbox;
-	styleName.appendChild(document.createTextNode(style.name));
+  const styleName = $('.style-name', entry);
+  Object.assign(styleName, {
+    htmlFor: 'style-' + style.id,
+    onclick: listeners.styleNameClick,
+  });
+  styleName.checkbox = checkbox;
+  styleName.appendChild(document.createTextNode(style.name));
 
-	entry.querySelector('.enable').onclick = createStyleElement.events.toggleClick;
-	entry.querySelector('.disable').onclick = createStyleElement.events.toggleClick;
-	entry.querySelector('.delete').onclick = createStyleElement.events.deleteClick;
+  $('.enable', entry).onclick = listeners.toggleClick;
+  $('.disable', entry).onclick = listeners.toggleClick;
+  $('.delete', entry).onclick = listeners.deleteClick;
 
-	return entry;
+  return entry;
 }
+
 
 function doDelete(event) {
-	document.getElementById('confirm').dataset.display = true;
-	const id = getClickedStyleId(event);
-	document.querySelector('#confirm b').textContent =
-		document.querySelector(`[style-id="${id}"] label`).textContent;
-	document.getElementById('confirm').dataset.id = id;
+  $('#confirm').dataset.display = true;
+  const id = getClickedStyleId(event);
+  $('#confirm b').textContent =
+    $(`[style-id="${id}"] label`).textContent;
+  $('#confirm').dataset.id = id;
 }
 
-document.getElementById('confirm').addEventListener('click', e => {
-	let cmd = e.target.dataset.cmd;
-	if (cmd === 'ok') {
-		deleteStyle(document.getElementById('confirm').dataset.id, () => {
-			// update view with 'No styles installed for this site' message
-			if (document.getElementById('installed').children.length === 0) {
-				showStyles([]);
-			}
-		});
-	}
-	//
-	if (cmd) {
-		document.getElementById('confirm').dataset.display = false;
-	}
-});
 
 function getClickedStyleId(event) {
-	const entry = event.target.closest('.entry');
-	return entry ? entry.styleId : null;
+  const entry = event.target.closest('.entry');
+  return entry ? entry.styleId : null;
 }
+
 
 function openLinkInTabOrWindow(event) {
-	event.preventDefault();
-	if (prefs.get("openEditInWindow", false)) {
-		var options = {url: event.target.href}
-		var wp = prefs.get("windowPosition", {});
-		for (var k in wp) options[k] = wp[k];
-		chrome.windows.create(options);
-	} else {
-		openLink(event);
-	}
-	close();
+  if (!prefs.get('openEditInWindow', false)) {
+    openURLandHide(event);
+    return;
+  }
+  event.preventDefault();
+  chrome.windows.create(
+    Object.assign({
+      url: event.target.href
+    }, prefs.get('windowPosition', {}))
+  );
+  close();
 }
+
 
 function openEditorOnMiddleclick(event) {
-	if (event.button != 1) {
-		return;
-	}
-	// open an editor on middleclick
-	if (event.target.matches('.entry, .style-name, .style-edit-link')) {
-		this.querySelector('.style-edit-link').click();
-		event.preventDefault();
-		return;
-	}
-	// prevent the popup being opened in a background tab
-	// when an irrelevant link was accidentally clicked
-	if (event.target.closest('a')) {
-		event.preventDefault();
-		return;
-	}
+  if (event.button != 1) {
+    return;
+  }
+  // open an editor on middleclick
+  if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+    $('.style-edit-link', this).click();
+    event.preventDefault();
+    return;
+  }
+  // prevent the popup being opened in a background tab
+  // when an irrelevant link was accidentally clicked
+  if (event.target.closest('a')) {
+    event.preventDefault();
+    return;
+  }
 }
 
-function openLink(event) {
-	event.preventDefault();
-	chrome.runtime.sendMessage({method: "openURL", url: event.target.href});
-	close();
+
+function openURLandHide(event) {
+  event.preventDefault();
+  openURL({url: event.target.href})
+    .then(close);
 }
+
 
 function handleUpdate(style) {
-	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
-	if (styleElement) {
-		installed.replaceChild(createStyleElement(style), styleElement);
-	} else {
-		getActiveTabRealURL(function(url) {
-			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
-				// a new style for the current url is installed
-				document.getElementById("unavailable").style.display = "none";
-				installed.appendChild(createStyleElement(style));
-			}
-		});
-	}
+  const styleElement = $(`[style-id="${style.id}"]`, installed);
+  if (styleElement) {
+    installed.replaceChild(createStyleElement(style), styleElement);
+  } else {
+    getActiveTabRealURL().then(url => {
+      if (getApplicableSections(style, url).length) {
+        // a new style for the current url is installed
+        $('#unavailable').style.display = 'none';
+        installed.appendChild(createStyleElement(style));
+      }
+    });
+  }
 }
+
 
 function handleDelete(id) {
-	var styleElement = installed.querySelector("[style-id='" + id + "']");
-	if (styleElement) {
-		installed.removeChild(styleElement);
-	}
+  var styleElement = $(`[style-id="${id}"]`, installed);
+  if (styleElement) {
+    installed.removeChild(styleElement);
+  }
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (request.method == "updatePopup") {
-		switch (request.reason) {
-			case "styleAdded":
-			case "styleUpdated":
-				handleUpdate(request.style);
-				break;
-			case "styleDeleted":
-				handleDelete(request.id);
-				break;
-		}
-	}
-});
 
-["find-styles-link"].forEach(function(id) {
-	document.getElementById(id).addEventListener("click", openLink, false);
-});
-
-document.getElementById("disableAll").addEventListener("change", function(event) {
-	installed.classList.toggle("disabled", prefs.get("disableAll"));
-});
-setupLivePrefs(["disableAll"]);
-
-document.querySelector('#popup-manage-button').addEventListener("click", function() {
-    window.open(chrome.runtime.getURL('manage.html'));
-});
-
-document.querySelector('#popup-options-button').addEventListener("click", function() {
-    if (chrome.runtime.openOptionsPage) {
-        // Supported (Chrome 42+)
-        chrome.runtime.openOptionsPage();
-    } else {
-        // Fallback
-        window.open(chrome.runtime.getURL('options/index.html'));
-    }
-});
-
-document.querySelector('#popup-shortcuts-button').addEventListener("click", configureCommands.open);
-
-// popup width
-document.body.style.width = (localStorage.getItem('popupWidth') || '246') + 'px';
+function $(selector, base = document) {
+  if (selector.startsWith('#') && /^#[^,\s]+$/.test(selector)) {
+    return document.getElementById(selector.slice(1));
+  } else {
+    return base.querySelector(selector);
+  }
+}

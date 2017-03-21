@@ -34,6 +34,8 @@ globals:
   getType: true
   importStyles: true
   getActiveTabRealURL: true
+  openURL: true
+  onDOMready: true
   getDomains: true
   webSqlStorage: true
   notifyAllTabs: true

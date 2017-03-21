@@ -64,6 +64,7 @@ function importFromString(jsonString) {
         });
       } else {
         refreshAllTabs().then(() => {
+          scrollTo(0, 0);
           setTimeout(alert, 100, numStyles + ' styles installed/updated');
           resolve(numStyles);
         });

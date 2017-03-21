@@ -2,6 +2,7 @@
 const KEEP_CHANNEL_OPEN = true;
 const OWN_ORIGIN = chrome.runtime.getURL('');
 
+
 function notifyAllTabs(request) {
 	// list all tabs including chrome-extension:// which can be ours
 	if (request.codeIsUpdated === false && request.style) {
@@ -23,6 +24,7 @@ function notifyAllTabs(request) {
 		applyOnMessage(reqPopup);
 	}
 }
+
 
 function refreshAllTabs() {
 	return new Promise(resolve => {
@@ -47,6 +49,7 @@ function refreshAllTabs() {
 	});
 }
 
+
 function updateIcon(tab, styles) {
 	// while NTP is still loading only process the request for its main frame with a real url
 	// (but when it's loaded we should process style toggle requests from popups, for example)
@@ -62,7 +65,7 @@ function updateIcon(tab, styles) {
 		});
 		return;
 	}
-	getTabRealURL(tab, url => {
+	getTabRealURL(tab).then(url => {
 		// if we have access to this, call directly
 		// (Chrome no longer sends messages to the page itself)
 		const options = {method: 'getStyles', matchUrl: url, enabled: true, asHash: true};
@@ -106,36 +109,79 @@ function updateIcon(tab, styles) {
 	}
 }
 
-function getActiveTab(callback) {
-	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
-		callback(tabs[0]);
+
+function getActiveTab() {
+	return new Promise(resolve =>
+		chrome.tabs.query({currentWindow: true, active: true}, tabs =>
+			resolve(tabs[0])));
+}
+
+
+function getActiveTabRealURL() {
+	return getActiveTab()
+		.then(getTabRealURL);
+}
+
+
+function getTabRealURL(tab) {
+	return new Promise(resolve => {
+		if (tab.url != 'chrome://newtab/') {
+			resolve(tab.url);
+		} else {
+			chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
+				frame && resolve(frame.url);
+			});
+		}
 	});
 }
 
-function getActiveTabRealURL(callback) {
-	getActiveTab(function(tab) {
-		getTabRealURL(tab, callback);
-	});
-}
 
-function getTabRealURL(tab, callback) {
-	if (tab.url != "chrome://newtab/") {
-		callback(tab.url);
-	} else {
-		chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, function(frame) {
-			frame && callback(frame.url);
+function openURL({url}) {
+	url = !url.includes('://') ? chrome.runtime.getURL(url) : url;
+	return new Promise(resolve => {
+		chrome.tabs.query({currentWindow: true, url}, tabs => {
+			// switch to an existing tab with the requested url
+			if (tabs.length) {
+				chrome.tabs.highlight({
+					windowId: tabs[0].windowId,
+					tabs: tabs[0].index,
+				}, resolve);
+			} else {
+				// re-use an active new tab page
+				getActiveTab().then(tab =>
+					tab && tab.url == 'chrome://newtab/'
+						? chrome.tabs.update({url}, resolve)
+						: chrome.tabs.create({url}, resolve)
+				);
+			}
 		});
-	}
+	});
 }
+
+
+function onDOMready() {
+	if (document.readyState != 'loading') {
+		return Promise.resolve();
+	}
+	return new Promise(resolve => {
+		document.addEventListener('DOMContentLoaded', function _() {
+			document.removeEventListener('DOMContentLoaded', _);
+			resolve();
+		});
+	});
+}
+
 
 function stringAsRegExp(s, flags) {
-	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, "\\$&"), flags);
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, '\\$&'), flags);
 }
+
 
 // expands * as .*?
 function wildcardAsRegExp(s, flags) {
-	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=!|]/g, "\\$&").replace(/\*/g, '.*?'), flags);
+	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=!|]/g, '\\$&').replace(/\*/g, '.*?'), flags);
 }
+
 
 var configureCommands = {
 	get url () {

@@ -25,6 +25,7 @@ input[type=checkbox] {
 }
 a, a:visited {
   color: black;
+  text-decoration-skip: ink;
 }
 
 .left-gutter {
@@ -59,7 +60,7 @@ body.blocked > DIV {
 }
 #installed {
   padding-top: 2px;
-  max-height: 434px; 
+  max-height: 434px;
   overflow-y: auto;
 }
 #installed.disabled .style-name {
@@ -112,6 +113,10 @@ body:not(.blocked) #unavailable {
   display: none;
 }
 
+body.blocked #unavailable {
+  display: flex;
+}
+
 /* Never shown, but can be enabled with a style */
 .enable, .disable {
   display: none;
@@ -120,7 +125,7 @@ body:not(.blocked) #unavailable {
 /* 'New style' links */
 #write-style-for {margin-right: .6ex}
 .write-style-link {margin-left: .6ex}
-.write-style-link::before, .write-style-link::after {font-size: x-small}
+.write-style-link::before, .write-style-link::after {font-size: 12px}
 .write-style-link::before {content: "\00ad"} /* "soft" hyphen */
 #match {overflow-wrap: break-word;}
 
@@ -154,6 +159,7 @@ body:not(.blocked) #unavailable {
 .breadcrumbs > .write-style-link:focus ~ .write-style-link[subdomain] {
   color: inherit;
   text-decoration: underline;
+  text-decoration-skip: ink;
 }
 
   /* action buttons */

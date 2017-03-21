@@ -29,11 +29,16 @@
         </div>
     </template>
 
+    <template data-id="writeStyle">
+        <a class="write-style-link"></a>
+    </template>
+
     <script src="localization.js"></script>
     <script src="health.js"></script>
     <script src="storage.js"></script>
     <script src="messaging.js"></script>
     <script src="apply.js"></script>
+    <script src="popup.js"></script>
 </head>
 
 <body id="stylus-popup">
@@ -75,11 +80,10 @@
     <!-- Actions -->
     <div id="popup-options">
         <button id="popup-manage-button" i18n-text="openManage"></button>
-        <button id="popup-options-button" i18n-text="openOptionsPopup">
+        <button id="popup-options-button" i18n-text="openOptionsPopup"></button>
         <button id="popup-shortcuts-button" i18n-text="openShortcutsPopup"></button>
     </div>
     </div>
-    <script src="popup.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-/* globals wildcardAsRegExp, KEEP_CHANNEL_OPEN */
+/* globals openURL, wildcardAsRegExp, KEEP_CHANNEL_OPEN */
 
 // This happens right away, sometimes so fast that the content script isn't even ready. That's
 // why the content script also asks for this stuff.
@@ -148,21 +148,6 @@ chrome.tabs.onAttached.addListener(function(tabId, data) {
 		}
 	});
 });
-
-function openURL(options) {
-	chrome.tabs.query({currentWindow: true, url: options.url}, function(tabs) {
-		// switch to an existing tab with the requested url
-		if (tabs.length) {
-			chrome.tabs.highlight({windowId: tabs[0].windowId, tabs: tabs[0].index}, function (window) {});
-		} else {
-			delete options.method;
-			getActiveTab(function(tab) {
-				// re-use an active new tab page
-				chrome.tabs[tab.url == "chrome://newtab/" ? "update" : "create"](options);
-			});
-		}
-	});
-}
 
 var codeMirrorThemes;
 getCodeMirrorThemes(function(themes) {

@@ -1,0 +1,284 @@
+body {
+  margin: 0;
+  font: 12px arial, sans-serif;
+}
+
+a,
+a:visited {
+  color: inherit;
+  opacity: .75;
+  -webkit-transition: opacity 0.5s;
+}
+
+a:hover,
+a.homepage:hover {
+  opacity: .6;
+}
+
+a.homepage {
+  opacity: 1;
+}
+
+#header {
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  padding: 15px;
+  border-right: 1px dashed #AAA;
+  -webkit-box-shadow: 0 0 50px -18px black;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+#header h1 {
+  margin-top: 0;
+}
+
+#installed {
+  position: relative;
+  margin-left: 280px;
+}
+
+.entry {
+  margin: 0;
+  padding: 1.25em 2em 1.5em;
+  border-top: 1px solid #ddd;
+}
+
+.entry:first-child {
+  border-top: none;
+}
+
+.svg-icon {
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+  margin-right: 0.3rem;
+  margin-top: -4px;
+  transition: opacity .5s;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.style-name {
+  margin-top: .25em;
+}
+
+.style-name a, .style-edit-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.applies-to {
+  word-break: break-word;
+}
+
+.applies-to,
+.actions {
+  padding-left: 15px;
+  margin-bottom: 0;
+}
+
+.applies-to > :first-child {
+  margin-right: .5ex;
+}
+
+.applies-to .target:hover {
+  background-color: rgba(128, 128, 128, .15);
+}
+
+.applies-to-extra {
+  display: inline;
+}
+
+.applies-to-extra summary {
+  font-weight: bold;
+  cursor: pointer;
+  list-style-type: none; /* for FF, allegedly */
+}
+
+.applies-to-extra summary::-webkit-details-marker {
+  display: none;
+}
+
+.disabled h2::after {
+  content: " (Disabled)";
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.disabled .disable {
+  display: none;
+}
+
+.enabled .enable {
+  display: none;
+}
+
+/* Default, no update buttons */
+
+.update,
+.check-update {
+  display: none;
+}
+
+/* Check update button for things that can*/
+
+*[style-update-url] .check-update {
+  display: inline;
+}
+
+/* Update check in progress */
+
+.checking-update .check-update {
+  display: none;
+}
+
+/* Updates available */
+
+.can-update .update {
+  display: inline;
+}
+
+.can-update .check-update {
+  display: none;
+}
+
+/* Updates not available */
+
+.no-update .check-update {
+  display: none;
+}
+
+/* Updates done */
+
+.update-done .check-update {
+  display: none;
+}
+
+.hidden {
+  display: none
+}
+
+fieldset {
+  border-width: 1px;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+
+.enabled-only > .disabled,
+.edited-only > [style-update-url] {
+  display: none;
+}
+
+#search {
+  width: calc(100% - 4px);
+  margin: 0.25rem 4px 0;
+  border-radius: 0.25rem;
+  padding-left: 0.25rem;
+  border-width: 1px;
+}
+
+#import ul {
+  margin-left: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+#import li {
+  margin-bottom: .5em;
+}
+
+#import pre {
+  background: #eee;
+  overflow: auto;
+  margin: 0 0 .5em 0;
+}
+
+/* drag-n-drop on import button */
+.dropzone:after {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  position: fixed;
+  padding: calc(50vh - 3em) calc(50vw - 5em);
+  content: attr(dragndrop-hint);
+  text-shadow: 1px 1px 10px black;
+  font-size: xx-large;
+  text-align: center;
+  animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
+  animation-fill-mode: both;
+}
+
+.fadeout.dropzone:after {
+  animation: fadeout .25s ease-in-out;
+  animation-fill-mode: both;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 675px) {
+  #header {
+    height: auto;
+    position: static;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+  }
+
+  #installed {
+    position: static;
+    margin-left: 0;
+    overflow: visible;
+  }
+
+  #header h1,
+  #header h2,
+  #header h3,
+  #backup-message {
+    display: none;
+  }
+
+  #header p,
+  #header fieldset div,
+  #backup {
+    display: inline-block;
+  }
+
+  #backup {
+    margin-right: 1em;
+  }
+
+  #backup p,
+  #header fieldset {
+    margin: 0;
+  }
+
+  .entry {
+    margin: 0;
+  }
+}

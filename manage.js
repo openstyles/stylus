@@ -1,434 +1,471 @@
 /* globals styleSectionsEqual */
-var lastUpdatedStyleId = null;
-var installed;
 
-var appliesToExtraTemplate = document.createElement("span");
-appliesToExtraTemplate.className = "applies-to-extra";
-appliesToExtraTemplate.innerHTML = " " + t('appliesDisplayTruncatedSuffix');
+const installed = $('#installed');
+const TARGET_LABEL = t('appliesDisplay', '').trim();
+const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
+const TARGET_LIMIT = 10;
 
-getStylesSafe({code: false}).then(showStyles);
 
-function showStyles(styles) {
-	if (!installed) {
-		// "getStyles" message callback is invoked before document is loaded,
-		// postpone the action until DOMContentLoaded is fired
-		document.stylishStyles = styles;
-		return;
-	}
-	styles.sort(function(a, b) { return a.name.localeCompare(b.name)});
-	styles.forEach(handleUpdate);
-	if (history.state) {
-		window.scrollTo(0, history.state.scrollY);
-	}
+getStylesSafe({code: false})
+  .then(showStyles)
+  .then(initGlobalEvents);
+
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  switch (msg.method) {
+    case 'styleUpdated':
+    case 'styleAdded':
+      handleUpdate(msg.style, msg);
+      break;
+    case 'styleDeleted':
+      handleDelete(msg.id);
+      break;
+  }
+});
+
+
+function initGlobalEvents() {
+  $('#check-all-updates').onclick = checkUpdateAll;
+  $('#apply-all-updates').onclick = applyUpdateAll;
+  $('#search').oninput = searchStyles;
+
+  // focus search field on / key
+  document.onkeypress = event => {
+    if (event.keyCode == 47
+    && !event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey
+    && !event.target.matches('[type="text"], [type="search"]')) {
+      event.preventDefault();
+      $('#search').focus();
+    }
+  };
+
+  // remember scroll position on normal history navigation
+  document.addEventListener('visibilitychange', event => {
+    if (document.visibilityState != 'visible') {
+      rememberScrollPosition();
+    }
+  });
+
+  setupLivePrefs([
+    'manage.onlyEnabled',
+    'manage.onlyEdited',
+    'show-badge',
+    'popup.stylesFirst'
+  ]);
+
+  [
+    ['enabled-only', $('#manage.onlyEnabled')],
+    ['edited-only', $('#manage.onlyEdited')],
+  ]
+  .forEach(([className, checkbox]) => {
+    checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
+    checkbox.onchange();
+  });
 }
+
+
+function showStyles(styles = []) {
+  const sorted = styles
+    .map(style => ({name: style.name.toLocaleLowerCase(), style}))
+    .sort((a, b) => a.name < b.name ? -1 : a.name == b.name ? 0 : 1);
+  const shouldRenderAll = history.state && history.state.scrollY > innerHeight;
+  const renderBin = document.createDocumentFragment();
+  renderStyles(0);
+  // TODO: remember how many styles fit one page to display just that portion first next time
+  function renderStyles(index) {
+    const t0 = performance.now();
+    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 10)) {
+      renderBin.appendChild(createStyleElement(sorted[index++].style));
+      }
+    if ($('#search').value) {
+      // re-apply filtering on history Back
+      searchStyles(true, renderBin);
+    }
+    installed.appendChild(renderBin);
+    if (index < sorted.length) {
+      setTimeout(renderStyles, 0, index);
+    }
+    else if (shouldRenderAll && history.state && 'scrollY' in history.state) {
+      setTimeout(() => scrollTo(0, history.state.scrollY));
+    }
+  }
+}
+
 
 function createStyleElement(style) {
-	var e = template.style.cloneNode(true);
-	e.setAttribute("class", style.enabled ? "enabled" : "disabled");
-	e.setAttribute("style-id", style.id);
-	if (style.updateUrl) {
-		e.setAttribute("style-update-url", style.updateUrl);
-	}
-	if (style.md5Url) {
-		e.setAttribute("style-md5-url", style.md5Url);
-	}
-	if (style.originalMd5) {
-		e.setAttribute("style-original-md5", style.originalMd5);
-	}
+  const entry = template.style.cloneNode(true);
+  entry.classList.add(style.enabled ? 'enabled' : 'disabled');
+  entry.setAttribute('style-id', style.id);
+  entry.styleId = style.id;
+  if (style.updateUrl) {
+    entry.setAttribute('style-update-url', style.updateUrl);
+  }
+  if (style.md5Url) {
+    entry.setAttribute('style-md5-url', style.md5Url);
+  }
+  if (style.originalMd5) {
+    entry.setAttribute('style-original-md5', style.originalMd5);
+  }
 
-	var styleName = e.querySelector(".style-name");
-	styleName.appendChild(document.createTextNode(style.name));
-	if (style.url) {
-		var homepage = template.styleHomepage.cloneNode(true)
-		homepage.setAttribute("href", style.url);
-		styleName.appendChild(document.createTextNode(" " ));
-		styleName.appendChild(homepage);
-	}
-	var domains = [];
-	var urls = [];
-	var urlPrefixes = [];
-	var regexps = [];
-	function add(array, property) {
-		style.sections.forEach(function(section) {
-			if (section[property]) {
-				section[property].filter(function(value) {
-					return array.indexOf(value) == -1;
-				}).forEach(function(value) {
-					array.push(value);
-				});;
-			}
-		});
-	}
-	add(domains, 'domains');
-	add(urls, 'urls');
-	add(urlPrefixes, 'urlPrefixes');
-	add(regexps, 'regexps');
-	var appliesToToShow = [];
-	if (domains)
-		appliesToToShow = appliesToToShow.concat(domains);
-	if (urls)
-		appliesToToShow = appliesToToShow.concat(urls);
-	if (urlPrefixes)
-		appliesToToShow = appliesToToShow.concat(urlPrefixes.map(function(u) { return u + "*"; }));
-	if (regexps)
-		appliesToToShow = appliesToToShow.concat(regexps.map(function(u) { return "/" + u + "/"; }));
-	var appliesToString = "";
-	var showAppliesToExtra = false;
-	if (appliesToToShow.length == "")
-		appliesToString = t('appliesToEverything');
-	else if (appliesToToShow.length <= 10)
-		appliesToString = appliesToToShow.join(", ");
-	else {
-		appliesToString = appliesToToShow.slice(0, 10).join(", ");
-		showAppliesToExtra = true;
-	}
-	e.querySelector(".applies-to").appendChild(document.createTextNode(t('appliesDisplay', [appliesToString])));
-	if (showAppliesToExtra) {
-		e.querySelector(".applies-to").appendChild(appliesToExtraTemplate.cloneNode(true));
-	}
-	var editLink = e.querySelector(".style-edit-link");
-	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", function(event) {
-		if (!event.altKey) {
-			var left = event.button == 0, middle = event.button == 1,
-				shift = event.shiftKey, ctrl = event.ctrlKey;
-			var openWindow = left && shift && !ctrl;
-			var openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
-			var openForegroundTab = (middle && shift) || (left && ctrl && shift);
-			var url = event.target.href || event.target.parentNode.href;
-			event.preventDefault();
-			event.stopPropagation();
-			if (openWindow || openBackgroundTab || openForegroundTab) {
-				if (openWindow) {
-					var options = prefs.get("windowPosition");
-					options.url = url;
-					chrome.windows.create(options);
-				} else {
-					chrome.runtime.sendMessage({
-						method: "openURL",
-						url: url,
-						active: openForegroundTab
-					});
-				}
-			} else {
-				history.replaceState({scrollY: window.scrollY}, document.title);
-				getActiveTab(function(tab) {
-					sessionStorageHash("manageStylesHistory").set(tab.id, url);
-					location.href = url;
-				});
-			}
-		}
-	});
-	e.querySelector(".enable").addEventListener("click", function(event) { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function(event) { enable(event, false); }, false);
-	e.querySelector(".check-update").addEventListener("click", doCheckUpdate, false);
-	e.querySelector(".update").addEventListener("click", doUpdate, false);
-	e.querySelector(".delete").addEventListener("click", doDelete, false);
-	return e;
+  const styleName = $('.style-name', entry);
+  const styleNameEditLink = $('a', styleName);
+  styleNameEditLink.appendChild(document.createTextNode(style.name));
+  styleNameEditLink.href = styleNameEditLink.getAttribute('href') + style.id;
+  styleNameEditLink.onclick = EntryOnClick.edit;
+  if (style.url) {
+    const homepage = template.styleHomepage.cloneNode(true);
+    homepage.href = style.url;
+    styleName.appendChild(document.createTextNode(' '));
+      styleName.appendChild(homepage);
+    }
+
+  const targets = new Map(TARGET_TYPES.map(t => [t, new Set()]));
+  const decorations = {
+    urlPrefixesAfter: '*',
+    regexpsBefore: '/',
+    regexpsAfter: '/',
+  };
+  for (let [name, target] of targets.entries()) {
+    for (let section of style.sections) {
+      for (let targetValue of section[name] || []) {
+        target.add(
+          (decorations[name + 'Before'] || '') +
+          targetValue.trim() +
+          (decorations[name + 'After'] || ''));
+        }
+        }
+          }
+  const appliesTo = $('.applies-to', entry);
+  appliesTo.firstElementChild.textContent = TARGET_LABEL;
+  const targetsList = Array.prototype.concat.apply([],
+    [...targets.values()].map(set => [...set.values()]));
+  if (!targetsList.length) {
+    appliesTo.appendChild(template.appliesToEverything.cloneNode(true));
+    entry.classList.add('global');
+  } else {
+    let index = 0;
+    let container = appliesTo;
+    for (let target of targetsList) {
+      if (index > 0) {
+        container.appendChild(template.appliesToSeparator.cloneNode(true));
+          }
+      if (++index == TARGET_LIMIT) {
+        container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
+        }
+      const item = template.appliesToTarget.cloneNode(true);
+      item.textContent = target;
+      container.appendChild(item);
+      }
+    }
+
+    const editLink = $('.style-edit-link', entry);
+    editLink.href = editLink.getAttribute('href') + style.id;
+  editLink.onclick = EntryOnClick.edit;
+
+  $('.enable', entry).onclick = EntryOnClick.toggle;
+  $('.disable', entry).onclick = EntryOnClick.toggle;
+  $('.check-update', entry).onclick = EntryOnClick.check;
+  $('.update', entry).onclick = EntryOnClick.update;
+  $('.delete', entry).onclick = EntryOnClick.delete;
+  return entry;
 }
 
-function enable(event, enabled) {
-	var id = getId(event);
-	enableStyle(id, enabled);
+class EntryOnClick {
+
+  static edit(event) {
+    if (event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    const left = event.button == 0, middle = event.button == 1,
+          shift = event.shiftKey, ctrl = event.ctrlKey;
+    const openWindow = left && shift && !ctrl;
+    const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
+    const openForegroundTab = (middle && shift) || (left && ctrl && shift);
+    const url = event.target.closest('[href]').href;
+    if (openWindow || openBackgroundTab || openForegroundTab) {
+      if (openWindow) {
+        chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
+      } else {
+        openURL({url, active: openForegroundTab});
+      }
+    } else {
+      rememberScrollPosition();
+      getActiveTab().then(tab => {
+        sessionStorageHash('manageStylesHistory').set(tab.id, url);
+        location.href = url;
+      });
+    }
+  }
+
+  static toggle(event) {
+    enableStyle(getClickedStyleId(event), this.matches('.enable'))
+      .then(handleUpdate);
+  }
+
+  static check(event) {
+    checkUpdate(getClickedStyleElement(event));
+  }
+
+  static update(event) {
+    const element = getClickedStyleElement(event);
+    const updatedCode = element.updatedCode;
+    // update everything but name
+    delete updatedCode.name;
+    updatedCode.id = element.styleId;
+    updatedCode.reason = 'update';
+    saveStyle(updatedCode)
+      .then(style => handleUpdate(style, {reason: 'update'}));
+      }
+
+  static delete(event) {
+    if (confirm(t('deleteStyleConfirm'))) {
+      deleteStyle(getClickedStyleId(event))
+        .then(handleDelete);
+      }
+    }
+
 }
 
-function doDelete(event) {
-	if (!confirm(t('deleteStyleConfirm'))) {
-		return;
-	}
-	var id = getId(event);
-	deleteStyle(id);
+
+function handleUpdate(style, {reason} = {}) {
+  const element = createStyleElement(style);
+  const oldElement = $(`[style-id="${style.id}"]`, installed);
+  if (!oldElement) {
+    installed.appendChild(element);
+  } else {
+      installed.replaceChild(element, oldElement);
+    if (reason == 'update') {
+      element.classList.add('update-done');
+      $('.update-note', element).innerHTML = t('updateCompleted');
+    }
+  }
+  // align to the bottom of the visible area if wasn't visible
+  element.scrollIntoView(false);
 }
 
-function getId(event) {
-	return getStyleElement(event).getAttribute("style-id");
-}
-
-function getStyleElement(event) {
-	var e = event.target;
-	while (e) {
-		if (e.hasAttribute("style-id")) {
-			return e;
-		}
-		e = e.parentNode;
-	}
-	return null;
-}
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	switch (request.method) {
-		case "styleUpdated":
-		case "styleAdded":
-			handleUpdate(request.style);
-			break;
-		case "styleDeleted":
-			handleDelete(request.id);
-			break;
-	}
-});
-
-function handleUpdate(style) {
-	var element = createStyleElement(style);
-	var oldElement = installed.querySelector(`[style-id="${style.id}"]`);
-	if (!oldElement) {
-		installed.appendChild(element);
-		return;
-	}
-	installed.replaceChild(element, oldElement);
-	if (style.id == lastUpdatedStyleId) {
-		lastUpdatedStyleId = null;
-		element.className = element.className += ' update-done';
-		element.querySelector('.update-note').innerHTML = t('updateCompleted');
-	}
-}
 
 function handleDelete(id) {
-	var node = installed.querySelector("[style-id='" + id + "']");
-	if (node) {
-		installed.removeChild(node);
-	}
+  const node = $(`[style-id="${id}"]`, installed);
+  if (node) {
+    node.remove();
+  }
 }
 
-function doCheckUpdate(event) {
-	checkUpdate(getStyleElement(event));
-}
 
 function applyUpdateAll() {
-	var btnApply = document.getElementById("apply-all-updates");
-	btnApply.disabled = true;
-	setTimeout(function() {
-		btnApply.style.display = "none";
-		btnApply.disabled = false;
-	}, 1000);
+  const btnApply = $('#apply-all-updates');
+  btnApply.disabled = true;
+  setTimeout(() => {
+    btnApply.style.display = 'none';
+    btnApply.disabled = false;
+  }, 1000);
 
-	Array.prototype.forEach.call(document.querySelectorAll(".can-update .update"), function(button) {
-		button.click();
-	});
+  [...document.querySelectorAll('.can-update .update')]
+    .forEach(button => {
+    // align to the bottom of the visible area if wasn't visible
+    button.scrollIntoView(false);
+    button.click();
+  });
 }
+
 
 function checkUpdateAll() {
-	var btnCheck = document.getElementById("check-all-updates");
-	var btnApply = document.getElementById("apply-all-updates");
-	var noUpdates = document.getElementById("update-all-no-updates");
+  const btnCheck = $('#check-all-updates');
+  const btnApply = $('#apply-all-updates');
+  const noUpdates = $('#update-all-no-updates');
 
-	btnCheck.disabled = true;
-	btnApply.classList.add("hidden");
-	noUpdates.classList.add("hidden");
+  btnCheck.disabled = true;
+  btnApply.classList.add('hidden');
+  noUpdates.classList.add('hidden');
 
-	var elements = document.querySelectorAll("[style-update-url]");
-	var toCheckCount = elements.length;
-	var updatableCount = 0;
-	Array.prototype.forEach.call(elements, function(element) {
-		checkUpdate(element, function(success) {
-			if (success) {
-				++updatableCount;
-			}
-			if (--toCheckCount == 0) {
-				btnCheck.disabled = false;
-				if (updatableCount) {
-					btnApply.classList.remove("hidden");
-				} else {
-					noUpdates.classList.remove("hidden");
-					setTimeout(function() {
-						noUpdates.classList.add("hidden");
-					}, 10000);
-				}
-			}
-		});
-	});
-	// notify the automatic updater to reset the next automatic update accordingly
-	chrome.runtime.sendMessage({
-		method: 'resetInterval'
-	});
+  const elements = document.querySelectorAll('[style-update-url]');
+  Promise.all([...elements].map(checkUpdate))
+    .then(updatables => {
+      btnCheck.disabled = false;
+      if (updatables.includes(true)) {
+        btnApply.classList.remove('hidden');
+      } else {
+        noUpdates.classList.remove('hidden');
+        setTimeout(() => {
+          noUpdates.classList.add('hidden');
+        }, 10e3);
+      }
+    });
+
+  // notify the automatic updater to reset the next automatic update accordingly
+  chrome.runtime.sendMessage({
+    method: 'resetInterval'
+  });
 }
 
-function checkUpdate(element, callback) {
-	element.querySelector(".update-note").innerHTML = t('checkingForUpdate');
-	element.className = element.className.replace("checking-update", "").replace("no-update", "").replace("can-update", "") + " checking-update";
-	var id = element.getAttribute("style-id");
-	var url = element.getAttribute("style-update-url");
-	var md5Url = element.getAttribute("style-md5-url");
-	var originalMd5 = element.getAttribute("style-original-md5");
 
-	function handleSuccess(forceUpdate, serverJson) {
-		chrome.runtime.sendMessage({method: "getStyles", id: id}, function(styles) {
-			var style = styles[0];
-			var needsUpdate = false;
-			if (!forceUpdate && styleSectionsEqual(style, serverJson)) {
-				handleNeedsUpdate("no", id, serverJson);
-			} else {
-				handleNeedsUpdate("yes", id, serverJson);
-				needsUpdate = true;
-			}
-			if (callback) {
-				callback(needsUpdate);
-			}
-		});
-	}
-
-	function handleFailure(status) {
-		if (status == 0) {
-			handleNeedsUpdate(t('updateCheckFailServerUnreachable'), id, null);
-		} else {
-			handleNeedsUpdate(t('updateCheckFailBadResponseCode', [status]), id, null);
-		}
-		if (callback) {
-			callback(false);
-		}
-	}
-
-	if (!md5Url || !originalMd5) {
-		checkUpdateFullCode(url, false, handleSuccess, handleFailure)
-	} else {
-		checkUpdateMd5(originalMd5, md5Url, function(needsUpdate) {
-			if (needsUpdate) {
-				// If the md5 shows a change we will update regardless of whether the code looks different
-				checkUpdateFullCode(url, true, handleSuccess, handleFailure);
-			} else {
-				handleNeedsUpdate("no", id, null);
-				if (callback) {
-					callback(false);
-				}
-			}
-		}, handleFailure);
-	}
+function checkUpdate(element) {
+  $('.update-note', element).innerHTML = t('checkingForUpdate');
+  element.classList.remove('checking-update', 'no-update', 'can-update');
+  element.classList.add('checking-update');
+  return new Updater(element).run();
 }
 
-function checkUpdateFullCode(url, forceUpdate, successCallback, failureCallback) {
-	download(url, function(responseText) {
-		successCallback(forceUpdate, JSON.parse(responseText));
-	}, failureCallback);
+
+class Updater {
+  constructor(element) {
+    Object.assign(this, {
+      element,
+      id: element.getAttribute('style-id'),
+      url: element.getAttribute('style-update-url'),
+      md5Url: element.getAttribute('style-md5-url'),
+      md5: element.getAttribute('style-original-md5'),
+    });
+  }
+
+  run() {
+    return this.md5Url && this.md5
+      ? this.checkMd5()
+      : this.checkFullCode();
+  }
+
+  checkMd5() {
+    return this.download(this.md5Url).then(
+      md5 => md5.length == 32
+        ? this.decideOnMd5(md5 != this.md5)
+        : this.onFailure(-1),
+      this.onFailure);
+  }
+
+  decideOnMd5(md5changed) {
+    if (md5changed) {
+      return this.checkFullCode({forceUpdate: true});
+    }
+    this.display();
+  }
+
+  checkFullCode({forceUpdate = false} = {}) {
+    return this.download(this.url).then(
+      text => this.handleJson(forceUpdate, JSON.parse(text)),
+      this.onFailure);
+  }
+
+  handleJson(forceUpdate, json) {
+    return getStylesSafe({id: this.id}).then(([style]) => {
+      const needsUpdate = forceUpdate || !styleSectionsEqual(style, json);
+      this.display({json: needsUpdate && json});
+      return needsUpdate;
+    });
+  }
+
+  onFailure(status) {
+    this.display({
+      message: status == 0
+        ? t('updateCheckFailServerUnreachable')
+        : t('updateCheckFailBadResponseCode', [status]),
+    });
+  }
+
+  display({json, message} = {}) {
+    // json on success
+    // message on failure
+    // none on update not needed
+    this.element.classList.remove('checking-update');
+    if (json) {
+      this.element.classList.add('can-update');
+      this.element.updatedCode = json;
+      $('.update-note', this.element).innerHTML = '';
+    } else {
+      this.element.classList.add('no-update');
+      $('.update-note', this.element).innerHTML = message || t('updateCheckSucceededNoUpdate');
+      }
+    }
+
+  download(url) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onloadend = () => xhr.status == 200
+        ? resolve(xhr.responseText)
+        : reject(xhr.status);
+      if (url.length > 2000) {
+        const [mainUrl, query] = url.split('?');
+        xhr.open('POST', mainUrl, true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(query);
+      } else {
+        xhr.open('GET', url);
+        xhr.send();
+      }
+    });
+  }
+
 }
 
-function checkUpdateMd5(originalMd5, md5Url, successCallback, failureCallback) {
-	download(md5Url, function(responseText) {
-		if (responseText.length != 32) {
-			failureCallback(-1);
-			return;
-		}
-		successCallback(responseText != originalMd5);
-	}, failureCallback);
+
+function searchStyles(immediately, bin) {
+  const query = $('#search').value.toLocaleLowerCase();
+  if (query == (searchStyles.lastQuery || '') && !bin) {
+    return;
+  }
+  searchStyles.lastQuery = query;
+  if (!immediately) {
+    clearTimeout(searchStyles.timeout);
+    searchStyles.timeout = setTimeout(doSearch, 200, true);
+    return;
+  }
+
+  for (let element of (bin || installed).children) {
+    const {style} = cachedStyles.byId.get(element.styleId) || {};
+    if (style) {
+      const isMatching = !query || isMatchingText(style.name) || isMatchingStyle(style);
+      element.style.display = isMatching ? '' : 'none';
+    }
+  }
+
+  function isMatchingStyle(style) {
+    for (let section of style.sections) {
+      for (let prop in section) {
+        const value = section[prop];
+        switch (typeof value) {
+          case 'string':
+            if (isMatchingText(value)) {
+              return true;
+            }
+            break;
+          case 'object':
+            for (let str of value) {
+              if (isMatchingText(str)) {
+                return true;
+              }
+            }
+            break;
+        }
+      }
+    }
+  }
+
+  function isMatchingText(text) {
+    return text.toLocaleLowerCase().indexOf(query) >= 0;
+  }
 }
 
-function download(url, successCallback, failureCallback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function (aEvt) {
-		if (xhr.readyState == 4) {
-			if (xhr.status == 200) {
-				successCallback(xhr.responseText)
-			} else {
-				failureCallback(xhr.status);
-			}
-		}
-	}
-	if (url.length > 2000) {
-		var parts = url.split("?");
-		xhr.open("POST", parts[0], true);
-		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xhr.send(parts[1]);
-	} else {
-		xhr.open("GET", url, true);
-		xhr.send();
-	}
+
+function getClickedStyleId(event) {
+  return (getClickedStyleElement(event) || {}).styleId;
 }
 
-function handleNeedsUpdate(needsUpdate, id, serverJson) {
-	var e = document.querySelector("[style-id='" + id + "']");
-	e.className = e.className.replace("checking-update", "");
-	switch (needsUpdate) {
-		case "yes":
-			e.className += " can-update";
-			e.updatedCode = serverJson;
-			e.querySelector(".update-note").innerHTML = '';
-			break;
-		case "no":
-			e.className += " no-update";
-			e.querySelector(".update-note").innerHTML = t('updateCheckSucceededNoUpdate');
-			break;
-		default:
-			e.className += " no-update";
-			e.querySelector(".update-note").innerHTML = needsUpdate;
-	}
+
+function getClickedStyleElement(event) {
+  return event.target.closest('.entry');
 }
 
-function doUpdate(event) {
-	var element = getStyleElement(event);
 
-	var updatedCode = element.updatedCode;
-	// update everything but name
-	delete updatedCode.name;
-	updatedCode.id = element.getAttribute('style-id');
-	updatedCode.method = "saveStyle";
-
-	// updating the UI will be handled by the general update listener
-	lastUpdatedStyleId = updatedCode.id;
-	chrome.runtime.sendMessage(updatedCode, function () {});
+function rememberScrollPosition() {
+  history.replaceState({scrollY}, document.title);
 }
 
-function searchStyles(immediately) {
-	var query = document.getElementById("search").value.toLocaleLowerCase();
-	if (query == (searchStyles.lastQuery || "")) {
-		return;
-	}
-	searchStyles.lastQuery = query;
-	if (immediately) {
-		doSearch();
-	} else {
-		clearTimeout(searchStyles.timeout);
-		searchStyles.timeout = setTimeout(doSearch, 100);
-	}
-	function doSearch() {
-		chrome.runtime.sendMessage({method: "getStyles"}, function(styles) {
-			styles.forEach(function(style) {
-				var el = document.querySelector("[style-id='" + style.id + "']");
-				if (el) {
-					el.style.display = !query || isMatchingText(style.name) || isMatchingStyle(style) ? "" : "none";
-				}
-			});
-		});
-	}
-	function isMatchingStyle(style) {
-		return style.sections.some(function(section) {
-			return Object.keys(section).some(function(key) {
-				var value = section[key];
-				switch (typeof value) {
-					case "string": return isMatchingText(value);
-					case "object": return value.some(isMatchingText);
-				}
-			});
-		});
-	}
-	function isMatchingText(text) {
-		return text.toLocaleLowerCase().indexOf(query) >= 0;
-	}
+
+function $(selector, base = document) {
+  if (selector.startsWith('#') && /^#[^,\s]+$/.test(selector)) {
+    return document.getElementById(selector.slice(1));
+    } else {
+    return base.querySelector(selector);
+    }
 }
-
-function onFilterChange (className, event) {
-	installed.classList.toggle(className, event.target.checked);
-}
-function initFilter(className, node) {
-	node.addEventListener("change", onFilterChange.bind(undefined, className), false);
-	onFilterChange(className, {target: node});
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-	installed = document.getElementById("installed");
-	if (document.stylishStyles) {
-		showStyles(document.stylishStyles);
-		delete document.stylishStyles;
-	}
-
-	document.getElementById("check-all-updates").addEventListener("click", checkUpdateAll);
-	document.getElementById("apply-all-updates").addEventListener("click", applyUpdateAll);
-	document.getElementById("search").addEventListener("input", searchStyles);
-	searchStyles(true); // re-apply filtering on history Back
-
-	setupLivePrefs([
-		"manage.onlyEnabled",
-		"manage.onlyEdited",
-		"show-badge",
-		"popup.stylesFirst"
-	]);
-	initFilter("enabled-only", document.getElementById("manage.onlyEnabled"));
-	initFilter("edited-only", document.getElementById("manage.onlyEdited"));
-});

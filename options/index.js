@@ -7,6 +7,7 @@ function restore () {
     document.getElementById('badgeNormal').value = bg.prefs.get('badgeNormal');
     document.getElementById('popupWidth').value = localStorage.getItem('popupWidth') || '246';
     document.getElementById('updateInterval').value = bg.prefs.get('updateInterval');
+    enforceValueRange('popupWidth');
   });
 }
 
@@ -14,7 +15,7 @@ function save () {
   chrome.runtime.getBackgroundPage(bg => {
     bg.prefs.set('badgeDisabled', document.getElementById('badgeDisabled').value);
     bg.prefs.set('badgeNormal', document.getElementById('badgeNormal').value);
-    localStorage.setItem('popupWidth', document.getElementById('popupWidth').value);
+    localStorage.setItem('popupWidth', enforceValueRange('popupWidth'));
     bg.prefs.set(
       'updateInterval',
       Math.max(0, +document.getElementById('updateInterval').value)
@@ -24,6 +25,19 @@ function save () {
     status.textContent = 'Options saved.';
     setTimeout(() => status.textContent = '', 750);
   });
+}
+
+function enforceValueRange(id) {
+  let element = document.getElementById(id);
+  let value = Number(element.value);
+  const min = Number(element.min);
+  const max = Number(element.max);
+  if (value < min || value > max) {
+    value = Math.max(min, Math.min(max, value));
+    element.value = value;
+  }
+  element.onchange = element.onchange || (() => enforceValueRange(id));
+  return value;
 }
 
 document.addEventListener('DOMContentLoaded', restore);
