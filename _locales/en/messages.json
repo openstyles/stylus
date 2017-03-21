@@ -191,6 +191,10 @@
     "message": "Enable",
     "description": "Label for the button to enable a style"
   },
+  "editDeleteText": {
+    "message": "Delete",
+    "description": "Label for the context menu item in the editor to delete selected text"
+  },
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

@@ -325,6 +325,7 @@ function setupCodeMirror(textarea, index) {
 		hotkeyRerouter.setState(false);
 		cm.display.wrapper.classList.add("CodeMirror-active");
 	});
+	cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -1168,10 +1169,27 @@ function initHooks() {
 		document.querySelector("#lint h2").addEventListener("click", toggleLintReport);
 	}
 
+	document.querySelectorAll(
+		'input:not([type]), input[type="text"], input[type="search"], input[type="number"]')
+		.forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
+
 	setupGlobalSearch();
 	setCleanGlobal();
 	updateTitle();
 }
+
+
+function toggleContextMenuDelete(event) {
+	if (event.button == 2) {
+		chrome.contextMenus.update('editDeleteText', {
+			enabled: Boolean(
+				this.selectionStart != this.selectionEnd ||
+				this.somethingSelected && this.somethingSelected()
+			),
+		});
+	}
+}
+
 
 function maximizeCodeHeight(sectionDiv, isLast) {
 	var cm = sectionDiv.CodeMirror;
@@ -1662,6 +1680,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			if (request.prefName == "editor.smartIndent") {
 				CodeMirror.setOption("smartIndent", request.value);
 			}
+			break;
+		case 'editDeleteText':
+			document.execCommand('delete');
+			break;
 	}
 });
 

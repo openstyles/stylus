@@ -116,6 +116,23 @@ const contextMenus = {
 	},
 };
 
+// detect browsers without Delete by looking at the end of UA string
+// Google Chrome: Safari/#
+// but skip CentBrowser: Safari/# plus Shockwave Flash in plugins
+// Vivaldi: Vivaldi/#
+if (/Vivaldi\/[\d.]+$/.test(navigator.userAgent)
+	|| /Safari\/[\d.]+$/.test(navigator.userAgent)
+	&& ![...navigator.plugins].some(p => p.name == 'Shockwave Flash')) {
+	contextMenus.editDeleteText = {
+		title: 'editDeleteText',
+		contexts: ['editable'],
+		documentUrlPatterns: [OWN_ORIGIN + 'edit*'],
+		click: (info, tab) => {
+			chrome.tabs.sendMessage(tab.id, {method: 'editDeleteText'});
+		},
+	};
+}
+
 chrome.contextMenus.onClicked.addListener((info, tab) =>
 	contextMenus[info.menuItemId].click(info, tab));
 
