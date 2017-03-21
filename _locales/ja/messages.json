@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla 形式のコードは、Stylus for Firefox で使用することができ、userstyles.org に投稿することができます。",
+		"message": "Mozilla 形式のコードは、Stylish for Firefox で使用することができ、userstyles.org に投稿することができます。",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {

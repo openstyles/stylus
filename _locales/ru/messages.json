@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Формат кода Mozilla можно использовать в сочетании с форматом Stylus для Firefox и отправлять на сайт userstyles.org.",
+		"message": "Формат кода Mozilla можно использовать в сочетании с форматом Stylish для Firefox и отправлять на сайт userstyles.org.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {

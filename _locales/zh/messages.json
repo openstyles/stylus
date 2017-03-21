@@ -80,7 +80,7 @@
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "用于Firefox上的Stylus的Mozilla格式样式代码可以在 userstyles.org 上提交",
+		"message": "用于Firefox上的Stylish的Mozilla格式样式代码可以在 userstyles.org 上提交",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
