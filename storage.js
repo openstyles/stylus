@@ -175,9 +175,11 @@ function filterStyles(options = {}) {
 	const cached = cachedStyles.filters.get(cacheKey);
 	if (cached) {
 		//console.log('%c%s filterStyles REUSED RESPONSE %s', 'color:gray', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+		cached.hits++;
+		cached.lastHit = Date.now();
 		return asHash
-			? Object.assign({disableAll: prefs.get('disableAll', false)}, cached)
-			: cached;
+			? Object.assign({disableAll: prefs.get('disableAll', false)}, cached.styles)
+			: cached.styles;
 	}
 
 	const styles = id == null
@@ -204,10 +206,47 @@ function filterStyles(options = {}) {
 		}
 	}
 	//console.log('%s filterStyles %s', (performance.now() - t0).toFixed(1), JSON.stringify(options))
-	cachedStyles.filters.set(cacheKey, filtered);
+	cachedStyles.filters.set(cacheKey, {
+		styles: filtered,
+		lastHit: Date.now(),
+		hits: 1,
+	});
+	if (cachedStyles.filters.size > 10000) {
+		cleanupCachedFilters();
+	}
 	return asHash
 		? Object.assign({disableAll: prefs.get('disableAll', false)}, filtered)
 		: filtered;
+}
+
+
+function cleanupCachedFilters({force = false} = {}) {
+	if (!force) {
+		// sliding timer for 1 second
+		clearTimeout(cleanupCachedFilters.timeout);
+		cleanupCachedFilters.timeout = setTimeout(cleanupCachedFilters, 1000, {force: true});
+		return;
+	}
+	const size = cachedStyles.filters.size;
+	const oldestHit = cachedStyles.filters.values().next().value.lastHit;
+	const now = Date.now();
+	const timeSpan = now - oldestHit;
+	const recencyWeight = 5 / size;
+	const hitWeight = 1 / 4; // we make ~4 hits per URL
+	const lastHitWeight = 10;
+	// delete the oldest 10%
+	const sorted = [...cachedStyles.filters.entries()]
+		.map(([id, v], index) => ({
+			id,
+			weight:
+				index * recencyWeight +
+				v.hits * hitWeight +
+				(v.lastHit - oldestHit) / timeSpan * lastHitWeight,
+		}))
+		.sort((a, b) => a.weight - b.weight)
+		.slice(0, size / 10 + 1)
+		.forEach(({id}) => cachedStyles.filters.delete(id));
+	cleanupCachedFilters.timeout = 0;
 }
 
 
