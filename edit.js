@@ -1551,8 +1551,8 @@ function showKeyMapHelp() {
 			cell.innerHTML = cell.textContent;
 		});
 	}
-	function mergeKeyMaps(merged) {
-		[].slice.call(arguments, 1).forEach(function(keyMap) {
+	function mergeKeyMaps(merged, ...more) {
+		more.forEach(keyMap => {
 			if (typeof keyMap == "string") {
 				keyMap = CodeMirror.keyMap[keyMap];
 			}
