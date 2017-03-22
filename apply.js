@@ -84,7 +84,8 @@ function disableAll(disable) {
 
 	function disableSheets(disable, doc) {
 		Array.prototype.forEach.call(doc.styleSheets, function(stylesheet) {
-			if (stylesheet.ownerNode.classList.contains("stylus")) {
+			if (stylesheet.ownerNode.classList.contains("stylus")
+			&& stylesheet.disabled != disable) {
 				stylesheet.disabled = disable;
 			}
 		});
