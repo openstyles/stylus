@@ -169,7 +169,7 @@
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Styles von userstyles.org beziehen</a><br><a href='https://userstyles.org/help/stylish_chrome'>Hilfeseite anzeigen</a>",
+		"message": "<a href='https://userstyles.org'>Styles von userstyles.org beziehen</a> | <a href='http://add0n.com/stylus.html'>Hilfeseite anzeigen</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {

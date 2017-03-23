@@ -165,7 +165,7 @@
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='https://userstyles.org/help/stylish_chrome'>获取帮助</a>",
+		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='http://add0n.com/stylus.html'>获取帮助</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {

@@ -34,7 +34,7 @@
   },
   "appliesLabel": {
     "message": "Applies to",
-    "description": "Label for 'applies to' fields on the edit\/add screen"
+    "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesRegexpOption": {
     "message": "URLs matching the regexp",
@@ -244,7 +244,7 @@
     "description": "Label for the CSSLint issues block on the style edit page"
   },
   "issuesHelp": {
-    "message": "The issues found by <a href='https:\/\/github.com\/CSSLint\/csslint' target='_blank'>CSSLint<\/a> with these rules enabled:",
+    "message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
     "description": "Help popup message for the CSSLint issues block on the style edit page"
   },
   "manageFilters": {
@@ -264,7 +264,7 @@
     "description": "Checkbox to show only locally edited styles"
   },
   "manageText": {
-    "message": "<a href='https:\/\/userstyles.org'>Get styles on userstyles.org<\/a> | <a href='https:\/\/userstyles.org\/help\/stylish_chrome'>Get help<\/a>",
+    "message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
     "description": "Help text on the manage page"
   },
   "manageTitle": {

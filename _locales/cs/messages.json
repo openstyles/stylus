@@ -117,7 +117,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Získat pomoc</a>",
+		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Získat pomoc</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
