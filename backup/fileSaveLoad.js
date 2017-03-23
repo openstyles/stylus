@@ -59,7 +59,7 @@ function importFromString(jsonString) {
       const nextStyle = json.shift();
       if (nextStyle) {
         saveStyle(nextStyle, {notify: false}).then(style => {
-          handleUpdate(style);
+          handleUpdate(style, {reason: 'import'});
           setTimeout(proceed, 0);
         });
       } else {

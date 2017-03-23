@@ -42,7 +42,7 @@ a.homepage {
 
 .entry {
   margin: 0;
-  padding: 1.25em 2em 1.5em;
+  padding: 1.25em 2em;
   border-top: 1px solid #ddd;
 }
 
@@ -71,6 +71,11 @@ a.homepage {
   color: inherit;
 }
 
+.style-name-link:hover {
+  text-decoration: underline;
+  color: black;
+}
+
 .applies-to {
   word-break: break-word;
 }
@@ -79,6 +84,19 @@ a.homepage {
 .actions {
   padding-left: 15px;
   margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.actions > * {
+  margin-bottom: .25rem;
+}
+
+.actions > *:not(:last-child) {
+  margin-right: .25rem;
 }
 
 .applies-to > :first-child {
@@ -158,6 +176,20 @@ a.homepage {
 
 .update-done .check-update {
   display: none;
+}
+
+/* highlight updated/added styles */
+.highlight {
+  animation: highlight 10s cubic-bezier(0,.82,.47,.98);
+}
+
+@keyframes highlight {
+  from {
+    background-color: rgba(128, 128, 128, .5);
+  }
+  to {
+    background-color: none;
+  }
 }
 
 .hidden {

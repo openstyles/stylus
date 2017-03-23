@@ -232,6 +232,11 @@ class EntryOnClick {
 function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement(style);
   const oldElement = $(`[style-id="${style.id}"]`, installed);
+  element.addEventListener('animationend', function _() {
+    element.removeEventListener('animationend', _);
+    element.classList.remove('highlight');
+  });
+  element.classList.add('highlight');
   if (!oldElement) {
     installed.appendChild(element);
   } else {
@@ -241,8 +246,11 @@ function handleUpdate(style, {reason} = {}) {
       $('.update-note', element).innerHTML = t('updateCompleted');
     }
   }
-  // align to the bottom of the visible area if wasn't visible
-  element.scrollIntoView(false);
+  // align to the top/bottom of the visible area if wasn't visible
+  const bounds = element.getBoundingClientRect();
+  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
+    element.scrollIntoView(bounds.top < 0 );
+  }
 }
 
 
