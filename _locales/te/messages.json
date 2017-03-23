@@ -168,7 +168,7 @@
 		"message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {

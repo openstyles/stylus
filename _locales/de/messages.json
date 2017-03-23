@@ -83,7 +83,7 @@
 		"message": "Hilfe",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Löschen",
 		"description": ""
 	},

@@ -212,7 +212,7 @@
 		"message": "¿Está seguro de que quiere eliminar este estilo?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {

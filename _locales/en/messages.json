@@ -141,6 +141,9 @@
     "description": "Drag'n'drop message"
   },
   "confirmOK": {
+    "message": "OK"
+  },
+  "confirmDelete": {
     "message": "Delete"
   },
   "confirmCancel": {

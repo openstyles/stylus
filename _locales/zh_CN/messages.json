@@ -79,7 +79,7 @@
 		"message": "帮助",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "确定",
 		"description": ""
 	},

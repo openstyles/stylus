@@ -168,7 +168,7 @@
 		"message": "Tem certeza de que deseja excluir este estilo?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {

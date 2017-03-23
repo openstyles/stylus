@@ -168,7 +168,7 @@
 		"message": "このスタイルを削除してもよろしいですか？",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
