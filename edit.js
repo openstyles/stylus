@@ -881,10 +881,10 @@ function updateLintReport(cm, delay) {
 		var changed = false;
 		var fixedOldIssues = false;
 		scope.forEach(function(cm) {
-			var state = cm.state.lint;
+			var state = cm.state.lint || {};
 			var oldMarkers = state.markedLast || {};
 			var newMarkers = {};
-			var html = state.marked.length == 0 ? "" : "<tbody>" +
+			var html = !state.marked || state.marked.length == 0 ? "" : "<tbody>" +
 				state.marked.map(function(mark) {
 					var info = mark.__annotation;
 					var isActiveLine = info.from.line == cm.getCursor().line;
