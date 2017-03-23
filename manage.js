@@ -70,6 +70,7 @@ function showStyles(styles = []) {
     .sort((a, b) => a.name < b.name ? -1 : a.name == b.name ? 0 : 1);
   const shouldRenderAll = history.state && history.state.scrollY > innerHeight;
   const renderBin = document.createDocumentFragment();
+  tDocLoader.stop();
   renderStyles(0);
   // TODO: remember how many styles fit one page to display just that portion first next time
   function renderStyles(index) {

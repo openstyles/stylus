@@ -66,17 +66,26 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
 	// localize HEAD
-	tNodeList(document.querySelectorAll("*"));
+	tNodeList(document.all);
 
 	// localize BODY
-	var observer = new MutationObserver(function(mutations) {
+	const observer = new MutationObserver(function(mutations) {
 		for (var m = 0; m < mutations.length; m++) {
 			tNodeList(mutations[m].addedNodes);
 		}
 	});
-	observer.observe(document, {subtree: true, childList: true});
-	document.addEventListener("DOMContentLoaded", function() {
+
+	const onLoad = () => {
+		tDocLoader.stop();
+		tNodeList(document.all);
+	};
+	tDocLoader.start = () => {
+		observer.observe(document, {subtree: true, childList: true});
+	};
+	tDocLoader.stop = () => {
 		observer.disconnect();
-		tNodeList(document.querySelectorAll("*"));
-	});
+		document.removeEventListener('DOMContentLoaded', onLoad);
+	};
+	tDocLoader.start();
+	document.addEventListener('DOMContentLoaded', onLoad);
 }
