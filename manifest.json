@@ -6,9 +6,10 @@
   "homepage_url": "http://add0n.com/stylus.html",
   "manifest_version": 2,
   "icons": {
-    "16": "16.png",
-    "48": "48.png",
-    "128": "128.png"
+    "16": "/images/icon/16.png",
+    "32": "/images/icon/32.png",
+    "48": "/images/icon/48.png",
+    "128": "/images/icon/128.png"
   },
   "permissions": [
     "tabs",
@@ -44,10 +45,10 @@
   ],
   "browser_action": {
     "default_icon": {
-      "16": "16w.png",
-      "32": "32w.png",
-      "19": "19w.png",
-      "38": "38w.png"
+      "16": "/images/icon/16w.png",
+      "32": "/images/icon/32w.png",
+      "19": "/images/icon/19w.png",
+      "38": "/images/icon/38w.png"
     },
     "default_title": "Stylus",
     "default_popup": "popup.html"

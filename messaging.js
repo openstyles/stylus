@@ -94,9 +94,9 @@ function updateIcon(tab, styles) {
 		chrome.browserAction.setIcon({
 			path: {
 				// Material Design 2016 new size is 16px
-				16: '16' + postfix + '.png', 32: '32' + postfix + '.png',
+				16: `/images/icon/16${postfix}.png`, 32: `/images/icon/32${postfix}.png`,
 				// Chromium forks or non-chromium browsers may still use the traditional 19px
-				19: '19' + postfix + '.png', 38: '38' + postfix + '.png',
+				19: `/images/icon/19${postfix}.png`, 38: `/images/icon/38${postfix}.png`,
 			},
 			tabId: tab.id
 		}, () => {
