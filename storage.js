@@ -367,13 +367,17 @@ function getDomains(url) {
 
 
 function getType(o) {
-	if (typeof o == "undefined" || typeof o == "string") {
+	if (typeof o == 'undefined' || typeof o == 'string') {
 		return typeof o;
 	}
-	if (o instanceof Array) {
-		return "array";
+	// with the persistent cachedStyles the Array reference is usually different
+  // so let's check for e.g. type of 'every' which is only present on arrays
+  // (in the context of our extension)
+	if (o instanceof Array || typeof o.every == 'function') {
+		return 'array';
 	}
-	throw "Not supported - " + o;
+	console.warn('Unsupported type:', o);
+	return 'undefined';
 }
 
 const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
@@ -752,29 +756,56 @@ function styleSectionsEqual(styleA, styleB) {
 	if (styleA.sections.length != styleB.sections.length) {
 		return false;
 	}
-	const properties = ['code', 'urlPrefixes', 'urls', 'domains', 'regexps'];
-	return styleA.sections.every(sectionA =>
-		styleB.sections.some(sectionB =>
-			properties.every(property => sectionEquals(sectionA, sectionB, property))
-		)
-	);
-
-	function sectionEquals(a, b, property) {
-		const aProp = a[property], typeA = getType(aProp);
-		const bProp = b[property], typeB = getType(bProp);
-		if (typeA != typeB) {
-			// consider empty arrays equivalent to lack of property
-			return ((typeA == 'undefined' || (typeA == 'array' && aProp.length == 0)) &&
-				(typeB == 'undefined' || (typeB == 'array' && bProp.length == 0)));
+	const propNames = ['code', 'urlPrefixes', 'urls', 'domains', 'regexps'];
+	const typeBcaches = [];
+	checkingEveryInA: for (let sectionA of styleA.sections) {
+		const typeAcache = new Map();
+		for (let name of propNames) {
+			typeAcache.set(name, getType(sectionA[name]));
 		}
-		if (typeA == 'undefined') {
-			return true;
+		lookingForDupeInB: for (let i = 0, sectionB; (sectionB = styleB.sections[i]); i++) {
+			const typeBcache = typeBcaches[i] = typeBcaches[i] || new Map();
+			comparingProps: for (let name of propNames) {
+				const propA = sectionA[name], typeA = typeAcache.get(name);
+				const propB = sectionB[name];
+				let typeB = typeBcache.get(name);
+				if (!typeB) {
+					typeB = getType(propB);
+					typeBcache.set(name, typeB);
+				}
+				if (typeA != typeB) {
+					const bothEmptyOrUndefined =
+						(typeA == 'undefined' || (typeA == 'array' && propA.length == 0)) &&
+						(typeB == 'undefined' || (typeB == 'array' && propB.length == 0));
+					if (bothEmptyOrUndefined) {
+						continue comparingProps;
+					} else {
+						continue lookingForDupeInB;
+					}
+				}
+				if (typeA == 'undefined') {
+					continue comparingProps;
+				}
+				if (typeA == 'array') {
+					if (propA.length != propB.length) {
+						continue lookingForDupeInB;
+					}
+					for (let item of propA) {
+						if (propB.indexOf(item) < 0) {
+							continue lookingForDupeInB;
+						}
+					}
+					continue comparingProps;
+				}
+				if (typeA == 'string' && propA != propB) {
+					continue lookingForDupeInB;
+				}
+			}
+			// dupe found
+			continue checkingEveryInA;
 		}
-		if (typeA == 'array') {
-			return aProp.length == bProp.length && aProp.every(item => bProp.includes(item));
-		}
-		if (typeA == 'string') {
-			return aProp == bProp;
-		}
+		// dupe not found
+		return false;
 	}
+	return true;
 }
