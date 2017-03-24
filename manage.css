@@ -111,9 +111,12 @@ a.homepage {
   display: inline;
 }
 
-.applies-to-extra summary {
+summary {
   font-weight: bold;
   cursor: pointer;
+}
+
+.applies-to-extra summary {
   list-style-type: none; /* for FF, allegedly */
 }
 
@@ -253,6 +256,19 @@ fieldset {
 .fadeout.dropzone:after {
   animation: fadeout .25s ease-in-out;
   animation-fill-mode: both;
+}
+
+/* post-import report */
+#message-box details:not([data-id="invalid"]) div:hover {
+  background-color: rgba(128, 128, 128, .3);
+}
+
+#message-box details:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+#message-box details small div {
+    margin-left: 1.5em;
 }
 
 @keyframes fadein {

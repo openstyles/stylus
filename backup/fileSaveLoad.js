@@ -1,9 +1,8 @@
 /* globals getStyles, saveStyle, invalidateCache, refreshAllTabs, handleUpdate */
 'use strict';
 
-var STYLISH_DUMP_FILE_EXT = '.txt';
-var STYLISH_DUMPFILE_EXTENSION = '.json';
-var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyyy' + STYLISH_DUMP_FILE_EXT;
+const STYLISH_DUMP_FILE_EXT = '.txt';
+const STYLUS_BACKUP_FILE_EXT = '.json';
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -47,52 +46,184 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 function importFromString(jsonString) {
   const json = runTryCatch(() => Array.from(JSON.parse(jsonString))) || [];
-  const numStyles = json.length;
+  const oldStyles = json.length && deepCopyStyles();
+  const oldStylesByName = json.length && new Map(
+    oldStyles.map(style => [style.name.trim(), style]));
+  const stats = {
+    added: {names: [], ids: [], legend: 'added'},
+    unchanged: {names: [], ids: [], legend: 'identical skipped'},
+    metaAndCode: {names: [], ids: [], legend: 'updated both meta info and code'},
+    metaOnly: {names: [], ids: [], legend: 'updated meta info'},
+    codeOnly: {names: [], ids: [], legend: 'updated code'},
+    invalid: {names: [], legend: 'invalid skipped'},
+  };
+  let index = 0;
+  return new Promise(proceed);
 
-  if (numStyles) {
-    invalidateCache(true);
+  function proceed(resolve) {
+    while (index < json.length) {
+      const item = json[index++];
+      if (!item || !item.name || !item.name.trim() || typeof item != 'object'
+      || (item.sections && !(item.sections instanceof Array))) {
+        stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
+        continue;
+      }
+      item.name = item.name.trim();
+      const byId = (cachedStyles.byId.get(item.id) || {}).style;
+      const byName = oldStylesByName.get(item.name);
+      const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
+      if (oldStyle == byName && byName) {
+        item.id = byName.id;
+      }
+      const oldStyleKeys = oldStyle && Object.keys(oldStyle);
+      const metaEqual = oldStyleKeys &&
+        oldStyleKeys.length == Object.keys(item).length &&
+        oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
+      const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
+      if (metaEqual && codeEqual) {
+        stats.unchanged.names.push(oldStyle.name);
+        stats.unchanged.ids.push(oldStyle.id);
+        continue;
+      }
+      saveStyle(item, {notify: false}).then(style => {
+        handleUpdate(style, {reason: 'import'});
+        setTimeout(proceed, 0, resolve);
+        if (!oldStyle) {
+          stats.added.names.push(style.name);
+          stats.added.ids.push(style.id);
+        }
+        else if (!metaEqual && !codeEqual) {
+          stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
+          stats.metaAndCode.ids.push(style.id);
+        }
+        else if (!codeEqual) {
+          stats.codeOnly.names.push(style.name);
+          stats.codeOnly.ids.push(style.id);
+        }
+        else {
+          stats.metaOnly.names.push(reportNameChange(oldStyle, style));
+          stats.metaOnly.ids.push(style.id);
+        }
+      });
+      return;
+    }
+    done(resolve);
   }
 
-  return new Promise(resolve => {
-    proceed();
-    function proceed() {
-      const nextStyle = json.shift();
-      if (nextStyle) {
-        saveStyle(nextStyle, {notify: false}).then(style => {
-          handleUpdate(style, {reason: 'import'});
-          setTimeout(proceed, 0);
-        });
-      } else {
-        refreshAllTabs().then(() => {
-          scrollTo(0, 0);
-          setTimeout(alert, 100, numStyles + ' styles installed/updated');
-          resolve(numStyles);
-        });
+  function done(resolve) {
+    const numChanged = stats.metaAndCode.names.length +
+      stats.metaOnly.names.length +
+      stats.codeOnly.names.length +
+      stats.added.names.length;
+    Promise.resolve(numChanged && refreshAllTabs()).then(() => {
+      scrollTo(0, 0);
+      const report = Object.keys(stats)
+        .filter(kind => stats[kind].names.length)
+        .map(kind => `<details data-id="${kind}">
+            <summary><b>${stats[kind].names.length} ${stats[kind].legend}</b></summary>
+            <small>` + stats[kind].names.map((name, i) =>
+                `<div data-id="${stats[kind].ids[i]}">${name}</div>`).join('') + `
+            </small>
+          </details>`)
+        .join('');
+      const box = messageBox({
+        title: 'Finished importing styles',
+        contents: report || 'Nothing was changed.',
+        buttons: [t('confirmOK'), numChanged && t('undo')],
+        onclick: btnIndex => btnIndex == 1 && undo(),
+      });
+      bindClick(box);
+      resolve(numChanged);
+    });
+  }
+
+  function undo() {
+    const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
+    const newIds = [
+      ...stats.metaAndCode.ids,
+      ...stats.metaOnly.ids,
+      ...stats.codeOnly.ids,
+      ...stats.added.ids,
+    ];
+    index = 0;
+    return new Promise(undoNextId)
+      .then(refreshAllTabs)
+      .then(() => messageBox({
+        title: 'Import has been undone',
+        contents: newIds.length + ' styles were reverted.',
+        buttons: [t('confirmOK')],
+      }));
+    function undoNextId(resolve) {
+      if (index == newIds.length) {
+        resolve();
+        return;
+      }
+      const id = newIds[index++];
+      deleteStyle(id, {notify: false}).then(id => {
+        handleDelete(id);
+        const oldStyle = oldStylesById.get(id);
+        if (oldStyle) {
+          saveStyle(Object.assign(oldStyle, {reason: 'undoImport'}), {notify: false})
+            .then(handleUpdate)
+            .then(() => setTimeout(undoNextId, 0, resolve));
+        } else {
+          setTimeout(undoNextId, 0, resolve);
+        }
+      });
+    }
+  }
+
+  function bindClick(box) {
+    for (let block of [...box.querySelectorAll('details')]) {
+      if (block.dataset.id != 'invalid') {
+        block.style.cursor = 'pointer';
+        block.onclick = event => {
+          const styleElement = $(`[style-id="${event.target.dataset.id}"]`);
+          if (styleElement) {
+            scrollElementIntoView(styleElement);
+            highlightElement(styleElement);
+          }
+        };
       }
     }
-  });
-}
+  }
 
-function generateFileName() {
-  var today = new Date();
-  var dd = '0' + today.getDate();
-  var mm = '0' + (today.getMonth() + 1);
-  var yyyy = today.getFullYear();
+  function deepCopyStyles() {
+    const clonedStyles = [];
+    for (let style of cachedStyles.list || []) {
+      style = Object.assign({}, style);
+      style.sections = style.sections.slice();
+      for (let i = 0, section; (section = style.sections[i]); i++) {
+        const copy = style.sections[i] = Object.assign({}, section);
+        for (let propName in copy) {
+          const prop = copy[propName];
+          if (prop instanceof Array) {
+            copy[propName] = prop.slice();
+          }
+        }
+      }
+      clonedStyles.push(style);
+    }
+    return clonedStyles;
+  }
 
-  dd = dd.substr(-2);
-  mm = mm.substr(-2);
+  function limitString(s, limit = 100) {
+    return s.length <= limit ? s : s.substr(0, limit) + '...';
+  }
 
-  today = mm + '-' + dd + '-' + yyyy;
-
-  return 'stylus-' + today + STYLISH_DUMPFILE_EXTENSION;
+  function reportNameChange(oldStyle, newStyle) {
+    return newStyle.name != oldStyle.name
+      ? oldStyle.name + ' —> ' + newStyle.name
+      : oldStyle.name;
+  }
 }
 
 document.getElementById('file-all-styles').onclick = () => {
   getStyles({}, function (styles) {
-    let text = JSON.stringify(styles, null, '\t');
-    let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
+    const text = JSON.stringify(styles, null, '\t');
+    const fileName = generateFileName();
 
-    let url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
     // for long URLs; https://github.com/schomery/stylish-chrome/issues/13#issuecomment-284582600
     fetch(url)
     .then(res => res.blob())
@@ -103,46 +234,51 @@ document.getElementById('file-all-styles').onclick = () => {
       a.dispatchEvent(new MouseEvent('click'));
     });
   });
+
+  function generateFileName() {
+    const today = new Date();
+    const dd = ('0' + today.getDate()).substr(-2);
+    const mm = ('0' + (today.getMonth() + 1)).substr(-2);
+    const yyyy = today.getFullYear();
+    return `stylus-${mm}-${dd}-${yyyy}${STYLUS_BACKUP_FILE_EXT}`;
+  }
 };
 
 
 document.getElementById('unfile-all-styles').onclick = () => {
-  importFromFile({fileTypeFilter: STYLISH_DUMPFILE_EXTENSION});
+  importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
 };
 
-const dropTarget = Object.assign(document.body, {
-  ondragover: event => {
+Object.assign(document.body, {
+  ondragover(event) {
     const hasFiles = event.dataTransfer.types.includes('Files');
     event.dataTransfer.dropEffect = hasFiles || event.target.type == 'search' ? 'copy' : 'none';
-    dropTarget.classList.toggle('dropzone', hasFiles);
+    this.classList.toggle('dropzone', hasFiles);
     if (hasFiles) {
       event.preventDefault();
-      clearTimeout(dropTarget.fadeoutTimer);
-      dropTarget.classList.remove('fadeout');
+      clearTimeout(this.fadeoutTimer);
+      this.classList.remove('fadeout');
     }
   },
-  ondragend: event => {
-    dropTarget.classList.add('fadeout');
-    // transitionend event may not fire if the user switched to another tab so we'll use a timer
-    clearTimeout(dropTarget.fadeoutTimer);
-    dropTarget.fadeoutTimer = setTimeout(() => {
-      dropTarget.classList.remove('dropzone', 'fadeout');
-    }, 250);
+  ondragend(event) {
+    this.classList.add('fadeout');
+    this.addEventListener('animationend', function _() {
+      this.removeEventListener('animationend', _);
+      this.style.animationDuration = '';
+      this.classList.remove('dropzone', 'fadeout');
+    });
   },
-  ondragleave: event => {
+  ondragleave(event) {
     // Chrome sets screen coords to 0 on Escape key pressed or mouse out of document bounds
     if (!event.screenX && !event.screenX) {
-      dropTarget.ondragend();
+      this.ondragend();
     }
   },
-  ondrop: event => {
+  ondrop(event) {
+    this.ondragend();
     if (event.dataTransfer.files.length) {
       event.preventDefault();
-      importFromFile({file: event.dataTransfer.files[0]}).then(() => {
-        dropTarget.classList.remove('dropzone');
-      });
-    } else {
-      dropTarget.ondragend();
+      importFromFile({file: event.dataTransfer.files[0]});
     }
   },
 });

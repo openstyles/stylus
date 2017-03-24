@@ -256,23 +256,28 @@ function saveStyle(style, {notify = true} = {}) {
 			const tx = db.transaction(['styles'], 'readwrite');
 			const os = tx.objectStore('styles');
 
+			const id = style.id !== undefined && style.id !== null ? Number(style.id) : null;
 			const reason = style.reason;
 			delete style.method;
 			delete style.reason;
 
 			// Update
-			if (style.id) {
-				style.id = Number(style.id);
-				os.get(style.id).onsuccess = eventGet => {
+			if (id != null) {
+				style.id = id;
+				os.get(id).onsuccess = eventGet => {
+					const existed = !!eventGet.target.result;
 					const oldStyle = Object.assign({}, eventGet.target.result);
 					const codeIsUpdated = 'sections' in style && !styleSectionsEqual(style, oldStyle);
 					style = Object.assign(oldStyle, style);
 					addMissingStyleTargets(style);
 					os.put(style).onsuccess = eventPut => {
 						style.id = style.id || eventPut.target.result;
-						invalidateCache(notify, {updated: style});
+						invalidateCache(notify, existed ? {updated: style} : {added: style});
 						if (notify) {
-							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated, reason});
+							notifyAllTabs({
+								method: existed ? 'styleUpdated' : 'styleAdded',
+								style, codeIsUpdated, reason,
+							});
 						}
 						resolve(style);
 					};
@@ -294,8 +299,10 @@ function saveStyle(style, {notify = true} = {}) {
 			os.add(style).onsuccess = event => {
 				// Give it the ID that was generated
 				style.id = event.target.result;
-				invalidateCache(true, {added: style});
-				notifyAllTabs({method: 'styleAdded', style, reason});
+				invalidateCache(notify, {added: style});
+				if (notify) {
+					notifyAllTabs({method: 'styleAdded', style, reason});
+				}
 				resolve(style);
 			};
 		});
@@ -320,17 +327,19 @@ function enableStyle(id, enabled) {
 }
 
 
-function deleteStyle(id) {
-  return new Promise(resolve =>
-    getDatabase(db => {
-      const tx = db.transaction(['styles'], 'readwrite');
-      const os = tx.objectStore('styles');
-      os.delete(Number(id)).onsuccess = event => {
-        invalidateCache(true, {deletedId: id});
-        notifyAllTabs({method: 'styleDeleted', id});
-        resolve(id);
-      };
-    }));
+function deleteStyle(id, {notify = true} = {}) {
+	return new Promise(resolve =>
+		getDatabase(db => {
+			const tx = db.transaction(['styles'], 'readwrite');
+			const os = tx.objectStore('styles');
+			os.delete(Number(id)).onsuccess = event => {
+				invalidateCache(notify, {deletedId: id});
+				if (notify) {
+					notifyAllTabs({method: 'styleDeleted', id});
+				}
+				resolve(id);
+			};
+		}));
 }
 
 
@@ -371,8 +380,8 @@ function getType(o) {
 		return typeof o;
 	}
 	// with the persistent cachedStyles the Array reference is usually different
-  // so let's check for e.g. type of 'every' which is only present on arrays
-  // (in the context of our extension)
+	// so let's check for e.g. type of 'every' which is only present on arrays
+	// (in the context of our extension)
 	if (o instanceof Array || typeof o.every == 'function') {
 		return 'array';
 	}

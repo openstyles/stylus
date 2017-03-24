@@ -28,6 +28,11 @@ function initGlobalEvents() {
   $('#check-all-updates').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#search').oninput = searchStyles;
+  $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
+  $('#manage-shortcuts-button').onclick = configureCommands.open;
+  $('#editor-styles-button').onclick = () => openURL({
+    url: 'https://userstyles.org/styles/browse/chrome-extension',
+  });
 
   // focus search field on / key
   document.onkeypress = event => {
@@ -233,11 +238,7 @@ class EntryOnClick {
 function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement(style);
   const oldElement = $(`[style-id="${style.id}"]`, installed);
-  element.addEventListener('animationend', function _() {
-    element.removeEventListener('animationend', _);
-    element.classList.remove('highlight');
-  });
-  element.classList.add('highlight');
+  highlightElement(element);
   if (!oldElement) {
     installed.appendChild(element);
   } else {
@@ -247,11 +248,7 @@ function handleUpdate(style, {reason} = {}) {
       $('.update-note', element).innerHTML = t('updateCompleted');
     }
   }
-  // align to the top/bottom of the visible area if wasn't visible
-  const bounds = element.getBoundingClientRect();
-  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
-    element.scrollIntoView(bounds.top < 0 );
-  }
+  scrollElementIntoView(element);
 }
 
 
@@ -463,6 +460,24 @@ function getClickedStyleId(event) {
 
 function getClickedStyleElement(event) {
   return event.target.closest('.entry');
+}
+
+
+function scrollElementIntoView(element) {
+  // align to the top/bottom of the visible area if wasn't visible
+  const bounds = element.getBoundingClientRect();
+  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
+    element.scrollIntoView(bounds.top < 0);
+  }
+}
+
+
+function highlightElement(element) {
+  element.addEventListener('animationend', function _() {
+    element.removeEventListener('animationend', _);
+    element.classList.remove('highlight');
+  });
+  element.classList.add('highlight');
 }
 
 

@@ -1,0 +1,102 @@
+#message-box {
+  top: 3rem;
+  right: 3rem;
+  min-width: 10rem;
+  max-width: 50vw;
+  min-height: 5rem;
+  max-height: 90vh;
+  position: fixed;
+  display: flex;
+  box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.35);
+  animation: fadein .25s ease-in-out;
+  flex-direction: column;
+  z-index: 9999990;
+}
+
+#message-box > * {
+  z-index: 9999991;
+  background-color: white;
+}
+
+#message-box.fadeout {
+  animation: fadeout .5s ease-in-out;
+}
+
+#message-box::before {
+  position: fixed;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .25);
+}
+
+#message-box.big {
+  max-width: none;
+  left: 3rem;
+}
+
+#message-box-title {
+  font-weight: bold;
+  background-color: rgb(145, 208, 198);
+  padding: .75rem 50px .75rem .75rem;
+  font-size: 1rem;
+}
+
+#message-box-title::before {
+  content: "";
+  width: 0;
+  height: 0;
+  padding: 0 32px 32px 0;
+  background: url(/32.png);
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: .5rem;
+}
+
+#message-box-close-icon {
+  cursor: pointer;
+  width: 8px;
+  height: 8px;
+  border: 8px solid transparent;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat, linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat;
+}
+
+#message-box-contents {
+  overflow: auto;
+  padding: .75rem;
+  position: relative;
+  flex-grow: 9;
+}
+
+#message-box-buttons {
+  padding: .75rem;
+  background-color: #f0f0f0;
+}
+
+#message-box-buttons button:not(:last-child) {
+  margin-right: 1em;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
