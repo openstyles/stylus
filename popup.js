@@ -188,12 +188,33 @@ class EntryOnClick {
   }
 
   static delete(event) {
-    confirmDelete(event).then(() => {
-      // update view with 'No styles installed for this site' message
-      if (!installed.children.length) {
-        showStyles([]);
+    const id = getClickedStyleId(event);
+    const box = $('#confirm');
+    box.dataset.display = true;
+    box.style.cssText = '';
+    $('b', box).textContent = ((cachedStyles.byId.get(id) || {}).style || {}).name;
+    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    window.onkeydown = event => {
+      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+      && (event.keyCode == 13 || event.keyCode == 27)) {
+        event.preventDefault();
+        confirm(event.keyCode == 13);
       }
-    });
+    };
+    function confirm(ok) {
+      window.onkeydown = null;
+      animateElement(box, {className: 'lights-on'})
+        .then(() => box.dataset.display = false);
+      if (ok) {
+        deleteStyle(id).then(() => {
+          // update view with 'No styles installed for this site' message
+          if (!installed.children.length) {
+            showStyles([]);
+          }
+        });
+      }
+    }
   }
 
 }

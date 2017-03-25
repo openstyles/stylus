@@ -172,7 +172,7 @@ function createStyleElement(style) {
   $('.disable', entry).onclick = EntryOnClick.toggle;
   $('.check-update', entry).onclick = EntryOnClick.check;
   $('.update', entry).onclick = EntryOnClick.update;
-  $('.delete', entry).onclick = event => confirmDelete(event, {float: true});
+  $('.delete', entry).onclick = EntryOnClick.delete;
   return entry;
 }
 
@@ -224,6 +224,23 @@ class EntryOnClick {
     }));
   }
 
+  static delete(event) {
+    const styleElement = getClickedStyleElement(event);
+    const id = styleElement.styleId;
+    const name = ((cachedStyles.byId.get(id) || {}).style || {}).name;
+    animateElement(styleElement, {className: 'highlight'});
+    messageBox({
+      title: t('deleteStyleConfirm'),
+      contents: name,
+      className: 'danger center',
+      buttons: [t('confirmDelete'), t('confirmCancel')],
+    })
+    .then(({button, enter, esc}) => {
+      if (button == 0 || enter) {
+        deleteStyle(id);
+      }
+    });
+  }
 }
 
 

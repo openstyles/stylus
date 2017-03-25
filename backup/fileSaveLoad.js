@@ -130,13 +130,16 @@ function importFromString(jsonString) {
             </small>
           </details>`)
         .join('');
-      const box = messageBox({
+      messageBox({
         title: 'Finished importing styles',
         contents: report || 'Nothing was changed.',
         buttons: [t('confirmOK'), numChanged && t('undo')],
-        onclick: btnIndex => btnIndex == 1 && undo(),
-      });
-      bindClick(box);
+        onshow:  bindClick,
+      }).then(({button, enter, esc}) => {
+          if (button == 1) {
+            undo();
+          }
+        });
       resolve(numChanged);
     });
   }

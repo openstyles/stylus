@@ -1,51 +1,90 @@
 'use strict';
 
-function messageBox({title, contents, buttons, onclick}) {
-  // keep the same reference to be able to remove the listener later
-  messageBox.close = messageBox.close || close;
-  if (messageBox.element) {
-    messageBox.element.remove();
+function messageBox({
+  title,          // [mandatory] the title string for innerHTML
+  contents,       // [mandatory] 1) DOM element 2) string for innerHTML
+  className = '', // string, CSS class name of the message box element
+  buttons = [],   // array of strings used as labels
+  onshow,         // function(messageboxElement) invoked after the messagebox is shown
+  blockScroll,    // boolean, blocks the page scroll
+}) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
+  initOwnListeners();
+  bindGlobalListeners();
+  createElement();
+  document.body.appendChild(messageBox.element);
+  if (onshow) {
+    onshow(messageBox.element);
   }
-  const id = 'message-box';
-  const putAs = typeof contents == 'string' ? 'innerHTML' : 'appendChild';
-  messageBox.element = $element({id, appendChild: [
-    $element({id: `${id}-title`, innerHTML: title}),
-    $element({id: `${id}-close-icon`, onclick: messageBox.close}),
-    $element({id: `${id}-contents`, [putAs]: contents}),
-    $element({id: `${id}-buttons`,
-      onclick: relayButtonClick,
-      appendChild: (buttons || []).map(textContent =>
-        textContent && $element({tag: 'button', textContent}))
-    }),
-  ]});
-  show();
-  return messageBox.element;
+  return new Promise(_resolve => {
+    messageBox.resolve = _resolve;
+  });
 
-  function show() {
-    document.body.appendChild(messageBox.element);
-    document.addEventListener('keydown', messageBox.close);
-  }
-
-  function close(event) {
-    if ((!event
-    || event.type == 'click'
-    || event.keyCode == 27 && !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey)
-    && messageBox.element) {
-      animateElement(messageBox.element, {className: 'fadeout', remove: true});
-      document.removeEventListener('keydown', messageBox.close);
-      $(`#${id}-buttons`).onclick = null;
-      messageBox.element = null;
-    }
-  }
-
-  function relayButtonClick(event) {
-    const button = event.target.closest('button');
-    if (button) {
-      close();
-      if (onclick) {
-        onclick([...this.children].indexOf(button));
+  function initOwnListeners() {
+    messageBox.listeners = messageBox.listeners || {
+      closeIcon() {
+        resolveWith({button: -1});
+      },
+      button() {
+        resolveWith({button: this.buttonIndex});
+      },
+      key(event) {
+        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+        && (event.keyCode == 13 || event.keyCode == 27)) {
+          event.preventDefault();
+          resolveWith(event.keyCode == 13 ? {enter: true} : {esc: true});
+        }
+      },
+      scroll() {
+        scrollTo(blockScroll.x, blockScroll.y);
       }
+    };
+  }
+
+  function resolveWith(value) {
+    setTimeout(messageBox.resolve, 0, value);
+    animateElement(messageBox.element, {className: 'fadeout', remove: true})
+      .then(unbindAndRemoveSelf);
+  }
+
+  function createElement() {
+    if (messageBox.element) {
+      unbindAndRemoveSelf();
     }
+    const id = 'message-box';
+    const putAs = typeof contents == 'string' ? 'innerHTML' : 'appendChild';
+    messageBox.element = $element({id, className, appendChild: [
+      $element({appendChild: [
+        $element({id: `${id}-title`, innerHTML: title}),
+        $element({id: `${id}-close-icon`, onclick: messageBox.listeners.closeIcon}),
+        $element({id: `${id}-contents`, [putAs]: contents}),
+        $element({id: `${id}-buttons`, appendChild:
+          buttons.map((textContent, buttonIndex) => textContent &&
+            $element({
+              tag: 'button',
+              buttonIndex,
+              textContent,
+              onclick: messageBox.listeners.button,
+            })
+          )
+        }),
+      ]}),
+    ]});
+  }
+
+  function bindGlobalListeners() {
+    blockScroll = blockScroll && {x: scrollX, y: scrollY};
+    if (blockScroll) {
+      window.addEventListener('scroll', messageBox.listeners.scroll);
+    }
+    window.addEventListener('keydown', messageBox.listeners.key);
+  }
+
+  function unbindAndRemoveSelf() {
+    document.removeEventListener('keydown', messageBox.listeners.key);
+    window.removeEventListener('scroll', messageBox.listeners.scroll);
+    messageBox.element.remove();
+    messageBox.element = null;
+    messageBox.resolve = null;
   }
 
   function $element(opt) {
