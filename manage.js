@@ -172,7 +172,7 @@ function createStyleElement(style) {
   $('.disable', entry).onclick = EntryOnClick.toggle;
   $('.check-update', entry).onclick = EntryOnClick.check;
   $('.update', entry).onclick = EntryOnClick.update;
-  $('.delete', entry).onclick = EntryOnClick.delete;
+  $('.delete', entry).onclick = event => confirmDelete(event, {float: true});
   return entry;
 }
 
@@ -222,13 +222,6 @@ class EntryOnClick {
       name: null,
       reason: 'update',
     }));
-  }
-
-  static delete(event) {
-    if (confirm(t('deleteStyleConfirm'))) {
-      deleteStyle(getClickedStyleId(event))
-        .then(handleDelete);
-    }
   }
 
 }

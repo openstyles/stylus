@@ -1,0 +1,80 @@
+#confirm,
+#confirm > div > span {
+  align-items: center;
+  justify-content: center;
+}
+
+#confirm {
+  z-index: 2147483647;
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0 !important;
+  box-sizing: border-box;
+  animation: lights-off .5s cubic-bezier(.03, .67, .08, .94);
+  animation-fill-mode: both;
+}
+
+#confirm.lights-on {
+  animation: lights-on .25s ease-in-out;
+  animation-fill-mode: both;
+}
+
+#confirm.lights-on > div{
+  display: none;
+}
+
+#confirm[data-display=true] {
+  display: flex;
+}
+
+#confirm > div {
+  width: 80vw;
+  max-width: 16em;
+  min-height: 8em;
+  max-height: 80vh;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border: solid 2px rgba(0, 0, 0, 0.5);
+}
+
+#confirm > div > span {
+  display: flex;
+  flex: 1;
+  padding: 0 10px;
+}
+
+#confirm > div > b {
+  padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#confirm > div > div {
+  padding: 10px;
+  direction: rtl;
+}
+
+@keyframes lights-off {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes lights-on {
+  from {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+

@@ -37,23 +37,6 @@ function initPopup(url) {
   document.body.style.width =
     Math.max(200, Math.min(800, Number(localStorage.popupWidth) || 246)) + 'px';
 
-  // confirm dialog
-  $('#confirm').onclick = e => {
-    const cmd = e.target.dataset.cmd;
-    if (cmd === 'ok') {
-      deleteStyle($('#confirm').dataset.id).then(() => {
-        // update view with 'No styles installed for this site' message
-        if ($('#installed').children.length === 0) {
-          showStyles([]);
-        }
-      });
-    }
-    //
-    if (cmd) {
-      $('#confirm').dataset.display = false;
-    }
-  };
-
   // action buttons
   $('#disableAll').onchange = () =>
     installed.classList.toggle('disabled', prefs.get('disableAll'));
@@ -132,8 +115,7 @@ function initPopup(url) {
 
 function showStyles(styles) {
   if (!styles.length) {
-    installed.innerHTML =
-      `<div class="entry" id="no-styles">${t('noStylesForSite')}</div>`;
+    installed.innerHTML = template.noStyles.outerHTML;
   } else {
     const enabledFirst = prefs.get('popup.enabledFirst');
     styles.sort((a, b) =>
@@ -168,14 +150,19 @@ function createStyleElement(style) {
         .then(handleUpdate);
     },
     deleteClick(event) {
-      doDelete(event);
+      confirmDelete(event).then(() => {
+        // update view with 'No styles installed for this site' message
+        if (!installed.children.length) {
+          showStyles([]);
+        }
+      });
     }
   };
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
   Object.assign(entry, {
     styleId: style.id,
-    className: ['entry', style.enabled ? 'enabled' : 'disabled'].join(' '),
+    className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
     onmousedown: openEditorOnMiddleclick,
     onauxclick: openEditorOnMiddleclick,
   });
@@ -209,18 +196,13 @@ function createStyleElement(style) {
 }
 
 
-function doDelete(event) {
-  $('#confirm').dataset.display = true;
-  const id = getClickedStyleId(event);
-  $('#confirm b').textContent =
-    $(`[style-id="${id}"] label`).textContent;
-  $('#confirm').dataset.id = id;
+function getClickedStyleId(event) {
+  return (getClickedStyleElement(event) || {}).styleId;
 }
 
 
-function getClickedStyleId(event) {
-  const entry = event.target.closest('.entry');
-  return entry ? entry.styleId : null;
+function getClickedStyleElement(event) {
+  return event.target.closest('.entry');
 }
 
 
