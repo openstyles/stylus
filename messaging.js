@@ -140,18 +140,17 @@ function getTabRealURL(tab) {
 }
 
 
-function openURL({url}) {
-	url = !url.includes('://') ? chrome.runtime.getURL(url) : url;
+// opens a tab or activates the already opened one,
+// reuses the New Tab page if it's focused now
+function openURL({url, currentWindow = true}) {
+	if (!url.includes('://')) {
+		url = chrome.runtime.getURL(url);
+	}
 	return new Promise(resolve => {
-		chrome.tabs.query({currentWindow: true, url}, tabs => {
-			// switch to an existing tab with the requested url
+		chrome.tabs.query({url, currentWindow}, tabs => {
 			if (tabs.length) {
-				chrome.tabs.highlight({
-					windowId: tabs[0].windowId,
-					tabs: tabs[0].index,
-				}, resolve);
+				activateTab(tabs[0]).then(resolve);
 			} else {
-				// re-use an active new tab page
 				getActiveTab().then(tab =>
 					tab && tab.url == 'chrome://newtab/'
 						? chrome.tabs.update({url}, resolve)
@@ -160,6 +159,18 @@ function openURL({url}) {
 			}
 		});
 	});
+}
+
+
+function activateTab(tab) {
+	return Promise.all([
+		new Promise(resolve => {
+			chrome.tabs.update(tab.id, {active: true}, resolve);
+		}),
+		new Promise(resolve => {
+			chrome.windows.update(tab.windowId, {focused: true}, resolve);
+		}),
+	]);
 }
 
 
