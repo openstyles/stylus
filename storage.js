@@ -250,7 +250,7 @@ function cleanupCachedFilters({force = false} = {}) {
 }
 
 
-function saveStyle(style, {notify = true} = {}) {
+function saveStyle(style) {
 	return new Promise(resolve => {
 		getDatabase(db => {
 			const tx = db.transaction(['styles'], 'readwrite');
@@ -258,8 +258,13 @@ function saveStyle(style, {notify = true} = {}) {
 
 			const id = style.id !== undefined && style.id !== null ? Number(style.id) : null;
 			const reason = style.reason;
+			const notify = style.notify !== false;
 			delete style.method;
 			delete style.reason;
+			delete style.notify;
+			if (!style.name) {
+			  delete style.name;
+      }
 
 			// Update
 			if (id != null) {
@@ -278,6 +283,9 @@ function saveStyle(style, {notify = true} = {}) {
 								method: existed ? 'styleUpdated' : 'styleAdded',
 								style, codeIsUpdated, reason,
 							});
+						}
+						if (typeof handleUpdate != 'undefined') {
+							handleUpdate(style, {reason});
 						}
 						resolve(style);
 					};
@@ -302,6 +310,9 @@ function saveStyle(style, {notify = true} = {}) {
 				invalidateCache(notify, {added: style});
 				if (notify) {
 					notifyAllTabs({method: 'styleAdded', style, reason});
+				}
+				if (typeof handleUpdate != 'undefined') {
+					handleUpdate(style, {reason});
 				}
 				resolve(style);
 			};
@@ -337,6 +348,9 @@ function deleteStyle(id, {notify = true} = {}) {
 				if (notify) {
 					notifyAllTabs({method: 'styleDeleted', id});
 				}
+				if (typeof handleDelete != 'undefined') {
+				  handleDelete(id);
+        }
 				resolve(id);
 			};
 		}));

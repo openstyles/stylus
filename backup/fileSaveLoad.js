@@ -85,8 +85,10 @@ function importFromString(jsonString) {
         stats.unchanged.ids.push(oldStyle.id);
         continue;
       }
-      saveStyle(item, {notify: false}).then(style => {
-        handleUpdate(style, {reason: 'import'});
+      saveStyle(Object.assign(item, {
+        reason: 'import',
+        notify: false,
+      })).then(style => {
         setTimeout(proceed, 0, resolve);
         if (!oldStyle) {
           stats.added.names.push(style.name);
@@ -160,11 +162,12 @@ function importFromString(jsonString) {
       }
       const id = newIds[index++];
       deleteStyle(id, {notify: false}).then(id => {
-        handleDelete(id);
         const oldStyle = oldStylesById.get(id);
         if (oldStyle) {
-          saveStyle(Object.assign(oldStyle, {reason: 'undoImport'}), {notify: false})
-            .then(handleUpdate)
+          saveStyle(Object.assign(oldStyle, {
+            reason: 'undoImport',
+            notify: false,
+          }))
             .then(() => setTimeout(undoNextId, 0, resolve));
         } else {
           setTimeout(undoNextId, 0, resolve);

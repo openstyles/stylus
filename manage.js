@@ -82,7 +82,7 @@ function showStyles(styles = []) {
     const t0 = performance.now();
     while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 10)) {
       renderBin.appendChild(createStyleElement(sorted[index++].style));
-      }
+    }
     if ($('#search').value) {
       // re-apply filtering on history Back
       searchStyles(true, renderBin);
@@ -122,8 +122,8 @@ function createStyleElement(style) {
     const homepage = template.styleHomepage.cloneNode(true);
     homepage.href = style.url;
     styleName.appendChild(document.createTextNode(' '));
-      styleName.appendChild(homepage);
-    }
+    styleName.appendChild(homepage);
+  }
 
   const targets = new Map(TARGET_TYPES.map(t => [t, new Set()]));
   const decorations = {
@@ -138,9 +138,9 @@ function createStyleElement(style) {
           (decorations[name + 'Before'] || '') +
           targetValue.trim() +
           (decorations[name + 'After'] || ''));
-        }
-        }
-          }
+      }
+    }
+  }
   const appliesTo = $('.applies-to', entry);
   appliesTo.firstElementChild.textContent = TARGET_LABEL;
   const targetsList = Array.prototype.concat.apply([],
@@ -154,18 +154,18 @@ function createStyleElement(style) {
     for (let target of targetsList) {
       if (index > 0) {
         container.appendChild(template.appliesToSeparator.cloneNode(true));
-          }
+      }
       if (++index == TARGET_LIMIT) {
         container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
-        }
+      }
       const item = template.appliesToTarget.cloneNode(true);
       item.textContent = target;
       container.appendChild(item);
-      }
     }
+  }
 
-    const editLink = $('.style-edit-link', entry);
-    editLink.href = editLink.getAttribute('href') + style.id;
+  const editLink = $('.style-edit-link', entry);
+  editLink.href = editLink.getAttribute('href') + style.id;
   editLink.onclick = EntryOnClick.edit;
 
   $('.enable', entry).onclick = EntryOnClick.toggle;
@@ -215,22 +215,21 @@ class EntryOnClick {
   }
 
   static update(event) {
-    const element = getClickedStyleElement(event);
-    const updatedCode = element.updatedCode;
+    const updatedCode = getClickedStyleElement(event).updatedCode;
     // update everything but name
-    delete updatedCode.name;
-    updatedCode.id = element.styleId;
-    updatedCode.reason = 'update';
-    saveStyle(updatedCode)
-      .then(style => handleUpdate(style, {reason: 'update'}));
-      }
+    saveStyle(Object.assign(updatedCode, {
+      id: element.styleId,
+      name: null,
+      reason: 'update',
+    }));
+  }
 
   static delete(event) {
     if (confirm(t('deleteStyleConfirm'))) {
       deleteStyle(getClickedStyleId(event))
         .then(handleDelete);
-      }
     }
+  }
 
 }
 
@@ -242,7 +241,7 @@ function handleUpdate(style, {reason} = {}) {
   if (!oldElement) {
     installed.appendChild(element);
   } else {
-      installed.replaceChild(element, oldElement);
+    installed.replaceChild(element, oldElement);
     if (reason == 'update') {
       element.classList.add('update-done');
       $('.update-note', element).innerHTML = t('updateCompleted');
@@ -270,10 +269,10 @@ function applyUpdateAll() {
 
   [...document.querySelectorAll('.can-update .update')]
     .forEach(button => {
-    // align to the bottom of the visible area if wasn't visible
-    button.scrollIntoView(false);
-    button.click();
-  });
+      // align to the bottom of the visible area if wasn't visible
+      button.scrollIntoView(false);
+      button.click();
+    });
 }
 
 
@@ -381,8 +380,8 @@ class Updater {
     } else {
       this.element.classList.add('no-update');
       $('.update-note', this.element).innerHTML = message || t('updateCheckSucceededNoUpdate');
-      }
     }
+  }
 
   download(url) {
     return new Promise((resolve, reject) => {
@@ -489,7 +488,7 @@ function rememberScrollPosition() {
 function $(selector, base = document) {
   if (selector.startsWith('#') && /^#[^,\s]+$/.test(selector)) {
     return document.getElementById(selector.slice(1));
-    } else {
+  } else {
     return base.querySelector(selector);
-    }
+  }
 }
