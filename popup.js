@@ -135,29 +135,6 @@ function showStyles(styles) {
 
 
 function createStyleElement(style) {
-  // reuse event listener function references
-  const listeners = createStyleElement.listeners = createStyleElement.listeners || {
-    checkboxClick() {
-      enableStyle(getClickedStyleId(event), this.checked)
-        .then(handleUpdate);
-    },
-    styleNameClick(event) {
-      this.checkbox.click();
-      event.preventDefault();
-    },
-    toggleClick(event) {
-      enableStyle(getClickedStyleId(event), this.matches('.enable'))
-        .then(handleUpdate);
-    },
-    deleteClick(event) {
-      confirmDelete(event).then(() => {
-        // update view with 'No styles installed for this site' message
-        if (!installed.children.length) {
-          showStyles([]);
-        }
-      });
-    }
-  };
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
   Object.assign(entry, {
@@ -171,7 +148,7 @@ function createStyleElement(style) {
   Object.assign(checkbox, {
     id: 'style-' + style.id,
     checked: style.enabled,
-    onclick: listeners.checkboxClick,
+    onclick: EntryOnClick.toggle,
   });
 
   const editLink = $('.style-edit-link', entry);
@@ -183,16 +160,42 @@ function createStyleElement(style) {
   const styleName = $('.style-name', entry);
   Object.assign(styleName, {
     htmlFor: 'style-' + style.id,
-    onclick: listeners.styleNameClick,
+    onclick: EntryOnClick.name,
   });
   styleName.checkbox = checkbox;
   styleName.appendChild(document.createTextNode(style.name));
 
-  $('.enable', entry).onclick = listeners.toggleClick;
-  $('.disable', entry).onclick = listeners.toggleClick;
-  $('.delete', entry).onclick = listeners.deleteClick;
+  $('.enable', entry).onclick = EntryOnClick.toggle;
+  $('.disable', entry).onclick = EntryOnClick.toggle;
+  $('.delete', entry).onclick = EntryOnClick.delete;
 
   return entry;
+}
+
+
+class EntryOnClick {
+
+  static name(event) {
+    this.checkbox.click();
+    event.preventDefault();
+  }
+
+  static toggle(event) {
+    saveStyle({
+      id: getClickedStyleId(event),
+      enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
+    });
+  }
+
+  static delete(event) {
+    confirmDelete(event).then(() => {
+      // update view with 'No styles installed for this site' message
+      if (!installed.children.length) {
+        showStyles([]);
+      }
+    });
+  }
+
 }
 
 
