@@ -136,7 +136,7 @@ function getTabRealURL(tab) {
       resolve(tab.url);
     } else {
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
-        frame && resolve(frame.url);
+        resolve(frame && frame.url || '');
       });
     }
   });
