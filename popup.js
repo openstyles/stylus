@@ -37,6 +37,10 @@ function initPopup(url) {
   document.body.style.width =
     Math.max(200, Math.min(800, Number(localStorage.popupWidth) || 246)) + 'px';
 
+  // force Chrome to resize the popup
+  document.body.style.height = '10px';
+  document.documentElement.style.height = '10px';
+
   // action buttons
   $('#disableAll').onchange = () =>
     installed.classList.toggle('disabled', prefs.get('disableAll'));
@@ -128,9 +132,6 @@ function showStyles(styles) {
     }
     installed.appendChild(fragment);
   }
-  // force Chrome to resize the popup
-  document.body.style.height = '10px';
-  document.documentElement.style.height = '10px';
 }
 
 
