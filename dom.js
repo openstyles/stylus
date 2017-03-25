@@ -1,5 +1,10 @@
 'use strict';
 
+if (!/Windows/i.test(navigator.userAgent)) {
+  document.documentElement.classList.add('non-windows');
+}
+
+
 function onDOMready() {
   if (document.readyState != 'loading') {
     return Promise.resolve();

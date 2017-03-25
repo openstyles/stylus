@@ -265,7 +265,11 @@ body>div:not(#installed) {
 }
 #confirm>div>div {
   padding: 10px;
+  text-align: center;
+}
+.non-windows #confirm>div>div {
   direction: rtl;
+  text-align: right;
 }
 @keyframes lights-off {
   from {
