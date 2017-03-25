@@ -199,16 +199,6 @@ class EntryOnClick {
 }
 
 
-function getClickedStyleId(event) {
-  return (getClickedStyleElement(event) || {}).styleId;
-}
-
-
-function getClickedStyleElement(event) {
-  return event.target.closest('.entry');
-}
-
-
 function openLinkInTabOrWindow(event) {
   if (!prefs.get('openEditInWindow', false)) {
     openURLandHide(event);
@@ -270,14 +260,5 @@ function handleDelete(id) {
   var styleElement = $(`[style-id="${id}"]`, installed);
   if (styleElement) {
     installed.removeChild(styleElement);
-  }
-}
-
-
-function $(selector, base = document) {
-  if (selector.startsWith('#') && /^#[^,\s]+$/.test(selector)) {
-    return document.getElementById(selector.slice(1));
-  } else {
-    return base.querySelector(selector);
   }
 }

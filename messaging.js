@@ -163,19 +163,6 @@ function openURL({url}) {
 }
 
 
-function onDOMready() {
-	if (document.readyState != 'loading') {
-		return Promise.resolve();
-	}
-	return new Promise(resolve => {
-		document.addEventListener('DOMContentLoaded', function _() {
-			document.removeEventListener('DOMContentLoaded', _);
-			resolve();
-		});
-	});
-}
-
-
 function stringAsRegExp(s, flags) {
 	return new RegExp(s.replace(/[{}()\[\]\/\\.+?^$:=*!|]/g, '\\$&'), flags);
 }

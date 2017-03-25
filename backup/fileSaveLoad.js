@@ -1,8 +1,9 @@
-/* globals getStyles, saveStyle, invalidateCache, refreshAllTabs, handleUpdate */
+/* globals getStyles, saveStyle, invalidateCache, refreshAllTabs */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
+
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -43,6 +44,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
     }
   });
 }
+
 
 function importFromString(jsonString) {
   const json = runTryCatch(() => Array.from(JSON.parse(jsonString))) || [];
@@ -177,14 +179,14 @@ function importFromString(jsonString) {
   }
 
   function bindClick(box) {
-    for (let block of [...box.querySelectorAll('details')]) {
+    for (let block of $$('details')) {
       if (block.dataset.id != 'invalid') {
         block.style.cursor = 'pointer';
         block.onclick = event => {
           const styleElement = $(`[style-id="${event.target.dataset.id}"]`);
           if (styleElement) {
             scrollElementIntoView(styleElement);
-            highlightElement(styleElement);
+            animateElement(styleElement, {className: 'highlight'});
           }
         };
       }
@@ -221,7 +223,8 @@ function importFromString(jsonString) {
   }
 }
 
-document.getElementById('file-all-styles').onclick = () => {
+
+$('#file-all-styles').onclick = () => {
   getStyles({}, function (styles) {
     const text = JSON.stringify(styles, null, '\t');
     const fileName = generateFileName();
@@ -248,7 +251,7 @@ document.getElementById('file-all-styles').onclick = () => {
 };
 
 
-document.getElementById('unfile-all-styles').onclick = () => {
+$('#unfile-all-styles').onclick = () => {
   importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
 };
 
@@ -264,11 +267,9 @@ Object.assign(document.body, {
     }
   },
   ondragend(event) {
-    this.classList.add('fadeout');
-    this.addEventListener('animationend', function _() {
-      this.removeEventListener('animationend', _);
+    animateElement(this, {className: 'fadeout'}).then(() => {
       this.style.animationDuration = '';
-      this.classList.remove('dropzone', 'fadeout');
+      this.classList.remove('dropzone');
     });
   },
   ondragleave(event) {

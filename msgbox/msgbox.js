@@ -31,12 +31,7 @@ function messageBox({title, contents, buttons, onclick}) {
     || event.type == 'click'
     || event.keyCode == 27 && !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey)
     && messageBox.element) {
-      const box = messageBox.element;
-      box.classList.add('fadeout');
-      box.addEventListener('animationend', function _() {
-        box.removeEventListener('animationend', _);
-        box.remove();
-      });
+      animateElement(messageBox.element, {className: 'fadeout', remove: true});
       document.removeEventListener('keydown', messageBox.close);
       $(`#${id}-buttons`).onclick = null;
       messageBox.element = null;

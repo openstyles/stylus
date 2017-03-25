@@ -230,7 +230,7 @@ class EntryOnClick {
 function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement(style);
   const oldElement = $(`[style-id="${style.id}"]`, installed);
-  highlightElement(element);
+  animateElement(element, {className: 'highlight'});
   if (!oldElement) {
     installed.appendChild(element);
   } else {
@@ -260,12 +260,11 @@ function applyUpdateAll() {
     btnApply.disabled = false;
   }, 1000);
 
-  [...document.querySelectorAll('.can-update .update')]
-    .forEach(button => {
-      // align to the bottom of the visible area if wasn't visible
-      button.scrollIntoView(false);
-      button.click();
-    });
+  $$('.can-update .update').forEach(button => {
+    // align to the bottom of the visible area if wasn't visible
+    button.scrollIntoView(false);
+    button.click();
+  });
 }
 
 
@@ -278,8 +277,7 @@ function checkUpdateAll() {
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
 
-  const elements = document.querySelectorAll('[style-update-url]');
-  Promise.all([...elements].map(checkUpdate))
+  Promise.all($$('[style-update-url]').map(checkUpdate))
     .then(updatables => {
       btnCheck.disabled = false;
       if (updatables.includes(true)) {
@@ -445,43 +443,6 @@ function searchStyles(immediately, bin) {
 }
 
 
-function getClickedStyleId(event) {
-  return (getClickedStyleElement(event) || {}).styleId;
-}
-
-
-function getClickedStyleElement(event) {
-  return event.target.closest('.entry');
-}
-
-
-function scrollElementIntoView(element) {
-  // align to the top/bottom of the visible area if wasn't visible
-  const bounds = element.getBoundingClientRect();
-  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
-    element.scrollIntoView(bounds.top < 0);
-  }
-}
-
-
-function highlightElement(element) {
-  element.addEventListener('animationend', function _() {
-    element.removeEventListener('animationend', _);
-    element.classList.remove('highlight');
-  });
-  element.classList.add('highlight');
-}
-
-
 function rememberScrollPosition() {
   history.replaceState({scrollY}, document.title);
-}
-
-
-function $(selector, base = document) {
-  if (selector.startsWith('#') && /^#[^,\s]+$/.test(selector)) {
-    return document.getElementById(selector.slice(1));
-  } else {
-    return base.querySelector(selector);
-  }
 }

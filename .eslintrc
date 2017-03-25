@@ -35,6 +35,12 @@ globals:
   importStyles: true
   getActiveTabRealURL: true
   openURL: true
+  $: true
+  $$: true
+  animateElement: true
+  scrollElementIntoView: true
+  getClickedStyleElement: true
+  getClickedStyleId: true
   onDOMready: true
   getDomains: true
   webSqlStorage: true

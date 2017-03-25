@@ -29,11 +29,8 @@ function confirmDelete(event, {float = false} = {}) {
   function doDelete(confirmed) {
     window.removeEventListener('keydown', onKey);
     window.removeEventListener('scroll', preventScroll);
-    box.classList.add('lights-on');
-    box.addEventListener('animationend', function _() {
-      box.removeEventListener('animationend', _);
+    animateElement(box, {className: 'lights-on'}).then(() => {
       box.dataset.display = false;
-      box.classList.remove('lights-on');
     });
     Promise.resolve(confirmed && deleteStyle(id))
       .then(resolveMe);
