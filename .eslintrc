@@ -54,6 +54,7 @@ globals:
   getApplicableSections: false
   isCheckbox: false
   runTryCatch: false
+  tryRegExp: false
   setupLivePrefs: false
   getCodeMirrorThemes: false
   styleSectionsEqual: false

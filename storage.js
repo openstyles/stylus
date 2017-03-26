@@ -36,6 +36,7 @@ var cachedStyles, prefs;
     noCode: null,
     byId: new Map(),
     filters: new Map(),
+    regexps: new Map(),
     mutex: {
       inProgress: false,
       onDone: [],
@@ -87,9 +88,10 @@ function getStyles(options, callback) {
         const noCode = getStyleWithNoCode(style);
         cachedStyles.noCode.push(noCode);
         cachedStyles.byId.set(style.id, {style, noCode});
+        compileStyleRegExps(style);
       }
       //console.log('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cachedStyles.mutex.onDone.map(e => JSON.stringify(e.options)))
-      runTryCatch(callback, filterStyles(options));
+      callback(filterStyles(options));
 
       cachedStyles.mutex.inProgress = false;
       for (const {options, callback} of cachedStyles.mutex.onDone) {
@@ -290,6 +292,7 @@ function saveStyle(style) {
           os.put(style).onsuccess = eventPut => {
             style.id = style.id || eventPut.target.result;
             invalidateCache(notify, existed ? {updated: style} : {added: style});
+            compileStyleRegExps(style);
             if (notify) {
               notifyAllTabs({
                 method: existed ? 'styleUpdated' : 'styleAdded',
@@ -320,6 +323,7 @@ function saveStyle(style) {
         // Give it the ID that was generated
         style.id = event.target.result;
         invalidateCache(notify, {added: style});
+        compileStyleRegExps(style);
         if (notify) {
           notifyAllTabs({method: 'styleAdded', style, reason});
         }
@@ -417,9 +421,12 @@ function getType(o) {
 const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 
 function getApplicableSections(style, url) {
-  const sections = style.sections.filter(function(section) {
-    return sectionAppliesToUrl(section, url);
-  });
+  const sections = [];
+  for (const section of style.sections) {
+    if (sectionAppliesToUrl(section, url)) {
+      sections.push(section);
+    }
+  }
   // ignore if it's just namespaces
   if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
     return [];
@@ -458,13 +465,20 @@ function sectionAppliesToUrl(section, url) {
     }
   }
   for (const regexp of section.regexps) {
-    // we want to match the full url, so add ^ and $ if not already present
-    const prefix = regexp.charAt(0) != '^' && '^';
-    const suffix = regexp.slice(-1) != '$' && '$';
-    const re = runTryCatch(() => new RegExp(prefix + regexp + suffix));
-    if (!re) {
-      console.warn('Regexp ' + regexp + ' is not valid');
-    } else if (re.test(url)) {
+    let rx = cachedStyles.regexps.get(regexp);
+    if (rx == false) {
+      // bad regexp
+      continue;
+    }
+    if (!rx) {
+      rx = tryRegExp('^(?:' + regexp + ')$');
+      cachedStyles.regexps.set(regexp, rx || false);
+      if (!rx) {
+        // bad regexp
+        continue;
+      }
+    }
+    if (rx.test(url)) {
       return true;
     }
   }
@@ -484,6 +498,14 @@ function runTryCatch(func, ...args) {
     return func(...args);
   } catch (e) {}
 }
+
+
+function tryRegExp(regexp) {
+  try {
+    return new RegExp(regexp);
+  } catch (e) {}
+}
+
 
 prefs = prefs || new function Prefs() {
   const me = this;
@@ -844,4 +866,22 @@ function styleSectionsEqual(styleA, styleB) {
     return false;
   }
   return true;
+}
+
+
+function compileStyleRegExps(style) {
+  const t0 = performance.now();
+  for (const section of style.sections || []) {
+    for (const regexp of section.regexps) {
+      // we want to match the full url, so add ^ and $ if not already present
+      if (cachedStyles.regexps.has(regexp)) {
+        continue;
+      }
+      const rx = tryRegExp('^(?:' + regexp + ')$');
+      cachedStyles.regexps.set(regexp, rx || false);
+      if (performance.now() - t0 > 100) {
+        return;
+      }
+    }
+  }
 }
