@@ -64,6 +64,7 @@ a.homepage {
 
 .style-name {
   margin-top: .25em;
+  word-break: break-word;
 }
 
 .style-name a, .style-edit-link {

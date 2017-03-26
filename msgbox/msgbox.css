@@ -94,7 +94,7 @@
   padding: 1.5rem .75rem;
   position: relative;
   flex-grow: 9;
-  word-wrap: break-word;
+  word-break: break-word;
 }
 
 #message-box-buttons {
