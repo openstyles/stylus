@@ -425,20 +425,23 @@ class Updater {
 
 function searchStyles({immediately, container}) {
   const query = $('#search').value.toLocaleLowerCase();
-  if (query == (searchStyles.lastQuery || '') && !container) {
+  if (query == (searchStyles.lastQuery || '') && !immediately && !container) {
     return;
   }
   searchStyles.lastQuery = query;
   if (!immediately) {
     clearTimeout(searchStyles.timeout);
-    searchStyles.timeout = setTimeout(searchStyles, 200, {immediately: true});
+    searchStyles.timeout = setTimeout(searchStyles, 150, {immediately: true});
     return;
   }
 
   for (const element of (container || installed).children) {
     const {style} = cachedStyles.byId.get(element.styleId) || {};
     if (style) {
-      const isMatching = !query || isMatchingText(style.name) || isMatchingStyle(style);
+      const isMatching = !query
+        || isMatchingText(style.name)
+        || style.url && isMatchingText(style.url)
+        || isMatchingStyle(style);
       element.style.display = isMatching ? '' : 'none';
     }
   }
