@@ -1,6 +1,5 @@
 /* global cachedStyles: true, prefs: true, contextMenus: false */
 /* global handleUpdate, handleDelete */
-/* global webSqlStorage */
 'use strict';
 
 function getDatabase(ready, error) {
@@ -20,7 +19,6 @@ function getDatabase(ready, error) {
         keyPath: 'id',
         autoIncrement: true,
       });
-      webSqlStorage.migrate();
     }
   };
 }
@@ -431,27 +429,27 @@ function getApplicableSections(style, url) {
 
 
 function sectionAppliesToUrl(section, url) {
-    // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
-    if (!url.startsWith('http')
-      && !url.startsWith('ftp')
-      && !url.startsWith('file')
-      && !url.startsWith(OWN_ORIGIN)) {
+  // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
+  if (!url.startsWith('http')
+  && !url.startsWith('ftp')
+  && !url.startsWith('file')
+  && !url.startsWith(OWN_ORIGIN)) {
     return false;
-    }
-    if (section.urls.length == 0
-    && section.domains.length == 0
-    && section.urlPrefixes.length == 0
-    && section.regexps.length == 0) {
+  }
+  if (section.urls.length == 0
+  && section.domains.length == 0
+  && section.urlPrefixes.length == 0
+  && section.regexps.length == 0) {
     return true;
-    }
-    if (section.urls.indexOf(url) != -1) {
+  }
+  if (section.urls.indexOf(url) != -1) {
     return true;
-    }
-    for (const urlPrefix of section.urlPrefixes) {
-      if (url.startsWith(urlPrefix)) {
+  }
+  for (const urlPrefix of section.urlPrefixes) {
+    if (url.startsWith(urlPrefix)) {
       return true;
-      }
     }
+  }
   if (section.domains.length) {
     for (const domain of getDomains(url)) {
       if (section.domains.indexOf(domain) != -1) {
@@ -459,7 +457,7 @@ function sectionAppliesToUrl(section, url) {
       }
     }
   }
-    for (const regexp of section.regexps) {
+  for (const regexp of section.regexps) {
     // we want to match the full url, so add ^ and $ if not already present
     const prefix = regexp.charAt(0) != '^' && '^';
     const suffix = regexp.slice(-1) != '$' && '$';
@@ -468,8 +466,8 @@ function sectionAppliesToUrl(section, url) {
       console.warn('Regexp ' + regexp + ' is not valid');
     } else if (re.test(url)) {
       return true;
-      }
-        }
+    }
+  }
   return false;
 }
 
