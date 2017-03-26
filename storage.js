@@ -37,6 +37,7 @@ var cachedStyles, prefs;
     byId: new Map(),
     filters: new Map(),
     regexps: new Map(),
+    urlDomains: new Map(),
     mutex: {
       inProgress: false,
       onDone: [],
@@ -194,6 +195,14 @@ function filterStyles(options = {}) {
     return asHash
       ? Object.assign({disableAll}, cached.styles)
       : cached.styles;
+  }
+
+  if (matchUrl && !cachedStyles.urlDomains.has(matchUrl)) {
+    cachedStyles.urlDomains.set(matchUrl, getDomains(matchUrl));
+    for (let i = cachedStyles.urlDomains.size - 100; i > 0; i--) {
+      const firstKey = cachedStyles.urlDomains.keys().next().value;
+      cachedStyles.urlDomains.delete(firstKey);
+    }
   }
 
   const styles = id === null
@@ -457,11 +466,10 @@ function sectionAppliesToUrl(section, url) {
       return true;
     }
   }
-  if (section.domains.length) {
-    for (const domain of getDomains(url)) {
-      if (section.domains.indexOf(domain) != -1) {
-        return true;
-      }
+  const urlDomains = cachedStyles.urlDomains.get(url) || getDomains(url);
+  for (const domain of urlDomains) {
+    if (section.domains.indexOf(domain) != -1) {
+      return true;
     }
   }
   for (const regexp of section.regexps) {
@@ -489,6 +497,7 @@ function sectionAppliesToUrl(section, url) {
 function isCheckbox(el) {
   return el.localName == 'input' && el.type == 'checkbox';
 }
+
 
 // js engine can't optimize the entire function if it contains try-catch
 // so we should keep it isolated from normal code in a minimal wrapper
