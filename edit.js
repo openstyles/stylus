@@ -500,6 +500,23 @@ function addSection(event, section) {
 	appliesTo.addEventListener("change", onChange);
 	appliesTo.addEventListener("input", onChange);
 
+	toggleTestRegExpVisibility();
+	appliesTo.addEventListener('change', toggleTestRegExpVisibility);
+	div.querySelector('.test-regexp').onclick = showRegExpTester;
+	function toggleTestRegExpVisibility() {
+		const show = [...appliesTo.children].some(item =>
+			!item.matches('.applies-to-everything') &&
+			item.querySelector('.applies-type').value == 'regexp' &&
+			item.querySelector('.applies-value').value.trim());
+		div.classList.toggle('has-regexp', show);
+		appliesTo.oninput = appliesTo.oninput || show && (event => {
+			if (event.target.matches('.applies-value')
+			&& event.target.parentElement.querySelector('.applies-type').value == 'regexp') {
+				showRegExpTester(null, div);
+			}
+		});
+	}
+
 	var sections = document.getElementById("sections");
 	if (event) {
 		var clickedSection = getSectionForChild(event.target);
@@ -1603,6 +1620,107 @@ function showLintHelp() {
 			return "<li><b>" + rule.name + "</b><br>" + rule.desc + "</li>";
 		}).join("") + "</ul>"
 	);
+}
+
+function showRegExpTester(event, section = getSectionForChild(this)) {
+	const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
+	const OWN_ICON = chrome.app.getDetails().icons['16'];
+	const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
+	const cachedRegexps = showRegExpTester.cachedRegexps =
+		showRegExpTester.cachedRegexps || new Map();
+	const regexps = [...section.querySelector('.applies-to-list').children]
+		.map(item =>
+			!item.matches('.applies-to-everything') &&
+			item.querySelector('.applies-type').value == 'regexp' &&
+			item.querySelector('.applies-value').value.trim())
+		.filter(item => item)
+		.map(text => {
+			const rxData = Object.assign({text}, cachedRegexps.get(text));
+			if (!rxData.urls) {
+				cachedRegexps.set(text, Object.assign(rxData, {
+					rx: tryRegExp(text),
+					urls: new Map(),
+				}));
+			}
+			return rxData;
+		});
+	chrome.tabs.query({}, tabs => {
+		const supported = tabs.map(tab => tab.url)
+			.filter(url => RX_SUPPORTED_URLS.test(url));
+		const unique = [...new Set(supported).values()];
+		for (const rxData of regexps) {
+			const {rx, urls} = rxData;
+			if (rx) {
+				const urlsNow = new Map();
+				for (const url of unique) {
+					const match = urls.get(url) || (url.match(rx) || [])[0];
+					if (match) {
+						urlsNow.set(url, match);
+					}
+				}
+				rxData.urls = urlsNow;
+			}
+		}
+		const moreInfoLink = '<a target="_blank" ' +
+			'href="https://github.com/stylish-userstyles/' +
+			'stylish/wiki/Applying-styles-to-specific-sites' +
+			'#advanced-matching-with-regular-expressions">' +
+			'<img src="/images/help.png"></a>';
+		const stats = {
+			full: {data: [], label: t('styleRegexpTestFull')},
+			partial: {data: [], label: t('styleRegexpTestPartial') + moreInfoLink},
+			none: {data: [], label: t('styleRegexpTestNone')},
+			invalid: {data: [], label: t('styleRegexpTestInvalid')},
+		};
+		for (const {text, rx, urls} of regexps) {
+			if (!rx) {
+				stats.invalid.data.push({text});
+				continue;
+			}
+			if (!urls.size) {
+				stats.none.data.push({text});
+				continue;
+			}
+			const full = [];
+			const partial = [];
+			for (const [url, match] of urls.entries()) {
+				const faviconUrl = url.startsWith(OWN_ORIGIN)
+					? OWN_ICON
+					: GET_FAVICON_URL + new URL(url).hostname;
+				const icon = `<img src="${faviconUrl}">`;
+				if (match.length == url.length) {
+					full.push(`<div>${icon + url}</div>`);
+				} else {
+					partial.push(`<div>${icon}<mark>${match}</mark>` +
+						url.substr(match.length) + '</div>');
+				}
+			}
+			if (full.length) {
+				stats.full.data.push({text, urls: full});
+			}
+			if (partial.length) {
+				stats.partial.data.push({text, urls: partial});
+			}
+		}
+		showHelp(t('styleRegexpTestTitle'),
+			'<div class="regexp-report">' +
+			Object.keys(stats).map(type => (!stats[type].data.length ? '' :
+				`<details open data-type="${type}">
+					<summary>${stats[type].label}</summary>` +
+					stats[type].data.map(({text, urls}) => (!urls ? text :
+						`<details open><summary>${text}</summary>${urls.join('')}</details>`
+					)).join('<br>') +
+				'</details>'
+			)).join('') +
+			'</div>');
+		document.querySelector('.regexp-report').onclick = event => {
+			const target = event.target.closest('a, .regexp-report div');
+			if (target) {
+				openURL({url: target.href || target.textContent});
+				event.preventDefault();
+			}
+		};
+	});
 }
 
 function showHelp(title, text) {

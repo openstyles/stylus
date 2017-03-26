@@ -207,6 +207,14 @@
 					background-color: none;
 				}
 			}
+			@keyframes fadein {
+				from {
+					opacity: 0;
+				}
+				to {
+					opacity: 1;
+				}
+			}
 			.resize-grip {
 				position: absolute;
 				display: block;
@@ -261,6 +269,61 @@
 			.applies-to img {
 				vertical-align: bottom;
 			}
+			.test-regexp {
+				display: none;
+			}
+			.has-regexp .test-regexp {
+				display: inline-block;
+			}
+			.regexp-report summary, .regexp-report div {
+				cursor: pointer;
+			}
+			.regexp-report mark {
+				background-color: rgba(255, 255, 0, .5);
+			}
+			.regexp-report details {
+				margin-left: 1rem;
+			}
+			.regexp-report details:not(:last-child) {
+				margin-bottom: 1rem;
+			}
+			.regexp-report summary {
+				font-weight: bold;
+				margin-left: -1rem;
+				margin-bottom: .5rem;
+				outline: none;
+				cursor: default;
+			}
+			.regexp-report details[data-type="full"] {
+				color: darkgreen;
+			}
+			.regexp-report details[data-type="partial"] {
+				color: darkgray;
+			}
+			.regexp-report details[data-type="invalid"] {
+				color: maroon;
+			}
+			.regexp-report details details {
+				margin-left: 2rem;
+				margin-top: .5rem;
+			}
+			.regexp-report .svg-icon {
+				position: absolute;
+				margin-top: -1px;
+			}
+			.regexp-report details div:hover {
+				text-decoration: underline;
+				text-decoration-skip: ink;
+			}
+			.regexp-report details div img {
+				width: 16px;
+				max-height: 16px;
+				position: absolute;
+				margin-left: -20px;
+				margin-top: -1px;
+				animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
+				animation-fill-mode: both;
+			}
 			/************ help popup ************/
 			#help-popup {
 				top: 3rem;
@@ -285,7 +348,7 @@
 				font-weight: bold;
 				background-color: rgba(0,0,0,0.05);
 				margin: -0.5rem -0.5rem 0.5rem;
-				padding: 0.5rem;
+				padding: .5rem 32px .5rem .5rem;
 			}
 			#help-popup .contents {
 				max-height: calc(100vh - 8rem);
@@ -537,6 +600,7 @@
 				<button class="remove-section" i18n-text="sectionRemove"></button>
 				<button class="add-section" i18n-text="sectionAdd"></button>
 				<button class="beautify-section" i18n-text="styleBeautify"></button>
+				<button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
 			</div>
 		</template>
 		<template data-id="find">

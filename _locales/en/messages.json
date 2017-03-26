@@ -362,6 +362,30 @@
     "message": "Regexp is invalid.",
     "description": "Validation message for a bad regexp in a style"
   },
+  "styleRegexpTestButton": {
+    "message": "RegExp test",
+    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
+  },
+  "styleRegexpTestTitle": {
+    "message": "List of matching opened tabs (click on URL to focus its tab)",
+    "description": "RegExp test report: title of the report"
+  },
+  "styleRegexpTestFull": {
+    "message": "Matching tabs",
+    "description": "RegExp test report: label for the fully matching expressions"
+  },
+  "styleRegexpTestPartial": {
+    "message": "Not matching fully, hence skipped",
+    "description": "RegExp test report: label for the partially matching expressions"
+  },
+  "styleRegexpTestNone": {
+    "message": "No matching tabs",
+    "description": "RegExp test report: label for expressions that didn't match any tabs"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Invalid regexps skipped",
+    "description": "RegExp test report: label for the invalid expressions"
+  },
   "styleBeautify": {
     "message": "Beautify",
     "description": "Label for the CSS-beautifier button on the edit style page"
