@@ -1,3 +1,6 @@
+/* eslint-disable no-tabs, indent, quotes, no-var */
+'use strict';
+
 chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}, function(response) {
 	if (response.length == 0) {
 		sendEvent("styleCanBeInstalledChrome");
@@ -17,7 +20,7 @@ chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") 
 		} else {
 			getResource(getMeta("stylish-code-chrome"), function(code) {
 				// this would indicate a failure (a style with settings?).
-				if (code == null) {
+				if (code === null) {
 					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
 				}
 				var json = JSON.parse(code);
@@ -30,7 +33,7 @@ chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") 
 						// everything's the same
 						sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
 						return;
-					};
+					}
 				}
 				sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
 			});
@@ -49,10 +52,12 @@ function sectionsAreEqual(a, b) {
 
 function arraysAreEqual(a, b) {
 	// treat empty array and undefined as equivalent
-	if (typeof a == "undefined")
+	if (typeof a == "undefined") {
 		return (typeof b == "undefined") || (b.length == 0);
-	if (typeof b == "undefined")
+	}
+	if (typeof b == "undefined") {
 		return (typeof a == "undefined") || (a.length == 0);
+	}
 	if (a.length != b.length) {
 		return false;
 	}
@@ -78,7 +83,7 @@ function stylishInstallChrome() {
 				// check for old style json
 				var json = JSON.parse(code);
 				json.method = "saveStyle";
-				chrome.runtime.sendMessage(json, function(response) {
+				chrome.runtime.sendMessage(json, function() {
 					sendEvent("styleInstalledChrome");
 				});
 			});
@@ -90,7 +95,10 @@ function stylishInstallChrome() {
 document.addEventListener("stylishInstallChrome", stylishInstallChrome);
 function stylishUpdateChrome() {
 	orphanCheck();
-	chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}, function(response) {
+	chrome.runtime.sendMessage({
+		method: "getStyles",
+		url: getMeta("stylish-id-url") || location.href,
+	}, function(response) {
 		var style = response[0];
 		if (confirm(chrome.i18n.getMessage('styleUpdate', [style.name]))) {
 			getResource(getMeta("stylish-code-chrome"), function(code) {
@@ -123,14 +131,14 @@ function getResource(url, callback) {
 			if (xhr.status >= 400) {
 				callback(null);
 			} else {
-		    callback(xhr.responseText);
+				callback(xhr.responseText);
 			}
 		}
-	}
+	};
 	if (url.length > 2000) {
 		var parts = url.split("?");
 		xhr.open("POST", parts[0], true);
-		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhr.send(parts[1]);
 	} else {
 		xhr.open("GET", url, true);
@@ -139,7 +147,7 @@ function getResource(url, callback) {
 }
 
 /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
-(function (es) {
+(function(es) {
 	es.forEach(e => {
 		[...e.childNodes].filter(n => n.nodeType == 3).forEach(n => {
 			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
@@ -176,5 +184,5 @@ function orphanCheck() {
 		'sendEvent',
 		'stylishUpdateChrome',
 		'stylishInstallChrome'
-	].forEach(fn => window[fn] = null);
+	].forEach(fn => (window[fn] = null));
 }

@@ -1,4 +1,5 @@
-/* globals styleSectionsEqual */
+/* global messageBox */
+'use strict';
 
 const installed = $('#installed');
 const TARGET_LABEL = t('appliesDisplay', '').trim();
@@ -11,7 +12,7 @@ getStylesSafe({code: false})
   .then(initGlobalEvents);
 
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(msg => {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
@@ -45,7 +46,7 @@ function initGlobalEvents() {
   };
 
   // remember scroll position on normal history navigation
-  document.addEventListener('visibilitychange', event => {
+  document.addEventListener('visibilitychange', () => {
     if (document.visibilityState != 'visible') {
       rememberScrollPosition();
     }
@@ -72,7 +73,7 @@ function initGlobalEvents() {
 function showStyles(styles = []) {
   const sorted = styles
     .map(style => ({name: style.name.toLocaleLowerCase(), style}))
-    .sort((a, b) => a.name < b.name ? -1 : a.name == b.name ? 0 : 1);
+    .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
   const shouldRenderAll = history.state && history.state.scrollY > innerHeight;
   const renderBin = document.createDocumentFragment();
   tDocLoader.stop();
@@ -80,24 +81,28 @@ function showStyles(styles = []) {
   // TODO: remember how many styles fit one page to display just that portion first next time
   function renderStyles(index) {
     const t0 = performance.now();
-    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 10)) {
+    while (index < sorted.length) {
       renderBin.appendChild(createStyleElement(sorted[index++].style));
+      if (!shouldRenderAll && performance.now() - t0 > 10) {
+        break;
+      }
     }
     if ($('#search').value) {
       // re-apply filtering on history Back
-      searchStyles(true, renderBin);
+      searchStyles({immediately: true, container: renderBin});
     }
     installed.appendChild(renderBin);
     if (index < sorted.length) {
       setTimeout(renderStyles, 0, index);
-    }
-    else if (shouldRenderAll && history.state && 'scrollY' in history.state) {
+    } else if (shouldRenderAll && history.state && 'scrollY' in history.state) {
       setTimeout(() => scrollTo(0, history.state.scrollY));
     }
   }
 }
 
 
+// silence the inapplicable warning for async code
+/* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
 function createStyleElement(style) {
   const entry = template.style.cloneNode(true);
   entry.classList.add(style.enabled ? 'enabled' : 'disabled');
@@ -131,9 +136,9 @@ function createStyleElement(style) {
     regexpsBefore: '/',
     regexpsAfter: '/',
   };
-  for (let [name, target] of targets.entries()) {
-    for (let section of style.sections) {
-      for (let targetValue of section[name] || []) {
+  for (const [name, target] of targets.entries()) {
+    for (const section of style.sections) {
+      for (const targetValue of section[name] || []) {
         target.add(
           (decorations[name + 'Before'] || '') +
           targetValue.trim() +
@@ -151,7 +156,7 @@ function createStyleElement(style) {
   } else {
     let index = 0;
     let container = appliesTo;
-    for (let target of targetsList) {
+    for (const target of targetsList) {
       if (index > 0) {
         container.appendChild(template.appliesToSeparator.cloneNode(true));
       }
@@ -184,8 +189,10 @@ class EntryOnClick {
     }
     event.preventDefault();
     event.stopPropagation();
-    const left = event.button == 0, middle = event.button == 1,
-          shift = event.shiftKey, ctrl = event.ctrlKey;
+    const left = event.button == 0;
+    const middle = event.button == 1;
+    const shift = event.shiftKey;
+    const ctrl = event.ctrlKey;
     const openWindow = left && shift && !ctrl;
     const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
@@ -215,10 +222,10 @@ class EntryOnClick {
   }
 
   static update(event) {
-    const updatedCode = getClickedStyleElement(event).updatedCode;
+    const styleElement = getClickedStyleElement(event);
     // update everything but name
-    saveStyle(Object.assign(updatedCode, {
-      id: element.styleId,
+    saveStyle(Object.assign(styleElement.updatedCode, {
+      id: styleElement.styleId,
       name: null,
       reason: 'update',
     }));
@@ -340,10 +347,10 @@ class Updater {
   }
 
   checkMd5() {
-    return this.download(this.md5Url).then(
-      md5 => md5.length == 32
+    return Updater.download(this.md5Url).then(
+      md5 => (md5.length == 32
         ? this.decideOnMd5(md5 != this.md5)
-        : this.onFailure(-1),
+        : this.onFailure(-1)),
       this.onFailure);
   }
 
@@ -355,7 +362,7 @@ class Updater {
   }
 
   checkFullCode({forceUpdate = false} = {}) {
-    return this.download(this.url).then(
+    return Updater.download(this.url).then(
       text => this.handleJson(forceUpdate, JSON.parse(text)),
       this.onFailure);
   }
@@ -391,12 +398,12 @@ class Updater {
     }
   }
 
-  download(url) {
+  static download(url) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onloadend = () => xhr.status == 200
+      xhr.onloadend = () => (xhr.status == 200
         ? resolve(xhr.responseText)
-        : reject(xhr.status);
+        : reject(xhr.status));
       if (url.length > 2000) {
         const [mainUrl, query] = url.split('?');
         xhr.open('POST', mainUrl, true);
@@ -412,19 +419,19 @@ class Updater {
 }
 
 
-function searchStyles(immediately, bin) {
+function searchStyles({immediately, container}) {
   const query = $('#search').value.toLocaleLowerCase();
-  if (query == (searchStyles.lastQuery || '') && !bin) {
+  if (query == (searchStyles.lastQuery || '') && !container) {
     return;
   }
   searchStyles.lastQuery = query;
   if (!immediately) {
     clearTimeout(searchStyles.timeout);
-    searchStyles.timeout = setTimeout(doSearch, 200, true);
+    searchStyles.timeout = setTimeout(searchStyles, 200, {immediately: true});
     return;
   }
 
-  for (let element of (bin || installed).children) {
+  for (const element of (container || installed).children) {
     const {style} = cachedStyles.byId.get(element.styleId) || {};
     if (style) {
       const isMatching = !query || isMatchingText(style.name) || isMatchingStyle(style);
@@ -433,8 +440,8 @@ function searchStyles(immediately, bin) {
   }
 
   function isMatchingStyle(style) {
-    for (let section of style.sections) {
-      for (let prop in section) {
+    for (const section of style.sections) {
+      for (const prop in section) {
         const value = section[prop];
         switch (typeof value) {
           case 'string':
@@ -443,7 +450,7 @@ function searchStyles(immediately, bin) {
             }
             break;
           case 'object':
-            for (let str of value) {
+            for (const str of value) {
               if (isMatchingText(str)) {
                 return true;
               }

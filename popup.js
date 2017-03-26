@@ -1,11 +1,9 @@
-/* globals configureCommands, openURL */
+'use strict';
 
-const RX_SUPPORTED_URLS = new RegExp(
-  `^(file|https?|ftps?):|^${OWN_ORIGIN}`);
 let installed;
 
-
 getActiveTabRealURL().then(url => {
+  const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
   const isUrlSupported = RX_SUPPORTED_URLS.test(url);
   Promise.all([
     isUrlSupported ? getStylesSafe({matchUrl: url}) : null,
@@ -15,7 +13,7 @@ getActiveTabRealURL().then(url => {
 });
 
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(msg => {
   if (msg.method == 'updatePopup') {
     switch (msg.reason) {
       case 'styleAdded':
@@ -93,7 +91,7 @@ function initPopup(url) {
 
   // For domain
   const domains = getDomains(url);
-  for (let domain of domains) {
+  for (const domain of domains) {
     // Don't include TLD
     if (domains.length > 1 && !domain.includes('.')) {
       continue;
@@ -122,12 +120,13 @@ function showStyles(styles) {
     installed.innerHTML = template.noStyles.outerHTML;
   } else {
     const enabledFirst = prefs.get('popup.enabledFirst');
-    styles.sort((a, b) =>
+    styles.sort((a, b) => (
       enabledFirst && a.enabled !== b.enabled
         ? !(a.enabled < b.enabled) ? -1 : 1
-        : a.name.localeCompare(b.name));
+        : a.name.localeCompare(b.name)
+    ));
     const fragment = document.createDocumentFragment();
-    for (let style of styles) {
+    for (const style of styles) {
       fragment.appendChild(createStyleElement(style));
     }
     installed.appendChild(fragment);
@@ -135,6 +134,8 @@ function showStyles(styles) {
 }
 
 
+// silence the inapplicable warning for async code
+/* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
 function createStyleElement(style) {
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
@@ -206,7 +207,7 @@ class EntryOnClick {
     function confirm(ok) {
       window.onkeydown = null;
       animateElement(box, {className: 'lights-on'})
-        .then(() => box.dataset.display = false);
+        .then(() => (box.dataset.display = false));
       if (ok) {
         deleteStyle(id).then(() => {
           // update view with 'No styles installed for this site' message
@@ -279,7 +280,7 @@ function handleUpdate(style) {
 
 
 function handleDelete(id) {
-  var styleElement = $(`[style-id="${id}"]`, installed);
+  const styleElement = $(`[style-id="${id}"]`, installed);
   if (styleElement) {
     installed.removeChild(styleElement);
   }

@@ -1,4 +1,3 @@
-/* globals getStyles, saveStyle, invalidateCache, refreshAllTabs */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -228,7 +227,7 @@ function importFromString(jsonString) {
 
 
 $('#file-all-styles').onclick = () => {
-  getStyles({}, function (styles) {
+  getStylesSafe().then(styles => {
     const text = JSON.stringify(styles, null, '\t');
     const fileName = generateFileName();
 

@@ -1,52 +1,62 @@
 # https://github.com/eslint/eslint/blob/master/docs/rules/README.md
 
 parserOptions:
-  ecmaVersion: 2017
+  ecmaVersion: 2015
 
 env:
   browser: true
-  commonjs: true
   es6: true
   webextensions: true
 
 globals:
-  CodeMirror: false
-  runTryCatch: true
-  getStylesSafe: true
-  getStyles: true
-  updateIcon: true
-  saveStyle: true
-  invalidateCache: true
-  getDatabase: true
+  # messaging.js
+  OWN_ORIGIN: false
+  KEEP_CHANNEL_OPEN: false
+  configureCommands: false
+  notifyAllTabs: false
+  refreshAllTabs: false
+  updateIcon: false
+  getActiveTab: false
+  getActiveTabRealURL: false
+  getTabRealURL: false
+  openURL: false
+  activateTab: false
+  stringAsRegExp: false
+  wildcardAsRegExp: false
+  # localization.js
+  template: false
+  t: false
+  o: false
+  tE: false
+  tHTML: false
+  tNodeList: false
+  tDocLoader: false
+  # dom.js
+  onDOMready: false
+  getClickedStyleId: false
+  getClickedStyleElement: false
+  scrollElementIntoView: false
+  animateElement: false
+  $: false
+  $$: false
+  # storage.js
   prefs: false
-  reportError: true
-  getActiveTab: true
-  t: true
-  getCodeMirrorThemes: true
-  setupLivePrefs: true
-  sessionStorageHash: true
-  template: true
-  tE: true
-  tHTML: true
-  CSSLint: true
-  enableStyle: true
-  deleteStyle: true
-  getType: true
-  importStyles: true
-  getActiveTabRealURL: true
-  openURL: true
-  $: true
-  $$: true
-  animateElement: true
-  scrollElementIntoView: true
-  getClickedStyleElement: true
-  getClickedStyleId: true
-  onDOMready: true
-  getDomains: true
-  webSqlStorage: true
-  notifyAllTabs: true
-  handleUpdate: true
-  handleDelete: true
+  cachedStyles: false
+  sessionStorageHash: false
+  getStylesSafe: false
+  invalidateCache: false
+  saveStyle: false
+  enableStyle: false
+  deleteStyle: false
+  fixBoolean: false
+  getDomains: false
+  getType: false
+  getApplicableSections: false
+  isCheckbox: false
+  runTryCatch: false
+  setupLivePrefs: false
+  getCodeMirrorThemes: false
+  styleSectionsEqual: false
 
 rules:
   accessor-pairs: [2]
@@ -56,7 +66,7 @@ rules:
   arrow-parens: [2, as-needed]
   arrow-spacing: [2, {before: true, after: true}]
   block-scoped-var: [2]
-  brace-style: [2, 1tbs, {allowSingleLine: true}]
+  brace-style: [2, 1tbs, {allowSingleLine: false}]
   camelcase: [2, {properties: never}]
   class-methods-use-this: [2]
   comma-dangle: [0]
@@ -77,16 +87,15 @@ rules:
   func-names: [0]
   generator-star-spacing: [2, before]
   global-require: [0]
-  guard-for-in: [2]
+  guard-for-in: [0] # not needed for our non-OOP stuff
   handle-callback-err: [2, ^(err|error)$]
   id-blacklist: [0]
   id-length: [0]
   id-match: [0]
-  indent: [2, 2, {VariableDeclarator: 0}]
+  indent: [2, 2, {VariableDeclarator: 0, SwitchCase: 1}]
   jsx-quotes: [0]
   key-spacing: [0]
   keyword-spacing: [2]
-  linebreak-style: [2, unix]
   lines-around-comment: [0]
   lines-around-directive: [0]
   max-len: [2, {code: 120, ignoreComments: true, ignoreRegExpLiterals: true}]
@@ -107,7 +116,7 @@ rules:
   no-case-declarations: [2]
   no-class-assign: [2]
   no-cond-assign: [2, except-parens]
-  no-confusing-arrow: [2]
+  no-confusing-arrow: [2, {allowParens: true}]
   no-const-assign: [2]
   no-constant-condition: [0]
   no-continue: [0]
@@ -134,11 +143,11 @@ rules:
   no-extra-label: [0]
   no-extra-parens: [0]
   no-extra-semi: [2]
-  no-fallthrough: [2]
+  no-fallthrough: [2, {commentPattern: fallthrough.*}]
   no-floating-decimal: [0]
   no-func-assign: [2]
   no-global-assign: [2]
-  no-implicit-coercion: [2]
+  no-implicit-coercion: [1]
   no-implicit-globals: [0]
   no-implied-eval: [2]
   no-inline-comments: [0]
@@ -148,7 +157,7 @@ rules:
   no-irregular-whitespace: [2]
   no-iterator: [2]
   no-label-var: [2]
-  no-labels: [2]
+  no-labels: [2, {allowLoop: true}]
   no-lone-blocks: [2]
   no-lonely-if: [0]
   no-loop-func: [0]
@@ -158,7 +167,7 @@ rules:
   no-mixed-spaces-and-tabs: [2]
   no-multi-spaces: [0]
   no-multi-str: [2]
-  no-multiple-empty-lines: [2, {max: 1, maxEOF: 0, maxBOF: 0}]
+  no-multiple-empty-lines: [2, {max: 2, maxEOF: 0, maxBOF: 0}]
   no-native-reassign: [2]
   no-negated-condition: [0]
   no-negated-in-lhs: [2]
@@ -193,7 +202,7 @@ rules:
   no-tabs: [2]
   no-template-curly-in-string: [2]
   no-this-before-super: [2]
-  no-throw-literal: [2]
+  no-throw-literal: [0]
   no-trailing-spaces: [2]
   no-undef-init: [2]
   no-undef: [2]
@@ -207,29 +216,30 @@ rules:
   no-unsafe-negation: [2]
   no-unused-expressions: [2]
   no-unused-labels: [0]
-  no-unused-vars: [2, {args: all, varsIgnorePattern: clearError, argsIgnorePattern: ^_}]
+  no-unused-vars: [1, {args: all, vars: local, varsIgnorePattern: clearError, argsIgnorePattern: ^_}]
   no-use-before-define: [2, nofunc]
   no-useless-call: [2]
   no-useless-computed-key: [2]
   no-useless-concat: [2]
   no-useless-constructor: [2]
   no-useless-escape: [2]
-  no-var: [0]
+  no-var: [1]
   no-warning-comments: [0]
   no-whitespace-before-property: [2]
   no-with: [2]
   object-curly-newline: [0]
   object-curly-spacing: [2, never]
   object-shorthand: [0]
-  one-var-declaration-per-line: [0]
+  one-var-declaration-per-line: [1]
   one-var: [0]
   operator-assignment: [2, always]
-  operator-linebreak: [2, after]
+  operator-linebreak: [2, after, overrides: {"?": ignore, ":": ignore, "&&": ignore, "||": ignore}]
   padded-blocks: [2, never]
   prefer-numeric-literals: [2]
   prefer-rest-params: [0]
+  prefer-const: [1, {destructuring: any, ignoreReadBeforeAssign: true}]
   quote-props: [0]
-  quotes: [2, double, avoid-escape]
+  quotes: [1, single, avoid-escape]
   radix: [2, as-needed]
   require-jsdoc: [0]
   require-yield: [2]
@@ -242,7 +252,7 @@ rules:
   space-in-parens: [2, never]
   space-infix-ops: [2]
   space-unary-ops: [2]
-  spaced-comment: [2, always, {markers: ["!"]}]
+  spaced-comment: [0, always, {markers: ["!"]}]
   strict: [2, global]
   symbol-description: [2]
   template-curly-spacing: [2, never]

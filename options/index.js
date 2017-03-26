@@ -1,8 +1,7 @@
-/* globals configureCommands */
 'use strict';
 
 
-function restore () {
+function restore() {
   chrome.runtime.getBackgroundPage(bg => {
     $('#badgeDisabled').value = bg.prefs.get('badgeDisabled');
     $('#badgeNormal').value = bg.prefs.get('badgeNormal');
@@ -13,28 +12,28 @@ function restore () {
 }
 
 
-function save () {
+function save() {
   chrome.runtime.getBackgroundPage(bg => {
     bg.prefs.set('badgeDisabled', $('#badgeDisabled').value);
     bg.prefs.set('badgeNormal', $('#badgeNormal').value);
     localStorage.setItem('popupWidth', enforceValueRange('popupWidth'));
     bg.prefs.set(
       'updateInterval',
-      Math.max(0, +$('#updateInterval').value)
+      Math.max(0, Number($('#updateInterval').value))
     );
     // display notification
-    let status = $('#status');
+    const status = $('#status');
     status.textContent = 'Options saved.';
-    setTimeout(() => status.textContent = '', 750);
+    setTimeout(() => (status.textContent = ''), 750);
   });
 }
 
 
 function enforceValueRange(id) {
-  let element = document.getElementById(id);
-  let value = Number(element.value);
+  const element = document.getElementById(id);
   const min = Number(element.min);
   const max = Number(element.max);
+  let value = Number(element.value);
   if (value < min || value > max) {
     value = Math.max(min, Math.min(max, value));
     element.value = value;
@@ -53,40 +52,38 @@ $('[data-cmd="open-keyboard"]').textContent =
 
 // actions
 document.onclick = e => {
-  let cmd = e.target.dataset.cmd;
-  let total = 0, updated = 0;
+  const cmd = e.target.dataset.cmd;
+  let total = 0;
+  let updated = 0;
 
-  function update () {
+  function update() {
     $('#update-counter').textContent = `${updated}/${total}`;
   }
-  function done (target) {
+
+  function done(target) {
     target.disabled = false;
     window.setTimeout(() => {
       $('#update-counter').textContent = '';
     }, 750);
   }
 
-  switch (cmd) {
-
-  case 'open-manage':
-    openURL({url: '/manage.html'});
-    break;
-
-  case'check-updates':
-    e.target.disabled = true;
+  function check() {
     chrome.runtime.getBackgroundPage(bg => {
       bg.update.perform((cmd, value) => {
-        if (cmd === 'count') {
-          total = value;
-          if (!total) {
-            done(e.target);
-          }
-        }
-        else if (cmd === 'single-updated' || cmd === 'single-skipped') {
-          updated += 1;
-          if (total && updated === total) {
-            done(e.target);
-          }
+        switch (cmd) {
+          case 'count':
+            total = value;
+            if (!total) {
+              done(e.target);
+            }
+            break;
+          case 'single-updated':
+          case 'single-skipped':
+            updated++;
+            if (total && updated === total) {
+              done(e.target);
+            }
+            break;
         }
         update();
       });
@@ -95,11 +92,21 @@ document.onclick = e => {
     chrome.runtime.sendMessage({
       method: 'resetInterval'
     });
-    break;
+  }
 
-  case 'open-keyboard':
-    configureCommands.open();
-    break;
+  switch (cmd) {
+    case 'open-manage':
+      openURL({url: '/manage.html'});
+      break;
+
+    case 'check-updates':
+      e.target.disabled = true;
+      check();
+      break;
+
+    case 'open-keyboard':
+      configureCommands.open();
+      break;
 
   }
 };

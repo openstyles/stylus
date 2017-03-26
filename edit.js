@@ -1,4 +1,5 @@
-/* globals stringAsRegExp */
+/* eslint no-tabs: 0, no-var: 0, indent: [2, tab, {VariableDeclarator: 0, SwitchCase: 1}], quotes: 0 */
+/* global CodeMirror */
 "use strict";
 
 var styleId = null;
@@ -29,7 +30,7 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	var r = this.slice(-amount, this.length);
 	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
 	return r;
-}
+};
 
 Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
 

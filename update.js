@@ -1,6 +1,7 @@
-/* globals getStyles, saveStyle, prefs */
+/* globals getStyles */
 'use strict';
 
+// TODO: refactor to make usable in manage::Updater
 var update = {
   fetch: (resource, callback) => {
     let req = new XMLHttpRequest();
@@ -30,6 +31,7 @@ var update = {
     getStyles({}, (styles) => callback(styles.filter(style => style.updateUrl)));
   },
   perform: (observe = function () {}) => {
+    // TODO: use sectionsAreEqual
     // from install.js
     function arraysAreEqual (a, b) {
       // treat empty array and undefined as equivalent
