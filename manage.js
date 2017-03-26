@@ -82,7 +82,7 @@ function showStyles(styles = []) {
   function renderStyles(index) {
     const t0 = performance.now();
     while (index < sorted.length) {
-      renderBin.appendChild(createStyleElement(sorted[index++].style));
+      renderBin.appendChild(createStyleElement(sorted[index++]));
       if (!shouldRenderAll && performance.now() - t0 > 10) {
         break;
       }
@@ -103,11 +103,12 @@ function showStyles(styles = []) {
 
 // silence the inapplicable warning for async code
 /* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
-function createStyleElement(style) {
+function createStyleElement({style, name}) {
   const entry = template.style.cloneNode(true);
   entry.classList.add(style.enabled ? 'enabled' : 'disabled');
   entry.setAttribute('style-id', style.id);
   entry.styleId = style.id;
+  entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
   if (style.updateUrl) {
     entry.setAttribute('style-update-url', style.updateUrl);
   }
@@ -252,18 +253,21 @@ class EntryOnClick {
 
 
 function handleUpdate(style, {reason} = {}) {
-  const element = createStyleElement(style);
+  const element = createStyleElement({style});
   const oldElement = $(`[style-id="${style.id}"]`, installed);
-  animateElement(element, {className: 'highlight'});
-  if (!oldElement) {
-    installed.appendChild(element);
-  } else {
-    installed.replaceChild(element, oldElement);
+  if (oldElement) {
+    if (oldElement.styleNameLowerCase == element.styleNameLowerCase) {
+      installed.replaceChild(element, oldElement);
+    } else {
+      oldElement.remove();
+    }
     if (reason == 'update') {
       element.classList.add('update-done');
       $('.update-note', element).innerHTML = t('updateCompleted');
     }
   }
+  installed.insertBefore(element, findNextElement(style));
+  animateElement(element, {className: 'highlight'});
   scrollElementIntoView(element);
 }
 
@@ -469,4 +473,37 @@ function searchStyles({immediately, container}) {
 
 function rememberScrollPosition() {
   history.replaceState({scrollY}, document.title);
+}
+
+
+function findNextElement(style) {
+  const nameLLC = style.name.toLocaleLowerCase();
+  const elements = installed.children;
+  let a = 0;
+  let b = elements.length - 1;
+  if (b < 0) {
+    return undefined;
+  }
+  if (elements[0].styleNameLowerCase > nameLLC) {
+    return elements[0];
+  }
+  if (elements[b].styleNameLowerCase <= nameLLC) {
+    return undefined;
+  }
+  // bisect
+  while (a < b - 1) {
+    const c = (a + b) / 2 | 0;
+    if (nameLLC < elements[c].styleNameLowerCase) {
+      b = c;
+    } else {
+      a = c;
+    }
+  }
+  if (elements[a].styleNameLowerCase > nameLLC) {
+    return elements[a];
+  }
+  while (a <= b && elements[a].name < nameLLC) {
+    a++;
+  }
+  return elements[elements[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
 }
