@@ -193,18 +193,9 @@ function wildcardAsRegExp(s, flags) {
 }
 
 
-// isolate deoptimization trigger:
-// https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
-// * Functions that contain object literals that contain __proto__, or get or set declarations.
-const configureCommands = (() => ({
-  get url() {
-    return navigator.userAgent.includes('OPR')
-      ? 'opera://settings/configureCommands'
-      : 'chrome://extensions/configureCommands';
-  },
-  open: () => {
-    chrome.tabs.create({
-      'url': configureCommands.url
-    });
-  }
-}))();
+const configureCommands = {
+  url: navigator.userAgent.includes('OPR')
+    ? 'opera://settings/configureCommands'
+    : 'chrome://extensions/configureCommands',
+  open: () => openURL({url: configureCommands.url}),
+};
