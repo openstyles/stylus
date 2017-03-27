@@ -188,7 +188,11 @@ function applyStyles(styleHash) {
         document.head.appendChild(document.getElementById(id));
       }
     }
-    document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+    if (document.readyState != 'loading') {
+      onDOMContentLoaded();
+    } else {
+      document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+    }
   }
 
   if (retiredStyleIds.length) {
@@ -330,15 +334,20 @@ function replaceAllpass2(newStyles, doc) {
 // Observe dynamic IFRAMEs being added
 function initObserver() {
   let orphanCheckTimer;
+  const iframesCollection = document.getElementsByTagName('iframe');
 
   iframeObserver = new MutationObserver(function(mutations) {
+    // MutationObserver runs as a microtask so the timer won't fire
+    // until all queued mutations are fired
     clearTimeout(orphanCheckTimer);
-    // MutationObserver runs as a microtask so the timer won't fire until all queued mutations are fired
     orphanCheckTimer = setTimeout(orphanCheck, 0);
-
+    // autoupdated HTMLCollection is superfast
+    if (!iframesCollection[0]) {
+      return;
+    }
+    // use a much faster method for very complex pages with lots of mutations
+    // (observer usually receives 1k-10k mutations per call)
     if (mutations.length > 1000) {
-      // use a much faster method for very complex pages with 100,000 mutations
-      // (observer usually receives 1k-10k mutations per call)
       addDocumentStylesToAllIFrames();
       return;
     }
@@ -349,20 +358,23 @@ function initObserver() {
   });
 
   function process(mutations) {
-    // var is slightly faster and MutationObserver may run a lot
-    // eslint-disable-next-line no-var
-    for (var m = 0, ml = mutations.length; m < ml; m++) {
-      const mutation = mutations[m];
-      if (mutation.type === 'childList') {
-        // eslint-disable-next-line no-var
-        for (var n = 0, nodes = mutation.addedNodes, nl = nodes.length; n < nl; n++) {
-          const node = nodes[n];
-          if (node.localName === 'iframe' && iframeIsDynamic(node)) {
-            addDocumentStylesToIFrame(node);
+    /* eslint-disable no-var # var is slightly faster and MutationObserver may run a lot */
+    for (var m = 0, mutation; (mutation = mutations[m++]);) {
+      var added = mutation.addedNodes;
+      for (var n = 0, node; (node = added[n++]);) {
+        // process only ELEMENT_NODE
+        if (node.nodeType == 1) {
+          var iframes = node.localName === 'iframe' ? [node] :
+            node.children.length && node.getElementsByTagName('iframe');
+          for (var i = 0, iframe; (iframe = iframes[i++]);) {
+            if (iframeIsDynamic(iframe)) {
+              addDocumentStylesToIFrame(iframe);
+            }
           }
         }
       }
     }
+    /* eslint-enable no-var */
   }
 
   iframeObserver.start = () => {
