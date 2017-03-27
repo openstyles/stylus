@@ -45,13 +45,15 @@ function onBackgroundMessage(request, sender, sendResponse) {
   switch (request.method) {
 
     case 'getStyles':
-      var styles = getStyles(request, sendResponse); // eslint-disable-line no-var
-      // check if this is a main content frame style enumeration
-      if (request.matchUrl && !request.id
-      && sender && sender.tab && sender.frameId == 0
-      && sender.tab.url == request.matchUrl) {
-        updateIcon(sender.tab, styles);
-      }
+      getStyles(request, styles => {
+        sendResponse(styles);
+        // check if this is a main content frame style enumeration
+        if (request.matchUrl && !request.id
+        && sender && sender.tab && sender.frameId == 0
+        && sender.tab.url == request.matchUrl) {
+          updateIcon(sender.tab, styles);
+        }
+      });
       return KEEP_CHANNEL_OPEN;
 
     case 'saveStyle':
