@@ -258,7 +258,7 @@ function openEditorOnMiddleclick(event) {
 
 function openURLandHide(event) {
   event.preventDefault();
-  openURL({url: event.target.href})
+  openURL({url: this.href})
     .then(close);
 }
 
