@@ -1,27 +1,33 @@
 /* global getDatabase, getStyles, reportError */
 'use strict';
 
-// This happens right away, sometimes so fast that the content script isn't even ready. That's
-// why the content script also asks for this stuff.
+chrome.webNavigation.onBeforeNavigate.addListener(data => {
+  webNavigationListener(null, data);
+});
+
 chrome.webNavigation.onCommitted.addListener(data => {
   webNavigationListener('styleApply', data);
 });
+
 chrome.webNavigation.onHistoryStateUpdated.addListener(data => {
   webNavigationListener('styleReplaceAll', data);
 });
-chrome.webNavigation.onBeforeNavigate.addListener(data => {
-  webNavigationListener(null, data);
+
+chrome.webNavigation.onReferenceFragmentUpdated.addListener(data => {
+  webNavigationListener('styleReplaceAll', data);
 });
 
 
 function webNavigationListener(method, data) {
   getStyles({matchUrl: data.url, enabled: true, asHash: true}, styles => {
-    // we can't inject chrome:// and chrome-extension:// pages except our own
-    // that request the styles on their own, so we'll only update the icon
-    if (method && !data.url.startsWith('chrome')) {
+    // we can't inject chrome:// and chrome-extension:// pages
+    // so we'll only inform our page of the change
+    // and it'll retrieve the styles directly
+    if (method && !data.url.startsWith('chrome:')) {
+      const isOwnPage = data.url.startsWith(OWN_ORIGIN);
       chrome.tabs.sendMessage(
         data.tabId,
-        {method, styles},
+        {method, styles: isOwnPage ? 'DIY' : styles},
         {frameId: data.frameId});
     }
     // main page frame id is 0
@@ -30,32 +36,6 @@ function webNavigationListener(method, data) {
     }
   });
 }
-
-// catch direct URL hash modifications not invoked via HTML5 history API
-const tabUrlHasHash = new Set();
-
-chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  if (info.status != 'loading' || !info.url) {
-    return;
-  }
-  if (info.url.includes('#')) {
-    tabUrlHasHash.add(tabId);
-  } else if (tabUrlHasHash.has(tabId)) {
-    tabUrlHasHash.delete(tabId);
-  } else {
-    // do nothing since the tab neither had # before nor has # now
-    return;
-  }
-  webNavigationListener('styleReplaceAll', {
-    tabId: tabId,
-    frameId: 0,
-    url: info.url,
-  });
-});
-
-chrome.tabs.onRemoved.addListener(tabId => {
-  tabUrlHasHash.delete(tabId);
-});
 
 // messaging
 

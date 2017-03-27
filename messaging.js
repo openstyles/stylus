@@ -60,7 +60,8 @@ function refreshAllTabs() {
 function updateIcon(tab, styles) {
   // while NTP is still loading only process the request for its main frame with a real url
   // (but when it's loaded we should process style toggle requests from popups, for example)
-  if (tab.url == 'chrome://newtab/' && tab.status != 'complete') {
+  const isNTP = tab.url == 'chrome://newtab/';
+  if (isNTP && tab.status != 'complete') {
     return;
   }
   if (styles) {
@@ -72,16 +73,13 @@ function updateIcon(tab, styles) {
     });
     return;
   }
-  getTabRealURL(tab).then(url => {
-    // if we have access to this, call directly
-    // (Chrome no longer sends messages to the page itself)
-    const options = {method: 'getStyles', matchUrl: url, enabled: true, asHash: true};
-    if (typeof getStyles != 'undefined') {
-      getStyles(options, stylesReceived);
-    } else {
-      chrome.runtime.sendMessage(options, stylesReceived);
-    }
-  });
+  (isNTP ? getTabRealURL(tab) : Promise.resolve(tab.url))
+    .then(url => getStylesSafe({
+      matchUrl: url,
+      enabled: true,
+      asHash: true,
+    }))
+    .then(stylesReceived);
 
   function stylesReceived(styles) {
     let numStyles = styles.length;

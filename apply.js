@@ -33,6 +33,17 @@ function requestStyles(options) {
 
 
 function applyOnMessage(request, sender, sendResponse) {
+  // Do-It-Yourself tells our built-in pages to fetch the styles directly
+  // which is faster because IPC messaging JSON-ifies everything internally
+  if (request.styles == 'DIY') {
+    getStylesSafe({
+      matchUrl: location.href,
+      enabled: true,
+      asHash: true,
+    }).then(styles =>
+      applyOnMessage(Object.assign(request, {styles})));
+    return;
+  }
   // Also handle special request just for the pop-up
   switch (request.method == 'updatePopup' ? request.reason : request.method) {
 
