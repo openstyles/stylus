@@ -7,8 +7,11 @@ var disableAll = false;
 var styleElements = new Map();
 var retiredStyleIds = [];
 var iframeObserver;
+var styleObserverSymbol = Symbol('Stylus.styleObserver');
+var orphanCheckTimer;
 
 initObserver();
+initStyleObserver();
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
 
@@ -134,10 +137,7 @@ function applyStyleState(id, enabled, doc) {
 
 function removeStyle(id, doc) {
   styleElements.delete('stylus-' + id);
-  const el = doc.getElementById('stylus-' + id);
-  if (el) {
-    el.remove();
-  }
+  removeStyleElements([doc.getElementById('stylus-' + id)]);
   if (doc == document && !styleElements.size) {
     iframeObserver.disconnect();
   }
@@ -192,6 +192,24 @@ function applyStyles(styleHash) {
       onDOMContentLoaded();
     } else {
       document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+    }
+
+    if (!location.href.startsWith('chrome-extension:')) {
+      const t0 = performance.now();
+      let counter = 0;
+      console.warn(location.href, 'START');
+      const interval = setInterval(() => {
+        counter++;
+        for (const [id, el] of styleElements.entries()) {
+          if (!document.getElementById(id)) {
+            document.documentElement.appendChild(el);
+            console.log(location.href, el);
+          } else if (performance.now() - t0 > 1000) {
+            console.warn(location.href, 'watchdog fired', counter, 'times');
+            clearInterval(interval);
+          }
+        }
+      }, 10);
     }
   }
 
@@ -259,6 +277,7 @@ function addDocumentStylesToIFrame(iframe) {
       addStyleElement(el, doc);
     }
   }
+  initStyleObserver(doc);
 }
 
 
@@ -327,16 +346,38 @@ function replaceAll(newStyles, doc) {
 function replaceAllpass2(newStyles, doc) {
   const oldStyles = [...doc.querySelectorAll('STYLE.stylus[id$="-ghost"]')];
   processDynamicIFrames(doc, replaceAllpass2, newStyles);
-  oldStyles.forEach(style => style.remove());
+  removeStyleElements(oldStyles);
+}
+
+
+function removeStyleElements(elements) {
+  if (!elements[0]) {
+    return;
+  }
+  const styleObserver = elements[0].ownerDocument[styleObserverSymbol];
+  if (styleObserver) {
+    styleObserver.disconnect();
+  }
+  for (const el of elements) {
+    el.remove();
+  }
+  if (styleObserver) {
+    styleObserver.start();
+  }
 }
 
 
 // Observe dynamic IFRAMEs being added
 function initObserver() {
-  let orphanCheckTimer;
   const iframesCollection = document.getElementsByTagName('iframe');
 
-  iframeObserver = new MutationObserver(function(mutations) {
+  iframeObserver = Object.assign(new MutationObserver(observer), {
+    start() {
+      this.observe(document, {childList: true, subtree: true});
+    }
+  });
+
+  function observer(mutations) {
     // MutationObserver runs as a microtask so the timer won't fire
     // until all queued mutations are fired
     clearTimeout(orphanCheckTimer);
@@ -355,73 +396,132 @@ function initObserver() {
     // because some same-domain (!) iframes fail to load when their 'contentDocument' is accessed (!)
     // namely gmail's old chat iframe talkgadget.google.com
     setTimeout(process, 0, mutations);
-  });
+  }
 
   function process(mutations) {
-    /* eslint-disable no-var # var is slightly faster and MutationObserver may run a lot */
     for (var m = 0, mutation; (mutation = mutations[m++]);) {
       var added = mutation.addedNodes;
       for (var n = 0, node; (node = added[n++]);) {
         // process only ELEMENT_NODE
-        if (node.nodeType == 1) {
-          var iframes = node.localName === 'iframe' ? [node] :
-            node.children.length && node.getElementsByTagName('iframe');
-          for (var i = 0, iframe; (iframe = iframes[i++]);) {
-            if (iframeIsDynamic(iframe)) {
-              addDocumentStylesToIFrame(iframe);
-            }
+        if (node.nodeType != 1) {
+          continue;
+        }
+        var iframes = node.localName === 'iframe' ? [node] :
+          node.children.length && node.getElementsByTagName('iframe');
+        for (var i = 0, iframe; (iframe = iframes[i++]);) {
+          if (iframeIsDynamic(iframe)) {
+            addDocumentStylesToIFrame(iframe);
           }
         }
       }
     }
-    /* eslint-enable no-var */
   }
+}
 
-  iframeObserver.start = () => {
-    // subsequent calls are ignored if already started observing
-    iframeObserver.observe(document, {childList: true, subtree: true});
-  };
 
-  function orphanCheck() {
-    orphanCheckTimer = 0;
-    const port = chrome.runtime.connect();
-    if (port) {
-      port.disconnect();
-      return;
+function initStyleObserver(doc = document) {
+  const observer = Object.assign(new MutationObserver(styleObserver), {
+    counters: new Map(),
+    start() {
+      this.observe(doc.documentElement, {childList: true});
     }
+  });
+  doc[styleObserverSymbol] = observer;
+  observer.start();
+}
 
-    // we're orphaned due to an extension update
-    // we can detach the mutation observer
-    iframeObserver.takeRecords();
-    iframeObserver.disconnect();
-    iframeObserver = null;
-    // we can detach event listeners
-    document.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
-    // we can't detach chrome.runtime.onMessage because it's no longer connected internally
 
-    // we can destroy global functions in this context to free up memory
-    [
-      'addDocumentStylesToAllIFrames',
-      'addDocumentStylesToIFrame',
-      'addStyleElement',
-      'addStyleToIFrameSrcDoc',
-      'applyOnMessage',
-      'applySections',
-      'applyStyles',
-      'doDisableAll',
-      'getDynamicIFrames',
-      'processDynamicIFrames',
-      'iframeIsDynamic',
-      'iframeIsLoadingSrcDoc',
-      'initObserver',
-      'removeStyle',
-      'replaceAll',
-      'replaceAllpass2',
-      'requestStyles',
-      'retireStyle'
-    ].forEach(fn => (window[fn] = null));
-
-    // we can destroy global variables
-    styleElements = iframeObserver = retiredStyleIds = null;
+function styleObserver(mutations, observer) {
+  //console.log(location.href,
+  //  [].concat.apply([], mutations.map(m => [...m.addedNodes])),
+  //  [].concat.apply([], mutations.map(m => [...m.removedNodes]))
+  //);
+  for (var m = 0, mutation; (mutation = mutations[m++]);) {
+    var removed = mutation.removedNodes;
+    for (var n = 0, node; (node = removed[n++]);) {
+      let id = node.id;
+      var ourElement = styleElements.get(id);
+      if (!ourElement) {
+        for (const [elId, el] of styleElements.entries()) {
+          if (el == node) {
+            node.id = id = elId;
+            ourElement = el;
+            break;
+          }
+        }
+      }
+      if (!ourElement) {
+        continue;
+      }
+      const counter = observer.counters.get(id) || 0;
+      if (counter > 10) {
+        continue;
+      }
+      observer.counters.set(id, counter + 1);
+      if (ourElement.ownerDocument != node.ownerDocument) {
+        ourElement = node.ownerDocument.importNode(ourElement, true);
+      }
+      node.ownerDocument.documentElement.appendChild(ourElement);
+      //console.log('Restoring style', ourElement);
+    }
   }
+}
+
+
+function orphanCheck() {
+  orphanCheckTimer = 0;
+  const port = chrome.runtime.connect();
+  if (port) {
+    port.disconnect();
+    return;
+  }
+
+  // we're orphaned due to an extension update
+  // we can detach the mutation observer
+  iframeObserver.takeRecords();
+  iframeObserver.disconnect();
+  iframeObserver = null;
+  document[styleObserverSymbol].disconnect();
+  document[styleObserverSymbol] = null;
+  (function removeStyleObservers(doc) {
+    getDynamicIFrames(doc).forEach(iframe => {
+      const styleObserver = iframe.contentDocument[styleObserverSymbol];
+      if (styleObserver) {
+        styleObserver.disconnect();
+        document[styleObserverSymbol] = null;
+      }
+      removeStyleObservers(iframe.contentDocument);
+    });
+  })(document);
+  // we can detach event listeners
+  document.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
+  // we can't detach chrome.runtime.onMessage because it's no longer connected internally
+  // we can destroy our globals in this context to free up memory
+  [ // functions
+    'addDocumentStylesToAllIFrames',
+    'addDocumentStylesToIFrame',
+    'addStyleElement',
+    'addStyleToIFrameSrcDoc',
+    'applyOnMessage',
+    'applySections',
+    'applyStyles',
+    'doDisableAll',
+    'getDynamicIFrames',
+    'processDynamicIFrames',
+    'iframeIsDynamic',
+    'iframeIsLoadingSrcDoc',
+    'initObserver',
+    'initStyleObserver',
+    'orphanCheck',
+    'removeStyle',
+    'replaceAll',
+    'replaceAllpass2',
+    'requestStyles',
+    'retireStyle',
+    'styleObserver',
+    // variables
+    'styleElements',
+    'iframeObserver',
+    'retiredStyleIds',
+  ].forEach(fn => (window[fn] = null));
 }
