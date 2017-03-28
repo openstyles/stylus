@@ -1,22 +1,102 @@
 body {
-  margin: 10px;
-  font-family: "Helvetica Neue",Helvetica,sans-serif;
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+body > * {
+  padding: 1em 1rem 1em 44px;
 }
 
 table {
   width: 100%;
+  border-collapse: collapse;
 }
+
+td {
+  padding: 2px 0;
+}
+
 td:last-child {
   text-align: right;
 }
 
-input[type=number],
+a {
+  text-decoration-skip: ink;
+}
+
 button {
+  text-align: center;
   width: 80px;
 }
 
-.notes {
+h1:not(:first-child) {
+  margin-top: 0;
+}
+
+input[type=number] {
+  width: 80px;
+  text-align: right;
+  padding-right: 1em;
+}
+
+#actions {
+  margin-top: -2em;
+}
+
+#save {
+  text-align: right;
+  position: relative;
+}
+
+#save-status {
+  margin-top: .5ex;
+  position: absolute;
+  right: 0;
+  visibility: hidden;
+}
+
+#save-status.fadeinout {
+  visibility: visible;
+  animation: fadeinout 1s ease-in-out;
+  animation-fill-mode: both;
+}
+
+#notes {
+  background-color: #f4f4f4;
+  margin-top: .5em;
   font-size: 90%;
   color: #999;
+}
+
+#notes ol {
+  margin: 0;
+  padding: 0;
+}
+
+#notes li:not(last-child) {
+  margin-bottom: 1ex;
+}
+
+input[type="color"] {
+  width: 80px;
+  box-sizing: border-box;
+  height: 2em;
+}
+
+#notes a {
+  color: inherit;
+}
+
+#notes a:hover {
+  color: black;
+}
+
+@keyframes fadeinout {
+  0%   { opacity: 0 }
+  10%  { opacity: 1 }
+  25%  { opacity: 1 }
+  100% { opacity: 0 }
 }

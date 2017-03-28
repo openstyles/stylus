@@ -3,13 +3,16 @@
 <head>
   <title>Stylus Options</title>
   <link rel="stylesheet" href="index.css">
-  <script src="../localization.js"></script>
+  <script src="/localization.js"></script>
+  <script src="/apply.js"></script>
+  <script src="/messaging.js"></script>
+  <script src="/dom.js"></script>
 </head>
 
 <body>
-  <h1 i18n-text="optionsCustomize"></h1>
-  <table>
-    <tbody>
+  <div id="ui">
+    <h1 i18n-text="optionsCustomize"></h1>
+    <table>
       <tr>
         <td i18n-text="optionsBadgeNormal"></td>
         <td><input type="color" id="badgeNormal"></td>
@@ -26,16 +29,16 @@
         <td i18n-text="optionsUpdateInterval"><sup>1</sup></td>
         <td><input type="number" min="0" id="updateInterval"></td>
       </tr>
-    </tbody>
-  </table>
-  <div>
-    <button id="save">Save</button>
-    <span id="status"></span>
+    </table>
+    <div id="save">
+      <button id="save-button" i18n-text="optionsSave"></button>
+      <div id="save-status" i18n-text="optionsSaved"></div>
+    </div>
   </div>
 
-  <h1 i18n-text="optionsActions"></h1>
-  <table>
-    <tbody>
+  <div id="actions">
+    <h1 i18n-text="optionsActions"></h1>
+    <table>
       <tr>
         <td i18n-text="optionsOpenManager"><sup>2</sup></td>
         <td><button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button></td>
@@ -47,17 +50,19 @@
           <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
         </td>
       </tr>
-    </tbody>
-  </table>
-  <div class="notes">
-    <hr>
-    1: <span i18n-text="optionsUpdateIntervalNote"></span>
-    <br>
-    2: <span i18n-text="optionsOpenManagerNote"></span>, <a href="#" data-cmd="open-keyboard">chrome://extensions/configureCommands</a>
+    </table>
   </div>
 
-  <script src="/messaging.js"></script>
-  <script src="/dom.js"></script>
+  <div id="notes">
+    <ol>
+      <li i18n-text="optionsUpdateIntervalNote"></li>
+      <li><a data-cmd="open-keyboard"
+             i18n-text="optionsOpenManagerNote"
+             href="chrome://extensions/configureCommands"></a>
+      </li>
+    </ol>
+  </div>
+
   <script src="index.js"></script>
 </body>
 </html>

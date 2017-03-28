@@ -496,6 +496,12 @@
   "optionsActions": {
     "message": "Actions"
   },
+  "optionsSave": {
+    "message": "Save"
+  },
+  "optionsSaved": {
+    "message": "Options saved."
+  },
   "optionsOpenManager": {
     "message": "Open styles manager"
   },

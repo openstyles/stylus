@@ -21,10 +21,7 @@ function save() {
       'updateInterval',
       Math.max(0, Number($('#updateInterval').value))
     );
-    // display notification
-    const status = $('#status');
-    status.textContent = 'Options saved.';
-    setTimeout(() => (status.textContent = ''), 750);
+    animateElement($('#save-status'), {className: 'fadeinout'});
   });
 }
 
@@ -47,8 +44,7 @@ onDOMready().then(restore);
 $('#save').onclick = save;
 
 // overwrite the default URL if browser is Opera
-$('[data-cmd="open-keyboard"]').textContent =
-  configureCommands.url;
+$('[data-cmd="open-keyboard"]').href = configureCommands.url;
 
 // actions
 document.onclick = e => {
