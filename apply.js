@@ -3,15 +3,15 @@
 /* eslint no-var: 0 */
 'use strict';
 
+var isOwnPage = location.href.startsWith('chrome-extension:');
 var disableAll = false;
 var styleElements = new Map();
 var retiredStyleIds = [];
 var iframeObserver;
-var styleObserverSymbol = Symbol('Stylus.styleObserver');
+var docRewriteObserver;
 var orphanCheckTimer;
 
-initObserver();
-initStyleObserver();
+initIFrameObserver();
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
 
@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(applyOnMessage);
 function requestStyles(options) {
   // If this is a Stylish page (Edit Style or Manage Styles),
   // we'll request the styles directly to minimize delay and flicker,
-  // unless Chrome still starts up and the background page isn't fully loaded.
+  // unless Chrome is still starting up and the background page isn't fully loaded.
   // (Note: in this case the function may be invoked again from applyStyles.)
   const request = Object.assign({
     method: 'getStyles',
@@ -137,7 +137,7 @@ function applyStyleState(id, enabled, doc) {
 
 function removeStyle(id, doc) {
   styleElements.delete('stylus-' + id);
-  removeStyleElements([doc.getElementById('stylus-' + id)]);
+  [doc.getElementById('stylus-' + id)].forEach(e => e && e.remove());
   if (doc == document && !styleElements.size) {
     iframeObserver.disconnect();
   }
@@ -193,24 +193,7 @@ function applyStyles(styleHash) {
     } else {
       document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
     }
-
-    if (!location.href.startsWith('chrome-extension:')) {
-      const t0 = performance.now();
-      let counter = 0;
-      console.warn(location.href, 'START');
-      const interval = setInterval(() => {
-        counter++;
-        for (const [id, el] of styleElements.entries()) {
-          if (!document.getElementById(id)) {
-            document.documentElement.appendChild(el);
-            console.log(location.href, el);
-          } else if (performance.now() - t0 > 1000) {
-            console.warn(location.href, 'watchdog fired', counter, 'times');
-            clearInterval(interval);
-          }
-        }
-      }, 10);
-    }
+    initDocRewriteObserver();
   }
 
   if (retiredStyleIds.length) {
@@ -277,13 +260,14 @@ function addDocumentStylesToIFrame(iframe) {
       addStyleElement(el, doc);
     }
   }
-  initStyleObserver(doc);
+  initDocRewriteObserver(doc);
 }
 
 
 function addDocumentStylesToAllIFrames() {
   getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
 }
+
 
 // Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
 function getDynamicIFrames(doc) {
@@ -346,42 +330,23 @@ function replaceAll(newStyles, doc) {
 function replaceAllpass2(newStyles, doc) {
   const oldStyles = [...doc.querySelectorAll('STYLE.stylus[id$="-ghost"]')];
   processDynamicIFrames(doc, replaceAllpass2, newStyles);
-  removeStyleElements(oldStyles);
+  oldStyles.forEach(e => e.remove);
 }
 
 
-function removeStyleElements(elements) {
-  if (!elements[0]) {
-    return;
-  }
-  const styleObserver = elements[0].ownerDocument[styleObserverSymbol];
-  if (styleObserver) {
-    styleObserver.disconnect();
-  }
-  for (const el of elements) {
-    el.remove();
-  }
-  if (styleObserver) {
-    styleObserver.start();
-  }
-}
-
-
-// Observe dynamic IFRAMEs being added
-function initObserver() {
-  const iframesCollection = document.getElementsByTagName('iframe');
-
+function initIFrameObserver() {
   iframeObserver = Object.assign(new MutationObserver(observer), {
     start() {
       this.observe(document, {childList: true, subtree: true});
     }
   });
+  const iframesCollection = document.getElementsByTagName('iframe');
 
   function observer(mutations) {
-    // MutationObserver runs as a microtask so the timer won't fire
-    // until all queued mutations are fired
-    clearTimeout(orphanCheckTimer);
-    orphanCheckTimer = setTimeout(orphanCheck, 0);
+    if (!isOwnPage) {
+      clearTimeout(orphanCheckTimer);
+      orphanCheckTimer = setTimeout(orphanCheck, 1000);
+    }
     // autoupdated HTMLCollection is superfast
     if (!iframesCollection[0]) {
       return;
@@ -419,50 +384,28 @@ function initObserver() {
 }
 
 
-function initStyleObserver(doc = document) {
-  const observer = Object.assign(new MutationObserver(styleObserver), {
-    counters: new Map(),
-    start() {
-      this.observe(doc.documentElement, {childList: true});
-    }
-  });
-  doc[styleObserverSymbol] = observer;
-  observer.start();
-}
+function initDocRewriteObserver() {
+  if (isOwnPage) {
+    return;
+  }
+  // re-add styles if we detect documentElement being recreated
+  docRewriteObserver = new MutationObserver(observer);
+  docRewriteObserver.observe(document, {childList: true});
 
-
-function styleObserver(mutations, observer) {
-  //console.log(location.href,
-  //  [].concat.apply([], mutations.map(m => [...m.addedNodes])),
-  //  [].concat.apply([], mutations.map(m => [...m.removedNodes]))
-  //);
-  for (var m = 0, mutation; (mutation = mutations[m++]);) {
-    var removed = mutation.removedNodes;
-    for (var n = 0, node; (node = removed[n++]);) {
-      let id = node.id;
-      var ourElement = styleElements.get(id);
-      if (!ourElement) {
-        for (const [elId, el] of styleElements.entries()) {
-          if (el == node) {
-            node.id = id = elId;
-            ourElement = el;
-            break;
+  function observer(mutations) {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.localName != 'html') {
+          continue;
+        }
+        for (const [id, el] of styleElements.entries()) {
+          if (!document.getElementById(id)) {
+            document.documentElement.appendChild(el);
           }
         }
+        document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+        return;
       }
-      if (!ourElement) {
-        continue;
-      }
-      const counter = observer.counters.get(id) || 0;
-      if (counter > 10) {
-        continue;
-      }
-      observer.counters.set(id, counter + 1);
-      if (ourElement.ownerDocument != node.ownerDocument) {
-        ourElement = node.ownerDocument.importNode(ourElement, true);
-      }
-      node.ownerDocument.documentElement.appendChild(ourElement);
-      //console.log('Restoring style', ourElement);
     }
   }
 }
@@ -481,18 +424,10 @@ function orphanCheck() {
   iframeObserver.takeRecords();
   iframeObserver.disconnect();
   iframeObserver = null;
-  document[styleObserverSymbol].disconnect();
-  document[styleObserverSymbol] = null;
-  (function removeStyleObservers(doc) {
-    getDynamicIFrames(doc).forEach(iframe => {
-      const styleObserver = iframe.contentDocument[styleObserverSymbol];
-      if (styleObserver) {
-        styleObserver.disconnect();
-        document[styleObserverSymbol] = null;
-      }
-      removeStyleObservers(iframe.contentDocument);
-    });
-  })(document);
+  if (docRewriteObserver) {
+    docRewriteObserver.disconnect();
+    docRewriteObserver = null;
+  }
   // we can detach event listeners
   document.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
@@ -507,12 +442,12 @@ function orphanCheck() {
     'applyStyles',
     'doDisableAll',
     'getDynamicIFrames',
-    'processDynamicIFrames',
     'iframeIsDynamic',
     'iframeIsLoadingSrcDoc',
-    'initObserver',
-    'initStyleObserver',
+    'initDocRewriteObserver',
+    'initIFrameObserver',
     'orphanCheck',
+    'processDynamicIFrames',
     'removeStyle',
     'replaceAll',
     'replaceAllpass2',
@@ -520,8 +455,9 @@ function orphanCheck() {
     'retireStyle',
     'styleObserver',
     // variables
-    'styleElements',
+    'docRewriteObserver',
     'iframeObserver',
     'retiredStyleIds',
+    'styleElements',
   ].forEach(fn => (window[fn] = null));
 }
