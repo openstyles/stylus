@@ -7,7 +7,11 @@ body {
 }
 
 body > * {
-  padding: 1em 1rem 1em 44px;
+  padding: .5rem 1.5rem 1em 48px;
+}
+
+body > *:first-child {
+  padding-top: .75rem;
 }
 
 table {
@@ -23,21 +27,24 @@ td:last-child {
   text-align: right;
 }
 
+button,
+td:last-child,
+input[type=number],
+input[type="color"],
+.onoffswitch,
+#update-counter {
+  width: 80px;
+}
+
 a {
   text-decoration-skip: ink;
 }
 
 button {
   text-align: center;
-  width: 80px;
-}
-
-h1:not(:first-child) {
-  margin-top: 0;
 }
 
 input[type=number] {
-  width: 80px;
   text-align: right;
   padding-right: 1em;
 }
@@ -66,7 +73,7 @@ input[type=number] {
 
 #notes {
   background-color: #f4f4f4;
-  margin-top: .5em;
+  margin-top: .75rem;
   font-size: 90%;
   color: #999;
 }
@@ -81,7 +88,6 @@ input[type=number] {
 }
 
 input[type="color"] {
-  width: 80px;
   box-sizing: border-box;
   height: 2em;
 }
@@ -94,9 +100,73 @@ input[type="color"] {
   color: black;
 }
 
+#update-counter {
+  margin-top: .5ex;
+  position: absolute;
+  text-align: center;
+}
+
 @keyframes fadeinout {
   0%   { opacity: 0 }
   10%  { opacity: 1 }
   25%  { opacity: 1 }
   100% { opacity: 0 }
+}
+
+/* On/Off FlipSwitch https://proto.io/freebies/onoff/ */
+
+.onoffswitch {
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.onoffswitch-checkbox {
+  display: none;
+}
+
+.onoffswitch-label {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 12px;
+  padding: 0;
+  line-height: 12px;
+  border: 0 solid #E3E3E3;
+  border-radius: 12px;
+  background-color: #E0E0E0;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.onoffswitch-label:before {
+  content: "";
+  display: block;
+  width: 18px;
+  margin: -3px;
+  background: #efefef;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 56px;
+  border-radius: 18px;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+  background-color: #CAEBE3;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  border-color: #CAEBE3;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+  margin-left: 0;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  right: 0;
+  background-color: #04BA9F;
+  box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
 }

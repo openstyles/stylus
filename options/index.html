@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="index.css">
   <script src="/localization.js"></script>
   <script src="/apply.js"></script>
+  <script src="/storage.js"></script>
   <script src="/messaging.js"></script>
   <script src="/dom.js"></script>
 </head>
@@ -13,6 +14,24 @@
   <div id="ui">
     <h1 i18n-text="optionsCustomize"></h1>
     <table>
+      <tr>
+        <td i18n-text="prefShowBadge"></td>
+        <td>
+          <div class="onoffswitch">
+            <input type="checkbox" class="onoffswitch-checkbox" id="show-badge">
+            <label class="onoffswitch-label" for="show-badge"></label>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td i18n-text="popupStylesFirst"></td>
+        <td>
+          <div class="onoffswitch">
+            <input type="checkbox" class="onoffswitch-checkbox" id="popup.stylesFirst">
+            <label class="onoffswitch-label" for="popup.stylesFirst"></label>
+          </div>
+        </td>
+      </tr>
       <tr>
         <td i18n-text="optionsBadgeNormal"></td>
         <td><input type="color" id="badgeNormal"></td>
@@ -46,8 +65,8 @@
       <tr>
         <td i18n-text="optionsCheckUpdate"></td>
         <td>
-          <span id="update-counter"></span>
           <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
+          <div id="update-counter"></div>
         </td>
       </tr>
     </table>

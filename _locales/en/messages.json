@@ -488,7 +488,7 @@
     "message": "Automatically check for and install all available userstyle updates (in hrs)"
   },
   "optionsUpdateIntervalNote": {
-    "message": "To disable the automatic userstyle update checks, set interval to zero"
+    "message": "To disable the automatic userstyle update checks, set interval to 0"
   },
   "optionsCustomize": {
     "message": "UI Customizations"
