@@ -24,6 +24,12 @@ function getDatabase(ready, error) {
 }
 
 
+const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
+  /(@namespace[\s\r\n]+(?:[^\s\r\n]+[\s\r\n]+)?url\(http:\/\/.*?\);)/,
+  /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
+const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
+
+
 // Let manage/popup/edit reuse background page variables
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
@@ -427,70 +433,70 @@ function getType(o) {
   return 'undefined';
 }
 
-const namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
 
 function getApplicableSections(style, url) {
   const sections = [];
+  checkingSections:
   for (const section of style.sections) {
-    if (sectionAppliesToUrl(section, url)) {
+    // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
+    if (!url.startsWith('http')
+      && !url.startsWith('ftp')
+      && !url.startsWith('file')
+      && !url.startsWith(OWN_ORIGIN)) {
+      continue checkingSections;
+    }
+    if (section.urls.length == 0
+    && section.domains.length == 0
+    && section.urlPrefixes.length == 0
+    && section.regexps.length == 0) {
       sections.push(section);
+      continue checkingSections;
     }
-  }
-  // ignore if it's just namespaces
-  if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
-    return [];
-  }
-  return sections;
-}
-
-
-function sectionAppliesToUrl(section, url) {
-  // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
-  if (!url.startsWith('http')
-  && !url.startsWith('ftp')
-  && !url.startsWith('file')
-  && !url.startsWith(OWN_ORIGIN)) {
-    return false;
-  }
-  if (section.urls.length == 0
-  && section.domains.length == 0
-  && section.urlPrefixes.length == 0
-  && section.regexps.length == 0) {
-    return true;
-  }
-  if (section.urls.indexOf(url) != -1) {
-    return true;
-  }
-  for (const urlPrefix of section.urlPrefixes) {
-    if (url.startsWith(urlPrefix)) {
-      return true;
+    if (section.urls.indexOf(url) != -1) {
+      sections.push(section);
+      continue checkingSections;
     }
-  }
-  const urlDomains = cachedStyles.urlDomains.get(url) || getDomains(url);
-  for (const domain of urlDomains) {
-    if (section.domains.indexOf(domain) != -1) {
-      return true;
+    for (const urlPrefix of section.urlPrefixes) {
+      if (url.startsWith(urlPrefix)) {
+        sections.push(section);
+        continue checkingSections;
+      }
     }
-  }
-  for (const regexp of section.regexps) {
-    let rx = cachedStyles.regexps.get(regexp);
-    if (rx == false) {
-      // bad regexp
-      continue;
+    const urlDomains = cachedStyles.urlDomains.get(url) || getDomains(url);
+    for (const domain of urlDomains) {
+      if (section.domains.indexOf(domain) != -1) {
+        sections.push(section);
+        continue checkingSections;
+      }
     }
-    if (!rx) {
-      rx = tryRegExp('^(?:' + regexp + ')$');
-      cachedStyles.regexps.set(regexp, rx || false);
-      if (!rx) {
+    for (const regexp of section.regexps) {
+      let rx = cachedStyles.regexps.get(regexp);
+      if (rx == false) {
         // bad regexp
         continue;
       }
-    }
-    if (rx.test(url)) {
-      return true;
+      if (!rx) {
+        rx = tryRegExp('^(?:' + regexp + ')$');
+        cachedStyles.regexps.set(regexp, rx || false);
+        if (!rx) {
+          // bad regexp
+          continue;
+        }
+      }
+      if (rx.test(url)) {
+        sections.push(section);
+        continue checkingSections;
+      }
     }
   }
-  return false;
+  // ignore @namespace-only results
+  if (sections.length == 1
+  && sections[0].code
+  && sections[0].code.indexOf('@namespace') >= 0
+  && sections[0].code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '') {
+    return [];
+  }
+  return sections;
 }
 
 
