@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css">
 		<script src="codemirror/addon/scroll/annotatescrollbar.js"></script>
 		<script src="codemirror/addon/search/matchesonscrollbar.js"></script>
-		<script src="codemirror/addon/search/match-highlighter.js"></script>
+		<script src="codemirror-overwrites/addon/search/match-highlighter.js"></script>
 		<script src="codemirror/addon/dialog/dialog.js"></script>
 		<script src="codemirror/addon/search/searchcursor.js"></script>
 		<script src="codemirror/addon/search/search.js"></script>
@@ -192,12 +192,10 @@
 			.CodeMirror-search-hint {
 				color: #888;
 			}
-			.cm-matchhighlight {
-				text-decoration: underline;
-				text-decoration-skip: ink;
-			}
+			.cm-matchhighlight-approved .cm-matchhighlight,
 			.CodeMirror-selection-highlight-scrollbar {
-				background-color: rgba(144, 179, 214, 0.3);
+				animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
+				animation-fill-mode: both;
 			}
 			@-webkit-keyframes highlight {
 				from {
@@ -214,6 +212,10 @@
 				to {
 					opacity: 1;
 				}
+			}
+			@keyframes fadein-match-highlighter {
+				from { background-color: transparent; }
+				to   { background-color: rgba(1, 151, 193, 0.1); }
 			}
 			.resize-grip {
 				position: absolute;
