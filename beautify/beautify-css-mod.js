@@ -108,6 +108,14 @@
         space_around_combinator = space_around_combinator || ((options.space_around_selector_separator === undefined) ? false : options.space_around_selector_separator);
         var eol = options.eol ? options.eol : 'auto';
 
+        /* STYLUS: hack start */
+        const defaultOption = (opt, defaultValue) => opt === undefined ? defaultValue : opt;
+        var newline_between_properties = defaultOption(options.newline_between_properties, true);
+        var newline_before_open_brace = defaultOption(options.newline_before_open_brace, false);
+        var newline_after_open_brace = defaultOption(options.newline_after_open_brace, true);
+        var newline_before_close_brace = defaultOption(options.newline_before_close_brace, true);
+        /* STYLUS: hack end */
+
         if (options.indent_with_tabs) {
             indentCharacter = '\t';
             indentSize = 1;
@@ -259,15 +267,21 @@
 
         var print = {};
         print["{"] = function(ch) {
-            print.singleSpace();
+            /* STYLUS: hack start */
+            newline_before_open_brace ? print.newLine() : print.singleSpace();
+            /* STYLUS: hack end */
             output.push(ch);
             if (!eatWhitespace(true)) {
-                print.newLine();
+                /* STYLUS: hack start */
+                newline_after_open_brace ? print.newLine() : print.singleSpace();
+                /* STYLUS: hack end */
             }
         };
         print["}"] = function(newline) {
             if (newline) {
-                print.newLine();
+                /* STYLUS: hack start */
+                newline_before_close_brace ? print.newLine() : (print.trim(), print.singleSpace());
+                /* STYLUS: hack end */
             }
             output.push('}');
             if (!eatWhitespace(true)) {
@@ -451,7 +465,9 @@
                 insidePropertyValue = false;
                 output.push(ch);
                 if (!eatWhitespace(true)) {
-                    print.newLine();
+                    /* STYLUS: hack start */
+                    newline_between_properties ? print.newLine() : print.singleSpace();
+                    /* STYLUS: hack end */
                 }
             } else if (ch === '(') { // may be a url
                 if (lookBack("url")) {
