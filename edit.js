@@ -1049,6 +1049,7 @@ function beautify(event) {
 				if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
 					delete cm.beautifyChange[cm.changeGeneration()];
 					cm.undo();
+					cm.scrollIntoView(cm.getCursor());
 					undoable |= cm.beautifyChange[cm.changeGeneration()];
 				}
 			});
@@ -1057,6 +1058,9 @@ function beautify(event) {
 
 		scope.forEach(function(cm) {
 			setTimeout(function() {
+				const pos = options.translate_positions =
+					[].concat.apply([], cm.doc.sel.ranges.map(r =>
+						[Object.assign({}, r.anchor), Object.assign({}, r.head)]));
 				var text = cm.getValue();
 				var newText = exports.css_beautify(text, options);
 				if (newText != text) {
@@ -1065,6 +1069,11 @@ function beautify(event) {
 						cm.beautifyChange = {};
 					}
 					cm.setValue(newText);
+					const selections = [];
+					for (let i = 0; i < pos.length; i += 2) {
+						selections.push({anchor: pos[i], head: pos[i + 1]});
+					}
+					cm.setSelections(selections);
 					cm.beautifyChange[cm.changeGeneration()] = true;
 					undoButton.disabled = false;
 				}
