@@ -1019,7 +1019,7 @@ function beautify(event) {
 		doBeautify();
 	} else {
 		var script = document.head.appendChild(document.createElement("script"));
-		script.src = "beautify/beautify-css.js";
+		script.src = "beautify/beautify-css-mod.js";
 		script.onload = doBeautify;
 	}
 	function doBeautify() {

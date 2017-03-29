@@ -553,7 +553,8 @@ prefs = prefs || new function Prefs() {
       newline_between_properties: true,
       newline_before_close_brace: true,
       newline_between_rules: false,
-      end_with_newline: false
+      end_with_newline: false,
+      space_around_selector_separator: true,
     },
     'editor.lintDelay': 500,        // lint gutter marker update delay, ms
     'editor.lintReportDelay': 4500, // lint report update delay, ms
