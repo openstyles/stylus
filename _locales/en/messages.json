@@ -108,6 +108,22 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
+  "cm_matchHighlight": {
+    "message": "Highlight",
+    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token under cursor",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Selection only",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+  },
+  "genericDisabledLabel": {
+    "message": "Disabled",
+    "description": "Used in various lists/options to indicate that something is disabled"
+  },
   "confirmNo": {
     "message": "No",
     "description": "'No' button in a confirm dialog"

@@ -304,6 +304,16 @@ function acmeEventListener(event) {
 				}, 100);
 			})();
 			return;
+		case "highlightSelectionMatches":
+			switch (value) {
+				case 'token':
+				case 'selection':
+					document.body.dataset[option] = value;
+					value = {showToken: value == 'token' && /[#.\-\w]/, annotateScrollbar: true};
+					break;
+				default:
+					value = null;
+			}
 	}
 	CodeMirror.setOption(option, value);
 }

@@ -557,6 +557,9 @@ prefs = prefs || new function Prefs() {
     },
     'editor.lintDelay': 500,        // lint gutter marker update delay, ms
     'editor.lintReportDelay': 4500, // lint report update delay, ms
+    'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
+                                      // selection = only when something is selected
+                                      // '' (empty string) = disabled
 
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color

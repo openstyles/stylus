@@ -192,10 +192,14 @@
 			.CodeMirror-search-hint {
 				color: #888;
 			}
-			.cm-matchhighlight-approved .cm-matchhighlight,
-			.CodeMirror-selection-highlight-scrollbar {
+			body[data-highlight-selection-matches="token"] .cm-matchhighlight-approved .cm-matchhighlight,
+			body[data-highlight-selection-matches="token"] .CodeMirror-selection-highlight-scrollbar {
 				animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
 				animation-fill-mode: both;
+			}
+			body[data-highlight-selection-matches="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
+			body[data-highlight-selection-matches="selection"] .CodeMirror-selection-highlight-scrollbar {
+				background-color: rgba(1, 151, 193, 0.1);
 			}
 			@-webkit-keyframes highlight {
 				from {
@@ -692,6 +696,14 @@
 				<div class="option aligned">
 					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
 					<select data-option="theme" id="editor.theme"></select>
+				</div>
+				<div class="option aligned">
+					<label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
+					<select data-option="highlightSelectionMatches" id="editor.matchHighlight">
+						<option i18n-text="cm_matchHighlightToken" value="token">
+						<option i18n-text="cm_matchHighlightSelection" value="selection">
+						<option i18n-text="genericDisabledLabel" value="">
+					</select>
 				</div>
 			</section>
 			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
