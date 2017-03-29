@@ -92,25 +92,23 @@ function updateIcon(tab, styles) {
     }
     const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
     const postfix = disableAll ? 'x' : numStyles == 0 ? 'w' : '';
+    const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
+    const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
     chrome.browserAction.setIcon({
+      tabId: tab.id,
       path: {
         // Material Design 2016 new size is 16px
-        16: `/images/icon/16${postfix}.png`, 32: `/images/icon/32${postfix}.png`,
+        16: `images/icon/16${postfix}.png`,
+        32: `images/icon/32${postfix}.png`,
         // Chromium forks or non-chromium browsers may still use the traditional 19px
-        19: `/images/icon/19${postfix}.png`, 38: `/images/icon/38${postfix}.png`,
+        19: `images/icon/19${postfix}.png`,
+        38: `images/icon/38${postfix}.png`,
+        // TODO: add Edge preferred sizes: 20, 25, 30, 40
       },
-      tabId: tab.id
-    }, () => {
-      // if the tab was just closed an error may occur,
-      // e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
-      if (!chrome.runtime.lastError) {
-        const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
-        chrome.browserAction.setBadgeBackgroundColor({
-          color: prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal')
-        });
-        chrome.browserAction.setBadgeText({text, tabId: tab.id});
-      }
-    });
+    }, ignoreChromeError);
+    // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
+    chrome.browserAction.setBadgeBackgroundColor({color});
+    chrome.browserAction.setBadgeText({text, tabId: tab.id});
   }
 }
 
