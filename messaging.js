@@ -150,6 +150,8 @@ function openURL({url, currentWindow = true}) {
     url = chrome.runtime.getURL(url);
   }
   return new Promise(resolve => {
+    // [some] chromium forks don't handle their fake branded protocols
+    url = url.replace(/^(opera|vivaldi)/, 'chrome');
     // API doesn't handle the hash-fragment part
     chrome.tabs.query({url: url.replace(/#.*/, ''), currentWindow}, tabs => {
       for (const tab of tabs) {
