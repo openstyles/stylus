@@ -105,10 +105,10 @@ function updateIcon(tab, styles) {
       // e.g. 'windowPosition' pref updated in edit.js::window.onbeforeunload
       if (!chrome.runtime.lastError) {
         const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
-        chrome.browserAction.setBadgeText({text, tabId: tab.id});
         chrome.browserAction.setBadgeBackgroundColor({
           color: prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal')
         });
+        chrome.browserAction.setBadgeText({text, tabId: tab.id});
       }
     });
   }
