@@ -23,6 +23,7 @@ globals:
   activateTab: false
   stringAsRegExp: false
   wildcardAsRegExp: false
+  ignoreChromeError: false
   # localization.js
   template: false
   t: false

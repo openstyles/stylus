@@ -191,6 +191,11 @@ function wildcardAsRegExp(s, flags) {
 }
 
 
+function ignoreChromeError() {
+  chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
+}
+
+
 const configureCommands = {
   url: navigator.userAgent.includes('OPR')
     ? 'opera://settings/configureCommands'

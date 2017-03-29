@@ -1214,7 +1214,7 @@ function toggleContextMenuDelete(event) {
 				this.selectionStart != this.selectionEnd ||
 				this.somethingSelected && this.somethingSelected()
 			),
-		});
+		}, ignoreChromeError);
 	}
 }
 

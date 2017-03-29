@@ -79,7 +79,7 @@ function onBackgroundMessage(request, sender, sendResponse) {
     case 'prefChanged':
       // eslint-disable-next-line no-use-before-define
       if (typeof request.value == 'boolean' && contextMenus[request.prefName]) {
-        chrome.contextMenus.update(request.prefName, {checked: request.value});
+        chrome.contextMenus.update(request.prefName, {checked: request.value}, ignoreChromeError);
       }
       break;
   }
@@ -227,9 +227,4 @@ function injectContentScripts() {
       }
     }
   });
-}
-
-
-function ignoreChromeError() {
-  chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
 }
