@@ -28,7 +28,7 @@ const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
   /(@namespace[\s\r\n]+(?:[^\s\r\n]+[\s\r\n]+)?url\(http:\/\/.*?\);)/,
   /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
-
+const SLOPPY_REGEXP_PREFIX = '\0';
 
 // Let manage/popup/edit reuse background page variables
 // Note, only 'var'-declared variables are visible from another extension page
@@ -39,11 +39,11 @@ var cachedStyles, prefs;
   cachedStyles = bg && bg.cachedStyles || {
     bg,
     list: null,
-    noCode: null,
     byId: new Map(),
     filters: new Map(),
     regexps: new Map(),
     urlDomains: new Map(),
+    emptyCode: new Map(), // entire code is comments/whitespace/@namespace
     mutex: {
       inProgress: false,
       onDone: [],
@@ -89,15 +89,12 @@ function getStyles(options, callback) {
     const os = tx.objectStore('styles');
     os.getAll().onsuccess = event => {
       cachedStyles.list = event.target.result || [];
-      cachedStyles.noCode = [];
       cachedStyles.byId.clear();
       for (const style of cachedStyles.list) {
-        const noCode = getStyleWithNoCode(style);
-        cachedStyles.noCode.push(noCode);
-        cachedStyles.byId.set(style.id, {style, noCode});
-        compileStyleRegExps(style);
+        cachedStyles.byId.set(style.id, style);
+        compileStyleRegExps({style});
       }
-      //console.log('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cachedStyles.mutex.onDone.map(e => JSON.stringify(e.options)))
+      //console.debug('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cachedStyles.mutex.onDone.map(e => JSON.stringify(e.options))); // eslint-disable-line max-len
       callback(filterStyles(options));
 
       cachedStyles.mutex.inProgress = false;
@@ -134,19 +131,16 @@ function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
   if (updated) {
     const cached = cachedStyles.byId.get(updated.id);
     if (cached) {
-      Object.assign(cached.style, updated);
-      Object.assign(cached.noCode, getStyleWithNoCode(updated));
-      //console.log('cache: updated', updated);
+      Object.assign(cached, updated);
+      //console.debug('cache: updated', updated);
     }
     cachedStyles.filters.clear();
     return;
   }
   if (added) {
-    const noCode = getStyleWithNoCode(added);
     cachedStyles.list.push(added);
-    cachedStyles.noCode.push(noCode);
-    cachedStyles.byId.set(added.id, {style: added, noCode});
-    //console.log('cache: added', added);
+    cachedStyles.byId.set(added.id, added);
+    //console.debug('cache: added', added);
     cachedStyles.filters.clear();
     return;
   }
@@ -155,46 +149,47 @@ function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
     if (deletedStyle) {
       const cachedIndex = cachedStyles.list.indexOf(deletedStyle);
       cachedStyles.list.splice(cachedIndex, 1);
-      cachedStyles.noCode.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
-      //console.log('cache: deleted', deletedStyle);
+      //console.debug('cache: deleted', deletedStyle);
       cachedStyles.filters.clear();
       return;
     }
   }
   cachedStyles.list = null;
-  cachedStyles.noCode = null;
-  //console.log('cache cleared');
+  //console.debug('cache cleared');
   cachedStyles.filters.clear();
 }
 
 
-function filterStyles(options = {}) {
+function filterStyles({
+  enabled,
+  url = null,
+  id = null,
+  matchUrl = null,
+  asHash = null,
+  strictRegexp = true, // used by the popup to detect bad regexps
+} = {}) {
   //const t0 = performance.now();
-  const enabled = fixBoolean(options.enabled);
-  const url = 'url' in options ? options.url : null;
-  const id = 'id' in options ? Number(options.id) : null;
-  const matchUrl = 'matchUrl' in options ? options.matchUrl : null;
-  const code = 'code' in options ? options.code : true;
-  const asHash = 'asHash' in options ? options.asHash : false;
+  enabled = fixBoolean(enabled);
+  id = id === null ? null : Number(id);
 
   if (enabled === null
     && url === null
     && id === null
     && matchUrl === null
     && asHash != true) {
-    //console.log('%c%s filterStyles SKIPPED LOOP %s', 'color:gray', (performance.now() - t0).toFixed(1), JSON.stringify(options))
-    return code ? cachedStyles.list : cachedStyles.noCode;
+    //console.debug('%c%s filterStyles SKIPPED LOOP %s', 'color:gray', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
+    return cachedStyles.list;
   }
   // silence the inapplicable warning for async code
   // eslint-disable-next-line no-use-before-define
   const disableAll = asHash && prefs.get('disableAll', false);
 
   // add \t after url to prevent collisions (not sure it can actually happen though)
-  const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + code + asHash;
+  const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
   const cached = cachedStyles.filters.get(cacheKey);
   if (cached) {
-    //console.log('%c%s filterStyles REUSED RESPONSE %s', 'color:gray', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+    //console.debug('%c%s filterStyles REUSED RESPONSE %s', 'color:gray', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
     cached.hits++;
     cached.lastHit = Date.now();
 
@@ -212,19 +207,22 @@ function filterStyles(options = {}) {
   }
 
   const styles = id === null
-    ? (code ? cachedStyles.list : cachedStyles.noCode)
-    : [(cachedStyles.byId.get(id) || {})[code ? 'style' : 'noCode']];
+    ? cachedStyles.list
+    : [cachedStyles.byId.get(id)];
   const filtered = asHash ? {} : [];
   if (!styles) {
     // may happen when users [accidentally] reopen an old URL
     // of edit.html with a non-existent style id parameter
     return filtered;
   }
+  const needSections = asHash || matchUrl !== null;
+
   for (let i = 0, style; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled == enabled)
       && (url === null || style.url == url)
       && (id === null || style.id == id)) {
-      const sections = (asHash || matchUrl !== null) && getApplicableSections(style, matchUrl);
+      const sections = needSections &&
+        getApplicableSections({style, matchUrl, strictRegexp, stopOnFirst: !asHash});
       if (asHash) {
         if (sections.length) {
           filtered[style.id] = sections;
@@ -234,7 +232,7 @@ function filterStyles(options = {}) {
       }
     }
   }
-  //console.log('%s filterStyles %s', (performance.now() - t0).toFixed(1), JSON.stringify(options))
+  //console.debug('%s filterStyles %s', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
   cachedStyles.filters.set(cacheKey, {
     styles: filtered,
     lastHit: Date.now(),
@@ -307,7 +305,7 @@ function saveStyle(style) {
           os.put(style).onsuccess = eventPut => {
             style.id = style.id || eventPut.target.result;
             invalidateCache(notify, existed ? {updated: style} : {added: style});
-            compileStyleRegExps(style);
+            compileStyleRegExps({style});
             if (notify) {
               notifyAllTabs({
                 method: existed ? 'styleUpdated' : 'styleAdded',
@@ -338,7 +336,7 @@ function saveStyle(style) {
         // Give it the ID that was generated
         style.id = event.target.result;
         invalidateCache(notify, {added: style});
-        compileStyleRegExps(style);
+        compileStyleRegExps({style});
         if (notify) {
           notifyAllTabs({method: 'styleAdded', style, reason});
         }
@@ -434,68 +432,88 @@ function getType(o) {
 }
 
 
-function getApplicableSections(style, url) {
+function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirst}) {
+  //let t0 = 0;
   const sections = [];
   checkingSections:
   for (const section of style.sections) {
-    // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
-    if (!url.startsWith('http')
-      && !url.startsWith('ftp')
-      && !url.startsWith('file')
-      && !url.startsWith(OWN_ORIGIN)) {
-      continue checkingSections;
-    }
-    if (section.urls.length == 0
-    && section.domains.length == 0
-    && section.urlPrefixes.length == 0
-    && section.regexps.length == 0) {
-      sections.push(section);
-      continue checkingSections;
-    }
-    if (section.urls.indexOf(url) != -1) {
-      sections.push(section);
-      continue checkingSections;
-    }
-    for (const urlPrefix of section.urlPrefixes) {
-      if (url.startsWith(urlPrefix)) {
-        sections.push(section);
+    andCollect:
+    do {
+      // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
+      if (!matchUrl.startsWith('http')
+        && !matchUrl.startsWith('ftp')
+        && !matchUrl.startsWith('file')
+        && !matchUrl.startsWith(OWN_ORIGIN)) {
         continue checkingSections;
       }
-    }
-    const urlDomains = cachedStyles.urlDomains.get(url) || getDomains(url);
-    for (const domain of urlDomains) {
-      if (section.domains.indexOf(domain) != -1) {
-        sections.push(section);
-        continue checkingSections;
+      if (section.urls.length == 0
+      && section.domains.length == 0
+      && section.urlPrefixes.length == 0
+      && section.regexps.length == 0) {
+        break andCollect;
       }
-    }
-    for (const regexp of section.regexps) {
-      let rx = cachedStyles.regexps.get(regexp);
-      if (rx == false) {
-        // bad regexp
-        continue;
+      if (section.urls.indexOf(matchUrl) != -1) {
+        break andCollect;
       }
-      if (!rx) {
-        rx = tryRegExp('^(?:' + regexp + ')$');
-        cachedStyles.regexps.set(regexp, rx || false);
-        if (!rx) {
-          // bad regexp
-          continue;
+      for (const urlPrefix of section.urlPrefixes) {
+        if (matchUrl.startsWith(urlPrefix)) {
+          break andCollect;
         }
       }
-      if (rx.test(url)) {
-        sections.push(section);
-        continue checkingSections;
+      if (section.domains.length) {
+        const urlDomains = cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl);
+        for (const domain of urlDomains) {
+          if (section.domains.indexOf(domain) != -1) {
+            break andCollect;
+          }
+        }
+      }
+      for (const regexp of section.regexps) {
+        for (let pass = 1; pass <= (strictRegexp ? 1 : 2); pass++) {
+          const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+          let rx = cachedStyles.regexps.get(cacheKey);
+          if (rx == false) {
+            // invalid regexp
+            break;
+          }
+          if (!rx) {
+            const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+            rx = tryRegExp(anchored);
+            cachedStyles.regexps.set(cacheKey, rx || false);
+            if (!rx) {
+              // invalid regexp
+              break;
+            }
+          }
+          if (rx.test(matchUrl)) {
+            break andCollect;
+          }
+        }
+      }
+      continue checkingSections;
+    } while (0);
+    // Collect the section if not empty or namespace-only.
+    // We don't check long code as it's slow both for emptyCode declared as Object
+    // and as Map in case the string is not the same reference used to add the item
+    //const t0start = performance.now();
+    const code = section.code;
+    let isEmpty = code.length < 1000 && cachedStyles.emptyCode.get(code);
+    if (isEmpty === undefined) {
+      isEmpty = !code || !code.trim()
+        || code.indexOf('@namespace') >= 0
+        && code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '';
+      cachedStyles.emptyCode.set(code, isEmpty);
+    }
+    //t0 += performance.now() - t0start;
+    if (!isEmpty) {
+      sections.push(section);
+      if (stopOnFirst) {
+        //t0 >= 0.1 && console.debug('%s emptyCode', t0.toFixed(1)); // eslint-disable-line no-unused-expressions
+        return sections;
       }
     }
   }
-  // ignore @namespace-only results
-  if (sections.length == 1
-  && sections[0].code
-  && sections[0].code.indexOf('@namespace') >= 0
-  && sections[0].code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '') {
-    return [];
-  }
+  //t0 >= 0.1 && console.debug('%s emptyCode', t0.toFixed(1)); // eslint-disable-line no-unused-expressions
   return sections;
 }
 
@@ -888,18 +906,22 @@ function styleSectionsEqual(styleA, styleB) {
 }
 
 
-function compileStyleRegExps(style) {
+function compileStyleRegExps({style, compileAll}) {
   const t0 = performance.now();
   for (const section of style.sections || []) {
     for (const regexp of section.regexps) {
-      // we want to match the full url, so add ^ and $ if not already present
-      if (cachedStyles.regexps.has(regexp)) {
-        continue;
-      }
-      const rx = tryRegExp('^(?:' + regexp + ')$');
-      cachedStyles.regexps.set(regexp, rx || false);
-      if (performance.now() - t0 > 100) {
-        return;
+      for (let pass = 1; pass <= (compileAll ? 2 : 1); pass++) {
+        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+        if (cachedStyles.regexps.has(cacheKey)) {
+          continue;
+        }
+        // according to CSS4 @document specification the entire URL must match
+        const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+        const rx = tryRegExp(anchored);
+        cachedStyles.regexps.set(cacheKey, rx || false);
+        if (!compileAll && performance.now() - t0 > 100) {
+          return;
+        }
       }
     }
   }

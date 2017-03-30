@@ -402,6 +402,20 @@
     "message": "Invalid regexps skipped",
     "description": "RegExp test report: label for the invalid expressions"
   },
+  "styleRegexpPartialExplanation": {
+    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug)."
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Some 'regexp()' rules that could not be compiled at all."
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Style was not applied due to its incorrect usage of 'regexp()'",
+    "description": "Tooltip in the popup for styles that were not applied at all"
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "Number of sections not applied due to incorrect usage of 'regexp()'",
+    "description": "Tooltip in the popup for styles that were applied only partially"
+  },
   "styleBeautify": {
     "message": "Beautify",
     "description": "Label for the CSS-beautifier button on the edit style page"

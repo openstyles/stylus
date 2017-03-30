@@ -7,7 +7,7 @@ const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const TARGET_LIMIT = 10;
 
 
-getStylesSafe({code: false})
+getStylesSafe()
   .then(showStyles)
   .then(initGlobalEvents);
 
@@ -235,7 +235,7 @@ class EntryOnClick {
   static delete(event) {
     const styleElement = getClickedStyleElement(event);
     const id = styleElement.styleId;
-    const name = ((cachedStyles.byId.get(id) || {}).style || {}).name;
+    const {name} = cachedStyles.byId.get(id) || {};
     animateElement(styleElement, {className: 'highlight'});
     messageBox({
       title: t('deleteStyleConfirm'),
@@ -436,7 +436,7 @@ function searchStyles({immediately, container}) {
   }
 
   for (const element of (container || installed).children) {
-    const {style} = cachedStyles.byId.get(element.styleId) || {};
+    const style = cachedStyles.byId.get(element.styleId) || {};
     if (style) {
       const isMatching = !query
         || isMatchingText(style.name)

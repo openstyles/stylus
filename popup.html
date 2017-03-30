@@ -37,7 +37,19 @@
         <div id="no-styles" class="entry" i18n-text="noStylesForSite"></div>
     </template>
 
-    <script src="localization.js"></script>
+    <template data-id="regexpProblemIndicator">
+      <div class="regexp-problem-indicator" i18n-title="styleRegexpProblemTooltip"></div>
+    </template>
+
+    <template data-id="regexpProblemExplanation">
+      <div id="regexp-explanation">
+        <div id="regexp-partial" i18n-html="styleRegexpPartialExplanation"></div>
+        <div id="regexp-invalid" i18n-text="styleRegexpInvalidExplanation"></div>
+        <button i18n-text="confirmOK"></button>
+      </div>
+    </template>
+
+  <script src="localization.js"></script>
     <script src="health.js"></script>
     <script src="storage.js"></script>
     <script src="messaging.js"></script>
@@ -81,7 +93,7 @@
                 <a id="find-styles-link" href="#" i18n-text="findStylesForSite"></a>
             </div>
             <div id="write-style">
-                <span id="write-style-for" i18n-text="writeStyleFor"><br></span>
+                <span id="write-style-for" i18n-text="writeStyleFor"></span>
             </div>
         </div>
     <!-- Actions -->

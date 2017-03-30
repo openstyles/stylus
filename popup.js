@@ -1,15 +1,19 @@
+/* global SLOPPY_REGEXP_PREFIX, compileStyleRegExps */
 'use strict';
 
 let installed;
+let tabURL;
 
 getActiveTabRealURL().then(url => {
-  const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
-  const isUrlSupported = RX_SUPPORTED_URLS.test(url);
+  tabURL = RX_SUPPORTED_URLS.test(url) ? url : '';
   Promise.all([
-    isUrlSupported ? getStylesSafe({matchUrl: url}) : null,
-    onDOMready().then(() => initPopup(isUrlSupported ? url : '')),
-  ])
-    .then(([styles]) => styles && showStyles(styles));
+    tabURL && getStylesSafe({matchUrl: tabURL}),
+    onDOMready().then(() => {
+      initPopup(tabURL);
+    }),
+  ]).then(([styles]) => {
+    showStyles(styles);
+  });
 });
 
 
@@ -116,30 +120,55 @@ function initPopup(url) {
 
 
 function showStyles(styles) {
+  if (!styles) {
+    return;
+  }
   if (!styles.length) {
     installed.innerHTML = template.noStyles.outerHTML;
-  } else {
-    const enabledFirst = prefs.get('popup.enabledFirst');
-    styles.sort((a, b) => (
-      enabledFirst && a.enabled !== b.enabled
-        ? !(a.enabled < b.enabled) ? -1 : 1
-        : a.name.localeCompare(b.name)
-    ));
-    const fragment = document.createDocumentFragment();
-    for (const style of styles) {
-      fragment.appendChild(createStyleElement(style));
-    }
-    installed.appendChild(fragment);
+    return;
   }
+
+  const enabledFirst = prefs.get('popup.enabledFirst');
+  styles.sort((a, b) => (
+    enabledFirst && a.enabled !== b.enabled
+      ? !(a.enabled < b.enabled) ? -1 : 1
+      : a.name.localeCompare(b.name)
+  ));
+
+  let postponeDetect = false;
+  const t0 = performance.now();
+  const container = document.createDocumentFragment();
+  for (const style of styles) {
+    createStyleElement({style, container, postponeDetect});
+    postponeDetect = postponeDetect || performance.now() - t0 > 100;
+  }
+  installed.appendChild(container);
+
+  getStylesSafe({matchUrl: tabURL, strictRegexp: false})
+    .then(unscreenedStyles => {
+      for (const unscreened of unscreenedStyles) {
+        if (!styles.includes(unscreened)) {
+          postponeDetect = postponeDetect || performance.now() - t0 > 100;
+          createStyleElement({
+            style: Object.assign({appliedSections: [], postponeDetect}, unscreened),
+          });
+        }
+      }
+    });
 }
 
 
 // silence the inapplicable warning for async code
 /* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
-function createStyleElement(style) {
+function createStyleElement({
+  style,
+  container = installed,
+  postponeDetect,
+}) {
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
   Object.assign(entry, {
+    id: 'style-' + style.id,
     styleId: style.id,
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
     onmousedown: openEditorOnMiddleclick,
@@ -171,7 +200,18 @@ function createStyleElement(style) {
   $('.disable', entry).onclick = EntryOnClick.toggle;
   $('.delete', entry).onclick = EntryOnClick.delete;
 
-  return entry;
+  if (postponeDetect) {
+    setTimeout(detectSloppyRegexps, 0, {entry, style});
+  } else {
+    detectSloppyRegexps({entry, style});
+  }
+
+  const oldElement = $('#style-' + style.id);
+  if (oldElement) {
+    oldElement.parentNode.replaceChild(entry, oldElement);
+  } else {
+    container.appendChild(entry);
+  }
 }
 
 
@@ -194,7 +234,7 @@ class EntryOnClick {
     const box = $('#confirm');
     box.dataset.display = true;
     box.style.cssText = '';
-    $('b', box).textContent = ((cachedStyles.byId.get(id) || {}).style || {}).name;
+    $('b', box).textContent = (cachedStyles.byId.get(id) || {}).name;
     $('[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
@@ -219,6 +259,18 @@ class EntryOnClick {
     }
   }
 
+  static indicator(event) {
+    const entry = getClickedStyleElement(event);
+    const info = template.regexpProblemExplanation.cloneNode(true);
+    $$('#' + info.id).forEach(el => el.remove());
+    $$('a', info).forEach(el => (el.onclick = openURLandHide));
+    $$('button', info).forEach(el => (el.onclick = EntryOnClick.closeExplanation));
+    entry.appendChild(info);
+  }
+
+  static closeExplanation(event) {
+    $('#regexp-explanation').remove();
+  }
 }
 
 
@@ -264,24 +316,51 @@ function openURLandHide(event) {
 
 
 function handleUpdate(style) {
-  const styleElement = $(`[style-id="${style.id}"]`, installed);
-  if (styleElement) {
-    installed.replaceChild(createStyleElement(style), styleElement);
-  } else {
-    getActiveTabRealURL().then(url => {
-      if (getApplicableSections(style, url).length) {
-        // a new style for the current url is installed
-        $('#unavailable').style.display = 'none';
-        installed.appendChild(createStyleElement(style));
-      }
-    });
+  if ($('#style-' + style.id)) {
+    createStyleElement({style});
+    return;
+  }
+  // Add an entry when a new style for the current url is installed
+  if (tabURL && getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
+    $('#unavailable').style.display = 'none';
+    createStyleElement({style});
   }
 }
 
 
 function handleDelete(id) {
-  const styleElement = $(`[style-id="${id}"]`, installed);
-  if (styleElement) {
-    installed.removeChild(styleElement);
+  $$('#style-' + id).forEach(el => el.remove());
+}
+
+
+/*
+  According to CSS4 @document specification the entire URL must match.
+  Stylish-for-Chrome implemented it incorrectly since the very beginning.
+  We'll detect styles that abuse the bug by finding the sections that
+  would have been applied by Stylish but not by us as we follow the spec.
+  Additionally we'll check for invalid regexps.
+*/
+function detectSloppyRegexps({entry, style}) {
+  const {
+    appliedSections = getApplicableSections({style, matchUrl: tabURL}),
+    wannabeSections = getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
+  } = style;
+
+  compileStyleRegExps({style, compileAll: true});
+  entry.hasInvalidRegexps = wannabeSections.some(section =>
+    section.regexps.some(rx => !cachedStyles.regexps.has(rx)));
+  entry.sectionsSkipped = wannabeSections.length - appliedSections.length;
+
+  if (!appliedSections.length) {
+    entry.classList.add('not-applied');
+    $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
+  }
+  if (entry.sectionsSkipped || entry.hasInvalidRegexps) {
+    entry.classList.toggle('regexp-partial', entry.sectionsSkipped);
+    entry.classList.toggle('regexp-invalid', entry.hasInvalidRegexps);
+    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    indicator.appendChild(document.createTextNode(entry.sectionsSkipped || '!'));
+    indicator.onclick = EntryOnClick.indicator;
+    $('.main-controls', entry).appendChild(indicator);
   }
 }

@@ -4,6 +4,7 @@
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
 const OWN_ORIGIN = chrome.runtime.getURL('');
+const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
 
 
 function notifyAllTabs(request) {

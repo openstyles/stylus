@@ -70,7 +70,7 @@ function importFromString(jsonString) {
         continue;
       }
       item.name = item.name.trim();
-      const byId = (cachedStyles.byId.get(item.id) || {}).style;
+      const byId = cachedStyles.byId.get(item.id);
       const byName = oldStylesByName.get(item.name);
       const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
       if (oldStyle == byName && byName) {
