@@ -77,30 +77,14 @@ body.blocked > DIV {
 }
 #installed .style-edit-link, #installed .delete {
   display: inline-block;
+  padding: 0 1px 0;
 }
 .svg-icon {
-  width: 16px;
-  height: 16px;
   pointer-events: none;
+  transition: fill .5s;
 }
-.svg-icon path,
-.svg-icon polygon,
-.svg-icon rect {
-  fill: hsl(0, 0%, 30%);
-  transition: .5s;
-}
-.svg-icon circle {
-  stroke: hsl(0, 0%, 30%);
-  stroke-width: 1;
-  transition: .5s;
-}
-a:hover .svg-icon path,
-a:hover .svg-icon polygon,
-a:hover .svg-icon rect {
-  fill: hsl(0, 0%, 54%);
-}
-a:hover .svg-icon circle {
-  stroke: hsl(0, 0%, 54%);
+a:hover .svg-icon {
+  fill: #000000;
 }
 
 body > .actions {

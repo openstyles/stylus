@@ -47,12 +47,20 @@
             height: 2px;
             background-color: #fff;
         }
-        img[src*="world"] {
-            width: 16px;
-            height: 16px;
-            vertical-align: middle;
-            image-rendering: -webkit-optimize-contrast;
-        }
+		.svg-icon.installed {
+			cursor: pointer;
+			vertical-align: middle;
+			margin-left: 0.3rem;
+			margin-top: -4px;
+			transition: fill .5s;
+		}
+		a:hover .svg-icon.installed {
+			fill: hsl(0, 0%, 40%);
+		}
+		.style-name {
+		margin-top: .25em;
+		word-break: break-word;
+		}
         .applies-to {
             word-break: break-word;
         }
@@ -209,7 +217,9 @@
 
     <template data-id="styleHomepage">
         <a target="_blank">
-            <img src="world_go.png" alt="*">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" class="svg-icon installed" height="16" width="16" viewBox="0 0 8 8">
+				<path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z" id="external-link"></path>
+			</svg>
         </a>
     </template>
 
