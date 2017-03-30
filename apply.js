@@ -330,7 +330,7 @@ function replaceAll(newStyles, doc) {
 function replaceAllpass2(newStyles, doc) {
   const oldStyles = [...doc.querySelectorAll('STYLE.stylus[id$="-ghost"]')];
   processDynamicIFrames(doc, replaceAllpass2, newStyles);
-  oldStyles.forEach(e => e.remove);
+  oldStyles.forEach(e => e.remove());
 }
 
 
