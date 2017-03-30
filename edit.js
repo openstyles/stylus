@@ -1644,6 +1644,15 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 			}
 			return rxData;
 		});
+	chrome.tabs.onUpdated.addListener(function _(tabId, info) {
+		if (document.querySelector('.regexp-report')) {
+			if (info.url) {
+				showRegExpTester(event, section);
+			}
+		} else {
+			chrome.tabs.onUpdated.removeListener(_);
+		}
+	});
 	chrome.tabs.query({}, tabs => {
 		const supported = tabs.map(tab => tab.url)
 			.filter(url => RX_SUPPORTED_URLS.test(url));
