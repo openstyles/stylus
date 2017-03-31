@@ -31,9 +31,7 @@ function initGlobalEvents() {
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = configureCommands.open;
-  $('#editor-styles-button').onclick = () => openURL({
-    url: 'https://userstyles.org/styles/browse/chrome-extension',
-  });
+  $('#find-editor-styles').onclick = EntryOnClick.external;
 
   // focus search field on / key
   document.onkeypress = event => {
@@ -55,8 +53,6 @@ function initGlobalEvents() {
   setupLivePrefs([
     'manage.onlyEnabled',
     'manage.onlyEdited',
-    'show-badge',
-    'popup.stylesFirst'
   ]);
 
   [
@@ -127,6 +123,7 @@ function createStyleElement({style, name}) {
   if (style.url) {
     const homepage = template.styleHomepage.cloneNode(true);
     homepage.href = style.url;
+    homepage.onclick = EntryOnClick.external;
     styleName.appendChild(document.createTextNode(' '));
     styleName.appendChild(homepage);
   }
@@ -248,6 +245,11 @@ class EntryOnClick {
         deleteStyle(id);
       }
     });
+  }
+
+  static external(event) {
+    openURL({url: event.target.closest('a').href});
+    event.preventDefault();
   }
 }
 

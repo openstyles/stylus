@@ -142,26 +142,22 @@ summary {
 }
 
 /* Default, no update buttons */
-
 .update,
 .check-update {
   display: none;
 }
 
 /* Check update button for things that can*/
-
 *[style-update-url] .check-update {
   display: inline;
 }
 
 /* Update check in progress */
-
 .checking-update .check-update {
   display: none;
 }
 
 /* Updates available */
-
 .can-update .update {
   display: inline;
 }
@@ -171,13 +167,11 @@ summary {
 }
 
 /* Updates not available */
-
 .no-update .check-update {
   display: none;
 }
 
 /* Updates done */
-
 .update-done .check-update {
   display: none;
 }
@@ -185,6 +179,11 @@ summary {
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
+}
+
+#find-editor-styles {
+  display: block;
+  margin-top: .5em;
 }
 
 @keyframes highlight {
@@ -315,6 +314,10 @@ fieldset {
   #header p,
   #header fieldset div,
   #backup {
+    display: inline-block;
+  }
+
+  #find-editor-styles {
     display: inline-block;
   }
 
