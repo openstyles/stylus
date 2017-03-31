@@ -10,7 +10,7 @@ function restore() {
   //$('#show-badge').value = bg.prefs.get('show-badge');
   $('#badgeDisabled').value = prefs.get('badgeDisabled');
   $('#badgeNormal').value = prefs.get('badgeNormal');
-  $('#popupWidth').value = localStorage.getItem('popupWidth') || '246';
+  $('#popupWidth').value = prefs.get('popupWidth');
   $('#updateInterval').value = prefs.get('updateInterval');
   enforceValueRange('popupWidth');
 }
@@ -19,7 +19,7 @@ function restore() {
 function save() {
   prefs.set('badgeDisabled', $('#badgeDisabled').value);
   prefs.set('badgeNormal', $('#badgeNormal').value);
-  localStorage.setItem('popupWidth', enforceValueRange('popupWidth'));
+  prefs.set('popupWidth', enforceValueRange('popupWidth'));
   prefs.set(
     'updateInterval',
     Math.max(0, Number($('#updateInterval').value))
@@ -38,7 +38,7 @@ function enforceValueRange(id) {
     element.value = value;
   }
   element.onchange = element.onchange || (() => enforceValueRange(id));
-  return value;
+  return value | 0;
 }
 
 

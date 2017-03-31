@@ -540,6 +540,13 @@ function tryRegExp(regexp) {
 }
 
 
+function tryJSONparse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {}
+}
+
+
 function debounce(fn, ...args) {
   const timers = debounce.timers = debounce.timers || new Map();
   debounce.run = debounce.run || ((fn, ...args) => {
@@ -592,7 +599,7 @@ prefs = prefs || new function Prefs() {
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
 
-    'popupWidth': 240,              // popup width in pixels
+    'popupWidth': 246,              // popup width in pixels
 
     'updateInterval': 0             // user-style automatic update interval, hour
   };
@@ -638,6 +645,9 @@ prefs = prefs || new function Prefs() {
       if (!noBroadcast && !equal(value, oldValue)) {
         this.broadcast(key, value, {noSync});
       }
+      localStorage[key] = typeof defaults[key] == 'object'
+        ? JSON.stringify(value)
+        : value;
     },
 
     remove: key => this.set(key, undefined),
@@ -651,14 +661,41 @@ prefs = prefs || new function Prefs() {
     },
   });
 
-  Object.keys(defaults).forEach(key => {
-    this.set(key, defaults[key], {noBroadcast: true});
-  });
+  // Unlike sync, HTML5 localStorage is ready at browser startup
+  // so we'll mirror the prefs to avoid using the wrong defaults
+  // during the startup phase
+  for (const key in defaults) {
+    const defaultValue = defaults[key];
+    let value = localStorage[key];
+    if (typeof value == 'string') {
+      switch (typeof defaultValue) {
+        case 'boolean':
+          value = value.toLowerCase() === 'true';
+          break;
+        case 'number':
+          value |= 0;
+          break;
+        case 'object':
+          value = tryJSONparse(value) || defaultValue;
+          break;
+      }
+    } else {
+      value = defaultValue;
+    }
+    this.set(key, value, {noBroadcast: true});
+  }
 
   getSync().get('settings', ({settings: synced}) => {
-    for (const key in defaults) {
-      if (synced && (key in synced)) {
-        this.set(key, synced[key], {noSync: true});
+    if (synced) {
+      for (const key in defaults) {
+        if (key == 'popupWidth' && synced[key] != values.popupWidth) {
+          // this is a fix for the period when popupWidth wasn't synced
+          // TODO: remove it in a couple of months before the summer 2017
+          continue;
+        }
+        if (key in synced) {
+          this.set(key, synced[key], {noSync: true});
+        }
       }
     }
     if (typeof contextMenus !== 'undefined') {

@@ -43,7 +43,7 @@ function initPopup(url) {
 
   // popup width
   document.body.style.width =
-    Math.max(200, Math.min(800, Number(localStorage.popupWidth) || 246)) + 'px';
+    Math.max(200, Math.min(800, prefs.get('popupWidth'))) + 'px';
 
   // force Chrome to resize the popup
   document.body.style.height = '10px';
