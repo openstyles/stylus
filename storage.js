@@ -497,7 +497,7 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
     // and as Map in case the string is not the same reference used to add the item
     //const t0start = performance.now();
     const code = section.code;
-    let isEmpty = code.length < 1000 && cachedStyles.emptyCode.get(code);
+    let isEmpty = code !== null && code.length < 1000 && cachedStyles.emptyCode.get(code);
     if (isEmpty === undefined) {
       isEmpty = !code || !code.trim()
         || code.indexOf('@namespace') >= 0
@@ -540,9 +540,18 @@ function tryRegExp(regexp) {
 }
 
 
-prefs = prefs || new function Prefs() {
-  const me = this;
+function debounce(fn, ...args) {
+  const timers = debounce.timers = debounce.timers || new Map();
+  debounce.run = debounce.run || ((fn, ...args) => {
+    timers.delete(fn);
+    fn(...args);
+  });
+  clearTimeout(timers.get(fn));
+  timers.set(fn, setTimeout(debounce.run, 0, fn, ...args));
+}
 
+
+prefs = prefs || new function Prefs() {
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'windowPosition': {},           // detached window position
@@ -589,85 +598,85 @@ prefs = prefs || new function Prefs() {
   };
   const values = deepCopy(defaults);
 
-  let syncTimeout; // see broadcast() function below
+  // coalesce multiple pref changes in broadcast
+  let broadcastPrefs = {};
+
+  function doBroadcast() {
+    notifyAllTabs({method: 'prefChanged', prefs: broadcastPrefs});
+    broadcastPrefs = {};
+  }
+
+  function doSyncSet() {
+    getSync().set({'settings': values});
+  }
 
   Object.defineProperty(this, 'readOnlyValues', {value: {}});
 
-  Prefs.prototype.get = function(key, defaultValue) {
-    if (key in values) {
-      return values[key];
-    }
-    if (defaultValue !== undefined) {
-      return defaultValue;
-    }
-    if (key in defaults) {
-      return defaults[key];
-    }
-    console.warn("No default preference for '%s'", key);
-  };
+  Object.assign(Prefs.prototype, {
 
-  Prefs.prototype.getAll = function() {
-    return deepCopy(values);
-  };
+    get(key, defaultValue) {
+      if (key in values) {
+        return values[key];
+      }
+      if (defaultValue !== undefined) {
+        return defaultValue;
+      }
+      if (key in defaults) {
+        return defaults[key];
+      }
+      console.warn("No default preference for '%s'", key);
+    },
 
-  Prefs.prototype.set = function(key, value, options) {
-    const oldValue = deepCopy(values[key]);
-    values[key] = value;
-    defineReadonlyProperty(this.readOnlyValues, key, value);
-    if ((!options || !options.noBroadcast) && !equal(value, oldValue)) {
-      me.broadcast(key, value, options);
-    }
-  };
+    getAll() {
+      return deepCopy(values);
+    },
 
-  Prefs.prototype.remove = key => me.set(key, undefined);
+    set(key, value, {noBroadcast, noSync} = {}) {
+      const oldValue = deepCopy(values[key]);
+      values[key] = value;
+      defineReadonlyProperty(this.readOnlyValues, key, value);
+      if (!noBroadcast && !equal(value, oldValue)) {
+        this.broadcast(key, value, {noSync});
+      }
+    },
 
-  Prefs.prototype.broadcast = function(key, value, options) {
-    const message = {method: 'prefChanged', prefName: key, value: value};
-    notifyAllTabs(message);
-    chrome.runtime.sendMessage(message);
-    if (key == 'disableAll') {
-      notifyAllTabs({method: 'styleDisableAll', disableAll: value});
-    }
-    if (!options || !options.noSync) {
-      clearTimeout(syncTimeout);
-      syncTimeout = setTimeout(function() {
-        getSync().set({'settings': values});
-      }, 0);
-    }
-  };
+    remove: key => this.set(key, undefined),
 
-  Object.keys(defaults).forEach(function(key) {
-    me.set(key, defaults[key], {noBroadcast: true});
+    broadcast(key, value, {noSync} = {}) {
+      broadcastPrefs[key] = value;
+      debounce(doBroadcast);
+      if (!noSync) {
+        debounce(doSyncSet);
+      }
+    },
   });
 
-  getSync().get('settings', function(result) {
-    const synced = result.settings;
+  Object.keys(defaults).forEach(key => {
+    this.set(key, defaults[key], {noBroadcast: true});
+  });
+
+  getSync().get('settings', ({settings: synced}) => {
     for (const key in defaults) {
       if (synced && (key in synced)) {
-        me.set(key, synced[key], {noSync: true});
-      } else {
-        const value = tryMigrating(key);
-        if (value !== undefined) {
-          me.set(key, value);
-        }
+        this.set(key, synced[key], {noSync: true});
       }
     }
     if (typeof contextMenus !== 'undefined') {
       for (const id in contextMenus) {
         if (typeof values[id] == 'boolean') {
-          me.broadcast(id, values[id], {noSync: true});
+          this.broadcast(id, values[id], {noSync: true});
         }
       }
     }
   });
 
-  chrome.storage.onChanged.addListener(function(changes, area) {
+  chrome.storage.onChanged.addListener((changes, area) => {
     if (area == 'sync' && 'settings' in changes) {
       const synced = changes.settings.newValue;
       if (synced) {
         for (const key in defaults) {
           if (key in synced) {
-            me.set(key, synced[key], {noSync: true});
+            this.set(key, synced[key], {noSync: true});
           }
         }
       } else {
@@ -676,29 +685,6 @@ prefs = prefs || new function Prefs() {
       }
     }
   });
-
-  function tryMigrating(key) {
-    if (!(key in localStorage)) {
-      return undefined;
-    }
-    const value = localStorage[key];
-    delete localStorage[key];
-    localStorage['DEPRECATED: ' + key] = value;
-    switch (typeof defaults[key]) {
-      case 'boolean':
-        return value.toLowerCase() === 'true';
-      case 'number':
-        return Number(value);
-      case 'object':
-        try {
-          return JSON.parse(value);
-        } catch (e) {
-          console.log("Cannot migrate from localStorage %s = '%s': %o", key, value, e);
-          return undefined;
-        }
-    }
-    return value;
-  }
 }();
 
 
@@ -712,14 +698,18 @@ function setupLivePrefs(IDs) {
       prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
     });
   });
-  chrome.runtime.onMessage.addListener(function(request) {
-    if (request.prefName in localIDs) {
-      updateElement(request.prefName);
+  chrome.runtime.onMessage.addListener(msg => {
+    if (msg.prefs) {
+      for (const prefName in msg.prefs) {
+        if (prefName in localIDs) {
+          updateElement(prefName, msg.prefs[prefName]);
+        }
+      }
     }
   });
-  function updateElement(id) {
+  function updateElement(id, value) {
     const el = document.getElementById(id);
-    el[isCheckbox(el) ? 'checked' : 'value'] = prefs.get(id);
+    el[isCheckbox(el) ? 'checked' : 'value'] = value || prefs.get(id);
     el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     return el;
   }
@@ -817,6 +807,7 @@ function defineReadonlyProperty(obj, key, value) {
   }
   Object.defineProperty(obj, key, {value: copy, configurable: true});
 }
+
 
 // Polyfill for Firefox < 53 https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
 function getSync() {

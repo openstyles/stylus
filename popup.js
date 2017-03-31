@@ -18,16 +18,22 @@ getActiveTabRealURL().then(url => {
 
 
 chrome.runtime.onMessage.addListener(msg => {
-  if (msg.method == 'updatePopup') {
-    switch (msg.reason) {
-      case 'styleAdded':
-      case 'styleUpdated':
-        handleUpdate(msg.style);
-        break;
-      case 'styleDeleted':
-        handleDelete(msg.id);
-        break;
-    }
+  switch (msg.method) {
+    case 'styleAdded':
+    case 'styleUpdated':
+      handleUpdate(msg.style);
+      break;
+    case 'styleDeleted':
+      handleDelete(msg.id);
+      break;
+    case 'prefChanged':
+      if ('popup.stylesFirst' in msg.prefs) {
+        const stylesFirst = msg.prefs['popup.stylesFirst'];
+        const actions = $('body > .actions');
+        const before = stylesFirst ? actions : actions.nextSibling;
+        document.body.insertBefore(installed, before);
+      }
+      break;
   }
 });
 
@@ -53,7 +59,6 @@ function initPopup(url) {
   $('#popup-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#popup-shortcuts-button').onclick = configureCommands.open;
 
-  // styles first?
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
       $('body > .actions'),

@@ -72,14 +72,13 @@ function onBackgroundMessage(request, sender, sendResponse) {
         () => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
 
-    case 'styleDisableAll':
-      request = {prefName: 'disableAll', value: request.disableAll};
-      // fallthrough to prefChanged
-
     case 'prefChanged':
-      // eslint-disable-next-line no-use-before-define
-      if (typeof request.value == 'boolean' && contextMenus[request.prefName]) {
-        chrome.contextMenus.update(request.prefName, {checked: request.value}, ignoreChromeError);
+      for (var prefName in request.prefs) { // eslint-disable-line no-var
+        if (prefName in contextMenus) { // eslint-disable-line no-use-before-define
+          chrome.contextMenus.update(prefName, {
+            checked: request.prefs[prefName],
+          }, ignoreChromeError);
+        }
       }
       break;
   }

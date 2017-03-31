@@ -20,17 +20,14 @@ function notifyAllTabs(request) {
       updateIcon(tab);
     }
   });
-  // notify all open popups
-  const reqPopup = Object.assign({}, request, {method: 'updatePopup', reason: request.method});
-  chrome.runtime.sendMessage(reqPopup);
   // notify self: the message no longer is sent to the origin in new Chrome
-  if (typeof applyOnMessage !== 'undefined') {
-    applyOnMessage(reqPopup);
-  }
-  // notify self: pref changed by background page
-  if (request.method == 'prefChanged' && typeof onBackgroundMessage !== 'undefined') {
+  if (window.applyOnMessage) {
+    applyOnMessage(request);
+  } else if (window.onBackgroundMessage) {
     onBackgroundMessage(request);
   }
+  // notify background page and all open popups
+  chrome.runtime.sendMessage(request);
 }
 
 

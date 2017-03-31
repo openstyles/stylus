@@ -47,8 +47,7 @@ function applyOnMessage(request, sender, sendResponse) {
       applyOnMessage(Object.assign(request, {styles})));
     return;
   }
-  // Also handle special request just for the pop-up
-  switch (request.method == 'updatePopup' ? request.reason : request.method) {
+  switch (request.method) {
 
     case 'styleDeleted':
       removeStyle(request.id, document);
@@ -80,8 +79,10 @@ function applyOnMessage(request, sender, sendResponse) {
       replaceAll(request.styles, document);
       break;
 
-    case 'styleDisableAll':
-      doDisableAll(request.disableAll);
+    case 'prefChanged':
+      if ('disableAll' in request.prefs) {
+        doDisableAll(request.prefs.disableAll);
+      }
       break;
 
     case 'ping':

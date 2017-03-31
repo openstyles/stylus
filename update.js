@@ -106,7 +106,7 @@ window.setTimeout(function () {
   }
   chrome.runtime.onMessage.addListener(request => {
     // when user has changed the predefined time interval in the settings page
-    if (request.method === 'prefChanged' && request.prefName === 'updateInterval') {
+    if (request.method === 'prefChanged' && 'updateInterval' in request.prefs) {
       reset();
     }
     // when user just manually checked for updates

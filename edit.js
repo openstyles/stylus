@@ -1824,8 +1824,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "prefChanged":
-			if (request.prefName == "editor.smartIndent") {
-				CodeMirror.setOption("smartIndent", request.value);
+			if ('editor.smartIndent' in request.prefs) {
+				CodeMirror.setOption('smartIndent', request.prefs['editor.smartIndent']);
 			}
 			break;
 		case 'editDeleteText':
