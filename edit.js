@@ -1422,7 +1422,7 @@ function fromMozillaFormat() {
 
 	function doImport() {
 		var replaceOldStyle = this.name == "import-replace";
-		popup.querySelector(".dismiss").click();
+		popup.querySelector(".dismiss").onclick();
 		var mozStyle = trimNewLines(popup.codebox.getValue());
 		var parser = new parserlib.css.Parser(), lines = mozStyle.split("\n");
 		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
@@ -1766,7 +1766,7 @@ function showHelp(title, text) {
 	return div;
 
 	function closeHelp(e) {
-		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
+		if (!e || e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
 			div.style.display = "";
 			document.querySelector(".contents").innerHTML = "";
 			document.removeEventListener("keydown", closeHelp);
