@@ -103,6 +103,7 @@ function createStyleElement({style, name}) {
   const entry = template.style.cloneNode(true);
   entry.classList.add(style.enabled ? 'enabled' : 'disabled');
   entry.setAttribute('style-id', style.id);
+  entry.id = 'style-' + style.id;
   entry.styleId = style.id;
   entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
   if (style.updateUrl) {
@@ -256,7 +257,7 @@ class EntryOnClick {
 
 function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement({style});
-  const oldElement = $(`[style-id="${style.id}"]`, installed);
+  const oldElement = $('#style-' + style.id, installed);
   if (oldElement) {
     if (oldElement.styleNameLowerCase == element.styleNameLowerCase) {
       installed.replaceChild(element, oldElement);
@@ -275,7 +276,7 @@ function handleUpdate(style, {reason} = {}) {
 
 
 function handleDelete(id) {
-  const node = $(`[style-id="${id}"]`, installed);
+  const node = $('#style-' + id, installed);
   if (node) {
     node.remove();
   }
@@ -339,7 +340,7 @@ class Updater {
   constructor(element) {
     Object.assign(this, {
       element,
-      id: element.getAttribute('style-id'),
+      id: element.styleId,
       url: element.getAttribute('style-update-url'),
       md5Url: element.getAttribute('style-md5-url'),
       md5: element.getAttribute('style-original-md5'),
