@@ -10,11 +10,16 @@
         }
         a,
         a:visited {
-            color: #555;
-            -webkit-transition: color 0.5s;
+            color: inherit;
+            opacity: .75;
+            -webkit-transition: opacity 0.5s;
         }
-        a:hover {
-            color: #999;
+        a:hover,
+        a.homepage:hover {
+            opacity: .6;
+        }
+        a.homepage {
+            opacity: 1;
         }
         #header {
             height: 100%;
@@ -47,20 +52,21 @@
             height: 2px;
             background-color: #fff;
         }
-		.svg-icon.installed {
-			cursor: pointer;
-			vertical-align: middle;
-			margin-left: 0.3rem;
-			margin-top: -4px;
-			transition: fill .5s;
-		}
-		a:hover .svg-icon.installed {
-			fill: hsl(0, 0%, 40%);
-		}
-		.style-name {
-		    margin-top: .25em;
-		    word-break: break-word;
-		}
+        .svg-icon {
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 0.3rem;
+            margin-right: 0.3rem;
+            margin-top: -4px;
+            transition: opacity .5s;
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        .style-name {
+            margin-top: .25em;
+            word-break: break-word;
+        }
         .applies-to {
             word-break: break-word;
         }
@@ -83,9 +89,10 @@
         .enabled .enable {
             display: none;
         }
-		.style-name a[target="_blank"] {
-			text-decoration: none;
-		}
+        .style-name a[target="_blank"] {
+            text-decoration: none;
+            color: inherit;
+        }
         /* Default, no update buttons */
         
         .update,
@@ -219,10 +226,8 @@
     </template>
 
     <template data-id="styleHomepage">
-        <a target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" class="svg-icon installed" height="16" width="16" viewBox="0 0 8 8">
-				<path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z" id="external-link"></path>
-			</svg>
+        <a target="_blank" class="homepage">
+            <svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg>
         </a>
     </template>
 
@@ -293,6 +298,13 @@
         <p id="manage-text" i18n-html="manageText"></p>
     </div>
     <div id="installed"></div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+        <symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
+            <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
+        </symbol>
+    </svg>
+
     <script src="openOptions.js"></script>
     <script src="backup/fileSaveLoad.js"></script>
 </body>

@@ -1348,7 +1348,7 @@ function fromMozillaFormat() {
 
 	function doImport() {
 		var replaceOldStyle = this.name == "import-replace";
-		popup.querySelector(".close-icon").click();
+		popup.querySelector(".dismiss").click();
 		var mozStyle = trimNewLines(popup.codebox.getValue());
 		var parser = new parserlib.css.Parser(), lines = mozStyle.split("\n");
 		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
@@ -1575,7 +1575,7 @@ function showHelp(title, text) {
 
 	if (getComputedStyle(div).display == "none") {
 		document.addEventListener("keydown", closeHelp);
-		div.querySelector(".close-icon").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
+		div.querySelector(".dismiss").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
 	}
 
 	div.style.display = "block";

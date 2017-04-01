@@ -86,6 +86,7 @@
 			}
 			#url {
 				margin-left: 0.25rem;
+				color: inherit;
 			}
 			#url:not([href^="http"]) {
 				display: none;
@@ -93,7 +94,10 @@
 			.svg-icon {
 				cursor: pointer;
 				vertical-align: middle;
-				transition: fill .5s;
+				transition: opacity .5s;
+				width: 16px;
+				height: 16px;
+				fill: currentColor;
 			}
 			.svg-icon:not(.applies-to-help):not(.dismiss) {
 				margin-left: 0.2rem;
@@ -101,12 +105,14 @@
 			h2 .svg-icon, label .svg-icon {
 				margin-top: -2px;
 			}
-			.svg-icon.info:hover {
-				fill: #000000;
+			.svg-icon:hover,
+			.svg-icon.info {
+				opacity: .6;
 			}
-			a:hover .svg-icon.installed, .svg-icon.dismiss:hover {
-				fill: hsl(0, 0%, 40%);
-		    }
+			.svg-icon,
+			.svg-icon.info:hover {
+				opacity: 1;
+			}
 			#enabled {
 				margin-left: 0;
 				vertical-align: middle;
@@ -275,10 +281,10 @@
 				max-height: calc(100vh - 8rem);
 				overflow-y: auto;
 			}
-			#help-popup .close-icon {
+			#help-popup .dismiss {
 				position: absolute;
 				right: 4px;
-				top: 4px;
+				top: .5em;
 			}
 
 			.keymap-list {
@@ -514,7 +520,7 @@
 				<br>
 				<div class="applies-to">
 					<label i18n-text="appliesLabel">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="applies-to-help svg-icon info" fill="hsl(0, 0%, 40%)" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg>
+						<svg class="svg-icon info applies-to-help"><use xlink:href="#svg-icon-help"/></svg>
 					</label>
 					<ul class="applies-to-list"></ul>
 				</div>
@@ -565,7 +571,7 @@
 			<section id="basic-info">
 				<div id="basic-info-name">
 					<input id="name" class="style-contributor" i18n-placeholder="styleMissingName">
-					<a id="url" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="svg-icon installed" fill="#000000" height="16" width="16" viewBox="0 0 8 8"><path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path></svg></a>
+					<a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
 				</div>
 				<div id="basic-info-enabled">
 					<input type="checkbox" id="enabled" class="style-contributor">
@@ -579,7 +585,7 @@
 					<a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
 				</div>
 				<div>
-					<h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="to-mozilla-help" class="svg-icon info" fill="hsl(0, 0%, 40%)" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></h2>
+					<h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
 					<button id="from-mozilla" i18n-text="importLabel"></button>
 					<button id="to-mozilla" i18n-text="exportLabel"></button>
 				</div>
@@ -605,21 +611,34 @@
 				<div class="option aligned">
 					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
 					<select data-option="keyMap" id="editor.keyMap"></select>
-					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="keyMap-help" class="svg-icon info" fill="hsl(0, 0%, 40%)" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg>
+					<svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
 				</div>
 				<div class="option aligned">
 					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
 					<select data-option="theme" id="editor.theme"></select>
 				</div>
 			</section>
-			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="lint-help" class="svg-icon info" fill="hsl(0, 0%, 40%)" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></h2><div></div></section>
+			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
 		</div>
 		<section id="sections">
-			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="sections-help" class="svg-icon info" fill="hsl(0, 0%, 40%)" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></h2>
+			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
 		</section>
 		<div id="help-popup">
-			<div class="title"></div><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="close-icon svg-icon dismiss" fill="#000000" height="16" width="12" viewBox="0 0 12 16"><path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path></svg>
+			<div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg></svg>
 			<div class="contents"></div>
 		</div>
+
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+			<symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
+				<path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
+			</symbol>
+			<symbol id="svg-icon-help" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt">
+				<path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
+			</symbol>
+			<symbol id="svg-icon-close" height="16" width="12" viewBox="0 0 12 16">
+				<path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
+			</symbol>
+		</svg>
+
 	</body>
 </html>
