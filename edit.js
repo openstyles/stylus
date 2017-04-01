@@ -1689,11 +1689,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 				rxData.urls = urlsNow;
 			}
 		}
-		const moreInfoLink = '<a target="_blank" ' +
-			'href="https://github.com/stylish-userstyles/' +
-			'stylish/wiki/Applying-styles-to-specific-sites' +
-			'#advanced-matching-with-regular-expressions">' +
-			'<img src="/images/help.png"></a>';
+		const moreInfoLink = template.regexpTestPartial.outerHTML;
 		const stats = {
 			full: {data: [], label: t('styleRegexpTestFull')},
 			partial: {data: [], label: t('styleRegexpTestPartial') + moreInfoLink},

@@ -89,7 +89,6 @@
 			}
 			#url {
 				margin-left: 0.25rem;
-				color: inherit;
 			}
 			#url:not([href^="http"]) {
 				display: none;
@@ -97,10 +96,9 @@
 			.svg-icon {
 				cursor: pointer;
 				vertical-align: middle;
-				transition: opacity .5s;
+				transition: fill .5s;
 				width: 16px;
 				height: 16px;
-				fill: currentColor;
 			}
 			.svg-icon:not(.applies-to-help):not(.dismiss) {
 				margin-left: 0.2rem;
@@ -108,13 +106,17 @@
 			h2 .svg-icon, label .svg-icon {
 				margin-top: -2px;
 			}
+			.svg-icon.info {
+				width: 14px;
+				height: 16px;
+			}
 			.svg-icon:hover,
 			.svg-icon.info {
-				opacity: .6;
+				fill: #666;
 			}
 			.svg-icon,
 			.svg-icon.info:hover {
-				opacity: 1;
+				fill: #000;
 			}
 			#enabled {
 				margin-left: 0;
@@ -637,6 +639,9 @@
 		</template>
 		<template data-id="jumpToLine">
 			<span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+		</template>
+		<template data-id="regexpTestPartial">
+			<a target="_blank" href="https://github.com/stylish-userstyles/stylish/wiki/Applying-styles-to-specific-sites#advanced-matching-with-regular-expressions"><svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></a>
 		</template>
 
 		<script src="storage.js"></script>

@@ -78,7 +78,9 @@ function initPopup(url) {
   // Write new style links
   const writeStyle = $('#write-style');
   const matchTargets = document.createElement('span');
-  matchTargets.id = 'match';
+  const matchWrapper = document.createElement('span');
+  matchWrapper.id = 'match';
+  matchWrapper.appendChild(matchTargets);
 
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
@@ -120,7 +122,7 @@ function initPopup(url) {
     matchTargets.classList.add('breadcrumbs');
     matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
   }
-  writeStyle.appendChild(matchTargets);
+  writeStyle.appendChild(matchWrapper);
 }
 
 

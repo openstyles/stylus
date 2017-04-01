@@ -3,20 +3,14 @@ body {
   font: 12px arial, sans-serif;
 }
 
-a,
-a:visited {
-  color: inherit;
-  opacity: .75;
-  -webkit-transition: opacity 0.5s;
+a {
+  color: #000;
+  transition: color .5s;
+  text-decoration-skip: ink;
 }
 
-a:hover,
-a.homepage:hover {
-  opacity: .6;
-}
-
-a.homepage {
-  opacity: 1;
+a:hover {
+  color: #666;
 }
 
 #header {
@@ -53,13 +47,20 @@ a.homepage {
 .svg-icon {
   cursor: pointer;
   vertical-align: middle;
-  margin-left: 0.3rem;
-  margin-right: 0.3rem;
   margin-top: -4px;
-  transition: opacity .5s;
+  transition: fill .5s;
   width: 16px;
   height: 16px;
-  fill: currentColor;
+  fill: #000;
+}
+
+.svg-icon:hover {
+  fill: #666;
+}
+
+.homepage {
+  margin-left: 0.1em;
+  margin-right: 0.1em;
 }
 
 .style-name {
@@ -69,12 +70,11 @@ a.homepage {
 
 .style-name a, .style-edit-link {
   text-decoration: none;
-  color: inherit;
 }
 
 .style-name-link:hover {
   text-decoration: underline;
-  color: black;
+  color: #000;
 }
 
 .applies-to {
@@ -179,11 +179,6 @@ summary {
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
-}
-
-#find-editor-styles {
-  display: block;
-  margin-top: .5em;
 }
 
 @keyframes highlight {

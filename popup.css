@@ -36,10 +36,14 @@ input[type=checkbox] {
   display: block;
 }
 
-a,
-a:visited {
-  color: black;
+a {
+  color: #000;
+  transition: color .5s;
   text-decoration-skip: ink;
+}
+
+a:hover {
+  color: #666;
 }
 
 .left-gutter {
@@ -195,9 +199,13 @@ body.blocked > DIV {
 .svg-icon {
   pointer-events: none;
   transition: fill .5s;
+  width: 14px;
+  height: 16px;
+  fill: #666;
 }
+
 a:hover .svg-icon {
-  fill: #000000;
+  fill: #000;
 }
 
 body > .actions {
@@ -245,6 +253,12 @@ body.blocked #unavailable {
 
 /* 'New style' links */
 
+#write-style {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 #write-style-for {
   margin-right: .6ex
 }
@@ -264,7 +278,9 @@ body.blocked #unavailable {
 
 #match {
   overflow-wrap: break-word;
-  display: inline-block;
+  display: block;
+  flex-grow: 9;
+  min-width: 200px;
 }
 
 /* "breadcrumbs" 'new style' links */
