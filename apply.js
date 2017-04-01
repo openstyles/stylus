@@ -6,6 +6,7 @@
 var isOwnPage = location.href.startsWith('chrome-extension:');
 var disableAll = false;
 var styleElements = new Map();
+var disabledElements = new Map();
 var retiredStyleIds = [];
 var iframeObserver;
 var docRewriteObserver;
@@ -126,21 +127,40 @@ function doDisableAll(disable) {
 
 
 function applyStyleState(id, enabled, doc) {
-  const el = doc.getElementById('stylus-' + id);
-  if (el) {
-    el.sheet.disabled = !enabled;
-    processDynamicIFrames(doc, applyStyleState, id, enabled);
-  } else if (enabled) {
+  const inCache = disabledElements.get(id);
+  const inDoc = doc.getElementById('stylus-' + id);
+  if (enabled && inDoc || !enabled && !inDoc) {
+    return;
+  }
+  if (enabled && !inDoc && !inCache) {
     requestStyles({id});
+    return;
+  }
+  if (enabled && inCache) {
+    const el = inCache.cloneNode(true);
+    document.documentElement.appendChild(el);
+    el.sheet.disabled = disableAll;
+    processDynamicIFrames(doc, applyStyleState, id, enabled);
+    disabledElements.delete(id);
+    return;
+  }
+  if (!enabled && inDoc) {
+    disabledElements.set(id, inDoc);
+    inDoc.remove();
+    processDynamicIFrames(doc, applyStyleState, id, enabled);
+    return;
   }
 }
 
 
 function removeStyle(id, doc) {
-  styleElements.delete('stylus-' + id);
   [doc.getElementById('stylus-' + id)].forEach(e => e && e.remove());
-  if (doc == document && !styleElements.size) {
-    iframeObserver.disconnect();
+  if (doc == document) {
+    styleElements.delete('stylus-' + id);
+    disabledElements.delete(id);
+    if (!styleElements.size) {
+      iframeObserver.disconnect();
+    }
   }
   processDynamicIFrames(doc, removeStyle, id);
 }
@@ -155,6 +175,7 @@ function retireStyle(id, doc) {
     doc = document;
     retiredStyleIds.push(deadID);
     styleElements.delete('stylus-' + id);
+    disabledElements.delete(id);
     // in case something went wrong and new style was never applied
     setTimeout(removeStyle, 1000, deadID, doc);
   }
@@ -232,6 +253,7 @@ function applySections(styleId, sections) {
   el.appendChild(document.createTextNode(sections.map(section => section.code).join('\n')));
   addStyleElement(el, document);
   styleElements.set(el.id, el);
+  disabledElements.delete(styleId);
 }
 
 
@@ -322,6 +344,7 @@ function replaceAll(newStyles, doc) {
   processDynamicIFrames(doc, replaceAll, newStyles);
   if (doc == document) {
     styleElements.clear();
+    disabledElements.clear();
     applyStyles(newStyles);
     replaceAllpass2(newStyles, doc);
   }
