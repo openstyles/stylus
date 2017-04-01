@@ -31,7 +31,7 @@ function initGlobalEvents() {
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = configureCommands.open;
-  $('#find-editor-styles').onclick = EntryOnClick.external;
+  $$('#header a[href^="http"]').forEach(a => (a.onclick = EntryOnClick.external));
 
   // focus search field on / key
   document.onkeypress = event => {
