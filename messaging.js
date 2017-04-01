@@ -157,7 +157,7 @@ function openURL({url, currentWindow = true}) {
       getActiveTab().then(tab => (
         tab && tab.url == 'chrome://newtab/'
           ? chrome.tabs.update({url}, resolve)
-          : chrome.tabs.create({url}, resolve)
+          : chrome.tabs.create({url, openerTabId: tab.id}, resolve)
       ));
     });
   });
