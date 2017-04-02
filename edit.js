@@ -1497,14 +1497,19 @@ function fromMozillaFormat() {
 			}
 		}
 		function doAddSection(section) {
+			section.code = section.code.trim();
+			// don't add empty sections
+			if (!section.code
+			&& !section.urls
+			&& !section.urlPrefixes
+			&& !section.domains
+			&& !section.regexps) {
+				return;
+			}
 			if (!firstAddedCM) {
 				if (!initFirstSection(section)) {
 					return;
 				}
-			}
-			// don't add empty sections
-			if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
-				return;
 			}
 			setCleanItem(addSection(null, section), false);
 			firstAddedCM = firstAddedCM || editors.last;
