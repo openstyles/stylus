@@ -143,22 +143,23 @@ body.blocked > DIV {
 }
 
 .not-applied:hover .style-name {
-  color: darkorange;
+  color: darkred;
 }
 
 .regexp-problem-indicator {
-  background-color: darkorange;
-  width: 15px;
-  height: 15px;
-  line-height: 16px;
+  background-color: #d00;
+  width: 14px;
+  height: 14px;
+  line-height: 15px;
   border-radius: 8px;
-  margin-right: 4px;
-  margin-left: 4px;
+  margin-right: 6px;
+  margin-left: 6px;
   text-align: center;
   color: white;
   font-weight: bold;
   box-sizing: border-box;
   cursor: pointer;
+  font-size: 90%;
 }
 
 .regexp-partial .actions,
@@ -178,6 +179,7 @@ body.blocked > DIV {
   box-shadow: 0 0 100px black;
   display: flex;
   flex-direction: column;
+  z-index: 999999;
 }
 
 #regexp-explanation > div {
