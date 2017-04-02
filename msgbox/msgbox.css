@@ -78,15 +78,15 @@
   font-weight: bold;
 }
 
+#message-box.danger #message-box-close-icon svg:hover {
+  fill: #600;
+}
+
 #message-box-close-icon {
   cursor: pointer;
-  width: 8px;
-  height: 8px;
-  border: 8px solid transparent;
   position: absolute;
-  right: 0;
-  top: 0;
-  background: linear-gradient(-45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat, linear-gradient(45deg, transparent 5px, black 5px, black 6px, transparent 6.5px) no-repeat;
+  right: 3px;
+  top: 7px;
 }
 
 #message-box-contents {

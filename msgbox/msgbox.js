@@ -55,7 +55,10 @@ function messageBox({
     messageBox.element = $element({id, className, appendChild: [
       $element({appendChild: [
         $element({id: `${id}-title`, innerHTML: title}),
-        $element({id: `${id}-close-icon`, onclick: messageBox.listeners.closeIcon}),
+        $element({
+          id: `${id}-close-icon`,
+          innerHTML: '<svg class="svg-icon"><use xlink:href="#svg-icon-close"/></svg>',
+          onclick: messageBox.listeners.closeIcon}),
         $element({id: `${id}-contents`, [putAs]: contents}),
         $element({id: `${id}-buttons`, appendChild:
           buttons.map((textContent, buttonIndex) => textContent &&
