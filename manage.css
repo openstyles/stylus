@@ -90,6 +90,7 @@ a:hover {
 .actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .actions > * {
