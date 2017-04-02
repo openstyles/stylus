@@ -4,7 +4,7 @@
 		"description": "Text displayed for styles that apply to all sites"
 	},
 	"defaultTheme": {
-		"message": "default",
+		"message": "Standard",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"manageOnlyEdited": {
@@ -16,7 +16,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"issues": {
-		"message": "Issues",
+		"message": "Probleme",
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"cm_tabSize": {
@@ -40,7 +40,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"importAppendLabel": {
-		"message": "Append to style",
+		"message": "Zum Style anfügen.",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"updateAllCheckSucceededNoUpdate": {
@@ -48,7 +48,7 @@
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "Paste the Mozilla-format code",
+		"message": "Mozilla Format code einfügen",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"helpAlt": {
@@ -56,11 +56,11 @@
 		"description": "Alternate text for help buttons"
 	},
 	"search": {
-		"message": "Search",
+		"message": "Suche",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"confirmYes": {
-		"message": "Yes",
+		"message": "Ja",
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
@@ -121,7 +121,7 @@
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
-		"message": "Search contents",
+		"message": "Inhalte durchsuchen",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableStyleLabel": {
@@ -137,7 +137,7 @@
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
 	"cm_lineWrapping": {
-		"message": "Zeilenumbruch",
+		"message": "Automatischer Zeilenumbruch",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
 	"styleCancelEditLabel": {
@@ -250,7 +250,7 @@
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Style in Mozilla format",
+		"message": "Style im Mozilla Format",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"manageTitle": {
@@ -262,7 +262,7 @@
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
 	},
 	"replace": {
-		"message": "Replace",
+		"message": "Ersetzen",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"appliesLabel": {
@@ -307,7 +307,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"undoGlobal": {
-		"message": "Undo (global)",
+		"message": "Rückgängig (global)",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
@@ -343,7 +343,7 @@
 		"description": "Title of the page for adding styles"
 	},
 	"importReplaceLabel": {
-		"message": "Overwrite style",
+		"message": "Style Überschreiben",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
@@ -355,11 +355,11 @@
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"helpKeyMapHotkey": {
-		"message": "Press a hotkey",
+		"message": "Hotkey drücken",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"replaceAll": {
-		"message": "Replace all",
+		"message": "Alle Ersetzen",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"editGotoLine": {
@@ -375,7 +375,7 @@
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
 	"confirmNo": {
-		"message": "No",
+		"message": "Nein",
 		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
@@ -391,7 +391,7 @@
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
-		"message": "Replace with",
+		"message": "Ersetzen mit",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
@@ -415,7 +415,7 @@
 		"description": "Label for the style editor's CSS theme."
 	},
 	"helpKeyMapCommand": {
-		"message": "Type a command name",
+		"message": "Befehlsnamen eingeben",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
