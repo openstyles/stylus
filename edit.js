@@ -1113,8 +1113,8 @@ function init() {
 				section[CssToProperty[i]] = [params[i]];
 			}
 		}
-		onload = () => {
-			onload = null;
+		window.onload = () => {
+			window.onload = null;
 			addSection(null, section);
 			// default to enabled
 			document.getElementById("enabled").checked = true
@@ -1132,12 +1132,12 @@ function init() {
 		}
 		styleId = style.id;
 		setStyleMeta(style);
-		onload = () => {
-			onload = null;
+		window.onload = () => {
+			window.onload = null;
 			initWithStyle({style});
 		};
 		if (document.readyState != 'loading') {
-			onload();
+			window.onload();
 		}
 	});
 }

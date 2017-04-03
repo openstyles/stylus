@@ -70,7 +70,7 @@ function showStyles(styles = []) {
   const sorted = styles
     .map(style => ({name: style.name.toLocaleLowerCase(), style}))
     .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
-  const shouldRenderAll = history.state && history.state.scrollY > innerHeight;
+  const shouldRenderAll = (history.state || {}).scrollY > window.innerHeight;
   const renderBin = document.createDocumentFragment();
   tDocLoader.stop();
   renderStyles(0);
@@ -477,7 +477,7 @@ function searchStyles({immediately, container}) {
 
 
 function rememberScrollPosition() {
-  history.replaceState({scrollY}, document.title);
+  history.replaceState({scrollY: window.scrollY}, document.title);
 }
 
 
