@@ -5,7 +5,7 @@ const installed = $('#installed');
 const TARGET_LABEL = t('appliesDisplay', '').trim();
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const TARGET_LIMIT = 10;
-
+const handleEvent = {};
 
 getStylesSafe()
   .then(showStyles)
@@ -31,7 +31,7 @@ function initGlobalEvents() {
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = configureCommands.open;
-  $$('#header a[href^="http"]').forEach(a => (a.onclick = EntryOnClick.external));
+  $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
   // focus search field on / key
   document.onkeypress = event => {
@@ -90,15 +90,13 @@ function showStyles(styles = []) {
     installed.appendChild(renderBin);
     if (index < sorted.length) {
       setTimeout(renderStyles, 0, index);
-    } else if (shouldRenderAll && history.state && 'scrollY' in history.state) {
+    } else if (shouldRenderAll && 'scrollY' in (history.state || {})) {
       setTimeout(() => scrollTo(0, history.state.scrollY));
     }
   }
 }
 
 
-// silence the inapplicable warning for async code
-/* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
 function createStyleElement({style, name}) {
   const entry = template.style.cloneNode(true);
   entry.classList.add(style.enabled ? 'enabled' : 'disabled');
@@ -120,11 +118,11 @@ function createStyleElement({style, name}) {
   const styleNameEditLink = $('a', styleName);
   styleNameEditLink.appendChild(document.createTextNode(style.name));
   styleNameEditLink.href = styleNameEditLink.getAttribute('href') + style.id;
-  styleNameEditLink.onclick = EntryOnClick.edit;
+  styleNameEditLink.onclick = handleEvent.edit;
   if (style.url) {
     const homepage = template.styleHomepage.cloneNode(true);
     homepage.href = style.url;
-    homepage.onclick = EntryOnClick.external;
+    homepage.onclick = handleEvent.external;
     styleName.appendChild(document.createTextNode(' '));
     styleName.appendChild(homepage);
   }
@@ -170,19 +168,20 @@ function createStyleElement({style, name}) {
 
   const editLink = $('.style-edit-link', entry);
   editLink.href = editLink.getAttribute('href') + style.id;
-  editLink.onclick = EntryOnClick.edit;
+  editLink.onclick = handleEvent.edit;
 
-  $('.enable', entry).onclick = EntryOnClick.toggle;
-  $('.disable', entry).onclick = EntryOnClick.toggle;
-  $('.check-update', entry).onclick = EntryOnClick.check;
-  $('.update', entry).onclick = EntryOnClick.update;
-  $('.delete', entry).onclick = EntryOnClick.delete;
+  $('.enable', entry).onclick = handleEvent.toggle;
+  $('.disable', entry).onclick = handleEvent.toggle;
+  $('.check-update', entry).onclick = handleEvent.check;
+  $('.update', entry).onclick = handleEvent.update;
+  $('.delete', entry).onclick = handleEvent.delete;
   return entry;
 }
 
-class EntryOnClick {
 
-  static edit(event) {
+Object.assign(handleEvent, {
+
+  edit(event) {
     if (event.altKey) {
       return;
     }
@@ -209,18 +208,18 @@ class EntryOnClick {
         location.href = url;
       });
     }
-  }
+  },
 
-  static toggle(event) {
+  toggle(event) {
     enableStyle(getClickedStyleId(event), this.matches('.enable'))
       .then(handleUpdate);
-  }
+  },
 
-  static check(event) {
+  check(event) {
     checkUpdate(getClickedStyleElement(event));
-  }
+  },
 
-  static update(event) {
+  update(event) {
     const styleElement = getClickedStyleElement(event);
     // update everything but name
     saveStyle(Object.assign(styleElement.updatedCode, {
@@ -228,9 +227,9 @@ class EntryOnClick {
       name: null,
       reason: 'update',
     }));
-  }
+  },
 
-  static delete(event) {
+  delete(event) {
     const styleElement = getClickedStyleElement(event);
     const id = styleElement.styleId;
     const {name} = cachedStyles.byId.get(id) || {};
@@ -246,13 +245,13 @@ class EntryOnClick {
         deleteStyle(id);
       }
     });
-  }
+  },
 
-  static external(event) {
+  external(event) {
     openURL({url: event.target.closest('a').href});
     event.preventDefault();
-  }
-}
+  },
+});
 
 
 function handleUpdate(style, {reason} = {}) {
@@ -332,7 +331,7 @@ function checkUpdate(element) {
   $('.update-note', element).innerHTML = t('checkingForUpdate');
   element.classList.remove('checking-update', 'no-update', 'can-update');
   element.classList.add('checking-update');
-  return new Updater(element).run();
+  return new Updater(element).run(); // eslint-disable-line no-use-before-define
 }
 
 

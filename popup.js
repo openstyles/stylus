@@ -3,6 +3,7 @@
 
 let installed;
 let tabURL;
+const handleEvent = {};
 
 getActiveTabRealURL().then(url => {
   tabURL = RX_SUPPORTED_URLS.test(url) ? url : '';
@@ -53,9 +54,9 @@ function initPopup(url) {
   $('#disableAll').onchange = () =>
     installed.classList.toggle('disabled', prefs.get('disableAll'));
   setupLivePrefs(['disableAll']);
-  $('#find-styles-link').onclick = openURLandHide;
+  $('#find-styles-link').onclick = handleEvent.openURLandHide;
   $('#popup-manage-button').href = 'manage.html';
-  $('#popup-manage-button').onclick = openURLandHide;
+  $('#popup-manage-button').onclick = handleEvent.openURLandHide;
   $('#popup-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#popup-shortcuts-button').onclick = configureCommands.open;
 
@@ -90,7 +91,7 @@ function initPopup(url) {
     textContent: prefs.get('popup.breadcrumbs.usePath')
       ? new URL(url).pathname.slice(1)
       : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
-    onclick: openLinkInTabOrWindow,
+    onclick: handleEvent.openLink,
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -112,7 +113,7 @@ function initPopup(url) {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: domain,
       title: `domain("${domain}")`,
-      onclick: openLinkInTabOrWindow,
+      onclick: handleEvent.openLink,
     });
     domainLink.setAttribute('subdomain', domain.substring(0, domain.indexOf('.')));
     matchTargets.appendChild(domainLink);
@@ -165,8 +166,6 @@ function showStyles(styles) {
 }
 
 
-// silence the inapplicable warning for async code
-/* eslint no-use-before-define: [2, {"functions": false, "classes": false}] */
 function createStyleElement({
   style,
   container = installed,
@@ -178,34 +177,34 @@ function createStyleElement({
     id: 'style-' + style.id,
     styleId: style.id,
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
-    onmousedown: openEditorOnMiddleclick,
-    onauxclick: openEditorOnMiddleclick,
+    onmousedown: handleEvent.middleClick,
+    onauxclick: handleEvent.middleClick,
   });
 
   const checkbox = $('.checker', entry);
   Object.assign(checkbox, {
     id: 'style-' + style.id,
     checked: style.enabled,
-    onclick: EntryOnClick.toggle,
+    onclick: handleEvent.toggle,
   });
 
   const editLink = $('.style-edit-link', entry);
   Object.assign(editLink, {
     href: editLink.getAttribute('href') + style.id,
-    onclick: openLinkInTabOrWindow,
+    onclick: handleEvent.openLink,
   });
 
   const styleName = $('.style-name', entry);
   Object.assign(styleName, {
     htmlFor: 'style-' + style.id,
-    onclick: EntryOnClick.name,
+    onclick: handleEvent.name,
   });
   styleName.checkbox = checkbox;
   styleName.appendChild(document.createTextNode(style.name));
 
-  $('.enable', entry).onclick = EntryOnClick.toggle;
-  $('.disable', entry).onclick = EntryOnClick.toggle;
-  $('.delete', entry).onclick = EntryOnClick.delete;
+  $('.enable', entry).onclick = handleEvent.toggle;
+  $('.disable', entry).onclick = handleEvent.toggle;
+  $('.delete', entry).onclick = handleEvent.delete;
 
   if (postponeDetect) {
     setTimeout(detectSloppyRegexps, 0, {entry, style});
@@ -222,21 +221,21 @@ function createStyleElement({
 }
 
 
-class EntryOnClick {
+Object.assign(handleEvent, {
 
-  static name(event) {
+  name(event) {
     this.checkbox.click();
     event.preventDefault();
-  }
+  },
 
-  static toggle(event) {
+  toggle(event) {
     saveStyle({
       id: getClickedStyleId(event),
       enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
     });
-  }
+  },
 
-  static delete(event) {
+  delete(event) {
     const id = getClickedStyleId(event);
     const box = $('#confirm');
     box.dataset.display = true;
@@ -264,62 +263,59 @@ class EntryOnClick {
         });
       }
     }
-  }
+  },
 
-  static indicator(event) {
+  indicator(event) {
     const entry = getClickedStyleElement(event);
     const info = template.regexpProblemExplanation.cloneNode(true);
     $$('#' + info.id).forEach(el => el.remove());
-    $$('a', info).forEach(el => (el.onclick = openURLandHide));
-    $$('button', info).forEach(el => (el.onclick = EntryOnClick.closeExplanation));
+    $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
+    $$('button', info).forEach(el => (el.onclick = handleEvent.closeExplanation));
     entry.appendChild(info);
-  }
+  },
 
-  static closeExplanation(event) {
+  closeExplanation(event) {
     $('#regexp-explanation').remove();
-  }
-}
+  },
 
-
-function openLinkInTabOrWindow(event) {
-  if (!prefs.get('openEditInWindow', false)) {
-    openURLandHide(event);
-    return;
-  }
-  event.preventDefault();
-  chrome.windows.create(
-    Object.assign({
-      url: event.target.href
-    }, prefs.get('windowPosition', {}))
-  );
-  close();
-}
-
-
-function openEditorOnMiddleclick(event) {
-  if (event.button != 1) {
-    return;
-  }
-  // open an editor on middleclick
-  if (event.target.matches('.entry, .style-name, .style-edit-link')) {
-    $('.style-edit-link', this).click();
+  openLink(event) {
+    if (!prefs.get('openEditInWindow', false)) {
+      handleEvent.openURLandHide.call(this, event);
+      return;
+    }
     event.preventDefault();
-    return;
-  }
-  // prevent the popup being opened in a background tab
-  // when an irrelevant link was accidentally clicked
-  if (event.target.closest('a')) {
+    chrome.windows.create(
+      Object.assign({
+        url: this.href
+      }, prefs.get('windowPosition', {}))
+    );
+    close();
+  },
+
+  middleClick(event) {
+    if (event.button != 1) {
+      return;
+    }
+    // open an editor on middleclick
+    if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+      $('.style-edit-link', this).click();
+      event.preventDefault();
+      return;
+    }
+    // prevent the popup being opened in a background tab
+    // when an irrelevant link was accidentally clicked
+    if (event.target.closest('a')) {
+      event.preventDefault();
+      return;
+    }
+  },
+
+  openURLandHide(event) {
     event.preventDefault();
-    return;
-  }
-}
-
-
-function openURLandHide(event) {
-  event.preventDefault();
-  openURL({url: this.href})
-    .then(close);
-}
+    openURL({url: this.href})
+      .then(close);
+  },
+});
 
 
 function handleUpdate(style) {
@@ -367,7 +363,7 @@ function detectSloppyRegexps({entry, style}) {
     entry.classList.toggle('regexp-invalid', entry.hasInvalidRegexps);
     const indicator = template.regexpProblemIndicator.cloneNode(true);
     indicator.appendChild(document.createTextNode(entry.sectionsSkipped || '!'));
-    indicator.onclick = EntryOnClick.indicator;
+    indicator.onclick = handleEvent.indicator;
     $('.main-controls', entry).appendChild(indicator);
   }
 }
