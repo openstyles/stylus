@@ -33,18 +33,24 @@ chrome.runtime.onMessage.addListener(msg => {
         const actions = $('body > .actions');
         const before = stylesFirst ? actions : actions.nextSibling;
         document.body.insertBefore(installed, before);
+      } else if ('popupWidth' in msg.prefs) {
+        setPopupWidth(msg.prefs.popupWidth);
       }
       break;
   }
 });
 
 
+function setPopupWidth(width = prefs.get('popupWidth')) {
+  document.body.style.width =
+    Math.max(200, Math.min(800, width)) + 'px';
+}
+
+
 function initPopup(url) {
   installed = $('#installed');
 
-  // popup width
-  document.body.style.width =
-    Math.max(200, Math.min(800, prefs.get('popupWidth'))) + 'px';
+  setPopupWidth();
 
   // force Chrome to resize the popup
   document.body.style.height = '10px';

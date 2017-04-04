@@ -53,22 +53,9 @@ input[type=number] {
   margin-top: -2em;
 }
 
-#save {
+#reset {
   text-align: right;
   position: relative;
-}
-
-#save-status {
-  margin-top: .5ex;
-  position: absolute;
-  right: 0;
-  visibility: hidden;
-}
-
-#save-status.fadeinout {
-  visibility: visible;
-  animation: fadeinout 1s ease-in-out;
-  animation-fill-mode: both;
 }
 
 #notes {

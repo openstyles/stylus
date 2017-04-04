@@ -652,6 +652,8 @@ prefs = prefs || new function Prefs() {
 
     remove: key => this.set(key, undefined),
 
+    reset: key => this.set(key, deepCopy(defaults[key])),
+
     broadcast(key, value, {noSync} = {}) {
       broadcastPrefs[key] = value;
       debounce(doBroadcast);

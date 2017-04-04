@@ -550,11 +550,8 @@
   "optionsActions": {
     "message": "Actions"
   },
-  "optionsSave": {
-    "message": "Save"
-  },
-  "optionsSaved": {
-    "message": "Options saved."
+  "optionsReset": {
+    "message": "Reset"
   },
   "optionsOpenManager": {
     "message": "Open styles manager"

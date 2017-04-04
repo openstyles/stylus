@@ -2,31 +2,15 @@
 'use strict';
 
 
-function restore() {
-  setupLivePrefs([
-    'show-badge',
-    'popup.stylesFirst'
-  ]);
-  //$('#show-badge').value = bg.prefs.get('show-badge');
-  $('#badgeDisabled').value = prefs.get('badgeDisabled');
-  $('#badgeNormal').value = prefs.get('badgeNormal');
-  $('#popupWidth').value = prefs.get('popupWidth');
-  $('#updateInterval').value = prefs.get('updateInterval');
-  enforceValueRange('popupWidth');
-}
-
-
-function save() {
-  prefs.set('badgeDisabled', $('#badgeDisabled').value);
-  prefs.set('badgeNormal', $('#badgeNormal').value);
-  prefs.set('popupWidth', enforceValueRange('popupWidth'));
-  prefs.set(
-    'updateInterval',
-    Math.max(0, Number($('#updateInterval').value))
-  );
-  animateElement($('#save-status'), {className: 'fadeinout'});
-}
-
+setupLivePrefs([
+  'show-badge',
+  'popup.stylesFirst',
+  'badgeNormal',
+  'badgeDisabled',
+  'popupWidth',
+  'updateInterval',
+]);
+enforceValueRange('popupWidth');
 
 function enforceValueRange(id) {
   const element = document.getElementById(id);
@@ -40,10 +24,6 @@ function enforceValueRange(id) {
   element.onchange = element.onchange || (() => enforceValueRange(id));
   return value | 0;
 }
-
-
-restore();
-$('#save').onclick = save;
 
 // overwrite the default URL if browser is Opera
 $('[data-cmd="open-keyboard"]').href = configureCommands.url;
@@ -104,5 +84,10 @@ document.onclick = e => {
       configureCommands.open();
       break;
 
+    case 'reset':
+      $$('input')
+        .filter(input => input.id in prefs.readOnlyValues)
+        .forEach(input => prefs.reset(input.id));
+      break;
   }
 };
