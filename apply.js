@@ -10,12 +10,15 @@ var disabledElements = new Map();
 var retiredStyleIds = [];
 var iframeObserver;
 var docRewriteObserver;
-var orphanCheckTimer;
 
 initIFrameObserver();
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
 
+if (!isOwnPage) {
+  window.dispatchEvent(new CustomEvent(chrome.runtime.id));
+  window.addEventListener(chrome.runtime.id, orphanCheck, true);
+}
 
 function requestStyles(options) {
   // If this is a Stylish page (Edit Style or Manage Styles),
@@ -367,10 +370,6 @@ function initIFrameObserver() {
   const iframesCollection = document.getElementsByTagName('iframe');
 
   function observer(mutations) {
-    if (!isOwnPage) {
-      clearTimeout(orphanCheckTimer);
-      orphanCheckTimer = setTimeout(orphanCheck, 1000);
-    }
     // autoupdated HTMLCollection is superfast
     if (!iframesCollection[0]) {
       return;
@@ -436,12 +435,13 @@ function initDocRewriteObserver() {
 
 
 function orphanCheck() {
-  orphanCheckTimer = 0;
   const port = chrome.runtime.connect();
   if (port) {
     port.disconnect();
+    //console.debug('orphanCheck: still connected');
     return;
   }
+  //console.debug('orphanCheck: disconnected');
 
   // we're orphaned due to an extension update
   // we can detach the mutation observer
@@ -454,6 +454,7 @@ function orphanCheck() {
   }
   // we can detach event listeners
   document.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
+  window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy our globals in this context to free up memory
   [ // functions
