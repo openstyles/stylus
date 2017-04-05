@@ -57,7 +57,10 @@ globals:
   isCheckbox: false
   runTryCatch: false
   tryRegExp: false
+  tryJSONparse: false
+  debounce: false
   setupLivePrefs: false
+  enforceInputRange: false
   getCodeMirrorThemes: false
   styleSectionsEqual: false
 

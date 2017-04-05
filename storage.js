@@ -547,14 +547,14 @@ function tryJSONparse(jsonString) {
 }
 
 
-function debounce(fn, ...args) {
+function debounce(fn, delay, ...args) {
   const timers = debounce.timers = debounce.timers || new Map();
   debounce.run = debounce.run || ((fn, ...args) => {
     timers.delete(fn);
     fn(...args);
   });
   clearTimeout(timers.get(fn));
-  timers.set(fn, setTimeout(debounce.run, 0, fn, ...args));
+  timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
 }
 
 
@@ -572,6 +572,9 @@ prefs = prefs || new function Prefs() {
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyEdited': false,     // display only styles created locally
+    'manage.newUI': true,           // use the new compact layout
+    'manage.newUI.favicons': true,  // show favicons for the sites in applies-to
+    'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
     'editor.options': {},           // CodeMirror.defaults.*
     'editor.lineWrapping': true,    // word wrap
@@ -752,6 +755,21 @@ function setupLivePrefs(IDs) {
     el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     return el;
   }
+}
+
+
+function enforceInputRange(element) {
+  const min = Number(element.min);
+  const max = Number(element.max);
+  const onChange = () => {
+    const value = Number(element.value);
+    if (value < min || value > max) {
+      element.value = Math.max(min, Math.min(max, value));
+    }
+  };
+  onChange();
+  element.addEventListener('change', onChange);
+  element.addEventListener('input', onChange);
 }
 
 

@@ -86,7 +86,12 @@
   cursor: pointer;
   position: absolute;
   right: 3px;
-  top: 7px;
+  top: 4px;
+}
+
+#message-box-close-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 #message-box-contents {

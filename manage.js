@@ -2,10 +2,18 @@
 'use strict';
 
 const installed = $('#installed');
-const TARGET_LABEL = t('appliesDisplay', '').trim();
+const newUI = {
+  enabled: prefs.get('manage.newUI'),
+  favicons: prefs.get('manage.newUI.favicons'),
+  targets: prefs.get('manage.newUI.targets'),
+};
+
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const TARGET_LIMIT = 10;
+const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
+const OWN_ICON = chrome.app.getDetails().icons['16'];
+
 const handleEvent = {};
+
 
 getStylesSafe()
   .then(showStyles)
@@ -26,6 +34,7 @@ chrome.runtime.onMessage.addListener(msg => {
 
 
 function initGlobalEvents() {
+  installed.onclick = handleEvent.entryClicked;
   $('#check-all-updates').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#search').oninput = searchStyles;
@@ -50,19 +59,28 @@ function initGlobalEvents() {
     }
   });
 
+  for (const [className, checkbox] of [
+    ['enabled-only', $('#manage.onlyEnabled')],
+    ['edited-only', $('#manage.onlyEdited')],
+  ]) {
+    // will be triggered by setupLivePrefs immediately
+    checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
+  }
+
+  enforceInputRange($('#manage.newUI.favicons'));
+
   setupLivePrefs([
     'manage.onlyEnabled',
     'manage.onlyEdited',
+    'manage.newUI',
+    'manage.newUI.favicons',
+    'manage.newUI.targets',
   ]);
 
-  [
-    ['enabled-only', $('#manage.onlyEnabled')],
-    ['edited-only', $('#manage.onlyEdited')],
-  ]
-  .forEach(([className, checkbox]) => {
-    checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
-    checkbox.onchange();
-  });
+  $$('[id^="manage.newUI"]')
+    .forEach(el => (el.oninput = (el.onchange = switchUI)));
+
+  switchUI({styleOnly: true});
 }
 
 
@@ -98,7 +116,7 @@ function showStyles(styles = []) {
 
 
 function createStyleElement({style, name}) {
-  const entry = template.style.cloneNode(true);
+  const entry = template[`style${newUI.enabled ? 'Compact' : ''}`].cloneNode(true);
   entry.classList.add(style.enabled ? 'enabled' : 'disabled');
   entry.setAttribute('style-id', style.id);
   entry.id = 'style-' + style.id;
@@ -118,68 +136,110 @@ function createStyleElement({style, name}) {
   const styleNameEditLink = $('a', styleName);
   styleNameEditLink.appendChild(document.createTextNode(style.name));
   styleNameEditLink.href = styleNameEditLink.getAttribute('href') + style.id;
-  styleNameEditLink.onclick = handleEvent.edit;
   if (style.url) {
-    const homepage = template.styleHomepage.cloneNode(true);
-    homepage.href = style.url;
-    homepage.onclick = handleEvent.external;
-    styleName.appendChild(document.createTextNode(' '));
-    styleName.appendChild(homepage);
+    const homepage = Object.assign(template.styleHomepage.cloneNode(true), {
+      href: style.url,
+      title: style.url,
+    });
+    if (newUI.enabled) {
+      const actions = $('.actions', entry);
+      actions.insertBefore(homepage, actions.firstChild);
+    } else {
+      styleName.appendChild(homepage);
+    }
   }
 
-  const targets = new Map(TARGET_TYPES.map(t => [t, new Set()]));
+  const appliesTo = $('.applies-to', entry);
   const decorations = {
     urlPrefixesAfter: '*',
     regexpsBefore: '/',
     regexpsAfter: '/',
   };
-  for (const [name, target] of targets.entries()) {
+  const showFavicons = newUI.enabled && newUI.favicons;
+  const maxTargets = newUI.enabled ? Number.MAX_VALUE : 10;
+  const displayed = new Set();
+  let container = newUI.enabled ? $('.targets', appliesTo) : appliesTo;
+  let numTargets = 0;
+  for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
-      for (const targetValue of section[name] || []) {
-        target.add(
-          (decorations[name + 'Before'] || '') +
-          targetValue.trim() +
-          (decorations[name + 'After'] || ''));
+      for (const targetValue of section[type] || []) {
+        if (displayed.has(targetValue)) {
+          continue;
+        }
+        displayed.add(targetValue);
+        if (numTargets++ == maxTargets) {
+          container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
+        } else if (numTargets > 1 && !newUI.enabled) {
+          container.appendChild(template.appliesToSeparator.cloneNode(true));
+        }
+        const element = template.appliesToTarget.cloneNode(true);
+        if (showFavicons) {
+          let favicon = '';
+          if (type == 'domains') {
+            favicon = GET_FAVICON_URL + targetValue;
+          } else if (targetValue.startsWith('chrome-extension:')) {
+            favicon = OWN_ICON;
+          } else if (type != 'regexps') {
+            favicon = targetValue.match(/^.*?:\/\/([^/]+)/);
+            favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+          }
+          if (favicon) {
+            element.appendChild(document.createElement('img')).dataset.src = favicon;
+            debounce(handleEvent.loadFavicons);
+          }
+        }
+        element.appendChild(
+          document.createTextNode(
+            (decorations[type + 'Before'] || '') +
+            targetValue +
+            (decorations[type + 'After'] || '')));
+        container.appendChild(element);
       }
     }
   }
-  const appliesTo = $('.applies-to', entry);
-  appliesTo.firstElementChild.textContent = TARGET_LABEL;
-  const targetsList = Array.prototype.concat.apply([],
-    [...targets.values()].map(set => [...set.values()]));
-  if (!targetsList.length) {
+  if (!numTargets) {
     appliesTo.appendChild(template.appliesToEverything.cloneNode(true));
     entry.classList.add('global');
-  } else {
-    let index = 0;
-    let container = appliesTo;
-    for (const target of targetsList) {
-      if (index > 0) {
-        container.appendChild(template.appliesToSeparator.cloneNode(true));
-      }
-      if (++index == TARGET_LIMIT) {
-        container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
-      }
-      const item = template.appliesToTarget.cloneNode(true);
-      item.textContent = target;
-      container.appendChild(item);
-    }
   }
 
-  const editLink = $('.style-edit-link', entry);
-  editLink.href = editLink.getAttribute('href') + style.id;
-  editLink.onclick = handleEvent.edit;
+  if (newUI.enabled) {
+    $('.checker', entry).checked = style.enabled;
+    if (numTargets > newUI.targets) {
+      appliesTo.appendChild(template.expandAppliesTo.cloneNode(true));
+    }
+  } else {
+    const editLink = $('.style-edit-link', entry);
+    editLink.href = editLink.getAttribute('href') + style.id;
+  }
 
-  $('.enable', entry).onclick = handleEvent.toggle;
-  $('.disable', entry).onclick = handleEvent.toggle;
-  $('.check-update', entry).onclick = handleEvent.check;
-  $('.update', entry).onclick = handleEvent.update;
-  $('.delete', entry).onclick = handleEvent.delete;
   return entry;
 }
 
 
 Object.assign(handleEvent, {
+
+  ENTRY_ROUTES: {
+    '.checker, .enable, .disable': 'toggle',
+    '.style-name-link': 'edit',
+    '.homepage': 'external',
+    '.check-update': 'check',
+    '.update': 'update',
+    '.delete': 'delete',
+    '.applies-to .expander': 'expandTargets',
+  },
+
+  entryClicked(event) {
+    const target = event.target;
+    const entry = target.closest('.entry');
+    for (const selector in handleEvent.ENTRY_ROUTES) {
+      for (let el = target; el && el != entry; el = el.parentElement) {
+        if (el.matches(selector)) {
+          const handler = handleEvent.ENTRY_ROUTES[selector];
+          return handleEvent[handler].call(el, event, entry);
+        }
+      }
+    }
+  },
 
   edit(event) {
     if (event.altKey) {
@@ -210,30 +270,28 @@ Object.assign(handleEvent, {
     }
   },
 
-  toggle(event) {
-    enableStyle(getClickedStyleId(event), this.matches('.enable'))
+  toggle(event, entry) {
+    enableStyle(entry.styleId, this.matches('.enable') || this.checked)
       .then(handleUpdate);
   },
 
-  check(event) {
-    checkUpdate(getClickedStyleElement(event));
+  check(event, entry) {
+    checkUpdate(entry);
   },
 
-  update(event) {
-    const styleElement = getClickedStyleElement(event);
+  update(event, entry) {
     // update everything but name
-    saveStyle(Object.assign(styleElement.updatedCode, {
-      id: styleElement.styleId,
+    saveStyle(Object.assign(entry.updatedCode, {
+      id: entry.styleId,
       name: null,
       reason: 'update',
     }));
   },
 
-  delete(event) {
-    const styleElement = getClickedStyleElement(event);
-    const id = styleElement.styleId;
+  delete(event, entry) {
+    const id = entry.styleId;
     const {name} = cachedStyles.byId.get(id) || {};
-    animateElement(styleElement, {className: 'highlight'});
+    animateElement(entry, {className: 'highlight'});
     messageBox({
       title: t('deleteStyleConfirm'),
       contents: name,
@@ -251,10 +309,23 @@ Object.assign(handleEvent, {
     openURL({url: event.target.closest('a').href});
     event.preventDefault();
   },
+
+  expandTargets() {
+    this.closest('.applies-to').classList.toggle('expanded');
+  },
+
+  loadFavicons(container = installed) {
+    for (const img of container.getElementsByTagName('img')) {
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+      }
+    }
+  }
 });
 
 
-function handleUpdate(style, {reason} = {}) {
+function handleUpdate(style, {reason, quiet} = {}) {
   const element = createStyleElement({style});
   const oldElement = $('#style-' + style.id, installed);
   if (oldElement) {
@@ -269,8 +340,10 @@ function handleUpdate(style, {reason} = {}) {
     }
   }
   installed.insertBefore(element, findNextElement(style));
-  animateElement(element, {className: 'highlight'});
-  scrollElementIntoView(element);
+  if (!quiet) {
+    animateElement(element, {className: 'highlight'});
+    scrollElementIntoView(element);
+  }
 }
 
 
@@ -278,6 +351,38 @@ function handleDelete(id) {
   const node = $('#style-' + id, installed);
   if (node) {
     node.remove();
+  }
+}
+
+
+function switchUI({styleOnly} = {}) {
+  const enabled = $('#manage.newUI').checked;
+  const favicons = $('#manage.newUI.favicons').checked;
+  const targets = Number($('#manage.newUI.targets').value);
+
+  const stateToggled = newUI.enabled != enabled;
+  const targetsChanged = enabled && targets != newUI.targets;
+  const faviconsChanged = enabled && favicons != newUI.favicons;
+  const missingFavicons = enabled && favicons && !$('.applies-to img');
+
+  if (!styleOnly && !stateToggled && !targetsChanged && !faviconsChanged) {
+    return;
+  }
+
+  Object.assign(newUI, {enabled, favicons, targets});
+
+  installed.classList.toggle('newUI', enabled);
+  installed.classList.toggle('has-favicons', favicons);
+  $('#newUIoptions').classList.toggle('hidden', !enabled);
+  $('#style-overrides').textContent = `
+    .newUI .targets {
+      max-height: ${newUI.targets * 18}px;
+    }
+  `;
+
+  if (!styleOnly && (stateToggled || missingFavicons)) {
+    installed.innerHTML = '';
+    getStylesSafe().then(showStyles);
   }
 }
 
@@ -310,8 +415,11 @@ function checkUpdateAll() {
   Promise.all($$('[style-update-url]').map(checkUpdate))
     .then(updatables => {
       btnCheck.disabled = false;
-      if (updatables.includes(true)) {
+      const numUpdatable = updatables.filter(u => u).length;
+      if (numUpdatable) {
         btnApply.classList.remove('hidden');
+        btnApply.originalLabel = btnApply.originalLabel || btnApply.textContent;
+        btnApply.textContent = btnApply.originalLabel + ` (${numUpdatable})`;
       } else {
         noUpdates.classList.remove('hidden');
         setTimeout(() => {
@@ -329,7 +437,8 @@ function checkUpdateAll() {
 
 function checkUpdate(element) {
   $('.update-note', element).innerHTML = t('checkingForUpdate');
-  element.classList.remove('checking-update', 'no-update', 'can-update');
+  $('.check-update', element).title = '';
+  element.classList.remove('checking-update', 'no-update', 'can-update', 'update-problem');
   element.classList.add('checking-update');
   return new Updater(element).run(); // eslint-disable-line no-use-before-define
 }
@@ -337,12 +446,13 @@ function checkUpdate(element) {
 
 class Updater {
   constructor(element) {
+    const style = cachedStyles.byId.get(element.styleId);
     Object.assign(this, {
       element,
-      id: element.styleId,
-      url: element.getAttribute('style-update-url'),
-      md5Url: element.getAttribute('style-md5-url'),
-      md5: element.getAttribute('style-original-md5'),
+      id: style.id,
+      url: style.updateUrl,
+      md5Url: style.md5Url,
+      md5: style.originalMd5,
     });
   }
 
@@ -357,7 +467,7 @@ class Updater {
       md5 => (md5.length == 32
         ? this.decideOnMd5(md5 != this.md5)
         : this.onFailure(-1)),
-      this.onFailure);
+      status => this.onFailure(status));
   }
 
   decideOnMd5(md5changed) {
@@ -370,7 +480,7 @@ class Updater {
   checkFullCode({forceUpdate = false} = {}) {
     return Updater.download(this.url).then(
       text => this.handleJson(forceUpdate, JSON.parse(text)),
-      this.onFailure);
+      status => this.onFailure(status));
   }
 
   handleJson(forceUpdate, json) {
@@ -400,7 +510,11 @@ class Updater {
       $('.update-note', this.element).innerHTML = '';
     } else {
       this.element.classList.add('no-update');
+      this.element.classList.toggle('update-problem', Boolean(message));
       $('.update-note', this.element).innerHTML = message || t('updateCheckSucceededNoUpdate');
+      if (newUI.enabled) {
+        $('.check-update', this.element).title = message;
+      }
     }
   }
 

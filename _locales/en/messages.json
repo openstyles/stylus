@@ -282,6 +282,18 @@
     "message": "Only edited styles",
     "description": "Checkbox to show only locally edited styles"
   },
+  "manageNewUI": {
+    "message": "New manage UI layout",
+    "description": "Label for the checkbox that toggles the new UI on manage page"
+  },
+  "manageFavicons": {
+    "message": "Favicons in applies-to column",
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+  },
+  "manageMaxTargets": {
+    "message": "Number of applies-to items",
+    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+  },
   "manageText": {
     "message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
     "description": "Help text on the manage page"
@@ -481,6 +493,10 @@
   "stylishUnavailableForURL": {
     "message": "(Stylus can't affect this page.)",
     "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
+  "toggleStyle": {
+    "message": "Toggle style",
+    "description": "Label for the checkbox to enable/disable a style"
   },
   "undo": {
     "message": "Undo",

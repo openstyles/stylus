@@ -10,20 +10,7 @@ setupLivePrefs([
   'popupWidth',
   'updateInterval',
 ]);
-enforceValueRange('popupWidth');
-
-function enforceValueRange(id) {
-  const element = document.getElementById(id);
-  const min = Number(element.min);
-  const max = Number(element.max);
-  let value = Number(element.value);
-  if (value < min || value > max) {
-    value = Math.max(min, Math.min(max, value));
-    element.value = value;
-  }
-  element.onchange = element.onchange || (() => enforceValueRange(id));
-  return value | 0;
-}
+enforceInputRange($('#popupWidth'));
 
 // overwrite the default URL if browser is Opera
 $('[data-cmd="open-keyboard"]').href = configureCommands.url;
