@@ -608,11 +608,27 @@ prefs = prefs || new function Prefs() {
   };
   const values = deepCopy(defaults);
 
+  const affectsIcon = [
+    'show-badge',
+    'disableAll',
+    'badgeDisabled',
+    'badgeNormal',
+  ];
+
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
 
   function doBroadcast() {
-    notifyAllTabs({method: 'prefChanged', prefs: broadcastPrefs});
+    const affects = {all: 'disableAll' in broadcastPrefs};
+    if (!affects.all) {
+      for (const key in broadcastPrefs) {
+        affects.icon = affects.icon || affectsIcon.includes(key);
+        affects.popup = affects.popup || key.startsWith('popup');
+        affects.editor = affects.editor || key.startsWith('editor');
+        affects.manager = affects.manager || key.startsWith('manage');
+      }
+    }
+    notifyAllTabs({method: 'prefChanged', prefs: broadcastPrefs, affects});
     broadcastPrefs = {};
   }
 

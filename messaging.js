@@ -14,12 +14,23 @@ function notifyAllTabs(request) {
       style: getStyleWithNoCode(request.style)
     });
   }
-  chrome.tabs.query({}, tabs => {
-    for (const tab of tabs) {
-      chrome.tabs.sendMessage(tab.id, request);
-      updateIcon(tab);
-    }
-  });
+  const affectsAll = !request.affects || request.affects.all;
+  const affectsOwnOrigin = !affectsAll && (request.affects.editor || request.affects.manager);
+  const affectsTabs = affectsAll || affectsOwnOrigin;
+  const affectsIcon = affectsAll || request.affects.icon;
+  const affectsPopup = affectsAll || request.affects.popup;
+  if (affectsTabs || affectsIcon) {
+    chrome.tabs.query(affectsOwnOrigin ? {url: OWN_ORIGIN + '*'} : {}, tabs => {
+      for (const tab of tabs) {
+        if (affectsTabs || tab.url.startsWith(OWN_ORIGIN + 'options')) {
+          chrome.tabs.sendMessage(tab.id, request);
+        }
+        if (affectsIcon) {
+          updateIcon(tab);
+        }
+      }
+    });
+  }
   // notify self: the message no longer is sent to the origin in new Chrome
   if (window.applyOnMessage) {
     applyOnMessage(request);
@@ -27,7 +38,9 @@ function notifyAllTabs(request) {
     onBackgroundMessage(request);
   }
   // notify background page and all open popups
-  chrome.runtime.sendMessage(request);
+  if (affectsPopup) {
+    chrome.runtime.sendMessage(request);
+  }
 }
 
 
