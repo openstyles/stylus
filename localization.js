@@ -41,8 +41,8 @@ function tNodeList(nodes) {
       continue;
     }
     if (node.localName == 'template') {
-      tNodeList(node.content.querySelectorAll('*'));
-      template[node.dataset.id] = node.content.firstElementChild;
+      // compress inter-tag whitespace to reduce number of DOM nodes by 25%
+      template[node.dataset.id] = tHTML(node.innerHTML);
       continue;
     }
     for (const attr of [...node.attributes]) {
