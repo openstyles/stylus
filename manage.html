@@ -8,6 +8,12 @@
 
   <style id="style-overrides"></style>
 
+  <!-- Notes:
+    * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
+    * inter-tag whitespace in templates is automatically removed in localization.js
+    * i18n-anything attribute automatically creates "anything" attribute
+  -->
+
   <template data-id="style">
     <div class="entry">
       <h2 class="style-name"><a class="style-name-link" href="edit.html?id="></a></h2>
@@ -33,21 +39,50 @@
         <a class="style-name-link" href="edit.html?id="></a>
       </h2>
       <p class="actions">
-        <span i18n-title="deleteStyleLabel"><svg class="svg-icon delete"><use xlink:href="#svg-icon-remove"/></svg></span>
+        <span i18n-title="deleteStyleLabel">
+          <svg class="svg-icon delete" viewBox="0 0 14 16">
+            <path shape-rendering="crispEdges" fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/>
+          </svg>
+        </span>
         <span class="updater-icons">
-          <span class="check-update" i18n-title="checkForUpdate"><svg class="svg-icon"><use xlink:href="#svg-icon-check"/></svg></span>
-          <span class="update" i18n-title="installUpdate"><svg class="svg-icon"><use xlink:href="#svg-icon-update"/></svg></span>
-          <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate"><svg class="svg-icon"><use xlink:href="#svg-icon-uptodate"/></svg></span>
-          <span class="updated" i18n-title="updateCompleted"><svg class="svg-icon"><use xlink:href="#svg-icon-uptodate"/></svg></span>
+          <span class="check-update" i18n-title="checkForUpdate">
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <path d="M15,11c-0.5,2.3-2.5,4.1-5,4.1c-2.4,0-4.5-1.7-5-4.1H3.3c0.5,3.3,3.3,5.8,6.7,5.8s6.2-2.5,6.7-5.8H15z"/>
+              <path d="M10,3.2C6.6,3.2,3.8,5.7,3.3,9H5c0.5-2.3,2.5-4.1,5-4.1c2.4,0,4.5,1.7,5,4.1h1.7C16.2,5.7,13.4,3.2,10,3.2z"/>
+              <polygon shape-rendering="crispEdges" points="17,3 17,9 11,9 "/>
+              <polygon shape-rendering="crispEdges" points="9.1,11 3,11 3,17.1 "/>
+              <polygon points="19.9,18.6 15.1,13.8 13.8,15.1 18.6,19.9 "/>
+            </svg>
+          </span>
+          <span class="update" i18n-title="installUpdate">
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
+              <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
+            </svg>
+          </span>
+          <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate">
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <polygon shape-rendering="crispEdges" points="4,9 8,13 18,3 19,4 8,15 3,10 "/>
+            </svg>
+          </span>
+          <span class="updated" i18n-title="updateCompleted">
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <polygon shape-rendering="crispEdges" points="4,9 8,13 18,3 19,4 8,15 3,10 "/>
+            </svg>
+          </span>
           <span class="update-note"></span>
         </span>
       </p>
-      <div class="applies-to"><div class="targets"></div></div>
+      <div class="applies-to">
+        <div class="targets"></div>
+      </div>
     </div>
   </template>
 
   <template data-id="styleHomepage">
-    <a target="_blank" class="homepage"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
+    <a target="_blank" class="homepage"><svg class="svg-icon" viewBox="0 0 20 20">
+        <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
+        <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/></svg></a>
   </template>
 
   <template data-id="appliesToTarget">
@@ -137,41 +172,6 @@
   <p id="manage-text" i18n-html="manageText"></p>
 </div>
 <div id="installed"></div>
-
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
-
-  <symbol id="svg-icon-external-link" viewBox="0 0 20 20">
-    <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
-    <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
-  </symbol>
-
-  <symbol id="svg-icon-close" viewBox="0 0 12 16">
-    <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
-  </symbol>
-
-  <symbol id="svg-icon-remove" viewBox="0 0 14 16">
-    <path shape-rendering="crispEdges" fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z">
-    </path>
-  </symbol>
-
-  <symbol id="svg-icon-check" viewBox="0 0 20 20">
-    <path d="M15,11c-0.5,2.3-2.5,4.1-5,4.1c-2.4,0-4.5-1.7-5-4.1H3.3c0.5,3.3,3.3,5.8,6.7,5.8s6.2-2.5,6.7-5.8H15z"/>
-    <path d="M10,3.2C6.6,3.2,3.8,5.7,3.3,9H5c0.5-2.3,2.5-4.1,5-4.1c2.4,0,4.5,1.7,5,4.1h1.7C16.2,5.7,13.4,3.2,10,3.2z"/>
-    <polygon shape-rendering="crispEdges" points="17,3 17,9 11,9 "/>
-    <polygon shape-rendering="crispEdges" points="9.1,11 3,11 3,17.1 "/>
-    <polygon points="19.9,18.6 15.1,13.8 13.8,15.1 18.6,19.9 "/>
-  </symbol>
-
-  <symbol id="svg-icon-update" viewBox="0 0 20 20">
-    <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
-    <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
-  </symbol>
-
-  <symbol id="svg-icon-uptodate" viewBox="0 0 20 20">
-    <polygon shape-rendering="crispEdges" points="4,9 8,13 18,3 19,4 8,15 3,10 "/>
-  </symbol>
-
-</svg>
 
 <script src="backup/fileSaveLoad.js"></script>
 <script src="msgbox/msgbox.js"></script>
