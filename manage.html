@@ -78,6 +78,7 @@
   <script src="apply.js"></script>
   <script src="dom.js"></script>
   <script src="localization.js"></script>
+  <script src="manage.js"></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
@@ -112,7 +113,7 @@
   <div id="options">
     <h2 id="options-heading" i18n-text="optionsHeading"></h2>
     <label><input id="manage.newUI" type="checkbox"><span i18n-text="manageNewUI"></span></label>
-    <div id="newUIoptions" class="hidden">
+    <div id="newUIoptions">
       <label><input id="manage.newUI.favicons" type="checkbox"><span i18n-text="manageFavicons"></span></label>
       <label><input id="manage.newUI.targets" type="number" min="1" max="99"><span i18n-text="manageMaxTargets"></span></label>
     </div>
@@ -172,7 +173,6 @@
 
 </svg>
 
-<script src="manage.js"></script>
 <script src="backup/fileSaveLoad.js"></script>
 <script src="msgbox/msgbox.js"></script>
 

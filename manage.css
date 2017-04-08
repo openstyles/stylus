@@ -306,6 +306,14 @@ summary {
   filter: grayscale(0);
 }
 
+#newUIoptions {
+  display: none;
+}
+
+.newUI #newUIoptions {
+  display: initial;
+}
+
 #newUIoptions label {
   display: flex;
   align-items: center;

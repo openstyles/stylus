@@ -1,12 +1,17 @@
 /* global messageBox */
 'use strict';
 
-const installed = $('#installed');
+let installed;
+
 const newUI = {
   enabled: prefs.get('manage.newUI'),
   favicons: prefs.get('manage.newUI.favicons'),
   targets: prefs.get('manage.newUI.targets'),
+  renderClass() {
+    document.documentElement.classList.toggle('newUI', newUI.enabled);
+  },
 };
+newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
@@ -14,10 +19,12 @@ const OWN_ICON = chrome.app.getDetails().icons['16'];
 
 const handleEvent = {};
 
-
-getStylesSafe()
-  .then(showStyles)
-  .then(initGlobalEvents);
+Promise.all([
+  getStylesSafe(),
+  onDOMready().then(initGlobalEvents),
+]).then(([styles]) => {
+  showStyles(styles);
+});
 
 
 chrome.runtime.onMessage.addListener(msg => {
@@ -34,6 +41,7 @@ chrome.runtime.onMessage.addListener(msg => {
 
 
 function initGlobalEvents() {
+  installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
   $('#check-all-updates').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
@@ -371,9 +379,8 @@ function switchUI({styleOnly} = {}) {
 
   Object.assign(newUI, {enabled, favicons, targets});
 
-  installed.classList.toggle('newUI', enabled);
+  newUI.renderClass();
   installed.classList.toggle('has-favicons', favicons);
-  $('#newUIoptions').classList.toggle('hidden', !enabled);
   $('#style-overrides').textContent = `
     .newUI .targets {
       max-height: ${newUI.targets * 18}px;
