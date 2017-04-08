@@ -4,6 +4,13 @@ if (!/Windows/i.test(navigator.userAgent)) {
   document.documentElement.classList.add('non-windows');
 }
 
+// polyfill for old browsers to enable [...results] and for-of
+for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) {
+  if (!type.prototype[Symbol.iterator]) {
+    type.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+  }
+}
+
 
 function onDOMready() {
   if (document.readyState != 'loading') {
