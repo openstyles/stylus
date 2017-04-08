@@ -61,8 +61,7 @@ function initPopup(url) {
     installed.classList.toggle('disabled', prefs.get('disableAll'));
   setupLivePrefs(['disableAll']);
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
-  $('#popup-manage-button').href = 'manage.html';
-  $('#popup-manage-button').onclick = handleEvent.openURLandHide;
+  $('#popup-manage-button').onclick = () => openURL({url: 'manage.html'});
   $('#popup-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#popup-shortcuts-button').onclick = configureCommands.open;
 
