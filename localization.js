@@ -73,14 +73,15 @@ function tDocLoader() {
   tNodeList(document.all);
 
   // localize BODY
-  const observer = new MutationObserver(mutations => {
+  const process = mutations => {
     for (const mutation of mutations) {
       tNodeList(mutation.addedNodes);
     }
-  });
+  };
+  const observer = new MutationObserver(process);
   const onLoad = () => {
     tDocLoader.stop();
-    tNodeList(document.all);
+    process(observer.takeRecords());
   };
   tDocLoader.start = () => {
     observer.observe(document, {subtree: true, childList: true});
