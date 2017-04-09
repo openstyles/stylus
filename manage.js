@@ -334,6 +334,7 @@ function handleUpdate(style, {reason, quiet} = {}) {
     }
     if (reason == 'update') {
       element.classList.add('update-done');
+      element.classList.remove('can-update', 'updatable');
       $('.update-note', element).innerHTML = t('updateCompleted');
     }
   }
