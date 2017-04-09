@@ -28,7 +28,7 @@ function tHTML(html) {
   const node = document.createElement('div');
   node.innerHTML = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
   if (html.includes('i18n-')) {
-    tNodeList(node.querySelectorAll('*'));
+    tNodeList(node.getElementsByTagName('*'));
   }
   return node.firstElementChild;
 }
@@ -70,7 +70,7 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
   // localize HEAD
-  tNodeList(document.all);
+  tNodeList(document.getElementsByTagName('*'));
 
   // localize BODY
   const process = mutations => {

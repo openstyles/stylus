@@ -15,7 +15,7 @@ newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
-const OWN_ICON = chrome.app.getDetails().icons['16'];
+const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 
 const handleEvent = {};
 
@@ -47,7 +47,7 @@ function initGlobalEvents() {
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
-  $('#manage-shortcuts-button').onclick = configureCommands.open;
+  $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
   // focus search field on / key

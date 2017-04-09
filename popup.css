@@ -10,6 +10,10 @@ body > div:not(#installed) {
   margin-right: 0.75em;
 }
 
+.firefox .chromium-only {
+  display: none;
+}
+
 input[type=checkbox] {
   outline: none;
 }

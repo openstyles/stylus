@@ -1,6 +1,9 @@
 body {
   margin: 0;
   font: 12px arial, sans-serif;
+  /* Firefox: fill the entire page for drag'n'drop to work */
+  display: flex;
+  height: 100%;
 }
 
 a {
@@ -27,6 +30,10 @@ a:hover {
 
 #header h1 {
   margin-top: 0;
+}
+
+.firefox .chromium-only {
+  display: none;
 }
 
 #installed {
@@ -272,6 +279,10 @@ summary {
   line-height: .5ex;
   vertical-align: super;
   letter-spacing: .1ex;
+}
+
+.newUI .has-favicons .applies-to .expander {
+  padding-left: 20px;
 }
 
 .newUI .target:hover {

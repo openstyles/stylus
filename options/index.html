@@ -58,7 +58,7 @@
     <h1 i18n-text="optionsActions"></h1>
     <table>
       <tr>
-        <td i18n-text="optionsOpenManager"><sup>2</sup></td>
+        <td i18n-text="optionsOpenManager"><sup class="chromium-only">2</sup></td>
         <td><button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button></td>
       </tr>
       <tr>
@@ -74,9 +74,10 @@
   <div id="notes">
     <ol>
       <li i18n-text="optionsUpdateIntervalNote"></li>
-      <li><a data-cmd="open-keyboard"
-             i18n-text="optionsOpenManagerNote"
-             href="chrome://extensions/configureCommands"></a>
+      <li class="chromium-only">
+        <a data-cmd="open-keyboard"
+           i18n-text="optionsOpenManagerNote"
+           href="chrome://extensions/configureCommands"></a>
       </li>
     </ol>
   </div>

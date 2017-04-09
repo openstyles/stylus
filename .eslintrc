@@ -10,10 +10,11 @@ env:
 
 globals:
   # messaging.js
-  OWN_ORIGIN: false
   KEEP_CHANNEL_OPEN: false
   RX_SUPPORTED_URLS: false
-  configureCommands: false
+  FIREFOX: false
+  OPERA: false
+  URLS: false
   notifyAllTabs: false
   refreshAllTabs: false
   updateIcon: false

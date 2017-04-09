@@ -1648,8 +1648,8 @@ function showLintHelp() {
 
 function showRegExpTester(event, section = getSectionForChild(this)) {
 	const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
-	const OWN_ICON = chrome.app.getDetails().icons['16'];
-	const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
+	const OWN_ICON = chrome.runtime.getManifest().icons['16'];
+	const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${URLS.ownOrigin}`);
 	const cachedRegexps = showRegExpTester.cachedRegexps =
 		showRegExpTester.cachedRegexps || new Map();
 	const regexps = [...section.querySelector('.applies-to-list').children]
@@ -1713,7 +1713,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 			const full = [];
 			const partial = [];
 			for (const [url, match] of urls.entries()) {
-				const faviconUrl = url.startsWith(OWN_ORIGIN)
+				const faviconUrl = url.startsWith(URLS.ownOrigin)
 					? OWN_ICON
 					: GET_FAVICON_URL + new URL(url).hostname;
 				const icon = `<img src="${faviconUrl}">`;

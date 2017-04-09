@@ -23,8 +23,8 @@ function webNavigationListener(method, data) {
     // we can't inject chrome:// and chrome-extension:// pages
     // so we'll only inform our page of the change
     // and it'll retrieve the styles directly
-    if (method && !data.url.startsWith('chrome:')) {
-      const isOwnPage = data.url.startsWith(OWN_ORIGIN);
+    if (method && !data.url.startsWith('chrome:') && data.tabId >= 0) {
+      const isOwnPage = data.url.startsWith(URLS.ownOrigin);
       chrome.tabs.sendMessage(
         data.tabId,
         {method, styles: isOwnPage ? 'DIY' : styles},
@@ -127,7 +127,7 @@ if (/Vivaldi\/[\d.]+$/.test(navigator.userAgent)
   contextMenus.editDeleteText = {
     title: 'editDeleteText',
     contexts: ['editable'],
-    documentUrlPatterns: [OWN_ORIGIN + 'edit*'],
+    documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
       chrome.tabs.sendMessage(tab.id, {method: 'editDeleteText'});
     },
@@ -160,7 +160,7 @@ getDatabase(function() {}, reportError);
 
 // When an edit page gets attached or detached, remember its state
 // so we can do the same to the next one to open.
-const editFullUrl = OWN_ORIGIN + 'edit.html';
+const editFullUrl = URLS.ownOrigin + 'edit.html';
 chrome.tabs.onAttached.addListener((tabId, data) => {
   chrome.tabs.get(tabId, tabData => {
     if (tabData.url.startsWith(editFullUrl)) {
@@ -198,7 +198,7 @@ chrome.storage.local.get('version', prefs => {
 injectContentScripts();
 
 function injectContentScripts() {
-  const contentScripts = chrome.app.getDetails().content_scripts;
+  const contentScripts = chrome.runtime.getManifest().content_scripts;
   for (const cs of contentScripts) {
     cs.matches = cs.matches.map(m => (
       m == '<all_urls>' ? m : wildcardAsRegExp(m)

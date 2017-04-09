@@ -53,17 +53,27 @@ function initPopup(url) {
   setPopupWidth();
 
   // force Chrome to resize the popup
-  document.body.style.height = '10px';
-  document.documentElement.style.height = '10px';
+  if (!FIREFOX) {
+    document.body.style.height = '10px';
+    document.documentElement.style.height = '10px';
+  }
 
   // action buttons
   $('#disableAll').onchange = () =>
     installed.classList.toggle('disabled', prefs.get('disableAll'));
   setupLivePrefs(['disableAll']);
+
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
-  $('#popup-manage-button').onclick = () => openURL({url: 'manage.html'});
-  $('#popup-options-button').onclick = () => chrome.runtime.openOptionsPage();
-  $('#popup-shortcuts-button').onclick = configureCommands.open;
+  $('#popup-manage-button').onclick = handleEvent.openURLandHide;
+
+  $('#popup-options-button').onclick = () => {
+    chrome.runtime.openOptionsPage();
+    window.close();
+  };
+
+  const shortcutsButton = $('#popup-shortcuts-button');
+  shortcutsButton.dataset.href = URLS.configureCommands;
+  shortcutsButton.onclick = handleEvent.openURLandHide;
 
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
@@ -317,8 +327,8 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
-    openURL({url: this.href})
-      .then(close);
+    openURL({url: this.href || this.dataset.href})
+      .then(window.close);
   },
 });
 

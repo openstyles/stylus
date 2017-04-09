@@ -3,8 +3,21 @@
 
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
-const OWN_ORIGIN = chrome.runtime.getURL('');
-const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${OWN_ORIGIN}`);
+const FIREFOX = /Firefox/.test(navigator.userAgent);
+const OPERA = /OPR/.test(navigator.userAgent);
+const URLS = {
+  ownOrigin: chrome.runtime.getURL(''),
+  optionsUI: new Set([
+    chrome.runtime.getURL('options/index.html'),
+    'chrome://extensions/?options=' + chrome.runtime.id,
+  ]),
+  configureCommands: OPERA ? 'opera://settings/configureCommands'
+    : 'chrome://extensions/configureCommands',
+};
+const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${URLS.ownOrigin}`);
+
+document.documentElement.classList.toggle('firefox', FIREFOX);
+document.documentElement.classList.toggle('opera', OPERA);
 
 
 function notifyAllTabs(request) {
@@ -20,9 +33,9 @@ function notifyAllTabs(request) {
   const affectsIcon = affectsAll || request.affects.icon;
   const affectsPopup = affectsAll || request.affects.popup;
   if (affectsTabs || affectsIcon) {
-    chrome.tabs.query(affectsOwnOrigin ? {url: OWN_ORIGIN + '*'} : {}, tabs => {
+    chrome.tabs.query(affectsOwnOrigin ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
       for (const tab of tabs) {
-        if (affectsTabs || tab.url.startsWith(OWN_ORIGIN + 'options')) {
+        if (affectsTabs || URLS.optionsUI.has(tab.url)) {
           chrome.tabs.sendMessage(tab.id, request);
         }
         if (affectsIcon) {
@@ -38,7 +51,7 @@ function notifyAllTabs(request) {
     onBackgroundMessage(request);
   }
   // notify background page and all open popups
-  if (affectsPopup) {
+  if (affectsPopup || request.prefs) {
     chrome.runtime.sendMessage(request);
   }
 }
@@ -72,7 +85,7 @@ function updateIcon(tab, styles) {
   // while NTP is still loading only process the request for its main frame with a real url
   // (but when it's loaded we should process style toggle requests from popups, for example)
   const isNTP = tab.url == 'chrome://newtab/';
-  if (isNTP && tab.status != 'complete') {
+  if (isNTP && tab.status != 'complete' || tab.id < 0) {
     return;
   }
   if (styles) {
@@ -167,11 +180,13 @@ function openURL({url, currentWindow = true}) {
           return;
         }
       }
-      getActiveTab().then(tab => (
-        tab && tab.url == 'chrome://newtab/'
-          ? chrome.tabs.update({url}, resolve)
-          : chrome.tabs.create({url, openerTabId: tab.id}, resolve)
-      ));
+      getActiveTab().then(tab => {
+        if (tab && tab.url == 'chrome://newtab/') {
+          chrome.tabs.update({url}, resolve);
+        } else {
+          chrome.tabs.create(tab && !FIREFOX ? {url, openerTabId: tab.id} : {url}, resolve);
+        }
+      });
     });
   });
 }
@@ -203,11 +218,3 @@ function wildcardAsRegExp(s, flags) {
 function ignoreChromeError() {
   chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
 }
-
-
-const configureCommands = {
-  url: navigator.userAgent.includes('OPR')
-    ? 'opera://settings/configureCommands'
-    : 'chrome://extensions/configureCommands',
-  open: () => openURL({url: configureCommands.url}),
-};

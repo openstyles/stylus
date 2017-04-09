@@ -441,9 +441,9 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
     do {
       // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
       if (!matchUrl.startsWith('http')
-        && !matchUrl.startsWith('ftp')
-        && !matchUrl.startsWith('file')
-        && !matchUrl.startsWith(OWN_ORIGIN)) {
+      && !matchUrl.startsWith('ftp')
+      && !matchUrl.startsWith('file')
+      && !matchUrl.startsWith(URLS.ownOrigin)) {
         continue checkingSections;
       }
       if (section.urls.length == 0

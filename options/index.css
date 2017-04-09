@@ -1,3 +1,8 @@
+html {
+    max-width: 40em;
+    margin: auto;
+}
+
 body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
@@ -12,6 +17,10 @@ body > * {
 
 body > *:first-child {
   padding-top: .75rem;
+}
+
+.firefox .chromium-only {
+  display: none;
 }
 
 table {
@@ -34,6 +43,7 @@ input[type="color"],
 .onoffswitch,
 #update-counter {
   width: 80px;
+  box-sizing: border-box;
 }
 
 a {
@@ -46,7 +56,6 @@ button {
 
 input[type=number] {
   text-align: right;
-  padding-right: 1em;
 }
 
 #actions {

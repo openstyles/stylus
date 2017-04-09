@@ -13,7 +13,7 @@ setupLivePrefs([
 enforceInputRange($('#popupWidth'));
 
 // overwrite the default URL if browser is Opera
-$('[data-cmd="open-keyboard"]').href = configureCommands.url;
+$('[data-cmd="open-keyboard"]').href = URLS.configureCommands;
 
 // actions
 document.onclick = e => {
@@ -68,7 +68,8 @@ document.onclick = e => {
       break;
 
     case 'open-keyboard':
-      configureCommands.open();
+      openURL({url: e.target.href});
+      e.preventDefault();
       break;
 
     case 'reset':
