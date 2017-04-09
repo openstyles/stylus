@@ -25,16 +25,6 @@ function onDOMready() {
 }
 
 
-function getClickedStyleId(event) {
-  return (getClickedStyleElement(event) || {}).styleId;
-}
-
-
-function getClickedStyleElement(event) {
-  return event.target.closest('.entry');
-}
-
-
 function scrollElementIntoView(element) {
   // align to the top/bottom of the visible area if wasn't visible
   const bounds = element.getBoundingClientRect();

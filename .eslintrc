@@ -36,8 +36,6 @@ globals:
   tDocLoader: false
   # dom.js
   onDOMready: false
-  getClickedStyleId: false
-  getClickedStyleElement: false
   scrollElementIntoView: false
   animateElement: false
   $: false

@@ -238,6 +238,14 @@ function createStyleElement({
 
 Object.assign(handleEvent, {
 
+  getClickedStyleId(event) {
+    return (handleEvent.getClickedStyleElement(event) || {}).styleId;
+  },
+
+  getClickedStyleElement(event) {
+    return event.target.closest('.entry');
+  },
+
   name(event) {
     this.checkbox.click();
     event.preventDefault();
@@ -245,13 +253,13 @@ Object.assign(handleEvent, {
 
   toggle(event) {
     saveStyle({
-      id: getClickedStyleId(event),
+      id: handleEvent.getClickedStyleId(event),
       enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
     });
   },
 
   delete(event) {
-    const id = getClickedStyleId(event);
+    const id = handleEvent.getClickedStyleId(event);
     const box = $('#confirm');
     box.dataset.display = true;
     box.style.cssText = '';
@@ -281,7 +289,7 @@ Object.assign(handleEvent, {
   },
 
   indicator(event) {
-    const entry = getClickedStyleElement(event);
+    const entry = handleEvent.getClickedStyleElement(event);
     const info = template.regexpProblemExplanation.cloneNode(true);
     $$('#' + info.id).forEach(el => el.remove());
     $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
