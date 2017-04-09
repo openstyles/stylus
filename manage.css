@@ -137,7 +137,7 @@ summary {
 }
 
 .disabled h2::after {
-  content: " (Disabled)";
+  content: " (__MSG_genericDisabledLabel__)";
 }
 
 .disabled {
