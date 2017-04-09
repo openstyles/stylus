@@ -215,7 +215,7 @@ summary {
   width: 60px;
   height: 20px;
   white-space: nowrap;
-  font-size: 0;
+  z-index: 999;
 }
 
 .newUI .actions > * {
@@ -244,8 +244,42 @@ summary {
   display: inline;
 }
 
+.newUI .can-update .update,
+.newUI .no-update.update-problem .check-update {
+  cursor: pointer;
+}
+
 .update-problem .check-update svg {
   fill: darkred;
+}
+
+.updater-icons > :not(.check-update):after {
+  content: attr(title);
+  position: absolute;
+  margin-top: 18px;
+  margin-left: -36px;
+  padding: 1ex 1.5ex;
+  border: 1px solid #ded597;
+  background-color: #fffbd6;
+  border-radius: 4px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,.25);
+  font-size: 90%;
+  animation: fadeout 10s;
+  animation-fill-mode: both;
+  z-index: 999;
+}
+
+.update-problem .check-update:after {
+  background-color: red;
+  border: 1px solid #d40000;
+  color: white;
+  animation: none;
+}
+
+.can-update .update:after {
+  background-color: #c0fff0;
+  border: 1px solid #89cac9;
+  animation: none;
 }
 
 .newUI .applies-to {
@@ -400,8 +434,13 @@ fieldset {
   margin: 1em 0;
 }
 
+fieldset > * {
+  display: block;
+}
+
 .enabled-only > .disabled,
-.edited-only > .updatable {
+.edited-only > .updatable,
+.updates-only > .entry:not(.can-update) {
   display: none;
 }
 

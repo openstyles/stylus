@@ -129,17 +129,10 @@
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
   <fieldset>
     <legend id="filters" i18n-text="manageFilters"></legend>
-    <div>
-      <input id="manage.onlyEnabled" type="checkbox">
-      <label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label>
-    </div>
-    <div>
-      <input id="manage.onlyEdited" type="checkbox">
-      <label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label>
-    </div>
-    <div>
-      <input id="search" type="search" i18n-placeholder="searchStyles">
-    </div>
+    <label><input id="manage.onlyEnabled" type="checkbox"><span i18n-text="manageOnlyEnabled"></span></label>
+    <label><input id="manage.onlyEdited" type="checkbox"><span i18n-text="manageOnlyEdited"></span></label>
+    <label id="onlyUpdates" class="hidden"><input type="checkbox"><span i18n-text="manageOnlyUpdates"></span></label>
+    <input id="search" type="search" i18n-placeholder="searchStyles">
   </fieldset>
   <p>
     <button id="check-all-updates" i18n-text="checkAllUpdates"></button>

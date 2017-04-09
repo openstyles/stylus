@@ -70,6 +70,7 @@ function initGlobalEvents() {
   for (const [className, checkbox] of [
     ['enabled-only', $('#manage.onlyEnabled')],
     ['edited-only', $('#manage.onlyEdited')],
+    ['updates-only', $('#onlyUpdates input')],
   ]) {
     // will be triggered by setupLivePrefs immediately
     checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
@@ -269,8 +270,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    enableStyle(entry.styleId, this.matches('.enable') || this.checked)
-      .then(handleUpdate);
+    enableStyle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
   check(event, entry) {
@@ -336,6 +336,7 @@ function handleUpdate(style, {reason, quiet} = {}) {
       element.classList.add('update-done');
       element.classList.remove('can-update', 'updatable');
       $('.update-note', element).innerHTML = t('updateCompleted');
+      renderUpdatesOnlyFilter();
     }
   }
   installed.insertBefore(element, findNextElement(style));
@@ -398,6 +399,8 @@ function applyUpdateAll() {
     button.scrollIntoView(false);
     button.click();
   });
+
+  renderUpdatesOnlyFilter({show: false});
 }
 
 
@@ -410,7 +413,7 @@ function checkUpdateAll() {
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
 
-  Promise.all($$('.updatable').map(checkUpdate))
+  Promise.all($$('.updatable:not(.can-update)').map(checkUpdate))
     .then(updatables => {
       btnCheck.disabled = false;
       const numUpdatable = updatables.filter(u => u).length;
@@ -418,6 +421,7 @@ function checkUpdateAll() {
         btnApply.classList.remove('hidden');
         btnApply.originalLabel = btnApply.originalLabel || btnApply.textContent;
         btnApply.textContent = btnApply.originalLabel + ` (${numUpdatable})`;
+        renderUpdatesOnlyFilter({check: true});
       } else {
         noUpdates.classList.remove('hidden');
         setTimeout(() => {
@@ -436,7 +440,7 @@ function checkUpdateAll() {
 function checkUpdate(element) {
   $('.update-note', element).innerHTML = t('checkingForUpdate');
   $('.check-update', element).title = '';
-  element.classList.remove('checking-update', 'no-update', 'can-update', 'update-problem');
+  element.classList.remove('checking-update', 'no-update', 'update-problem');
   element.classList.add('checking-update');
   return new Updater(element).run(); // eslint-disable-line no-use-before-define
 }
@@ -506,12 +510,17 @@ class Updater {
       this.element.classList.add('can-update');
       this.element.updatedCode = json;
       $('.update-note', this.element).innerHTML = '';
+      $('#onlyUpdates').classList.remove('hidden');
     } else {
       this.element.classList.add('no-update');
       this.element.classList.toggle('update-problem', Boolean(message));
       $('.update-note', this.element).innerHTML = message || t('updateCheckSucceededNoUpdate');
       if (newUI.enabled) {
         $('.check-update', this.element).title = message;
+      }
+      // don't hide if check-all is running
+      if (!$('#check-all-updates').disabled) {
+        $('#onlyUpdates').classList.toggle('hidden', !$('.can-update'));
       }
     }
   }
@@ -534,6 +543,28 @@ class Updater {
     });
   }
 
+}
+
+
+function renderUpdatesOnlyFilter({show, check} = {}) {
+  const numUpdatable = $$('.can-update').length;
+  const canUpdate = numUpdatable > 0;
+  const checkbox = $('#onlyUpdates input');
+  show = show !== undefined ? show : canUpdate;
+  check = check !== undefined ? show && check : checkbox.checked && canUpdate;
+
+  $('#onlyUpdates').classList.toggle('hidden', !show);
+  checkbox.checked = check;
+  checkbox.dispatchEvent(new Event('change'));
+
+  const btnApply = $('#apply-all-updates');
+  if (!btnApply.matches('.hidden')) {
+    if (canUpdate) {
+      btnApply.textContent = btnApply.originalLabel + ` (${numUpdatable})`;
+    } else {
+      btnApply.classList.add('hidden');
+    }
+  }
 }
 
 

@@ -282,6 +282,10 @@
     "message": "Only edited styles",
     "description": "Checkbox to show only locally edited styles"
   },
+  "manageOnlyUpdates": {
+    "message": "Only with updates",
+    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+  },
   "manageNewUI": {
     "message": "New manage UI layout",
     "description": "Label for the checkbox that toggles the new UI on manage page"
