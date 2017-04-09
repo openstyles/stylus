@@ -154,9 +154,10 @@ summary {
 
 /* compact layout */
 
-.newUI {
+.newUI #installed {
   display: table;
-  margin: .75rem 0 .75rem 0;
+  margin-top: .75rem;
+  margin-bottom: .75rem;
 }
 
 .newUI .disabled {
@@ -273,10 +274,6 @@ summary {
   letter-spacing: .1ex;
 }
 
-.newUI.has-favicons .target {
-  padding-left: 20px;
-}
-
 .newUI .target:hover {
   background-color: inherit;
 }
@@ -295,7 +292,11 @@ summary {
   display: none;
 }
 
-.newUI.has-favicons .target img[src] {
+.newUI .has-favicons .target {
+  padding-left: 20px;
+}
+
+.newUI .has-favicons .target img[src] {
   display: inline;
 }
 
@@ -336,7 +337,7 @@ input[id^="manage.newUI"] {
 }
 
 /* Check update button for things that can*/
-*[style-update-url] .check-update {
+.updatable .check-update {
   display: inline;
 }
 
@@ -389,7 +390,7 @@ fieldset {
 }
 
 .enabled-only > .disabled,
-.edited-only > [style-update-url] {
+.edited-only > .updatable {
   display: none;
 }
 

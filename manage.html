@@ -16,7 +16,15 @@
 
   <template data-id="style">
     <div class="entry">
-      <h2 class="style-name"><a class="style-name-link" href="edit.html?id="></a></h2>
+      <h2 class="style-name">
+        <a class="style-name-link" href="edit.html?id="></a>
+        <a target="_blank" class="homepage">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
+            <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
+          </svg>
+        </a>
+      </h2>
       <p class="applies-to"><label i18n-text="appliesDisplay"></label></p>
       <p class="actions">
         <a class="style-edit-link" href="edit.html?id=">
@@ -39,6 +47,12 @@
         <a class="style-name-link" href="edit.html?id="></a>
       </h2>
       <p class="actions">
+        <a target="_blank" class="homepage">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
+            <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
+          </svg>
+        </a>
         <span i18n-title="deleteStyleLabel">
           <svg class="svg-icon delete" viewBox="0 0 14 16">
             <path shape-rendering="crispEdges" fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/>
@@ -77,12 +91,6 @@
         <div class="targets"></div>
       </div>
     </div>
-  </template>
-
-  <template data-id="styleHomepage">
-    <a target="_blank" class="homepage"><svg class="svg-icon" viewBox="0 0 20 20">
-        <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
-        <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/></svg></a>
   </template>
 
   <template data-id="appliesToTarget">

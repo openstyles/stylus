@@ -125,36 +125,22 @@ function showStyles(styles = []) {
 
 function createStyleElement({style, name}) {
   const entry = template[`style${newUI.enabled ? 'Compact' : ''}`].cloneNode(true);
-  entry.classList.add(style.enabled ? 'enabled' : 'disabled');
-  entry.setAttribute('style-id', style.id);
+  entry.className += ' ' +
+    (style.enabled ? 'enabled' : 'disabled') +
+    (style.updateUrl ? ' updatable' : '');
   entry.id = 'style-' + style.id;
   entry.styleId = style.id;
   entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
-  if (style.updateUrl) {
-    entry.setAttribute('style-update-url', style.updateUrl);
-  }
-  if (style.md5Url) {
-    entry.setAttribute('style-md5-url', style.md5Url);
-  }
-  if (style.originalMd5) {
-    entry.setAttribute('style-original-md5', style.originalMd5);
-  }
 
-  const styleName = $('.style-name', entry);
-  const styleNameEditLink = $('a', styleName);
-  styleNameEditLink.appendChild(document.createTextNode(style.name));
-  styleNameEditLink.href = styleNameEditLink.getAttribute('href') + style.id;
+  const editLink = $('.style-name-link', entry);
+  editLink.appendChild(document.createTextNode(style.name));
+  editLink.href = editLink.getAttribute('href') + style.id;
+
+  const homepage = $('.homepage', entry);
   if (style.url) {
-    const homepage = Object.assign(template.styleHomepage.cloneNode(true), {
-      href: style.url,
-      title: style.url,
-    });
-    if (newUI.enabled) {
-      const actions = $('.actions', entry);
-      actions.insertBefore(homepage, actions.firstChild);
-    } else {
-      styleName.appendChild(homepage);
-    }
+    homepage.href = homepage.title = style.url;
+  } else {
+    homepage.remove();
   }
 
   const appliesTo = $('.applies-to', entry);
@@ -163,11 +149,10 @@ function createStyleElement({style, name}) {
     regexpsBefore: '/',
     regexpsAfter: '/',
   };
-  const showFavicons = newUI.enabled && newUI.favicons;
-  const maxTargets = newUI.enabled ? Number.MAX_VALUE : 10;
   const displayed = new Set();
   let container = newUI.enabled ? $('.targets', appliesTo) : appliesTo;
   let numTargets = 0;
+  let numIcons = 0;
   for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
       for (const targetValue of section[type] || []) {
@@ -175,25 +160,26 @@ function createStyleElement({style, name}) {
           continue;
         }
         displayed.add(targetValue);
-        if (numTargets++ == maxTargets) {
-          container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
-        } else if (numTargets > 1 && !newUI.enabled) {
-          container.appendChild(template.appliesToSeparator.cloneNode(true));
-        }
         const element = template.appliesToTarget.cloneNode(true);
-        if (showFavicons) {
+        if (!newUI.enabled) {
+          if (numTargets == 10) {
+            container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
+          } else if (numTargets > 1) {
+            container.appendChild(template.appliesToSeparator.cloneNode(true));
+          }
+        } else if (newUI.favicons) {
           let favicon = '';
           if (type == 'domains') {
             favicon = GET_FAVICON_URL + targetValue;
           } else if (targetValue.startsWith('chrome-extension:')) {
             favicon = OWN_ICON;
           } else if (type != 'regexps') {
-            favicon = targetValue.match(/^.*?:\/\/([^/]+)/);
+            favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
           if (favicon) {
             element.appendChild(document.createElement('img')).dataset.src = favicon;
-            debounce(handleEvent.loadFavicons);
+            numIcons++;
           }
         }
         element.appendChild(
@@ -202,6 +188,7 @@ function createStyleElement({style, name}) {
             targetValue +
             (decorations[type + 'After'] || '')));
         container.appendChild(element);
+        numTargets++;
       }
     }
   }
@@ -214,6 +201,9 @@ function createStyleElement({style, name}) {
     $('.checker', entry).checked = style.enabled;
     if (numTargets > newUI.targets) {
       appliesTo.appendChild(template.expandAppliesTo.cloneNode(true));
+    }
+    if (numIcons) {
+      debounce(handleEvent.loadFavicons);
     }
   } else {
     const editLink = $('.style-edit-link', entry);
@@ -419,7 +409,7 @@ function checkUpdateAll() {
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
 
-  Promise.all($$('[style-update-url]').map(checkUpdate))
+  Promise.all($$('.updatable').map(checkUpdate))
     .then(updatables => {
       btnCheck.disabled = false;
       const numUpdatable = updatables.filter(u => u).length;
