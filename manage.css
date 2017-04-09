@@ -32,6 +32,10 @@ a:hover {
   margin-top: 0;
 }
 
+#header a[href^="edit"] {
+  text-decoration: none;
+}
+
 .firefox .chromium-only {
   display: none;
 }
@@ -575,5 +579,102 @@ fieldset > * {
 
   .entry {
     margin: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    flex-direction: column;
+  }
+
+  .newUI #header {
+    height: auto;
+    position: static;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+    overflow: visible;
+  }
+
+  .newUI #installed {
+    margin-left: 0;
+  }
+
+  .newUI #header h1,
+  .newUI #header h2,
+  .newUI #header h3,
+  .newUI #header legend,
+  .newUI #backup-message {
+    display: none;
+  }
+
+  .newUI #header p,
+  .newUI #header fieldset div,
+  .newUI #options,
+  .newUI #backup,
+  .newUI #find-editor-styles,
+  .newUI #header fieldset label,
+  .newUI #header fieldset input,
+  .newUI #newUIoptions > * {
+    display: inline;
+    vertical-align: middle;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+  }
+
+  .newUI #header > * {
+    display: inline-block
+  }
+
+  .newUI #header button,
+  .newUI #header span,
+  .newUI #header div {
+    margin-right: 1ex;
+  }
+
+  .newUI #header label,
+  .newUI #header a {
+    white-space: nowrap
+  }
+
+  .newUI #backup p,
+  .newUI #header fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .newUI #header fieldset input {
+    margin-left: 0;
+  }
+
+  .newUI #search {
+    width: auto;
+  }
+
+  .newUI #installed {
+    width: 100%;
+  }
+
+  .newUI .entry {
+    margin: 0;
+  }
+
+  .newUI .style-name {
+    width: 50%;
+  }
+
+  .newUI .target {
+    max-width: calc(50vw - 60px);
+  }
+}
+
+@media (max-width: 500px) {
+  .newUI #header > * {
+    display: inline;
+  }
+
+  .newUI .style-name {
+    word-break: break-all;
   }
 }
