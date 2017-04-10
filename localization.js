@@ -56,6 +56,9 @@ function tNodeList(nodes) {
         case 'text':
           node.insertBefore(document.createTextNode(value), node.firstChild);
           break;
+        case 'text-append':
+          node.appendChild(document.createTextNode(value));
+          break;
         case 'html':
           node.insertAdjacentHTML('afterbegin', value);
           break;
