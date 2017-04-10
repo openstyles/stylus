@@ -61,11 +61,7 @@ function initGlobalEvents() {
   };
 
   // remember scroll position on normal history navigation
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState != 'visible') {
-      rememberScrollPosition();
-    }
-  });
+  window.onbeforeunload = rememberScrollPosition;
 
   for (const [className, checkbox] of [
     ['enabled-only', $('#manage.onlyEnabled')],
