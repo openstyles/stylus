@@ -131,6 +131,11 @@ function initCodeMirror() {
 	var CM = CodeMirror;
 	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
 
+	// CodeMirror miserably fails on keyMap="" so let's ensure it's not
+	if (!prefs.get('editor.keyMap')) {
+		prefs.reset('editor.keyMap');
+	}
+
 	// default option values
 	Object.assign(CM.defaults, {
 		mode: 'css',
