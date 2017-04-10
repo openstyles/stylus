@@ -95,9 +95,8 @@ function showStyles(styles = []) {
     .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
   const shouldRenderAll = (history.state || {}).scrollY > window.innerHeight;
   const renderBin = document.createDocumentFragment();
-  tDocLoader.stop();
   renderStyles(0);
-  // TODO: remember how many styles fit one page to display just that portion first next time
+
   function renderStyles(index) {
     const t0 = performance.now();
     while (index < sorted.length) {
@@ -116,40 +115,57 @@ function showStyles(styles = []) {
     } else if (shouldRenderAll && 'scrollY' in (history.state || {})) {
       setTimeout(() => scrollTo(0, history.state.scrollY));
     }
+    if (newUI.enabled && newUI.favicons) {
+      debounce(handleEvent.loadFavicons, 16);
+    }
   }
 }
 
 
 function createStyleElement({style, name}) {
-  const entry = template[`style${newUI.enabled ? 'Compact' : ''}`].cloneNode(true);
-  entry.className += ' ' +
-    (style.enabled ? 'enabled' : 'disabled') +
-    (style.updateUrl ? ' updatable' : '');
-  entry.id = 'style-' + style.id;
-  entry.styleId = style.id;
-  entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
-
-  const editLink = $('.style-name-link', entry);
-  editLink.appendChild(document.createTextNode(style.name));
-  editLink.href = editLink.getAttribute('href') + style.id;
-
-  const homepage = $('.homepage', entry);
-  if (style.url) {
-    homepage.href = homepage.title = style.url;
-  } else {
-    homepage.remove();
+  // query the sub-elements just once, then reuse the references
+  if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
+    const entry = template[`style${newUI.enabled ? 'Compact' : ''}`].cloneNode(true);
+    createStyleElement.parts = {
+      newUI: newUI.enabled,
+      entry,
+      entryClassBase: entry.className,
+      checker: $('.checker', entry),
+      nameLink: $('.style-name-link', entry),
+      editLink: $('.style-edit-link', entry) || {},
+      editHrefBase: $('.style-name-link, .style-edit-link', entry).getAttribute('href'),
+      homepage: $('.homepage', entry),
+      appliesTo: $('.applies-to', entry),
+      targets: $('.targets', entry),
+      expander: $('.expander', entry),
+      decorations: {
+        urlPrefixesAfter: '*',
+        regexpsBefore: '/',
+        regexpsAfter: '/',
+      },
+    };
   }
+  const parts = createStyleElement.parts;
+  Object.assign(parts.entry, {
+    className: parts.entryClassBase + ' ' +
+      (style.enabled ? 'enabled' : 'disabled') +
+      (style.updateUrl ? ' updatable' : ''),
+    id: 'style-' + style.id,
+    styleId: style.id,
+    styleNameLowerCase: name || style.name.toLocaleLowerCase(),
+  });
 
-  const appliesTo = $('.applies-to', entry);
-  const decorations = {
-    urlPrefixesAfter: '*',
-    regexpsBefore: '/',
-    regexpsAfter: '/',
-  };
-  const displayed = new Set();
-  let container = newUI.enabled ? $('.targets', appliesTo) : appliesTo;
+  parts.nameLink.textContent = style.name;
+  parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
+  parts.homepage.href = parts.homepage.title = style.url || '';
+
+  // .targets may be a large list so we clone it separately
+  // and paste into the cloned entry in the end
+  const targets = parts.targets.cloneNode(true);
+  let container = targets;
   let numTargets = 0;
   let numIcons = 0;
+  const displayed = new Set();
   for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
       for (const targetValue of section[type] || []) {
@@ -160,7 +176,7 @@ function createStyleElement({style, name}) {
         const element = template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets == 10) {
-            container = appliesTo.appendChild(template.extraAppliesTo.cloneNode(true));
+            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 1) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
@@ -181,33 +197,33 @@ function createStyleElement({style, name}) {
         }
         element.appendChild(
           document.createTextNode(
-            (decorations[type + 'Before'] || '') +
+            (parts.decorations[type + 'Before'] || '') +
             targetValue +
-            (decorations[type + 'After'] || '')));
+            (parts.decorations[type + 'After'] || '')));
         container.appendChild(element);
         numTargets++;
       }
     }
   }
-  if (!numTargets) {
-    appliesTo.appendChild(template.appliesToEverything.cloneNode(true));
-    entry.classList.add('global');
-  }
 
   if (newUI.enabled) {
-    $('.checker', entry).checked = style.enabled;
-    if (numTargets > newUI.targets) {
-      appliesTo.appendChild(template.expandAppliesTo.cloneNode(true));
-    }
-    if (numIcons) {
+    parts.checker.checked = style.enabled;
+    parts.appliesTo.classList.toggle('has-more', numTargets > newUI.targets);
+    // name is supplied by showStyles so we let it decide when to load the icons
+    if (numIcons && !name) {
       debounce(handleEvent.loadFavicons);
     }
-  } else {
-    const editLink = $('.style-edit-link', entry);
-    editLink.href = editLink.getAttribute('href') + style.id;
   }
 
-  return entry;
+  const newEntry = parts.entry.cloneNode(true);
+  const newTargets = $('.targets', newEntry);
+  if (numTargets) {
+    newTargets.parentElement.replaceChild(targets, newTargets);
+  } else {
+    newTargets.appendChild(template.appliesToEverything.cloneNode(true));
+    newEntry.classList.add('global');
+  }
+  return newEntry;
 }
 
 
@@ -378,6 +394,11 @@ function switchUI({styleOnly} = {}) {
   if (!styleOnly && (stateToggled || missingFavicons)) {
     installed.innerHTML = '';
     getStylesSafe().then(showStyles);
+  } else if (targetsChanged) {
+    for (const targets of $$('.entry .targets')) {
+      const hasMore = targets.children.length > newUI.targets;
+      targets.parentElement.classList.toggle('has-more', hasMore);
+    }
   }
 }
 

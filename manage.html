@@ -25,7 +25,10 @@
           </svg>
         </a>
       </h2>
-      <p class="applies-to"><label i18n-text="appliesDisplay"></label></p>
+      <p class="applies-to">
+        <label i18n-text="appliesDisplay"></label>
+        <span class="targets"></span>
+      </p>
       <p class="actions">
         <a class="style-edit-link" href="edit.html?id=">
           <button i18n-text="editStyleLabel"></button>
@@ -89,6 +92,7 @@
       </p>
       <div class="applies-to">
         <div class="targets"></div>
+        <span class="expander">...</span>
       </div>
     </div>
   </template>
@@ -109,10 +113,6 @@
     <details class="applies-to-extra">
       <summary i18n-html="appliesDisplayTruncatedSuffix"></summary>
     </details>
-  </template>
-
-  <template data-id="expandAppliesTo">
-    <span class="expander">...</span>
   </template>
 
   <script src="dom.js"></script>

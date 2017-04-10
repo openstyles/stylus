@@ -78,6 +78,10 @@ a:hover {
   margin-right: 0.1em;
 }
 
+.homepage[href=""] {
+  display: none;
+}
+
 .homepage .svg-icon {
   margin-top: -4px;
   margin-left: .5ex;
@@ -317,6 +321,10 @@ summary {
   line-height: .5ex;
   vertical-align: super;
   letter-spacing: .1ex;
+}
+
+.newUI .applies-to:not(.has-more) .expander {
+  display: none;
 }
 
 .newUI .has-favicons .applies-to .expander {
