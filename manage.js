@@ -352,10 +352,10 @@ function handleUpdate(style, {reason, quiet} = {}) {
     }
   }
   installed.insertBefore(element, findNextElement(style));
-  if (!quiet) {
+  if (reason != 'import') {
     animateElement(element, {className: 'highlight'});
-    scrollElementIntoView(element);
   }
+  scrollElementIntoView(element);
 }
 
 
