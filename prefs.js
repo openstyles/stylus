@@ -85,6 +85,19 @@ var prefs = new function Prefs() {
 
     set(key, value, {noBroadcast, noSync} = {}) {
       const oldValue = deepCopy(values[key]);
+      switch (typeof defaults[key]) {
+        case typeof value:
+          break;
+        case 'string':
+          value = String(value);
+          break;
+        case 'number':
+          value |= 0;
+          break;
+        case 'boolean':
+          value = value === true || value === 'true';
+          break;
+      }
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
       if (BG && BG != window) {
