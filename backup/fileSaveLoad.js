@@ -1,3 +1,4 @@
+/* global messageBox */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -24,7 +25,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
     function readFile() {
       if (file || fileInput.value !== fileInput.initialValue) {
         file = file || fileInput.files[0];
-        if (file.size > 100*1000*1000) {
+        if (file.size > 100e6) {
           console.warn("100MB backup? I don't believe you.");
           importFromString('').then(resolve);
           return;
@@ -94,19 +95,20 @@ function importFromString(jsonString) {
         if (!oldStyle) {
           stats.added.names.push(style.name);
           stats.added.ids.push(style.id);
+          return;
         }
-        else if (!metaEqual && !codeEqual) {
+        if (!metaEqual && !codeEqual) {
           stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
           stats.metaAndCode.ids.push(style.id);
+          return;
         }
-        else if (!codeEqual) {
+        if (!codeEqual) {
           stats.codeOnly.names.push(style.name);
           stats.codeOnly.ids.push(style.id);
+          return;
         }
-        else {
-          stats.metaOnly.names.push(reportNameChange(oldStyle, style));
-          stats.metaOnly.ids.push(style.id);
-        }
+        stats.metaOnly.names.push(reportNameChange(oldStyle, style));
+        stats.metaOnly.ids.push(style.id);
       });
       return;
     }
@@ -135,10 +137,10 @@ function importFromString(jsonString) {
         buttons: [t('confirmOK'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button, enter, esc}) => {
-          if (button == 1) {
-            undo();
-          }
-        });
+        if (button == 1) {
+          undo();
+        }
+      });
       resolve(numChanged);
     });
   }
@@ -181,16 +183,17 @@ function importFromString(jsonString) {
   }
 
   function bindClick(box) {
-    for (let block of $$('details')) {
+    const highlightElement = event => {
+      const styleElement = $('#style-' + event.target.dataset.id);
+      if (styleElement) {
+        scrollElementIntoView(styleElement);
+        animateElement(styleElement, {className: 'highlight'});
+      }
+    };
+    for (const block of $$('details')) {
       if (block.dataset.id != 'invalid') {
         block.style.cursor = 'pointer';
-        block.onclick = event => {
-          const styleElement = $(`[style-id="${event.target.dataset.id}"]`);
-          if (styleElement) {
-            scrollElementIntoView(styleElement);
-            animateElement(styleElement, {className: 'highlight'});
-          }
-        };
+        block.onclick = highlightElement;
       }
     }
   }
@@ -202,7 +205,7 @@ function importFromString(jsonString) {
       style.sections = style.sections.slice();
       for (let i = 0, section; (section = style.sections[i]); i++) {
         const copy = style.sections[i] = Object.assign({}, section);
-        for (let propName in copy) {
+        for (const propName in copy) {
           const prop = copy[propName];
           if (prop instanceof Array) {
             copy[propName] = prop.slice();
@@ -236,7 +239,7 @@ $('#file-all-styles').onclick = () => {
     fetch(url)
     .then(res => res.blob())
     .then(blob => {
-      let a = document.createElement('a');
+      const a = document.createElement('a');
       a.setAttribute('download', fileName);
       a.setAttribute('href', URL.createObjectURL(blob));
       a.dispatchEvent(new MouseEvent('click'));
