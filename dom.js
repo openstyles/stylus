@@ -50,6 +50,21 @@ function animateElement(element, {className, remove = false}) {
 }
 
 
+function enforceInputRange(element) {
+  const min = Number(element.min);
+  const max = Number(element.max);
+  const onChange = () => {
+    const value = Number(element.value);
+    if (value < min || value > max) {
+      element.value = Math.max(min, Math.min(max, value));
+    }
+  };
+  onChange();
+  element.addEventListener('change', onChange);
+  element.addEventListener('input', onChange);
+}
+
+
 function $(selector, base = document) {
   // we have ids with . like #manage.onlyEdited which look like #id.class
   // so since getElementById is superfast we'll try it anyway

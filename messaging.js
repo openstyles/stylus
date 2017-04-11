@@ -1,4 +1,4 @@
-/* global getStyleWithNoCode, applyOnMessage, onBackgroundMessage, getStyles */
+/* global BG: true, onRuntimeMessage, applyOnMessage, handleUpdate, handleDelete */
 'use strict';
 
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
@@ -7,134 +7,59 @@ const FIREFOX = /Firefox/.test(navigator.userAgent);
 const OPERA = /OPR/.test(navigator.userAgent);
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
-  optionsUI: new Set([
+  optionsUI: [
     chrome.runtime.getURL('options/index.html'),
     'chrome://extensions/?options=' + chrome.runtime.id,
-  ]),
-  configureCommands: OPERA ? 'opera://settings/configureCommands'
-    : 'chrome://extensions/configureCommands',
+  ],
+  configureCommands:
+    OPERA ? 'opera://settings/configureCommands'
+          : 'chrome://extensions/configureCommands',
 };
 const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${URLS.ownOrigin}`);
 
-document.documentElement.classList.toggle('firefox', FIREFOX);
-document.documentElement.classList.toggle('opera', OPERA);
+let BG = chrome.extension.getBackgroundPage();
 
+if (!BG || BG != window) {
+  document.documentElement.classList.toggle('firefox', FIREFOX);
+  document.documentElement.classList.toggle('opera', OPERA);
+}
 
-function notifyAllTabs(request) {
-  // list all tabs including chrome-extension:// which can be ours
-  if (request.codeIsUpdated === false && request.style) {
-    request = Object.assign({}, request, {
-      style: getStyleWithNoCode(request.style)
+function notifyAllTabs(msg) {
+  const originalMessage = msg;
+  if (msg.codeIsUpdated === false && msg.style) {
+    msg = Object.assign({}, msg, {
+      style: getStyleWithNoCode(msg.style)
     });
   }
-  const affectsAll = !request.affects || request.affects.all;
-  const affectsOwnOrigin = !affectsAll && (request.affects.editor || request.affects.manager);
+  const affectsAll = !msg.affects || msg.affects.all;
+  const affectsOwnOrigin = !affectsAll && (msg.affects.editor || msg.affects.manager);
   const affectsTabs = affectsAll || affectsOwnOrigin;
-  const affectsIcon = affectsAll || request.affects.icon;
-  const affectsPopup = affectsAll || request.affects.popup;
+  const affectsIcon = affectsAll || msg.affects.icon;
+  const affectsPopup = affectsAll || msg.affects.popup;
   if (affectsTabs || affectsIcon) {
+    // list all tabs including chrome-extension:// which can be ours
     chrome.tabs.query(affectsOwnOrigin ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
       for (const tab of tabs) {
-        if (affectsTabs || URLS.optionsUI.has(tab.url)) {
-          chrome.tabs.sendMessage(tab.id, request);
+        if (affectsTabs || URLS.optionsUI.includes(tab.url)) {
+          chrome.tabs.sendMessage(tab.id, msg);
         }
-        if (affectsIcon) {
-          updateIcon(tab);
+        if (affectsIcon && BG) {
+          BG.updateIcon(tab);
         }
       }
     });
   }
   // notify self: the message no longer is sent to the origin in new Chrome
-  if (window.applyOnMessage) {
-    applyOnMessage(request);
-  } else if (window.onBackgroundMessage) {
-    onBackgroundMessage(request);
+  if (typeof onRuntimeMessage != 'undefined') {
+    onRuntimeMessage(originalMessage);
+  }
+  // notify apply.js on own pages
+  if (typeof applyOnMessage != 'undefined') {
+    applyOnMessage(originalMessage);
   }
   // notify background page and all open popups
-  if (affectsPopup || request.prefs) {
-    chrome.runtime.sendMessage(request);
-  }
-}
-
-
-function refreshAllTabs() {
-  return new Promise(resolve => {
-    // list all tabs including chrome-extension:// which can be ours
-    chrome.tabs.query({}, tabs => {
-      const lastTab = tabs[tabs.length - 1];
-      for (const tab of tabs) {
-        getStyles({matchUrl: tab.url, enabled: true, asHash: true}, styles => {
-          const message = {method: 'styleReplaceAll', styles};
-          if (tab.url == location.href && typeof applyOnMessage !== 'undefined') {
-            applyOnMessage(message);
-          } else {
-            chrome.tabs.sendMessage(tab.id, message);
-          }
-          updateIcon(tab, styles);
-          if (tab == lastTab) {
-            resolve();
-          }
-        });
-      }
-    });
-  });
-}
-
-
-function updateIcon(tab, styles) {
-  // while NTP is still loading only process the request for its main frame with a real url
-  // (but when it's loaded we should process style toggle requests from popups, for example)
-  const isNTP = tab.url == 'chrome://newtab/';
-  if (isNTP && tab.status != 'complete' || tab.id < 0) {
-    return;
-  }
-  if (styles) {
-    // check for not-yet-existing tabs e.g. omnibox instant search
-    chrome.tabs.get(tab.id, () => {
-      if (!chrome.runtime.lastError) {
-        stylesReceived(styles);
-      }
-    });
-    return;
-  }
-  if (isNTP) {
-    getTabRealURL(tab).then(url =>
-      getStyles({matchUrl: url, enabled: true, asHash: true}, stylesReceived));
-  } else {
-    getStyles({matchUrl: tab.url, enabled: true, asHash: true}, stylesReceived);
-  }
-
-  function stylesReceived(styles) {
-    let numStyles = styles.length;
-    if (numStyles === undefined) {
-      // for 'styles' asHash:true fake the length by counting numeric ids manually
-      numStyles = 0;
-      for (const id of Object.keys(styles)) {
-        numStyles += id.match(/^\d+$/) ? 1 : 0;
-      }
-    }
-    const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
-    const postfix = disableAll ? 'x' : numStyles == 0 ? 'w' : '';
-    const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
-    const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
-    chrome.browserAction.setIcon({
-      tabId: tab.id,
-      path: {
-        // Material Design 2016 new size is 16px
-        16: `images/icon/16${postfix}.png`,
-        32: `images/icon/32${postfix}.png`,
-        // Chromium forks or non-chromium browsers may still use the traditional 19px
-        19: `images/icon/19${postfix}.png`,
-        38: `images/icon/38${postfix}.png`,
-        // TODO: add Edge preferred sizes: 20, 25, 30, 40
-      },
-    }, () => {
-      if (!chrome.runtime.lastError) {
-        // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
-        chrome.browserAction.setBadgeBackgroundColor({color});
-        chrome.browserAction.setBadgeText({text, tabId: tab.id});
-      }
-    });
+  if (affectsPopup || msg.prefs) {
+    chrome.runtime.sendMessage(msg);
   }
 }
 
@@ -211,12 +136,153 @@ function stringAsRegExp(s, flags) {
 }
 
 
-// expands * as .*?
-function wildcardAsRegExp(s, flags) {
-  return new RegExp(s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&').replace(/\*/g, '.*?'), flags);
+function ignoreChromeError() {
+  chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
 }
 
 
-function ignoreChromeError() {
-  chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
+function getStyleWithNoCode(style) {
+  const stripped = Object.assign({}, style, {sections: []});
+  for (const section of style.sections) {
+    stripped.sections.push(Object.assign({}, section, {code: null}));
+  }
+  return stripped;
+}
+
+
+// js engine can't optimize the entire function if it contains try-catch
+// so we should keep it isolated from normal code in a minimal wrapper
+// Update: might get fixed in V8 TurboFan in the future
+function tryCatch(func, ...args) {
+  try {
+    return func(...args);
+  } catch (e) {}
+}
+
+
+function tryRegExp(regexp) {
+  try {
+    return new RegExp(regexp);
+  } catch (e) {}
+}
+
+
+function tryJSONparse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {}
+}
+
+
+function debounce(fn, delay, ...args) {
+  const timers = debounce.timers = debounce.timers || new Map();
+  debounce.run = debounce.run || ((fn, ...args) => {
+    timers.delete(fn);
+    fn(...args);
+  });
+  clearTimeout(timers.get(fn));
+  timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
+}
+
+
+function deepCopy(obj) {
+  if (!obj || typeof obj != 'object') {
+    return obj;
+  } else {
+    const emptyCopy = Object.create(Object.getPrototypeOf(obj));
+    return deepMerge(emptyCopy, obj);
+  }
+}
+
+
+function deepMerge(target, ...args) {
+  for (const obj of args) {
+    for (const k in obj) {
+      const value = obj[k];
+      if (!value || typeof value != 'object') {
+        target[k] = value;
+      } else if (typeof value.slice == 'function') {
+        const arrayCopy = target[k] = target[k] || [];
+        for (const element of value) {
+          arrayCopy.push(deepCopy(element));
+        }
+      } else if (k in target) {
+        deepMerge(target[k], value);
+      } else {
+        target[k] = deepCopy(value);
+      }
+    }
+  }
+  return target;
+}
+
+
+function sessionStorageHash(name) {
+  return {
+    name,
+    value: tryCatch(JSON.parse, sessionStorage[name]) || {},
+    set(k, v) {
+      this.value[k] = v;
+      this.updateStorage();
+    },
+    unset(k) {
+      delete this.value[k];
+      this.updateStorage();
+    },
+    updateStorage() {
+      sessionStorage[this.name] = JSON.stringify(this.value);
+    }
+  };
+}
+
+
+function onBackgroundReady() {
+  return BG ? Promise.resolve() : new Promise(ping);
+  function ping(resolve) {
+    chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
+      if (health !== undefined) {
+        BG = chrome.extension.getBackgroundPage();
+        resolve();
+      } else {
+        ping(resolve);
+      }
+    });
+  }
+}
+
+
+// in case Chrome haven't yet loaded the bg page and displays our page like edit/manage
+function getStylesSafe(options) {
+  return new Promise(resolve => {
+    if (BG) {
+      BG.getStyles(options, resolve);
+    } else {
+      onBackgroundReady().then(() =>
+        BG.getStyles(options, resolve));
+    }
+  });
+}
+
+
+function saveStyleSafe(style) {
+  return onBackgroundReady()
+    .then(() => BG.saveStyle(BG.deepCopy(style)))
+    .then(savedStyle => {
+      if (style.notify === false) {
+        handleUpdate(savedStyle, style);
+      }
+      return savedStyle;
+    });
+}
+
+
+function deleteStyleSafe({id, notify = true} = {}) {
+  return onBackgroundReady()
+    .then(() => BG.deleteStyle({id, notify}))
+    .then(() => {
+      if (!notify) {
+        handleDelete(id);
+      }
+      return id;
+    });
 }

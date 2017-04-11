@@ -27,7 +27,9 @@ Promise.all([
 });
 
 
-chrome.runtime.onMessage.addListener(msg => {
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
@@ -37,7 +39,7 @@ chrome.runtime.onMessage.addListener(msg => {
       handleDelete(msg.id);
       break;
   }
-});
+}
 
 
 function initGlobalEvents() {
@@ -151,8 +153,6 @@ function createStyleElement({style, name}) {
       (style.enabled ? 'enabled' : 'disabled') +
       (style.updateUrl ? ' updatable' : ''),
     id: 'style-' + style.id,
-    styleId: style.id,
-    styleNameLowerCase: name || style.name.toLocaleLowerCase(),
   });
 
   parts.nameLink.textContent = style.name;
@@ -216,6 +216,8 @@ function createStyleElement({style, name}) {
   }
 
   const newEntry = parts.entry.cloneNode(true);
+  newEntry.styleId = style.id;
+  newEntry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
   const newTargets = $('.targets', newEntry);
   if (numTargets) {
     newTargets.parentElement.replaceChild(targets, newTargets);
@@ -282,7 +284,10 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    enableStyle(entry.styleId, this.matches('.enable') || this.checked);
+    saveStyleSafe({
+      id: entry.styleId,
+      enabled: this.matches('.enable') || this.checked,
+    });
   },
 
   check(event, entry) {
@@ -291,7 +296,7 @@ Object.assign(handleEvent, {
 
   update(event, entry) {
     // update everything but name
-    saveStyle(Object.assign(entry.updatedCode, {
+    saveStyleSafe(Object.assign(entry.updatedCode, {
       id: entry.styleId,
       name: null,
       reason: 'update',
@@ -300,7 +305,7 @@ Object.assign(handleEvent, {
 
   delete(event, entry) {
     const id = entry.styleId;
-    const {name} = cachedStyles.byId.get(id) || {};
+    const {name} = BG.cachedStyles.byId.get(id) || {};
     animateElement(entry, {className: 'highlight'});
     messageBox({
       title: t('deleteStyleConfirm'),
@@ -310,7 +315,7 @@ Object.assign(handleEvent, {
     })
     .then(({button, enter, esc}) => {
       if (button == 0 || enter) {
-        deleteStyle(id);
+        deleteStyleSafe({id});
       }
     });
   },
@@ -335,7 +340,7 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style, {reason, quiet} = {}) {
+function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement({style});
   const oldElement = $('#style-' + style.id, installed);
   if (oldElement) {
@@ -354,8 +359,8 @@ function handleUpdate(style, {reason, quiet} = {}) {
   installed.insertBefore(element, findNextElement(style));
   if (reason != 'import') {
     animateElement(element, {className: 'highlight'});
+    scrollElementIntoView(element);
   }
-  scrollElementIntoView(element);
 }
 
 
@@ -465,7 +470,7 @@ function checkUpdate(element) {
 
 class Updater {
   constructor(element) {
-    const style = cachedStyles.byId.get(element.styleId);
+    const style = BG.cachedStyles.byId.get(element.styleId);
     Object.assign(this, {
       element,
       id: style.id,
@@ -504,7 +509,7 @@ class Updater {
 
   handleJson(forceUpdate, json) {
     return getStylesSafe({id: this.id}).then(([style]) => {
-      const needsUpdate = forceUpdate || !styleSectionsEqual(style, json);
+      const needsUpdate = forceUpdate || !BG.styleSectionsEqual(style, json);
       this.display({json: needsUpdate && json});
       return needsUpdate;
     });
@@ -598,7 +603,7 @@ function searchStyles({immediately, container}) {
   }
 
   for (const element of (container || installed).children) {
-    const style = cachedStyles.byId.get(element.styleId) || {};
+    const style = BG.cachedStyles.byId.get(element.styleId) || {};
     if (style) {
       const isMatching = !query
         || isMatchingText(style.name)

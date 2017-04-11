@@ -1,4 +1,3 @@
-/* global SLOPPY_REGEXP_PREFIX, compileStyleRegExps */
 'use strict';
 
 let installed;
@@ -17,8 +16,9 @@ getActiveTabRealURL().then(url => {
   });
 });
 
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-chrome.runtime.onMessage.addListener(msg => {
+function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(msg => {
       }
       break;
   }
-});
+}
 
 
 function setPopupWidth(width = prefs.get('popupWidth')) {
@@ -117,7 +117,7 @@ function initPopup(url) {
   matchTargets.appendChild(urlLink);
 
   // For domain
-  const domains = getDomains(url);
+  const domains = BG.getDomains(url);
   for (const domain of domains) {
     // Don't include TLD
     if (domains.length > 1 && !domain.includes('.')) {
@@ -252,7 +252,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event) {
-    saveStyle({
+    saveStyleSafe({
       id: handleEvent.getClickedStyleId(event),
       enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
     });
@@ -263,7 +263,7 @@ Object.assign(handleEvent, {
     const box = $('#confirm');
     box.dataset.display = true;
     box.style.cssText = '';
-    $('b', box).textContent = (cachedStyles.byId.get(id) || {}).name;
+    $('b', box).textContent = (BG.cachedStyles.byId.get(id) || {}).name;
     $('[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
@@ -278,7 +278,7 @@ Object.assign(handleEvent, {
       animateElement(box, {className: 'lights-on'})
         .then(() => (box.dataset.display = false));
       if (ok) {
-        deleteStyle(id).then(() => {
+        deleteStyleSafe({id}).then(() => {
           // update view with 'No styles installed for this site' message
           if (!installed.children.length) {
             showStyles([]);
@@ -297,7 +297,7 @@ Object.assign(handleEvent, {
     entry.appendChild(info);
   },
 
-  closeExplanation(event) {
+  closeExplanation() {
     $('#regexp-explanation').remove();
   },
 
@@ -347,7 +347,7 @@ function handleUpdate(style) {
     return;
   }
   // Add an entry when a new style for the current url is installed
-  if (tabURL && getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
+  if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
     $('#unavailable').style.display = 'none';
     createStyleElement({style});
   }
@@ -368,13 +368,15 @@ function handleDelete(id) {
 */
 function detectSloppyRegexps({entry, style}) {
   const {
-    appliedSections = getApplicableSections({style, matchUrl: tabURL}),
-    wannabeSections = getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
+    appliedSections =
+      BG.getApplicableSections({style, matchUrl: tabURL}),
+    wannabeSections =
+      BG.getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
   } = style;
 
-  compileStyleRegExps({style, compileAll: true});
+  BG.compileStyleRegExps({style, compileAll: true});
   entry.hasInvalidRegexps = wannabeSections.some(section =>
-    section.regexps.some(rx => !cachedStyles.regexps.has(rx)));
+    section.regexps.some(rx => !BG.cachedStyles.regexps.has(rx)));
   entry.sectionsSkipped = wannabeSections.length - appliedSections.length;
 
   if (!appliedSections.length) {

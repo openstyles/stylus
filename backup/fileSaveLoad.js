@@ -1,4 +1,4 @@
-/* global messageBox */
+/* global messageBox, handleUpdate */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -47,8 +47,15 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 
 function importFromString(jsonString) {
-  const json = runTryCatch(() => Array.from(JSON.parse(jsonString))) || [];
-  const oldStyles = json.length && deepCopyStyles();
+  if (!BG) {
+    onBackgroundReady().then(() => importFromString(jsonString));
+    return;
+  }
+  const json = BG.tryJSONparse(jsonString) || []; // create object in background context
+  if (typeof json.slice != 'function') {
+    json.length = 0;
+  }
+  const oldStyles = json.length && BG.deepCopy(BG.cachedStyles.list || []);
   const oldStylesByName = json.length && new Map(
     oldStyles.map(style => [style.name.trim(), style]));
   const stats = {
@@ -60,18 +67,19 @@ function importFromString(jsonString) {
     invalid: {names: [], legend: 'invalid skipped'},
   };
   let index = 0;
+  let lastRepaint = performance.now();
   return new Promise(proceed);
 
   function proceed(resolve) {
     while (index < json.length) {
       const item = json[index++];
       if (!item || !item.name || !item.name.trim() || typeof item != 'object'
-      || (item.sections && !(item.sections instanceof Array))) {
+      || (item.sections && typeof item.sections.slice != 'function')) {
         stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
         continue;
       }
       item.name = item.name.trim();
-      const byId = cachedStyles.byId.get(item.id);
+      const byId = BG.cachedStyles.byId.get(item.id);
       const byName = oldStylesByName.get(item.name);
       const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
       if (oldStyle == byName && byName) {
@@ -81,16 +89,22 @@ function importFromString(jsonString) {
       const metaEqual = oldStyleKeys &&
         oldStyleKeys.length == Object.keys(item).length &&
         oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
-      const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
+      const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
       if (metaEqual && codeEqual) {
         stats.unchanged.names.push(oldStyle.name);
         stats.unchanged.ids.push(oldStyle.id);
         continue;
       }
-      saveStyle(Object.assign(item, {
+      // using saveStyle directly since json was parsed in background page context
+      BG.saveStyle(Object.assign(item, {
         reason: 'import',
         notify: false,
       })).then(style => {
+        handleUpdate(style, {reason: 'import'});
+        if (performance.now() - lastRepaint > 1000) {
+          scrollElementIntoView($('#style-' + style.id));
+          lastRepaint = performance.now();
+        }
         setTimeout(proceed, 0, resolve);
         if (!oldStyle) {
           stats.added.names.push(style.name);
@@ -120,17 +134,22 @@ function importFromString(jsonString) {
       stats.metaOnly.names.length +
       stats.codeOnly.names.length +
       stats.added.names.length;
-    Promise.resolve(numChanged && refreshAllTabs()).then(() => {
-      scrollTo(0, 0);
+    Promise.resolve(numChanged && BG.refreshAllTabs()).then(() => {
+      const listNames = kind => {
+        const {ids, names} = stats[kind];
+        return ids
+          ? names.map((name, i) => `<div data-id="${ids[i]}">${name}</div>`)
+          : names.map(name => `<div>${name}</div>`);
+      };
       const report = Object.keys(stats)
         .filter(kind => stats[kind].names.length)
-        .map(kind => `<details data-id="${kind}">
+        .map(kind =>
+          `<details data-id="${kind}">
             <summary><b>${stats[kind].names.length} ${stats[kind].legend}</b></summary>
-            <small>` + stats[kind].names.map((name, i) =>
-                `<div data-id="${stats[kind].ids[i]}">${name}</div>`).join('') + `
-            </small>
+            <small>${listNames(kind).join('')}</small>
           </details>`)
         .join('');
+      scrollTo(0, 0);
       messageBox({
         title: 'Finished importing styles',
         contents: report || 'Nothing was changed.',
@@ -155,7 +174,7 @@ function importFromString(jsonString) {
     ];
     index = 0;
     return new Promise(undoNextId)
-      .then(refreshAllTabs)
+      .then(BG.refreshAllTabs)
       .then(() => messageBox({
         title: 'Import has been undone',
         contents: newIds.length + ' styles were reverted.',
@@ -167,14 +186,14 @@ function importFromString(jsonString) {
         return;
       }
       const id = newIds[index++];
-      deleteStyle(id, {notify: false}).then(id => {
+      deleteStyleSafe({id, notify: false}).then(id => {
         const oldStyle = oldStylesById.get(id);
         if (oldStyle) {
-          saveStyle(Object.assign(oldStyle, {
-            reason: 'undoImport',
+          saveStyleSafe(Object.assign(oldStyle, {
+            reason: 'import',
             notify: false,
-          }))
-            .then(() => setTimeout(undoNextId, 0, resolve));
+          })).then(() =>
+            setTimeout(undoNextId, 0, resolve));
         } else {
           setTimeout(undoNextId, 0, resolve);
         }
@@ -196,25 +215,6 @@ function importFromString(jsonString) {
         block.onclick = highlightElement;
       }
     }
-  }
-
-  function deepCopyStyles() {
-    const clonedStyles = [];
-    for (let style of cachedStyles.list || []) {
-      style = Object.assign({}, style);
-      style.sections = style.sections.slice();
-      for (let i = 0, section; (section = style.sections[i]); i++) {
-        const copy = style.sections[i] = Object.assign({}, section);
-        for (const propName in copy) {
-          const prop = copy[propName];
-          if (prop instanceof Array) {
-            copy[propName] = prop.slice();
-          }
-        }
-      }
-      clonedStyles.push(style);
-    }
-    return clonedStyles;
   }
 
   function limitString(s, limit = 100) {

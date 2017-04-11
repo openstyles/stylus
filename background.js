@@ -1,4 +1,4 @@
-/* global getDatabase, getStyles, reportError */
+/* global getDatabase, getStyles, saveStyle, reportError, invalidateCache */
 'use strict';
 
 chrome.webNavigation.onBeforeNavigate.addListener(data => {
@@ -39,9 +39,9 @@ function webNavigationListener(method, data) {
 
 // messaging
 
-chrome.runtime.onMessage.addListener(onBackgroundMessage);
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-function onBackgroundMessage(request, sender, sendResponse) {
+function onRuntimeMessage(request, sender, sendResponse) {
   switch (request.method) {
 
     case 'getStyles':
@@ -61,9 +61,7 @@ function onBackgroundMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'invalidateCache':
-      if (typeof invalidateCache != 'undefined') {
-        invalidateCache(false, request);
-      }
+      invalidateCache(false, request);
       break;
 
     case 'healthCheck':
@@ -101,8 +99,8 @@ if ('commands' in chrome) {
 }
 
 // context menus
-
-const contextMenus = {
+// eslint-disable-next-line no-var
+var contextMenus = {
   'show-badge': {
     title: 'menuShowBadge',
     click: info => prefs.set(info.menuItemId, info.checked),
@@ -123,7 +121,7 @@ const contextMenus = {
 // Vivaldi: Vivaldi/#
 if (/Vivaldi\/[\d.]+$/.test(navigator.userAgent)
   || /Safari\/[\d.]+$/.test(navigator.userAgent)
-  && ![...navigator.plugins].some(p => p.name == 'Shockwave Flash')) {
+  && !Array.from(navigator.plugins).some(p => p.name == 'Shockwave Flash')) {
   contextMenus.editDeleteText = {
     title: 'editDeleteText',
     contexts: ['editable'],
@@ -172,8 +170,11 @@ chrome.tabs.onAttached.addListener((tabId, data) => {
   });
 });
 
-var codeMirrorThemes; // eslint-disable-line no-var
-getCodeMirrorThemes(themes => (codeMirrorThemes = themes));
+// eslint-disable-next-line no-var
+var codeMirrorThemes;
+getCodeMirrorThemes().then(themes => {
+  codeMirrorThemes = themes;
+});
 
 // do not use prefs.get('version', null) as it might not yet be available
 chrome.storage.local.get('version', prefs => {
@@ -198,6 +199,9 @@ chrome.storage.local.get('version', prefs => {
 injectContentScripts();
 
 function injectContentScripts() {
+  // expand * as .*?
+  const wildcardAsRegExp = (s, flags) =>
+    new RegExp(s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&').replace(/\*/g, '.*?'), flags);
   const contentScripts = chrome.runtime.getManifest().content_scripts;
   for (const cs of contentScripts) {
     cs.matches = cs.matches.map(m => (
@@ -225,5 +229,154 @@ function injectContentScripts() {
         }
       }
     }
+  });
+}
+
+
+function refreshAllTabs() {
+  return new Promise(resolve => {
+    // list all tabs including chrome-extension:// which can be ours
+    chrome.tabs.query({}, tabs => {
+      const lastTab = tabs[tabs.length - 1];
+      for (const tab of tabs) {
+        getStyles({matchUrl: tab.url, enabled: true, asHash: true}, styles => {
+          const message = {method: 'styleReplaceAll', styles};
+          chrome.tabs.sendMessage(tab.id, message);
+          updateIcon(tab, styles);
+          if (tab == lastTab) {
+            resolve();
+          }
+        });
+      }
+    });
+  });
+}
+
+
+function updateIcon(tab, styles) {
+  // while NTP is still loading only process the request for its main frame with a real url
+  // (but when it's loaded we should process style toggle requests from popups, for example)
+  const isNTP = tab.url == 'chrome://newtab/';
+  if (isNTP && tab.status != 'complete' || tab.id < 0) {
+    return;
+  }
+  if (styles) {
+    // check for not-yet-existing tabs e.g. omnibox instant search
+    chrome.tabs.get(tab.id, () => {
+      if (!chrome.runtime.lastError) {
+        stylesReceived(styles);
+      }
+    });
+    return;
+  }
+  if (isNTP) {
+    getTabRealURL(tab).then(url =>
+      getStyles({matchUrl: url, enabled: true, asHash: true}, stylesReceived));
+  } else {
+    getStyles({matchUrl: tab.url, enabled: true, asHash: true}, stylesReceived);
+  }
+
+  function stylesReceived(styles) {
+    let numStyles = styles.length;
+    if (numStyles === undefined) {
+      // for 'styles' asHash:true fake the length by counting numeric ids manually
+      numStyles = 0;
+      for (const id of Object.keys(styles)) {
+        numStyles += id.match(/^\d+$/) ? 1 : 0;
+      }
+    }
+    const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
+    const postfix = disableAll ? 'x' : numStyles == 0 ? 'w' : '';
+    const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
+    const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
+    chrome.browserAction.setIcon({
+      tabId: tab.id,
+      path: {
+        // Material Design 2016 new size is 16px
+        16: `images/icon/16${postfix}.png`,
+        32: `images/icon/32${postfix}.png`,
+        // Chromium forks or non-chromium browsers may still use the traditional 19px
+        19: `images/icon/19${postfix}.png`,
+        38: `images/icon/38${postfix}.png`,
+        // TODO: add Edge preferred sizes: 20, 25, 30, 40
+      },
+    }, () => {
+      if (!chrome.runtime.lastError) {
+        // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
+        chrome.browserAction.setBadgeBackgroundColor({color});
+        chrome.browserAction.setBadgeText({text, tabId: tab.id});
+      }
+    });
+  }
+}
+
+
+function getCodeMirrorThemes() {
+  if (!chrome.runtime.getPackageDirectoryEntry) {
+    return Promise.resolve([
+      '3024-day',
+      '3024-night',
+      'abcdef',
+      'ambiance',
+      'ambiance-mobile',
+      'base16-dark',
+      'base16-light',
+      'bespin',
+      'blackboard',
+      'cobalt',
+      'colorforth',
+      'dracula',
+      'duotone-dark',
+      'duotone-light',
+      'eclipse',
+      'elegant',
+      'erlang-dark',
+      'hopscotch',
+      'icecoder',
+      'isotope',
+      'lesser-dark',
+      'liquibyte',
+      'material',
+      'mbo',
+      'mdn-like',
+      'midnight',
+      'monokai',
+      'neat',
+      'neo',
+      'night',
+      'panda-syntax',
+      'paraiso-dark',
+      'paraiso-light',
+      'pastel-on-dark',
+      'railscasts',
+      'rubyblue',
+      'seti',
+      'solarized',
+      'the-matrix',
+      'tomorrow-night-bright',
+      'tomorrow-night-eighties',
+      'ttcn',
+      'twilight',
+      'vibrant-ink',
+      'xq-dark',
+      'xq-light',
+      'yeti',
+      'zenburn',
+    ]);
+  }
+  return new Promise(resolve => {
+    chrome.runtime.getPackageDirectoryEntry(rootDir => {
+      rootDir.getDirectory('codemirror/theme', {create: false}, themeDir => {
+        themeDir.createReader().readEntries(entries => {
+          resolve([
+            chrome.i18n.getMessage('defaultTheme')
+          ].concat(
+            entries.filter(entry => entry.isFile)
+              .sort((a, b) => (a.name < b.name ? -1 : 1))
+              .map(entry => entry.name.replace(/\.css$/, ''))
+          ));
+        });
+      });
+    });
   });
 }

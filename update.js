@@ -1,4 +1,5 @@
-/* globals getStyles */
+/* eslint brace-style: 1, arrow-parens: 1, space-before-function-paren: 1, arrow-body-style: 1 */
+/* globals getStyles, saveStyle */
 'use strict';
 
 // TODO: refactor to make usable in manage::Updater

@@ -15,17 +15,25 @@ globals:
   FIREFOX: false
   OPERA: false
   URLS: false
+  BG: false
   notifyAllTabs: false
-  refreshAllTabs: false
-  updateIcon: false
   getActiveTab: false
   getActiveTabRealURL: false
   getTabRealURL: false
   openURL: false
   activateTab: false
   stringAsRegExp: false
-  wildcardAsRegExp: false
   ignoreChromeError: false
+  tryCatch: false
+  tryRegExp: false
+  tryJSONparse: false
+  debounce: false
+  deepCopy: false
+  onBackgroundReady: false
+  deleteStyleSafe: false
+  getStylesSafe: false
+  saveStyleSafe: false
+  sessionStorageHash: false
   # localization.js
   template: false
   t: false
@@ -37,31 +45,13 @@ globals:
   # dom.js
   onDOMready: false
   scrollElementIntoView: false
+  enforceInputRange: false
   animateElement: false
   $: false
   $$: false
-  # storage.js
+  # prefs.js
   prefs: false
-  cachedStyles: false
-  sessionStorageHash: false
-  getStylesSafe: false
-  invalidateCache: false
-  saveStyle: false
-  enableStyle: false
-  deleteStyle: false
-  fixBoolean: false
-  getDomains: false
-  getType: false
-  getApplicableSections: false
-  isCheckbox: false
-  runTryCatch: false
-  tryRegExp: false
-  tryJSONparse: false
-  debounce: false
   setupLivePrefs: false
-  enforceInputRange: false
-  getCodeMirrorThemes: false
-  styleSectionsEqual: false
 
 rules:
   accessor-pairs: [2]

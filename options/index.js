@@ -1,6 +1,4 @@
-/* global update */
 'use strict';
-
 
 setupLivePrefs([
   'show-badge',
@@ -33,7 +31,7 @@ document.onclick = e => {
   }
 
   function check() {
-    chrome.extension.getBackgroundPage().update.perform((cmd, value) => {
+    BG.update.perform((cmd, value) => {
       switch (cmd) {
         case 'count':
           total = value;

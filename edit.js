@@ -252,7 +252,8 @@ function initCodeMirror() {
 		} else {
 			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
 			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
-			getCodeMirrorThemes(function(themes) {
+			BG.getCodeMirrorThemes().then(themes => {
+				BG.codeMirrorThemes = themes;
 				themeControl.innerHTML = optionsHtmlFromArray(themes);
 				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
 			});
@@ -1333,7 +1334,7 @@ function save() {
 	}
 	var name = document.getElementById("name").value;
 	var enabled = document.getElementById("enabled").checked;
-	saveStyle({
+	saveStyleSafe({
 		id: styleId,
 		name: name,
 		enabled: enabled,
@@ -1815,7 +1816,9 @@ function getParams() {
 	return params;
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+function onRuntimeMessage(request) {
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId && styleId == request.style.id && request.reason != 'editSave') {
@@ -1838,7 +1841,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			document.execCommand('delete');
 			break;
 	}
-});
+}
 
 function getComputedHeight(el) {
 	var compStyle = getComputedStyle(el);
