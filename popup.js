@@ -59,8 +59,9 @@ function initPopup(url) {
   }
 
   // action buttons
-  $('#disableAll').onchange = () =>
-    installed.classList.toggle('disabled', prefs.get('disableAll'));
+  $('#disableAll').onchange = function() {
+    installed.classList.toggle('disabled', this.checked);
+  };
   setupLivePrefs(['disableAll']);
 
   $('#find-styles-link').onclick = handleEvent.openURLandHide;

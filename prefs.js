@@ -87,12 +87,16 @@ var prefs = new function Prefs() {
       const oldValue = deepCopy(values[key]);
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
-      if (!noBroadcast && !equal(value, oldValue)) {
-        this.broadcast(key, value, {noSync});
+      if (BG && BG != window) {
+        BG.prefs.set(key, BG.deepCopy(value), {noBroadcast, noSync});
+      } else {
+        localStorage[key] = typeof defaults[key] == 'object'
+          ? JSON.stringify(value)
+          : value;
+        if (!noBroadcast && !equal(value, oldValue)) {
+          this.broadcast(key, value, {noSync});
+        }
       }
-      localStorage[key] = typeof defaults[key] == 'object'
-        ? JSON.stringify(value)
-        : value;
     },
 
     remove: key => this.set(key, undefined),
@@ -166,6 +170,14 @@ var prefs = new function Prefs() {
       } else {
         // user manually deleted our settings, we'll recreate them
         getSync().set({'settings': values});
+      }
+    }
+  });
+
+  chrome.runtime.onMessage.addListener(msg => {
+    if (msg.prefs) {
+      for (const id in msg.prefs) {
+        this.set(id, msg.prefs[id], {noBroadcast: true, noSync: true});
       }
     }
   });
