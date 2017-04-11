@@ -84,7 +84,7 @@ var prefs = new function Prefs() {
     },
 
     set(key, value, {noBroadcast, noSync} = {}) {
-      const oldValue = deepCopy(values[key]);
+      const oldValue = values[key];
       switch (typeof defaults[key]) {
         case typeof value:
           break;
@@ -250,7 +250,11 @@ var prefs = new function Prefs() {
       return false;
     }
     for (const k in a) {
-      if (a[k] !== b[k]) {
+      if (typeof a[k] == 'object') {
+        if (!equal(a[k], b[k])) {
+          return false;
+        }
+      } else if (a[k] !== b[k]) {
         return false;
       }
     }
