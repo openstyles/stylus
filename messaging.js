@@ -97,13 +97,12 @@ function updateIcon(tab, styles) {
     });
     return;
   }
-  (isNTP ? getTabRealURL(tab) : Promise.resolve(tab.url))
-    .then(url => getStylesSafe({
-      matchUrl: url,
-      enabled: true,
-      asHash: true,
-    }))
-    .then(stylesReceived);
+  if (isNTP) {
+    getTabRealURL(tab).then(url =>
+      getStyles({matchUrl: url, enabled: true, asHash: true}, stylesReceived));
+  } else {
+    getStyles({matchUrl: tab.url, enabled: true, asHash: true}, stylesReceived);
+  }
 
   function stylesReceived(styles) {
     let numStyles = styles.length;
@@ -129,10 +128,13 @@ function updateIcon(tab, styles) {
         38: `images/icon/38${postfix}.png`,
         // TODO: add Edge preferred sizes: 20, 25, 30, 40
       },
-    }, ignoreChromeError);
-    // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
-    chrome.browserAction.setBadgeBackgroundColor({color});
-    chrome.browserAction.setBadgeText({text, tabId: tab.id});
+    }, () => {
+      if (!chrome.runtime.lastError) {
+        // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
+        chrome.browserAction.setBadgeBackgroundColor({color});
+        chrome.browserAction.setBadgeText({text, tabId: tab.id});
+      }
+    });
   }
 }
 
