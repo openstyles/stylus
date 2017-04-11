@@ -186,27 +186,24 @@ function debounce(fn, delay, ...args) {
 
 
 function deepCopy(obj) {
-  if (!obj || typeof obj != 'object') {
-    return obj;
-  } else {
-    const emptyCopy = Object.create(Object.getPrototypeOf(obj));
-    return deepMerge(emptyCopy, obj);
-  }
+  return obj !== null && obj !== undefined && typeof obj == 'object'
+    ? deepMerge(typeof obj.slice == 'function' ? [] : {}, obj)
+    : obj;
 }
 
 
 function deepMerge(target, ...args) {
+  const isArray = typeof target.slice == 'function';
   for (const obj of args) {
+    if (isArray && obj !== null && obj !== undefined) {
+      for (const element of obj) {
+        target.push(deepCopy(element));
+      }
+      continue;
+    }
     for (const k in obj) {
       const value = obj[k];
-      if (!value || typeof value != 'object') {
-        target[k] = value;
-      } else if (typeof value.slice == 'function') {
-        const arrayCopy = target[k] = target[k] || [];
-        for (const element of value) {
-          arrayCopy.push(deepCopy(element));
-        }
-      } else if (k in target) {
+      if (k in target && typeof value == 'object' && value !== null) {
         deepMerge(target[k], value);
       } else {
         target[k] = deepCopy(value);
