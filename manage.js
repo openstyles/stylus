@@ -107,7 +107,7 @@ function showStyles(styles = []) {
         break;
       }
     }
-    if ($('#search').value) {
+    if ($('#search').value.trim()) {
       // re-apply filtering on history Back
       searchStyles({immediately: true, container: renderBin});
     }
@@ -342,6 +342,11 @@ Object.assign(handleEvent, {
 
 function handleUpdate(style, {reason} = {}) {
   const element = createStyleElement({style});
+  if ($('#search').value.trim()) {
+    const renderBin = document.createDocumentFragment();
+    renderBin.appendChild(element);
+    searchStyles({immediately: true, container: renderBin});
+  }
   const oldElement = $('#style-' + style.id, installed);
   if (oldElement) {
     if (oldElement.styleNameLowerCase == element.styleNameLowerCase) {
