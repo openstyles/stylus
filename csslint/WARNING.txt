@@ -1,0 +1,12 @@
+1. Until https://github.com/CSSLint/parser-lib/issues/229 is fixed, manually replace:
+
+  while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN) {
+
+  in "_function: function()" with
+
+  while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN && lt !== Tokens.EOF) {
+
+2. Apply our hacks unless supported natively:
+
+  * Support :any(), :-webkit-any(), :-moz-any()
+  * Support @supports inside @-moz-document

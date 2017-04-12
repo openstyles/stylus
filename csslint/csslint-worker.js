@@ -2781,7 +2781,7 @@ Parser.prototype = function() {
 
                             //functionText += this._term();
                             lt = tokenStream.peek();
-                            while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN) {
+                            while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN && lt !== Tokens.EOF) {
                                 tokenStream.get();
                                 functionText += tokenStream.token().value;
                                 lt = tokenStream.peek();
