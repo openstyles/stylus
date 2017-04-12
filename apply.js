@@ -20,15 +20,17 @@ if (!isOwnPage) {
   window.addEventListener(chrome.runtime.id, orphanCheck, true);
 }
 
-function requestStyles(options) {
+function requestStyles(options, callback = applyStyles) {
   var matchUrl = location.href;
-  try {
+  if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
     // dynamic about: and javascript: iframes don't have an URL yet
     // so we'll try the parent frame which is guaranteed to have a real URL
-    if (!matchUrl.match(/^(http|file|chrome|ftp)/) && window != parent) {
-      matchUrl = parent.location.href;
-    }
-  } catch (e) {}
+    try {
+      if (window != parent) {
+        matchUrl = parent.location.href;
+      }
+    } catch (e) {}
+  }
   const request = Object.assign({
     method: 'getStyles',
     matchUrl,
@@ -40,23 +42,21 @@ function requestStyles(options) {
   // unless Chrome is still starting up and the background page isn't fully loaded.
   // (Note: in this case the function may be invoked again from applyStyles.)
   if (typeof getStylesSafe !== 'undefined') {
-    getStylesSafe(request).then(applyStyles);
+    getStylesSafe(request).then(callback);
   } else {
-    chrome.runtime.sendMessage(request, applyStyles);
+    chrome.runtime.sendMessage(request, callback);
   }
 }
 
 
 function applyOnMessage(request, sender, sendResponse) {
-  // Do-It-Yourself tells our built-in pages to fetch the styles directly
-  // which is faster because IPC messaging JSON-ifies everything internally
   if (request.styles == 'DIY') {
-    getStylesSafe({
-      matchUrl: location.href,
-      enabled: true,
-      asHash: true,
-    }).then(styles =>
-      applyOnMessage(Object.assign(request, {styles})));
+    // Do-It-Yourself tells our built-in pages to fetch the styles directly
+    // which is faster because IPC messaging JSON-ifies everything internally
+    requestStyles({}, styles => {
+      request.styles = styles;
+      applyOnMessage(request);
+    });
     return;
   }
   switch (request.method) {
@@ -70,12 +70,13 @@ function applyOnMessage(request, sender, sendResponse) {
         applyStyleState(request.style);
         break;
       }
-      if (!request.style.enabled) {
+      if (request.style.enabled) {
+        removeStyle({id: request.style.id, retire: true});
+        requestStyles({id: request.style.id});
+      } else {
         removeStyle(request.style);
-        break;
       }
-      removeStyle({id: request.style.id, retire: true});
-     // fallthrough to 'styleAdded'
+      break;
 
     case 'styleAdded':
       if (request.style.enabled) {
