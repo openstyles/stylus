@@ -3,11 +3,14 @@
 /* eslint no-var: 0 */
 'use strict';
 
+var ID_PREFIX = 'stylus-';
+var ROOT = document.documentElement;
 var isOwnPage = location.href.startsWith('chrome-extension:');
 var disableAll = false;
 var styleElements = new Map();
 var disabledElements = new Map();
-var retiredStyleIds = [];
+var retiredStyleTimers = new Map();
+var docRewriteObserver;
 
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
@@ -18,16 +21,24 @@ if (!isOwnPage) {
 }
 
 function requestStyles(options) {
+  var matchUrl = location.href;
+  try {
+    // dynamic about: and javascript: iframes don't have an URL yet
+    // so we'll try the parent frame which is guaranteed to have a real URL
+    if (!matchUrl.match(/^(http|file|chrome|ftp)/) && window != parent) {
+      matchUrl = parent.location.href;
+    }
+  } catch (e) {}
+  const request = Object.assign({
+    method: 'getStyles',
+    matchUrl,
+    enabled: true,
+    asHash: true,
+  }, options);
   // If this is a Stylish page (Edit Style or Manage Styles),
   // we'll request the styles directly to minimize delay and flicker,
   // unless Chrome is still starting up and the background page isn't fully loaded.
   // (Note: in this case the function may be invoked again from applyStyles.)
-  const request = Object.assign({
-    method: 'getStyles',
-    matchUrl: location.href,
-    enabled: true,
-    asHash: true,
-  }, options);
   if (typeof getStylesSafe !== 'undefined') {
     getStylesSafe(request).then(applyStyles);
   } else {
@@ -51,19 +62,19 @@ function applyOnMessage(request, sender, sendResponse) {
   switch (request.method) {
 
     case 'styleDeleted':
-      removeStyle(request.id, document);
+      removeStyle(request);
       break;
 
     case 'styleUpdated':
       if (request.codeIsUpdated === false) {
-        applyStyleState(request.style.id, request.style.enabled, document);
+        applyStyleState(request.style);
         break;
       }
       if (!request.style.enabled) {
-        removeStyle(request.style.id, document);
+        removeStyle(request.style);
         break;
       }
-      retireStyle(request.style.id);
+      removeStyle({id: request.style.id, retire: true});
      // fallthrough to 'styleAdded'
 
     case 'styleAdded':
@@ -77,7 +88,7 @@ function applyOnMessage(request, sender, sendResponse) {
       break;
 
     case 'styleReplaceAll':
-      replaceAll(request.styles, document);
+      replaceAll(request.styles);
       break;
 
     case 'prefChanged':
@@ -93,36 +104,23 @@ function applyOnMessage(request, sender, sendResponse) {
 }
 
 
-function doDisableAll(disable, doc = document) {
-  if (doc == document && !disable === !disableAll) {
+function doDisableAll(disable) {
+  if (!disable === !disableAll) {
     return;
   }
   disableAll = disable;
-  if (disable && doc.iframeObserver) {
-    doc.iframeObserver.stop();
-  }
-  Array.prototype.forEach.call(doc.styleSheets, stylesheet => {
-    if (stylesheet.ownerNode.matches('stylus[id^="stylus-"]')
+  Array.prototype.forEach.call(document.styleSheets, stylesheet => {
+    if (stylesheet.ownerNode.matches(`STYLE.stylus[id^="${ID_PREFIX}"]`)
     && stylesheet.disabled != disable) {
       stylesheet.disabled = disable;
     }
   });
-  for (const iframe of getDynamicIFrames(doc)) {
-    if (!disable) {
-      // update the IFRAME if it was created while the observer was disconnected
-      addDocumentStylesToIFrame(iframe);
-    }
-    doDisableAll(disable, iframe.contentDocument);
-  }
-  if (!disable && doc.readyState != 'loading' && doc.iframeObserver) {
-    doc.iframeObserver.start();
-  }
 }
 
 
-function applyStyleState(id, enabled, doc) {
-  const inCache = disabledElements.get(id);
-  const inDoc = doc.getElementById('stylus-' + id);
+function applyStyleState({id, enabled}) {
+  const inCache = disabledElements.get(id) || styleElements.get(id);
+  const inDoc = document.getElementById(ID_PREFIX + id);
   if (enabled && inDoc || !enabled && !inDoc) {
     return;
   }
@@ -131,103 +129,80 @@ function applyStyleState(id, enabled, doc) {
     return;
   }
   if (enabled && inCache) {
-    const el = inCache.cloneNode(true);
-    doc.documentElement.appendChild(el);
-    el.sheet.disabled = disableAll;
-    processDynamicIFrames(doc, applyStyleState, id, enabled);
+    addStyleElement(inCache);
     disabledElements.delete(id);
     return;
   }
   if (!enabled && inDoc) {
-    if (!inCache) {
-      disabledElements.set(id, inDoc);
-    }
+    disabledElements.set(id, inDoc);
     inDoc.remove();
-    if (doc.location.href == 'about:srcdoc') {
-      const original = doc.getElementById('stylus-' + id);
+    if (document.location.href == 'about:srcdoc') {
+      const original = document.getElementById(ID_PREFIX + id);
       if (original) {
         original.remove();
       }
     }
-    processDynamicIFrames(doc, applyStyleState, id, enabled);
     return;
   }
 }
 
 
-function removeStyle(id, doc) {
-  [doc.getElementById('stylus-' + id)].forEach(e => e && e.remove());
-  if (doc == document) {
-    styleElements.delete('stylus-' + id);
-    disabledElements.delete(id);
-    if (!styleElements.size) {
-      doc.iframeObserver.disconnect();
+function removeStyle({id, retire = false}) {
+  const el = document.getElementById(ID_PREFIX + id);
+  if (el) {
+    if (retire) {
+      // to avoid page flicker when the style is updated
+      // instead of removing it immediately we rename its ID and queue it
+      // to be deleted in applyStyles after a new version is fetched and applied
+      const deadID = 'ghost-' + id;
+      el.id = ID_PREFIX + deadID;
+      // in case something went wrong and new style was never applied
+      retiredStyleTimers.set(deadID, setTimeout(removeStyle, 1000, {id: deadID}));
+    } else {
+      el.remove();
     }
   }
-  processDynamicIFrames(doc, removeStyle, id);
+  styleElements.delete(ID_PREFIX + id);
+  disabledElements.delete(id);
+  retiredStyleTimers.delete(id);
 }
 
 
-// to avoid page flicker when the style is updated
-// instead of removing it immediately we rename its ID and queue it
-// to be deleted in applyStyles after a new version is fetched and applied
-function retireStyle(id, doc) {
-  const deadID = 'ghost-' + id;
-  if (!doc) {
-    doc = document;
-    retiredStyleIds.push(deadID);
-    styleElements.delete('stylus-' + id);
-    disabledElements.delete(id);
-    // in case something went wrong and new style was never applied
-    setTimeout(removeStyle, 1000, deadID, doc);
-  }
-  const el = doc.getElementById('stylus-' + id);
-  if (el) {
-    el.id = 'stylus-' + deadID;
-  }
-  processDynamicIFrames(doc, retireStyle, id);
-}
-
-
-function applyStyles(styleHash) {
-  if (!styleHash) { // Chrome is starting up
+function applyStyles(styles) {
+  if (!styles) {
+    // Chrome is starting up
     requestStyles();
     return;
   }
-  if ('disableAll' in styleHash) {
-    doDisableAll(styleHash.disableAll);
-    delete styleHash.disableAll;
+  if ('disableAll' in styles) {
+    doDisableAll(styles.disableAll);
+    delete styles.disableAll;
   }
-
-  for (const styleId in styleHash) {
-    applySections(styleId, styleHash[styleId]);
-  }
-
-  if (styleElements.size) {
+  if (document.head
+  && document.head.firstChild
+  && document.head.firstChild.id == 'xml-viewer-style') {
     // when site response is application/xml Chrome displays our style elements
     // under document.documentElement as plain text so we need to move them into HEAD
     // which is already autogenerated at this moment
-    if (document.head && document.head.firstChild && document.head.firstChild.id == 'xml-viewer-style') {
-      for (const id of styleElements.keys()) {
-        document.head.appendChild(document.getElementById(id));
-      }
-    }
-    initObservers();
+    ROOT = document.head;
   }
-
-  if (retiredStyleIds.length) {
-    setTimeout(function() {
-      while (retiredStyleIds.length) {
-        removeStyle(retiredStyleIds.shift(), document);
+  for (const id in styles) {
+    applySections(id, styles[id]);
+  }
+  initDocRewriteObserver();
+  if (retiredStyleTimers.size) {
+    setTimeout(() => {
+      for (const [id, timer] of retiredStyleTimers.entries()) {
+        removeStyle({id});
+        clearTimeout(timer);
       }
-    }, 0);
+    });
   }
 }
 
 
 function applySections(styleId, sections) {
-  let el = document.getElementById('stylus-' + styleId);
-  // Already there.
+  let el = document.getElementById(ID_PREFIX + styleId);
   if (el) {
     return;
   }
@@ -240,232 +215,63 @@ function applySections(styleId, sections) {
     // This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
     el = document.createElement('style');
   }
-  el.setAttribute('id', 'stylus-' + styleId);
-  el.setAttribute('class', 'stylus');
-  el.setAttribute('type', 'text/css');
-  el.appendChild(document.createTextNode(sections.map(section => section.code).join('\n')));
-  addStyleElement(el, document);
+  Object.assign(el, {
+    id: ID_PREFIX + styleId,
+    className: 'stylus',
+    type: 'text/css',
+    textContent: sections.map(section => section.code).join('\n'),
+  });
+  addStyleElement(el);
   styleElements.set(el.id, el);
   disabledElements.delete(styleId);
 }
 
 
-function addStyleElement(el, doc) {
-  if (!doc.documentElement || doc.getElementById(el.id)) {
+function addStyleElement(el) {
+  if (ROOT && !document.getElementById(el.id)) {
+    ROOT.appendChild(el);
+    el.disabled = disableAll;
+  }
+}
+
+
+function replaceAll(newStyles) {
+  const oldStyles = Array.prototype.slice.call(
+    document.querySelectorAll(`STYLE.stylus[id^="${ID_PREFIX}"]`));
+  oldStyles.forEach(el => (el.id += '-ghost'));
+  styleElements.clear();
+  disabledElements.clear();
+  retiredStyleTimers.clear();
+  applyStyles(newStyles);
+  oldStyles.forEach(el => el.remove());
+}
+
+
+function initDocRewriteObserver() {
+  if (isOwnPage || docRewriteObserver || !styleElements.size) {
     return;
   }
-  doc.documentElement.appendChild(doc.importNode(el, true))
-    .disabled = disableAll;
-  for (const iframe of getDynamicIFrames(doc)) {
-    if (iframeIsLoadingSrcDoc(iframe)) {
-      addStyleToIFrameSrcDoc(iframe, el);
-    } else {
-      addStyleElement(el, iframe.contentDocument);
-    }
-  }
-}
-
-
-function addDocumentStylesToIFrame(iframe) {
-  const doc = iframe.contentDocument;
-  const srcDocIsLoading = iframeIsLoadingSrcDoc(iframe);
-  for (const el of styleElements.values()) {
-    if (srcDocIsLoading) {
-      addStyleToIFrameSrcDoc(iframe, el);
-    } else {
-      addStyleElement(el, doc);
-    }
-  }
-  initObservers(doc);
-}
-
-
-function addDocumentStylesToAllIFrames(doc = document) {
-  getDynamicIFrames(doc).forEach(addDocumentStylesToIFrame);
-}
-
-
-// Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
-function getDynamicIFrames(doc) {
-  return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
-}
-
-
-function iframeIsDynamic(f) {
-  let href;
-  if (f.src && f.src.startsWith('http') && new URL(f.src).origin != location.origin) {
-    return false;
-  }
-  try {
-    href = f.contentDocument.location.href;
-  } catch (ex) {
-    // Cross-origin, so it's not a dynamic iframe
-    return false;
-  }
-  return href == document.location.href || href.startsWith('about:');
-}
-
-
-function processDynamicIFrames(doc, fn, ...args) {
-  var iframes = doc.getElementsByTagName('iframe');
-  for (var i = 0, il = iframes.length; i < il; i++) {
-    var iframe = iframes[i];
-    if (iframeIsDynamic(iframe)) {
-      fn(...args, iframe.contentDocument);
-    }
-  }
-}
-
-
-function iframeIsLoadingSrcDoc(f) {
-  return f.srcdoc && f.contentDocument.all.length <= 3;
-  // 3 nodes or less in total (html, head, body) == new empty iframe about to be overwritten by its 'srcdoc'
-}
-
-
-function addStyleToIFrameSrcDoc(iframe, el) {
-  if (disableAll) {
-    return;
-  }
-  iframe.srcdoc += el.outerHTML;
-  // make sure the style is added in case srcdoc was malformed
-  setTimeout(addStyleElement, 100, el, iframe.contentDocument);
-}
-
-
-function replaceAll(newStyles, doc) {
-  Array.prototype.forEach.call(doc.querySelectorAll('STYLE.stylus[id^="stylus-"]'),
-    e => (e.id += '-ghost'));
-  processDynamicIFrames(doc, replaceAll, newStyles);
-  if (doc == document) {
-    styleElements.clear();
-    disabledElements.clear();
-    applyStyles(newStyles);
-    replaceAllpass2(newStyles, doc);
-  }
-}
-
-
-function replaceAllpass2(newStyles, doc) {
-  const oldStyles = doc.querySelectorAll('STYLE.stylus[id$="-ghost"]');
-  processDynamicIFrames(doc, replaceAllpass2, newStyles);
-  Array.prototype.forEach.call(oldStyles,
-    e => e.remove());
-}
-
-
-function onDOMContentLoaded({target = document} = {}) {
-  addDocumentStylesToAllIFrames(target);
-  if (target.iframeObserver) {
-    target.iframeObserver.start();
-  }
-}
-
-
-function initObservers(doc = document) {
-  if (isOwnPage || doc.rewriteObserver) {
-    return;
-  }
-  initIFrameObserver(doc);
-  initDocRewriteObserver(doc);
-  if (doc.readyState != 'loading') {
-    onDOMContentLoaded({target: doc});
-  } else {
-    doc.addEventListener('DOMContentLoaded', onDOMContentLoaded);
-  }
-}
-
-
-function initIFrameObserver(doc = document) {
-  if (!initIFrameObserver.methods) {
-    initIFrameObserver.methods = {
-      start() {
-        this.observe(this.doc, {childList: true, subtree: true});
-      },
-      stop() {
-        this.disconnect();
-        getDynamicIFrames(this.doc).forEach(iframe => {
-          const observer = iframe.contentDocument.iframeObserver;
-          if (observer) {
-            observer.stop();
-          }
-        });
-      },
-    };
-  }
-  doc.iframeObserver = Object.assign(
-    new MutationObserver(iframeObserver),
-    initIFrameObserver.methods, {
-      iframes: doc.getElementsByTagName('iframe'),
-      doc,
-    });
-}
-
-
-function iframeObserver(mutations, observer) {
-  // autoupdated HTMLCollection is superfast
-  if (!observer.iframes[0]) {
-    return;
-  }
-  // use a much faster method for very complex pages with lots of mutations
-  // (observer usually receives 1k-10k mutations per call)
-  if (mutations.length > 1000) {
-    addDocumentStylesToAllIFrames(observer.doc);
-    return;
-  }
-  for (var m = 0, ml = mutations.length; m < ml; m++) {
-    var added = mutations[m].addedNodes;
-    for (var n = 0, nl = added.length; n < nl; n++) {
-      var node = added[n];
-      // process only ELEMENT_NODE
-      if (node.nodeType != 1) {
-        continue;
-      }
-      var iframes = node.localName === 'iframe' ? [node] :
-        node.children.length && node.getElementsByTagName('iframe');
-      if (iframes.length) {
-        // move the check out of current execution context
-        // because some same-domain (!) iframes fail to load when their 'contentDocument' is accessed (!)
-        // namely gmail's old chat iframe talkgadget.google.com
-        setTimeout(testIFrames, 0, iframes);
-      }
-    }
-  }
-}
-
-
-function testIFrames(iframes) {
-  for (const iframe of iframes) {
-    if (iframeIsDynamic(iframe)) {
-      addDocumentStylesToIFrame(iframe);
-    }
-  }
-}
-
-
-function initDocRewriteObserver(doc = document) {
   // re-add styles if we detect documentElement being recreated
-  doc.rewriteObserver = new MutationObserver(docRewriteObserver);
-  doc.rewriteObserver.observe(doc, {childList: true});
-}
-
-
-function docRewriteObserver(mutations) {
-  for (const mutation of mutations) {
-    for (const node of mutation.addedNodes) {
-      if (node.localName != 'html') {
-        continue;
-      }
-      const doc = node.ownerDocument;
-      for (const [id, el] of styleElements.entries()) {
-        if (!doc.getElementById(id)) {
-          doc.documentElement.appendChild(el);
+  const reinjectStyles = () => {
+    ROOT = document.documentElement;
+    for (const el of styleElements.values()) {
+      addStyleElement(document.importNode(el, true));
+    }
+  };
+  // detect documentElement being rewritten from inside the script
+  docRewriteObserver = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.localName == 'html') {
+          reinjectStyles();
+          return;
         }
       }
-      initObservers(doc);
-      return;
     }
-  }
+  });
+  docRewriteObserver.observe(document, {childList: true});
+  // detect dynamic iframes rewritten after creation by the embedder i.e. externally
+  setTimeout(() => document.documentElement != ROOT && reinjectStyles());
 }
 
 
@@ -473,55 +279,35 @@ function orphanCheck() {
   const port = chrome.runtime.connect();
   if (port) {
     port.disconnect();
-    //console.debug('orphanCheck: still connected');
     return;
   }
-  //console.debug('orphanCheck: disconnected');
 
   // we're orphaned due to an extension update
   // we can detach the mutation observer
+  if (docRewriteObserver) {
+    docRewriteObserver.disconnect();
+  }
   // we can detach event listeners
-  (function unbind(doc) {
-    if (doc.iframeObserver) {
-      doc.iframeObserver.disconnect();
-      delete doc.iframeObserver;
-    }
-    if (doc.rewriteObserver) {
-      doc.rewriteObserver.disconnect();
-      delete doc.rewriteObserver;
-    }
-    doc.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
-    getDynamicIFrames(doc).forEach(iframe => unbind(iframe.contentDocument));
-  })(document);
   window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy our globals in this context to free up memory
   [ // functions
-    'addDocumentStylesToAllIFrames',
-    'addDocumentStylesToIFrame',
     'addStyleElement',
-    'addStyleToIFrameSrcDoc',
     'applyOnMessage',
     'applySections',
     'applyStyles',
+    'applyStyleState',
     'doDisableAll',
-    'getDynamicIFrames',
-    'iframeIsDynamic',
-    'iframeIsLoadingSrcDoc',
     'initDocRewriteObserver',
-    'initIFrameObserver',
     'orphanCheck',
-    'processDynamicIFrames',
     'removeStyle',
     'replaceAll',
-    'replaceAllpass2',
     'requestStyles',
-    'retireStyle',
-    'styleObserver',
     // variables
-    'docRewriteObserver',
-    'iframeObserver',
-    'retiredStyleIds',
+    'ROOT',
+    'disabledElements',
+    'retiredStyleTimers',
     'styleElements',
+    'docRewriteObserver',
   ].forEach(fn => (window[fn] = null));
 }

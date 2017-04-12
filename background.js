@@ -208,18 +208,19 @@ function injectContentScripts() {
       m == '<all_urls>' ? m : wildcardAsRegExp(m)
     ));
   }
-  // also inject in chrome://newtab/ page
-  chrome.tabs.query({url: '*://*/*'}, tabs => {
+  chrome.tabs.query({}, tabs => {
     for (const tab of tabs) {
       for (const cs of contentScripts) {
         for (const m of cs.matches) {
-          if (m == '<all_urls>' || tab.url.match(m)) {
+          if ((m == '<all_urls>' || tab.url.match(m))
+          && (!tab.url.startsWith('chrome') || tab.url == 'chrome://newtab/')) {
             chrome.tabs.sendMessage(tab.id, {method: 'ping'}, pong => {
               if (!pong) {
                 chrome.tabs.executeScript(tab.id, {
                   file: cs.js[0],
                   runAt: cs.run_at,
                   allFrames: cs.all_frames,
+                  matchAboutBlank: cs.match_about_blank,
                 }, ignoreChromeError);
               }
             });
