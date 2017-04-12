@@ -67,7 +67,10 @@ function importFromString(jsonString) {
     invalid: {names: [], legend: 'invalid skipped'},
   };
   let index = 0;
-  let lastRepaint = performance.now();
+  let lastRenderTime = performance.now();
+  const renderQueue = [];
+  const RENDER_NAP_TIME_MAX = 1000; // ms
+  const RENDER_QUEUE_MAX = 50; // number of styles
   return new Promise(proceed);
 
   function proceed(resolve) {
@@ -100,10 +103,13 @@ function importFromString(jsonString) {
         reason: 'import',
         notify: false,
       })).then(style => {
-        handleUpdate(style, {reason: 'import'});
-        if (performance.now() - lastRepaint > 1000) {
-          scrollElementIntoView($('#style-' + style.id));
-          lastRepaint = performance.now();
+        renderQueue.push(style);
+        if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
+        || renderQueue.length > RENDER_QUEUE_MAX) {
+          renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
+          setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
+          renderQueue.length = 0;
+          lastRenderTime = performance.now();
         }
         setTimeout(proceed, 0, resolve);
         if (!oldStyle) {
@@ -126,6 +132,8 @@ function importFromString(jsonString) {
       });
       return;
     }
+    renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
+    renderQueue.length = 0;
     done(resolve);
   }
 
