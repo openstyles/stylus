@@ -433,6 +433,26 @@ body.blocked #unavailable {
   text-align: right;
 }
 
+.unreachable .entry {
+  opacity: .25;
+}
+
+.unreachable:before {
+  content: "__MSG_unreachableContentScript__";
+  padding: 5px 0.75em;
+  display: block;
+  font-weight: bold;
+}
+
+.unreachable #installed:before {
+  content: "__MSG_unreachableFileHint__";
+  padding: 1px 0.75em 9px;
+  display: block;
+  font-size: 90%;
+  border-bottom: 1px solid black;
+  margin-bottom: 5px;
+}
+
 @keyframes lights-off {
   from {
     background-color: transparent;

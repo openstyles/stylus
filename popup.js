@@ -92,6 +92,14 @@ function initPopup(url) {
     return;
   }
 
+  getActiveTab().then(tab => {
+    chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
+      if (pong === undefined) {
+        document.body.classList.add('unreachable');
+      }
+    });
+  });
+
   // Write new style links
   const writeStyle = $('#write-style');
   const matchTargets = document.createElement('span');

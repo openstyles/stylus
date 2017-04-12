@@ -510,6 +510,14 @@
     "message": "Undo (global)",
     "description": "CSS-beautify global Undo button label"
   },
+  "unreachableContentScript": {
+    "message": "Could not communicate with the page. Try reloading the tab.",
+    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+  },
+  "unreachableFileHint": {
+    "message": "To allow Stylus access file:// URLs enable the checkbox on chrome://extensions page.",
+    "description": "Note in the toolbar popup for file:// URLs"
+  },
   "updateCheckFailBadResponseCode": {
     "message": "Update failed - server responded with code $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
