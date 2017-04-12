@@ -294,9 +294,8 @@
 		"message": "Mozilla формат",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus не ради на страницама као што је ова.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	"stylusUnavailableForURL": {
+		"message": "Stylus не ради на страницама као што је ова.",		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Уклони одељак",

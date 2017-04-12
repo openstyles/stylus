@@ -294,8 +294,8 @@
 		"message": "Mozilla Format",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus ne fonctionne pas sur les pages de ce genre)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus ne fonctionne pas sur les pages de ce genre",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

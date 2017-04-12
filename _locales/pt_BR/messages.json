@@ -294,10 +294,6 @@
 		"message": "Mozilla Format",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
 	"sectionRemove": {
 		"message": "Remover seção",
 		"description": "Label for the button to remove a section"

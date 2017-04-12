@@ -357,7 +357,7 @@ function handleUpdate(style) {
   }
   // Add an entry when a new style for the current url is installed
   if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
-    $('#unavailable').style.display = 'none';
+    document.body.classList.remove('blocked');
     createStyleElement({style});
   }
 }

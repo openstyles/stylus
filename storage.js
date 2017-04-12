@@ -104,6 +104,12 @@ function filterStyles({
   // eslint-disable-next-line no-use-before-define
   const disableAll = asHash && prefs.get('disableAll', false);
 
+  if (matchUrl && matchUrl.startsWith(URLS.chromeWebStore)) {
+    // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
+    // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
+    return asHash ? {} : [];
+  }
+
   // add \t after url to prevent collisions (not sure it can actually happen though)
   const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
   const cached = cachedStyles.filters.get(cacheKey);

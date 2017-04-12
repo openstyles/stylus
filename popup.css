@@ -66,7 +66,6 @@ a:hover {
   display: table-cell;
 }
 
-#unavailable,
 #installed {
   border-bottom: 1px solid black;
   padding-bottom: 2px;
@@ -219,9 +218,7 @@ body > .actions {
 }
 
 .actions > div:not(:last-child):not(#disable-all-wrapper),
-.actions > .main-controls > div:not(:last-child),
-#unavailable:not(:last-child),
-#unavailable + .actions {
+.actions > .main-controls > div:not(:last-child) {
   margin-bottom: 0.75em;
 }
 
@@ -230,24 +227,10 @@ body > .actions {
   vertical-align: middle;
 }
 
-#unavailable {
-  border: none;
+body.blocked #installed > *,
+body.blocked .actions > .main-controls,
+body.blocked .actions > .left-gutter {
   display: none;
-  margin-top: 0.75em;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-}
-
-body.blocked #installed,
-body.blocked #find-styles,
-body.blocked #write-style,
-body:not(.blocked) #unavailable {
-  display: none;
-}
-
-body.blocked #unavailable {
-  display: flex;
 }
 
 /* Never shown, but can be enabled with a style */
@@ -437,20 +420,36 @@ body.blocked #unavailable {
   opacity: .25;
 }
 
+.blocked:before,
 .unreachable:before {
-  content: "__MSG_unreachableContentScript__";
   padding: 5px 0.75em;
   display: block;
   font-weight: bold;
 }
 
+.blocked #installed:before,
 .unreachable #installed:before {
-  content: "__MSG_unreachableFileHint__";
   padding: 1px 0.75em 9px;
   display: block;
   font-size: 90%;
-  border-bottom: 1px solid black;
   margin-bottom: 5px;
+}
+
+.blocked:before {
+  content: "__MSG_stylusUnavailableForURL__";
+}
+
+.blocked #installed:before {
+  content: "__MSG_stylusUnavailableForURLdetails__";
+}
+
+.unreachable:before {
+  content: "__MSG_unreachableContentScript__";
+}
+
+.unreachable #installed:before {
+  content: "__MSG_unreachableFileHint__";
+  border-bottom: 1px solid black;
 }
 
 @keyframes lights-off {

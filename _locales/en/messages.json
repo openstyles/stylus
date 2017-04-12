@@ -494,9 +494,13 @@
       }
     }
   },
-  "stylishUnavailableForURL": {
-    "message": "(Stylus can't affect this page.)",
+  "stylusUnavailableForURL": {
+    "message": "Stylus doesn't work on pages like this.",
     "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version or about:addons) as well as other extensions' pages. Chrome/Chromium forks also restrict the Chrome Web Store.",
+    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
   },
   "toggleStyle": {
     "message": "Toggle style",
@@ -515,7 +519,7 @@
     "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
   },
   "unreachableFileHint": {
-    "message": "To allow Stylus access file:// URLs enable the checkbox on chrome://extensions page.",
+    "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "updateCheckFailBadResponseCode": {
