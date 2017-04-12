@@ -12,6 +12,9 @@ var useHistoryBack;   // use browser history back when "back to manage" is click
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
 
+// if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
+onBackgroundReady();
+
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf", "map"].forEach(function(method) {
 	NodeList.prototype[method]= Array.prototype[method];
@@ -246,9 +249,8 @@ function initCodeMirror() {
 			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
 		}
 		var themeControl = document.getElementById("editor.theme");
-		var bg = chrome.extension.getBackgroundPage();
-		if (bg && bg.codeMirrorThemes) {
-			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
+		if (BG && BG.codeMirrorThemes) {
+			themeControl.innerHTML = optionsHtmlFromArray(BG.codeMirrorThemes);
 		} else {
 			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
 			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
@@ -1822,7 +1824,15 @@ function onRuntimeMessage(request) {
 	switch (request.method) {
 		case "styleUpdated":
 			if (styleId && styleId == request.style.id && request.reason != 'editSave') {
-				initWithStyle(request);
+				if ((request.style.sections[0] || {}).code === null) {
+					// the code-less style came from notifyAllTabs
+					onBackgroundReady().then(() => {
+						request.style = BG.cachedStyles.byId.get(request.style.id);
+						initWithStyle(request);
+					});
+				} else {
+					initWithStyle(request);
+				}
 			}
 			break;
 		case "styleDeleted":

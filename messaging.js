@@ -32,19 +32,22 @@ if (!BG || BG != window) {
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;
-  if (msg.codeIsUpdated === false && msg.style) {
+  if (msg.method == 'styleUpdated' || msg.method == 'styleAdded') {
+    // apply/popup/manage use only meta for these two methods,
+    // editor may need the full code but can fetch it directly,
+    // so we send just the meta to avoid spamming lots of tabs with huge styles
     msg = Object.assign({}, msg, {
       style: getStyleWithNoCode(msg.style)
     });
   }
   const affectsAll = !msg.affects || msg.affects.all;
-  const affectsOwnOrigin = !affectsAll && (msg.affects.editor || msg.affects.manager);
-  const affectsTabs = affectsAll || affectsOwnOrigin;
+  const affectsOwnOriginOnly = !affectsAll && (msg.affects.editor || msg.affects.manager);
+  const affectsTabs = affectsAll || affectsOwnOriginOnly;
   const affectsIcon = affectsAll || msg.affects.icon;
   const affectsPopup = affectsAll || msg.affects.popup;
   if (affectsTabs || affectsIcon) {
     // list all tabs including chrome-extension:// which can be ours
-    chrome.tabs.query(affectsOwnOrigin ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
+    chrome.tabs.query(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
       for (const tab of tabs) {
         if (affectsTabs || URLS.optionsUI.includes(tab.url)) {
           chrome.tabs.sendMessage(tab.id, msg);
