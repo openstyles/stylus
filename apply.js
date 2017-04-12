@@ -8,10 +8,7 @@ var disableAll = false;
 var styleElements = new Map();
 var disabledElements = new Map();
 var retiredStyleIds = [];
-var iframeObserver;
-var docRewriteObserver;
 
-initIFrameObserver();
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
 
@@ -71,7 +68,7 @@ function applyOnMessage(request, sender, sendResponse) {
 
     case 'styleAdded':
       if (request.style.enabled) {
-        requestStyles({id: request.style.id}, applyStyles);
+        requestStyles({id: request.style.id});
       }
       break;
 
@@ -96,35 +93,29 @@ function applyOnMessage(request, sender, sendResponse) {
 }
 
 
-function doDisableAll(disable) {
-  if (!disable === !disableAll) {
+function doDisableAll(disable, doc = document) {
+  if (doc == document && !disable === !disableAll) {
     return;
   }
   disableAll = disable;
-  if (disableAll) {
-    iframeObserver.disconnect();
+  if (disable && doc.iframeObserver) {
+    doc.iframeObserver.stop();
   }
-
-  disableSheets(disableAll, document);
-
-  if (!disableAll && document.readyState != 'loading') {
-    iframeObserver.start();
-  }
-
-  function disableSheets(disable, doc) {
-    Array.prototype.forEach.call(doc.styleSheets, stylesheet => {
-      if (stylesheet.ownerNode.classList.contains('stylus')
-      && stylesheet.disabled != disable) {
-        stylesheet.disabled = disable;
-      }
-    });
-    for (const iframe of getDynamicIFrames(doc)) {
-      if (!disable) {
-        // update the IFRAME if it was created while the observer was disconnected
-        addDocumentStylesToIFrame(iframe);
-      }
-      disableSheets(disable, iframe.contentDocument);
+  Array.prototype.forEach.call(doc.styleSheets, stylesheet => {
+    if (stylesheet.ownerNode.matches('stylus[id^="stylus-"]')
+    && stylesheet.disabled != disable) {
+      stylesheet.disabled = disable;
     }
+  });
+  for (const iframe of getDynamicIFrames(doc)) {
+    if (!disable) {
+      // update the IFRAME if it was created while the observer was disconnected
+      addDocumentStylesToIFrame(iframe);
+    }
+    doDisableAll(disable, iframe.contentDocument);
+  }
+  if (!disable && doc.readyState != 'loading' && doc.iframeObserver) {
+    doc.iframeObserver.start();
   }
 }
 
@@ -141,15 +132,23 @@ function applyStyleState(id, enabled, doc) {
   }
   if (enabled && inCache) {
     const el = inCache.cloneNode(true);
-    document.documentElement.appendChild(el);
+    doc.documentElement.appendChild(el);
     el.sheet.disabled = disableAll;
     processDynamicIFrames(doc, applyStyleState, id, enabled);
     disabledElements.delete(id);
     return;
   }
   if (!enabled && inDoc) {
-    disabledElements.set(id, inDoc);
+    if (!inCache) {
+      disabledElements.set(id, inDoc);
+    }
     inDoc.remove();
+    if (doc.location.href == 'about:srcdoc') {
+      const original = doc.getElementById('stylus-' + id);
+      if (original) {
+        original.remove();
+      }
+    }
     processDynamicIFrames(doc, applyStyleState, id, enabled);
     return;
   }
@@ -162,7 +161,7 @@ function removeStyle(id, doc) {
     styleElements.delete('stylus-' + id);
     disabledElements.delete(id);
     if (!styleElements.size) {
-      iframeObserver.disconnect();
+      doc.iframeObserver.disconnect();
     }
   }
   processDynamicIFrames(doc, removeStyle, id);
@@ -213,12 +212,7 @@ function applyStyles(styleHash) {
         document.head.appendChild(document.getElementById(id));
       }
     }
-    if (document.readyState != 'loading') {
-      onDOMContentLoaded();
-    } else {
-      document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
-    }
-    initDocRewriteObserver();
+    initObservers();
   }
 
   if (retiredStyleIds.length) {
@@ -228,12 +222,6 @@ function applyStyles(styleHash) {
       }
     }, 0);
   }
-}
-
-
-function onDOMContentLoaded() {
-  addDocumentStylesToAllIFrames();
-  iframeObserver.start();
 }
 
 
@@ -288,18 +276,18 @@ function addDocumentStylesToIFrame(iframe) {
       addStyleElement(el, doc);
     }
   }
-  initDocRewriteObserver(doc);
+  initObservers(doc);
 }
 
 
-function addDocumentStylesToAllIFrames() {
-  getDynamicIFrames(document).forEach(addDocumentStylesToIFrame);
+function addDocumentStylesToAllIFrames(doc = document) {
+  getDynamicIFrames(doc).forEach(addDocumentStylesToIFrame);
 }
 
 
 // Only dynamic iframes get the parent document's styles. Other ones should get styles based on their own URLs.
 function getDynamicIFrames(doc) {
-  return [...doc.getElementsByTagName('iframe')].filter(iframeIsDynamic);
+  return Array.prototype.filter.call(doc.getElementsByTagName('iframe'), iframeIsDynamic);
 }
 
 
@@ -319,7 +307,9 @@ function iframeIsDynamic(f) {
 
 
 function processDynamicIFrames(doc, fn, ...args) {
-  for (const iframe of [...doc.getElementsByTagName('iframe')]) {
+  var iframes = doc.getElementsByTagName('iframe');
+  for (var i = 0, il = iframes.length; i < il; i++) {
+    var iframe = iframes[i];
     if (iframeIsDynamic(iframe)) {
       fn(...args, iframe.contentDocument);
     }
@@ -344,8 +334,8 @@ function addStyleToIFrameSrcDoc(iframe, el) {
 
 
 function replaceAll(newStyles, doc) {
-  const oldStyles = [...doc.querySelectorAll('STYLE.stylus')];
-  oldStyles.forEach(style => (style.id += '-ghost'));
+  Array.prototype.forEach.call(doc.querySelectorAll('STYLE.stylus[id^="stylus-"]'),
+    e => (e.id += '-ghost'));
   processDynamicIFrames(doc, replaceAll, newStyles);
   if (doc == document) {
     styleElements.clear();
@@ -357,80 +347,123 @@ function replaceAll(newStyles, doc) {
 
 
 function replaceAllpass2(newStyles, doc) {
-  const oldStyles = [...doc.querySelectorAll('STYLE.stylus[id$="-ghost"]')];
+  const oldStyles = doc.querySelectorAll('STYLE.stylus[id$="-ghost"]');
   processDynamicIFrames(doc, replaceAllpass2, newStyles);
-  oldStyles.forEach(e => e.remove());
+  Array.prototype.forEach.call(oldStyles,
+    e => e.remove());
 }
 
 
-function initIFrameObserver() {
-  iframeObserver = Object.assign(new MutationObserver(observer), {
-    start() {
-      this.observe(document, {childList: true, subtree: true});
-    }
-  });
-  const iframesCollection = document.getElementsByTagName('iframe');
-
-  function observer(mutations) {
-    // autoupdated HTMLCollection is superfast
-    if (!iframesCollection[0]) {
-      return;
-    }
-    // use a much faster method for very complex pages with lots of mutations
-    // (observer usually receives 1k-10k mutations per call)
-    if (mutations.length > 1000) {
-      addDocumentStylesToAllIFrames();
-      return;
-    }
-    // move the check out of current execution context
-    // because some same-domain (!) iframes fail to load when their 'contentDocument' is accessed (!)
-    // namely gmail's old chat iframe talkgadget.google.com
-    setTimeout(process, 0, mutations);
-  }
-
-  function process(mutations) {
-    for (var m = 0, mutation; (mutation = mutations[m++]);) {
-      var added = mutation.addedNodes;
-      for (var n = 0, node; (node = added[n++]);) {
-        // process only ELEMENT_NODE
-        if (node.nodeType != 1) {
-          continue;
-        }
-        var iframes = node.localName === 'iframe' ? [node] :
-          node.children.length && node.getElementsByTagName('iframe');
-        for (var i = 0, iframe; (iframe = iframes[i++]);) {
-          if (iframeIsDynamic(iframe)) {
-            addDocumentStylesToIFrame(iframe);
-          }
-        }
-      }
-    }
+function onDOMContentLoaded({target = document} = {}) {
+  addDocumentStylesToAllIFrames(target);
+  if (target.iframeObserver) {
+    target.iframeObserver.start();
   }
 }
 
 
-function initDocRewriteObserver() {
-  if (isOwnPage) {
+function initObservers(doc = document) {
+  if (isOwnPage || doc.rewriteObserver) {
     return;
   }
-  // re-add styles if we detect documentElement being recreated
-  docRewriteObserver = new MutationObserver(observer);
-  docRewriteObserver.observe(document, {childList: true});
+  initIFrameObserver(doc);
+  initDocRewriteObserver(doc);
+  if (doc.readyState != 'loading') {
+    onDOMContentLoaded({target: doc});
+  } else {
+    doc.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+  }
+}
 
-  function observer(mutations) {
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (node.localName != 'html') {
-          continue;
-        }
-        for (const [id, el] of styleElements.entries()) {
-          if (!document.getElementById(id)) {
-            document.documentElement.appendChild(el);
+
+function initIFrameObserver(doc = document) {
+  if (!initIFrameObserver.methods) {
+    initIFrameObserver.methods = {
+      start() {
+        this.observe(this.doc, {childList: true, subtree: true});
+      },
+      stop() {
+        this.disconnect();
+        getDynamicIFrames(this.doc).forEach(iframe => {
+          const observer = iframe.contentDocument.iframeObserver;
+          if (observer) {
+            observer.stop();
           }
-        }
-        document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
-        return;
+        });
+      },
+    };
+  }
+  doc.iframeObserver = Object.assign(
+    new MutationObserver(iframeObserver),
+    initIFrameObserver.methods, {
+      iframes: doc.getElementsByTagName('iframe'),
+      doc,
+    });
+}
+
+
+function iframeObserver(mutations, observer) {
+  // autoupdated HTMLCollection is superfast
+  if (!observer.iframes[0]) {
+    return;
+  }
+  // use a much faster method for very complex pages with lots of mutations
+  // (observer usually receives 1k-10k mutations per call)
+  if (mutations.length > 1000) {
+    addDocumentStylesToAllIFrames(observer.doc);
+    return;
+  }
+  for (var m = 0, ml = mutations.length; m < ml; m++) {
+    var added = mutations[m].addedNodes;
+    for (var n = 0, nl = added.length; n < nl; n++) {
+      var node = added[n];
+      // process only ELEMENT_NODE
+      if (node.nodeType != 1) {
+        continue;
       }
+      var iframes = node.localName === 'iframe' ? [node] :
+        node.children.length && node.getElementsByTagName('iframe');
+      if (iframes.length) {
+        // move the check out of current execution context
+        // because some same-domain (!) iframes fail to load when their 'contentDocument' is accessed (!)
+        // namely gmail's old chat iframe talkgadget.google.com
+        setTimeout(testIFrames, 0, iframes);
+      }
+    }
+  }
+}
+
+
+function testIFrames(iframes) {
+  for (const iframe of iframes) {
+    if (iframeIsDynamic(iframe)) {
+      addDocumentStylesToIFrame(iframe);
+    }
+  }
+}
+
+
+function initDocRewriteObserver(doc = document) {
+  // re-add styles if we detect documentElement being recreated
+  doc.rewriteObserver = new MutationObserver(docRewriteObserver);
+  doc.rewriteObserver.observe(doc, {childList: true});
+}
+
+
+function docRewriteObserver(mutations) {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (node.localName != 'html') {
+        continue;
+      }
+      const doc = node.ownerDocument;
+      for (const [id, el] of styleElements.entries()) {
+        if (!doc.getElementById(id)) {
+          doc.documentElement.appendChild(el);
+        }
+      }
+      initObservers(doc);
+      return;
     }
   }
 }
@@ -447,15 +480,19 @@ function orphanCheck() {
 
   // we're orphaned due to an extension update
   // we can detach the mutation observer
-  iframeObserver.takeRecords();
-  iframeObserver.disconnect();
-  iframeObserver = null;
-  if (docRewriteObserver) {
-    docRewriteObserver.disconnect();
-    docRewriteObserver = null;
-  }
   // we can detach event listeners
-  document.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
+  (function unbind(doc) {
+    if (doc.iframeObserver) {
+      doc.iframeObserver.disconnect();
+      delete doc.iframeObserver;
+    }
+    if (doc.rewriteObserver) {
+      doc.rewriteObserver.disconnect();
+      delete doc.rewriteObserver;
+    }
+    doc.removeEventListener('DOMContentLoaded', onDOMContentLoaded);
+    getDynamicIFrames(doc).forEach(iframe => unbind(iframe.contentDocument));
+  })(document);
   window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy our globals in this context to free up memory
