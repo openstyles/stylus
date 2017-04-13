@@ -141,6 +141,7 @@ a:hover {
 summary {
   font-weight: bold;
   cursor: pointer;
+  outline: none;
 }
 
 .applies-to-extra summary {
