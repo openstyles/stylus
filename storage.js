@@ -333,69 +333,52 @@ function styleCodeEmpty(code) {
 }
 
 
-function styleSectionsEqual(styleA, styleB) {
-  if (!styleA.sections || !styleB.sections) {
+function styleSectionsEqual({sections: a}, {sections: b}) {
+  if (!a || !b) {
     return undefined;
   }
-  if (styleA.sections.length != styleB.sections.length) {
+  if (a.length != b.length) {
     return false;
   }
-  const propNames = ['code', 'urlPrefixes', 'urls', 'domains', 'regexps'];
-  const typeBcaches = [];
-  checkingEveryInA:
-  for (const sectionA of styleA.sections) {
-    const typeAcache = new Map();
-    for (const name of propNames) {
-      typeAcache.set(name, getType(sectionA[name]));
+  const checkedInB = [];
+  return a.every(sectionA => b.some(sectionB => {
+    if (!checkedInB.includes(sectionB) && propertiesEqual(sectionA, sectionB)) {
+      checkedInB.push(sectionB);
+      return true;
     }
-    lookingForDupeInB:
-    for (let i = 0, sectionB; (sectionB = styleB.sections[i]); i++) {
-      const typeBcache = typeBcaches[i] = typeBcaches[i] || new Map();
-      comparingProps:
-      for (const name of propNames) {
-        const propA = sectionA[name];
-        const typeA = typeAcache.get(name);
-        const propB = sectionB[name];
-        let typeB = typeBcache.get(name);
-        if (!typeB) {
-          typeB = getType(propB);
-          typeBcache.set(name, typeB);
-        }
-        if (typeA != typeB) {
-          const bothEmptyOrUndefined =
-            (typeA == 'undefined' || (typeA == 'array' && propA.length == 0)) &&
-            (typeB == 'undefined' || (typeB == 'array' && propB.length == 0));
-          if (bothEmptyOrUndefined) {
-            continue comparingProps;
-          } else {
-            continue lookingForDupeInB;
-          }
-        }
-        if (typeA == 'undefined') {
-          continue comparingProps;
-        }
-        if (typeA == 'array') {
-          if (propA.length != propB.length) {
-            continue lookingForDupeInB;
-          }
-          for (const item of propA) {
-            if (propB.indexOf(item) < 0) {
-              continue lookingForDupeInB;
-            }
-          }
-          continue comparingProps;
-        }
-        if (typeA == 'string' && propA != propB) {
-          continue lookingForDupeInB;
-        }
+  }));
+
+  function propertiesEqual(secA, secB) {
+    for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
+      if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
+        return false;
       }
-      // dupe found
-      continue checkingEveryInA;
     }
-    // dupe not found
-    return false;
+    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a == b);
   }
-  return true;
+
+  function equalOrEmpty(a, b, telltale, comparator) {
+    const typeA = a && typeof a[telltale] == 'function';
+    const typeB = b && typeof b[telltale] == 'function';
+    return (
+      (a === null || a === undefined || (typeA && !a.length)) &&
+      (b === null || b === undefined || (typeB && !b.length))
+    ) || typeA && typeB && a.length == b.length && comparator(a, b);
+  }
+
+  function arrayMirrors(array1, array2) {
+    for (const el of array1) {
+      if (array2.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    for (const el of array2) {
+      if (array1.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 
@@ -514,19 +497,4 @@ function getDomains(url) {
     domains.push(d);
   }
   return domains;
-}
-
-
-function getType(o) {
-  if (typeof o == 'undefined' || typeof o == 'string') {
-    return typeof o;
-  }
-  // with the persistent cachedStyles the Array reference is usually different
-  // so let's check for e.g. type of 'every' which is only present on arrays
-  // (in the context of our extension)
-  if (o instanceof Array || typeof o.every == 'function') {
-    return 'array';
-  }
-  console.warn('Unsupported type:', o);
-  return 'undefined';
 }
