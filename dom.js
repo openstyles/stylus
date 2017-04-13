@@ -53,13 +53,16 @@ function animateElement(element, {className, remove = false}) {
 function enforceInputRange(element) {
   const min = Number(element.min);
   const max = Number(element.max);
-  const onChange = () => {
-    const value = Number(element.value);
-    if (value < min || value > max) {
-      element.value = Math.max(min, Math.min(max, value));
+  const doNotify = () => element.dispatchEvent(new Event('change', {bubbles: true}));
+  const onChange = ({type}) => {
+    if (type == 'input' && element.checkValidity()) {
+      doNotify();
+    } else if (type == 'change' && !element.checkValidity()) {
+      element.value = Math.max(min, Math.min(max, Number(element.value)));
+      doNotify();
     }
   };
-  onChange();
+  onChange({});
   element.addEventListener('change', onChange);
   element.addEventListener('input', onChange);
 }

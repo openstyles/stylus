@@ -58,6 +58,11 @@ input[type=number] {
   text-align: right;
 }
 
+input[type=number]:invalid {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: darkred;
+}
+
 #actions {
   margin-top: -2em;
 }
