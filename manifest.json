@@ -15,8 +15,10 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "storage",
-    "*://*/*"
+    "storage"
+  ],
+  "optional_permissions": [
+    "chrome://favicon/"
   ],
   "background": {
     "scripts": ["messaging.js", "storage.js", "prefs.js", "background.js", "update.js"]

@@ -294,6 +294,10 @@
     "message": "Favicons in applies-to column",
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
+  "manageFaviconsHelp": {
+    "message": "Stylus asks for chrome://favicon permission to retrieve the icons from browser cache. For non-cached icons Stylus uses external service https://www.google.com/s2/favicons",
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+  },
   "manageMaxTargets": {
     "message": "Number of applies-to items",
     "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"

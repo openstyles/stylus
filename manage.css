@@ -61,16 +61,27 @@ a:hover {
   transition: fill .5s;
   width: 20px;
   height: 20px;
+}
+
+.svg-icon,
+.svg-icon.info:hover {
   fill: #000;
 }
 
-.svg-icon:hover {
+.svg-icon:hover,
+.svg-icon.info {
   fill: #666;
 }
 
 .svg-icon.delete {
   width: 16px;
   height: 16px;
+}
+
+.svg-icon.info {
+  width: 14px;
+  height: 16px;
+  margin-left: .5ex;
 }
 
 .homepage {
@@ -373,10 +384,11 @@ summary {
   display: initial;
 }
 
-#newUIoptions label {
+#newUIoptions > * {
   display: flex;
   align-items: center;
   margin-bottom: auto;
+  flex-wrap: wrap;
 }
 
 #newUIoptions input[type="number"] {
@@ -387,6 +399,13 @@ summary {
 input[id^="manage.newUI"] {
   margin-left: 0;
 }
+
+#faviconsHelp {
+  overflow-y: auto;
+  font-size: 90%;
+  padding: 1ex 0 2ex 16px;
+}
+
 
 /* Default, no update buttons */
 .update,
