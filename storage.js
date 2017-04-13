@@ -246,88 +246,90 @@ function deleteStyle({id, notify = true}) {
 
 
 function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirst}) {
-  //let t0 = 0;
+  if (!matchUrl.startsWith('http')
+  && !matchUrl.startsWith('ftp')
+  && !matchUrl.startsWith('file')
+  && !matchUrl.startsWith(URLS.ownOrigin)) {
+    return [];
+  }
   const sections = [];
-  checkingSections:
   for (const section of style.sections) {
-    andCollect:
-    do {
-      // only http, https, file, ftp, and chrome-extension://OWN_EXTENSION_ID allowed
-      if (!matchUrl.startsWith('http')
-      && !matchUrl.startsWith('ftp')
-      && !matchUrl.startsWith('file')
-      && !matchUrl.startsWith(URLS.ownOrigin)) {
-        continue checkingSections;
-      }
-      if (section.urls.length == 0
-      && section.domains.length == 0
-      && section.urlPrefixes.length == 0
-      && section.regexps.length == 0) {
-        break andCollect;
-      }
-      if (section.urls.indexOf(matchUrl) != -1) {
-        break andCollect;
-      }
-      for (const urlPrefix of section.urlPrefixes) {
-        if (matchUrl.startsWith(urlPrefix)) {
-          break andCollect;
-        }
-      }
-      if (section.domains.length) {
-        const urlDomains = cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl);
-        for (const domain of urlDomains) {
-          if (section.domains.indexOf(domain) != -1) {
-            break andCollect;
-          }
-        }
-      }
-      for (const regexp of section.regexps) {
-        for (let pass = 1; pass <= (strictRegexp ? 1 : 2); pass++) {
-          const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
-          let rx = cachedStyles.regexps.get(cacheKey);
-          if (rx == false) {
-            // invalid regexp
-            break;
-          }
-          if (!rx) {
-            const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
-            rx = tryRegExp(anchored);
-            cachedStyles.regexps.set(cacheKey, rx || false);
-            if (!rx) {
-              // invalid regexp
-              break;
-            }
-          }
-          if (rx.test(matchUrl)) {
-            break andCollect;
-          }
-        }
-      }
-      continue checkingSections;
-    } while (0);
-    // Collect the section if not empty or namespace-only.
-    // We don't check long code as it's slow both for emptyCode declared as Object
-    // and as Map in case the string is not the same reference used to add the item
-    //const t0start = performance.now();
-    const code = section.code;
-    let isEmpty = code !== null && code.length < 1000 && cachedStyles.emptyCode.get(code);
-    if (isEmpty === undefined) {
-      isEmpty = !code || !code.trim()
-        || code.indexOf('@namespace') >= 0
-        && code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '';
-      cachedStyles.emptyCode.set(code, isEmpty);
-    }
-    //t0 += performance.now() - t0start;
-    if (!isEmpty) {
+    const {urls, domains, urlPrefixes, regexps, code} = section;
+    if ((!urls.length && !urlPrefixes.length && !domains.length && !regexps.length
+      || urls.length && urls.indexOf(matchUrl) >= 0
+      || urlPrefixes.length && arraySomeIsPrefix(urlPrefixes, matchUrl)
+      || domains.length && arraySomeIn(cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl), domains)
+      || regexps.length && arraySomeMatches(regexps, matchUrl, strictRegexp)
+    ) && !styleCodeEmpty(code)) {
       sections.push(section);
       if (stopOnFirst) {
-        //t0 >= 0.1 && console.debug('%s emptyCode', t0.toFixed(1)); // eslint-disable-line no-unused-expressions
-        return sections;
+        break;
       }
     }
   }
-  //t0 >= 0.1 && console.debug('%s emptyCode', t0.toFixed(1)); // eslint-disable-line no-unused-expressions
   return sections;
+
+  function arraySomeIsPrefix(array, string) {
+    for (const prefix of array) {
+      if (string.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function arraySomeIn(array, haystack) {
+    for (const el of array) {
+      if (haystack.indexOf(el) >= 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function arraySomeMatches(array, matchUrl, strictRegexp) {
+    for (const regexp of array) {
+      for (let pass = 1; pass <= (strictRegexp ? 1 : 2); pass++) {
+        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+        let rx = cachedStyles.regexps.get(cacheKey);
+        if (rx == false) {
+          // invalid regexp
+          break;
+        }
+        if (!rx) {
+          const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+          rx = tryRegExp(anchored);
+          cachedStyles.regexps.set(cacheKey, rx || false);
+          if (!rx) {
+            // invalid regexp
+            break;
+          }
+        }
+        if (rx.test(matchUrl)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+
+
+function styleCodeEmpty(code) {
+  // Collect the section if not empty or namespace-only.
+  // We don't check long code as it's slow both for emptyCode declared as Object
+  // and as Map in case the string is not the same reference used to add the item
+  let isEmpty = code !== null &&
+    code.length < 1000 &&
+    cachedStyles.emptyCode.get(code);
+  if (isEmpty !== undefined) {
+    return isEmpty;
+  }
+  isEmpty = !code || !code.trim()
+    || code.indexOf('@namespace') >= 0
+    && code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '';
+  cachedStyles.emptyCode.set(code, isEmpty);
+  return isEmpty;
 }
 
 
