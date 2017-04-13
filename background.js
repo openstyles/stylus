@@ -311,6 +311,7 @@ function updateIcon(tab, styles) {
 function getCodeMirrorThemes() {
   if (!chrome.runtime.getPackageDirectoryEntry) {
     return Promise.resolve([
+      chrome.i18n.getMessage('defaultTheme'),
       '3024-day',
       '3024-night',
       'abcdef',
