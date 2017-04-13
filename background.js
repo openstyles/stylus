@@ -1,4 +1,4 @@
-/* global getDatabase, getStyles, saveStyle, reportError, invalidateCache */
+/* global getDatabase, getStyles, saveStyle, reportError */
 'use strict';
 
 chrome.webNavigation.onBeforeNavigate.addListener(data => {
@@ -59,10 +59,6 @@ function onRuntimeMessage(request, sender, sendResponse) {
     case 'saveStyle':
       saveStyle(request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
-
-    case 'invalidateCache':
-      invalidateCache(false, request);
-      break;
 
     case 'healthCheck':
       getDatabase(

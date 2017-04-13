@@ -10,15 +10,15 @@ const SLOPPY_REGEXP_PREFIX = '\0';
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
 var cachedStyles = {
-  list: null,
-  byId: new Map(),
-  filters: new Map(),
-  regexps: new Map(),
-  urlDomains: new Map(),
-  emptyCode: new Map(), // entire code is comments/whitespace/@namespace
+  list: null,            // array of all styles
+  byId: new Map(),       // all styles indexed by id
+  filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
+  regexps: new Map(),    // compiled style regexps
+  urlDomains: new Map(), // getDomain() results for 100 last checked urls
+  emptyCode: new Map(),  // entire code is comments/whitespace/@namespace
   mutex: {
-    inProgress: false,
-    onDone: [],
+    inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
+    onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
 
@@ -56,7 +56,6 @@ function getStyles(options, callback) {
   }
   cachedStyles.mutex.inProgress = true;
 
-  //const t0 = performance.now();
   getDatabase(db => {
     const tx = db.transaction(['styles'], 'readonly');
     const os = tx.objectStore('styles');
@@ -67,7 +66,6 @@ function getStyles(options, callback) {
         cachedStyles.byId.set(style.id, style);
         compileStyleRegExps({style});
       }
-      //console.debug('%s getStyles %s, invoking cached callbacks: %o', (performance.now() - t0).toFixed(1), JSON.stringify(options), cachedStyles.mutex.onDone.map(e => JSON.stringify(e.options))); // eslint-disable-line max-len
       callback(filterStyles(options));
 
       cachedStyles.mutex.inProgress = false;
@@ -88,7 +86,6 @@ function filterStyles({
   asHash = null,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
-  //const t0 = performance.now();
   enabled = fixBoolean(enabled);
   id = id === null ? null : Number(id);
 
@@ -97,11 +94,8 @@ function filterStyles({
   && id === null
   && matchUrl === null
   && asHash != true) {
-    //console.debug('%c%s filterStyles SKIPPED LOOP %s', 'color:gray', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
     return cachedStyles.list;
   }
-  // silence the inapplicable warning for async code
-  // eslint-disable-next-line no-use-before-define
   const disableAll = asHash && prefs.get('disableAll', false);
 
   if (matchUrl && matchUrl.startsWith(URLS.chromeWebStore)) {
@@ -114,7 +108,6 @@ function filterStyles({
   const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
   const cached = cachedStyles.filters.get(cacheKey);
   if (cached) {
-    //console.debug('%c%s filterStyles REUSED RESPONSE %s', 'color:gray', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
     cached.hits++;
     cached.lastHit = Date.now();
 
@@ -144,8 +137,8 @@ function filterStyles({
 
   for (let i = 0, style; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled == enabled)
-      && (url === null || style.url == url)
-      && (id === null || style.id == id)) {
+    && (url === null || style.url == url)
+    && (id === null || style.id == id)) {
       const sections = needSections &&
         getApplicableSections({style, matchUrl, strictRegexp, stopOnFirst: !asHash});
       if (asHash) {
@@ -157,7 +150,6 @@ function filterStyles({
       }
     }
   }
-  //console.debug('%s filterStyles %s', (performance.now() - t0).toFixed(1), enabled, id, asHash, strictRegexp, matchUrl); // eslint-disable-line max-len
   cachedStyles.filters.set(cacheKey, {
     styles: filtered,
     lastHit: Date.now(),
@@ -188,52 +180,50 @@ function saveStyle(style) {
         delete style.name;
       }
 
-      // Update
       if (id !== null) {
+        // Update or create
         style.id = id;
         os.get(id).onsuccess = eventGet => {
           const existed = Boolean(eventGet.target.result);
           const oldStyle = Object.assign({}, eventGet.target.result);
           const codeIsUpdated = 'sections' in style && !styleSectionsEqual(style, oldStyle);
-          style = Object.assign(oldStyle, style);
-          addMissingStyleTargets(style);
-          os.put(style).onsuccess = eventPut => {
-            style.id = style.id || eventPut.target.result;
-            invalidateCache(notify, existed ? {updated: style} : {added: style});
-            compileStyleRegExps({style});
-            if (notify) {
-              notifyAllTabs({
-                method: existed ? 'styleUpdated' : 'styleAdded',
-                style, codeIsUpdated, reason,
-              });
-            }
-            resolve(style);
-          };
+          write(Object.assign(oldStyle, style), {existed, codeIsUpdated});
         };
-        return;
+      } else {
+        // Create
+        delete style.id;
+        write(Object.assign({
+          // Set optional things if they're undefined
+          enabled: true,
+          updateUrl: null,
+          md5Url: null,
+          url: null,
+          originalMd5: null,
+        }, style));
       }
 
-      // Create
-      delete style.id;
-      style = Object.assign({
-        // Set optional things if they're undefined
-        enabled: true,
-        updateUrl: null,
-        md5Url: null,
-        url: null,
-        originalMd5: null,
-      }, style);
-      addMissingStyleTargets(style);
-      os.add(style).onsuccess = event => {
-        // Give it the ID that was generated
-        style.id = event.target.result;
-        invalidateCache(notify, {added: style});
-        compileStyleRegExps({style});
-        if (notify) {
-          notifyAllTabs({method: 'styleAdded', style, reason});
-        }
-        resolve(style);
-      };
+      function write(style, {existed, codeIsUpdated} = {}) {
+        style.sections = (style.sections || []).map(section =>
+          Object.assign({
+            urls: [],
+            urlPrefixes: [],
+            domains: [],
+            regexps: [],
+          }, section)
+        );
+        os.put(style).onsuccess = event => {
+          style.id = style.id || event.target.result;
+          invalidateCache(existed ? {updated: style} : {added: style});
+          compileStyleRegExps({style});
+          if (notify) {
+            notifyAllTabs({
+              method: existed ? 'styleUpdated' : 'styleAdded',
+              style, codeIsUpdated, reason,
+            });
+          }
+          resolve(style);
+        };
+      }
     });
   });
 }
@@ -245,7 +235,7 @@ function deleteStyle({id, notify = true}) {
       const tx = db.transaction(['styles'], 'readwrite');
       const os = tx.objectStore('styles');
       os.delete(Number(id)).onsuccess = () => {
-        invalidateCache(notify, {deletedId: id});
+        invalidateCache({deletedId: id});
         if (notify) {
           notifyAllTabs({method: 'styleDeleted', id});
         }
@@ -429,14 +419,11 @@ function compileStyleRegExps({style, compileAll}) {
 }
 
 
-function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
+function invalidateCache({added, updated, deletedId} = {}) {
   // prevent double-add on echoed invalidation
   const cached = added && cachedStyles.byId.get(added.id);
   if (cached) {
     return;
-  }
-  if (andNotify) {
-    chrome.runtime.sendMessage({method: 'invalidateCache', added, updated, deletedId});
   }
   if (!cachedStyles.list) {
     return;
@@ -445,7 +432,6 @@ function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
     const cached = cachedStyles.byId.get(updated.id);
     if (cached) {
       Object.assign(cached, updated);
-      //console.debug('cache: updated', updated);
     }
     cachedStyles.filters.clear();
     return;
@@ -453,7 +439,6 @@ function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
   if (added) {
     cachedStyles.list.push(added);
     cachedStyles.byId.set(added.id, added);
-    //console.debug('cache: added', added);
     cachedStyles.filters.clear();
     return;
   }
@@ -463,22 +448,18 @@ function invalidateCache(andNotify, {added, updated, deletedId} = {}) {
       const cachedIndex = cachedStyles.list.indexOf(deletedStyle);
       cachedStyles.list.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
-      //console.debug('cache: deleted', deletedStyle);
       cachedStyles.filters.clear();
       return;
     }
   }
   cachedStyles.list = null;
-  //console.debug('cache cleared');
   cachedStyles.filters.clear();
 }
 
 
 function cleanupCachedFilters({force = false} = {}) {
   if (!force) {
-    // sliding timer for 1 second
-    clearTimeout(cleanupCachedFilters.timeout);
-    cleanupCachedFilters.timeout = setTimeout(cleanupCachedFilters, 1000, {force: true});
+    debounce(cleanupCachedFilters, 1000, {force: true});
     return;
   }
   const size = cachedStyles.filters.size;
@@ -500,19 +481,6 @@ function cleanupCachedFilters({force = false} = {}) {
     .sort((a, b) => a.weight - b.weight)
     .slice(0, size / 10 + 1)
     .forEach(({id}) => cachedStyles.filters.delete(id));
-  cleanupCachedFilters.timeout = 0;
-}
-
-
-function addMissingStyleTargets(style) {
-  style.sections = (style.sections || []).map(section =>
-    Object.assign({
-      urls: [],
-      urlPrefixes: [],
-      domains: [],
-      regexps: [],
-    }, section)
-  );
 }
 
 
