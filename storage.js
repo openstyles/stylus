@@ -110,12 +110,36 @@ function filterStyles({
   if (cached) {
     cached.hits++;
     cached.lastHit = Date.now();
-
     return asHash
       ? Object.assign({disableAll}, cached.styles)
       : cached.styles;
   }
 
+  return filterStylesInternal({
+    enabled,
+    url,
+    id,
+    matchUrl,
+    asHash,
+    strictRegexp,
+    disableAll,
+    cacheKey,
+  });
+}
+
+
+function filterStylesInternal({
+  // js engines don't like big functions (V8 often deoptimized the original filterStyles)
+  // it also makes sense to extract the less frequently executed code
+  enabled,
+  url,
+  id,
+  matchUrl,
+  asHash,
+  strictRegexp,
+  disableAll,
+  cacheKey,
+}) {
   if (matchUrl && !cachedStyles.urlDomains.has(matchUrl)) {
     cachedStyles.urlDomains.set(matchUrl, getDomains(matchUrl));
     for (let i = cachedStyles.urlDomains.size - 100; i > 0; i--) {
@@ -133,6 +157,7 @@ function filterStyles({
     // of edit.html with a non-existent style id parameter
     return filtered;
   }
+
   const needSections = asHash || matchUrl !== null;
 
   for (let i = 0, style; (style = styles[i]); i++) {
@@ -150,6 +175,7 @@ function filterStyles({
       }
     }
   }
+
   cachedStyles.filters.set(cacheKey, {
     styles: filtered,
     lastHit: Date.now(),
@@ -158,6 +184,7 @@ function filterStyles({
   if (cachedStyles.filters.size > 10000) {
     cleanupCachedFilters();
   }
+
   return asHash
     ? Object.assign({disableAll}, filtered)
     : filtered;
