@@ -14,10 +14,7 @@ const newUI = {
 newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const GET_FAVICON_URL = {
-  builtin: 'chrome://favicon/size/16@2x/',
-  external: 'https://www.google.com/s2/favicons?domain=',
-};
+const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 
 const handleEvent = {};
@@ -77,6 +74,10 @@ function initGlobalEvents() {
     checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
   }
 
+  $$('[data-toggle-on-click]').forEach(el => {
+    el.onclick = () => $(el.dataset.toggleOnClick).classList.toggle('hidden');
+  });
+
   enforceInputRange($('#manage.newUI.targets'));
 
   setupLivePrefs([
@@ -87,28 +88,8 @@ function initGlobalEvents() {
     'manage.newUI.targets',
   ]);
 
-  $('#manage.newUI').onchange = switchUI;
-  $('#manage.newUI.targets').oninput = switchUI;
-  $('#manage.newUI.targets').onchange = switchUI;
-  $('#manage.newUI.favicons').onchange = function() {
-    if (!this.checked) {
-      switchUI();
-      return;
-    }
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    onPermissionsGranted({origins: ['chrome://favicon/']}).then(
-      switchUI,
-      () => (this.checked = false)
-    ).then(
-      () => (this.disabled = false)
-    );
-  };
-  $$('[data-toggle-on-click]').forEach(el => {
-    el.onclick = () => $(el.dataset.toggleOnClick).classList.toggle('hidden');
-  });
+  $$('[id^="manage.newUI"]')
+    .forEach(el => (el.oninput = (el.onchange = switchUI)));
 
   switchUI({styleOnly: true});
 }
@@ -206,12 +187,12 @@ function createStyleElement({style, name}) {
         } else if (newUI.favicons) {
           let favicon = '';
           if (type == 'domains') {
-            favicon = 'http://' + targetValue;
+            favicon = GET_FAVICON_URL + targetValue;
           } else if (targetValue.startsWith('chrome-extension:')) {
             favicon = OWN_ICON;
           } else if (type != 'regexps') {
-            favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/[^/]+/);
-            favicon = favicon ? favicon[0] : '';
+            favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
+            favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
           if (favicon) {
             element.appendChild(document.createElement('img')).dataset.src = favicon;
@@ -354,13 +335,10 @@ Object.assign(handleEvent, {
 
   loadFavicons(container = installed) {
     for (const img of container.getElementsByTagName('img')) {
-      const src = img.dataset.src;
-      if (!src) {
-        continue;
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
       }
-      img.src = src == OWN_ICON ? src
-        : GET_FAVICON_URL.builtin + (src.includes('://') ? src : 'http://' + src);
-      delete img.dataset.src;
     }
   }
 });
@@ -707,23 +685,4 @@ function findNextElement(style) {
     a++;
   }
   return elements[elements[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
-}
-
-
-function onPermissionsGranted(permissions) {
-  return new Promise((resolve, reject) => {
-    chrome.permissions.contains(permissions, alreadyGranted => {
-      if (alreadyGranted) {
-        resolve();
-      } else {
-        chrome.permissions.request(permissions, granted => {
-          if (granted) {
-            resolve();
-          } else {
-            reject();
-          }
-        });
-      }
-    });
-  });
 }
