@@ -15,7 +15,8 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "storage"
+    "storage",
+    "<all_urls>"
   ],
   "background": {
     "scripts": ["messaging.js", "storage.js", "prefs.js", "background.js", "update.js"]
