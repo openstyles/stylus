@@ -234,6 +234,46 @@
     "message": "Type a command name",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "importReportLegendAdded": {
+    "message": "added",
+    "description": "Text after the number of styles added in the report shown after importing styles"
+  },
+  "importReportLegendIdentical": {
+    "message": "identical skipped",
+    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+  },
+  "importReportLegendInvalid": {
+    "message": "invalid skipped",
+    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "updated both meta info and code",
+    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "updated code",
+    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "updated meta info",
+    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+  },
+  "importReportTitle": {
+    "message": "Finished importing styles",
+    "description": "Title of the report shown after importing styles"
+  },
+  "importReportUnchanged": {
+    "message": "Nothing was changed.",
+    "description": "Message in the report shown after importing styles"
+  },
+  "importReportUndoneTitle": {
+    "message": "Import has been undone",
+    "description": "Title of the message box shown after undoing the import of styles"
+  },
+  "importReportUndone": {
+    "message": "styles were reverted",
+    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+  },
   "importLabel": {
     "message": "Import",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"

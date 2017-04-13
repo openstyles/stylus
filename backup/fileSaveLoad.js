@@ -59,12 +59,12 @@ function importFromString(jsonString) {
   const oldStylesByName = json.length && new Map(
     oldStyles.map(style => [style.name.trim(), style]));
   const stats = {
-    added: {names: [], ids: [], legend: 'added'},
-    unchanged: {names: [], ids: [], legend: 'identical skipped'},
-    metaAndCode: {names: [], ids: [], legend: 'updated both meta info and code'},
-    metaOnly: {names: [], ids: [], legend: 'updated meta info'},
-    codeOnly: {names: [], ids: [], legend: 'updated code'},
-    invalid: {names: [], legend: 'invalid skipped'},
+    added: {names: [], ids: [], legend: 'importReportLegendAdded'},
+    unchanged: {names: [], ids: [], legend: 'importReportLegendIdentical'},
+    metaAndCode: {names: [], ids: [], legend: 'importReportLegendUpdatedBoth'},
+    metaOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedMeta'},
+    codeOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedCode'},
+    invalid: {names: [], legend: 'importReportLegendInvalid'},
   };
   let index = 0;
   let lastRenderTime = performance.now();
@@ -153,14 +153,14 @@ function importFromString(jsonString) {
         .filter(kind => stats[kind].names.length)
         .map(kind =>
           `<details data-id="${kind}">
-            <summary><b>${stats[kind].names.length} ${stats[kind].legend}</b></summary>
+            <summary><b>${stats[kind].names.length} ${t(stats[kind].legend)}</b></summary>
             <small>${listNames(kind).join('')}</small>
           </details>`)
         .join('');
       scrollTo(0, 0);
       messageBox({
-        title: 'Finished importing styles',
-        contents: report || 'Nothing was changed.',
+        title: t('importReportTitle'),
+        contents: report || t('importReportUnchanged'),
         buttons: [t('confirmOK'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button, enter, esc}) => {
@@ -184,8 +184,8 @@ function importFromString(jsonString) {
     return new Promise(undoNextId)
       .then(BG.refreshAllTabs)
       .then(() => messageBox({
-        title: 'Import has been undone',
-        contents: newIds.length + ' styles were reverted.',
+        title: t('importReportUndoneTitle'),
+        contents: newIds.length + ' ' + t('importReportUndone'),
         buttons: [t('confirmOK')],
       }));
     function undoNextId(resolve) {
