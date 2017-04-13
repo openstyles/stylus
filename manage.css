@@ -357,6 +357,8 @@ summary {
   /* unprefixed since Chrome 53 */
   -webkit-filter: grayscale(1);
   filter: grayscale(1);
+  /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
+  backface-visibility: hidden;
   opacity: .25;
   display: none;
 }
