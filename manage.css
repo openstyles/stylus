@@ -444,6 +444,24 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
+#apply-all-updates:after {
+  content: " (" attr(data-value) ")";
+}
+
+#check-all-updates[disabled] {
+  position: relative;
+}
+
+#check-all-updates[disabled] #update-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: currentColor;
+  content: "";
+  opacity: .35;
+}
+
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);

@@ -365,7 +365,7 @@ function handleUpdate(style, {reason} = {}) {
     if (reason == 'update') {
       element.classList.add('update-done');
       element.classList.remove('can-update', 'updatable');
-      $('.update-note', element).innerHTML = t('updateCompleted');
+      $('.update-note', element).textContent = t('updateCompleted');
       renderUpdatesOnlyFilter();
     }
   }
@@ -444,13 +444,12 @@ function applyUpdateAll() {
   const btnApply = $('#apply-all-updates');
   btnApply.disabled = true;
   setTimeout(() => {
-    btnApply.style.display = 'none';
+    btnApply.classList.add('hidden');
     btnApply.disabled = false;
   }, 1000);
 
   $$('.can-update .update').forEach(button => {
-    // align to the bottom of the visible area if wasn't visible
-    button.scrollIntoView(false);
+    scrollElementIntoView(button);
     button.click();
   });
 
@@ -462,37 +461,51 @@ function checkUpdateAll() {
   const btnCheck = $('#check-all-updates');
   const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
+  const progress = $('#update-progress');
 
   btnCheck.disabled = true;
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
+  const maxWidth = progress.parentElement.clientWidth;
 
-  Promise.all($$('.updatable:not(.can-update)').map(checkUpdate))
-    .then(updatables => {
-      btnCheck.disabled = false;
-      const numUpdatable = updatables.filter(u => u).length;
-      if (numUpdatable) {
-        btnApply.classList.remove('hidden');
-        btnApply.originalLabel = btnApply.originalLabel || btnApply.textContent;
-        btnApply.textContent = btnApply.originalLabel + ` (${numUpdatable})`;
-        renderUpdatesOnlyFilter({check: true});
-      } else {
-        noUpdates.classList.remove('hidden');
-        setTimeout(() => {
-          noUpdates.classList.add('hidden');
-        }, 10e3);
-      }
-    });
-
+  const queue = $$('.updatable:not(.can-update)').map(checkUpdate);
+  const total = queue.length;
+  let updatesFound = false;
+  let checked = 0;
+  processQueue();
   // notify the automatic updater to reset the next automatic update accordingly
   chrome.runtime.sendMessage({
     method: 'resetInterval'
   });
+
+  function processQueue(status) {
+    if (status === true) {
+      updatesFound = true;
+      btnApply.disabled = true;
+      btnApply.classList.remove('hidden');
+      renderUpdatesOnlyFilter({check: true});
+    }
+    if (checked < total) {
+      queue[checked++].then(status => {
+        progress.style.width = Math.round(checked / total * maxWidth) + 'px';
+        setTimeout(processQueue, 0, status);
+      });
+      return;
+    }
+    btnCheck.disabled = false;
+    btnApply.disabled = false;
+    if (!updatesFound) {
+      noUpdates.classList.remove('hidden');
+      setTimeout(() => {
+        noUpdates.classList.add('hidden');
+      }, 10e3);
+    }
+  }
 }
 
 
 function checkUpdate(element) {
-  $('.update-note', element).innerHTML = t('checkingForUpdate');
+  $('.update-note', element).textContent = t('checkingForUpdate');
   $('.check-update', element).title = '';
   element.classList.remove('checking-update', 'no-update', 'update-problem');
   element.classList.add('checking-update');
@@ -563,12 +576,12 @@ class Updater {
     if (json) {
       this.element.classList.add('can-update');
       this.element.updatedCode = json;
-      $('.update-note', this.element).innerHTML = '';
+      $('.update-note', this.element).textContent = '';
       $('#onlyUpdates').classList.remove('hidden');
     } else {
       this.element.classList.add('no-update');
       this.element.classList.toggle('update-problem', Boolean(message));
-      $('.update-note', this.element).innerHTML = message || t('updateCheckSucceededNoUpdate');
+      $('.update-note', this.element).textContent = message || t('updateCheckSucceededNoUpdate');
       if (newUI.enabled) {
         $('.check-update', this.element).title = message;
       }
@@ -614,7 +627,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   const btnApply = $('#apply-all-updates');
   if (!btnApply.matches('.hidden')) {
     if (canUpdate) {
-      btnApply.textContent = btnApply.originalLabel + ` (${numUpdatable})`;
+      btnApply.dataset.value = numUpdatable;
     } else {
       btnApply.classList.add('hidden');
     }
