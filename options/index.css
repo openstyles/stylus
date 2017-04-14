@@ -7,6 +7,14 @@ html.opera body {
   text-align: initial;
 }
 
+html.firefox .block {
+  padding-left: 6px;
+}
+
+html.firefox #notes {
+  padding-left: calc(6px + 2ex);
+}
+
 body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
