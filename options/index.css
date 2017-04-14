@@ -1,6 +1,10 @@
-html {
-    max-width: 40em;
-    margin: auto;
+html.opera {
+  text-align: center;
+}
+
+html.opera body {
+  display: inline-block;
+  text-align: initial;
 }
 
 body {
