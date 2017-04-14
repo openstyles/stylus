@@ -45,6 +45,7 @@ h1 {
   font-size: 120%;
   font-weight: bold;
   padding-right: 8px;
+  word-wrap: break-word;
 }
 
 label {
@@ -95,6 +96,43 @@ input[type=number] {
 input[type=number]:invalid {
   background-color: rgba(255, 0, 0, 0.1);
   color: darkred;
+}
+
+[data-cmd="check-updates"] button {
+  position: relative;
+}
+
+.update-in-progress [data-cmd="check-updates"] {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.update-in-progress #update-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: currentColor;
+  content: "";
+  opacity: .35;
+}
+
+#updates-installed {
+  position: absolute;
+  font-size: 85%;
+  right: 16px;
+  margin-top: 1px;
+}
+
+#updates-installed:after {
+  content: attr(data-value);
+  margin-left: .5ex;
+  font-weight: bold;
+}
+
+#updates-installed:not([data-value]),
+#updates-installed[data-value=""] {
+  display: none;
 }
 
 #notes {

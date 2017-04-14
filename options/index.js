@@ -15,23 +15,27 @@ $('[data-cmd="open-keyboard"]').href = URLS.configureCommands;
 
 // actions
 document.onclick = e => {
-  const cmd = e.target.dataset.cmd;
-  let total = 0;
-  let updated = 0;
+  const target = e.target.closest('[data-cmd]');
+  if (!target) {
+    return;
+  }
+  // prevent double-triggering in case a sub-element was clicked
+  e.stopPropagation();
 
   function check() {
-    const originalLabel = e.target.textContent;
-    e.target.disabled = true;
-    e.target.parentElement.setAttribute('disabled', '');
+    let total = 0;
+    let checked = 0;
+    let updated = 0;
+    $('#update-progress').style.width = 0;
+    $('#updates-installed').dataset.value = '';
+    document.body.classList.add('update-in-progress');
+    const maxWidth = $('#update-progress').parentElement.clientWidth;
     function showProgress() {
-      e.target.textContent = `${updated} / ${total}`;
+      $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
+      $('#updates-installed').dataset.value = updated || '';
     }
     function done() {
-      setTimeout(() => {
-        e.target.disabled = false;
-        e.target.textContent = originalLabel;
-        e.target.parentElement.removeAttribute('disabled');
-      }, 750);
+      document.body.classList.remove('update-in-progress');
     }
     BG.update.perform((cmd, value) => {
       switch (cmd) {
@@ -42,9 +46,11 @@ document.onclick = e => {
           }
           break;
         case 'single-updated':
-        case 'single-skipped':
           updated++;
-          if (total && updated === total) {
+          // fallthrough
+        case 'single-skipped':
+          checked++;
+          if (total && checked === total) {
             done();
           }
           break;
@@ -57,7 +63,7 @@ document.onclick = e => {
     });
   }
 
-  switch (cmd) {
+  switch (target.dataset.cmd) {
     case 'open-manage':
       openURL({url: '/manage.html'});
       break;

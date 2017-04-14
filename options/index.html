@@ -66,12 +66,13 @@
         </label>
         <label>
           <span i18n-text="optionsOpenManager"><sup class="chromium-only">2</sup></span>
-          <button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button>
+          <button data-cmd="open-manage" i18n-text="optionsOpen"></button>
         </label>
-        <label>
+        <label data-cmd="check-updates">
           <span i18n-text="optionsCheckUpdate"></span>
-          <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
+          <button i18n-text="optionsCheck"><span id="update-progress"></span></button>
         </label>
+        <div id="updates-installed" i18n-text="updatesCurrentlyInstalled"></div>
       </div>
     </div>
   </div>

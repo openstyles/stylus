@@ -591,6 +591,10 @@
     "message": "Update completed.",
     "description": "Text that displays when an update completed"
   },
+  "updatesCurrentlyInstalled": {
+    "message": "Updates installed:",
+    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+  },
   "writeStyleFor": {
     "message": "Write style for: ",
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
