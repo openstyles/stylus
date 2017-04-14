@@ -264,6 +264,14 @@ summary {
   display: inline;
 }
 
+.newUI .update-done .updated svg {
+  top: -2px;
+  position: relative;
+  /* unprefixed since Chrome 53 */
+  -webkit-filter: drop-shadow(0 4px 0 currentColor);
+  filter: drop-shadow(0 4px 0 currentColor);
+}
+
 .newUI .can-update .update,
 .newUI .no-update.update-problem .check-update {
   cursor: pointer;
