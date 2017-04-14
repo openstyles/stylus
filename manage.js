@@ -136,7 +136,7 @@ function createStyleElement({style, name}) {
       newUI: newUI.enabled,
       entry,
       entryClassBase: entry.className,
-      checker: $('.checker', entry),
+      checker: $('.checker', entry) || {},
       nameLink: $('.style-name-link', entry),
       editLink: $('.style-edit-link', entry) || {},
       editHrefBase: $('.style-name-link, .style-edit-link', entry).getAttribute('href'),
@@ -152,19 +152,29 @@ function createStyleElement({style, name}) {
     };
   }
   const parts = createStyleElement.parts;
-  Object.assign(parts.entry, {
-    className: parts.entryClassBase + ' ' +
-      (style.enabled ? 'enabled' : 'disabled') +
-      (style.updateUrl ? ' updatable' : ''),
-    id: 'style-' + style.id,
-  });
-
+  parts.checker.checked = style.enabled;
   parts.nameLink.textContent = style.name;
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
 
-  // .targets may be a large list so we clone it separately
-  // and paste into the cloned entry in the end
+  const entry = parts.entry.cloneNode(true);
+  entry.id = 'style-' + style.id;
+  entry.styleId = style.id;
+  entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
+  entry.className = parts.entryClassBase + ' ' +
+    (style.enabled ? 'enabled' : 'disabled') +
+    (style.updateUrl ? ' updatable' : '');
+
+  // name being supplied signifies we're invoked by showStyles()
+  // which debounces its main loop thus loading the postponed favicons
+  createStyleTargetsElement({entry, style, postponeFavicons: name});
+
+  return entry;
+}
+
+
+function createStyleTargetsElement({entry, style, postponeFavicons}) {
+  const parts = createStyleElement.parts;
   const targets = parts.targets.cloneNode(true);
   let container = targets;
   let numTargets = 0;
@@ -209,27 +219,21 @@ function createStyleElement({style, name}) {
       }
     }
   }
-
   if (newUI.enabled) {
-    parts.checker.checked = style.enabled;
-    parts.appliesTo.classList.toggle('has-more', numTargets > newUI.targets);
-    // name is supplied by showStyles so we let it decide when to load the icons
-    if (numIcons && !name) {
+    if (numTargets > newUI.targets) {
+      $('.applies-to', entry).classList.add('has-more');
+    }
+    if (numIcons && !postponeFavicons) {
       debounce(handleEvent.loadFavicons);
     }
   }
-
-  const newEntry = parts.entry.cloneNode(true);
-  newEntry.styleId = style.id;
-  newEntry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
-  const newTargets = $('.targets', newEntry);
+  const entryTargets = $('.targets', entry);
   if (numTargets) {
-    newTargets.parentElement.replaceChild(targets, newTargets);
+    entryTargets.parentElement.replaceChild(targets, entryTargets);
   } else {
-    newTargets.appendChild(template.appliesToEverything.cloneNode(true));
-    newEntry.classList.add('global');
+    entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
   }
-  return newEntry;
+  entry.classList.toggle('global', !numTargets);
 }
 
 
@@ -405,14 +409,33 @@ function switchUI({styleOnly} = {}) {
     }
   `;
 
-  if (!styleOnly && (stateToggled || missingFavicons)) {
+  if (styleOnly) {
+    return;
+  }
+
+  if (stateToggled || missingFavicons && !createStyleElement.parts) {
     installed.innerHTML = '';
     getStylesSafe().then(showStyles);
-  } else if (targetsChanged) {
+    return;
+  }
+  if (targetsChanged) {
     for (const targets of $$('.entry .targets')) {
       const hasMore = targets.children.length > newUI.targets;
       targets.parentElement.classList.toggle('has-more', hasMore);
     }
+    return;
+  }
+  if (missingFavicons) {
+    getStylesSafe().then(styles => {
+      for (const style of styles) {
+        const entry = $('#style-' + style.id);
+        if (entry) {
+          createStyleTargetsElement({entry, style, postponeFavicons: true});
+        }
+      }
+      debounce(handleEvent.loadFavicons);
+    });
+    return;
   }
 }
 
