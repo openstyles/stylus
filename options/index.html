@@ -11,64 +11,69 @@
 </head>
 
 <body>
-  <div id="ui">
-    <h1 i18n-text="optionsCustomize"></h1>
-    <table>
-      <tr>
-        <td i18n-text="prefShowBadge"></td>
-        <td>
-          <div class="onoffswitch">
+  <div id="options">
+    <div class="block">
+      <h1 i18n-text="optionsCustomizeBadge"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsBadgeNormal"></span>
+          <input type="color" id="badgeNormal">
+        </label>
+        <label>
+          <span i18n-text="optionsBadgeDisabled"></span>
+          <input type="color" id="badgeDisabled">
+        </label>
+        <label>
+          <span i18n-text="prefShowBadge"></span>
+          <span class="onoffswitch">
             <input type="checkbox" class="onoffswitch-checkbox" id="show-badge">
-            <label class="onoffswitch-label" for="show-badge"></label>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td i18n-text="popupStylesFirst"></td>
-        <td>
-          <div class="onoffswitch">
-            <input type="checkbox" class="onoffswitch-checkbox" id="popup.stylesFirst">
-            <label class="onoffswitch-label" for="popup.stylesFirst"></label>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsBadgeNormal"></td>
-        <td><input type="color" id="badgeNormal"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsBadgeDisabled"></td>
-        <td><input type="color" id="badgeDisabled"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsPopupWidth"></td>
-        <td><input type="number" id="popupWidth" min="200" max="800"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsUpdateInterval"><sup>1</sup></td>
-        <td><input type="number" min="0" id="updateInterval"></td>
-      </tr>
-    </table>
-    <div id="reset">
-      <button data-cmd="reset" i18n-text="optionsReset"></button>
+            <span class="onoffswitch-label"></span>
+          </span>
+        </label>
+      </div>
     </div>
-  </div>
-
-  <div id="actions">
-    <h1 i18n-text="optionsActions"></h1>
-    <table>
-      <tr>
-        <td i18n-text="optionsOpenManager"><sup class="chromium-only">2</sup></td>
-        <td><button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsCheckUpdate"></td>
-        <td>
+    <div class="block">
+      <h1 i18n-text="optionsCustomizePopup"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsPopupWidth"></span>
+          <input type="number" id="popupWidth" min="200" max="800">
+        </label>
+        <label>
+          <span i18n-text="popupStylesFirst"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" class="onoffswitch-checkbox" id="popup.stylesFirst">
+            <span class="onoffswitch-label" for="popup.stylesFirst"></span>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="block">
+      <h1 i18n-text="optionsCustomizeUpdate"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsUpdateInterval"><sup>1</sup></span>
+          <input type="number" min="0" id="updateInterval">
+        </label>
+      </div>
+    </div>
+    <div class="block">
+      <h1 i18n-text="optionsActions"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsReset"></span>
+          <button data-cmd="reset" i18n-text="optionsResetButton"></button>
+        </label>
+        <label>
+          <span i18n-text="optionsOpenManager"><sup class="chromium-only">2</sup></span>
+          <button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button>
+        </label>
+        <label>
+          <span i18n-text="optionsCheckUpdate"></span>
           <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
-          <div id="update-counter"></div>
-        </td>
-      </tr>
-    </table>
+        </label>
+      </div>
+    </div>
   </div>
 
   <div id="notes">

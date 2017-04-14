@@ -19,31 +19,33 @@ document.onclick = e => {
   let total = 0;
   let updated = 0;
 
-  function showProgress() {
-    $('#update-counter').textContent = `${updated} / ${total}`;
-  }
-
-  function done(target) {
-    target.disabled = false;
-    window.setTimeout(() => {
-      $('#update-counter').textContent = '';
-    }, 750);
-  }
-
   function check() {
+    const originalLabel = e.target.textContent;
+    e.target.disabled = true;
+    e.target.parentElement.setAttribute('disabled', '');
+    function showProgress() {
+      e.target.textContent = `${updated} / ${total}`;
+    }
+    function done() {
+      setTimeout(() => {
+        e.target.disabled = false;
+        e.target.textContent = originalLabel;
+        e.target.parentElement.removeAttribute('disabled');
+      }, 750);
+    }
     BG.update.perform((cmd, value) => {
       switch (cmd) {
         case 'count':
           total = value;
           if (!total) {
-            done(e.target);
+            done();
           }
           break;
         case 'single-updated':
         case 'single-skipped':
           updated++;
           if (total && updated === total) {
-            done(e.target);
+            done();
           }
           break;
       }
@@ -61,7 +63,6 @@ document.onclick = e => {
       break;
 
     case 'check-updates':
-      e.target.disabled = true;
       check();
       break;
 

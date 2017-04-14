@@ -7,41 +7,63 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-body > * {
-  padding: .5rem 1.5rem 1em 48px;
-}
-
-body > *:first-child {
-  padding-top: .75rem;
+  width: calc(16px + 100px + 8px + 240px + 8px + 80px + 4px + 16px);
 }
 
 .firefox .chromium-only {
   display: none;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.block {
+  display: flex;
+  align-items: center;
+  margin: 1em 0;
+  border-bottom: 1px dotted #ccc;
+  padding: 0 0 1em 16px;
 }
 
-td {
-  padding: 2px 0;
+.block:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
 }
 
-td:last-child {
-  text-align: right;
+h1 {
+  width: 100px;
+  margin: 0;
+  font-size: 120%;
+  font-weight: bold;
+  padding-right: 8px;
+}
+
+label {
+  display: block;
+  white-space: nowrap;
+  margin: .25ex 0;
+}
+
+label > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+label > :first-child {
+  width: 240px;
+  white-space: normal;
+  margin-right: 8px;
+}
+
+label:not([disabled]) > :first-child {
+  cursor: default;
+}
+
+label:not([disabled]):hover > :first-child {
+  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
 }
 
 button,
-td:last-child,
 input[type=number],
 input[type="color"],
-.onoffswitch,
-#update-counter {
+.onoffswitch {
   width: 80px;
   box-sizing: border-box;
 }
@@ -63,18 +85,9 @@ input[type=number]:invalid {
   color: darkred;
 }
 
-#actions {
-  margin-top: -2em;
-}
-
-#reset {
-  text-align: right;
-  position: relative;
-}
-
 #notes {
   background-color: #f4f4f4;
-  margin-top: .75rem;
+  padding: 1.5ex 16px 1ex calc(16px + 2ex);
   font-size: 90%;
   color: #999;
 }
@@ -101,12 +114,6 @@ input[type="color"] {
   color: black;
 }
 
-#update-counter {
-  margin-top: .5ex;
-  position: absolute;
-  text-align: center;
-}
-
 @keyframes fadeinout {
   0%   { opacity: 0 }
   10%  { opacity: 1 }
@@ -118,6 +125,7 @@ input[type="color"] {
 
 .onoffswitch {
   position: relative;
+  margin: 1ex 0;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

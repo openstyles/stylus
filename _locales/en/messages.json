@@ -387,11 +387,11 @@
     "description": "Subheading for options section on manage page."
   },
   "popupStylesFirst": {
-    "message": "List styles before commands in the toolbar button menu",
-    "description": "Label for the checkbox controlling section order in the toolbar button menu."
+    "message": "Styles before commands",
+    "description": "Label for the checkbox controlling section order in the popup."
   },
   "prefShowBadge": {
-    "message": "Show number of styles active for the current site on the toolbar button",
+    "message": "Number of styles active for the current site",
     "description": "Label for the checkbox controlling toolbar badge text."
   },
   "replace": {
@@ -606,13 +606,13 @@
       "message": "Import styles"
   },
   "optionsBadgeNormal": {
-    "message": "Badge background color"
+    "message": "Background color"
   },
   "optionsBadgeDisabled": {
-    "message": "Badge background color (when disabled)"
+    "message": "Background color when disabled"
   },
   "optionsPopupWidth": {
-    "message": "Popup width (in pixels)"
+    "message": "Width (in pixels)"
   },
   "optionsUpdateInterval": {
     "message": "Automatically check for and install all available userstyle updates (in hrs)"
@@ -620,13 +620,22 @@
   "optionsUpdateIntervalNote": {
     "message": "To disable the automatic userstyle update checks, set interval to 0"
   },
-  "optionsCustomize": {
-    "message": "UI Customizations"
+  "optionsCustomizeBadge": {
+    "message": "Badge on the toolbar icon"
+  },
+  "optionsCustomizePopup": {
+    "message": "Popup"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Updates"
   },
   "optionsActions": {
     "message": "Actions"
   },
   "optionsReset": {
+    "message": "Reset the options to default values"
+  },
+  "optionsResetButton": {
     "message": "Reset"
   },
   "optionsOpenManager": {
