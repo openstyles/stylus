@@ -1,188 +1,245 @@
-/* eslint-disable no-tabs, indent, quotes, no-var */
 'use strict';
 
-chrome.runtime.sendMessage({method: "getStyles", url: getMeta("stylish-id-url") || location.href}, function(response) {
-	if (response.length == 0) {
-		sendEvent("styleCanBeInstalledChrome");
-	} else {
-		var installedStyle = response[0];
-		// maybe an update is needed
-		// use the md5 if available
-		var md5Url = getMeta("stylish-md5-url");
-		if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
-			getResource(md5Url, function(md5) {
-				if (md5 == installedStyle.originalMd5) {
-					sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
-				} else {
-					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
-				}
-			});
-		} else {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
-				// this would indicate a failure (a style with settings?).
-				if (code === null) {
-					sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
-				}
-				var json = JSON.parse(code);
-				if (json.sections.length == installedStyle.sections.length) {
-					if (json.sections.every(function(section) {
-						return installedStyle.sections.some(function(installedSection) {
-							return sectionsAreEqual(section, installedSection);
-						});
-					})) {
-						// everything's the same
-						sendEvent("styleAlreadyInstalledChrome", {updateUrl: installedStyle.updateUrl});
-						return;
-					}
-				}
-				sendEvent("styleCanBeUpdatedChrome", {updateUrl: installedStyle.updateUrl});
-			});
-		}
-	}
+document.addEventListener('stylishUpdateChrome', onUpdateClicked);
+document.addEventListener('stylishInstallChrome', onInstallClicked);
+
+new MutationObserver(waitForBody)
+  .observe(document.documentElement, {childList: true});
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  // orphaned content script check
+  if (msg.method == 'ping') {
+    sendResponse(true);
+  }
 });
 
-function sectionsAreEqual(a, b) {
-	if (a.code != b.code) {
-		return false;
-	}
-	return ["urls", "urlPrefixes", "domains", "regexps"].every(function(attribute) {
-		return arraysAreEqual(a[attribute], b[attribute]);
-	});
+
+function waitForBody() {
+  if (!document.body) {
+    return;
+  }
+
+  this.disconnect();
+  rebrand([{addedNodes: [document.body]}]);
+  const rebrandObserver = new MutationObserver(rebrand);
+  rebrandObserver.observe(document.body, {childList: true, subtree: true});
+
+  document.addEventListener('DOMContentLoaded', function _() {
+    document.removeEventListener('DOMContentLoaded', _);
+    rebrandObserver.disconnect();
+    chrome.runtime.sendMessage({
+      method: 'getStyles',
+      url: getMeta('stylish-id-url') || location.href
+    }, checkUpdatability);
+  });
 }
 
-function arraysAreEqual(a, b) {
-	// treat empty array and undefined as equivalent
-	if (typeof a == "undefined") {
-		return (typeof b == "undefined") || (b.length == 0);
-	}
-	if (typeof b == "undefined") {
-		return (typeof a == "undefined") || (a.length == 0);
-	}
-	if (a.length != b.length) {
-		return false;
-	}
-	return a.every(function(entry) {
-		return b.indexOf(entry) != -1;
-	});
+
+function checkUpdatability([installedStyle]) {
+  if (!installedStyle) {
+    sendEvent('styleCanBeInstalledChrome');
+    return;
+  }
+  const md5Url = getMeta('stylish-md5-url');
+  if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
+    getResource(md5Url).then(md5 => {
+      reportUpdatable(md5 != installedStyle.originalMd5);
+    });
+  } else {
+    getResource(getMeta('stylish-code-chrome')).then(code => {
+      reportUpdatable(code === null ||
+        !styleSectionsEqual(JSON.parse(code), installedStyle));
+    });
+  }
+
+  function reportUpdatable(isUpdatable) {
+    sendEvent(
+      isUpdatable
+        ? 'styleCanBeUpdatedChrome'
+        : 'styleAlreadyInstalledChrome',
+      {
+        updateUrl: installedStyle.updateUrl
+      }
+    );
+  }
 }
 
-function sendEvent(type, data) {
-	if (typeof data == "undefined") {
-		data = null;
-	}
-	var stylishEvent = new CustomEvent(type, {detail: data});
-	document.dispatchEvent(stylishEvent);
+
+function sendEvent(type, detail = null) {
+  detail = {detail};
+  if (typeof cloneInto != 'undefined') {
+    // Firefox requires explicit cloning, however USO can't process our messages anyway
+    // because USO tries to use a global "event" variable deprecated in Firefox
+    detail = cloneInto(detail, document); // eslint-disable-line no-undef
+  }
+  document.dispatchEvent(new CustomEvent(type, detail));
 }
 
-document.addEventListener("stylishUpdateChrome", stylishUpdateChrome);
-function stylishInstallChrome() {
-	orphanCheck();
-	getResource(getMeta("stylish-description"), function(name) {
-		if (confirm(chrome.i18n.getMessage('styleInstall', [name]))) {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
-				// check for old style json
-				var json = JSON.parse(code);
-				json.method = "saveStyle";
-				chrome.runtime.sendMessage(json, function() {
-					sendEvent("styleInstalledChrome");
-				});
-			});
-			getResource(getMeta("stylish-install-ping-url-chrome"));
-		}
-	});
+
+function onInstallClicked() {
+  if (!orphanCheck()) {
+    return;
+  }
+  getResource(getMeta('stylish-description'))
+    .then(name => saveStyleCode('styleInstall', name))
+    .then(() => getResource(getMeta('stylish-install-ping-url-chrome')));
 }
 
-document.addEventListener("stylishInstallChrome", stylishInstallChrome);
-function stylishUpdateChrome() {
-	orphanCheck();
-	chrome.runtime.sendMessage({
-		method: "getStyles",
-		url: getMeta("stylish-id-url") || location.href,
-	}, function(response) {
-		var style = response[0];
-		if (confirm(chrome.i18n.getMessage('styleUpdate', [style.name]))) {
-			getResource(getMeta("stylish-code-chrome"), function(code) {
-				var json = JSON.parse(code);
-				json.method = "saveStyle";
-				json.id = style.id;
-				chrome.runtime.sendMessage(json, function() {
-					sendEvent("styleInstalledChrome");
-				});
-			});
-		}
-	});
+
+function onUpdateClicked() {
+  if (!orphanCheck()) {
+    return;
+  }
+  chrome.runtime.sendMessage({
+    method: 'getStyles',
+    url: getMeta('stylish-id-url') || location.href,
+  }, ([style]) => {
+    saveStyleCode('styleUpdate', style.name, {id: style.id});
+  });
 }
+
+
+function saveStyleCode(message, name, addProps) {
+  return new Promise(resolve => {
+    if (!confirm(chrome.i18n.getMessage(message, [name]))) {
+      return;
+    }
+    getResource(getMeta('stylish-code-chrome')).then(code => {
+      chrome.runtime.sendMessage(
+        Object.assign(JSON.parse(code), addProps, {method: 'saveStyle'}),
+        () => sendEvent('styleInstalledChrome')
+      );
+      resolve();
+    });
+  });
+}
+
 
 function getMeta(name) {
-	var e = document.querySelector("link[rel='" + name + "']");
-	return e ? e.getAttribute("href") : null;
+  const e = document.querySelector(`link[rel="${name}"]`);
+  return e ? e.getAttribute('href') : null;
 }
 
-function getResource(url, callback) {
-	if (url.indexOf("#") == 0) {
-		if (callback) {
-			callback(document.getElementById(url.substring(1)).innerText);
-		}
-		return;
-	}
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && callback) {
-			if (xhr.status >= 400) {
-				callback(null);
-			} else {
-				callback(xhr.responseText);
-			}
-		}
-	};
-	if (url.length > 2000) {
-		var parts = url.split("?");
-		xhr.open("POST", parts[0], true);
-		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhr.send(parts[1]);
-	} else {
-		xhr.open("GET", url, true);
-		xhr.send();
-	}
+
+function getResource(url) {
+  if (url.startsWith('#')) {
+    return Promise.resolve(document.getElementById(url.slice(1)).textContent);
+  }
+  return new Promise(resolve => {
+    const xhr = new XMLHttpRequest();
+    xhr.onloadend = () => resolve(xhr.status < 400 ? xhr.responseText : null);
+    if (url.length > 2000) {
+      const [mainUrl, query] = url.split('?');
+      xhr.open('POST', mainUrl, true);
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.send(query);
+    } else {
+      xhr.open('GET', url);
+      xhr.send();
+    }
+  });
 }
 
-/* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
-(function(es) {
-	es.forEach(e => {
-		[...e.childNodes].filter(n => n.nodeType == 3).forEach(n => {
-			n.nodeValue = n.nodeValue.replace('Stylish', 'Stylus');
-		});
-	});
-})([
-	...document.querySelectorAll('div[id^="stylish-installed-style-not-installed-"]'),
-	...document.querySelectorAll('div[id^="stylish-installed-style-needs-update-"]')
-]);
 
-// orphaned content script check
+function rebrand(mutations) {
+  /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
+  for (const mutation of mutations) {
+    for (const addedNode of mutation.addedNodes) {
+      if (addedNode.nodeType != Node.ELEMENT_NODE) {
+        continue;
+      }
+      const elementsToCheck = addedNode.matches('.install-status') ? [addedNode]
+        : Array.prototype.slice.call(addedNode.getElementsByClassName('install-status'));
+      for (const el of elementsToCheck) {
+        if (!el.textContent.includes('Stylish')) {
+          continue;
+        }
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          const text = node.nodeValue;
+          if (text.includes('Stylish') && node.parentNode.localName != 'a') {
+            node.nodeValue = text.replace(/Stylish/g, 'Stylus');
+          }
+        }
+      }
+    }
+  }
+}
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) =>
-	msg.method == 'ping' && sendResponse(true));
+
+function styleSectionsEqual({sections: a}, {sections: b}) {
+  if (!a || !b) {
+    return undefined;
+  }
+  if (a.length != b.length) {
+    return false;
+  }
+  const checkedInB = [];
+  return a.every(sectionA => b.some(sectionB => {
+    if (!checkedInB.includes(sectionB) && propertiesEqual(sectionA, sectionB)) {
+      checkedInB.push(sectionB);
+      return true;
+    }
+  }));
+
+  function propertiesEqual(secA, secB) {
+    for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
+      if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
+        return false;
+      }
+    }
+    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a == b);
+  }
+
+  function equalOrEmpty(a, b, telltale, comparator) {
+    const typeA = a && typeof a[telltale] == 'function';
+    const typeB = b && typeof b[telltale] == 'function';
+    return (
+      (a === null || a === undefined || (typeA && !a.length)) &&
+      (b === null || b === undefined || (typeB && !b.length))
+    ) || typeA && typeB && a.length == b.length && comparator(a, b);
+  }
+
+  function arrayMirrors(array1, array2) {
+    for (const el of array1) {
+      if (array2.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    for (const el of array2) {
+      if (array1.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
 
 function orphanCheck() {
-	var port = chrome.runtime.connect();
-	if (port) {
-		port.disconnect();
-		return;
-	}
-	// we're orphaned due to an extension update
-	// we can detach event listeners
-	document.removeEventListener('stylishUpdateChrome', stylishUpdateChrome);
-	document.removeEventListener('stylishInstallChrome', stylishInstallChrome);
-	// we can't detach chrome.runtime.onMessage because it's no longer connected internally
-	// we can destroy global functions in this context to free up memory
-	[
-		'arraysAreEqual',
-		'getMeta',
-		'getResource',
-		'orphanCheck',
-		'sectionsAreEqual',
-		'sendEvent',
-		'stylishUpdateChrome',
-		'stylishInstallChrome'
-	].forEach(fn => (window[fn] = null));
+  const port = chrome.runtime.connect();
+  if (port) {
+    port.disconnect();
+    return true;
+  }
+  // we're orphaned due to an extension update
+  // we can detach event listeners
+  document.removeEventListener('stylishUpdateChrome', onUpdateClicked);
+  document.removeEventListener('stylishInstallChrome', onInstallClicked);
+  // we can't detach chrome.runtime.onMessage because it's no longer connected internally
+  // we can destroy global functions in this context to free up memory
+  [
+    'checkUpdatability',
+    'getMeta',
+    'getResource',
+    'onInstallClicked',
+    'onUpdateClicked',
+    'orphanCheck',
+    'rebrand',
+    'saveStyleCode',
+    'sendEvent',
+    'styleSectionsEqual',
+    'waitForBody',
+  ].forEach(fn => (window[fn] = null));
 }
