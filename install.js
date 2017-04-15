@@ -143,14 +143,17 @@ function getResource(url) {
 
 function rebrand(mutations) {
   /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
-  for (const mutation of mutations) {
-    for (const addedNode of mutation.addedNodes) {
+  for (let m = mutations.length; --m >= 0;) {
+    const added = mutations[m].addedNodes;
+    for (let n = added.length; --n >= 0;) {
+      const addedNode = added[n];
       if (addedNode.nodeType != Node.ELEMENT_NODE) {
         continue;
       }
       const elementsToCheck = addedNode.matches('.install-status') ? [addedNode]
-        : Array.prototype.slice.call(addedNode.getElementsByClassName('install-status'));
-      for (const el of elementsToCheck) {
+        : addedNode.getElementsByClassName('install-status');
+      for (let i = elementsToCheck.length; --i >= 0;) {
+        const el = elementsToCheck[i];
         if (!el.textContent.includes('Stylish')) {
           continue;
         }

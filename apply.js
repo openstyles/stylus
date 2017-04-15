@@ -261,9 +261,10 @@ function initDocRewriteObserver() {
   };
   // detect documentElement being rewritten from inside the script
   docRewriteObserver = new MutationObserver(mutations => {
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (node.localName == 'html') {
+    for (let m = mutations.length; --m >= 0;) {
+      const added = mutations[m].addedNodes;
+      for (let n = added.length; --n >= 0;) {
+        if (added[n].localName == 'html') {
           reinjectStyles();
           return;
         }
