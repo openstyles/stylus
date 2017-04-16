@@ -488,7 +488,7 @@ input[id^="manage.newUI"] {
 }
 
 .hidden {
-  display: none
+  display: none !important;
 }
 
 fieldset {
@@ -498,13 +498,8 @@ fieldset {
 }
 
 fieldset > * {
-  display: block;
-}
-
-.enabled-only > .disabled,
-.edited-only > .updatable,
-.updates-only > .entry:not(.can-update) {
-  display: none;
+  display: flex;
+  align-items: center;
 }
 
 #search {

@@ -128,10 +128,19 @@
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
   <fieldset>
     <legend id="filters" i18n-text="manageFilters"></legend>
-    <label><input id="manage.onlyEnabled" type="checkbox"><span i18n-text="manageOnlyEnabled"></span></label>
-    <label><input id="manage.onlyEdited" type="checkbox"><span i18n-text="manageOnlyEdited"></span></label>
-    <label id="onlyUpdates" class="hidden"><input type="checkbox"><span i18n-text="manageOnlyUpdates"></span></label>
-    <input id="search" type="search" i18n-placeholder="searchStyles">
+    <label>
+      <input id="manage.onlyEnabled" type="checkbox" data-filter=".disabled">
+      <span i18n-text="manageOnlyEnabled"></span>
+    </label>
+    <label>
+      <input id="manage.onlyEdited" type="checkbox" data-filter=".updatable">
+      <span i18n-text="manageOnlyEdited"></span>
+    </label>
+    <label id="onlyUpdates" class="hidden">
+      <input type="checkbox" data-filter=":not(.can-update)">
+      <span i18n-text="manageOnlyUpdates"></span>
+    </label>
+    <input id="search" type="search" i18n-placeholder="searchStyles" data-filter=".not-matching">
   </fieldset>
   <p>
     <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>

@@ -2,6 +2,10 @@
 'use strict';
 
 let installed;
+const filtersSelector = {
+  hide: '',
+  unhide: '',
+};
 
 const newUI = {
   enabled: prefs.get('manage.newUI'),
@@ -65,15 +69,6 @@ function initGlobalEvents() {
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
 
-  for (const [className, checkbox] of [
-    ['enabled-only', $('#manage.onlyEnabled')],
-    ['edited-only', $('#manage.onlyEdited')],
-    ['updates-only', $('#onlyUpdates input')],
-  ]) {
-    // will be triggered by setupLivePrefs immediately
-    checkbox.onchange = () => installed.classList.toggle(className, checkbox.checked);
-  }
-
   $$('[data-toggle-on-click]').forEach(el => {
     el.onclick = () => $(el.dataset.toggleOnClick).classList.toggle('hidden');
   });
@@ -87,6 +82,11 @@ function initGlobalEvents() {
     'manage.newUI.favicons',
     'manage.newUI.targets',
   ]);
+
+  $$('[data-filter]').forEach(el => {
+    el.onchange = handleEvent.filterOnChange;
+  });
+  handleEvent.filterOnChange({forceRefilter: true});
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -111,11 +111,7 @@ function showStyles(styles = []) {
         break;
       }
     }
-    if ($('#search').value.trim()) {
-      // re-apply filtering on history Back
-      searchStyles({immediately: true, container: renderBin});
-    }
-    installed.appendChild(renderBin);
+    filterAndAppend({container: renderBin});
     if (index < sorted.length) {
       setTimeout(renderStyles, 0, index);
     } else if (shouldRenderAll && 'scrollY' in (history.state || {})) {
@@ -337,50 +333,67 @@ Object.assign(handleEvent, {
     this.closest('.applies-to').classList.toggle('expanded');
   },
 
-  loadFavicons(container = installed) {
+  loadFavicons(container = document.body) {
     for (const img of container.getElementsByTagName('img')) {
       if (img.dataset.src) {
         img.src = img.dataset.src;
         delete img.dataset.src;
       }
     }
-  }
+  },
+
+  filterOnChange({target: el, forceRefilter}) {
+    const getValue = el => (el.type == 'checkbox' ? el.checked : el.value.trim());
+    if (!forceRefilter) {
+      const value = getValue(el);
+      if (value == el.lastValue) {
+        return;
+      }
+      el.lastValue = value;
+    }
+    const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
+    Object.assign(filtersSelector, {
+      hide: enabledFilters.map(el => '.entry:not(.hidden)' + el.dataset.filter).join(','),
+      unhide: '.entry.hidden' + enabledFilters.map(el =>
+        (':not(' + el.dataset.filter + ')').replace(/^:not\(:not\((.+?)\)\)$/, '$1')).join(''),
+    });
+    reapplyFilter();
+  },
 });
 
 
 function handleUpdate(style, {reason} = {}) {
-  const element = createStyleElement({style});
-  if ($('#search').value.trim()) {
-    const renderBin = document.createDocumentFragment();
-    renderBin.appendChild(element);
-    searchStyles({immediately: true, container: renderBin});
-  }
-  const oldElement = $('#style-' + style.id, installed);
-  if (oldElement) {
-    if (oldElement.styleNameLowerCase == element.styleNameLowerCase) {
-      installed.replaceChild(element, oldElement);
+  const entry = createStyleElement({style});
+  const oldEntry = $('#style-' + style.id);
+  if (oldEntry) {
+    if (oldEntry.styleNameLowerCase == entry.styleNameLowerCase) {
+      installed.replaceChild(entry, oldEntry);
     } else {
-      oldElement.remove();
+      oldEntry.remove();
     }
     if (reason == 'update') {
-      element.classList.add('update-done');
-      element.classList.remove('can-update', 'updatable');
-      $('.update-note', element).textContent = t('updateCompleted');
+      entry.classList.add('update-done');
+      entry.classList.remove('can-update', 'updatable');
+      $('.update-note', entry).textContent = t('updateCompleted');
       renderUpdatesOnlyFilter();
     }
   }
-  installed.insertBefore(element, findNextElement(style));
-  if (reason != 'import') {
-    animateElement(element, {className: 'highlight'});
-    scrollElementIntoView(element);
+  filterAndAppend({entry});
+  if (!entry.classList.contains('hidden') && reason != 'import') {
+    animateElement(entry, {className: 'highlight'});
+    scrollElementIntoView(entry);
   }
 }
 
 
 function handleDelete(id) {
-  const node = $('#style-' + id, installed);
+  const node = $('#style-' + id);
   if (node) {
     node.remove();
+    if (node.matches('.can-update')) {
+      const btnApply = $('#apply-all-updates');
+      btnApply.dataset.value = Number(btnApply.dataset.value) - 1;
+    }
   }
 }
 
@@ -590,6 +603,9 @@ class Updater {
         $('#onlyUpdates').classList.toggle('hidden', !$('.can-update'));
       }
     }
+    if (filtersSelector.hide) {
+      filterAndAppend({entry: this.element});
+    }
   }
 
   static download(url) {
@@ -636,27 +652,41 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 
 
 function searchStyles({immediately, container}) {
-  const query = $('#search').value.toLocaleLowerCase();
-  if (query == (searchStyles.lastQuery || '') && !immediately && !container) {
+  const searchElement = $('#search');
+  const query = searchElement.value.toLocaleLowerCase();
+  const queryPrev = searchElement.lastValue || '';
+  if (query == queryPrev && !immediately && !container) {
     return;
   }
-  searchStyles.lastQuery = query;
   if (!immediately) {
     clearTimeout(searchStyles.timeout);
     searchStyles.timeout = setTimeout(searchStyles, 150, {immediately: true});
     return;
   }
+  searchElement.lastValue = query;
 
-  for (const element of (container || installed).children) {
-    const style = BG.cachedStyles.byId.get(element.styleId) || {};
-    if (style) {
-      const isMatching = !query
-        || isMatchingText(style.name)
-        || style.url && isMatchingText(style.url)
-        || isMatchingStyle(style);
-      element.style.display = isMatching ? '' : 'none';
+  const searchInVisible = queryPrev && query.includes(queryPrev);
+  const entries = container && container.children || container ||
+    (searchInVisible ? $$('.entry:not(.hidden)') : installed.children);
+  let needsRefilter = false;
+  for (const entry of entries) {
+    let isMatching = !query;
+    if (!isMatching) {
+      const style = BG.cachedStyles.byId.get(entry.styleId) || {};
+      isMatching = Boolean(style && (
+        isMatchingText(style.name) ||
+        style.url && isMatchingText(style.url) ||
+        isMatchingStyle(style)));
+    }
+    if (entry.classList.contains('not-matching') != !isMatching) {
+      entry.classList.toggle('not-matching', !isMatching);
+      needsRefilter = true;
     }
   }
+  if (needsRefilter && !container) {
+    handleEvent.filterOnChange({forceRefilter: true});
+  }
+  return;
 
   function isMatchingStyle(style) {
     for (const section of style.sections) {
@@ -686,39 +716,159 @@ function searchStyles({immediately, container}) {
 }
 
 
-function rememberScrollPosition() {
-  history.replaceState({scrollY: window.scrollY}, document.title);
+function filterAndAppend({entry, container}) {
+  if (!container) {
+    container = document.createElement('div');
+    container.appendChild(entry);
+    // reverse the visibility, otherwise reapplyFilter will see no need to work
+    if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
+      entry.classList.add('hidden');
+    }
+  }
+  if ($('#search').value.trim()) {
+    searchStyles({immediately: true, container});
+  }
+  reapplyFilter(container);
 }
 
 
-function findNextElement(style) {
-  const nameLLC = style.name.toLocaleLowerCase();
-  const elements = installed.children;
-  let a = 0;
-  let b = elements.length - 1;
-  if (b < 0) {
-    return undefined;
+function reapplyFilter(container = installed) {
+  $('#check-all-updates').disabled = !$('.updatable:not(.can-update)');
+  // A: show
+  const toUnhide = filtersSelector.hide ? $$(filtersSelector.unhide, container) : container;
+  // showStyles() is building the page and no filters are active
+  if (toUnhide instanceof DocumentFragment) {
+    installed.appendChild(toUnhide);
+    return;
   }
-  if (elements[0].styleNameLowerCase > nameLLC) {
-    return elements[0];
-  }
-  if (elements[b].styleNameLowerCase <= nameLLC) {
-    return undefined;
-  }
-  // bisect
-  while (a < b - 1) {
-    const c = (a + b) / 2 | 0;
-    if (nameLLC < elements[c].styleNameLowerCase) {
-      b = c;
-    } else {
-      a = c;
+  // filtering needed or a single-element job from handleUpdate()
+  const entries = installed.children;
+  const numEntries = entries.length;
+  let numVisible = numEntries - $$('.entry.hidden').length;
+  for (const entry of toUnhide.children || toUnhide) {
+    const next = findInsertionPoint(entry);
+    if (entry.nextElementSibling !== next) {
+      installed.insertBefore(entry, next);
+    }
+    if (entry.classList.contains('hidden')) {
+      entry.classList.remove('hidden');
+      numVisible++;
     }
   }
-  if (elements[a].styleNameLowerCase > nameLLC) {
-    return elements[a];
+  // B: hide
+  const toHide = filtersSelector.hide ? $$(filtersSelector.hide, container) : [];
+  if (!toHide.length) {
+    return;
   }
-  while (a <= b && elements[a].name < nameLLC) {
-    a++;
+  for (const entry of toHide) {
+    entry.classList.add('hidden');
   }
-  return elements[elements[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
+  // showStyles() is building the page with filters active so we need to:
+  // 1. add all hidden entries to the end
+  // 2. add the visible entries before the first hidden entry
+  if (container instanceof DocumentFragment) {
+    for (const entry of toHide) {
+      installed.appendChild(entry);
+    }
+    installed.insertBefore(container, $('.entry.hidden'));
+    return;
+  }
+  // normal filtering of the page or a single-element job from handleUpdate()
+  // we need to keep the visible entries together at the start
+  // first pass only moves one hidden entry in hidden groups with odd number of items
+  shuffle(false);
+  setTimeout(shuffle, 0, true);
+  // single-element job from handleEvent(): add the last wraith
+  if (toHide.length == 1 && toHide[0].parentElement != installed) {
+    installed.appendChild(toHide[0]);
+  }
+  return;
+
+  function shuffle(fullPass) {
+    // 1. skip the visible group on top
+    let firstHidden = $('#installed > .hidden');
+    let entry = firstHidden;
+    let i = [...entries].indexOf(entry);
+    let horizon = entries[numVisible];
+    const skipGroup = state => {
+      const start = i;
+      const first = entry;
+      while (entry && entry.classList.contains('hidden') == state) {
+        entry = entry.nextElementSibling;
+        i++;
+      }
+      return {first, start, len: i - start};
+    };
+    let prevGroup = i ? {first: entries[0], start: 0, len: i} : skipGroup(true);
+    // eslint-disable-next-line no-unmodified-loop-condition
+    while (entry) {
+      // 2a. find the next hidden group's start and end
+      // 2b. find the next visible group's start and end
+      const isHidden = entry.classList.contains('hidden');
+      const group = skipGroup(isHidden);
+      const hidden = isHidden ? group : prevGroup;
+      const visible = isHidden ? prevGroup : group;
+      // 3. move the shortest group; repeat 2-3
+      if (hidden.len < visible.len && (fullPass || hidden.len % 2)) {
+        // 3a. move hidden under the horizon
+        for (let j =  0; j < (fullPass ? hidden.len : 1); j++) {
+          const entry = entries[hidden.start];
+          installed.insertBefore(entry, horizon);
+          horizon = entry;
+          i--;
+        }
+        prevGroup = isHidden ? skipGroup(false) : group;
+        firstHidden = entry;
+      } else if (isHidden || !fullPass) {
+        prevGroup = group;
+      } else {
+        // 3b. move visible above the horizon
+        for (let j = 0; j < visible.len; j++) {
+          const entry = entries[visible.start + j];
+          installed.insertBefore(entry, firstHidden);
+        }
+        prevGroup = {
+          first: firstHidden,
+          start: hidden.start + visible.len,
+          len: hidden.len + skipGroup(true).len,
+        };
+      }
+    }
+  }
+
+  function findInsertionPoint(entry) {
+    const nameLLC = entry.styleNameLowerCase;
+    let a = 0;
+    let b = Math.min(numEntries, numVisible) - 1;
+    if (b < 0) {
+      return entries[numVisible];
+    }
+    if (entries[0].styleNameLowerCase > nameLLC) {
+      return entries[0];
+    }
+    if (entries[b].styleNameLowerCase <= nameLLC) {
+      return entries[numVisible];
+    }
+    // bisect
+    while (a < b - 1) {
+      const c = (a + b) / 2 | 0;
+      if (nameLLC < entries[c].styleNameLowerCase) {
+        b = c;
+      } else {
+        a = c;
+      }
+    }
+    if (entries[a].styleNameLowerCase > nameLLC) {
+      return entries[a];
+    }
+    while (a <= b && entries[a].styleNameLowerCase < nameLLC) {
+      a++;
+    }
+    return entries[entries[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
+  }
+}
+
+
+function rememberScrollPosition() {
+  history.replaceState({scrollY: window.scrollY}, document.title);
 }
