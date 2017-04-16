@@ -45,11 +45,14 @@ function notifyAllTabs(msg) {
   const affectsTabs = affectsAll || affectsOwnOriginOnly;
   const affectsIcon = affectsAll || msg.affects.icon;
   const affectsPopup = affectsAll || msg.affects.popup;
+  const affectsSelf = affectsPopup || msg.prefs;
   if (affectsTabs || affectsIcon) {
     // list all tabs including chrome-extension:// which can be ours
     chrome.tabs.query(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
       for (const tab of tabs) {
-        if (affectsTabs || URLS.optionsUI.includes(tab.url)) {
+        // own pages will be notified via runtime.sendMessage later
+        if ((affectsTabs || URLS.optionsUI.includes(tab.url))
+        && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))) {
           chrome.tabs.sendMessage(tab.id, msg);
         }
         if (affectsIcon && BG) {
@@ -67,7 +70,7 @@ function notifyAllTabs(msg) {
     applyOnMessage(originalMessage);
   }
   // notify background page and all open popups
-  if (affectsPopup || msg.prefs) {
+  if (affectsSelf) {
     chrome.runtime.sendMessage(msg);
   }
 }
