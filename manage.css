@@ -26,6 +26,7 @@ a:hover {
   -webkit-box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;
+  z-index: 9;
 }
 
 #header h1 {
@@ -42,7 +43,9 @@ a:hover {
 
 #installed {
   position: relative;
-  margin-left: 280px;
+  padding-left: 280px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .entry {
@@ -603,7 +606,7 @@ fieldset > * {
 
   #installed {
     position: static;
-    margin-left: 0;
+    padding-left: 0;
     overflow: visible;
   }
 
@@ -653,7 +656,7 @@ fieldset > * {
   }
 
   .newUI #installed {
-    margin-left: 0;
+    padding-left: 0;
   }
 
   .newUI #header h1,
@@ -706,10 +709,6 @@ fieldset > * {
 
   .newUI #search {
     width: auto;
-  }
-
-  .newUI #installed {
-    width: 100%;
   }
 
   .newUI .entry {
