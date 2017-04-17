@@ -146,54 +146,69 @@ var prefs = new function Prefs() {
     } else {
       value = defaultValue;
     }
-    this.set(key, value, {noBroadcast: true});
+    if (BG == window) {
+      // when in bg page, .set() will write to localStorage
+      this.set(key, value, {noBroadcast: true, noSync: true});
+    } else {
+      values[key] = value;
+      defineReadonlyProperty(this.readOnlyValues, key, value);
+    }
   }
 
-  getSync().get('settings', ({settings: synced} = {}) => {
-    if (synced) {
-      for (const key in defaults) {
-        if (key == 'popupWidth' && synced[key] != values.popupWidth) {
-          // this is a fix for the period when popupWidth wasn't synced
-          // TODO: remove it in a couple of months
-          continue;
-        }
-        if (key in synced) {
-          this.set(key, synced[key], {noSync: true});
-        }
-      }
-    }
-    if (typeof contextMenus !== 'undefined') {
-      for (const id in contextMenus) {
-        if (typeof values[id] == 'boolean') {
-          this.broadcast(id, values[id], {noSync: true});
-        }
-      }
-    }
-  });
+  // any access to chrome API takes time due to initialization of bindings
+  let lazyInit = () => {
+    window.removeEventListener('load', lazyInit);
+    lazyInit = null;
 
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area == 'sync' && 'settings' in changes) {
-      const synced = changes.settings.newValue;
+    getSync().get('settings', ({settings: synced} = {}) => {
       if (synced) {
         for (const key in defaults) {
+          if (key == 'popupWidth' && synced[key] != values.popupWidth) {
+            // this is a fix for the period when popupWidth wasn't synced
+            // TODO: remove it in a couple of months
+            continue;
+          }
           if (key in synced) {
             this.set(key, synced[key], {noSync: true});
           }
         }
-      } else {
-        // user manually deleted our settings, we'll recreate them
-        getSync().set({'settings': values});
       }
-    }
-  });
+      if (typeof contextMenus !== 'undefined') {
+        for (const id in contextMenus) {
+          if (typeof values[id] == 'boolean') {
+            this.broadcast(id, values[id], {noSync: true});
+          }
+        }
+      }
+    });
 
-  chrome.runtime.onMessage.addListener(msg => {
-    if (msg.prefs) {
-      for (const id in msg.prefs) {
-        this.set(id, msg.prefs[id], {noBroadcast: true, noSync: true});
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area == 'sync' && 'settings' in changes) {
+        const synced = changes.settings.newValue;
+        if (synced) {
+          for (const key in defaults) {
+            if (key in synced) {
+              this.set(key, synced[key], {noSync: true});
+            }
+          }
+        } else {
+          // user manually deleted our settings, we'll recreate them
+          getSync().set({'settings': values});
+        }
       }
-    }
-  });
+    });
+
+    chrome.runtime.onMessage.addListener(msg => {
+      if (msg.prefs) {
+        for (const id in msg.prefs) {
+          this.set(id, msg.prefs[id], {noBroadcast: true, noSync: true});
+        }
+      }
+    });
+  };
+
+  window.addEventListener('load', lazyInit);
+  return;
 
   function doBroadcast() {
     const affects = {all: 'disableAll' in broadcastPrefs};
