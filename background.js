@@ -37,6 +37,18 @@ function webNavigationListener(method, data) {
   });
 }
 
+// reset i18n cache on language change
+
+setTimeout(() => {
+  const {browserUIlanguage} = tryJSONparse(localStorage.L10N) || {};
+  const UIlang = chrome.i18n.getUILanguage();
+  if (browserUIlanguage != UIlang) {
+    localStorage.L10N = JSON.stringify({
+      browserUIlanguage: UIlang,
+    });
+  }
+});
+
 // messaging
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);

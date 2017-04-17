@@ -5,9 +5,13 @@ tDocLoader();
 
 
 function t(key, params) {
-  const s = chrome.i18n.getMessage(key, params);
+  const cache = !params && t.cache[key];
+  const s = cache || chrome.i18n.getMessage(key, params);
   if (s == '') {
     throw `Missing string "${key}"`;
+  }
+  if (!params && !cache) {
+    t.cache[key] = s;
   }
   return s;
 }
@@ -35,24 +39,38 @@ function tHTML(html) {
 
 
 function tNodeList(nodes) {
-  for (const node of [...nodes]) {
+  const PREFIX = 'i18n-';
+  for (let n = nodes.length; --n >= 0;) {
+    const node = nodes[n];
     // skip non-ELEMENT_NODE
     if (node.nodeType != 1) {
       continue;
     }
     if (node.localName == 'template') {
+      const elements = node.content.querySelectorAll('*');
+      tNodeList(elements);
+      template[node.dataset.id] = elements[0];
       // compress inter-tag whitespace to reduce number of DOM nodes by 25%
-      template[node.dataset.id] = tHTML(node.innerHTML);
+      const walker = document.createTreeWalker(elements[0], NodeFilter.SHOW_TEXT);
+      const toRemove = [];
+      while (walker.nextNode()) {
+        const textNode = walker.currentNode;
+        if (!textNode.nodeValue.trim()) {
+          toRemove.push(textNode);
+        }
+      }
+      toRemove.forEach(el => el.remove());
       continue;
     }
-    for (const attr of [...node.attributes]) {
-      let name = attr.nodeName;
-      if (name.indexOf('i18n-') != 0) {
+    for (let a = node.attributes.length; --a >= 0;) {
+      const attr = node.attributes[a];
+      const name = attr.nodeName;
+      if (!name.startsWith(PREFIX)) {
         continue;
       }
-      name = name.substr(5); // 'i18n-'.length
+      const type = name.substr(PREFIX.length);
       const value = t(attr.value);
-      switch (name) {
+      switch (type) {
         case 'text':
           node.insertBefore(document.createTextNode(value), node.firstChild);
           break;
@@ -63,15 +81,17 @@ function tNodeList(nodes) {
           node.insertAdjacentHTML('afterbegin', value);
           break;
         default:
-          node.setAttribute(name, value);
+          node.setAttribute(type, value);
       }
-      node.removeAttribute(attr.nodeName);
+      node.removeAttribute(name);
     }
   }
 }
 
 
 function tDocLoader() {
+  t.cache = tryJSONparse(localStorage.L10N) || {};
+  const cacheLength = Object.keys(t.cache).length;
   // localize HEAD
   tNodeList(document.getElementsByTagName('*'));
 
@@ -85,6 +105,9 @@ function tDocLoader() {
   const onLoad = () => {
     tDocLoader.stop();
     process(observer.takeRecords());
+    if (cacheLength != Object.keys(t.cache).length) {
+      localStorage.L10N = JSON.stringify(t.cache);
+    }
   };
   tDocLoader.start = () => {
     observer.observe(document, {subtree: true, childList: true});
