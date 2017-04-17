@@ -51,7 +51,8 @@ function importFromString(jsonString) {
     onBackgroundReady().then(() => importFromString(jsonString));
     return;
   }
-  const json = BG.tryJSONparse(jsonString) || []; // create object in background context
+  // create objects in background context
+  const json = BG.tryJSONparse(jsonString) || [];
   if (typeof json.slice != 'function') {
     json.length = 0;
   }
@@ -59,82 +60,90 @@ function importFromString(jsonString) {
   const oldStylesByName = json.length && new Map(
     oldStyles.map(style => [style.name.trim(), style]));
   const stats = {
-    added: {names: [], ids: [], legend: 'importReportLegendAdded'},
-    unchanged: {names: [], ids: [], legend: 'importReportLegendIdentical'},
+    added:       {names: [], ids: [], legend: 'importReportLegendAdded'},
+    unchanged:   {names: [], ids: [], legend: 'importReportLegendIdentical'},
     metaAndCode: {names: [], ids: [], legend: 'importReportLegendUpdatedBoth'},
-    metaOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedMeta'},
-    codeOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedCode'},
-    invalid: {names: [], legend: 'importReportLegendInvalid'},
+    metaOnly:    {names: [], ids: [], legend: 'importReportLegendUpdatedMeta'},
+    codeOnly:    {names: [], ids: [], legend: 'importReportLegendUpdatedCode'},
+    invalid:     {names: [], legend: 'importReportLegendInvalid'},
   };
   let index = 0;
   let lastRenderTime = performance.now();
   const renderQueue = [];
   const RENDER_NAP_TIME_MAX = 1000; // ms
   const RENDER_QUEUE_MAX = 50; // number of styles
+  const SAVE_OPTIONS = {reason: 'import', notify: false};
   return new Promise(proceed);
 
   function proceed(resolve) {
     while (index < json.length) {
       const item = json[index++];
-      if (!item || !item.name || !item.name.trim() || typeof item != 'object'
-      || (item.sections && typeof item.sections.slice != 'function')) {
-        stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
-        continue;
+      const info = analyze(item);
+      if (info) {
+        // using saveStyle directly since json was parsed in background page context
+        return BG.saveStyle(Object.assign(item, SAVE_OPTIONS))
+          .then(style => account({style, info, resolve}));
       }
-      item.name = item.name.trim();
-      const byId = BG.cachedStyles.byId.get(item.id);
-      const byName = oldStylesByName.get(item.name);
-      const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
-      if (oldStyle == byName && byName) {
-        item.id = byName.id;
-      }
-      const oldStyleKeys = oldStyle && Object.keys(oldStyle);
-      const metaEqual = oldStyleKeys &&
-        oldStyleKeys.length == Object.keys(item).length &&
-        oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
-      const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
-      if (metaEqual && codeEqual) {
-        stats.unchanged.names.push(oldStyle.name);
-        stats.unchanged.ids.push(oldStyle.id);
-        continue;
-      }
-      // using saveStyle directly since json was parsed in background page context
-      BG.saveStyle(Object.assign(item, {
-        reason: 'import',
-        notify: false,
-      })).then(style => {
-        renderQueue.push(style);
-        if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
-        || renderQueue.length > RENDER_QUEUE_MAX) {
-          renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
-          setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
-          renderQueue.length = 0;
-          lastRenderTime = performance.now();
-        }
-        setTimeout(proceed, 0, resolve);
-        if (!oldStyle) {
-          stats.added.names.push(style.name);
-          stats.added.ids.push(style.id);
-          return;
-        }
-        if (!metaEqual && !codeEqual) {
-          stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
-          stats.metaAndCode.ids.push(style.id);
-          return;
-        }
-        if (!codeEqual) {
-          stats.codeOnly.names.push(style.name);
-          stats.codeOnly.ids.push(style.id);
-          return;
-        }
-        stats.metaOnly.names.push(reportNameChange(oldStyle, style));
-        stats.metaOnly.ids.push(style.id);
-      });
-      return;
     }
     renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
     renderQueue.length = 0;
     done(resolve);
+  }
+
+  function analyze(item) {
+    if (!item || !item.name || !item.name.trim() || typeof item != 'object'
+    || (item.sections && typeof item.sections.slice != 'function')) {
+      stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
+      return;
+    }
+    item.name = item.name.trim();
+    const byId = BG.cachedStyles.byId.get(item.id);
+    const byName = oldStylesByName.get(item.name);
+    const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
+    if (oldStyle == byName && byName) {
+      item.id = byName.id;
+    }
+    const oldStyleKeys = oldStyle && Object.keys(oldStyle);
+    const metaEqual = oldStyleKeys &&
+      oldStyleKeys.length == Object.keys(item).length &&
+      oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
+    const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
+    if (metaEqual && codeEqual) {
+      stats.unchanged.names.push(oldStyle.name);
+      stats.unchanged.ids.push(oldStyle.id);
+      return;
+    }
+    return {oldStyle, metaEqual, codeEqual};
+  }
+
+  function account({style, info, resolve}) {
+    renderQueue.push(style);
+    if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
+    || renderQueue.length > RENDER_QUEUE_MAX) {
+      renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
+      setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
+      renderQueue.length = 0;
+      lastRenderTime = performance.now();
+    }
+    setTimeout(proceed, 0, resolve);
+    const {oldStyle, metaEqual, codeEqual} = info;
+    if (!oldStyle) {
+      stats.added.names.push(style.name);
+      stats.added.ids.push(style.id);
+      return;
+    }
+    if (!metaEqual && !codeEqual) {
+      stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
+      stats.metaAndCode.ids.push(style.id);
+      return;
+    }
+    if (!codeEqual) {
+      stats.codeOnly.names.push(style.name);
+      stats.codeOnly.ids.push(style.id);
+      return;
+    }
+    stats.metaOnly.names.push(reportNameChange(oldStyle, style));
+    stats.metaOnly.ids.push(style.id);
   }
 
   function done(resolve) {
