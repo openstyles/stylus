@@ -89,13 +89,4 @@ function messageBox({
     messageBox.element = null;
     messageBox.resolve = null;
   }
-
-  function $element(opt) {
-    const element = document.createElement(opt.tag || 'div');
-    (opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild])
-      .forEach(child => child && element.appendChild(child));
-    delete opt.appendChild;
-    delete opt.tag;
-    return Object.assign(element, opt);
-  }
 }

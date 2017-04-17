@@ -143,24 +143,29 @@ function importFromString(jsonString) {
       stats.codeOnly.names.length +
       stats.added.names.length;
     Promise.resolve(numChanged && BG.refreshAllTabs()).then(() => {
-      const listNames = kind => {
-        const {ids, names} = stats[kind];
-        return ids
-          ? names.map((name, i) => `<div data-id="${ids[i]}">${name}</div>`)
-          : names.map(name => `<div>${name}</div>`);
-      };
       const report = Object.keys(stats)
         .filter(kind => stats[kind].names.length)
-        .map(kind =>
-          `<details data-id="${kind}">
-            <summary><b>${stats[kind].names.length} ${t(stats[kind].legend)}</b></summary>
-            <small>${listNames(kind).join('')}</small>
-          </details>`)
-        .join('');
+        .map(kind => {
+          const {ids, names, legend} = stats[kind];
+          const listItemsWithId = (name, i) =>
+            $element({dataset: {id: ids[i]}, textContent: name});
+          const listItems = name =>
+            $element({textContent: name});
+          const block =
+            $element({tag: 'details', dataset: {id: kind}, appendChild: [
+              $element({tag: 'summary', appendChild:
+                $element({tag: 'b', textContent: names.length + ' ' + t(legend)})
+              }),
+              $element({tag: 'small', appendChild:
+                names.map(ids ? listItemsWithId : listItems)
+              }),
+            ]});
+          return block;
+        });
       scrollTo(0, 0);
       messageBox({
         title: t('importReportTitle'),
-        contents: report || t('importReportUnchanged'),
+        contents: report.length ? report : t('importReportUnchanged'),
         buttons: [t('confirmOK'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button, enter, esc}) => {

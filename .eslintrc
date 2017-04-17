@@ -48,6 +48,7 @@ globals:
   animateElement: false
   $: false
   $$: false
+  $element: false
   # prefs.js
   prefs: false
   setupLivePrefs: false

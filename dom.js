@@ -79,3 +79,21 @@ function $(selector, base = document) {
 function $$(selector, base = document) {
   return [...base.querySelectorAll(selector)];
 }
+
+
+function $element(opt) {
+  // tag:              string, default 'div'
+  // appendChild:      element or an array of elements
+  // dataset:          object
+  // any DOM property: assigned as is
+  const element = document.createElement(opt.tag || 'div');
+  (opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild])
+    .forEach(child => child && element.appendChild(child));
+  delete opt.appendChild;
+  delete opt.tag;
+  if (opt.dataset) {
+    Object.assign(element.dataset, opt.dataset);
+    delete opt.dataset;
+  }
+  return Object.assign(element, opt);
+}
