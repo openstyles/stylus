@@ -3,25 +3,31 @@
 
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
+
 const FIREFOX = /Firefox/.test(navigator.userAgent);
 const OPERA = /OPR/.test(navigator.userAgent);
+
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
+
   optionsUI: [
     chrome.runtime.getURL('options/index.html'),
     'chrome://extensions/?options=' + chrome.runtime.id,
   ],
+
   configureCommands:
     OPERA ? 'opera://settings/configureCommands'
           : 'chrome://extensions/configureCommands',
+
   // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
   // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
   chromeWebStore: FIREFOX ? 'N/A' : 'https://chrome.google.com/webstore/',
+
+  supported: new RegExp(
+    '^(file|ftps?|http)://|' +
+    `^https://${FIREFOX ? '' : '(?!chrome\\.google\\.com/webstore)'}|` +
+    '^' + chrome.runtime.getURL('')),
 };
-const RX_SUPPORTED_URLS = new RegExp(
-  '^(file|ftps?|http)://|' +
-  `^https://${FIREFOX ? '' : '(?!chrome\\.google\\.com/webstore)'}|` +
-  '^' + URLS.ownOrigin);
 
 let BG = chrome.extension.getBackgroundPage();
 

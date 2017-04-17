@@ -1666,7 +1666,6 @@ function showLintHelp() {
 function showRegExpTester(event, section = getSectionForChild(this)) {
 	const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 	const OWN_ICON = chrome.runtime.getManifest().icons['16'];
-	const RX_SUPPORTED_URLS = new RegExp(`^(file|https?|ftps?):|^${URLS.ownOrigin}`);
 	const cachedRegexps = showRegExpTester.cachedRegexps =
 		showRegExpTester.cachedRegexps || new Map();
 	const regexps = [...section.querySelector('.applies-to-list').children]
@@ -1696,7 +1695,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 	});
 	chrome.tabs.query({}, tabs => {
 		const supported = tabs.map(tab => tab.url)
-			.filter(url => RX_SUPPORTED_URLS.test(url));
+			.filter(url => URLS.supported.test(url));
 		const unique = [...new Set(supported).values()];
 		for (const rxData of regexps) {
 			const {rx, urls} = rxData;

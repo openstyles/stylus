@@ -5,7 +5,7 @@ let tabURL;
 const handleEvent = {};
 
 getActiveTabRealURL().then(url => {
-  tabURL = RX_SUPPORTED_URLS.test(url) ? url : '';
+  tabURL = URLS.supported.test(url) ? url : '';
   Promise.all([
     tabURL && getStylesSafe({matchUrl: tabURL}),
     onDOMready().then(() => {
