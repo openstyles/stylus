@@ -252,10 +252,13 @@ $('#file-all-styles').onclick = () => {
     fetch(url)
     .then(res => res.blob())
     .then(blob => {
-      const a = document.createElement('a');
-      a.setAttribute('download', fileName);
-      a.setAttribute('href', URL.createObjectURL(blob));
-      a.dispatchEvent(new MouseEvent('click'));
+      const objectURL = URL.createObjectURL(blob);
+      Object.assign(document.createElement('a'), {
+        download: fileName,
+        href: objectURL,
+        type: 'application/json',
+      }).dispatchEvent(new MouseEvent('click'));
+      setTimeout(() => URL.revokeObjectURL(objectURL));
     });
   });
 
