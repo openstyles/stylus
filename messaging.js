@@ -28,6 +28,11 @@ let BG = chrome.extension.getBackgroundPage();
 if (!BG || BG != window) {
   document.documentElement.classList.toggle('firefox', FIREFOX);
   document.documentElement.classList.toggle('opera', OPERA);
+  // TODO: remove once our manifest's minimum_chrome_version is 50+
+  // Chrome 49 doesn't report own extension pages in webNavigation apparently
+  if (navigator.userAgent.includes('Chrome/49.')) {
+    getActiveTab().then(BG.updateIcon);
+  }
 }
 
 function notifyAllTabs(msg) {
