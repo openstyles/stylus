@@ -201,8 +201,7 @@ function createStyleElement({
     id: 'style-' + style.id,
     styleId: style.id,
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
-    onmousedown: handleEvent.middleClick,
-    onauxclick: handleEvent.middleClick,
+    onmousedown: handleEvent.maybeEdit,
   });
 
   const checkbox = $('.checker', entry);
@@ -324,13 +323,16 @@ Object.assign(handleEvent, {
     close();
   },
 
-  middleClick(event) {
-    if (event.button != 1) {
+  maybeEdit(event) {
+    if (!(
+      event.button == 0 && event.ctrlKey ||
+      event.button == 1 ||
+      event.button == 2)) {
       return;
     }
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
-      $('.style-edit-link', this).click();
+      this.onmouseup = () => $('.style-edit-link', this).click();
       event.preventDefault();
       return;
     }
