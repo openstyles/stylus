@@ -17,7 +17,6 @@ chrome.webNavigation.onReferenceFragmentUpdated.addListener(data => {
   webNavigationListener('styleReplaceAll', data);
 });
 
-
 function webNavigationListener(method, data) {
   getStyles({matchUrl: data.url, enabled: true, asHash: true}, styles => {
     // we can't inject chrome:// and chrome-extension:// pages
@@ -263,10 +262,7 @@ function refreshAllTabs() {
 
 
 function updateIcon(tab, styles) {
-  // while NTP is still loading only process the request for its main frame with a real url
-  // (but when it's loaded we should process style toggle requests from popups, for example)
-  const isNTP = tab.url == 'chrome://newtab/';
-  if (isNTP && tab.status != 'complete' || tab.id < 0) {
+  if (tab.id < 0) {
     return;
   }
   if (styles) {
@@ -278,12 +274,9 @@ function updateIcon(tab, styles) {
     });
     return;
   }
-  if (isNTP) {
-    getTabRealURL(tab).then(url =>
-      getStyles({matchUrl: url, enabled: true, asHash: true}, stylesReceived));
-  } else {
-    getStyles({matchUrl: tab.url, enabled: true, asHash: true}, stylesReceived);
-  }
+  getTabRealURL(tab).then(url =>
+    getStyles({matchUrl: url, enabled: true, asHash: true},
+      stylesReceived));
 
   function stylesReceived(styles) {
     let numStyles = styles.length;
