@@ -37,6 +37,16 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 
 Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
 
+// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
+new MutationObserver((mutations, observer) => {
+	const themeElement = document.getElementById("cm-theme");
+	if (themeElement) {
+		themeElement.href = prefs.get("editor.theme") == "default" ? ""
+			: "codemirror/theme/" + prefs.get("editor.theme") + ".css";
+		observer.disconnect();
+	}
+}).observe(document, {subtree: true, childList: true});
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
 	commands: {
@@ -239,38 +249,32 @@ function initCodeMirror() {
 		return this.display.wrapper.parentNode;
 	};
 
-	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
-	var theme = prefs.get("editor.theme");
-	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
-
 	// initialize global editor controls
-	document.addEventListener("DOMContentLoaded", function() {
-		function optionsHtmlFromArray(options) {
-			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
-		}
-		var themeControl = document.getElementById("editor.theme");
-		if (BG && BG.codeMirrorThemes) {
-			themeControl.innerHTML = optionsHtmlFromArray(BG.codeMirrorThemes);
-		} else {
-			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
-			BG.getCodeMirrorThemes().then(themes => {
-				BG.codeMirrorThemes = themes;
-				themeControl.innerHTML = optionsHtmlFromArray(themes);
-				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
-			});
-		}
-		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
-		document.getElementById("options").addEventListener("change", acmeEventListener, false);
-		setupLivePrefs(
-			document.querySelectorAll("#options *[data-option][id^='editor.']")
-				.map(function(option) { return option.id })
-		);
-	});
+	function optionsHtmlFromArray(options) {
+		return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
+	}
+	var themeControl = document.getElementById("editor.theme");
+	if (BG && BG.codeMirrorThemes) {
+		themeControl.innerHTML = optionsHtmlFromArray(BG.codeMirrorThemes);
+	} else {
+		// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
+		const theme = prefs.get("editor.theme");
+		themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
+		BG.getCodeMirrorThemes().then(themes => {
+			BG.codeMirrorThemes = themes;
+			themeControl.innerHTML = optionsHtmlFromArray(themes);
+			themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
+		});
+	}
+	document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+	document.getElementById("options").addEventListener("change", acmeEventListener, false);
+	setupLivePrefs(
+		document.querySelectorAll("#options *[data-option][id^='editor.']")
+			.map(function(option) { return option.id })
+	);
 
 	hotkeyRerouter.setState(true);
 }
-initCodeMirror();
 
 function acmeEventListener(event) {
 	var el = event.target;
@@ -416,6 +420,10 @@ document.addEventListener("wheel", function(event) {
 chrome.tabs.query({currentWindow: true}, function(tabs) {
 	var windowId = tabs[0].windowId;
 	if (prefs.get("openEditInWindow")) {
+		if (sessionStorage.saveSizeOnClose && 'left' in prefs.get('windowPosition', {})) {
+			// window was reopened via Ctrl-Shift-T etc.
+			chrome.windows.update(windowId, prefs.get('windowPosition'));
+		}
 		if (tabs.length == 1 && window.history.length == 1) {
 			chrome.windows.getAll(function(windows) {
 				if (windows.length > 1) {
@@ -1111,6 +1119,7 @@ function beautify(event) {
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
+	initCodeMirror();
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
