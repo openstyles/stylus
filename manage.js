@@ -732,7 +732,6 @@ function filterAndAppend({entry, container}) {
 
 
 function reapplyFilter(container = installed) {
-  $('#check-all-updates').disabled = !$('.updatable:not(.can-update)');
   // A: show
   const toUnhide = filtersSelector.hide ? $$(filtersSelector.unhide, container) : container;
   // showStyles() is building the page and no filters are active
@@ -784,6 +783,9 @@ function reapplyFilter(container = installed) {
   return;
 
   function shuffle(fullPass) {
+    if (fullPass) {
+      $('#check-all-updates').disabled = !$('.updatable:not(.can-update)');
+    }
     // 1. skip the visible group on top
     let firstHidden = $('#installed > .hidden');
     let entry = firstHidden;
