@@ -10,6 +10,7 @@ const filtersSelector = {
 const newUI = {
   enabled: prefs.get('manage.newUI'),
   favicons: prefs.get('manage.newUI.favicons'),
+  faviconsGray: prefs.get('manage.newUI.faviconsGray'),
   targets: prefs.get('manage.newUI.targets'),
   renderClass() {
     document.documentElement.classList.toggle('newUI', newUI.enabled);
@@ -75,15 +76,11 @@ function initGlobalEvents() {
     el.onclick = () => target.classList.toggle('hidden');
   });
 
+  // triggered automatically by setupLivePrefs() below
   enforceInputRange($('#manage.newUI.targets'));
 
-  setupLivePrefs([
-    'manage.onlyEnabled',
-    'manage.onlyEdited',
-    'manage.newUI',
-    'manage.newUI.favicons',
-    'manage.newUI.targets',
-  ]);
+  // N.B. triggers existing onchange listeners
+  setupLivePrefs($$('input[id^="manage."]').map(el => el.id));
 
   $$('[data-filter]').forEach(el => {
     el.onchange = handleEvent.filterOnChange;
@@ -401,39 +398,55 @@ function handleDelete(id) {
 
 
 function switchUI({styleOnly} = {}) {
-  const enabled = $('#manage.newUI').checked;
-  const favicons = $('#manage.newUI.favicons').checked;
-  const targets = Number($('#manage.newUI.targets').value);
+  const current = {};
+  const changed = {};
+  let someChanged = false;
+  // ensure the global option is processed first
+  for (const el of [$('#manage.newUI'), ...$$('[id^="manage.newUI."]')]) {
+    const id = el.id.replace(/^manage\.newUI\.?/, '') || 'enabled';
+    const value = el.type == 'checkbox' ? el.checked : Number(el.value);
+    const valueChanged = value !== newUI[id] && (id == 'enabled' || current.enabled);
+    current[id] = value;
+    changed[id] = valueChanged;
+    someChanged |= valueChanged;
+  }
 
-  const stateToggled = newUI.enabled != enabled;
-  const targetsChanged = enabled && targets != newUI.targets;
-  const faviconsChanged = enabled && favicons != newUI.favicons;
-  const missingFavicons = enabled && favicons && !$('.applies-to img');
-
-  if (!styleOnly && !stateToggled && !targetsChanged && !faviconsChanged) {
+  if (!styleOnly && !someChanged) {
     return;
   }
 
-  Object.assign(newUI, {enabled, favicons, targets});
-
+  Object.assign(newUI, current);
   newUI.renderClass();
-  installed.classList.toggle('has-favicons', favicons);
+  installed.classList.toggle('has-favicons', newUI.favicons);
   $('#style-overrides').textContent = `
     .newUI .targets {
       max-height: ${newUI.targets * 18}px;
     }
-  `;
+    ` + (newUI.faviconsGray ? `
+    .newUI .target img {
+      -webkit-filter: grayscale(1);
+      filter: grayscale(1);
+      opacity: .25;
+    }
+    ` : `
+    .newUI .target img {
+      -webkit-filter: none;
+      filter: none;
+      opacity: 1;
+    }
+  `);
 
   if (styleOnly) {
     return;
   }
 
-  if (stateToggled || missingFavicons && !createStyleElement.parts) {
+  const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
+  if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
     installed.innerHTML = '';
     getStylesSafe().then(showStyles);
     return;
   }
-  if (targetsChanged) {
+  if (changed.targets) {
     for (const targets of $$('.entry .targets')) {
       const hasMore = targets.children.length > newUI.targets;
       targets.parentElement.classList.toggle('has-more', hasMore);

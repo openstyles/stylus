@@ -18,6 +18,7 @@ var prefs = new function Prefs() {
     'manage.onlyEdited': false,     // display only styles created locally
     'manage.newUI': true,           // use the new compact layout
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
+    'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
     'editor.options': {},           // CodeMirror.defaults.*

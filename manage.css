@@ -433,6 +433,11 @@ input[id^="manage.newUI"] {
   padding: 1ex 0 2ex 16px;
 }
 
+#faviconsHelp div {
+    display: flex;
+    align-items: center;
+    margin-top: 1ex;
+}
 
 /* Default, no update buttons */
 .update,
