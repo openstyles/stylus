@@ -162,7 +162,14 @@ summary {
 }
 
 .disabled h2::after {
-  content: " (__MSG_genericDisabledLabel__)";
+  content: "__MSG_genericDisabledLabel__";
+  font-weight: normal;
+  font-size: 11px;
+  text-transform: lowercase;
+  background: rgba(128, 128, 128, .2);
+  padding: 2px 5px 3px;
+  border-radius: 4px;
+  margin-left: 1ex;
 }
 
 .disabled {
