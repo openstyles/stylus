@@ -281,29 +281,38 @@ var prefs = new function Prefs() {
 // Accepts an array of pref names (values are fetched via prefs.get)
 // and establishes a two-way connection between the document elements and the actual prefs
 function setupLivePrefs(IDs) {
-  const localIDs = {};
-  IDs.forEach(function(id) {
-    localIDs[id] = true;
-    updateElement(id).addEventListener('change', function() {
-      prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
-    });
-  });
+  const checkedProps = {};
+  for (const id of IDs) {
+    const element = document.getElementById(id);
+    checkedProps[id] = element.type == 'checkbox' ? 'checked' : 'value';
+    updateElement({id, element, force: true});
+    element.addEventListener('change', onChange);
+  }
   chrome.runtime.onMessage.addListener(msg => {
     if (msg.prefs) {
-      for (const prefName in msg.prefs) {
-        if (prefName in localIDs) {
-          updateElement(prefName, msg.prefs[prefName]);
+      for (const id in msg.prefs) {
+        if (id in checkedProps) {
+          updateElement({id, value: msg.prefs[id]});
         }
       }
     }
   });
-  function updateElement(id, value) {
-    const el = document.getElementById(id);
-    el[isCheckbox(el) ? 'checked' : 'value'] = value || prefs.get(id);
-    el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
-    return el;
+  function onChange() {
+    const value = this[checkedProps[this.id]];
+    if (prefs.get(this.id) != value) {
+      prefs.set(this.id, value);
+    }
   }
-  function isCheckbox(el) {
-    return el.localName == 'input' && el.type == 'checkbox';
+  function updateElement({
+    id,
+    value = prefs.get(id),
+    element = document.getElementById(id),
+    force,
+  }) {
+    const prop = checkedProps[id];
+    if (force || element[prop] != value) {
+      element[prop] = value;
+      element.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+    }
   }
 }
