@@ -249,6 +249,18 @@ summary {
   display: none;
 }
 
+.newUI .svg-icon {
+  fill: #aaa;
+}
+
+.newUI .entry:hover .svg-icon {
+  fill: #666;
+}
+
+.newUI .entry:hover .svg-icon:hover {
+  fill: #000;
+}
+
 .newUI .checking-update .check-update {
   opacity: 0;
   display: inline;
