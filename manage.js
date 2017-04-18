@@ -70,7 +70,9 @@ function initGlobalEvents() {
   window.onbeforeunload = rememberScrollPosition;
 
   $$('[data-toggle-on-click]').forEach(el => {
-    el.onclick = () => $(el.dataset.toggleOnClick).classList.toggle('hidden');
+    // dataset on SVG doesn't work in Chrome 49-??, works in 57+
+    const target = $(el.getAttribute('data-toggle-on-click'));
+    el.onclick = () => target.classList.toggle('hidden');
   });
 
   enforceInputRange($('#manage.newUI.targets'));
