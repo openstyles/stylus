@@ -76,11 +76,6 @@ a:hover {
   fill: #666;
 }
 
-.svg-icon.delete {
-  width: 16px;
-  height: 16px;
-}
-
 .svg-icon.info {
   width: 14px;
   height: 16px;
@@ -268,11 +263,11 @@ summary {
 }
 
 .newUI .update-done .updated svg {
-  top: -2px;
+  top: -4px;
   position: relative;
   /* unprefixed since Chrome 53 */
   -webkit-filter: drop-shadow(0 4px 0 currentColor);
-  filter: drop-shadow(0 4px 0 currentColor);
+  filter: drop-shadow(0 5px 0 currentColor);
 }
 
 .newUI .can-update .update,
