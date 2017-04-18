@@ -459,14 +459,13 @@ function applyUpdateAll() {
   setTimeout(() => {
     btnApply.classList.add('hidden');
     btnApply.disabled = false;
+    renderUpdatesOnlyFilter({show: false});
   }, 1000);
 
   $$('.can-update .update').forEach(button => {
     scrollElementIntoView(button);
     button.click();
   });
-
-  renderUpdatesOnlyFilter({show: false});
 }
 
 
