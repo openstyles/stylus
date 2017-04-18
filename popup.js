@@ -275,10 +275,11 @@ Object.assign(handleEvent, {
     $('[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
+      const keyCode = event.keyCode || event.which;
       if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-      && (event.keyCode == 13 || event.keyCode == 27)) {
+      && (keyCode == 13 || keyCode == 27)) {
         event.preventDefault();
-        confirm(event.keyCode == 13);
+        confirm(keyCode == 13);
       }
     };
     function confirm(ok) {

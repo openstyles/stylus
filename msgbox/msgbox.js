@@ -28,10 +28,11 @@ function messageBox({
         resolveWith({button: this.buttonIndex});
       },
       key(event) {
+        const keyCode = event.keyCode || event.which;
         if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-        && (event.keyCode == 13 || event.keyCode == 27)) {
+        && (keyCode == 13 || keyCode == 27)) {
           event.preventDefault();
-          resolveWith(event.keyCode == 13 ? {enter: true} : {esc: true});
+          resolveWith(keyCode == 13 ? {enter: true} : {esc: true});
         }
       },
       scroll() {

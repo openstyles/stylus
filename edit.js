@@ -1783,7 +1783,9 @@ function showHelp(title, text) {
 	return div;
 
 	function closeHelp(e) {
-		if (!e || e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
+		if (!e
+		|| e.type == "click"
+		|| ((e.keyCode || e.which) == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
 			div.style.display = "";
 			document.querySelector(".contents").innerHTML = "";
 			document.removeEventListener("keydown", closeHelp);

@@ -59,7 +59,7 @@ function initGlobalEvents() {
 
   // focus search field on / key
   document.onkeypress = event => {
-    if (event.keyCode == 47
+    if ((event.keyCode || event.which) == 47
     && !event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey
     && !event.target.matches('[type="text"], [type="search"]')) {
       event.preventDefault();
