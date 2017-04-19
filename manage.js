@@ -104,11 +104,10 @@ function showStyles(styles = []) {
 
   function renderStyles(index) {
     const t0 = performance.now();
-    while (index < sorted.length) {
+    let rendered = 0;
+    while (index < sorted.length
+    && (shouldRenderAll || performance.now() - t0 < 10 || ++rendered < 10)) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
-      if (!shouldRenderAll && performance.now() - t0 > 10) {
-        break;
-      }
     }
     filterAndAppend({container: renderBin});
     if (index < sorted.length) {
