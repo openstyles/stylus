@@ -79,14 +79,15 @@ function getStyles(options, callback) {
 
 
 function filterStyles({
-  enabled,
+  enabled = null,
   url = null,
   id = null,
   matchUrl = null,
   asHash = null,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
-  enabled = fixBoolean(enabled);
+  enabled = enabled === null || typeof enabled == 'boolean' ? enabled :
+    typeof enabled == 'string' ? enabled == 'true' : null;
   id = id === null ? null : Number(id);
 
   if (enabled === null
@@ -501,14 +502,6 @@ function reportError(...args) {
       console.log(arg.message);
     }
   }
-}
-
-
-function fixBoolean(b) {
-  if (typeof b != 'undefined') {
-    return b != 'false';
-  }
-  return null;
 }
 
 
