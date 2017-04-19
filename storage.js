@@ -1,4 +1,3 @@
-/* global cachedStyles: true */
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -493,15 +492,6 @@ function cleanupCachedFilters({force = false} = {}) {
     .sort((a, b) => a.weight - b.weight)
     .slice(0, size / 10 + 1)
     .forEach(({id}) => cachedStyles.filters.delete(id));
-}
-
-
-function reportError(...args) {
-  for (const arg of args) {
-    if ('message' in arg) {
-      console.log(arg.message);
-    }
-  }
 }
 
 

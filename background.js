@@ -1,4 +1,4 @@
-/* global getDatabase, getStyles, saveStyle, reportError */
+/* global getDatabase, getStyles, saveStyle */
 'use strict';
 
 chrome.webNavigation.onBeforeNavigate.addListener(data => {
@@ -161,7 +161,10 @@ Object.keys(contextMenus).forEach(id => {
 
 // Get the DB so that any first run actions will be performed immediately
 // when the background page loads.
-getDatabase(function() {}, reportError);
+getDatabase(() => {}, (...args) => {
+  args.forEach(arg => 'message' in arg && console.error(arg.message));
+});
+
 
 // When an edit page gets attached or detached, remember its state
 // so we can do the same to the next one to open.
