@@ -21,12 +21,11 @@ function waitForBody() {
 
   this.disconnect();
   rebrand([{addedNodes: [document.body]}]);
-  const rebrandObserver = new MutationObserver(rebrand);
-  rebrandObserver.observe(document.body, {childList: true, subtree: true});
+  new MutationObserver(rebrand)
+    .observe(document.body, {childList: true, subtree: true});
 
   document.addEventListener('DOMContentLoaded', function _() {
     document.removeEventListener('DOMContentLoaded', _);
-    rebrandObserver.disconnect();
     chrome.runtime.sendMessage({
       method: 'getStyles',
       url: getMeta('stylish-id-url') || location.href
@@ -141,30 +140,24 @@ function getResource(url) {
 }
 
 
-function rebrand(mutations) {
+function rebrand(mutations, observer) {
   /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
-  for (let m = mutations.length; --m >= 0;) {
-    const added = mutations[m].addedNodes;
-    for (let n = added.length; --n >= 0;) {
-      const addedNode = added[n];
-      if (addedNode.nodeType != Node.ELEMENT_NODE) {
-        continue;
-      }
-      const elementsToCheck = addedNode.matches('.install-status') ? [addedNode]
-        : addedNode.getElementsByClassName('install-status');
-      for (let i = elementsToCheck.length; --i >= 0;) {
-        const el = elementsToCheck[i];
-        if (!el.textContent.includes('Stylish')) {
-          continue;
-        }
-        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-        while (walker.nextNode()) {
-          const node = walker.currentNode;
-          const text = node.nodeValue;
-          if (text.includes('Stylish') && node.parentNode.localName != 'a') {
-            node.nodeValue = text.replace(/Stylish/g, 'Stylus');
-          }
-        }
+  if (!document.getElementById('hidden-meta') && document.readyState == 'loading') {
+    return;
+  }
+  observer.disconnect();
+  const elements = document.getElementsByClassName('install-status');
+  for (let i = elements.length; --i >= 0;) {
+    const el = elements[i];
+    if (!el.textContent.includes('Stylish')) {
+      continue;
+    }
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const text = node.nodeValue;
+      if (text.includes('Stylish') && node.parentNode.localName != 'a') {
+        node.nodeValue = text.replace(/Stylish/g, 'Stylus');
       }
     }
   }
