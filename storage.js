@@ -432,32 +432,31 @@ function compileStyleRegExps({style, compileAll}) {
 
 
 function invalidateCache({added, updated, deletedId} = {}) {
-  // prevent double-add on echoed invalidation
-  const cached = added && cachedStyles.byId.get(added.id);
-  if (cached) {
-    return;
-  }
   if (!cachedStyles.list) {
     return;
   }
+  const id = added ? added.id : updated ? updated.id : deletedId;
+  const cached = cachedStyles.byId.get(id);
   if (updated) {
-    const cached = cachedStyles.byId.get(updated.id);
     if (cached) {
       Object.assign(cached, updated);
+      cachedStyles.filters.clear();
+      return;
+    } else {
+      added = updated;
     }
-    cachedStyles.filters.clear();
-    return;
   }
   if (added) {
-    cachedStyles.list.push(added);
-    cachedStyles.byId.set(added.id, added);
-    cachedStyles.filters.clear();
+    if (!cached) {
+      cachedStyles.list.push(added);
+      cachedStyles.byId.set(added.id, added);
+      cachedStyles.filters.clear();
+    }
     return;
   }
-  if (deletedId != undefined) {
-    const deletedStyle = (cachedStyles.byId.get(deletedId) || {}).style;
-    if (deletedStyle) {
-      const cachedIndex = cachedStyles.list.indexOf(deletedStyle);
+  if (deletedId !== undefined) {
+    if (cached) {
+      const cachedIndex = cachedStyles.list.indexOf(cached);
       cachedStyles.list.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
       cachedStyles.filters.clear();
