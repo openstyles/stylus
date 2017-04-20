@@ -1,118 +1,80 @@
-/* eslint brace-style: 1, arrow-parens: 1, space-before-function-paren: 1, arrow-body-style: 1 */
-/* globals getStyles, saveStyle */
+/* globals getStyles, saveStyle, styleSectionsEqual */
 'use strict';
 
-// TODO: refactor to make usable in manage::Updater
-var update = {
-  fetch: (resource, callback) => {
-    let req = new XMLHttpRequest();
-    let [url, data] = resource.split('?');
-    req.open('POST', url, true);
-    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    req.onload = () => callback(req.responseText);
-    req.onerror = req.ontimeout = () => callback();
-    req.send(data);
-  },
-  md5Check: (style, callback, skipped) => {
-    let req = new XMLHttpRequest();
-    req.open('GET', style.md5Url, true);
-    req.onload = () => {
-      let md5 = req.responseText;
-      if (md5 && md5 !== style.originalMd5) {
-        callback(style);
-      }
-      else {
-        skipped(`"${style.name}" style is up-to-date`);
-      }
-    };
-    req.onerror = req.ontimeout = () => skipped('Error validating MD5 checksum');
-    req.send();
-  },
-  list: (callback) => {
-    getStyles({}, (styles) => callback(styles.filter(style => style.updateUrl)));
-  },
-  perform: (observe = function () {}) => {
-    // TODO: use sectionsAreEqual
-    // from install.js
-    function arraysAreEqual (a, b) {
-      // treat empty array and undefined as equivalent
-      if (typeof a === 'undefined') {
-        return (typeof b === 'undefined') || (b.length === 0);
-      }
-      if (typeof b === 'undefined') {
-        return (typeof a === 'undefined') || (a.length === 0);
-      }
-      if (a.length !== b.length) {
-        return false;
-      }
-      return a.every(function (entry) {
-        return b.indexOf(entry) !== -1;
+// eslint-disable-next-line no-var
+var updater = {
+
+  COUNT: 'count',
+  UPDATED: 'updated',
+  SKIPPED: 'skipped',
+  SKIPPED_SAME_MD5: 'up-to-date: MD5 is unchanged',
+  SKIPPED_SAME_CODE: 'up-to-date: code sections are unchanged',
+  SKIPPED_ERROR_MD5: 'error: MD5 is invalid',
+  SKIPPED_ERROR_JSON: 'error: JSON is invalid',
+  DONE: 'done',
+
+  lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
+
+  checkAllStyles(observe = () => {}) {
+    updater.resetInterval();
+    return new Promise(resolve => {
+      getStyles({}, styles => {
+        styles = styles.filter(style => style.updateUrl);
+        observe(updater.COUNT, styles.length);
+        Promise.all(styles.map(style =>
+          updater.checkStyle(style)
+            .then(saveStyle)
+            .then(saved => observe(updater.UPDATED, saved))
+            .catch(err => observe(updater.SKIPPED, style, err))
+        )).then(() => {
+          observe(updater.DONE);
+          resolve();
+        });
       });
-    }
-    // from install.js
-    function sectionsAreEqual(a, b) {
-      if (a.code !== b.code) {
-        return false;
-      }
-      return ['urls', 'urlPrefixes', 'domains', 'regexps'].every(function (attribute) {
-        return arraysAreEqual(a[attribute], b[attribute]);
-      });
-    }
-
-    update.list(styles => {
-      observe('count', styles.length);
-      styles.forEach(style => update.md5Check(style, style => update.fetch(style.updateUrl, response => {
-        if (response) {
-          let json = JSON.parse(response);
-
-          if (json.sections.length === style.sections.length) {
-            if (json.sections.every((section) => {
-              return style.sections.some(installedSection => sectionsAreEqual(section, installedSection));
-            })) {
-              return observe('single-skipped', '2'); // everything is the same
-            }
-            json.method = 'saveStyle';
-            json.id = style.id;
-
-            saveStyle(json).then(style => {
-              observe('single-updated', style.name);
-            });
-          }
-          else {
-            return observe('single-skipped', '3'); // style sections mismatch
-          }
-        }
-      }), () => observe('single-skipped', '1')));
     });
-  }
-};
-// automatically update all user-styles if "updateInterval" pref is set
-window.setTimeout(function () {
-  let id;
-  function run () {
-    update.perform(/*(cmd, value) => console.log(cmd, value)*/);
-    reset();
-  }
-  function reset () {
-    window.clearTimeout(id);
-    let interval = prefs.get('updateInterval');
-    // if interval === 0 => automatic update is disabled
+  },
+
+  checkStyle(style) {
+    return download(style.md5Url)
+      .then(md5 =>
+        !md5 || md5.length != 32 ? Promise.reject(updater.SKIPPED_ERROR_MD5) :
+        md5 == style.originalMd5 ? Promise.reject(updater.SKIPPED_SAME_MD5) :
+        style.updateUrl)
+      .then(download)
+      .then(text => tryJSONparse(text))
+      .then(json =>
+        !updater.styleJSONseemsValid(json) ? Promise.reject(updater.SKIPPED_ERROR_JSON) :
+        styleSectionsEqual(json, style) ? Promise.reject(updater.SKIPPED_SAME_CODE) :
+        // keep the local name as it could've been customized by the user
+        Object.assign(json, {
+          id: style.id,
+          name: null,
+        }));
+  },
+
+  styleJSONseemsValid(json) {
+    return json
+      && json.sections
+      && json.sections.length
+      && typeof json.sections.every == 'function'
+      && typeof json.sections[0].code == 'string';
+  },
+
+  schedule() {
+    const interval = prefs.get('updateInterval') * 60 * 60 * 1000;
     if (interval) {
-      /* console.log('next update', interval); */
-      id = window.setTimeout(run, interval * 60 * 60 * 1000);
+      const elapsed = Math.max(0, Date.now() - updater.lastUpdateTime);
+      debounce(updater.checkAllStyles, Math.max(10e3, interval - elapsed));
+    } else if (debounce.timers) {
+      debounce.unregister(updater.checkAllStyles);
     }
-  }
-  if (prefs.get('updateInterval')) {
-    run();
-  }
-  chrome.runtime.onMessage.addListener(request => {
-    // when user has changed the predefined time interval in the settings page
-    if (request.method === 'prefChanged' && 'updateInterval' in request.prefs) {
-      reset();
-    }
-    // when user just manually checked for updates
-    if (request.method === 'resetInterval') {
-      reset();
-    }
-  });
-}, 10000);
+  },
+
+  resetInterval() {
+    localStorage.lastUpdateTime = updater.lastUpdateTime = Date.now();
+    updater.schedule();
+  },
+};
+
+updater.schedule();
+prefs.subscribe(updater.schedule, ['updateInterval']);

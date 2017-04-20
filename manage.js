@@ -499,10 +499,7 @@ function checkUpdateAll() {
   let updatesFound = false;
   let checked = 0;
   processQueue();
-  // notify the automatic updater to reset the next automatic update accordingly
-  chrome.runtime.sendMessage({
-    method: 'resetInterval'
-  });
+  BG.updater.resetInterval();
 
   function processQueue(status) {
     if (status === true) {

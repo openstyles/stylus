@@ -112,7 +112,7 @@ rules:
   no-case-declarations: [2]
   no-class-assign: [2]
   no-cond-assign: [2, except-parens]
-  no-confusing-arrow: [2, {allowParens: true}]
+  no-confusing-arrow: [1, {allowParens: true}]
   no-const-assign: [2]
   no-constant-condition: [0]
   no-continue: [0]

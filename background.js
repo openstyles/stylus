@@ -137,17 +137,9 @@ for (const id of Object.keys(contextMenus)) {
   chrome.contextMenus.create(item, ignoreChromeError);
 }
 
-Object.defineProperty(contextMenus, 'updateOnPrefChanged', {
-  value: changedPrefs => {
-    for (const id in changedPrefs) {
-      if (id in contextMenus) {
-        chrome.contextMenus.update(id, {
-          checked: changedPrefs[id],
-        }, ignoreChromeError);
-      }
-    }
-  }
-});
+prefs.subscribe((id, checked) => {
+  chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+}, Object.keys(contextMenus));
 
 // *************************************************************************
 // [re]inject content scripts
@@ -281,10 +273,6 @@ function onRuntimeMessage(request, sender, sendResponse) {
         () => sendResponse(true),
         () => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
-
-    case 'prefChanged':
-      contextMenus.updateOnPrefChanged(request.prefs);
-      break;
 
     case 'download':
       download(request.url)

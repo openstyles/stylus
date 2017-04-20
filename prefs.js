@@ -60,6 +60,11 @@ var prefs = new function Prefs() {
     'badgeNormal',
   ];
 
+  const onChange = {
+    any: new Set(),
+    specific: new Map(),
+  };
+
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
 
@@ -101,14 +106,24 @@ var prefs = new function Prefs() {
       }
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
+      const hasChanged = !equal(value, oldValue);
       if (BG && BG != window) {
         BG.prefs.set(key, BG.deepCopy(value), {noBroadcast, noSync});
       } else {
         localStorage[key] = typeof defaults[key] == 'object'
           ? JSON.stringify(value)
           : value;
-        if (!noBroadcast && !equal(value, oldValue)) {
+        if (!noBroadcast && hasChanged) {
           this.broadcast(key, value, {noSync});
+        }
+      }
+      if (hasChanged) {
+        const listener = onChange.specific.get(key);
+        if (listener) {
+          listener(key, value);
+        }
+        for (const listener of onChange.any.values()) {
+          listener(key, value);
         }
       }
     },
@@ -122,6 +137,16 @@ var prefs = new function Prefs() {
       debounce(doBroadcast);
       if (!noSync) {
         debounce(doSyncSet);
+      }
+    },
+
+    subscribe(listener, keys) {
+      if (keys) {
+        for (const key of keys) {
+          onChange.specific.set(key, listener);
+        }
+      } else {
+        onChange.any.add(listener);
       }
     },
   });
@@ -289,15 +314,8 @@ function setupLivePrefs(IDs) {
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
   }
-  chrome.runtime.onMessage.addListener(msg => {
-    if (msg.prefs) {
-      for (const id in msg.prefs) {
-        if (id in checkedProps) {
-          updateElement({id, value: msg.prefs[id]});
-        }
-      }
-    }
-  });
+  prefs.subscribe((id, value) => updateElement({id, value}), IDs);
+
   function onChange() {
     const value = this[checkedProps[this.id]];
     if (prefs.get(this.id) != value) {

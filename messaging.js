@@ -203,6 +203,10 @@ function debounce(fn, delay, ...args) {
     timers.delete(fn);
     fn(...args);
   });
+  debounce.unregister = debounce.unregister || (fn => {
+    clearTimeout(timers.get(fn));
+    timers.delete(fn);
+  });
   clearTimeout(timers.get(fn));
   timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
 }
