@@ -18,19 +18,16 @@ function waitForBody() {
   if (!document.body) {
     return;
   }
-
   this.disconnect();
+
   rebrand([{addedNodes: [document.body]}]);
   new MutationObserver(rebrand)
     .observe(document.body, {childList: true, subtree: true});
 
-  document.addEventListener('DOMContentLoaded', function _() {
-    document.removeEventListener('DOMContentLoaded', _);
-    chrome.runtime.sendMessage({
-      method: 'getStyles',
-      url: getMeta('stylish-id-url') || location.href
-    }, checkUpdatability);
-  });
+  chrome.runtime.sendMessage({
+    method: 'getStyles',
+    url: getMeta('stylish-id-url') || location.href
+  }, checkUpdatability);
 }
 
 
@@ -71,7 +68,9 @@ function sendEvent(type, detail = null) {
     // because USO tries to use a global "event" variable deprecated in Firefox
     detail = cloneInto(detail, document); // eslint-disable-line no-undef
   }
-  document.dispatchEvent(new CustomEvent(type, detail));
+  onDOMready().then(() => {
+    document.dispatchEvent(new CustomEvent(type, detail));
+  });
 }
 
 
@@ -121,20 +120,11 @@ function getMeta(name) {
 
 
 function getResource(url) {
-  if (url.startsWith('#')) {
-    return Promise.resolve(document.getElementById(url.slice(1)).textContent);
-  }
   return new Promise(resolve => {
-    const xhr = new XMLHttpRequest();
-    xhr.onloadend = () => resolve(xhr.status < 400 ? xhr.responseText : null);
-    if (url.length > 2000) {
-      const [mainUrl, query] = url.split('?');
-      xhr.open('POST', mainUrl, true);
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send(query);
+    if (url.startsWith('#')) {
+      resolve(document.getElementById(url.slice(1)).textContent);
     } else {
-      xhr.open('GET', url);
-      xhr.send();
+      chrome.runtime.sendMessage({method: 'download', url}, resolve);
     }
   });
 }
@@ -148,16 +138,17 @@ function rebrand(mutations, observer) {
   observer.disconnect();
   const elements = document.getElementsByClassName('install-status');
   for (let i = elements.length; --i >= 0;) {
-    const el = elements[i];
-    if (!el.textContent.includes('Stylish')) {
-      continue;
-    }
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(elements[i], NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const text = node.nodeValue;
-      if (text.includes('Stylish') && node.parentNode.localName != 'a') {
+      const parent = node.parentNode;
+      const extensionHelp = /stylish_chrome/.test(parent.href);
+      if (text.includes('Stylish') && (parent.localName != 'a' || extensionHelp)) {
         node.nodeValue = text.replace(/Stylish/g, 'Stylus');
+      }
+      if (extensionHelp) {
+        parent.href = 'http://add0n.com/stylus.html';
       }
     }
   }
@@ -210,6 +201,19 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
     }
     return true;
   }
+}
+
+
+function onDOMready() {
+  if (document.readyState != 'loading') {
+    return Promise.resolve();
+  }
+  return new Promise(resolve => {
+    document.addEventListener('DOMContentLoaded', function _() {
+      document.removeEventListener('DOMContentLoaded', _);
+      resolve();
+    });
+  });
 }
 
 

@@ -33,6 +33,7 @@ globals:
   getStylesSafe: false
   saveStyleSafe: false
   sessionStorageHash: false
+  download: false
   # localization.js
   template: false
   t: false

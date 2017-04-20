@@ -86,6 +86,12 @@ function onRuntimeMessage(request, sender, sendResponse) {
         }
       }
       break;
+
+    case 'download':
+      download(request.url)
+        .then(sendResponse)
+        .catch(() => sendResponse(null));
+      return KEEP_CHANNEL_OPEN;
   }
 }
 

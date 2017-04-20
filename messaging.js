@@ -306,3 +306,18 @@ function deleteStyleSafe({id, notify = true} = {}) {
       return id;
     });
 }
+
+
+function download(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.timeout = 10e3;
+    xhr.onloadend = () => (xhr.status == 200
+      ? resolve(xhr.responseText)
+      : reject(xhr.status));
+    const [mainUrl, query] = url.split('?');
+    xhr.open(query ? 'POST' : 'GET', mainUrl, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(query);
+  });
+}

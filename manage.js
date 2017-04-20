@@ -558,7 +558,7 @@ class Updater {
   }
 
   checkMd5() {
-    return Updater.download(this.md5Url).then(
+    return download(this.md5Url).then(
       md5 => (md5.length == 32
         ? this.decideOnMd5(md5 != this.md5)
         : this.onFailure(-1)),
@@ -573,7 +573,7 @@ class Updater {
   }
 
   checkFullCode({forceUpdate = false} = {}) {
-    return Updater.download(this.url).then(
+    return download(this.url).then(
       text => this.handleJson(forceUpdate, JSON.parse(text)),
       status => this.onFailure(status));
   }
@@ -620,25 +620,6 @@ class Updater {
       filterAndAppend({entry: this.element});
     }
   }
-
-  static download(url) {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onloadend = () => (xhr.status == 200
-        ? resolve(xhr.responseText)
-        : reject(xhr.status));
-      if (url.length > 2000) {
-        const [mainUrl, query] = url.split('?');
-        xhr.open('POST', mainUrl, true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(query);
-      } else {
-        xhr.open('GET', url);
-        xhr.send();
-      }
-    });
-  }
-
 }
 
 
