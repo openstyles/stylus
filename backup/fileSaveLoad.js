@@ -1,4 +1,4 @@
-/* global messageBox, handleUpdate */
+/* global messageBox, handleUpdate, applyOnMessage */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -151,7 +151,7 @@ function importFromString(jsonString) {
       stats.metaOnly.names.length +
       stats.codeOnly.names.length +
       stats.added.names.length;
-    Promise.resolve(numChanged && BG.refreshAllTabs()).then(() => {
+    Promise.resolve(numChanged && refreshAllTabs()).then(() => {
       const report = Object.keys(stats)
         .filter(kind => stats[kind].names.length)
         .map(kind => {
@@ -247,6 +247,29 @@ function importFromString(jsonString) {
     return newStyle.name != oldStyle.name
       ? oldStyle.name + ' —> ' + newStyle.name
       : oldStyle.name;
+  }
+
+  function refreshAllTabs() {
+    return getActiveTab().then(activeTab => new Promise(resolve => {
+      // list all tabs including chrome-extension:// which can be ours
+      chrome.tabs.query({}, tabs => {
+        const lastTab = tabs[tabs.length - 1];
+        for (const tab of tabs) {
+          getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+            const message = {method: 'styleReplaceAll', styles};
+            if (tab.id == activeTab.id) {
+              applyOnMessage(message);
+            } else {
+              chrome.tabs.sendMessage(tab.id, message);
+            }
+            BG.updateIcon(tab, styles);
+            if (tab == lastTab) {
+              resolve();
+            }
+          });
+        }
+      });
+    }));
   }
 }
 

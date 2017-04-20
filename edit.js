@@ -47,6 +47,8 @@ new MutationObserver((mutations, observer) => {
 	}
 }).observe(document, {subtree: true, childList: true});
 
+getCodeMirrorThemes();
+
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
 	commands: {
@@ -254,14 +256,15 @@ function initCodeMirror() {
 		return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
 	}
 	var themeControl = document.getElementById("editor.theme");
-	if (BG && BG.codeMirrorThemes) {
-		themeControl.innerHTML = optionsHtmlFromArray(BG.codeMirrorThemes);
+	const themeList = localStorage.codeMirrorThemes;
+	if (themeList) {
+		themeControl.innerHTML = optionsHtmlFromArray(themeList.split(/\s+/));
 	} else {
 		// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
 		const theme = prefs.get("editor.theme");
 		themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
-		BG.getCodeMirrorThemes().then(themes => {
-			BG.codeMirrorThemes = themes;
+		getCodeMirrorThemes().then(() => {
+			const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
 			themeControl.innerHTML = optionsHtmlFromArray(themes);
 			themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
 		});
@@ -1867,4 +1870,79 @@ function getComputedHeight(el) {
 	var compStyle = getComputedStyle(el);
 	return el.getBoundingClientRect().height +
 		parseFloat(compStyle.marginTop) + parseFloat(compStyle.marginBottom);
+}
+
+
+function getCodeMirrorThemes() {
+	if (!chrome.runtime.getPackageDirectoryEntry) {
+		const themes = Promise.resolve([
+			chrome.i18n.getMessage('defaultTheme'),
+			'3024-day',
+			'3024-night',
+			'abcdef',
+			'ambiance',
+			'ambiance-mobile',
+			'base16-dark',
+			'base16-light',
+			'bespin',
+			'blackboard',
+			'cobalt',
+			'colorforth',
+			'dracula',
+			'duotone-dark',
+			'duotone-light',
+			'eclipse',
+			'elegant',
+			'erlang-dark',
+			'hopscotch',
+			'icecoder',
+			'isotope',
+			'lesser-dark',
+			'liquibyte',
+			'material',
+			'mbo',
+			'mdn-like',
+			'midnight',
+			'monokai',
+			'neat',
+			'neo',
+			'night',
+			'panda-syntax',
+			'paraiso-dark',
+			'paraiso-light',
+			'pastel-on-dark',
+			'railscasts',
+			'rubyblue',
+			'seti',
+			'solarized',
+			'the-matrix',
+			'tomorrow-night-bright',
+			'tomorrow-night-eighties',
+			'ttcn',
+			'twilight',
+			'vibrant-ink',
+			'xq-dark',
+			'xq-light',
+			'yeti',
+			'zenburn',
+		]);
+		localStorage.codeMirrorThemes = themes.join(' ');
+	}
+	return new Promise(resolve => {
+		chrome.runtime.getPackageDirectoryEntry(rootDir => {
+			rootDir.getDirectory('codemirror/theme', {create: false}, themeDir => {
+				themeDir.createReader().readEntries(entries => {
+					const themes = [
+						chrome.i18n.getMessage('defaultTheme')
+					].concat(
+						entries.filter(entry => entry.isFile)
+							.sort((a, b) => (a.name < b.name ? -1 : 1))
+							.map(entry => entry.name.replace(/\.css$/, ''))
+					);
+					localStorage.codeMirrorThemes = themes.join(' ');
+					resolve(themes);
+				});
+			});
+		});
+	});
 }
