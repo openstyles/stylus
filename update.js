@@ -15,17 +15,14 @@ var updater = {
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
-  checkAllStyles(observe = () => {}) {
+  checkAllStyles(observe = () => {}, {save = true} = {}) {
     updater.resetInterval();
     return new Promise(resolve => {
       getStyles({}, styles => {
         styles = styles.filter(style => style.updateUrl);
         observe(updater.COUNT, styles.length);
         Promise.all(styles.map(style =>
-          updater.checkStyle(style)
-            .then(saveStyle)
-            .then(saved => observe(updater.UPDATED, saved))
-            .catch(err => observe(updater.SKIPPED, style, err))
+          updater.checkStyle(style, observe, {save})
         )).then(() => {
           observe(updater.DONE);
           resolve();
@@ -34,7 +31,7 @@ var updater = {
     });
   },
 
-  checkStyle(style) {
+  checkStyle(style, observe = () => {}, {save = true} = {}) {
     return download(style.md5Url)
       .then(md5 =>
         !md5 || md5.length != 32 ? Promise.reject(updater.SKIPPED_ERROR_MD5) :
@@ -49,7 +46,11 @@ var updater = {
         Object.assign(json, {
           id: style.id,
           name: null,
-        }));
+          reason: 'update',
+        }))
+      .then(json => save ? saveStyle(json) : json)
+      .then(saved => observe(updater.UPDATED, saved))
+      .catch(err => observe(updater.SKIPPED, style, err));
   },
 
   styleJSONseemsValid(json) {

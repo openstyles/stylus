@@ -484,138 +484,97 @@ function applyUpdateAll() {
 
 
 function checkUpdateAll() {
-  const btnCheck = $('#check-all-updates');
-  const btnApply = $('#apply-all-updates');
-  const noUpdates = $('#update-all-no-updates');
-  const progress = $('#update-progress');
+  $('#check-all-updates').disabled = true;
+  $('#apply-all-updates').classList.add('hidden');
+  $('#update-all-no-updates').classList.add('hidden');
 
-  btnCheck.disabled = true;
-  btnApply.classList.add('hidden');
-  noUpdates.classList.add('hidden');
-  const maxWidth = progress.parentElement.clientWidth;
-
-  const queue = $$('.updatable:not(.can-update)').map(checkUpdate);
-  const total = queue.length;
-  let updatesFound = false;
+  let total = 0;
   let checked = 0;
-  processQueue();
-  BG.updater.resetInterval();
+  let updated = 0;
 
-  function processQueue(status) {
-    if (status === true) {
-      updatesFound = true;
-      btnApply.disabled = true;
-      btnApply.classList.remove('hidden');
-      renderUpdatesOnlyFilter({check: true});
+  $$('.updatable:not(.can-update)').map(el => checkUpdate(el, {single: false}));
+  BG.updater.checkAllStyles(observe, {save: false}).then(done);
+
+  function observe(state, value, details) {
+    switch (state) {
+      case BG.updater.COUNT:
+        total = value;
+        break;
+      case BG.updater.UPDATED:
+        if (++updated == 1) {
+          $('#apply-all-updates').disabled = true;
+          $('#apply-all-updates').classList.remove('hidden');
+        }
+        $('#apply-all-updates').dataset.value = updated;
+        // fallthrough
+      case BG.updater.SKIPPED:
+        checked++;
+        reportUpdateState(state, value, details);
+        break;
     }
-    if (checked < total) {
-      queue[checked++].then(status => {
-        progress.style.width = Math.round(checked / total * maxWidth) + 'px';
-        setTimeout(processQueue, 0, status);
-      });
-      return;
-    }
-    btnCheck.disabled = false;
-    btnApply.disabled = false;
-    if (!updatesFound) {
-      noUpdates.classList.remove('hidden');
+    const progress = $('#update-progress');
+    const maxWidth = progress.parentElement.clientWidth;
+    progress.style.width = Math.round(checked / total * maxWidth) + 'px';
+  }
+
+  function done() {
+    $('#check-all-updates').disabled = false;
+    $('#apply-all-updates').disabled = false;
+    renderUpdatesOnlyFilter({check: updated > 0});
+    if (!updated) {
+      $('#update-all-no-updates').classList.remove('hidden');
       setTimeout(() => {
-        noUpdates.classList.add('hidden');
+        $('#update-all-no-updates').classList.add('hidden');
       }, 10e3);
     }
   }
 }
 
 
-function checkUpdate(element) {
+function checkUpdate(element, {single = true} = {}) {
   $('.update-note', element).textContent = t('checkingForUpdate');
   $('.check-update', element).title = '';
   element.classList.remove('checking-update', 'no-update', 'update-problem');
   element.classList.add('checking-update');
-  return new Updater(element).run(); // eslint-disable-line no-use-before-define
+  if (single) {
+    const style = BG.cachedStyles.byId.get(element.styleId);
+    BG.updater.checkStyle(style, reportUpdateState, {save: false});
+  }
 }
 
 
-class Updater {
-  constructor(element) {
-    const style = BG.cachedStyles.byId.get(element.styleId);
-    Object.assign(this, {
-      element,
-      id: style.id,
-      url: style.updateUrl,
-      md5Url: style.md5Url,
-      md5: style.originalMd5,
-    });
-  }
-
-  run() {
-    return this.md5Url && this.md5
-      ? this.checkMd5()
-      : this.checkFullCode();
-  }
-
-  checkMd5() {
-    return download(this.md5Url).then(
-      md5 => (md5.length == 32
-        ? this.decideOnMd5(md5 != this.md5)
-        : this.onFailure(-1)),
-      status => this.onFailure(status));
-  }
-
-  decideOnMd5(md5changed) {
-    if (md5changed) {
-      return this.checkFullCode({forceUpdate: true});
-    }
-    this.display();
-  }
-
-  checkFullCode({forceUpdate = false} = {}) {
-    return download(this.url).then(
-      text => this.handleJson(forceUpdate, JSON.parse(text)),
-      status => this.onFailure(status));
-  }
-
-  handleJson(forceUpdate, json) {
-    return getStylesSafe({id: this.id}).then(([style]) => {
-      const needsUpdate = forceUpdate || !BG.styleSectionsEqual(style, json);
-      this.display({json: needsUpdate && json});
-      return needsUpdate;
-    });
-  }
-
-  onFailure(status) {
-    this.display({
-      message: status == 0
-        ? t('updateCheckFailServerUnreachable')
-        : t('updateCheckFailBadResponseCode', [status]),
-    });
-  }
-
-  display({json, message} = {}) {
-    // json on success
-    // message on failure
-    // none on update not needed
-    this.element.classList.remove('checking-update');
-    if (json) {
-      this.element.classList.add('can-update');
-      this.element.updatedCode = json;
-      $('.update-note', this.element).textContent = '';
+function reportUpdateState(state, style, details) {
+  const entry = $('#style-' + style.id);
+  entry.classList.remove('checking-update');
+  switch (state) {
+    case BG.updater.UPDATED:
+      entry.classList.add('can-update');
+      entry.updatedCode = style;
+      $('.update-note', entry).textContent = '';
       $('#onlyUpdates').classList.remove('hidden');
-    } else {
-      this.element.classList.add('no-update');
-      this.element.classList.toggle('update-problem', Boolean(message));
-      $('.update-note', this.element).textContent = message || t('updateCheckSucceededNoUpdate');
-      if (newUI.enabled) {
-        $('.check-update', this.element).title = message;
+      break;
+    case BG.updater.SKIPPED: {
+      if (!details) {
+        details = t('updateCheckFailServerUnreachable');
+      } else if (typeof details == 'number') {
+        details = t('updateCheckFailBadResponseCode', [details]);
       }
-      // don't hide if check-all is running
+      const same =
+        details == BG.updater.SKIPPED_SAME_MD5 ||
+        details == BG.updater.SKIPPED_SAME_CODE;
+      const message = same ? t('updateCheckSucceededNoUpdate') : details;
+      entry.classList.add('no-update');
+      entry.classList.toggle('update-problem', !same);
+      $('.update-note', entry).textContent = message;
+      $('.check-update', entry).title = newUI.enabled ? message : '';
       if (!$('#check-all-updates').disabled) {
+        // this is a single update job so we can decide whether to hide the filter
         $('#onlyUpdates').classList.toggle('hidden', !$('.can-update'));
       }
     }
-    if (filtersSelector.hide) {
-      filterAndAppend({entry: this.element});
-    }
+  }
+  if (filtersSelector.hide) {
+    filterAndAppend({entry});
   }
 }
 
