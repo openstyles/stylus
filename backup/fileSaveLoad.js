@@ -194,15 +194,18 @@ function importFromString(jsonString) {
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
+    let resolve;
     index = 0;
-    return new Promise(undoNextId)
-      .then(BG.refreshAllTabs)
+    return new Promise(resolve_ => {
+      resolve = resolve_;
+      undoNextId();
+    }).then(BG.refreshAllTabs)
       .then(() => messageBox({
         title: t('importReportUndoneTitle'),
         contents: newIds.length + ' ' + t('importReportUndone'),
         buttons: [t('confirmOK')],
       }));
-    function undoNextId(resolve) {
+    function undoNextId() {
       if (index == newIds.length) {
         resolve();
         return;
@@ -211,13 +214,10 @@ function importFromString(jsonString) {
       deleteStyleSafe({id, notify: false}).then(id => {
         const oldStyle = oldStylesById.get(id);
         if (oldStyle) {
-          saveStyleSafe(Object.assign(oldStyle, {
-            reason: 'import',
-            notify: false,
-          })).then(() =>
-            setTimeout(undoNextId, 0, resolve));
+          saveStyleSafe(Object.assign(oldStyle, SAVE_OPTIONS))
+            .then(undoNextId);
         } else {
-          setTimeout(undoNextId, 0, resolve);
+          undoNextId();
         }
       });
     }
