@@ -184,6 +184,8 @@ var prefs = new function Prefs() {
   }
 
   if (!BG || BG == window) {
+    affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
+
     getSync().get('settings', ({settings: synced} = {}) => {
       if (synced) {
         for (const key in defaults) {
