@@ -1,6 +1,6 @@
 'use strict';
 
-if (!/Windows/i.test(navigator.userAgent)) {
+if (!navigator.userAgent.includes('Windows')) {
   document.documentElement.classList.add('non-windows');
 }
 
@@ -62,7 +62,6 @@ function enforceInputRange(element) {
       doNotify();
     }
   };
-  onChange({});
   element.addEventListener('change', onChange);
   element.addEventListener('input', onChange);
 }
