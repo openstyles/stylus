@@ -295,7 +295,15 @@ summary {
 }
 
 .update-problem .check-update svg {
-  fill: darkred;
+  fill: #ef6969;
+}
+
+.newUI .entry.update-problem:hover .check-update svg {
+  fill: #fd4040;
+}
+
+.newUI .entry.update-problem:hover .check-update svg:hover {
+  fill: red;
 }
 
 .updater-icons > :not(.check-update):after {
