@@ -197,13 +197,6 @@ var prefs = new function Prefs() {
           }
         }
       }
-      if (typeof contextMenus !== 'undefined') {
-        for (const id in contextMenus) {
-          if (typeof values[id] == 'boolean') {
-            this.broadcast(id, values[id], {sync: false});
-          }
-        }
-      }
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
