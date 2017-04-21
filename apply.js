@@ -37,10 +37,7 @@ function requestStyles(options, callback = applyStyles) {
     enabled: true,
     asHash: true,
   }, options);
-  // If this is a Stylish page (Edit Style or Manage Styles),
-  // we'll request the styles directly to minimize delay and flicker,
-  // unless Chrome is still starting up and the background page isn't fully loaded.
-  // (Note: in this case the function may be invoked again from applyStyles.)
+  // On own pages we request the styles directly to minimize delay and flicker
   if (typeof getStylesSafe !== 'undefined') {
     getStylesSafe(request).then(callback);
   } else {
@@ -59,6 +56,7 @@ function applyOnMessage(request, sender, sendResponse) {
     });
     return;
   }
+
   switch (request.method) {
 
     case 'styleDeleted':
@@ -122,28 +120,20 @@ function doDisableAll(disable) {
 function applyStyleState({id, enabled}) {
   const inCache = disabledElements.get(id) || styleElements.get(id);
   const inDoc = document.getElementById(ID_PREFIX + id);
-  if (enabled && inDoc || !enabled && !inDoc) {
-    return;
-  }
-  if (enabled && !inDoc && !inCache) {
-    requestStyles({id});
-    return;
-  }
-  if (enabled && inCache) {
-    addStyleElement(inCache);
-    disabledElements.delete(id);
-    return;
-  }
-  if (!enabled && inDoc) {
-    disabledElements.set(id, inDoc);
-    inDoc.remove();
-    if (document.location.href == 'about:srcdoc') {
-      const original = document.getElementById(ID_PREFIX + id);
-      if (original) {
-        original.remove();
-      }
+  if (enabled) {
+    if (inDoc) {
+      return;
+    } else if (inCache) {
+      addStyleElement(inCache);
+      disabledElements.delete(id);
+    } else {
+      requestStyles({id});
     }
-    return;
+  } else {
+    if (inDoc) {
+      disabledElements.set(id, inDoc);
+      inDoc.remove();
+    }
   }
 }
 
@@ -208,12 +198,13 @@ function applySections(styleId, sections) {
     return;
   }
   if (document.documentElement instanceof SVGSVGElement) {
-    // SVG document, make an SVG style element.
+    // SVG document style
     el = document.createElementNS('http://www.w3.org/2000/svg', 'style');
   } else if (document instanceof XMLDocument) {
+    // XML document style
     el = document.createElementNS('http://www.w3.org/1999/xhtml', 'style');
   } else {
-    // This will make an HTML style element. If there's SVG embedded in an HTML document, this works on the SVG too.
+    // HTML document style; also works on HTML-embedded SVG
     el = document.createElement('style');
   }
   Object.assign(el, {
@@ -242,6 +233,7 @@ function replaceAll(newStyles) {
   oldStyles.forEach(el => (el.id += '-ghost'));
   styleElements.clear();
   disabledElements.clear();
+  [...retiredStyleTimers.values()].forEach(clearTimeout);
   retiredStyleTimers.clear();
   applyStyles(newStyles);
   oldStyles.forEach(el => el.remove());
@@ -273,7 +265,11 @@ function initDocRewriteObserver() {
   });
   docRewriteObserver.observe(document, {childList: true});
   // detect dynamic iframes rewritten after creation by the embedder i.e. externally
-  setTimeout(() => document.documentElement != ROOT && reinjectStyles());
+  setTimeout(() => {
+    if (document.documentElement != ROOT) {
+      reinjectStyles();
+    }
+  });
 }
 
 
