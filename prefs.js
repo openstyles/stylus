@@ -302,7 +302,10 @@ var prefs = new function Prefs() {
 
 // Accepts an array of pref names (values are fetched via prefs.get)
 // and establishes a two-way connection between the document elements and the actual prefs
-function setupLivePrefs(IDs) {
+function setupLivePrefs(
+  IDs = Object.getOwnPropertyNames(prefs.readOnlyValues)
+    .filter(id => document.getElementById(id))
+) {
   const checkedProps = {};
   for (const id of IDs) {
     const element = document.getElementById(id);

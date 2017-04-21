@@ -80,7 +80,7 @@ function initGlobalEvents() {
   enforceInputRange($('#manage.newUI.targets'));
 
   // N.B. triggers existing onchange listeners
-  setupLivePrefs($$('input[id^="manage."]').map(el => el.id));
+  setupLivePrefs();
 
   $$('[data-filter]').forEach(el => {
     el.onchange = handleEvent.filterOnChange;

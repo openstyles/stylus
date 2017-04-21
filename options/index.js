@@ -1,13 +1,6 @@
 'use strict';
 
-setupLivePrefs([
-  'show-badge',
-  'popup.stylesFirst',
-  'badgeNormal',
-  'badgeDisabled',
-  'popupWidth',
-  'updateInterval',
-]);
+setupLivePrefs();
 enforceInputRange($('#popupWidth'));
 
 // overwrite the default URL if browser is Opera

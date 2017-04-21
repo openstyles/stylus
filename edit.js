@@ -271,10 +271,7 @@ function initCodeMirror() {
 	}
 	document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
 	document.getElementById("options").addEventListener("change", acmeEventListener, false);
-	setupLivePrefs(
-		document.querySelectorAll("#options *[data-option][id^='editor.']")
-			.map(function(option) { return option.id })
-	);
+	setupLivePrefs();
 
 	hotkeyRerouter.setState(true);
 }
