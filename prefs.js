@@ -89,7 +89,7 @@ var prefs = new function Prefs() {
       return deepCopy(values);
     },
 
-    set(key, value, {noBroadcast, noSync} = {}) {
+    set(key, value, {broadcast = true, sync = true, fromBroadcast} = {}) {
       const oldValue = values[key];
       switch (typeof defaults[key]) {
         case typeof value:
@@ -107,14 +107,16 @@ var prefs = new function Prefs() {
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
       const hasChanged = !equal(value, oldValue);
-      if (BG && BG != window) {
-        BG.prefs.set(key, BG.deepCopy(value), {noBroadcast, noSync});
-      } else {
-        localStorage[key] = typeof defaults[key] == 'object'
-          ? JSON.stringify(value)
-          : value;
-        if (!noBroadcast && hasChanged) {
-          this.broadcast(key, value, {noSync});
+      if (!fromBroadcast) {
+        if (BG && BG != window) {
+          BG.prefs.set(key, BG.deepCopy(value), {broadcast, sync});
+        } else {
+          localStorage[key] = typeof defaults[key] == 'object'
+            ? JSON.stringify(value)
+            : value;
+          if (broadcast && hasChanged) {
+            this.broadcast(key, value, {sync});
+          }
         }
       }
       if (hasChanged) {
@@ -132,10 +134,10 @@ var prefs = new function Prefs() {
 
     reset: key => this.set(key, deepCopy(defaults[key])),
 
-    broadcast(key, value, {noSync} = {}) {
+    broadcast(key, value, {sync = true} = {}) {
       broadcastPrefs[key] = value;
       debounce(doBroadcast);
-      if (!noSync) {
+      if (sync) {
         debounce(doSyncSet);
       }
     },
@@ -174,18 +176,14 @@ var prefs = new function Prefs() {
     }
     if (BG == window) {
       // when in bg page, .set() will write to localStorage
-      this.set(key, value, {noBroadcast: true, noSync: true});
+      this.set(key, value, {broadcast: false, sync: false});
     } else {
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
     }
   }
 
-  // any access to chrome API takes time due to initialization of bindings
-  let lazyInit = () => {
-    window.removeEventListener('load', lazyInit);
-    lazyInit = null;
-
+  if (!BG || BG == window) {
     getSync().get('settings', ({settings: synced} = {}) => {
       if (synced) {
         for (const key in defaults) {
@@ -195,14 +193,14 @@ var prefs = new function Prefs() {
             continue;
           }
           if (key in synced) {
-            this.set(key, synced[key], {noSync: true});
+            this.set(key, synced[key], {sync: false});
           }
         }
       }
       if (typeof contextMenus !== 'undefined') {
         for (const id in contextMenus) {
           if (typeof values[id] == 'boolean') {
-            this.broadcast(id, values[id], {noSync: true});
+            this.broadcast(id, values[id], {sync: false});
           }
         }
       }
@@ -214,7 +212,7 @@ var prefs = new function Prefs() {
         if (synced) {
           for (const key in defaults) {
             if (key in synced) {
-              this.set(key, synced[key], {noSync: true});
+              this.set(key, synced[key], {sync: false});
             }
           }
         } else {
@@ -223,17 +221,20 @@ var prefs = new function Prefs() {
         }
       }
     });
+  }
 
+  // any access to chrome API takes time due to initialization of bindings
+  window.addEventListener('load', function _() {
+    window.removeEventListener('load', _);
     chrome.runtime.onMessage.addListener(msg => {
       if (msg.prefs) {
         for (const id in msg.prefs) {
-          this.set(id, msg.prefs[id], {noBroadcast: true, noSync: true});
+          prefs.set(id, msg.prefs[id], {fromBroadcast: true});
         }
       }
     });
-  };
+  });
 
-  window.addEventListener('load', lazyInit);
   return;
 
   function doBroadcast() {
