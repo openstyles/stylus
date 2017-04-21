@@ -246,6 +246,9 @@ function initDocRewriteObserver() {
   }
   // re-add styles if we detect documentElement being recreated
   const reinjectStyles = () => {
+    if (!styleElements) {
+      return orphanCheck && orphanCheck();
+    }
     ROOT = document.documentElement;
     for (const el of styleElements.values()) {
       addStyleElement(document.importNode(el, true));
