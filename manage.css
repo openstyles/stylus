@@ -275,7 +275,7 @@ summary {
 }
 
 .newUI .can-update .update,
-.newUI .no-update:not(.update-problem) .up-to-date,
+.newUI .no-update:not(.update-problem):not(.update-done) .up-to-date,
 .newUI .no-update.update-problem .check-update,
 .newUI .update-done .updated {
   display: inline;

@@ -98,22 +98,29 @@ function showStyles(styles = []) {
   const sorted = styles
     .map(style => ({name: style.name.toLocaleLowerCase(), style}))
     .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
+  let index = 0;
   const shouldRenderAll = (history.state || {}).scrollY > window.innerHeight;
   const renderBin = document.createDocumentFragment();
-  renderStyles(0);
+  if (shouldRenderAll) {
+    renderStyles();
+  } else {
+    requestAnimationFrame(renderStyles);
+  }
 
-  function renderStyles(index) {
+  function renderStyles() {
     const t0 = performance.now();
     let rendered = 0;
     while (index < sorted.length
-    && (shouldRenderAll || performance.now() - t0 < 10 || ++rendered < 10)) {
+    && (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
     if (index < sorted.length) {
-      setTimeout(renderStyles, 0, index);
-    } else if (shouldRenderAll && 'scrollY' in (history.state || {})) {
-      setTimeout(() => scrollTo(0, history.state.scrollY));
+      requestAnimationFrame(renderStyles);
+      return;
+    }
+    if ('scrollY' in (history.state || {})) {
+      setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
     if (newUI.enabled && newUI.favicons) {
       debounce(handleEvent.loadFavicons, 16);
@@ -125,7 +132,7 @@ function showStyles(styles = []) {
 function createStyleElement({style, name}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = template[`style${newUI.enabled ? 'Compact' : ''}`].cloneNode(true);
+    const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
@@ -133,8 +140,9 @@ function createStyleElement({style, name}) {
       checker: $('.checker', entry) || {},
       nameLink: $('.style-name-link', entry),
       editLink: $('.style-edit-link', entry) || {},
-      editHrefBase: $('.style-name-link, .style-edit-link', entry).getAttribute('href'),
+      editHrefBase: $('.style-name-link', entry).getAttribute('href'),
       homepage: $('.homepage', entry),
+      homepageIcon: template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
       expander: $('.expander', entry),
@@ -158,6 +166,13 @@ function createStyleElement({style, name}) {
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '');
+
+  if (style.url) {
+    $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
+  }
+  if (style.updateUrl && newUI.enabled) {
+    $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
+  }
 
   // name being supplied signifies we're invoked by showStyles()
   // which debounces its main loop thus loading the postponed favicons
