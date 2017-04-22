@@ -256,8 +256,8 @@ summary {
   display: none;
 }
 
-.newUI .svg-icon {
-  fill: #aaa;
+.newUI .entry .svg-icon {
+  fill: #999;
 }
 
 .newUI .entry:hover .svg-icon {
