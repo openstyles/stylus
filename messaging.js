@@ -204,19 +204,20 @@ function tryJSONparse(jsonString) {
 }
 
 
-function debounce(fn, delay, ...args) {
-  const timers = debounce.timers = debounce.timers || new Map();
-  debounce.run = debounce.run || ((fn, ...args) => {
-    timers.delete(fn);
+const debounce = Object.assign((fn, delay, ...args) => {
+  clearTimeout(debounce.timers.get(fn));
+  debounce.timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
+}, {
+  timers: new Map(),
+  run(fn, ...args) {
+    debounce.timers.delete(fn);
     fn(...args);
-  });
-  debounce.unregister = debounce.unregister || (fn => {
-    clearTimeout(timers.get(fn));
-    timers.delete(fn);
-  });
-  clearTimeout(timers.get(fn));
-  timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
-}
+  },
+  unregister(fn) {
+    clearTimeout(debounce.timers.get(fn));
+    debounce.timers.delete(fn);
+  },
+});
 
 
 function deepCopy(obj) {

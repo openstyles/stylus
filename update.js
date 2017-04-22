@@ -66,7 +66,7 @@ var updater = {
     if (interval) {
       const elapsed = Math.max(0, Date.now() - updater.lastUpdateTime);
       debounce(updater.checkAllStyles, Math.max(10e3, interval - elapsed));
-    } else if (debounce.timers) {
+    } else {
       debounce.unregister(updater.checkAllStyles);
     }
   },
