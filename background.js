@@ -210,12 +210,7 @@ function updateIcon(tab, styles) {
     return;
   }
   if (styles) {
-    // check for not-yet-existing tabs e.g. omnibox instant search
-    chrome.tabs.get(tab.id, () => {
-      if (!chrome.runtime.lastError) {
-        stylesReceived(styles);
-      }
-    });
+    stylesReceived(styles);
     return;
   }
   getTabRealURL(tab).then(url =>
@@ -247,11 +242,14 @@ function updateIcon(tab, styles) {
         // TODO: add Edge preferred sizes: 20, 25, 30, 40
       },
     }, () => {
-      if (!chrome.runtime.lastError) {
-        // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
-        chrome.browserAction.setBadgeBackgroundColor({color});
-        chrome.browserAction.setBadgeText({text, tabId: tab.id});
+      if (chrome.runtime.lastError) {
+        return;
       }
+      // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
+      chrome.browserAction.setBadgeBackgroundColor({color});
+      getTab(tab.id).then(() => {
+        chrome.browserAction.setBadgeText({text, tabId: tab.id});
+      });
     });
   }
 }

@@ -87,6 +87,13 @@ function notifyAllTabs(msg) {
 }
 
 
+function getTab(id) {
+  return new Promise(resolve =>
+    chrome.tabs.get(id, tab =>
+      !chrome.runtime.lastError && resolve(tab)));
+}
+
+
 function getActiveTab() {
   return new Promise(resolve =>
     chrome.tabs.query({currentWindow: true, active: true}, tabs =>

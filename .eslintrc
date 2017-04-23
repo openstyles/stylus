@@ -16,6 +16,7 @@ globals:
   URLS: false
   BG: false
   notifyAllTabs: false
+  getTab: false
   getActiveTab: false
   getActiveTabRealURL: false
   getTabRealURL: false
