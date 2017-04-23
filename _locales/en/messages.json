@@ -583,6 +583,18 @@
     "message": "Update failed - server unreachable.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "This style was edited locally.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "This style might have been edited locally.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Do a one-time manual update on its userstyles.org page (your edits will be lost)",
+    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+  },
   "updateCheckSucceededNoUpdate": {
     "message": "Style is up to date.",
     "description": "Text that displays when an update check completed and no update is available"

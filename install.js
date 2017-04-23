@@ -104,7 +104,10 @@ function saveStyleCode(message, name, addProps) {
     }
     getResource(getMeta('stylish-code-chrome')).then(code => {
       chrome.runtime.sendMessage(
-        Object.assign(JSON.parse(code), addProps, {method: 'saveStyle'}),
+        Object.assign(JSON.parse(code), addProps, {
+          method: 'saveStyle',
+          reason: 'update',
+        }),
         () => sendEvent('styleInstalledChrome')
       );
       resolve();

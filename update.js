@@ -1,4 +1,4 @@
-/* globals getStyles, saveStyle, styleSectionsEqual */
+/* globals getStyles, saveStyle, styleSectionsEqual, getStyleDigests, updateStyleDigest */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -7,6 +7,8 @@ var updater = {
   COUNT: 'count',
   UPDATED: 'updated',
   SKIPPED: 'skipped',
+  SKIPPED_EDITED: 'locally edited',
+  SKIPPED_MAYBE_EDITED: 'maybe locally edited',
   SKIPPED_SAME_MD5: 'up-to-date: MD5 is unchanged',
   SKIPPED_SAME_CODE: 'up-to-date: code sections are unchanged',
   SKIPPED_ERROR_MD5: 'error: MD5 is invalid',
@@ -32,33 +34,60 @@ var updater = {
   },
 
   checkStyle(style, observe = () => {}, {save = true} = {}) {
-    return download(style.md5Url)
-      .then(md5 =>
-        !md5 || md5.length != 32 ? Promise.reject(updater.SKIPPED_ERROR_MD5) :
-        md5 == style.originalMd5 ? Promise.reject(updater.SKIPPED_SAME_MD5) :
-        style.updateUrl)
-      .then(download)
-      .then(text => tryJSONparse(text))
-      .then(json =>
-        !updater.styleJSONseemsValid(json) ? Promise.reject(updater.SKIPPED_ERROR_JSON) :
-        styleSectionsEqual(json, style) ? Promise.reject(updater.SKIPPED_SAME_CODE) :
-        // keep the local name as it could've been customized by the user
-        Object.assign(json, {
-          id: style.id,
-          name: null,
-          reason: 'update',
-        }))
-      .then(json => save ? saveStyle(json) : json)
+    let hasDigest;
+    return getStyleDigests(style)
+      .then(fetchMd5IfNotEdited)
+      .then(fetchCodeIfMd5Changed)
+      .then(saveIfUpdated)
       .then(saved => observe(updater.UPDATED, saved))
       .catch(err => observe(updater.SKIPPED, style, err));
-  },
 
-  styleJSONseemsValid(json) {
-    return json
-      && json.sections
-      && json.sections.length
-      && typeof json.sections.every == 'function'
-      && typeof json.sections[0].code == 'string';
+    function fetchMd5IfNotEdited([originalDigest, current]) {
+      hasDigest = Boolean(originalDigest);
+      if (hasDigest && originalDigest != current) {
+        return Promise.reject(updater.SKIPPED_EDITED);
+      }
+      return download(style.md5Url);
+    }
+
+    function fetchCodeIfMd5Changed(md5) {
+      if (!md5 || md5.length != 32) {
+        return Promise.reject(updater.SKIPPED_ERROR_MD5);
+      }
+      if (md5 == style.originalMd5 && hasDigest) {
+        return Promise.reject(updater.SKIPPED_SAME_MD5);
+      }
+      return download(style.updateUrl);
+    }
+
+    function saveIfUpdated(text) {
+      const json = tryJSONparse(text);
+      if (!styleJSONseemsValid(json)) {
+        return Promise.reject(updater.SKIPPED_ERROR_JSON);
+      }
+      json.id = style.id;
+      if (styleSectionsEqual(json, style)) {
+        if (!hasDigest) {
+          updateStyleDigest(json);
+        }
+        return Promise.reject(updater.SKIPPED_SAME_CODE);
+      } else if (!hasDigest) {
+        return Promise.reject(updater.SKIPPED_MAYBE_EDITED);
+      }
+      return !save ? json :
+        saveStyle(Object.assign(json, {
+          name: null, // keep local name customizations
+          reason: 'update',
+        }));
+    }
+
+    function styleJSONseemsValid(json) {
+      return json
+        && json.sections
+        && json.sections.length
+        && typeof json.sections.every == 'function'
+        && typeof json.sections[0].code == 'string';
+    }
   },
 
   schedule() {

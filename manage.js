@@ -573,6 +573,10 @@ function reportUpdateState(state, style, details) {
         details = t('updateCheckFailServerUnreachable');
       } else if (typeof details == 'number') {
         details = t('updateCheckFailBadResponseCode', [details]);
+      } else if (details == BG.updater.SKIPPED_EDITED) {
+        details = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
+      } else if (details == BG.updater.SKIPPED_MAYBE_EDITED) {
+        details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       }
       const same =
         details == BG.updater.SKIPPED_SAME_MD5 ||

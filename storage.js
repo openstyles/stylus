@@ -5,6 +5,7 @@ const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
   /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 const SLOPPY_REGEXP_PREFIX = '\0';
+const DIGEST_KEY_PREFIX = 'originalDigest';
 
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
@@ -18,6 +19,26 @@ var cachedStyles = {
   mutex: {
     inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
+  },
+};
+
+// eslint-disable-next-line no-var
+var chromeLocal = {
+  get(options) {
+    return new Promise(resolve => {
+      chrome.storage.local.get(options, data => resolve(data));
+    });
+  },
+  set(data) {
+    return new Promise(resolve => {
+      chrome.storage.local.set(data, () => resolve(data));
+    });
+  },
+  getValue(key) {
+    return chromeLocal.get(key).then(data => data[key]);
+  },
+  setValue(key, value) {
+    return chromeLocal.set({[key]: value});
   },
 };
 
@@ -214,7 +235,7 @@ function saveStyle(style) {
           const existed = Boolean(eventGet.target.result);
           const oldStyle = Object.assign({}, eventGet.target.result);
           const codeIsUpdated = 'sections' in style && !styleSectionsEqual(style, oldStyle);
-          write(Object.assign(oldStyle, style), {existed, codeIsUpdated});
+          write(Object.assign(oldStyle, style), {reason, existed, codeIsUpdated});
         };
       } else {
         // Create
@@ -226,10 +247,10 @@ function saveStyle(style) {
           md5Url: null,
           url: null,
           originalMd5: null,
-        }, style));
+        }, style), {reason});
       }
 
-      function write(style, {existed, codeIsUpdated} = {}) {
+      function write(style, {reason, existed, codeIsUpdated} = {}) {
         style.sections = (style.sections || []).map(section =>
           Object.assign({
             urls: [],
@@ -248,6 +269,9 @@ function saveStyle(style) {
               style, codeIsUpdated, reason,
             });
           }
+          if (reason == 'update') {
+            updateStyleDigest(style);
+          }
           resolve(style);
         };
       }
@@ -257,6 +281,7 @@ function saveStyle(style) {
 
 
 function deleteStyle({id, notify = true}) {
+  chrome.storage.local.remove(DIGEST_KEY_PREFIX + id, ignoreChromeError);
   return new Promise(resolve =>
     getDatabase(db => {
       const tx = db.transaction(['styles'], 'readwrite');
@@ -506,4 +531,33 @@ function getDomains(url) {
     domains.push(d);
   }
   return domains;
+}
+
+
+function getStyleDigests(style) {
+  return Promise.all([
+    chromeLocal.getValue(DIGEST_KEY_PREFIX + style.id),
+    calcStyleDigest(style),
+  ]);
+}
+
+
+function updateStyleDigest(style) {
+  calcStyleDigest(style).then(digest =>
+    chromeLocal.set({[DIGEST_KEY_PREFIX + style.id]: digest}));
+}
+
+
+function calcStyleDigest({sections}) {
+  const text = new TextEncoder('utf-8').encode(JSON.stringify(sections));
+  return crypto.subtle.digest('SHA-1', text).then(hex);
+  function hex(buffer) {
+    const parts = [];
+    const PAD8 = '00000000';
+    const view = new DataView(buffer);
+    for (let i = 0; i < view.byteLength; i += 4) {
+      parts.push((PAD8 + view.getUint32(i).toString(16)).slice(-8));
+    }
+    return parts.join('');
+  }
 }
