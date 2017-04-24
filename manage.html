@@ -135,18 +135,26 @@
   <fieldset>
     <legend id="filters" i18n-text="manageFilters"></legend>
     <label>
-      <input id="manage.onlyEnabled" type="checkbox" data-filter=".disabled">
+      <input id="manage.onlyEnabled" type="checkbox"
+             data-filter=".enabled"
+             data-filter-hide=".disabled">
       <span i18n-text="manageOnlyEnabled"></span>
     </label>
     <label>
-      <input id="manage.onlyEdited" type="checkbox" data-filter=".updatable">
+      <input id="manage.onlyEdited" type="checkbox"
+             data-filter=":not(.updatable)"
+             data-filter-hide=".updatable">
       <span i18n-text="manageOnlyEdited"></span>
     </label>
     <label id="onlyUpdates" class="hidden">
-      <input type="checkbox" data-filter=":not(.can-update)">
+      <input type="checkbox"
+             data-filter=".can-update, .update-problem"
+             data-filter-hide=":not(.updatable), .update-done, .no-update:not(.update-problem)">
       <span i18n-text="manageOnlyUpdates"></span>
     </label>
-    <input id="search" type="search" i18n-placeholder="searchStyles" data-filter=".not-matching">
+    <input id="search" type="search" i18n-placeholder="searchStyles"
+           data-filter=":not(.not-matching)"
+           data-filter-hide=".not-matching">
   </fieldset>
   <p>
     <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>

@@ -323,7 +323,7 @@
     "description": "Checkbox to show only locally edited styles"
   },
   "manageOnlyUpdates": {
-    "message": "Only with updates",
+    "message": "Only with updates or problems",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageNewUI": {
@@ -592,7 +592,7 @@
     "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
   },
   "updateCheckManualUpdateHint": {
-    "message": "Do a one-time manual update on its userstyles.org page (your edits will be lost)",
+    "message": "To force an update (and lose your edits) update each style individually.",
     "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckSucceededNoUpdate": {
@@ -600,7 +600,11 @@
     "description": "Text that displays when an update check completed and no update is available"
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "All styles are up to date.",
+    "message": "No updates found.",
+    "description": "Text that displays when an update all check completed and no updates are available"
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Some updatable styles weren't checked to avoid losing possible local edits.",
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateCompleted": {

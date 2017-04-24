@@ -218,7 +218,7 @@ function saveStyle(style) {
       const tx = db.transaction(['styles'], 'readwrite');
       const os = tx.objectStore('styles');
 
-      const id = style.id !== undefined && style.id !== null ? Number(style.id) : null;
+      const id = style.id == '0' ? 0 : Number(style.id) || null;
       const reason = style.reason;
       const notify = style.notify !== false;
       delete style.method;
@@ -227,15 +227,16 @@ function saveStyle(style) {
       if (!style.name) {
         delete style.name;
       }
+      let existed, codeIsUpdated;
 
       if (id !== null) {
         // Update or create
         style.id = id;
         os.get(id).onsuccess = eventGet => {
-          const existed = Boolean(eventGet.target.result);
-          const oldStyle = Object.assign({}, eventGet.target.result);
-          const codeIsUpdated = 'sections' in style && !styleSectionsEqual(style, oldStyle);
-          write(Object.assign(oldStyle, style), {reason, existed, codeIsUpdated});
+          const oldStyle = eventGet.target.result;
+          existed = Boolean(oldStyle);
+          codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
+          write(Object.assign({}, oldStyle, style));
         };
       } else {
         // Create
@@ -247,18 +248,11 @@ function saveStyle(style) {
           md5Url: null,
           url: null,
           originalMd5: null,
-        }, style), {reason});
+        }, style));
       }
 
-      function write(style, {reason, existed, codeIsUpdated} = {}) {
-        style.sections = (style.sections || []).map(section =>
-          Object.assign({
-            urls: [],
-            urlPrefixes: [],
-            domains: [],
-            regexps: [],
-          }, section)
-        );
+      function write(style) {
+        style.sections = normalizeStyleSections(style);
         os.put(style).onsuccess = event => {
           style.id = style.id || event.target.result;
           invalidateCache(existed ? {updated: style} : {added: style});
@@ -271,6 +265,8 @@ function saveStyle(style) {
           }
           if (reason == 'update') {
             updateStyleDigest(style);
+          } else if (reason == 'import') {
+            chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id, ignoreChromeError);
           }
           resolve(style);
         };
@@ -308,10 +304,14 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
   for (const section of style.sections) {
     const {urls, domains, urlPrefixes, regexps, code} = section;
     if ((!urls.length && !urlPrefixes.length && !domains.length && !regexps.length
-      || urls.length && urls.indexOf(matchUrl) >= 0
-      || urlPrefixes.length && arraySomeIsPrefix(urlPrefixes, matchUrl)
-      || domains.length && arraySomeIn(cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl), domains)
-      || regexps.length && arraySomeMatches(regexps, matchUrl, strictRegexp)
+      || urls.length
+        && urls.indexOf(matchUrl) >= 0
+      || urlPrefixes.length
+        && arraySomeIsPrefix(urlPrefixes, matchUrl)
+      || domains.length
+        && arraySomeIn(cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl), domains)
+      || regexps.length
+        && arraySomeMatches(regexps, matchUrl, strictRegexp)
     ) && !styleCodeEmpty(code)) {
       sections.push(section);
       if (stopOnFirst) {
@@ -534,6 +534,18 @@ function getDomains(url) {
 }
 
 
+function normalizeStyleSections({sections}) {
+  // retain known properties in an arbitrarily predefined order
+  return (sections || []).map(section => ({
+    code: section.code || '',
+    urls: section.urls || [],
+    urlPrefixes: section.urlPrefixes || [],
+    domains: section.domains || [],
+    regexps: section.regexps || [],
+  }));
+}
+
+
 function getStyleDigests(style) {
   return Promise.all([
     chromeLocal.getValue(DIGEST_KEY_PREFIX + style.id),
@@ -548,9 +560,11 @@ function updateStyleDigest(style) {
 }
 
 
-function calcStyleDigest({sections}) {
-  const text = new TextEncoder('utf-8').encode(JSON.stringify(sections));
+function calcStyleDigest(style) {
+  const jsonString = JSON.stringify(normalizeStyleSections(style));
+  const text = new TextEncoder('utf-8').encode(jsonString);
   return crypto.subtle.digest('SHA-1', text).then(hex);
+
   function hex(buffer) {
     const parts = [];
     const PAD8 = '00000000';

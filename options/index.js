@@ -41,16 +41,14 @@ function checkUpdates() {
   let total = 0;
   let checked = 0;
   let updated = 0;
-  const installed = $('#updates-installed');
-  const progress = $('#update-progress');
-  const maxWidth = progress.parentElement.clientWidth;
-  progress.style.width = 0;
-  installed.dataset.value = '';
-  document.body.classList.add('update-in-progress');
-  BG.updater.checkAllStyles((state, value) => {
+  const maxWidth = $('#update-progress').parentElement.clientWidth;
+  BG.updater.checkAllStyles({observer});
+
+  function observer(state, value) {
     switch (state) {
       case BG.updater.COUNT:
         total = value;
+        document.body.classList.add('update-in-progress');
         break;
       case BG.updater.UPDATED:
         updated++;
@@ -58,10 +56,11 @@ function checkUpdates() {
       case BG.updater.SKIPPED:
         checked++;
         break;
+      case BG.updater.DONE:
+        document.body.classList.remove('update-in-progress');
+        return;
     }
-    progress.style.width = Math.round(checked / total * maxWidth) + 'px';
-    installed.dataset.value = updated || '';
-  }).then(() => {
-    document.body.classList.remove('update-in-progress');
-  });
+    $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
+    $('#updates-installed').dataset.value = updated || '';
+  }
 }

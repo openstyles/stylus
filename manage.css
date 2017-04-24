@@ -294,7 +294,7 @@ summary {
   cursor: pointer;
 }
 
-.update-problem .check-update svg {
+.newUI .update-problem .check-update svg {
   fill: #ef6969;
 }
 
@@ -498,6 +498,10 @@ input[id^="manage.newUI"] {
   background-color: currentColor;
   content: "";
   opacity: .35;
+}
+
+#update-all-no-updates[data-skipped-edited="true"]:after {
+  content: " __MSG_updateAllCheckSucceededSomeEdited__ __MSG_updateCheckManualUpdateHint__";
 }
 
 /* highlight updated/added styles */

@@ -1,4 +1,5 @@
-/* globals getStyles, saveStyle, styleSectionsEqual, getStyleDigests, updateStyleDigest */
+/* global getStyles, saveStyle, styleSectionsEqual */
+/* global getStyleDigests, updateStyleDigest */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -7,55 +8,71 @@ var updater = {
   COUNT: 'count',
   UPDATED: 'updated',
   SKIPPED: 'skipped',
-  SKIPPED_EDITED: 'locally edited',
-  SKIPPED_MAYBE_EDITED: 'maybe locally edited',
-  SKIPPED_SAME_MD5: 'up-to-date: MD5 is unchanged',
-  SKIPPED_SAME_CODE: 'up-to-date: code sections are unchanged',
-  SKIPPED_ERROR_MD5: 'error: MD5 is invalid',
-  SKIPPED_ERROR_JSON: 'error: JSON is invalid',
   DONE: 'done',
+
+  // details for SKIPPED status
+  EDITED: 'locally edited',
+  MAYBE_EDITED: 'maybe locally edited',
+  SAME_MD5: 'up-to-date: MD5 is unchanged',
+  SAME_CODE: 'up-to-date: code sections are unchanged',
+  ERROR_MD5: 'error: MD5 is invalid',
+  ERROR_JSON: 'error: JSON is invalid',
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
-  checkAllStyles(observe = () => {}, {save = true} = {}) {
+  checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
     updater.resetInterval();
     return new Promise(resolve => {
       getStyles({}, styles => {
         styles = styles.filter(style => style.updateUrl);
-        observe(updater.COUNT, styles.length);
+        observer(updater.COUNT, styles.length);
         Promise.all(styles.map(style =>
-          updater.checkStyle(style, observe, {save})
+          updater.checkStyle({style, observer, save, ignoreDigest})
         )).then(() => {
-          observe(updater.DONE);
+          observer(updater.DONE);
           resolve();
         });
       });
     });
   },
 
-  checkStyle(style, observe = () => {}, {save = true} = {}) {
+  checkStyle({style, observer = () => {}, save = true, ignoreDigest}) {
     let hasDigest;
+    /*
+    Original style digests are calculated in these cases:
+    * style is installed or updated from server
+    * style is checked for an update and its code is equal to the server code
+
+    Update check proceeds in these cases:
+    * style has the original digest and it's equal to the current digest
+    * [ignoreDigest: true] style doesn't yet have the original digest but we ignore it
+    * [ignoreDigest: none/false] style doesn't yet have the original digest
+      so we compare the code to the server code and if it's the same we save the digest,
+      otherwise we skip the style and report MAYBE_EDITED status
+
+    'ignoreDigest' option is set on the second manual individual update check on the manage page.
+    */
     return getStyleDigests(style)
       .then(fetchMd5IfNotEdited)
       .then(fetchCodeIfMd5Changed)
       .then(saveIfUpdated)
-      .then(saved => observe(updater.UPDATED, saved))
-      .catch(err => observe(updater.SKIPPED, style, err));
+      .then(saved => observer(updater.UPDATED, saved))
+      .catch(err => observer(updater.SKIPPED, style, err));
 
     function fetchMd5IfNotEdited([originalDigest, current]) {
       hasDigest = Boolean(originalDigest);
-      if (hasDigest && originalDigest != current) {
-        return Promise.reject(updater.SKIPPED_EDITED);
+      if (hasDigest && !ignoreDigest && originalDigest != current) {
+        return Promise.reject(updater.EDITED);
       }
       return download(style.md5Url);
     }
 
     function fetchCodeIfMd5Changed(md5) {
       if (!md5 || md5.length != 32) {
-        return Promise.reject(updater.SKIPPED_ERROR_MD5);
+        return Promise.reject(updater.ERROR_MD5);
       }
       if (md5 == style.originalMd5 && hasDigest) {
-        return Promise.reject(updater.SKIPPED_SAME_MD5);
+        return Promise.reject(updater.SAME_MD5);
       }
       return download(style.updateUrl);
     }
@@ -63,16 +80,16 @@ var updater = {
     function saveIfUpdated(text) {
       const json = tryJSONparse(text);
       if (!styleJSONseemsValid(json)) {
-        return Promise.reject(updater.SKIPPED_ERROR_JSON);
+        return Promise.reject(updater.ERROR_JSON);
       }
       json.id = style.id;
       if (styleSectionsEqual(json, style)) {
-        if (!hasDigest) {
-          updateStyleDigest(json);
-        }
-        return Promise.reject(updater.SKIPPED_SAME_CODE);
-      } else if (!hasDigest) {
-        return Promise.reject(updater.SKIPPED_MAYBE_EDITED);
+        // JSONs may have different order of items even if sections are effectively equal
+        // so we'll update the digest anyway
+        updateStyleDigest(json);
+        return Promise.reject(updater.SAME_CODE);
+      } else if (!hasDigest && !ignoreDigest) {
+        return Promise.reject(updater.MAYBE_EDITED);
       }
       return !save ? json :
         saveStyle(Object.assign(json, {

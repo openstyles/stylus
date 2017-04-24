@@ -365,10 +365,15 @@ Object.assign(handleEvent, {
       el.lastValue = value;
     }
     const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
+    const buildFilter = hide =>
+      [...enabledFilters.map(el =>
+        el.dataset[hide ? 'filterHide' : 'filter']
+          .split(/,\s*/)
+          .map(s => '.entry' + (hide ? '' : '.hidden') + s))
+      ].join(',');
     Object.assign(filtersSelector, {
-      hide: enabledFilters.map(el => '.entry:not(.hidden)' + el.dataset.filter).join(','),
-      unhide: '.entry.hidden' + enabledFilters.map(el =>
-        (':not(' + el.dataset.filter + ')').replace(/^:not\(:not\((.+?)\)\)$/, '$1')).join(''),
+      hide: buildFilter(true),
+      unhide: buildFilter(false),
     });
     reapplyFilter();
   },
@@ -505,12 +510,13 @@ function checkUpdateAll() {
 
   let total = 0;
   let checked = 0;
+  let skippedEdited = 0;
   let updated = 0;
 
-  $$('.updatable:not(.can-update)').map(el => checkUpdate(el, {single: false}));
-  BG.updater.checkAllStyles(observe, {save: false}).then(done);
+  $$('.updatable:not(.can-update):not(.update-problem)').map(el => checkUpdate(el, {single: false}));
+  BG.updater.checkAllStyles({observer, save: false});
 
-  function observe(state, value, details) {
+  function observer(state, value, details) {
     switch (state) {
       case BG.updater.COUNT:
         total = value;
@@ -524,37 +530,41 @@ function checkUpdateAll() {
         // fallthrough
       case BG.updater.SKIPPED:
         checked++;
+        if (details == BG.updater.EDITED || details == BG.updater.MAYBE_EDITED) {
+          skippedEdited++;
+        }
         reportUpdateState(state, value, details);
         break;
+      case BG.updater.DONE:
+        $('#check-all-updates').disabled = false;
+        $('#apply-all-updates').disabled = false;
+        renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
+        if (!updated) {
+          $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
+          $('#update-all-no-updates').classList.remove('hidden');
+        }
+        return;
     }
     const progress = $('#update-progress');
     const maxWidth = progress.parentElement.clientWidth;
     progress.style.width = Math.round(checked / total * maxWidth) + 'px';
   }
-
-  function done() {
-    $('#check-all-updates').disabled = false;
-    $('#apply-all-updates').disabled = false;
-    renderUpdatesOnlyFilter({check: updated > 0});
-    if (!updated) {
-      $('#update-all-no-updates').classList.remove('hidden');
-      setTimeout(() => {
-        $('#update-all-no-updates').classList.add('hidden');
-      }, 10e3);
-    }
-  }
 }
 
 
-function checkUpdate(element, {single = true} = {}) {
-  $('.update-note', element).textContent = t('checkingForUpdate');
-  $('.check-update', element).title = '';
-  element.classList.remove('checking-update', 'no-update', 'update-problem');
-  element.classList.add('checking-update');
+function checkUpdate(entry, {single = true} = {}) {
+  $('.update-note', entry).textContent = t('checkingForUpdate');
+  $('.check-update', entry).title = '';
   if (single) {
-    const style = BG.cachedStyles.byId.get(element.styleId);
-    BG.updater.checkStyle(style, reportUpdateState, {save: false});
+    BG.updater.checkStyle({
+      save: false,
+      ignoreDigest: entry.classList.contains('update-problem'),
+      style: BG.cachedStyles.byId.get(entry.styleId),
+      observer: reportUpdateState,
+    });
   }
+  entry.classList.remove('checking-update', 'no-update', 'update-problem');
+  entry.classList.add('checking-update');
 }
 
 
@@ -569,18 +579,19 @@ function reportUpdateState(state, style, details) {
       $('#onlyUpdates').classList.remove('hidden');
       break;
     case BG.updater.SKIPPED: {
+      if (entry.classList.contains('can-update')) {
+        break;
+      }
       if (!details) {
         details = t('updateCheckFailServerUnreachable');
       } else if (typeof details == 'number') {
         details = t('updateCheckFailBadResponseCode', [details]);
-      } else if (details == BG.updater.SKIPPED_EDITED) {
+      } else if (details == BG.updater.EDITED) {
         details = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
-      } else if (details == BG.updater.SKIPPED_MAYBE_EDITED) {
+      } else if (details == BG.updater.MAYBE_EDITED) {
         details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       }
-      const same =
-        details == BG.updater.SKIPPED_SAME_MD5 ||
-        details == BG.updater.SKIPPED_SAME_CODE;
+      const same = details == BG.updater.SAME_MD5 || details == BG.updater.SAME_CODE;
       const message = same ? t('updateCheckSucceededNoUpdate') : details;
       entry.classList.add('no-update');
       entry.classList.toggle('update-problem', !same);
@@ -588,7 +599,7 @@ function reportUpdateState(state, style, details) {
       $('.check-update', entry).title = newUI.enabled ? message : '';
       if (!$('#check-all-updates').disabled) {
         // this is a single update job so we can decide whether to hide the filter
-        $('#onlyUpdates').classList.toggle('hidden', !$('.can-update'));
+        renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
       }
     }
   }
@@ -600,10 +611,10 @@ function reportUpdateState(state, style, details) {
 
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
-  const canUpdate = numUpdatable > 0;
+  const mightUpdate = numUpdatable > 0 || $('.update-problem');
   const checkbox = $('#onlyUpdates input');
-  show = show !== undefined ? show : canUpdate;
-  check = check !== undefined ? show && check : checkbox.checked && canUpdate;
+  show = show !== undefined ? show : mightUpdate;
+  check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
   $('#onlyUpdates').classList.toggle('hidden', !show);
   checkbox.checked = check;
@@ -611,7 +622,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 
   const btnApply = $('#apply-all-updates');
   if (!btnApply.matches('.hidden')) {
-    if (canUpdate) {
+    if (numUpdatable > 0) {
       btnApply.dataset.value = numUpdatable;
     } else {
       btnApply.classList.add('hidden');
