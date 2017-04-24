@@ -75,7 +75,7 @@ function sendEvent(type, detail = null) {
 
 
 function onInstallClicked() {
-  if (!orphanCheck()) {
+  if (!orphanCheck || !orphanCheck()) {
     return;
   }
   getResource(getMeta('stylish-description'))
@@ -85,7 +85,7 @@ function onInstallClicked() {
 
 
 function onUpdateClicked() {
-  if (!orphanCheck()) {
+  if (!orphanCheck || !orphanCheck()) {
     return;
   }
   chrome.runtime.sendMessage({
