@@ -48,33 +48,29 @@ if ('commands' in chrome) {
 }
 
 // *************************************************************************
-// Open FAQs page once after installation to guide new users.
-// Do not display it in development mode.
-if (chrome.runtime.getManifest().update_url) {
-  const openHomepageOnInstall = ({reason}) => {
-    chrome.runtime.onInstalled.removeListener(openHomepageOnInstall);
-    if (reason == 'install') {
-      const version = chrome.runtime.getManifest().version;
+{
+  const onInstall = ({reason}) => {
+    chrome.runtime.onInstalled.removeListener(onInstall);
+    const manifest = chrome.runtime.getManifest();
+    // Open FAQs page once after installation to guide new users.
+    // Do not display it in development mode.
+    if (reason == 'install' && manifest.update_url) {
       setTimeout(openURL, 100, {
-        url: `http://add0n.com/stylus.html?version=${version}&type=install`
+        url: `http://add0n.com/stylus.html?version=${manifest.version}&type=install`
+      });
+    }
+    // reset L10N cache on UI language change or update
+    const {browserUIlanguage} = tryJSONparse(localStorage.L10N) || {};
+    const UIlang = chrome.i18n.getUILanguage();
+    if (reason == 'update' || browserUIlanguage != UIlang) {
+      localStorage.L10N = JSON.stringify({
+        browserUIlanguage: UIlang,
       });
     }
   };
   // bind for 60 seconds max and auto-unbind if it's a normal run
-  chrome.runtime.onInstalled.addListener(openHomepageOnInstall);
-  setTimeout(openHomepageOnInstall, 60e3, {reason: 'unbindme'});
-}
-
-// *************************************************************************
-// reset L10N cache on UI language change
-{
-  const {browserUIlanguage} = tryJSONparse(localStorage.L10N) || {};
-  const UIlang = chrome.i18n.getUILanguage();
-  if (browserUIlanguage != UIlang) {
-    localStorage.L10N = JSON.stringify({
-      browserUIlanguage: UIlang,
-    });
-  }
+  chrome.runtime.onInstalled.addListener(onInstall);
+  setTimeout(onInstall, 60e3, {reason: 'unbindme'});
 }
 
 // *************************************************************************
