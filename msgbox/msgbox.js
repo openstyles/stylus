@@ -56,9 +56,12 @@ function messageBox({
     messageBox.element = $element({id, className, appendChild: [
       $element({appendChild: [
         $element({id: `${id}-title`, innerHTML: title}),
-        $element({
-          id: `${id}-close-icon`,
-          innerHTML: '<svg class="svg-icon"><use xlink:href="#svg-icon-close"/></svg>',
+        $element({id: `${id}-close-icon`, appendChild:
+          $element({tag: 'SVG#svg', class: 'svg-icon', viewBox: '0 0 20 20', appendChild:
+            $element({tag: 'SVG#path', d: 'M11.69,10l4.55,4.55-1.69,1.69L10,11.69,' +
+              '5.45,16.23,3.77,14.55,8.31,10,3.77,5.45,5.45,3.77,10,8.31l4.55-4.55,1.69,1.69Z',
+            })
+          }),
           onclick: messageBox.listeners.closeIcon}),
         $element({id: `${id}-contents`, [putAs]: contents}),
         $element({id: `${id}-buttons`, appendChild:

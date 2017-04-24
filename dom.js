@@ -81,11 +81,16 @@ function $$(selector, base = document) {
 
 
 function $element(opt) {
-  // tag:              string, default 'div'
+  // tag:              string, default 'div', may include namespace like 'ns#tag'
   // appendChild:      element or an array of elements
   // dataset:          object
   // any DOM property: assigned as is
-  const element = document.createElement(opt.tag || 'div');
+  const [ns, tag] = opt.tag && opt.tag.includes('#')
+    ? opt.tag.split('#')
+    : [null, opt.tag];
+  const element = ns
+    ? document.createElementNS(ns == 'SVG' || ns == 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
+    : document.createElement(tag || 'div');
   (opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild])
     .forEach(child => child && element.appendChild(child));
   delete opt.appendChild;
@@ -94,5 +99,12 @@ function $element(opt) {
     Object.assign(element.dataset, opt.dataset);
     delete opt.dataset;
   }
-  return Object.assign(element, opt);
+  if (ns) {
+    for (const attr in opt) {
+      element.setAttributeNS(null, attr, opt[attr]);
+    }
+  } else {
+    Object.assign(element, opt);
+  }
+  return element;
 }
