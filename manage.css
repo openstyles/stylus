@@ -332,9 +332,12 @@ summary {
 }
 
 .newUI .can-update .update:after {
+  animation: none;
+}
+
+.newUI .can-update:not([data-details$="locally edited"]) .update:after {
   background-color: #c0fff0;
   border: 1px solid #89cac9;
-  animation: none;
 }
 
 .newUI .applies-to {
