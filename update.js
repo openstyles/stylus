@@ -12,7 +12,7 @@ var updater = {
 
   // details for SKIPPED status
   EDITED: 'locally edited',
-  MAYBE_EDITED: 'maybe locally edited',
+  MAYBE_EDITED: 'may be locally edited',
   SAME_MD5: 'up-to-date: MD5 is unchanged',
   SAME_CODE: 'up-to-date: code sections are unchanged',
   ERROR_MD5: 'error: MD5 is invalid',

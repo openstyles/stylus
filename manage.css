@@ -507,7 +507,7 @@ input[id^="manage.newUI"] {
 }
 
 #update-all-no-updates[data-skipped-edited="true"]:after {
-  content: " __MSG_updateAllCheckSucceededSomeEdited__ __MSG_updateCheckManualUpdateHint__";
+  content: " __MSG_updateAllCheckSucceededSomeEdited__";
 }
 
 #check-all-updates-force {

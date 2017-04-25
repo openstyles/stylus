@@ -596,11 +596,11 @@
     "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
   },
   "updateCheckManualUpdateForce": {
-    "message": "Force-install update (and lose your edits)",
+    "message": "Install update (local edits will be overwritten)",
     "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckManualUpdateHint": {
-    "message": "To force an update (and lose your edits) update each style individually.",
+    "message": "Forcing an update will overwrite any local edits.",
     "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckSucceededNoUpdate": {
@@ -612,7 +612,7 @@
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Some updatable styles weren't checked to avoid losing possible local edits.",
+    "message": "Some updatable styles weren't checked to avoid losing possible local edits. Updates can be forced by checking individually, or by running another check for all styles (local edits will be overwritten).",
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateCompleted": {
