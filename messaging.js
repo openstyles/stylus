@@ -268,13 +268,13 @@ function sessionStorageHash(name) {
 }
 
 
-function onBackgroundReady() {
-  return BG ? Promise.resolve() : new Promise(ping);
+function onBackgroundReady(...dataPassthru) {
+  return BG ? Promise.resolve(...dataPassthru) : new Promise(ping);
   function ping(resolve) {
     chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
       if (health !== undefined) {
         BG = chrome.extension.getBackgroundPage();
-        resolve();
+        resolve(...dataPassthru);
       } else {
         ping(resolve);
       }
@@ -285,20 +285,13 @@ function onBackgroundReady() {
 
 // in case Chrome haven't yet loaded the bg page and displays our page like edit/manage
 function getStylesSafe(options) {
-  return new Promise(resolve => {
-    if (BG) {
-      BG.getStyles(options, resolve);
-    } else {
-      onBackgroundReady().then(() =>
-        BG.getStyles(options, resolve));
-    }
-  });
+  return onBackgroundReady(options).then(BG.getStyles);
 }
 
 
 function saveStyleSafe(style) {
-  return onBackgroundReady()
-    .then(() => BG.saveStyle(BG.deepCopy(style)))
+  return onBackgroundReady(BG.deepCopy(style))
+    .then(BG.saveStyle)
     .then(savedStyle => {
       if (style.notify === false) {
         handleUpdate(savedStyle, style);
@@ -309,8 +302,8 @@ function saveStyleSafe(style) {
 
 
 function deleteStyleSafe({id, notify = true} = {}) {
-  return onBackgroundReady()
-    .then(() => BG.deleteStyle({id, notify}))
+  return onBackgroundReady({id, notify})
+    .then(BG.deleteStyle)
     .then(() => {
       if (!notify) {
         handleDelete(id);

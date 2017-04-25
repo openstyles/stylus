@@ -22,17 +22,14 @@ var updater = {
 
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
     updater.resetInterval();
-    return new Promise(resolve => {
-      getStyles({}, styles => {
-        styles = styles.filter(style => style.updateUrl);
-        observer(updater.COUNT, styles.length);
-        Promise.all(styles.map(style =>
-          updater.checkStyle({style, observer, save, ignoreDigest})
-        )).then(() => {
-          observer(updater.DONE);
-          resolve();
-        });
-      });
+    return getStyles({}).then(styles => {
+      styles = styles.filter(style => style.updateUrl);
+      observer(updater.COUNT, styles.length);
+      return Promise.all(
+        styles.map(style =>
+          updater.checkStyle({style, observer, save, ignoreDigest})));
+    }).then(() => {
+      observer(updater.DONE);
     });
   },
 

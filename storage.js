@@ -43,58 +43,69 @@ var chromeLocal = {
 };
 
 
-function getDatabase(ready, error) {
-  const dbOpenRequest = window.indexedDB.open('stylish', 2);
-  dbOpenRequest.onsuccess = event => {
-    ready(event.target.result);
-  };
-  dbOpenRequest.onerror = event => {
-    console.warn(event.target.errorCode);
-    if (error) {
-      error(event);
-    }
-  };
-  dbOpenRequest.onupgradeneeded = event => {
-    if (event.oldVersion == 0) {
-      event.target.result.createObjectStore('styles', {
-        keyPath: 'id',
-        autoIncrement: true,
-      });
-    }
-  };
+function dbExec(method, data) {
+  return new Promise((resolve, reject) => {
+    Object.assign(indexedDB.open('stylish', 2), {
+      onsuccess(event) {
+        const database = event.target.result;
+        if (!method) {
+          resolve(database);
+        } else {
+          const transaction = database.transaction(['styles'], 'readwrite');
+          const store = transaction.objectStore('styles');
+          Object.assign(store[method](data), {
+            onsuccess: event => resolve(event, store, transaction, database),
+            onerror: reject,
+          });
+        }
+      },
+      onerror(event) {
+        console.warn(event.target.errorCode);
+        reject(event);
+      },
+      onupgradeneeded(event) {
+        if (event.oldVersion == 0) {
+          event.target.result.createObjectStore('styles', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+        }
+      },
+    });
+  });
 }
 
 
-function getStyles(options, callback) {
+function getStyles(options) {
   if (cachedStyles.list) {
-    callback(filterStyles(options));
-    return;
+    return Promise.resolve(filterStyles(options));
   }
   if (cachedStyles.mutex.inProgress) {
-    cachedStyles.mutex.onDone.push({options, callback});
-    return;
+    return new Promise(resolve => {
+      cachedStyles.mutex.onDone.push({options, resolve});
+    });
   }
   cachedStyles.mutex.inProgress = true;
 
-  getDatabase(db => {
-    const tx = db.transaction(['styles'], 'readonly');
-    const os = tx.objectStore('styles');
-    os.getAll().onsuccess = event => {
-      cachedStyles.list = event.target.result || [];
-      cachedStyles.byId.clear();
-      for (const style of cachedStyles.list) {
-        cachedStyles.byId.set(style.id, style);
-        compileStyleRegExps({style});
+  return dbExec('getAll').then(event => {
+    cachedStyles.list = event.target.result || [];
+    cachedStyles.byId.clear();
+    const t0 = performance.now();
+    let hasTimeToCompile = true;
+    for (const style of cachedStyles.list) {
+      cachedStyles.byId.set(style.id, style);
+      if (hasTimeToCompile) {
+        hasTimeToCompile = !compileStyleRegExps({style}) || performance.now() - t0 > 100;
       }
-      callback(filterStyles(options));
+    }
 
-      cachedStyles.mutex.inProgress = false;
-      for (const {options, callback} of cachedStyles.mutex.onDone) {
-        callback(filterStyles(options));
-      }
-      cachedStyles.mutex.onDone = [];
-    };
-  }, null);
+    cachedStyles.mutex.inProgress = false;
+    for (const {options, resolve} of cachedStyles.mutex.onDone) {
+      resolve(filterStyles(options));
+    }
+    cachedStyles.mutex.onDone = [];
+    return filterStyles(options);
+  });
 }
 
 
@@ -213,83 +224,81 @@ function filterStylesInternal({
 
 
 function saveStyle(style) {
-  return new Promise(resolve => {
-    getDatabase(db => {
-      const tx = db.transaction(['styles'], 'readwrite');
-      const os = tx.objectStore('styles');
-
-      const id = style.id == '0' ? 0 : Number(style.id) || null;
-      const reason = style.reason;
-      const notify = style.notify !== false;
-      delete style.method;
-      delete style.reason;
-      delete style.notify;
-      if (!style.name) {
-        delete style.name;
-      }
-      let existed, codeIsUpdated;
-
-      if (id !== null) {
-        // Update or create
-        style.id = id;
-        os.get(id).onsuccess = eventGet => {
-          const oldStyle = eventGet.target.result;
-          existed = Boolean(oldStyle);
-          codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
-          write(Object.assign({}, oldStyle, style));
-        };
-      } else {
-        // Create
-        delete style.id;
-        write(Object.assign({
-          // Set optional things if they're undefined
-          enabled: true,
-          updateUrl: null,
-          md5Url: null,
-          url: null,
-          originalMd5: null,
-        }, style));
-      }
-
-      function write(style) {
-        style.sections = normalizeStyleSections(style);
-        os.put(style).onsuccess = event => {
-          style.id = style.id || event.target.result;
-          invalidateCache(existed ? {updated: style} : {added: style});
-          compileStyleRegExps({style});
-          if (notify) {
-            notifyAllTabs({
-              method: existed ? 'styleUpdated' : 'styleAdded',
-              style, codeIsUpdated, reason,
-            });
-          }
-          if (reason == 'update') {
-            updateStyleDigest(style);
-          } else if (reason == 'import') {
-            chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id, ignoreChromeError);
-          }
-          resolve(style);
-        };
-      }
+  const id = Number(style.id) >= 0 ? Number(style.id) : null;
+  const reason = style.reason;
+  const notify = style.notify !== false;
+  delete style.method;
+  delete style.reason;
+  delete style.notify;
+  if (!style.name) {
+    delete style.name;
+  }
+  let existed, codeIsUpdated;
+  if (id !== null) {
+    // Update or create
+    style.id = id;
+    return dbExec('get', id).then((event, store) => {
+      const oldStyle = event.target.result;
+      existed = Boolean(oldStyle);
+      codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
+      style = Object.assign({}, oldStyle, style);
+      return write(style, store);
     });
-  });
+  } else {
+    // Create
+    delete style.id;
+    style = Object.assign({
+      // Set optional things if they're undefined
+      enabled: true,
+      updateUrl: null,
+      md5Url: null,
+      url: null,
+      originalMd5: null,
+    }, style);
+    return write(style);
+  }
+
+  function write(style, store) {
+    style.sections = normalizeStyleSections(style);
+    if (store) {
+      return new Promise(resolve => {
+        store.put(style).onsuccess = event => resolve(done(event));
+      });
+    } else {
+      return dbExec('put', style).then(done);
+    }
+  }
+
+  function done(event) {
+    style.id = style.id || event.target.result;
+    invalidateCache(existed ? {updated: style} : {added: style});
+    compileStyleRegExps({style});
+    if (notify) {
+      notifyAllTabs({
+        method: existed ? 'styleUpdated' : 'styleAdded',
+        style, codeIsUpdated, reason,
+      });
+    }
+    if (reason == 'update') {
+      updateStyleDigest(style);
+    } else if (reason == 'import') {
+      chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id, ignoreChromeError);
+    }
+    return style;
+  }
 }
 
 
 function deleteStyle({id, notify = true}) {
+  id = Number(id);
   chrome.storage.local.remove(DIGEST_KEY_PREFIX + id, ignoreChromeError);
-  return new Promise(resolve =>
-    getDatabase(db => {
-      const tx = db.transaction(['styles'], 'readwrite');
-      const os = tx.objectStore('styles');
-      os.delete(Number(id)).onsuccess = () => {
-        invalidateCache({deletedId: id});
-        if (notify) {
-          notifyAllTabs({method: 'styleDeleted', id});
-        }
-        resolve(id);
-      };
-    }));
+  return dbExec('delete', id).then(() => {
+    invalidateCache({deletedId: id});
+    if (notify) {
+      notifyAllTabs({method: 'styleDeleted', id});
+    }
+    return id;
+  });
 }
 
 
@@ -448,11 +457,12 @@ function compileStyleRegExps({style, compileAll}) {
         const rx = tryRegExp(anchored);
         cachedStyles.regexps.set(cacheKey, rx || false);
         if (!compileAll && performance.now() - t0 > 100) {
-          return;
+          return false;
         }
       }
     }
   }
+  return true;
 }
 
 

@@ -1,4 +1,4 @@
-/* global getDatabase, getStyles, saveStyle */
+/* global dbExec, getStyles, saveStyle */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -6,7 +6,7 @@ var browserCommands, contextMenus;
 
 // *************************************************************************
 // preload the DB and report errors
-getDatabase(() => {}, (...args) => {
+dbExec().catch((...args) => {
   args.forEach(arg => 'message' in arg && console.error(arg.message));
 });
 
@@ -183,7 +183,7 @@ prefs.subscribe((id, checked) => {
 // *************************************************************************
 
 function webNavigationListener(method, {url, tabId, frameId}) {
-  getStyles({matchUrl: url, enabled: true, asHash: true}, styles => {
+  getStyles({matchUrl: url, enabled: true, asHash: true}).then(styles => {
     if (method && !url.startsWith('chrome:') && tabId >= 0) {
       chrome.tabs.sendMessage(tabId, {
         method,
@@ -209,9 +209,9 @@ function updateIcon(tab, styles) {
     stylesReceived(styles);
     return;
   }
-  getTabRealURL(tab).then(url =>
-    getStyles({matchUrl: url, enabled: true, asHash: true},
-      stylesReceived));
+  getTabRealURL(tab)
+    .then(url => getStyles({matchUrl: url, enabled: true, asHash: true}))
+    .then(stylesReceived);
 
   function stylesReceived(styles) {
     let numStyles = styles.length;
@@ -255,7 +255,7 @@ function onRuntimeMessage(request, sender, sendResponse) {
   switch (request.method) {
 
     case 'getStyles':
-      getStyles(request, sendResponse);
+      getStyles(request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
     case 'saveStyle':
@@ -263,9 +263,9 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'healthCheck':
-      getDatabase(
-        () => sendResponse(true),
-        () => sendResponse(false));
+      dbExec()
+        .then(() => sendResponse(true))
+        .catch(() => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
 
     case 'download':
