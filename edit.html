@@ -101,6 +101,14 @@
 			#url:not([href^="http"]) {
 				display: none;
 			}
+			#save-button {
+				opacity: .5;
+				pointer-events: none;
+			}
+			.dirty #save-button {
+				opacity: 1;
+				pointer-events: all;
+			}
 			.svg-icon {
 				cursor: pointer;
 				vertical-align: middle;
