@@ -240,7 +240,6 @@ summary {
   width: 60px;
   height: 20px;
   white-space: nowrap;
-  z-index: 999;
 }
 
 .newUI .actions > * {
