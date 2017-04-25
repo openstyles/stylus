@@ -293,19 +293,22 @@ summary {
   cursor: pointer;
 }
 
+.newUI .can-update[data-details$="locally edited"] .update svg,
 .newUI .update-problem .check-update svg {
   fill: #ef6969;
 }
 
+.newUI .can-update[data-details$="locally edited"]:hover .update svg,
 .newUI .entry.update-problem:hover .check-update svg {
   fill: #fd4040;
 }
 
+.newUI .can-update[data-details$="locally edited"]:hover .update svg:hover,
 .newUI .entry.update-problem:hover .check-update svg:hover {
   fill: red;
 }
 
-.updater-icons > :not(.check-update):after {
+.newUI .updater-icons > :not(.check-update):after {
   content: attr(title);
   position: absolute;
   margin-top: 18px;
@@ -321,14 +324,14 @@ summary {
   z-index: 999;
 }
 
-.update-problem .check-update:after {
+.newUI .update-problem .check-update:after {
   background-color: red;
   border: 1px solid #d40000;
   color: white;
   animation: none;
 }
 
-.can-update .update:after {
+.newUI .can-update .update:after {
   background-color: #c0fff0;
   border: 1px solid #89cac9;
   animation: none;
@@ -467,12 +470,16 @@ input[id^="manage.newUI"] {
   display: inline;
 }
 
+.can-update[data-details$="locally edited"] button.update:after {
+  content: "*";
+}
+
 .can-update .check-update {
   display: none;
 }
 
 /* Updates not available */
-.no-update .check-update {
+.no-update:not(.update-problem) .check-update {
   display: none;
 }
 
@@ -501,6 +508,10 @@ input[id^="manage.newUI"] {
 
 #update-all-no-updates[data-skipped-edited="true"]:after {
   content: " __MSG_updateAllCheckSucceededSomeEdited__ __MSG_updateCheckManualUpdateHint__";
+}
+
+#check-all-updates-force {
+  margin-top: 1ex;
 }
 
 /* highlight updated/added styles */

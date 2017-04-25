@@ -148,8 +148,8 @@
     </label>
     <label id="onlyUpdates" class="hidden">
       <input type="checkbox"
-             data-filter=".can-update, .update-problem"
-             data-filter-hide=":not(.updatable), .update-done, .no-update:not(.update-problem)">
+             data-filter=".can-update, .update-problem, .update-done"
+             data-filter-hide=":not(.updatable):not(.update-done), .no-update:not(.update-problem)">
       <span i18n-text="manageOnlyUpdates"></span>
     </label>
     <input id="search" type="search" i18n-placeholder="searchStyles"
@@ -162,6 +162,7 @@
   <p>
     <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
     <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
+    <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
   </p>
   <p>
     <a href="edit.html">

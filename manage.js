@@ -51,6 +51,7 @@ function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
   $('#check-all-updates').onclick = checkUpdateAll;
+  $('#check-all-updates-force').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
@@ -504,7 +505,9 @@ function applyUpdateAll() {
 
 
 function checkUpdateAll() {
+  const ignoreDigest = this && this.id == 'check-all-updates-force';
   $('#check-all-updates').disabled = true;
+  $('#check-all-updates-force').classList.add('hidden');
   $('#apply-all-updates').classList.add('hidden');
   $('#update-all-no-updates').classList.add('hidden');
 
@@ -513,8 +516,9 @@ function checkUpdateAll() {
   let skippedEdited = 0;
   let updated = 0;
 
-  $$('.updatable:not(.can-update):not(.update-problem)').map(el => checkUpdate(el, {single: false}));
-  BG.updater.checkAllStyles({observer, save: false});
+  $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
+    .map(el => checkUpdate(el, {single: false}));
+  BG.updater.checkAllStyles({observer, save: false, ignoreDigest});
 
   function observer(state, value, details) {
     switch (state) {
@@ -542,6 +546,7 @@ function checkUpdateAll() {
         if (!updated) {
           $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
           $('#update-all-no-updates').classList.remove('hidden');
+          $('#check-all-updates-force').classList.toggle('hidden', skippedEdited == 0);
         }
         return;
     }
@@ -582,6 +587,9 @@ function reportUpdateState(state, style, details) {
       if (entry.classList.contains('can-update')) {
         break;
       }
+      const same = details == BG.updater.SAME_MD5 || details == BG.updater.SAME_CODE;
+      const edited = details == BG.updater.EDITED || details == BG.updater.MAYBE_EDITED;
+      entry.dataset.details = details;
       if (!details) {
         details = t('updateCheckFailServerUnreachable');
       } else if (typeof details == 'number') {
@@ -591,12 +599,12 @@ function reportUpdateState(state, style, details) {
       } else if (details == BG.updater.MAYBE_EDITED) {
         details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       }
-      const same = details == BG.updater.SAME_MD5 || details == BG.updater.SAME_CODE;
       const message = same ? t('updateCheckSucceededNoUpdate') : details;
       entry.classList.add('no-update');
       entry.classList.toggle('update-problem', !same);
       $('.update-note', entry).textContent = message;
       $('.check-update', entry).title = newUI.enabled ? message : '';
+      $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
       if (!$('#check-all-updates').disabled) {
         // this is a single update job so we can decide whether to hide the filter
         renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});

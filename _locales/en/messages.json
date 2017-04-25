@@ -76,6 +76,10 @@
     "message": "Check all styles for updates",
     "description": "Label for the button to check all styles for updates"
   },
+  "checkAllUpdatesForce": {
+    "message": "Check again, I didn't edit any styles!",
+    "description": "Label for the button to apply all detected updates"
+  },
   "checkForUpdate": {
     "message": "Check for update",
     "description": "Label for the button to check a single style for an update"
@@ -323,7 +327,7 @@
     "description": "Checkbox to show only locally edited styles"
   },
   "manageOnlyUpdates": {
-    "message": "Only with updates or problems",
+    "message": "Only with updates or issues",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageNewUI": {
@@ -590,6 +594,10 @@
   "updateCheckSkippedMaybeLocallyEdited": {
     "message": "This style might have been edited locally.",
     "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Force-install update (and lose your edits)",
+    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckManualUpdateHint": {
     "message": "To force an update (and lose your edits) update each style individually.",

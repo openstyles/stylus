@@ -71,7 +71,7 @@ var updater = {
       if (!md5 || md5.length != 32) {
         return Promise.reject(updater.ERROR_MD5);
       }
-      if (md5 == style.originalMd5 && hasDigest) {
+      if (md5 == style.originalMd5 && hasDigest && !ignoreDigest) {
         return Promise.reject(updater.SAME_MD5);
       }
       return download(style.updateUrl);
