@@ -1,4 +1,4 @@
-/* global messageBox */
+/* global messageBox, getStyleWithNoCode */
 'use strict';
 
 let installed;
@@ -85,6 +85,9 @@ function initGlobalEvents() {
 
   $$('[data-filter]').forEach(el => {
     el.onchange = handleEvent.filterOnChange;
+    if (el.closest('.hidden')) {
+      el.checked = false;
+    }
   });
   handleEvent.filterOnChange({forceRefilter: true});
 
@@ -164,6 +167,7 @@ function createStyleElement({style, name}) {
   entry.id = 'style-' + style.id;
   entry.styleId = style.id;
   entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
+  entry.styleMeta = getStyleWithNoCode(style);
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '');
@@ -381,26 +385,52 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style, {reason} = {}) {
-  const entry = createStyleElement({style});
-  const oldEntry = $('#style-' + style.id);
+function handleUpdate(style, {reason, method} = {}) {
+  let entry;
+  let oldEntry = $('#style-' + style.id);
+  if (oldEntry && method == 'styleUpdated') {
+    handleToggledOrCodeEdited();
+  }
+  entry = entry || createStyleElement({style});
   if (oldEntry) {
     if (oldEntry.styleNameLowerCase == entry.styleNameLowerCase) {
       installed.replaceChild(entry, oldEntry);
     } else {
       oldEntry.remove();
     }
-    if (reason == 'update') {
-      entry.classList.add('update-done');
-      entry.classList.remove('can-update', 'updatable');
-      $('.update-note', entry).textContent = t('updateCompleted');
-      renderUpdatesOnlyFilter();
-    }
+  }
+  if (reason == 'update' && entry.matches('.updatable')) {
+    handleUpdateInstalled();
   }
   filterAndAppend({entry});
-  if (!entry.classList.contains('hidden') && reason != 'import') {
+  if (!entry.matches('.hidden') && reason != 'import') {
     animateElement(entry, {className: 'highlight'});
     scrollElementIntoView(entry);
+  }
+
+  function handleToggledOrCodeEdited() {
+    const newStyleMeta = getStyleWithNoCode(style);
+    const diff = objectDiff(oldEntry.styleMeta, newStyleMeta);
+    if (diff.length == 0) {
+      // only code was modified
+      entry = oldEntry;
+      oldEntry = null;
+    }
+    if (diff.length == 1 && diff[0].key == 'enabled') {
+      oldEntry.classList.toggle('enabled', style.enabled);
+      oldEntry.classList.toggle('disabled', !style.enabled);
+      $$('.checker', oldEntry).forEach(el => (el.checked = style.enabled));
+      oldEntry.styleMeta = newStyleMeta;
+      entry = oldEntry;
+      oldEntry = null;
+    }
+  }
+
+  function handleUpdateInstalled() {
+    entry.classList.add('update-done');
+    entry.classList.remove('can-update', 'updatable');
+    $('.update-note', entry).textContent = t('updateCompleted');
+    renderUpdatesOnlyFilter();
   }
 }
 
@@ -505,20 +535,22 @@ function applyUpdateAll() {
 
 
 function checkUpdateAll() {
-  const ignoreDigest = this && this.id == 'check-all-updates-force';
+  document.body.classList.add('update-in-progress');
   $('#check-all-updates').disabled = true;
   $('#check-all-updates-force').classList.add('hidden');
   $('#apply-all-updates').classList.add('hidden');
   $('#update-all-no-updates').classList.add('hidden');
+
+  const ignoreDigest = this && this.id == 'check-all-updates-force';
+  $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
+    .map(el => checkUpdate(el, {single: false}));
 
   let total = 0;
   let checked = 0;
   let skippedEdited = 0;
   let updated = 0;
 
-  $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
-    .map(el => checkUpdate(el, {single: false}));
-  BG.updater.checkAllStyles({observer, save: false, ignoreDigest});
+  BG.updater.checkAllStyles({observer, save: false, ignoreDigest}).then(done);
 
   function observer(state, value, details) {
     switch (state) {
@@ -539,20 +571,22 @@ function checkUpdateAll() {
         }
         reportUpdateState(state, value, details);
         break;
-      case BG.updater.DONE:
-        $('#check-all-updates').disabled = false;
-        $('#apply-all-updates').disabled = false;
-        renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
-        if (!updated) {
-          $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
-          $('#update-all-no-updates').classList.remove('hidden');
-          $('#check-all-updates-force').classList.toggle('hidden', skippedEdited == 0);
-        }
-        return;
     }
     const progress = $('#update-progress');
     const maxWidth = progress.parentElement.clientWidth;
     progress.style.width = Math.round(checked / total * maxWidth) + 'px';
+  }
+
+  function done() {
+    document.body.classList.remove('update-in-progress');
+    $('#check-all-updates').disabled = total == 0;
+    $('#apply-all-updates').disabled = false;
+    renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
+    if (!updated) {
+      $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
+      $('#update-all-no-updates').classList.remove('hidden');
+      $('#check-all-updates-force').classList.toggle('hidden', skippedEdited == 0);
+    }
   }
 }
 
@@ -605,7 +639,7 @@ function reportUpdateState(state, style, details) {
       $('.update-note', entry).textContent = message;
       $('.check-update', entry).title = newUI.enabled ? message : '';
       $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
-      if (!$('#check-all-updates').disabled) {
+      if (!document.body.classList.contains('update-in-progress')) {
         // this is a single update job so we can decide whether to hide the filter
         renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
       }
@@ -706,8 +740,7 @@ function searchStyles({immediately, container}) {
 
 function filterAndAppend({entry, container}) {
   if (!container) {
-    container = document.createElement('div');
-    container.appendChild(entry);
+    container = [entry];
     // reverse the visibility, otherwise reapplyFilter will see no need to work
     if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
       entry.classList.add('hidden');
@@ -722,7 +755,7 @@ function filterAndAppend({entry, container}) {
 
 function reapplyFilter(container = installed) {
   // A: show
-  const toUnhide = filtersSelector.hide ? $$(filtersSelector.unhide, container) : container;
+  const toUnhide = filtersSelector.hide ? filterContainer({hide: false}) : container;
   // showStyles() is building the page and no filters are active
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
@@ -743,7 +776,7 @@ function reapplyFilter(container = installed) {
     }
   }
   // B: hide
-  const toHide = filtersSelector.hide ? $$(filtersSelector.hide, container) : [];
+  const toHide = filtersSelector.hide ? filterContainer({hide: true}) : [];
   if (!toHide.length) {
     return;
   }
@@ -757,7 +790,12 @@ function reapplyFilter(container = installed) {
     for (const entry of toHide) {
       installed.appendChild(entry);
     }
-    installed.insertBefore(container, $('.entry.hidden'));
+    const firstHidden = $('.entry.hidden');
+    if (container.forEach) {
+      container.forEach(el => installed.insertBefore(el, firstHidden));
+    } else {
+      installed.insertBefore(container, firstHidden);
+    }
     return;
   }
   // normal filtering of the page or a single-element job from handleUpdate()
@@ -771,8 +809,17 @@ function reapplyFilter(container = installed) {
   }
   return;
 
+  function filterContainer({hide}) {
+    const selector = filtersSelector[hide ? 'hide' : 'unhide'];
+    if (container.filter) {
+      return container.filter(el => el.matches(selector));
+    } else {
+      return $$(selector, container);
+    }
+  }
+
   function shuffle(fullPass) {
-    if (fullPass) {
+    if (fullPass && !document.body.classList.contains('update-in-progress')) {
       $('#check-all-updates').disabled = !$('.updatable:not(.can-update)');
     }
     // 1. skip the visible group on top
@@ -861,4 +908,38 @@ function reapplyFilter(container = installed) {
 
 function rememberScrollPosition() {
   history.replaceState({scrollY: window.scrollY}, document.title);
+}
+
+
+function objectDiff(first, second, path = '') {
+  const diff = [];
+  for (const key in first) {
+    const a = first[key];
+    const b = second[key];
+    if (a === b) {
+      continue;
+    }
+    if (b === undefined) {
+      diff.push({path, key, values: [a], type: 'removed'});
+      continue;
+    }
+    if (a && typeof a.filter == 'function' && b && typeof b.filter == 'function') {
+      if (a.length != b.length
+      || a.some((el, i) => !el || typeof el != 'object' ? el != b[i]
+          : objectDiff(el, b[i], path + key + '[' + i + '].').length)
+      ) {
+        diff.push({path, key, values: [a, b], type: 'changed'});
+      }
+    } else if (typeof a == 'object' && typeof b == 'object') {
+      diff.push(...objectDiff(a, b, path + key + '.'));
+    } else {
+      diff.push({path, key, values: [a, b], type: 'changed'});
+    }
+  }
+  for (const key in second) {
+    if (!(key in first)) {
+      diff.push({path, key, values: [second[key]], type: 'added'});
+    }
+  }
+  return diff;
 }

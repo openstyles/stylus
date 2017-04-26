@@ -335,6 +335,9 @@ Object.assign(document.body, {
     this.ondragend();
     if (event.dataTransfer.files.length) {
       event.preventDefault();
+      if ($('#onlyUpdates input').checked) {
+        $('#onlyUpdates input').click();
+      }
       importFromFile({file: event.dataTransfer.files[0]});
     }
   },

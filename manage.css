@@ -495,11 +495,11 @@ input[id^="manage.newUI"] {
   content: " (" attr(data-value) ")";
 }
 
-#check-all-updates[disabled] {
+.update-in-progress #check-all-updates {
   position: relative;
 }
 
-#check-all-updates[disabled] #update-progress {
+.update-in-progress #update-progress {
   position: absolute;
   top: 0;
   left: 0;
