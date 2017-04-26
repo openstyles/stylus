@@ -128,17 +128,27 @@ var updater = {
     updater.schedule();
   },
 
-  log(text) {
-    chromeLocal.getValue('updateLog').then((lines = []) => {
-      const time = text && performance.now() - (updater.log.lastWriteTime || 0) > 10e3
-        ? new Date().toLocaleString() + '\t'
-        : '';
-      lines.splice(0, lines.length - 1000);
-      lines.push(time + text);
-      chromeLocal.setValue('updateLog', lines);
-      updater.log.lastWriteTime = performance.now();
-    });
-  },
+  log: (() => {
+    let queue = [];
+    let lastWriteTime = 0;
+    return text => {
+      queue.push(text);
+      debounce(flushQueue, 1e3);
+    };
+    function flushQueue() {
+      chromeLocal.getValue('updateLog').then((lines = []) => {
+        // our XHR timeout is 10 seconds
+        const time = performance.now() - lastWriteTime > 11e3
+          ? new Date().toLocaleString() + '\t'
+          : '';
+        lines.splice(0, lines.length - 1000);
+        lines.push(...queue.map(item => item ? time + item : ''));
+        chromeLocal.setValue('updateLog', lines);
+        lastWriteTime = performance.now();
+        queue = [];
+      });
+    }
+  })(),
 };
 
 updater.schedule();
