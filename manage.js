@@ -371,11 +371,13 @@ Object.assign(handleEvent, {
     }
     const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
     const buildFilter = hide =>
+      (hide ? '' : '.entry.hidden') +
       [...enabledFilters.map(el =>
         el.dataset[hide ? 'filterHide' : 'filter']
           .split(/,\s*/)
-          .map(s => '.entry' + (hide ? '' : '.hidden') + s))
-      ].join(',');
+          .map(s => (hide ? '.entry:not(.hidden)' : '') + s)
+          .join(','))
+      ].join(hide ? ',' : '');
     Object.assign(filtersSelector, {
       hide: buildFilter(true),
       unhide: buildFilter(false),
@@ -389,7 +391,7 @@ function handleUpdate(style, {reason, method} = {}) {
   let entry;
   let oldEntry = $('#style-' + style.id);
   if (oldEntry && method == 'styleUpdated') {
-    handleToggledOrCodeEdited();
+    handleToggledOrCodeOnly();
   }
   entry = entry || createStyleElement({style});
   if (oldEntry) {
@@ -408,7 +410,7 @@ function handleUpdate(style, {reason, method} = {}) {
     scrollElementIntoView(entry);
   }
 
-  function handleToggledOrCodeEdited() {
+  function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
     const diff = objectDiff(oldEntry.styleMeta, newStyleMeta);
     if (diff.length == 0) {
@@ -755,11 +757,14 @@ function filterAndAppend({entry, container}) {
 
 function reapplyFilter(container = installed) {
   // A: show
-  const toUnhide = filtersSelector.hide ? filterContainer({hide: false}) : container;
+  let toUnhide = filtersSelector.hide ? filterContainer({hide: false}) : container;
   // showStyles() is building the page and no filters are active
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
     return;
+  } else if (toUnhide.length && $('#search').value.trim()) {
+    searchStyles({immediately: true, container: toUnhide});
+    toUnhide = filterContainer({hide: false});
   }
   // filtering needed or a single-element job from handleUpdate()
   const entries = installed.children;
@@ -790,12 +795,7 @@ function reapplyFilter(container = installed) {
     for (const entry of toHide) {
       installed.appendChild(entry);
     }
-    const firstHidden = $('.entry.hidden');
-    if (container.forEach) {
-      container.forEach(el => installed.insertBefore(el, firstHidden));
-    } else {
-      installed.insertBefore(container, firstHidden);
-    }
+    installed.insertBefore(container, $('.entry.hidden'));
     return;
   }
   // normal filtering of the page or a single-element job from handleUpdate()
@@ -812,7 +812,16 @@ function reapplyFilter(container = installed) {
   function filterContainer({hide}) {
     const selector = filtersSelector[hide ? 'hide' : 'unhide'];
     if (container.filter) {
-      return container.filter(el => el.matches(selector));
+      if (hide) {
+        // already filtered in previous invocation
+        return container;
+      }
+      const toHide = [], toUnhide = [];
+      for (const el of container) {
+        (el.matches(selector) ? toUnhide : toHide).push(el);
+      }
+      container = toHide;
+      return toUnhide;
     } else {
       return $$(selector, container);
     }
