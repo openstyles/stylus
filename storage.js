@@ -5,7 +5,9 @@ const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
   /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 const SLOPPY_REGEXP_PREFIX = '\0';
-const DIGEST_KEY_PREFIX = 'originalDigest';
+
+// eslint-disable-next-line no-var
+var DIGEST_KEY_PREFIX = 'originalDigest';
 
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
@@ -227,9 +229,11 @@ function saveStyle(style) {
   const id = Number(style.id) >= 0 ? Number(style.id) : null;
   const reason = style.reason;
   const notify = style.notify !== false;
+  const styleDigest = style.styleDigest;
   delete style.method;
   delete style.reason;
   delete style.notify;
+  delete style.styleDigest;
   if (!style.name) {
     delete style.name;
   }
@@ -282,7 +286,11 @@ function saveStyle(style) {
     if (reason == 'update') {
       updateStyleDigest(style);
     } else if (reason == 'import') {
-      chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id, ignoreChromeError);
+      if (typeof styleDigest == 'string' && styleDigest.length == 40) {
+        chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, styleDigest);
+      } else {
+        chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id);
+      }
     }
     return style;
   }
@@ -566,7 +574,7 @@ function getStyleDigests(style) {
 
 function updateStyleDigest(style) {
   calcStyleDigest(style).then(digest =>
-    chromeLocal.set({[DIGEST_KEY_PREFIX + style.id]: digest}));
+    chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, digest));
 }
 
 

@@ -59,6 +59,10 @@ function importFromString(jsonString) {
   const oldStyles = json.length && BG.deepCopy(BG.cachedStyles.list || []);
   const oldStylesByName = json.length && new Map(
     oldStyles.map(style => [style.name.trim(), style]));
+
+  let oldDigests;
+  chrome.storage.local.get(null, data => (oldDigests = data));
+
   const stats = {
     added:       {names: [], ids: [], legend: 'importReportLegendAdded'},
     unchanged:   {names: [], ids: [], legend: 'importReportLegendIdentical'},
@@ -67,12 +71,14 @@ function importFromString(jsonString) {
     codeOnly:    {names: [], ids: [], legend: 'importReportLegendUpdatedCode'},
     invalid:     {names: [], legend: 'importReportLegendInvalid'},
   };
+
   let index = 0;
   let lastRenderTime = performance.now();
   const renderQueue = [];
   const RENDER_NAP_TIME_MAX = 1000; // ms
   const RENDER_QUEUE_MAX = 50; // number of styles
   const SAVE_OPTIONS = {reason: 'import', notify: false};
+
   return new Promise(proceed);
 
   function proceed(resolve) {
@@ -214,6 +220,7 @@ function importFromString(jsonString) {
       deleteStyleSafe({id, notify: false}).then(id => {
         const oldStyle = oldStylesById.get(id);
         if (oldStyle) {
+          oldStyle.styleDigest = oldDigests[BG.DIGEST_KEY_PREFIX + id];
           saveStyleSafe(Object.assign(oldStyle, SAVE_OPTIONS))
             .then(undoNextId);
         } else {
@@ -275,7 +282,14 @@ function importFromString(jsonString) {
 
 
 $('#file-all-styles').onclick = () => {
-  getStylesSafe().then(styles => {
+  Promise.all([
+    BG.chromeLocal.get(null),
+    getStylesSafe(),
+  ]).then(([data, styles]) => {
+    styles = styles.map(style => {
+      const styleDigest = data[BG.DIGEST_KEY_PREFIX + style.id];
+      return styleDigest ? Object.assign({styleDigest}, style) : style;
+    });
     const text = JSON.stringify(styles, null, '\t');
     const fileName = generateFileName();
 
