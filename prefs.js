@@ -49,7 +49,7 @@ var prefs = new function Prefs() {
 
     'popupWidth': 246,              // popup width in pixels
 
-    'updateInterval': 0             // user-style automatic update interval, hour
+    'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
   const values = deepCopy(defaults);
 
