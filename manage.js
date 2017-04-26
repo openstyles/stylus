@@ -53,6 +53,7 @@ function initGlobalEvents() {
   $('#check-all-updates').onclick = checkUpdateAll;
   $('#check-all-updates-force').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
+  $('#update-history').onclick = showUpdateHistory;
   $('#search').oninput = searchStyles;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
@@ -672,6 +673,21 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
       btnApply.classList.add('hidden');
     }
   }
+}
+
+
+function showUpdateHistory() {
+  BG.chromeLocal.getValue('updateLog').then((lines = []) => {
+    messageBox({
+      title: t('updateCheckHistory'),
+      contents: $element({
+        className: 'update-history-log',
+        textContent: lines.join('\n'),
+      }),
+      buttons: [t('confirmOK')],
+      onshow: () => ($('#message-box-contents').scrollTop = 1e9),
+    });
+  });
 }
 
 

@@ -1,4 +1,4 @@
-/* global getStyles, saveStyle, styleSectionsEqual */
+/* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
 /* global getStyleDigests, updateStyleDigest */
 'use strict';
 
@@ -25,11 +25,13 @@ var updater = {
     return getStyles({}).then(styles => {
       styles = styles.filter(style => style.updateUrl);
       observer(updater.COUNT, styles.length);
+      updater.log(`${save ? 'Scheduled' : 'Manual'} update check for ${styles.length} styles`);
       return Promise.all(
         styles.map(style =>
           updater.checkStyle({style, observer, save, ignoreDigest})));
     }).then(() => {
       observer(updater.DONE);
+      updater.log('');
     });
   },
 
@@ -53,8 +55,15 @@ var updater = {
       .then(fetchMd5IfNotEdited)
       .then(fetchCodeIfMd5Changed)
       .then(saveIfUpdated)
-      .then(saved => observer(updater.UPDATED, saved))
-      .catch(err => observer(updater.SKIPPED, style, err));
+      .then(saved => {
+        observer(updater.UPDATED, saved);
+        updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
+      })
+      .catch(err => {
+        observer(updater.SKIPPED, style, err);
+        err = err === 0 ? 'server unreachable' : err;
+        updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
+      });
 
     function fetchMd5IfNotEdited([originalDigest, current]) {
       hasDigest = Boolean(originalDigest);
@@ -117,6 +126,18 @@ var updater = {
   resetInterval() {
     localStorage.lastUpdateTime = updater.lastUpdateTime = Date.now();
     updater.schedule();
+  },
+
+  log(text) {
+    chromeLocal.getValue('updateLog').then((lines = []) => {
+      const time = text && performance.now() - (updater.log.lastWriteTime || 0) > 10e3
+        ? new Date().toLocaleString() + '\t'
+        : '';
+      lines.splice(0, lines.length - 1000);
+      lines.push(time + text);
+      chromeLocal.setValue('updateLog', lines);
+      updater.log.lastWriteTime = performance.now();
+    });
   },
 };
 

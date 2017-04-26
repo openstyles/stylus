@@ -80,6 +80,9 @@
     "message": "Check again, I didn't edit any styles!",
     "description": "Label for the button to apply all detected updates"
   },
+  "updateCheckHistory": {
+    "message": "History of update checks"
+  },
   "checkForUpdate": {
     "message": "Check for update",
     "description": "Label for the button to check a single style for an update"
@@ -127,6 +130,10 @@
   "genericDisabledLabel": {
     "message": "Disabled",
     "description": "Used in various lists/options to indicate that something is disabled"
+  },
+  "genericHistoryLabel": {
+    "message": "History",
+    "description": "Used in various places to show a history log of something"
   },
   "confirmNo": {
     "message": "No",

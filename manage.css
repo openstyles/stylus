@@ -66,13 +66,11 @@ a:hover {
   height: 20px;
 }
 
-.svg-icon,
-.svg-icon.info:hover {
+.svg-icon:hover {
   fill: #000;
 }
 
-.svg-icon:hover,
-.svg-icon.info {
+.svg-icon {
   fill: #666;
 }
 
@@ -605,6 +603,13 @@ fieldset > * {
 
 #message-box details small div {
     margin-left: 1.5em;
+}
+
+.update-history-log {
+  font-size: 11px;
+  white-space: pre;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 @keyframes fadein {
