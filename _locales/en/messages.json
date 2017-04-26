@@ -322,9 +322,13 @@
     "message": "Only enabled styles",
     "description": "Checkbox to show only enabled styles"
   },
-  "manageOnlyEdited": {
-    "message": "Only edited styles",
-    "description": "Checkbox to show only locally edited styles"
+  "manageOnlyLocal": {
+    "message": "Only locally created styles",
+    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(the styles not installed through a userstyles.org page)",
+    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyUpdates": {
     "message": "Only with updates or issues",

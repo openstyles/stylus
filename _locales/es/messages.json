@@ -11,10 +11,6 @@
 		"message": "Exportar estilos",
 		"description": ""
 	},
-	"manageOnlyEdited": {
-		"message": "Sólo estilos editados",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"optionsUpdateInterval": {
 		"message": "Buscar e instalar automáticamente todas las actualizaciones disponibles de estilos de usuario (en horas)",
 		"description": ""

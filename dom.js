@@ -68,7 +68,7 @@ function enforceInputRange(element) {
 
 
 function $(selector, base = document) {
-  // we have ids with . like #manage.onlyEdited which look like #id.class
+  // we have ids with . like #manage.onlyEnabled which looks like #id.class
   // so since getElementById is superfast we'll try it anyway
   const byId = selector.startsWith('#') && document.getElementById(selector.slice(1));
   return byId || base.querySelector(selector);

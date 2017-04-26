@@ -11,10 +11,6 @@
 		"message": "导出所有样式",
 		"description": ""
 	},
-	"manageOnlyEdited": {
-		"message": "仅修改过的样式",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"optionsUpdateInterval": {
 		"message": "每 N 小时，检查所有样式更新（0 为关闭检查）",
 		"description": ""

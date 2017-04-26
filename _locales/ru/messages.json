@@ -7,10 +7,6 @@
 		"message": "по-умолчанию",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Только отредактированные стили",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Экспорт",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

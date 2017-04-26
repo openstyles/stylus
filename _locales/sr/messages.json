@@ -7,10 +7,6 @@
 		"message": "подразумевано",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Само уређени стилови",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Извези",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -295,7 +291,8 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"stylusUnavailableForURL": {
-		"message": "Stylus не ради на страницама као што је ова.",		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+		"message": "Stylus не ради на страницама као што је ова.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Уклони одељак",

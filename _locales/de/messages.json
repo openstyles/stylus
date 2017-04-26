@@ -11,10 +11,6 @@
 		"message": "Styles Exportieren",
 		"description": ""
 	},
-	"manageOnlyEdited": {
-		"message": "Nur bearbeitete Styles",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"optionsUpdateInterval": {
 		"message": "Automatischer Update- und Installations-Intervall (in Stunden)",
 		"description": ""

@@ -15,7 +15,7 @@ var prefs = new function Prefs() {
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
 
     'manage.onlyEnabled': false,    // display only enabled styles
-    'manage.onlyEdited': false,     // display only styles created locally
+    'manage.onlyLocal': false,      // display only styles created locally
     'manage.newUI': true,           // use the new compact layout
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
