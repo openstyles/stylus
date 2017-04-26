@@ -291,22 +291,20 @@ $('#file-all-styles').onclick = () => {
       return styleDigest ? Object.assign({styleDigest}, style) : style;
     });
     const text = JSON.stringify(styles, null, '\t');
-    const fileName = generateFileName();
-
     const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    return url;
     // for long URLs; https://github.com/schomery/stylish-chrome/issues/13#issuecomment-284582600
-    fetch(url)
+  }).then(fetch)
     .then(res => res.blob())
     .then(blob => {
       const objectURL = URL.createObjectURL(blob);
       Object.assign(document.createElement('a'), {
-        download: fileName,
+        download: generateFileName(),
         href: objectURL,
         type: 'application/json',
       }).dispatchEvent(new MouseEvent('click'));
       setTimeout(() => URL.revokeObjectURL(objectURL));
     });
-  });
 
   function generateFileName() {
     const today = new Date();
