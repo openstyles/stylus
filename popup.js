@@ -334,6 +334,7 @@ Object.assign(handleEvent, {
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
+      this.oncontextmenu = event => event.preventDefault();
       event.preventDefault();
       return;
     }
