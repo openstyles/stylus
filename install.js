@@ -3,9 +3,6 @@
 document.addEventListener('stylishUpdateChrome', onUpdateClicked);
 document.addEventListener('stylishInstallChrome', onInstallClicked);
 
-new MutationObserver(waitForBody)
-  .observe(document.documentElement, {childList: true});
-
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
   if (msg.method == 'ping') {
@@ -13,22 +10,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-
-function waitForBody() {
-  if (!document.body) {
-    return;
+new MutationObserver((mutations, observer) => {
+  if (document.body) {
+    observer.disconnect();
+    chrome.runtime.sendMessage({
+      method: 'getStyles',
+      url: getMeta('stylish-id-url') || location.href
+    }, checkUpdatability);
   }
-  this.disconnect();
-
-  rebrand([{addedNodes: [document.body]}]);
-  new MutationObserver(rebrand)
-    .observe(document.body, {childList: true, subtree: true});
-
-  chrome.runtime.sendMessage({
-    method: 'getStyles',
-    url: getMeta('stylish-id-url') || location.href
-  }, checkUpdatability);
-}
+}).observe(document.documentElement, {childList: true});
 
 
 function checkUpdatability([installedStyle]) {
@@ -133,31 +123,6 @@ function getResource(url) {
 }
 
 
-function rebrand(mutations, observer) {
-  /* stylish to stylus; https://github.com/schomery/stylish-chrome/issues/12 */
-  if (!document.getElementById('hidden-meta') && document.readyState == 'loading') {
-    return;
-  }
-  observer.disconnect();
-  const elements = document.getElementsByClassName('install-status');
-  for (let i = elements.length; --i >= 0;) {
-    const walker = document.createTreeWalker(elements[i], NodeFilter.SHOW_TEXT);
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const text = node.nodeValue;
-      const parent = node.parentNode;
-      const extensionHelp = /stylish_chrome/.test(parent.href);
-      if (text.includes('Stylish') && (parent.localName != 'a' || extensionHelp)) {
-        node.nodeValue = text.replace(/Stylish/g, 'Stylus');
-      }
-      if (extensionHelp) {
-        parent.href = 'http://add0n.com/stylus.html';
-      }
-    }
-  }
-}
-
-
 function styleSectionsEqual({sections: a}, {sections: b}) {
   if (!a || !b) {
     return undefined;
@@ -236,13 +201,12 @@ function orphanCheck() {
     'checkUpdatability',
     'getMeta',
     'getResource',
+    'onDOMready',
     'onInstallClicked',
     'onUpdateClicked',
     'orphanCheck',
-    'rebrand',
     'saveStyleCode',
     'sendEvent',
     'styleSectionsEqual',
-    'waitForBody',
   ].forEach(fn => (window[fn] = null));
 }
