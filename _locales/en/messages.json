@@ -663,6 +663,9 @@
   "optionsUpdateIntervalNote": {
     "message": "To disable the automatic userstyle update checks, set interval to 0"
   },
+  "optionsUpdateImportNote": {
+    "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
+  },
   "optionsCustomizeBadge": {
     "message": "Badge on the toolbar icon"
   },

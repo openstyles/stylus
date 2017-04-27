@@ -99,6 +99,11 @@ input[type=number]:invalid {
   color: darkred;
 }
 
+input[type="color"] {
+  box-sizing: border-box;
+  height: 2em;
+}
+
 [data-cmd="check-updates"] button {
   position: relative;
 }
@@ -152,17 +157,18 @@ input[type=number]:invalid {
   margin-bottom: 1ex;
 }
 
-input[type="color"] {
-  box-sizing: border-box;
-  height: 2em;
-}
-
 #notes a {
   color: inherit;
 }
 
 #notes a:hover {
   color: black;
+}
+
+#notes p {
+  line-height: 1.25;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
 }
 
 @keyframes fadeinout {
