@@ -132,19 +132,17 @@ var updater = {
     let queue = [];
     let lastWriteTime = 0;
     return text => {
-      queue.push(text);
+      queue.push({text, time: new Date().toLocaleString()});
       debounce(flushQueue, 1e3);
     };
     function flushQueue() {
       chromeLocal.getValue('updateLog').then((lines = []) => {
-        // our XHR timeout is 10 seconds
-        const time = performance.now() - lastWriteTime > 11e3
-          ? new Date().toLocaleString() + '\t'
-          : '';
+        const time = Date.now() - lastWriteTime > 11e3 ? queue[0].time + ' ' : '';
         lines.splice(0, lines.length - 1000);
-        lines.push(...queue.map(item => item ? time + item : ''));
+        lines.push(time + queue[0].text);
+        lines.push(...queue.slice(1).map(item => item.text));
         chromeLocal.setValue('updateLog', lines);
-        lastWriteTime = performance.now();
+        lastWriteTime = Date.now();
         queue = [];
       });
     }
