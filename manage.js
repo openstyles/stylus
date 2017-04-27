@@ -104,9 +104,10 @@ function showStyles(styles = []) {
     .map(style => ({name: style.name.toLocaleLowerCase(), style}))
     .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
   let index = 0;
-  const shouldRenderAll = (history.state || {}).scrollY > window.innerHeight;
+  const scrollY = (history.state || {}).scrollY;
+  const shouldRenderAll = scrollY > window.innerHeight;
   const renderBin = document.createDocumentFragment();
-  if (shouldRenderAll) {
+  if (scrollY) {
     renderStyles();
   } else {
     requestAnimationFrame(renderStyles);
