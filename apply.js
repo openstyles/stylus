@@ -7,6 +7,7 @@ var ID_PREFIX = 'stylus-';
 var ROOT = document.documentElement;
 var isOwnPage = location.href.startsWith('chrome-extension:');
 var disableAll = false;
+var exposeIframes = false;
 var styleElements = new Map();
 var disabledElements = new Map();
 var retiredStyleTimers = new Map();
@@ -94,6 +95,9 @@ function applyOnMessage(request, sender, sendResponse) {
       if ('disableAll' in request.prefs) {
         doDisableAll(request.prefs.disableAll);
       }
+      if ('exposeIframes' in request.prefs) {
+        doExposeIframes(request.prefs.exposeIframes);
+      }
       break;
 
     case 'ping':
@@ -103,7 +107,7 @@ function applyOnMessage(request, sender, sendResponse) {
 }
 
 
-function doDisableAll(disable) {
+function doDisableAll(disable = disableAll) {
   if (!disable === !disableAll) {
     return;
   }
@@ -114,6 +118,20 @@ function doDisableAll(disable) {
       stylesheet.disabled = disable;
     }
   });
+}
+
+
+function doExposeIframes(state = exposeIframes) {
+  if (state === exposeIframes || window == parent) {
+    return;
+  }
+  exposeIframes = state;
+  const attr = document.documentElement.getAttribute('stylus-iframe');
+  if (state && attr != '') {
+    document.documentElement.setAttribute('stylus-iframe', '');
+  } else if (!state && attr == '') {
+    document.documentElement.removeAttribute('stylus-iframe');
+  }
 }
 
 
@@ -168,6 +186,10 @@ function applyStyles(styles) {
   if ('disableAll' in styles) {
     doDisableAll(styles.disableAll);
     delete styles.disableAll;
+  }
+  if ('exposeIframes' in styles) {
+    doExposeIframes(styles.exposeIframes);
+    delete styles.exposeIframes;
   }
   if (document.head
   && document.head.firstChild

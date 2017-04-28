@@ -8,6 +8,7 @@ var prefs = new function Prefs() {
     'windowPosition': {},           // detached window position
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
+    'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
 
     'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
@@ -233,7 +234,10 @@ var prefs = new function Prefs() {
   return;
 
   function doBroadcast() {
-    const affects = {all: 'disableAll' in broadcastPrefs};
+    const affects = {
+      all: 'disableAll' in broadcastPrefs
+        || 'exposeIframes' in broadcastPrefs,
+    };
     if (!affects.all) {
       for (const key in broadcastPrefs) {
         affects.icon = affects.icon || affectsIcon.includes(key);

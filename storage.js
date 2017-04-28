@@ -130,7 +130,10 @@ function filterStyles({
   && asHash != true) {
     return cachedStyles.list;
   }
-  const disableAll = asHash && prefs.get('disableAll', false);
+  const blankHash = asHash && {
+    disableAll: prefs.get('disableAll'),
+    exposeIframes: prefs.get('exposeIframes'),
+  };
 
   if (matchUrl && matchUrl.startsWith(URLS.chromeWebStore)) {
     // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
@@ -145,7 +148,7 @@ function filterStyles({
     cached.hits++;
     cached.lastHit = Date.now();
     return asHash
-      ? Object.assign({disableAll}, cached.styles)
+      ? Object.assign(blankHash, cached.styles)
       : cached.styles;
   }
 
@@ -156,7 +159,7 @@ function filterStyles({
     matchUrl,
     asHash,
     strictRegexp,
-    disableAll,
+    blankHash,
     cacheKey,
   });
 }
@@ -171,7 +174,7 @@ function filterStylesInternal({
   matchUrl,
   asHash,
   strictRegexp,
-  disableAll,
+  blankHash,
   cacheKey,
 }) {
   if (matchUrl && !cachedStyles.urlDomains.has(matchUrl)) {
@@ -220,7 +223,7 @@ function filterStylesInternal({
   }
 
   return asHash
-    ? Object.assign({disableAll}, filtered)
+    ? Object.assign(blankHash, filtered)
     : filtered;
 }
 

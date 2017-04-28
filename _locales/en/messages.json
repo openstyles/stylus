@@ -655,7 +655,7 @@
     "message": "Background color when disabled"
   },
   "optionsPopupWidth": {
-    "message": "Width (in pixels)"
+    "message": "Popup width (in pixels)"
   },
   "optionsUpdateInterval": {
     "message": "Automatically check for and install all available userstyle updates (in hrs)"
@@ -675,6 +675,15 @@
   "optionsCustomizeUpdate": {
     "message": "Updates"
   },
+  "optionsAdvanced": {
+    "message": "Advanced"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Expose iframes via HTML[stylus-iframe]"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'"
+  },
   "optionsActions": {
     "message": "Actions"
   },
@@ -682,10 +691,10 @@
     "message": "Reset the options to default values"
   },
   "optionsResetButton": {
-    "message": "Reset"
+    "message": "Reset options"
   },
   "optionsOpenManager": {
-    "message": "Open styles manager"
+    "message": "Manage styles"
   },
   "optionsOpenManagerNote": {
     "message": "Define a keyboard shortcut"
@@ -697,6 +706,6 @@
     "message": "Open"
   },
   "optionsCheck": {
-    "message": "Check"
+    "message": "Update styles"
   }
 }

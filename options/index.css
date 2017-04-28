@@ -37,7 +37,7 @@ body {
 
 .block:last-child {
   border-bottom: none;
-  padding-bottom: 4px;
+  padding-bottom: 0;
 }
 
 h1 {
@@ -104,6 +104,14 @@ input[type="color"] {
   height: 2em;
 }
 
+#actions {
+  justify-content: space-around;
+}
+
+#actions button {
+  width: auto;
+}
+
 [data-cmd="check-updates"] button {
   position: relative;
 }
@@ -126,7 +134,6 @@ input[type="color"] {
 #updates-installed {
   position: absolute;
   font-size: 85%;
-  right: 16px;
   margin-top: 1px;
 }
 
@@ -169,6 +176,12 @@ input[type="color"] {
   line-height: 1.25;
   margin-top: 1ex;
   margin-bottom: 1ex;
+}
+
+sup {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
 }
 
 @keyframes fadeinout {

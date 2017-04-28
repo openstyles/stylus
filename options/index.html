@@ -12,9 +12,17 @@
 
 <body>
   <div id="options">
+
     <div class="block">
       <h1 i18n-text="optionsCustomizeBadge"></h1>
       <div class="items">
+        <label>
+          <span i18n-text="prefShowBadge"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" class="onoffswitch-checkbox" id="show-badge">
+            <span class="onoffswitch-label"></span>
+          </span>
+        </label>
         <label>
           <span i18n-text="optionsBadgeNormal"></span>
           <input type="color" id="badgeNormal">
@@ -23,15 +31,9 @@
           <span i18n-text="optionsBadgeDisabled"></span>
           <input type="color" id="badgeDisabled">
         </label>
-        <label>
-          <span i18n-text="prefShowBadge"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" class="onoffswitch-checkbox" id="show-badge">
-            <span class="onoffswitch-label"></span>
-          </span>
-        </label>
       </div>
     </div>
+
     <div class="block">
       <h1 i18n-text="optionsCustomizePopup"></h1>
       <div class="items">
@@ -48,6 +50,7 @@
         </label>
       </div>
     </div>
+
     <div class="block">
       <h1 i18n-text="optionsCustomizeUpdate"></h1>
       <div class="items">
@@ -57,21 +60,27 @@
         </label>
       </div>
     </div>
+
     <div class="block">
-      <h1 i18n-text="optionsActions"></h1>
+      <h1 i18n-text="optionsAdvanced"></h1>
       <div class="items">
         <label>
-          <span i18n-text="optionsReset"></span>
-          <button data-cmd="reset" i18n-text="optionsResetButton"></button>
+          <span i18n-text="optionsAdvancedExposeIframes"> <sup>2</sup></span>
+          <span class="onoffswitch">
+            <input type="checkbox" class="onoffswitch-checkbox" id="exposeIframes">
+            <span class="onoffswitch-label" for="exposeIframes"></span>
+          </span>
         </label>
-        <label>
-          <span i18n-text="optionsOpenManager"><sup class="chromium-only">2</sup></span>
-          <button data-cmd="open-manage" i18n-text="optionsOpen"></button>
-        </label>
-        <label data-cmd="check-updates">
-          <span i18n-text="optionsCheckUpdate"></span>
-          <button i18n-text="optionsCheck"><span id="update-progress"></span></button>
-        </label>
+      </div>
+    </div>
+
+    <div class="block" id="actions">
+      <button data-cmd="reset" i18n-text="optionsResetButton" i18n-title="optionsReset"></button>
+      <button data-cmd="open-manage" i18n-text="optionsOpenManager"><sup class="chromium-only">3</sup></button>
+      <div data-cmd="check-updates">
+        <button i18n-text="optionsCheck" i18n-title="optionsCheckUpdate">
+          <span id="update-progress"></span>
+        </button>
         <div id="updates-installed" i18n-text="updatesCurrentlyInstalled"></div>
       </div>
     </div>
@@ -83,6 +92,7 @@
         <p i18n-text="optionsUpdateIntervalNote"></p>
         <p i18n-text="optionsUpdateImportNote"></p>
       </li>
+      <li i18n-text="optionsAdvancedExposeIframesNote"></li>
       <li class="chromium-only">
         <a data-cmd="open-keyboard"
            i18n-text="optionsOpenManagerNote"
