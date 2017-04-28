@@ -21,8 +21,8 @@ var updater = {
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
-    updater.checkAllStyles.running = true;
     updater.resetInterval();
+    updater.checkAllStyles.running = true;
     return getStyles({}).then(styles => {
       styles = styles.filter(style => style.updateUrl);
       observer(updater.COUNT, styles.length);
@@ -55,9 +55,9 @@ var updater = {
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
     return getStyleDigests(style)
-      .then(fetchMd5IfNotEdited)
-      .then(fetchCodeIfMd5Changed)
-      .then(saveIfUpdated)
+      .then(maybeFetchMd5)
+      .then(maybeFetchCode)
+      .then(maybeSave)
       .then(saved => {
         observer(updater.UPDATED, saved);
         updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
@@ -68,7 +68,7 @@ var updater = {
         updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
       });
 
-    function fetchMd5IfNotEdited([originalDigest, current]) {
+    function maybeFetchMd5([originalDigest, current]) {
       hasDigest = Boolean(originalDigest);
       if (hasDigest && !ignoreDigest && originalDigest != current) {
         return Promise.reject(updater.EDITED);
@@ -76,7 +76,7 @@ var updater = {
       return download(style.md5Url);
     }
 
-    function fetchCodeIfMd5Changed(md5) {
+    function maybeFetchCode(md5) {
       if (!md5 || md5.length != 32) {
         return Promise.reject(updater.ERROR_MD5);
       }
@@ -86,7 +86,7 @@ var updater = {
       return download(style.updateUrl);
     }
 
-    function saveIfUpdated(text) {
+    function maybeSave(text) {
       const json = tryJSONparse(text);
       if (!styleJSONseemsValid(json)) {
         return Promise.reject(updater.ERROR_JSON);
