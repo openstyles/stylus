@@ -226,7 +226,7 @@ function filterStylesInternal({
 
 
 function saveStyle(style) {
-  const id = Number(style.id) >= 0 ? Number(style.id) : null;
+  const id = Number(style.id) || null;
   const reason = style.reason;
   const notify = style.notify !== false;
   const styleDigest = style.styleDigest;
