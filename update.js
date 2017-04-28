@@ -21,10 +21,12 @@ var updater = {
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
+    updater.checkAllStyles.running = true;
     updater.resetInterval();
     return getStyles({}).then(styles => {
       styles = styles.filter(style => style.updateUrl);
       observer(updater.COUNT, styles.length);
+      updater.log('');
       updater.log(`${save ? 'Scheduled' : 'Manual'} update check for ${styles.length} styles`);
       return Promise.all(
         styles.map(style =>
@@ -32,6 +34,7 @@ var updater = {
     }).then(() => {
       observer(updater.DONE);
       updater.log('');
+      updater.checkAllStyles.running = false;
     });
   },
 
@@ -133,11 +136,17 @@ var updater = {
     let lastWriteTime = 0;
     return text => {
       queue.push({text, time: new Date().toLocaleString()});
-      debounce(flushQueue, 1e3);
+      debounce(flushQueue, text && updater.checkAllStyles.running ? 1e3 : 0);
     };
     function flushQueue() {
       chromeLocal.getValue('updateLog').then((lines = []) => {
         const time = Date.now() - lastWriteTime > 11e3 ? queue[0].time + ' ' : '';
+        if (!queue[0].text) {
+          queue.shift();
+          if (lines[lines.length - 1]) {
+            lines.push('');
+          }
+        }
         lines.splice(0, lines.length - 1000);
         lines.push(time + queue[0].text);
         lines.push(...queue.slice(1).map(item => item.text));
