@@ -201,11 +201,11 @@ sup {
   -ms-user-select: none;
 }
 
-.onoffswitch-checkbox {
+.onoffswitch input {
   display: none;
 }
 
-.onoffswitch-label {
+.onoffswitch span {
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -218,7 +218,7 @@ sup {
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
 }
 
-.onoffswitch-label:before {
+.onoffswitch span:before {
   content: "";
   display: block;
   width: 18px;
@@ -232,19 +232,19 @@ sup {
   box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
 }
 
-.onoffswitch-checkbox:checked + .onoffswitch-label {
+.onoffswitch input:checked + span {
   background-color: #CAEBE3;
 }
 
-.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+.onoffswitch input:checked + span, .onoffswitch input:checked + span:before {
   border-color: #CAEBE3;
 }
 
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+.onoffswitch input:checked + span .onoffswitch-inner {
   margin-left: 0;
 }
 
-.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+.onoffswitch input:checked + span:before {
   right: 0;
   background-color: #04BA9F;
   box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
