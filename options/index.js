@@ -25,7 +25,7 @@ document.onclick = e => {
       break;
 
     case 'open-keyboard':
-      openURL({url: e.target.href});
+      openURL({url: target.closest('a').href});
       e.preventDefault();
       break;
 

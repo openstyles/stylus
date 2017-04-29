@@ -389,14 +389,6 @@
     "message": "Options",
     "description": "Go to Options UI"
   },
-  "openOptionsShortcuts": {
-    "message": "Shortcuts",
-    "description": "Go to shortcut configuration"
-  },
-  "openShortcutsPopup": {
-    "message": "Shortcuts",
-    "description": "Go to shortcut configuration"
-  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."
@@ -452,6 +444,13 @@
   "sectionRemove": {
     "message": "Remove section",
     "description": "Label for the button to remove a section"
+  },
+  "shortcuts": {
+    "message": "Shortcuts",
+    "description": "Go to shortcut configuration"
+  },
+  "shortcutsNote": {
+    "message": "Define keyboard shortcuts"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",
@@ -695,9 +694,6 @@
   },
   "optionsOpenManager": {
     "message": "Manage styles"
-  },
-  "optionsOpenManagerNote": {
-    "message": "Define a keyboard shortcut"
   },
   "optionsCheckUpdate": {
     "message": "Check for and install all available updates"

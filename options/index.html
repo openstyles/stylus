@@ -76,13 +76,16 @@
 
     <div class="block" id="actions">
       <button data-cmd="reset" i18n-text="optionsResetButton" i18n-title="optionsReset"></button>
-      <button data-cmd="open-manage" i18n-text="optionsOpenManager"><sup class="chromium-only">3</sup></button>
+      <button data-cmd="open-manage" i18n-text="optionsOpenManager"></button>
       <div data-cmd="check-updates">
         <button i18n-text="optionsCheck" i18n-title="optionsCheckUpdate">
           <span id="update-progress"></span>
         </button>
         <div id="updates-installed" i18n-text="updatesCurrentlyInstalled"></div>
       </div>
+      <a data-cmd="open-keyboard" class="chromium-only" href="chrome://extensions/configureCommands">
+        <button i18n-text="shortcuts" i18n-title="shortcutsNote"></button>
+      </a>
     </div>
   </div>
 
@@ -93,11 +96,6 @@
         <p i18n-text="optionsUpdateImportNote"></p>
       </li>
       <li i18n-text="optionsAdvancedExposeIframesNote"></li>
-      <li class="chromium-only">
-        <a data-cmd="open-keyboard"
-           i18n-text="optionsOpenManagerNote"
-           href="chrome://extensions/configureCommands"></a>
-      </li>
     </ol>
   </div>
 
