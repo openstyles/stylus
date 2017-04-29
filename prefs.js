@@ -44,6 +44,7 @@ var prefs = new function Prefs() {
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected
                                       // '' (empty string) = disabled
+    'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
@@ -300,6 +301,17 @@ var prefs = new function Prefs() {
       }
     }
     return true;
+  }
+
+  function contextDeleteMissing() {
+    return (
+      // detect browsers without Delete by looking at the end of UA string
+      /Vivaldi\/[\d.]+$/.test(navigator.userAgent) ||
+      // Chrome and co.
+      /Safari\/[\d.]+$/.test(navigator.userAgent) &&
+      // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
+      !Array.from(navigator.plugins).some(p => p.name == 'Shockwave Flash')
+    );
   }
 }();
 

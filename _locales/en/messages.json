@@ -683,6 +683,9 @@
   "optionsAdvancedExposeIframesNote": {
     "message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'"
   },
+  "optionsAdvancedContextDelete": {
+    "message": "Add 'Delete' in editor context menu"
+  },
   "optionsActions": {
     "message": "Actions"
   },

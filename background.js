@@ -99,16 +99,10 @@ contextMenus = Object.assign({
     title: 'openStylesManager',
     click: browserCommands.openManage,
   },
-},
-  // detect browsers without Delete by looking at the end of UA string
-  /Vivaldi\/[\d.]+$/.test(navigator.userAgent) ||
-  // Chrome and co.
-  /Safari\/[\d.]+$/.test(navigator.userAgent) &&
-  // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
-  !Array.from(navigator.plugins).some(p => p.name == 'Shockwave Flash')
-&& {
-  'editDeleteText': {
+}, prefs.get('editor.contextDelete') && {
+  'editor.contextDelete': {
     title: 'editDeleteText',
+    type: 'normal',
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
@@ -117,25 +111,36 @@ contextMenus = Object.assign({
   }
 });
 
-for (const id of Object.keys(contextMenus)) {
-  const item = Object.assign({id}, contextMenus[id]);
-  const prefValue = prefs.readOnlyValues[id];
-  const isBoolean = typeof prefValue == 'boolean';
-  item.title = chrome.i18n.getMessage(item.title);
-  if (isBoolean) {
-    item.type = 'checkbox';
-    item.checked = prefValue;
-  }
-  if (!item.contexts) {
-    item.contexts = ['browser_action'];
-  }
-  delete item.click;
-  chrome.contextMenus.create(item, ignoreChromeError);
+{
+  const createContextMenus = (ids = Object.keys(contextMenus)) => {
+    for (const id of ids) {
+      const item = Object.assign({id}, contextMenus[id]);
+      const prefValue = prefs.readOnlyValues[id];
+      item.title = chrome.i18n.getMessage(item.title);
+      if (!item.type && typeof prefValue == 'boolean') {
+        item.type = 'checkbox';
+        item.checked = prefValue;
+      }
+      if (!item.contexts) {
+        item.contexts = ['browser_action'];
+      }
+      delete item.click;
+      chrome.contextMenus.create(item, ignoreChromeError);
+    }
+  };
+  createContextMenus();
+  prefs.subscribe((id, checked) => {
+    if (id == 'editor.contextDelete') {
+      if (checked) {
+        createContextMenus([id]);
+      } else {
+        chrome.contextMenus.remove(id, ignoreChromeError);
+      }
+    } else {
+      chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+    }
+  }, Object.keys(contextMenus).filter(key => typeof prefs.readOnlyValues[key] == 'boolean'));
 }
-
-prefs.subscribe((id, checked) => {
-  chrome.contextMenus.update(id, {checked}, ignoreChromeError);
-}, Object.keys(contextMenus));
 
 // *************************************************************************
 // [re]inject content scripts

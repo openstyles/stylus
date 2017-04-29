@@ -1234,8 +1234,8 @@ function initHooks() {
 
 
 function toggleContextMenuDelete(event) {
-	if (event.button == 2) {
-		chrome.contextMenus.update('editDeleteText', {
+	if (event.button == 2 && prefs.get('editor.contextDelete')) {
+		chrome.contextMenus.update('editor.contextDelete', {
 			enabled: Boolean(
 				this.selectionStart != this.selectionEnd ||
 				this.somethingSelected && this.somethingSelected()
