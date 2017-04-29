@@ -19,7 +19,7 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  width: calc(16px + 100px + 8px + 240px + 8px + 80px + 4px + 16px);
+  width: calc(16px + 100px + 8px + 260px + 8px + 60px + 4px + 16px);
 }
 
 .firefox .chromium-only {
@@ -61,7 +61,7 @@ label > * {
 }
 
 label > :first-child {
-  width: 240px;
+  width: 260px;
   white-space: normal;
   margin-right: 8px;
 }
@@ -78,7 +78,7 @@ button,
 input[type=number],
 input[type="color"],
 .onoffswitch {
-  width: 80px;
+  width: 60px;
   box-sizing: border-box;
 }
 
@@ -106,10 +106,13 @@ input[type="color"] {
 
 #actions {
   justify-content: space-around;
+  align-items: stretch;
+  padding-right: 8px;
 }
 
 #actions button {
   width: auto;
+  margin-right: 8px;
 }
 
 [data-cmd="check-updates"] button {
@@ -227,7 +230,7 @@ sup {
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 56px;
+  right: 46px;
   border-radius: 18px;
   box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
 }
