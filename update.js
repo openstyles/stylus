@@ -136,7 +136,7 @@ var updater = {
     let lastWriteTime = 0;
     return text => {
       queue.push({text, time: new Date().toLocaleString()});
-      debounce(flushQueue, text && updater.checkAllStyles.running ? 1e3 : 0);
+      debounce(flushQueue, text && updater.checkAllStyles.running ? 1000 : 0);
     };
     function flushQueue() {
       chromeLocal.getValue('updateLog').then((lines = []) => {
