@@ -354,7 +354,7 @@ Object.assign(handleEvent, {
   },
 
   loadFavicons(container = document.body) {
-    for (const img of container.getElementsByTagName('img')) {
+    for (const img of $$('img', container)) {
       if (img.dataset.src) {
         img.src = img.dataset.src;
         delete img.dataset.src;
