@@ -1,246 +1,407 @@
-/* globals configureCommands */
+'use strict';
 
-var writeStyleTemplate = document.createElement("a");
-writeStyleTemplate.className = "write-style-link";
+let installed;
+let tabURL;
+const handleEvent = {};
 
-var installed = document.getElementById("installed");
+getActiveTabRealURL().then(url => {
+  tabURL = URLS.supported.test(url) ? url : '';
+  Promise.all([
+    tabURL && getStylesSafe({matchUrl: tabURL}),
+    onDOMready().then(() => {
+      initPopup(tabURL);
+    }),
+  ]).then(([styles]) => {
+    showStyles(styles);
+  });
+});
 
-if (!prefs.get("popup.stylesFirst")) {
-	document.body.insertBefore(document.querySelector("body > .actions"), installed);
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+function onRuntimeMessage(msg) {
+  switch (msg.method) {
+    case 'styleAdded':
+    case 'styleUpdated':
+      handleUpdate(msg.style);
+      break;
+    case 'styleDeleted':
+      handleDelete(msg.id);
+      break;
+    case 'prefChanged':
+      if ('popup.stylesFirst' in msg.prefs) {
+        const stylesFirst = msg.prefs['popup.stylesFirst'];
+        const actions = $('body > .actions');
+        const before = stylesFirst ? actions : actions.nextSibling;
+        document.body.insertBefore(installed, before);
+      } else if ('popupWidth' in msg.prefs) {
+        setPopupWidth(msg.prefs.popupWidth);
+      }
+      break;
+  }
 }
 
-getActiveTabRealURL(updatePopUp);
 
-function updatePopUp(url) {
-	var urlWillWork = /^(file|http|https|ftps?|chrome\-extension):/.exec(url);
-	if (!urlWillWork) {
-		document.body.classList.add("blocked");
-		document.getElementById("unavailable").style.display = "flex";
-		return;
-	}
-
-	chrome.runtime.sendMessage({method: "getStyles", matchUrl: url}, showStyles);
-	document.querySelector("#find-styles a").href = "https://userstyles.org/styles/browse/all/" + encodeURIComponent("file" === urlWillWork[1] ? "file:" : url);
-
-	// Write new style links
-	var writeStyleLinks = [],
-	    container = document.createElement('span');
-	container.id = "match";
-
-	// For this URL
-	var urlLink = writeStyleTemplate.cloneNode(true);
-	urlLink.href = "edit.html?url-prefix=" + encodeURIComponent(url);
-	urlLink.appendChild(document.createTextNode( // switchable; default="this&nbsp;URL"
-		!prefs.get("popup.breadcrumbs.usePath")
-		? t("writeStyleForURL").replace(/ /g, "\u00a0")
-		: /\/\/[^/]+\/(.*)/.exec(url)[1]
-	));
-	urlLink.title = "url-prefix(\"$\")".replace("$", url);
-	writeStyleLinks.push(urlLink);
-	document.querySelector("#write-style").appendChild(urlLink)
-	if (prefs.get("popup.breadcrumbs")) { // switchable; default=enabled
-		urlLink.addEventListener("mouseenter", function(event) { this.parentNode.classList.add("url()") }, false);
-		urlLink.addEventListener("focus", function(event) { this.parentNode.classList.add("url()") }, false);
-		urlLink.addEventListener("mouseleave", function(event) { this.parentNode.classList.remove("url()") }, false);
-		urlLink.addEventListener("blur", function(event) { this.parentNode.classList.remove("url()") }, false);
-	}
-
-	// For domain
-	var domains = getDomains(url)
-	domains.forEach(function(domain) {
-		// Don't include TLD
-		if (domains.length > 1 && domain.indexOf(".") == -1) {
-			return;
-		}
-		var domainLink = writeStyleTemplate.cloneNode(true);
-		domainLink.href = "edit.html?domain=" + encodeURIComponent(domain);
-		domainLink.appendChild(document.createTextNode(domain));
-		domainLink.title = "domain(\"$\")".replace("$", domain);
-		domainLink.setAttribute("subdomain", domain.substring(0, domain.indexOf(".")));
-		writeStyleLinks.push(domainLink);
-	});
-
-	var writeStyle = document.querySelector("#write-style");
-	writeStyleLinks.forEach(function(link, index) {
-		link.addEventListener("click", openLinkInTabOrWindow, false);
-		container.appendChild(link);
-	});
-	if (prefs.get("popup.breadcrumbs")) {
-		container.classList.add("breadcrumbs");
-		container.appendChild(container.removeChild(container.firstChild));
-	}
-	writeStyle.appendChild(container);
+function setPopupWidth(width = prefs.get('popupWidth')) {
+  document.body.style.width =
+    Math.max(200, Math.min(800, width)) + 'px';
 }
+
+
+function initPopup(url) {
+  installed = $('#installed');
+
+  setPopupWidth();
+
+  // force Chrome to resize the popup
+  if (!FIREFOX) {
+    document.body.style.height = '10px';
+    document.documentElement.style.height = '10px';
+  }
+
+  // action buttons
+  $('#disableAll').onchange = function() {
+    installed.classList.toggle('disabled', this.checked);
+  };
+  setupLivePrefs();
+
+  $('#find-styles-link').onclick = handleEvent.openURLandHide;
+  $('#popup-manage-button').onclick = handleEvent.openURLandHide;
+
+  $('#popup-options-button').onclick = () => {
+    chrome.runtime.openOptionsPage();
+    window.close();
+  };
+
+  const shortcutsButton = $('#popup-shortcuts-button');
+  shortcutsButton.dataset.href = URLS.configureCommands;
+  shortcutsButton.onclick = handleEvent.openURLandHide;
+
+  if (!prefs.get('popup.stylesFirst')) {
+    document.body.insertBefore(
+      $('body > .actions'),
+      installed);
+  }
+
+  // find styles link
+  $('#find-styles a').href =
+    'https://userstyles.org/styles/browse/all/' +
+    encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
+
+  if (!url) {
+    document.body.classList.add('blocked');
+    return;
+  }
+
+  getActiveTab().then(tab => {
+    chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
+      if (pong === undefined) {
+        document.body.classList.add('unreachable');
+      }
+    });
+  });
+
+  // Write new style links
+  const writeStyle = $('#write-style');
+  const matchTargets = document.createElement('span');
+  const matchWrapper = document.createElement('span');
+  matchWrapper.id = 'match';
+  matchWrapper.appendChild(matchTargets);
+
+  // For this URL
+  const urlLink = template.writeStyle.cloneNode(true);
+  Object.assign(urlLink, {
+    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
+    title: `url-prefix("${url}")`,
+    textContent: prefs.get('popup.breadcrumbs.usePath')
+      ? new URL(url).pathname.slice(1)
+      : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+    onclick: handleEvent.openLink,
+  });
+  if (prefs.get('popup.breadcrumbs')) {
+    urlLink.onmouseenter =
+      urlLink.onfocus = () => urlLink.parentNode.classList.add('url()');
+    urlLink.onmouseleave =
+      urlLink.onblur = () => urlLink.parentNode.classList.remove('url()');
+  }
+  matchTargets.appendChild(urlLink);
+
+  // For domain
+  const domains = BG.getDomains(url);
+  for (const domain of domains) {
+    // Don't include TLD
+    if (domains.length > 1 && !domain.includes('.')) {
+      continue;
+    }
+    const domainLink = template.writeStyle.cloneNode(true);
+    Object.assign(domainLink, {
+      href: 'edit.html?domain=' + encodeURIComponent(domain),
+      textContent: domain,
+      title: `domain("${domain}")`,
+      onclick: handleEvent.openLink,
+    });
+    domainLink.setAttribute('subdomain', domain.substring(0, domain.indexOf('.')));
+    matchTargets.appendChild(domainLink);
+  }
+
+  if (prefs.get('popup.breadcrumbs')) {
+    matchTargets.classList.add('breadcrumbs');
+    matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
+  }
+  writeStyle.appendChild(matchWrapper);
+}
+
 
 function showStyles(styles) {
-	var enabledFirst = prefs.get("popup.enabledFirst");
-	styles.sort(function(a, b) {
-		if (enabledFirst && a.enabled !== b.enabled) return !(a.enabled < b.enabled) ? -1 : 1;
-		return a.name.localeCompare(b.name);
-	});
-	if (styles.length == 0) {
-		installed.innerHTML = "<div class='entry' id='no-styles'>" + t('noStylesForSite') + "</div>";
-	}
-	styles.map(createStyleElement).forEach(function(e) {
-		installed.appendChild(e);
-	});
-	// force Chrome to resize the popup
-	document.body.style.height = '10px';
-	document.documentElement.style.height = '10px';
+  if (!styles) {
+    return;
+  }
+  if (!styles.length) {
+    installed.innerHTML = template.noStyles.outerHTML;
+    return;
+  }
+
+  const enabledFirst = prefs.get('popup.enabledFirst');
+  styles.sort((a, b) => (
+    enabledFirst && a.enabled !== b.enabled
+      ? !(a.enabled < b.enabled) ? -1 : 1
+      : a.name.localeCompare(b.name)
+  ));
+
+  let postponeDetect = false;
+  const t0 = performance.now();
+  const container = document.createDocumentFragment();
+  for (const style of styles) {
+    createStyleElement({style, container, postponeDetect});
+    postponeDetect = postponeDetect || performance.now() - t0 > 100;
+  }
+  installed.appendChild(container);
+
+  getStylesSafe({matchUrl: tabURL, strictRegexp: false})
+    .then(unscreenedStyles => {
+      for (const unscreened of unscreenedStyles) {
+        if (!styles.includes(unscreened)) {
+          postponeDetect = postponeDetect || performance.now() - t0 > 100;
+          createStyleElement({
+            style: Object.assign({appliedSections: [], postponeDetect}, unscreened),
+          });
+        }
+      }
+    });
 }
 
-function createStyleElement(style) {
-	var e = template.style.cloneNode(true);
-	var checkbox = e.querySelector(".checker");
-	checkbox.id = "style-" + style.id;
-	checkbox.checked = style.enabled;
 
-	e.setAttribute("class", "entry " + (style.enabled ? "enabled" : "disabled"));
-	e.setAttribute("style-id", style.id);
-	var styleName = e.querySelector(".style-name");
-	styleName.appendChild(document.createTextNode(style.name));
-	styleName.setAttribute("for", "style-" + style.id);
-	styleName.checkbox = checkbox;
-	var editLink = e.querySelector(".style-edit-link");
-	editLink.setAttribute("href", editLink.getAttribute("href") + style.id);
-	editLink.addEventListener("click", openLinkInTabOrWindow, false);
+function createStyleElement({
+  style,
+  container = installed,
+  postponeDetect,
+}) {
+  const entry = template.style.cloneNode(true);
+  entry.setAttribute('style-id', style.id);
+  Object.assign(entry, {
+    id: 'style-' + style.id,
+    styleId: style.id,
+    className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
+    onmousedown: handleEvent.maybeEdit,
+  });
 
-	styleName.addEventListener("click", function() { this.checkbox.click(); event.preventDefault(); });
-	// clicking the checkbox will toggle it, and this will run after that happens
-	checkbox.addEventListener("click", function() { enable(event, event.target.checked); }, false);
-	e.querySelector(".enable").addEventListener("click", function() { enable(event, true); }, false);
-	e.querySelector(".disable").addEventListener("click", function() { enable(event, false); }, false);
+  const checkbox = $('.checker', entry);
+  Object.assign(checkbox, {
+    id: 'style-' + style.id,
+    checked: style.enabled,
+    onclick: handleEvent.toggle,
+  });
 
-	e.querySelector(".delete").addEventListener("click", function() { doDelete(event, false); }, false);
-	return e;
+  const editLink = $('.style-edit-link', entry);
+  Object.assign(editLink, {
+    href: editLink.getAttribute('href') + style.id,
+    onclick: handleEvent.openLink,
+  });
+
+  const styleName = $('.style-name', entry);
+  Object.assign(styleName, {
+    htmlFor: 'style-' + style.id,
+    onclick: handleEvent.name,
+  });
+  styleName.checkbox = checkbox;
+  styleName.appendChild(document.createTextNode(style.name));
+
+  $('.enable', entry).onclick = handleEvent.toggle;
+  $('.disable', entry).onclick = handleEvent.toggle;
+  $('.delete', entry).onclick = handleEvent.delete;
+
+  if (postponeDetect) {
+    setTimeout(detectSloppyRegexps, 0, {entry, style});
+  } else {
+    detectSloppyRegexps({entry, style});
+  }
+
+  const oldElement = $('#style-' + style.id);
+  if (oldElement) {
+    oldElement.parentNode.replaceChild(entry, oldElement);
+  } else {
+    container.appendChild(entry);
+  }
 }
 
-function enable(event, enabled) {
-	var id = getId(event);
-	enableStyle(id, enabled);
-}
 
-function doDelete() {
-	document.getElementById('confirm').dataset.display = true;
-	let id = getId(event);
-	document.querySelector('#confirm b').textContent =
-		document.querySelector(`[style-id="${id}"] label`).textContent;
-	document.getElementById('confirm').dataset.id = id;
+Object.assign(handleEvent, {
 
-}
-document.getElementById('confirm').addEventListener('click', e => {
-	let cmd = e.target.dataset.cmd;
-	if (cmd === 'ok') {
-		deleteStyle(document.getElementById('confirm').dataset.id, () => {
-			// update view with 'No styles installed for this site' message
-			if (document.getElementById('installed').children.length === 0) {
-				showStyles([]);
-			}
-		});
-	}
-	//
-	if (cmd) {
-		document.getElementById('confirm').dataset.display = false;
-	}
+  getClickedStyleId(event) {
+    return (handleEvent.getClickedStyleElement(event) || {}).styleId;
+  },
+
+  getClickedStyleElement(event) {
+    return event.target.closest('.entry');
+  },
+
+  name(event) {
+    this.checkbox.click();
+    event.preventDefault();
+  },
+
+  toggle(event) {
+    saveStyleSafe({
+      id: handleEvent.getClickedStyleId(event),
+      enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
+    });
+  },
+
+  delete(event) {
+    const id = handleEvent.getClickedStyleId(event);
+    const box = $('#confirm');
+    box.dataset.display = true;
+    box.style.cssText = '';
+    $('b', box).textContent = (BG.cachedStyles.byId.get(id) || {}).name;
+    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    window.onkeydown = event => {
+      const keyCode = event.keyCode || event.which;
+      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+      && (keyCode == 13 || keyCode == 27)) {
+        event.preventDefault();
+        confirm(keyCode == 13);
+      }
+    };
+    function confirm(ok) {
+      window.onkeydown = null;
+      animateElement(box, {className: 'lights-on'})
+        .then(() => (box.dataset.display = false));
+      if (ok) {
+        deleteStyleSafe({id}).then(() => {
+          // update view with 'No styles installed for this site' message
+          if (!installed.children.length) {
+            showStyles([]);
+          }
+        });
+      }
+    }
+  },
+
+  indicator(event) {
+    const entry = handleEvent.getClickedStyleElement(event);
+    const info = template.regexpProblemExplanation.cloneNode(true);
+    $$('#' + info.id).forEach(el => el.remove());
+    $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
+    $$('button', info).forEach(el => (el.onclick = handleEvent.closeExplanation));
+    entry.appendChild(info);
+  },
+
+  closeExplanation() {
+    $('#regexp-explanation').remove();
+  },
+
+  openLink(event) {
+    if (!prefs.get('openEditInWindow', false)) {
+      handleEvent.openURLandHide.call(this, event);
+      return;
+    }
+    event.preventDefault();
+    chrome.windows.create(
+      Object.assign({
+        url: this.href
+      }, prefs.get('windowPosition', {}))
+    );
+    close();
+  },
+
+  maybeEdit(event) {
+    if (!(
+      event.button == 0 && (event.ctrlKey || event.metaKey) ||
+      event.button == 1 ||
+      event.button == 2)) {
+      return;
+    }
+    // open an editor on middleclick
+    if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+      this.onmouseup = () => $('.style-edit-link', this).click();
+      this.oncontextmenu = event => event.preventDefault();
+      event.preventDefault();
+      return;
+    }
+    // prevent the popup being opened in a background tab
+    // when an irrelevant link was accidentally clicked
+    if (event.target.closest('a')) {
+      event.preventDefault();
+      return;
+    }
+  },
+
+  openURLandHide(event) {
+    event.preventDefault();
+    openURL({url: this.href || this.dataset.href})
+      .then(window.close);
+  },
 });
 
-function getBrowser() {
-	if (navigator.userAgent.indexOf("OPR") > -1) {
-		return "Opera";
-	}
-	return "Chrome";
-}
-
-function getId(event) {
-	var e = event.target;
-	while (e) {
-		if (e.hasAttribute("style-id")) {
-			return e.getAttribute("style-id");
-		}
-		e = e.parentNode;
-	}
-	return null;
-}
-
-function openLinkInTabOrWindow(event) {
-	event.preventDefault();
-	if (prefs.get("openEditInWindow", false)) {
-		var options = {url: event.target.href}
-		var wp = prefs.get("windowPosition", {});
-		for (var k in wp) options[k] = wp[k];
-		chrome.windows.create(options);
-	} else {
-		openLink(event);
-	}
-	close();
-}
-
-function openLink(event) {
-	event.preventDefault();
-	chrome.runtime.sendMessage({method: "openURL", url: event.target.href});
-	close();
-}
 
 function handleUpdate(style) {
-	var styleElement = installed.querySelector("[style-id='" + style.id + "']");
-	if (styleElement) {
-		installed.replaceChild(createStyleElement(style), styleElement);
-	} else {
-		getActiveTabRealURL(function(url) {
-			if (chrome.extension.getBackgroundPage().getApplicableSections(style, url).length) {
-				// a new style for the current url is installed
-				document.getElementById("unavailable").style.display = "none";
-				installed.appendChild(createStyleElement(style));
-			}
-		});
-	}
+  if ($('#style-' + style.id)) {
+    createStyleElement({style});
+    return;
+  }
+  // Add an entry when a new style for the current url is installed
+  if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
+    document.body.classList.remove('blocked');
+    createStyleElement({style});
+  }
 }
+
 
 function handleDelete(id) {
-	var styleElement = installed.querySelector("[style-id='" + id + "']");
-	if (styleElement) {
-		installed.removeChild(styleElement);
-	}
+  $$('#style-' + id).forEach(el => el.remove());
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (request.method == "updatePopup") {
-		switch (request.reason) {
-			case "styleAdded":
-			case "styleUpdated":
-				handleUpdate(request.style);
-				break;
-			case "styleDeleted":
-				handleDelete(request.id);
-				break;
-		}
-	}
-});
 
-["find-styles-link"].forEach(function(id) {
-	document.getElementById(id).addEventListener("click", openLink, false);
-});
+/*
+  According to CSS4 @document specification the entire URL must match.
+  Stylish-for-Chrome implemented it incorrectly since the very beginning.
+  We'll detect styles that abuse the bug by finding the sections that
+  would have been applied by Stylish but not by us as we follow the spec.
+  Additionally we'll check for invalid regexps.
+*/
+function detectSloppyRegexps({entry, style}) {
+  const {
+    appliedSections =
+      BG.getApplicableSections({style, matchUrl: tabURL}),
+    wannabeSections =
+      BG.getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
+  } = style;
 
-document.getElementById("disableAll").addEventListener("change", function(event) {
-	installed.classList.toggle("disabled", prefs.get("disableAll"));
-});
-setupLivePrefs(["disableAll"]);
+  BG.compileStyleRegExps({style, compileAll: true});
+  entry.hasInvalidRegexps = wannabeSections.some(section =>
+    section.regexps.some(rx => !BG.cachedStyles.regexps.has(rx)));
+  entry.sectionsSkipped = wannabeSections.length - appliedSections.length;
 
-document.querySelector('#popup-manage-button').addEventListener("click", function() {
-    window.open(chrome.runtime.getURL('manage.html'));
-});
-
-document.querySelector('#popup-options-button').addEventListener("click", function() {
-    if (chrome.runtime.openOptionsPage) {
-        // Supported (Chrome 42+)
-        chrome.runtime.openOptionsPage();
-    } else {
-        // Fallback
-        window.open(chrome.runtime.getURL('options/index.html'));
-    }
-});
-
-document.querySelector('#popup-shortcuts-button').addEventListener("click", configureCommands.open);
-
-// popup width
-document.body.style.width = (localStorage.getItem('popupWidth') || '246') + 'px';
+  if (!appliedSections.length) {
+    entry.classList.add('not-applied');
+    $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
+  }
+  if (entry.sectionsSkipped || entry.hasInvalidRegexps) {
+    entry.classList.toggle('regexp-partial', entry.sectionsSkipped);
+    entry.classList.toggle('regexp-invalid', entry.hasInvalidRegexps);
+    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    indicator.appendChild(document.createTextNode(entry.sectionsSkipped || '!'));
+    indicator.onclick = handleEvent.indicator;
+    $('.main-controls', entry).appendChild(indicator);
+  }
+}

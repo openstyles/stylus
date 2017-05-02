@@ -1,4 +1,5 @@
-/* globals stringAsRegExp */
+/* eslint no-tabs: 0, no-var: 0, indent: [2, tab, {VariableDeclarator: 0, SwitchCase: 1}], quotes: 0 */
+/* global CodeMirror */
 "use strict";
 
 var styleId = null;
@@ -10,6 +11,9 @@ var useHistoryBack;   // use browser history back when "back to manage" is click
 // direct & reverse mapping of @-moz-document keywords and internal property names
 var propertyToCss = {urls: "url", urlPrefixes: "url-prefix", domains: "domain", regexps: "regexp"};
 var CssToProperty = {"url": "urls", "url-prefix": "urlPrefixes", "domain": "domains", "regexp": "regexps"};
+
+// if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
+onBackgroundReady();
 
 // make querySelectorAll enumeration code readable
 ["forEach", "some", "indexOf", "map"].forEach(function(method) {
@@ -29,9 +33,21 @@ Array.prototype.rotate = function(amount) { // negative amount == rotate left
 	var r = this.slice(-amount, this.length);
 	Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
 	return r;
-}
+};
 
 Object.defineProperty(Array.prototype, "last", {get: function() { return this[this.length - 1]; }});
+
+// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
+new MutationObserver((mutations, observer) => {
+	const themeElement = document.getElementById("cm-theme");
+	if (themeElement) {
+		themeElement.href = prefs.get("editor.theme") == "default" ? ""
+			: "codemirror/theme/" + prefs.get("editor.theme") + ".css";
+		observer.disconnect();
+	}
+}).observe(document, {subtree: true, childList: true});
+
+getCodeMirrorThemes();
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
 var hotkeyRerouter = {
@@ -130,6 +146,11 @@ function initCodeMirror() {
 	var CM = CodeMirror;
 	var isWindowsOS = navigator.appVersion.indexOf("Windows") > 0;
 
+	// CodeMirror miserably fails on keyMap="" so let's ensure it's not
+	if (!prefs.get('editor.keyMap')) {
+		prefs.reset('editor.keyMap');
+	}
+
 	// default option values
 	Object.assign(CM.defaults, {
 		mode: 'css',
@@ -138,6 +159,7 @@ function initCodeMirror() {
 		foldGutter: true,
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
+		highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
 		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
@@ -229,38 +251,30 @@ function initCodeMirror() {
 		return this.display.wrapper.parentNode;
 	};
 
-	// preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
-	var theme = prefs.get("editor.theme");
-	document.getElementById("cm-theme").href = theme == "default" ? "" : "codemirror/theme/" + theme + ".css";
-
 	// initialize global editor controls
-	document.addEventListener("DOMContentLoaded", function() {
-		function optionsHtmlFromArray(options) {
-			return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
-		}
-		var themeControl = document.getElementById("editor.theme");
-		var bg = chrome.extension.getBackgroundPage();
-		if (bg && bg.codeMirrorThemes) {
-			themeControl.innerHTML = optionsHtmlFromArray(bg.codeMirrorThemes);
-		} else {
-			// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-			themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
-			getCodeMirrorThemes(function(themes) {
-				themeControl.innerHTML = optionsHtmlFromArray(themes);
-				themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
-			});
-		}
-		document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
-		document.getElementById("options").addEventListener("change", acmeEventListener, false);
-		setupLivePrefs(
-			document.querySelectorAll("#options *[data-option][id^='editor.']")
-				.map(function(option) { return option.id })
-		);
-	});
+	function optionsHtmlFromArray(options) {
+		return options.map(function(opt) { return "<option>" + opt + "</option>"; }).join("");
+	}
+	var themeControl = document.getElementById("editor.theme");
+	const themeList = localStorage.codeMirrorThemes;
+	if (themeList) {
+		themeControl.innerHTML = optionsHtmlFromArray(themeList.split(/\s+/));
+	} else {
+		// Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
+		const theme = prefs.get("editor.theme");
+		themeControl.innerHTML = optionsHtmlFromArray([theme == "default" ? t("defaultTheme") : theme]);
+		getCodeMirrorThemes().then(() => {
+			const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
+			themeControl.innerHTML = optionsHtmlFromArray(themes);
+			themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
+		});
+	}
+	document.getElementById("editor.keyMap").innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+	document.getElementById("options").addEventListener("change", acmeEventListener, false);
+	setupLivePrefs();
 
 	hotkeyRerouter.setState(true);
 }
-initCodeMirror();
 
 function acmeEventListener(event) {
 	var el = event.target;
@@ -287,7 +301,7 @@ function acmeEventListener(event) {
 				el.selectedIndex = 0;
 				break;
 			}
-			var url = chrome.extension.getURL("codemirror/theme/" + value + ".css");
+			var url = chrome.runtime.getURL("codemirror/theme/" + value + ".css");
 			if (themeLink.href == url) { // preloaded in initCodeMirror()
 				break;
 			}
@@ -302,13 +316,23 @@ function acmeEventListener(event) {
 				}, 100);
 			})();
 			return;
+		case "highlightSelectionMatches":
+			switch (value) {
+				case 'token':
+				case 'selection':
+					document.body.dataset[option] = value;
+					value = {showToken: value == 'token' && /[#.\-\w]/, annotateScrollbar: true};
+					break;
+				default:
+					value = null;
+			}
 	}
 	CodeMirror.setOption(option, value);
 }
 
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
-	var cm = CodeMirror.fromTextArea(textarea);
+	var cm = CodeMirror.fromTextArea(textarea, {lint: null});
 
 	cm.on("change", indicateCodeChange);
 	cm.on("blur", function(cm) {
@@ -324,6 +348,7 @@ function setupCodeMirror(textarea, index) {
 		hotkeyRerouter.setState(false);
 		cm.display.wrapper.classList.add("CodeMirror-active");
 	});
+	cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
 
 	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
 	resizeGrip.className = "resize-grip";
@@ -395,6 +420,10 @@ document.addEventListener("wheel", function(event) {
 chrome.tabs.query({currentWindow: true}, function(tabs) {
 	var windowId = tabs[0].windowId;
 	if (prefs.get("openEditInWindow")) {
+		if (sessionStorage.saveSizeOnClose && 'left' in prefs.get('windowPosition', {})) {
+			// window was reopened via Ctrl-Shift-T etc.
+			chrome.windows.update(windowId, prefs.get('windowPosition'));
+		}
 		if (tabs.length == 1 && window.history.length == 1) {
 			chrome.windows.getAll(function(windows) {
 				if (windows.length > 1) {
@@ -414,7 +443,7 @@ chrome.tabs.query({currentWindow: true}, function(tabs) {
 	});
 });
 
-getActiveTab(function(tab) {
+getActiveTab().then(tab => {
 	useHistoryBack = sessionStorageHash("manageStylesHistory").value[tab.id] == location.href;
 });
 
@@ -496,6 +525,23 @@ function addSection(event, section) {
 
 	appliesTo.addEventListener("change", onChange);
 	appliesTo.addEventListener("input", onChange);
+
+	toggleTestRegExpVisibility();
+	appliesTo.addEventListener('change', toggleTestRegExpVisibility);
+	div.querySelector('.test-regexp').onclick = showRegExpTester;
+	function toggleTestRegExpVisibility() {
+		const show = [...appliesTo.children].some(item =>
+			!item.matches('.applies-to-everything') &&
+			item.querySelector('.applies-type').value == 'regexp' &&
+			item.querySelector('.applies-value').value.trim());
+		div.classList.toggle('has-regexp', show);
+		appliesTo.oninput = appliesTo.oninput || show && (event => {
+			if (event.target.matches('.applies-value')
+			&& event.target.parentElement.querySelector('.applies-type').value == 'regexp') {
+				showRegExpTester(null, div);
+			}
+		});
+	}
 
 	var sections = document.getElementById("sections");
 	if (event) {
@@ -857,36 +903,32 @@ function getEditorInSight(nearbyElement) {
 function updateLintReport(cm, delay) {
 	if (delay == 0) {
 		// immediately show pending csslint messages in onbeforeunload and save
-		update.call(cm);
+		update(cm);
 		return;
 	}
 	if (delay > 0) {
-		// give csslint some time to find the issues, e.g. 500 (1/10 of our default 5s)
-		// by settings its internal delay to 1ms and restoring it back later
-		var lintOpt = editors[0].state.lint.options;
-		setTimeout((function(opt, delay) {
-			opt.delay = delay == 1 ? opt.delay : delay; // options object is shared between editors
-			update(this);
-		}).bind(cm, lintOpt, lintOpt.delay), delay);
-		lintOpt.delay = 1;
+		setTimeout(cm => { cm.performLint(); update(cm) }, delay, cm);
+		return;
+	}
+	var state = cm.state.lint;
+	if (!state) {
 		return;
 	}
 	// user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
 	// or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
-	var state = cm.state.lint;
 	clearTimeout(state.reportTimeout);
-	state.reportTimeout = setTimeout(update.bind(cm), state.options.delay + 100);
+	state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
 	state.postponeNewIssues = delay == undefined || delay == null;
 
-	function update() { // this == cm
-		var scope = this ? [this] : editors;
+	function update(cm) {
+		var scope = cm ? [cm] : editors;
 		var changed = false;
 		var fixedOldIssues = false;
 		scope.forEach(function(cm) {
-			var state = cm.state.lint;
+			var state = cm.state.lint || {};
 			var oldMarkers = state.markedLast || {};
 			var newMarkers = {};
-			var html = state.marked.length == 0 ? "" : "<tbody>" +
+			var html = !state.marked || state.marked.length == 0 ? "" : "<tbody>" +
 				state.marked.map(function(mark) {
 					var info = mark.__annotation;
 					var isActiveLine = info.from.line == cm.getCursor().line;
@@ -938,7 +980,7 @@ function renderLintReport(someBlockChanged) {
 	var newContent = content.cloneNode(false);
 	var issueCount = 0;
 	editors.forEach(function(cm, index) {
-		if (cm.state.lint.html) {
+		if (cm.state.lint && cm.state.lint.html) {
 			var newBlock = newContent.appendChild(document.createElement("table"));
 			var html = "<caption>" + label + " " + (index+1) + "</caption>" + cm.state.lint.html;
 			newBlock.innerHTML = html;
@@ -993,7 +1035,7 @@ function beautify(event) {
 		doBeautify();
 	} else {
 		var script = document.head.appendChild(document.createElement("script"));
-		script.src = "beautify/beautify-css.js";
+		script.src = "beautify/beautify-css-mod.js";
 		script.onload = doBeautify;
 	}
 	function doBeautify() {
@@ -1023,6 +1065,7 @@ function beautify(event) {
 				if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
 					delete cm.beautifyChange[cm.changeGeneration()];
 					cm.undo();
+					cm.scrollIntoView(cm.getCursor());
 					undoable |= cm.beautifyChange[cm.changeGeneration()];
 				}
 			});
@@ -1031,6 +1074,9 @@ function beautify(event) {
 
 		scope.forEach(function(cm) {
 			setTimeout(function() {
+				const pos = options.translate_positions =
+					[].concat.apply([], cm.doc.sel.ranges.map(r =>
+						[Object.assign({}, r.anchor), Object.assign({}, r.head)]));
 				var text = cm.getValue();
 				var newText = exports.css_beautify(text, options);
 				if (newText != text) {
@@ -1039,6 +1085,11 @@ function beautify(event) {
 						cm.beautifyChange = {};
 					}
 					cm.setValue(newText);
+					const selections = [];
+					for (let i = 0; i < pos.length; i += 2) {
+						selections.push({anchor: pos[i], head: pos[i + 1]});
+					}
+					cm.setSelections(selections);
 					cm.beautifyChange[cm.changeGeneration()] = true;
 					undoButton.disabled = false;
 				}
@@ -1065,48 +1116,67 @@ function beautify(event) {
 	}
 }
 
-window.addEventListener("load", init, false);
+document.addEventListener("DOMContentLoaded", init);
 
 function init() {
+	initCodeMirror();
 	var params = getParams();
 	if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
 		// This is an add
+		tE("heading", "addStyleTitle");
 		var section = {code: ""}
 		for (var i in CssToProperty) {
 			if (params[i]) {
 				section[CssToProperty[i]] = [params[i]];
 			}
 		}
-		addSection(null, section);
-		// default to enabled
-		document.getElementById("enabled").checked = true
-		tE("heading", "addStyleTitle");
-		initHooks();
+		window.onload = () => {
+			window.onload = null;
+			addSection(null, section);
+			// default to enabled
+			document.getElementById("enabled").checked = true
+			initHooks();
+		};
 		return;
 	}
 	// This is an edit
 	tE("heading", "editStyleHeading", null, false);
-	requestStyle();
-	function requestStyle() {
-		chrome.runtime.sendMessage({method: "getStyles", id: params.id}, function callback(styles) {
-			if (!styles) { // Chrome is starting up and shows edit.html
-				requestStyle();
-				return;
-			}
-			var style = styles[0];
-			styleId = style.id;
-			initWithStyle(style);
-		});
-	}
+	getStylesSafe({id: params.id}).then(styles => {
+		let style = styles[0];
+		if (!style) {
+			style = {id: null, sections: []};
+			history.replaceState({}, document.title, location.pathname);
+		}
+		styleId = style.id;
+		setStyleMeta(style);
+		window.onload = () => {
+			window.onload = null;
+			initWithStyle({style});
+		};
+		if (document.readyState != 'loading') {
+			window.onload();
+		}
+	});
 }
 
-function initWithStyle(style) {
+function setStyleMeta(style) {
 	document.getElementById("name").value = style.name;
 	document.getElementById("enabled").checked = style.enabled;
 	document.getElementById("url").href = style.url;
+}
+
+function initWithStyle({style, codeIsUpdated}) {
+	setStyleMeta(style);
+
+	if (codeIsUpdated === false) {
+		setCleanGlobal();
+		updateTitle();
+		return;
+	}
+
 	// if this was done in response to an update, we need to clear existing sections
 	getSections().forEach(function(div) { div.remove(); });
-	var queue = style.sections.length ? style.sections : [{code: ""}];
+	var queue = style.sections.length ? style.sections.slice() : [{code: ""}];
 	var queueStart = new Date().getTime();
 	// after 100ms the sections will be added asynchronously
 	while (new Date().getTime() - queueStart <= 100 && queue.length) {
@@ -1123,7 +1193,11 @@ function initWithStyle(style) {
 	function add() {
 		var sectionDiv = addSection(null, queue.shift());
 		maximizeCodeHeight(sectionDiv, !queue.length);
-		updateLintReport(sectionDiv.CodeMirror, prefs.get("editor.lintDelay"));
+		const cm = sectionDiv.CodeMirror;
+		setTimeout(() => {
+			cm.setOption('lint', CodeMirror.defaults.lint);
+			updateLintReport(cm, 0);
+		}, prefs.get("editor.lintDelay"));
 	}
 }
 
@@ -1149,10 +1223,27 @@ function initHooks() {
 		document.querySelector("#lint h2").addEventListener("click", toggleLintReport);
 	}
 
+	document.querySelectorAll(
+		'input:not([type]), input[type="text"], input[type="search"], input[type="number"]')
+		.forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
+
 	setupGlobalSearch();
 	setCleanGlobal();
 	updateTitle();
 }
+
+
+function toggleContextMenuDelete(event) {
+	if (event.button == 2 && prefs.get('editor.contextDelete')) {
+		chrome.contextMenus.update('editor.contextDelete', {
+			enabled: Boolean(
+				this.selectionStart != this.selectionEnd ||
+				this.somethingSelected && this.somethingSelected()
+			),
+		}, ignoreChromeError);
+	}
+}
+
 
 function maximizeCodeHeight(sectionDiv, isLast) {
 	var cm = sectionDiv.CodeMirror;
@@ -1254,14 +1345,14 @@ function save() {
 	}
 	var name = document.getElementById("name").value;
 	var enabled = document.getElementById("enabled").checked;
-	var request = {
-		method: "saveStyle",
+	saveStyleSafe({
 		id: styleId,
 		name: name,
 		enabled: enabled,
+		reason: 'editSave',
 		sections: getSectionsHashes()
-	};
-	chrome.runtime.sendMessage(request, saveComplete);
+	})
+		.then(saveComplete);
 }
 
 function getSectionsHashes() {
@@ -1348,7 +1439,7 @@ function fromMozillaFormat() {
 
 	function doImport() {
 		var replaceOldStyle = this.name == "import-replace";
-		popup.querySelector(".close-icon").click();
+		popup.querySelector(".dismiss").onclick();
 		var mozStyle = trimNewLines(popup.codebox.getValue());
 		var parser = new parserlib.css.Parser(), lines = mozStyle.split("\n");
 		var sectionStack = [{code: "", start: {line: 1, col: 1}}];
@@ -1423,14 +1514,19 @@ function fromMozillaFormat() {
 			}
 		}
 		function doAddSection(section) {
+			section.code = section.code.trim();
+			// don't add empty sections
+			if (!section.code
+			&& !section.urls
+			&& !section.urlPrefixes
+			&& !section.domains
+			&& !section.regexps) {
+				return;
+			}
 			if (!firstAddedCM) {
 				if (!initFirstSection(section)) {
 					return;
 				}
-			}
-			// don't add empty sections
-			if (!(section.code || section.urls || section.urlPrefixes || section.domains || section.regexps)) {
-				return;
 			}
 			setCleanItem(addSection(null, section), false);
 			firstAddedCM = firstAddedCM || editors.last;
@@ -1532,8 +1628,8 @@ function showKeyMapHelp() {
 			cell.innerHTML = cell.textContent;
 		});
 	}
-	function mergeKeyMaps(merged) {
-		[].slice.call(arguments, 1).forEach(function(keyMap) {
+	function mergeKeyMaps(merged, ...more) {
+		more.forEach(keyMap => {
 			if (typeof keyMap == "string") {
 				keyMap = CodeMirror.keyMap[keyMap];
 			}
@@ -1567,6 +1663,111 @@ function showLintHelp() {
 	);
 }
 
+function showRegExpTester(event, section = getSectionForChild(this)) {
+	const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
+	const OWN_ICON = chrome.runtime.getManifest().icons['16'];
+	const cachedRegexps = showRegExpTester.cachedRegexps =
+		showRegExpTester.cachedRegexps || new Map();
+	const regexps = [...section.querySelector('.applies-to-list').children]
+		.map(item =>
+			!item.matches('.applies-to-everything') &&
+			item.querySelector('.applies-type').value == 'regexp' &&
+			item.querySelector('.applies-value').value.trim())
+		.filter(item => item)
+		.map(text => {
+			const rxData = Object.assign({text}, cachedRegexps.get(text));
+			if (!rxData.urls) {
+				cachedRegexps.set(text, Object.assign(rxData, {
+					rx: tryRegExp(text),
+					urls: new Map(),
+				}));
+			}
+			return rxData;
+		});
+	chrome.tabs.onUpdated.addListener(function _(tabId, info) {
+		if (document.querySelector('.regexp-report')) {
+			if (info.url) {
+				showRegExpTester(event, section);
+			}
+		} else {
+			chrome.tabs.onUpdated.removeListener(_);
+		}
+	});
+	chrome.tabs.query({}, tabs => {
+		const supported = tabs.map(tab => tab.url)
+			.filter(url => URLS.supported.test(url));
+		const unique = [...new Set(supported).values()];
+		for (const rxData of regexps) {
+			const {rx, urls} = rxData;
+			if (rx) {
+				const urlsNow = new Map();
+				for (const url of unique) {
+					const match = urls.get(url) || (url.match(rx) || [])[0];
+					if (match) {
+						urlsNow.set(url, match);
+					}
+				}
+				rxData.urls = urlsNow;
+			}
+		}
+		const moreInfoLink = template.regexpTestPartial.outerHTML;
+		const stats = {
+			full: {data: [], label: t('styleRegexpTestFull')},
+			partial: {data: [], label: t('styleRegexpTestPartial') + moreInfoLink},
+			none: {data: [], label: t('styleRegexpTestNone')},
+			invalid: {data: [], label: t('styleRegexpTestInvalid')},
+		};
+		for (const {text, rx, urls} of regexps) {
+			if (!rx) {
+				stats.invalid.data.push({text});
+				continue;
+			}
+			if (!urls.size) {
+				stats.none.data.push({text});
+				continue;
+			}
+			const full = [];
+			const partial = [];
+			for (const [url, match] of urls.entries()) {
+				const faviconUrl = url.startsWith(URLS.ownOrigin)
+					? OWN_ICON
+					: GET_FAVICON_URL + new URL(url).hostname;
+				const icon = `<img src="${faviconUrl}">`;
+				if (match.length == url.length) {
+					full.push(`<div>${icon + url}</div>`);
+				} else {
+					partial.push(`<div>${icon}<mark>${match}</mark>` +
+						url.substr(match.length) + '</div>');
+				}
+			}
+			if (full.length) {
+				stats.full.data.push({text, urls: full});
+			}
+			if (partial.length) {
+				stats.partial.data.push({text, urls: partial});
+			}
+		}
+		showHelp(t('styleRegexpTestTitle'),
+			'<div class="regexp-report">' +
+			Object.keys(stats).map(type => (!stats[type].data.length ? '' :
+				`<details open data-type="${type}">
+					<summary>${stats[type].label}</summary>` +
+					stats[type].data.map(({text, urls}) => (!urls ? text :
+						`<details open><summary>${text}</summary>${urls.join('')}</details>`
+					)).join('<br>') +
+				'</details>'
+			)).join('') +
+			'</div>');
+		document.querySelector('.regexp-report').onclick = event => {
+			const target = event.target.closest('a, .regexp-report div');
+			if (target) {
+				openURL({url: target.href || target.textContent});
+				event.preventDefault();
+			}
+		};
+	});
+}
+
 function showHelp(title, text) {
 	var div = document.getElementById("help-popup");
 	div.classList.remove("big");
@@ -1575,14 +1776,16 @@ function showHelp(title, text) {
 
 	if (getComputedStyle(div).display == "none") {
 		document.addEventListener("keydown", closeHelp);
-		div.querySelector(".close-icon").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
+		div.querySelector(".dismiss").onclick = closeHelp; // avoid chaining on multiple showHelp() calls
 	}
 
 	div.style.display = "block";
 	return div;
 
 	function closeHelp(e) {
-		if (e.type == "click" || (e.keyCode == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
+		if (!e
+		|| e.type == "click"
+		|| ((e.keyCode || e.which) == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)) {
 			div.style.display = "";
 			document.querySelector(".contents").innerHTML = "";
 			document.removeEventListener("keydown", closeHelp);
@@ -1625,11 +1828,21 @@ function getParams() {
 	return params;
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+function onRuntimeMessage(request) {
 	switch (request.method) {
 		case "styleUpdated":
-			if (styleId && styleId == request.id) {
-				initWithStyle(request.style);
+			if (styleId && styleId == request.style.id && request.reason != 'editSave') {
+				if ((request.style.sections[0] || {}).code === null) {
+					// the code-less style came from notifyAllTabs
+					onBackgroundReady().then(() => {
+						request.style = BG.cachedStyles.byId.get(request.style.id);
+						initWithStyle(request);
+					});
+				} else {
+					initWithStyle(request);
+				}
 			}
 			break;
 		case "styleDeleted":
@@ -1640,14 +1853,93 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 			break;
 		case "prefChanged":
-			if (request.prefName == "editor.smartIndent") {
-				CodeMirror.setOption("smartIndent", request.value);
+			if ('editor.smartIndent' in request.prefs) {
+				CodeMirror.setOption('smartIndent', request.prefs['editor.smartIndent']);
 			}
+			break;
+		case 'editDeleteText':
+			document.execCommand('delete');
+			break;
 	}
-});
+}
 
 function getComputedHeight(el) {
 	var compStyle = getComputedStyle(el);
 	return el.getBoundingClientRect().height +
 		parseFloat(compStyle.marginTop) + parseFloat(compStyle.marginBottom);
+}
+
+
+function getCodeMirrorThemes() {
+	if (!chrome.runtime.getPackageDirectoryEntry) {
+		const themes = Promise.resolve([
+			chrome.i18n.getMessage('defaultTheme'),
+			'3024-day',
+			'3024-night',
+			'abcdef',
+			'ambiance',
+			'ambiance-mobile',
+			'base16-dark',
+			'base16-light',
+			'bespin',
+			'blackboard',
+			'cobalt',
+			'colorforth',
+			'dracula',
+			'duotone-dark',
+			'duotone-light',
+			'eclipse',
+			'elegant',
+			'erlang-dark',
+			'hopscotch',
+			'icecoder',
+			'isotope',
+			'lesser-dark',
+			'liquibyte',
+			'material',
+			'mbo',
+			'mdn-like',
+			'midnight',
+			'monokai',
+			'neat',
+			'neo',
+			'night',
+			'panda-syntax',
+			'paraiso-dark',
+			'paraiso-light',
+			'pastel-on-dark',
+			'railscasts',
+			'rubyblue',
+			'seti',
+			'solarized',
+			'the-matrix',
+			'tomorrow-night-bright',
+			'tomorrow-night-eighties',
+			'ttcn',
+			'twilight',
+			'vibrant-ink',
+			'xq-dark',
+			'xq-light',
+			'yeti',
+			'zenburn',
+		]);
+		localStorage.codeMirrorThemes = themes.join(' ');
+	}
+	return new Promise(resolve => {
+		chrome.runtime.getPackageDirectoryEntry(rootDir => {
+			rootDir.getDirectory('codemirror/theme', {create: false}, themeDir => {
+				themeDir.createReader().readEntries(entries => {
+					const themes = [
+						chrome.i18n.getMessage('defaultTheme')
+					].concat(
+						entries.filter(entry => entry.isFile)
+							.sort((a, b) => (a.name < b.name ? -1 : 1))
+							.map(entry => entry.name.replace(/\.css$/, ''))
+					);
+					localStorage.codeMirrorThemes = themes.join(' ');
+					resolve(themes);
+				});
+			});
+		});
+	});
 }

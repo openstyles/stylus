@@ -11,10 +11,6 @@
 		"message": "Exportar estilos",
 		"description": ""
 	},
-	"manageOnlyEdited": {
-		"message": "Sólo estilos editados",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"optionsUpdateInterval": {
 		"message": "Buscar e instalar automáticamente todas las actualizaciones disponibles de estilos de usuario (en horas)",
 		"description": ""
@@ -157,7 +153,7 @@
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Obtener estilos en userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Obtener ayuda</a>",
+		"message": "<a href='https://userstyles.org'>Obtener estilos en userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Obtener ayuda</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -212,7 +208,7 @@
 		"message": "¿Está seguro de que quiere eliminar este estilo?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -350,8 +346,8 @@
 		"message": "Formato Mozilla",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus no funciona en páginas como esta)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus no funciona en páginas como esta",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

@@ -7,10 +7,6 @@
 		"message": "výchozí",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Pouze upravené styly.",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Exportovat",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -117,7 +113,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Získat pomoc</a>",
+		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Získat pomoc</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -168,7 +164,7 @@
 		"message": "Opravdu chcete tento styl smazat?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -294,8 +290,8 @@
 		"message": "Mozilla Formát",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus nefunguje na těchto stránkách.)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus nefunguje na těchto stránkách.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

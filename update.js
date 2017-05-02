@@ -1,115 +1,162 @@
-/* globals getStyles, saveStyle, prefs */
+/* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
+/* global getStyleDigests, updateStyleDigest */
 'use strict';
 
-var update = {
-  fetch: (resource, callback) => {
-    let req = new XMLHttpRequest();
-    let [url, data] = resource.split('?');
-    req.open('POST', url, true);
-    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    req.onload = () => callback(req.responseText);
-    req.onerror = req.ontimeout = () => callback();
-    req.send(data);
+// eslint-disable-next-line no-var
+var updater = {
+
+  COUNT: 'count',
+  UPDATED: 'updated',
+  SKIPPED: 'skipped',
+  DONE: 'done',
+
+  // details for SKIPPED status
+  EDITED: 'locally edited',
+  MAYBE_EDITED: 'may be locally edited',
+  SAME_MD5: 'up-to-date: MD5 is unchanged',
+  SAME_CODE: 'up-to-date: code sections are unchanged',
+  ERROR_MD5: 'error: MD5 is invalid',
+  ERROR_JSON: 'error: JSON is invalid',
+
+  lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
+
+  checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
+    updater.resetInterval();
+    updater.checkAllStyles.running = true;
+    return getStyles({}).then(styles => {
+      styles = styles.filter(style => style.updateUrl);
+      observer(updater.COUNT, styles.length);
+      updater.log('');
+      updater.log(`${save ? 'Scheduled' : 'Manual'} update check for ${styles.length} styles`);
+      return Promise.all(
+        styles.map(style =>
+          updater.checkStyle({style, observer, save, ignoreDigest})));
+    }).then(() => {
+      observer(updater.DONE);
+      updater.log('');
+      updater.checkAllStyles.running = false;
+    });
   },
-  md5Check: (style, callback, skipped) => {
-    let req = new XMLHttpRequest();
-    req.open('GET', style.md5Url, true);
-    req.onload = () => {
-      let md5 = req.responseText;
-      if (md5 && md5 !== style.originalMd5) {
-        callback(style);
+
+  checkStyle({style, observer = () => {}, save = true, ignoreDigest}) {
+    let hasDigest;
+    /*
+    Original style digests are calculated in these cases:
+    * style is installed or updated from server
+    * style is checked for an update and its code is equal to the server code
+
+    Update check proceeds in these cases:
+    * style has the original digest and it's equal to the current digest
+    * [ignoreDigest: true] style doesn't yet have the original digest but we ignore it
+    * [ignoreDigest: none/false] style doesn't yet have the original digest
+      so we compare the code to the server code and if it's the same we save the digest,
+      otherwise we skip the style and report MAYBE_EDITED status
+
+    'ignoreDigest' option is set on the second manual individual update check on the manage page.
+    */
+    return getStyleDigests(style)
+      .then(maybeFetchMd5)
+      .then(maybeFetchCode)
+      .then(maybeSave)
+      .then(saved => {
+        observer(updater.UPDATED, saved);
+        updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
+      })
+      .catch(err => {
+        observer(updater.SKIPPED, style, err);
+        err = err === 0 ? 'server unreachable' : err;
+        updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
+      });
+
+    function maybeFetchMd5([originalDigest, current]) {
+      hasDigest = Boolean(originalDigest);
+      if (hasDigest && !ignoreDigest && originalDigest != current) {
+        return Promise.reject(updater.EDITED);
       }
-      else {
-        skipped(`"${style.name}" style is up-to-date`);
+      return download(style.md5Url);
+    }
+
+    function maybeFetchCode(md5) {
+      if (!md5 || md5.length != 32) {
+        return Promise.reject(updater.ERROR_MD5);
       }
+      if (md5 == style.originalMd5 && hasDigest && !ignoreDigest) {
+        return Promise.reject(updater.SAME_MD5);
+      }
+      return download(style.updateUrl);
+    }
+
+    function maybeSave(text) {
+      const json = tryJSONparse(text);
+      if (!styleJSONseemsValid(json)) {
+        return Promise.reject(updater.ERROR_JSON);
+      }
+      json.id = style.id;
+      if (styleSectionsEqual(json, style)) {
+        // JSONs may have different order of items even if sections are effectively equal
+        // so we'll update the digest anyway
+        updateStyleDigest(json);
+        return Promise.reject(updater.SAME_CODE);
+      } else if (!hasDigest && !ignoreDigest) {
+        return Promise.reject(updater.MAYBE_EDITED);
+      }
+      return !save ? json :
+        saveStyle(Object.assign(json, {
+          name: null, // keep local name customizations
+          reason: 'update',
+        }));
+    }
+
+    function styleJSONseemsValid(json) {
+      return json
+        && json.sections
+        && json.sections.length
+        && typeof json.sections.every == 'function'
+        && typeof json.sections[0].code == 'string';
+    }
+  },
+
+  schedule() {
+    const interval = prefs.get('updateInterval') * 60 * 60 * 1000;
+    if (interval) {
+      const elapsed = Math.max(0, Date.now() - updater.lastUpdateTime);
+      debounce(updater.checkAllStyles, Math.max(10e3, interval - elapsed));
+    } else {
+      debounce.unregister(updater.checkAllStyles);
+    }
+  },
+
+  resetInterval() {
+    localStorage.lastUpdateTime = updater.lastUpdateTime = Date.now();
+    updater.schedule();
+  },
+
+  log: (() => {
+    let queue = [];
+    let lastWriteTime = 0;
+    return text => {
+      queue.push({text, time: new Date().toLocaleString()});
+      debounce(flushQueue, text && updater.checkAllStyles.running ? 1000 : 0);
     };
-    req.onerror = req.ontimeout = () => skipped('Error validating MD5 checksum');
-    req.send();
-  },
-  list: (callback) => {
-    getStyles({}, (styles) => callback(styles.filter(style => style.updateUrl)));
-  },
-  perform: (observe = function () {}) => {
-    // from install.js
-    function arraysAreEqual (a, b) {
-      // treat empty array and undefined as equivalent
-      if (typeof a === 'undefined') {
-        return (typeof b === 'undefined') || (b.length === 0);
-      }
-      if (typeof b === 'undefined') {
-        return (typeof a === 'undefined') || (a.length === 0);
-      }
-      if (a.length !== b.length) {
-        return false;
-      }
-      return a.every(function (entry) {
-        return b.indexOf(entry) !== -1;
-      });
-    }
-    // from install.js
-    function sectionsAreEqual(a, b) {
-      if (a.code !== b.code) {
-        return false;
-      }
-      return ['urls', 'urlPrefixes', 'domains', 'regexps'].every(function (attribute) {
-        return arraysAreEqual(a[attribute], b[attribute]);
-      });
-    }
-
-    update.list(styles => {
-      observe('count', styles.length);
-      styles.forEach(style => update.md5Check(style, style => update.fetch(style.updateUrl, response => {
-        if (response) {
-          let json = JSON.parse(response);
-
-          if (json.sections.length === style.sections.length) {
-            if (json.sections.every((section) => {
-              return style.sections.some(installedSection => sectionsAreEqual(section, installedSection));
-            })) {
-              return observe('single-skipped', '2'); // everything is the same
-            }
-            json.method = 'saveStyle';
-            json.id = style.id;
-
-            saveStyle(json).then(style => {
-              observe('single-updated', style.name);
-            });
-          }
-          else {
-            return observe('single-skipped', '3'); // style sections mismatch
+    function flushQueue() {
+      chromeLocal.getValue('updateLog').then((lines = []) => {
+        const time = Date.now() - lastWriteTime > 11e3 ? queue[0].time + ' ' : '';
+        if (!queue[0].text) {
+          queue.shift();
+          if (lines[lines.length - 1]) {
+            lines.push('');
           }
         }
-      }), () => observe('single-skipped', '1')));
-    });
-  }
+        lines.splice(0, lines.length - 1000);
+        lines.push(time + queue[0].text);
+        lines.push(...queue.slice(1).map(item => item.text));
+        chromeLocal.setValue('updateLog', lines);
+        lastWriteTime = Date.now();
+        queue = [];
+      });
+    }
+  })(),
 };
-// automatically update all user-styles if "updateInterval" pref is set
-window.setTimeout(function () {
-  let id;
-  function run () {
-    update.perform(/*(cmd, value) => console.log(cmd, value)*/);
-    reset();
-  }
-  function reset () {
-    window.clearTimeout(id);
-    let interval = prefs.get('updateInterval');
-    // if interval === 0 => automatic update is disabled
-    if (interval) {
-      /* console.log('next update', interval); */
-      id = window.setTimeout(run, interval * 60 * 60 * 1000);
-    }
-  }
-  if (prefs.get('updateInterval')) {
-    run();
-  }
-  chrome.runtime.onMessage.addListener(request => {
-    // when user has changed the predefined time interval in the settings page
-    if (request.method === 'prefChanged' && request.prefName === 'updateInterval') {
-      reset();
-    }
-    // when user just manually checked for updates
-    if (request.method === 'resetInterval') {
-      reset();
-    }
-  });
-}, 10000);
+
+updater.schedule();
+prefs.subscribe(updater.schedule, ['updateInterval']);

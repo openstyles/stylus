@@ -1,9 +1,9 @@
-/* globals getStyles, saveStyle, invalidateCache, refreshAllTabs, handleUpdate */
+/* global messageBox, handleUpdate, applyOnMessage */
 'use strict';
 
-var STYLISH_DUMP_FILE_EXT = '.txt';
-var STYLISH_DUMPFILE_EXTENSION = '.json';
-var STYLISH_DEFAULT_SAVE_NAME = 'stylus-mm-dd-yyyy' + STYLISH_DUMP_FILE_EXT;
+const STYLISH_DUMP_FILE_EXT = '.txt';
+const STYLUS_BACKUP_FILE_EXT = '.json';
+
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -25,7 +25,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
     function readFile() {
       if (file || fileInput.value !== fileInput.initialValue) {
         file = file || fileInput.files[0];
-        if (file.size > 100*1000*1000) {
+        if (file.size > 100e6) {
           console.warn("100MB backup? I don't believe you.");
           importFromString('').then(resolve);
           return;
@@ -45,103 +45,312 @@ function importFromFile({fileTypeFilter, file} = {}) {
   });
 }
 
+
 function importFromString(jsonString) {
-  const json = runTryCatch(() => Array.from(JSON.parse(jsonString))) || [];
-  const numStyles = json.length;
-
-  if (numStyles) {
-    invalidateCache(true);
+  if (!BG) {
+    onBackgroundReady().then(() => importFromString(jsonString));
+    return;
   }
+  // create objects in background context
+  const json = BG.tryJSONparse(jsonString) || [];
+  if (typeof json.slice != 'function') {
+    json.length = 0;
+  }
+  const oldStyles = json.length && BG.deepCopy(BG.cachedStyles.list || []);
+  const oldStylesByName = json.length && new Map(
+    oldStyles.map(style => [style.name.trim(), style]));
 
-  return new Promise(resolve => {
-    proceed();
-    function proceed() {
-      const nextStyle = json.shift();
-      if (nextStyle) {
-        saveStyle(nextStyle, {notify: false}).then(style => {
-          handleUpdate(style);
-          setTimeout(proceed, 0);
-        });
-      } else {
-        refreshAllTabs().then(() => {
-          setTimeout(alert, 100, numStyles + ' styles installed/updated');
-          resolve(numStyles);
-        });
+  let oldDigests;
+  chrome.storage.local.get(null, data => (oldDigests = data));
+
+  const stats = {
+    added:       {names: [], ids: [], legend: 'importReportLegendAdded'},
+    unchanged:   {names: [], ids: [], legend: 'importReportLegendIdentical'},
+    metaAndCode: {names: [], ids: [], legend: 'importReportLegendUpdatedBoth'},
+    metaOnly:    {names: [], ids: [], legend: 'importReportLegendUpdatedMeta'},
+    codeOnly:    {names: [], ids: [], legend: 'importReportLegendUpdatedCode'},
+    invalid:     {names: [], legend: 'importReportLegendInvalid'},
+  };
+
+  let index = 0;
+  let lastRenderTime = performance.now();
+  const renderQueue = [];
+  const RENDER_NAP_TIME_MAX = 1000; // ms
+  const RENDER_QUEUE_MAX = 50; // number of styles
+  const SAVE_OPTIONS = {reason: 'import', notify: false};
+
+  return new Promise(proceed);
+
+  function proceed(resolve) {
+    while (index < json.length) {
+      const item = json[index++];
+      const info = analyze(item);
+      if (info) {
+        // using saveStyle directly since json was parsed in background page context
+        return BG.saveStyle(Object.assign(item, SAVE_OPTIONS))
+          .then(style => account({style, info, resolve}));
       }
     }
-  });
+    renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
+    renderQueue.length = 0;
+    done(resolve);
+  }
+
+  function analyze(item) {
+    if (!item || !item.name || !item.name.trim() || typeof item != 'object'
+    || (item.sections && typeof item.sections.slice != 'function')) {
+      stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
+      return;
+    }
+    item.name = item.name.trim();
+    const byId = BG.cachedStyles.byId.get(item.id);
+    const byName = oldStylesByName.get(item.name);
+    const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
+    if (oldStyle == byName && byName) {
+      item.id = byName.id;
+    }
+    const oldStyleKeys = oldStyle && Object.keys(oldStyle);
+    const metaEqual = oldStyleKeys &&
+      oldStyleKeys.length == Object.keys(item).length &&
+      oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
+    const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
+    if (metaEqual && codeEqual) {
+      stats.unchanged.names.push(oldStyle.name);
+      stats.unchanged.ids.push(oldStyle.id);
+      return;
+    }
+    return {oldStyle, metaEqual, codeEqual};
+  }
+
+  function account({style, info, resolve}) {
+    renderQueue.push(style);
+    if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
+    || renderQueue.length > RENDER_QUEUE_MAX) {
+      renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
+      setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
+      renderQueue.length = 0;
+      lastRenderTime = performance.now();
+    }
+    setTimeout(proceed, 0, resolve);
+    const {oldStyle, metaEqual, codeEqual} = info;
+    if (!oldStyle) {
+      stats.added.names.push(style.name);
+      stats.added.ids.push(style.id);
+      return;
+    }
+    if (!metaEqual && !codeEqual) {
+      stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
+      stats.metaAndCode.ids.push(style.id);
+      return;
+    }
+    if (!codeEqual) {
+      stats.codeOnly.names.push(style.name);
+      stats.codeOnly.ids.push(style.id);
+      return;
+    }
+    stats.metaOnly.names.push(reportNameChange(oldStyle, style));
+    stats.metaOnly.ids.push(style.id);
+  }
+
+  function done(resolve) {
+    const numChanged = stats.metaAndCode.names.length +
+      stats.metaOnly.names.length +
+      stats.codeOnly.names.length +
+      stats.added.names.length;
+    Promise.resolve(numChanged && refreshAllTabs()).then(() => {
+      const report = Object.keys(stats)
+        .filter(kind => stats[kind].names.length)
+        .map(kind => {
+          const {ids, names, legend} = stats[kind];
+          const listItemsWithId = (name, i) =>
+            $element({dataset: {id: ids[i]}, textContent: name});
+          const listItems = name =>
+            $element({textContent: name});
+          const block =
+            $element({tag: 'details', dataset: {id: kind}, appendChild: [
+              $element({tag: 'summary', appendChild:
+                $element({tag: 'b', textContent: names.length + ' ' + t(legend)})
+              }),
+              $element({tag: 'small', appendChild:
+                names.map(ids ? listItemsWithId : listItems)
+              }),
+            ]});
+          return block;
+        });
+      scrollTo(0, 0);
+      messageBox({
+        title: t('importReportTitle'),
+        contents: report.length ? report : t('importReportUnchanged'),
+        buttons: [t('confirmOK'), numChanged && t('undo')],
+        onshow:  bindClick,
+      }).then(({button, enter, esc}) => {
+        if (button == 1) {
+          undo();
+        }
+      });
+      resolve(numChanged);
+    });
+  }
+
+  function undo() {
+    const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
+    const newIds = [
+      ...stats.metaAndCode.ids,
+      ...stats.metaOnly.ids,
+      ...stats.codeOnly.ids,
+      ...stats.added.ids,
+    ];
+    let resolve;
+    index = 0;
+    return new Promise(resolve_ => {
+      resolve = resolve_;
+      undoNextId();
+    }).then(BG.refreshAllTabs)
+      .then(() => messageBox({
+        title: t('importReportUndoneTitle'),
+        contents: newIds.length + ' ' + t('importReportUndone'),
+        buttons: [t('confirmOK')],
+      }));
+    function undoNextId() {
+      if (index == newIds.length) {
+        resolve();
+        return;
+      }
+      const id = newIds[index++];
+      deleteStyleSafe({id, notify: false}).then(id => {
+        const oldStyle = oldStylesById.get(id);
+        if (oldStyle) {
+          oldStyle.styleDigest = oldDigests[BG.DIGEST_KEY_PREFIX + id];
+          saveStyleSafe(Object.assign(oldStyle, SAVE_OPTIONS))
+            .then(undoNextId);
+        } else {
+          undoNextId();
+        }
+      });
+    }
+  }
+
+  function bindClick(box) {
+    const highlightElement = event => {
+      const styleElement = $('#style-' + event.target.dataset.id);
+      if (styleElement) {
+        scrollElementIntoView(styleElement);
+        animateElement(styleElement, {className: 'highlight'});
+      }
+    };
+    for (const block of $$('details')) {
+      if (block.dataset.id != 'invalid') {
+        block.style.cursor = 'pointer';
+        block.onclick = highlightElement;
+      }
+    }
+  }
+
+  function limitString(s, limit = 100) {
+    return s.length <= limit ? s : s.substr(0, limit) + '...';
+  }
+
+  function reportNameChange(oldStyle, newStyle) {
+    return newStyle.name != oldStyle.name
+      ? oldStyle.name + ' —> ' + newStyle.name
+      : oldStyle.name;
+  }
+
+  function refreshAllTabs() {
+    return getActiveTab().then(activeTab => new Promise(resolve => {
+      // list all tabs including chrome-extension:// which can be ours
+      chrome.tabs.query({}, tabs => {
+        const lastTab = tabs[tabs.length - 1];
+        for (const tab of tabs) {
+          getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+            const message = {method: 'styleReplaceAll', styles};
+            if (tab.id == activeTab.id) {
+              applyOnMessage(message);
+            } else {
+              chrome.tabs.sendMessage(tab.id, message);
+            }
+            BG.updateIcon(tab, styles);
+            if (tab == lastTab) {
+              resolve();
+            }
+          });
+        }
+      });
+    }));
+  }
 }
 
-function generateFileName() {
-  var today = new Date();
-  var dd = '0' + today.getDate();
-  var mm = '0' + (today.getMonth() + 1);
-  var yyyy = today.getFullYear();
 
-  dd = dd.substr(-2);
-  mm = mm.substr(-2);
-
-  today = mm + '-' + dd + '-' + yyyy;
-
-  return 'stylus-' + today + STYLISH_DUMPFILE_EXTENSION;
-}
-
-document.getElementById('file-all-styles').onclick = () => {
-  getStyles({}, function (styles) {
-    let text = JSON.stringify(styles, null, '\t');
-    let fileName = generateFileName() || STYLISH_DEFAULT_SAVE_NAME;
-
-    let url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+$('#file-all-styles').onclick = () => {
+  Promise.all([
+    BG.chromeLocal.get(null),
+    getStylesSafe(),
+  ]).then(([data, styles]) => {
+    styles = styles.map(style => {
+      const styleDigest = data[BG.DIGEST_KEY_PREFIX + style.id];
+      return styleDigest ? Object.assign({styleDigest}, style) : style;
+    });
+    const text = JSON.stringify(styles, null, '\t');
+    const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    return url;
     // for long URLs; https://github.com/schomery/stylish-chrome/issues/13#issuecomment-284582600
-    fetch(url)
+  }).then(fetch)
     .then(res => res.blob())
     .then(blob => {
-      let a = document.createElement('a');
-      a.setAttribute('download', fileName);
-      a.setAttribute('href', URL.createObjectURL(blob));
-      a.dispatchEvent(new MouseEvent('click'));
+      const objectURL = URL.createObjectURL(blob);
+      Object.assign(document.createElement('a'), {
+        download: generateFileName(),
+        href: objectURL,
+        type: 'application/json',
+      }).dispatchEvent(new MouseEvent('click'));
+      setTimeout(() => URL.revokeObjectURL(objectURL));
     });
-  });
+
+  function generateFileName() {
+    const today = new Date();
+    const dd = ('0' + today.getDate()).substr(-2);
+    const mm = ('0' + (today.getMonth() + 1)).substr(-2);
+    const yyyy = today.getFullYear();
+    return `stylus-${mm}-${dd}-${yyyy}${STYLUS_BACKUP_FILE_EXT}`;
+  }
 };
 
 
-document.getElementById('unfile-all-styles').onclick = () => {
-  importFromFile({fileTypeFilter: STYLISH_DUMPFILE_EXTENSION});
+$('#unfile-all-styles').onclick = () => {
+  importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
 };
 
-const dropTarget = Object.assign(document.body, {
-  ondragover: event => {
+Object.assign(document.body, {
+  ondragover(event) {
     const hasFiles = event.dataTransfer.types.includes('Files');
     event.dataTransfer.dropEffect = hasFiles || event.target.type == 'search' ? 'copy' : 'none';
-    dropTarget.classList.toggle('dropzone', hasFiles);
+    this.classList.toggle('dropzone', hasFiles);
     if (hasFiles) {
       event.preventDefault();
-      clearTimeout(dropTarget.fadeoutTimer);
-      dropTarget.classList.remove('fadeout');
+      clearTimeout(this.fadeoutTimer);
+      this.classList.remove('fadeout');
     }
   },
-  ondragend: event => {
-    dropTarget.classList.add('fadeout');
-    // transitionend event may not fire if the user switched to another tab so we'll use a timer
-    clearTimeout(dropTarget.fadeoutTimer);
-    dropTarget.fadeoutTimer = setTimeout(() => {
-      dropTarget.classList.remove('dropzone', 'fadeout');
-    }, 250);
+  ondragend(event) {
+    animateElement(this, {className: 'fadeout'}).then(() => {
+      this.style.animationDuration = '';
+      this.classList.remove('dropzone');
+    });
   },
-  ondragleave: event => {
+  ondragleave(event) {
     // Chrome sets screen coords to 0 on Escape key pressed or mouse out of document bounds
     if (!event.screenX && !event.screenX) {
-      dropTarget.ondragend();
+      this.ondragend();
     }
   },
-  ondrop: event => {
+  ondrop(event) {
+    this.ondragend();
     if (event.dataTransfer.files.length) {
       event.preventDefault();
-      importFromFile({file: event.dataTransfer.files[0]}).then(() => {
-        dropTarget.classList.remove('dropzone');
-      });
-    } else {
-      dropTarget.ondragend();
+      if ($('#onlyUpdates input').checked) {
+        $('#onlyUpdates input').click();
+      }
+      importFromFile({file: event.dataTransfer.files[0]});
     }
   },
 });

@@ -7,10 +7,6 @@
 		"message": "default",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Only edited styles",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Export",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -117,7 +113,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a>",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -168,7 +164,7 @@
 		"message": "このスタイルを削除してもよろしいですか？",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -293,10 +289,6 @@
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla Format",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus does not work on pages like this.)",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "セクションを削除",

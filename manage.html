@@ -1,300 +1,223 @@
-<html>
+<html id="stylus">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title i18n-text="manageTitle"></title>
-    <style>
-        body {
-            margin: 0;
-            font: 12px arial, sans-serif;
-        }
-        a,
-        a:visited {
-            color: #555;
-            -webkit-transition: color 0.5s;
-        }
-        a:hover {
-            color: #999;
-        }
-        #header {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            padding: 15px;
-            border-right: 1px dashed #AAA;
-            -webkit-box-shadow: 0 0 50px -18px black;
-        }
-        #header h1 {
-            margin-top: 0;
-        }
-        #installed {
-            position: relative;
-            margin-left: 280px;
-        }
-        [style-id] {
-            margin: 10px;
-            padding: 0 15px;
-        }
-        [style-id] {
-            border-top: 2px solid gray;
-        }
-        #installed::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #fff;
-        }
-		.svg-icon.installed {
-			cursor: pointer;
-			vertical-align: middle;
-			margin-left: 0.3rem;
-			margin-top: -4px;
-			transition: fill .5s;
-		}
-		a:hover .svg-icon.installed {
-			fill: hsl(0, 0%, 40%);
-		}
-		.style-name {
-		    margin-top: .25em;
-		    word-break: break-word;
-		}
-        .applies-to {
-            word-break: break-word;
-        }
-        .applies-to,
-        .actions {
-            padding-left: 15px;
-        }
-        .applies-to-extra {
-            font-weight: bold;
-        }
-        .disabled h2::after {
-            content: " (Disabled)";
-        }
-        .disabled {
-            opacity: 0.5;
-        }
-        .disabled .disable {
-            display: none;
-        }
-        .enabled .enable {
-            display: none;
-        }
-		.style-name a[target="_blank"] {
-			text-decoration: none;
-		}
-        /* Default, no update buttons */
-        
-        .update,
-        .check-update {
-            display: none;
-        }
-        /* Check update button for things that can*/
-        
-        *[style-update-url] .check-update {
-            display: inline;
-        }
-        /* Update check in progress */
-        
-        .checking-update .check-update {
-            display: none;
-        }
-        /* Updates available */
-        
-        .can-update .update {
-            display: inline;
-        }
-        .can-update .check-update {
-            display: none;
-        }
-        /* Updates not available */
-        
-        .no-update .check-update {
-            display: none;
-        }
-        /* Updates done */
-        
-        .update-done .check-update {
-            display: none;
-        }
-        .hidden {
-            display: none
-        }
-        @media(max-width:675px) {
-            #header {
-                height: auto;
-                position: inherit;
-                width: auto;
-                border-right: none;
-            }
-            #installed {
-                margin-left: 0;
-            }
-            [style-id] {
-                margin: 0;
-            }
-        }
-        #header {
-            overflow: auto;
-            height: calc(100vh - 30px)
-        }
-        fieldset {
-            border-width: 1px;
-            border-radius: 6px;
-            margin: 1em 0;
-        }
-        .enabled-only > .disabled,
-        .edited-only > [style-update-url] {
-            display: none;
-        }
-        #search {
-            width: calc(100% - 4px);
-            margin: 0.25rem 4px 0;
-            border-radius: 0.25rem;
-            padding-left: 0.25rem;
-            border-width: 1px;
-        }
-        #import ul {
-            margin-left: 0;
-            padding-left: 0;
-            list-style: none;
-        }
-        #import li {
-            margin-bottom: .5em;
-        }
-        #import pre {
-            background: #eee;
-            overflow: auto;
-            margin: 0 0 .5em 0;
-        }
-        /* drag-n-drop on import button */
-        .dropzone:after {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            position: fixed;
-            padding: calc(50vh - 3em) calc(50vw - 5em);
-            content: attr(dragndrop-hint);
-            text-shadow: 1px 1px 10px black;
-            font-size: xx-large;
-            text-align: center;
-            animation: fadein 1s cubic-bezier(.03,.67,.08,.94);
-            animation-fill-mode: both;
-        }
-        .fadeout.dropzone:after {
-            animation: fadeout .25s ease-in-out;
-            animation-fill-mode: both;
-        }
-        @keyframes fadein {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes fadeout {
-            from { opacity: 1; }
-            to   { opacity: 0; }
-        }
-    </style>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title i18n-text="manageTitle"></title>
+  <link rel="stylesheet" href="manage.css">
+  <link rel="stylesheet" href="msgbox/msgbox.css">
 
-    <template data-id="style">
-        <div>
-            <h2 class="style-name"></h2>
-            <p class="applies-to"></p>
-            <p class="actions">
-                <a class="style-edit-link" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>
-                <button class="enable" i18n-text="enableStyleLabel"></button>
-                <button class="disable" i18n-text="disableStyleLabel"></button>
-                <button class="delete" i18n-text="deleteStyleLabel"></button>
-                <button class="check-update" i18n-text="checkForUpdate"></button>
-                <button class="update" i18n-text="installUpdate"></button>
-                <span class="update-note"></span>
-            </p>
-        </div>
-    </template>
+  <style id="style-overrides"></style>
 
-    <template data-id="styleHomepage">
-        <a target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" class="svg-icon installed" height="16" width="16" viewBox="0 0 8 8">
-				<path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z" id="external-link"></path>
-			</svg>
+  <!-- Notes:
+    * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
+    * inter-tag whitespace in templates is automatically removed in localization.js
+    * i18n-anything attribute automatically creates "anything" attribute
+  -->
+
+  <template data-id="style">
+    <div class="entry">
+      <h2 class="style-name">
+        <a class="style-name-link" href="edit.html?id="></a>
+        <a target="_blank" class="homepage"></a>
+      </h2>
+      <p class="applies-to">
+        <label i18n-text="appliesDisplay"></label>
+        <span class="targets"></span>
+      </p>
+      <p class="actions">
+        <a class="style-edit-link" href="edit.html?id=">
+          <button i18n-text="editStyleLabel"></button>
         </a>
-    </template>
+        <button class="enable" i18n-text="enableStyleLabel"></button>
+        <button class="disable" i18n-text="disableStyleLabel"></button>
+        <button class="delete" i18n-text="deleteStyleLabel"></button>
+        <button class="check-update" i18n-text="checkForUpdate"></button>
+        <button class="update" i18n-text="installUpdate"></button>
+        <span class="update-note"></span>
+      </p>
+    </div>
+  </template>
 
-    <script src="localization.js"></script>
-    <script src="health.js"></script>
-    <script src="storage.js"></script>
-    <script src="messaging.js"></script>
-    <script src="apply.js"></script>
-    <script src="manage.js"></script>
+  <template data-id="styleCompact">
+    <div class="entry">
+      <h2 class="style-name">
+        <input class="checker" type="checkbox" i18n-title="toggleStyle">
+        <a class="style-name-link" href="edit.html?id="></a>
+      </h2>
+      <p class="actions">
+        <a target="_blank" class="homepage"></a>
+        <span i18n-title="deleteStyleLabel">
+          <svg class="svg-icon delete" viewBox="0 0 20 20">
+            <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+                             5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+          </svg>
+        </span>
+      </p>
+      <div class="applies-to">
+        <div class="targets"></div>
+        <span class="expander">...</span>
+      </div>
+    </div>
+  </template>
+
+  <template data-id="homepageIconBig">
+    <svg class="svg-icon" viewBox="0 0 20 20">
+      <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
+      <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
+    </svg>
+  </template>
+
+  <template data-id="homepageIconSmall">
+    <svg class="svg-icon" viewBox="0 0 20 20">
+      <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
+    </svg>
+  </template>
+
+  <template data-id="updaterIcons">
+    <span class="updater-icons">
+      <span class="check-update" i18n-title="checkForUpdate">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
+                   L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
+          <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
+                   C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
+        </svg>
+      </span>
+      <span class="update" i18n-title="installUpdate">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
+          <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
+        </svg>
+      </span>
+      <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
+        </svg>
+      </span>
+      <span class="updated" i18n-title="updateCompleted">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
+        </svg>
+      </span>
+      <span class="update-note"></span>
+    </span>
+  </template>
+
+  <template data-id="appliesToTarget">
+    <span class="target"></span>
+  </template>
+
+  <template data-id="appliesToSeparator">
+    <span class="sep">, </span>
+  </template>
+
+  <template data-id="appliesToEverything">
+    <span class="target" i18n-text="appliesToEverything"></span>
+  </template>
+
+  <template data-id="extraAppliesTo">
+    <details class="applies-to-extra">
+      <summary i18n-html="appliesDisplayTruncatedSuffix"></summary>
+    </details>
+  </template>
+
+  <script src="dom.js"></script>
+  <script src="messaging.js"></script>
+  <script src="prefs.js"></script>
+  <script src="apply.js"></script>
+  <script src="localization.js"></script>
+  <script src="manage.js"></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
-    <div id="header">
-        <h1 id="manage-heading" i18n-text="manageHeading"></h1>
-        <fieldset>
-            <legend id="filters" i18n-text="manageFilters"></legend>
-            <div>
-                <input id="manage.onlyEnabled" type="checkbox">
-                <label id="manage.onlyEnabled-label" for="manage.onlyEnabled" i18n-text="manageOnlyEnabled"></label>
-            </div>
-            <div>
-                <input id="manage.onlyEdited" type="checkbox">
-                <label id="manage.onlyEdited-label" for="manage.onlyEdited" i18n-text="manageOnlyEdited"></label>
-            </div>
-            <div>
-                <input id="search" type="search" i18n-placeholder="searchStyles">
-            </div>
-        </fieldset>
-        <p>
-            <button id="check-all-updates" i18n-text="checkAllUpdates"></button>
-        </p>
-        <p>
-            <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-            <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-        </p>
-        <p>
-            <a href="edit.html">
-                <button id="add-style-label" i18n-text="addStyleLabel"></button>
-            </a>
-        </p>
-        <div id="options">
-            <h2 id="options-heading" i18n-text="optionsHeading"></h2>
-            <div>
-                <input id="show-badge" type="checkbox">
-                <label id="show-badge-label" for="show-badge" i18n-text="prefShowBadge"></label>
-            </div>
-            <div>
-                <input id="popup.stylesFirst" type="checkbox">
-                <label id="stylesFirst-label" for="popup.stylesFirst" i18n-text="popupStylesFirst"></label>
-            </div>
-            <div id="more-options">
-                <h3 id="options-subheading" i18n-text="optionsSubheading"></h3>
-                <button id="manage-options-button" i18n-text="openOptionsManage"></button>
-                <button id="manage-shortcuts-button" i18n-text="openOptionsShortcuts"></button>
-                <p>
-                    <button id="editor-styles-button" i18n-text="editorStylesButton"></button>
-                </p>
-            </div>
+<div id="header">
+  <h1 id="manage-heading" i18n-text="manageHeading"></h1>
+  <fieldset>
+    <legend id="filters" i18n-text="manageFilters"></legend>
+    <label>
+      <input id="manage.onlyEnabled" type="checkbox"
+             data-filter=".enabled"
+             data-filter-hide=".disabled">
+      <span i18n-text="manageOnlyEnabled"></span>
+    </label>
+    <label>
+      <input id="manage.onlyLocal" type="checkbox"
+             data-filter=":not(.updatable)"
+             data-filter-hide=".updatable">
+      <span i18n-text="manageOnlyLocal" i18n-title="manageOnlyLocalTooltip"></span>
+    </label>
+    <label id="onlyUpdates" class="hidden">
+      <input type="checkbox"
+             data-filter=".can-update, .update-problem, .update-done"
+             data-filter-hide=":not(.updatable):not(.update-done), .no-update:not(.update-problem)">
+      <span i18n-text="manageOnlyUpdates"></span>
+    </label>
+    <input id="search" type="search" i18n-placeholder="searchStyles"
+           data-filter=":not(.not-matching)"
+           data-filter-hide=".not-matching">
+  </fieldset>
+  <p>
+    <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
+    <span id="update-history" i18n-title="genericHistoryLabel">
+      <svg class="svg-icon" viewBox="0 0 20 20" i18n-alt="helpAlt">
+        <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
+      </svg>
+    </span>
+  </p>
+  <p>
+    <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+    <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
+    <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
+  </p>
+  <p>
+    <a href="edit.html">
+      <button id="add-style-label" i18n-text="addStyleLabel"></button>
+    </a>
+  </p>
+  <div id="options">
+    <h2 id="options-heading" i18n-text="optionsHeading"></h2>
+    <label><input id="manage.newUI" type="checkbox"><span i18n-text="manageNewUI"></span></label>
+    <div id="newUIoptions">
+      <div>
+        <input id="manage.newUI.favicons" type="checkbox">
+        <label for="manage.newUI.favicons" i18n-text="manageFavicons"></label>
+        <svg class="svg-icon info" viewBox="0 0 14 16" i18n-alt="helpAlt" data-toggle-on-click="#faviconsHelp">
+          <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
+        </svg>
+        <div id="faviconsHelp" class="hidden" i18n-text="manageFaviconsHelp">
+          <div>
+            <input id="manage.newUI.faviconsGray" type="checkbox">
+            <label for="manage.newUI.faviconsGray" i18n-text="manageFaviconsGray"></label>
+          </div>
         </div>
-        <div id="backup">
-            <h2 id="backup-title" i18n-text="backupButtons"></h2>
-            <span id="backup-message" i18n-text="backupMessage"></span>
-            <p>
-                <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
-                <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
-            </p>
-        </div>
-        <p id="manage-text" i18n-html="manageText"></p>
+      </div>
+      <label><input id="manage.newUI.targets" type="number" min="1" max="99"><span i18n-text="manageMaxTargets"></span></label>
     </div>
-    <div id="installed"></div>
-    <script src="openOptions.js"></script>
-    <script src="backup/fileSaveLoad.js"></script>
-</body>
+    <p>
+      <button id="manage-options-button" i18n-text="openOptionsManage"></button>
+      <button id="manage-shortcuts-button" class="chromium-only"
+              i18n-text="shortcuts"
+              i18n-title="shortcutsNote"></button>
+      <a id="find-editor-styles"
+         href="https://userstyles.org/styles/browse/chrome-extension"
+         i18n-title="editorStylesButton"
+         target="_blank"><button i18n-text="cm_theme"></button></a>
+    </p>
+  </div>
+  <div id="backup">
+    <h2 id="backup-title" i18n-text="backupButtons"></h2>
+    <span id="backup-message" i18n-text="backupMessage"></span>
+    <p>
+      <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
+      <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
+    </p>
+  </div>
+  <p id="manage-text" i18n-html="manageText"></p>
+</div>
+<div id="installed"></div>
 
+<script src="backup/fileSaveLoad.js"></script>
+<script src="msgbox/msgbox.js"></script>
+
+</body>
 </html>

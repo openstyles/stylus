@@ -108,6 +108,20 @@
         space_around_combinator = space_around_combinator || ((options.space_around_selector_separator === undefined) ? false : options.space_around_selector_separator);
         var eol = options.eol ? options.eol : 'auto';
 
+        /* STYLUS: hack start */
+        const defaultOption = (opt, defaultValue) => opt === undefined ? defaultValue : opt;
+        var newline_between_properties = defaultOption(options.newline_between_properties, true);
+        var newline_before_open_brace = defaultOption(options.newline_before_open_brace, false);
+        var newline_after_open_brace = defaultOption(options.newline_after_open_brace, true);
+        var newline_before_close_brace = defaultOption(options.newline_before_close_brace, true);
+        var translatePos = (options.translate_positions || [])[0];
+        var translatePosIndex = 0;
+        var translatePosLine = translatePos && translatePos.line;
+        var translatePosCol = translatePos && translatePos.ch;
+        var inputPosLine = 0, inputPosCol = 0;
+        var outputPosLine = 0, outputPosCol = 0;
+        /* STYLUS: hack end */
+
         if (options.indent_with_tabs) {
             indentCharacter = '\t';
             indentSize = 1;
@@ -132,20 +146,46 @@
             ch;
         var parenLevel = 0;
 
-        function next() {
+        function next(resetLine, resetCol) {
+            if (resetLine !== undefined) {
+                inputPosLine = resetLine;
+                inputPosCol = resetCol;
+                if (inputPosCol < 0) {
+                    inputPosLine--;
+                    inputPosCol = pos - source_text.lastIndexOf('\n', pos);
+                }
+            }
             ch = source_text.charAt(++pos);
+            if (translatePos) {
+                inputPosCol++;
+                if (ch == '\n') {
+                    inputPosLine++;
+                    inputPosCol = 0;
+                }
+                if (inputPosLine == translatePosLine && inputPosCol >= translatePosCol
+                || inputPosLine > translatePosLine) {
+                    translatePos.line = outputPosLine - (inputPosLine - translatePosLine);
+                    translatePos.ch = outputPosCol - (inputPosCol - translatePosCol);
+                    translatePos.ch += translatePos.ch ? 1 : 0;
+                    translatePos = options.translate_positions[++translatePosIndex];
+                    translatePosLine = translatePos && translatePos.line;
+                    translatePosCol = translatePos && translatePos.ch;
+                }
+            }
             return ch || '';
         }
 
         function peek(skipWhitespace) {
             var result = '';
             var prev_pos = pos;
+            var prevInputPosLine = inputPosLine;
+            var prevInputPosCol = inputPosCol;
             if (skipWhitespace) {
                 eatWhitespace();
             }
             result = source_text.charAt(pos + 1) || '';
             pos = prev_pos - 1;
-            next();
+            next(prevInputPosLine, prevInputPosCol - 1);
             return result;
         }
 
@@ -165,9 +205,11 @@
 
         function peekString(endChar) {
             var prev_pos = pos;
+            var prevInputPosLine = inputPosLine;
+            var prevInputPosCol = inputPosCol;
             var str = eatString(endChar);
             pos = prev_pos - 1;
-            next();
+            next(prevInputPosLine, prevInputPosCol - 1);
             return str;
         }
 
@@ -259,17 +301,19 @@
 
         var print = {};
         print["{"] = function(ch) {
-            print.singleSpace();
+            newline_before_open_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
+            outputPosCol++;
             if (!eatWhitespace(true)) {
-                print.newLine();
+                newline_after_open_brace ? print.newLine() : print.singleSpace();
             }
         };
         print["}"] = function(newline) {
             if (newline) {
-                print.newLine();
+                newline_before_close_brace ? print.newLine() : (print.trim(), print.singleSpace());
             }
             output.push('}');
+            outputPosCol++;
             if (!eatWhitespace(true)) {
                 print.newLine();
             }
@@ -285,17 +329,22 @@
                     print.trim();
                 } else if (output[output.length - 1] === basebaseIndentString) {
                     output.pop();
+                    outputPosCol -= basebaseIndentString.length;
                 }
                 output.push('\n');
+                outputPosLine++;
+                outputPosCol = 0;
 
                 if (basebaseIndentString) {
                     output.push(basebaseIndentString);
+                    outputPosCol += basebaseIndentString.length;
                 }
             }
         };
         print.singleSpace = function() {
             if (output.length && !print._lastCharWhitespace()) {
                 output.push(' ');
+                outputPosCol++;
             }
         };
 
@@ -307,7 +356,25 @@
 
         print.trim = function() {
             while (print._lastCharWhitespace()) {
-                output.pop();
+                const text = output.pop();
+                if (text.indexOf('\n') >= 0) {
+                    outputPosLine -= text.match(/\n/g).length;
+                }
+            }
+            outputPosCol = 0;
+            let i = output.length, token;
+            while (--i >= 0 && (token = output[i]) != '\n') {
+                outputPosCol += token.length;
+            }
+        };
+
+        print.text = function(text) {
+            output.push(text);
+            if (text.indexOf('\n') < 0) {
+                outputPosCol += text.length;
+            } else {
+                outputPosLine += text.match(/\n/g).length;
+                outputPosCol = text.length - text.lastIndexOf('\n') - 1;
             }
         };
 
@@ -337,7 +404,7 @@
                     print.newLine();
                 }
 
-                output.push(eatComment());
+                print.text(eatComment());
                 print.newLine();
                 if (header) {
                     print.newLine(true);
@@ -347,16 +414,17 @@
                     print.trim();
                 }
                 print.singleSpace();
-                output.push(eatComment());
+                print.text(eatComment());
                 print.newLine();
             } else if (ch === '@') {
                 print.preserveSingleSpace();
 
                 // deal with less propery mixins @{...}
                 if (peek() === '{') {
-                    output.push(eatString('}'));
+                    print.text(eatString('}'));
                 } else {
                     output.push(ch);
+                    outputPosCol++;
 
                     // strip trailing space, if present, for hash property checks
                     var variableOrRule = peekString(": ,;{}()[]/='\"");
@@ -365,7 +433,7 @@
                         // we have a variable or pseudo-class, add it and insert one space before continuing
                         next();
                         variableOrRule = eatString(": ").replace(/\s$/, '');
-                        output.push(variableOrRule);
+                        print.text(variableOrRule);
                         print.singleSpace();
                     }
 
@@ -381,13 +449,14 @@
                 }
             } else if (ch === '#' && peek() === '{') {
                 print.preserveSingleSpace();
-                output.push(eatString('}'));
+                print.text(eatString('}'));
             } else if (ch === '{') {
                 if (peek(true) === '}') {
                     eatWhitespace();
                     next();
                     print.singleSpace();
                     output.push("{");
+                    outputPosCol++;
                     print['}'](false);
                     if (newlinesFromLastWSEat < 2 && newline_between_rules && indentLevel === 0) {
                         print.newLine(true);
@@ -423,6 +492,7 @@
                     // 'property: value' delimiter
                     // which could be in a conditional group query
                     output.push(':');
+                    outputPosCol++;
                     if (!insidePropertyValue) {
                         insidePropertyValue = true;
                         print.singleSpace();
@@ -434,32 +504,37 @@
                     // preserve space before pseudoclasses/pseudoelements, as it means "in any child"
                     if (lookBack(" ") && output[output.length - 1] !== " ") {
                         output.push(" ");
+                        outputPosCol++;
                     }
                     if (peek() === ":") {
                         // pseudo-element
                         next();
                         output.push("::");
+                        outputPosCol += 2;
                     } else {
                         // pseudo-class
                         output.push(':');
+                        outputPosCol++;
                     }
                 }
             } else if (ch === '"' || ch === '\'') {
                 print.preserveSingleSpace();
-                output.push(eatString(ch));
+                print.text(eatString(ch));
             } else if (ch === ';') {
                 insidePropertyValue = false;
                 output.push(ch);
+                outputPosCol++;
                 if (!eatWhitespace(true)) {
-                    print.newLine();
+                    newline_between_properties ? print.newLine() : print.singleSpace();
                 }
             } else if (ch === '(') { // may be a url
                 if (lookBack("url")) {
                     output.push(ch);
+                    outputPosCol++;
                     eatWhitespace();
                     if (next()) {
                         if (ch !== ')' && ch !== '"' && ch !== '\'') {
-                            output.push(eatString(')'));
+                            print.text(eatString(')'));
                         } else {
                             pos--;
                         }
@@ -468,13 +543,16 @@
                     parenLevel++;
                     print.preserveSingleSpace();
                     output.push(ch);
+                    outputPosCol++;
                     eatWhitespace();
                 }
             } else if (ch === ')') {
                 output.push(ch);
+                outputPosCol++;
                 parenLevel--;
             } else if (ch === ',') {
                 output.push(ch);
+                outputPosCol++;
                 if (!eatWhitespace(true) && selectorSeparatorNewline && !insidePropertyValue && parenLevel < 1) {
                     print.newLine();
                 } else {
@@ -486,9 +564,11 @@
                 if (space_around_combinator) {
                     print.singleSpace();
                     output.push(ch);
+                    outputPosCol++;
                     print.singleSpace();
                 } else {
                     output.push(ch);
+                    outputPosCol++;
                     eatWhitespace();
                     // squash extra whitespace
                     if (ch && whiteRe.test(ch)) {
@@ -497,18 +577,22 @@
                 }
             } else if (ch === ']') {
                 output.push(ch);
+                outputPosCol++;
             } else if (ch === '[') {
                 print.preserveSingleSpace();
                 output.push(ch);
+                outputPosCol++;
             } else if (ch === '=') { // no whitespace before or after
                 eatWhitespace();
                 output.push('=');
+                outputPosCol++;
                 if (whiteRe.test(ch)) {
                     ch = '';
                 }
             } else {
                 print.preserveSingleSpace();
                 output.push(ch);
+                outputPosCol++;
             }
         }
 

@@ -1,602 +1,598 @@
-function getDatabase(ready, error) {
-	var dbOpenRequest = window.indexedDB.open("stylish", 2);
-	dbOpenRequest.onsuccess = function(e) {
-		ready(e.target.result);
-	};
-	dbOpenRequest.onerror = function(event) {
-		console.log(event.target.errorCode);
-		if (error) {
-			error(event);
-		}
-	};
-	dbOpenRequest.onupgradeneeded = function(event) {
-		if (event.oldVersion == 0) {
-			var os = event.target.result.createObjectStore("styles", {keyPath: 'id', autoIncrement: true});
-			webSqlStorage.migrate();
-		}
-	}
+'use strict';
+
+const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
+  /(@namespace[\s\r\n]+(?:[^\s\r\n]+[\s\r\n]+)?url\(http:\/\/.*?\);)/,
+  /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
+const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
+const SLOPPY_REGEXP_PREFIX = '\0';
+
+// eslint-disable-next-line no-var
+var DIGEST_KEY_PREFIX = 'originalDigest';
+
+// Note, only 'var'-declared variables are visible from another extension page
+// eslint-disable-next-line no-var
+var cachedStyles = {
+  list: null,            // array of all styles
+  byId: new Map(),       // all styles indexed by id
+  filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
+  regexps: new Map(),    // compiled style regexps
+  urlDomains: new Map(), // getDomain() results for 100 last checked urls
+  emptyCode: new Map(),  // entire code is comments/whitespace/@namespace
+  mutex: {
+    inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
+    onDone: [],          // to getStyles() are queued and resolved when the first one finishes
+  },
 };
 
-var cachedStyles = null;
-function getStyles(options, callback) {
-	if (cachedStyles != null) {
-		callback(filterStyles(cachedStyles, options));
-		return;
-	}
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readonly");
-		var os = tx.objectStore("styles");
-		var all = [];
-		os.openCursor().onsuccess = function(event) {
-			var cursor = event.target.result;
-			if (cursor) {
-				var s = cursor.value;
-				s.id = cursor.key;
-				all.push(cursor.value);
-				cursor.continue();
-			} else {
-				cachedStyles = all;
-				try{
-					callback(filterStyles(all, options));
-				} catch(e){
-					// no error in console, it works
-				}
-			}
-		};
-  }, null);
+// eslint-disable-next-line no-var
+var chromeLocal = {
+  get(options) {
+    return new Promise(resolve => {
+      chrome.storage.local.get(options, data => resolve(data));
+    });
+  },
+  set(data) {
+    return new Promise(resolve => {
+      chrome.storage.local.set(data, () => resolve(data));
+    });
+  },
+  getValue(key) {
+    return chromeLocal.get(key).then(data => data[key]);
+  },
+  setValue(key, value) {
+    return chromeLocal.set({[key]: value});
+  },
+};
+
+
+function dbExec(method, data) {
+  return new Promise((resolve, reject) => {
+    Object.assign(indexedDB.open('stylish', 2), {
+      onsuccess(event) {
+        const database = event.target.result;
+        if (!method) {
+          resolve(database);
+        } else {
+          const transaction = database.transaction(['styles'], 'readwrite');
+          const store = transaction.objectStore('styles');
+          Object.assign(store[method](data), {
+            onsuccess: event => resolve(event, store, transaction, database),
+            onerror: reject,
+          });
+        }
+      },
+      onerror(event) {
+        console.warn(event.target.errorCode);
+        reject(event);
+      },
+      onupgradeneeded(event) {
+        if (event.oldVersion == 0) {
+          event.target.result.createObjectStore('styles', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+        }
+      },
+    });
+  });
 }
 
-function invalidateCache(andNotify) {
-	cachedStyles = null;
-	if (andNotify) {
-		chrome.runtime.sendMessage({method: "invalidateCache"});
-	}
+
+function getStyles(options) {
+  if (cachedStyles.list) {
+    return Promise.resolve(filterStyles(options));
+  }
+  if (cachedStyles.mutex.inProgress) {
+    return new Promise(resolve => {
+      cachedStyles.mutex.onDone.push({options, resolve});
+    });
+  }
+  cachedStyles.mutex.inProgress = true;
+
+  return dbExec('getAll').then(event => {
+    cachedStyles.list = event.target.result || [];
+    cachedStyles.byId.clear();
+    const t0 = performance.now();
+    let hasTimeToCompile = true;
+    for (const style of cachedStyles.list) {
+      cachedStyles.byId.set(style.id, style);
+      if (hasTimeToCompile) {
+        hasTimeToCompile = !compileStyleRegExps({style}) || performance.now() - t0 > 100;
+      }
+    }
+
+    cachedStyles.mutex.inProgress = false;
+    for (const {options, resolve} of cachedStyles.mutex.onDone) {
+      resolve(filterStyles(options));
+    }
+    cachedStyles.mutex.onDone = [];
+    return filterStyles(options);
+  });
 }
 
-function filterStyles(styles, options) {
-	var enabled = fixBoolean(options.enabled);
-	var url = "url" in options ? options.url : null;
-	var id = "id" in options ? Number(options.id) : null;
-	var matchUrl = "matchUrl" in options ? options.matchUrl : null;
 
-	if (enabled != null) {
-		styles = styles.filter(function(style) {
-			return style.enabled == enabled;
-		});
-	}
-	if (url != null) {
-		styles = styles.filter(function(style) {
-			return style.url == url;
-		});
-	}
-	if (id != null) {
-		styles = styles.filter(function(style) {
-			return style.id == id;
-		});
-	}
-	if (matchUrl != null) {
-		// Return as a hash from style to applicable sections? Can only be used with matchUrl.
-		var asHash = "asHash" in options ? options.asHash : false;
-		if (asHash) {
-			var h = {disableAll: prefs.get("disableAll", false)};
-			styles.forEach(function(style) {
-				var applicableSections = getApplicableSections(style, matchUrl);
-				if (applicableSections.length > 0) {
-					h[style.id] = applicableSections;
-				}
-			});
-			return h;
-		}
-		styles = styles.filter(function(style) {
-			var applicableSections = getApplicableSections(style, matchUrl);
-			return applicableSections.length > 0;
-		});
-	}
-	return styles;
+function filterStyles({
+  enabled = null,
+  url = null,
+  id = null,
+  matchUrl = null,
+  asHash = null,
+  strictRegexp = true, // used by the popup to detect bad regexps
+} = {}) {
+  enabled = enabled === null || typeof enabled == 'boolean' ? enabled :
+    typeof enabled == 'string' ? enabled == 'true' : null;
+  id = id === null ? null : Number(id);
+
+  if (enabled === null
+  && url === null
+  && id === null
+  && matchUrl === null
+  && asHash != true) {
+    return cachedStyles.list;
+  }
+  const blankHash = asHash && {
+    disableAll: prefs.get('disableAll'),
+    exposeIframes: prefs.get('exposeIframes'),
+  };
+
+  if (matchUrl && matchUrl.startsWith(URLS.chromeWebStore)) {
+    // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
+    // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
+    return asHash ? {} : [];
+  }
+
+  // add \t after url to prevent collisions (not sure it can actually happen though)
+  const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
+  const cached = cachedStyles.filters.get(cacheKey);
+  if (cached) {
+    cached.hits++;
+    cached.lastHit = Date.now();
+    return asHash
+      ? Object.assign(blankHash, cached.styles)
+      : cached.styles;
+  }
+
+  return filterStylesInternal({
+    enabled,
+    url,
+    id,
+    matchUrl,
+    asHash,
+    strictRegexp,
+    blankHash,
+    cacheKey,
+  });
 }
 
-function saveStyle(style, {notify = true} = {}) {
-	return new Promise(resolve => {
-		getDatabase(db => {
-			const tx = db.transaction(['styles'], 'readwrite');
-			const os = tx.objectStore('styles');
 
-			// Update
-			if (style.id) {
-				style.id = Number(style.id);
-				os.get(style.id).onsuccess = eventGet => {
-					const oldStyle = Object.assign({}, eventGet.target.result);
-					const codeIsUpdated = !styleSectionsEqual(style, oldStyle);
-					style = Object.assign(oldStyle, style);
-					os.put(style).onsuccess = eventPut => {
-						style.id = style.id || eventPut.target.result;
-						if (notify) {
-							notifyAllTabs({method: 'styleUpdated', style, codeIsUpdated});
-						}
-						invalidateCache(notify);
-						resolve(style);
-					};
-				};
-				return;
-			}
+function filterStylesInternal({
+  // js engines don't like big functions (V8 often deoptimized the original filterStyles)
+  // it also makes sense to extract the less frequently executed code
+  enabled,
+  url,
+  id,
+  matchUrl,
+  asHash,
+  strictRegexp,
+  blankHash,
+  cacheKey,
+}) {
+  if (matchUrl && !cachedStyles.urlDomains.has(matchUrl)) {
+    cachedStyles.urlDomains.set(matchUrl, getDomains(matchUrl));
+    for (let i = cachedStyles.urlDomains.size - 100; i > 0; i--) {
+      const firstKey = cachedStyles.urlDomains.keys().next().value;
+      cachedStyles.urlDomains.delete(firstKey);
+    }
+  }
 
-			// Create
-			style = Object.assign({
-				// Set optional things if they're undefined
-				enabled: true,
-				updateUrl: null,
-				md5Url: null,
-				url: null,
-				originalMd5: null,
-			}, style, {
-				// Set other optional things to empty array if they're undefined
-				sections: style.sections.map(section =>
-					Object.assign({
-						urls: [],
-						urlPrefixes: [],
-						domains: [],
-						regexps: [],
-					}, section)
-				),
-			})
-			// Make sure it's not null - that makes indexeddb sad
-			delete style.id;
-			os.add(style).onsuccess = event => {
-				invalidateCache(true);
-				// Give it the ID that was generated
-				style.id = event.target.result;
-				notifyAllTabs({method: 'styleAdded', style});
-				resolve(style);
-			};
-		});
-	});
+  const styles = id === null
+    ? cachedStyles.list
+    : [cachedStyles.byId.get(id)];
+  const filtered = asHash ? {} : [];
+  if (!styles) {
+    // may happen when users [accidentally] reopen an old URL
+    // of edit.html with a non-existent style id parameter
+    return filtered;
+  }
+
+  const needSections = asHash || matchUrl !== null;
+
+  for (let i = 0, style; (style = styles[i]); i++) {
+    if ((enabled === null || style.enabled == enabled)
+    && (url === null || style.url == url)
+    && (id === null || style.id == id)) {
+      const sections = needSections &&
+        getApplicableSections({style, matchUrl, strictRegexp, stopOnFirst: !asHash});
+      if (asHash) {
+        if (sections.length) {
+          filtered[style.id] = sections;
+        }
+      } else if (matchUrl === null || sections.length) {
+        filtered.push(style);
+      }
+    }
+  }
+
+  cachedStyles.filters.set(cacheKey, {
+    styles: filtered,
+    lastHit: Date.now(),
+    hits: 1,
+  });
+  if (cachedStyles.filters.size > 10000) {
+    cleanupCachedFilters();
+  }
+
+  return asHash
+    ? Object.assign(blankHash, filtered)
+    : filtered;
 }
 
-function enableStyle(id, enabled) {
-	saveStyle({id: id, enabled: enabled}).then(style => {
-		handleUpdate(style);
-		notifyAllTabs({method: "styleUpdated", style});
-	});
+
+function saveStyle(style) {
+  const id = Number(style.id) || null;
+  const reason = style.reason;
+  const notify = style.notify !== false;
+  const styleDigest = style.styleDigest;
+  delete style.method;
+  delete style.reason;
+  delete style.notify;
+  delete style.styleDigest;
+  if (!style.name) {
+    delete style.name;
+  }
+  let existed, codeIsUpdated;
+  if (id !== null) {
+    // Update or create
+    style.id = id;
+    return dbExec('get', id).then((event, store) => {
+      const oldStyle = event.target.result;
+      existed = Boolean(oldStyle);
+      codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
+      style = Object.assign({}, oldStyle, style);
+      return write(style, store);
+    });
+  } else {
+    // Create
+    delete style.id;
+    style = Object.assign({
+      // Set optional things if they're undefined
+      enabled: true,
+      updateUrl: null,
+      md5Url: null,
+      url: null,
+      originalMd5: null,
+    }, style);
+    return write(style);
+  }
+
+  function write(style, store) {
+    style.sections = normalizeStyleSections(style);
+    if (store) {
+      return new Promise(resolve => {
+        store.put(style).onsuccess = event => resolve(done(event));
+      });
+    } else {
+      return dbExec('put', style).then(done);
+    }
+  }
+
+  function done(event) {
+    style.id = style.id || event.target.result;
+    invalidateCache(existed ? {updated: style} : {added: style});
+    compileStyleRegExps({style});
+    if (notify) {
+      notifyAllTabs({
+        method: existed ? 'styleUpdated' : 'styleAdded',
+        style, codeIsUpdated, reason,
+      });
+    }
+    if (reason == 'update') {
+      updateStyleDigest(style);
+    } else if (reason == 'import') {
+      if (typeof styleDigest == 'string' && styleDigest.length == 40) {
+        chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, styleDigest);
+      } else {
+        chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id);
+      }
+    }
+    return style;
+  }
 }
 
-function deleteStyle(id, callback = function (){}) {
-	getDatabase(function(db) {
-		var tx = db.transaction(["styles"], "readwrite");
-		var os = tx.objectStore("styles");
-		var request = os.delete(Number(id));
-		request.onsuccess = function(event) {
-			handleDelete(id);
-			invalidateCache(true);
-			notifyAllTabs({method: "styleDeleted", id: id});
-			callback();
-		};
-	});
+
+function deleteStyle({id, notify = true}) {
+  id = Number(id);
+  chrome.storage.local.remove(DIGEST_KEY_PREFIX + id, ignoreChromeError);
+  return dbExec('delete', id).then(() => {
+    invalidateCache({deletedId: id});
+    if (notify) {
+      notifyAllTabs({method: 'styleDeleted', id});
+    }
+    return id;
+  });
 }
 
-function reportError() {
-	for (i in arguments) {
-		if ("message" in arguments[i]) {
-			//alert(arguments[i].message);
-			console.log(arguments[i].message);
-		}
-	}
+
+function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirst}) {
+  if (!matchUrl.startsWith('http')
+  && !matchUrl.startsWith('ftp')
+  && !matchUrl.startsWith('file')
+  && !matchUrl.startsWith(URLS.ownOrigin)) {
+    return [];
+  }
+  const sections = [];
+  for (const section of style.sections) {
+    const {urls, domains, urlPrefixes, regexps, code} = section;
+    if ((!urls.length && !urlPrefixes.length && !domains.length && !regexps.length
+      || urls.length
+        && urls.indexOf(matchUrl) >= 0
+      || urlPrefixes.length
+        && arraySomeIsPrefix(urlPrefixes, matchUrl)
+      || domains.length
+        && arraySomeIn(cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl), domains)
+      || regexps.length
+        && arraySomeMatches(regexps, matchUrl, strictRegexp)
+    ) && !styleCodeEmpty(code)) {
+      sections.push(section);
+      if (stopOnFirst) {
+        break;
+      }
+    }
+  }
+  return sections;
+
+  function arraySomeIsPrefix(array, string) {
+    for (const prefix of array) {
+      if (string.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function arraySomeIn(array, haystack) {
+    for (const el of array) {
+      if (haystack.indexOf(el) >= 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function arraySomeMatches(array, matchUrl, strictRegexp) {
+    for (const regexp of array) {
+      for (let pass = 1; pass <= (strictRegexp ? 1 : 2); pass++) {
+        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+        let rx = cachedStyles.regexps.get(cacheKey);
+        if (rx == false) {
+          // invalid regexp
+          break;
+        }
+        if (!rx) {
+          const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+          rx = tryRegExp(anchored);
+          cachedStyles.regexps.set(cacheKey, rx || false);
+          if (!rx) {
+            // invalid regexp
+            break;
+          }
+        }
+        if (rx.test(matchUrl)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
 
-function fixBoolean(b) {
-	if (typeof b != "undefined") {
-		return b != "false";
-	}
-	return null;
+
+function styleCodeEmpty(code) {
+  // Collect the section if not empty or namespace-only.
+  // We don't check long code as it's slow both for emptyCode declared as Object
+  // and as Map in case the string is not the same reference used to add the item
+  let isEmpty = code !== null &&
+    code.length < 1000 &&
+    cachedStyles.emptyCode.get(code);
+  if (isEmpty !== undefined) {
+    return isEmpty;
+  }
+  isEmpty = !code || !code.trim()
+    || code.indexOf('@namespace') >= 0
+    && code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '';
+  cachedStyles.emptyCode.set(code, isEmpty);
+  return isEmpty;
 }
+
+
+function styleSectionsEqual({sections: a}, {sections: b}) {
+  if (!a || !b) {
+    return undefined;
+  }
+  if (a.length != b.length) {
+    return false;
+  }
+  const checkedInB = [];
+  return a.every(sectionA => b.some(sectionB => {
+    if (!checkedInB.includes(sectionB) && propertiesEqual(sectionA, sectionB)) {
+      checkedInB.push(sectionB);
+      return true;
+    }
+  }));
+
+  function propertiesEqual(secA, secB) {
+    for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
+      if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
+        return false;
+      }
+    }
+    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a == b);
+  }
+
+  function equalOrEmpty(a, b, telltale, comparator) {
+    const typeA = a && typeof a[telltale] == 'function';
+    const typeB = b && typeof b[telltale] == 'function';
+    return (
+      (a === null || a === undefined || (typeA && !a.length)) &&
+      (b === null || b === undefined || (typeB && !b.length))
+    ) || typeA && typeB && a.length == b.length && comparator(a, b);
+  }
+
+  function arrayMirrors(array1, array2) {
+    for (const el of array1) {
+      if (array2.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    for (const el of array2) {
+      if (array1.indexOf(el) < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+
+function compileStyleRegExps({style, compileAll}) {
+  const t0 = performance.now();
+  for (const section of style.sections || []) {
+    for (const regexp of section.regexps) {
+      for (let pass = 1; pass <= (compileAll ? 2 : 1); pass++) {
+        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+        if (cachedStyles.regexps.has(cacheKey)) {
+          continue;
+        }
+        // according to CSS4 @document specification the entire URL must match
+        const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+        const rx = tryRegExp(anchored);
+        cachedStyles.regexps.set(cacheKey, rx || false);
+        if (!compileAll && performance.now() - t0 > 100) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+
+function invalidateCache({added, updated, deletedId} = {}) {
+  if (!cachedStyles.list) {
+    return;
+  }
+  const id = added ? added.id : updated ? updated.id : deletedId;
+  const cached = cachedStyles.byId.get(id);
+  if (updated) {
+    if (cached) {
+      Object.assign(cached, updated);
+      cachedStyles.filters.clear();
+      return;
+    } else {
+      added = updated;
+    }
+  }
+  if (added) {
+    if (!cached) {
+      cachedStyles.list.push(added);
+      cachedStyles.byId.set(added.id, added);
+      cachedStyles.filters.clear();
+    }
+    return;
+  }
+  if (deletedId !== undefined) {
+    if (cached) {
+      const cachedIndex = cachedStyles.list.indexOf(cached);
+      cachedStyles.list.splice(cachedIndex, 1);
+      cachedStyles.byId.delete(deletedId);
+      cachedStyles.filters.clear();
+      return;
+    }
+  }
+  cachedStyles.list = null;
+  cachedStyles.filters.clear();
+}
+
+
+function cleanupCachedFilters({force = false} = {}) {
+  if (!force) {
+    debounce(cleanupCachedFilters, 1000, {force: true});
+    return;
+  }
+  const size = cachedStyles.filters.size;
+  const oldestHit = cachedStyles.filters.values().next().value.lastHit;
+  const now = Date.now();
+  const timeSpan = now - oldestHit;
+  const recencyWeight = 5 / size;
+  const hitWeight = 1 / 4; // we make ~4 hits per URL
+  const lastHitWeight = 10;
+  // delete the oldest 10%
+  [...cachedStyles.filters.entries()]
+    .map(([id, v], index) => ({
+      id,
+      weight:
+        index * recencyWeight +
+        v.hits * hitWeight +
+        (v.lastHit - oldestHit) / timeSpan * lastHitWeight,
+    }))
+    .sort((a, b) => a.weight - b.weight)
+    .slice(0, size / 10 + 1)
+    .forEach(({id}) => cachedStyles.filters.delete(id));
+}
+
 
 function getDomains(url) {
-	if (url.indexOf("file:") == 0) {
-		return [];
-	}
-	var d = /.*?:\/*([^\/:]+)/.exec(url)[1];
-	var domains = [d];
-	while (d.indexOf(".") != -1) {
-		d = d.substring(d.indexOf(".") + 1);
-		domains.push(d);
-	}
-	return domains;
+  if (url.indexOf('file:') == 0) {
+    return [];
+  }
+  let d = /.*?:\/*([^/:]+)/.exec(url)[1];
+  const domains = [d];
+  while (d.indexOf('.') != -1) {
+    d = d.substring(d.indexOf('.') + 1);
+    domains.push(d);
+  }
+  return domains;
 }
 
-function getType(o) {
-	if (typeof o == "undefined" || typeof o == "string") {
-		return typeof o;
-	}
-	if (o instanceof Array) {
-		return "array";
-	}
-	throw "Not supported - " + o;
+
+function normalizeStyleSections({sections}) {
+  // retain known properties in an arbitrarily predefined order
+  return (sections || []).map(section => ({
+    code: section.code || '',
+    urls: section.urls || [],
+    urlPrefixes: section.urlPrefixes || [],
+    domains: section.domains || [],
+    regexps: section.regexps || [],
+  }));
 }
 
-var namespacePattern = /^\s*(@namespace[^;]+;\s*)+$/;
-function getApplicableSections(style, url) {
-	var sections = style.sections.filter(function(section) {
-		return sectionAppliesToUrl(section, url);
-	});
-	// ignore if it's just namespaces
-	if (sections.length == 1 && namespacePattern.test(sections[0].code)) {
-		return [];
-	}
-	return sections;
+
+function getStyleDigests(style) {
+  return Promise.all([
+    chromeLocal.getValue(DIGEST_KEY_PREFIX + style.id),
+    calcStyleDigest(style),
+  ]);
 }
 
-function sectionAppliesToUrl(section, url) {
-	// only http, https, file, and chrome-extension allowed
-	if (url.indexOf("http") != 0 && url.indexOf("file") != 0 && url.indexOf("chrome-extension") != 0 && url.indexOf("ftp") != 0) {
-		return false;
-	}
-	// other extensions can't be styled
-	if (url.indexOf("chrome-extension") == 0 && url.indexOf(chrome.extension.getURL("")) != 0) {
-		return false;
-	}
-	if (section.urls.length == 0 && section.domains.length == 0 && section.urlPrefixes.length == 0 && section.regexps.length == 0) {
-		//console.log(section.id + " is global");
-		return true;
-	}
-	if (section.urls.indexOf(url) != -1) {
-		//console.log(section.id + " applies to " + url + " due to URL rules");
-		return true;
-	}
-	if (section.urlPrefixes.some(function(prefix) {
-		return url.indexOf(prefix) == 0;
-	})) {
-		//console.log(section.id + " applies to " + url + " due to URL prefix rules");
-		return true;
-	}
-	if (section.domains.length > 0 && getDomains(url).some(function(domain) {
-		return section.domains.indexOf(domain) != -1;
-	})) {
-		//console.log(section.id + " applies due to " + url + " due to domain rules");
-		return true;
-	}
-	if (section.regexps.some(function(regexp) {
-		// we want to match the full url, so add ^ and $ if not already present
-		if (regexp[0] != "^") {
-			regexp = "^" + regexp;
-		}
-		if (regexp[regexp.length - 1] != "$") {
-			regexp += "$";
-		}
-		var re = runTryCatch(function() { return new RegExp(regexp) });
-		if (re) {
-			return (re).test(url);
-		} else {
-			console.log(section.id + "'s regexp '" + regexp + "' is not valid");
-		}
-	})) {
-		//console.log(section.id + " applies to " + url + " due to regexp rules");
-		return true;
-	}
-	//console.log(section.id + " does not apply due to " + url);
-	return false;
+
+function updateStyleDigest(style) {
+  calcStyleDigest(style).then(digest =>
+    chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, digest));
 }
 
-function isCheckbox(el) {
-	return el.nodeName.toLowerCase() == "input" && "checkbox" == el.type.toLowerCase();
-}
 
-// js engine can't optimize the entire function if it contains try-catch
-// so we should keep it isolated from normal code in a minimal wrapper
-function runTryCatch(func) {
-	try { return func() }
-	catch(e) {}
-}
+function calcStyleDigest(style) {
+  const jsonString = JSON.stringify(normalizeStyleSections(style));
+  const text = new TextEncoder('utf-8').encode(jsonString);
+  return crypto.subtle.digest('SHA-1', text).then(hex);
 
-// Accepts an array of pref names (values are fetched via prefs.get)
-// and establishes a two-way connection between the document elements and the actual prefs
-function setupLivePrefs(IDs) {
-	var localIDs = {};
-	IDs.forEach(function(id) {
-		localIDs[id] = true;
-		updateElement(id).addEventListener("change", function() {
-			prefs.set(this.id, isCheckbox(this) ? this.checked : this.value);
-		});
-	});
-	chrome.runtime.onMessage.addListener(function(request) {
-		if (request.prefName in localIDs) {
-			updateElement(request.prefName);
-		}
-	});
-	function updateElement(id) {
-		var el = document.getElementById(id);
-		el[isCheckbox(el) ? "checked" : "value"] = prefs.get(id);
-		el.dispatchEvent(new Event("change", {bubbles: true, cancelable: true}));
-		return el;
-	}
-}
-
-var prefs = chrome.extension.getBackgroundPage().prefs || new function Prefs() {
-	var me = this;
-
-	var defaults = {
-		"openEditInWindow": false,      // new editor opens in a own browser window
-		"windowPosition": {},           // detached window position
-		"show-badge": true,             // display text on popup menu icon
-		"disableAll": false,            // boss key
-
-		"popup.breadcrumbs": true,      // display "New style" links as URL breadcrumbs
-		"popup.breadcrumbs.usePath": false, // use URL path for "this URL"
-		"popup.enabledFirst": true,     // display enabled styles before disabled styles
-		"popup.stylesFirst": true,      // display enabled styles before disabled styles
-
-		"manage.onlyEnabled": false,    // display only enabled styles
-		"manage.onlyEdited": false,     // display only styles created locally
-
-		"editor.options": {},           // CodeMirror.defaults.*
-		"editor.lineWrapping": true,    // word wrap
-		"editor.smartIndent": true,     // "smart" indent
-		"editor.indentWithTabs": false, // smart indent with tabs
-		"editor.tabSize": 4,            // tab width, in spaces
-		"editor.keyMap": navigator.appVersion.indexOf("Windows") > 0 ? "sublime" : "default",
-		"editor.theme": "default",      // CSS theme
-		"editor.beautify": {            // CSS beautifier
-			selector_separator_newline: true,
-			newline_before_open_brace: false,
-			newline_after_open_brace: true,
-			newline_between_properties: true,
-			newline_before_close_brace: true,
-			newline_between_rules: false,
-			end_with_newline: false
-		},
-		"editor.lintDelay": 500,        // lint gutter marker update delay, ms
-		"editor.lintReportDelay": 4500, // lint report update delay, ms
-
-		"badgeDisabled": "#8B0000",     // badge background color when disabled
-		"badgeNormal": "#006666",       // badge background color
-
-		"popupWidth": 240,              // popup width in pixels
-
-		"updateInterval": 0             // user-style automatic update interval, hour
-	};
-	var values = deepCopy(defaults);
-
-	var syncTimeout; // see broadcast() function below
-
-	Object.defineProperty(this, "readOnlyValues", {value: {}});
-
-	Prefs.prototype.get = function(key, defaultValue) {
-		if (key in values) {
-			return values[key];
-		}
-		if (defaultValue !== undefined) {
-			return defaultValue;
-		}
-		if (key in defaults) {
-			return defaults[key];
-		}
-		console.warn("No default preference for '%s'", key);
-	};
-
-	Prefs.prototype.getAll = function(key) {
-		return deepCopy(values);
-	};
-
-	Prefs.prototype.set = function(key, value, options) {
-		var oldValue = deepCopy(values[key]);
-		values[key] = value;
-		defineReadonlyProperty(this.readOnlyValues, key, value);
-		if ((!options || !options.noBroadcast) && !equal(value, oldValue)) {
-			me.broadcast(key, value, options);
-		}
-	};
-
-	Prefs.prototype.remove = function(key) { me.set(key, undefined) };
-
-	Prefs.prototype.broadcast = function(key, value, options) {
-		var message = {method: "prefChanged", prefName: key, value: value};
-		notifyAllTabs(message);
-		chrome.runtime.sendMessage(message);
-		if (key == "disableAll") {
-			notifyAllTabs({method: "styleDisableAll", disableAll: value});
-		}
-		if (!options || !options.noSync) {
-			clearTimeout(syncTimeout);
-			syncTimeout = setTimeout(function() {
-				getSync().set({"settings": values});
-			}, 0);
-		}
-	};
-
-	Object.keys(defaults).forEach(function(key) {
-		me.set(key, defaults[key], {noBroadcast: true});
-	});
-
-	getSync().get("settings", function(result) {
-		var synced = result.settings;
-		for (var key in defaults) {
-			if (synced && (key in synced)) {
-				me.set(key, synced[key], {noSync: true});
-			} else {
-				var value = tryMigrating(key);
-				if (value !== undefined) {
-					me.set(key, value);
-				}
-			}
-		}
-		// make sure right click context menu is in the right state when prefs are loaded
-		chrome.contextMenus.update("disableAll", {checked: prefs.get("disableAll")});
-		chrome.contextMenus.update("show-badge", {checked: prefs.get("show-badge")});
-	});
-
-	chrome.storage.onChanged.addListener(function(changes, area) {
-		if (area == "sync" && "settings" in changes) {
-			var synced = changes.settings.newValue;
-			if (synced) {
-				for (key in defaults) {
-					if (key in synced) {
-						me.set(key, synced[key], {noSync: true});
-					}
-				}
-			} else {
-				// user manually deleted our settings, we'll recreate them
-				getSync().set({"settings": values});
-			}
-		}
-	});
-
-	function tryMigrating(key) {
-		if (!(key in localStorage)) {
-			return undefined;
-		}
-		var value = localStorage[key];
-		delete localStorage[key];
-		localStorage["DEPRECATED: " + key] = value;
-		switch (typeof defaults[key]) {
-			case "boolean":
-				return value.toLowerCase() === "true";
-			case "number":
-				return Number(value);
-			case "object":
-				try {
-					return JSON.parse(value);
-				} catch(e) {
-					console.log("Cannot migrate from localStorage %s = '%s': %o", key, value, e);
-					return undefined;
-				}
-		}
-		return value;
-	}
-};
-
-function getCodeMirrorThemes(callback) {
-	chrome.runtime.getPackageDirectoryEntry(function(rootDir) {
-		rootDir.getDirectory("codemirror/theme", {create: false}, function(themeDir) {
-			themeDir.createReader().readEntries(function(entries) {
-				var themes = [chrome.i18n.getMessage("defaultTheme")];
-				entries
-					.filter(function(entry) { return entry.isFile })
-					.sort(function(a, b) { return a.name < b.name ? -1 : 1 })
-					.forEach(function(entry) {
-						themes.push(entry.name.replace(/\.css$/, ""));
-					});
-				if (callback) {
-					callback(themes);
-				}
-			});
-		});
-	});
-}
-
-function sessionStorageHash(name) {
-	var hash = {
-		value: {},
-		set: function(k, v) { this.value[k] = v; this.updateStorage(); },
-		unset: function(k) { delete this.value[k]; this.updateStorage(); },
-		updateStorage: function() {
-			sessionStorage[this.name] = JSON.stringify(this.value);
-		}
-	};
-	try { hash.value = JSON.parse(sessionStorage[name]); } catch(e) {}
-	Object.defineProperty(hash, "name", {value: name});
-	return hash;
-}
-
-function deepCopy(obj) {
-	if (!obj || typeof obj != "object") {
-		return obj;
-	} else {
-		var emptyCopy = Object.create(Object.getPrototypeOf(obj));
-		return deepMerge(emptyCopy, obj);
-	}
-}
-
-function deepMerge(target, obj1 /* plus any number of object arguments */) {
-	for (var i = 1; i < arguments.length; i++) {
-		var obj = arguments[i];
-		for (var k in obj) {
-			// hasOwnProperty checking is not needed for our non-OOP stuff
-			var value = obj[k];
-			if (!value || typeof value != "object") {
-				target[k] = value;
-			} else if (k in target) {
-				deepMerge(target[k], value);
-			} else {
-				target[k] = deepCopy(value);
-			}
-		}
-	}
-	return target;
-}
-
-function equal(a, b) {
-	if (!a || !b || typeof a != "object" || typeof b != "object") {
-		return a === b;
-	}
-	if (Object.keys(a).length != Object.keys(b).length) {
-		return false;
-	}
-	for (var k in a) {
-		if (a[k] !== b[k]) {
-			return false;
-		}
-	}
-	return true;
-}
-
-function defineReadonlyProperty(obj, key, value) {
-	var copy = deepCopy(value);
-	// In ES6, freezing a literal is OK (it returns the same value), but in previous versions it's an exception.
-	if (typeof copy == "object") {
-		Object.freeze(copy);
-	}
-	Object.defineProperty(obj, key, {value: copy, configurable: true})
-}
-
-// Polyfill, can be removed when Firefox gets this - https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
-function getSync() {
-	if ("sync" in chrome.storage) {
-		return chrome.storage.sync;
-	}
-	crappyStorage = {};
-	return {
-		get: function(key, callback) {
-			callback(crappyStorage[key] || {});
-		},
-		set: function(source, callback) {
-			for (var property in source) {
-					if (source.hasOwnProperty(property)) {
-							crappyStorage[property] = source[property];
-					}
-			}
-			callback();
-		}
-	}
-}
-
-function styleSectionsEqual(styleA, styleB) {
-	if (!styleA.sections || !styleB.sections) {
-		return undefined;
-	}
-	if (styleA.sections.length != styleB.sections.length) {
-		return false;
-	}
-	const properties = ['code', 'urlPrefixes', 'urls', 'domains', 'regexps'];
-	return styleA.sections.every(sectionA =>
-		styleB.sections.some(sectionB =>
-			properties.every(property => sectionEquals(sectionA, sectionB, property))
-		)
-	);
-
-	function sectionEquals(a, b, property) {
-		const aProp = a[property], typeA = getType(aProp);
-		const bProp = b[property], typeB = getType(bProp);
-		if (typeA != typeB) {
-			// consider empty arrays equivalent to lack of property
-			return ((typeA == 'undefined' || (typeA == 'array' && aProp.length == 0)) &&
-				(typeB == 'undefined' || (typeB == 'array' && bProp.length == 0)));
-		}
-		if (typeA == 'undefined') {
-			return true;
-		}
-		if (typeA == 'array') {
-			return aProp.length == bProp.length && aProp.every(item => bProp.includes(item));
-		}
-		if (typeA == 'string') {
-			return aProp == bProp;
-		}
-	}
+  function hex(buffer) {
+    const parts = [];
+    const PAD8 = '00000000';
+    const view = new DataView(buffer);
+    for (let i = 0; i < view.byteLength; i += 4) {
+      parts.push((PAD8 + view.getUint32(i).toString(16)).slice(-8));
+    }
+    return parts.join('');
+  }
 }

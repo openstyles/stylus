@@ -1,62 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html id="stylus">
 <head>
-  <title>Stylus Options</title>
+  <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="index.css">
-  <script src="../localization.js"></script>
+  <script src="/dom.js"></script>
+  <script src="/messaging.js"></script>
+  <script src="/localization.js"></script>
+  <script src="/prefs.js"></script>
+  <script src="/apply.js"></script>
 </head>
 
 <body>
-  <h1 i18n-text="optionsCustomize"></h1>
-  <table>
-    <tbody>
-      <tr>
-        <td i18n-text="optionsBadgeNormal"></td>
-        <td><input type="color" id="badgeNormal"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsBadgeDisabled"></td>
-        <td><input type="color" id="badgeDisabled"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsPopupWidth"></td>
-        <td><input type="number" id="popupWidth" min="200"></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsUpdateInterval"><sup>1</sup></td>
-        <td><input type="number" min="0" id="updateInterval"></td>
-      </tr>
-    </tbody>
-  </table>
-  <div>
-    <button id="save">Save</button>
-    <span id="status"></span>
+  <div id="options">
+
+    <div class="block">
+      <h1 i18n-text="optionsCustomizeBadge"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="prefShowBadge"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="show-badge">
+            <span></span>
+          </span>
+        </label>
+        <label>
+          <span i18n-text="optionsBadgeNormal"></span>
+          <input type="color" id="badgeNormal">
+        </label>
+        <label>
+          <span i18n-text="optionsBadgeDisabled"></span>
+          <input type="color" id="badgeDisabled">
+        </label>
+      </div>
+    </div>
+
+    <div class="block">
+      <h1 i18n-text="optionsCustomizePopup"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsPopupWidth"></span>
+          <input type="number" id="popupWidth" min="200" max="800">
+        </label>
+        <label>
+          <span i18n-text="popupStylesFirst"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="popup.stylesFirst">
+            <span></span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="block">
+      <h1 i18n-text="optionsCustomizeUpdate"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsUpdateInterval"><sup>1</sup></span>
+          <input type="number" min="0" id="updateInterval">
+        </label>
+      </div>
+    </div>
+
+    <div class="block">
+      <h1 i18n-text="optionsAdvanced"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="optionsAdvancedExposeIframes"> <sup>2</sup></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="exposeIframes">
+            <span></span>
+          </span>
+        </label>
+        <label>
+          <span i18n-text="optionsAdvancedContextDelete"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="editor.contextDelete">
+            <span></span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="block" id="actions">
+      <button data-cmd="reset" i18n-text="optionsResetButton" i18n-title="optionsReset"></button>
+      <button data-cmd="open-manage" i18n-text="optionsOpenManager"></button>
+      <div data-cmd="check-updates">
+        <button i18n-text="optionsCheck" i18n-title="optionsCheckUpdate">
+          <span id="update-progress"></span>
+        </button>
+        <div id="updates-installed" i18n-text="updatesCurrentlyInstalled"></div>
+      </div>
+      <button data-cmd="open-keyboard" class="chromium-only" i18n-text="shortcuts" i18n-title="shortcutsNote"></button>
+    </div>
   </div>
 
-  <h1 i18n-text="optionsActions"></h1>
-  <table>
-    <tbody>
-      <tr>
-        <td i18n-text="optionsOpenManager"><sup>2</sup></td>
-        <td><button type="button" data-cmd="open-manage" i18n-text="optionsOpen"></button></td>
-      </tr>
-      <tr>
-        <td i18n-text="optionsCheckUpdate"></td>
-        <td>
-          <span id="update-counter"></span>
-          <button type="button" data-cmd="check-updates" i18n-text="optionsCheck"></button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="notes">
-    <hr>
-    1: <span i18n-text="optionsUpdateIntervalNote"></span>
-    <br>
-    2: <span i18n-text="optionsOpenManagerNote"></span>, <a href="#" data-cmd="open-keyboard">chrome://extensions/configureCommands</a>
+  <div id="notes">
+    <ol>
+      <li>
+        <p i18n-text="optionsUpdateIntervalNote"></p>
+        <p i18n-text="optionsUpdateImportNote"></p>
+      </li>
+      <li i18n-text="optionsAdvancedExposeIframesNote"></li>
+    </ol>
   </div>
 
-  <script src="/messaging.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

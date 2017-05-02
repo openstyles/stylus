@@ -1,0 +1,779 @@
+body {
+  margin: 0;
+  font: 12px arial, sans-serif;
+  /* Firefox: fill the entire page for drag'n'drop to work */
+  display: flex;
+  height: 100%;
+}
+
+a {
+  color: #000;
+  transition: color .5s;
+  text-decoration-skip: ink;
+}
+
+a:hover {
+  color: #666;
+}
+
+#header {
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  padding: 15px;
+  border-right: 1px dashed #AAA;
+  -webkit-box-shadow: 0 0 50px -18px black;
+  overflow: auto;
+  box-sizing: border-box;
+  z-index: 9;
+}
+
+#header h1 {
+  margin-top: 0;
+}
+
+#header a[href^="edit"] {
+  text-decoration: none;
+}
+
+.firefox .chromium-only {
+  display: none;
+}
+
+#installed {
+  position: relative;
+  padding-left: 280px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.entry {
+  margin: 0;
+  padding: 1.25em 2em;
+  border-top: 1px solid #ddd;
+}
+
+.entry:first-child {
+  border-top: none;
+}
+
+.svg-icon {
+  cursor: pointer;
+  vertical-align: middle;
+  transition: fill .5s;
+  width: 20px;
+  height: 20px;
+}
+
+.svg-icon:hover {
+  fill: #000;
+}
+
+.svg-icon {
+  fill: #666;
+}
+
+.svg-icon.info {
+  width: 14px;
+  height: 16px;
+  margin-left: .5ex;
+}
+
+.homepage {
+  margin-left: 0.1em;
+  margin-right: 0.1em;
+}
+
+.homepage[href=""] {
+  display: none;
+}
+
+.homepage .svg-icon {
+  margin-top: -4px;
+  margin-left: .5ex;
+}
+
+.style-name {
+  margin-top: .25em;
+  word-break: break-word;
+}
+
+.style-name a, .style-edit-link {
+  text-decoration: none;
+}
+
+.style-name-link:hover {
+  text-decoration: underline;
+  color: #000;
+}
+
+.applies-to {
+  word-break: break-word;
+}
+
+.applies-to,
+.actions {
+  padding-left: 15px;
+  margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.actions > * {
+  margin-bottom: .25rem;
+}
+
+.actions > *:not(:last-child) {
+  margin-right: .25rem;
+}
+
+.applies-to label {
+  margin-right: .5ex;
+}
+
+.applies-to .target:hover {
+  background-color: rgba(128, 128, 128, .15);
+}
+
+.applies-to-extra:not([open]) {
+  display: inline;
+  margin-left: 1ex;
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
+
+.applies-to-extra summary {
+  list-style-type: none; /* for FF, allegedly */
+}
+
+.applies-to-extra summary::-webkit-details-marker {
+  display: none;
+}
+
+.disabled h2::after {
+  content: "__MSG_genericDisabledLabel__";
+  font-weight: normal;
+  font-size: 11px;
+  text-transform: lowercase;
+  background: rgba(128, 128, 128, .2);
+  padding: 2px 5px 3px;
+  border-radius: 4px;
+  margin-left: 1ex;
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.disabled .disable {
+  display: none;
+}
+
+.enabled .enable {
+  display: none;
+}
+
+/* compact layout */
+
+.newUI #installed {
+  display: table;
+  margin-top: .75rem;
+  margin-bottom: .75rem;
+}
+
+.newUI .disabled {
+  opacity: 1;
+}
+
+.newUI .disabled .style-name,
+.newUI .disabled .applies-to {
+  opacity: .5;
+}
+
+.newUI .entry {
+  display: table-row;
+}
+
+.newUI .entry:nth-child(2n) {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+.newUI .entry > * {
+  padding: .9rem 0 1rem;
+  margin: 0;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.newUI .checker {
+  position: relative;
+  top: 1px;
+  margin-right: 1ex;
+}
+
+.newUI .style-name {
+  font-size: 14px;
+  font-family: sans-serif;
+  text-indent: -2em;
+  padding-left: 3em;
+  padding-right: 30px;
+}
+
+.newUI .homepage .svg-icon {
+  position: absolute;
+  margin-top: 0;
+  margin-left: -28px;
+}
+
+.newUI .actions {
+  width: 60px;
+  height: 20px;
+  white-space: nowrap;
+}
+
+.newUI .actions > * {
+  margin: 0;
+}
+
+.newUI .actions .svg-icon {
+    margin-right: 8px;
+}
+
+.newUI .updater-icons > * {
+  transition: opacity 1s;
+  display: none;
+}
+
+.newUI .entry .svg-icon {
+  fill: #999;
+}
+
+.newUI .entry:hover .svg-icon {
+  fill: #666;
+}
+
+.newUI .entry:hover .svg-icon:hover {
+  fill: #000;
+}
+
+.newUI .checking-update .check-update {
+  opacity: 0;
+  display: inline;
+  pointer-events: none;
+}
+
+.newUI .can-update .update,
+.newUI .no-update:not(.update-problem):not(.update-done) .up-to-date,
+.newUI .no-update.update-problem .check-update,
+.newUI .update-done .updated {
+  display: inline;
+}
+
+.newUI .update-done .updated svg {
+  top: -4px;
+  position: relative;
+  /* unprefixed since Chrome 53 */
+  -webkit-filter: drop-shadow(0 4px 0 currentColor);
+  filter: drop-shadow(0 5px 0 currentColor);
+}
+
+.newUI .can-update .update,
+.newUI .no-update.update-problem .check-update {
+  cursor: pointer;
+}
+
+.newUI .can-update[data-details$="locally edited"] .update svg,
+.newUI .update-problem .check-update svg {
+  fill: #ef6969;
+}
+
+.newUI .can-update[data-details$="locally edited"]:hover .update svg,
+.newUI .entry.update-problem:hover .check-update svg {
+  fill: #fd4040;
+}
+
+.newUI .can-update[data-details$="locally edited"]:hover .update svg:hover,
+.newUI .entry.update-problem:hover .check-update svg:hover {
+  fill: red;
+}
+
+.newUI .updater-icons > :not(.check-update):after {
+  content: attr(title);
+  position: absolute;
+  margin-top: 18px;
+  margin-left: -36px;
+  padding: 1ex 1.5ex;
+  border: 1px solid #ded597;
+  background-color: #fffbd6;
+  border-radius: 4px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,.25);
+  font-size: 90%;
+  animation: fadeout 10s;
+  animation-fill-mode: both;
+  z-index: 999;
+}
+
+.newUI .update-problem .check-update:after {
+  background-color: red;
+  border: 1px solid #d40000;
+  color: white;
+  animation: none;
+}
+
+.newUI .can-update .update:after {
+  animation: none;
+}
+
+.newUI .can-update:not([data-details$="locally edited"]) .update:after {
+  background-color: #c0fff0;
+  border: 1px solid #89cac9;
+}
+
+.newUI .applies-to {
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+}
+
+.newUI .targets {
+  overflow: hidden;
+}
+
+.newUI .applies-to.expanded .targets {
+  max-height: 100vh;
+}
+
+.newUI .target {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100vw - 280px - 60px - 25vw - 3rem);
+  box-sizing: border-box;
+  padding-right: 1rem;
+  line-height: 18px;
+}
+
+.newUI .applies-to .expander {
+  margin: 0;
+  cursor: pointer;
+  font-size: 3ex;
+  line-height: .5ex;
+  vertical-align: super;
+  letter-spacing: .1ex;
+}
+
+.newUI .applies-to:not(.has-more) .expander {
+  display: none;
+}
+
+.newUI .has-favicons .applies-to .expander {
+  padding-left: 20px;
+}
+
+.newUI .target:hover {
+  background-color: inherit;
+}
+
+.newUI .target img {
+  width: 16px;
+  height: 16px;
+  vertical-align: sub;
+  margin-left: -20px;
+  margin-right: 4px;
+  transition: opacity .5s, filter .5s;
+  /* unprefixed since Chrome 53 */
+  -webkit-filter: grayscale(1);
+  filter: grayscale(1);
+  /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
+  backface-visibility: hidden;
+  opacity: .25;
+  display: none;
+}
+
+.newUI .has-favicons .target {
+  padding-left: 20px;
+}
+
+.newUI .has-favicons .target img[src] {
+  display: inline;
+}
+
+.newUI .entry:hover .target img {
+  opacity: 1;
+  /* unprefixed since Chrome 53 */
+  -webkit-filter: grayscale(0);
+  filter: grayscale(0);
+}
+
+#newUIoptions {
+  display: none;
+}
+
+.newUI #newUIoptions {
+  display: initial;
+}
+
+#newUIoptions > * {
+  display: flex;
+  align-items: center;
+  margin-bottom: auto;
+  flex-wrap: wrap;
+}
+
+#newUIoptions input[type="number"] {
+  width: 3em;
+  margin-right: .5em;
+}
+
+input[id^="manage.newUI"] {
+  margin-left: 0;
+}
+
+#faviconsHelp {
+  overflow-y: auto;
+  font-size: 90%;
+  padding: 1ex 0 2ex 16px;
+}
+
+#faviconsHelp div {
+    display: flex;
+    align-items: center;
+    margin-top: 1ex;
+}
+
+/* Default, no update buttons */
+.update,
+.check-update {
+  display: none;
+}
+
+/* Check update button for things that can*/
+.updatable .check-update {
+  display: inline;
+}
+
+/* Update check in progress */
+.checking-update .check-update {
+  display: none;
+}
+
+/* Updates available */
+.can-update .update {
+  display: inline;
+}
+
+.can-update[data-details$="locally edited"] button.update:after {
+  content: "*";
+}
+
+.can-update .check-update {
+  display: none;
+}
+
+/* Updates not available */
+.no-update:not(.update-problem) .check-update {
+  display: none;
+}
+
+/* Updates done */
+.update-done .check-update {
+  display: none;
+}
+
+#apply-all-updates:after {
+  content: " (" attr(data-value) ")";
+}
+
+.update-in-progress #check-all-updates {
+  position: relative;
+}
+
+.update-in-progress #update-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: currentColor;
+  content: "";
+  opacity: .35;
+}
+
+#update-all-no-updates[data-skipped-edited="true"]:after {
+  content: " __MSG_updateAllCheckSucceededSomeEdited__";
+}
+
+#check-all-updates-force {
+  margin-top: 1ex;
+}
+
+/* highlight updated/added styles */
+.highlight {
+  animation: highlight 10s cubic-bezier(0,.82,.47,.98);
+}
+
+@keyframes highlight {
+  from {
+    background-color: rgba(128, 128, 128, .5);
+  }
+  to {
+    background-color: none;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+fieldset {
+  border-width: 1px;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+
+fieldset > * {
+  display: flex;
+  align-items: center;
+}
+
+#search {
+  width: calc(100% - 4px);
+  margin: 0.25rem 4px 0;
+  border-radius: 0.25rem;
+  padding-left: 0.25rem;
+  border-width: 1px;
+}
+
+#import ul {
+  margin-left: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+#import li {
+  margin-bottom: .5em;
+}
+
+#import pre {
+  background: #eee;
+  overflow: auto;
+  margin: 0 0 .5em 0;
+}
+
+/* drag-n-drop on import button */
+.dropzone:after {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  position: fixed;
+  padding: calc(50vh - 3em) calc(50vw - 5em);
+  content: attr(dragndrop-hint);
+  text-shadow: 1px 1px 10px black;
+  font-size: xx-large;
+  text-align: center;
+  animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
+  animation-fill-mode: both;
+}
+
+.fadeout.dropzone:after {
+  animation: fadeout .25s ease-in-out;
+  animation-fill-mode: both;
+}
+
+/* post-import report */
+#message-box details:not([data-id="invalid"]) div:hover {
+  background-color: rgba(128, 128, 128, .3);
+}
+
+#message-box details:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+#message-box details small div {
+    margin-left: 1.5em;
+}
+
+.update-history-log {
+  font-size: 11px;
+  white-space: pre;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadein-25pct {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: .25;
+  }
+}
+
+@media (max-width: 675px) {
+  #header {
+    height: auto;
+    position: static;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+  }
+
+  #installed {
+    position: static;
+    padding-left: 0;
+    overflow: visible;
+  }
+
+  #header h1,
+  #header h2,
+  #header h3,
+  #backup-message {
+    display: none;
+  }
+
+  #header p,
+  #header fieldset div,
+  #backup {
+    display: inline-block;
+  }
+
+  #find-editor-styles {
+    display: inline-block;
+  }
+
+  #backup {
+    margin-right: 1em;
+  }
+
+  #backup p,
+  #header fieldset {
+    margin: 0;
+  }
+
+  .entry {
+    margin: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    flex-direction: column;
+  }
+
+  .newUI #header {
+    height: auto;
+    position: static;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+    overflow: visible;
+  }
+
+  .newUI #installed {
+    padding-left: 0;
+  }
+
+  .newUI #header h1,
+  .newUI #header h2,
+  .newUI #header h3,
+  .newUI #header legend,
+  .newUI #backup-message {
+    display: none;
+  }
+
+  .newUI #header p,
+  .newUI #header fieldset div,
+  .newUI #options,
+  .newUI #backup,
+  .newUI #find-editor-styles,
+  .newUI #header fieldset label,
+  .newUI #header fieldset input,
+  .newUI #newUIoptions > * {
+    display: inline;
+    vertical-align: middle;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+  }
+
+  .newUI #header > * {
+    display: inline-block
+  }
+
+  .newUI #header button,
+  .newUI #header span,
+  .newUI #header div {
+    margin-right: 1ex;
+  }
+
+  .newUI #header label,
+  .newUI #header a {
+    white-space: nowrap
+  }
+
+  .newUI #backup p,
+  .newUI #header fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .newUI #header fieldset input {
+    margin-left: 0;
+  }
+
+  .newUI #search {
+    width: auto;
+  }
+
+  .newUI .entry {
+    margin: 0;
+  }
+
+  .newUI .style-name {
+    width: 50%;
+  }
+
+  .newUI .target {
+    max-width: calc(50vw - 60px);
+  }
+}
+
+@media (max-width: 500px) {
+  .newUI #header > * {
+    display: inline;
+  }
+
+  .newUI .style-name {
+    word-break: break-all;
+  }
+}

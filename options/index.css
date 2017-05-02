@@ -1,22 +1,254 @@
-body {
-  margin: 10px;
-  font-family: "Helvetica Neue",Helvetica,sans-serif;
-  font-size: 12px;
+html.opera {
+  text-align: center;
 }
 
-table {
-  width: 100%;
+html.opera body {
+  display: inline-block;
+  text-align: initial;
 }
-td:last-child {
+
+html.firefox .block {
+  padding-left: 6px;
+}
+
+html.firefox #notes {
+  padding-left: calc(6px + 2ex);
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 12px;
+  width: calc(16px + 100px + 8px + 260px + 8px + 60px + 4px + 16px);
+}
+
+.firefox .chromium-only {
+  display: none;
+}
+
+.block {
+  display: flex;
+  align-items: center;
+  margin: 1em 0;
+  border-bottom: 1px dotted #ccc;
+  padding: 0 0 1em 16px;
+  position: relative;
+}
+
+.block:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+h1 {
+  width: 100px;
+  margin: 0;
+  font-size: 120%;
+  font-weight: bold;
+  padding-right: 8px;
+  word-wrap: break-word;
+}
+
+label {
+  display: block;
+  white-space: nowrap;
+  margin: .25ex 0;
+}
+
+label > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+label > :first-child {
+  width: 260px;
+  white-space: normal;
+  margin-right: 8px;
+}
+
+label:not([disabled]) > :first-child {
+  cursor: default;
+}
+
+label:not([disabled]):hover > :first-child {
+  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
+}
+
+button,
+input[type=number],
+input[type="color"],
+.onoffswitch {
+  width: 60px;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration-skip: ink;
+}
+
+button {
+  text-align: center;
+}
+
+input[type=number] {
   text-align: right;
 }
 
-input[type=number],
-button {
-  width: 80px;
+input[type=number]:invalid {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: darkred;
 }
 
-.notes {
+input[type="color"] {
+  box-sizing: border-box;
+  height: 2em;
+}
+
+#actions {
+  justify-content: space-around;
+  align-items: stretch;
+  padding-right: 8px;
+}
+
+#actions button {
+  width: auto;
+  margin-right: 8px;
+}
+
+[data-cmd="check-updates"] button {
+  position: relative;
+}
+
+.update-in-progress [data-cmd="check-updates"] {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.update-in-progress #update-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: currentColor;
+  content: "";
+  opacity: .35;
+}
+
+#updates-installed {
+  position: absolute;
+  font-size: 85%;
+  margin-top: 1px;
+}
+
+#updates-installed:after {
+  content: attr(data-value);
+  margin-left: .5ex;
+  font-weight: bold;
+}
+
+#updates-installed:not([data-value]),
+#updates-installed[data-value=""] {
+  display: none;
+}
+
+#notes {
+  background-color: #f4f4f4;
+  padding: 1.5ex 16px 1ex calc(16px + 2ex);
   font-size: 90%;
   color: #999;
+}
+
+#notes ol {
+  margin: 0;
+  padding: 0;
+}
+
+#notes li:not(last-child) {
+  margin-bottom: 1ex;
+}
+
+#notes a {
+  color: inherit;
+}
+
+#notes a:hover {
+  color: black;
+}
+
+#notes p {
+  line-height: 1.25;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
+}
+
+sup {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
+
+@keyframes fadeinout {
+  0%   { opacity: 0 }
+  10%  { opacity: 1 }
+  25%  { opacity: 1 }
+  100% { opacity: 0 }
+}
+
+/* On/Off FlipSwitch https://proto.io/freebies/onoff/ */
+
+.onoffswitch {
+  position: relative;
+  margin: 1ex 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.onoffswitch input {
+  display: none;
+}
+
+.onoffswitch span {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 12px;
+  padding: 0;
+  line-height: 12px;
+  border: 0 solid #E3E3E3;
+  border-radius: 12px;
+  background-color: #E0E0E0;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.onoffswitch span:before {
+  content: "";
+  display: block;
+  width: 18px;
+  margin: -3px;
+  background: #efefef;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 46px;
+  border-radius: 18px;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
+}
+
+.onoffswitch input:checked + span {
+  background-color: #CAEBE3;
+}
+
+.onoffswitch input:checked + span, .onoffswitch input:checked + span:before {
+  border-color: #CAEBE3;
+}
+
+.onoffswitch input:checked + span .onoffswitch-inner {
+  margin-left: 0;
+}
+
+.onoffswitch input:checked + span:before {
+  right: 0;
+  background-color: #04BA9F;
+  box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
 }

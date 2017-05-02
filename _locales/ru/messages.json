@@ -7,10 +7,6 @@
 		"message": "по-умолчанию",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Только отредактированные стили",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Экспорт",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -117,7 +113,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Скачать стили с userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Справка</a>",
+		"message": "<a href='https://userstyles.org'>Скачать стили с userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Справка</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -168,7 +164,7 @@
 		"message": "Удалить этот стиль?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -294,8 +290,8 @@
 		"message": "Формат Mozilla",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus не работает на таких страницах)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus не работает на таких страницах.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

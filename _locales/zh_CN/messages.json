@@ -11,10 +11,6 @@
 		"message": "导出所有样式",
 		"description": ""
 	},
-	"manageOnlyEdited": {
-		"message": "仅修改过的样式",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"optionsUpdateInterval": {
 		"message": "每 N 小时，检查所有样式更新（0 为关闭检查）",
 		"description": ""
@@ -79,7 +75,7 @@
 		"message": "帮助",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "确定",
 		"description": ""
 	},
@@ -165,7 +161,7 @@
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='https://userstyles.org/help/stylish_chrome'>获取帮助</a>",
+		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='http://add0n.com/stylus.html'>获取帮助</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -352,8 +348,8 @@
 		"message": "Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus在这样的页面上不工作)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus在这样的页面上不工作",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

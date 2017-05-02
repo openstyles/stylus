@@ -7,10 +7,6 @@
 		"message": "standaard",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "Alleen bewerkte stijlen",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "Exporteren",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -117,7 +113,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Verkrijg hulp</a>",
+		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Verkrijg hulp</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -168,7 +164,7 @@
 		"message": "Weet u zeker dat u deze stijl wilt verwijderen?",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -294,8 +290,8 @@
 		"message": "Mozilla-opmaak",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "(Stylus werkt niet op pagina's als deze.)",
+	"stylusUnavailableForURL": {
+		"message": "Stylus werkt niet op pagina's als deze.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {

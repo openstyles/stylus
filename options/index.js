@@ -1,97 +1,63 @@
-/* globals configureCommands */
 'use strict';
 
-function restore () {
-  chrome.runtime.getBackgroundPage(bg => {
-    document.getElementById('badgeDisabled').value = bg.prefs.get('badgeDisabled');
-    document.getElementById('badgeNormal').value = bg.prefs.get('badgeNormal');
-    document.getElementById('popupWidth').value = localStorage.getItem('popupWidth') || '246';
-    document.getElementById('updateInterval').value = bg.prefs.get('updateInterval');
-  });
-}
-
-function save () {
-  chrome.runtime.getBackgroundPage(bg => {
-    bg.prefs.set('badgeDisabled', document.getElementById('badgeDisabled').value);
-    bg.prefs.set('badgeNormal', document.getElementById('badgeNormal').value);
-    localStorage.setItem('popupWidth', document.getElementById('popupWidth').value);
-    bg.prefs.set(
-      'updateInterval',
-      Math.max(0, +document.getElementById('updateInterval').value)
-    );
-    // display notification
-    let status = document.getElementById('status');
-    status.textContent = 'Options saved.';
-    setTimeout(() => status.textContent = '', 750);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', restore);
-document.getElementById('save').addEventListener('click', save);
+setupLivePrefs();
+enforceInputRange($('#popupWidth'));
 
 // actions
-document.addEventListener('click', e => {
-  let cmd = e.target.dataset.cmd;
-  let total = 0, updated = 0;
+document.onclick = e => {
+  const target = e.target.closest('[data-cmd]');
+  if (!target) {
+    return;
+  }
+  // prevent double-triggering in case a sub-element was clicked
+  e.stopPropagation();
 
-  function update () {
-    document.getElementById('update-counter').textContent = `${updated}/${total}`;
-  }
-  function done (target) {
-    target.disabled = false;
-    window.setTimeout(() => {
-      document.getElementById('update-counter').textContent = '';
-    }, 750);
-  }
+  switch (target.dataset.cmd) {
+    case 'open-manage':
+      openURL({url: '/manage.html'});
+      break;
 
-  if (cmd === 'open-manage') {
-    chrome.tabs.query({
-      url: chrome.runtime.getURL('manage.html')
-    }, tabs => {
-      if (tabs.length) {
-        chrome.tabs.update(tabs[0].id, {
-          active: true,
-        }, () => {
-          chrome.windows.update(tabs[0].windowId, {
-            focused: true
-          });
-        });
-      }
-      else {
-        chrome.tabs.create({
-          url: chrome.runtime.getURL('manage.html')
-        });
-      }
-    });
+    case 'check-updates':
+      checkUpdates();
+      break;
+
+    case 'open-keyboard':
+      openURL({url: URLS.configureCommands});
+      e.preventDefault();
+      break;
+
+    case 'reset':
+      $$('input')
+        .filter(input => input.id in prefs.readOnlyValues)
+        .forEach(input => prefs.reset(input.id));
+      break;
   }
-  else if (cmd === 'check-updates') {
-    e.target.disabled = true;
-    chrome.runtime.getBackgroundPage(bg => {
-      bg.update.perform((cmd, value) => {
-        if (cmd === 'count') {
-          total = value;
-          if (!total) {
-            done(e.target);
-          }
-        }
-        else if (cmd === 'single-updated' || cmd === 'single-skipped') {
-          updated += 1;
-          if (total && updated === total) {
-            done(e.target);
-          }
-        }
-        update();
-      });
-    });
-    // notify the automatic updater to reset the next automatic update accordingly
-    chrome.runtime.sendMessage({
-      method: 'resetInterval'
-    });
+};
+
+function checkUpdates() {
+  let total = 0;
+  let checked = 0;
+  let updated = 0;
+  const maxWidth = $('#update-progress').parentElement.clientWidth;
+  BG.updater.checkAllStyles({observer});
+
+  function observer(state, value) {
+    switch (state) {
+      case BG.updater.COUNT:
+        total = value;
+        document.body.classList.add('update-in-progress');
+        break;
+      case BG.updater.UPDATED:
+        updated++;
+        // fallthrough
+      case BG.updater.SKIPPED:
+        checked++;
+        break;
+      case BG.updater.DONE:
+        document.body.classList.remove('update-in-progress');
+        return;
+    }
+    $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
+    $('#updates-installed').dataset.value = updated || '';
   }
-  else if (cmd === 'open-keyboard') {
-    configureCommands.open();
-  }
-});
-// overwrite the default URL if browser is Opera
-document.querySelector('[data-cmd="open-keyboard"]').textContent =
-  configureCommands.url;
+}

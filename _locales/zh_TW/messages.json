@@ -7,10 +7,6 @@
 		"message": "默認",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"manageOnlyEdited": {
-		"message": "只顯示已禁用的樣式",
-		"description": "Checkbox to show only locally edited styles"
-	},
 	"exportLabel": {
 		"message": "導出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -117,7 +113,7 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='https://userstyles.org/help/stylish_chrome'>Get help</a>",
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
 		"description": "Help text on the manage page"
 	},
 	"searchStyles": {
@@ -168,7 +164,7 @@
 		"message": "確定要刪除這個樣式嗎？",
 		"description": "Confirmation before deleting a style"
 	},
-	"confirmOK": {
+	"confirmDelete": {
 		"message": "Delete"
 	},
 	"confirmCancel": {
@@ -294,8 +290,8 @@
 		"message": "Mozilla格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylishUnavailableForURL": {
-		"message": "（ Stylus 不能在諸如此類的網頁上生效。）",
+	"stylusUnavailableForURL": {
+		"message": "Stylus 不能在諸如此類的網頁上生效。",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
