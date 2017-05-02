@@ -326,7 +326,7 @@ Object.assign(handleEvent, {
 
   maybeEdit(event) {
     if (!(
-      event.button == 0 && event.ctrlKey ||
+      event.button == 0 && (event.ctrlKey || event.metaKey) ||
       event.button == 1 ||
       event.button == 2)) {
       return;
