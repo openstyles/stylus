@@ -76,7 +76,7 @@ schedule.execute = (name, request) => {
       chrome.alarms.create(name, {when});
       getStylesSafe({id: request.id}).then(([style]) => {
         if (style) {
-          const enabled = start <= 0 && end > 0;
+          const enabled = (start <= 0 && end > 0) || (start > end && start * end > 0) ;
           console.log(`style with id = ${style.id}; enabled = `, enabled);
 
           saveStyleSafe({

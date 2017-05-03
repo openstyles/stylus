@@ -36,10 +36,14 @@ document.addEventListener('click', e => {
           });
           break;
         case 1: // when only start or end value is set; display an alert
-          window.alert(t('scheduleMSG'));
+          window.alert(t('scheduleOneEntry'));
           [start, end].filter(o => !o.value).forEach(o => o.focus());
           return;
         default:
+          if (start.value === end.value) {
+            window.alert(t('scheduleEqualEntries'));
+            return start.focus();
+          }
           chrome.runtime.sendMessage({
             method: 'schedule',
             enabled: true,

@@ -713,7 +713,10 @@
   "scheduleButtonActive": {
     "message": "Scheduled"
   },
-  "scheduleMSG": {
+  "scheduleOneEntry": {
     "message": "Either clear both start and end values to disable the schedule or set both to enable it"
+  },
+  "scheduleEqualEntries": {
+    "message": "Start and end times cannot be equal"
   }
 }
