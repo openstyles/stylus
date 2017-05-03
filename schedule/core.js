@@ -6,13 +6,19 @@ var SCHEDULE_PREFIX = 'schedule';
 var schedule = {};
 
 schedule.prefs = {
+  name (id) {
+    return SCHEDULE_PREFIX + '.' + id;
+  },
+  validate (name) {
+    return name.startsWith(SCHEDULE_PREFIX + '.');
+  },
   get (name, callback) {
     chrome.storage.local.get(name, callback);
   },
   getAll (callback) {
     schedule.prefs.get(null, prefs => {
       callback(
-        Object.keys(prefs).filter(n => n.startsWith(SCHEDULE_PREFIX + '.'))
+        Object.keys(prefs).filter(schedule.prefs.validate)
         .map(n => [n, prefs[n]])
       );
     });
@@ -33,21 +39,20 @@ schedule.prefs = {
     });
   }
 };
-
+/* call this function when schedule timing is modified; if timing is not modified, nothing happens */
 schedule.entry = request => {
-  console.error('schedule.entry', request);
+  console.log('schedule.entry', 'schedule timing might have been changed', request);
   return new Promise((resolve, reject) => {
     chrome.permissions.request({
       permissions: ['idle', 'alarms']
     }, (granted) => {
       if (granted) {
-        schedule.prefs.set(SCHEDULE_PREFIX + '.' + request.id, {
+        schedule.prefs.set(schedule.prefs.name(request.id), {
           id: request.id,
           start: request.start,
           end: request.end,
           enabled: request.enabled
-        });
-        resolve();
+        }, resolve);
       }
       else {
         reject(new Error('Required permissions are not granted'));
@@ -55,25 +60,24 @@ schedule.entry = request => {
     });
   });
 };
-
+/* call this to update current alarm. If request.enabled = false, then alarm is cleared and this job will be removed from the storage */
 schedule.execute = (name, request) => {
-  console.error('schedule.execute', name, request);
+  console.log('schedule.execute', 'evaluating response', name, request);
   chrome.alarms.clear(name, () => {
     if (request.enabled) {
       const now = new Date();
       let start = new Date(now.toDateString() + ' ' + request.start).getTime() - now;
       let end = new Date(now.toDateString() + ' ' + request.end).getTime() - now;
-      console.error('next alarm is set for', request.id);
-      chrome.alarms.create(name, {
-        when: now.getTime() + Math.min(
-          start < 0 ? start + 24 * 60 * 60 * 1000 : start,
-          end < 0 ? end + 24 * 60 * 60 * 1000 : end
-        )
-      });
+      const when = now.getTime() + Math.min(
+        start < 0 ? start + 24 * 60 * 60 * 1000 : start,
+        end < 0 ? end + 24 * 60 * 60 * 1000 : end
+      );
+      console.log(`next alarm is set for id = ${request.id}`, new Date(when), start, end);
+      chrome.alarms.create(name, {when});
       getStylesSafe({id: request.id}).then(([style]) => {
         if (style) {
           const enabled = start <= 0 && end > 0;
-          console.error('Changing state', enabled, style.id);
+          console.log(`style with id = ${style.id}; enabled = `, enabled);
 
           saveStyleSafe({
             id: request.id,
@@ -82,7 +86,7 @@ schedule.execute = (name, request) => {
         }
         else {
           // clear schedule if style is not found
-          console.error('removing since stlye is not found', request);
+          console.log('removing from storage since style is not found', request);
           schedule.execute(name, Object.assign(
             request, {enabled: false}
           ));
@@ -90,7 +94,7 @@ schedule.execute = (name, request) => {
       });
     }
     else {
-      console.error('removing pref', name);
+      console.log('removing pref since request.enabled is false', name);
       schedule.prefs.remove(name);
     }
   });
@@ -98,24 +102,18 @@ schedule.execute = (name, request) => {
 
 // background only
 if (BG === window) {
-  schedule.prefs.subscribe((name, pref) => name.startsWith(SCHEDULE_PREFIX + '.') && schedule.execute(name, pref));
+  // listen for pref changes to update chrome.alarms
+  schedule.prefs.subscribe((name, pref) => schedule.prefs.validate(name) && schedule.execute(name, pref));
 
   chrome.alarms.onAlarm.addListener(({name}) => {
-    schedule.prefs.get(name, prefs => {
-      if (prefs[name]) {
-        schedule.execute(name, prefs[name]);
-      }
-    });
+    schedule.prefs.get(name, prefs => prefs[name] && schedule.execute(name, prefs[name]));
   });
 
   (function (callback) {
-    chrome.idle.onStateChanged.addListener(state => {
-      if (state === 'active') {
-        callback();
-      }
-    });
+    chrome.idle.onStateChanged.addListener(state => state === 'active' && callback());
     window.setTimeout(callback);
   })(function () {
+    console.log('updating all schedules');
     schedule.prefs.getAll(prefs => prefs.forEach(a => schedule.execute(...a)));
   });
 }

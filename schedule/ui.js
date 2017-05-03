@@ -1,13 +1,31 @@
-/* global t, schedule */
+/* global t, schedule, $, $$ */
 'use strict';
 
+schedule.ui = {};
+
+/* get start and end inputs */
+schedule.ui.inputs = (parent) => $$('input[type=time]', parent);
+
+/* updating schedule section of a single style */
+schedule.ui.update = (request) => {
+  const parent = $(`[id="style-${request.id}"] .schedule`);
+  if (parent) {
+    parent.dataset.active = true;
+    $('input[type=button]', parent).value = t('scheduleButtonActive');
+    const [start, end] = schedule.ui.inputs(parent);
+    start.value = request.start;
+    end.value = request.end;
+  }
+};
+
+/* display schedule panel and hide it when user selects outside area */
 document.addEventListener('click', e => {
   const target = e.target;
   let parent;
   // hide schedule panel
   function observe (e) {
     if (!parent.contains(e.target)) {
-      const [start, end] = parent.querySelectorAll('input[type=time]');
+      const [start, end] = schedule.ui.inputs(parent);
       const id = target.closest('.entry').id.replace('style-', '');
       switch ([start.value, end.value].filter(v => v).length) {
         case 0:
@@ -42,20 +60,22 @@ document.addEventListener('click', e => {
     document.addEventListener('click', observe);
   }
 });
-
-function test () {
+/* update schedule section on styles ready */
+document.addEventListener('styles-ready', () => {
+  console.log('"styles-ready" is called');
   schedule.prefs.getAll(prefs => {
-    prefs.forEach(([name, pref]) => {
-      const parent = document.querySelector(`[id="style-${pref.id}"] .schedule`);
-      if (parent) {
-        parent.dataset.active = true;
-        parent.querySelector('input[type=button]').value = t('scheduleButtonActive');
-        const [start, end] = parent.querySelectorAll('input[type=time');
-        start.value = pref.start;
-        end.value = pref.end;
-      }
-    });
+    prefs.forEach(([name, pref]) => schedule.ui.update(pref));
   });
-}
-
-window.setTimeout(test, 1000);
+});
+/* update schedule section on style change */
+document.addEventListener('style-edited', e => {
+  console.log('"style-edited" is called');
+  const id = e.detail.id;
+  const name = schedule.prefs.name(id);
+  schedule.prefs.get(name, prefs => {
+    const pref = prefs[name];
+    if (pref) {
+      schedule.ui.update(pref);
+    }
+  });
+});
