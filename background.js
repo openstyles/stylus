@@ -1,4 +1,4 @@
-/* global dbExec, getStyles, saveStyle */
+/* global dbExec, getStyles, saveStyle, schedule, download */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -278,5 +278,9 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .then(sendResponse)
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
+    case 'schedule':
+      schedule.entry(request)
+        .then(sendResponse)
+        .catch(e => sendResponse(e));
   }
 }

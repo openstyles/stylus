@@ -145,6 +145,33 @@ a:hover {
   margin-left: 1ex;
 }
 
+.schedule {
+  position: relative;
+  opacity: 0.5;
+}
+.schedule:hover {
+  opacity: 1;
+}
+.schedule[data-edit=true],
+.schedule[data-active=true] {
+  opacity: 1;
+}
+.schedule>input {
+  margin-right: 5px;
+}
+.schedule>div {
+  position: absolute;
+  right: 10px;
+  top: 25%;
+  white-space: nowrap;
+}
+.schedule[data-edit=false]>div {
+  display: none;
+}
+.schedule[data-edit=true]>input {
+  display: none;
+}
+
 summary {
   font-weight: bold;
   cursor: pointer;

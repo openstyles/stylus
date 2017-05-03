@@ -706,5 +706,14 @@
   },
   "optionsCheck": {
     "message": "Update styles"
+  },
+  "scheduleButton": {
+    "message": "Schedule"
+  },
+  "scheduleButtonActive": {
+    "message": "Scheduled"
+  },
+  "scheduleMSG": {
+    "message": "Either clear both start and end values to disable the schedule or set both to enable it"
   }
 }

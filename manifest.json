@@ -18,8 +18,12 @@
     "storage",
     "<all_urls>"
   ],
+  "optional_permissions": [
+    "idle",
+    "alarms"
+  ],
   "background": {
-    "scripts": ["messaging.js", "storage.js", "prefs.js", "background.js", "update.js"]
+    "scripts": ["messaging.js", "storage.js", "prefs.js", "schedule/core.js" ,"background.js", "update.js"]
   },
   "commands": {
     "openManage": {
