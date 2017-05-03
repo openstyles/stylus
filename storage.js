@@ -239,7 +239,7 @@ function saveStyle(style) {
   if (reason == 'update' || reason == 'update-digest') {
     return calcStyleDigest(style).then(digest => {
       style.originalDigest = digest;
-      decide();
+      return decide();
     });
   }
   if (reason == 'import') {
@@ -311,7 +311,6 @@ function saveStyle(style) {
 
 function deleteStyle({id, notify = true}) {
   id = Number(id);
-  chrome.storage.local.remove('originalDigest' + id, ignoreChromeError); // TODO: remove in the future
   return dbExec('delete', id).then(() => {
     invalidateCache({deletedId: id});
     if (notify) {
