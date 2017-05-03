@@ -1,5 +1,5 @@
 /* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
-/* global getStyleDigests, updateStyleDigest */
+/* global calcStyleDigest */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -39,7 +39,6 @@ var updater = {
   },
 
   checkStyle({style, observer = () => {}, save = true, ignoreDigest}) {
-    let hasDigest;
     /*
     Original style digests are calculated in these cases:
     * style is installed or updated from server
@@ -54,7 +53,7 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    return getStyleDigests(style)
+    return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
       .then(maybeFetchMd5)
       .then(maybeFetchCode)
       .then(maybeSave)
@@ -68,9 +67,8 @@ var updater = {
         updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
       });
 
-    function maybeFetchMd5([originalDigest, current]) {
-      hasDigest = Boolean(originalDigest);
-      if (hasDigest && !ignoreDigest && originalDigest != current) {
+    function maybeFetchMd5(digest) {
+      if (!ignoreDigest && style.originalDigest && style.originalDigest != digest) {
         return Promise.reject(updater.EDITED);
       }
       return download(style.md5Url);
@@ -80,7 +78,7 @@ var updater = {
       if (!md5 || md5.length != 32) {
         return Promise.reject(updater.ERROR_MD5);
       }
-      if (md5 == style.originalMd5 && hasDigest && !ignoreDigest) {
+      if (md5 == style.originalMd5 && style.originalDigest && !ignoreDigest) {
         return Promise.reject(updater.SAME_MD5);
       }
       return download(style.updateUrl);
@@ -95,9 +93,9 @@ var updater = {
       if (styleSectionsEqual(json, style)) {
         // JSONs may have different order of items even if sections are effectively equal
         // so we'll update the digest anyway
-        updateStyleDigest(json);
+        saveStyle(Object.assign(json, {reason: 'update-digest'}));
         return Promise.reject(updater.SAME_CODE);
-      } else if (!hasDigest && !ignoreDigest) {
+      } else if (!style.originalDigest && !ignoreDigest) {
         return Promise.reject(updater.MAYBE_EDITED);
       }
       return !save ? json :

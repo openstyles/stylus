@@ -67,6 +67,24 @@ if ('commands' in chrome) {
         browserUIlanguage: UIlang,
       });
     }
+    // TODO: remove in the future
+    // embed style digests
+    chrome.storage.local.get(null, data => {
+      const digestKeys = Object.keys(data).filter(key => key.startsWith('originalDigest'));
+      if (!digestKeys.length) {
+        return;
+      }
+      chrome.storage.local.remove(digestKeys);
+      getStyles().then(styles => {
+        for (const style of styles) {
+          const digest = data['originalDigest' + style.id];
+          if (!style.originalDigest && digest) {
+            style.originalDigest = digest;
+            dbExec('put', style);
+          }
+        }
+      });
+    });
   };
   // bind for 60 seconds max and auto-unbind if it's a normal run
   chrome.runtime.onInstalled.addListener(onInstall);

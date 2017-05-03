@@ -6,9 +6,6 @@ const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 const SLOPPY_REGEXP_PREFIX = '\0';
 
-// eslint-disable-next-line no-var
-var DIGEST_KEY_PREFIX = 'originalDigest';
-
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
 var cachedStyles = {
@@ -232,37 +229,55 @@ function saveStyle(style) {
   const id = Number(style.id) || null;
   const reason = style.reason;
   const notify = style.notify !== false;
-  const styleDigest = style.styleDigest;
   delete style.method;
   delete style.reason;
   delete style.notify;
-  delete style.styleDigest;
   if (!style.name) {
     delete style.name;
   }
   let existed, codeIsUpdated;
-  if (id !== null) {
-    // Update or create
-    style.id = id;
-    return dbExec('get', id).then((event, store) => {
-      const oldStyle = event.target.result;
-      existed = Boolean(oldStyle);
-      codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
-      style = Object.assign({}, oldStyle, style);
-      return write(style, store);
+  if (reason == 'update' || reason == 'update-digest') {
+    return calcStyleDigest(style).then(digest => {
+      style.originalDigest = digest;
+      decide();
     });
-  } else {
-    // Create
-    delete style.id;
-    style = Object.assign({
-      // Set optional things if they're undefined
-      enabled: true,
-      updateUrl: null,
-      md5Url: null,
-      url: null,
-      originalMd5: null,
-    }, style);
-    return write(style);
+  }
+  if (reason == 'import') {
+    style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
+    delete style.styleDigest; // TODO: remove in the future
+    if (typeof style.originalDigest != 'string' || style.originalDigest.length != 40) {
+      delete style.originalDigest;
+    }
+  }
+  return decide();
+
+  function decide() {
+    if (id !== null) {
+      // Update or create
+      style.id = id;
+      return dbExec('get', id).then((event, store) => {
+        const oldStyle = event.target.result;
+        existed = Boolean(oldStyle);
+        if (reason == 'update-digest' && oldStyle.originalDigest == style.originalDigest) {
+          return style;
+        }
+        codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
+        style = Object.assign({}, oldStyle, style);
+        return write(style, store);
+      });
+    } else {
+      // Create
+      delete style.id;
+      style = Object.assign({
+        // Set optional things if they're undefined
+        enabled: true,
+        updateUrl: null,
+        md5Url: null,
+        url: null,
+        originalMd5: null,
+      }, style);
+      return write(style);
+    }
   }
 
   function write(style, store) {
@@ -277,6 +292,9 @@ function saveStyle(style) {
   }
 
   function done(event) {
+    if (reason == 'update-digest') {
+      return style;
+    }
     style.id = style.id || event.target.result;
     invalidateCache(existed ? {updated: style} : {added: style});
     compileStyleRegExps({style});
@@ -286,15 +304,6 @@ function saveStyle(style) {
         style, codeIsUpdated, reason,
       });
     }
-    if (reason == 'update') {
-      updateStyleDigest(style);
-    } else if (reason == 'import') {
-      if (typeof styleDigest == 'string' && styleDigest.length == 40) {
-        chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, styleDigest);
-      } else {
-        chrome.storage.local.remove(DIGEST_KEY_PREFIX + style.id);
-      }
-    }
     return style;
   }
 }
@@ -302,7 +311,7 @@ function saveStyle(style) {
 
 function deleteStyle({id, notify = true}) {
   id = Number(id);
-  chrome.storage.local.remove(DIGEST_KEY_PREFIX + id, ignoreChromeError);
+  chrome.storage.local.remove('originalDigest' + id, ignoreChromeError); // TODO: remove in the future
   return dbExec('delete', id).then(() => {
     invalidateCache({deletedId: id});
     if (notify) {
@@ -564,20 +573,6 @@ function normalizeStyleSections({sections}) {
     domains: section.domains || [],
     regexps: section.regexps || [],
   }));
-}
-
-
-function getStyleDigests(style) {
-  return Promise.all([
-    chromeLocal.getValue(DIGEST_KEY_PREFIX + style.id),
-    calcStyleDigest(style),
-  ]);
-}
-
-
-function updateStyleDigest(style) {
-  calcStyleDigest(style).then(digest =>
-    chromeLocal.setValue(DIGEST_KEY_PREFIX + style.id, digest));
 }
 
 
