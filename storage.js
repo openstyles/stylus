@@ -14,7 +14,6 @@ var cachedStyles = {
   filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
   regexps: new Map(),    // compiled style regexps
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
-  emptyCode: new Map(),  // entire code is comments/whitespace/@namespace
   mutex: {
     inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
@@ -331,16 +330,17 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
   const sections = [];
   for (const section of style.sections) {
     const {urls, domains, urlPrefixes, regexps, code} = section;
-    if ((!urls.length && !urlPrefixes.length && !domains.length && !regexps.length
-      || urls.length
+    const isGlobal = !urls.length && !urlPrefixes.length && !domains.length && !regexps.length;
+    const isMatching = !isGlobal && (
+      urls.length
         && urls.indexOf(matchUrl) >= 0
       || urlPrefixes.length
         && arraySomeIsPrefix(urlPrefixes, matchUrl)
       || domains.length
         && arraySomeIn(cachedStyles.urlDomains.get(matchUrl) || getDomains(matchUrl), domains)
       || regexps.length
-        && arraySomeMatches(regexps, matchUrl, strictRegexp)
-    ) && !styleCodeEmpty(code)) {
+        && arraySomeMatches(regexps, matchUrl, strictRegexp));
+    if (isGlobal && !styleCodeEmpty(code) || isMatching) {
       sections.push(section);
       if (stopOnFirst) {
         break;
@@ -396,20 +396,21 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
 
 
 function styleCodeEmpty(code) {
-  // Collect the section if not empty or namespace-only.
-  // We don't check long code as it's slow both for emptyCode declared as Object
-  // and as Map in case the string is not the same reference used to add the item
-  let isEmpty = code !== null &&
-    code.length < 1000 &&
-    cachedStyles.emptyCode.get(code);
-  if (isEmpty !== undefined) {
-    return isEmpty;
+  // Collect the global section if it's not empty, not comment-only, not namespace-only.
+  const cmtOpen = code && code.indexOf('/*');
+  if (cmtOpen >= 0) {
+    const cmtCloseLast = code.lastIndexOf('*/');
+    if (cmtCloseLast < 0) {
+      code = code.substr(0, cmtOpen);
+    } else {
+      code = code.substr(0, cmtOpen) +
+        code.substring(cmtOpen, cmtCloseLast + 2).replace(RX_CSS_COMMENTS, '') +
+        code.substr(cmtCloseLast + 2);
+    }
   }
-  isEmpty = !code || !code.trim()
-    || code.indexOf('@namespace') >= 0
-    && code.replace(RX_CSS_COMMENTS, '').replace(RX_NAMESPACE, '').trim() == '';
-  cachedStyles.emptyCode.set(code, isEmpty);
-  return isEmpty;
+  return !code
+    || !code.trim()
+    || code.includes('@namespace') && !code.replace(RX_NAMESPACE, '').trim();
 }
 
 
