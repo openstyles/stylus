@@ -237,7 +237,7 @@ function applySections(styleId, sections) {
   });
   addStyleElement(el);
   styleElements.set(el.id, el);
-  disabledElements.delete(styleId);
+  disabledElements.delete(Number(styleId));
 }
 
 
