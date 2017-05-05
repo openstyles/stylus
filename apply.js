@@ -273,6 +273,7 @@ function initDocRewriteObserver() {
     }
     ROOT = document.documentElement;
     for (const el of styleElements.values()) {
+      el.textContent += ' '; // invalidate CSSOM cache
       addStyleElement(document.importNode(el, true));
     }
   };
