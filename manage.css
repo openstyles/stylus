@@ -159,6 +159,9 @@ a:hover {
 .schedule>input {
   margin-right: 5px;
 }
+.schedule span {
+  margin: 0 5px;
+}
 .schedule>div {
   position: absolute;
   right: 10px;

@@ -713,10 +713,30 @@
   "scheduleButtonActive": {
     "message": "Scheduled"
   },
+  "scheduleTitle": {
+    "message": "Add/Edit this schedule",
+    "description": "Title for the messageBox"
+  },
+  "scheduleButtonRetry": {
+    "message": "Retry",
+    "description": "First button for the messageBox"
+  },
+  "scheduleButtonGiveUp": {
+    "message": "I give up ",
+    "description": "Second button for the messageBox"
+  },
   "scheduleOneEntry": {
-    "message": "Either clear both start and end values to disable the schedule or set both to enable it"
+    "message": "Either clear both start and end values to disable the schedule or set both values to enable it",
+    "description": "Description for the messageBox when only one time value is present"
   },
   "scheduleEqualEntries": {
-    "message": "Start and end times cannot be equal"
+    "message": "Start and end time values cannot be equal",
+    "description": "Description for the messageBox when both start and end time values are equal"
+  },
+  "scheduleFrom": {
+    "message": "From:"
+  },
+  "scheduleTo": {
+    "message": "To:"
   }
 }

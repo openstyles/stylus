@@ -279,7 +279,9 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
     case 'schedule':
-      schedule.entry(request);
+      schedule.entry(request)
+        .then(() => sendResponse(true))
+        .catch(() => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
   }
 }
