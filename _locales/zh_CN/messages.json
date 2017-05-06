@@ -7,16 +7,16 @@
 		"message": "默认",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
+	"styleRegexpTestTitle": {
+		"message": "列出当前正则表达式匹配的网页标签（点击网址 URL 可跳转到该页）",
+		"description": "RegExp test report: title of the report"
+	},
 	"bckpInstStyles": {
 		"message": "导出所有样式",
 		"description": ""
 	},
 	"optionsUpdateInterval": {
 		"message": "每 N 小时，检查所有样式更新（0 为关闭检查）",
-		"description": ""
-	},
-	"optionsOpenManagerNote": {
-		"message": "设置键盘快捷键",
 		"description": ""
 	},
 	"exportLabel": {
@@ -28,7 +28,11 @@
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
-		"message": "样式计数背景颜色",
+		"message": "背景颜色",
+		"description": ""
+	},
+	"updateCheckHistory": {
+		"message": "检测升级的历史记录",
 		"description": ""
 	},
 	"cm_tabSize": {
@@ -43,6 +47,14 @@
 		"message": "输入名称。",
 		"description": "Error displayed when user saves without providing a name"
 	},
+	"genericHistoryLabel": {
+		"message": "历史",
+		"description": "Used in various places to show a history log of something"
+	},
+	"shortcutsNote": {
+		"message": "定义键盘快捷键",
+		"description": ""
+	},
 	"appliesDomainOption": {
 		"message": "该域上的网址",
 		"description": "Option to make the style apply to the entered string as a domain"
@@ -51,37 +63,53 @@
 		"message": "检查更新",
 		"description": "Label for the button to check a single style for an update"
 	},
-	"openOptionsShortcuts": {
-		"message": "设置快捷键",
-		"description": "Go to shortcut configuration"
+	"styleNotAppliedRegexpProblemTooltip": {
+		"message": "正则表达式错误，样式无法正常运行",
+		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"styleRegexpInvalidExplanation": {
+		"message": "部分正则表达式无法生效。",
+		"description": ""
 	},
 	"importAppendLabel": {
 		"message": "追加到样式",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"optionsOpenManager": {
-		"message": "打开样式管理器 ",
+		"message": "管理样式",
 		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "所有样式已是最新版本。",
+		"message": "没找到任何升级。",
 		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"importReportLegendAdded": {
+		"message": "个样式已添加",
+		"description": "Text after the number of styles added in the report shown after importing styles"
 	},
 	"styleFromMozillaFormatPrompt": {
 		"message": "粘贴 Mozilla 格式代码",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
+	"dragDropMessage": {
+		"message": "把 json 备份文件拖放到页面的任意位置，即可导入数据库",
+		"description": "Drag'n'drop message"
+	},
 	"helpAlt": {
 		"message": "帮助",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmDelete": {
-		"message": "确定",
+	"confirmOK": {
+		"message": "确认",
 		"description": ""
 	},
 	"search": {
 		"message": "搜索",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"manageFaviconsGray": {
+		"message": "灰色图标",
+		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"confirmYes": {
 		"message": "是",
@@ -99,21 +127,33 @@
 		"message": "美化",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
+	"styleRegexpProblemTooltip": {
+		"message": "多个部分代码无法正常处理正则表达式",
+		"description": "Tooltip in the popup for styles that were applied only partially"
+	},
 	"styleEnabledLabel": {
 		"message": "已启用",
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla 格式的代码可以与 Stylish 一起用于 Firefox，并可提交至 userstyles.org。",
+		"message": "FireFox(Mozilla) 格式的 CSS 代码导入后，会自动转换成适 Stylus 使用的 Chrome 格式的 CSS 代码。反过来，Chrome 格式的 CSS 也可以导出为适合 FireFox 使用的格式。需要注意的是，如果你要提交你的 CSS 代码到 userstyles.org，则必须使用 FireFox(Mozilla) 格式的 CSS 代码。",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
 		"message": "添加其他部分",
 		"description": "Label for the button to add a section"
 	},
+	"styleRegexpTestPartial": {
+		"message": "没有完全匹配，因此忽略",
+		"description": "RegExp test report: label for the partially matching expressions"
+	},
 	"styleSaveLabel": {
 		"message": "保存",
 		"description": "Label for save button for style editing"
+	},
+	"confirmDelete": {
+		"message": "删除",
+		"description": ""
 	},
 	"confirmCancel": {
 		"message": "取消",
@@ -143,6 +183,14 @@
 		"message": "与该正则表达式匹配的网址",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
+	"optionsAdvancedExposeIframesNote": {
+		"message": "在开发者工具中，找到 Stylus 特定插入的框架代码，以便调用，例如：“html[stylus-iframe] h1 { display:none }”",
+		"description": ""
+	},
+	"importReportLegendUpdatedCode": {
+		"message": "代码已更新",
+		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+	},
 	"styleInstall": {
 		"message": "要将“$stylename$”安装到 Stylus 中吗？",
 		"description": "Confirmation when installing a style",
@@ -153,28 +201,48 @@
 		}
 	},
 	"optionsBadgeDisabled": {
-		"message": "样式计数背景颜色（停用时）",
+		"message": "关闭时的背景颜色",
 		"description": ""
 	},
 	"optionsCheck": {
-		"message": "检查",
+		"message": "升级样式",
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>访问 userstyles.org 获取样式</a> | <a href='http://add0n.com/stylus.html'>获取帮助</a>",
+		"message": "<a href='https://userstyles.org'>从 userstyles.org 获取样式</a> | <a href='http://add0n.com/stylus.html'>帮助</a>",
 		"description": "Help text on the manage page"
+	},
+	"manageOnlyLocal": {
+		"message": "只显示在本地创建的样式",
+		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"searchStyles": {
 		"message": "搜索内容",
 		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"optionsUpdateImportNote": {
+		"message": "从旧版本的 Stylus 或 Stylish 中导入样式备份时，请在样式管理器中手动检测升级一次，以确保所有样式都可更新到最新版本。",
+		"description": ""
+	},
+	"checkAllUpdatesForce": {
+		"message": "再检测一次，我没有修改过任何样式。",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"unreachableFileHint": {
+		"message": "如果需要改变 file:// 协议的样式，则需要在 chrome://extensions 页面中的 Stylus 扩展选项里面，打开 允许访问文件网址 的权限",
+		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"disableStyleLabel": {
 		"message": "停用",
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "在工具栏按钮上显示对当前站点生效的样式数目",
+		"message": "当前网站激活的样式数量",
 		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"manageFavicons": {
+		"message": "显示应用对象的图标",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
 		"message": "显示生效的样式计数",
@@ -196,6 +264,10 @@
 		"message": "导入",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
+	"shortcuts": {
+		"message": "快捷键",
+		"description": "Go to shortcut configuration"
+	},
 	"updateCheckFailServerUnreachable": {
 		"message": "更新失败 - 无法访问服务器。",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
@@ -208,13 +280,21 @@
 		"message": "应用全部更新",
 		"description": "Label for the button to apply all detected updates"
 	},
-	"openShortcutsPopup": {
-		"message": "设置快捷键",
-		"description": "Go to shortcut configuration"
+	"optionsReset": {
+		"message": "重置所有选项为默认值",
+		"description": ""
+	},
+	"optionsCustomizeUpdate": {
+		"message": "检测升级",
+		"description": ""
 	},
 	"deleteStyleConfirm": {
 		"message": "确定要删除此样式吗？",
 		"description": "Confirmation before deleting a style"
+	},
+	"optionsCustomizePopup": {
+		"message": "样式管理弹框",
+		"description": ""
 	},
 	"styleBadRegexp": {
 		"message": "正则表达式无效。",
@@ -250,6 +330,10 @@
 		"message": "部分",
 		"description": "Title for the style sections section"
 	},
+	"importReportLegendInvalid": {
+		"message": "忽略无效的代码",
+		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
 	"editStyleTitle": {
 		"message": "修改样式“$stylename$”",
 		"description": "Title of the page for editing styles",
@@ -267,17 +351,29 @@
 		"message": "网址前缀",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
+	"cm_matchHighlightToken": {
+		"message": "光标所在的位置",
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+	},
 	"searchRegexp": {
 		"message": "使用 /re/ 语法进行正则表达式搜索",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"updateCheckManualUpdateHint": {
+		"message": "强制升级将覆盖所有本地修改的样式",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"toggleStyle": {
+		"message": "切换样式",
+		"description": "Label for the checkbox to enable/disable a style"
 	},
 	"importReplaceTooltip": {
 		"message": "放弃当前样式的内容，使用已导入样式覆盖它",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"popupStylesFirst": {
-		"message": "在工具栏按钮中的命令前列出样式",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"message": "样式列表置顶",
+		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
 		"message": "各部分可让您定义不同的代码段，以通过同一样式应用到不同的网址组。例如，某个单一样式能以一种方式更改网站首页，同时以另一种方式更改网站的其余部分。",
@@ -295,6 +391,10 @@
 		"message": "删除",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"updatesCurrentlyInstalled": {
+		"message": "更新已安装",
+		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+	},
 	"styleToMozillaFormatTitle": {
 		"message": "Mozilla 格式的样式",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
@@ -310,6 +410,14 @@
 	"replace": {
 		"message": "替换",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"styleRegexpTestNone": {
+		"message": "没有发现任何网页标签与正则表达式匹配",
+		"description": "RegExp test report: label for expressions that didn't match any tabs"
+	},
+	"importReportLegendUpdatedMeta": {
+		"message": "升级信息",
+		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
 		"message": "应用对象：",
@@ -344,13 +452,25 @@
 		"message": "检查所有样式更新",
 		"description": ""
 	},
+	"importReportTitle": {
+		"message": "样式导入完成",
+		"description": "Title of the report shown after importing styles"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus在这样的页面上不工作",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	"cm_matchHighlight": {
+		"message": "高亮",
+		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+	},
+	"styleRegexpPartialExplanation": {
+		"message": "这个样式有一部分正则表达式与 <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a>完整的 URL 不匹配。这部分样式将被忽略，可能这个样式是基于 Stylish 编写的，请尝试在 Stylus 重新编写该样式。",
+		"description": ""
+	},
+	"unreachableContentScript": {
+		"message": "无法读取页面，请尝试刷新。",
+		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
 	},
 	"sectionRemove": {
 		"message": "删除此部分",
@@ -359,6 +479,10 @@
 	"disableAllStyles": {
 		"message": "停用所有样式",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"updateCheckSkippedMaybeLocallyEdited": {
+		"message": "这个样式可能在本地修改过，如果强制升级更新则会覆盖修改的内容。",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
 		"message": "撤销 (全局)",
@@ -372,17 +496,45 @@
 		"message": "正在检查更新...",
 		"description": "Text to display when checking a style for an update"
 	},
-	"optionsCustomize": {
-		"message": "自定义用户界面",
+	"styleRegexpTestFull": {
+		"message": "匹配的网页标签",
+		"description": "RegExp test report: label for the fully matching expressions"
+	},
+	"manageMaxTargets": {
+		"message": "应用对象的数量",
+		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"manageFaviconsHelp": {
+		"message": "Stylus 使用了 https://www.google.com/s2/favicons?domain=http://add0n.com/stylus.html 方式获取图标",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"updateCheckSkippedLocallyEdited": {
+		"message": "此样式已在本地修改过。",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"optionsResetButton": {
+		"message": "恢复默认值",
 		"description": ""
 	},
 	"sectionCode": {
 		"message": "代码",
 		"description": "Label for the code for a section"
 	},
+	"optionsAdvancedContextDelete": {
+		"message": "添加“删除”到编辑器的菜单",
+		"description": ""
+	},
+	"importReportLegendUpdatedBoth": {
+		"message": "已更新的所有信息和代码",
+		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
+	},
 	"cm_smartIndent": {
 		"message": "启用智能缩进",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
+	"styleRegexpTestButton": {
+		"message": "测试正则表达式",
+		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
 		"message": "使用“应用对象”控件来限制此部分中的代码所应用到的网址。",
@@ -392,9 +544,33 @@
 		"message": "修改样式",
 		"description": "Title of the page for editing styles"
 	},
+	"editDeleteText": {
+		"message": "删除",
+		"description": "Label for the context menu item in the editor to delete selected text"
+	},
+	"stylusUnavailableForURLdetails": {
+		"message": "基于安全，浏览器限制了扩展在这些页面上的权限（例如chrome://version or about:addons） Chrome/Chromium 类浏览器\n还限制了扩展访问谷歌商店的权限。",
+		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
+	"cm_matchHighlightSelection": {
+		"message": "选择区域",
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+	},
 	"appliesUrlOption": {
 		"message": "网址",
 		"description": "Option to make the style apply to the entered string as a URL"
+	},
+	"updateAllCheckSucceededSomeEdited": {
+		"message": "如果你修改过一些样式，那它们可能被忽略更新，你可以单独检测这些样式强制升级，也可以点 再次检测所有样式强制更新。",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"stylusUnavailableForURL": {
+		"message": "Stylus 在这样的页面上不工作",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
+	"manageOnlyUpdates": {
+		"message": "只显示可升级的样式",
+		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
 		"message": "添加样式",
@@ -407,6 +583,10 @@
 	"dbError": {
 		"message": "应用Stylus数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"optionsAdvanced": {
+		"message": "高级设置",
+		"description": ""
 	},
 	"importAppendTooltip": {
 		"message": "追加已导入样式到当前样式",
@@ -424,9 +604,17 @@
 		"message": "按下热键",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"styleRegexpTestInvalid": {
+		"message": "忽略无效的正则表达式",
+		"description": "RegExp test report: label for the invalid expressions"
+	},
 	"replaceAll": {
 		"message": "全部替换",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"importReportUnchanged": {
+		"message": "样式导入无效。",
+		"description": "Message in the report shown after importing styles"
 	},
 	"optionsActions": {
 		"message": "接下来要做什么",
@@ -435,6 +623,10 @@
 	"editGotoLine": {
 		"message": "跳转至行（或行:列）",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
+	"manageOnlyLocalTooltip": {
+		"message": "（此样式无法通过 userstyles.org 页面进行安装）",
+		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
 		"message": "检查所有样式更新",
@@ -447,6 +639,14 @@
 	"issuesHelp": {
 		"message": "<a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> 在已启用的这些规则中找到问题：",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
+	"optionsCustomizeBadge": {
+		"message": "样式计数器",
+		"description": ""
+	},
+	"importReportLegendIdentical": {
+		"message": "个相同的样式被忽略",
+		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"optionsPopupWidth": {
 		"message": "样式管理弹出框宽度 px",
@@ -464,6 +664,18 @@
 		"message": "键盘映射",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
+	"manageNewUI": {
+		"message": "启用新的样式管理界面",
+		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"importReportUndoneTitle": {
+		"message": "样式导入被取消",
+		"description": "Title of the message box shown after undoing the import of styles"
+	},
+	"genericDisabledLabel": {
+		"message": "未启用",
+		"description": "Used in various lists/options to indicate that something is disabled"
+	},
 	"cm_indentWithTabs": {
 		"message": "启用带智能缩进的标签页",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -475,6 +687,14 @@
 	"deleteStyleLabel": {
 		"message": "删除",
 		"description": "Label for the button to delete a style"
+	},
+	"updateCheckManualUpdateForce": {
+		"message": "安装更新（将覆盖本地修改的样式）",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"optionsAdvancedExposeIframes": {
+		"message": "通过 HTML[stylus-iframe] 方式改变 iframes 的 css",
+		"description": ""
 	},
 	"addStyleLabel": {
 		"message": "编写新样式",
@@ -489,7 +709,7 @@
 		"description": "Heading for backup"
 	},
 	"manageOnlyEnabled": {
-		"message": "仅已启用的样式",
+		"message": "只显示已启用的样式",
 		"description": "Checkbox to show only enabled styles"
 	},
 	"editStyleLabel": {
@@ -499,6 +719,14 @@
 	"cm_theme": {
 		"message": "主题",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"backupMessage": {
+		"message": "拖放一个 json 备份文件到这个页面，即可导入数据库",
+		"description": "Message for backup"
+	},
+	"importReportUndone": {
+		"message": "个样式被还原",
+		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
 	},
 	"helpKeyMapCommand": {
 		"message": "输入命令名称",
