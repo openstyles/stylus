@@ -321,14 +321,18 @@ Object.assign(document.body, {
     }
   },
   ondragend(event) {
-    animateElement(this, {className: 'fadeout'}).then(() => {
+    animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
       this.style.animationDuration = '';
-      this.classList.remove('dropzone');
     });
   },
   ondragleave(event) {
-    // Chrome sets screen coords to 0 on Escape key pressed or mouse out of document bounds
-    if (!event.screenX && !event.screenX) {
+    try {
+      // in Firefox event.target could be XUL browser and hence there is no permission to access it
+      if (event.target === this) {
+        this.ondragend();
+      }
+    }
+    catch (e) {
       this.ondragend();
     }
   },

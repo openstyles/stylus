@@ -34,11 +34,14 @@ function scrollElementIntoView(element) {
 }
 
 
-function animateElement(element, {className, remove = false}) {
+function animateElement(element, {className, removeExtraClasses = [], remove = false}) {
   return new Promise(resolve => {
     element.addEventListener('animationend', function _() {
       element.removeEventListener('animationend', _);
-      element.classList.remove(className);
+      element.classList.remove(
+        className,
+        ...removeExtraClasses // In Firefox, `resolve()` might be called one frame later. This is helpful to clean-up on the same frame
+      );
       // TODO: investigate why animation restarts if the elements is removed in .then()
       if (remove) {
         element.remove();

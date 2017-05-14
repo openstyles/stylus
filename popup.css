@@ -4,6 +4,9 @@ body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   margin: 0;
 }
+.firefox body {
+  background-color: #fff;
+}
 
 body > div:not(#installed) {
   margin-left: 0.75em;
@@ -119,7 +122,6 @@ body.blocked > DIV {
 
 .entry .main-controls {
   display: flex;
-  flex: 1;
   width: calc(100% - 20px);
   align-items: center;
 }

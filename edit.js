@@ -1872,7 +1872,7 @@ function getComputedHeight(el) {
 
 function getCodeMirrorThemes() {
 	if (!chrome.runtime.getPackageDirectoryEntry) {
-		const themes = Promise.resolve([
+		const themes = [
 			chrome.i18n.getMessage('defaultTheme'),
 			'3024-day',
 			'3024-night',
@@ -1922,8 +1922,9 @@ function getCodeMirrorThemes() {
 			'xq-light',
 			'yeti',
 			'zenburn',
-		]);
+		];
 		localStorage.codeMirrorThemes = themes.join(' ');
+		return Promise.resolve(themes);
 	}
 	return new Promise(resolve => {
 		chrome.runtime.getPackageDirectoryEntry(rootDir => {
