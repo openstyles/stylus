@@ -102,7 +102,8 @@ function importFromString(jsonString) {
     item.name = item.name.trim();
     const byId = BG.cachedStyles.byId.get(item.id);
     const byName = oldStylesByName.get(item.name);
-    const oldStyle = byId && byId.name.trim() == item.name || !byName ? byId : byName;
+    const oldStyle = byId && sameStyle(byId, item) ? byId : byName;
+    oldStylesByName.delete(item.name);
     if (oldStyle == byName && byName) {
       item.id = byName.id;
     }
@@ -117,6 +118,12 @@ function importFromString(jsonString) {
       return;
     }
     return {oldStyle, metaEqual, codeEqual};
+  }
+
+  function sameStyle(oldStyle, newStyle) {
+    return oldStyle.name.trim() === newStyle.name.trim() ||
+      ['updateUrl', 'originalMd5', 'originalDigest']
+        .some(field => oldStyle[field] && oldStyle[field] == newStyle[field]);
   }
 
   function account({style, info, resolve}) {
