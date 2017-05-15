@@ -4,6 +4,7 @@ Stylus : Stylish fork for Chrome and Chrome-like things
 
 1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)
 2. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/)
+3. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/)
 
 ## Screen shot
 
