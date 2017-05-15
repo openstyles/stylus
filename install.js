@@ -1,9 +1,16 @@
 'use strict';
 
 const FIREFOX = /Firefox/.test(navigator.userAgent);
+const VIVALDI = /Vivaldi/.test(navigator.userAgent);
+const OPERA = /OPR/.test(navigator.userAgent);
 
-document.addEventListener("stylishUpdate" + (FIREFOX ? "" : "Chrome"), onUpdateClicked);
-document.addEventListener("stylishInstall" + (FIREFOX ? "" : "Chrome"), onInstallClicked);
+document.addEventListener("stylishUpdate", onUpdateClicked);
+document.addEventListener("stylishUpdateChrome", onUpdateClicked);
+document.addEventListener("stylishUpdateOpera", onUpdateClicked);
+
+document.addEventListener("stylishInstall", onInstallClicked);
+document.addEventListener("stylishInstallChrome", onInstallClicked);
+document.addEventListener("stylishInstallOpera", onInstallClicked);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
@@ -56,6 +63,9 @@ function checkUpdatability([installedStyle]) {
 function sendEvent(type, detail = null) {
   if (FIREFOX) {
     type = type.replace('Chrome', '');
+  }
+  else if (OPERA || VIVALDI) {
+    type = type.replace('Chrome', 'Opera');
   }
   detail = {detail};
   if (typeof cloneInto != 'undefined') {
