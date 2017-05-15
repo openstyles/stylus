@@ -102,10 +102,18 @@ function importFromString(jsonString) {
     item.name = item.name.trim();
     const byId = BG.cachedStyles.byId.get(item.id);
     const byName = oldStylesByName.get(item.name);
-    const oldStyle = byId && sameStyle(byId, item) ? byId : byName;
     oldStylesByName.delete(item.name);
-    if (oldStyle == byName && byName) {
+    let oldStyle;
+    if (byId) {
+      if (sameStyle(byId, item)) {
+        oldStyle = byId;
+      } else {
+        item.id = null;
+      }
+    }
+    if (!oldStyle && byName) {
       item.id = byName.id;
+      oldStyle = byName;
     }
     const oldStyleKeys = oldStyle && Object.keys(oldStyle);
     const metaEqual = oldStyleKeys &&
