@@ -1,7 +1,9 @@
 'use strict';
 
-document.addEventListener('stylishUpdateChrome', onUpdateClicked);
-document.addEventListener('stylishInstallChrome', onInstallClicked);
+const FIREFOX = /Firefox/.test(navigator.userAgent);
+
+document.addEventListener("stylishUpdate" + (FIREFOX ? "" : "Chrome"), onUpdateClicked);
+document.addEventListener("stylishInstall" + (FIREFOX ? "" : "Chrome"), onInstallClicked);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
@@ -52,6 +54,9 @@ function checkUpdatability([installedStyle]) {
 
 
 function sendEvent(type, detail = null) {
+  if (FIREFOX) {
+    type = type.replace('Chrome', '');
+  }
   detail = {detail};
   if (typeof cloneInto != 'undefined') {
     // Firefox requires explicit cloning, however USO can't process our messages anyway
