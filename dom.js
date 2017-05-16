@@ -11,6 +11,18 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   }
 }
 
+// add favicon in Firefox
+if (/Firefox/.test(navigator.userAgent)) {
+  for (const size of [128, 38, 32, 19, 16]) {
+    document.head.appendChild($element({
+      tag: 'link',
+      rel: 'icon',
+      href: `/images/icon/${size}.png`,
+      sizes: size + 'x' + size,
+    }));
+  }
+}
+
 
 function onDOMready() {
   if (document.readyState != 'loading') {
