@@ -2287,6 +2287,14 @@ Parser.prototype = function() {
                         tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
                         value += tokenStream.token().value;
                         value += this._readWhitespace();
+
+                        if (tokenStream.match([Tokens.IDENT])
+                        && tokenStream.token().value.toLowerCase() == 'i') {
+                            value += tokenStream.token().value;
+                            value += this._readWhitespace();
+                        } else {
+                            tokenStream.unget();
+                        }
                     }
 
                     tokenStream.mustMatch(Tokens.RBRACKET);
