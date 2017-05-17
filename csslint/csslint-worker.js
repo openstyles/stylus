@@ -2288,12 +2288,13 @@ Parser.prototype = function() {
                         value += tokenStream.token().value;
                         value += this._readWhitespace();
 
-                        if (tokenStream.match([Tokens.IDENT])
-                        && tokenStream.token().value.toLowerCase() == 'i') {
-                            value += tokenStream.token().value;
-                            value += this._readWhitespace();
-                        } else {
-                            tokenStream.unget();
+                        if (tokenStream.match([Tokens.IDENT])) {
+                            if (tokenStream.token().value.toLowerCase() == 'i') {
+                                value += tokenStream.token().value;
+                                value += this._readWhitespace();
+                            } else {
+                                tokenStream.unget();
+                            }
                         }
                     }
 
