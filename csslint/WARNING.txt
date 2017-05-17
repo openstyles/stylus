@@ -6,7 +6,10 @@
 
   while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN && lt !== Tokens.EOF) {
 
-2. Apply our hacks unless supported natively:
+2. Apply our hacks unless supported natively
+  (use git history for the file as this warning may be obsolete):
 
-  * Support :any(), :-webkit-any(), :-moz-any()
-  * Support @supports inside @-moz-document
+  * bc63ecca support "i" in attribute selector
+  * 2468784e fix crashing on unclosed calc() at eof
+  * 3287b79f Support :any(), :-webkit-any(), :-moz-any()
+  * 4684016a Support @supports inside @-moz-document
