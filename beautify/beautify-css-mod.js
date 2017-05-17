@@ -304,6 +304,7 @@
             newline_before_open_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
             outputPosCol++;
+            indent();
             if (!eatWhitespace(true)) {
                 newline_after_open_brace ? print.newLine() : print.singleSpace();
             }
@@ -462,7 +463,6 @@
                         print.newLine(true);
                     }
                 } else {
-                    indent();
                     print["{"](ch);
                     // when entering conditional groups, only rulesets are allowed
                     if (enteringConditionalGroup) {
