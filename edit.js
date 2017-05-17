@@ -1133,6 +1133,7 @@ function init() {
 		window.onload = () => {
 			window.onload = null;
 			addSection(null, section);
+			editors[0].setOption('lint', CodeMirror.defaults.lint);
 			// default to enabled
 			document.getElementById("enabled").checked = true
 			initHooks();
