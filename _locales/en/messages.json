@@ -177,7 +177,7 @@
     "message": "Cancel"
   },
   "description": {
-    "message": "Restyle the web with Stylus, a user styles manager. Stylus lets you easily install themes and skins for many popular sites.",
+    "message": "Redesign the web with Stylus, a user styles manager. Stylus allows you to easily install themes and skins for many popular sites.",
     "description": "Extension description"
   },
   "openStylesManager": {
