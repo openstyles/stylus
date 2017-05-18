@@ -29,6 +29,21 @@ new MutationObserver((mutations, observer) => {
   }
 }).observe(document.documentElement, {childList: true});
 
+/* since we are using "stylish-code-chrome" meta key on all browsers and
+  US.o does not provide "advanced settings" on this url if browser is not Chrome,
+  we need to fix this URL using "stylish-update-url" meta key
+*/
+function getStyleURL () {
+  const url = getMeta('stylish-code-chrome');
+
+  if (FIREFOX || OPERA || VIVALDI) {
+    /* get custom settings from the update url */
+    return Object.assign(new URL(url), {
+      search: (new URL(getMeta('stylish-update-url'))).search
+    }).href;
+  }
+  return url;
+}
 
 function checkUpdatability([installedStyle]) {
   if (!installedStyle) {
@@ -41,7 +56,7 @@ function checkUpdatability([installedStyle]) {
       reportUpdatable(md5 != installedStyle.originalMd5);
     });
   } else {
-    getResource(getMeta('stylish-code-chrome')).then(code => {
+    getResource(getStyleURL()).then(code => {
       reportUpdatable(code === null ||
         !styleSectionsEqual(JSON.parse(code), installedStyle));
     });
@@ -107,7 +122,8 @@ function saveStyleCode(message, name, addProps) {
     if (!confirm(chrome.i18n.getMessage(message, [name]))) {
       return;
     }
-    getResource(getMeta('stylish-code-chrome')).then(code => {
+
+    getResource(getStyleURL()).then(code => {
       chrome.runtime.sendMessage(
         Object.assign(JSON.parse(code), addProps, {
           method: 'saveStyle',
@@ -208,8 +224,14 @@ function orphanCheck() {
   }
   // we're orphaned due to an extension update
   // we can detach event listeners
-  document.removeEventListener('stylishUpdateChrome', onUpdateClicked);
-  document.removeEventListener('stylishInstallChrome', onInstallClicked);
+  document.removeEventListener("stylishUpdate", onUpdateClicked);
+  document.removeEventListener("stylishUpdateChrome", onUpdateClicked);
+  document.removeEventListener("stylishUpdateOpera", onUpdateClicked);
+
+  document.removeEventListener("stylishInstall", onInstallClicked);
+  document.removeEventListener("stylishInstallChrome", onInstallClicked);
+  document.removeEventListener("stylishInstallOpera", onInstallClicked);
+
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy global functions in this context to free up memory
   [
