@@ -548,11 +548,7 @@
 		"message": "Удалить",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
-	"stylusUnavailableForURLdetails": {
-		"message": "В целях обеспечения безопасности браузер запрещает дополнениям изменять встроенные страницы (т.е. chrome://version или about:addons), также как и страницы других дополнений. Клоны Chrome/Chromium дополнительно защищают \"магазин\" дополнений Chrome Web Store.",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"cm_matchHighlightSelection": {
+  "cm_matchHighlightSelection": {
 		"message": "Выделенный текст",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
