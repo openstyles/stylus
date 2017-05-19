@@ -21,11 +21,15 @@ const URLS = {
 
   // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
   // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
-  chromeWebStore: FIREFOX ? 'N/A' : 'https://chrome.google.com/webstore/',
+  chromeWebStore: FIREFOX ? 'https://addons.mozilla.org/' : (
+    OPERA ? 'https://addons.opera.com/' : 'https://chrome.google.com/webstore/'
+  ),
 
   supported: new RegExp(
     '^(file|ftps?|http)://|' +
-    `^https://${FIREFOX ? '' : '(?!chrome\\.google\\.com/webstore)'}|` +
+    `^https://${FIREFOX ? '(?!addons\\.mozilla\\.org)' : (
+      OPERA ? '(?!addons\\.opera\\.com)' : '(?!chrome\\.google\\.com/webstore)'
+    )}|` +
     '^' + chrome.runtime.getURL('')),
 };
 
