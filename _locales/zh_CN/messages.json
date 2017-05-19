@@ -548,10 +548,6 @@
 		"message": "删除",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
-	"stylusUnavailableForURLdetails": {
-		"message": "基于安全，浏览器限制了扩展在这些页面上的权限（例如chrome://version or about:addons） Chrome/Chromium 类浏览器\n还限制了扩展访问谷歌商店的权限。",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
 	"cm_matchHighlightSelection": {
 		"message": "选择区域",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
