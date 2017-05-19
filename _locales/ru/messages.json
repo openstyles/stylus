@@ -548,7 +548,7 @@
 		"message": "Удалить",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
-  "cm_matchHighlightSelection": {
+   "cm_matchHighlightSelection": {
 		"message": "Выделенный текст",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
