@@ -22,7 +22,9 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
-      handleUpdate(msg.style);
+      // notifyAllTabs sets msg.style's code to null so we have to get the actual style
+      // because we analyze its code in detectSloppyRegexps
+      handleUpdate(BG.cachedStyles.byId.get(msg.style.id));
       break;
     case 'styleDeleted':
       handleDelete(msg.id);
