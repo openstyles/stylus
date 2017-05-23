@@ -272,13 +272,13 @@ function sessionStorageHash(name) {
 }
 
 
-function onBackgroundReady(...dataPassthru) {
-  return BG ? Promise.resolve(...dataPassthru) : new Promise(ping);
+function onBackgroundReady() {
+  return BG ? Promise.resolve() : new Promise(ping);
   function ping(resolve) {
     chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
       if (health !== undefined) {
         BG = chrome.extension.getBackgroundPage();
-        resolve(...dataPassthru);
+        resolve();
       } else {
         ping(resolve);
       }
@@ -289,13 +289,14 @@ function onBackgroundReady(...dataPassthru) {
 
 // in case Chrome haven't yet loaded the bg page and displays our page like edit/manage
 function getStylesSafe(options) {
-  return onBackgroundReady(options).then(BG.getStyles);
+  return onBackgroundReady()
+    .then(() => BG.getStyles(options));
 }
 
 
 function saveStyleSafe(style) {
-  return onBackgroundReady(BG.deepCopy(style))
-    .then(BG.saveStyle)
+  return onBackgroundReady()
+    .then(() => BG.saveStyle(BG.deepCopy(style)))
     .then(savedStyle => {
       if (style.notify === false) {
         handleUpdate(savedStyle, style);
@@ -306,8 +307,8 @@ function saveStyleSafe(style) {
 
 
 function deleteStyleSafe({id, notify = true} = {}) {
-  return onBackgroundReady({id, notify})
-    .then(BG.deleteStyle)
+  return onBackgroundReady()
+    .then(() => BG.deleteStyle({id, notify}))
     .then(() => {
       if (!notify) {
         handleDelete(id);
