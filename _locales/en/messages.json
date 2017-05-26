@@ -577,7 +577,7 @@
     "description": "Button label"
   },
   "undoGlobal": {
-    "message": "Undo (global)",
+    "message": "Undo in all sections",
     "description": "CSS-beautify global Undo button label"
   },
   "unreachableContentScript": {

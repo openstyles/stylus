@@ -302,10 +302,6 @@
 		"message": "Désactiver tous les styles",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
-	"undoGlobal": {
-		"message": "Undo (global)",
-		"description": "CSS-beautify global Undo button label"
-	},
 	"updateCompleted": {
 		"message": "Mise à jour terminée.",
 		"description": "Text that displays when an update completed"

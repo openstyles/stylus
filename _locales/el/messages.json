@@ -302,10 +302,6 @@
 		"message": "Απενεργοποιηση ολων των στυλ",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
-	"undoGlobal": {
-		"message": "Undo (global)",
-		"description": "CSS-beautify global Undo button label"
-	},
 	"updateCompleted": {
 		"message": "Η ενημέρωση ολοκληρώθηκε.",
 		"description": "Text that displays when an update completed"

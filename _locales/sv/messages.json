@@ -302,10 +302,6 @@
 		"message": "Stäng av alla stilar",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
-	"undoGlobal": {
-		"message": "Undo (global)",
-		"description": "CSS-beautify global Undo button label"
-	},
 	"updateCompleted": {
 		"message": "Uppdatering slutförd.",
 		"description": "Text that displays when an update completed"
