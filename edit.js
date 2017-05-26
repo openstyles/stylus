@@ -1054,6 +1054,9 @@ function beautify(event) {
 			optionHtml("border: none;", "newline_between_properties", true) +
 			optionHtml("display: block;", "newline_before_close_brace", true) +
 			optionHtml("}", "newline_between_rules") +
+			`<label style="display: block; clear: both;"><input data-option="indent_conditional" type="checkbox"
+				${options.indent_conditional !== false ? 'checked' : ''}>` +
+				t('styleBeautifyIndentConditional') + '</label>' +
 			"</div>" +
 			"<div><button role='undo'></button></div>");
 
@@ -1096,13 +1099,14 @@ function beautify(event) {
 			}, 0);
 		});
 
-		document.querySelector(".beautify-options").addEventListener("change", function(event) {
-			var value = event.target.selectedIndex > 0;
-			options[event.target.dataset.option] = value;
-			prefs.set("editor.beautify", options);
-			event.target.parentNode.setAttribute("newline", value.toString());
+		document.querySelector('.beautify-options').onchange = ({target}) => {
+			const value = target.type == 'checkbox' ? target.checked : target.selectedIndex > 0;
+			prefs.set('editor.beautify', Object.assign(options, {[target.dataset.option]: value}));
+			if (target.parentNode.hasAttribute('newline')) {
+				target.parentNode.setAttribute('newline', value.toString());
+			}
 			doBeautify();
-		});
+		};
 
 		function optionHtml(label, optionName, indent) {
 			var value = options[optionName];

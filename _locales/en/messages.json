@@ -498,6 +498,10 @@
     "message": "Beautify",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyIndentConditional": {
+    "message": "Indent @media, @supports",
+    "description": "CSS-beautifier option"
+  },
   "styleCancelEditLabel": {
     "message": "Back to manage",
     "description": "Label for cancel button for style editing"

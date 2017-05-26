@@ -100,27 +100,26 @@
         var newlinesFromLastWSEat = 0;
         var indentSize = options.indent_size ? parseInt(options.indent_size, 10) : 4;
         var indentCharacter = options.indent_char || ' ';
-        var preserve_newlines = (options.preserve_newlines === undefined) ? false : options.preserve_newlines;
-        var selectorSeparatorNewline = (options.selector_separator_newline === undefined) ? true : options.selector_separator_newline;
-        var end_with_newline = (options.end_with_newline === undefined) ? false : options.end_with_newline;
-        var newline_between_rules = (options.newline_between_rules === undefined) ? true : options.newline_between_rules;
-        var space_around_combinator = (options.space_around_combinator === undefined) ? false : options.space_around_combinator;
-        space_around_combinator = space_around_combinator || ((options.space_around_selector_separator === undefined) ? false : options.space_around_selector_separator);
         var eol = options.eol ? options.eol : 'auto';
+        var {
+            preserve_newlines = false,
+            selector_separator_newline = true,
+            end_with_newline = false,
+            newline_between_rules = true,
+            space_around_combinator = true,
+            indent_conditional = true,
+            newline_between_properties = true,
+            newline_before_open_brace = false,
+            newline_after_open_brace = true,
+            newline_before_close_brace = true,
+        } = options;
 
-        /* STYLUS: hack start */
-        const defaultOption = (opt, defaultValue) => opt === undefined ? defaultValue : opt;
-        var newline_between_properties = defaultOption(options.newline_between_properties, true);
-        var newline_before_open_brace = defaultOption(options.newline_before_open_brace, false);
-        var newline_after_open_brace = defaultOption(options.newline_after_open_brace, true);
-        var newline_before_close_brace = defaultOption(options.newline_before_close_brace, true);
         var translatePos = (options.translate_positions || [])[0];
         var translatePosIndex = 0;
         var translatePosLine = translatePos && translatePos.line;
         var translatePosCol = translatePos && translatePos.ch;
         var inputPosLine = 0, inputPosCol = 0;
         var outputPosLine = 0, outputPosCol = 0;
-        /* STYLUS: hack end */
 
         if (options.indent_with_tabs) {
             indentCharacter = '\t';
@@ -304,9 +303,11 @@
             newline_before_open_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
             outputPosCol++;
-            indent();
+            if (!enteringConditionalGroup || indent_conditional) {
+                indent();
+            }
             if (!eatWhitespace(true)) {
-                newline_after_open_brace ? print.newLine() : print.singleSpace();
+                newline_after_open_brace || enteringConditionalGroup ? print.newLine() : print.singleSpace();
             }
         };
         print["}"] = function(newline) {
@@ -315,7 +316,7 @@
             }
             output.push('}');
             outputPosCol++;
-            if (!eatWhitespace(true)) {
+            if (!eatWhitespace(true) && peek(true) != '}') {
                 print.newLine();
             }
         };
@@ -386,6 +387,7 @@
         var insideRule = false;
         var insidePropertyValue = false;
         var enteringConditionalGroup = false;
+        var insideConditionalGroup = false;
         var top_ch = '';
         var last_top_ch = '';
 
@@ -438,13 +440,16 @@
                         print.singleSpace();
                     }
 
-                    variableOrRule = variableOrRule.replace(/\s$/, '');
+                    variableOrRule = '@' + variableOrRule.replace(/\s$/, '');
 
                     // might be a nesting at-rule
                     if (variableOrRule in css_beautify.NESTED_AT_RULE) {
                         nestedLevel += 1;
                         if (variableOrRule in css_beautify.CONDITIONAL_GROUP_RULE) {
                             enteringConditionalGroup = true;
+                            if (!indent_conditional) {
+                                nestedLevel--;
+                            }
                         }
                     }
                 }
@@ -467,6 +472,7 @@
                     // when entering conditional groups, only rulesets are allowed
                     if (enteringConditionalGroup) {
                         enteringConditionalGroup = false;
+                        insideConditionalGroup = true;
                         insideRule = (indentLevel > nestedLevel);
                     } else {
                         // otherwise, declarations are also allowed
@@ -478,10 +484,14 @@
                 print["}"](true);
                 insideRule = false;
                 insidePropertyValue = false;
-                if (nestedLevel) {
+                if (nestedLevel && (indent_conditional || !insideConditionalGroup)) {
                     nestedLevel--;
                 }
-                if (newlinesFromLastWSEat < 2 && newline_between_rules && indentLevel === 0) {
+                insideConditionalGroup = false;
+                if (newlinesFromLastWSEat < 2
+                && newline_between_rules
+                //&& indentLevel === 0
+                && peek(true) != '}') {
                     print.newLine(true);
                 }
             } else if (ch === ":") {
@@ -553,7 +563,7 @@
             } else if (ch === ',') {
                 output.push(ch);
                 outputPosCol++;
-                if (!eatWhitespace(true) && selectorSeparatorNewline && !insidePropertyValue && parenLevel < 1) {
+                if (!eatWhitespace(true) && selector_separator_newline && !insidePropertyValue && parenLevel < 1) {
                     print.newLine();
                 } else {
                     print.singleSpace();
@@ -624,12 +634,12 @@
         // also in CONDITIONAL_GROUP_RULE below
         "@media": true,
         "@supports": true,
-        "@document": true
+        "@-moz-document": true
     };
     css_beautify.CONDITIONAL_GROUP_RULE = {
         "@media": true,
         "@supports": true,
-        "@document": true
+        "@-moz-document": true
     };
 
     /*global define */
