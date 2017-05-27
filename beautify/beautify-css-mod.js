@@ -401,17 +401,12 @@
             if (!ch) {
                 break;
             } else if (ch === '/' && peek() === '*') { /* css comment */
-                var header = indentLevel === 0;
-
-                if (isAfterNewline || header) {
+                if (isAfterNewline) {
                     print.newLine();
                 }
 
                 print.text(eatComment());
                 print.newLine();
-                if (header) {
-                    print.newLine(true);
-                }
             } else if (ch === '/' && peek() === '/') { // single line comment
                 if (!isAfterNewline && last_top_ch !== '{') {
                     print.trim();
