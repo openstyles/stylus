@@ -142,7 +142,8 @@ function openURL({url, currentWindow = true}) {
         }
       }
       getActiveTab().then(tab => {
-        if (tab && tab.url == 'chrome://newtab/') {
+        if (tab && tab.url == 'chrome://newtab/'
+        && (!url.startsWith(URLS.ownOrigin) || !tab.incognito)) {
           chrome.tabs.update({url}, resolve);
         } else {
           chrome.tabs.create(tab && !FIREFOX ? {url, openerTabId: tab.id} : {url}, resolve);
