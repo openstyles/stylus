@@ -19,6 +19,78 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+// TODO: remove the following statement when USO is fixed
+document.documentElement.appendChild(document.createElement('script')).text = '(' +
+  function() {
+    let settings;
+    document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
+      document.removeEventListener('stylusFixBuggyUSOsettings', _);
+      settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search);
+    });
+    const originalResponseJson = Response.prototype.json;
+    Response.prototype.json = function(...args) {
+      return originalResponseJson.call(this, ...args).then(json => {
+        Response.prototype.json = originalResponseJson;
+        if (!settings || typeof ((json || {}).style_settings || {}).every != 'function') {
+          return json;
+        }
+        const images = new Map();
+        for (const jsonSetting of json.style_settings) {
+          let value = settings.get('ik-' + jsonSetting.install_key);
+          if (!value
+          || !jsonSetting.style_setting_options
+          || !jsonSetting.style_setting_options[0]) {
+            continue;
+          }
+          if (value.startsWith('ik-')) {
+            value = value.replace(/^ik-/, '');
+            const defaultItem = jsonSetting.style_setting_options.find(item => item.default);
+            if (!defaultItem || defaultItem.install_key != value) {
+              if (defaultItem) {
+                defaultItem.default = false;
+              }
+              jsonSetting.style_setting_options.some(item => {
+                if (item.install_key == value) {
+                  item.default = true;
+                  return true;
+                }
+              });
+            }
+          } else if (jsonSetting.setting_type == 'image') {
+            jsonSetting.style_setting_options.some(item => {
+              if (item.default) {
+                item.default = false;
+                return true;
+              }
+            });
+            images.set(jsonSetting.install_key, value);
+          } else {
+            const item = jsonSetting.style_setting_options[0];
+            if (item.value !== value && item.install_key == 'placeholder') {
+              item.value = value;
+            }
+          }
+        }
+        if (images.size) {
+          new MutationObserver((_, observer) => {
+            if (!document.getElementById('style-settings')) {
+              return;
+            }
+            observer.disconnect();
+            for (const [name, url] of images.entries()) {
+              const elRadio = document.querySelector(`input[name="ik-${name}"][value="user-url"]`);
+              const elUrl = elRadio && document.getElementById(elRadio.id.replace('url-choice', 'user-url'));
+              if (elUrl) {
+                elUrl.value = url;
+              }
+            }
+          }).observe(document, {childList: true, subtree: true});
+        }
+        return json;
+      });
+    };
+  } + ')()';
+
 new MutationObserver((mutations, observer) => {
   if (document.body) {
     observer.disconnect();
@@ -46,6 +118,10 @@ function getStyleURL () {
 }
 
 function checkUpdatability([installedStyle]) {
+  // TODO: remove the following statement when USO is fixed
+  document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
+    detail: installedStyle && installedStyle.updateUrl,
+  }));
   if (!installedStyle) {
     sendEvent('styleCanBeInstalledChrome');
     return;
