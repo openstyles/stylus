@@ -130,7 +130,7 @@ function saveStyleCode(message, name, addProps) {
           reason: 'update',
         }),
         style => {
-          if (style.updateUrl.includes('?')) {
+          if (message == 'styleUpdate' && style.updateUrl.includes('?')) {
             enableUpdateButton(true);
           } else {
             sendEvent('styleInstalledChrome');
