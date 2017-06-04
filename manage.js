@@ -764,8 +764,7 @@ function filterAndAppend({entry, container}) {
     if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
       entry.classList.add('hidden');
     }
-  }
-  if ($('#search').value.trim()) {
+  } else if ($('#search').value.trim()) {
     searchStyles({immediately: true, container});
   }
   reapplyFilter(container);
@@ -774,14 +773,20 @@ function filterAndAppend({entry, container}) {
 
 function reapplyFilter(container = installed) {
   // A: show
-  let toUnhide = filtersSelector.hide ? filterContainer({hide: false}) : container;
+  let toHide = [];
+  let toUnhide = [];
+  if (filtersSelector.hide) {
+    filterContainer({hide: false});
+  } else {
+    toUnhide = container;
+  }
   // showStyles() is building the page and no filters are active
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
     return;
   } else if (toUnhide.length && $('#search').value.trim()) {
     searchStyles({immediately: true, container: toUnhide});
-    toUnhide = filterContainer({hide: false});
+    filterContainer({hide: false});
   }
   // filtering needed or a single-element job from handleUpdate()
   const entries = installed.children;
@@ -798,7 +803,9 @@ function reapplyFilter(container = installed) {
     }
   }
   // B: hide
-  const toHide = filtersSelector.hide ? filterContainer({hide: true}) : [];
+  if (filtersSelector.hide) {
+    filterContainer({hide: true});
+  }
   if (!toHide.length) {
     return;
   }
@@ -831,16 +838,16 @@ function reapplyFilter(container = installed) {
     if (container.filter) {
       if (hide) {
         // already filtered in previous invocation
-        return container;
+        return;
       }
-      const toHide = [], toUnhide = [];
       for (const el of container) {
         (el.matches(selector) ? toUnhide : toHide).push(el);
       }
-      container = toHide;
-      return toUnhide;
+      return;
+    } else if (hide) {
+      toHide = $$(selector, container);
     } else {
-      return $$(selector, container);
+      toUnhide = $$(selector, container);
     }
   }
 
