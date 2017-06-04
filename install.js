@@ -122,18 +122,32 @@ function saveStyleCode(message, name, addProps) {
     if (!confirm(chrome.i18n.getMessage(message, [name]))) {
       return;
     }
-
+    enableUpdateButton(false);
     getResource(getStyleURL()).then(code => {
       chrome.runtime.sendMessage(
         Object.assign(JSON.parse(code), addProps, {
           method: 'saveStyle',
           reason: 'update',
         }),
-        () => sendEvent('styleInstalledChrome')
+        style => {
+          if (style.updateUrl.includes('?')) {
+            enableUpdateButton(true);
+          } else {
+            sendEvent('styleInstalledChrome');
+          }
+        }
       );
       resolve();
     });
   });
+
+  function enableUpdateButton(state) {
+    const button = document.getElementById('update_style_button');
+    if (button) {
+      button.style.cssText = state ? '' :
+        'pointer-events: none !important; opacity: .25 !important;';
+    }
+  }
 }
 
 
