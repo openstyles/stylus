@@ -40,11 +40,11 @@
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
-		"message": "Habilitar",
+		"message": "Activar",
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Introduzca un nombre.",
+		"message": "Introduzca un nombre",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -52,7 +52,7 @@
 		"description": "Used in various places to show a history log of something"
 	},
 	"shortcutsNote": {
-		"message": "Define atajos de teclado",
+		"message": "Defina atajos de teclado",
 		"description": ""
 	},
 	"appliesDomainOption": {
@@ -68,7 +68,7 @@
 		"description": "Tooltip in the popup for styles that were not applied at all"
 	},
 	"styleRegexpInvalidExplanation": {
-		"message": "Algunas reglas 'regexp()' que no se pudieron compilar en absoluto.",
+		"message": "Algunas reglas «regexp()» que no se pudieron compilar en absoluto.",
 		"description": ""
 	},
 	"importAppendLabel": {
@@ -92,7 +92,7 @@
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"dragDropMessage": {
-		"message": "Suelte su fichero de copia de seguridad en cualquier lugar de esta página para importar.",
+		"message": "Suelte su fichero de copia de seguridad en cualquier lugar de esta página para importarlo.",
 		"description": "Drag'n'drop message"
 	},
 	"helpAlt": {
@@ -116,7 +116,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Buscar más estilos para este sitio",
+		"message": "Encontrar más estilos para este sitio.",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
@@ -132,7 +132,7 @@
 		"description": "Tooltip in the popup for styles that were applied only partially"
 	},
 	"styleEnabledLabel": {
-		"message": "Habilitado",
+		"message": "Activado",
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
@@ -168,7 +168,7 @@
 		"description": "'Stop' button in a confirm dialog"
 	},
 	"writeStyleForURL": {
-		"message": "Esta URL",
+		"message": "este URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
 	"optionsSubheading": {
@@ -184,7 +184,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "Habilita la escritura de CSS específico-para-iframe como 'html[stylus-iframe] h1 { display:none }'",
+		"message": "Activa la escritura de CSS específico-para-iframe como «html[stylus-iframe] h1 { display:none }»",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -192,7 +192,7 @@
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
-		"message": "¿Instalar \"$stylename$\" en Stylus?",
+		"message": "¿Quiere instalar «$stylename$» en Stylus?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -201,7 +201,7 @@
 		}
 	},
 	"optionsBadgeDisabled": {
-		"message": "Color de fondo cuando está deshabilitado",
+		"message": "Color de fondo cuando está desactivado",
 		"description": ""
 	},
 	"optionsCheck": {
@@ -229,15 +229,15 @@
 		"description": "Label for the button to apply all detected updates"
 	},
 	"unreachableFileHint": {
-		"message": "Stylus puede acceder a URLs file:// sólo si habilita la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
+		"message": "Stylus puede acceder a URL file:// solo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"disableStyleLabel": {
-		"message": "Deshabilitar",
+		"message": "Desactivar",
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "Número de estilos activos para el sitio actual",
+		"message": "Número de estilos activos en el sitio actual",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
@@ -269,7 +269,7 @@
 		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Error de actualización - No se pudo alcanzar el servidor.",
+		"message": "Error de actualización: no se pudo contactar con el servidor.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {
@@ -281,7 +281,7 @@
 		"description": "Label for the button to apply all detected updates"
 	},
 	"optionsReset": {
-		"message": "Reinicializar las opciones a sus valores predeterminados.",
+		"message": "Restablecer las opciones a sus valores predeterminados.",
 		"description": ""
 	},
 	"optionsCustomizeUpdate": {
@@ -289,7 +289,7 @@
 		"description": ""
 	},
 	"deleteStyleConfirm": {
-		"message": "¿Está seguro de que quiere eliminar este estilo?",
+		"message": "¿Confirma que quiere eliminar este estilo?",
 		"description": "Confirmation before deleting a style"
 	},
 	"optionsCustomizePopup": {
@@ -297,7 +297,7 @@
 		"description": ""
 	},
 	"styleBadRegexp": {
-		"message": "La expresión regular (regexp) introducida no es válida",
+		"message": "La expresión regular proporcionada no es válida.",
 		"description": "Validation message for a bad regexp in a style"
 	},
 	"optionsHeading": {
@@ -318,7 +318,7 @@
 		"description": "Label for the style maanger opener in the browser action context menu."
 	},
 	"styleUpdate": {
-		"message": "¿Está seguro de que quiere actualizar '$stylename$'?",
+		"message": "¿Confirma que quiere actualizar «$stylename$»?",
 		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
@@ -348,7 +348,7 @@
 		"description": "Text that displays when an update check completed and no update is available"
 	},
 	"appliesUrlPrefixOption": {
-		"message": "URLs que empiezan por",
+		"message": "URLs que empiezan con",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"cm_matchHighlightToken": {
@@ -356,7 +356,7 @@
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
-		"message": "Use la sintaxis /re/ para búsquedas con regexp",
+		"message": "Use la sintaxis /re/ para búsquedas con expresiones regulares",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"updateCheckManualUpdateHint": {
@@ -372,7 +372,7 @@
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"popupStylesFirst": {
-		"message": "Estilos antes de los comandos",
+		"message": "Estilos antes que las órdenes",
 		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
@@ -432,7 +432,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Error de actualización - El servidor ha respondido con el código $code$.",
+		"message": "Error de actualización: el servidor ha respondido con el código $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
@@ -468,6 +468,10 @@
 		"message": "Este estilo utiliza expresiones regulares (regexps) parcialmente coincidentes violando así la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia completa de URL. Las secciones CSS afectadas no se aplicaron a la página. Probablemente este estilo fue creado con Stylish-para-Chrome, que evalúa de modo incorrecto las reglas 'regexp()' desde la primera versión (un fallo conocido).",
 		"description": ""
 	},
+	"styleBeautifyIndentConditional": {
+		"message": "Sangrar @media, @supports",
+		"description": "CSS-beautifier option"
+	},
 	"unreachableContentScript": {
 		"message": "No se pudo comunicar con la página. Pruebe a recargar la pestaña.",
 		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
@@ -477,15 +481,15 @@
 		"description": "Label for the button to remove a section"
 	},
 	"disableAllStyles": {
-		"message": "Deshabilitar todos los estlos",
+		"message": "Desactivar todos los estilos",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "Este estilo podría haber sido editado localmente.",
+		"message": "Este estilo podría haberse editado localmente.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
-		"message": "Deshacer (global)",
+		"message": "Deshacer en todas las secciones",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
@@ -513,7 +517,7 @@
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"optionsResetButton": {
-		"message": "Opciones de reinicialización",
+		"message": "Restablecer opciones",
 		"description": ""
 	},
 	"sectionCode": {
@@ -521,7 +525,7 @@
 		"description": "Label for the code for a section"
 	},
 	"optionsAdvancedContextDelete": {
-		"message": "Añadir 'Borrar' al menú contextual del editor",
+		"message": "Añadir 'Eliminar' al menú contextual del editor",
 		"description": ""
 	},
 	"importReportLegendUpdatedBoth": {
@@ -533,11 +537,11 @@
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
-		"message": "Test de regexp",
+		"message": "Prueba de regexp",
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "Utilice los controles 'Se aplica a' para limitar las URLs a las que se aplica el código de esta sección.",
+		"message": "Utilice los controles 'Se aplica a' para limitar a qué URLs se aplica el código de esta sección.",
 		"description": "Help text for 'applies to' section"
 	},
 	"editStyleHeading": {
@@ -545,8 +549,12 @@
 		"description": "Title of the page for editing styles"
 	},
 	"editDeleteText": {
-		"message": "Borrar",
+		"message": "Eliminar",
 		"description": "Label for the context menu item in the editor to delete selected text"
+	},
+	"stylusUnavailableForURLdetails": {
+		"message": "Como medida de precaución, el navegador prohíbe que las extensiones afecten a sus páginas internas (como chrome://version o about:addons) además de las páginas internas de otras extensiones. Cada navegador además restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO).",
+		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"cm_matchHighlightSelection": {
 		"message": "Sólo selección",
@@ -601,7 +609,7 @@
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"styleRegexpTestInvalid": {
-		"message": "Regexp no válidas omitidas",
+		"message": "Expresiones regulares no válidas omitidas",
 		"description": "RegExp test report: label for the invalid expressions"
 	},
 	"replaceAll": {
@@ -661,7 +669,7 @@
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
 	"manageNewUI": {
-		"message": "Nuevo diseño de interfaz de administración",
+		"message": "Nuevo diseño de interfaz de gestión",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
 	"importReportUndoneTitle": {
@@ -669,7 +677,7 @@
 		"description": "Title of the message box shown after undoing the import of styles"
 	},
 	"genericDisabledLabel": {
-		"message": "Deshabilitado",
+		"message": "Desactivado",
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
@@ -693,11 +701,11 @@
 		"description": ""
 	},
 	"addStyleLabel": {
-		"message": "Escribir nuevo estilo",
+		"message": "Escribir un nuevo estilo",
 		"description": "Label for the button to go to the add style page"
 	},
 	"optionsUpdateIntervalNote": {
-		"message": "Para deshabilitar las búsquedas automáticas de actualizaciones, establezca el intervalo a 0",
+		"message": "Para desactivar las búsquedas automáticas de actualizaciones, establezca el intervalo a 0",
 		"description": ""
 	},
 	"backupButtons": {
@@ -705,7 +713,7 @@
 		"description": "Heading for backup"
 	},
 	"manageOnlyEnabled": {
-		"message": "Sólo estilos habilitados",
+		"message": "Sólo estilos activos",
 		"description": "Checkbox to show only enabled styles"
 	},
 	"editStyleLabel": {
@@ -713,11 +721,11 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"cm_theme": {
-		"message": "Tema",
+		"message": "Temas",
 		"description": "Label for the style editor's CSS theme."
 	},
 	"backupMessage": {
-		"message": "Seleccione un fichero o arrastre y suéltelo en esta página.",
+		"message": "Seleccione un fichero o arrástrelo y suéltelo en esta página.",
 		"description": "Message for backup"
 	},
 	"importReportUndone": {
@@ -725,11 +733,11 @@
 		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
 	},
 	"helpKeyMapCommand": {
-		"message": "Escriba un nombre de comando",
+		"message": "Nombre del comando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Modifique el estilo de la Web con Stylus, un administrador de estilos de usuario. Stylus le permite instalar fácilmente temas y coberturas para muchos sitios populares.",
+		"message": "Rediseñe la web con Stylus, un administrador de estilos de usuario. Stylus le permite instalar fácilmente temas y coberturas para muchos sitios populares.",
 		"description": "Extension description"
 	}
 }
