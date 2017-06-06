@@ -260,7 +260,7 @@ function saveStyle(style) {
         if (reason == 'update-digest' && oldStyle.originalDigest == style.originalDigest) {
           return style;
         }
-        codeIsUpdated = !existed || style.sections && !styleSectionsEqual(style, oldStyle);
+        codeIsUpdated = !existed || 'sections' in style && !styleSectionsEqual(style, oldStyle);
         style = Object.assign({}, oldStyle, style);
         return write(style, store);
       });
