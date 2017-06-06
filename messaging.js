@@ -133,8 +133,10 @@ function openURL({url, currentWindow = true}) {
   return new Promise(resolve => {
     // [some] chromium forks don't handle their fake branded protocols
     url = url.replace(/^(opera|vivaldi)/, 'chrome');
+    // FF doesn't handle moz-extension:// URLs (bug)
     // API doesn't handle the hash-fragment part
-    chrome.tabs.query({url: url.replace(/#.*/, ''), currentWindow}, tabs => {
+    const urlQuery = url.startsWith('moz-extension') ? undefined : url.replace(/#.*/, '');
+    chrome.tabs.query({url: urlQuery, currentWindow}, tabs => {
       for (const tab of tabs) {
         if (tab.url == url) {
           activateTab(tab).then(resolve);
