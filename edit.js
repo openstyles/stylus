@@ -423,7 +423,9 @@ document.addEventListener("wheel", function(event) {
 chrome.tabs.query({currentWindow: true}, function(tabs) {
 	var windowId = tabs[0].windowId;
 	if (prefs.get("openEditInWindow")) {
-		if (sessionStorage.saveSizeOnClose && 'left' in prefs.get('windowPosition', {})) {
+		if (sessionStorage.saveSizeOnClose
+		&& 'left' in prefs.get('windowPosition', {})
+		&& !isWindowMaximized()) {
 			// window was reopened via Ctrl-Shift-T etc.
 			chrome.windows.update(windowId, prefs.get('windowPosition'));
 		}
@@ -458,8 +460,15 @@ function goBackToManage(event) {
 	}
 }
 
+function isWindowMaximized() {
+	return window.screenLeft == 0
+		&& window.screenTop == 0
+		&& window.outerWidth == screen.availWidth
+		&& window.outerHeight == screen.availHeight;
+}
+
 window.onbeforeunload = function() {
-	if (saveSizeOnClose) {
+	if (saveSizeOnClose	&& !isWindowMaximized()) {
 		prefs.set("windowPosition", {
 			left: screenLeft,
 			top: screenTop,
