@@ -514,6 +514,10 @@
     "message": "Enabled",
     "description": "Label for the enabled state of styles"
   },
+  "styleEnabledToggleHint": {
+    "message": "Press Alt-Enter to toggle enabled/disabled state and save the style",
+    "description": "Help text for the '[x] enable' checkbox in the editor"
+  },
   "styleInstall": {
     "message": "Install '$stylename$' into Stylus?",
     "description": "Confirmation when installing a style",

@@ -53,7 +53,8 @@ getCodeMirrorThemes();
 var hotkeyRerouter = {
 	commands: {
 		save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
-		find: true, findNext: true, findPrev: true, replace: true, replaceAll: true
+		find: true, findNext: true, findPrev: true, replace: true, replaceAll: true,
+		toggleStyle: true,
 	},
 	setState: function(enable) {
 		setTimeout(function() {
@@ -166,6 +167,7 @@ function initCodeMirror() {
 		theme: "default",
 		keyMap: prefs.get("editor.keyMap"),
 		extraKeys: { // independent of current keyMap
+			"Alt-Enter": "toggleStyle",
 			"Alt-PageDown": "nextEditor",
 			"Alt-PageUp": "prevEditor"
 		}
@@ -179,6 +181,7 @@ function initCodeMirror() {
 	CM.commands.blockComment = function(cm) {
 		cm.blockComment(cm.getCursor("from"), cm.getCursor("to"), {fullLines: false});
 	};
+	CM.commands.toggleStyle = toggleStyle;
 
 	// "basic" keymap only has basic keys by design, so we skip it
 
@@ -849,6 +852,11 @@ function jumpToLine(cm) {
 	}, {value: cur.line+1});
 }
 
+function toggleStyle() {
+	$('#enabled').checked = !$('#enabled').checked;
+	save();
+}
+
 function refocusMinidialog(cm) {
 	var section = cm.getSection();
 	if (!section.querySelector(".CodeMirror-dialog")) {
@@ -1211,6 +1219,7 @@ function initHooks() {
 		node.addEventListener("change", onChange);
 		node.addEventListener("input", onChange);
 	});
+	document.getElementById("toggle-style-help").addEventListener("click", showToggleStyleHelp);
 	document.getElementById("to-mozilla").addEventListener("click", showMozillaFormat, false);
 	document.getElementById("to-mozilla-help").addEventListener("click", showToMozillaHelp, false);
 	document.getElementById("from-mozilla").addEventListener("click", fromMozillaFormat);
@@ -1579,6 +1588,10 @@ function showAppliesToHelp() {
 
 function showToMozillaHelp() {
 	showHelp(t("styleMozillaFormatHeading"), t("styleToMozillaFormatHelp"));
+}
+
+function showToggleStyleHelp() {
+	showHelp(t("helpAlt"), t("styleEnabledToggleHint"));
 }
 
 function showKeyMapHelp() {
