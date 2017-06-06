@@ -230,7 +230,7 @@
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
   "findStylesForSite": {
-    "message": "Find more styles for this site.",
+    "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "helpAlt": {
@@ -593,7 +593,7 @@
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Update failed - server responded with code $code$.",
+    "message": "Update failed – server responded with code $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
@@ -602,7 +602,7 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Update failed - server unreachable.",
+    "message": "Update failed – server unreachable.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSkippedLocallyEdited": {
