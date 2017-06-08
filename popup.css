@@ -348,6 +348,10 @@ body.blocked .actions > .left-gutter {
   text-overflow: ellipsis;
 }
 
+.firefox #popup-options button {
+  width: 50%;
+}
+
 /* confirm */
 
 #confirm,
