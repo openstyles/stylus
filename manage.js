@@ -1,4 +1,4 @@
-/* global messageBox, getStyleWithNoCode */
+/* global messageBox, getStyleWithNoCode, retranslateCSS */
 'use strict';
 
 let installed;
@@ -31,6 +31,15 @@ Promise.all([
   showStyles(styles);
 });
 
+if (FIREFOX) {
+  // TODO: remove when this bug is fixed in FF
+  retranslateCSS({
+    '.disabled h2::after':
+      '__MSG_genericDisabledLabel__',
+    '#update-all-no-updates[data-skipped-edited="true"]::after':
+      ' __MSG_updateAllCheckSucceededSomeEdited__',
+  });
+}
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 

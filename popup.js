@@ -1,3 +1,4 @@
+/* global retranslateCSS */
 'use strict';
 
 let installed;
@@ -15,6 +16,20 @@ getActiveTabRealURL().then(url => {
     showStyles(styles);
   });
 });
+
+if (FIREFOX) {
+  // TODO: remove when this bug is fixed in FF
+  retranslateCSS({
+    '.blocked::before':
+      '__MSG_stylusUnavailableForURL__',
+    '.blocked #installed::before':
+      '__MSG_stylusUnavailableForURLdetails__',
+    '.unreachable::before':
+      '__MSG_unreachableContentScript__',
+    '.unreachable #installed::before':
+      '__MSG_unreachableFileHint__',
+  });
+}
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 

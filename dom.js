@@ -123,3 +123,15 @@ function $element(opt) {
   }
   return element;
 }
+
+
+function retranslateCSS(selectorToMessageMap) {
+  // TODO: remove when this bug is fixed in FF
+  // Note: selectors must be spec-normalized e.g. ::before, not :before
+  for (const rule of document.styleSheets[0].cssRules) {
+    const msg = selectorToMessageMap[rule.selectorText];
+    if (msg) {
+      rule.style.content = '"' + msg.replace(/__MSG_(\w+)__/g, (_, id) => t(id)) + '"';
+    }
+  }
+}
