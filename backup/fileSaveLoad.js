@@ -297,7 +297,7 @@ $('#file-all-styles').onclick = () => {
     const text = JSON.stringify(styles, null, '\t');
     const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
     return url;
-    // for long URLs; https://github.com/schomery/stylish-chrome/issues/13#issuecomment-284582600
+    // for long URLs; https://github.com/schomery/stylus/issues/13#issuecomment-284582600
   }).then(fetch)
     .then(res => res.blob())
     .then(blob => {

@@ -16,9 +16,9 @@ See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userst
 
 ## Contributing
 
-The source is hosted on [GitHub](https://github.com/schomery/stylish-chrome) and pull requests are welcome.
+The source is hosted on [GitHub](https://github.com/schomery/stylus) and pull requests are welcome.
 
-You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylish-chrome/issues](https://github.com/schomery/stylish-chrome/issues).
+You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylus/issues](https://github.com/schomery/stylus/issues).
 
 ## License
 
