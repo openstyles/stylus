@@ -1576,7 +1576,7 @@ function fromMozillaFormat() {
 	}
 	function backtrackTo(parser, tokenType, startEnd) {
 		var tokens = parser._tokenStream._lt;
-		for (var i = tokens.length - 2; i >= 0; --i) {
+		for (var i = parser._tokenStream._ltIndex - 1; i >= 0; --i) {
 			if (tokens[i].type == tokenType) {
 				return {line: tokens[i][startEnd+"Line"], col: tokens[i][startEnd+"Col"]};
 			}

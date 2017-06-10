@@ -1675,7 +1675,6 @@ Parser.prototype = function() {
                 }
 
                 tokenStream.mustMatch(Tokens.LBRACE);
-                this._readWhitespace();
 
                 this.fire({
                     type:      "startdocument",
@@ -1684,6 +1683,8 @@ Parser.prototype = function() {
                     line:      token.startLine,
                     col:       token.startCol
                 });
+
+                this._readWhitespace(); // Stylus hack
 
                 var ok = true;
                 while (ok) {
