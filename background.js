@@ -190,7 +190,12 @@ contextMenus = Object.assign({
     cs.matches.some(match => {
       if ((match == ALL_URLS || url.match(match))
         && (!url.startsWith('chrome') || url == NTP)) {
-        chrome.tabs.sendMessage(id, PING, pong => !pong && injectCS(cs, id));
+        chrome.tabs.sendMessage(id, PING, pong => {
+          if (!pong) {
+            injectCS(cs, id);
+          }
+          ignoreChromeError();
+        });
         return true;
       }
     });
