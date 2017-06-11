@@ -91,9 +91,29 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
     };
   } + ')()';
 
+// TODO: remove the following statement when USO pagination is fixed
+if (location.search.includes('category=')) {
+  document.addEventListener('DOMContentLoaded', function _() {
+    document.removeEventListener('DOMContentLoaded', _);
+    new MutationObserver((_, observer) => {
+      if (!document.getElementById('pagination')) {
+        return;
+      }
+      observer.disconnect();
+      const category = '&' + location.search.match(/category=[^&]+/)[0];
+      const links = document.querySelectorAll('#pagination a[href*="page="]:not([href*="category="])');
+      for (let i = 0; i < links.length; i++) {
+        links[i].href += category;
+      }
+    }).observe(document, {childList: true, subtree: true});
+  });
+}
+
 new MutationObserver((mutations, observer) => {
   if (document.body) {
     observer.disconnect();
+    // TODO: remove the following statement when USO pagination title is fixed
+    document.title = document.title.replace(/^\d+&category=/, '');
     chrome.runtime.sendMessage({
       method: 'getStyles',
       url: getMeta('stylish-id-url') || location.href
