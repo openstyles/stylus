@@ -1,5 +1,6 @@
 'use strict';
 
+const CHROMIUM = /Chromium/.test(navigator.userAgent); // non-Windows Chromium
 const FIREFOX = /Firefox/.test(navigator.userAgent);
 const VIVALDI = /Vivaldi/.test(navigator.userAgent);
 const OPERA = /OPR/.test(navigator.userAgent);
@@ -127,8 +128,8 @@ new MutationObserver((mutations, observer) => {
 */
 function getStyleURL () {
   const url = getMeta('stylish-code-chrome');
-
-  if (FIREFOX || OPERA || VIVALDI) {
+  // TODO: remove when USO is fixed
+  if (FIREFOX || OPERA || VIVALDI || CHROMIUM) {
     /* get custom settings from the update url */
     return Object.assign(new URL(url), {
       search: (new URL(getMeta('stylish-update-url'))).search
