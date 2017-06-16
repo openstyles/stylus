@@ -593,7 +593,7 @@
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Update failed – server responded with code $code$.",
+    "message": "Update failed: server responded with code $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
@@ -602,7 +602,7 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Update failed – server unreachable.",
+    "message": "Update failed: server unreachable.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSkippedLocallyEdited": {
