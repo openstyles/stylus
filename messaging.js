@@ -62,18 +62,30 @@ function notifyAllTabs(msg) {
   const affectsPopup = affectsAll || msg.affects.popup;
   const affectsSelf = affectsPopup || msg.prefs;
   if (affectsTabs || affectsIcon) {
+    const notifyTab = tab => {
+      // own pages will be notified via runtime.sendMessage later
+      if ((affectsTabs || URLS.optionsUI.includes(tab.url))
+      && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
+      // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
+      && (!FIREFOX || tab.width)) {
+        chrome.tabs.sendMessage(tab.id, msg);
+      }
+      if (affectsIcon && BG) {
+        BG.updateIcon(tab);
+      }
+    };
     // list all tabs including chrome-extension:// which can be ours
     chrome.tabs.query(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
-      for (const tab of tabs) {
-        // own pages will be notified via runtime.sendMessage later
-        if ((affectsTabs || URLS.optionsUI.includes(tab.url))
-        && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))) {
-          chrome.tabs.sendMessage(tab.id, msg);
+      getActiveTab().then(activeTab => {
+        const activeTabId = activeTab && activeTab.id;
+        for (const tab of tabs) {
+          if (tab.id === activeTabId) {
+            notifyTab(tab);
+          } else {
+            setTimeout(notifyTab, 0, tab);
+          }
         }
-        if (affectsIcon && BG) {
-          BG.updateIcon(tab);
-        }
-      }
+      });
     });
   }
   // notify self: the message no longer is sent to the origin in new Chrome

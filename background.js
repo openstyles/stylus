@@ -202,9 +202,13 @@ contextMenus = Object.assign({
   };
 
   chrome.tabs.query({}, tabs =>
-    tabs.forEach(tab =>
-      contentScripts.forEach(cs =>
-        pingCS(cs, tab))));
+    tabs.forEach(tab => {
+      // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
+      if (!FIREFOX || tab.width) {
+        contentScripts.forEach(cs =>
+          setTimeout(pingCS, 0, cs, tab));
+      }
+    }));
 }
 
 
