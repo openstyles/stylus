@@ -270,7 +270,7 @@ function importFromString(jsonString) {
   function refreshAllTabs() {
     return getActiveTab().then(activeTab => new Promise(resolve => {
       // list all tabs including chrome-extension:// which can be ours
-      chrome.tabs.query({}, tabs => {
+      queryTabs().then(tabs => {
         const lastTab = tabs[tabs.length - 1];
         for (const tab of tabs) {
           getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {

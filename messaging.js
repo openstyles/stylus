@@ -75,17 +75,18 @@ function notifyAllTabs(msg) {
       }
     };
     // list all tabs including chrome-extension:// which can be ours
-    chrome.tabs.query(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}, tabs => {
-      getActiveTab().then(activeTab => {
-        const activeTabId = activeTab && activeTab.id;
-        for (const tab of tabs) {
-          if (tab.id === activeTabId) {
-            notifyTab(tab);
-          } else {
-            setTimeout(notifyTab, 0, tab);
-          }
+    Promise.all([
+      queryTabs(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}),
+      getActiveTab(),
+    ]).then(([tabs, activeTab]) => {
+      const activeTabId = activeTab && activeTab.id;
+      for (const tab of tabs) {
+        if (tab.id === activeTabId) {
+          notifyTab(tab);
+        } else {
+          setTimeout(notifyTab, 0, tab);
         }
-      });
+      }
     });
   }
   // notify self: the message no longer is sent to the origin in new Chrome
@@ -103,6 +104,13 @@ function notifyAllTabs(msg) {
 }
 
 
+function queryTabs(options = {}) {
+  return new Promise(resolve =>
+    chrome.tabs.query(options, tabs =>
+      resolve(tabs)));
+}
+
+
 function getTab(id) {
   return new Promise(resolve =>
     chrome.tabs.get(id, tab =>
@@ -111,9 +119,8 @@ function getTab(id) {
 
 
 function getActiveTab() {
-  return new Promise(resolve =>
-    chrome.tabs.query({currentWindow: true, active: true}, tabs =>
-      resolve(tabs[0])));
+  return queryTabs({currentWindow: true, active: true})
+    .then(tabs => tabs[0]);
 }
 
 
@@ -148,7 +155,7 @@ function openURL({url, currentWindow = true}) {
     // FF doesn't handle moz-extension:// URLs (bug)
     // API doesn't handle the hash-fragment part
     const urlQuery = url.startsWith('moz-extension') ? undefined : url.replace(/#.*/, '');
-    chrome.tabs.query({url: urlQuery, currentWindow}, tabs => {
+    queryTabs({url: urlQuery, currentWindow}).then(tabs => {
       for (const tab of tabs) {
         if (tab.url == url) {
           activateTab(tab).then(resolve);

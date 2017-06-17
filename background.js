@@ -201,7 +201,7 @@ contextMenus = Object.assign({
     });
   };
 
-  chrome.tabs.query({}, tabs =>
+  queryTabs().then(tabs =>
     tabs.forEach(tab => {
       // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
       if (!FIREFOX || tab.width) {

@@ -420,7 +420,7 @@ document.addEventListener("wheel", function(event) {
 	}
 });
 
-chrome.tabs.query({currentWindow: true}, function(tabs) {
+queryTabs({currentWindow: true}).then(tabs => {
 	var windowId = tabs[0].windowId;
 	if (prefs.get("openEditInWindow")) {
 		if (sessionStorage.saveSizeOnClose
@@ -1720,7 +1720,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 			chrome.tabs.onUpdated.removeListener(_);
 		}
 	});
-	chrome.tabs.query({}, tabs => {
+	queryTabs().then(tabs => {
 		const supported = tabs.map(tab => tab.url)
 			.filter(url => URLS.supported.test(url));
 		const unique = [...new Set(supported).values()];
