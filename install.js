@@ -129,10 +129,11 @@ new MutationObserver((mutations, observer) => {
 function getStyleURL () {
   const url = getMeta('stylish-code-chrome');
   // TODO: remove when USO is fixed
-  if (FIREFOX || OPERA || VIVALDI || CHROMIUM) {
+  const directUrl = getMeta('stylish-update-url');
+  if (directUrl.includes('?') && !url.includes('?')) {
     /* get custom settings from the update url */
     return Object.assign(new URL(url), {
-      search: (new URL(getMeta('stylish-update-url'))).search
+      search: (new URL(directUrl)).search
     }).href;
   }
   return url;
