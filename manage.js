@@ -155,7 +155,7 @@ function createStyleElement({style, name}) {
       checker: $('.checker', entry) || {},
       nameLink: $('.style-name-link', entry),
       editLink: $('.style-edit-link', entry) || {},
-      editHrefBase: $('.style-name-link', entry).getAttribute('href'),
+      editHrefBase: 'edit.html?id=',
       homepage: $('.homepage', entry),
       homepageIcon: template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       appliesTo: $('.applies-to', entry),
