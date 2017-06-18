@@ -161,6 +161,7 @@ function initCodeMirror() {
 		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 		matchBrackets: true,
 		highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
+		hintOptions: {},
 		lint: {getAnnotations: CodeMirror.lint.css, delay: prefs.get("editor.lintDelay")},
 		lintReportDelay: prefs.get("editor.lintReportDelay"),
 		styleActiveLine: true,
@@ -319,6 +320,13 @@ function acmeEventListener(event) {
 				}, 100);
 			})();
 			return;
+		case 'autocompleteOnTyping':
+			editors.forEach(cm => {
+				const onOff = el.checked ? 'on' : 'off';
+				cm[onOff]('change', autocompleteOnTyping);
+				cm[onOff]('pick', autocompletePicked);
+			});
+			return;
 		case "matchHighlight":
 			switch (value) {
 				case 'token':
@@ -338,6 +346,10 @@ function setupCodeMirror(textarea, index) {
 	var cm = CodeMirror.fromTextArea(textarea, {lint: null});
 
 	cm.on("change", indicateCodeChange);
+	if (prefs.get('editor.autocompleteOnTyping')) {
+		cm.on('change', autocompleteOnTyping);
+		cm.on('pick', autocompletePicked);
+	}
 	cm.on("blur", function(cm) {
 		editors.lastActive = cm;
 		hotkeyRerouter.setState(true);
@@ -872,6 +884,34 @@ function jumpToLine(cm) {
 function toggleStyle() {
 	$('#enabled').checked = !$('#enabled').checked;
 	save();
+}
+
+function autocompleteOnTyping(cm, info, debounced) {
+	if (cm.state.completionActive
+	|| info.origin && !info.origin.includes('input')
+	|| !info.text.last) {
+		return;
+	}
+	if (cm.state.autocompletePicked) {
+		cm.state.autocompletePicked = false;
+		return;
+	}
+	if (!debounced) {
+		debounce(autocompleteOnTyping, 100, cm, info, true);
+		return;
+	}
+	if (info.text.last.match(/[-\w!]+$/)) {
+		cm.state.autocompletePicked = false;
+		cm.options.hintOptions.completeSingle = false;
+		cm.execCommand('autocomplete');
+		setTimeout(() => {
+			cm.options.hintOptions.completeSingle = true;
+		});
+	}
+}
+
+function autocompletePicked(cm) {
+	cm.state.autocompletePicked = true;
 }
 
 function refocusMinidialog(cm) {

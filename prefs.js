@@ -44,6 +44,7 @@ var prefs = new function Prefs() {
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected
                                       // '' (empty string) = disabled
+    'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
     'badgeDisabled': '#8B0000',     // badge background color when disabled
