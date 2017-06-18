@@ -361,6 +361,8 @@ function setupCodeMirror(textarea, index) {
 		var minHeight = cm.defaultTextHeight()
 			+ cm.display.lineDiv.offsetParent.offsetTop /* .CodeMirror-lines padding */
 			+ cm.display.wrapper.offsetHeight - cm.display.wrapper.clientHeight /* borders */;
+		cm.display.wrapper.style.pointerEvents = 'none';
+		document.body.style.cursor = 's-resize';
 		function resize(e) {
 			const cmPageY = cm.display.wrapper.getBoundingClientRect().top + window.scrollY;
 			const height = Math.max(minHeight, e.pageY - cmPageY);
@@ -372,6 +374,8 @@ function setupCodeMirror(textarea, index) {
 		document.addEventListener("mouseup", function resizeStop() {
 			document.removeEventListener("mouseup", resizeStop);
 			document.removeEventListener("mousemove", resize);
+			cm.display.wrapper.style.pointerEvents = '';
+			document.body.style.cursor = '';
 		});
 	});
 	// resizeGrip has enough space when scrollbars.horiz is visible
