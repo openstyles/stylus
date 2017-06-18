@@ -360,9 +360,13 @@ function setupCodeMirror(textarea, index) {
 		var cm = e.target.parentNode.CodeMirror;
 		var minHeight = cm.defaultTextHeight()
 			+ cm.display.lineDiv.offsetParent.offsetTop /* .CodeMirror-lines padding */
-			+ cm.display.wrapper.offsetHeight - cm.display.wrapper.scrollHeight /* borders */;
+			+ cm.display.wrapper.offsetHeight - cm.display.wrapper.clientHeight /* borders */;
 		function resize(e) {
-			cm.setSize(null, Math.max(minHeight, cm.display.wrapper.scrollHeight + e.movementY));
+			const cmPageY = cm.display.wrapper.getBoundingClientRect().top + window.scrollY;
+			const height = Math.max(minHeight, e.pageY - cmPageY);
+			if (height != cm.display.wrapper.clientHeight) {
+				cm.setSize(null, height);
+			}
 		}
 		document.addEventListener("mousemove", resize);
 		document.addEventListener("mouseup", function resizeStop() {
