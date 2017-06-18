@@ -296,17 +296,16 @@ function sessionStorageHash(name) {
 
 
 function onBackgroundReady() {
-  return BG ? Promise.resolve() : new Promise(ping);
-  function ping(resolve) {
+  return BG && BG.getStyles ? Promise.resolve() : new Promise(function ping(resolve) {
     chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
       if (health !== undefined) {
         BG = chrome.extension.getBackgroundPage();
         resolve();
       } else {
-        ping(resolve);
+        setTimeout(ping, 0, resolve);
       }
     });
-  }
+  });
 }
 
 
