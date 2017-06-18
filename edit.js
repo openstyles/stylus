@@ -281,7 +281,7 @@ function initCodeMirror() {
 
 function acmeEventListener(event) {
 	var el = event.target;
-	var option = el.dataset.option;
+	var option = el.id.replace(/^editor\./, '');
 	//console.log("acmeEventListener heard %s on %s", event.type, el.id);
 	if (!option) {
 		console.error("acmeEventListener: no 'cm_option' %O", el);
@@ -319,7 +319,7 @@ function acmeEventListener(event) {
 				}, 100);
 			})();
 			return;
-		case "highlightSelectionMatches":
+		case "matchHighlight":
 			switch (value) {
 				case 'token':
 				case 'selection':

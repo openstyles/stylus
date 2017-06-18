@@ -210,13 +210,13 @@
 			.CodeMirror-search-hint {
 				color: #888;
 			}
-			body[data-highlight-selection-matches="token"] .cm-matchhighlight-approved .cm-matchhighlight,
-			body[data-highlight-selection-matches="token"] .CodeMirror-selection-highlight-scrollbar {
+			body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
+			body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
 				animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
 				animation-fill-mode: both;
 			}
-			body[data-highlight-selection-matches="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
-			body[data-highlight-selection-matches="selection"] .CodeMirror-selection-highlight-scrollbar {
+			body[data-match-highlight="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
+			body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar {
 				background-color: rgba(1, 151, 193, 0.1);
 			}
 			@-webkit-keyframes highlight {
@@ -693,33 +693,33 @@
 			<section id="options">
 				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
 				<div class="option">
-					<input data-option="lineWrapping" id="editor.lineWrapping" type="checkbox">
+					<input id="editor.lineWrapping" type="checkbox">
 					<label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
 				</div>
 				<div class="option">
-					<input data-option="smartIndent" id="editor.smartIndent" type="checkbox">
+					<input id="editor.smartIndent" type="checkbox">
 					<label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
 				</div>
 				<div class="option">
-					<input data-option="indentWithTabs" id="editor.indentWithTabs" type="checkbox">
+					<input id="editor.indentWithTabs" type="checkbox">
 					<label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
 				</div>
 				<div class="option aligned">
 					<label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
-					<input data-option="tabSize" id="editor.tabSize" type="number" min="0">
+					<input id="editor.tabSize" type="number" min="0">
 				</div>
 				<div class="option aligned">
 					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-					<select data-option="keyMap" id="editor.keyMap"></select>
+					<select id="editor.keyMap"></select>
 					<svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
 				</div>
 				<div class="option aligned">
 					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-					<select data-option="theme" id="editor.theme"></select>
+					<select id="editor.theme"></select>
 				</div>
 				<div class="option aligned">
 					<label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
-					<select data-option="highlightSelectionMatches" id="editor.matchHighlight">
+					<select id="editor.matchHighlight">
 						<option i18n-text="cm_matchHighlightToken" value="token">
 						<option i18n-text="cm_matchHighlightSelection" value="selection">
 						<option i18n-text="genericDisabledLabel" value="">
