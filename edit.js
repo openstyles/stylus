@@ -291,7 +291,7 @@ function acmeEventListener(event) {
 	var value = el.type == "checkbox" ? el.checked : el.value;
 	switch (option) {
 		case "tabSize":
-			CodeMirror.setOption("indentUnit", value);
+			CodeMirror.setOption("indentUnit", Number(value));
 			break;
 		case "theme":
 			var themeLink = document.getElementById("cm-theme");
