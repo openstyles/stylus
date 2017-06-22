@@ -12,6 +12,7 @@ var styleElements = new Map();
 var disabledElements = new Map();
 var retiredStyleTimers = new Map();
 var docRewriteObserver;
+var docHeadObserver;
 
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
@@ -210,6 +211,17 @@ function applyStyles(styles) {
         clearTimeout(timer);
       }
     });
+  }
+  // TODO: remove when https://bugzilla.mozilla.org/show_bug.cgi?id=1375358 is fixed
+  if (styleElements.size && !document.head && !docHeadObserver) {
+    docHeadObserver = new MutationObserver(() => {
+      docHeadObserver.disconnect();
+      docHeadObserver = null;
+      for (const el of styleElements.values()) {
+        ROOT.insertBefore(el, document.body);
+      }
+    });
+    docHeadObserver.observe(ROOT, {childList: true});
   }
 }
 
