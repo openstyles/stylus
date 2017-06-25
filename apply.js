@@ -212,8 +212,8 @@ function applyStyles(styles) {
       }
     });
   }
-  // TODO: remove when https://bugzilla.mozilla.org/show_bug.cgi?id=1375358 is fixed
   if (styleElements.size && !document.head && !docHeadObserver) {
+    // HEAD is not yet present so we'll wait for it and move the style elements
     docHeadObserver = new MutationObserver(() => {
       docHeadObserver.disconnect();
       docHeadObserver = null;
