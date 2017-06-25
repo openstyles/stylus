@@ -397,6 +397,21 @@ function handleDelete(id) {
   Additionally we'll check for invalid regexps.
 */
 function detectSloppyRegexps({entry, style}) {
+  // make sure all regexps are compiled
+  const rxCache = BG.cachedStyles.regexps;
+  for (const section of style.sections) {
+    for (const regexp of section.regexps) {
+      for (let pass = 1; pass <= 2; pass++) {
+        const cacheKey = pass == 1 ? regexp : BG.SLOPPY_REGEXP_PREFIX + regexp;
+        if (!rxCache.has(cacheKey)) {
+          // according to CSS4 @document specification the entire URL must match
+          const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+          const rx = tryRegExp(anchored);
+          rxCache.set(cacheKey, rx || false);
+        }
+      }
+    }
+  }
   const {
     appliedSections =
       BG.getApplicableSections({style, matchUrl: tabURL}),
@@ -404,9 +419,8 @@ function detectSloppyRegexps({entry, style}) {
       BG.getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
   } = style;
 
-  BG.compileStyleRegExps({style, compileAll: true});
   entry.hasInvalidRegexps = wannabeSections.some(section =>
-    section.regexps.some(rx => !BG.cachedStyles.regexps.has(rx)));
+    section.regexps.some(rx => !rxCache.has(rx)));
   entry.sectionsSkipped = wannabeSections.length - appliedSections.length;
 
   if (!appliedSections.length) {

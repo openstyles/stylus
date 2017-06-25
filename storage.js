@@ -4,7 +4,8 @@ const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
   /(@namespace[\s\r\n]+(?:[^\s\r\n]+[\s\r\n]+)?url\(http:\/\/.*?\);)/,
   /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
-const SLOPPY_REGEXP_PREFIX = '\0';
+// eslint-disable-next-line no-var
+var SLOPPY_REGEXP_PREFIX = '\0';
 
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
@@ -88,13 +89,8 @@ function getStyles(options) {
   return dbExec('getAll').then(event => {
     cachedStyles.list = event.target.result || [];
     cachedStyles.byId.clear();
-    const t0 = performance.now();
-    let hasTimeToCompile = true;
     for (const style of cachedStyles.list) {
       cachedStyles.byId.set(style.id, style);
-      if (hasTimeToCompile) {
-        hasTimeToCompile = !compileStyleRegExps({style}) || performance.now() - t0 > 100;
-      }
     }
 
     cachedStyles.mutex.inProgress = false;
@@ -296,7 +292,6 @@ function saveStyle(style) {
     }
     style.id = style.id || event.target.result;
     invalidateCache(existed ? {updated: style} : {added: style});
-    compileStyleRegExps({style});
     if (notify) {
       notifyAllTabs({
         method: existed ? 'styleUpdated' : 'styleAdded',
@@ -460,29 +455,6 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
     }
     return true;
   }
-}
-
-
-function compileStyleRegExps({style, compileAll}) {
-  const t0 = performance.now();
-  for (const section of style.sections || []) {
-    for (const regexp of section.regexps) {
-      for (let pass = 1; pass <= (compileAll ? 2 : 1); pass++) {
-        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
-        if (cachedStyles.regexps.has(cacheKey)) {
-          continue;
-        }
-        // according to CSS4 @document specification the entire URL must match
-        const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
-        const rx = tryRegExp(anchored);
-        cachedStyles.regexps.set(cacheKey, rx || false);
-        if (!compileAll && performance.now() - t0 > 100) {
-          return false;
-        }
-      }
-    }
-  }
-  return true;
 }
 
 
