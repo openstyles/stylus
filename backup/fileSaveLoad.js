@@ -302,12 +302,31 @@ $('#file-all-styles').onclick = () => {
     .then(res => res.blob())
     .then(blob => {
       const objectURL = URL.createObjectURL(blob);
-      Object.assign(document.createElement('a'), {
-        download: generateFileName(),
+      let link = $element({
+        tag:'a',
         href: objectURL,
         type: 'application/json',
-      }).dispatchEvent(new MouseEvent('click'));
-      setTimeout(() => URL.revokeObjectURL(objectURL));
+        download: generateFileName(),
+      });
+      // TODO: remove the fallback when FF multi-process bug is fixed
+      if (!FIREFOX) {
+        link.dispatchEvent(new MouseEvent('click'));
+        setTimeout(() => URL.revokeObjectURL(objectURL));
+      } else {
+        const iframe = document.body.appendChild($element({
+          tag: 'iframe',
+          style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
+        }));
+        setTimeout(() => {
+          link = iframe.contentDocument.importNode(link, true);
+          iframe.contentDocument.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click'));
+          setTimeout(() => {
+            URL.revokeObjectURL(objectURL);
+            iframe.remove();
+          }, 1000);
+        });
+      }
     });
 
   function generateFileName() {
