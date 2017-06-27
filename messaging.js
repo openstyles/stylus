@@ -359,3 +359,10 @@ function download(url) {
     xhr.send(query);
   });
 }
+
+
+function doTimeout(ms = 0, ...args) {
+  return ms > 0
+    ? () => new Promise(resolve => setTimeout(resolve, ms, ...args))
+    : new Promise(resolve => setTimeout(resolve, 0, ...args));
+}

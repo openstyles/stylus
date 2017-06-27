@@ -329,14 +329,16 @@ $('#file-all-styles').onclick = () => {
           tag: 'iframe',
           style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
         }));
-        setTimeout(() => {
+        doTimeout().then(() => {
           link = iframe.contentDocument.importNode(link, true);
           iframe.contentDocument.body.appendChild(link);
-          link.dispatchEvent(new MouseEvent('click'));
-          setTimeout(() => {
-            URL.revokeObjectURL(objectURL);
-            iframe.remove();
-          }, 1000);
+        })
+        .then(doTimeout)
+        .then(() => link.dispatchEvent(new MouseEvent('click')))
+        .then(doTimeout(1000))
+        .then(() => {
+          URL.revokeObjectURL(objectURL);
+          iframe.remove();
         });
       }
     });
