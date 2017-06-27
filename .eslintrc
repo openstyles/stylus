@@ -18,6 +18,7 @@ globals:
   notifyAllTabs: false
   queryTabs: false
   getTab: false
+  getOwnTab: false
   getActiveTab: false
   getActiveTabRealURL: false
   getTabRealURL: false

@@ -118,6 +118,12 @@ function getTab(id) {
 }
 
 
+function getOwnTab() {
+  return new Promise(resolve =>
+    chrome.tabs.getCurrent(tab => resolve(tab)));
+}
+
+
 function getActiveTab() {
   return queryTabs({currentWindow: true, active: true})
     .then(tabs => tabs[0]);

@@ -217,7 +217,7 @@ function importFromString(jsonString) {
     return new Promise(resolve_ => {
       resolve = resolve_;
       undoNextId();
-    }).then(BG.refreshAllTabs)
+    }).then(refreshAllTabs)
       .then(() => messageBox({
         title: t('importReportUndoneTitle'),
         contents: newIds.length + ' ' + t('importReportUndone'),
@@ -268,19 +268,31 @@ function importFromString(jsonString) {
   }
 
   function refreshAllTabs() {
-    return getActiveTab().then(activeTab => new Promise(resolve => {
+    return Promise.all([
+      getActiveTab(),
+      getOwnTab(),
+    ]).then(([activeTab, ownTab]) => new Promise(resolve => {
       // list all tabs including chrome-extension:// which can be ours
       queryTabs().then(tabs => {
         const lastTab = tabs[tabs.length - 1];
         for (const tab of tabs) {
+          // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
+          if (FIREFOX && !tab.width) {
+            if (tab == lastTab) {
+              resolve();
+            }
+            continue;
+          }
           getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
             const message = {method: 'styleReplaceAll', styles};
-            if (tab.id == activeTab.id) {
+            if (tab.id == ownTab.id) {
               applyOnMessage(message);
+            } else if (tab.id == activeTab.id) {
+              chrome.tabs.sendMessage(tab.id, message, ignoreChromeError);
             } else {
-              chrome.tabs.sendMessage(tab.id, message);
+              setTimeout(chrome.tabs.sendMessage, 0, tab.id, message, ignoreChromeError);
             }
-            BG.updateIcon(tab, styles);
+            setTimeout(BG.updateIcon, 0, tab, styles);
             if (tab == lastTab) {
               resolve();
             }
