@@ -709,8 +709,7 @@ function searchStyles({immediately, container}) {
     return;
   }
   if (!immediately) {
-    clearTimeout(searchStyles.timeout);
-    searchStyles.timeout = setTimeout(searchStyles, 150, {immediately: true});
+    debounce(searchStyles, 150, {immediately: true});
     return;
   }
   searchElement.lastValue = query;
