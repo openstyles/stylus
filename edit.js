@@ -390,20 +390,6 @@ function setupCodeMirror(textarea, index) {
 			document.body.style.cursor = '';
 		});
 	});
-	// resizeGrip has enough space when scrollbars.horiz is visible
-	if (cm.display.scrollbars.horiz.style.display != "") {
-		cm.display.scrollbars.vert.style.marginBottom = "0";
-	}
-	// resizeGrip space adjustment in case a long line was entered/deleted by a user
-	new MutationObserver(function(mutations) {
-		var hScrollbar = mutations[0].target;
-		var hScrollbarVisible = hScrollbar.style.display != "";
-		var vScrollbar = hScrollbar.parentNode.CodeMirror.display.scrollbars.vert;
-		vScrollbar.style.marginBottom = hScrollbarVisible ? "0" : "";
-	}).observe(cm.display.scrollbars.horiz, {
-		attributes: true,
-		attributeFilter: ["style"]
-	});
 
 	editors.splice(index || editors.length, 0, cm);
 	return cm;

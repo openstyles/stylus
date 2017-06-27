@@ -192,7 +192,13 @@
 				background: none;
 			}
 			.CodeMirror-vscrollbar {
-				margin-bottom: 8px; /* make space for resize-grip */
+				margin-bottom: 7px; /* make space for resize-grip */
+			}
+			.CodeMirror-hscrollbar {
+		  		bottom: 7px; /* make space for resize-grip */
+			}
+			.CodeMirror-scrollbar-filler {
+				bottom: 7px; /* make space for resize-grip */
 			}
 			.CodeMirror-dialog {
 				-webkit-animation: highlight 3s ease-out;
@@ -242,14 +248,29 @@
 			.resize-grip {
 				position: absolute;
 				display: block;
-				width: 8px;
-				height: 8px;
-				content: " ";
+				height: 6px;
+				content: "";
+				left: 0;
 				right: 0;
 				bottom: 0;
-				z-index: 99;
+				z-index: 9;
 				cursor: n-resize;
-				background: linear-gradient(-45deg, transparent 2px, rgba(0,0,0,0.5) 2px, transparent 3px, transparent 4.5px, rgba(0,0,0,0.5) 5px, transparent 5.5px);
+				background-color: inherit;
+				border-top-width: 1px;
+				border-top-style: solid;
+				border-top-color: inherit;
+			}
+			.resize-grip:after {
+				content: "";
+				bottom: 2px;
+				left: 0;
+				right: 0;
+				margin: 0 8px;
+				display: block;
+				position: absolute;
+				border-top-width: 2px;
+				border-top-style: dotted;
+				border-top-color: inherit;
 			}
 			/* applies-to */
 			.applies-to {
