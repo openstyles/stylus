@@ -117,7 +117,7 @@ function showStyles(styles = []) {
     .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
   let index = 0;
   const scrollY = (history.state || {}).scrollY;
-  const shouldRenderAll = scrollY > window.innerHeight;
+  const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
   if (scrollY) {
     renderStyles();
@@ -143,7 +143,15 @@ function showStyles(styles = []) {
     if (newUI.enabled && newUI.favicons) {
       debounce(handleEvent.loadFavicons, 16);
     }
+    if (sessionStorage.justEditedStyleId) {
+      const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
+      delete sessionStorage.justEditedStyleId;
+      if (entry) {
+        animateElement(entry);
+        scrollElementIntoView(entry);
       }
+    }
+  }
 }
 
 

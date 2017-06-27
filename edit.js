@@ -477,6 +477,8 @@ function goBackToManage(event) {
 		event.stopPropagation();
 		event.preventDefault();
 		history.back();
+	} else if (styleId) {
+		sessionStorage.justEditedStyleId = styleId;
 	}
 }
 
