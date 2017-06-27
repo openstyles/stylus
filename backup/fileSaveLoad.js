@@ -246,7 +246,7 @@ function importFromString(jsonString) {
       const styleElement = $('#style-' + event.target.dataset.id);
       if (styleElement) {
         scrollElementIntoView(styleElement);
-        animateElement(styleElement, {className: 'highlight'});
+        animateElement(styleElement);
       }
     };
     for (const block of $$('details')) {

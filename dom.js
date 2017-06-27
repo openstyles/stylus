@@ -46,8 +46,13 @@ function scrollElementIntoView(element) {
 }
 
 
-function animateElement(element, {className, removeExtraClasses = [], remove = false}) {
-  return new Promise(resolve => {
+function animateElement(
+  element, {
+    className = 'highlight',
+    removeExtraClasses = [],
+    remove = false,
+  } = {}) {
+  return element && new Promise(resolve => {
     element.addEventListener('animationend', function _() {
       element.removeEventListener('animationend', _);
       element.classList.remove(

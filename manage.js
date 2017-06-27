@@ -342,7 +342,7 @@ Object.assign(handleEvent, {
   delete(event, entry) {
     const id = entry.styleId;
     const {name} = BG.cachedStyles.byId.get(id) || {};
-    animateElement(entry, {className: 'highlight'});
+    animateElement(entry);
     messageBox({
       title: t('deleteStyleConfirm'),
       contents: name,
@@ -420,7 +420,7 @@ function handleUpdate(style, {reason, method} = {}) {
   }
   filterAndAppend({entry});
   if (!entry.matches('.hidden') && reason != 'import') {
-    animateElement(entry, {className: 'highlight'});
+    animateElement(entry);
     scrollElementIntoView(entry);
   }
 
