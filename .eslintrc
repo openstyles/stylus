@@ -38,6 +38,7 @@ globals:
   sessionStorageHash: false
   download: false
   doTimeout: false
+  invokeOrPostpone: false
   # localization.js
   template: false
   t: false

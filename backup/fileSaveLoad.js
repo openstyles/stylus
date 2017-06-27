@@ -287,10 +287,9 @@ function importFromString(jsonString) {
             const message = {method: 'styleReplaceAll', styles};
             if (tab.id == ownTab.id) {
               applyOnMessage(message);
-            } else if (tab.id == activeTab.id) {
-              chrome.tabs.sendMessage(tab.id, message, ignoreChromeError);
             } else {
-              setTimeout(chrome.tabs.sendMessage, 0, tab.id, message, ignoreChromeError);
+              invokeOrPostpone(tab.id == activeTab.id,
+                chrome.tabs.sendMessage, tab.id, message, ignoreChromeError);
             }
             setTimeout(BG.updateIcon, 0, tab, styles);
             if (tab == lastTab) {

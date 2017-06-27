@@ -246,11 +246,7 @@ function createStyleElement({
   $('.disable', entry).onclick = handleEvent.toggle;
   $('.delete', entry).onclick = handleEvent.delete;
 
-  if (postponeDetect) {
-    setTimeout(detectSloppyRegexps, 0, {entry, style});
-  } else {
-    detectSloppyRegexps({entry, style});
-  }
+  invokeOrPostpone(!postponeDetect, detectSloppyRegexps, {entry, style});
 
   const oldElement = $('#style-' + style.id);
   if (oldElement) {

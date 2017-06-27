@@ -81,11 +81,7 @@ function notifyAllTabs(msg) {
     ]).then(([tabs, activeTab]) => {
       const activeTabId = activeTab && activeTab.id;
       for (const tab of tabs) {
-        if (tab.id === activeTabId) {
-          notifyTab(tab);
-        } else {
-          setTimeout(notifyTab, 0, tab);
-        }
+        invokeOrPostpone(tab.id === activeTabId, notifyTab, tab);
       }
     });
   }
@@ -365,4 +361,11 @@ function doTimeout(ms = 0, ...args) {
   return ms > 0
     ? () => new Promise(resolve => setTimeout(resolve, ms, ...args))
     : new Promise(resolve => setTimeout(resolve, 0, ...args));
+}
+
+
+function invokeOrPostpone(isInvoke, fn, ...args) {
+  return isInvoke
+    ? fn(...args)
+    : setTimeout(invokeOrPostpone, 0, true, fn, ...args);
 }
