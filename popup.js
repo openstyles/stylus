@@ -5,6 +5,9 @@ let installed;
 let tabURL;
 const handleEvent = {};
 
+const ENTRY_ID_PREFIX_RAW = 'style-';
+const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+
 getActiveTabRealURL().then(url => {
   tabURL = URLS.supported.test(url) ? url : '';
   Promise.all([
@@ -215,7 +218,7 @@ function createStyleElement({
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
   Object.assign(entry, {
-    id: 'style-' + style.id,
+    id: ENTRY_ID_PREFIX_RAW + style.id,
     styleId: style.id,
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
     onmousedown: handleEvent.maybeEdit,
@@ -223,7 +226,7 @@ function createStyleElement({
 
   const checkbox = $('.checker', entry);
   Object.assign(checkbox, {
-    id: 'style-' + style.id,
+    id: ENTRY_ID_PREFIX_RAW + style.id,
     checked: style.enabled,
     onclick: handleEvent.toggle,
   });
@@ -236,7 +239,7 @@ function createStyleElement({
 
   const styleName = $('.style-name', entry);
   Object.assign(styleName, {
-    htmlFor: 'style-' + style.id,
+    htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
     onclick: handleEvent.name,
   });
   styleName.checkbox = checkbox;
@@ -248,7 +251,7 @@ function createStyleElement({
 
   invokeOrPostpone(!postponeDetect, detectSloppyRegexps, {entry, style});
 
-  const oldElement = $('#style-' + style.id);
+  const oldElement = $(ENTRY_ID_PREFIX + style.id);
   if (oldElement) {
     oldElement.parentNode.replaceChild(entry, oldElement);
   } else {
@@ -368,7 +371,7 @@ Object.assign(handleEvent, {
 
 
 function handleUpdate(style) {
-  if ($('#style-' + style.id)) {
+  if ($(ENTRY_ID_PREFIX + style.id)) {
     createStyleElement({style});
     return;
   }
@@ -381,7 +384,7 @@ function handleUpdate(style) {
 
 
 function handleDelete(id) {
-  $$('#style-' + id).forEach(el => el.remove());
+  $$(ENTRY_ID_PREFIX + id).forEach(el => el.remove());
 }
 
 

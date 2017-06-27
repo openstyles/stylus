@@ -7,6 +7,9 @@ const filtersSelector = {
   unhide: '',
 };
 
+const ENTRY_ID_PREFIX_RAW = 'style-';
+const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+
 const newUI = {
   enabled: prefs.get('manage.newUI'),
   favicons: prefs.get('manage.newUI.favicons'),
@@ -140,7 +143,7 @@ function showStyles(styles = []) {
     if (newUI.enabled && newUI.favicons) {
       debounce(handleEvent.loadFavicons, 16);
     }
-  }
+      }
 }
 
 
@@ -175,7 +178,7 @@ function createStyleElement({style, name}) {
   parts.homepage.href = parts.homepage.title = style.url || '';
 
   const entry = parts.entry.cloneNode(true);
-  entry.id = 'style-' + style.id;
+  entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
   entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
   entry.styleMeta = getStyleWithNoCode(style);
@@ -400,7 +403,7 @@ Object.assign(handleEvent, {
 
 function handleUpdate(style, {reason, method} = {}) {
   let entry;
-  let oldEntry = $('#style-' + style.id);
+  let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method == 'styleUpdated') {
     handleToggledOrCodeOnly();
   }
@@ -449,7 +452,7 @@ function handleUpdate(style, {reason, method} = {}) {
 
 
 function handleDelete(id) {
-  const node = $('#style-' + id);
+  const node = $(ENTRY_ID_PREFIX + id);
   if (node) {
     node.remove();
     if (node.matches('.can-update')) {
@@ -519,7 +522,7 @@ function switchUI({styleOnly} = {}) {
   if (missingFavicons) {
     getStylesSafe().then(styles => {
       for (const style of styles) {
-        const entry = $('#style-' + style.id);
+        const entry = $(ENTRY_ID_PREFIX + style.id);
         if (entry) {
           createStyleTargetsElement({entry, style, postponeFavicons: true});
         }
@@ -621,7 +624,7 @@ function checkUpdate(entry, {single = true} = {}) {
 
 
 function reportUpdateState(state, style, details) {
-  const entry = $('#style-' + style.id);
+  const entry = $(ENTRY_ID_PREFIX + style.id);
   entry.classList.remove('checking-update');
   switch (state) {
     case BG.updater.UPDATED:
