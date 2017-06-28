@@ -48,6 +48,11 @@ if ('commands' in chrome) {
 }
 
 // *************************************************************************
+// set the default icon displayed after a tab is created until webNavigation kicks in
+prefs.subscribe(() => updateIcon({id: undefined}, {}), ['iconset']);
+updateIcon({id: undefined}, {});
+
+// *************************************************************************
 {
   const onInstall = ({reason}) => {
     chrome.runtime.onInstalled.removeListener(onInstall);
@@ -272,7 +277,7 @@ function updateIcon(tab, styles) {
         // TODO: add Edge preferred sizes: 20, 25, 30, 40
       },
     }, () => {
-      if (chrome.runtime.lastError) {
+      if (chrome.runtime.lastError || tab.id === undefined) {
         return;
       }
       // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
