@@ -131,6 +131,10 @@
     "message": "Selection only",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
   },
+  "cm_resizeGripHint": {
+    "message": "Double-click to maximize/restore the height",
+    "description": "Tooltip for the resize grip in style editor"
+  },
   "genericDisabledLabel": {
     "message": "Disabled",
     "description": "Used in various lists/options to indicate that something is disabled"

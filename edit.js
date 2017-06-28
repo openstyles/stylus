@@ -343,53 +343,60 @@ function acmeEventListener(event) {
 
 // replace given textarea with the CodeMirror editor
 function setupCodeMirror(textarea, index) {
-	var cm = CodeMirror.fromTextArea(textarea, {lint: null});
+	const cm = CodeMirror.fromTextArea(textarea, {lint: null});
+	const wrapper = cm.display.wrapper;
 
-	cm.on("change", indicateCodeChange);
+	cm.on('change', indicateCodeChange);
 	if (prefs.get('editor.autocompleteOnTyping')) {
 		cm.on('change', autocompleteOnTyping);
 		cm.on('pick', autocompletePicked);
 	}
-	cm.on("blur", function(cm) {
+	cm.on('blur', () => {
 		editors.lastActive = cm;
 		hotkeyRerouter.setState(true);
-		setTimeout(function() {
-			var cm = editors.lastActive;
-			var childFocused = cm.display.wrapper.contains(document.activeElement);
-			cm.display.wrapper.classList.toggle("CodeMirror-active", childFocused);
-		}, 0);
+		setTimeout(() => {
+			wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
+		});
 	});
-	cm.on("focus", function() {
+	cm.on('focus', () => {
 		hotkeyRerouter.setState(false);
-		cm.display.wrapper.classList.add("CodeMirror-active");
+		wrapper.classList.add('CodeMirror-active');
 	});
 	cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
 
-	var resizeGrip = cm.display.wrapper.appendChild(document.createElement("div"));
-	resizeGrip.className = "resize-grip";
-	resizeGrip.addEventListener("mousedown", function(e) {
-		e.preventDefault();
-		var cm = e.target.parentNode.CodeMirror;
-		var minHeight = cm.defaultTextHeight()
+	let lastClickTime = 0;
+	const resizeGrip = wrapper.appendChild(template.resizeGrip.cloneNode(true));
+	resizeGrip.onmousedown = event => {
+		if (event.button != 0) {
+			return;
+		}
+		event.preventDefault();
+		if (Date.now() - lastClickTime < 500) {
+			lastClickTime = 0;
+			toggleSectionHeight(cm);
+			return;
+		}
+		lastClickTime = Date.now();
+		const minHeight = cm.defaultTextHeight()
 			+ cm.display.lineDiv.offsetParent.offsetTop /* .CodeMirror-lines padding */
-			+ cm.display.wrapper.offsetHeight - cm.display.wrapper.clientHeight /* borders */;
-		cm.display.wrapper.style.pointerEvents = 'none';
+			+ wrapper.offsetHeight - wrapper.clientHeight /* borders */;
+		wrapper.style.pointerEvents = 'none';
 		document.body.style.cursor = 's-resize';
 		function resize(e) {
-			const cmPageY = cm.display.wrapper.getBoundingClientRect().top + window.scrollY;
+			const cmPageY = wrapper.getBoundingClientRect().top + window.scrollY;
 			const height = Math.max(minHeight, e.pageY - cmPageY);
-			if (height != cm.display.wrapper.clientHeight) {
+			if (height != wrapper.clientHeight) {
 				cm.setSize(null, height);
 			}
 		}
-		document.addEventListener("mousemove", resize);
-		document.addEventListener("mouseup", function resizeStop() {
-			document.removeEventListener("mouseup", resizeStop);
-			document.removeEventListener("mousemove", resize);
-			cm.display.wrapper.style.pointerEvents = '';
+		document.addEventListener('mousemove', resize);
+		document.addEventListener('mouseup', function resizeStop() {
+			document.removeEventListener('mouseup', resizeStop);
+			document.removeEventListener('mousemove', resize);
+			wrapper.style.pointerEvents = '';
 			document.body.style.cursor = '';
 		});
-	});
+	};
 
 	editors.splice(index || editors.length, 0, cm);
 	return cm;
@@ -872,6 +879,27 @@ function jumpToLine(cm) {
 function toggleStyle() {
 	$('#enabled').checked = !$('#enabled').checked;
 	save();
+}
+
+function toggleSectionHeight(cm) {
+	if (cm.state.toggleHeightSaved) {
+		// restore previous size
+		cm.setSize(null, cm.state.toggleHeightSaved);
+		cm.state.toggleHeightSaved = 0;
+	} else {
+		// maximize
+		const wrapper = cm.display.wrapper;
+		const allBounds = $('#sections').getBoundingClientRect();
+		const pageExtrasHeight = allBounds.top + window.scrollY +
+			parseFloat(getComputedStyle($('#sections')).paddingBottom);
+		const sectionExtrasHeight = cm.getSection().clientHeight - wrapper.offsetHeight;
+		cm.state.toggleHeightSaved = wrapper.clientHeight;
+		cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight);
+		const bounds = cm.getSection().getBoundingClientRect();
+		if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
+			window.scrollBy(0, bounds.top);
+		}
+	}
 }
 
 function autocompleteOnTyping(cm, info, debounced) {
