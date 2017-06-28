@@ -47,6 +47,9 @@ var prefs = new function Prefs() {
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
+    'iconset': 0,                   // 0 = dark-themed icon
+                                    // 1 = light-themed icon
+
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
 
@@ -61,6 +64,7 @@ var prefs = new function Prefs() {
     'disableAll',
     'badgeDisabled',
     'badgeNormal',
+    'iconset',
   ];
 
   const onChange = {

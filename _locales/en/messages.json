@@ -681,6 +681,15 @@
   "optionsUpdateImportNote": {
     "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
   },
+  "optionsCustomizeIcon": {
+    "message": "Toolbar icon"
+  },
+  "optionsIconLight": {
+    "message": "Light browser themes"
+  },
+  "optionsIconDark": {
+    "message": "Dark browser themes"
+  },
   "optionsCustomizeBadge": {
     "message": "Badge on the toolbar icon"
   },

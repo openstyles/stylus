@@ -114,6 +114,14 @@ input[type="color"] {
   height: 2em;
 }
 
+.iconset {
+  display: flex;
+}
+
+.iconset input {
+  display: block;
+}
+
 #actions {
   justify-content: space-around;
   align-items: stretch;
