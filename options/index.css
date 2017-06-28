@@ -67,10 +67,7 @@ h1 {
 label {
   display: flex;
   margin: .25ex 0;
-}
-
-label > * {
-  /*vertical-align: middle;*/
+  align-items: center;
 }
 
 label > :first-child {
