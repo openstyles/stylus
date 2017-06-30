@@ -60,7 +60,6 @@ function applyOnMessage(request, sender, sendResponse) {
   }
 
   switch (request.method) {
-
     case 'styleDeleted':
       removeStyle(request);
       break;

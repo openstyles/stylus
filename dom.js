@@ -58,7 +58,9 @@ function animateElement(
       element.removeEventListener('animationend', _);
       element.classList.remove(
         className,
-        ...removeExtraClasses // In Firefox, `resolve()` might be called one frame later. This is helpful to clean-up on the same frame
+        // In Firefox, `resolve()` might be called one frame later.
+        // This is helpful to clean-up on the same frame
+        ...removeExtraClasses
       );
       // TODO: investigate why animation restarts if the elements is removed in .then()
       if (remove) {

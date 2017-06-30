@@ -292,7 +292,6 @@ function updateIcon(tab, styles) {
 
 function onRuntimeMessage(request, sender, sendResponse) {
   switch (request.method) {
-
     case 'getStyles':
       getStyles(request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;

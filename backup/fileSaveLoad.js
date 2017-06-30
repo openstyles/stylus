@@ -378,8 +378,7 @@ Object.assign(document.body, {
       if (event.target === this) {
         this.ondragend();
       }
-    }
-    catch (e) {
+    } catch (e) {
       this.ondragend();
     }
   },

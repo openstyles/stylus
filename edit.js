@@ -1,4 +1,4 @@
-/* eslint no-tabs: 0, no-var: 0, indent: [2, tab, {VariableDeclarator: 0, SwitchCase: 1}], quotes: 0 */
+/* eslint no-tabs: 0, no-var: 0, indent-legacy: [2, tab, {VariableDeclarator: 0, SwitchCase: 1}], quotes: 0 */
 /* global CodeMirror */
 "use strict";
 
