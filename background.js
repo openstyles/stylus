@@ -61,7 +61,7 @@ updateIcon({id: undefined}, {});
     // Do not display it in development mode.
     if (reason == 'install' && manifest.update_url) {
       setTimeout(openURL, 100, {
-        url: 'http://add0n.com/stylus.html&type=install'
+        url: 'http://add0n.com/stylus.html?type=install'
       });
     }
     // reset L10N cache on UI language change or update
