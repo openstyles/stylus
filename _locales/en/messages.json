@@ -610,7 +610,7 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Update failed - server unreachable.",
+    "message": "Update failed: server unreachable.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSkippedLocallyEdited": {
