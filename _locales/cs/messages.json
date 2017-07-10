@@ -60,7 +60,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Najít styly pro tento web.",
+		"message": "Najít styly pro tento web",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {

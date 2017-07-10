@@ -238,7 +238,7 @@
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
   "findStylesForSite": {
-    "message": "Find more styles for this site.",
+    "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "helpAlt": {

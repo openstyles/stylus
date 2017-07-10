@@ -116,7 +116,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Найдите другие стили для этого веб-сайта.",
+		"message": "Найти еще стили для этого веб-сайта",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {

@@ -60,7 +60,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "查找更多適合此網站的樣式。",
+		"message": "查找更多適合此網站的樣式",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {

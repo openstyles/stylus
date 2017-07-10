@@ -60,7 +60,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Trova più stili per questo sito.",
+		"message": "Trova più stili per questo sito",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
