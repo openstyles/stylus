@@ -270,7 +270,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Aggiornamento non riuscito - il server ha risposto con il codice $code$.",
+		"message": "Aggiornamento non riuscito: il server ha risposto con il codice $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {

@@ -270,7 +270,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Update mislukt - server gaf code $code$ als antwoord.",
+		"message": "Update mislukt: server gaf code $code$ als antwoord.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {

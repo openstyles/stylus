@@ -270,7 +270,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Échec de la mise à jour. Le serveur a renvoyé le $code$ $code$.",
+		"message": "Échec de la mise à jour: le serveur a renvoyé le code $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {

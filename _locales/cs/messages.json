@@ -270,7 +270,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Aktualizace selhala - server opověděl kódem $code$.",
+		"message": "Aktualizace selhala: server opověděl kódem $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
