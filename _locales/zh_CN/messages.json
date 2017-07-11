@@ -269,7 +269,7 @@
 		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "更新失败 - 无法访问服务器。",
+		"message": "更新失败: 无法访问服务器。",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {

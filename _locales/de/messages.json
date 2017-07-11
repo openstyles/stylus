@@ -269,7 +269,7 @@
 		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Aktualisierung fehlgeschlagen - Server nicht erreichbar.",
+		"message": "Aktualisierung fehlgeschlagen: Server nicht erreichbar.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {

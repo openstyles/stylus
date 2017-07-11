@@ -149,7 +149,7 @@
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Aggiornamento non riuscito - server non raggiungibile.",
+		"message": "Aggiornamento non riuscito: server non raggiungibile.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {
