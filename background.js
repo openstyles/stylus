@@ -64,12 +64,10 @@ updateIcon({id: undefined}, {});
         url: 'http://add0n.com/stylus.html'
       });
     }
-    // reset L10N cache on UI language change or update
-    const {browserUIlanguage} = tryJSONparse(localStorage.L10N) || {};
-    const UIlang = chrome.i18n.getUILanguage();
-    if (reason == 'update' || browserUIlanguage != UIlang) {
+    // reset L10N cache on update
+    if (reason == 'update') {
       localStorage.L10N = JSON.stringify({
-        browserUIlanguage: UIlang,
+        browserUIlanguage: chrome.i18n.getUILanguage(),
       });
     }
     // TODO: remove in the future

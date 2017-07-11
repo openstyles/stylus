@@ -91,7 +91,16 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
   t.cache = tryJSONparse(localStorage.L10N) || {};
+
+  // reset L10N cache on UI language change
+  const UIlang = chrome.i18n.getUILanguage();
+  if (t.cache.browserUIlanguage != UIlang) {
+    t.cache = {browserUIlanguage: UIlang};
+    localStorage.L10N = JSON.stringify(t.cache);
+  }
+
   const cacheLength = Object.keys(t.cache).length;
+
   // localize HEAD
   tNodeList(document.getElementsByTagName('*'));
 
