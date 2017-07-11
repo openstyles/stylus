@@ -1,111 +1,84 @@
 {
 	"appliesToEverything": {
-		"message": "Све",
-		"description": "Text displayed for styles that apply to all sites"
+		"message": "Све"
 	},
 	"defaultTheme": {
-		"message": "подразумевано",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
+		"message": "подразумевано"
 	},
 	"exportLabel": {
-		"message": "Извези",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+		"message": "Извези"
 	},
 	"issues": {
-		"message": "Проблеми",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"message": "Проблеми"
 	},
 	"cm_tabSize": {
-		"message": "Величина картице",
-		"description": "Label for the text box controlling tab size option for the style editor."
+		"message": "Величина картице"
 	},
 	"enableStyleLabel": {
-		"message": "Омогући",
-		"description": "Label for the button to enable a style"
+		"message": "Омогући"
 	},
 	"styleMissingName": {
-		"message": "Унесите назив",
-		"description": "Error displayed when user saves without providing a name"
+		"message": "Унесите назив"
 	},
 	"appliesDomainOption": {
-		"message": "УРЛ адресе на домену",
-		"description": "Option to make the style apply to the entered string as a domain"
+		"message": "УРЛ адресе на домену"
 	},
 	"checkForUpdate": {
-		"message": "Проверите ажурирање",
-		"description": "Label for the button to check a single style for an update"
+		"message": "Проверите ажурирање"
 	},
 	"importAppendLabel": {
-		"message": "Додај стилу",
-		"description": "Label for the button to import a style and append to the existing sections"
+		"message": "Додај стилу"
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Сви стилови су ажурирани.",
-		"description": "Text that displays when an update all check completed and no updates are available"
+		"message": "Сви стилови су ажурирани."
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "Налепи код у Mozilla формату",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+		"message": "Налепи код у Mozilla формату"
 	},
 	"helpAlt": {
-		"message": "Помоћ",
-		"description": "Alternate text for help buttons"
+		"message": "Помоћ"
 	},
 	"search": {
-		"message": "Претражи",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
+		"message": "Претражи"
 	},
 	"confirmYes": {
-		"message": "Да",
-		"description": "'Yes' button in a confirm dialog"
+		"message": "Да"
 	},
 	"findStylesForSite": {
-		"message": "Пронађи још стилова за овај сајт",
-		"description": "Text for a link that gets a list of styles for the current site"
+		"message": "Пронађи још стилова за овај сајт"
 	},
 	"manageHeading": {
-		"message": "Инсталирани стилови",
-		"description": "Heading for the manage page"
+		"message": "Инсталирани стилови"
 	},
 	"styleBeautify": {
-		"message": " Улепшај",
-		"description": "Label for the CSS-beautifier button on the edit style page"
+		"message": "Улепшај"
 	},
 	"styleEnabledLabel": {
-		"message": "Омогућено",
-		"description": "Label for the enabled state of styles"
+		"message": "Омогућено"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla формат кода се може користити у Stylish за Firefox и може се послати на userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+		"message": "Mozilla формат кода се може користити у Stylish за Firefox и може се послати на userstyles.org."
 	},
 	"sectionAdd": {
-		"message": "Додај нови одељак",
-		"description": "Label for the button to add a section"
+		"message": "Додај нови одељак"
 	},
 	"styleSaveLabel": {
-		"message": "Сачувај",
-		"description": "Label for save button for style editing"
+		"message": "Сачувај"
 	},
 	"confirmStop": {
-		"message": "Заустави",
-		"description": "'Stop' button in a confirm dialog"
+		"message": "Заустави"
 	},
 	"writeStyleForURL": {
-		"message": "ову УРЛ адресу",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+		"message": "ову УРЛ адресу"
 	},
 	"appliesAdd": {
-		"message": "Додај",
-		"description": "Label for the button to add an 'applies' entry"
+		"message": "Додај"
 	},
 	"appliesRegexpOption": {
-		"message": "УРЛ адресе које одговарају регуларном изразу",
-		"description": "Option to make the style apply to the entered string as a regular expression"
+		"message": "УРЛ адресе које одговарају регуларном изразу"
 	},
 	"styleInstall": {
 		"message": "Инсталирати '$stylename$' у Stylus?",
-		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -113,74 +86,52 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Преузмите стилове са userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помоћ</a>",
-		"description": "Help text on the manage page"
+		"message": "<a href='https://userstyles.org'>Преузмите стилове са userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помоћ</a>"
 	},
 	"searchStyles": {
-		"message": "Претражи садржај",
-		"description": "Label for the search filter textbox on the Manage styles page"
+		"message": "Претражи садржај"
 	},
 	"disableStyleLabel": {
-		"message": "Онемогући",
-		"description": "Label for the button to disable a style"
+		"message": "Онемогући"
 	},
 	"prefShowBadge": {
-		"message": "Прикажи број активних стилова за тренутни сајт на дугмету на алатној траци",
-		"description": "Label for the checkbox controlling toolbar badge text."
+		"message": "Прикажи број активних стилова за тренутни сајт на дугмету на алатној траци"
 	},
 	"menuShowBadge": {
-		"message": "Прикажи број активних стилова",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+		"message": "Прикажи број активних стилова"
 	},
 	"cm_lineWrapping": {
-		"message": "Преламање текста",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
+		"message": "Преламање текста"
 	},
 	"styleCancelEditLabel": {
-		"message": "Назад на управљање",
-		"description": "Label for cancel button for style editing"
+		"message": "Назад на управљање"
 	},
 	"styleChangesNotSaved": {
-		"message": "Направили сте измене овог стила које нисте сачували.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+		"message": "Направили сте измене овог стила које нисте сачували."
 	},
 	"importLabel": {
-		"message": "Увези",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+		"message": "Увези"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Ажурирање није успело: сервер није доступан.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
+		"message": "Ажурирање није успело: сервер није доступан."
 	},
 	"manageFilters": {
-		"message": "Филтери",
-		"description": "Label for filters container"
+		"message": "Филтери"
 	},
 	"applyAllUpdates": {
-		"message": "Примени сва ажурирања",
-		"description": "Label for the button to apply all detected updates"
+		"message": "Примени сва ажурирања"
 	},
 	"deleteStyleConfirm": {
-		"message": "Да ли сте сигурни да желите да избришете овај стил?",
-		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
+		"message": "Да ли сте сигурни да желите да избришете овај стил?"
 	},
 	"styleBadRegexp": {
-		"message": "Регуларни израз је неисправан.",
-		"description": "Validation message for a bad regexp in a style"
+		"message": "Регуларни израз је неисправан."
 	},
 	"optionsHeading": {
-		"message": "Опције",
-		"description": "Heading for options section on manage page."
+		"message": "Опције"
 	},
 	"appliesDisplay": {
 		"message": "Примењује се на: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
 				"content": "$1"
@@ -189,7 +140,6 @@
 	},
 	"styleUpdate": {
 		"message": "Да ли сте сигурни да желите да ажурирате '$stylename$'?",
-		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -197,12 +147,10 @@
 		}
 	},
 	"styleSectionsTitle": {
-		"message": "Одељци",
-		"description": "Title for the style sections section"
+		"message": "Одељци"
 	},
 	"editStyleTitle": {
 		"message": "Уреди стил $stylename$",
-		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -210,68 +158,49 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "Стил је ажуриран.",
-		"description": "Text that displays when an update check completed and no update is available"
+		"message": "Стил је ажуриран."
 	},
 	"appliesUrlPrefixOption": {
-		"message": "УРЛ адресе које почињу са",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
+		"message": "УРЛ адресе које почињу са"
 	},
 	"searchRegexp": {
-		"message": "Користи /re/ синтаксу за претрагу  регуларним изразом",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
+		"message": "Користи /re/ синтаксу за претрагу  регуларним изразом"
 	},
 	"importReplaceTooltip": {
-		"message": "Одбаци садржај тренутног стила и упиши преко њега увезени стил",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Одбаци садржај тренутног стила и упиши преко њега увезени стил"
 	},
 	"popupStylesFirst": {
-		"message": "Излистај стилове пре команди у менију дугмета на алатној траци",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"message": "Излистај стилове пре команди у менију дугмета на алатној траци"
 	},
 	"sectionHelp": {
-		"message": "Одељци вам омогућавају да дефинишете различите делове кода који се примењују на раличите скупове УРЛ-ова у истом стилу. На пример, један исти стил може променити почетну страницу једног сајта на један начин а остатак сајта на други начин.",
-		"description": "Help text for sections"
+		"message": "Одељци вам омогућавају да дефинишете различите делове кода који се примењују на раличите скупове УРЛ-ова у истом стилу. На пример, један исти стил може променити почетну страницу једног сајта на један начин а остатак сајта на други начин."
 	},
 	"noStylesForSite": {
-		"message": "Нема инсталираних стилова за овај сајт.",
-		"description": "Text displayed when no styles are installed for the current site"
+		"message": "Нема инсталираних стилова за овај сајт."
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "и још",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+		"message": "и још"
 	},
 	"appliesRemove": {
-		"message": "Уклони",
-		"description": "Label for the button to remove an 'applies' entry"
+		"message": "Уклони"
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Стил у Mozilla формату",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
+		"message": "Стил у Mozilla формату"
 	},
 	"writeStyleFor": {
-		"message": "Упиши стил за:",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+		"message": "Упиши стил за:"
 	},
 	"replace": {
-		"message": "Замени",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+		"message": "Замени"
 	},
 	"appliesLabel": {
-		"message": "Примењује се на",
-		"description": "Label for 'applies to' fields on the edit/add screen"
+		"message": "Примењује се на"
 	},
 	"openManage": {
-		"message": "Управљај инсталираним стиловима",
-		"description": "Link to open the manage page."
+		"message": "Управљај инсталираним стиловима"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Ажурирање није успело: сервер је одговорио кодом $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
 				"content": "$1"
@@ -279,143 +208,108 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Детаљније",
-		"description": "Label for the button to make a style apply only to specific sites"
+		"message": "Детаљније"
 	},
 	"installUpdate": {
-		"message": "Инсталирај ажурирање",
-		"description": "Label for the button to install an update for a single style"
+		"message": "Инсталирај ажурирање"
 	},
 	"styleMozillaFormatHeading": {
-		"message": "Mozilla формат",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"message": "Mozilla формат"
 	},
 	"stylusUnavailableForURL": {
-		"message": "Stylus не ради на страницама као што је ова.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+		"message": "Stylus не ради на страницама као што је ова."
 	},
 	"sectionRemove": {
-		"message": "Уклони одељак",
-		"description": "Label for the button to remove a section"
+		"message": "Уклони одељак"
 	},
 	"disableAllStyles": {
-		"message": "Искључи све стилове",
-		"description": "Label for the checkbox that turns all enabled styles off."
+		"message": "Искључи све стилове"
 	},
 	"undoGlobal": {
-		"message": "Опозови (свеобухватно)",
-		"description": "CSS-beautify global Undo button label"
+		"message": "Опозови (свеобухватно)"
 	},
 	"updateCompleted": {
-		"message": "Ажурирање је комплетирано.",
-		"description": "Text that displays when an update completed"
+		"message": "Ажурирање је комплетирано."
 	},
 	"checkingForUpdate": {
-		"message": "Проверавање...",
-		"description": "Text to display when checking a style for an update"
+		"message": "Проверавање..."
 	},
 	"sectionCode": {
-		"message": "Код",
-		"description": "Label for the code for a section"
+		"message": "Код"
 	},
 	"cm_smartIndent": {
-		"message": "Користи паметно увлачење редова",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+		"message": "Користи паметно увлачење редова"
 	},
 	"appliesHelp": {
-		"message": "Употреба 'Примењује се на' одређује опсег УРЛ адреса на које се код у овом одељку примењује.",
-		"description": "Help text for 'applies to' section"
+		"message": "Употреба 'Примењује се на' одређује опсег УРЛ адреса на које се код у овом одељку примењује."
 	},
 	"editStyleHeading": {
-		"message": "Уреди стил",
-		"description": "Title of the page for editing styles"
+		"message": "Уреди стил"
 	},
 	"appliesUrlOption": {
-		"message": "УРЛ",
-		"description": "Option to make the style apply to the entered string as a URL"
+		"message": "УРЛ"
 	},
 	"addStyleTitle": {
-		"message": "Додај стил",
-		"description": "Title of the page for adding styles"
+		"message": "Додај стил"
 	},
 	"importReplaceLabel": {
-		"message": "Упиши преко стила",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Упиши преко стила"
 	},
 	"dbError": {
-		"message": "Дошло је до грешке користећи Stylus базу података. Да ли желите да посетите веб страницу са могућим решењима?",
-		"description": "Prompt when a DB error is encountered"
+		"message": "Дошло је до грешке користећи Stylus базу података. Да ли желите да посетите веб страницу са могућим решењима?"
 	},
 	"importAppendTooltip": {
-		"message": "Додај увезени стил тренутном стилу",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
+		"message": "Додај увезени стил тренутном стилу"
 	},
 	"helpKeyMapHotkey": {
-		"message": "Притисни пречицу",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Притисни пречицу"
 	},
 	"replaceAll": {
-		"message": "Замени све",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+		"message": "Замени све"
 	},
 	"editGotoLine": {
-		"message": "Иди на ред (или line:col)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
+		"message": "Иди на ред (или line:col)"
 	},
 	"checkAllUpdates": {
-		"message": "Проверите ажурирања за све стилове",
-		"description": "Label for the button to check all styles for updates"
+		"message": "Проверите ажурирања за све стилове"
 	},
 	"issuesHelp": {
-		"message": "Проблем пронађен од стране <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> са овим омогућеним правилима:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+		"message": "Проблем пронађен од стране <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> са овим омогућеним правилима:"
 	},
 	"confirmNo": {
-		"message": "Не",
-		"description": "'No' button in a confirm dialog"
+		"message": "Не"
 	},
 	"undo": {
-		"message": "Опозови",
-		"description": "Button label"
+		"message": "Опозови"
 	},
 	"cm_keyMap": {
-		"message": "Мапа тастера",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
+		"message": "Мапа тастера"
 	},
 	"cm_indentWithTabs": {
-		"message": "Користи картице са паметним увлачењем редова",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+		"message": "Користи картице са паметним увлачењем редова"
 	},
 	"replaceWith": {
-		"message": "Замени са",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+		"message": "Замени са"
 	},
 	"deleteStyleLabel": {
-		"message": "Избриши",
-		"description": "Label for the button to delete a style"
+		"message": "Избриши"
 	},
 	"addStyleLabel": {
-		"message": "Упиши нови стил",
-		"description": "Label for the button to go to the add style page"
+		"message": "Упиши нови стил"
 	},
 	"manageOnlyEnabled": {
-		"message": "Само омогућени стилови",
-		"description": "Checkbox to show only enabled styles"
+		"message": "Само омогућени стилови"
 	},
 	"editStyleLabel": {
-		"message": "Уреди",
-		"description": "Label for the button to go to the edit style page"
+		"message": "Уреди"
 	},
 	"cm_theme": {
-		"message": "Тема",
-		"description": "Label for the style editor's CSS theme."
+		"message": "Тема"
 	},
 	"helpKeyMapCommand": {
-		"message": "Укуцај име команде",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Укуцај име команде"
 	},
 	"description": {
-		"message": "Измените стил интернет мреже управљачем корисничких стилова. Stylus вам омогућава да лако инсталирате теме и скинове за многе популарне сајтове.",
-		"description": "Extension description"
+		"message": "Измените стил интернет мреже управљачем корисничких стилова. Stylus вам омогућава да лако инсталирате теме и скинове за многе популарне сајтове."
 	}
 }

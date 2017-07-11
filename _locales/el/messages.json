@@ -1,186 +1,101 @@
 {
 	"appliesToEverything": {
-		"message": "Τα πάντα",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"defaultTheme": {
-		"message": "default",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
-	},
-	"exportLabel": {
-		"message": "Export",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"issues": {
-		"message": "Issues",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"message": "Τα πάντα"
 	},
 	"cm_tabSize": {
-		"message": "Μέγεθος καρτέλας",
-		"description": "Label for the text box controlling tab size option for the style editor."
+		"message": "Μέγεθος καρτέλας"
 	},
 	"enableStyleLabel": {
-		"message": "Ενεργοποίηση",
-		"description": "Label for the button to enable a style"
+		"message": "Ενεργοποίηση"
 	},
 	"styleMissingName": {
-		"message": "Εισάγετε ένα όνομα.",
-		"description": "Error displayed when user saves without providing a name"
+		"message": "Εισάγετε ένα όνομα."
 	},
 	"appliesDomainOption": {
-		"message": "URL στον τομέα",
-		"description": "Option to make the style apply to the entered string as a domain"
+		"message": "URL στον τομέα"
 	},
 	"checkForUpdate": {
-		"message": "Έλεγχος για ενημερώσεις",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"importAppendLabel": {
-		"message": "Append to style",
-		"description": "Label for the button to import a style and append to the existing sections"
+		"message": "Έλεγχος για ενημερώσεις"
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Όλα τα στυλ είναι ενημερωμένα.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Paste the Mozilla-format code",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+		"message": "Όλα τα στυλ είναι ενημερωμένα."
 	},
 	"helpAlt": {
-		"message": "Βοήθεια",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Search",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"confirmYes": {
-		"message": "Yes",
-		"description": "'Yes' button in a confirm dialog"
+		"message": "Βοήθεια"
 	},
 	"findStylesForSite": {
-		"message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα",
-		"description": "Text for a link that gets a list of styles for the current site"
+		"message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα"
 	},
 	"manageHeading": {
-		"message": "Εγκατεστημένα Στυλ",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Beautify",
-		"description": "Label for the CSS-beautifier button on the edit style page"
+		"message": "Εγκατεστημένα Στυλ"
 	},
 	"styleEnabledLabel": {
-		"message": "Ενεργοποιημένη",
-		"description": "Label for the enabled state of styles"
+		"message": "Ενεργοποιημένη"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+		"message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org."
 	},
 	"sectionAdd": {
-		"message": "Προσθήκη ένος άλλου τμήματος",
-		"description": "Label for the button to add a section"
+		"message": "Προσθήκη ένος άλλου τμήματος"
 	},
 	"styleSaveLabel": {
-		"message": "Αποθήκευση",
-		"description": "Label for save button for style editing"
-	},
-	"confirmStop": {
-		"message": "Stop",
-		"description": "'Stop' button in a confirm dialog"
+		"message": "Αποθήκευση"
 	},
 	"writeStyleForURL": {
-		"message": "αυτή την διεύθυνση URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+		"message": "αυτή την διεύθυνση URL"
 	},
 	"appliesAdd": {
-		"message": "Προσθήκη",
-		"description": "Label for the button to add an 'applies' entry"
+		"message": "Προσθήκη"
 	},
 	"appliesRegexpOption": {
-		"message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση",
-		"description": "Option to make the style apply to the entered string as a regular expression"
+		"message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση"
 	},
 	"styleInstall": {
 		"message": "Εγκατάσταση του '$stylename$' στο Stylus;",
-		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
 			}
 		}
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
-		"description": "Help text on the manage page"
-	},
-	"searchStyles": {
-		"message": "Search contents",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
 	"disableStyleLabel": {
-		"message": "Απενεργοποίηση",
-		"description": "Label for the button to disable a style"
+		"message": "Απενεργοποίηση"
 	},
 	"prefShowBadge": {
-		"message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων",
-		"description": "Label for the checkbox controlling toolbar badge text."
+		"message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων"
 	},
 	"menuShowBadge": {
-		"message": "Εμφάνιση ενεργους καταμέτρησης στυλ",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+		"message": "Εμφάνιση ενεργους καταμέτρησης στυλ"
 	},
 	"cm_lineWrapping": {
-		"message": "Αναδίπλωση λέξεων",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
+		"message": "Αναδίπλωση λέξεων"
 	},
 	"styleCancelEditLabel": {
-		"message": "Πίσω στη διαχείριση",
-		"description": "Label for cancel button for style editing"
+		"message": "Πίσω στη διαχείριση"
 	},
 	"styleChangesNotSaved": {
-		"message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"importLabel": {
-		"message": "Import",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+		"message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση."
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Αποτυχία ενημέρωσης: απρόσιτος διακομιστής.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
+		"message": "Αποτυχία ενημέρωσης: απρόσιτος διακομιστής."
 	},
 	"manageFilters": {
-		"message": "Φίλτρα",
-		"description": "Label for filters container"
+		"message": "Φίλτρα"
 	},
 	"applyAllUpdates": {
-		"message": "Εφαρμογή όλων των ενημερώσεων",
-		"description": "Label for the button to apply all detected updates"
+		"message": "Εφαρμογή όλων των ενημερώσεων"
 	},
 	"deleteStyleConfirm": {
-		"message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;",
-		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
+		"message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;"
 	},
 	"styleBadRegexp": {
-		"message": "Το Regexp δεν είναι έγκυρο.",
-		"description": "Validation message for a bad regexp in a style"
+		"message": "Το Regexp δεν είναι έγκυρο."
 	},
 	"optionsHeading": {
-		"message": "Επιλογές",
-		"description": "Heading for options section on manage page."
+		"message": "Επιλογές"
 	},
 	"appliesDisplay": {
 		"message": "Ισχύει για: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
 				"content": "$1"
@@ -189,7 +104,6 @@
 	},
 	"styleUpdate": {
 		"message": "Είστε σίγουροι ότι θέλετε να ενημερώσετε το '$stylename$';",
-		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -197,12 +111,10 @@
 		}
 	},
 	"styleSectionsTitle": {
-		"message": "Ενότητες",
-		"description": "Title for the style sections section"
+		"message": "Ενότητες"
 	},
 	"editStyleTitle": {
 		"message": "Επεξεργασία του στυλ $stylename$",
-		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -210,68 +122,40 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "Το στυλ είναι ενημερωμένο.",
-		"description": "Text that displays when an update check completed and no update is available"
+		"message": "Το στυλ είναι ενημερωμένο."
 	},
 	"appliesUrlPrefixOption": {
-		"message": "Διευθύνσεις URL που αρχίζουν με",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"searchRegexp": {
-		"message": "Use /re/ syntax for regexp search",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
-	},
-	"importReplaceTooltip": {
-		"message": "Discard contents of current style and overwrite it with the imported style",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Διευθύνσεις URL που αρχίζουν με"
 	},
 	"popupStylesFirst": {
-		"message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων"
 	},
 	"sectionHelp": {
-		"message": "Ενότητες σας επιτρέπουν να ορίσετε διαφορετικά κομμάτια του κώδικα για να εφαρμόζονται σε διαφορετικά σύνολα των διευθύνσεων URL στο ίδιο στυλ. Για παράδειγμα, ένα ενιαίο ύφος θα μπορούσε να αλλάξει την αρχική σελίδα ενός ιστότοπου με έναν τρόπο, ενώ αλλάζει το υπόλοιπο μιας τοποθεσίας ένας άλλος τρόπος.",
-		"description": "Help text for sections"
+		"message": "Ενότητες σας επιτρέπουν να ορίσετε διαφορετικά κομμάτια του κώδικα για να εφαρμόζονται σε διαφορετικά σύνολα των διευθύνσεων URL στο ίδιο στυλ. Για παράδειγμα, ένα ενιαίο ύφος θα μπορούσε να αλλάξει την αρχική σελίδα ενός ιστότοπου με έναν τρόπο, ενώ αλλάζει το υπόλοιπο μιας τοποθεσίας ένας άλλος τρόπος."
 	},
 	"noStylesForSite": {
-		"message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα.",
-		"description": "Text displayed when no styles are installed for the current site"
+		"message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα."
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "και πολλά άλλα",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+		"message": "και πολλά άλλα"
 	},
 	"appliesRemove": {
-		"message": "Αφαίρεση",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Style in Mozilla format",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+		"message": "Αφαίρεση"
 	},
 	"manageTitle": {
-		"message": "Κομψή",
-		"description": "Title for the manage page"
+		"message": "Κομψή"
 	},
 	"writeStyleFor": {
-		"message": "Γράψτε νέο στυλ για:",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
-	},
-	"replace": {
-		"message": "Replace",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+		"message": "Γράψτε νέο στυλ για:"
 	},
 	"appliesLabel": {
-		"message": "Ισχύει για",
-		"description": "Label for 'applies to' fields on the edit/add screen"
+		"message": "Ισχύει για"
 	},
 	"openManage": {
-		"message": "Διαχείριση εγκατεστημένων στυλ",
-		"description": "Link to open the manage page."
+		"message": "Διαχείριση εγκατεστημένων στυλ"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Αποτυχία ενημέρωσης: ο διακομιστής ανταποκρίθηκε με κωδικό $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
 				"content": "$1"
@@ -279,139 +163,66 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Καθορισμός",
-		"description": "Label for the button to make a style apply only to specific sites"
+		"message": "Καθορισμός"
 	},
 	"installUpdate": {
-		"message": "Εγκατάσταση ενημέρωσης",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"message": "Εγκατάσταση ενημέρωσης"
 	},
 	"stylusUnavailableForURL": {
-		"message": "To Stylus δεν λειτουργεί σε σελίδες όπως αυτή.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+		"message": "To Stylus δεν λειτουργεί σε σελίδες όπως αυτή."
 	},
 	"sectionRemove": {
-		"message": "Αφαίρεση ενότητας",
-		"description": "Label for the button to remove a section"
+		"message": "Αφαίρεση ενότητας"
 	},
 	"disableAllStyles": {
-		"message": "Απενεργοποιηση ολων των στυλ",
-		"description": "Label for the checkbox that turns all enabled styles off."
+		"message": "Απενεργοποιηση ολων των στυλ"
 	},
 	"updateCompleted": {
-		"message": "Η ενημέρωση ολοκληρώθηκε.",
-		"description": "Text that displays when an update completed"
+		"message": "Η ενημέρωση ολοκληρώθηκε."
 	},
 	"checkingForUpdate": {
-		"message": "Έλεγχος...",
-		"description": "Text to display when checking a style for an update"
+		"message": "Έλεγχος..."
 	},
 	"sectionCode": {
-		"message": "Κώδικας",
-		"description": "Label for the code for a section"
+		"message": "Κώδικας"
 	},
 	"cm_smartIndent": {
-		"message": "Χρήση έξυπνης εσοχής",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+		"message": "Χρήση έξυπνης εσοχής"
 	},
 	"appliesHelp": {
-		"message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται.",
-		"description": "Help text for 'applies to' section"
+		"message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται."
 	},
 	"editStyleHeading": {
-		"message": "Επεξεργασία Στυλ",
-		"description": "Title of the page for editing styles"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
+		"message": "Επεξεργασία Στυλ"
 	},
 	"addStyleTitle": {
-		"message": "Προσθήκη στυλ",
-		"description": "Title of the page for adding styles"
-	},
-	"importReplaceLabel": {
-		"message": "Overwrite style",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Προσθήκη στυλ"
 	},
 	"dbError": {
-		"message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"importAppendTooltip": {
-		"message": "Append the imported style to current style",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"helpKeyMapHotkey": {
-		"message": "Press a hotkey",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"replaceAll": {
-		"message": "Replace all",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+		"message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;"
 	},
 	"editGotoLine": {
-		"message": "Μετάβαση στη γραμμή (ή line:col)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
+		"message": "Μετάβαση στη γραμμή (ή line:col)"
 	},
 	"checkAllUpdates": {
-		"message": "Έλεγχος όλων των στυλ για ενημερώσεις",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"issuesHelp": {
-		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
-	},
-	"confirmNo": {
-		"message": "No",
-		"description": "'No' button in a confirm dialog"
-	},
-	"undo": {
-		"message": "Undo",
-		"description": "Button label"
-	},
-	"cm_keyMap": {
-		"message": "Keymap",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
+		"message": "Έλεγχος όλων των στυλ για ενημερώσεις"
 	},
 	"cm_indentWithTabs": {
-		"message": "Χρήση καρτελών με έξυπνη εσοχή",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-	},
-	"replaceWith": {
-		"message": "Replace with",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+		"message": "Χρήση καρτελών με έξυπνη εσοχή"
 	},
 	"deleteStyleLabel": {
-		"message": "Διαγραφή",
-		"description": "Label for the button to delete a style"
+		"message": "Διαγραφή"
 	},
 	"addStyleLabel": {
-		"message": "Γράψτε νέο στυλ",
-		"description": "Label for the button to go to the add style page"
+		"message": "Γράψτε νέο στυλ"
 	},
 	"manageOnlyEnabled": {
-		"message": "Μόνο ενεργοποιημένα στυλ",
-		"description": "Checkbox to show only enabled styles"
+		"message": "Μόνο ενεργοποιημένα στυλ"
 	},
 	"editStyleLabel": {
-		"message": "Επεξεργασία",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"cm_theme": {
-		"message": "Theme",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"helpKeyMapCommand": {
-		"message": "Type a command name",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Επεξεργασία"
 	},
 	"description": {
-		"message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylus, έναν διαχειριστή στυλ. Το Stylus σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες.",
-		"description": "Extension description"
+		"message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylus, έναν διαχειριστή στυλ. Το Stylus σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες."
 	}
 }

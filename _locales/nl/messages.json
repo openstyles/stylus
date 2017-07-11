@@ -1,111 +1,84 @@
 {
 	"appliesToEverything": {
-		"message": "Alles",
-		"description": "Text displayed for styles that apply to all sites"
+		"message": "Alles"
 	},
 	"defaultTheme": {
-		"message": "standaard",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
+		"message": "standaard"
 	},
 	"exportLabel": {
-		"message": "Exporteren",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+		"message": "Exporteren"
 	},
 	"issues": {
-		"message": "Problemen",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"message": "Problemen"
 	},
 	"cm_tabSize": {
-		"message": "Tabgrootte",
-		"description": "Label for the text box controlling tab size option for the style editor."
+		"message": "Tabgrootte"
 	},
 	"enableStyleLabel": {
-		"message": "Inschakelen",
-		"description": "Label for the button to enable a style"
+		"message": "Inschakelen"
 	},
 	"styleMissingName": {
-		"message": "Vul een naam in.",
-		"description": "Error displayed when user saves without providing a name"
+		"message": "Vul een naam in."
 	},
 	"appliesDomainOption": {
-		"message": "URL's op het domein",
-		"description": "Option to make the style apply to the entered string as a domain"
+		"message": "URL's op het domein"
 	},
 	"checkForUpdate": {
-		"message": "Controleren op update",
-		"description": "Label for the button to check a single style for an update"
+		"message": "Controleren op update"
 	},
 	"importAppendLabel": {
-		"message": "Toevoegen aan stijl",
-		"description": "Label for the button to import a style and append to the existing sections"
+		"message": "Toevoegen aan stijl"
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Alle stijlen zijn bijgewerkt.",
-		"description": "Text that displays when an update all check completed and no updates are available"
+		"message": "Alle stijlen zijn bijgewerkt."
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "Plak de Mozilla-opmaakcode",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+		"message": "Plak de Mozilla-opmaakcode"
 	},
 	"helpAlt": {
-		"message": "Hul",
-		"description": "Alternate text for help buttons"
+		"message": "Hul"
 	},
 	"search": {
-		"message": "Zoeken",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
+		"message": "Zoeken"
 	},
 	"confirmYes": {
-		"message": "Ja",
-		"description": "'Yes' button in a confirm dialog"
+		"message": "Ja"
 	},
 	"findStylesForSite": {
-		"message": "Meer stijlen zoeken voor deze website",
-		"description": "Text for a link that gets a list of styles for the current site"
+		"message": "Meer stijlen zoeken voor deze website"
 	},
 	"manageHeading": {
-		"message": "Geïnstalleerde stijlen",
-		"description": "Heading for the manage page"
+		"message": "Geïnstalleerde stijlen"
 	},
 	"styleBeautify": {
-		"message": "Mooier maken",
-		"description": "Label for the CSS-beautifier button on the edit style page"
+		"message": "Mooier maken"
 	},
 	"styleEnabledLabel": {
-		"message": "Ingeschakeld",
-		"description": "Label for the enabled state of styles"
+		"message": "Ingeschakeld"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "De Mozilla-opmaak van de code kan worden gebruikt met Stylish voor Firefox en worden ingezonden naar userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+		"message": "De Mozilla-opmaak van de code kan worden gebruikt met Stylish voor Firefox en worden ingezonden naar userstyles.org."
 	},
 	"sectionAdd": {
-		"message": "Nog een sectie toevoegen",
-		"description": "Label for the button to add a section"
+		"message": "Nog een sectie toevoegen"
 	},
 	"styleSaveLabel": {
-		"message": "Opslaan",
-		"description": "Label for save button for style editing"
+		"message": "Opslaan"
 	},
 	"confirmStop": {
-		"message": "Stoppen",
-		"description": "'Stop' button in a confirm dialog"
+		"message": "Stoppen"
 	},
 	"writeStyleForURL": {
-		"message": "deze URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+		"message": "deze URL"
 	},
 	"appliesAdd": {
-		"message": "Toevoegen",
-		"description": "Label for the button to add an 'applies' entry"
+		"message": "Toevoegen"
 	},
 	"appliesRegexpOption": {
-		"message": "URL's overeenkomend met de regexp",
-		"description": "Option to make the style apply to the entered string as a regular expression"
+		"message": "URL's overeenkomend met de regexp"
 	},
 	"styleInstall": {
 		"message": "'$stylename$' installeren in Stylus?",
-		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -113,74 +86,49 @@
 		}
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Verkrijg hulp</a>",
-		"description": "Help text on the manage page"
+		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Verkrijg hulp</a>"
 	},
 	"searchStyles": {
-		"message": "Inhoud doorzoeken",
-		"description": "Label for the search filter textbox on the Manage styles page"
+		"message": "Inhoud doorzoeken"
 	},
 	"disableStyleLabel": {
-		"message": "Uitschakelen",
-		"description": "Label for the button to disable a style"
+		"message": "Uitschakelen"
 	},
 	"prefShowBadge": {
-		"message": "Aantal actieve stijlen voor de huidige website weergeven op de werkbalkknop",
-		"description": "Label for the checkbox controlling toolbar badge text."
+		"message": "Aantal actieve stijlen voor de huidige website weergeven op de werkbalkknop"
 	},
 	"menuShowBadge": {
-		"message": "Teller voor actieve stijlen weergeven",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+		"message": "Teller voor actieve stijlen weergeven"
 	},
 	"cm_lineWrapping": {
-		"message": "Woordomslag",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
+		"message": "Woordomslag"
 	},
 	"styleCancelEditLabel": {
-		"message": "Terug naar beheren",
-		"description": "Label for cancel button for style editing"
+		"message": "Terug naar beheren"
 	},
 	"styleChangesNotSaved": {
-		"message": "U heeft wijzigingen aangebracht in deze stijl zonder deze op te slaan.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+		"message": "U heeft wijzigingen aangebracht in deze stijl zonder deze op te slaan."
 	},
 	"importLabel": {
-		"message": "Importeren",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+		"message": "Importeren"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Update mislukt: server onbereikbaar.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"manageFilters": {
-		"message": "Filters",
-		"description": "Label for filters container"
+		"message": "Update mislukt: server onbereikbaar."
 	},
 	"applyAllUpdates": {
-		"message": "Alle bijwerkingen toepassen",
-		"description": "Label for the button to apply all detected updates"
+		"message": "Alle bijwerkingen toepassen"
 	},
 	"deleteStyleConfirm": {
-		"message": "Weet u zeker dat u deze stijl wilt verwijderen?",
-		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
+		"message": "Weet u zeker dat u deze stijl wilt verwijderen?"
 	},
 	"styleBadRegexp": {
-		"message": "Regexp is ongeldig.",
-		"description": "Validation message for a bad regexp in a style"
+		"message": "Regexp is ongeldig."
 	},
 	"optionsHeading": {
-		"message": "Voorkeuren",
-		"description": "Heading for options section on manage page."
+		"message": "Voorkeuren"
 	},
 	"appliesDisplay": {
 		"message": "Toepasbaar op: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
 				"content": "$1"
@@ -189,7 +137,6 @@
 	},
 	"styleUpdate": {
 		"message": "Weet u zeker dat u '$stylename$' wilt updaten?",
-		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -197,12 +144,10 @@
 		}
 	},
 	"styleSectionsTitle": {
-		"message": "Secties",
-		"description": "Title for the style sections section"
+		"message": "Secties"
 	},
 	"editStyleTitle": {
 		"message": "Stijl $stylename$ bewerken",
-		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -210,68 +155,49 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "Stijl is up-to-date.",
-		"description": "Text that displays when an update check completed and no update is available"
+		"message": "Stijl is up-to-date."
 	},
 	"appliesUrlPrefixOption": {
-		"message": "URL's beginnend met",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
+		"message": "URL's beginnend met"
 	},
 	"searchRegexp": {
-		"message": "Gebruik /re/-syntax voor regexp-zoeken",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
+		"message": "Gebruik /re/-syntax voor regexp-zoeken"
 	},
 	"importReplaceTooltip": {
-		"message": "Verwerp de inhoud van de huidige stijl en overschrijf het met de geïmporteerde stijl",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Verwerp de inhoud van de huidige stijl en overschrijf het met de geïmporteerde stijl"
 	},
 	"popupStylesFirst": {
-		"message": "Stijlen vóór commando's opsomming in het werkbalkknopmenu",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"message": "Stijlen vóór commando's opsomming in het werkbalkknopmenu"
 	},
 	"sectionHelp": {
-		"message": "Secties stellen u in staat om andere stukken code toe te passen op andere URL's in dezelfde stijl. Bijv.: een enkele stijl kan de homepage van een site aanpassen op een bepaalde manier, terwijl de rest van de site op een andere manier wordt aangepast.",
-		"description": "Help text for sections"
+		"message": "Secties stellen u in staat om andere stukken code toe te passen op andere URL's in dezelfde stijl. Bijv.: een enkele stijl kan de homepage van een site aanpassen op een bepaalde manier, terwijl de rest van de site op een andere manier wordt aangepast."
 	},
 	"noStylesForSite": {
-		"message": "Geen geïnstalleerde stijlen voor deze website.",
-		"description": "Text displayed when no styles are installed for the current site"
+		"message": "Geen geïnstalleerde stijlen voor deze website."
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "en meer",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+		"message": "en meer"
 	},
 	"appliesRemove": {
-		"message": "Verwijderen",
-		"description": "Label for the button to remove an 'applies' entry"
+		"message": "Verwijderen"
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Stijl in Mozilla-opmaak",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
+		"message": "Stijl in Mozilla-opmaak"
 	},
 	"writeStyleFor": {
-		"message": "Stijl schrijven voor:",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+		"message": "Stijl schrijven voor:"
 	},
 	"replace": {
-		"message": "Vervangen",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+		"message": "Vervangen"
 	},
 	"appliesLabel": {
-		"message": "Toepasbaar op",
-		"description": "Label for 'applies to' fields on the edit/add screen"
+		"message": "Toepasbaar op"
 	},
 	"openManage": {
-		"message": "Geïnstalleerde stijlen beheren",
-		"description": "Link to open the manage page."
+		"message": "Geïnstalleerde stijlen beheren"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Update mislukt: server gaf code $code$ als antwoord.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
 				"content": "$1"
@@ -279,143 +205,102 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Specificeren",
-		"description": "Label for the button to make a style apply only to specific sites"
+		"message": "Specificeren"
 	},
 	"installUpdate": {
-		"message": "Update installeren",
-		"description": "Label for the button to install an update for a single style"
+		"message": "Update installeren"
 	},
 	"styleMozillaFormatHeading": {
-		"message": "Mozilla-opmaak",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"message": "Mozilla-opmaak"
 	},
 	"stylusUnavailableForURL": {
-		"message": "Stylus werkt niet op pagina's als deze.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+		"message": "Stylus werkt niet op pagina's als deze."
 	},
 	"sectionRemove": {
-		"message": "Sectie verwijderen",
-		"description": "Label for the button to remove a section"
+		"message": "Sectie verwijderen"
 	},
 	"disableAllStyles": {
-		"message": "Alle stijlen uitschakelen",
-		"description": "Label for the checkbox that turns all enabled styles off."
+		"message": "Alle stijlen uitschakelen"
 	},
 	"undoGlobal": {
-		"message": "Ongedaan maken (globaal)",
-		"description": "CSS-beautify global Undo button label"
+		"message": "Ongedaan maken (globaal)"
 	},
 	"updateCompleted": {
-		"message": "Update voltooid.",
-		"description": "Text that displays when an update completed"
+		"message": "Update voltooid."
 	},
 	"checkingForUpdate": {
-		"message": "Bezig met controleren...",
-		"description": "Text to display when checking a style for an update"
-	},
-	"sectionCode": {
-		"message": "Code",
-		"description": "Label for the code for a section"
+		"message": "Bezig met controleren..."
 	},
 	"cm_smartIndent": {
-		"message": "Slimme inspringing gebruiken",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+		"message": "Slimme inspringing gebruiken"
 	},
 	"appliesHelp": {
-		"message": "Gebruik de 'Toepasbaar op'-functies om de URL's te limiteren in de sectie.",
-		"description": "Help text for 'applies to' section"
+		"message": "Gebruik de 'Toepasbaar op'-functies om de URL's te limiteren in de sectie."
 	},
 	"editStyleHeading": {
-		"message": "Stijl bewerken",
-		"description": "Title of the page for editing styles"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
+		"message": "Stijl bewerken"
 	},
 	"addStyleTitle": {
-		"message": "Stijl toevoegen",
-		"description": "Title of the page for adding styles"
+		"message": "Stijl toevoegen"
 	},
 	"importReplaceLabel": {
-		"message": "Stijl overschrijven",
-		"description": "Label for the button to import and overwrite current style"
+		"message": "Stijl overschrijven"
 	},
 	"dbError": {
-		"message": "Er is een fout opgetreden bij het gebruiken van de Stylus-database. Wilt u een webpagina met mogelijke oplossingen bezoeken?",
-		"description": "Prompt when a DB error is encountered"
+		"message": "Er is een fout opgetreden bij het gebruiken van de Stylus-database. Wilt u een webpagina met mogelijke oplossingen bezoeken?"
 	},
 	"importAppendTooltip": {
-		"message": "Voeg de geïmporteerde stijl toe aan de huidige stijl",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
+		"message": "Voeg de geïmporteerde stijl toe aan de huidige stijl"
 	},
 	"helpKeyMapHotkey": {
-		"message": "Druk op een sneltoets",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Druk op een sneltoets"
 	},
 	"replaceAll": {
-		"message": "Alles vervangen",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+		"message": "Alles vervangen"
 	},
 	"editGotoLine": {
-		"message": "Ga naar regel (of regel:kolom)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
+		"message": "Ga naar regel (of regel:kolom)"
 	},
 	"checkAllUpdates": {
-		"message": "Controleer alle stijlen op updates",
-		"description": "Label for the button to check all styles for updates"
+		"message": "Controleer alle stijlen op updates"
 	},
 	"issuesHelp": {
-		"message": "De door CSSLint gevonden problemen, <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a>, met deze ingeschakelde regels:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+		"message": "De door CSSLint gevonden problemen, <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a>, met deze ingeschakelde regels:"
 	},
 	"confirmNo": {
-		"message": "Nee",
-		"description": "'No' button in a confirm dialog"
+		"message": "Nee"
 	},
 	"undo": {
-		"message": "Ongedaan maken",
-		"description": "Button label"
+		"message": "Ongedaan maken"
 	},
 	"cm_keyMap": {
-		"message": "Toetsenbordindeling",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
+		"message": "Toetsenbordindeling"
 	},
 	"cm_indentWithTabs": {
-		"message": "Tabs met slimme inspringing gebruiken",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+		"message": "Tabs met slimme inspringing gebruiken"
 	},
 	"replaceWith": {
-		"message": "Vervangen door",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+		"message": "Vervangen door"
 	},
 	"deleteStyleLabel": {
-		"message": "Verwijderen",
-		"description": "Label for the button to delete a style"
+		"message": "Verwijderen"
 	},
 	"addStyleLabel": {
-		"message": "Nieuwe stijl schrijven",
-		"description": "Label for the button to go to the add style page"
+		"message": "Nieuwe stijl schrijven"
 	},
 	"manageOnlyEnabled": {
-		"message": "Alleen ingeschakelde stijlen",
-		"description": "Checkbox to show only enabled styles"
+		"message": "Alleen ingeschakelde stijlen"
 	},
 	"editStyleLabel": {
-		"message": "Bewerken",
-		"description": "Label for the button to go to the edit style page"
+		"message": "Bewerken"
 	},
 	"cm_theme": {
-		"message": "Thema",
-		"description": "Label for the style editor's CSS theme."
+		"message": "Thema"
 	},
 	"helpKeyMapCommand": {
-		"message": "Voer een naam in voor het commando",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Voer een naam in voor het commando"
 	},
 	"description": {
-		"message": "Voorzie het web van een ander uiterlijk met Stylus, een gebruikersstijlbeheerder. Stylus stelt u in staat om eenvoudig thema's en stijlen te installeren voor vele populaire websites.",
-		"description": "Extension description"
+		"message": "Voorzie het web van een ander uiterlijk met Stylus, een gebruikersstijlbeheerder. Stylus stelt u in staat om eenvoudig thema's en stijlen te installeren voor vele populaire websites."
 	}
 }

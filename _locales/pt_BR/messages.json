@@ -1,208 +1,85 @@
 {
 	"appliesToEverything": {
-		"message": "Tudo",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"defaultTheme": {
-		"message": "default",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
-	},
-	"exportLabel": {
-		"message": "Export",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"issues": {
-		"message": "Issues",
-		"description": "Label for the CSSLint issues block on the style edit page"
-	},
-	"cm_tabSize": {
-		"message": "Tab size",
-		"description": "Label for the text box controlling tab size option for the style editor."
+		"message": "Tudo"
 	},
 	"enableStyleLabel": {
-		"message": "Ativar",
-		"description": "Label for the button to enable a style"
+		"message": "Ativar"
 	},
 	"styleMissingName": {
-		"message": "Insira um nome.",
-		"description": "Error displayed when user saves without providing a name"
+		"message": "Insira um nome."
 	},
 	"appliesDomainOption": {
-		"message": "URLs no domínio",
-		"description": "Option to make the style apply to the entered string as a domain"
+		"message": "URLs no domínio"
 	},
 	"checkForUpdate": {
-		"message": "Verificar atualizações",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"importAppendLabel": {
-		"message": "Append to style",
-		"description": "Label for the button to import a style and append to the existing sections"
-	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "All styles are up to date.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Paste the Mozilla-format code",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+		"message": "Verificar atualizações"
 	},
 	"helpAlt": {
-		"message": "Ajuda",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Search",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"confirmYes": {
-		"message": "Yes",
-		"description": "'Yes' button in a confirm dialog"
+		"message": "Ajuda"
 	},
 	"findStylesForSite": {
-		"message": "Procurar mais estilos para este site",
-		"description": "Text for a link that gets a list of styles for the current site"
+		"message": "Procurar mais estilos para este site"
 	},
 	"manageHeading": {
-		"message": "Estilos instalados",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Beautify",
-		"description": "Label for the CSS-beautifier button on the edit style page"
+		"message": "Estilos instalados"
 	},
 	"styleEnabledLabel": {
-		"message": "Ativado",
-		"description": "Label for the enabled state of styles"
+		"message": "Ativado"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "O formato Mozilla do código pode ser usado com o Stylish para Firefox e pode ser enviado para userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+		"message": "O formato Mozilla do código pode ser usado com o Stylish para Firefox e pode ser enviado para userstyles.org."
 	},
 	"sectionAdd": {
-		"message": "Adicionar outra seção",
-		"description": "Label for the button to add a section"
+		"message": "Adicionar outra seção"
 	},
 	"styleSaveLabel": {
-		"message": "Salvar",
-		"description": "Label for save button for style editing"
-	},
-	"confirmStop": {
-		"message": "Stop",
-		"description": "'Stop' button in a confirm dialog"
-	},
-	"writeStyleForURL": {
-		"message": "this URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+		"message": "Salvar"
 	},
 	"appliesAdd": {
-		"message": "Adicionar",
-		"description": "Label for the button to add an 'applies' entry"
+		"message": "Adicionar"
 	},
 	"appliesRegexpOption": {
-		"message": "URLs que correspondem a regexp",
-		"description": "Option to make the style apply to the entered string as a regular expression"
+		"message": "URLs que correspondem a regexp"
 	},
 	"styleInstall": {
 		"message": "Instalar \"$stylename$\" no Stylus?",
-		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
 			}
 		}
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
-		"description": "Help text on the manage page"
-	},
-	"searchStyles": {
-		"message": "Search contents",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
 	"disableStyleLabel": {
-		"message": "Desativar",
-		"description": "Label for the button to disable a style"
+		"message": "Desativar"
 	},
 	"prefShowBadge": {
-		"message": "Show number of styles active for the current site on the toolbar button",
-		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"menuShowBadge": {
-		"message": "Show active style count",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-	},
-	"cm_lineWrapping": {
-		"message": "Word wrap",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
+		"message": "Show number of styles active for the current site on the toolbar button"
 	},
 	"styleCancelEditLabel": {
-		"message": "Voltar ao gerenciamento",
-		"description": "Label for cancel button for style editing"
+		"message": "Voltar ao gerenciamento"
 	},
 	"styleChangesNotSaved": {
-		"message": "Você fez alterações neste estilo sem salvar.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"importLabel": {
-		"message": "Import",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+		"message": "Você fez alterações neste estilo sem salvar."
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "A atualização falhou: servidor inacessível.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"manageFilters": {
-		"message": "Filters",
-		"description": "Label for filters container"
-	},
-	"applyAllUpdates": {
-		"message": "Apply all updates",
-		"description": "Label for the button to apply all detected updates"
+		"message": "A atualização falhou: servidor inacessível."
 	},
 	"deleteStyleConfirm": {
-		"message": "Tem certeza de que deseja excluir este estilo?",
-		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
-	},
-	"styleBadRegexp": {
-		"message": "Regexp is invalid.",
-		"description": "Validation message for a bad regexp in a style"
-	},
-	"optionsHeading": {
-		"message": "Options",
-		"description": "Heading for options section on manage page."
+		"message": "Tem certeza de que deseja excluir este estilo?"
 	},
 	"appliesDisplay": {
 		"message": "Aplica-se a: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
 				"content": "$1"
 			}
 		}
 	},
-	"styleUpdate": {
-		"message": "Are you sure you want to update '$stylename$'?",
-		"description": "Confirmation when updating a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
 	"styleSectionsTitle": {
-		"message": "Seções",
-		"description": "Title for the style sections section"
+		"message": "Seções"
 	},
 	"editStyleTitle": {
 		"message": "Editar estilo $stylename$",
-		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -210,68 +87,31 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "O estilo está atualizado.",
-		"description": "Text that displays when an update check completed and no update is available"
+		"message": "O estilo está atualizado."
 	},
 	"appliesUrlPrefixOption": {
-		"message": "URLs que começam com",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"searchRegexp": {
-		"message": "Use /re/ syntax for regexp search",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
-	},
-	"importReplaceTooltip": {
-		"message": "Discard contents of current style and overwrite it with the imported style",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"popupStylesFirst": {
-		"message": "List styles before commands in the toolbar button menu",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"message": "URLs que começam com"
 	},
 	"sectionHelp": {
-		"message": "As seções permitem definir diferentes partes de código para aplicar a diferentes conjuntos de URLs no mesmo estilo. Por exemplo, um único estilo poderia alterar a página inicial de um site de uma forma, enquanto alteraria o resto do site de outra forma.",
-		"description": "Help text for sections"
+		"message": "As seções permitem definir diferentes partes de código para aplicar a diferentes conjuntos de URLs no mesmo estilo. Por exemplo, um único estilo poderia alterar a página inicial de um site de uma forma, enquanto alteraria o resto do site de outra forma."
 	},
 	"noStylesForSite": {
-		"message": "Nenhum estilo instalado para este site.",
-		"description": "Text displayed when no styles are installed for the current site"
+		"message": "Nenhum estilo instalado para este site."
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "e mais",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+		"message": "e mais"
 	},
 	"appliesRemove": {
-		"message": "Remover",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Style in Mozilla format",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
-	"writeStyleFor": {
-		"message": "Write style for: ",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
-	},
-	"replace": {
-		"message": "Replace",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+		"message": "Remover"
 	},
 	"appliesLabel": {
-		"message": "Aplica-se a",
-		"description": "Label for 'applies to' fields on the edit/add screen"
+		"message": "Aplica-se a"
 	},
 	"openManage": {
-		"message": "Gerenciar estilos instalados",
-		"description": "Link to open the manage page."
+		"message": "Gerenciar estilos instalados"
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "A atualização falhou: o  servidor respondeu com código $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
 				"content": "$1"
@@ -279,135 +119,45 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Especificar",
-		"description": "Label for the button to make a style apply only to specific sites"
+		"message": "Especificar"
 	},
 	"installUpdate": {
-		"message": "Instalar atualização",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+		"message": "Instalar atualização"
 	},
 	"sectionRemove": {
-		"message": "Remover seção",
-		"description": "Label for the button to remove a section"
-	},
-	"disableAllStyles": {
-		"message": "Turn all styles off",
-		"description": "Label for the checkbox that turns all enabled styles off."
+		"message": "Remover seção"
 	},
 	"updateCompleted": {
-		"message": "Atualização concluída.",
-		"description": "Text that displays when an update completed"
+		"message": "Atualização concluída."
 	},
 	"checkingForUpdate": {
-		"message": "Verificando...",
-		"description": "Text to display when checking a style for an update"
+		"message": "Verificando..."
 	},
 	"sectionCode": {
-		"message": "Código",
-		"description": "Label for the code for a section"
-	},
-	"cm_smartIndent": {
-		"message": "Use smart indentation",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+		"message": "Código"
 	},
 	"appliesHelp": {
-		"message": "Use os controles \"Aplica-se a\" para limitar a quais URLs o código desta seção se aplica.",
-		"description": "Help text for 'applies to' section"
+		"message": "Use os controles \"Aplica-se a\" para limitar a quais URLs o código desta seção se aplica."
 	},
 	"editStyleHeading": {
-		"message": "Editar estilo",
-		"description": "Title of the page for editing styles"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
+		"message": "Editar estilo"
 	},
 	"addStyleTitle": {
-		"message": "Adicionar estilo",
-		"description": "Title of the page for adding styles"
-	},
-	"importReplaceLabel": {
-		"message": "Overwrite style",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"dbError": {
-		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"importAppendTooltip": {
-		"message": "Append the imported style to current style",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"helpKeyMapHotkey": {
-		"message": "Press a hotkey",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"replaceAll": {
-		"message": "Replace all",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"editGotoLine": {
-		"message": "Goto line (or line:col)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
+		"message": "Adicionar estilo"
 	},
 	"checkAllUpdates": {
-		"message": "Verificar atualizações para todos os estilos",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"issuesHelp": {
-		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
-	},
-	"confirmNo": {
-		"message": "No",
-		"description": "'No' button in a confirm dialog"
-	},
-	"undo": {
-		"message": "Undo",
-		"description": "Button label"
-	},
-	"cm_keyMap": {
-		"message": "Keymap",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
-	},
-	"cm_indentWithTabs": {
-		"message": "Use tabs with smart indentation",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-	},
-	"replaceWith": {
-		"message": "Replace with",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+		"message": "Verificar atualizações para todos os estilos"
 	},
 	"deleteStyleLabel": {
-		"message": "Excluir",
-		"description": "Label for the button to delete a style"
+		"message": "Excluir"
 	},
 	"addStyleLabel": {
-		"message": "Gravar novo estilo",
-		"description": "Label for the button to go to the add style page"
-	},
-	"manageOnlyEnabled": {
-		"message": "Only enabled styles",
-		"description": "Checkbox to show only enabled styles"
+		"message": "Gravar novo estilo"
 	},
 	"editStyleLabel": {
-		"message": "Editar",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"cm_theme": {
-		"message": "Theme",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"helpKeyMapCommand": {
-		"message": "Type a command name",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+		"message": "Editar"
 	},
 	"description": {
-		"message": "Mude o estilo da web com o Stylus, um gerenciador de estilos do usuário. O Stylus permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites.",
-		"description": "Extension description"
+		"message": "Mude o estilo da web com o Stylus, um gerenciador de estilos do usuário. O Stylus permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites."
 	}
 }
