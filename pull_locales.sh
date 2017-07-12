@@ -1,2 +1,2 @@
 ruby pull_locales.rb
-python fill_locale_placeholders.py
+python pull_locales_postprocess.py
