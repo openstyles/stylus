@@ -75,7 +75,7 @@
 		"message": "Hilfe"
 	},
 	"confirmOK": {
-		"message": "OK",
+		"message": "OK"
 	},
 	"search": {
 		"message": "Suche"
@@ -93,7 +93,7 @@
 		"message": "Installierte Styles"
 	},
 	"styleBeautify": {
-		"message": "Beautify",
+		"message": "Beautify"
 	},
 	"styleRegexpProblemTooltip": {
 		"message": "Anzahl der Bereiche wurde nicht angewendet aufgrund von nicht korrekten Verwendeten Regulären Ausdrücken 'regexp()'"
@@ -215,13 +215,13 @@
 		"message": "Setzt diese Einstellungen auf die Standard-Werte zurück."
 	},
 	"optionsCustomizeUpdate": {
-		"message": "Updates",
+		"message": "Updates"
 	},
 	"deleteStyleConfirm": {
 		"message": "Möchten Sie diesen Style wirklich löschen?"
 	},
 	"optionsCustomizePopup": {
-		"message": "Popup",
+		"message": "Popup"
 	},
 	"styleBadRegexp": {
 		"message": "Regulärer Ausdruck ist ungültig."
@@ -349,7 +349,7 @@
 		"message": "Importieren der Styles abgeschlossen."
 	},
 	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
+		"message": "Mozilla Format"
 	},
 	"cm_matchHighlight": {
 		"message": "Hervorheben"
@@ -394,7 +394,7 @@
 		"message": "Optionen zurücksetzten"
 	},
 	"sectionCode": {
-		"message": "Code",
+		"message": "Code"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "'Löschen' im Editor Context-Menü hinzufügen"
@@ -421,7 +421,7 @@
 		"message": "Nur die Auswahl"
 	},
 	"appliesUrlOption": {
-		"message": "URL",
+		"message": "URL"
 	},
 	"updateAllCheckSucceededSomeEdited": {
 		"message": "Einige Styles wurden nicht Aktualisiert um einen Datenverlust vorzubeugen. Die Aktualisierungen können durch eine manuelle Überprüfung erzwungen werden oder für alle verbliebenen Styles durch das ausführen der erzwungenen Aktualisierung (Lokal Bearbeitungen werden überschrieben)."
@@ -541,7 +541,7 @@
 		"message": "Bearbeiten"
 	},
 	"cm_theme": {
-		"message": "Theme",
+		"message": "Theme"
 	},
 	"backupMessage": {
 		"message": "Wähle eine Datei aus oder ziehe die Datei auf diese Seite. (Drag and Drop)"
