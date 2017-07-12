@@ -1,82 +1,354 @@
 {
 	"appliesToEverything": {
-		"message": "Her şey"
+		"message": "Her şey",
+		"description": "Text displayed for styles that apply to all sites"
+	},
+	"defaultTheme": {
+		"message": "default",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"styleRegexpTestTitle": {
+		"message": "List of matching opened tabs (click on URL to focus its tab)",
+		"description": "RegExp test report: title of the report"
+	},
+	"bckpInstStyles": {
+		"message": "Export styles",
+		"description": ""
+	},
+	"optionsUpdateInterval": {
+		"message": "Automatically check for and install all available userstyle updates (in hrs)",
+		"description": ""
+	},
+	"styleEnabledToggleHint": {
+		"message": "Press Alt-Enter to toggle enabled/disabled state and save the style",
+		"description": "Help text for the '[x] enable' checkbox in the editor"
+	},
+	"exportLabel": {
+		"message": "Export",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"issues": {
+		"message": "Issues",
+		"description": "Label for the CSSLint issues block on the style edit page"
+	},
+	"optionsBadgeNormal": {
+		"message": "Background color",
+		"description": ""
+	},
+	"updateCheckHistory": {
+		"message": "History of update checks",
+		"description": ""
+	},
+	"cm_tabSize": {
+		"message": "Tab size",
+		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
-		"message": "Etkinleştir"
+		"message": "Etkinleştir",
+		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Bir ad girin."
+		"message": "Bir ad girin.",
+		"description": "Error displayed when user saves without providing a name"
+	},
+	"genericHistoryLabel": {
+		"message": "History",
+		"description": "Used in various places to show a history log of something"
+	},
+	"shortcutsNote": {
+		"message": "Define keyboard shortcuts",
+		"description": ""
 	},
 	"appliesDomainOption": {
-		"message": "Alan adındaki URLler"
+		"message": "Alan adındaki URLler",
+		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
-		"message": "Güncellemeleri denetle"
+		"message": "Güncellemeleri denetle",
+		"description": "Label for the button to check a single style for an update"
+	},
+	"styleNotAppliedRegexpProblemTooltip": {
+		"message": "Style was not applied due to its incorrect usage of 'regexp()'",
+		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"styleRegexpInvalidExplanation": {
+		"message": "Some 'regexp()' rules that could not be compiled at all.",
+		"description": ""
+	},
+	"optionsIconDark": {
+		"message": "Dark browser themes",
+		"description": ""
+	},
+	"importAppendLabel": {
+		"message": "Append to style",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"optionsOpenManager": {
+		"message": "Manage styles",
+		"description": ""
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "No updates found.",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"importReportLegendAdded": {
+		"message": "added",
+		"description": "Text after the number of styles added in the report shown after importing styles"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Paste the Mozilla-format code",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
+	"dragDropMessage": {
+		"message": "Drop your backup file anywhere on this page to import.",
+		"description": "Drag'n'drop message"
 	},
 	"helpAlt": {
-		"message": "Yardım"
+		"message": "Yardım",
+		"description": "Alternate text for help buttons"
+	},
+	"confirmOK": {
+		"message": "OK",
+		"description": ""
+	},
+	"search": {
+		"message": "Search",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"manageFaviconsGray": {
+		"message": "Grayed out",
+		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"confirmYes": {
+		"message": "Yes",
+		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Bu site için başka stiller bul"
+		"message": "Bu site için başka stiller bul",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
-		"message": "Yüklü Stiller"
+		"message": "Yüklü Stiller",
+		"description": "Heading for the manage page"
+	},
+	"styleBeautify": {
+		"message": "Beautify",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
+	"styleRegexpProblemTooltip": {
+		"message": "Number of sections not applied due to incorrect usage of 'regexp()'",
+		"description": "Tooltip in the popup for styles that were applied only partially"
 	},
 	"styleEnabledLabel": {
-		"message": "Etkin"
+		"message": "Etkin",
+		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir."
+		"message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir.",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
-		"message": "Başka bölüm ekle"
+		"message": "Başka bölüm ekle",
+		"description": "Label for the button to add a section"
+	},
+	"styleRegexpTestPartial": {
+		"message": "Not matching fully, hence skipped",
+		"description": "RegExp test report: label for the partially matching expressions"
 	},
 	"styleSaveLabel": {
-		"message": "Kaydet"
+		"message": "Kaydet",
+		"description": "Label for save button for style editing"
+	},
+	"confirmDelete": {
+		"message": "Delete",
+		"description": ""
+	},
+	"confirmCancel": {
+		"message": "Cancel",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "Import styles",
+		"description": ""
+	},
+	"confirmStop": {
+		"message": "Stop",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"writeStyleForURL": {
+		"message": "this URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "More Options",
+		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
-		"message": "Ekleyin"
+		"message": "Ekleyin",
+		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
-		"message": "regexp ile eşleşen URL'ler"
+		"message": "regexp ile eşleşen URL'ler",
+		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"optionsAdvancedExposeIframesNote": {
+		"message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'",
+		"description": ""
+	},
+	"importReportLegendUpdatedCode": {
+		"message": "updated code",
+		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
 		"message": "'$stylename$' Stylus'e yüklensin mi?",
+		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
 			}
 		}
 	},
+	"optionsBadgeDisabled": {
+		"message": "Background color when disabled",
+		"description": ""
+	},
+	"optionsCheck": {
+		"message": "Update styles",
+		"description": ""
+	},
+	"manageText": {
+		"message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
+		"description": "Help text on the manage page"
+	},
+	"manageOnlyLocal": {
+		"message": "Only locally created styles",
+		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"searchStyles": {
+		"message": "Search contents",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"optionsUpdateImportNote": {
+		"message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated.",
+		"description": ""
+	},
+	"checkAllUpdatesForce": {
+		"message": "Check again, I didn't edit any styles!",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"unreachableFileHint": {
+		"message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
+		"description": "Note in the toolbar popup for file:// URLs"
+	},
 	"disableStyleLabel": {
-		"message": "Devre dışı bırak"
+		"message": "Devre dışı bırak",
+		"description": "Label for the button to disable a style"
+	},
+	"prefShowBadge": {
+		"message": "Number of styles active for the current site",
+		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"manageFavicons": {
+		"message": "Favicons in applies-to column",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"menuShowBadge": {
+		"message": "Show active style count",
+		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"cm_lineWrapping": {
+		"message": "Word wrap",
+		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
 	"styleCancelEditLabel": {
-		"message": "Yönetim sayfasına dön"
+		"message": "Yönetim sayfasına dön",
+		"description": "Label for cancel button for style editing"
 	},
 	"styleChangesNotSaved": {
-		"message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var."
+		"message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var.",
+		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+	},
+	"importLabel": {
+		"message": "Import",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"shortcuts": {
+		"message": "Shortcuts",
+		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Güncellenemedi: sunucuya erişilemiyor."
+		"message": "Güncellenemedi: sunucuya erişilemiyor.",
+		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"manageFilters": {
+		"message": "Filters",
+		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Apply all updates",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"optionsReset": {
+		"message": "Reset the options to default values",
+		"description": ""
+	},
+	"optionsCustomizeUpdate": {
+		"message": "Updates",
+		"description": ""
 	},
 	"deleteStyleConfirm": {
-		"message": "Bu stili silmek istediğinizden emin misiniz?"
+		"message": "Bu stili silmek istediğinizden emin misiniz?",
+		"description": "Confirmation before deleting a style"
+	},
+	"optionsCustomizePopup": {
+		"message": "Popup",
+		"description": ""
+	},
+	"styleBadRegexp": {
+		"message": "Regexp is invalid.",
+		"description": "Validation message for a bad regexp in a style"
+	},
+	"optionsHeading": {
+		"message": "Options",
+		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
 		"message": "Şuraya uygulanır: $applies$",
+		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
 				"content": "$1"
 			}
 		}
 	},
+	"optionsIconLight": {
+		"message": "Light browser themes",
+		"description": ""
+	},
+	"openStylesManager": {
+		"message": "Open styles manager",
+		"description": "Label for the style maanger opener in the browser action context menu."
+	},
+	"styleUpdate": {
+		"message": "Are you sure you want to update '$stylename$'?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
 	"styleSectionsTitle": {
-		"message": "Bölümler"
+		"message": "Bölümler",
+		"description": "Title for the style sections section"
+	},
+	"importReportLegendInvalid": {
+		"message": "invalid skipped",
+		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"editStyleTitle": {
 		"message": "$stylename$ Stilini Düzenleyin",
+		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
 				"content": "$1"
@@ -84,31 +356,100 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "Stil güncel."
+		"message": "Stil güncel.",
+		"description": "Text that displays when an update check completed and no update is available"
 	},
 	"appliesUrlPrefixOption": {
-		"message": "Şununla başlayan URL'ler:"
+		"message": "Şununla başlayan URL'ler:",
+		"description": "Option to make the style apply to the entered string as a URL prefix"
+	},
+	"cm_matchHighlightToken": {
+		"message": "Token under cursor",
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+	},
+	"searchRegexp": {
+		"message": "Use /re/ syntax for regexp search",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"updateCheckManualUpdateHint": {
+		"message": "Forcing an update will overwrite any local edits.",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"toggleStyle": {
+		"message": "Toggle style",
+		"description": "Label for the checkbox to enable/disable a style"
+	},
+	"importReplaceTooltip": {
+		"message": "Discard contents of current style and overwrite it with the imported style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"cm_resizeGripHint": {
+		"message": "Double-click to maximize/restore the height",
+		"description": "Tooltip for the resize grip in style editor"
+	},
+	"popupStylesFirst": {
+		"message": "Styles before commands",
+		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
-		"message": "Bölümler, aynı stil içindeki farklı URL kümelerine uygulanacak farklı kod parçaları tanımlamanıza olanak sağlar. Örneğin, tek bir stil bir sitenin ana sayfasını belirli bir şekilde değiştirirken, sayfanın kalan kısmını farklı bir şekilde değiştirebilir."
+		"message": "Bölümler, aynı stil içindeki farklı URL kümelerine uygulanacak farklı kod parçaları tanımlamanıza olanak sağlar. Örneğin, tek bir stil bir sitenin ana sayfasını belirli bir şekilde değiştirirken, sayfanın kalan kısmını farklı bir şekilde değiştirebilir.",
+		"description": "Help text for sections"
 	},
 	"noStylesForSite": {
-		"message": "Bu site için hiçbir stil yüklenmedi."
+		"message": "Bu site için hiçbir stil yüklenmedi.",
+		"description": "Text displayed when no styles are installed for the current site"
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "ve diğerleri"
+		"message": "ve diğerleri",
+		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
 	},
 	"appliesRemove": {
-		"message": "Kaldır"
+		"message": "Kaldır",
+		"description": "Label for the button to remove an 'applies' entry"
+	},
+	"updatesCurrentlyInstalled": {
+		"message": "Updates installed:",
+		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+	},
+	"styleToMozillaFormatTitle": {
+		"message": "Style in Mozilla format",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"manageTitle": {
+		"message": "Stylus",
+		"description": "Title for the manage page"
+	},
+	"writeStyleFor": {
+		"message": "Write style for: ",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"replace": {
+		"message": "Replace",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"styleRegexpTestNone": {
+		"message": "No matching tabs",
+		"description": "RegExp test report: label for expressions that didn't match any tabs"
+	},
+	"importReportLegendUpdatedMeta": {
+		"message": "updated meta info",
+		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
-		"message": "Şuraya uygulanır"
+		"message": "Şuraya uygulanır",
+		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openOptionsPopup": {
+		"message": "Options",
+		"description": "Go to Options UI"
 	},
 	"openManage": {
-		"message": "Yüklü stilleri yönet"
+		"message": "Yüklü stilleri yönet",
+		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
 		"message": "Güncellenemedi: sunucu yanıt olarak $code$ kodunu gönderdi.",
+		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
 				"content": "$1"
@@ -116,45 +457,311 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Belirt"
+		"message": "Belirt",
+		"description": "Label for the button to make a style apply only to specific sites"
 	},
 	"installUpdate": {
-		"message": "Güncellemeyi yükle"
+		"message": "Güncellemeyi yükle",
+		"description": "Label for the button to install an update for a single style"
+	},
+	"optionsCheckUpdate": {
+		"message": "Check for and install all available updates",
+		"description": ""
+	},
+	"importReportTitle": {
+		"message": "Finished importing styles",
+		"description": "Title of the report shown after importing styles"
+	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla Format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
+	"cm_matchHighlight": {
+		"message": "Highlight",
+		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+	},
+	"styleRegexpPartialExplanation": {
+		"message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug).",
+		"description": ""
+	},
+	"styleBeautifyIndentConditional": {
+		"message": "Indent @media, @supports",
+		"description": "CSS-beautifier option"
+	},
+	"unreachableContentScript": {
+		"message": "Could not communicate with the page. Try reloading the tab.",
+		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
 	},
 	"sectionRemove": {
-		"message": "Bölümü kaldır"
+		"message": "Bölümü kaldır",
+		"description": "Label for the button to remove a section"
+	},
+	"disableAllStyles": {
+		"message": "Turn all styles off",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"updateCheckSkippedMaybeLocallyEdited": {
+		"message": "This style might have been edited locally.",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+	},
+	"undoGlobal": {
+		"message": "Undo in all sections",
+		"description": "CSS-beautify global Undo button label"
+	},
+	"optionsCustomizeIcon": {
+		"message": "Toolbar icon",
+		"description": ""
 	},
 	"updateCompleted": {
-		"message": "Güncelleme tamamlandı."
+		"message": "Güncelleme tamamlandı.",
+		"description": "Text that displays when an update completed"
 	},
 	"checkingForUpdate": {
-		"message": "Kontrol ediliyor..."
+		"message": "Kontrol ediliyor...",
+		"description": "Text to display when checking a style for an update"
+	},
+	"styleRegexpTestFull": {
+		"message": "Matching tabs",
+		"description": "RegExp test report: label for the fully matching expressions"
+	},
+	"manageMaxTargets": {
+		"message": "Number of applies-to items",
+		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"manageFaviconsHelp": {
+		"message": "Stylus uses an external service https://www.google.com/s2/favicons",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"updateCheckSkippedLocallyEdited": {
+		"message": "This style was edited locally.",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"optionsResetButton": {
+		"message": "Reset options",
+		"description": ""
 	},
 	"sectionCode": {
-		"message": "Kod"
+		"message": "Kod",
+		"description": "Label for the code for a section"
+	},
+	"optionsAdvancedContextDelete": {
+		"message": "Add 'Delete' in editor context menu",
+		"description": ""
+	},
+	"importReportLegendUpdatedBoth": {
+		"message": "updated both meta info and code",
+		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
+	},
+	"cm_smartIndent": {
+		"message": "Use smart indentation",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
+	"styleRegexpTestButton": {
+		"message": "RegExp test",
+		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın."
+		"message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın.",
+		"description": "Help text for 'applies to' section"
 	},
 	"editStyleHeading": {
-		"message": "Stili Düzenle"
+		"message": "Stili Düzenle",
+		"description": "Title of the page for editing styles"
+	},
+	"editDeleteText": {
+		"message": "Delete",
+		"description": "Label for the context menu item in the editor to delete selected text"
+	},
+	"cm_autocompleteOnTyping": {
+		"message": "Autocomplete on typing",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"stylusUnavailableForURLdetails": {
+		"message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version or about:addons) as well as other extensions' pages. Each browser also restricts access to its own extensions gallery (like Chrome Web Store or AMO).",
+		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
+	"cm_matchHighlightSelection": {
+		"message": "Selection only",
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+	},
+	"appliesUrlOption": {
+		"message": "URL",
+		"description": "Option to make the style apply to the entered string as a URL"
+	},
+	"updateAllCheckSucceededSomeEdited": {
+		"message": "Some updatable styles weren't checked to avoid losing possible local edits. Updates can be forced by checking individually, or by running another check for all styles (local edits will be overwritten).",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"stylusUnavailableForURL": {
+		"message": "Stylus doesn't work on pages like this.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
+	"manageOnlyUpdates": {
+		"message": "Only with updates or issues",
+		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
-		"message": "Stil Ekleyin"
+		"message": "Stil Ekleyin",
+		"description": "Title of the page for adding styles"
+	},
+	"importReplaceLabel": {
+		"message": "Overwrite style",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"dbError": {
+		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
+		"description": "Prompt when a DB error is encountered"
+	},
+	"optionsAdvanced": {
+		"message": "Advanced",
+		"description": ""
+	},
+	"importAppendTooltip": {
+		"message": "Append the imported style to current style",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"editorStylesButton": {
+		"message": "Find editor styles",
+		"description": "Find styles for the editor"
+	},
+	"optionsOpen": {
+		"message": "Open",
+		"description": ""
+	},
+	"helpKeyMapHotkey": {
+		"message": "Press a hotkey",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"styleRegexpTestInvalid": {
+		"message": "Invalid regexps skipped",
+		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"replaceAll": {
+		"message": "Replace all",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"importReportUnchanged": {
+		"message": "Nothing was changed.",
+		"description": "Message in the report shown after importing styles"
+	},
+	"optionsActions": {
+		"message": "Actions",
+		"description": ""
+	},
+	"editGotoLine": {
+		"message": "Goto line (or line:col)",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
+	"manageOnlyLocalTooltip": {
+		"message": "(the styles not installed through a userstyles.org page)",
+		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
-		"message": "Tüm stiller için güncellemeleri denetle"
+		"message": "Tüm stiller için güncellemeleri denetle",
+		"description": "Label for the button to check all styles for updates"
+	},
+	"openOptionsManage": {
+		"message": "Options UI",
+		"description": "Go to Options UI"
+	},
+	"issuesHelp": {
+		"message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
+		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	},
+	"optionsCustomizeBadge": {
+		"message": "Badge on the toolbar icon",
+		"description": ""
+	},
+	"importReportLegendIdentical": {
+		"message": "identical skipped",
+		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+	},
+	"optionsPopupWidth": {
+		"message": "Popup width (in pixels)",
+		"description": ""
+	},
+	"confirmNo": {
+		"message": "No",
+		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Undo",
+		"description": "Button label"
+	},
+	"cm_keyMap": {
+		"message": "Keymap",
+		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"manageNewUI": {
+		"message": "New manage UI layout",
+		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"importReportUndoneTitle": {
+		"message": "Import has been undone",
+		"description": "Title of the message box shown after undoing the import of styles"
+	},
+	"genericDisabledLabel": {
+		"message": "Disabled",
+		"description": "Used in various lists/options to indicate that something is disabled"
+	},
+	"cm_indentWithTabs": {
+		"message": "Use tabs with smart indentation",
+		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+	},
+	"replaceWith": {
+		"message": "Replace with",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
-		"message": "Sil"
+		"message": "Sil",
+		"description": "Label for the button to delete a style"
+	},
+	"updateCheckManualUpdateForce": {
+		"message": "Install update (local edits will be overwritten)",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"optionsAdvancedExposeIframes": {
+		"message": "Expose iframes via HTML[stylus-iframe]",
+		"description": ""
 	},
 	"addStyleLabel": {
-		"message": "Yeni stil oluşturun"
+		"message": "Yeni stil oluşturun",
+		"description": "Label for the button to go to the add style page"
+	},
+	"optionsUpdateIntervalNote": {
+		"message": "To disable the automatic userstyle update checks, set interval to 0",
+		"description": ""
+	},
+	"backupButtons": {
+		"message": "Backup",
+		"description": "Heading for backup"
+	},
+	"manageOnlyEnabled": {
+		"message": "Only enabled styles",
+		"description": "Checkbox to show only enabled styles"
 	},
 	"editStyleLabel": {
-		"message": "Düzenle"
+		"message": "Düzenle",
+		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Theme",
+		"description": "Label for the style editor's CSS theme."
+	},
+	"backupMessage": {
+		"message": "Select a file or drag and drop to this page.",
+		"description": "Message for backup"
+	},
+	"importReportUndone": {
+		"message": "styles were reverted",
+		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+	},
+	"helpKeyMapCommand": {
+		"message": "Type a command name",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır."
+		"message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır.",
+		"description": "Extension description"
 	}
 }
