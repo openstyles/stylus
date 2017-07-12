@@ -12,6 +12,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 }
 
 // add favicon in Firefox
+// eslint-disable-next-line no-unused-expressions
 navigator.userAgent.includes('Firefox') && setTimeout(() => {
   const iconset = ['', 'light/'][prefs.get('iconset')] || '';
   for (const size of [38, 32, 19, 16]) {

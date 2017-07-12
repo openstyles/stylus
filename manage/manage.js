@@ -128,8 +128,11 @@ function showStyles(styles = []) {
   function renderStyles() {
     const t0 = performance.now();
     let rendered = 0;
-    while (index < sorted.length
-    && (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)) {
+    while (
+      index < sorted.length &&
+      // eslint-disable-next-line no-unmodified-loop-condition
+      (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)
+    ) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
@@ -976,9 +979,14 @@ function objectDiff(first, second, path = '') {
       continue;
     }
     if (a && typeof a.filter == 'function' && b && typeof b.filter == 'function') {
-      if (a.length != b.length
-      || a.some((el, i) => !el || typeof el != 'object' ? el != b[i]
-          : objectDiff(el, b[i], path + key + '[' + i + '].').length)
+      if (
+        a.length != b.length ||
+        a.some((el, i) => {
+          const result = !el || typeof el != 'object'
+            ? el != b[i]
+            : objectDiff(el, b[i], path + key + '[' + i + '].').length;
+          return result;
+        })
       ) {
         diff.push({path, key, values: [a, b], type: 'changed'});
       }
