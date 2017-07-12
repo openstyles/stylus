@@ -2,7 +2,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="popup/popup.css">
 
   <!-- Notes:
     * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
@@ -55,12 +55,12 @@
     </div>
   </template>
 
-  <script src="dom.js"></script>
-  <script src="messaging.js"></script>
-  <script src="localization.js"></script>
-  <script src="prefs.js"></script>
-  <script src="apply.js"></script>
-  <script src="popup.js"></script>
+  <script src="js/dom.js"></script>
+  <script src="background/messaging.js"></script>
+  <script src="js/localization.js"></script>
+  <script src="js/prefs.js"></script>
+  <script src="content/apply.js"></script>
+  <script src="popup/popup.js"></script>
 </head>
 
 <body id="stylus-popup">

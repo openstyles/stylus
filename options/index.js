@@ -15,7 +15,7 @@ document.onclick = e => {
 
   switch (target.dataset.cmd) {
     case 'open-manage':
-      openURL({url: '/manage.html'});
+      openURL({url: 'manage.html'});
       break;
 
     case 'check-updates':

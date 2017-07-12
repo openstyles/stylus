@@ -42,7 +42,7 @@ new MutationObserver((mutations, observer) => {
 	const themeElement = document.getElementById("cm-theme");
 	if (themeElement) {
 		themeElement.href = prefs.get("editor.theme") == "default" ? ""
-			: "codemirror/theme/" + prefs.get("editor.theme") + ".css";
+			: "vendor/codemirror/theme/" + prefs.get("editor.theme") + ".css";
 		observer.disconnect();
 	}
 }).observe(document, {subtree: true, childList: true});
@@ -305,7 +305,7 @@ function acmeEventListener(event) {
 				el.selectedIndex = 0;
 				break;
 			}
-			var url = chrome.runtime.getURL("codemirror/theme/" + value + ".css");
+			var url = chrome.runtime.getURL("vendor/codemirror/theme/" + value + ".css");
 			if (themeLink.href == url) { // preloaded in initCodeMirror()
 				break;
 			}
@@ -1116,7 +1116,7 @@ function beautify(event) {
 		doBeautify();
 	} else {
 		var script = document.head.appendChild(document.createElement("script"));
-		script.src = "beautify/beautify-css-mod.js";
+		script.src = "vendor-overwrites/beautify/beautify-css-mod.js";
 		script.onload = doBeautify;
 	}
 	function doBeautify() {
@@ -2019,7 +2019,7 @@ function getCodeMirrorThemes() {
 	}
 	return new Promise(resolve => {
 		chrome.runtime.getPackageDirectoryEntry(rootDir => {
-			rootDir.getDirectory('codemirror/theme', {create: false}, themeDir => {
+			rootDir.getDirectory('vendor/codemirror/theme', {create: false}, themeDir => {
 				themeDir.createReader().readEntries(entries => {
 					const themes = [
 						chrome.i18n.getMessage('defaultTheme')

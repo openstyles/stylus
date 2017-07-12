@@ -98,7 +98,7 @@ updateIcon({id: undefined}, {});
 // browser commands
 browserCommands = {
   openManage() {
-    openURL({url: '/manage.html'});
+    openURL({url: 'manage.html'});
   },
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
