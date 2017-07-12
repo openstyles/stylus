@@ -347,7 +347,7 @@ $('#file-all-styles').onclick = () => {
     const dd = ('0' + today.getDate()).substr(-2);
     const mm = ('0' + (today.getMonth() + 1)).substr(-2);
     const yyyy = today.getFullYear();
-    return `stylus-${mm}-${dd}-${yyyy}${STYLUS_BACKUP_FILE_EXT}`;
+    return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
   }
 };
 
