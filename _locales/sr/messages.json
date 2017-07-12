@@ -7,22 +7,6 @@
 		"message": "подразумевано",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
-	"styleRegexpTestTitle": {
-		"message": "List of matching opened tabs (click on URL to focus its tab)",
-		"description": "RegExp test report: title of the report"
-	},
-	"bckpInstStyles": {
-		"message": "Export styles",
-		"description": ""
-	},
-	"optionsUpdateInterval": {
-		"message": "Automatically check for and install all available userstyle updates (in hrs)",
-		"description": ""
-	},
-	"styleEnabledToggleHint": {
-		"message": "Press Alt-Enter to toggle enabled/disabled state and save the style",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "Извези",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -30,14 +14,6 @@
 	"issues": {
 		"message": "Проблеми",
 		"description": "Label for the CSSLint issues block on the style edit page"
-	},
-	"optionsBadgeNormal": {
-		"message": "Background color",
-		"description": ""
-	},
-	"updateCheckHistory": {
-		"message": "History of update checks",
-		"description": ""
 	},
 	"cm_tabSize": {
 		"message": "Величина картице",
@@ -51,14 +27,6 @@
 		"message": "Унесите назив",
 		"description": "Error displayed when user saves without providing a name"
 	},
-	"genericHistoryLabel": {
-		"message": "History",
-		"description": "Used in various places to show a history log of something"
-	},
-	"shortcutsNote": {
-		"message": "Define keyboard shortcuts",
-		"description": ""
-	},
 	"appliesDomainOption": {
 		"message": "УРЛ адресе на домену",
 		"description": "Option to make the style apply to the entered string as a domain"
@@ -67,57 +35,25 @@
 		"message": "Проверите ажурирање",
 		"description": "Label for the button to check a single style for an update"
 	},
-	"styleNotAppliedRegexpProblemTooltip": {
-		"message": "Style was not applied due to its incorrect usage of 'regexp()'",
-		"description": "Tooltip in the popup for styles that were not applied at all"
-	},
-	"styleRegexpInvalidExplanation": {
-		"message": "Some 'regexp()' rules that could not be compiled at all.",
-		"description": ""
-	},
-	"optionsIconDark": {
-		"message": "Dark browser themes",
-		"description": ""
-	},
 	"importAppendLabel": {
 		"message": "Додај стилу",
 		"description": "Label for the button to import a style and append to the existing sections"
-	},
-	"optionsOpenManager": {
-		"message": "Manage styles",
-		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
 		"message": "Сви стилови су ажурирани.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
-	"importReportLegendAdded": {
-		"message": "added",
-		"description": "Text after the number of styles added in the report shown after importing styles"
-	},
 	"styleFromMozillaFormatPrompt": {
 		"message": "Налепи код у Mozilla формату",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-	},
-	"dragDropMessage": {
-		"message": "Drop your backup file anywhere on this page to import.",
-		"description": "Drag'n'drop message"
 	},
 	"helpAlt": {
 		"message": "Помоћ",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
-		"message": "OK",
-		"description": ""
-	},
 	"search": {
 		"message": "Претражи",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"manageFaviconsGray": {
-		"message": "Grayed out",
-		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"confirmYes": {
 		"message": "Да",
@@ -135,10 +71,6 @@
 		"message": "Улепшај",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
-	"styleRegexpProblemTooltip": {
-		"message": "Number of sections not applied due to incorrect usage of 'regexp()'",
-		"description": "Tooltip in the popup for styles that were applied only partially"
-	},
 	"styleEnabledLabel": {
 		"message": "Омогућено",
 		"description": "Label for the enabled state of styles"
@@ -151,25 +83,9 @@
 		"message": "Додај нови одељак",
 		"description": "Label for the button to add a section"
 	},
-	"styleRegexpTestPartial": {
-		"message": "Not matching fully, hence skipped",
-		"description": "RegExp test report: label for the partially matching expressions"
-	},
 	"styleSaveLabel": {
 		"message": "Сачувај",
 		"description": "Label for save button for style editing"
-	},
-	"confirmDelete": {
-		"message": "Delete",
-		"description": ""
-	},
-	"confirmCancel": {
-		"message": "Cancel",
-		"description": ""
-	},
-	"retrieveBckp": {
-		"message": "Import styles",
-		"description": ""
 	},
 	"confirmStop": {
 		"message": "Заустави",
@@ -179,10 +95,6 @@
 		"message": "ову УРЛ адресу",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
-	"optionsSubheading": {
-		"message": "More Options",
-		"description": "Subheading for options section on manage page."
-	},
 	"appliesAdd": {
 		"message": "Додај",
 		"description": "Label for the button to add an 'applies' entry"
@@ -190,14 +102,6 @@
 	"appliesRegexpOption": {
 		"message": "УРЛ адресе које одговарају регуларном изразу",
 		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'",
-		"description": ""
-	},
-	"importReportLegendUpdatedCode": {
-		"message": "updated code",
-		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
 		"message": "Инсталирати '$stylename$' у Stylus?",
@@ -208,37 +112,13 @@
 			}
 		}
 	},
-	"optionsBadgeDisabled": {
-		"message": "Background color when disabled",
-		"description": ""
-	},
-	"optionsCheck": {
-		"message": "Update styles",
-		"description": ""
-	},
 	"manageText": {
 		"message": "<a href='https://userstyles.org'>Преузмите стилове са userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помоћ</a>",
 		"description": "Help text on the manage page"
 	},
-	"manageOnlyLocal": {
-		"message": "Only locally created styles",
-		"description": "Checkbox to show only locally created styles i.e. non-updatable"
-	},
 	"searchStyles": {
 		"message": "Претражи садржај",
 		"description": "Label for the search filter textbox on the Manage styles page"
-	},
-	"optionsUpdateImportNote": {
-		"message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated.",
-		"description": ""
-	},
-	"checkAllUpdatesForce": {
-		"message": "Check again, I didn't edit any styles!",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"unreachableFileHint": {
-		"message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
-		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"disableStyleLabel": {
 		"message": "Онемогући",
@@ -247,10 +127,6 @@
 	"prefShowBadge": {
 		"message": "Прикажи број активних стилова за тренутни сајт на дугмету на алатној траци",
 		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"manageFavicons": {
-		"message": "Favicons in applies-to column",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
 		"message": "Прикажи број активних стилова",
@@ -272,10 +148,6 @@
 		"message": "Увези",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
-	"shortcuts": {
-		"message": "Shortcuts",
-		"description": "Go to shortcut configuration"
-	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Ажурирање није успело: сервер није доступан.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
@@ -288,21 +160,9 @@
 		"message": "Примени сва ажурирања",
 		"description": "Label for the button to apply all detected updates"
 	},
-	"optionsReset": {
-		"message": "Reset the options to default values",
-		"description": ""
-	},
-	"optionsCustomizeUpdate": {
-		"message": "Updates",
-		"description": ""
-	},
 	"deleteStyleConfirm": {
 		"message": "Да ли сте сигурни да желите да избришете овај стил?",
 		"description": "Confirmation before deleting a style"
-	},
-	"optionsCustomizePopup": {
-		"message": "Popup",
-		"description": ""
 	},
 	"styleBadRegexp": {
 		"message": "Регуларни израз је неисправан.",
@@ -321,14 +181,6 @@
 			}
 		}
 	},
-	"optionsIconLight": {
-		"message": "Light browser themes",
-		"description": ""
-	},
-	"openStylesManager": {
-		"message": "Open styles manager",
-		"description": "Label for the style maanger opener in the browser action context menu."
-	},
 	"styleUpdate": {
 		"message": "Да ли сте сигурни да желите да ажурирате '$stylename$'?",
 		"description": "Confirmation when updating a style",
@@ -341,10 +193,6 @@
 	"styleSectionsTitle": {
 		"message": "Одељци",
 		"description": "Title for the style sections section"
-	},
-	"importReportLegendInvalid": {
-		"message": "invalid skipped",
-		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"editStyleTitle": {
 		"message": "Уреди стил $stylename$",
@@ -363,29 +211,13 @@
 		"message": "УРЛ адресе које почињу са",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
-	"cm_matchHighlightToken": {
-		"message": "Token under cursor",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
-	},
 	"searchRegexp": {
 		"message": "Користи /re/ синтаксу за претрагу  регуларним изразом",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
-	"updateCheckManualUpdateHint": {
-		"message": "Forcing an update will overwrite any local edits.",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"toggleStyle": {
-		"message": "Toggle style",
-		"description": "Label for the checkbox to enable/disable a style"
-	},
 	"importReplaceTooltip": {
 		"message": "Одбаци садржај тренутног стила и упиши преко њега увезени стил",
 		"description": "Label for the button to import and overwrite current style"
-	},
-	"cm_resizeGripHint": {
-		"message": "Double-click to maximize/restore the height",
-		"description": "Tooltip for the resize grip in style editor"
 	},
 	"popupStylesFirst": {
 		"message": "Излистај стилове пре команди у менију дугмета на алатној траци",
@@ -407,17 +239,9 @@
 		"message": "Уклони",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
-	"updatesCurrentlyInstalled": {
-		"message": "Updates installed:",
-		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-	},
 	"styleToMozillaFormatTitle": {
 		"message": "Стил у Mozilla формату",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
 		"message": "Упиши стил за:",
@@ -427,21 +251,9 @@
 		"message": "Замени",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
-	"styleRegexpTestNone": {
-		"message": "No matching tabs",
-		"description": "RegExp test report: label for expressions that didn't match any tabs"
-	},
-	"importReportLegendUpdatedMeta": {
-		"message": "updated meta info",
-		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
-	},
 	"appliesLabel": {
 		"message": "Примењује се на",
 		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"openOptionsPopup": {
-		"message": "Options",
-		"description": "Go to Options UI"
 	},
 	"openManage": {
 		"message": "Управљај инсталираним стиловима",
@@ -464,33 +276,9 @@
 		"message": "Инсталирај ажурирање",
 		"description": "Label for the button to install an update for a single style"
 	},
-	"optionsCheckUpdate": {
-		"message": "Check for and install all available updates",
-		"description": ""
-	},
-	"importReportTitle": {
-		"message": "Finished importing styles",
-		"description": "Title of the report shown after importing styles"
-	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla формат",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"cm_matchHighlight": {
-		"message": "Highlight",
-		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
-	},
-	"styleRegexpPartialExplanation": {
-		"message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug).",
-		"description": ""
-	},
-	"styleBeautifyIndentConditional": {
-		"message": "Indent @media, @supports",
-		"description": "CSS-beautifier option"
-	},
-	"unreachableContentScript": {
-		"message": "Could not communicate with the page. Try reloading the tab.",
-		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
 	},
 	"sectionRemove": {
 		"message": "Уклони одељак",
@@ -500,17 +288,9 @@
 		"message": "Искључи све стилове",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
-	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "This style might have been edited locally.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
-	},
 	"undoGlobal": {
 		"message": "Опозови (свеобухватно)",
 		"description": "CSS-beautify global Undo button label"
-	},
-	"optionsCustomizeIcon": {
-		"message": "Toolbar icon",
-		"description": ""
 	},
 	"updateCompleted": {
 		"message": "Ажурирање је комплетирано.",
@@ -520,45 +300,13 @@
 		"message": "Проверавање...",
 		"description": "Text to display when checking a style for an update"
 	},
-	"styleRegexpTestFull": {
-		"message": "Matching tabs",
-		"description": "RegExp test report: label for the fully matching expressions"
-	},
-	"manageMaxTargets": {
-		"message": "Number of applies-to items",
-		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
-	},
-	"manageFaviconsHelp": {
-		"message": "Stylus uses an external service https://www.google.com/s2/favicons",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
-	},
-	"updateCheckSkippedLocallyEdited": {
-		"message": "This style was edited locally.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"optionsResetButton": {
-		"message": "Reset options",
-		"description": ""
-	},
 	"sectionCode": {
 		"message": "Код",
 		"description": "Label for the code for a section"
 	},
-	"optionsAdvancedContextDelete": {
-		"message": "Add 'Delete' in editor context menu",
-		"description": ""
-	},
-	"importReportLegendUpdatedBoth": {
-		"message": "updated both meta info and code",
-		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
-	},
 	"cm_smartIndent": {
 		"message": "Користи паметно увлачење редова",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"styleRegexpTestButton": {
-		"message": "RegExp test",
-		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
 		"message": "Употреба 'Примењује се на' одређује опсег УРЛ адреса на које се код у овом одељку примењује.",
@@ -568,37 +316,13 @@
 		"message": "Уреди стил",
 		"description": "Title of the page for editing styles"
 	},
-	"editDeleteText": {
-		"message": "Delete",
-		"description": "Label for the context menu item in the editor to delete selected text"
-	},
-	"cm_autocompleteOnTyping": {
-		"message": "Autocomplete on typing",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"stylusUnavailableForURLdetails": {
-		"message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version or about:addons) as well as other extensions' pages. Each browser also restricts access to its own extensions gallery (like Chrome Web Store or AMO).",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"cm_matchHighlightSelection": {
-		"message": "Selection only",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-	},
 	"appliesUrlOption": {
 		"message": "УРЛ",
 		"description": "Option to make the style apply to the entered string as a URL"
 	},
-	"updateAllCheckSucceededSomeEdited": {
-		"message": "Some updatable styles weren't checked to avoid losing possible local edits. Updates can be forced by checking individually, or by running another check for all styles (local edits will be overwritten).",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
 	"stylusUnavailableForURL": {
 		"message": "Stylus не ради на страницама као што је ова.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"manageOnlyUpdates": {
-		"message": "Only with updates or issues",
-		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
 		"message": "Додај стил",
@@ -612,73 +336,29 @@
 		"message": "Дошло је до грешке користећи Stylus базу података. Да ли желите да посетите веб страницу са могућим решењима?",
 		"description": "Prompt when a DB error is encountered"
 	},
-	"optionsAdvanced": {
-		"message": "Advanced",
-		"description": ""
-	},
 	"importAppendTooltip": {
 		"message": "Додај увезени стил тренутном стилу",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"editorStylesButton": {
-		"message": "Find editor styles",
-		"description": "Find styles for the editor"
-	},
-	"optionsOpen": {
-		"message": "Open",
-		"description": ""
 	},
 	"helpKeyMapHotkey": {
 		"message": "Притисни пречицу",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
-	"styleRegexpTestInvalid": {
-		"message": "Invalid regexps skipped",
-		"description": "RegExp test report: label for the invalid expressions"
-	},
 	"replaceAll": {
 		"message": "Замени све",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"importReportUnchanged": {
-		"message": "Nothing was changed.",
-		"description": "Message in the report shown after importing styles"
-	},
-	"optionsActions": {
-		"message": "Actions",
-		"description": ""
 	},
 	"editGotoLine": {
 		"message": "Иди на ред (или line:col)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
-	"manageOnlyLocalTooltip": {
-		"message": "(the styles not installed through a userstyles.org page)",
-		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
-	},
 	"checkAllUpdates": {
 		"message": "Проверите ажурирања за све стилове",
 		"description": "Label for the button to check all styles for updates"
 	},
-	"openOptionsManage": {
-		"message": "Options UI",
-		"description": "Go to Options UI"
-	},
 	"issuesHelp": {
 		"message": "Проблем пронађен од стране <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> са овим омогућеним правилима:",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
-	},
-	"optionsCustomizeBadge": {
-		"message": "Badge on the toolbar icon",
-		"description": ""
-	},
-	"importReportLegendIdentical": {
-		"message": "identical skipped",
-		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
-	},
-	"optionsPopupWidth": {
-		"message": "Popup width (in pixels)",
-		"description": ""
 	},
 	"confirmNo": {
 		"message": "Не",
@@ -692,18 +372,6 @@
 		"message": "Мапа тастера",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
-	"manageNewUI": {
-		"message": "New manage UI layout",
-		"description": "Label for the checkbox that toggles the new UI on manage page"
-	},
-	"importReportUndoneTitle": {
-		"message": "Import has been undone",
-		"description": "Title of the message box shown after undoing the import of styles"
-	},
-	"genericDisabledLabel": {
-		"message": "Disabled",
-		"description": "Used in various lists/options to indicate that something is disabled"
-	},
 	"cm_indentWithTabs": {
 		"message": "Користи картице са паметним увлачењем редова",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -716,25 +384,9 @@
 		"message": "Избриши",
 		"description": "Label for the button to delete a style"
 	},
-	"updateCheckManualUpdateForce": {
-		"message": "Install update (local edits will be overwritten)",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"optionsAdvancedExposeIframes": {
-		"message": "Expose iframes via HTML[stylus-iframe]",
-		"description": ""
-	},
 	"addStyleLabel": {
 		"message": "Упиши нови стил",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "To disable the automatic userstyle update checks, set interval to 0",
-		"description": ""
-	},
-	"backupButtons": {
-		"message": "Backup",
-		"description": "Heading for backup"
 	},
 	"manageOnlyEnabled": {
 		"message": "Само омогућени стилови",
@@ -747,14 +399,6 @@
 	"cm_theme": {
 		"message": "Тема",
 		"description": "Label for the style editor's CSS theme."
-	},
-	"backupMessage": {
-		"message": "Select a file or drag and drop to this page.",
-		"description": "Message for backup"
-	},
-	"importReportUndone": {
-		"message": "styles were reverted",
-		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
 	},
 	"helpKeyMapCommand": {
 		"message": "Укуцај име команде",

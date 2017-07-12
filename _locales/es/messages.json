@@ -415,10 +415,6 @@
 		"message": "Estilo en formato Mozilla",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
 	"writeStyleFor": {
 		"message": "Escribir estilo para:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -584,10 +580,6 @@
 		"message": "Sólo selección",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
-	},
 	"updateAllCheckSucceededSomeEdited": {
 		"message": "No se buscaron actualizaciones de algunos estilos actualizables para evitar la pérdida de posibles ediciones locales. Se puede forzar la búsqueda de actualizaciones mediante comprobación individual, o ejecutando otra búsqueda para todos los estilos (las ediciones locales se sobrescribirán).",
 		"description": "Text that displays when an update all check completed and no updates are available"
@@ -679,10 +671,6 @@
 	"optionsPopupWidth": {
 		"message": "Anchura del diálogo emergente (en píxeles)",
 		"description": ""
-	},
-	"confirmNo": {
-		"message": "No",
-		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
 		"message": "Deshacer",

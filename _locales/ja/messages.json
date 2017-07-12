@@ -27,10 +27,6 @@
 		"message": "エクスポート",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
-		"message": "Issues",
-		"description": "Label for the CSSLint issues block on the style edit page"
-	},
 	"optionsBadgeNormal": {
 		"message": "背景色",
 		"description": ""
@@ -67,18 +63,6 @@
 		"message": "アップデートをチェック",
 		"description": "Label for the button to check a single style for an update"
 	},
-	"styleNotAppliedRegexpProblemTooltip": {
-		"message": "Style was not applied due to its incorrect usage of 'regexp()'",
-		"description": "Tooltip in the popup for styles that were not applied at all"
-	},
-	"styleRegexpInvalidExplanation": {
-		"message": "Some 'regexp()' rules that could not be compiled at all.",
-		"description": ""
-	},
-	"optionsIconDark": {
-		"message": "Dark browser themes",
-		"description": ""
-	},
 	"importAppendLabel": {
 		"message": "スタイルに追加",
 		"description": "Label for the button to import a style and append to the existing sections"
@@ -91,10 +75,6 @@
 		"message": "更新は見つかりませんでした。",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
-	"importReportLegendAdded": {
-		"message": "added",
-		"description": "Text after the number of styles added in the report shown after importing styles"
-	},
 	"styleFromMozillaFormatPrompt": {
 		"message": "Mozilla形式のコードを貼り付ける",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
@@ -106,10 +86,6 @@
 	"helpAlt": {
 		"message": "ヘルプ",
 		"description": "Alternate text for help buttons"
-	},
-	"confirmOK": {
-		"message": "OK",
-		"description": ""
 	},
 	"search": {
 		"message": "検索",
@@ -131,14 +107,6 @@
 		"message": "インストール済みのスタイル",
 		"description": "Heading for the manage page"
 	},
-	"styleBeautify": {
-		"message": "Beautify",
-		"description": "Label for the CSS-beautifier button on the edit style page"
-	},
-	"styleRegexpProblemTooltip": {
-		"message": "Number of sections not applied due to incorrect usage of 'regexp()'",
-		"description": "Tooltip in the popup for styles that were applied only partially"
-	},
 	"styleEnabledLabel": {
 		"message": "有効",
 		"description": "Label for the enabled state of styles"
@@ -150,10 +118,6 @@
 	"sectionAdd": {
 		"message": "他のセクションを追加",
 		"description": "Label for the button to add a section"
-	},
-	"styleRegexpTestPartial": {
-		"message": "Not matching fully, hence skipped",
-		"description": "RegExp test report: label for the partially matching expressions"
 	},
 	"styleSaveLabel": {
 		"message": "保存",
@@ -175,10 +139,6 @@
 		"message": "中止",
 		"description": "'Stop' button in a confirm dialog"
 	},
-	"writeStyleForURL": {
-		"message": "this URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
 	"optionsSubheading": {
 		"message": "その他のオプション",
 		"description": "Subheading for options section on manage page."
@@ -190,10 +150,6 @@
 	"appliesRegexpOption": {
 		"message": "正規表現に一致する URL",
 		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'",
-		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
 		"message": "コードを更新",
@@ -231,10 +187,6 @@
 	"optionsUpdateImportNote": {
 		"message": "旧バージョンまたはStylishからスタイルバックアップをインポートする場合は、スタイルマネージャで手動で更新を一度チェックして、すべてのスタイルが確実に更新されるようにします。",
 		"description": ""
-	},
-	"checkAllUpdatesForce": {
-		"message": "Check again, I didn't edit any styles!",
-		"description": "Label for the button to apply all detected updates"
 	},
 	"unreachableFileHint": {
 		"message": "Stylusはchrome://extensionsページのStylus拡張機能に対応するチェックボックスを有効にした場合にのみ、file:// URLにアクセスできます。",
@@ -321,10 +273,6 @@
 			}
 		}
 	},
-	"optionsIconLight": {
-		"message": "Light browser themes",
-		"description": ""
-	},
 	"openStylesManager": {
 		"message": "スタイルマネージャーを開く",
 		"description": "Label for the style maanger opener in the browser action context menu."
@@ -341,10 +289,6 @@
 	"styleSectionsTitle": {
 		"message": "セクション",
 		"description": "Title for the style sections section"
-	},
-	"importReportLegendInvalid": {
-		"message": "invalid skipped",
-		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"editStyleTitle": {
 		"message": "スタイル「$stylename$」を編集",
@@ -383,10 +327,6 @@
 		"message": "現在のスタイルの内容を破棄し、インポートされたスタイルで上書きする",
 		"description": "Label for the button to import and overwrite current style"
 	},
-	"cm_resizeGripHint": {
-		"message": "Double-click to maximize/restore the height",
-		"description": "Tooltip for the resize grip in style editor"
-	},
 	"popupStylesFirst": {
 		"message": "スタイルをコマンドボタンの前に",
 		"description": "Label for the checkbox controlling section order in the popup."
@@ -407,17 +347,9 @@
 		"message": "削除",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
-	"updatesCurrentlyInstalled": {
-		"message": "Updates installed:",
-		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-	},
 	"styleToMozillaFormatTitle": {
 		"message": "Mozilla形式のスタイル",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
 		"message": "次のスタイルを書く:",
@@ -426,14 +358,6 @@
 	"replace": {
 		"message": "置換",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
-	},
-	"styleRegexpTestNone": {
-		"message": "No matching tabs",
-		"description": "RegExp test report: label for expressions that didn't match any tabs"
-	},
-	"importReportLegendUpdatedMeta": {
-		"message": "updated meta info",
-		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
 		"message": "適用先",
@@ -472,21 +396,9 @@
 		"message": "スタイルのインポートが終了しました",
 		"description": "Title of the report shown after importing styles"
 	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
 	"cm_matchHighlight": {
 		"message": "ハイライト",
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
-	},
-	"styleRegexpPartialExplanation": {
-		"message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug).",
-		"description": ""
-	},
-	"styleBeautifyIndentConditional": {
-		"message": "Indent @media, @supports",
-		"description": "CSS-beautifier option"
 	},
 	"unreachableContentScript": {
 		"message": "ページと通信できませんでした。タブを再読み込みしてみてください。",
@@ -508,10 +420,6 @@
 		"message": "すべてのセクションで元に戻す",
 		"description": "CSS-beautify global Undo button label"
 	},
-	"optionsCustomizeIcon": {
-		"message": "Toolbar icon",
-		"description": ""
-	},
 	"updateCompleted": {
 		"message": "更新が完了しました",
 		"description": "Text that displays when an update completed"
@@ -519,10 +427,6 @@
 	"checkingForUpdate": {
 		"message": "チェック中...",
 		"description": "Text to display when checking a style for an update"
-	},
-	"styleRegexpTestFull": {
-		"message": "Matching tabs",
-		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
 		"message": "適用先アイテムの数",
@@ -548,17 +452,9 @@
 		"message": "エディタのコンテキストメニューに「削除」を追加",
 		"description": ""
 	},
-	"importReportLegendUpdatedBoth": {
-		"message": "updated both meta info and code",
-		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
-	},
 	"cm_smartIndent": {
 		"message": "スマートインデントを使用する",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"styleRegexpTestButton": {
-		"message": "RegExp test",
-		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
 		"message": "[適用先] を使用すると、このセクションのコードが適用される URL を制限することができます。",
@@ -572,10 +468,6 @@
 		"message": "削除",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
-	"cm_autocompleteOnTyping": {
-		"message": "Autocomplete on typing",
-		"description": "Label for the checkbox in the style editor."
-	},
 	"stylusUnavailableForURLdetails": {
 		"message": "セキュリティ上の予防措置として、ブラウザは拡張機能が他の拡張機能のページと同様に、内蔵のページ（chrome://versionやabout:addonsなど）に影響を及ぼさないようにします。各ブラウザは、独自の拡張機能ギャラリー（ChromeウェブストアやAMOなど）へのアクセスも制限しています。",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
@@ -583,10 +475,6 @@
 	"cm_matchHighlightSelection": {
 		"message": "選択した単語のみ",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
 	},
 	"updateAllCheckSucceededSomeEdited": {
 		"message": "可能なローカル編集を失うのを避けるために、更新可能なスタイルがチェックされていませんでした。更新を強制的に行うには、個別にチェックするか、すべてのスタイルに対して別のチェックを実行します（ローカル編集は上書きされます）。",
@@ -608,10 +496,6 @@
 		"message": "スタイルを上書き",
 		"description": "Label for the button to import and overwrite current style"
 	},
-	"dbError": {
-		"message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
-		"description": "Prompt when a DB error is encountered"
-	},
 	"optionsAdvanced": {
 		"message": "上級者向け",
 		"description": ""
@@ -632,21 +516,9 @@
 		"message": "ホットキーを押す",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
-	"styleRegexpTestInvalid": {
-		"message": "Invalid regexps skipped",
-		"description": "RegExp test report: label for the invalid expressions"
-	},
 	"replaceAll": {
 		"message": "すべて置換",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"importReportUnchanged": {
-		"message": "Nothing was changed.",
-		"description": "Message in the report shown after importing styles"
-	},
-	"optionsActions": {
-		"message": "Actions",
-		"description": ""
 	},
 	"editGotoLine": {
 		"message": "行（または行:列）に移動",
@@ -671,10 +543,6 @@
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",
 		"description": ""
-	},
-	"importReportLegendIdentical": {
-		"message": "identical skipped",
-		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"optionsPopupWidth": {
 		"message": "ポップアップの幅 (ピクセル単位)",
@@ -716,14 +584,6 @@
 		"message": "削除",
 		"description": "Label for the button to delete a style"
 	},
-	"updateCheckManualUpdateForce": {
-		"message": "Install update (local edits will be overwritten)",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"optionsAdvancedExposeIframes": {
-		"message": "Expose iframes via HTML[stylus-iframe]",
-		"description": ""
-	},
 	"addStyleLabel": {
 		"message": "新しいスタイルを作成",
 		"description": "Label for the button to go to the add style page"
@@ -751,10 +611,6 @@
 	"backupMessage": {
 		"message": "ファイルを選択するか、このページにドラッグ＆ドロップします。",
 		"description": "Message for backup"
-	},
-	"importReportUndone": {
-		"message": "styles were reverted",
-		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
 	},
 	"helpKeyMapCommand": {
 		"message": "コマンド名を入力",

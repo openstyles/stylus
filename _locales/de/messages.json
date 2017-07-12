@@ -107,10 +107,6 @@
 		"message": "Hilfe",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
-		"message": "OK",
-		"description": ""
-	},
 	"search": {
 		"message": "Suche",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
@@ -130,10 +126,6 @@
 	"manageHeading": {
 		"message": "Installierte Styles",
 		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Beautify",
-		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleRegexpProblemTooltip": {
 		"message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter Regulärer Ausdrücke nicht angewendet wurden.",
@@ -292,17 +284,9 @@
 		"message": "Setzt diese Einstellungen auf die Standard-Werte zurück.",
 		"description": ""
 	},
-	"optionsCustomizeUpdate": {
-		"message": "Updates",
-		"description": ""
-	},
 	"deleteStyleConfirm": {
 		"message": "Möchtest Du diesen Style wirklich löschen?",
 		"description": "Confirmation before deleting a style"
-	},
-	"optionsCustomizePopup": {
-		"message": "Popup",
-		"description": ""
 	},
 	"styleBadRegexp": {
 		"message": "Regulärer Ausdruck ist ungültig.",
@@ -415,10 +399,6 @@
 		"message": "Style im Mozilla Format",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
 	"writeStyleFor": {
 		"message": "Style erstellen für:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -471,10 +451,6 @@
 	"importReportTitle": {
 		"message": "Importieren der Styles abgeschlossen.",
 		"description": "Title of the report shown after importing styles"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla Format",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"cm_matchHighlight": {
 		"message": "Hervorheben",
@@ -540,10 +516,6 @@
 		"message": "Optionen zurücksetzten",
 		"description": ""
 	},
-	"sectionCode": {
-		"message": "Code",
-		"description": "Label for the code for a section"
-	},
 	"optionsAdvancedContextDelete": {
 		"message": "'Löschen' im Editor-Kontextmenü hinzufügen",
 		"description": ""
@@ -583,10 +555,6 @@
 	"cm_matchHighlightSelection": {
 		"message": "Nur die Auswahl",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
 	},
 	"updateAllCheckSucceededSomeEdited": {
 		"message": "Einige Styles wurden nicht aktualisiert, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Aktualisierung für alle Styles erzwungen werden (Lokale Bearbeitungen werden dann überschrieben).",
@@ -743,10 +711,6 @@
 	"editStyleLabel": {
 		"message": "Bearbeiten",
 		"description": "Label for the button to go to the edit style page"
-	},
-	"cm_theme": {
-		"message": "Theme",
-		"description": "Label for the style editor's CSS theme."
 	},
 	"backupMessage": {
 		"message": "Wähle eine Datei aus oder ziehe die Datei auf diese Seite. (Drag and Drop)",

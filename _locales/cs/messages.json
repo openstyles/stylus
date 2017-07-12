@@ -107,10 +107,6 @@
 		"message": "Nápověda",
 		"description": "Alternate text for help buttons"
 	},
-	"confirmOK": {
-		"message": "OK",
-		"description": ""
-	},
 	"search": {
 		"message": "Vyhledat",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
@@ -414,10 +410,6 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Styl v Mozilla formátu",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
 	},
 	"writeStyleFor": {
 		"message": "Napsat nový styl pro:",

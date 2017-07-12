@@ -415,10 +415,6 @@
 		"message": "Mozilla格式樣式表",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
 	"writeStyleFor": {
 		"message": "編寫樣式給：",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
