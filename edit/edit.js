@@ -547,8 +547,7 @@ function addSection(event, section) {
 
   if (section) {
     codeElement.value = section.code;
-    let i;
-    for (i in propertyToCss) {
+    for (const i in propertyToCss) {
       if (section[i]) {
         section[i].forEach(function(url) {
           addAppliesTo(appliesTo, propertyToCss[i], url);
@@ -1234,8 +1233,7 @@ function init() {
     // This is an add
     tE('heading', 'addStyleTitle');
     const section = {code: ''};
-    let i;
-    for (i in CssToProperty) {
+    for (const i in CssToProperty) {
       if (params[i]) {
         section[CssToProperty[i]] = [params[i]];
       }
@@ -1518,8 +1516,7 @@ function showMozillaFormat() {
 function toMozillaFormat() {
   return getSectionsHashes().map(function(section) {
     let cssMds = [];
-    let i;
-    for (i in propertyToCss) {
+    for (const i in propertyToCss) {
       if (section[i]) {
         cssMds = cssMds.concat(section[i].map(function(v) {
           return propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")';
