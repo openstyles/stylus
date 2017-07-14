@@ -62,7 +62,7 @@
   },
   "default_locale": "en",
   "options_ui": {
-    "page": "index.html",
+    "page": "options.html",
     "chrome_style": true
   }
 }

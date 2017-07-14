@@ -11,7 +11,7 @@ const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
   optionsUI: [
-    chrome.runtime.getURL('options/index.html'),
+    chrome.runtime.getURL('options.html'),
     'chrome://extensions/?options=' + chrome.runtime.id,
   ],
 
