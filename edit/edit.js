@@ -602,8 +602,8 @@ function addSection(event, section) {
 }
 
 function removeAppliesTo(event) {
-  const appliesTo = event.target.parentNode,
-    appliesToList = appliesTo.parentNode;
+  const appliesTo = event.target.parentNode;
+  const appliesToList = appliesTo.parentNode;
   removeAreaAndSetDirty(appliesTo);
   if (!appliesToList.hasChildNodes()) {
     addAppliesTo(appliesToList);
@@ -744,7 +744,8 @@ function setupGlobalSearch() {
       && searchAppliesTo(activeCM)) {
       return;
     }
-    for (let i = 0, cm = activeCM; i < editors.length; i++) {
+    let cm = activeCM;
+    for (let i = 0; i < editors.length; i++) {
       state = updateState(cm);
       if (!cm.hasFocus()) {
         pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
@@ -799,7 +800,9 @@ function setupGlobalSearch() {
   }
 
   function replace(activeCM, all) {
-    let queue, query, replacement;
+    let queue;
+    let query;
+    let replacement;
     activeCM = focusClosestCM(activeCM);
     customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], function(txt) {
       query = txt;

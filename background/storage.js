@@ -189,7 +189,8 @@ function filterStylesInternal({
 
   const needSections = asHash || matchUrl !== null;
 
-  for (let i = 0, style; (style = styles[i]); i++) {
+  let style;
+  for (let i = 0; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled == enabled)
     && (url === null || style.url == url)
     && (id === null || style.id == id)) {
@@ -230,7 +231,8 @@ function saveStyle(style) {
   if (!style.name) {
     delete style.name;
   }
-  let existed, codeIsUpdated;
+  let existed;
+  let codeIsUpdated;
   if (reason == 'update' || reason == 'update-digest') {
     return calcStyleDigest(style).then(digest => {
       style.originalDigest = digest;
