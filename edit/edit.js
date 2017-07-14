@@ -1014,7 +1014,8 @@ function updateLintReport(cm, delay) {
     setTimeout(cm => { cm.performLint(); update(cm); }, delay, cm);
     return;
   }
-  const state = cm.state.lint;
+  // eslint-disable-next-line no-var
+  var state = cm.state.lint;
   if (!state) {
     return;
   }
@@ -1028,13 +1029,12 @@ function updateLintReport(cm, delay) {
     const scope = cm ? [cm] : editors;
     let changed = false;
     let fixedOldIssues = false;
-    let state;
     scope.forEach(function(cm) {
-      state = cm.state.lint || {};
-      const oldMarkers = state.markedLast || {};
+      const scopedState = cm.state.lint || {};
+      const oldMarkers = scopedState.markedLast || {};
       const newMarkers = {};
-      const html = !state.marked || state.marked.length == 0 ? '' : '<tbody>' +
-        state.marked.map(function(mark) {
+      const html = !scopedState.marked || scopedState.marked.length == 0 ? '' : '<tbody>' +
+        scopedState.marked.map(function(mark) {
           const info = mark.__annotation;
           const isActiveLine = info.from.line == cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
@@ -1054,10 +1054,10 @@ function updateLintReport(cm, delay) {
             '<td role="col">' + (info.from.ch + 1) + '</td>' +
             '<td role="message">' + message + '</td></tr>';
         }).join('') + '</tbody>';
-      state.markedLast = newMarkers;
-      fixedOldIssues |= state.reportDisplayed && Object.keys(oldMarkers).length > 0;
-      if (state.html != html) {
-        state.html = html;
+      scopedState.markedLast = newMarkers;
+      fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
+      if (scopedState.html != html) {
+        scopedState.html = html;
         changed = true;
       }
     });
