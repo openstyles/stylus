@@ -20,7 +20,7 @@
   ],
   "background": {
     "scripts": [
-      "background/messaging.js",
+      "js/messaging.js",
       "background/storage.js",
       "js/prefs.js",
       "background/background.js",
