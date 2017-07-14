@@ -1073,7 +1073,7 @@ function updateLintReport(cm, delay) {
     }
   }
   function escapeHtml(html) {
-    const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;', '/': '&#x2F;'};
+    const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'};
     return html.replace(/[&<>"'/]/g, function(char) { return chars[char]; });
   }
 }
