@@ -299,8 +299,7 @@ function acmeEventListener(event) {
     case 'tabSize':
       CodeMirror.setOption('indentUnit', Number(value));
       break;
-    /* eslint-disable no-case-declarations */
-    case 'theme':
+    case 'theme': {
       const themeLink = document.getElementById('cm-theme');
       // use non-localized 'default' internally
       if (!value || value == 'default' || value == t('defaultTheme')) {
@@ -327,7 +326,7 @@ function acmeEventListener(event) {
         }, 100);
       })();
       return;
-    /* eslint-enable no-case-declarations */
+    }
     case 'autocompleteOnTyping':
       editors.forEach(cm => {
         const onOff = el.checked ? 'on' : 'off';
