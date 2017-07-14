@@ -295,13 +295,13 @@ function acmeEventListener(event) {
     return;
   }
   let value = el.type == 'checkbox' ? el.checked : el.value;
-  let url;
-  const themeLink = document.getElementById('cm-theme');
   switch (option) {
     case 'tabSize':
       CodeMirror.setOption('indentUnit', Number(value));
       break;
+    /* eslint-disable no-case-declarations */
     case 'theme':
+      const themeLink = document.getElementById('cm-theme');
       // use non-localized 'default' internally
       if (!value || value == 'default' || value == t('defaultTheme')) {
         value = 'default';
@@ -312,7 +312,7 @@ function acmeEventListener(event) {
         el.selectedIndex = 0;
         break;
       }
-      url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
+      const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
       if (themeLink.href == url) { // preloaded in initCodeMirror()
         break;
       }
@@ -327,6 +327,7 @@ function acmeEventListener(event) {
         }, 100);
       })();
       return;
+    /* eslint-enable no-case-declarations */
     case 'autocompleteOnTyping':
       editors.forEach(cm => {
         const onOff = el.checked ? 'on' : 'off';
