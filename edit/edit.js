@@ -441,9 +441,11 @@ document.addEventListener('wheel', event => {
 queryTabs({currentWindow: true}).then(tabs => {
   const windowId = tabs[0].windowId;
   if (prefs.get('openEditInWindow')) {
-    if (sessionStorage.saveSizeOnClose
-    && 'left' in prefs.get('windowPosition', {})
-    && !isWindowMaximized()) {
+    if (
+      sessionStorage.saveSizeOnClose &&
+      'left' in prefs.get('windowPosition', {}) &&
+      !isWindowMaximized()
+    ) {
       // window was reopened via Ctrl-Shift-T etc.
       chrome.windows.update(windowId, prefs.get('windowPosition'));
     }
@@ -481,10 +483,10 @@ function goBackToManage(event) {
 }
 
 function isWindowMaximized() {
-  return window.screenLeft == 0
-    && window.screenTop == 0
-    && window.outerWidth == screen.availWidth
-    && window.outerHeight == screen.availHeight;
+  return window.screenLeft == 0 &&
+    window.screenTop == 0 &&
+    window.outerWidth == screen.availWidth &&
+    window.outerHeight == screen.availHeight;
 }
 
 window.onbeforeunload = () => {
@@ -570,8 +572,10 @@ function addSection(event, section) {
       item.querySelector('.applies-value').value.trim());
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
-      if (event.target.matches('.applies-value')
-      && event.target.parentElement.querySelector('.applies-type').value == 'regexp') {
+      if (
+        event.target.matches('.applies-value') &&
+        event.target.parentElement.querySelector('.applies-type').value == 'regexp'
+      ) {
         showRegExpTester(null, div);
       }
     });
@@ -736,8 +740,11 @@ function setupGlobalSearch() {
     const rxQuery = typeof state.query == 'object'
       ? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? 'i' : '');
 
-    if (document.activeElement && document.activeElement.name == 'applies-value'
-      && searchAppliesTo(activeCM)) {
+    if (
+      document.activeElement &&
+      document.activeElement.name == 'applies-value' &&
+      searchAppliesTo(activeCM)
+    ) {
       return;
     }
     let cm = activeCM;
