@@ -16,7 +16,7 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 onBackgroundReady();
 
 // make querySelectorAll enumeration code readable
-['forEach', 'some', 'indexOf', 'map'].forEach(function(method) {
+['forEach', 'some', 'indexOf', 'map'].forEach(method => {
   NodeList.prototype[method] = Array.prototype[method];
 });
 
@@ -24,7 +24,7 @@ onBackgroundReady();
 Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
 
 // Chrome pre-41 polyfill
-Element.prototype.closest = Element.prototype.closest || function(selector) {
+Element.prototype.closest = Element.prototype.closest || function (selector) {
   let e;
   // eslint-disable-next-line no-empty
   for (e = this; e && !e.matches(selector); e = e.parentElement) {}
@@ -32,14 +32,14 @@ Element.prototype.closest = Element.prototype.closest || function(selector) {
 };
 
 // eslint-disable-next-line no-extend-native
-Array.prototype.rotate = function(amount) { // negative amount == rotate left
+Array.prototype.rotate = function (amount) { // negative amount == rotate left
   const r = this.slice(-amount, this.length);
   Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
   return r;
 };
 
 // eslint-disable-next-line no-extend-native
-Object.defineProperty(Array.prototype, 'last', {get: function() { return this[this.length - 1]; }});
+Object.defineProperty(Array.prototype, 'last', {get: function () { return this[this.length - 1]; }});
 
 // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
 new MutationObserver((mutations, observer) => {
@@ -60,12 +60,12 @@ const hotkeyRerouter = {
     find: true, findNext: true, findPrev: true, replace: true, replaceAll: true,
     toggleStyle: true,
   },
-  setState: function(enable) {
-    setTimeout(function() {
+  setState: enable => {
+    setTimeout(() => {
       document[(enable ? 'add' : 'remove') + 'EventListener']('keydown', hotkeyRerouter.eventHandler);
     }, 0);
   },
-  eventHandler: function(event) {
+  eventHandler: event => {
     const keyName = CodeMirror.keyName(event);
     if (
       CodeMirror.lookupKey(keyName, CodeMirror.getOption('keyMap'), handleCommand) == 'handled' ||
@@ -139,7 +139,7 @@ function setCleanGlobal() {
 }
 
 function setCleanSection(section) {
-  section.querySelectorAll('.style-contributor').forEach(function(node) { setCleanItem(node, true); });
+  section.querySelectorAll('.style-contributor').forEach(node => { setCleanItem(node, true); });
 
   // #header section has no codemirror
   const cm = section.CodeMirror;
@@ -182,10 +182,10 @@ function initCodeMirror() {
 
   // additional commands
   CM.commands.jumpToLine = jumpToLine;
-  CM.commands.nextEditor = function(cm) { nextPrevEditor(cm, 1); };
-  CM.commands.prevEditor = function(cm) { nextPrevEditor(cm, -1); };
+  CM.commands.nextEditor = cm => { nextPrevEditor(cm, 1); };
+  CM.commands.prevEditor = cm => { nextPrevEditor(cm, -1); };
   CM.commands.save = save;
-  CM.commands.blockComment = function(cm) {
+  CM.commands.blockComment = cm => {
     cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
   };
   CM.commands.toggleStyle = toggleStyle;
@@ -193,7 +193,7 @@ function initCodeMirror() {
   // 'basic' keymap only has basic keys by design, so we skip it
 
   const extraKeysCommands = {};
-  Object.keys(CM.defaults.extraKeys).forEach(function(key) {
+  Object.keys(CM.defaults.extraKeys).forEach(key => {
     extraKeysCommands[CM.defaults.extraKeys[key]] = true;
   });
   if (!extraKeysCommands.jumpToLine) {
@@ -222,18 +222,18 @@ function initCodeMirror() {
     }
 
     // try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
-    ['N', 'T', 'W'].forEach(function(char) {
+    ['N', 'T', 'W'].forEach(char => {
       [{from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']} // Note: modifier order in CM is S-C-A
-      ].forEach(function(remap) {
+      ].forEach(remap => {
         const oldKey = remap.from + char;
-        Object.keys(CM.keyMap).forEach(function(keyMapName) {
+        Object.keys(CM.keyMap).forEach(keyMapName => {
           const keyMap = CM.keyMap[keyMapName];
           const command = keyMap[oldKey];
           if (!command) {
             return;
           }
-          remap.to.some(function(newMod) {
+          remap.to.some(newMod => {
             const newKey = newMod + char;
             if (!(newKey in keyMap)) {
               delete keyMap[oldKey];
@@ -247,23 +247,21 @@ function initCodeMirror() {
   }
 
   // user option values
-  CM.getOption = function(o) {
-    return CodeMirror.defaults[o];
-  };
-  CM.setOption = function(o, v) {
+  CM.getOption = o => CodeMirror.defaults[o];
+  CM.setOption = (o, v) => {
     CodeMirror.defaults[o] = v;
-    editors.forEach(function(editor) {
+    editors.forEach(editor => {
       editor.setOption(o, v);
     });
   };
 
-  CM.prototype.getSection = function() {
+  CM.prototype.getSection = function () {
     return this.display.wrapper.parentNode;
   };
 
   // initialize global editor controls
   function optionsHtmlFromArray(options) {
-    return options.map(function(opt) { return '<option>' + opt + '</option>'; }).join('');
+    return options.map(opt => '<option>' + opt + '</option>').join('');
   }
   const themeControl = document.getElementById('editor.theme');
   const themeList = localStorage.codeMirrorThemes;
@@ -318,8 +316,8 @@ function acmeEventListener(event) {
       // avoid flicker: wait for the second stylesheet to load, then apply the theme
       document.head.insertAdjacentHTML('beforeend',
         '<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
-      (function() {
-        setTimeout(function() {
+      (() => {
+        setTimeout(() => {
           CodeMirror.setOption(option, value);
           themeLink.remove();
           document.getElementById('cm-theme2').id = 'cm-theme';
@@ -426,13 +424,13 @@ function getSections() {
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
 // this bug is present in some versions of Chrome (v37-40 or something)
-document.addEventListener('scroll', function() {
+document.addEventListener('scroll', () => {
   const style = document.getElementById('name').style;
   style.webkitTransform = style.webkitTransform ? '' : 'scale(1)';
 });
 
 // Shift-Ctrl-Wheel scrolls entire page even when mouse is over a code editor
-document.addEventListener('wheel', function(event) {
+document.addEventListener('wheel', event => {
   if (event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
     // Chrome scrolls horizontally when Shift is pressed but on some PCs this might be different
     window.scrollBy(0, event.deltaX || event.deltaY);
@@ -450,7 +448,7 @@ queryTabs({currentWindow: true}).then(tabs => {
       chrome.windows.update(windowId, prefs.get('windowPosition'));
     }
     if (tabs.length == 1 && window.history.length == 1) {
-      chrome.windows.getAll(function(windows) {
+      chrome.windows.getAll(windows => {
         if (windows.length > 1) {
           sessionStorageHash('saveSizeOnClose').set(windowId, true);
           saveSizeOnClose = true;
@@ -460,7 +458,7 @@ queryTabs({currentWindow: true}).then(tabs => {
       saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
     }
   }
-  chrome.tabs.onRemoved.addListener(function(tabId, info) {
+  chrome.tabs.onRemoved.addListener((tabId, info) => {
     sessionStorageHash('manageStylesHistory').unset(tabId);
     if (info.windowId == windowId && info.isWindowClosing) {
       sessionStorageHash('saveSizeOnClose').unset(windowId);
@@ -489,7 +487,7 @@ function isWindowMaximized() {
     && window.outerHeight == screen.availHeight;
 }
 
-window.onbeforeunload = function() {
+window.onbeforeunload = () => {
   if (saveSizeOnClose && !isWindowMaximized()) {
     prefs.set('windowPosition', {
       left: screenLeft,
@@ -527,7 +525,7 @@ function addAppliesTo(list, name, value) {
   } else {
     e = template.appliesToEverything.cloneNode(true);
   }
-  e.querySelector('.add-applies-to').addEventListener('click', function() {
+  e.querySelector('.add-applies-to').addEventListener('click', function () {
     addAppliesTo(this.parentNode.parentNode);
   }, false);
   list.appendChild(e);
@@ -548,7 +546,7 @@ function addSection(event, section) {
     codeElement.value = section.code;
     for (const i in propertyToCss) {
       if (section[i]) {
-        section[i].forEach(function(url) {
+        section[i].forEach(url => {
           addAppliesTo(appliesTo, propertyToCss[i], url);
           appliesToAdded = true;
         });
@@ -621,7 +619,7 @@ function removeAreaAndSetDirty(area) {
   if (!contributors.length) {
     setCleanItem(area, false);
   }
-  contributors.some(function(node) {
+  contributors.some(node => {
     if (node.savedValue) {
       // it's a saved section, so make it dirty and stop the enumeration
       setCleanItem(area, false);
@@ -688,11 +686,11 @@ function setupGlobalSearch() {
 
   // temporarily overrides the original openDialog with the provided template's innerHTML
   function customizeOpenDialog(cm, template, callback) {
-    cm.openDialog = function(tmpl, cb, opt) {
+    cm.openDialog = (tmpl, cb, opt) => {
       // invoke 'callback' and bind 'this' to the original callback
       originalOpenDialog.call(cm, template.innerHTML, callback.bind(cb), opt);
     };
-    setTimeout(function() { cm.openDialog = originalOpenDialog; }, 0);
+    setTimeout(() => { cm.openDialog = originalOpenDialog; }, 0);
     refocusMinidialog(cm);
   }
 
@@ -707,13 +705,13 @@ function setupGlobalSearch() {
 
   function find(activeCM) {
     activeCM = focusClosestCM(activeCM);
-    customizeOpenDialog(activeCM, template.find, function(query) {
+    customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
       curState = activeCM.state.search;
       if (editors.length == 1 || !curState.query) {
         return;
       }
-      editors.forEach(function(cm) {
+      editors.forEach(cm => {
         if (cm != activeCM) {
           cm.execCommand('clearSearch');
           updateState(cm, curState);
@@ -776,14 +774,14 @@ function setupGlobalSearch() {
         inputs = inputs.reverse();
       }
       inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
-      return inputs.some(function(input) {
+      return inputs.some(input => {
         const match = rxQuery.exec(input.value);
         if (match) {
           input.focus();
           const end = match.index + match[0].length;
           // scroll selected part into view in long inputs,
           // works only outside of current event handlers chain, hence timeout=0
-          setTimeout(function() {
+          setTimeout(() => {
             input.setSelectionRange(end, end);
             input.setSelectionRange(match.index, end);
           }, 0);
@@ -802,9 +800,9 @@ function setupGlobalSearch() {
     let query;
     let replacement;
     activeCM = focusClosestCM(activeCM);
-    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], function(txt) {
+    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], txt => {
       query = txt;
-      customizeOpenDialog(activeCM, template.replaceWith, function(txt) {
+      customizeOpenDialog(activeCM, template.replaceWith, txt => {
         replacement = txt;
         queue = editors.rotate(-editors.indexOf(activeCM));
         if (all) {
@@ -826,8 +824,8 @@ function setupGlobalSearch() {
         return;
       }
       // hide the first two dialogs (replace, replaceWith)
-      cm.openDialog = function(tmpl, callback, opt) {
-        cm.openDialog = function(tmpl, callback, opt) {
+      cm.openDialog = (tmpl, callback, opt) => {
+        cm.openDialog = (tmpl, callback, opt) => {
           cm.openDialog = originalOpenDialog;
           if (all) {
             callback(replacement);
@@ -848,25 +846,23 @@ function setupGlobalSearch() {
       let wrapAround = false;
       const origPos = cm.getCursor();
       cm.openConfirm = function overrideConfirm(tmpl, callbacks, opt) {
-        const ovrCallbacks = callbacks.map(function(callback) {
-          return function() {
-            makeSectionVisible(cm);
-            cm.openConfirm = overrideConfirm;
-            setTimeout(function() { cm.openConfirm = originalOpenConfirm; }, 0);
+        const ovrCallbacks = callbacks.map(callback => () => {
+          makeSectionVisible(cm);
+          cm.openConfirm = overrideConfirm;
+          setTimeout(() => { cm.openConfirm = originalOpenConfirm; }, 0);
 
-            const pos = cm.getCursor();
-            callback();
-            const cmp = CodeMirror.cmpPos(cm.getCursor(), pos);
-            wrapAround |= cmp <= 0;
+          const pos = cm.getCursor();
+          callback();
+          const cmp = CodeMirror.cmpPos(cm.getCursor(), pos);
+          wrapAround |= cmp <= 0;
 
-            const dlg = cm.getWrapperElement().querySelector('.CodeMirror-dialog');
-            if (!dlg || cmp == 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
-              if (dlg) {
-                dlg.remove();
-              }
-              doReplace();
+          const dlg = cm.getWrapperElement().querySelector('.CodeMirror-dialog');
+          if (!dlg || cmp == 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
+            if (dlg) {
+              dlg.remove();
             }
-          };
+            doReplace();
+          }
         });
         originalOpenConfirm.call(cm, template.replaceConfirm.innerHTML, ovrCallbacks, opt);
       };
@@ -887,7 +883,7 @@ function setupGlobalSearch() {
 function jumpToLine(cm) {
   const cur = cm.getCursor();
   refocusMinidialog(cm);
-  cm.openDialog(template.jumpToLine.innerHTML, function(str) {
+  cm.openDialog(template.jumpToLine.innerHTML, str => {
     const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
     if (m) {
       cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
@@ -959,7 +955,7 @@ function refocusMinidialog(cm) {
   // close the currently opened minidialog
   cm.focus();
   // make sure to focus the input in newly opened minidialog
-  setTimeout(function() {
+  setTimeout(() => {
     section.querySelector('.CodeMirror-dialog').focus();
   }, 0);
 }
@@ -980,8 +976,8 @@ function getEditorInSight(nearbyElement) {
   }
   if (!cm || offscreenDistance(cm) > 0) {
     const sorted = editors
-      .map(function(cm, index) { return {cm: cm, distance: offscreenDistance(cm), index: index}; })
-      .sort(function(a, b) { return a.distance - b.distance || a.index - b.index; });
+      .map((cm, index) => ({cm: cm, distance: offscreenDistance(cm), index: index}))
+      .sort((a, b) => a.distance - b.distance || a.index - b.index);
     cm = sorted[0].cm;
     if (sorted[0].distance > 0) {
       makeSectionVisible(cm);
@@ -1027,12 +1023,12 @@ function updateLintReport(cm, delay) {
     const scope = cm ? [cm] : editors;
     let changed = false;
     let fixedOldIssues = false;
-    scope.forEach(function(cm) {
+    scope.forEach(cm => {
       const scopedState = cm.state.lint || {};
       const oldMarkers = scopedState.markedLast || {};
       const newMarkers = {};
       const html = !scopedState.marked || scopedState.marked.length == 0 ? '' : '<tbody>' +
-        scopedState.marked.map(function(mark) {
+        scopedState.marked.map(mark => {
           const info = mark.__annotation;
           const isActiveLine = info.from.line == cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
@@ -1064,7 +1060,7 @@ function updateLintReport(cm, delay) {
       if (!state || !state.postponeNewIssues || fixedOldIssues) {
         renderLintReport(true);
       } else {
-        state.renderTimeout = setTimeout(function() {
+        state.renderTimeout = setTimeout(() => {
           renderLintReport(true);
         }, CodeMirror.defaults.lintReportDelay);
       }
@@ -1072,7 +1068,7 @@ function updateLintReport(cm, delay) {
   }
   function escapeHtml(html) {
     const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'};
-    return html.replace(/[&<>"'/]/g, function(char) { return chars[char]; });
+    return html.replace(/[&<>"'/]/g, char => chars[char]);
   }
 }
 
@@ -1082,7 +1078,7 @@ function renderLintReport(someBlockChanged) {
   const label = t('sectionCode');
   const newContent = content.cloneNode(false);
   let issueCount = 0;
-  editors.forEach(function(cm, index) {
+  editors.forEach((cm, index) => {
     if (cm.state.lint && cm.state.lint.html) {
       const newBlock = newContent.appendChild(document.createElement('table'));
       const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
@@ -1165,9 +1161,9 @@ function beautify(event) {
 
     const undoButton = document.querySelector('#help-popup button[role="undo"]');
     undoButton.textContent = t(scope.length == 1 ? 'undo' : 'undoGlobal');
-    undoButton.addEventListener('click', function() {
+    undoButton.addEventListener('click', () => {
       let undoable = false;
-      scope.forEach(function(cm) {
+      scope.forEach(cm => {
         if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
           delete cm.beautifyChange[cm.changeGeneration()];
           cm.undo();
@@ -1178,8 +1174,8 @@ function beautify(event) {
       undoButton.disabled = !undoable;
     });
 
-    scope.forEach(function(cm) {
-      setTimeout(function() {
+    scope.forEach(cm => {
+      setTimeout(() => {
         const pos = options.translate_positions =
           [].concat.apply([], cm.doc.sel.ranges.map(r =>
             [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
@@ -1283,7 +1279,7 @@ function initWithStyle({style, codeIsUpdated}) {
   }
 
   // if this was done in response to an update, we need to clear existing sections
-  getSections().forEach(function(div) { div.remove(); });
+  getSections().forEach(div => { div.remove(); });
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
   const queueStart = new Date().getTime();
   // after 100ms the sections will be added asynchronously
@@ -1310,7 +1306,7 @@ function initWithStyle({style, codeIsUpdated}) {
 }
 
 function initHooks() {
-  document.querySelectorAll('#header .style-contributor').forEach(function(node) {
+  document.querySelectorAll('#header .style-contributor').forEach(node => {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
   });
@@ -1378,7 +1374,7 @@ function maximizeCodeHeight(sectionDiv, isLast) {
   }
   stats.totalHeight += stats.firstSectionTop;
   if (stats.totalHeight <= window.innerHeight) {
-    editors.forEach(function(cm, index) {
+    editors.forEach((cm, index) => {
       cm.setSize(null, stats.deltas[index] + stats.cmActualHeight);
     });
     return;
@@ -1390,10 +1386,10 @@ function maximizeCodeHeight(sectionDiv, isLast) {
   if (available <= 0) {
     return;
   }
-  const totalDelta = stats.deltas.reduce(function(sum, d) { return sum + d; }, 0);
+  const totalDelta = stats.deltas.reduce((sum, d) => sum + d, 0);
   const q = available / totalDelta;
   const baseHeight = stats.cmActualHeight - stats.sectionMarginTop;
-  stats.deltas.forEach(function(delta, index) {
+  stats.deltas.forEach((delta, index) => {
     editors[index].setSize(null, baseHeight + Math.floor(q * delta));
   });
 }
@@ -1413,8 +1409,8 @@ function validate() {
     return t('styleMissingName');
   }
   // validate the regexps
-  if (document.querySelectorAll('.applies-to-list').some(function(list) {
-    return list.childNodes.some(function(li) {
+  if (document.querySelectorAll('.applies-to-list').some(list => {
+    list.childNodes.some(li => {
       if (li.className == template.appliesToEverything.className) {
         return false;
       }
@@ -1466,7 +1462,7 @@ function save() {
 
 function getSectionsHashes() {
   const sections = [];
-  getSections().forEach(function(div) {
+  getSections().forEach(div => {
     const meta = getMeta(div);
     const code = div.CodeMirror.getValue();
     if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
@@ -1480,7 +1476,7 @@ function getSectionsHashes() {
 
 function getMeta(e) {
   const meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
-  e.querySelector('.applies-to-list').childNodes.forEach(function(li) {
+  e.querySelector('.applies-to-list').childNodes.forEach(li => {
     if (li.className == template.appliesToEverything.className) {
       return;
     }
@@ -1513,13 +1509,13 @@ function showMozillaFormat() {
 }
 
 function toMozillaFormat() {
-  return getSectionsHashes().map(function(section) {
+  return getSectionsHashes().map(section => {
     let cssMds = [];
     for (const i in propertyToCss) {
       if (section[i]) {
-        cssMds = cssMds.concat(section[i].map(function(v) {
-          return propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")';
-        }));
+        cssMds = cssMds.concat(section[i].map(v =>
+          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
+        ));
       }
     }
     return cssMds.length ? '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' : section.code;
@@ -1540,9 +1536,9 @@ function fromMozillaFormat() {
   popup.querySelector('[name="import-append"]').addEventListener('click', doImport);
   popup.querySelector('[name="import-replace"]').addEventListener('click', doImport);
 
-  popup.codebox.on('change', function() {
+  popup.codebox.on('change', () => {
     clearTimeout(popup.mozillaTimeout);
-    popup.mozillaTimeout = setTimeout(function() {
+    popup.mozillaTimeout = setTimeout(() => {
       popup.classList.toggle('ready', trimNewLines(popup.codebox.getValue()));
     }, 100);
   });
@@ -1558,7 +1554,7 @@ function fromMozillaFormat() {
     // let oldSectionCount = editors.length;
     let firstAddedCM;
 
-    parser.addListener('startdocument', function(e) {
+    parser.addListener('startdocument', function (e) {
       let outerText = getRange(sectionStack.last.start, (--e.col, e));
       const gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
       const section = {code: '', start: backtrackTo(this, parserlib.css.Tokens.LBRACE, 'end')};
@@ -1572,7 +1568,7 @@ function fromMozillaFormat() {
         doAddSection(sectionStack.last);
         sectionStack.last.code = '';
       }
-      e.functions.forEach(function(f) {
+      e.functions.forEach(f => {
         const m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
         const aType = CssToProperty[m[1]];
         const aValue = aType != 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
@@ -1581,7 +1577,7 @@ function fromMozillaFormat() {
       sectionStack.push(section);
     });
 
-    parser.addListener('enddocument', function() {
+    parser.addListener('enddocument', function () {
       const end = backtrackTo(this, parserlib.css.Tokens.RBRACE, 'start');
       const section = sectionStack.pop();
       section.code += getRange(section.start, end);
@@ -1589,14 +1585,14 @@ function fromMozillaFormat() {
       doAddSection(section);
     });
 
-    parser.addListener('endstylesheet', function() {
+    parser.addListener('endstylesheet', () => {
       // add nonclosed outer sections (either broken or the last global one)
       const endOfText = {line: lines.length, col: lines.last.length + 1};
       sectionStack.last.code += getRange(sectionStack.last.start, endOfText);
       sectionStack.forEach(doAddSection);
 
       delete maximizeCodeHeight.stats;
-      editors.forEach(function(cm) {
+      editors.forEach(cm => {
         maximizeCodeHeight(cm.getSection(), cm == editors.last);
       });
 
@@ -1608,7 +1604,7 @@ function fromMozillaFormat() {
       }
     });
 
-    parser.addListener('error', function(e) {
+    parser.addListener('error', e => {
       errors += e.line + ':' + e.col + ' ' + e.message.replace(/ at line \d.+$/, '') + '<br>';
     });
 
@@ -1655,7 +1651,7 @@ function fromMozillaFormat() {
         return false;
       }
       if (replaceOldStyle) {
-        editors.slice(0).reverse().forEach(function(cm) {
+        editors.slice(0).reverse().forEach(cm => {
           removeSection({target: cm.getSection().firstElementChild});
         });
       } else if (!editors.last.getValue()) {
@@ -1699,16 +1695,16 @@ function showToggleStyleHelp() {
 function showKeyMapHelp() {
   const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
   const keyMapSorted = Object.keys(keyMap)
-    .map(function(key) { return {key: key, cmd: keyMap[key]}; })
+    .map(key => ({key: key, cmd: keyMap[key]}))
     .concat([{key: 'Shift-Ctrl-Wheel', cmd: 'scrollWindow'}])
-    .sort(function(a, b) { return a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1; });
+    .sort((a, b) => (a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1));
   showHelp(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'),
     '<table class="keymap-list">' +
       '<thead><tr><th><input placeholder="' + t('helpKeyMapHotkey') + '" type="search"></th>' +
         '<th><input placeholder="' + t('helpKeyMapCommand') + '" type="search"></th></tr></thead>' +
-      '<tbody>' + keyMapSorted.map(function(value) {
-        return '<tr><td>' + value.key + '</td><td>' + value.cmd + '</td></tr>';
-      }).join('') +
+      '<tbody>' + keyMapSorted.map(value =>
+        '<tr><td>' + value.key + '</td><td>' + value.cmd + '</td></tr>'
+      ).join('') +
       '</tbody>' +
     '</table>');
 
@@ -1734,12 +1730,13 @@ function showKeyMapHelp() {
     this.value = normalizedKey.replace('-dummy', '');
     filterTable(event);
   }
+
   function filterTable(event) {
     const input = event.target;
     const query = stringAsRegExp(input.value, 'gi');
     const col = input.parentNode.cellIndex;
     inputs[1 - col].value = '';
-    table.tBodies[0].childNodes.forEach(function(row) {
+    table.tBodies[0].childNodes.forEach(row => {
       let cell = row.children[col];
       cell.innerHTML = cell.textContent.replace(query, '<mark>$&</mark>');
       row.style.display = query.test(cell.textContent) ? '' : 'none';
@@ -1753,7 +1750,7 @@ function showKeyMapHelp() {
       if (typeof keyMap == 'string') {
         keyMap = CodeMirror.keyMap[keyMap];
       }
-      Object.keys(keyMap).forEach(function(key) {
+      Object.keys(keyMap).forEach(key => {
         let cmd = keyMap[key];
         // filter out '...', 'attach', etc. (hotkeys start with an uppercase letter)
         if (!merged[key] && !key.match(/^[a-z]/) && cmd != '...') {
@@ -1777,9 +1774,9 @@ function showKeyMapHelp() {
 
 function showLintHelp() {
   showHelp(t('issues'), t('issuesHelp') + '<ul>' +
-    CSSLint.getRules().map(function(rule) {
-      return '<li><b>' + rule.name + '</b><br>' + rule.desc + '</li>';
-    }).join('') + '</ul>'
+    CSSLint.getRules().map(rule =>
+      '<li><b>' + rule.name + '</b><br>' + rule.desc + '</li>'
+    ).join('') + '</ul>'
   );
 }
 
@@ -1932,8 +1929,8 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap')
   }, options));
   popup.codebox.focus();
-  popup.codebox.on('focus', function() { hotkeyRerouter.setState(false); });
-  popup.codebox.on('blur', function() { hotkeyRerouter.setState(true); });
+  popup.codebox.on('focus', () => { hotkeyRerouter.setState(false); });
+  popup.codebox.on('blur', () => { hotkeyRerouter.setState(true); });
   return popup;
 }
 
@@ -1943,7 +1940,7 @@ function getParams() {
   if (urlParts.length == 1) {
     return params;
   }
-  urlParts[1].split('&').forEach(function(keyValue) {
+  urlParts[1].split('&').forEach(keyValue => {
     const splitKeyValue = keyValue.split('=', 2);
     params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
   });
@@ -1969,7 +1966,7 @@ function onRuntimeMessage(request) {
       break;
     case 'styleDeleted':
       if (styleId && styleId == request.id) {
-        window.onbeforeunload = function() {};
+        window.onbeforeunload = () => {};
         window.close();
         break;
       }

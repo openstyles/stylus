@@ -22,14 +22,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 // TODO: remove the following statement when USO is fixed
 document.documentElement.appendChild(document.createElement('script')).text = '(' +
-  function() {
+  function () {
     let settings;
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
       settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search);
     });
     const originalResponseJson = Response.prototype.json;
-    Response.prototype.json = function(...args) {
+    Response.prototype.json = function (...args) {
       return originalResponseJson.call(this, ...args).then(json => {
         Response.prototype.json = originalResponseJson;
         if (!settings || typeof ((json || {}).style_settings || {}).every != 'function') {

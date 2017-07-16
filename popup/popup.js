@@ -79,7 +79,7 @@ function initPopup(url) {
   }
 
   // action buttons
-  $('#disableAll').onchange = function() {
+  $('#disableAll').onchange = function () {
     installed.classList.toggle('disabled', this.checked);
   };
   setupLivePrefs();

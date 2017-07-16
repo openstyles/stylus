@@ -903,7 +903,7 @@ function reapplyFilter(container = installed) {
       // 3. move the shortest group; repeat 2-3
       if (hidden.len < visible.len && (fullPass || hidden.len % 2)) {
         // 3a. move hidden under the horizon
-        for (let j =  0; j < (fullPass ? hidden.len : 1); j++) {
+        for (let j = 0; j < (fullPass ? hidden.len : 1); j++) {
           const entry = entries[hidden.start];
           installed.insertBefore(entry, horizon);
           horizon = entry;
