@@ -35,7 +35,7 @@ const URLS = {
 
 let BG = chrome.extension.getBackgroundPage();
 
-if (!BG || BG != window) {
+if (!BG || BG !== window) {
   document.documentElement.classList.toggle('firefox', FIREFOX);
   document.documentElement.classList.toggle('opera', OPERA);
   // TODO: remove once our manifest's minimum_chrome_version is 50+
@@ -47,7 +47,7 @@ if (!BG || BG != window) {
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;
-  if (msg.method == 'styleUpdated' || msg.method == 'styleAdded') {
+  if (msg.method === 'styleUpdated' || msg.method === 'styleAdded') {
     // apply/popup/manage use only meta for these two methods,
     // editor may need the full code but can fetch it directly,
     // so we send just the meta to avoid spamming lots of tabs with huge styles
@@ -86,11 +86,11 @@ function notifyAllTabs(msg) {
     });
   }
   // notify self: the message no longer is sent to the origin in new Chrome
-  if (typeof onRuntimeMessage != 'undefined') {
+  if (typeof onRuntimeMessage !== 'undefined') {
     onRuntimeMessage(originalMessage);
   }
   // notify apply.js on own pages
-  if (typeof applyOnMessage != 'undefined') {
+  if (typeof applyOnMessage !== 'undefined') {
     applyOnMessage(originalMessage);
   }
   // notify background page and all open popups
@@ -134,7 +134,7 @@ function getActiveTabRealURL() {
 
 function getTabRealURL(tab) {
   return new Promise(resolve => {
-    if (tab.url != 'chrome://newtab/') {
+    if (tab.url !== 'chrome://newtab/') {
       resolve(tab.url);
     } else {
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
@@ -159,13 +159,13 @@ function openURL({url, currentWindow = true}) {
     const urlQuery = url.startsWith('moz-extension') ? undefined : url.replace(/#.*/, '');
     queryTabs({url: urlQuery, currentWindow}).then(tabs => {
       for (const tab of tabs) {
-        if (tab.url == url) {
+        if (tab.url === url) {
           activateTab(tab).then(resolve);
           return;
         }
       }
       getActiveTab().then(tab => {
-        if (tab && tab.url == 'chrome://newtab/'
+        if (tab && tab.url === 'chrome://newtab/'
         // prevent redirecting incognito NTP to a chrome URL as it crashes Chrome
         && (!url.startsWith('chrome') || !tab.incognito)) {
           chrome.tabs.update({url}, resolve);
@@ -250,14 +250,14 @@ const debounce = Object.assign((fn, delay, ...args) => {
 
 
 function deepCopy(obj) {
-  return obj !== null && obj !== undefined && typeof obj == 'object'
-    ? deepMerge(typeof obj.slice == 'function' ? [] : {}, obj)
+  return obj !== null && obj !== undefined && typeof obj === 'object'
+    ? deepMerge(typeof obj.slice === 'function' ? [] : {}, obj)
     : obj;
 }
 
 
 function deepMerge(target, ...args) {
-  const isArray = typeof target.slice == 'function';
+  const isArray = typeof target.slice === 'function';
   for (const obj of args) {
     if (isArray && obj !== null && obj !== undefined) {
       for (const element of obj) {
@@ -267,7 +267,7 @@ function deepMerge(target, ...args) {
     }
     for (const k in obj) {
       const value = obj[k];
-      if (k in target && typeof value == 'object' && value !== null) {
+      if (k in target && typeof value === 'object' && value !== null) {
         deepMerge(target[k], value);
       } else {
         target[k] = deepCopy(value);
@@ -346,7 +346,7 @@ function download(url) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.timeout = 10e3;
-    xhr.onloadend = () => (xhr.status == 200
+    xhr.onloadend = () => (xhr.status === 200
       ? resolve(xhr.responseText)
       : reject(xhr.status));
     const [mainUrl, query] = url.split('?');

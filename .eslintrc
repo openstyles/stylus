@@ -82,7 +82,7 @@ rules:
   dot-location: [2, property]
   dot-notation: [0]
   eol-last: [2]
-  eqeqeq: [0]
+  eqeqeq: [1, always]
   func-call-spacing: [2, never]
   func-name-matching: [0]
   func-names: [0]

@@ -27,7 +27,7 @@ navigator.userAgent.includes('Firefox') && setTimeout(() => {
 
 
 function onDOMready() {
-  if (document.readyState != 'loading') {
+  if (document.readyState !== 'loading') {
     return Promise.resolve();
   }
   return new Promise(resolve => {
@@ -79,9 +79,9 @@ function enforceInputRange(element) {
   const max = Number(element.max);
   const doNotify = () => element.dispatchEvent(new Event('change', {bubbles: true}));
   const onChange = ({type}) => {
-    if (type == 'input' && element.checkValidity()) {
+    if (type === 'input' && element.checkValidity()) {
       doNotify();
-    } else if (type == 'change' && !element.checkValidity()) {
+    } else if (type === 'change' && !element.checkValidity()) {
       element.value = Math.max(min, Math.min(max, Number(element.value)));
       doNotify();
     }
@@ -113,7 +113,7 @@ function $element(opt) {
     ? opt.tag.split('#')
     : [null, opt.tag];
   const element = ns
-    ? document.createElementNS(ns == 'SVG' || ns == 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
+    ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
     : document.createElement(tag || 'div');
   (opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild])
     .forEach(child => child && element.appendChild(child));

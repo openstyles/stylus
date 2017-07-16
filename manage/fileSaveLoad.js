@@ -53,7 +53,7 @@ function importFromString(jsonString) {
   }
   // create objects in background context
   const json = BG.tryJSONparse(jsonString) || [];
-  if (typeof json.slice != 'function') {
+  if (typeof json.slice !== 'function') {
     json.length = 0;
   }
   const oldStyles = json.length && BG.deepCopy(BG.cachedStyles.list || []);
@@ -94,8 +94,8 @@ function importFromString(jsonString) {
   }
 
   function analyze(item) {
-    if (!item || !item.name || !item.name.trim() || typeof item != 'object'
-    || (item.sections && typeof item.sections.slice != 'function')) {
+    if (!item || !item.name || !item.name.trim() || typeof item !== 'object'
+    || (item.sections && typeof item.sections.slice !== 'function')) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }
@@ -117,8 +117,8 @@ function importFromString(jsonString) {
     }
     const oldStyleKeys = oldStyle && Object.keys(oldStyle);
     const metaEqual = oldStyleKeys &&
-      oldStyleKeys.length == Object.keys(item).length &&
-      oldStyleKeys.every(k => k == 'sections' || oldStyle[k] === item[k]);
+      oldStyleKeys.length === Object.keys(item).length &&
+      oldStyleKeys.every(k => k === 'sections' || oldStyle[k] === item[k]);
     const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
     if (metaEqual && codeEqual) {
       stats.unchanged.names.push(oldStyle.name);
@@ -131,7 +131,7 @@ function importFromString(jsonString) {
   function sameStyle(oldStyle, newStyle) {
     return oldStyle.name.trim() === newStyle.name.trim() ||
       ['updateUrl', 'originalMd5', 'originalDigest']
-        .some(field => oldStyle[field] && oldStyle[field] == newStyle[field]);
+        .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
   }
 
   function account({style, info, resolve}) {
@@ -196,7 +196,7 @@ function importFromString(jsonString) {
         buttons: [t('confirmOK'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button, enter, esc}) => {
-        if (button == 1) {
+        if (button === 1) {
           undo();
         }
       });
@@ -224,7 +224,7 @@ function importFromString(jsonString) {
         buttons: [t('confirmOK')],
       }));
     function undoNextId() {
-      if (index == newIds.length) {
+      if (index === newIds.length) {
         resolve();
         return;
       }
@@ -250,7 +250,7 @@ function importFromString(jsonString) {
       }
     };
     for (const block of $$('details')) {
-      if (block.dataset.id != 'invalid') {
+      if (block.dataset.id !== 'invalid') {
         block.style.cursor = 'pointer';
         block.onclick = highlightElement;
       }
@@ -262,7 +262,7 @@ function importFromString(jsonString) {
   }
 
   function reportNameChange(oldStyle, newStyle) {
-    return newStyle.name != oldStyle.name
+    return newStyle.name !== oldStyle.name
       ? oldStyle.name + ' —> ' + newStyle.name
       : oldStyle.name;
   }
@@ -278,21 +278,21 @@ function importFromString(jsonString) {
         for (const tab of tabs) {
           // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
           if (FIREFOX && !tab.width) {
-            if (tab == lastTab) {
+            if (tab === lastTab) {
               resolve();
             }
             continue;
           }
           getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
             const message = {method: 'styleReplaceAll', styles};
-            if (tab.id == ownTab.id) {
+            if (tab.id === ownTab.id) {
               applyOnMessage(message);
             } else {
-              invokeOrPostpone(tab.id == activeTab.id,
+              invokeOrPostpone(tab.id === activeTab.id,
                 chrome.tabs.sendMessage, tab.id, message, ignoreChromeError);
             }
             setTimeout(BG.updateIcon, 0, tab, styles);
-            if (tab == lastTab) {
+            if (tab === lastTab) {
               resolve();
             }
           });
@@ -359,7 +359,7 @@ $('#unfile-all-styles').onclick = () => {
 Object.assign(document.body, {
   ondragover(event) {
     const hasFiles = event.dataTransfer.types.includes('Files');
-    event.dataTransfer.dropEffect = hasFiles || event.target.type == 'search' ? 'copy' : 'none';
+    event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
     this.classList.toggle('dropzone', hasFiles);
     if (hasFiles) {
       event.preventDefault();

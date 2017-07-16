@@ -278,7 +278,7 @@ Object.assign(handleEvent, {
   toggle(event) {
     saveStyleSafe({
       id: handleEvent.getClickedStyleId(event),
-      enabled: this.type == 'checkbox' ? this.checked : this.matches('.enable'),
+      enabled: this.type === 'checkbox' ? this.checked : this.matches('.enable'),
     });
   },
 
@@ -293,9 +293,9 @@ Object.assign(handleEvent, {
     window.onkeydown = event => {
       const keyCode = event.keyCode || event.which;
       if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-      && (keyCode == 13 || keyCode == 27)) {
+      && (keyCode === 13 || keyCode === 27)) {
         event.preventDefault();
-        confirm(keyCode == 13);
+        confirm(keyCode === 13);
       }
     };
     function confirm(ok) {
@@ -342,9 +342,9 @@ Object.assign(handleEvent, {
 
   maybeEdit(event) {
     if (!(
-      event.button == 0 && (event.ctrlKey || event.metaKey) ||
-      event.button == 1 ||
-      event.button == 2)) {
+      event.button === 0 && (event.ctrlKey || event.metaKey) ||
+      event.button === 1 ||
+      event.button === 2)) {
       return;
     }
     // open an editor on middleclick
@@ -401,10 +401,10 @@ function detectSloppyRegexps({entry, style}) {
   for (const section of style.sections) {
     for (const regexp of section.regexps) {
       for (let pass = 1; pass <= 2; pass++) {
-        const cacheKey = pass == 1 ? regexp : BG.SLOPPY_REGEXP_PREFIX + regexp;
+        const cacheKey = pass === 1 ? regexp : BG.SLOPPY_REGEXP_PREFIX + regexp;
         if (!rxCache.has(cacheKey)) {
           // according to CSS4 @document specification the entire URL must match
-          const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+          const anchored = pass === 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
           const rx = tryRegExp(anchored);
           rxCache.set(cacheKey, rx || false);
         }

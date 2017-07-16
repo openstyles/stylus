@@ -33,7 +33,7 @@ chrome.tabs.onAttached.addListener((tabId, data) => {
     if (tab.url.startsWith(URLS.ownOrigin + 'edit.html')) {
       chrome.windows.get(tab.windowId, {populate: true}, win => {
         // If there's only one tab in this window, it's been dragged to new window
-        prefs.set('openEditInWindow', win.tabs.length == 1);
+        prefs.set('openEditInWindow', win.tabs.length === 1);
       });
     }
   });
@@ -59,13 +59,13 @@ updateIcon({id: undefined}, {});
     const manifest = chrome.runtime.getManifest();
     // Open FAQs page once after installation to guide new users.
     // Do not display it in development mode.
-    if (reason == 'install' && manifest.update_url) {
+    if (reason === 'install' && manifest.update_url) {
       setTimeout(openURL, 100, {
         url: 'http://add0n.com/stylus.html'
       });
     }
     // reset L10N cache on update
-    if (reason == 'update') {
+    if (reason === 'update') {
       localStorage.L10N = JSON.stringify({
         browserUIlanguage: chrome.i18n.getUILanguage(),
       });
@@ -138,7 +138,7 @@ contextMenus = Object.assign({
       const item = Object.assign({id}, contextMenus[id]);
       const prefValue = prefs.readOnlyValues[id];
       item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefValue == 'boolean') {
+      if (!item.type && typeof prefValue === 'boolean') {
         item.type = 'checkbox';
         item.checked = prefValue;
       }
@@ -151,7 +151,7 @@ contextMenus = Object.assign({
   };
   createContextMenus();
   prefs.subscribe((id, checked) => {
-    if (id == 'editor.contextDelete') {
+    if (id === 'editor.contextDelete') {
       if (checked) {
         createContextMenus([id]);
       } else {
@@ -160,7 +160,7 @@ contextMenus = Object.assign({
     } else {
       chrome.contextMenus.update(id, {checked}, ignoreChromeError);
     }
-  }, Object.keys(contextMenus).filter(key => typeof prefs.readOnlyValues[key] == 'boolean'));
+  }, Object.keys(contextMenus).filter(key => typeof prefs.readOnlyValues[key] === 'boolean'));
 }
 
 // *************************************************************************
@@ -176,7 +176,7 @@ contextMenus = Object.assign({
         .replace(/\*/g, '.*?'), flags);
   for (const cs of contentScripts) {
     cs.matches = cs.matches.map(m => (
-      m == ALL_URLS ? m : wildcardAsRegExp(m)
+      m === ALL_URLS ? m : wildcardAsRegExp(m)
     ));
   }
 
@@ -191,8 +191,8 @@ contextMenus = Object.assign({
 
   const pingCS = (cs, {id, url}) => {
     cs.matches.some(match => {
-      if ((match == ALL_URLS || url.match(match))
-        && (!url.startsWith('chrome') || url == NTP)) {
+      if ((match === ALL_URLS || url.match(match))
+        && (!url.startsWith('chrome') || url === NTP)) {
         chrome.tabs.sendMessage(id, PING, pong => {
           if (!pong) {
             injectCS(cs, id);
@@ -229,7 +229,7 @@ function webNavigationListener(method, {url, tabId, frameId}) {
       });
     }
     // main page frame id is 0
-    if (frameId == 0) {
+    if (frameId === 0) {
       updateIcon({id: tabId, url}, styles);
     }
   });
@@ -258,7 +258,7 @@ function updateIcon(tab, styles) {
       }
     }
     const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
-    const postfix = disableAll ? 'x' : numStyles == 0 ? 'w' : '';
+    const postfix = disableAll ? 'x' : numStyles === 0 ? 'w' : '';
     const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
     const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';

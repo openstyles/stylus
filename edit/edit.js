@@ -45,7 +45,7 @@ Object.defineProperty(Array.prototype, 'last', {get: function () { return this[t
 new MutationObserver((mutations, observer) => {
   const themeElement = document.getElementById('cm-theme');
   if (themeElement) {
-    themeElement.href = prefs.get('editor.theme') == 'default' ? ''
+    themeElement.href = prefs.get('editor.theme') === 'default' ? ''
       : 'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css';
     observer.disconnect();
   }
@@ -68,8 +68,8 @@ const hotkeyRerouter = {
   eventHandler: event => {
     const keyName = CodeMirror.keyName(event);
     if (
-      CodeMirror.lookupKey(keyName, CodeMirror.getOption('keyMap'), handleCommand) == 'handled' ||
-      CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand) == 'handled'
+      CodeMirror.lookupKey(keyName, CodeMirror.getOption('keyMap'), handleCommand) === 'handled' ||
+      CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, handleCommand) === 'handled'
     ) {
       event.preventDefault();
       event.stopPropagation();
@@ -90,7 +90,7 @@ function onChange(event) {
     setCleanItem(node, node.savedValue === currentValue);
   } else {
     // the manually added section's applies-to is dirty only when the value is non-empty
-    setCleanItem(node, node.localName != 'input' || !node.value.trim());
+    setCleanItem(node, node.localName !== 'input' || !node.value.trim());
     delete node.savedValue; // only valid when actually saved
   }
   updateTitle();
@@ -122,7 +122,7 @@ function setCleanItem(node, isClean) {
 }
 
 function isCleanGlobal() {
-  const clean = Object.keys(dirty).length == 0;
+  const clean = Object.keys(dirty).length === 0;
   setDirtyClass(document.body, !clean);
     // let saveBtn = document.getElementById('save-button')
     // if (clean){
@@ -270,7 +270,7 @@ function initCodeMirror() {
   } else {
     // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
     const theme = prefs.get('editor.theme');
-    themeControl.innerHTML = optionsHtmlFromArray([theme == 'default' ? t('defaultTheme') : theme]);
+    themeControl.innerHTML = optionsHtmlFromArray([theme === 'default' ? t('defaultTheme') : theme]);
     getCodeMirrorThemes().then(() => {
       const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
       themeControl.innerHTML = optionsHtmlFromArray(themes);
@@ -292,7 +292,7 @@ function acmeEventListener(event) {
     console.error('acmeEventListener: no "cm_option" %O', el);
     return;
   }
-  let value = el.type == 'checkbox' ? el.checked : el.value;
+  let value = el.type === 'checkbox' ? el.checked : el.value;
   switch (option) {
     case 'tabSize':
       CodeMirror.setOption('indentUnit', Number(value));
@@ -300,9 +300,9 @@ function acmeEventListener(event) {
     case 'theme': {
       const themeLink = document.getElementById('cm-theme');
       // use non-localized 'default' internally
-      if (!value || value == 'default' || value == t('defaultTheme')) {
+      if (!value || value === 'default' || value === t('defaultTheme')) {
         value = 'default';
-        if (prefs.get(el.id) != value) {
+        if (prefs.get(el.id) !== value) {
           prefs.set(el.id, value);
         }
         themeLink.href = '';
@@ -310,7 +310,7 @@ function acmeEventListener(event) {
         break;
       }
       const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
-      if (themeLink.href == url) { // preloaded in initCodeMirror()
+      if (themeLink.href === url) { // preloaded in initCodeMirror()
         break;
       }
       // avoid flicker: wait for the second stylesheet to load, then apply the theme
@@ -337,7 +337,7 @@ function acmeEventListener(event) {
         case 'token':
         case 'selection':
           document.body.dataset[option] = value;
-          value = {showToken: value == 'token' && /[#.\-\w]/, annotateScrollbar: true};
+          value = {showToken: value === 'token' && /[#.\-\w]/, annotateScrollbar: true};
           break;
         default:
           value = null;
@@ -372,7 +372,7 @@ function setupCodeMirror(textarea, index) {
   let lastClickTime = 0;
   const resizeGrip = wrapper.appendChild(template.resizeGrip.cloneNode(true));
   resizeGrip.onmousedown = event => {
-    if (event.button != 0) {
+    if (event.button !== 0) {
       return;
     }
     event.preventDefault();
@@ -390,7 +390,7 @@ function setupCodeMirror(textarea, index) {
     function resize(e) {
       const cmPageY = wrapper.getBoundingClientRect().top + window.scrollY;
       const height = Math.max(minHeight, e.pageY - cmPageY);
-      if (height != wrapper.clientHeight) {
+      if (height !== wrapper.clientHeight) {
         cm.setSize(null, height);
       }
     }
@@ -449,7 +449,7 @@ queryTabs({currentWindow: true}).then(tabs => {
       // window was reopened via Ctrl-Shift-T etc.
       chrome.windows.update(windowId, prefs.get('windowPosition'));
     }
-    if (tabs.length == 1 && window.history.length == 1) {
+    if (tabs.length === 1 && window.history.length === 1) {
       chrome.windows.getAll(windows => {
         if (windows.length > 1) {
           sessionStorageHash('saveSizeOnClose').set(windowId, true);
@@ -462,14 +462,14 @@ queryTabs({currentWindow: true}).then(tabs => {
   }
   chrome.tabs.onRemoved.addListener((tabId, info) => {
     sessionStorageHash('manageStylesHistory').unset(tabId);
-    if (info.windowId == windowId && info.isWindowClosing) {
+    if (info.windowId === windowId && info.isWindowClosing) {
       sessionStorageHash('saveSizeOnClose').unset(windowId);
     }
   });
 });
 
 getActiveTab().then(tab => {
-  useHistoryBack = sessionStorageHash('manageStylesHistory').value[tab.id] == location.href;
+  useHistoryBack = sessionStorageHash('manageStylesHistory').value[tab.id] === location.href;
 });
 
 function goBackToManage(event) {
@@ -483,10 +483,10 @@ function goBackToManage(event) {
 }
 
 function isWindowMaximized() {
-  return window.screenLeft == 0 &&
-    window.screenTop == 0 &&
-    window.outerWidth == screen.availWidth &&
-    window.outerHeight == screen.availHeight;
+  return window.screenLeft === 0 &&
+    window.screenTop === 0 &&
+    window.outerWidth === screen.availWidth &&
+    window.outerHeight === screen.availHeight;
 }
 
 window.onbeforeunload = () => {
@@ -568,13 +568,13 @@ function addSection(event, section) {
   function toggleTestRegExpVisibility() {
     const show = [...appliesTo.children].some(item =>
       !item.matches('.applies-to-everything') &&
-      item.querySelector('.applies-type').value == 'regexp' &&
+      item.querySelector('.applies-type').value === 'regexp' &&
       item.querySelector('.applies-value').value.trim());
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
       if (
         event.target.matches('.applies-value') &&
-        event.target.parentElement.querySelector('.applies-type').value == 'regexp'
+        event.target.parentElement.querySelector('.applies-type').value === 'regexp'
       ) {
         showRegExpTester(null, div);
       }
@@ -666,7 +666,7 @@ function setupGlobalSearch() {
   let curState; // cm.state.search for last used 'find'
 
   function shouldIgnoreCase(query) { // treat all-lowercase non-regexp queries as case-insensitive
-    return typeof query == 'string' && query == query.toLowerCase();
+    return typeof query === 'string' && query === query.toLowerCase();
   }
 
   function updateState(cm, newState) {
@@ -701,7 +701,7 @@ function setupGlobalSearch() {
   function focusClosestCM(activeCM) {
     editors.lastActive = activeCM;
     const cm = getEditorInSight();
-    if (cm != activeCM) {
+    if (cm !== activeCM) {
       cm.focus();
     }
     return cm;
@@ -712,16 +712,16 @@ function setupGlobalSearch() {
     customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
       curState = activeCM.state.search;
-      if (editors.length == 1 || !curState.query) {
+      if (editors.length === 1 || !curState.query) {
         return;
       }
       editors.forEach(cm => {
-        if (cm != activeCM) {
+        if (cm !== activeCM) {
           cm.execCommand('clearSearch');
           updateState(cm, curState);
         }
       });
-      if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) == 0) {
+      if (CodeMirror.cmpPos(curState.posFrom, curState.posTo) === 0) {
         findNext(activeCM);
       }
     });
@@ -737,12 +737,12 @@ function setupGlobalSearch() {
     let pos = activeCM.getCursor(reverse ? 'from' : 'to');
     activeCM.setSelection(activeCM.getCursor()); // clear the selection, don't move the cursor
 
-    const rxQuery = typeof state.query == 'object'
+    const rxQuery = typeof state.query === 'object'
       ? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? 'i' : '');
 
     if (
       document.activeElement &&
-      document.activeElement.name == 'applies-value' &&
+      document.activeElement.name === 'applies-value' &&
       searchAppliesTo(activeCM)
     ) {
       return;
@@ -864,7 +864,7 @@ function setupGlobalSearch() {
           wrapAround |= cmp <= 0;
 
           const dlg = cm.getWrapperElement().querySelector('.CodeMirror-dialog');
-          if (!dlg || cmp == 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
+          if (!dlg || cmp === 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
             if (dlg) {
               dlg.remove();
             }
@@ -1006,7 +1006,7 @@ function getEditorInSight(nearbyElement) {
 }
 
 function updateLintReport(cm, delay) {
-  if (delay == 0) {
+  if (delay === 0) {
     // immediately show pending csslint messages in onbeforeunload and save
     update(cm);
     return;
@@ -1024,7 +1024,7 @@ function updateLintReport(cm, delay) {
   // or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
   clearTimeout(state.reportTimeout);
   state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
-  state.postponeNewIssues = delay == undefined || delay === null;
+  state.postponeNewIssues = delay === undefined || delay === null;
 
   function update(cm) {
     const scope = cm ? [cm] : editors;
@@ -1034,16 +1034,16 @@ function updateLintReport(cm, delay) {
       const scopedState = cm.state.lint || {};
       const oldMarkers = scopedState.markedLast || {};
       const newMarkers = {};
-      const html = !scopedState.marked || scopedState.marked.length == 0 ? '' : '<tbody>' +
+      const html = !scopedState.marked || scopedState.marked.length === 0 ? '' : '<tbody>' +
         scopedState.marked.map(mark => {
           const info = mark.__annotation;
-          const isActiveLine = info.from.line == cm.getCursor().line;
+          const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
           let message = escapeHtml(info.message.replace(/ at line \d.+$/, ''));
           if (message.length > 100) {
             message = message.substr(0, 100) + '...';
           }
-          if (isActiveLine || oldMarkers[pos] == message) {
+          if (isActiveLine || oldMarkers[pos] === message) {
             delete oldMarkers[pos];
           }
           newMarkers[pos] = message;
@@ -1057,7 +1057,7 @@ function updateLintReport(cm, delay) {
         }).join('') + '</tbody>';
       scopedState.markedLast = newMarkers;
       fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
-      if (scopedState.html != html) {
+      if (scopedState.html !== html) {
         scopedState.html = html;
         changed = true;
       }
@@ -1094,12 +1094,12 @@ function renderLintReport(someBlockChanged) {
       issueCount += newBlock.rows.length;
 
       const block = content.children[newContent.children.length - 1];
-      const blockChanged = !block || cm != block.cm || html != block.innerHTML;
+      const blockChanged = !block || cm !== block.cm || html !== block.innerHTML;
       someBlockChanged |= blockChanged;
       cm.state.lint.reportDisplayed = blockChanged;
     }
   });
-  if (someBlockChanged || newContent.children.length != content.children.length) {
+  if (someBlockChanged || newContent.children.length !== content.children.length) {
     document.getElementById('issue-count').textContent = issueCount;
     container.replaceChild(newContent, content);
     container.style.display = newContent.children.length ? 'block' : 'none';
@@ -1112,7 +1112,7 @@ function resizeLintReport(event, content) {
   if (content.children.length) {
     const bounds = content.getBoundingClientRect();
     const newMaxHeight = bounds.bottom <= innerHeight ? '' : (innerHeight - bounds.top) + 'px';
-    if (newMaxHeight != content.style.maxHeight) {
+    if (newMaxHeight !== content.style.maxHeight) {
       content.style.maxHeight = newMaxHeight;
     }
   }
@@ -1167,7 +1167,7 @@ function beautify(event) {
       '<div><button role="undo"></button></div>');
 
     const undoButton = document.querySelector('#help-popup button[role="undo"]');
-    undoButton.textContent = t(scope.length == 1 ? 'undo' : 'undoGlobal');
+    undoButton.textContent = t(scope.length === 1 ? 'undo' : 'undoGlobal');
     undoButton.addEventListener('click', () => {
       let undoable = false;
       scope.forEach(cm => {
@@ -1188,7 +1188,7 @@ function beautify(event) {
             [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
         const text = cm.getValue();
         const newText = exports.css_beautify(text, options);
-        if (newText != text) {
+        if (newText !== text) {
           if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
             // clear the list if last change wasn't a css-beautify
             cm.beautifyChange = {};
@@ -1206,7 +1206,7 @@ function beautify(event) {
     });
 
     document.querySelector('.beautify-options').onchange = ({target}) => {
-      const value = target.type == 'checkbox' ? target.checked : target.selectedIndex > 0;
+      const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;
       prefs.set('editor.beautify', Object.assign(options, {[target.dataset.option]: value}));
       if (target.parentNode.hasAttribute('newline')) {
         target.parentNode.setAttribute('newline', value.toString());
@@ -1264,7 +1264,7 @@ function init() {
       window.onload = null;
       initWithStyle({style});
     };
-    if (document.readyState != 'loading') {
+    if (document.readyState !== 'loading') {
       window.onload();
     }
   });
@@ -1346,10 +1346,10 @@ function initHooks() {
 
 
 function toggleContextMenuDelete(event) {
-  if (event.button == 2 && prefs.get('editor.contextDelete')) {
+  if (event.button === 2 && prefs.get('editor.contextDelete')) {
     chrome.contextMenus.update('editor.contextDelete', {
       enabled: Boolean(
-        this.selectionStart != this.selectionEnd ||
+        this.selectionStart !== this.selectionEnd ||
         this.somethingSelected && this.somethingSelected()
       ),
     }, ignoreChromeError);
@@ -1412,20 +1412,20 @@ function updateTitle() {
 
 function validate() {
   const name = document.getElementById('name').value;
-  if (name == '') {
+  if (name === '') {
     return t('styleMissingName');
   }
   // validate the regexps
   if (document.querySelectorAll('.applies-to-list').some(list => {
     list.childNodes.some(li => {
-      if (li.className == template.appliesToEverything.className) {
+      if (li.className === template.appliesToEverything.className) {
         return false;
       }
       const valueElement = li.querySelector('[name=applies-value]');
       const type = li.querySelector('[name=applies-type]').value;
       const value = valueElement.value;
       if (type && value) {
-        if (type == 'regexp') {
+        if (type === 'regexp') {
           try {
             new RegExp(value);
           } catch (ex) {
@@ -1472,7 +1472,7 @@ function getSectionsHashes() {
   getSections().forEach(div => {
     const meta = getMeta(div);
     const code = div.CodeMirror.getValue();
-    if (/^\s*$/.test(code) && Object.keys(meta).length == 0) {
+    if (/^\s*$/.test(code) && Object.keys(meta).length === 0) {
       return;
     }
     meta.code = code;
@@ -1484,7 +1484,7 @@ function getSectionsHashes() {
 function getMeta(e) {
   const meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
   e.querySelector('.applies-to-list').childNodes.forEach(li => {
-    if (li.className == template.appliesToEverything.className) {
+    if (li.className === template.appliesToEverything.className) {
       return;
     }
     const type = li.querySelector('[name=applies-type]').value;
@@ -1502,7 +1502,7 @@ function saveComplete(style) {
   setCleanGlobal();
 
   // Go from new style URL to edit style URL
-  if (location.href.indexOf('id=') == -1) {
+  if (location.href.indexOf('id=') === -1) {
     history.replaceState({}, document.title, 'edit.html?id=' + style.id);
     tE('heading', 'editStyleHeading', null, false);
   }
@@ -1551,7 +1551,7 @@ function fromMozillaFormat() {
   });
 
   function doImport() {
-    const replaceOldStyle = this.name == 'import-replace';
+    const replaceOldStyle = this.name === 'import-replace';
     popup.querySelector('.dismiss').onclick();
     const mozStyle = trimNewLines(popup.codebox.getValue());
     const parser = new parserlib.css.Parser();
@@ -1578,7 +1578,7 @@ function fromMozillaFormat() {
       e.functions.forEach(f => {
         const m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
         const aType = CssToProperty[m[1]];
-        const aValue = aType != 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
+        const aValue = aType !== 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
         (section[aType] = section[aType] || []).push(aValue);
       });
       sectionStack.push(section);
@@ -1600,7 +1600,7 @@ function fromMozillaFormat() {
 
       delete maximizeCodeHeight.stats;
       editors.forEach(cm => {
-        maximizeCodeHeight(cm.getSection(), cm == editors.last);
+        maximizeCodeHeight(cm.getSection(), cm === editors.last);
       });
 
       makeSectionVisible(firstAddedCM);
@@ -1622,7 +1622,7 @@ function fromMozillaFormat() {
       const C1 = start.col - 1;
       const L2 = end.line - 1;
       const C2 = end.col - 1;
-      if (L1 == L2) {
+      if (L1 === L2) {
         return lines[L1].substr(C1, C2 - C1 + 1);
       } else {
         const middle = lines.slice(L1 + 1, L2).join('\n');
@@ -1673,7 +1673,7 @@ function fromMozillaFormat() {
   function backtrackTo(parser, tokenType, startEnd) {
     const tokens = parser._tokenStream._lt;
     for (let i = parser._tokenStream._ltIndex - 1; i >= 0; --i) {
-      if (tokens[i].type == tokenType) {
+      if (tokens[i].type === tokenType) {
         return {line: tokens[i][startEnd + 'Line'], col: tokens[i][startEnd + 'Col']};
       }
     }
@@ -1704,7 +1704,7 @@ function showKeyMapHelp() {
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key: key, cmd: keyMap[key]}))
     .concat([{key: 'Shift-Ctrl-Wheel', cmd: 'scrollWindow'}])
-    .sort((a, b) => (a.cmd < b.cmd || (a.cmd == b.cmd && a.key < b.key) ? -1 : 1));
+    .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
   showHelp(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'),
     '<table class="keymap-list">' +
       '<thead><tr><th><input placeholder="' + t('helpKeyMapHotkey') + '" type="search"></th>' +
@@ -1724,7 +1724,7 @@ function showKeyMapHelp() {
 
   function hotkeyHandler(event) {
     const keyName = CodeMirror.keyName(event);
-    if (keyName == 'Esc' || keyName == 'Tab' || keyName == 'Shift-Tab') {
+    if (keyName === 'Esc' || keyName === 'Tab' || keyName === 'Shift-Tab') {
       return;
     }
     event.preventDefault();
@@ -1754,14 +1754,14 @@ function showKeyMapHelp() {
   }
   function mergeKeyMaps(merged, ...more) {
     more.forEach(keyMap => {
-      if (typeof keyMap == 'string') {
+      if (typeof keyMap === 'string') {
         keyMap = CodeMirror.keyMap[keyMap];
       }
       Object.keys(keyMap).forEach(key => {
         let cmd = keyMap[key];
         // filter out '...', 'attach', etc. (hotkeys start with an uppercase letter)
-        if (!merged[key] && !key.match(/^[a-z]/) && cmd != '...') {
-          if (typeof cmd == 'function') {
+        if (!merged[key] && !key.match(/^[a-z]/) && cmd !== '...') {
+          if (typeof cmd === 'function') {
             // for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
             // for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
             cmd = cmd.toString().replace(/^function.*?\{[\s\r\n]*([\s\S]+?)[\s\r\n]*\}$/, '$1');
@@ -1795,7 +1795,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
   const regexps = [...section.querySelector('.applies-to-list').children]
     .map(item =>
       !item.matches('.applies-to-everything') &&
-      item.querySelector('.applies-type').value == 'regexp' &&
+      item.querySelector('.applies-type').value === 'regexp' &&
       item.querySelector('.applies-value').value.trim())
     .filter(item => item)
     .map(text => {
@@ -1857,7 +1857,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
           ? OWN_ICON
           : GET_FAVICON_URL + new URL(url).hostname;
         const icon = `<img src="${faviconUrl}">`;
-        if (match.length == url.length) {
+        if (match.length === url.length) {
           full.push(`<div>${icon + url}</div>`);
         } else {
           partial.push(`<div>${icon}<mark>${match}</mark>` +
@@ -1898,7 +1898,7 @@ function showHelp(title, text) {
   div.querySelector('.contents').innerHTML = text;
   div.querySelector('.title').innerHTML = title;
 
-  if (getComputedStyle(div).display == 'none') {
+  if (getComputedStyle(div).display === 'none') {
     document.addEventListener('keydown', closeHelp);
     div.querySelector('.dismiss').onclick = closeHelp; // avoid chaining on multiple showHelp() calls
   }
@@ -1909,8 +1909,8 @@ function showHelp(title, text) {
   function closeHelp(e) {
     if (
       !e ||
-      e.type == 'click' ||
-      ((e.keyCode || e.which) == 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
+      e.type === 'click' ||
+      ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
     ) {
       div.style.display = '';
       document.querySelector('.contents').innerHTML = '';
@@ -1944,7 +1944,7 @@ function showCodeMirrorPopup(title, html, options) {
 function getParams() {
   const params = {};
   const urlParts = location.href.split('?', 2);
-  if (urlParts.length == 1) {
+  if (urlParts.length === 1) {
     return params;
   }
   urlParts[1].split('&').forEach(keyValue => {
@@ -1959,7 +1959,7 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId == request.style.id && request.reason != 'editSave') {
+      if (styleId && styleId === request.style.id && request.reason !== 'editSave') {
         if ((request.style.sections[0] || {}).code === null) {
           // the code-less style came from notifyAllTabs
           onBackgroundReady().then(() => {
@@ -1972,7 +1972,7 @@ function onRuntimeMessage(request) {
       }
       break;
     case 'styleDeleted':
-      if (styleId && styleId == request.id) {
+      if (styleId && styleId === request.id) {
         window.onbeforeunload = () => {};
         window.close();
         break;

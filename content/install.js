@@ -15,7 +15,7 @@ document.addEventListener('stylishInstallOpera', onInstallClicked);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
-  if (msg.method == 'ping') {
+  if (msg.method === 'ping') {
     sendResponse(true);
   }
 });
@@ -32,7 +32,7 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
     Response.prototype.json = function (...args) {
       return originalResponseJson.call(this, ...args).then(json => {
         Response.prototype.json = originalResponseJson;
-        if (!settings || typeof ((json || {}).style_settings || {}).every != 'function') {
+        if (!settings || typeof ((json || {}).style_settings || {}).every !== 'function') {
           return json;
         }
         const images = new Map();
@@ -46,18 +46,18 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
           if (value.startsWith('ik-')) {
             value = value.replace(/^ik-/, '');
             const defaultItem = jsonSetting.style_setting_options.find(item => item.default);
-            if (!defaultItem || defaultItem.install_key != value) {
+            if (!defaultItem || defaultItem.install_key !== value) {
               if (defaultItem) {
                 defaultItem.default = false;
               }
               jsonSetting.style_setting_options.some(item => {
-                if (item.install_key == value) {
+                if (item.install_key === value) {
                   item.default = true;
                   return true;
                 }
               });
             }
-          } else if (jsonSetting.setting_type == 'image') {
+          } else if (jsonSetting.setting_type === 'image') {
             jsonSetting.style_setting_options.some(item => {
               if (item.default) {
                 item.default = false;
@@ -67,7 +67,7 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
             images.set(jsonSetting.install_key, value);
           } else {
             const item = jsonSetting.style_setting_options[0];
-            if (item.value !== value && item.install_key == 'placeholder') {
+            if (item.value !== value && item.install_key === 'placeholder') {
               item.value = value;
             }
           }
@@ -151,7 +151,7 @@ function checkUpdatability([installedStyle]) {
   const md5Url = getMeta('stylish-md5-url');
   if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
     getResource(md5Url).then(md5 => {
-      reportUpdatable(md5 != installedStyle.originalMd5);
+      reportUpdatable(md5 !== installedStyle.originalMd5);
     });
   } else {
     getResource(getStyleURL()).then(code => {
@@ -180,7 +180,7 @@ function sendEvent(type, detail = null) {
     type = type.replace('Chrome', 'Opera');
   }
   detail = {detail};
-  if (typeof cloneInto != 'undefined') {
+  if (typeof cloneInto !== 'undefined') {
     // Firefox requires explicit cloning, however USO can't process our messages anyway
     // because USO tries to use a global "event" variable deprecated in Firefox
     detail = cloneInto(detail, document); // eslint-disable-line no-undef
@@ -227,7 +227,7 @@ function saveStyleCode(message, name, addProps) {
           reason: 'update',
         }),
         style => {
-          if (message == 'styleUpdate' && style.updateUrl.includes('?')) {
+          if (message === 'styleUpdate' && style.updateUrl.includes('?')) {
             enableUpdateButton(true);
           } else {
             sendEvent('styleInstalledChrome');
@@ -269,7 +269,7 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
   if (!a || !b) {
     return undefined;
   }
-  if (a.length != b.length) {
+  if (a.length !== b.length) {
     return false;
   }
   const checkedInB = [];
@@ -286,16 +286,16 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
         return false;
       }
     }
-    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a == b);
+    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
   }
 
   function equalOrEmpty(a, b, telltale, comparator) {
-    const typeA = a && typeof a[telltale] == 'function';
-    const typeB = b && typeof b[telltale] == 'function';
+    const typeA = a && typeof a[telltale] === 'function';
+    const typeB = b && typeof b[telltale] === 'function';
     return (
       (a === null || a === undefined || (typeA && !a.length)) &&
       (b === null || b === undefined || (typeB && !b.length))
-    ) || typeA && typeB && a.length == b.length && comparator(a, b);
+    ) || typeA && typeB && a.length === b.length && comparator(a, b);
   }
 
   function arrayMirrors(array1, array2) {
@@ -315,7 +315,7 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
 
 
 function onDOMready() {
-  if (document.readyState != 'loading') {
+  if (document.readyState !== 'loading') {
     return Promise.resolve();
   }
   return new Promise(resolve => {

@@ -68,17 +68,17 @@ var updater = {
       });
 
     function maybeFetchMd5(digest) {
-      if (!ignoreDigest && style.originalDigest && style.originalDigest != digest) {
+      if (!ignoreDigest && style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
       return download(style.md5Url);
     }
 
     function maybeFetchCode(md5) {
-      if (!md5 || md5.length != 32) {
+      if (!md5 || md5.length !== 32) {
         return Promise.reject(updater.ERROR_MD5);
       }
-      if (md5 == style.originalMd5 && style.originalDigest && !ignoreDigest) {
+      if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
         return Promise.reject(updater.SAME_MD5);
       }
       return download(style.updateUrl);
@@ -109,8 +109,8 @@ var updater = {
       return json
         && json.sections
         && json.sections.length
-        && typeof json.sections.every == 'function'
-        && typeof json.sections[0].code == 'string';
+        && typeof json.sections.every === 'function'
+        && typeof json.sections[0].code === 'string';
     }
   },
 
