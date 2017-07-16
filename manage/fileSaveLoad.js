@@ -195,7 +195,7 @@ function importFromString(jsonString) {
         contents: report.length ? report : t('importReportUnchanged'),
         buttons: [t('confirmOK'), numChanged && t('undo')],
         onshow:  bindClick,
-      }).then(({button, enter, esc}) => {
+      }).then(({button}) => {
         if (button === 1) {
           undo();
         }
@@ -241,7 +241,7 @@ function importFromString(jsonString) {
     }
   }
 
-  function bindClick(box) {
+  function bindClick() {
     const highlightElement = event => {
       const styleElement = $('#style-' + event.target.dataset.id);
       if (styleElement) {
@@ -367,7 +367,7 @@ Object.assign(document.body, {
       this.classList.remove('fadeout');
     }
   },
-  ondragend(event) {
+  ondragend() {
     animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
       this.style.animationDuration = '';
     });

@@ -831,8 +831,8 @@ function setupGlobalSearch() {
         return;
       }
       // hide the first two dialogs (replace, replaceWith)
-      cm.openDialog = (tmpl, callback, opt) => {
-        cm.openDialog = (tmpl, callback, opt) => {
+      cm.openDialog = (tmpl, callback) => {
+        cm.openDialog = (tmpl, callback) => {
           cm.openDialog = originalOpenDialog;
           if (all) {
             callback(replacement);

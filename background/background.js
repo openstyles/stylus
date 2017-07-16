@@ -26,7 +26,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
 chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
   webNavigationListener('styleReplaceAll', data));
 
-chrome.tabs.onAttached.addListener((tabId, data) => {
+chrome.tabs.onAttached.addListener(tabId => {
   // When an edit page gets attached or detached, remember its state
   // so we can do the same to the next one to open.
   chrome.tabs.get(tabId, tab => {
