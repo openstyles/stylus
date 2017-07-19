@@ -1234,7 +1234,7 @@ function init() {
   const params = getParams();
   if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
     // This is an add
-    tE('heading', 'addStyleTitle');
+    $('#heading').textContent = t('addStyleTitle');
     const section = {code: ''};
     for (const i in CssToProperty) {
       if (params[i]) {
@@ -1252,7 +1252,7 @@ function init() {
     return;
   }
   // This is an edit
-  tE('heading', 'editStyleHeading', null, false);
+  $('#heading').textContent = t('editStyleHeading');
   getStylesSafe({id: params.id}).then(styles => {
     let style = styles[0];
     if (!style) {
@@ -1505,7 +1505,7 @@ function saveComplete(style) {
   // Go from new style URL to edit style URL
   if (location.href.indexOf('id=') === -1) {
     history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-    tE('heading', 'editStyleHeading', null, false);
+    $('#heading').textContent = t('editStyleHeading');
   }
   updateTitle();
 }

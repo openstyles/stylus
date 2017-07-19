@@ -17,17 +17,6 @@ function t(key, params) {
 }
 
 
-function tE(id, key, attr, esc) {
-  if (attr) {
-    document.getElementById(id).setAttribute(attr, t(key));
-  } else if (typeof esc === 'undefined' || esc) {
-    document.getElementById(id).appendChild(document.createTextNode(t(key)));
-  } else {
-    document.getElementById(id).innerHTML = t(key);
-  }
-}
-
-
 function tHTML(html, tag) {
   // body is a text node without HTML tags
   if (typeof html === 'string' && !tag && /<\w+/.test(html) === false) {
