@@ -96,7 +96,11 @@ function tNodeList(nodes) {
           node.appendChild(document.createTextNode(value));
           break;
         case 'html':
-          node.insertAdjacentHTML('afterbegin', value);
+          // localized strings only allow having text nodes and links
+          node.textContent = '';
+          [...tHTML(value, 'div').childNodes]
+            .filter(a => a.nodeType === a.TEXT_NODE || a.tagName === 'A')
+            .forEach(n => node.appendChild(n));
           break;
         default:
           node.setAttribute(type, value);
