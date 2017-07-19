@@ -19,7 +19,13 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["messaging.js", "storage.js", "prefs.js", "background.js", "update.js"]
+    "scripts": [
+      "js/messaging.js",
+      "background/storage.js",
+      "js/prefs.js",
+      "background/background.js",
+      "background/update.js"
+    ]
   },
   "commands": {
     "openManage": {
@@ -35,13 +41,13 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["apply.js"]
+      "js": ["content/apply.js"]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
       "all_frames": false,
-      "js": ["install.js"]
+      "js": ["content/install.js"]
     }
   ],
   "browser_action": {
@@ -56,7 +62,7 @@
   },
   "default_locale": "en",
   "options_ui": {
-    "page": "options/index.html",
+    "page": "options.html",
     "chrome_style": true
   }
 }

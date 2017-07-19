@@ -1,792 +1,213 @@
 <html id="stylus">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
-		<script src="dom.js"></script>
-		<script src="messaging.js"></script>
-		<script src="prefs.js"></script>
-		<script src="localization.js"></script>
-		<script src="apply.js"></script>
-		<script src="edit.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/messaging.js"></script>
+    <script src="js/prefs.js"></script>
+    <script src="js/localization.js"></script>
+    <script src="content/apply.js"></script>
+    <link rel="stylesheet" href="edit/edit.css">
+    <script src="edit/edit.js"></script>
 
-		<script src="codemirror/lib/codemirror.js"></script>
-		<link rel="stylesheet" href="codemirror/lib/codemirror.css">
-		<script src="codemirror/mode/css/css.js"></script>
+    <script src="vendor/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.css">
+    <script src="vendor/codemirror/mode/css/css.js"></script>
 
-		<link rel="stylesheet" href="codemirror/addon/dialog/dialog.css">
-		<link rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css">
-		<script src="codemirror/addon/scroll/annotatescrollbar.js"></script>
-		<script src="codemirror/addon/search/matchesonscrollbar.js"></script>
-		<script src="codemirror-overwrites/addon/search/match-highlighter.js"></script>
-		<script src="codemirror/addon/dialog/dialog.js"></script>
-		<script src="codemirror/addon/search/searchcursor.js"></script>
-		<script src="codemirror/addon/search/search.js"></script>
-		<script src="codemirror/addon/comment/comment.js"></script>
-		<script src="codemirror/addon/selection/active-line.js"></script>
+    <link rel="stylesheet" href="vendor/codemirror/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="vendor/codemirror/addon/search/matchesonscrollbar.css">
+    <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
+    <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
+    <script src="vendor-overwrites/codemirror/addon/search/match-highlighter.js"></script>
+    <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
+    <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
+    <script src="vendor/codemirror/addon/search/search.js"></script>
+    <script src="vendor/codemirror/addon/comment/comment.js"></script>
+    <script src="vendor/codemirror/addon/selection/active-line.js"></script>
 
-		<link rel="stylesheet" href="codemirror/addon/fold/foldgutter.css" />
-		<script src="codemirror/addon/fold/foldcode.js"></script>
-		<script src="codemirror/addon/fold/foldgutter.js"></script>
-		<script src="codemirror/addon/fold/brace-fold.js"></script>
-		<script src="codemirror/addon/fold/comment-fold.js"></script>
+    <link rel="stylesheet" href="vendor/codemirror/addon/fold/foldgutter.css" />
+    <script src="vendor/codemirror/addon/fold/foldcode.js"></script>
+    <script src="vendor/codemirror/addon/fold/foldgutter.js"></script>
+    <script src="vendor/codemirror/addon/fold/brace-fold.js"></script>
+    <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
 
-		<script src="codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
 
-		<link rel="stylesheet" href="codemirror/addon/lint/lint.css" />
-		<script src="csslint/csslint-worker.js"></script>
-		<script src="codemirror/addon/lint/lint.js"></script>
-		<script src="codemirror-overwrites/addon/lint/css-lint.js"></script>
+    <link rel="stylesheet" href="vendor/codemirror/addon/lint/lint.css" />
+    <script src="vendor/csslint/csslint-worker.js"></script>
+    <script src="vendor/codemirror/addon/lint/lint.js"></script>
+    <script src="vendor-overwrites/codemirror/addon/lint/css-lint.js"></script>
 
-		<link rel="stylesheet" href="codemirror/addon/hint/show-hint.css" />
-		<script src="codemirror/addon/hint/show-hint.js"></script>
-		<script src="codemirror/addon/hint/css-hint.js"></script>
+    <link rel="stylesheet" href="vendor/codemirror/addon/hint/show-hint.css" />
+    <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
+    <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
 
-		<script src="codemirror/keymap/sublime.js"></script>
-		<script src="codemirror/keymap/emacs.js"></script>
-		<script src="codemirror/keymap/vim.js"></script>
+    <script src="vendor/codemirror/keymap/sublime.js"></script>
+    <script src="vendor/codemirror/keymap/emacs.js"></script>
+    <script src="vendor/codemirror/keymap/vim.js"></script>
+    <link id="cm-theme" rel="stylesheet">
 
-		<style type="text/css">
+    <template data-id="appliesTo">
+      <li>
+        <select name="applies-type" class="applies-type style-contributor">
+          <option value="url" i18n-text="appliesUrlOption"></option>
+          <option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
+          <option value="domain" i18n-text="appliesDomainOption"></option>
+          <option value="regexp" i18n-text="appliesRegexpOption"></option>
+        </select>
+        <input name="applies-value" class="applies-value style-contributor">
+        <button class="remove-applies-to" i18n-text="appliesRemove"></button>
+        <button class="add-applies-to" i18n-text="appliesAdd"></button>
+      </li>
+    </template>
+    <template data-id="appliesToEverything">
+      <li class="applies-to-everything" i18n-html="appliesToEverything">
+        <button class="add-applies-to" i18n-text="appliesSpecify"></button>
+      </li>
+    </template>
+    <template data-id="section">
+      <div>
+        <label i18n-text="sectionCode"></label>
+        <textarea class="code"></textarea>
+        <br>
+        <div class="applies-to">
+          <label i18n-text="appliesLabel">
+            <svg class="svg-icon info applies-to-help"><use xlink:href="#svg-icon-help"/></svg>
+          </label>
+          <ul class="applies-to-list"></ul>
+        </div>
+        <button class="remove-section" i18n-text="sectionRemove"></button>
+        <button class="add-section" i18n-text="sectionAdd"></button>
+        <button class="beautify-section" i18n-text="styleBeautify"></button>
+        <button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
+      </div>
+    </template>
+    <template data-id="find">
+      <span i18n-text="search">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
+        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+      </span>
+    </template>
+    <template data-id="replace">
+      <span i18n-text="replace">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
+        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+      </span>
+    </template>
+    <template data-id="replaceAll">
+      <span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
+        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
+      </span>
+    </template>
+    <template data-id="replaceWith">
+      <span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
+      </span>
+    </template>
+    <template data-id="replaceConfirm">
+      <span i18n-text="replace">?
+        <button i18n-text="confirmYes"></button>
+        <button i18n-text="confirmNo"></button>
+        <button i18n-text="confirmStop"></button>
+      </span>
+    </template>
+    <template data-id="jumpToLine">
+      <span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+    </template>
+    <template data-id="regexpTestPartial">
+      <a target="_blank" href="https://github.com/stylish-userstyles/stylish/wiki/Applying-styles-to-specific-sites#advanced-matching-with-regular-expressions"><svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></a>
+    </template>
+    <template data-id="resizeGrip">
+      <div class="resize-grip" i18n-title="cm_resizeGripHint"></div>
+    </template>
+  </head>
 
-			body {
-				margin: 0;
-				font: 12px arial,sans-serif;
-			}
-			/************ header ************/
-			#header {
-				width: 280px;
-				height: 100vh;
-				overflow: auto;
-				position: fixed;
-				top: 0;
-				padding: 15px;
-				border-right: 1px dashed #AAA;
-				-webkit-box-shadow: 0 0 3rem -1.2rem black;
-				box-sizing: border-box;
-			}
-			#header h1 {
-				margin-top: 0;
-			}
-			#sections {
-				padding-left: 280px;
-			}
-			#sections h2 {
-				margin-top: 1rem;
-				margin-left: 1.7rem;
-			}
-			.aligned {
-				display: table-row;
-			}
-			.aligned > *:not(svg) {
-				display: table-cell;
-				margin-top: 0.1rem;
-				min-height: 1.4rem;
-			}
-			input[type="checkbox"] {
-				margin-left: 0.1rem;
-			}
-			/* basic info */
-			#basic-info {
-				margin-bottom: 1rem;
-			}
-			#name {
-				width: 100%;
-			}
-			#basic-info-name {
-				display: flex;
-				align-items: center;
-			}
-			#url {
-				margin-left: 0.25rem;
-			}
-			#url:not([href^="http"]) {
-				display: none;
-			}
-			#save-button {
-				opacity: .5;
-				pointer-events: none;
-			}
-			.dirty #save-button {
-				opacity: 1;
-				pointer-events: all;
-			}
-			.svg-icon {
-				cursor: pointer;
-				vertical-align: middle;
-				transition: fill .5s;
-				width: 16px;
-				height: 16px;
-			}
-			.svg-icon:not(.dismiss) {
-				margin-left: 0.2rem;
-			}
-			h2 .svg-icon, label .svg-icon {
-				margin-top: -1px;
-			}
-			.svg-icon.info {
-				width: 14px;
-				height: 16px;
-			}
-			.svg-icon:hover,
-			.svg-icon.info {
-				fill: #666;
-			}
-			.svg-icon,
-			.svg-icon.info:hover {
-				fill: #000;
-			}
-			#enabled {
-				margin-left: 0;
-				vertical-align: middle;
-			}
-			#enabled-label {
-				vertical-align: middle;
-			}
-			/* actions */
-			#actions > * {
-				margin-right: 0.5rem;
-				margin-bottom: 0.5rem;
-			}
-			/* options */
-			#options [type="number"] {
-				max-width: 2.5rem;
-				text-align: right;
-			}
-			#options .option > * {
-				padding-right: 0.25rem;
-			}
-			/************ content ***********/
-			#sections > div {
-				margin: 0.7rem;
-				padding: 1rem;
-			}
-			#sections > div:not(:first-of-type) {
-				border-top: 2px solid black;
-			}
-			#sections > div:only-of-type .remove-section {
-				display: none;
-			}
-			#sections > div > button:not(:first-of-type) {
-				margin-left: 0.2rem;
-			}
-			.dirty > label::before {
-				content: "*";
-				font-weight: bold;
-			}
-			#sections {
-				counter-reset: codebox;
-			}
-			#sections > div > label::after {
-				counter-increment: codebox;
-				content: counter(codebox);
-				margin-left: 0.25rem;
-			}
-			/* code */
-			.CodeMirror-hint:hover {
-				color: white;
-				background: #08f;
-			}
-			.code {
-				height: 10rem;
-				width: 40rem;
-			}
-			.CodeMirror {
-				border: solid #CCC 1px;
-			}
-			.CodeMirror-scroll {
-				height: auto;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 6px; /* resize-grip height */
-			}
-			.CodeMirror-lint-mark-warning {
-				background: none;
-			}
-			.CodeMirror-vscrollbar {
-				margin-bottom: 7px; /* make space for resize-grip */
-			}
-			.CodeMirror-hscrollbar {
-		  		bottom: 7px; /* make space for resize-grip */
-			}
-			.CodeMirror-scrollbar-filler {
-				bottom: 7px; /* make space for resize-grip */
-			}
-			.CodeMirror-dialog {
-				-webkit-animation: highlight 3s ease-out;
-			}
-			.CodeMirror-focused {
-				outline: -webkit-focus-ring-color auto 5px;
-				outline-offset: -2px;
-			}
-			.CodeMirror-search-field {
-				width: 10em;
-			}
-			.CodeMirror-jump-field {
-				width: 5em;
-			}
-			.CodeMirror-search-hint {
-				color: #888;
-			}
-			body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
-			body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
-				animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
-				animation-fill-mode: both;
-			}
-			body[data-match-highlight="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
-			body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar {
-				background-color: rgba(1, 151, 193, 0.1);
-			}
-			@-webkit-keyframes highlight {
-				from {
-					background-color: #ff9;
-				}
-				to {
-					background-color: none;
-				}
-			}
-			@keyframes fadein {
-				from {
-					opacity: 0;
-				}
-				to {
-					opacity: 1;
-				}
-			}
-			@keyframes fadein-match-highlighter {
-				from { background-color: transparent; }
-				to   { background-color: rgba(1, 151, 193, 0.1); }
-			}
-			.resize-grip {
-				position: absolute;
-				display: block;
-				height: 6px;
-				content: "";
-				left: 0;
-				right: 0;
-				bottom: 0;
-				z-index: 9;
-				cursor: n-resize;
-				background-color: inherit;
-				border-top-width: 1px;
-				border-top-style: solid;
-				border-top-color: inherit;
-			}
-			.resize-grip:after {
-				content: "";
-				bottom: 2px;
-				left: 0;
-				right: 0;
-				margin: 0 8px;
-				display: block;
-				position: absolute;
-				border-top-width: 2px;
-				border-top-style: dotted;
-				border-top-color: inherit;
-			}
-			/* applies-to */
-			.applies-to {
-				display: flex;
-			}
-			.applies-to label {
-				flex: auto;
-				margin-top: 0.2rem;
-			}
-			.applies-to ul {
-				flex: auto;
-				flex-grow: 99;
-				margin: 0;
-				padding: 0;
-			}
-			.applies-to li {
-				display: flex;
-				list-style-type: none;
-				align-items: center;
-				margin-bottom: 0.35rem;
-			}
-			.applies-to li > *:not(button) {
-				flex: auto;
-				min-height: 1.4rem;
-				margin-left: 0.35rem;
-			}
-			.applies-to li .add-applies-to {
-				visibility: hidden;
-				text-align: left;
-			}
-			.applies-to li:last-child .add-applies-to {
-				visibility: visible
-			}
-			.applies-to li .add-applies-to:first-child {
-				margin-left: 1rem;
-			}
-			.applies-to li .applies-value {
-				flex-grow: 99;
-				padding-left: 0.2rem;
-			}
-			.applies-to img {
-				vertical-align: bottom;
-			}
-			.test-regexp {
-				display: none;
-			}
-			.has-regexp .test-regexp {
-				display: inline-block;
-			}
-			.regexp-report summary, .regexp-report div {
-				cursor: pointer;
-				outline: none;
-			}
-			.regexp-report mark {
-				background-color: rgba(255, 255, 0, .5);
-			}
-			.regexp-report details {
-				margin-left: 1rem;
-			}
-			.regexp-report details:not(:last-child) {
-				margin-bottom: 1rem;
-			}
-			.regexp-report summary {
-				font-weight: bold;
-				margin-left: -1rem;
-				margin-bottom: .5rem;
-				outline: none;
-				cursor: default;
-			}
-			.regexp-report details[data-type="full"] {
-				color: darkgreen;
-			}
-			.regexp-report details[data-type="partial"] {
-				color: darkgray;
-			}
-			.regexp-report details[data-type="invalid"] {
-				color: maroon;
-			}
-			.regexp-report details details {
-				margin-left: 2rem;
-				margin-top: .5rem;
-			}
-			.regexp-report .svg-icon {
-				position: absolute;
-				margin-top: -1px;
-			}
-			.regexp-report details div:hover {
-				text-decoration: underline;
-				text-decoration-skip: ink;
-			}
-			.regexp-report details div img {
-				width: 16px;
-				max-height: 16px;
-				position: absolute;
-				margin-left: -20px;
-				margin-top: -1px;
-				animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
-				animation-fill-mode: both;
-			}
-			/************ help popup ************/
-			#help-popup {
-				top: 3rem;
-				right: 3rem;
-				max-width: 50vw;
-				position: fixed;
-				display: none;
-				background-color: white;
-				box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
-				padding: 0.5rem;
-				z-index: 99;
-			}
-			#help-popup.big {
-				max-width: 100%;
-				left: 3rem;
-			}
-			#help-popup.big .CodeMirror {
-				min-height: 2rem;
-				height: 70vh;
-			}
-			#help-popup .title {
-				font-weight: bold;
-				background-color: rgba(0,0,0,0.05);
-				margin: -0.5rem -0.5rem 0.5rem;
-				padding: .5rem 32px .5rem .5rem;
-			}
-			#help-popup .contents {
-				max-height: calc(100vh - 8rem);
-				overflow-y: auto;
-			}
-			#help-popup .dismiss {
-				position: absolute;
-				right: 4px;
-				top: .5em;
-			}
+  <body id="stylus-edit">
+    <div id="header">
+      <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
+      <section id="basic-info">
+        <div id="basic-info-name">
+          <input id="name" class="style-contributor" i18n-placeholder="styleMissingName" spellcheck="false">
+          <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
+        </div>
+        <div id="basic-info-enabled">
+          <input type="checkbox" id="enabled" class="style-contributor">
+          <label for="enabled" id="enabled-label" i18n-text="styleEnabledLabel"></label><!--
+          --><svg id="toggle-style-help" class="svg-icon info">
+            <use xlink:href="#svg-icon-help"/>
+          </svg>
+        </div>
+      </section>
+      <section id="actions">
+        <div>
+          <button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button>
+          <button id="beautify" i18n-text="styleBeautify"></button>
+          <a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
+        </div>
+        <div>
+          <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
+          <button id="from-mozilla" i18n-text="importLabel"></button>
+          <button id="to-mozilla" i18n-text="exportLabel"></button>
+        </div>
+      </section>
+      <section id="options">
+        <h2 id="options-heading" i18n-text="optionsHeading"></h2>
+        <div class="option">
+          <input id="editor.lineWrapping" type="checkbox">
+          <label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
+        </div>
+        <div class="option">
+          <input id="editor.smartIndent" type="checkbox">
+          <label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
+        </div>
+        <div class="option">
+          <input id="editor.indentWithTabs" type="checkbox">
+          <label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
+        </div>
+        <div class="option">
+          <input id="editor.autocompleteOnTyping" type="checkbox">
+          <label for="editor.autocompleteOnTyping" i18n-text="cm_autocompleteOnTyping"></label>
+        </div>
+        <div class="option aligned">
+          <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+          <input id="editor.tabSize" type="number" min="0">
+        </div>
+        <div class="option aligned">
+          <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
+          <select id="editor.keyMap"></select>
+          <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+        </div>
+        <div class="option aligned">
+          <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+          <select id="editor.theme"></select>
+        </div>
+        <div class="option aligned">
+          <label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
+          <select id="editor.matchHighlight">
+            <option i18n-text="cm_matchHighlightToken" value="token">
+            <option i18n-text="cm_matchHighlightSelection" value="selection">
+            <option i18n-text="genericDisabledLabel" value="">
+          </select>
+        </div>
+      </section>
+      <section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
+    </div>
+    <section id="sections">
+      <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
+    </section>
+    <div id="help-popup">
+      <div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg></svg>
+      <div class="contents"></div>
+    </div>
 
-			.keymap-list {
-				font-size: 85%;
-				line-height: 1.0;
-				border-spacing: 0;
-				word-break: break-all;
-			}
-			.keymap-list input {
-				width: 100%;
-			}
-			.keymap-list tr:nth-child(odd) {
-				background-color: rgba(0, 0, 0, 0.07);
-			}
-			.keymap-list td:first-child {
-				white-space: nowrap;
-				font-family: monospace;
-				padding-right: 0.5rem;
-			}
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+      <symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
+        <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
+      </symbol>
+      <symbol id="svg-icon-help" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt">
+        <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
+      </symbol>
+      <symbol id="svg-icon-close" height="16" width="12" viewBox="0 0 12 16">
+        <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
+      </symbol>
+    </svg>
 
-			#help-popup button[name^="import"] {
-				line-height: 1.5rem;
-				padding: 0 0.5rem;
-				margin: 0.5rem 0 0 0.5rem;
-				pointer-events: none;
-				opacity: 0.5;
-				float: right;
-			}
-			#help-popup.ready button[name^="import"] {
-				pointer-events: all;
-				opacity: 1.0;
-			}
-
-			/************ lint ************/
-			#lint {
-				display: none;
-			}
-			#lint > div {
-				overflow-y: auto;
-			}
-			#lint table {
-				font-size: 100%;
-				border-spacing: 0;
-				margin-bottom: 1rem;
-				line-height: 1.0;
-			}
-			#lint table:last-child {
-				margin-bottom: 0;
-			}
-			#lint caption {
-				text-align: left;
-				font-weight: bold;
-			}
-			#lint tbody {
-				font-size: 85%;
-				cursor: pointer;
-			}
-			#lint tr:hover {
-				background-color: rgba(0, 0, 0, 0.1);
-			}
-			#lint td[role="severity"] {
-				font-size: 0;
-				width: 16px;
-				padding-right: 0.25rem;
-			}
-			#lint td[role="line"], #lint td[role="sep"] {
-				text-align: right;
-				padding-right: 0;
-			}
-			#lint td[role="col"] {
-				text-align: left;
-				padding-right: 0.25rem;
-			}
-			#lint td[role="message"] {
-				text-align: left;
-			}
-
-			/************ CSS beautifier ************/
-			.beautify-options {
-				white-space: nowrap;
-				font-family: monospace;
-			}
-			.beautify-options div {
-				float: left;
-			}
-			.beautify-options div[newline="true"] + div {
-				clear: left;
-			}
-			.beautify-options div[newline="true"] + div span[indent] {
-				padding-left: 2rem;
-			}
-			.beautify-options:after {
-				clear: both;
-				display: block;
-				content: " ";
-				height: 1rem;
-			}
-			.beautify-options span {
-				font-weight: bold;
-			}
-			.beautify-options select {
-				border: none;
-				background-color: rgba(0, 0, 0, 0.05);
-			}
-
-			/************ reponsive layouts ************/
-			@media(max-width:737px) {
-				#header {
-					width: auto;
-					height: auto;
-					position: inherit;
-					border-right: none;
-					border-bottom: 1px dashed #AAA;
-				}
-				#header section:not(:last-child) {
-					margin-bottom: 0.4rem;
-				}
-				#header input[type="checkbox"] {
-					vertical-align: middle;
-				}
-				h2 {
-					display: none;
-				}
-				#basic-info {
-					display: flex;
-					align-items: baseline;
-				}
-				#basic-info > * {
-					flex: auto;
-				}
-				#basic-info > *:first-child {
-					flex-grow: 99;
-					display: flex;
-				}
-				#basic-info > *:not(:last-child) {
-					margin-right: 0.8rem;
-				}
-				#basic-info #name {
-					width: auto;
-					flex-grow: 99;
-				}
-				#actions {
-					margin-top: 1rem;
-				}
-				#actions > * {
-					display: inline-block;
-				}
-				#options {
-					-webkit-column-count: 2;
-				}
-				#options .aligned > *:not(svg) {
-					margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
-					padding-right: 0.4rem;
-					vertical-align: baseline;
-					min-height: 1.4rem;
-				}
-				.option {
-					-webkit-column-break-inside: avoid;
-				}
-				.option label {
-					line-height: 1.25rem;
-					margin: 0;
-				}
-				#options [type="number"] {
-					text-align: left; /* workaround the column flow bug in webkit */
-					padding-left: 0.2rem;
-				}
-				#options #tabSize-label {
-					position: relative;
-					top: 0.2rem;
-				}
-				#lint h2 {
-					display: block;
-					cursor: default;
-					margin-bottom: 0;
-				}
-				#lint > div {
-					max-height: 0;
-				}
-				#lint.collapsed > div {
-					display: none;
-				}
-				#lint:hover > div {
-					margin-top: 1em;
-					max-height: 30vh;
-				}
-				#sections {
-					padding-left: 0;
-				}
-				#sections > div {
-					padding: 0;
-				}
-				#sections > *:not(h2) {
-					padding-left: 0.4rem;
-				}
-				.applies-type {
-					width: 30%;
-				}
-			}
-			@media(max-width:500px) {
-				#options {
-					-webkit-column-count: 1;
-				}
-				#options #tabSize-label {
-					position: static;
-				}
-			}
-		</style>
-		<link id="cm-theme" rel="stylesheet">
-
-		<template data-id="appliesTo">
-			<li>
-				<select name="applies-type" class="applies-type style-contributor">
-					<option value="url" i18n-text="appliesUrlOption"></option>
-					<option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
-					<option value="domain" i18n-text="appliesDomainOption"></option>
-					<option value="regexp" i18n-text="appliesRegexpOption"></option>
-				</select>
-				<input name="applies-value" class="applies-value style-contributor">
-				<button class="remove-applies-to" i18n-text="appliesRemove"></button>
-				<button class="add-applies-to" i18n-text="appliesAdd"></button>
-			</li>
-		</template>
-		<template data-id="appliesToEverything">
-			<li class="applies-to-everything" i18n-html="appliesToEverything">
-				<button class="add-applies-to" i18n-text="appliesSpecify"></button>
-			</li>
-		</template>
-		<template data-id="section">
-			<div>
-				<label i18n-text="sectionCode"></label>
-				<textarea class="code"></textarea>
-				<br>
-				<div class="applies-to">
-					<label i18n-text="appliesLabel">
-						<svg class="svg-icon info applies-to-help"><use xlink:href="#svg-icon-help"/></svg>
-					</label>
-					<ul class="applies-to-list"></ul>
-				</div>
-				<button class="remove-section" i18n-text="sectionRemove"></button>
-				<button class="add-section" i18n-text="sectionAdd"></button>
-				<button class="beautify-section" i18n-text="styleBeautify"></button>
-				<button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
-			</div>
-		</template>
-		<template data-id="find">
-			<span i18n-text="search">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-			</span>
-		</template>
-		<template data-id="replace">
-			<span i18n-text="replace">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-			</span>
-		</template>
-		<template data-id="replaceAll">
-			<span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-				<span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-			</span>
-		</template>
-		<template data-id="replaceWith">
-			<span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-			</span>
-		</template>
-		<template data-id="replaceConfirm">
-			<span i18n-text="replace">?
-				<button i18n-text="confirmYes"></button>
-				<button i18n-text="confirmNo"></button>
-				<button i18n-text="confirmStop"></button>
-			</span>
-		</template>
-		<template data-id="jumpToLine">
-			<span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
-		</template>
-		<template data-id="regexpTestPartial">
-			<a target="_blank" href="https://github.com/stylish-userstyles/stylish/wiki/Applying-styles-to-specific-sites#advanced-matching-with-regular-expressions"><svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></a>
-		</template>
-		<template data-id="resizeGrip">
-			<div class="resize-grip" i18n-title="cm_resizeGripHint"></div>
-		</template>
-	</head>
-
-	<body id="stylus-edit">
-		<div id="header">
-			<h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
-			<section id="basic-info">
-				<div id="basic-info-name">
-					<input id="name" class="style-contributor" i18n-placeholder="styleMissingName" spellcheck="false">
-					<a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
-				</div>
-				<div id="basic-info-enabled">
-					<input type="checkbox" id="enabled" class="style-contributor">
-					<label for="enabled" id="enabled-label" i18n-text="styleEnabledLabel"></label><!--
-					--><svg id="toggle-style-help" class="svg-icon info">
-						<use xlink:href="#svg-icon-help"/>
-					</svg>
-				</div>
-			</section>
-			<section id="actions">
-				<div>
-					<button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button>
-					<button id="beautify" i18n-text="styleBeautify"></button>
-					<a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
-				</div>
-				<div>
-					<h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
-					<button id="from-mozilla" i18n-text="importLabel"></button>
-					<button id="to-mozilla" i18n-text="exportLabel"></button>
-				</div>
-			</section>
-			<section id="options">
-				<h2 id="options-heading" i18n-text="optionsHeading"></h2>
-				<div class="option">
-					<input id="editor.lineWrapping" type="checkbox">
-					<label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
-				</div>
-				<div class="option">
-					<input id="editor.smartIndent" type="checkbox">
-					<label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
-				</div>
-				<div class="option">
-					<input id="editor.indentWithTabs" type="checkbox">
-					<label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
-				</div>
-				<div class="option">
-					<input id="editor.autocompleteOnTyping" type="checkbox">
-					<label for="editor.autocompleteOnTyping" i18n-text="cm_autocompleteOnTyping"></label>
-				</div>
-				<div class="option aligned">
-					<label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
-					<input id="editor.tabSize" type="number" min="0">
-				</div>
-				<div class="option aligned">
-					<label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-					<select id="editor.keyMap"></select>
-					<svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-				</div>
-				<div class="option aligned">
-					<label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-					<select id="editor.theme"></select>
-				</div>
-				<div class="option aligned">
-					<label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
-					<select id="editor.matchHighlight">
-						<option i18n-text="cm_matchHighlightToken" value="token">
-						<option i18n-text="cm_matchHighlightSelection" value="selection">
-						<option i18n-text="genericDisabledLabel" value="">
-					</select>
-				</div>
-			</section>
-			<section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
-		</div>
-		<section id="sections">
-			<h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
-		</section>
-		<div id="help-popup">
-			<div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg></svg>
-			<div class="contents"></div>
-		</div>
-
-		<svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-			<symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
-				<path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
-			</symbol>
-			<symbol id="svg-icon-help" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt">
-				<path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
-			</symbol>
-			<symbol id="svg-icon-close" height="16" width="12" viewBox="0 0 12 16">
-				<path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
-			</symbol>
-		</svg>
-
-	</body>
+  </body>
 </html>

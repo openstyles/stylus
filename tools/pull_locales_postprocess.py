@@ -2,19 +2,19 @@
 import io, os, json, re
 from collections import OrderedDict
 
-with io.open('_locales/en/messages.json', 'r', encoding='utf-8') as f:
+with io.open('../_locales/en/messages.json', 'r', encoding='utf-8') as f:
     items = json.load(f).items()
     english = [(k, v['message']) for k, v in items if 'message' in v]
     english_placeholders = [(k, v['placeholders']) for k,v in items
                             if 'placeholders' in v]
 
-for locale_name in os.listdir('_locales'):
+for locale_name in os.listdir('../_locales'):
     if locale_name == 'en':
         continue
     if not re.match(r'^\w{2}(_\w{2,3})?$', locale_name):
         print('Skipped %s: not a locale dir' % locale_name)
         continue
-    loc_path = '_locales/' + locale_name + '/messages.json'
+    loc_path = '../_locales/' + locale_name + '/messages.json'
     with io.open(loc_path, 'r+', encoding='utf-8') as f:
         loc = json.load(f, object_pairs_hook=OrderedDict)
 

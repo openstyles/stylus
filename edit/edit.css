@@ -1,0 +1,576 @@
+body {
+  margin: 0;
+  font: 12px arial,sans-serif;
+}
+/************ header ************/
+#header {
+  width: 280px;
+  height: 100vh;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  padding: 15px;
+  border-right: 1px dashed #AAA;
+  -webkit-box-shadow: 0 0 3rem -1.2rem black;
+  box-sizing: border-box;
+}
+#header h1 {
+  margin-top: 0;
+}
+#sections {
+  padding-left: 280px;
+}
+#sections h2 {
+  margin-top: 1rem;
+  margin-left: 1.7rem;
+}
+.aligned {
+  display: table-row;
+}
+.aligned > *:not(svg) {
+  display: table-cell;
+  margin-top: 0.1rem;
+  min-height: 1.4rem;
+}
+input[type="checkbox"] {
+  margin-left: 0.1rem;
+}
+/* basic info */
+#basic-info {
+  margin-bottom: 1rem;
+}
+#name {
+  width: 100%;
+}
+#basic-info-name {
+  display: flex;
+  align-items: center;
+}
+#url {
+  margin-left: 0.25rem;
+}
+#url:not([href^="http"]) {
+  display: none;
+}
+#save-button {
+  opacity: .5;
+  pointer-events: none;
+}
+.dirty #save-button {
+  opacity: 1;
+  pointer-events: all;
+}
+.svg-icon {
+  cursor: pointer;
+  vertical-align: middle;
+  transition: fill .5s;
+  width: 16px;
+  height: 16px;
+}
+.svg-icon:not(.dismiss) {
+  margin-left: 0.2rem;
+}
+h2 .svg-icon, label .svg-icon {
+  margin-top: -1px;
+}
+.svg-icon.info {
+  width: 14px;
+  height: 16px;
+}
+.svg-icon:hover,
+.svg-icon.info {
+  fill: #666;
+}
+.svg-icon,
+.svg-icon.info:hover {
+  fill: #000;
+}
+#enabled {
+  margin-left: 0;
+  vertical-align: middle;
+}
+#enabled-label {
+  vertical-align: middle;
+}
+/* actions */
+#actions > * {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+/* options */
+#options [type="number"] {
+  max-width: 2.5rem;
+  text-align: right;
+}
+#options .option > * {
+  padding-right: 0.25rem;
+}
+/************ content ***********/
+#sections > div {
+  margin: 0.7rem;
+  padding: 1rem;
+}
+#sections > div:not(:first-of-type) {
+  border-top: 2px solid black;
+}
+#sections > div:only-of-type .remove-section {
+  display: none;
+}
+#sections > div > button:not(:first-of-type) {
+  margin-left: 0.2rem;
+}
+.dirty > label::before {
+  content: "*";
+  font-weight: bold;
+}
+#sections {
+  counter-reset: codebox;
+}
+#sections > div > label::after {
+  counter-increment: codebox;
+  content: counter(codebox);
+  margin-left: 0.25rem;
+}
+/* code */
+.CodeMirror-hint:hover {
+  color: white;
+  background: #08f;
+}
+.code {
+  height: 10rem;
+  width: 40rem;
+}
+.CodeMirror {
+  border: solid #CCC 1px;
+}
+.CodeMirror-scroll {
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 6px; /* resize-grip height */
+}
+.CodeMirror-lint-mark-warning {
+  background: none;
+}
+.CodeMirror-vscrollbar {
+  margin-bottom: 7px; /* make space for resize-grip */
+}
+.CodeMirror-hscrollbar {
+    bottom: 7px; /* make space for resize-grip */
+}
+.CodeMirror-scrollbar-filler {
+  bottom: 7px; /* make space for resize-grip */
+}
+.CodeMirror-dialog {
+  -webkit-animation: highlight 3s ease-out;
+}
+.CodeMirror-focused {
+  outline: -webkit-focus-ring-color auto 5px;
+  outline-offset: -2px;
+}
+.CodeMirror-search-field {
+  width: 10em;
+}
+.CodeMirror-jump-field {
+  width: 5em;
+}
+.CodeMirror-search-hint {
+  color: #888;
+}
+body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
+body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
+  animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
+  animation-fill-mode: both;
+}
+body[data-match-highlight="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
+body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar {
+  background-color: rgba(1, 151, 193, 0.1);
+}
+@-webkit-keyframes highlight {
+  from {
+    background-color: #ff9;
+  }
+  to {
+    background-color: none;
+  }
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadein-match-highlighter {
+  from { background-color: transparent; }
+  to   { background-color: rgba(1, 151, 193, 0.1); }
+}
+.resize-grip {
+  position: absolute;
+  display: block;
+  height: 6px;
+  content: "";
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  cursor: n-resize;
+  background-color: inherit;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: inherit;
+}
+.resize-grip:after {
+  content: "";
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  margin: 0 8px;
+  display: block;
+  position: absolute;
+  border-top-width: 2px;
+  border-top-style: dotted;
+  border-top-color: inherit;
+}
+/* applies-to */
+.applies-to {
+  display: flex;
+}
+.applies-to label {
+  flex: auto;
+  margin-top: 0.2rem;
+}
+.applies-to ul {
+  flex: auto;
+  flex-grow: 99;
+  margin: 0;
+  padding: 0;
+}
+.applies-to li {
+  display: flex;
+  list-style-type: none;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.applies-to li > *:not(button) {
+  flex: auto;
+  min-height: 1.4rem;
+  margin-left: 0.35rem;
+}
+.applies-to li .add-applies-to {
+  visibility: hidden;
+  text-align: left;
+}
+.applies-to li:last-child .add-applies-to {
+  visibility: visible
+}
+.applies-to li .add-applies-to:first-child {
+  margin-left: 1rem;
+}
+.applies-to li .applies-value {
+  flex-grow: 99;
+  padding-left: 0.2rem;
+}
+.applies-to img {
+  vertical-align: bottom;
+}
+.test-regexp {
+  display: none;
+}
+.has-regexp .test-regexp {
+  display: inline-block;
+}
+.regexp-report summary, .regexp-report div {
+  cursor: pointer;
+  outline: none;
+}
+.regexp-report mark {
+  background-color: rgba(255, 255, 0, .5);
+}
+.regexp-report details {
+  margin-left: 1rem;
+}
+.regexp-report details:not(:last-child) {
+  margin-bottom: 1rem;
+}
+.regexp-report summary {
+  font-weight: bold;
+  margin-left: -1rem;
+  margin-bottom: .5rem;
+  outline: none;
+  cursor: default;
+}
+.regexp-report details[data-type="full"] {
+  color: darkgreen;
+}
+.regexp-report details[data-type="partial"] {
+  color: darkgray;
+}
+.regexp-report details[data-type="invalid"] {
+  color: maroon;
+}
+.regexp-report details details {
+  margin-left: 2rem;
+  margin-top: .5rem;
+}
+.regexp-report .svg-icon {
+  position: absolute;
+  margin-top: -1px;
+}
+.regexp-report details div:hover {
+  text-decoration: underline;
+  text-decoration-skip: ink;
+}
+.regexp-report details div img {
+  width: 16px;
+  max-height: 16px;
+  position: absolute;
+  margin-left: -20px;
+  margin-top: -1px;
+  animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
+  animation-fill-mode: both;
+}
+/************ help popup ************/
+#help-popup {
+  top: 3rem;
+  right: 3rem;
+  max-width: 50vw;
+  position: fixed;
+  display: none;
+  background-color: white;
+  box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  z-index: 99;
+}
+#help-popup.big {
+  max-width: 100%;
+  left: 3rem;
+}
+#help-popup.big .CodeMirror {
+  min-height: 2rem;
+  height: 70vh;
+}
+#help-popup .title {
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.05);
+  margin: -0.5rem -0.5rem 0.5rem;
+  padding: .5rem 32px .5rem .5rem;
+}
+#help-popup .contents {
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+}
+#help-popup .dismiss {
+  position: absolute;
+  right: 4px;
+  top: .5em;
+}
+
+.keymap-list {
+  font-size: 85%;
+  line-height: 1.0;
+  border-spacing: 0;
+  word-break: break-all;
+}
+.keymap-list input {
+  width: 100%;
+}
+.keymap-list tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+.keymap-list td:first-child {
+  white-space: nowrap;
+  font-family: monospace;
+  padding-right: 0.5rem;
+}
+
+#help-popup button[name^="import"] {
+  line-height: 1.5rem;
+  padding: 0 0.5rem;
+  margin: 0.5rem 0 0 0.5rem;
+  pointer-events: none;
+  opacity: 0.5;
+  float: right;
+}
+#help-popup.ready button[name^="import"] {
+  pointer-events: all;
+  opacity: 1.0;
+}
+
+/************ lint ************/
+#lint {
+  display: none;
+}
+#lint > div {
+  overflow-y: auto;
+}
+#lint table {
+  font-size: 100%;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+  line-height: 1.0;
+}
+#lint table:last-child {
+  margin-bottom: 0;
+}
+#lint caption {
+  text-align: left;
+  font-weight: bold;
+}
+#lint tbody {
+  font-size: 85%;
+  cursor: pointer;
+}
+#lint tr:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+#lint td[role="severity"] {
+  font-size: 0;
+  width: 16px;
+  padding-right: 0.25rem;
+}
+#lint td[role="line"], #lint td[role="sep"] {
+  text-align: right;
+  padding-right: 0;
+}
+#lint td[role="col"] {
+  text-align: left;
+  padding-right: 0.25rem;
+}
+#lint td[role="message"] {
+  text-align: left;
+}
+
+/************ CSS beautifier ************/
+.beautify-options {
+  white-space: nowrap;
+  font-family: monospace;
+}
+.beautify-options div {
+  float: left;
+}
+.beautify-options div[newline="true"] + div {
+  clear: left;
+}
+.beautify-options div[newline="true"] + div span[indent] {
+  padding-left: 2rem;
+}
+.beautify-options:after {
+  clear: both;
+  display: block;
+  content: " ";
+  height: 1rem;
+}
+.beautify-options span {
+  font-weight: bold;
+}
+.beautify-options select {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/************ reponsive layouts ************/
+@media(max-width:737px) {
+  #header {
+    width: auto;
+    height: auto;
+    position: inherit;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+  }
+  #header section:not(:last-child) {
+    margin-bottom: 0.4rem;
+  }
+  #header input[type="checkbox"] {
+    vertical-align: middle;
+  }
+  h2 {
+    display: none;
+  }
+  #basic-info {
+    display: flex;
+    align-items: baseline;
+  }
+  #basic-info > * {
+    flex: auto;
+  }
+  #basic-info > *:first-child {
+    flex-grow: 99;
+    display: flex;
+  }
+  #basic-info > *:not(:last-child) {
+    margin-right: 0.8rem;
+  }
+  #basic-info #name {
+    width: auto;
+    flex-grow: 99;
+  }
+  #actions {
+    margin-top: 1rem;
+  }
+  #actions > * {
+    display: inline-block;
+  }
+  #options {
+    -webkit-column-count: 2;
+  }
+  #options .aligned > *:not(svg) {
+    margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
+    padding-right: 0.4rem;
+    vertical-align: baseline;
+    min-height: 1.4rem;
+  }
+  .option {
+    -webkit-column-break-inside: avoid;
+  }
+  .option label {
+    line-height: 1.25rem;
+    margin: 0;
+  }
+  #options [type="number"] {
+    text-align: left; /* workaround the column flow bug in webkit */
+    padding-left: 0.2rem;
+  }
+  #options #tabSize-label {
+    position: relative;
+    top: 0.2rem;
+  }
+  #lint h2 {
+    display: block;
+    cursor: default;
+    margin-bottom: 0;
+  }
+  #lint > div {
+    max-height: 0;
+  }
+  #lint.collapsed > div {
+    display: none;
+  }
+  #lint:hover > div {
+    margin-top: 1em;
+    max-height: 30vh;
+  }
+  #sections {
+    padding-left: 0;
+  }
+  #sections > div {
+    padding: 0;
+  }
+  #sections > *:not(h2) {
+    padding-left: 0.4rem;
+  }
+  .applies-type {
+    width: 30%;
+  }
+}
+@media(max-width:500px) {
+  #options {
+    -webkit-column-count: 1;
+  }
+  #options #tabSize-label {
+    position: static;
+  }
+}

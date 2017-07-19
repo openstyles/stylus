@@ -1,3 +1,2 @@
-beautify/
-codemirror/
-csslint/
+vendor/
+vendor-overwrites/

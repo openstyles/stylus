@@ -115,10 +115,10 @@ var prefs = new function Prefs() {
       defineReadonlyProperty(this.readOnlyValues, key, value);
       const hasChanged = !equal(value, oldValue);
       if (!fromBroadcast) {
-        if (BG && BG != window) {
+        if (BG && BG !== window) {
           BG.prefs.set(key, BG.deepCopy(value), {broadcast, sync});
         } else {
-          localStorage[key] = typeof defaults[key] == 'object'
+          localStorage[key] = typeof defaults[key] === 'object'
             ? JSON.stringify(value)
             : value;
           if (broadcast && hasChanged) {
@@ -166,7 +166,7 @@ var prefs = new function Prefs() {
   for (const key in defaults) {
     const defaultValue = defaults[key];
     let value = localStorage[key];
-    if (typeof value == 'string') {
+    if (typeof value === 'string') {
       switch (typeof defaultValue) {
         case 'boolean':
           value = value.toLowerCase() === 'true';
@@ -181,7 +181,7 @@ var prefs = new function Prefs() {
     } else {
       value = defaultValue;
     }
-    if (BG == window) {
+    if (BG === window) {
       // when in bg page, .set() will write to localStorage
       this.set(key, value, {broadcast: false, sync: false});
     } else {
@@ -190,13 +190,13 @@ var prefs = new function Prefs() {
     }
   }
 
-  if (!BG || BG == window) {
+  if (!BG || BG === window) {
     affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
 
     getSync().get('settings', ({settings: synced} = {}) => {
       if (synced) {
         for (const key in defaults) {
-          if (key == 'popupWidth' && synced[key] != values.popupWidth) {
+          if (key === 'popupWidth' && synced[key] !== values.popupWidth) {
             // this is a fix for the period when popupWidth wasn't synced
             // TODO: remove it in a couple of months
             continue;
@@ -209,7 +209,7 @@ var prefs = new function Prefs() {
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area == 'sync' && 'settings' in changes) {
+      if (area === 'sync' && 'settings' in changes) {
         const synced = changes.settings.newValue;
         if (synced) {
           for (const key in defaults) {
@@ -283,21 +283,21 @@ var prefs = new function Prefs() {
 
   function defineReadonlyProperty(obj, key, value) {
     const copy = deepCopy(value);
-    if (typeof copy == 'object') {
+    if (typeof copy === 'object') {
       Object.freeze(copy);
     }
     Object.defineProperty(obj, key, {value: copy, configurable: true});
   }
 
   function equal(a, b) {
-    if (!a || !b || typeof a != 'object' || typeof b != 'object') {
+    if (!a || !b || typeof a !== 'object' || typeof b !== 'object') {
       return a === b;
     }
-    if (Object.keys(a).length != Object.keys(b).length) {
+    if (Object.keys(a).length !== Object.keys(b).length) {
       return false;
     }
     for (const k in a) {
-      if (typeof a[k] == 'object') {
+      if (typeof a[k] === 'object') {
         if (!equal(a[k], b[k])) {
           return false;
         }
@@ -315,7 +315,7 @@ var prefs = new function Prefs() {
       // Chrome and co.
       /Safari\/[\d.]+$/.test(navigator.userAgent) &&
       // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
-      !Array.from(navigator.plugins).some(p => p.name == 'Shockwave Flash')
+      !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')
     );
   }
 }();
@@ -330,7 +330,7 @@ function setupLivePrefs(
   const checkedProps = {};
   for (const id of IDs) {
     const element = document.getElementById(id);
-    checkedProps[id] = element.type == 'checkbox' ? 'checked' : 'value';
+    checkedProps[id] = element.type === 'checkbox' ? 'checked' : 'value';
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
   }
@@ -338,7 +338,7 @@ function setupLivePrefs(
 
   function onChange() {
     const value = this[checkedProps[this.id]];
-    if (prefs.get(this.id) != value) {
+    if (prefs.get(this.id) !== value) {
       prefs.set(this.id, value);
     }
   }
@@ -349,7 +349,7 @@ function setupLivePrefs(
     force,
   }) {
     const prop = checkedProps[id];
-    if (force || element[prop] != value) {
+    if (force || element[prop] !== value) {
       element[prop] = value;
       element.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     }

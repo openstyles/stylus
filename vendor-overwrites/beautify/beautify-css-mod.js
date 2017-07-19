@@ -364,7 +364,8 @@
                 }
             }
             outputPosCol = 0;
-            let i = output.length, token;
+            let i = output.length;
+            let token;
             while (--i >= 0 && (token = output[i]) != '\n') {
                 outputPosCol += token.length;
             }

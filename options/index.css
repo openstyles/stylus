@@ -81,6 +81,7 @@ label:not([disabled]) > :first-child {
 
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
+  cursor: pointer;
 }
 
 button,

@@ -63,7 +63,7 @@ function dbExec(method, data) {
         reject(event);
       },
       onupgradeneeded(event) {
-        if (event.oldVersion == 0) {
+        if (event.oldVersion === 0) {
           event.target.result.createObjectStore('styles', {
             keyPath: 'id',
             autoIncrement: true,
@@ -111,15 +111,17 @@ function filterStyles({
   asHash = null,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
-  enabled = enabled === null || typeof enabled == 'boolean' ? enabled :
-    typeof enabled == 'string' ? enabled == 'true' : null;
+  enabled = enabled === null || typeof enabled === 'boolean' ? enabled :
+    typeof enabled === 'string' ? enabled === 'true' : null;
   id = id === null ? null : Number(id);
 
-  if (enabled === null
-  && url === null
-  && id === null
-  && matchUrl === null
-  && asHash != true) {
+  if (
+    enabled === null &&
+    url === null &&
+    id === null &&
+    matchUrl === null &&
+    asHash !== true
+  ) {
     return cachedStyles.list;
   }
   const blankHash = asHash && {
@@ -189,10 +191,11 @@ function filterStylesInternal({
 
   const needSections = asHash || matchUrl !== null;
 
-  for (let i = 0, style; (style = styles[i]); i++) {
-    if ((enabled === null || style.enabled == enabled)
-    && (url === null || style.url == url)
-    && (id === null || style.id == id)) {
+  let style;
+  for (let i = 0; (style = styles[i]); i++) {
+    if ((enabled === null || style.enabled === enabled)
+    && (url === null || style.url === url)
+    && (id === null || style.id === id)) {
       const sections = needSections &&
         getApplicableSections({style, matchUrl, strictRegexp, stopOnFirst: !asHash});
       if (asHash) {
@@ -230,17 +233,18 @@ function saveStyle(style) {
   if (!style.name) {
     delete style.name;
   }
-  let existed, codeIsUpdated;
-  if (reason == 'update' || reason == 'update-digest') {
+  let existed;
+  let codeIsUpdated;
+  if (reason === 'update' || reason === 'update-digest') {
     return calcStyleDigest(style).then(digest => {
       style.originalDigest = digest;
       return decide();
     });
   }
-  if (reason == 'import') {
+  if (reason === 'import') {
     style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
     delete style.styleDigest; // TODO: remove in the future
-    if (typeof style.originalDigest != 'string' || style.originalDigest.length != 40) {
+    if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
       delete style.originalDigest;
     }
   }
@@ -253,7 +257,7 @@ function saveStyle(style) {
       return dbExec('get', id).then((event, store) => {
         const oldStyle = event.target.result;
         existed = Boolean(oldStyle);
-        if (reason == 'update-digest' && oldStyle.originalDigest == style.originalDigest) {
+        if (reason === 'update-digest' && oldStyle.originalDigest === style.originalDigest) {
           return style;
         }
         codeIsUpdated = !existed || 'sections' in style && !styleSectionsEqual(style, oldStyle);
@@ -287,7 +291,7 @@ function saveStyle(style) {
   }
 
   function done(event) {
-    if (reason == 'update-digest') {
+    if (reason === 'update-digest') {
       return style;
     }
     style.id = style.id || event.target.result;
@@ -365,14 +369,14 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
   function arraySomeMatches(array, matchUrl, strictRegexp) {
     for (const regexp of array) {
       for (let pass = 1; pass <= (strictRegexp ? 1 : 2); pass++) {
-        const cacheKey = pass == 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+        const cacheKey = pass === 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
         let rx = cachedStyles.regexps.get(cacheKey);
-        if (rx == false) {
+        if (rx === false) {
           // invalid regexp
           break;
         }
         if (!rx) {
-          const anchored = pass == 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+          const anchored = pass === 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
           rx = tryRegExp(anchored);
           cachedStyles.regexps.set(cacheKey, rx || false);
           if (!rx) {
@@ -413,7 +417,7 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
   if (!a || !b) {
     return undefined;
   }
-  if (a.length != b.length) {
+  if (a.length !== b.length) {
     return false;
   }
   const checkedInB = [];
@@ -430,16 +434,16 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
         return false;
       }
     }
-    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a == b);
+    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
   }
 
   function equalOrEmpty(a, b, telltale, comparator) {
-    const typeA = a && typeof a[telltale] == 'function';
-    const typeB = b && typeof b[telltale] == 'function';
+    const typeA = a && typeof a[telltale] === 'function';
+    const typeB = b && typeof b[telltale] === 'function';
     return (
       (a === null || a === undefined || (typeA && !a.length)) &&
       (b === null || b === undefined || (typeB && !b.length))
-    ) || typeA && typeB && a.length == b.length && comparator(a, b);
+    ) || typeA && typeB && a.length === b.length && comparator(a, b);
   }
 
   function arrayMirrors(array1, array2) {
@@ -523,12 +527,12 @@ function cleanupCachedFilters({force = false} = {}) {
 
 
 function getDomains(url) {
-  if (url.indexOf('file:') == 0) {
+  if (url.indexOf('file:') === 0) {
     return [];
   }
   let d = /.*?:\/*([^/:]+)/.exec(url)[1];
   const domains = [d];
-  while (d.indexOf('.') != -1) {
+  while (d.indexOf('.') !== -1) {
     d = d.substring(d.indexOf('.') + 1);
     domains.push(d);
   }

@@ -30,9 +30,9 @@ function messageBox({
       key(event) {
         const keyCode = event.keyCode || event.which;
         if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-        && (keyCode == 13 || keyCode == 27)) {
+        && (keyCode === 13 || keyCode === 27)) {
           event.preventDefault();
-          resolveWith(keyCode == 13 ? {enter: true} : {esc: true});
+          resolveWith(keyCode === 13 ? {enter: true} : {esc: true});
         }
       },
       scroll() {
@@ -52,7 +52,7 @@ function messageBox({
       unbindAndRemoveSelf();
     }
     const id = 'message-box';
-    const putAs = typeof contents == 'string' ? 'innerHTML' : 'appendChild';
+    const putAs = typeof contents === 'string' ? 'innerHTML' : 'appendChild';
     messageBox.element = $element({id, className, appendChild: [
       $element({appendChild: [
         $element({id: `${id}-title`, innerHTML: title}),

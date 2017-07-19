@@ -7,7 +7,7 @@ tDocLoader();
 function t(key, params) {
   const cache = !params && t.cache[key];
   const s = cache || chrome.i18n.getMessage(key, params);
-  if (s == '') {
+  if (s === '') {
     throw `Missing string "${key}"`;
   }
   if (!params && !cache) {
@@ -20,7 +20,7 @@ function t(key, params) {
 function tE(id, key, attr, esc) {
   if (attr) {
     document.getElementById(id).setAttribute(attr, t(key));
-  } else if (typeof esc == 'undefined' || esc) {
+  } else if (typeof esc === 'undefined' || esc) {
     document.getElementById(id).appendChild(document.createTextNode(t(key)));
   } else {
     document.getElementById(id).innerHTML = t(key);
@@ -43,10 +43,10 @@ function tNodeList(nodes) {
   for (let n = nodes.length; --n >= 0;) {
     const node = nodes[n];
     // skip non-ELEMENT_NODE
-    if (node.nodeType != 1) {
+    if (node.nodeType !== 1) {
       continue;
     }
-    if (node.localName == 'template') {
+    if (node.localName === 'template') {
       const elements = node.content.querySelectorAll('*');
       tNodeList(elements);
       template[node.dataset.id] = elements[0];
@@ -94,7 +94,7 @@ function tDocLoader() {
 
   // reset L10N cache on UI language change
   const UIlang = chrome.i18n.getUILanguage();
-  if (t.cache.browserUIlanguage != UIlang) {
+  if (t.cache.browserUIlanguage !== UIlang) {
     t.cache = {browserUIlanguage: UIlang};
     localStorage.L10N = JSON.stringify(t.cache);
   }
@@ -114,7 +114,7 @@ function tDocLoader() {
   const onLoad = () => {
     tDocLoader.stop();
     process(observer.takeRecords());
-    if (cacheLength != Object.keys(t.cache).length) {
+    if (cacheLength !== Object.keys(t.cache).length) {
       localStorage.L10N = JSON.stringify(t.cache);
     }
   };

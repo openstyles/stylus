@@ -15,7 +15,7 @@ document.onclick = e => {
 
   switch (target.dataset.cmd) {
     case 'open-manage':
-      openURL({url: '/manage.html'});
+      openURL({url: 'manage.html'});
       break;
 
     case 'check-updates':
@@ -65,9 +65,9 @@ function checkUpdates() {
 
 function setupRadioButtons() {
   const sets = {};
-  const onChange = function() {
+  const onChange = function () {
     const newValue = sets[this.name].indexOf(this);
-    if (newValue >= 0 && prefs.get(this.name) != newValue) {
+    if (newValue >= 0 && prefs.get(this.name) !== newValue) {
       prefs.set(this.name, newValue);
     }
   };

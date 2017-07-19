@@ -73,7 +73,7 @@ function initGlobalEvents() {
 
   // focus search field on / key
   document.onkeypress = event => {
-    if ((event.keyCode || event.which) == 47
+    if ((event.keyCode || event.which) === 47
     && !event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey
     && !event.target.matches('[type="text"], [type="search"]')) {
       event.preventDefault();
@@ -114,7 +114,7 @@ function initGlobalEvents() {
 function showStyles(styles = []) {
   const sorted = styles
     .map(style => ({name: style.name.toLocaleLowerCase(), style}))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name == b.name ? 0 : 1));
+    .sort((a, b) => (a.name < b.name ? -1 : a.name === b.name ? 0 : 1));
   let index = 0;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
@@ -128,8 +128,11 @@ function showStyles(styles = []) {
   function renderStyles() {
     const t0 = performance.now();
     let rendered = 0;
-    while (index < sorted.length
-    && (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)) {
+    while (
+      index < sorted.length &&
+      // eslint-disable-next-line no-unmodified-loop-condition
+      (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)
+    ) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
@@ -225,18 +228,18 @@ function createStyleTargetsElement({entry, style, postponeFavicons}) {
         displayed.add(targetValue);
         const element = template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
-          if (numTargets == 10) {
+          if (numTargets === 10) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 1) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
         } else if (newUI.favicons) {
           let favicon = '';
-          if (type == 'domains') {
+          if (type === 'domains') {
             favicon = GET_FAVICON_URL + targetValue;
           } else if (targetValue.startsWith('chrome-extension:')) {
             favicon = OWN_ICON;
-          } else if (type != 'regexps') {
+          } else if (type !== 'regexps') {
             favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
@@ -289,7 +292,7 @@ Object.assign(handleEvent, {
     const target = event.target;
     const entry = target.closest('.entry');
     for (const selector in handleEvent.ENTRY_ROUTES) {
-      for (let el = target; el && el != entry; el = el.parentElement) {
+      for (let el = target; el && el !== entry; el = el.parentElement) {
         if (el.matches(selector)) {
           const handler = handleEvent.ENTRY_ROUTES[selector];
           return handleEvent[handler].call(el, event, entry);
@@ -304,8 +307,8 @@ Object.assign(handleEvent, {
     }
     event.preventDefault();
     event.stopPropagation();
-    const left = event.button == 0;
-    const middle = event.button == 1;
+    const left = event.button === 0;
+    const middle = event.button === 1;
     const shift = event.shiftKey;
     const ctrl = event.ctrlKey;
     const openWindow = left && shift && !ctrl;
@@ -357,8 +360,8 @@ Object.assign(handleEvent, {
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })
-    .then(({button, enter, esc}) => {
-      if (button == 0 || enter) {
+    .then(({button, enter}) => {
+      if (button === 0 || enter) {
         deleteStyleSafe({id});
       }
     });
@@ -383,10 +386,10 @@ Object.assign(handleEvent, {
   },
 
   filterOnChange({target: el, forceRefilter}) {
-    const getValue = el => (el.type == 'checkbox' ? el.checked : el.value.trim());
+    const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
     if (!forceRefilter) {
       const value = getValue(el);
-      if (value == el.lastValue) {
+      if (value === el.lastValue) {
         return;
       }
       el.lastValue = value;
@@ -412,22 +415,22 @@ Object.assign(handleEvent, {
 function handleUpdate(style, {reason, method} = {}) {
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
-  if (oldEntry && method == 'styleUpdated') {
+  if (oldEntry && method === 'styleUpdated') {
     handleToggledOrCodeOnly();
   }
   entry = entry || createStyleElement({style});
   if (oldEntry) {
-    if (oldEntry.styleNameLowerCase == entry.styleNameLowerCase) {
+    if (oldEntry.styleNameLowerCase === entry.styleNameLowerCase) {
       installed.replaceChild(entry, oldEntry);
     } else {
       oldEntry.remove();
     }
   }
-  if (reason == 'update' && entry.matches('.updatable')) {
+  if (reason === 'update' && entry.matches('.updatable')) {
     handleUpdateInstalled();
   }
   filterAndAppend({entry});
-  if (!entry.matches('.hidden') && reason != 'import') {
+  if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);
   }
@@ -435,12 +438,12 @@ function handleUpdate(style, {reason, method} = {}) {
   function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
     const diff = objectDiff(oldEntry.styleMeta, newStyleMeta);
-    if (diff.length == 0) {
+    if (diff.length === 0) {
       // only code was modified
       entry = oldEntry;
       oldEntry = null;
     }
-    if (diff.length == 1 && diff[0].key == 'enabled') {
+    if (diff.length === 1 && diff[0].key === 'enabled') {
       oldEntry.classList.toggle('enabled', style.enabled);
       oldEntry.classList.toggle('disabled', !style.enabled);
       $$('.checker', oldEntry).forEach(el => (el.checked = style.enabled));
@@ -478,8 +481,8 @@ function switchUI({styleOnly} = {}) {
   // ensure the global option is processed first
   for (const el of [$('#manage.newUI'), ...$$('[id^="manage.newUI."]')]) {
     const id = el.id.replace(/^manage\.newUI\.?/, '') || 'enabled';
-    const value = el.type == 'checkbox' ? el.checked : Number(el.value);
-    const valueChanged = value !== newUI[id] && (id == 'enabled' || current.enabled);
+    const value = el.type === 'checkbox' ? el.checked : Number(el.value);
+    const valueChanged = value !== newUI[id] && (id === 'enabled' || current.enabled);
     current[id] = value;
     changed[id] = valueChanged;
     someChanged |= valueChanged;
@@ -565,7 +568,7 @@ function checkUpdateAll() {
   $('#apply-all-updates').classList.add('hidden');
   $('#update-all-no-updates').classList.add('hidden');
 
-  const ignoreDigest = this && this.id == 'check-all-updates-force';
+  const ignoreDigest = this && this.id === 'check-all-updates-force';
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
     .map(el => checkUpdate(el, {single: false}));
 
@@ -582,7 +585,7 @@ function checkUpdateAll() {
         total = value;
         break;
       case BG.updater.UPDATED:
-        if (++updated == 1) {
+        if (++updated === 1) {
           $('#apply-all-updates').disabled = true;
           $('#apply-all-updates').classList.remove('hidden');
         }
@@ -590,7 +593,7 @@ function checkUpdateAll() {
         // fallthrough
       case BG.updater.SKIPPED:
         checked++;
-        if (details == BG.updater.EDITED || details == BG.updater.MAYBE_EDITED) {
+        if (details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED) {
           skippedEdited++;
         }
         reportUpdateState(state, value, details);
@@ -603,13 +606,13 @@ function checkUpdateAll() {
 
   function done() {
     document.body.classList.remove('update-in-progress');
-    $('#check-all-updates').disabled = total == 0;
+    $('#check-all-updates').disabled = total === 0;
     $('#apply-all-updates').disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
       $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
       $('#update-all-no-updates').classList.remove('hidden');
-      $('#check-all-updates-force').classList.toggle('hidden', skippedEdited == 0);
+      $('#check-all-updates-force').classList.toggle('hidden', skippedEdited === 0);
     }
   }
 }
@@ -645,16 +648,16 @@ function reportUpdateState(state, style, details) {
       if (entry.classList.contains('can-update')) {
         break;
       }
-      const same = details == BG.updater.SAME_MD5 || details == BG.updater.SAME_CODE;
-      const edited = details == BG.updater.EDITED || details == BG.updater.MAYBE_EDITED;
+      const same = details === BG.updater.SAME_MD5 || details === BG.updater.SAME_CODE;
+      const edited = details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED;
       entry.dataset.details = details;
       if (!details) {
         details = t('updateCheckFailServerUnreachable');
-      } else if (typeof details == 'number') {
+      } else if (typeof details === 'number') {
         details = t('updateCheckFailBadResponseCode', [details]);
-      } else if (details == BG.updater.EDITED) {
+      } else if (details === BG.updater.EDITED) {
         details = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
-      } else if (details == BG.updater.MAYBE_EDITED) {
+      } else if (details === BG.updater.MAYBE_EDITED) {
         details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       }
       const message = same ? t('updateCheckSucceededNoUpdate') : details;
@@ -716,7 +719,7 @@ function searchStyles({immediately, container}) {
   const searchElement = $('#search');
   const query = searchElement.value.toLocaleLowerCase();
   const queryPrev = searchElement.lastValue || '';
-  if (query == queryPrev && !immediately && !container) {
+  if (query === queryPrev && !immediately && !container) {
     return;
   }
   if (!immediately) {
@@ -738,7 +741,7 @@ function searchStyles({immediately, container}) {
         style.url && isMatchingText(style.url) ||
         isMatchingStyle(style)));
     }
-    if (entry.classList.contains('not-matching') != !isMatching) {
+    if (entry.classList.contains('not-matching') !== !isMatching) {
       entry.classList.toggle('not-matching', !isMatching);
       needsRefilter = true;
     }
@@ -847,7 +850,7 @@ function reapplyFilter(container = installed) {
   shuffle(false);
   setTimeout(shuffle, 0, true);
   // single-element job from handleEvent(): add the last wraith
-  if (toHide.length == 1 && toHide[0].parentElement != installed) {
+  if (toHide.length === 1 && toHide[0].parentElement !== installed) {
     installed.appendChild(toHide[0]);
   }
   return;
@@ -882,7 +885,7 @@ function reapplyFilter(container = installed) {
     const skipGroup = state => {
       const start = i;
       const first = entry;
-      while (entry && entry.classList.contains('hidden') == state) {
+      while (entry && entry.classList.contains('hidden') === state) {
         entry = entry.nextElementSibling;
         i++;
       }
@@ -900,7 +903,7 @@ function reapplyFilter(container = installed) {
       // 3. move the shortest group; repeat 2-3
       if (hidden.len < visible.len && (fullPass || hidden.len % 2)) {
         // 3a. move hidden under the horizon
-        for (let j =  0; j < (fullPass ? hidden.len : 1); j++) {
+        for (let j = 0; j < (fullPass ? hidden.len : 1); j++) {
           const entry = entries[hidden.start];
           installed.insertBefore(entry, horizon);
           horizon = entry;
@@ -975,14 +978,19 @@ function objectDiff(first, second, path = '') {
       diff.push({path, key, values: [a], type: 'removed'});
       continue;
     }
-    if (a && typeof a.filter == 'function' && b && typeof b.filter == 'function') {
-      if (a.length != b.length
-      || a.some((el, i) => !el || typeof el != 'object' ? el != b[i]
-          : objectDiff(el, b[i], path + key + '[' + i + '].').length)
+    if (a && typeof a.filter === 'function' && b && typeof b.filter === 'function') {
+      if (
+        a.length !== b.length ||
+        a.some((el, i) => {
+          const result = !el || typeof el !== 'object'
+            ? el !== b[i]
+            : objectDiff(el, b[i], path + key + '[' + i + '].').length;
+          return result;
+        })
       ) {
         diff.push({path, key, values: [a, b], type: 'changed'});
       }
-    } else if (typeof a == 'object' && typeof b == 'object') {
+    } else if (typeof a === 'object' && typeof b === 'object') {
       diff.push(...objectDiff(a, b, path + key + '.'));
     } else {
       diff.push({path, key, values: [a, b], type: 'changed'});

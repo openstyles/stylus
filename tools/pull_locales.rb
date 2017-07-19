@@ -22,7 +22,7 @@ project = transifex.project(project_slug)
 project.languages.each do |language|
 	code = language.language_code
 	puts "Getting locale #{code}"
-	dir_name = "_locales/#{code}"
+	dir_name = "../_locales/#{code}"
 	Dir.mkdir(dir_name) if !Dir.exist?(dir_name)
 	has_content = false
 	project.resources.each do |resource|
