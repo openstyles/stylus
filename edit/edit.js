@@ -1963,7 +1963,7 @@ function showHelp(title, text) {
       ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
     ) {
       div.style.display = '';
-      document.querySelector('.contents').innerHTML = '';
+      document.querySelector('.contents').textContent = '';
       document.removeEventListener('keydown', closeHelp);
     }
   }
