@@ -261,7 +261,6 @@ function initCodeMirror() {
 
   // initialize global editor controls
   function optionsFromArray(parent, options) {
-    console.log(parent, options);
     options.map(opt => $element({tag: 'option', textContent: opt}))
       .forEach(opt => parent.appendChild(opt));
   }
@@ -690,11 +689,11 @@ function setupGlobalSearch() {
     return cm.state.search;
   }
 
-  // temporarily overrides the original openDialog with the provided template's innerHTML
+  // overrides the original openDialog with a clone of the provided template
   function customizeOpenDialog(cm, template, callback) {
     cm.openDialog = (tmpl, cb, opt) => {
       // invoke 'callback' and bind 'this' to the original callback
-      originalOpenDialog.call(cm, template.innerHTML, callback.bind(cb), opt);
+      originalOpenDialog.call(cm, template.cloneNode(true), callback.bind(cb), opt);
     };
     setTimeout(() => { cm.openDialog = originalOpenDialog; }, 0);
     refocusMinidialog(cm);
@@ -873,7 +872,7 @@ function setupGlobalSearch() {
             doReplace();
           }
         });
-        originalOpenConfirm.call(cm, template.replaceConfirm.innerHTML, ovrCallbacks, opt);
+        originalOpenConfirm.call(cm, template.replaceConfirm.cloneNode(true), ovrCallbacks, opt);
       };
     }
   }
@@ -892,7 +891,7 @@ function setupGlobalSearch() {
 function jumpToLine(cm) {
   const cur = cm.getCursor();
   refocusMinidialog(cm);
-  cm.openDialog(template.jumpToLine.innerHTML, str => {
+  cm.openDialog(template.jumpToLine.cloneNode(true), str => {
     const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
     if (m) {
       cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
