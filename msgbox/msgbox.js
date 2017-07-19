@@ -1,8 +1,8 @@
 'use strict';
 
 function messageBox({
-  title,          // [mandatory] the title string for innerHTML
-  contents,       // [mandatory] 1) DOM element 2) string for innerHTML
+  title,          // [mandatory] string
+  contents,       // [mandatory] 1) DOM element 2) string
   className = '', // string, CSS class name of the message box element
   buttons = [],   // array of strings used as labels
   onshow,         // function(messageboxElement) invoked after the messagebox is shown
@@ -52,10 +52,9 @@ function messageBox({
       unbindAndRemoveSelf();
     }
     const id = 'message-box';
-    const putAs = typeof contents === 'string' ? 'innerHTML' : 'appendChild';
     messageBox.element = $element({id, className, appendChild: [
       $element({appendChild: [
-        $element({id: `${id}-title`, innerHTML: title}),
+        $element({id: `${id}-title`, textContent: title}),
         $element({id: `${id}-close-icon`, appendChild:
           $element({tag: 'SVG#svg', class: 'svg-icon', viewBox: '0 0 20 20', appendChild:
             $element({tag: 'SVG#path', d: 'M11.69,10l4.55,4.55-1.69,1.69L10,11.69,' +
@@ -63,7 +62,7 @@ function messageBox({
             })
           }),
           onclick: messageBox.listeners.closeIcon}),
-        $element({id: `${id}-contents`, [putAs]: contents}),
+        $element({id: `${id}-contents`, appendChild: tHTML(contents)}),
         $element({id: `${id}-buttons`, appendChild:
           buttons.map((textContent, buttonIndex) => textContent &&
             $element({
