@@ -1088,9 +1088,9 @@ function renderLintReport(someBlockChanged) {
   let issueCount = 0;
   editors.forEach((cm, index) => {
     if (cm.state.lint && cm.state.lint.html) {
-      const newBlock = newContent.appendChild(document.createElement('table'));
       const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
-      newBlock.innerHTML = html;
+      const newBlock = newContent.appendChild(tHTML(html, 'table'));
+
       newBlock.cm = cm;
       issueCount += newBlock.rows.length;
 
@@ -1535,7 +1535,7 @@ function fromMozillaFormat() {
       <button name="import-append" i18n-text="importAppendLabel" i18n-title="importAppendTooltip"></button>
       <button name="import-replace" i18n-text="importReplaceLabel" i18n-title="importReplaceTooltip"></button>
     </div>`
-  ).innerHTML);
+  ));
 
   const contents = popup.querySelector('.contents');
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
@@ -1753,12 +1753,17 @@ function showKeyMapHelp() {
     const col = input.parentNode.cellIndex;
     inputs[1 - col].value = '';
     table.tBodies[0].childNodes.forEach(row => {
-      let cell = row.children[col];
-      cell.innerHTML = cell.textContent.replace(query, '<mark>$&</mark>');
+      const cell = row.children[col];
+      const html = cell.textContent.replace(query, '<mark>$&</mark>');
+      cell.textContent = '';
+      const div = tHTML(html, 'div');
+      while (div.childNodes.length > 0) {
+        cell.appendChild(div.childNodes[0]);
+      }
       row.style.display = query.test(cell.textContent) ? '' : 'none';
       // clear highlight from the other column
-      cell = row.children[1 - col];
-      cell.innerHTML = cell.textContent;
+      // cell = row.children[1 - col];
+      // cell.innerHTML = cell.textContent;
     });
   }
   function mergeKeyMaps(merged, ...more) {
@@ -1939,7 +1944,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 function showHelp(title, body) {
   const div = $('#help-popup');
   div.classList.remove('big');
-  $('.contents', div).appendChild(tHTML(body));
+  $('.contents', div).appendChild(typeof body === 'string' ? tHTML(body) : body);
   $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {

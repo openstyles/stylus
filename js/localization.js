@@ -30,7 +30,7 @@ function tE(id, key, attr, esc) {
 
 function tHTML(html, tag) {
   // body is a text node without HTML tags
-  if (typeof html === 'string' && /<\w+/.test(html) === false) {
+  if (typeof html === 'string' && !tag && /<\w+/.test(html) === false) {
     return document.createTextNode(html);
   }
   if (typeof html === 'string') {
