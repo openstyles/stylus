@@ -1936,17 +1936,10 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
   });
 }
 
-function showHelp(title, text) {
+function showHelp(title, body) {
   const div = $('#help-popup');
   div.classList.remove('big');
-
-  const contents = $('.contents', div);
-  if (text instanceof HTMLElement) {
-    contents.textContent = '';
-    contents.appendChild(text);
-  } else {
-    contents.innerHTML = text;
-  }
+  $('.contents', div).appendChild(tHTML(body));
   $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {

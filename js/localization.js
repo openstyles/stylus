@@ -28,13 +28,23 @@ function tE(id, key, attr, esc) {
 }
 
 
-function tHTML(html) {
-  const node = document.createElement('div');
-  node.innerHTML = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
-  if (html.includes('i18n-')) {
-    tNodeList(node.getElementsByTagName('*'));
+function tHTML(html, tag) {
+  // body is a text node without HTML tags
+  if (typeof html === 'string' && /<\w+/.test(html) === false) {
+    return document.createTextNode(html);
   }
-  return node.firstElementChild;
+  if (typeof html === 'string') {
+    html = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
+    if (tag) {
+      html = `<${tag}>${html}</${tag}>`;
+    }
+    const node = (new DOMParser()).parseFromString(html, 'text/html').querySelector('body').firstElementChild;
+    if (html.includes('i18n-')) {
+      tNodeList(node.getElementsByTagName('*'));
+    }
+    return node;
+  }
+  return html;
 }
 
 
