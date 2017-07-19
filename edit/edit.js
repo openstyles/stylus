@@ -1944,6 +1944,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 function showHelp(title, body) {
   const div = $('#help-popup');
   div.classList.remove('big');
+  $('.contents', div).textContent = '';
   $('.contents', div).appendChild(typeof body === 'string' ? tHTML(body) : body);
   $('.title', div).textContent = title;
 
