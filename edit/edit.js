@@ -261,8 +261,11 @@ function initCodeMirror() {
 
   // initialize global editor controls
   function optionsFromArray(parent, options) {
-    options.map(opt => $element({tag: 'option', textContent: opt}))
-      .forEach(opt => parent.appendChild(opt));
+    const fragment = document.createDocumentFragment();
+    for (const opt of options) {
+      fragment.appendChild($element({tag: 'option', textContent: opt}));
+    }
+    parent.appendChild(fragment);
   }
   const themeControl = document.getElementById('editor.theme');
   const themeList = localStorage.codeMirrorThemes;
@@ -324,7 +327,7 @@ function acmeEventListener(event) {
       setTimeout(() => {
         CodeMirror.setOption(option, value);
         themeLink.remove();
-        document.getElementById('cm-theme2').id = 'cm-theme';
+        $('#cm-theme2').id = 'cm-theme';
       }, 100);
       return;
     }
@@ -1751,21 +1754,37 @@ function showKeyMapHelp() {
 
   function filterTable(event) {
     const input = event.target;
-    const query = stringAsRegExp(input.value, 'gi');
     const col = input.parentNode.cellIndex;
     inputs[1 - col].value = '';
     table.tBodies[0].childNodes.forEach(row => {
       const cell = row.children[col];
-      const html = cell.textContent.replace(query, '<mark>$&</mark>');
-      cell.textContent = '';
-      const div = tHTML(html, 'div');
-      while (div.childNodes.length > 0) {
-        cell.appendChild(div.childNodes[0]);
+      const text = cell.textContent;
+      const query = stringAsRegExp(input.value, 'gi');
+      const test = query.test(text);
+      row.style.display = input.value && test === false ? 'none' : '';
+      if (input.value && test) {
+        cell.textContent = '';
+        let offset = 0;
+        text.replace(query, (match, index) => {
+          if (index > offset) {
+            cell.appendChild(document.createTextNode(text.substring(offset, index)));
+          }
+          cell.appendChild($element({tag: 'mark', textContent: match}));
+          offset = index + match.length;
+        });
+        if (offset + 1 !== text.length) {
+          cell.appendChild(document.createTextNode(text.substring(offset)));
+        }
       }
-      row.style.display = query.test(cell.textContent) ? '' : 'none';
+      else {
+        cell.textContent = text;
+      }
       // clear highlight from the other column
-      // cell = row.children[1 - col];
-      // cell.innerHTML = cell.textContent;
+      const otherCell = row.children[1 - col];
+      if (otherCell.children.length) {
+        const text = otherCell.textContent;
+        otherCell.textContent = text;
+      }
     });
   }
   function mergeKeyMaps(merged, ...more) {
