@@ -1557,7 +1557,7 @@ function fromMozillaFormat() {
     const parser = new parserlib.css.Parser();
     const lines = mozStyle.split('\n');
     const sectionStack = [{code: '', start: {line: 1, col: 1}}];
-    let errors = '';
+    const errors = [];
     // let oldSectionCount = editors.length;
     let firstAddedCM;
 
@@ -1575,12 +1575,16 @@ function fromMozillaFormat() {
         doAddSection(sectionStack.last);
         sectionStack.last.code = '';
       }
-      e.functions.forEach(f => {
-        const m = f.match(/^(url|url-prefix|domain|regexp)\((['"]?)(.+?)\2?\)$/);
+      for (const f of e.functions) {
+        const m = f && f.match(/^([\w-]*)\((['"]?)(.+?)\2?\)$/);
+        if (!m || !/^(url|url-prefix|domain|regexp)$/.test(m[1])) {
+          errors.push(`${e.line}:${e.col + 1} invalid function "${m ? m[1] : f || ''}"`);
+          continue;
+        }
         const aType = CssToProperty[m[1]];
         const aValue = aType !== 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
         (section[aType] = section[aType] || []).push(aValue);
-      });
+      }
       sectionStack.push(section);
     });
 
@@ -1607,12 +1611,16 @@ function fromMozillaFormat() {
       firstAddedCM.focus();
 
       if (errors) {
-        showHelp(t('issues'), errors);
+        showHelp(t('issues'), $element({
+          tag: 'pre',
+          textContent: errors.join('\n'),
+        }));
       }
     });
 
     parser.addListener('error', e => {
-      errors += e.line + ':' + e.col + ' ' + e.message.replace(/ at line \d.+$/, '') + '<br>';
+      errors.push(e.line + ':' + e.col + ' ' +
+        e.message.replace(/ at line \d.+$/, ''));
     });
 
     parser.parse(mozStyle);
@@ -1834,13 +1842,16 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         rxData.urls = urlsNow;
       }
     }
-    const moreInfoLink = template.regexpTestPartial.outerHTML;
     const stats = {
       full: {data: [], label: t('styleRegexpTestFull')},
-      partial: {data: [], label: t('styleRegexpTestPartial') + moreInfoLink},
+      partial: {data: [], label: [
+        t('styleRegexpTestPartial'),
+        template.regexpTestPartial.cloneNode(true),
+      ]},
       none: {data: [], label: t('styleRegexpTestNone')},
       invalid: {data: [], label: t('styleRegexpTestInvalid')},
     };
+    // collect stats
     for (const {text, rx, urls} of regexps) {
       if (!rx) {
         stats.invalid.data.push({text});
@@ -1856,12 +1867,18 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         const faviconUrl = url.startsWith(URLS.ownOrigin)
           ? OWN_ICON
           : GET_FAVICON_URL + new URL(url).hostname;
-        const icon = `<img src="${faviconUrl}">`;
+        const icon = $element({tag: 'img', src: faviconUrl});
         if (match.length === url.length) {
-          full.push(`<div>${icon + url}</div>`);
+          full.push($element({appendChild: [
+            icon,
+            url,
+          ]}));
         } else {
-          partial.push(`<div>${icon}<mark>${match}</mark>` +
-            url.substr(match.length) + '</div>');
+          partial.push($element({appendChild: [
+            icon,
+            $element({tag: 'mark', textContent: match}),
+            url.substr(match.length),
+          ]}));
         }
       }
       if (full.length) {
@@ -1871,17 +1888,42 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         stats.partial.data.push({text, urls: partial});
       }
     }
-    showHelp(t('styleRegexpTestTitle'),
-      '<div class="regexp-report">' +
-      Object.keys(stats).map(type => (!stats[type].data.length ? '' :
-        `<details open data-type="${type}">
-          <summary>${stats[type].label}</summary>` +
-          stats[type].data.map(({text, urls}) => (!urls ? text :
-            `<details open><summary>${text}</summary>${urls.join('')}</details>`
-          )).join('<br>') +
-        '</details>'
-      )).join('') +
-      '</div>');
+    // render stats
+    const report = $element({className: 'regexp-report'});
+    const br = $element({tag: 'br'});
+    for (const type in stats) {
+      // top level groups: full, partial, none, invalid
+      const {label, data} = stats[type];
+      if (!data.length) {
+        continue;
+      }
+      // 2nd level: regexp text
+      const summary = $element({tag: 'summary', appendChild: label});
+      const block = [summary];
+      for (const {text, urls} of data) {
+        if (!urls) {
+          block.push(text, br.cloneNode());
+          continue;
+        }
+        block.push($element({
+          tag: 'details',
+          open: true,
+          appendChild: [
+            $element({tag: 'summary', textContent: text}),
+            // 3rd level: tab urls
+            ...urls,
+          ],
+        }));
+      }
+      report.appendChild($element({
+        tag: 'details',
+        open: true,
+        dataset: {type},
+        appendChild: block,
+      }));
+    }
+    showHelp(t('styleRegexpTestTitle'), report);
+
     document.querySelector('.regexp-report').onclick = event => {
       const target = event.target.closest('a, .regexp-report div');
       if (target) {
@@ -1893,10 +1935,17 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
 }
 
 function showHelp(title, text) {
-  const div = document.getElementById('help-popup');
+  const div = $('#help-popup');
   div.classList.remove('big');
-  div.querySelector('.contents').innerHTML = text;
-  div.querySelector('.title').innerHTML = title;
+
+  const contents = $('.contents', div);
+  if (text instanceof HTMLElement) {
+    contents.textContent = '';
+    contents.appendChild(text);
+  } else {
+    contents.innerHTML = text;
+  }
+  $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {
     document.addEventListener('keydown', closeHelp);

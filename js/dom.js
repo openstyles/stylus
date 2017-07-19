@@ -106,7 +106,7 @@ function $$(selector, base = document) {
 
 function $element(opt) {
   // tag:              string, default 'div', may include namespace like 'ns#tag'
-  // appendChild:      element or an array of elements
+  // appendChild:      element/string or an array of elements/strings
   // dataset:          object
   // any DOM property: assigned as is
   const [ns, tag] = opt.tag && opt.tag.includes('#')
@@ -115,8 +115,12 @@ function $element(opt) {
   const element = ns
     ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
     : document.createElement(tag || 'div');
-  (opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild])
-    .forEach(child => child && element.appendChild(child));
+  const children = opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild];
+  for (const child of children) {
+    if (child) {
+      element.appendChild(child instanceof Node ? child : document.createTextNode(child));
+    }
+  }
   delete opt.appendChild;
   delete opt.tag;
   if (opt.dataset) {
