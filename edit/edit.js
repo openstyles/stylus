@@ -315,15 +315,17 @@ function acmeEventListener(event) {
         break;
       }
       // avoid flicker: wait for the second stylesheet to load, then apply the theme
-      document.head.insertAdjacentHTML('beforeend',
-        '<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
-      (() => {
-        setTimeout(() => {
-          CodeMirror.setOption(option, value);
-          themeLink.remove();
-          document.getElementById('cm-theme2').id = 'cm-theme';
-        }, 100);
-      })();
+      document.head.appendChild($element({
+        tag: 'link',
+        id: 'cm-theme2',
+        rel: 'stylesheet',
+        href: url
+      }));
+      setTimeout(() => {
+        CodeMirror.setOption(option, value);
+        themeLink.remove();
+        document.getElementById('cm-theme2').id = 'cm-theme';
+      }, 100);
       return;
     }
     case 'autocompleteOnTyping':
