@@ -260,24 +260,26 @@ function initCodeMirror() {
   };
 
   // initialize global editor controls
-  function optionsHtmlFromArray(options) {
-    return options.map(opt => '<option>' + opt + '</option>').join('');
+  function optionsFromArray(parent, options) {
+    console.log(parent, options);
+    options.map(opt => $element({tag: 'option', textContent: opt}))
+      .forEach(opt => parent.appendChild(opt));
   }
   const themeControl = document.getElementById('editor.theme');
   const themeList = localStorage.codeMirrorThemes;
   if (themeList) {
-    themeControl.innerHTML = optionsHtmlFromArray(themeList.split(/\s+/));
+    optionsFromArray(themeControl, themeList.split(/\s+/));
   } else {
     // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
     const theme = prefs.get('editor.theme');
-    themeControl.innerHTML = optionsHtmlFromArray([theme === 'default' ? t('defaultTheme') : theme]);
+    optionsFromArray(themeControl, [theme === 'default' ? t('defaultTheme') : theme]);
     getCodeMirrorThemes().then(() => {
       const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
-      themeControl.innerHTML = optionsHtmlFromArray(themes);
+      optionsFromArray(themeControl, themes);
       themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
     });
   }
-  document.getElementById('editor.keyMap').innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+  optionsFromArray($('#editor.keyMap'), Object.keys(CM.keyMap).sort());
   document.getElementById('options').addEventListener('change', acmeEventListener, false);
   setupLivePrefs();
 
