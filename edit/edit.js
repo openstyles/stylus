@@ -1610,7 +1610,7 @@ function fromMozillaFormat() {
       makeSectionVisible(firstAddedCM);
       firstAddedCM.focus();
 
-      if (errors) {
+      if (errors.length) {
         showHelp(t('issues'), $element({
           tag: 'pre',
           textContent: errors.join('\n'),
