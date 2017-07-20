@@ -1897,30 +1897,31 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       if (!data.length) {
         continue;
       }
-      // 2nd level: regexp text
-      const summary = $element({tag: 'summary', appendChild: label});
-      const block = [summary];
-      for (const {text, urls} of data) {
-        if (!urls) {
-          block.push(text, br.cloneNode());
-          continue;
-        }
-        block.push($element({
-          tag: 'details',
-          open: true,
-          appendChild: [
-            $element({tag: 'summary', textContent: text}),
-            // 3rd level: tab urls
-            ...urls,
-          ],
-        }));
-      }
-      report.appendChild($element({
+      const block = report.appendChild($element({
         tag: 'details',
         open: true,
         dataset: {type},
-        appendChild: block,
+        appendChild: $element({tag: 'summary', appendChild: label}),
       }));
+      // 2nd level: regexp text
+      for (const {text, urls} of data) {
+        if (urls) {
+          // type is partial or full
+          block.appendChild($element({
+            tag: 'details',
+            open: true,
+            appendChild: [
+              $element({tag: 'summary', textContent: text}),
+              // 3rd level: tab urls
+              ...urls,
+            ],
+          }));
+        } else {
+          // type is none or invalid
+          block.appendChild(document.createTextNode(text));
+          block.appendChild(br.cloneNode());
+        }
+      }
     }
     showHelp(t('styleRegexpTestTitle'), report);
 
