@@ -16,7 +16,9 @@ globals:
   URLS: false
   BG: false
   notifyAllTabs: false
+  queryTabs: false
   getTab: false
+  getOwnTab: false
   getActiveTab: false
   getActiveTabRealURL: false
   getTabRealURL: false
@@ -35,6 +37,8 @@ globals:
   saveStyleSafe: false
   sessionStorageHash: false
   download: false
+  doTimeout: false
+  invokeOrPostpone: false
   # localization.js
   template: false
   t: false
@@ -78,7 +82,7 @@ rules:
   dot-location: [2, property]
   dot-notation: [0]
   eol-last: [2]
-  eqeqeq: [0]
+  eqeqeq: [1, always]
   func-call-spacing: [2, never]
   func-name-matching: [0]
   func-names: [0]
@@ -89,7 +93,7 @@ rules:
   id-blacklist: [0]
   id-length: [0]
   id-match: [0]
-  indent: [2, 2, {VariableDeclarator: 0, SwitchCase: 1}]
+  indent-legacy: [2, 2, {VariableDeclarator: 0, SwitchCase: 1}]
   jsx-quotes: [0]
   key-spacing: [0]
   keyword-spacing: [2]
@@ -128,7 +132,7 @@ rules:
   no-duplicate-imports: [2]
   no-else-return: [0]
   no-empty-character-class: [2]
-  no-empty-function: [0]
+  no-empty-function: [1]
   no-empty-pattern: [2]
   no-empty: [2, {allowEmptyCatch: true}]
   no-eq-null: [2]
@@ -162,7 +166,7 @@ rules:
   no-mixed-operators: [0]
   no-mixed-requires: [2, true]
   no-mixed-spaces-and-tabs: [2]
-  no-multi-spaces: [0]
+  no-multi-spaces: [2, {ignoreEOLComments: true}]
   no-multi-str: [2]
   no-multiple-empty-lines: [2, {max: 2, maxEOF: 0, maxBOF: 0}]
   no-native-reassign: [2]
@@ -211,7 +215,7 @@ rules:
   no-unreachable: [2]
   no-unsafe-finally: [2]
   no-unsafe-negation: [2]
-  no-unused-expressions: [2]
+  no-unused-expressions: [1]
   no-unused-labels: [0]
   no-unused-vars: [1, {args: after-used, vars: local, argsIgnorePattern: ^_}]
   no-use-before-define: [2, nofunc]
@@ -245,7 +249,7 @@ rules:
   sort-imports: [0]
   sort-keys: [0]
   space-before-blocks: [2, always]
-  space-before-function-paren: [2, never]
+  space-before-function-paren: [2, {anonymous: always, asyncArrow: always, named: never}]
   space-in-parens: [2, never]
   space-infix-ops: [2]
   space-unary-ops: [2]

@@ -91,6 +91,10 @@
     "message": "Checking...",
     "description": "Text to display when checking a style for an update"
   },
+  "cm_autocompleteOnTyping": {
+    "message": "Autocomplete on typing",
+    "description": "Label for the checkbox in the style editor."
+  },
   "cm_indentWithTabs": {
     "message": "Use tabs with smart indentation",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -126,6 +130,10 @@
   "cm_matchHighlightSelection": {
     "message": "Selection only",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+  },
+  "cm_resizeGripHint": {
+    "message": "Double-click to maximize/restore the height",
+    "description": "Tooltip for the resize grip in style editor"
   },
   "genericDisabledLabel": {
     "message": "Disabled",
@@ -230,7 +238,7 @@
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
   "findStylesForSite": {
-    "message": "Find more styles for this site.",
+    "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "helpAlt": {
@@ -498,6 +506,10 @@
     "message": "Beautify",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyIndentConditional": {
+    "message": "Indent @media, @supports",
+    "description": "CSS-beautifier option"
+  },
   "styleCancelEditLabel": {
     "message": "Back to manage",
     "description": "Label for cancel button for style editing"
@@ -509,6 +521,10 @@
   "styleEnabledLabel": {
     "message": "Enabled",
     "description": "Label for the enabled state of styles"
+  },
+  "styleEnabledToggleHint": {
+    "message": "Press Alt-Enter to toggle enabled/disabled state and save the style",
+    "description": "Help text for the '[x] enable' checkbox in the editor"
   },
   "styleInstall": {
     "message": "Install '$stylename$' into Stylus?",
@@ -573,7 +589,7 @@
     "description": "Button label"
   },
   "undoGlobal": {
-    "message": "Undo (global)",
+    "message": "Undo in all sections",
     "description": "CSS-beautify global Undo button label"
   },
   "unreachableContentScript": {
@@ -585,7 +601,7 @@
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Update failed - server responded with code $code$.",
+    "message": "Update failed: server responded with code $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
@@ -594,7 +610,7 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Update failed - server unreachable.",
+    "message": "Update failed: server unreachable.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSkippedLocallyEdited": {
@@ -664,6 +680,15 @@
   },
   "optionsUpdateImportNote": {
     "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
+  },
+  "optionsCustomizeIcon": {
+    "message": "Toolbar icon"
+  },
+  "optionsIconLight": {
+    "message": "Light browser themes"
+  },
+  "optionsIconDark": {
+    "message": "Dark browser themes"
   },
   "optionsCustomizeBadge": {
     "message": "Badge on the toolbar icon"

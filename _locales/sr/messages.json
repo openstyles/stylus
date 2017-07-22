@@ -60,7 +60,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Пронађи још стилова за овај сајт.",
+		"message": "Пронађи још стилова за овај сајт",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
@@ -68,7 +68,7 @@
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
-		"message": " Улепшај",
+		"message": "Улепшај",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleEnabledLabel": {
@@ -149,7 +149,7 @@
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Ажурирање није успело - сервер није доступан.",
+		"message": "Ажурирање није успело: сервер није доступан.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {
@@ -163,12 +163,6 @@
 	"deleteStyleConfirm": {
 		"message": "Да ли сте сигурни да желите да избришете овај стил?",
 		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
 	},
 	"styleBadRegexp": {
 		"message": "Регуларни израз је неисправан.",
@@ -227,7 +221,7 @@
 	},
 	"popupStylesFirst": {
 		"message": "Излистај стилове пре команди у менију дугмета на алатној траци",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
 		"message": "Одељци вам омогућавају да дефинишете различите делове кода који се примењују на раличите скупове УРЛ-ова у истом стилу. На пример, један исти стил може променити почетну страницу једног сајта на један начин а остатак сајта на други начин.",
@@ -249,10 +243,6 @@
 		"message": "Стил у Mozilla формату",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
 	"writeStyleFor": {
 		"message": "Упиши стил за:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -270,7 +260,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Ажурирање није успело - сервер је одговорио кодом $code$.",
+		"message": "Ажурирање није успело: сервер је одговорио кодом $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
@@ -289,10 +279,6 @@
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla формат",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus не ради на страницама као што је ова.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Уклони одељак",
@@ -333,6 +319,10 @@
 	"appliesUrlOption": {
 		"message": "УРЛ",
 		"description": "Option to make the style apply to the entered string as a URL"
+	},
+	"stylusUnavailableForURL": {
+		"message": "Stylus не ради на страницама као што је ова.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"addStyleTitle": {
 		"message": "Додај стил",

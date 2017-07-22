@@ -60,7 +60,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Meer stijlen zoeken voor deze website.",
+		"message": "Meer stijlen zoeken voor deze website",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
@@ -149,12 +149,8 @@
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Update mislukt - server onbereikbaar.",
+		"message": "Update mislukt: server onbereikbaar.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"manageFilters": {
-		"message": "Filters",
-		"description": "Label for filters container"
 	},
 	"applyAllUpdates": {
 		"message": "Alle bijwerkingen toepassen",
@@ -163,12 +159,6 @@
 	"deleteStyleConfirm": {
 		"message": "Weet u zeker dat u deze stijl wilt verwijderen?",
 		"description": "Confirmation before deleting a style"
-	},
-	"confirmDelete": {
-		"message": "Delete"
-	},
-	"confirmCancel": {
-		"message": "Cancel"
 	},
 	"styleBadRegexp": {
 		"message": "Regexp is ongeldig.",
@@ -227,7 +217,7 @@
 	},
 	"popupStylesFirst": {
 		"message": "Stijlen vóór commando's opsomming in het werkbalkknopmenu",
-		"description": "Label for the checkbox controlling section order in the toolbar button menu."
+		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
 		"message": "Secties stellen u in staat om andere stukken code toe te passen op andere URL's in dezelfde stijl. Bijv.: een enkele stijl kan de homepage van een site aanpassen op een bepaalde manier, terwijl de rest van de site op een andere manier wordt aangepast.",
@@ -249,10 +239,6 @@
 		"message": "Stijl in Mozilla-opmaak",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
-	"manageTitle": {
-		"message": "Stylus",
-		"description": "Title for the manage page"
-	},
 	"writeStyleFor": {
 		"message": "Stijl schrijven voor:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -270,7 +256,7 @@
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Update mislukt - server gaf code $code$ als antwoord.",
+		"message": "Update mislukt: server gaf code $code$ als antwoord.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
@@ -289,10 +275,6 @@
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla-opmaak",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus werkt niet op pagina's als deze.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"sectionRemove": {
 		"message": "Sectie verwijderen",
@@ -314,10 +296,6 @@
 		"message": "Bezig met controleren...",
 		"description": "Text to display when checking a style for an update"
 	},
-	"sectionCode": {
-		"message": "Code",
-		"description": "Label for the code for a section"
-	},
 	"cm_smartIndent": {
 		"message": "Slimme inspringing gebruiken",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
@@ -330,9 +308,9 @@
 		"message": "Stijl bewerken",
 		"description": "Title of the page for editing styles"
 	},
-	"appliesUrlOption": {
-		"message": "URL",
-		"description": "Option to make the style apply to the entered string as a URL"
+	"stylusUnavailableForURL": {
+		"message": "Stylus werkt niet op pagina's als deze.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"addStyleTitle": {
 		"message": "Stijl toevoegen",

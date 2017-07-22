@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <title i18n-text="manageTitle"></title>
-  <link rel="stylesheet" href="manage.css">
+  <link rel="stylesheet" href="manage/manage.css">
   <link rel="stylesheet" href="msgbox/msgbox.css">
 
   <style id="style-overrides"></style>
@@ -17,7 +17,7 @@
   <template data-id="style">
     <div class="entry">
       <h2 class="style-name">
-        <a class="style-name-link" href="edit.html?id="></a>
+        <a class="style-name-link"></a>
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
@@ -25,7 +25,7 @@
         <span class="targets"></span>
       </p>
       <p class="actions">
-        <a class="style-edit-link" href="edit.html?id=">
+        <a class="style-edit-link">
           <button i18n-text="editStyleLabel"></button>
         </a>
         <button class="enable" i18n-text="enableStyleLabel"></button>
@@ -42,7 +42,7 @@
     <div class="entry">
       <h2 class="style-name">
         <input class="checker" type="checkbox" i18n-title="toggleStyle">
-        <a class="style-name-link" href="edit.html?id="></a>
+        <a class="style-name-link"></a>
       </h2>
       <p class="actions">
         <a target="_blank" class="homepage"></a>
@@ -121,12 +121,12 @@
     </details>
   </template>
 
-  <script src="dom.js"></script>
-  <script src="messaging.js"></script>
-  <script src="prefs.js"></script>
-  <script src="apply.js"></script>
-  <script src="localization.js"></script>
-  <script src="manage.js"></script>
+  <script src="js/dom.js"></script>
+  <script src="js/messaging.js"></script>
+  <script src="js/prefs.js"></script>
+  <script src="content/apply.js"></script>
+  <script src="js/localization.js"></script>
+  <script src="manage/manage.js"></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
@@ -152,7 +152,7 @@
              data-filter-hide=":not(.updatable):not(.update-done), .no-update:not(.update-problem)">
       <span i18n-text="manageOnlyUpdates"></span>
     </label>
-    <input id="search" type="search" i18n-placeholder="searchStyles"
+    <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
            data-filter=":not(.not-matching)"
            data-filter-hide=".not-matching">
   </fieldset>
@@ -216,7 +216,7 @@
 </div>
 <div id="installed"></div>
 
-<script src="backup/fileSaveLoad.js"></script>
+<script src="manage/fileSaveLoad.js"></script>
 <script src="msgbox/msgbox.js"></script>
 
 </body>

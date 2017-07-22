@@ -1,10 +1,12 @@
 html.opera {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 html.opera body {
-  display: inline-block;
-  text-align: initial;
+  width: auto;
 }
 
 html.firefox .block {
@@ -19,7 +21,15 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  width: calc(16px + 100px + 8px + 260px + 8px + 60px + 4px + 16px);
+  width: 480px;
+  min-width: 400px;
+  max-width: 800px;
+}
+
+@media (min-width: 401px) {
+  .firefox body {
+    width: calc(100% - 6px); /* TODO: rework to avoid compensating padding of 'html.firefox .block'  */
+  }
 }
 
 .firefox .chromium-only {
@@ -31,7 +41,7 @@ body {
   align-items: center;
   margin: 1em 0;
   border-bottom: 1px dotted #ccc;
-  padding: 0 0 1em 16px;
+  padding: 0 16px 1em;
   position: relative;
 }
 
@@ -41,29 +51,28 @@ body {
 }
 
 h1 {
-  width: 100px;
+  width: 30%;
   margin: 0;
   font-size: 120%;
   font-weight: bold;
   padding-right: 8px;
+  box-sizing: border-box;
   word-wrap: break-word;
 }
 
-label {
-  display: block;
-  white-space: nowrap;
-  margin: .25ex 0;
+.items {
+  width: 70%;
 }
 
-label > * {
-  display: inline-block;
-  vertical-align: middle;
+label {
+  display: flex;
+  margin: .25ex 0;
+  align-items: center;
 }
 
 label > :first-child {
-  width: 260px;
-  white-space: normal;
   margin-right: 8px;
+  flex-grow: 1;
 }
 
 label:not([disabled]) > :first-child {
@@ -72,6 +81,7 @@ label:not([disabled]) > :first-child {
 
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
+  cursor: pointer;
 }
 
 button,
@@ -80,6 +90,7 @@ input[type="color"],
 .onoffswitch {
   width: 60px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 a {
@@ -102,6 +113,14 @@ input[type=number]:invalid {
 input[type="color"] {
   box-sizing: border-box;
   height: 2em;
+}
+
+.iconset {
+  display: flex;
+}
+
+.iconset input {
+  display: block;
 }
 
 #actions {
@@ -140,7 +159,7 @@ input[type="color"] {
   margin-top: 1px;
 }
 
-#updates-installed:after {
+#updates-installed::after {
   content: attr(data-value);
   margin-left: .5ex;
   font-weight: bold;
@@ -221,10 +240,11 @@ sup {
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
 }
 
-.onoffswitch span:before {
+.onoffswitch span::before {
   content: "";
   display: block;
   width: 18px;
+  height: 18px;
   margin: -3px;
   background: #efefef;
   position: absolute;
@@ -239,7 +259,7 @@ sup {
   background-color: #CAEBE3;
 }
 
-.onoffswitch input:checked + span, .onoffswitch input:checked + span:before {
+.onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
   border-color: #CAEBE3;
 }
 
@@ -247,7 +267,7 @@ sup {
   margin-left: 0;
 }
 
-.onoffswitch input:checked + span:before {
+.onoffswitch input:checked + span::before {
   right: 0;
   background-color: #04BA9F;
   box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);

@@ -16,13 +16,15 @@ See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userst
 
 ## Contributing
 
-The source is hosted on [GitHub](https://github.com/schomery/stylish-chrome) and pull requests are welcome.
+The source is hosted on [GitHub](https://github.com/openstyles/stylus) and pull requests are welcome.
 
-You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylish-chrome/issues](https://github.com/schomery/stylish-chrome/issues).
+You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylus/issues](https://github.com/openstyles/stylus/issues).
+
+See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-For copyright status of the "codemirror" directory, see codemirror/LICENSE. Everything else is:
+For copyright status of the "codemirror" directory, see [codemirror/LICENSE](https://github.com/openstyles/stylus/blob/master/src/vendor/codemirror/LICENSE). Everything else is:
 
 Copyright (C) 2005-2014 Jason Barnabe <jason.barnabe@gmail.com>
 
