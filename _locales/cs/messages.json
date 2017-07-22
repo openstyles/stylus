@@ -568,10 +568,6 @@
 		"message": "Automatické dokončování během psaní",
 		"description": "Label for the checkbox in the style editor."
 	},
-	"stylusUnavailableForURLdetails": {
-		"message": "Jako bezpečností opatření, prohlížeč brání rozšířením v ovlivnění vestavěných stránek (např. chrome://version nebo about:addons) a stránek dalších rozšíření. Každý prohlížeč také omezuje přístup do vlastního obchodu s rozšířeními (např. Chrome Web Store nebo AMO).",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
 	"cm_matchHighlightSelection": {
 		"message": "Pouze výběr",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"

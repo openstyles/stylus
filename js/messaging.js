@@ -21,17 +21,29 @@ const URLS = {
 
   // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
   // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
-  chromeWebStore: FIREFOX ? 'https://addons.mozilla.org/' : (
-    OPERA ? 'https://addons.opera.com/' : 'https://chrome.google.com/webstore/'
-  ),
+  browserWebStore:
+    FIREFOX ? 'https://addons.mozilla.org/' :
+    OPERA ? 'https://addons.opera.com/' :
+      'https://chrome.google.com/webstore/',
 
-  supported: new RegExp(
-    '^(file|ftps?|http)://|' +
-    `^https://${FIREFOX ? '(?!addons\\.mozilla\\.org)' : (
-      OPERA ? '(?!addons\\.opera\\.com)' : '(?!chrome\\.google\\.com/webstore)'
-    )}|` +
-    '^' + chrome.runtime.getURL('')),
+  // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
+  // TODO: remove when "minimum_chrome_version": "61" or higher
+  chromeProtectsNTP:
+    parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) >= 3161,
+
+  supported: null,
 };
+
+URLS.supported = new RegExp(
+  '^(file|ftps?|http)://|' +
+  `^https://(?!${
+    URLS.browserWebStore.split('://')[1].replace(/\./g, '\\.')
+  })|` +
+  (URLS.chromeProtectsNTP
+    ? '^chrome://(?!newtab)/|'
+    : '') +
+  '^' + chrome.runtime.getURL('')
+);
 
 let BG = chrome.extension.getBackgroundPage();
 
@@ -134,7 +146,7 @@ function getActiveTabRealURL() {
 
 function getTabRealURL(tab) {
   return new Promise(resolve => {
-    if (tab.url !== 'chrome://newtab/') {
+    if (tab.url !== 'chrome://newtab/' || URLS.chromeProtectsNTP) {
       resolve(tab.url);
     } else {
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
@@ -191,7 +203,7 @@ function activateTab(tab) {
 
 
 function stringAsRegExp(s, flags) {
-  return new RegExp(s.replace(/[{}()[\]/\\.+?^$:=*!|]/g, '\\$&'), flags);
+  return new RegExp(s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&'), flags);
 }
 
 

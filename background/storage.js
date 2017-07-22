@@ -129,9 +129,12 @@ function filterStyles({
     exposeIframes: prefs.get('exposeIframes'),
   };
 
-  if (matchUrl && matchUrl.startsWith(URLS.chromeWebStore)) {
-    // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
-    // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
+  if (matchUrl && (
+    // Web Store doesn't run content scripts
+    matchUrl.startsWith(URLS.browserWebStore) ||
+    // Chrome 61.0.3161+ doesn't run content scripts on NTP
+    URLS.chromeProtectsNTP && matchUrl.startsWith('chrome://newtab/')
+  )) {
     return asHash ? {} : [];
   }
 

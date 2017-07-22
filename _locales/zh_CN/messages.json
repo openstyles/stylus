@@ -572,10 +572,6 @@
 		"message": "输入时自动完成",
 		"description": "Label for the checkbox in the style editor."
 	},
-	"stylusUnavailableForURLdetails": {
-		"message": "出于安全原因，浏览器禁止扩展影响内置页面（例如 chrome://version 或 about:addons）以及其他扩展的页面。各浏览器同时也限制介入自己的扩展网站（如 Chrome 网上应用店、Firefox 附加组件）。",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
 	"cm_matchHighlightSelection": {
 		"message": "选择区域",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
