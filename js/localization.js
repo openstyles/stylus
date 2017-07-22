@@ -38,11 +38,19 @@ function tHTML(html, tag) {
     if (tag) {
       html = `<${tag}>${html}</${tag}>`;
     }
-    const node = (new DOMParser()).parseFromString(html, 'text/html').querySelector('body').firstElementChild;
+    const body = t.DOMParser.parseFromString(html, 'text/html').body;
     if (html.includes('i18n-')) {
-      tNodeList(node.getElementsByTagName('*'));
+      tNodeList(body.getElementsByTagName('*'));
     }
-    return node;
+    // the html string may contain more than one top-level elements
+    if (body.childElementCount <= 1) {
+      return body.firstElementChild;
+    }
+    const fragment = document.createDocumentFragment();
+    while (body.childElementCount) {
+      fragment.appendChild(body.firstElementChild);
+    }
+    return fragment;
   }
   return html;
 }
@@ -100,6 +108,7 @@ function tNodeList(nodes) {
 
 
 function tDocLoader() {
+  t.DOMParser = new DOMParser();
   t.cache = tryJSONparse(localStorage.L10N) || {};
 
   // reset L10N cache on UI language change
