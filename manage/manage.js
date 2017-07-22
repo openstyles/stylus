@@ -519,7 +519,7 @@ function switchUI({styleOnly} = {}) {
 
   const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
   if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
-    installed.innerHTML = '';
+    installed.textContent = '';
     getStylesSafe().then(showStyles);
     return;
   }

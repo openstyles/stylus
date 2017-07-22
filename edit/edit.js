@@ -260,24 +260,28 @@ function initCodeMirror() {
   };
 
   // initialize global editor controls
-  function optionsHtmlFromArray(options) {
-    return options.map(opt => '<option>' + opt + '</option>').join('');
+  function optionsFromArray(parent, options) {
+    const fragment = document.createDocumentFragment();
+    for (const opt of options) {
+      fragment.appendChild($element({tag: 'option', textContent: opt}));
+    }
+    parent.appendChild(fragment);
   }
   const themeControl = document.getElementById('editor.theme');
   const themeList = localStorage.codeMirrorThemes;
   if (themeList) {
-    themeControl.innerHTML = optionsHtmlFromArray(themeList.split(/\s+/));
+    optionsFromArray(themeControl, themeList.split(/\s+/));
   } else {
     // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
     const theme = prefs.get('editor.theme');
-    themeControl.innerHTML = optionsHtmlFromArray([theme === 'default' ? t('defaultTheme') : theme]);
+    optionsFromArray(themeControl, [theme === 'default' ? t('defaultTheme') : theme]);
     getCodeMirrorThemes().then(() => {
       const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
-      themeControl.innerHTML = optionsHtmlFromArray(themes);
+      optionsFromArray(themeControl, themes);
       themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
     });
   }
-  document.getElementById('editor.keyMap').innerHTML = optionsHtmlFromArray(Object.keys(CM.keyMap).sort());
+  optionsFromArray($('#editor.keyMap'), Object.keys(CM.keyMap).sort());
   document.getElementById('options').addEventListener('change', acmeEventListener, false);
   setupLivePrefs();
 
@@ -314,15 +318,17 @@ function acmeEventListener(event) {
         break;
       }
       // avoid flicker: wait for the second stylesheet to load, then apply the theme
-      document.head.insertAdjacentHTML('beforeend',
-        '<link id="cm-theme2" rel="stylesheet" href="' + url + '">');
-      (() => {
-        setTimeout(() => {
-          CodeMirror.setOption(option, value);
-          themeLink.remove();
-          document.getElementById('cm-theme2').id = 'cm-theme';
-        }, 100);
-      })();
+      document.head.appendChild($element({
+        tag: 'link',
+        id: 'cm-theme2',
+        rel: 'stylesheet',
+        href: url
+      }));
+      setTimeout(() => {
+        CodeMirror.setOption(option, value);
+        themeLink.remove();
+        $('#cm-theme2').id = 'cm-theme';
+      }, 100);
       return;
     }
     case 'autocompleteOnTyping':
@@ -688,11 +694,11 @@ function setupGlobalSearch() {
     return cm.state.search;
   }
 
-  // temporarily overrides the original openDialog with the provided template's innerHTML
+  // overrides the original openDialog with a clone of the provided template
   function customizeOpenDialog(cm, template, callback) {
     cm.openDialog = (tmpl, cb, opt) => {
       // invoke 'callback' and bind 'this' to the original callback
-      originalOpenDialog.call(cm, template.innerHTML, callback.bind(cb), opt);
+      originalOpenDialog.call(cm, template.cloneNode(true), callback.bind(cb), opt);
     };
     setTimeout(() => { cm.openDialog = originalOpenDialog; }, 0);
     refocusMinidialog(cm);
@@ -871,7 +877,7 @@ function setupGlobalSearch() {
             doReplace();
           }
         });
-        originalOpenConfirm.call(cm, template.replaceConfirm.innerHTML, ovrCallbacks, opt);
+        originalOpenConfirm.call(cm, template.replaceConfirm.cloneNode(true), ovrCallbacks, opt);
       };
     }
   }
@@ -890,7 +896,7 @@ function setupGlobalSearch() {
 function jumpToLine(cm) {
   const cur = cm.getCursor();
   refocusMinidialog(cm);
-  cm.openDialog(template.jumpToLine.innerHTML, str => {
+  cm.openDialog(template.jumpToLine.cloneNode(true), str => {
     const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
     if (m) {
       cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
@@ -1087,9 +1093,9 @@ function renderLintReport(someBlockChanged) {
   let issueCount = 0;
   editors.forEach((cm, index) => {
     if (cm.state.lint && cm.state.lint.html) {
-      const newBlock = newContent.appendChild(document.createElement('table'));
       const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
-      newBlock.innerHTML = html;
+      const newBlock = newContent.appendChild(tHTML(html, 'table'));
+
       newBlock.cm = cm;
       issueCount += newBlock.rows.length;
 
@@ -1233,7 +1239,7 @@ function init() {
   const params = getParams();
   if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
     // This is an add
-    tE('heading', 'addStyleTitle');
+    $('#heading').textContent = t('addStyleTitle');
     const section = {code: ''};
     for (const i in CssToProperty) {
       if (params[i]) {
@@ -1251,7 +1257,7 @@ function init() {
     return;
   }
   // This is an edit
-  tE('heading', 'editStyleHeading', null, false);
+  $('#heading').textContent = t('editStyleHeading');
   getStylesSafe({id: params.id}).then(styles => {
     let style = styles[0];
     if (!style) {
@@ -1504,7 +1510,7 @@ function saveComplete(style) {
   // Go from new style URL to edit style URL
   if (location.href.indexOf('id=') === -1) {
     history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-    tE('heading', 'editStyleHeading', null, false);
+    $('#heading').textContent = t('editStyleHeading');
   }
   updateTitle();
 }
@@ -1534,7 +1540,7 @@ function fromMozillaFormat() {
       <button name="import-append" i18n-text="importAppendLabel" i18n-title="importAppendTooltip"></button>
       <button name="import-replace" i18n-text="importReplaceLabel" i18n-title="importReplaceTooltip"></button>
     </div>`
-  ).innerHTML);
+  ));
 
   const contents = popup.querySelector('.contents');
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
@@ -1610,7 +1616,7 @@ function fromMozillaFormat() {
       makeSectionVisible(firstAddedCM);
       firstAddedCM.focus();
 
-      if (errors) {
+      if (errors.length) {
         showHelp(t('issues'), $element({
           tag: 'pre',
           textContent: errors.join('\n'),
@@ -1748,16 +1754,37 @@ function showKeyMapHelp() {
 
   function filterTable(event) {
     const input = event.target;
-    const query = stringAsRegExp(input.value, 'gi');
     const col = input.parentNode.cellIndex;
     inputs[1 - col].value = '';
     table.tBodies[0].childNodes.forEach(row => {
-      let cell = row.children[col];
-      cell.innerHTML = cell.textContent.replace(query, '<mark>$&</mark>');
-      row.style.display = query.test(cell.textContent) ? '' : 'none';
+      const cell = row.children[col];
+      const text = cell.textContent;
+      const query = stringAsRegExp(input.value, 'gi');
+      const test = query.test(text);
+      row.style.display = input.value && test === false ? 'none' : '';
+      if (input.value && test) {
+        cell.textContent = '';
+        let offset = 0;
+        text.replace(query, (match, index) => {
+          if (index > offset) {
+            cell.appendChild(document.createTextNode(text.substring(offset, index)));
+          }
+          cell.appendChild($element({tag: 'mark', textContent: match}));
+          offset = index + match.length;
+        });
+        if (offset + 1 !== text.length) {
+          cell.appendChild(document.createTextNode(text.substring(offset)));
+        }
+      }
+      else {
+        cell.textContent = text;
+      }
       // clear highlight from the other column
-      cell = row.children[1 - col];
-      cell.innerHTML = cell.textContent;
+      const otherCell = row.children[1 - col];
+      if (otherCell.children.length) {
+        const text = otherCell.textContent;
+        otherCell.textContent = text;
+      }
     });
   }
   function mergeKeyMaps(merged, ...more) {
@@ -1897,30 +1924,31 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       if (!data.length) {
         continue;
       }
-      // 2nd level: regexp text
-      const summary = $element({tag: 'summary', appendChild: label});
-      const block = [summary];
-      for (const {text, urls} of data) {
-        if (!urls) {
-          block.push(text, br.cloneNode());
-          continue;
-        }
-        block.push($element({
-          tag: 'details',
-          open: true,
-          appendChild: [
-            $element({tag: 'summary', textContent: text}),
-            // 3rd level: tab urls
-            ...urls,
-          ],
-        }));
-      }
-      report.appendChild($element({
+      const block = report.appendChild($element({
         tag: 'details',
         open: true,
         dataset: {type},
-        appendChild: block,
+        appendChild: $element({tag: 'summary', appendChild: label}),
       }));
+      // 2nd level: regexp text
+      for (const {text, urls} of data) {
+        if (urls) {
+          // type is partial or full
+          block.appendChild($element({
+            tag: 'details',
+            open: true,
+            appendChild: [
+              $element({tag: 'summary', textContent: text}),
+              // 3rd level: tab urls
+              ...urls,
+            ],
+          }));
+        } else {
+          // type is none or invalid
+          block.appendChild(document.createTextNode(text));
+          block.appendChild(br.cloneNode());
+        }
+      }
     }
     showHelp(t('styleRegexpTestTitle'), report);
 
@@ -1934,17 +1962,11 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
   });
 }
 
-function showHelp(title, text) {
+function showHelp(title, body) {
   const div = $('#help-popup');
   div.classList.remove('big');
-
-  const contents = $('.contents', div);
-  if (text instanceof HTMLElement) {
-    contents.textContent = '';
-    contents.appendChild(text);
-  } else {
-    contents.innerHTML = text;
-  }
+  $('.contents', div).textContent = '';
+  $('.contents', div).appendChild(typeof body === 'string' ? tHTML(body) : body);
   $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {
@@ -1962,7 +1984,7 @@ function showHelp(title, text) {
       ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
     ) {
       div.style.display = '';
-      document.querySelector('.contents').innerHTML = '';
+      document.querySelector('.contents').textContent = '';
       document.removeEventListener('keydown', closeHelp);
     }
   }

@@ -176,7 +176,8 @@ function showStyles(styles) {
     return;
   }
   if (!styles.length) {
-    installed.innerHTML = template.noStyles.outerHTML;
+    installed.textContent = '';
+    installed.appendChild(template.noStyles.cloneNode(true));
     return;
   }
 

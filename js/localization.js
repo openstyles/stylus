@@ -17,24 +17,31 @@ function t(key, params) {
 }
 
 
-function tE(id, key, attr, esc) {
-  if (attr) {
-    document.getElementById(id).setAttribute(attr, t(key));
-  } else if (typeof esc === 'undefined' || esc) {
-    document.getElementById(id).appendChild(document.createTextNode(t(key)));
-  } else {
-    document.getElementById(id).innerHTML = t(key);
+function tHTML(html, tag) {
+  // body is a text node without HTML tags
+  if (typeof html === 'string' && !tag && /<\w+/.test(html) === false) {
+    return document.createTextNode(html);
   }
-}
-
-
-function tHTML(html) {
-  const node = document.createElement('div');
-  node.innerHTML = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
-  if (html.includes('i18n-')) {
-    tNodeList(node.getElementsByTagName('*'));
+  if (typeof html === 'string') {
+    html = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
+    if (tag) {
+      html = `<${tag}>${html}</${tag}>`;
+    }
+    const body = t.DOMParser.parseFromString(html, 'text/html').body;
+    if (html.includes('i18n-')) {
+      tNodeList(body.getElementsByTagName('*'));
+    }
+    // the html string may contain more than one top-level elements
+    if (body.childElementCount <= 1) {
+      return body.firstElementChild;
+    }
+    const fragment = document.createDocumentFragment();
+    while (body.childElementCount) {
+      fragment.appendChild(body.firstElementChild);
+    }
+    return fragment;
   }
-  return node.firstElementChild;
+  return html;
 }
 
 
@@ -78,7 +85,11 @@ function tNodeList(nodes) {
           node.appendChild(document.createTextNode(value));
           break;
         case 'html':
-          node.insertAdjacentHTML('afterbegin', value);
+          // localized strings only allow having text nodes and links
+          node.textContent = '';
+          [...tHTML(value, 'div').childNodes]
+            .filter(a => a.nodeType === a.TEXT_NODE || a.tagName === 'A')
+            .forEach(n => node.appendChild(n));
           break;
         default:
           node.setAttribute(type, value);
@@ -90,6 +101,7 @@ function tNodeList(nodes) {
 
 
 function tDocLoader() {
+  t.DOMParser = new DOMParser();
   t.cache = tryJSONparse(localStorage.L10N) || {};
 
   // reset L10N cache on UI language change

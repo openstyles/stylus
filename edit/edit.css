@@ -330,8 +330,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   position: absolute;
   margin-left: -20px;
   margin-top: -1px;
-  animation: fadein 1s cubic-bezier(.03, .67, .08, .94);
-  animation-fill-mode: both;
 }
 /************ help popup ************/
 #help-popup {
