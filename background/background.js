@@ -281,7 +281,10 @@ function updateIcon(tab, styles) {
       // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
       chrome.browserAction.setBadgeBackgroundColor({color});
       getTab(tab.id).then(() => {
-        chrome.browserAction.setBadgeText({text, tabId: tab.id});
+        // skip pre-rendered tabs
+        if (tab.index >= 0) {
+          chrome.browserAction.setBadgeText({text, tabId: tab.id});
+        }
       });
     });
   }
