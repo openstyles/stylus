@@ -576,6 +576,10 @@
     "message": "Разширението не работи на такива страници.",
     "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
   },
+  "stylusUnavailableForURLdetails": {
+    "message": "Като предпазна мярка, четецът забранява на разширенията да влияят на вградените страници (например chrome://version, about:addons, стандартната страница от Хром 61 и други), както и на страниците на други разширения. Достъпът до магазина с добавки на всеки четец също е ограничен.",
+    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
   "toggleStyle": {
     "message": "Превключване на стила",
     "description": "Label for the checkbox to enable/disable a style"
