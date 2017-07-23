@@ -483,8 +483,6 @@ function goBackToManage(event) {
     event.stopPropagation();
     event.preventDefault();
     history.back();
-  } else if (styleId) {
-    sessionStorage.justEditedStyleId = styleId;
   }
 }
 
@@ -1265,6 +1263,7 @@ function init() {
       history.replaceState({}, document.title, location.pathname);
     }
     styleId = style.id;
+    sessionStorage.justEditedStyleId = styleId;
     setStyleMeta(style);
     window.onload = () => {
       window.onload = null;
@@ -1505,6 +1504,7 @@ function getMeta(e) {
 
 function saveComplete(style) {
   styleId = style.id;
+  sessionStorage.justEditedStyleId = styleId;
   setCleanGlobal();
 
   // Go from new style URL to edit style URL
