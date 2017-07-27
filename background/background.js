@@ -14,17 +14,24 @@ dbExec().catch((...args) => {
 // register all listeners
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-chrome.webNavigation.onBeforeNavigate.addListener(data =>
-  webNavigationListener(null, data));
+{
+  const listener =
+    URLS.chromeProtectsNTP
+      ? webNavigationListenerChrome
+      : webNavigationListener;
 
-chrome.webNavigation.onCommitted.addListener(data =>
-  webNavigationListener('styleApply', data));
+  chrome.webNavigation.onBeforeNavigate.addListener(data =>
+    listener(null, data));
 
-chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
-  webNavigationListener('styleReplaceAll', data));
+  chrome.webNavigation.onCommitted.addListener(data =>
+    listener('styleApply', data));
 
-chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
-  webNavigationListener('styleReplaceAll', data));
+  chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
+    listener('styleReplaceAll', data));
+
+  chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
+    listener('styleReplaceAll', data));
+}
 
 chrome.tabs.onAttached.addListener(tabId => {
   // When an edit page gets attached or detached, remember its state
@@ -236,9 +243,30 @@ function webNavigationListener(method, {url, tabId, frameId}) {
 }
 
 
+function webNavigationListenerChrome(method, data) {
+  // Chrome 61.0.3161+ doesn't run content scripts on NTP
+  if (
+    !data.url.startsWith('https://www.google.') ||
+    !data.url.includes('/_/chrome/newtab?')
+  ) {
+    webNavigationListener(method, data);
+    return;
+  }
+  getTab(data.tabId).then(tab => {
+    if (tab.url === 'chrome://newtab/') {
+      data.url = tab.url;
+    }
+    webNavigationListener(method, data);
+  });
+}
+
+
 function updateIcon(tab, styles) {
   if (tab.id < 0) {
     return;
+  }
+  if (URLS.chromeProtectsNTP && tab.url === 'chrome://newtab/') {
+    styles = {};
   }
   if (styles) {
     stylesReceived(styles);
