@@ -1,4 +1,4 @@
-Stylus : Stylish fork for Chrome and Chrome-like things
+Stylus : Stylish fork for Firefox and Chrome-like things
 
 ## Releases
 
