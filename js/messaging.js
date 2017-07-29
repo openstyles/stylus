@@ -46,7 +46,12 @@ URLS.supported = new RegExp(
 );
 
 let BG = chrome.extension.getBackgroundPage();
-
+if (BG && !BG.getStyles) {
+  // own page like editor/manage is being loaded on browser startup
+  // before the background page has been fully initialized;
+  // it'll be resolved in onBackgroundReady() instead
+  BG = null;
+}
 if (!BG || BG !== window) {
   document.documentElement.classList.toggle('firefox', FIREFOX);
   document.documentElement.classList.toggle('opera', OPERA);
@@ -56,6 +61,7 @@ if (!BG || BG !== window) {
     getActiveTab().then(BG.updateIcon);
   }
 }
+
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;
