@@ -127,7 +127,7 @@ contextMenus = Object.assign({
     title: 'openStylesManager',
     click: browserCommands.openManage,
   },
-}, prefs.get('editor.contextDelete') && {
+}, !FIREFOX && prefs.get('editor.contextDelete') && {
   'editor.contextDelete': {
     title: 'editDeleteText',
     type: 'normal',

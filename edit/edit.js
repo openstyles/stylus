@@ -373,7 +373,9 @@ function setupCodeMirror(textarea, index) {
     hotkeyRerouter.setState(false);
     wrapper.classList.add('CodeMirror-active');
   });
-  cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
+  if (!FIREFOX) {
+    cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
+  }
 
   let lastClickTime = 0;
   const resizeGrip = wrapper.appendChild(template.resizeGrip.cloneNode(true));
@@ -1340,9 +1342,15 @@ function initHooks() {
     document.querySelector('#lint h2').addEventListener('click', toggleLintReport);
   }
 
-  document.querySelectorAll(
-    'input:not([type]), input[type="text"], input[type="search"], input[type="number"]')
-    .forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
+  if (!FIREFOX) {
+    $$([
+      'input:not([type])',
+      'input[type="text"]',
+      'input[type="search"]',
+      'input[type="number"]',
+    ].join(',')
+    ).forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
+  }
 
   setupGlobalSearch();
   setCleanGlobal();
