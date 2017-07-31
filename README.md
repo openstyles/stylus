@@ -1,4 +1,4 @@
-Stylus : Stylish fork for Chrome and Chrome-like things
+Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExtension
 
 ## Releases
 
