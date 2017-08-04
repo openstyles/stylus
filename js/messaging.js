@@ -46,7 +46,7 @@ URLS.supported = new RegExp(
 );
 
 let BG = chrome.extension.getBackgroundPage();
-if (BG && !BG.getStyles) {
+if (BG && !BG.getStyles && BG !== window) {
   // own page like editor/manage is being loaded on browser startup
   // before the background page has been fully initialized;
   // it'll be resolved in onBackgroundReady() instead
