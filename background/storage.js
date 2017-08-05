@@ -1,4 +1,6 @@
 /* global LZString */
+/* global usercss, openEditor */
+
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -259,8 +261,43 @@ function filterStylesInternal({
 }
 
 
+// Parse the source and find the duplication
+// {id: int, style: object, source: string, checkDup: boolean}
+function filterUsercss(req) {
+  return Promise.resolve().then(() => {
+    let style;
+    if (req.source) {
+      style = usercss.buildMeta(req.source);
+    } else {
+      style = req.style;
+    }
+    if (!style.id && req.id) {
+      style.id = req.id;
+    }
+    if (!style.id && req.checkDup) {
+      return findDupUsercss(style)
+        .then(dup => ({status: 'success', style, dup}));
+    }
+    return {status: 'success', style};
+  }).catch(err => ({status: 'error', error: String(err)}));
+}
+
+function saveUsercss(style) {
+  // This function use `saveStyle`, however the response is different.
+  return saveStyle(style)
+    .then(result => ({
+      status: 'success',
+      style: result
+    }))
+    .catch(err => ({
+      status: 'error',
+      error: String(err)
+    }));
+}
+
+
 function saveStyle(style) {
-  const id = Number(style.id) || null;
+  let id = Number(style.id) || null;
   const reason = style.reason;
   const notify = style.notify !== false;
   delete style.method;
@@ -271,6 +308,11 @@ function saveStyle(style) {
   }
   let existed;
   let codeIsUpdated;
+
+  if (style.usercss) {
+    return processUsercss(style).then(decide);
+  }
+
   if (reason === 'update' || reason === 'update-digest') {
     return calcStyleDigest(style).then(digest => {
       style.originalDigest = digest;
@@ -285,6 +327,27 @@ function saveStyle(style) {
     }
   }
   return decide();
+
+  function processUsercss(style) {
+    return findDupUsercss(style).then(dup => {
+      if (!dup) {
+        return;
+      }
+      if (!id) {
+        id = dup.id;
+      }
+      if (reason === 'config') {
+        return;
+      }
+      // preserve style.vars during update
+      for (const key of Object.keys(style.vars)) {
+        if (key in dup.vars) {
+          style.vars[key].value = dup.vars[key].value;
+        }
+      }
+    })
+    .then(() => usercss.buildCode(style));
+  }
 
   function decide() {
     if (id !== null) {
@@ -338,6 +401,10 @@ function saveStyle(style) {
         style, codeIsUpdated, reason,
       });
     }
+    if (style.usercss && !existed && reason === 'install') {
+      // open the editor for usercss with the first install?
+      openEditor(style.id);
+    }
     return style;
   }
 }
@@ -352,6 +419,17 @@ function deleteStyle({id, notify = true}) {
     }
     return id;
   });
+}
+
+function findDupUsercss(style) {
+  if (style.id) {
+    return getStyles({id: style.id}).then(s => s[0]);
+  }
+  return getStyles().then(styles =>
+    styles.find(
+      s => s.name === style.name && s.namespace === style.namespace
+    )
+  );
 }
 
 

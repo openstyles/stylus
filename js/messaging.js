@@ -393,3 +393,16 @@ function invokeOrPostpone(isInvoke, fn, ...args) {
     ? fn(...args)
     : setTimeout(invokeOrPostpone, 0, true, fn, ...args);
 }
+
+
+function openEditor(id) {
+  let url = '/edit.html';
+  if (id) {
+    url += `?id=${id}`;
+  }
+  if (prefs.get('openEditInWindow')) {
+    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
+  } else {
+    openURL({url});
+  }
+}

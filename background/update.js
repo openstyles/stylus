@@ -1,5 +1,5 @@
 /* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
-/* global calcStyleDigest */
+/* global calcStyleDigest, usercss */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -15,8 +15,10 @@ var updater = {
   MAYBE_EDITED: 'may be locally edited',
   SAME_MD5: 'up-to-date: MD5 is unchanged',
   SAME_CODE: 'up-to-date: code sections are unchanged',
+  SAME_VERSION: 'up-to-date: version is unchanged',
   ERROR_MD5: 'error: MD5 is invalid',
   ERROR_JSON: 'error: JSON is invalid',
+  ERROR_VERSION: 'error: version is invalid',
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
@@ -53,9 +55,10 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
+    const maybeUpdate = style.usercss ? maybeUpdateUsercss : maybeUpdateUSO;
     return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
-      .then(maybeFetchMd5)
-      .then(maybeFetchCode)
+      .then(checkIfEdited)
+      .then(maybeUpdate)
       .then(maybeSave)
       .then(saved => {
         observer(updater.UPDATED, saved);
@@ -67,25 +70,49 @@ var updater = {
         updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
       });
 
-    function maybeFetchMd5(digest) {
+    function checkIfEdited(digest) {
+      if (style.usercss) {
+        // FIXME: remove this after we can calculate digest from style.source
+        return;
+      }
       if (!ignoreDigest && style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
-      return download(style.md5Url);
     }
 
-    function maybeFetchCode(md5) {
-      if (!md5 || md5.length !== 32) {
-        return Promise.reject(updater.ERROR_MD5);
-      }
-      if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
-        return Promise.reject(updater.SAME_MD5);
-      }
-      return download(style.updateUrl);
+    function maybeUpdateUSO() {
+      return download(style.md5Url).then(md5 => {
+        if (!md5 || md5.length !== 32) {
+          return Promise.reject(updater.ERROR_MD5);
+        }
+        if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
+          return Promise.reject(updater.SAME_MD5);
+        }
+        return download(style.updateUrl)
+          .then(text => tryJSONparse(text));
+      });
     }
 
-    function maybeSave(text) {
-      const json = tryJSONparse(text);
+    function maybeUpdateUsercss() {
+      return download(style.updateUrl).then(text => {
+        const json = usercss.buildMeta(text);
+        if (!json.version) {
+          return Promise.reject(updater.ERROR_VERSION);
+        }
+        if (style.version) {
+          if (usercss.semverTest(style.version, json.version) === 0) {
+            return Promise.reject(updater.SAME_VERSION);
+          }
+          if (usercss.semverTest(style.version, json.version) > 0) {
+            return Promise.reject(updater.ERROR_VERSION);
+          }
+        }
+        json.id = style.id;
+        return json;
+      });
+    }
+
+    function maybeSave(json) {
       if (!styleJSONseemsValid(json)) {
         return Promise.reject(updater.ERROR_JSON);
       }

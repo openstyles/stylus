@@ -1,4 +1,4 @@
-/* global dbExec, getStyles, saveStyle */
+/* global dbExec, getStyles, saveStyle, filterUsercss, saveUsercss */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -320,6 +320,14 @@ function onRuntimeMessage(request, sender, sendResponse) {
 
     case 'saveStyle':
       saveStyle(request).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'saveUsercss':
+      saveUsercss(request).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'filterUsercss':
+      filterUsercss(request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
     case 'healthCheck':

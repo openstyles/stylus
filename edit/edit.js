@@ -3,6 +3,8 @@
 /* global onDOMscripted */
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
+/* global mozParser */
+
 'use strict';
 
 let styleId = null;
@@ -1498,17 +1500,7 @@ function showMozillaFormat() {
 }
 
 function toMozillaFormat() {
-  return getSectionsHashes().map(section => {
-    let cssMds = [];
-    for (const i in propertyToCss) {
-      if (section[i]) {
-        cssMds = cssMds.concat(section[i].map(v =>
-          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
-        ));
-      }
-    }
-    return cssMds.length ? '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' : section.code;
-  }).join('\n\n');
+  return mozParser.format({sections: getSectionsHashes()});
 }
 
 function fromMozillaFormat() {
@@ -1542,121 +1534,8 @@ function fromMozillaFormat() {
     const replaceOldStyle = target.name === 'import-replace';
     $('.dismiss', popup).onclick();
     const mozStyle = trimNewLines(popup.codebox.getValue());
-    const parser = new parserlib.css.Parser();
-    const lines = mozStyle.split('\n');
-    const sectionStack = [{code: '', start: {line: 1, col: 1}}];
-    const errors = [];
-    // let oldSectionCount = editors.length;
-    let firstAddedCM;
 
-    parser.addListener('startdocument', function (e) {
-      let outerText = getRange(sectionStack.last.start, (--e.col, e));
-      const gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-      const section = {code: '', start: backtrackTo(this, parserlib.css.Tokens.LBRACE, 'end')};
-      // move last comment before @-moz-document inside the section
-      if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
-        section.code = gapComment[1] + '\n';
-        outerText = trimNewLines(outerText.substring(0, gapComment.index));
-      }
-      if (outerText.trim()) {
-        sectionStack.last.code = outerText;
-        doAddSection(sectionStack.last);
-        sectionStack.last.code = '';
-      }
-      for (const f of e.functions) {
-        const m = f && f.match(/^([\w-]*)\((['"]?)(.+?)\2?\)$/);
-        if (!m || !/^(url|url-prefix|domain|regexp)$/.test(m[1])) {
-          errors.push(`${e.line}:${e.col + 1} invalid function "${m ? m[1] : f || ''}"`);
-          continue;
-        }
-        const aType = CssToProperty[m[1]];
-        const aValue = aType !== 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
-        (section[aType] = section[aType] || []).push(aValue);
-      }
-      sectionStack.push(section);
-    });
-
-    parser.addListener('enddocument', function () {
-      const end = backtrackTo(this, parserlib.css.Tokens.RBRACE, 'start');
-      const section = sectionStack.pop();
-      section.code += getRange(section.start, end);
-      sectionStack.last.start = (++end.col, end);
-      doAddSection(section);
-    });
-
-    parser.addListener('endstylesheet', () => {
-      // add nonclosed outer sections (either broken or the last global one)
-      const endOfText = {line: lines.length, col: lines.last.length + 1};
-      sectionStack.last.code += getRange(sectionStack.last.start, endOfText);
-      sectionStack.forEach(doAddSection);
-
-      delete maximizeCodeHeight.stats;
-      editors.forEach(cm => {
-        maximizeCodeHeight(cm.getSection(), cm === editors.last);
-      });
-
-      makeSectionVisible(firstAddedCM);
-      firstAddedCM.focus();
-
-      if (errors.length) {
-        showHelp(t('linterIssues'), $element({
-          tag: 'pre',
-          textContent: errors.join('\n'),
-        }));
-      }
-    });
-
-    parser.addListener('error', e => {
-      errors.push(e.line + ':' + e.col + ' ' +
-        e.message.replace(/ at line \d.+$/, ''));
-    });
-
-    parser.parse(mozStyle);
-
-    function getRange(start, end) {
-      const L1 = start.line - 1;
-      const C1 = start.col - 1;
-      const L2 = end.line - 1;
-      const C2 = end.col - 1;
-      if (L1 === L2) {
-        return lines[L1].substr(C1, C2 - C1 + 1);
-      } else {
-        const middle = lines.slice(L1 + 1, L2).join('\n');
-        return lines[L1].substr(C1) + '\n' + middle +
-          (L2 >= lines.length ? '' : ((middle ? '\n' : '') + lines[L2].substring(0, C2)));
-      }
-    }
-    function doAddSection(section) {
-      section.code = section.code.trim();
-      // don't add empty sections
-      if (
-        !section.code &&
-        !section.urls &&
-        !section.urlPrefixes &&
-        !section.domains &&
-        !section.regexps
-      ) {
-        return;
-      }
-      if (!firstAddedCM) {
-        if (!initFirstSection(section)) {
-          return;
-        }
-      }
-      setCleanItem(addSection(null, section), false);
-      firstAddedCM = firstAddedCM || editors.last;
-    }
-    // do onetime housekeeping as the imported text is confirmed to be a valid style
-    function initFirstSection(section) {
-      // skip adding the first global section when there's no code/comments
-      if (
-        /* ignore boilerplate NS */
-        !section.code.replace('@namespace url(http://www.w3.org/1999/xhtml);', '')
-          /* ignore all whitespace including new lines */
-          .replace(/[\s\n]/g, '')
-      ) {
-        return false;
-      }
+    mozParser.parse(mozStyle).then(sections => {
       if (replaceOldStyle) {
         editors.slice(0).reverse().forEach(cm => {
           removeSection({target: cm.getSection().firstElementChild});
@@ -1667,16 +1546,27 @@ function fromMozillaFormat() {
           removeSection({target: editors.last.getSection()});
         }
       }
-      return true;
-    }
-  }
-  function backtrackTo(parser, tokenType, startEnd) {
-    const tokens = parser._tokenStream._lt;
-    for (let i = parser._tokenStream._ltIndex - 1; i >= 0; --i) {
-      if (tokens[i].type === tokenType) {
-        return {line: tokens[i][startEnd + 'Line'], col: tokens[i][startEnd + 'Col']};
+
+      const firstSection = sections[0];
+      setCleanItem(addSection(null, firstSection), false);
+      const firstAddedCM = editors.last;
+      for (const section of sections.slice(1)) {
+        setCleanItem(addSection(null, section), false);
       }
-    }
+
+      delete maximizeCodeHeight.stats;
+      editors.forEach(cm => {
+        maximizeCodeHeight(cm.getSection(), cm === editors.last);
+      });
+
+      makeSectionVisible(firstAddedCM);
+      firstAddedCM.focus();
+    }, errors => {
+      showHelp(t('issues'), $element({
+        tag: 'pre',
+        textContent: errors.join('\n'),
+      }));
+    });
   }
   function trimNewLines(s) {
     return s.replace(/^[\s\n]+/, '').replace(/[\s\n]+$/, '');

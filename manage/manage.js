@@ -186,11 +186,14 @@ function createStyleElement({style, name}) {
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '');
 
-  if (style.url) {
+  if (style.url && !style.usercss) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
   }
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
+  }
+  if (style.vars && Object.keys(style.vars).length && newUI.enabled) {
+    $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
   // name being supplied signifies we're invoked by showStyles()
@@ -275,6 +278,39 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
+    '.configure-usercss': 'config'
+  },
+
+  config(event, {styleMeta: style}) {
+    let isChanged = false;
+
+    messageBox({
+      title: `Configure ${style.name}`,
+      className: 'regular-form',
+      contents: buildConfigForm(),
+      buttons: [t('confirmClose')]
+    }).then(() => {
+      if (!isChanged) {
+        return;
+      }
+      style.reason = 'config';
+      saveStyleSafe(style);
+    });
+
+    function buildConfigForm() {
+      const labels = [];
+      for (const va of Object.values(style.vars)) {
+        const input = $element({tag: 'input', type: 'text', value: va.value});
+        input.oninput = () => {
+          isChanged = true;
+          va.value = input.value;
+          animateElement(input, {className: 'value-update'});
+        };
+        const label = $element({tag: 'label', appendChild: [va.label, input]});
+        labels.push(label);
+      }
+      return labels;
+    }
   },
 
   entryClicked(event) {

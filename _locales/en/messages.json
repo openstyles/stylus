@@ -83,6 +83,10 @@
   "updateCheckHistory": {
     "message": "History of update checks"
   },
+  "configureStyle": {
+    "message": "Configure",
+    "description": "Label for the button to configure userstyle"
+  },
   "checkForUpdate": {
     "message": "Check for update",
     "description": "Label for the button to check a single style for an update"
@@ -174,6 +178,10 @@
   "confirmYes": {
     "message": "Yes",
     "description": "'Yes' button in a confirm dialog"
+  },
+  "confirmClose": {
+    "message": "Close",
+    "description": "'Close' button in a confirm dialog"
   },
   "dbError": {
     "message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
@@ -625,6 +633,43 @@
     "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite" : {
+    "message": "'$stylename$' is already installed. Overwrite?\nVersion: $oldVersion$ -> $newVersion$",
+    "description": "Confirmation when re-installing a style",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+    "newVersion": {
+        "content": "$3"
+      }
+    }
+  },
+  "styleInstallNoName": {
+    "message": "Install this style into stylus?",
+    "description": "Confirmation when installing a style"
+  },
+  "styleInstallFailed": {
+    "message": "Failed to install userstyle!\n$ERROR$",
+    "description": "Warning when installation failed",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingMeta": {
+    "message": "Missing medata @$KEY$",
+    "description": "Error displayed when a mandatory metadata is missing",
+    "placeholders": {
+      "key": {
         "content": "$1"
       }
     }
