@@ -29,10 +29,6 @@ input[type=checkbox] {
   font-style: italic;
 }
 
-#popup-shortcuts-button {
-  margin-left: 3px;
-}
-
 .checker {
   display: inline;
 }
@@ -333,20 +329,19 @@ body.blocked .actions > .left-gutter {
 #popup-options {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  padding: 1.2em 0;
+  justify-content: space-between;
+  padding: 1.2em 1px;
 }
 
 #popup-options button {
-  margin: 0 2px;
-  width: 33%;
+  width: 32%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .firefox #popup-options button {
-  width: 50%;
+  width: 49%;
 }
 
 /* confirm */
