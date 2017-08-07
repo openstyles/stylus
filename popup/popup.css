@@ -69,19 +69,16 @@ a:hover {
   display: table-cell;
 }
 
-#installed {
-  border-bottom: 1px solid black;
-  padding-bottom: 2px;
-}
-
 body > DIV:last-of-type,
 body.blocked > DIV {
   border-bottom: none;
 }
 
 #installed {
+  border-bottom: 1px solid black;
+  padding-bottom: 2px;
   padding-top: 2px;
-  max-height: 434px;
+  max-height: 445px;
   overflow-y: auto;
 }
 
@@ -473,5 +470,68 @@ body.blocked .actions > .left-gutter {
   }
   to {
     background-color: transparent;
+  }
+}
+
+/* Popup adjustments for common zoom levels */
+
+@media (-webkit-min-device-pixel-ratio: 1.05) {
+  #installed {
+    max-height: 420px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.1) {
+  #installed {
+    max-height: 393px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.15) {
+  #installed {
+    max-height: 371px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.2) {
+  #installed {
+    max-height: 348px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.25) {
+  #installed {
+    max-height: 326px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.30) {
+  #installed {
+    max-height: 306px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.35) {
+  #installed {
+    max-height: 288px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.4) {
+  #installed {
+    max-height: 271px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.45) {
+  #installed {
+    max-height: 256px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.5) {
+  #installed {
+    max-height: 244px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.55) {
+  #installed {
+    max-height: 199px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 1.75) {
+  #installed {
+    max-height: 144px;
   }
 }
