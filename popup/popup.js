@@ -406,7 +406,8 @@ function detectSloppyRegexps({entry, style}) {
         if (!rxCache.has(cacheKey)) {
           // according to CSS4 @document specification the entire URL must match
           const anchored = pass === 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
-          const rx = tryRegExp(anchored);
+          // create in the bg context to avoid leaking of "dead objects"
+          const rx = BG.tryRegExp(anchored);
           rxCache.set(cacheKey, rx || false);
         }
       }
