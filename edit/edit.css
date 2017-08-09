@@ -144,8 +144,8 @@ h2 .svg-icon, label .svg-icon {
   border: solid #CCC 1px;
 }
 .CodeMirror-scroll {
-  height: auto;
-  position: absolute;
+  height: auto !important;;
+  position: absolute !important;
   top: 0;
   left: 0;
   right: 0;
