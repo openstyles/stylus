@@ -572,6 +572,10 @@
 		"message": "Autocompletar al escribir",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"stylusUnavailableForURLdetails": {
+		"message": "Como precaución de seguridad, el navegador prohíbe que las extensiones afecten a sus páginas integradas (como chrome://version, o la página estándar de nueva pestaña desde Chrome 61, o about:addons, y demás) así como las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO).",
+		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
 	"cm_matchHighlightSelection": {
 		"message": "Sólo selección",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"

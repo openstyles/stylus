@@ -1,198 +1,202 @@
 {
 	"appliesToEverything": {
-		"message": "Alles",
+		"message": "Kõik",
 		"description": "Text displayed for styles that apply to all sites"
 	},
 	"defaultTheme": {
-		"message": "Standard",
+		"message": "vaikimisi",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"styleRegexpTestTitle": {
-		"message": "Liste der zutreffenden, geöffneten Tabs (URL anklicken, um den Tab zu fokussieren)",
+		"message": "Vastavate avatud kaardide nimekiri (klõpsa URLile selle kaardi fookustamiseks)",
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
-		"message": "Styles Exportieren",
+		"message": "Ekspordi stiile",
 		"description": ""
 	},
 	"optionsUpdateInterval": {
-		"message": "Automatischer Update- und Installations-Intervall (in Stunden)",
+		"message": "Automaatselt kontrolli ja installi kõik saadaolevad kasutajastiili uuendused (tundides)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
-		"message": "Drücke Alt-Enter, um den Style zu aktivieren / deaktivieren und gleichzeitig zu speichern.",
+		"message": "Vajuta Alt-Enter, et lülitada ümber lubatud/keelatud olek ja salvestada stiil",
 		"description": "Help text for the '[x] enable' checkbox in the editor"
 	},
 	"exportLabel": {
-		"message": "Exportieren",
+		"message": "Ekspordi",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"issues": {
-		"message": "Probleme",
+		"message": "Vead",
 		"description": "Label for the CSSLint issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
-		"message": "Hintergrundfarbe",
+		"message": "Taustavärv",
 		"description": ""
 	},
 	"updateCheckHistory": {
-		"message": "Verlauf der Aktualisierungs-Überprüfungen",
+		"message": "Uuenduskontrollide ajalugu",
 		"description": ""
 	},
 	"cm_tabSize": {
-		"message": "Tab-Größe",
+		"message": "Tabeldussuurus",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
-		"message": "Aktivieren",
+		"message": "Luba",
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Bitte einen Namen eingeben.",
+		"message": "Sisesta nimi.",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
-		"message": "Verlauf",
+		"message": "Ajalugu",
 		"description": "Used in various places to show a history log of something"
 	},
 	"shortcutsNote": {
-		"message": "Eine Tastenkombination definieren",
+		"message": "Defineeri klaviatuuriotseteed",
 		"description": ""
 	},
 	"appliesDomainOption": {
-		"message": "URLs auf der Domain",
+		"message": "URLe domeenis",
 		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
-		"message": "Nach Aktualisierungen suchen",
+		"message": "Kontrolli uuendusi",
 		"description": "Label for the button to check a single style for an update"
 	},
 	"styleNotAppliedRegexpProblemTooltip": {
-		"message": "Der Style wurde aufgrund ungültiger Regulärer Ausdrücke nicht angewandt.",
+		"message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu",
 		"description": "Tooltip in the popup for styles that were not applied at all"
 	},
 	"styleRegexpInvalidExplanation": {
-		"message": "Einige Regeln der Regulären Ausdrücke konnten nicht überprüft werden.",
+		"message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida.",
 		"description": ""
 	},
 	"optionsIconDark": {
-		"message": "Dunkle Browser-Themes",
+		"message": "Tumedad brauseriteemad",
 		"description": ""
 	},
 	"importAppendLabel": {
-		"message": "Zum Style anfügen",
+		"message": "Lisa stiilile",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"optionsOpenManager": {
-		"message": "Verwaltung",
+		"message": "Halda stiile",
 		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Keine Aktualisierung gefunden",
+		"message": "Uuendusi ei leitud.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"importReportLegendAdded": {
-		"message": "Hinzugefügt",
+		"message": "lisatud",
 		"description": "Text after the number of styles added in the report shown after importing styles"
 	},
 	"styleFromMozillaFormatPrompt": {
-		"message": "Mozilla-Format Code einfügen",
+		"message": "Kleebi Mozilla-vormingus koodi",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"dragDropMessage": {
-		"message": "Ziehe die Backup Datei zum importieren an irgendeinen Ort auf dieser Seite.",
+		"message": "Lohista importimiseks oma varundusfail kuskile siia lehele.",
 		"description": "Drag'n'drop message"
 	},
 	"helpAlt": {
-		"message": "Hilfe",
+		"message": "Abi",
 		"description": "Alternate text for help buttons"
 	},
 	"search": {
-		"message": "Suche",
+		"message": "Otsi",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"manageFaviconsGray": {
-		"message": "Ausgegraut",
+		"message": "Halliks tehtud",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"confirmYes": {
-		"message": "Ja",
+		"message": "Jah",
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Weitere Styles für diese Seite finden",
+		"message": "Leia sellele saidile veel stiile",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
-		"message": "Installierte Styles",
+		"message": "Installitud stiilid",
 		"description": "Heading for the manage page"
 	},
+	"styleBeautify": {
+		"message": "Ilusta",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
 	"styleRegexpProblemTooltip": {
-		"message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter Regulärer Ausdrücke nicht angewendet wurden.",
+		"message": "\"regexp()\" vale kasutuse tõttu rakendamata jaotiste arv",
 		"description": "Tooltip in the popup for styles that were applied only partially"
 	},
 	"styleEnabledLabel": {
-		"message": "Aktiviert",
+		"message": "Lubatud",
 		"description": "Label for the enabled state of styles"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Das Mozilla-Format des Codes kann mit Stylish für Firefox verwendet werden und bei userstyles.org eingereicht werden.",
+		"message": "Koodi Mozilla-vormingut saab üles laadida saidile userstyles.org ja kasutada klassikalise Firefoxi Stylish'iga",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
-		"message": "Weiteren Bereich hinzufügen",
+		"message": "Lisa uus jaotis",
 		"description": "Label for the button to add a section"
 	},
 	"styleRegexpTestPartial": {
-		"message": "Keine genaue Übereinstimmung, wurde daher übersprungen.",
+		"message": "Ei vasta täielikult, seega vahele jäetud",
 		"description": "RegExp test report: label for the partially matching expressions"
 	},
 	"styleSaveLabel": {
-		"message": "Speichern",
+		"message": "Salvesta",
 		"description": "Label for save button for style editing"
 	},
 	"confirmDelete": {
-		"message": "Löschen",
+		"message": "Kustuta",
 		"description": ""
 	},
 	"confirmCancel": {
-		"message": "Abbrechen",
+		"message": "Tühista",
 		"description": ""
 	},
 	"retrieveBckp": {
-		"message": "Styles Importieren",
+		"message": "Impordi stiile",
 		"description": ""
 	},
 	"confirmStop": {
-		"message": "Stopp",
+		"message": "Peata",
 		"description": "'Stop' button in a confirm dialog"
 	},
 	"writeStyleForURL": {
-		"message": "diese URL",
+		"message": "sellele URLile",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
 	"optionsSubheading": {
-		"message": "Mehr Optionen",
+		"message": "Rohkem valikuid",
 		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
-		"message": "Hinzufügen",
+		"message": "Lisa",
 		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
-		"message": "URLs, die mit dem Regulären Ausdruck übereinstimmen",
+		"message": "URLid, mis vastavad regulaaravaldisele",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "Aktiviert die iFrame-spezifische CSS Auszeichnung wie 'html[stylus-iframe] h1 { display:none; }'",
+		"message": "Lubab iframe'i-põhilise CSS-koodi kirjutamist, nagu \"html[stylus-iframe] h1 { display:none }\"",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
-		"message": "Aktualisierter Code",
+		"message": "uuendatud kood",
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
-		"message": "\"$stylename$\" in Stylus installieren?",
+		"message": "Installid \"$stylename$\" Stylus-esse?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -201,103 +205,111 @@
 		}
 	},
 	"optionsBadgeDisabled": {
-		"message": "Hintergrundfarbe wenn deaktiviert.",
+		"message": "Taustavärv keelatud olekus",
 		"description": ""
 	},
 	"optionsCheck": {
-		"message": "Styles aktualisieren",
+		"message": "Uuenda stiile",
 		"description": ""
 	},
 	"manageText": {
-		"message": "<a href='https://userstyles.org'>Styles von userstyles.org beziehen</a> | <a href='http://add0n.com/stylus.html'>Hilfeseite anzeigen</a>",
+		"message": "<a href='https://userstyles.org'>Hangi stiile saidilt userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Hangi abi</a>",
 		"description": "Help text on the manage page"
 	},
 	"manageOnlyLocal": {
-		"message": "Nur lokale Styles anzeigen",
+		"message": "Ainult kohalikult loodud stiilid",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"searchStyles": {
-		"message": "Inhalte durchsuchen",
+		"message": "Otsi sisu",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"optionsUpdateImportNote": {
-		"message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Überprüfung der Aktualisierungen (Updates) in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind.",
+		"message": "Kui impordid stiilide varundusi vanast versioonist või Stylish'ist, tee ühekordne käsitsi uuenduste kontroll stiilide halduris, et veenduda kõikide stiilide ajakohasuses.",
 		"description": ""
 	},
 	"checkAllUpdatesForce": {
-		"message": "Nochmals überprüfen, ich habe keine Styles bearbeitet!",
+		"message": "Kontrolli uuesti, ma ei muutnud ühtegi stiili!",
 		"description": "Label for the button to apply all detected updates"
 	},
 	"unreachableFileHint": {
-		"message": "Stylus kann nur auf das file:// Protokoll in der URL zugreifen, wenn dies in den Einstellungen der Erweiterung unter chrome://extensions festgelegt wurde.",
+		"message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"disableStyleLabel": {
-		"message": "Deaktivieren",
+		"message": "Keela",
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "Anzahl der aktiven Styles auf der aktuellen Seiten",
+		"message": "Praegusel saidil aktiivsete stiilide arv",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
-		"message": "Favicons in der 'Gilt für' Spalte anzeigen",
+		"message": "Favicon'id \"rakendub\"-tulbas",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
-		"message": "Zählung der aktiven Styles anzeigen ",
+		"message": "Kuva aktiivsete stiilide hulka",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
 	"cm_lineWrapping": {
-		"message": "Automatischer Zeilenumbruch",
+		"message": "Reamurdmine",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
 	"styleCancelEditLabel": {
-		"message": "Zurück zum Verwalten",
+		"message": "Tagasi haldusesse",
 		"description": "Label for cancel button for style editing"
 	},
 	"styleChangesNotSaved": {
-		"message": "Du hast Änderungen an diesem Style vorgenommen, ohne diese zu speichern.",
+		"message": "Sa oled teinud sellele stiilile muutusi ilma salvestamata.",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
 	"importLabel": {
-		"message": "Importieren",
+		"message": "Impordi",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"shortcuts": {
-		"message": "Tastenkürzel",
+		"message": "Otseteed",
 		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
-		"message": "Update fehlgeschlagen: Server nicht erreichbar.",
+		"message": "Uuendamine ebaõnnestus: server on kättesaamatu.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {
-		"message": "Filter",
+		"message": "Filtrid",
 		"description": "Label for filters container"
 	},
 	"applyAllUpdates": {
-		"message": "Alle Updates übernehmen ",
+		"message": "Rakenda kõik uuendused",
 		"description": "Label for the button to apply all detected updates"
 	},
 	"optionsReset": {
-		"message": "Setzt diese Einstellungen auf die Standard-Werte zurück.",
+		"message": "Lähtesta valikud vaikeväärtustele",
+		"description": ""
+	},
+	"optionsCustomizeUpdate": {
+		"message": "Uuendused",
 		"description": ""
 	},
 	"deleteStyleConfirm": {
-		"message": "Möchtest Du diesen Style wirklich löschen?",
+		"message": "Kas soovid kindlasti selle stiili kustutada?",
 		"description": "Confirmation before deleting a style"
 	},
+	"optionsCustomizePopup": {
+		"message": "Hüpikaken",
+		"description": ""
+	},
 	"styleBadRegexp": {
-		"message": "Regulärer Ausdruck ist ungültig.",
+		"message": "Regulaaravaldis on sobimatu.",
 		"description": "Validation message for a bad regexp in a style"
 	},
 	"optionsHeading": {
-		"message": "Optionen",
+		"message": "Valikud",
 		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
-		"message": "Gilt für: $applies$",
+		"message": "Rakendub: $applies$",
 		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
@@ -306,15 +318,15 @@
 		}
 	},
 	"optionsIconLight": {
-		"message": "Helle Browser-Themes",
+		"message": "Heledad brauseriteemad",
 		"description": ""
 	},
 	"openStylesManager": {
-		"message": "Style Verwaltung öffnen",
+		"message": "Ava stiilihaldur",
 		"description": "Label for the style maanger opener in the browser action context menu."
 	},
 	"styleUpdate": {
-		"message": "Möchtest Du '$stylename$' wirklich aktualisieren?",
+		"message": "Kas soovid kindlasti uuendada \"$stylename$\"?",
 		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
@@ -323,15 +335,15 @@
 		}
 	},
 	"styleSectionsTitle": {
-		"message": "Bereiche",
+		"message": "Jaotised",
 		"description": "Title for the style sections section"
 	},
 	"importReportLegendInvalid": {
-		"message": "Ungültige übersprungen",
+		"message": "sobimatut vahele jäetud",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"editStyleTitle": {
-		"message": "Style $stylename$ bearbeiten",
+		"message": "Muuda stiili $stylename$",
 		"description": "Title of the page for editing styles",
 		"placeholders": {
 			"stylename": {
@@ -340,95 +352,95 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "Der Style ist auf dem aktuellsten Stand.",
+		"message": "Stiil on ajakohane.",
 		"description": "Text that displays when an update check completed and no update is available"
 	},
 	"appliesUrlPrefixOption": {
-		"message": "URLs beginnend mit",
+		"message": "URLid algusega",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"cm_matchHighlightToken": {
-		"message": "Unter dem Textzeiger",
+		"message": "Kursori all olev sõna",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
-		"message": "Verwende die /re/ Syntax zur Suche als Regulärer Ausdruck",
+		"message": "Kasuta /re/ süntaksit regulaaravaldise otsinguks",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"updateCheckManualUpdateHint": {
-		"message": "Eine erzwungene Aktualisierung wird die Lokalen Änderungen überschreiben.",
+		"message": "Uuenduse sundimine kirjutab üle mistahes kohalikud muutused.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"toggleStyle": {
-		"message": "Style umschalten",
+		"message": "Luba/keela stiil",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
 	"importReplaceTooltip": {
-		"message": "Verwerfe den aktuellen Style-Inhalt und überschreibe ihn mit dem importierten",
+		"message": "Tühista praeguse stiili sisu ja kirjuta see üle imporditud stiiliga",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"cm_resizeGripHint": {
-		"message": "Doppelklick, um Höhe zu maximieren / wiederherzustellen",
+		"message": "Topeltklõpsa, et maksimeerida/taastada kõrgus",
 		"description": "Tooltip for the resize grip in style editor"
 	},
 	"popupStylesFirst": {
-		"message": "Styles vor den Bedienelementen",
+		"message": "Stiilid enne käske",
 		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
-		"message": "Mit Bereichen kannst Du unterschiedliche Code-Teile auf unterschiedliche URLs in dem gleichen Style anwenden. Beispielsweise kann über einen einzigen Style die Startseite der Website geändert werden, während für den Rest der Website andere Änderungen gelten.",
+		"message": "Jaotised võimaldavad sul määrata erinevaid koodiosi, mida rakendada mitmetele URLide kogumikele samas stiilis. Näiteks võib üks stiil muuta saidi kodulehte ühtemoodi, seejuures muutes ülejäänud saiti teistmoodi.",
 		"description": "Help text for sections"
 	},
 	"noStylesForSite": {
-		"message": "Für diese Webseite sind keine Styles installiert.",
+		"message": "Sellele saidile pole stiile installitud.",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "und weitere",
+		"message": "ja veel",
 		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
 	},
 	"appliesRemove": {
-		"message": "Löschen",
+		"message": "Eemalda",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"updatesCurrentlyInstalled": {
-		"message": "Installierte Aktualisierungen:",
+		"message": "Uuendused installitud:",
 		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
 	},
 	"styleToMozillaFormatTitle": {
-		"message": "Style im Mozilla Format",
+		"message": "Stiil Mozilla-vormingus",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"writeStyleFor": {
-		"message": "Style erstellen für:",
+		"message": "Kirjuta stiil:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
 	},
 	"replace": {
-		"message": "Ersetzen",
+		"message": "Asenda",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"styleRegexpTestNone": {
-		"message": "Keine zutreffenden Tabs",
+		"message": "Pole vastavaid kaarte",
 		"description": "RegExp test report: label for expressions that didn't match any tabs"
 	},
 	"importReportLegendUpdatedMeta": {
-		"message": "Aktualisierte Meta Infos",
+		"message": "metainfo uuendatud",
 		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
-		"message": "Gilt für",
+		"message": "Rakendub",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openOptionsPopup": {
-		"message": "Optionen",
+		"message": "Valikud",
 		"description": "Go to Options UI"
 	},
 	"openManage": {
-		"message": "Verwalten",
+		"message": "Halda",
 		"description": "Link to open the manage page."
 	},
 	"updateCheckFailBadResponseCode": {
-		"message": "Update fehlgeschlagen: Server antwortete mit Code $code$.",
+		"message": "Uuendamine ebaõnnestus: server vastas koodiga $code$.",
 		"description": "Text that displays when an update check failed because the response code indicates an error",
 		"placeholders": {
 			"code": {
@@ -437,295 +449,307 @@
 		}
 	},
 	"appliesSpecify": {
-		"message": "Angeben",
+		"message": "Täpsusta",
 		"description": "Label for the button to make a style apply only to specific sites"
 	},
 	"installUpdate": {
-		"message": "Aktualisierung installieren",
+		"message": "Installi uuendus",
 		"description": "Label for the button to install an update for a single style"
 	},
 	"optionsCheckUpdate": {
-		"message": "Alle verfügbaren Aktualisierungen Installieren.",
+		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
 		"description": ""
 	},
 	"importReportTitle": {
-		"message": "Importieren der Styles abgeschlossen.",
+		"message": "Stiilide importimine lõpetatud",
 		"description": "Title of the report shown after importing styles"
 	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla-vorming",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"cm_matchHighlight": {
-		"message": "Hervorheben",
+		"message": "Tõsta esile",
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
 	},
 	"styleRegexpPartialExplanation": {
-		"message": "Dieser Style verwendet teilweise Übereinstimmende Reguläre Ausdrücke unter Missachtung der <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document Spezifikationen</a>, welche eine vollständig Übereinstimmende URL benötigen. Der betroffene CSS Bereich wurde nicht auf die Website angewandt. Dieser Style wurde wahrscheinlich unter Stylish für Chrome erstellt, in der seit der ersten Version eine inkorrekte Überprüfung der Regulären Ausdrücke vorhanden ist (bekannter Fehler).",
+		"message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga).",
 		"description": ""
 	},
 	"styleBeautifyIndentConditional": {
-		"message": "Rücke @media / @supports ein",
+		"message": "Taanda @media, @supports",
 		"description": "CSS-beautifier option"
 	},
 	"unreachableContentScript": {
-		"message": "Konnte nicht mit der Seite kommunizieren. Bitte versuchen Sie, die Seite erneut zu laden.",
+		"message": "Lehega ei saanud ühendust. Proovi kaart uuesti laadida.",
 		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
 	},
 	"sectionRemove": {
-		"message": "Bereich entfernen",
+		"message": "Eemalda jaotis",
 		"description": "Label for the button to remove a section"
 	},
 	"disableAllStyles": {
-		"message": "Schalte alle Stile aus",
+		"message": "Lülita kõik stiilid välja",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "Dieser Style scheint lokal bearbeitet worden zu sein.",
+		"message": "Seda stiili võib olla kohalikult muudetud.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
-		"message": "Rückgängig machen in allen Bereichen",
+		"message": "Võta kõigis jaotistes tagasi",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"optionsCustomizeIcon": {
-		"message": "Symbolleisten-Icon",
+		"message": "Tööriistaribaikoon",
 		"description": ""
 	},
 	"updateCompleted": {
-		"message": "Aktualisierung abgeschlossen.",
+		"message": "Uuendus teostatud.",
 		"description": "Text that displays when an update completed"
 	},
 	"checkingForUpdate": {
-		"message": "Suche nach Aktualisierungen...",
+		"message": "Kontrollin...",
 		"description": "Text to display when checking a style for an update"
 	},
 	"styleRegexpTestFull": {
-		"message": "Zutreffende Tabs",
+		"message": "Vastavad kaardid",
 		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
-		"message": "Anzahl der 'Gilt für' Elemente",
+		"message": "\"Rakendub\"-üksuste arv",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"manageFaviconsHelp": {
-		"message": "Stylus nutzt hierzu den externen Dienst https://www.google.com/s2/favicons",
+		"message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"updateCheckSkippedLocallyEdited": {
-		"message": "Dieser Style wurde lokal bearbeitet.",
+		"message": "Seda stiili muudeti kohalikult.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"optionsResetButton": {
-		"message": "Optionen zurücksetzen",
+		"message": "Lähtesta valikud",
 		"description": ""
 	},
+	"sectionCode": {
+		"message": "Kood",
+		"description": "Label for the code for a section"
+	},
 	"optionsAdvancedContextDelete": {
-		"message": "'Löschen' im Editor-Kontextmenü hinzufügen",
+		"message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse",
 		"description": ""
 	},
 	"importReportLegendUpdatedBoth": {
-		"message": "Aktualisierte Meta Infos und Codes",
+		"message": "said uuenduse nii metaandmetele kui koodile",
 		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
 	},
 	"cm_smartIndent": {
-		"message": "Intelligenten Einzug verwenden",
+		"message": "Kasuta tarka taanet",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
-		"message": "Reguläre Ausdrücke testen",
+		"message": "Regulaaravaldise katsetus",
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "Lege mit den Einstellungen von 'Gilt für' fest, für welche URLs der Code in diesem Bereich gelten soll.",
+		"message": "Kasuta \"rakendub\" valikuid, et piirata, mis URLidele selles jaotises olev kood rakendub.",
 		"description": "Help text for 'applies to' section"
 	},
 	"editStyleHeading": {
-		"message": "Style bearbeiten",
+		"message": "Muuda stiili",
 		"description": "Title of the page for editing styles"
 	},
 	"editDeleteText": {
-		"message": "Löschen",
+		"message": "Kustuta",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
 	"cm_autocompleteOnTyping": {
-		"message": "Autovervollständigen bei Eingabe",
+		"message": "Automaattäide kirjutamisel",
 		"description": "Label for the checkbox in the style editor."
 	},
 	"stylusUnavailableForURLdetails": {
-		"message": "Als Sicherheitsvorkehrung verbietet der Browser Erweiterungen, seine eingebauten Seiten zu beeinflussen (wie chrome://version, die standardmäßige neue Registerkarte ab Chrome 61, about:addons, usw.) sowie andere Erweiterungsseiten. Jeder Browser beschränkt auch den Zugriff auf seine eigene Erweiterungsgalerie (wie Chrome Web Store oder addons.mozilla.org).",
+		"message": "Turvakaalutlustel keelab brauser laiendustel sisseehitatud lehtede (nagu chrome://version, standardne uue kaardi leht alates versioonist Chrome 61, about:addons jne) ning ka teiste laienduste lehtede muutmise. Iga brauser piirab lisaks juurdepääsu oma laienduste galeriile (nagu Chrome'i veebipood või AMO).",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"cm_matchHighlightSelection": {
-		"message": "Nur die Auswahl",
+		"message": "Ainult valik",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
 	"updateAllCheckSucceededSomeEdited": {
-		"message": "Einige Styles wurden nicht aktualisiert, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Aktualisierung für alle Styles erzwungen werden (Lokale Bearbeitungen werden dann überschrieben).",
+		"message": "Mõndasid uuendatavaid stiile ei kontrollitud, et vältida võimalike kohalike muutuste kadu. Uuendusi saab sundida, kontrollides ükshaaval või käivitades uue kontrolli kõikidele stiilidele (kohalikud muutused kirjutatakse üle).",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"stylusUnavailableForURL": {
-		"message": "Stylus funktioniert nicht auf Seiten wie diesen.",
+		"message": "Stylus ei tööta sellistel lehtedel.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"manageOnlyUpdates": {
-		"message": "Nur mit Aktualisierungen oder Problemen",
+		"message": "Ainult uuenduste ja vigadega",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
-		"message": "Style hinzufügen",
+		"message": "Lisa stiil",
 		"description": "Title of the page for adding styles"
 	},
 	"importReplaceLabel": {
-		"message": "Style überschreiben",
+		"message": "Kirjuta stiil üle",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"dbError": {
-		"message": "Ein Fehler ist beim Verwenden der Stylus-Datenbank aufgetreten. Willst Du eine Webseite mit möglichen Lösungen besuchen?",
+		"message": "Stylus'e andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"optionsAdvanced": {
-		"message": "Erweitert",
+		"message": "Täpsem",
 		"description": ""
 	},
 	"importAppendTooltip": {
-		"message": "Füge den importierten Style an den aktuellen",
+		"message": "Lisa imporditud stiil praegusele stiilile",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"editorStylesButton": {
-		"message": "Editor Styles finden",
+		"message": "Leia redaktori stiile",
 		"description": "Find styles for the editor"
 	},
 	"optionsOpen": {
-		"message": "Öffnen",
+		"message": "Ava",
 		"description": ""
 	},
 	"helpKeyMapHotkey": {
-		"message": "Hotkey drücken",
+		"message": "Vajuta kiirklahvi",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"styleRegexpTestInvalid": {
-		"message": "Ungültige Reguläre Ausdrücke übersprungen",
+		"message": "Sobimatud regulaaravaldised vahele jäetud",
 		"description": "RegExp test report: label for the invalid expressions"
 	},
 	"replaceAll": {
-		"message": "Alles ersetzen",
+		"message": "Asenda kõik",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"importReportUnchanged": {
-		"message": "Nichts wurde geändert.",
+		"message": "Midagi ei muudetud.",
 		"description": "Message in the report shown after importing styles"
 	},
 	"optionsActions": {
-		"message": "Aktionen",
+		"message": "Tegevused",
 		"description": ""
 	},
 	"editGotoLine": {
-		"message": "Gehe zu Zeile (oder Zeile:Zeichen)",
+		"message": "Mine reale (või rida:tulp)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
 	"manageOnlyLocalTooltip": {
-		"message": "(Diese Styles wurden nicht durch userstyles.org installiert)",
+		"message": "(stiilid, mida ei installitud userstyles.org lehelt)",
 		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
-		"message": "Nach Aktualisierungen für alle Styles suchen",
+		"message": "Kontrolli kõikide stiilide uuendusi",
 		"description": "Label for the button to check all styles for updates"
 	},
 	"openOptionsManage": {
-		"message": "Optionen",
+		"message": "Valikute liides",
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "Die von <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> gefunden Fehler haben die folgenden Einstellungen:",
+		"message": "<a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> poolt leitud vead nende lubatud reeglitega:",
 		"description": "Help popup message for the CSSLint issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
-		"message": "Badge auf dem Toolbar-Icon",
+		"message": "Number tööriistaribaikoonil",
 		"description": ""
 	},
 	"importReportLegendIdentical": {
-		"message": "Identische übersprungen",
+		"message": "identset vahele jäetud",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"optionsPopupWidth": {
-		"message": "Popup-Breite (in Pixeln)",
+		"message": "Hüpikakna laius (pikslites)",
 		"description": ""
 	},
 	"confirmNo": {
-		"message": "Nein",
+		"message": "Ei",
 		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
-		"message": "Rückgängig",
+		"message": "Võta tagasi",
 		"description": "Button label"
 	},
 	"cm_keyMap": {
-		"message": "Tastaturbelegung",
+		"message": "Klahvimäärangud",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
 	"manageNewUI": {
-		"message": "Neues Verwaltungs Design-Layout.",
+		"message": "Uus haldusliidese välimus",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
 	"importReportUndoneTitle": {
-		"message": "Importierung wurde rückgängig gemacht.",
+		"message": "Importimine on tagasi võetud",
 		"description": "Title of the message box shown after undoing the import of styles"
 	},
 	"genericDisabledLabel": {
-		"message": "Deaktiviert",
+		"message": "Keelatud",
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "Tabs mit intelligentem Einzug verwenden",
+		"message": "Kasuta tabeldusmärke targa taandega",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
-		"message": "Ersetzen durch",
+		"message": "Asenda tekstiga",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
-		"message": "Löschen",
+		"message": "Kustuta",
 		"description": "Label for the button to delete a style"
 	},
 	"updateCheckManualUpdateForce": {
-		"message": "Aktualisierungen installieren (Lokale Bearbeitungen werden überschrieben)",
+		"message": "Installi uuendus (kohalikud muutused kirjutatakse üle)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"optionsAdvancedExposeIframes": {
-		"message": "Ermögliche Iframes via HTML[stylus-iframe]",
+		"message": "Paljasta iframe-id HTML [stylus-iframe] kaudu",
 		"description": ""
 	},
 	"addStyleLabel": {
-		"message": "Neuen Style erstellen",
+		"message": "Kirjuta uus stiil",
 		"description": "Label for the button to go to the add style page"
 	},
 	"optionsUpdateIntervalNote": {
-		"message": "Zum Deaktivieren der automatischen Aktualisierungs-Überprüfung den Wert auf 0 setzen.",
+		"message": "Et keelata automaatsed kasutajastiilide uuenduste kontrollid, sea intervalliks 0",
 		"description": ""
 	},
 	"backupButtons": {
-		"message": "Datensicherung",
+		"message": "Varunda",
 		"description": "Heading for backup"
 	},
 	"manageOnlyEnabled": {
-		"message": "Nur aktivierte Styles",
+		"message": "Ainult lubatud stiilid",
 		"description": "Checkbox to show only enabled styles"
 	},
 	"editStyleLabel": {
-		"message": "Bearbeiten",
+		"message": "Muuda",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"cm_theme": {
+		"message": "Teema",
+		"description": "Label for the style editor's CSS theme."
+	},
 	"backupMessage": {
-		"message": "Wähle eine Datei aus oder ziehe die Datei auf diese Seite. (Drag and Drop)",
+		"message": "Vali fail või lohista see siia lehele.",
 		"description": "Message for backup"
 	},
 	"importReportUndone": {
-		"message": "Styles wiederherstellt",
+		"message": "stiili võeti tagasi",
 		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
 	},
 	"helpKeyMapCommand": {
-		"message": "Befehlsnamen eingeben",
+		"message": "Kirjuta käsu nimi",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
-		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele populäre Websites zu installieren.",
+		"message": "Disaini veeb ümber Stylus'ega - kasutajastiilide haldur. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",
 		"description": "Extension description"
 	}
 }
