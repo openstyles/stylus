@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "Problemas",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"description": "Label for the stylelint issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Color de fondo",
@@ -657,8 +657,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "Problemas encontrados por <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> con estas reglas aplicadas:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+		"message": "Problemas encontrados por <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> con estas reglas aplicadas:",
+		"description": "Help popup message for the stylelint issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "Distintivo en el icono de barra de herramientas",

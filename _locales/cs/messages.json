@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "Problémy",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"description": "Label for the stylelint issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Barva pozadí",
@@ -653,8 +653,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "Problémy nalezené aplikací <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> s těmito povolenými pravidly:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+		"message": "Problémy nalezené aplikací <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> s těmito povolenými pravidly:",
+		"description": "Help popup message for the stylelint issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",

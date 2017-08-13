@@ -1,5 +1,5 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
-/* global CodeMirror exports parserlib CSSLint */
+/* global CodeMirror parserlib */
 'use strict';
 
 let styleId = null;
@@ -639,7 +639,6 @@ function addSection(event, section) {
     sections.appendChild(div);
     cm = setupCodeMirror(codeElement);
   }
-
   div.CodeMirror = cm;
   setCleanSection(div);
   return div;
@@ -1051,7 +1050,7 @@ function getEditorInSight(nearbyElement) {
 
 function updateLintReport(cm, delay) {
   if (delay === 0) {
-    // immediately show pending csslint messages in onbeforeunload and save
+    // immediately show pending stylelint messages in onbeforeunload and save
     update(cm);
     return;
   }
@@ -1083,7 +1082,8 @@ function updateLintReport(cm, delay) {
           const info = mark.__annotation;
           const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          let message = escapeHtml(info.message.replace(/ at line \d.+$/, ''));
+          const rule = info.message.substring(info.message.lastIndexOf('('), info.message.length);
+          let message = escapeHtml(info.message.replace(rule, ''));
           if (message.length > 100) {
             message = message.substr(0, 100) + '...';
           }
@@ -1091,14 +1091,16 @@ function updateLintReport(cm, delay) {
             delete oldMarkers[pos];
           }
           newMarkers[pos] = message;
-          return '<tr class="' + info.severity + '">' +
-            '<td role="severity" class="CodeMirror-lint-marker-' + info.severity + '">' +
-              info.severity + '</td>' +
-            '<td role="line">' + (info.from.line + 1) + '</td>' +
-            '<td role="sep">:</td>' +
-            '<td role="col">' + (info.from.ch + 1) + '</td>' +
-            '<td role="message">' + message + '</td></tr>';
-        }).join('') + '</tbody>';
+          return `<tr class="${info.severity}">
+            <td role="severity" class="CodeMirror-lint-marker-${info.severity}" title="Rule: ${rule}">
+              ${info.severity}
+            </td>
+            <td role="line">${info.from.line + 1}</td>
+            <td role="sep">:</td>
+            <td role="col">${info.from.ch + 1}</td>
+            <td role="message" title="${message}">${message}</td>
+          </tr>`
+        }) + '</tbody>';
       scopedState.markedLast = newMarkers;
       fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
       if (scopedState.html !== html) {
@@ -1181,13 +1183,10 @@ function toggleLintReport() {
 }
 
 function beautify(event) {
-  if (exports.css_beautify) { // thanks to csslint's definition of 'exports'
-    doBeautify();
-  } else {
-    const script = document.head.appendChild(document.createElement('script'));
-    script.src = 'vendor-overwrites/beautify/beautify-css-mod.js';
-    script.onload = doBeautify;
-  }
+  const script = document.head.appendChild(document.createElement('script'));
+  script.src = 'vendor-overwrites/beautify/beautify-css-mod.js';
+  script.onload = doBeautify;
+
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
     const options = prefs.get('editor.beautify');
@@ -1231,7 +1230,7 @@ function beautify(event) {
           [].concat.apply([], cm.doc.sel.ranges.map(r =>
             [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
         const text = cm.getValue();
-        const newText = exports.css_beautify(text, options);
+        const newText = css_beautify(text, options);
         if (newText !== text) {
           if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
             // clear the list if last change wasn't a css-beautify
@@ -1352,7 +1351,8 @@ function initWithStyle({style, codeIsUpdated}) {
     const cm = sectionDiv.CodeMirror;
     setTimeout(() => {
       cm.setOption('lint', CodeMirror.defaults.lint);
-      updateLintReport(cm, 0);
+      // update lint issue table after a short delay
+      updateLintReport(cm, 200);
     }, prefs.get('editor.lintDelay'));
   }
 }
@@ -1866,11 +1866,18 @@ function showKeyMapHelp() {
 }
 
 function showLintHelp() {
-  showHelp(t('issues'), t('issuesHelp') + '<ul>' +
-    CSSLint.getRules().map(rule =>
-      '<li><b>' + rule.name + '</b><br>' + rule.desc + '</li>'
-    ).join('') + '</ul>'
-  );
+  let content = t('issuesHelp') + '<ul class="rules">',
+    rules = [];
+  $$('#lint td[role="severity"]').forEach(el => {
+    const rule = el.title.replace('Rule: (', '').replace(/[()]/g, '').trim();
+    if (!rules.includes(rule)) {
+      content += `<li>
+          <a target="_blank" href="https://stylelint.io/user-guide/rules/${rule}/">${rule}</a>
+        </li>`;
+      rules.push(rule);
+    }
+  });
+  return showHelp(t('issues'), content + '</ul>');
 }
 
 function showRegExpTester(event, section = getSectionForChild(this)) {

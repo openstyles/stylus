@@ -339,11 +339,11 @@
   },
   "issues": {
     "message": "Issues",
-    "description": "Label for the CSSLint issues block on the style edit page"
+    "description": "Label for the stylelint issues block on the style edit page"
   },
   "issuesHelp": {
-    "message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-    "description": "Help popup message for the CSSLint issues block on the style edit page"
+    "message": "The issues found by <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> with these rules enabled:",
+    "description": "Help popup message for the stylelint issues block on the style edit page"
   },
   "manageFilters": {
     "message": "Filters",

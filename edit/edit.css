@@ -24,6 +24,10 @@ body {
   margin-top: 1rem;
   margin-left: 1.7rem;
 }
+section {
+  box-sizing: border-box;
+  width: 100%;
+}
 .aligned {
   display: table-row;
 }
@@ -397,6 +401,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   pointer-events: all;
   opacity: 1.0;
 }
+#help-popup .rules {
+  padding: 0 15px;
+}
 
 /************ lint ************/
 #lint {
@@ -410,6 +417,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   border-spacing: 0;
   margin-bottom: 1rem;
   line-height: 1.0;
+  width: 245px;
 }
 #lint table:last-child {
   margin-bottom: 0;
@@ -440,6 +448,10 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 #lint td[role="message"] {
   text-align: left;
+  max-width: 140px;
+  text-overflow: ellipsis;
+  white-space: pre;
+  overflow: hidden;
 }
 
 /************ CSS beautifier ************/
@@ -551,6 +563,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   #lint:hover > div {
     margin-top: 1em;
     max-height: 30vh;
+  }
+  #lint table {
+    width: 100%;
+  }
+  #lint td[role="message"] {
+    max-width: none;
   }
   #sections {
     padding-left: 0;
