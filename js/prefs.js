@@ -193,30 +193,21 @@ var prefs = new function Prefs() {
   if (!BG || BG === window) {
     affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
 
-    getSync().get('settings', ({settings: synced} = {}) => {
-      if (synced) {
-        for (const key in defaults) {
-          if (key === 'popupWidth' && synced[key] !== values.popupWidth) {
-            // this is a fix for the period when popupWidth wasn't synced
-            // TODO: remove it in a couple of months
-            continue;
-          }
-          if (key in synced) {
-            this.set(key, synced[key], {sync: false});
-          }
+    const importFromSync = synced => {
+      for (const key in defaults) {
+        if (key in synced) {
+          this.set(key, synced[key], {sync: false});
         }
       }
-    });
+    };
+
+    getSync().get('settings', ({settings}) => importFromSync(settings));
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'sync' && 'settings' in changes) {
         const synced = changes.settings.newValue;
         if (synced) {
-          for (const key in defaults) {
-            if (key in synced) {
-              this.set(key, synced[key], {sync: false});
-            }
-          }
+          importFromSync(synced);
         } else {
           // user manually deleted our settings, we'll recreate them
           getSync().set({'settings': values});
