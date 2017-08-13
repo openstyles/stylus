@@ -4761,7 +4761,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "-":
                     if (reader.peek() === "-") {  //could be closing HTML-style comment
-                        token = this.htmlCommentEndToken(c, startLine, startCol);
+                        //or CSS variable
+                        if (/\w/.test(reader.peek(2))) {
+                            token = this.identOrFunctionToken(c, startLine, startCol);
+                        } else {
+                            token = this.htmlCommentEndToken(c, startLine, startCol);
+                        }
                     } else if (isNameStart(reader.peek())) {
                         token = this.identOrFunctionToken(c, startLine, startCol);
                     } else {
@@ -5903,7 +5908,7 @@ var Validation = module.exports = {
             value       = expression.value,
             part;
 
-        result = Matcher.parse(types).match(expression);
+        result = Matcher.parse(types + ' | <var>').match(expression);
 
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
@@ -6269,6 +6274,8 @@ copy(ValidationTypes, {
         "<uri>": function(part) {
             return part.type === "uri";
         },
+
+        "<var>": "var()",
 
         "<width>": "<margin-width>"
     },
