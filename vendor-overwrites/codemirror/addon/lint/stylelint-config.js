@@ -6,30 +6,31 @@ const stylelintConfig = {
   rules: {
     // ** recommended rules **
     // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
-    'at-rule-no-unknown': true,
-    'block-no-empty': true,
-    'color-no-invalid-hex': true,
-    'comment-no-empty': true,
+    'at-rule-no-unknown': [ true, { 'severity': 'warning' }],
+    'block-no-empty': [ true, { 'severity': 'warning' }],
+    'color-no-invalid-hex': [ true, { 'severity': 'warning' }],
+    'comment-no-empty': [ true, { 'severity': 'warning' }],
     'declaration-block-no-duplicate-properties': [ true, {
-      'ignore': ['consecutive-duplicates-with-different-values']
+      'ignore': ['consecutive-duplicates-with-different-values'],
+      'severity': 'warning'
     }],
-    'declaration-block-no-redundant-longhand-properties': true,
-    'declaration-block-no-shorthand-property-overrides': true,
-    'font-family-no-duplicate-names': true,
-    'function-calc-no-unspaced-operator': true,
-    'function-linear-gradient-no-nonstandard-direction': true,
-    'keyframe-declaration-no-important': true,
-    'media-feature-name-no-unknown': true,
-    'no-empty-source': true,
-    'no-extra-semicolons': true,
-    'no-invalid-double-slash-comments': true,
-    'property-no-unknown': true,
-    'selector-pseudo-class-no-unknown': true,
-    'selector-pseudo-element-no-unknown': true,
-    'selector-type-no-unknown': true,
-    'shorthand-property-no-redundant-values': true,
-    'string-no-newline': true,
-    'unit-no-unknown': true
+    'declaration-block-no-redundant-longhand-properties': [ true, { 'severity': 'warning' }],
+    'declaration-block-no-shorthand-property-overrides': [ true, { 'severity': 'warning' }],
+    'font-family-no-duplicate-names': [ true, { 'severity': 'warning' }],
+    'function-calc-no-unspaced-operator': [ true, { 'severity': 'warning' }],
+    'function-linear-gradient-no-nonstandard-direction': [ true, { 'severity': 'warning' }],
+    'keyframe-declaration-no-important': [ true, { 'severity': 'warning' }],
+    'media-feature-name-no-unknown': [ true, { 'severity': 'warning' }],
+    'no-empty-source': false, /* recommended true */
+    'no-extra-semicolons': [ true, { 'severity': 'warning' }],
+    'no-invalid-double-slash-comments': [ true, { 'severity': 'warning' }],
+    'property-no-unknown': [ true, { 'severity': 'warning' }],
+    'selector-pseudo-class-no-unknown': [ true, { 'severity': 'warning' }],
+    'selector-pseudo-element-no-unknown': [ true, { 'severity': 'warning' }],
+    'selector-type-no-unknown': [ true, { 'severity': 'warning' }],
+    'shorthand-property-no-redundant-values': [ true, { 'severity': 'warning' }],
+    'string-no-newline': [ true, { 'severity': 'warning' }],
+    'unit-no-unknown': [ true, { 'severity': 'warning' }]
 
     // ** stylistic rules **
     /*
