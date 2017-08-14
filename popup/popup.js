@@ -148,18 +148,19 @@ function initPopup(url) {
   // For domain
   const domains = BG.getDomains(url);
   for (const domain of domains) {
+    const numParts = domain.length - domain.replace(/\./g, '').length + 1;
     // Don't include TLD
-    if (domains.length > 1 && !domain.includes('.')) {
+    if (domains.length > 1 && numParts === 1) {
       continue;
     }
     const domainLink = template.writeStyle.cloneNode(true);
     Object.assign(domainLink, {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
-      textContent: domain,
+      textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
       onclick: handleEvent.openLink,
     });
-    domainLink.setAttribute('subdomain', domain.substring(0, domain.indexOf('.')));
+    domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     matchTargets.appendChild(domainLink);
   }
 

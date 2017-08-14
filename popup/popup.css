@@ -251,11 +251,6 @@ body.blocked .actions > .left-gutter {
   margin-left: .6ex
 }
 
-.write-style-link::before,
-.write-style-link::after {
-  font-size: 12px
-}
-
 .write-style-link::before {
   content: "\00ad"; /* "soft" hyphen */
 }
@@ -275,15 +270,6 @@ body.blocked .actions > .left-gutter {
 .breadcrumbs:hover a {
   color: #bbb;
   text-decoration: none
-}
-
-/* use just the subdomain name instead of the full domain name */
-.breadcrumbs > .write-style-link[subdomain]:not(:nth-last-child(2)) {
-  font-size: 0
-}
-
-.breadcrumbs > .write-style-link[subdomain]:not(:nth-last-child(2))::before {
-  content: attr(subdomain);
 }
 
 /* "dot" after each subdomain name */
