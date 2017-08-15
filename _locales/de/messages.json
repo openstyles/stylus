@@ -633,8 +633,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "Die von <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> gefunden Fehler haben die folgenden Einstellungen:",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "Die von $link$ gefunden Fehler haben die folgenden Einstellungen:",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "Badge auf dem Toolbar-Icon",

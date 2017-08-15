@@ -42,6 +42,7 @@ var prefs = new function Prefs() {
       indent_conditional: true,
     },
     'editor.lintDelay': 500,        // lint gutter marker update delay, ms
+    'editor.linter': 'csslint',     // Choose csslint or stylelint
     'editor.lintReportDelay': 4500, // lint report update delay, ms
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected

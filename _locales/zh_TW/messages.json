@@ -661,8 +661,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "由<a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a>發現啟用這些規則會產生衝突",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "由$link$發現啟用這些規則會產生衝突",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "在工具列圖示上的徽章",

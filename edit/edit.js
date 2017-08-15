@@ -1,5 +1,5 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
-/* global CodeMirror parserlib */
+/* global CodeMirror exports parserlib CSSLint */
 'use strict';
 
 let styleId = null;
@@ -348,6 +348,16 @@ function acmeEventListener(event) {
         default:
           value = null;
       }
+      break;
+    case 'linter':
+      if (value !== null && (editors.lastActive || editors[0])) {
+        if (prefs.get(el.id) !== value) {
+          prefs.set(el.id, value || 'csslint');
+        }
+        CodeMirror.signal(editors.lastActive || editors[0], "change");
+        // save();
+      }
+      break;
   }
   CodeMirror.setOption(option, value);
 }
@@ -1050,7 +1060,7 @@ function getEditorInSight(nearbyElement) {
 
 function updateLintReport(cm, delay) {
   if (delay === 0) {
-    // immediately show pending stylelint messages in onbeforeunload and save
+    // immediately show pending csslint/stylelint messages in onbeforeunload and save
     update(cm);
     return;
   }
@@ -1074,6 +1084,7 @@ function updateLintReport(cm, delay) {
     let changed = false;
     let fixedOldIssues = false;
     scope.forEach(cm => {
+      const linter = prefs.get('editor.linter');
       const scopedState = cm.state.lint || {};
       const oldMarkers = scopedState.markedLast || {};
       const newMarkers = {};
@@ -1082,17 +1093,19 @@ function updateLintReport(cm, delay) {
           const info = mark.__annotation;
           const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          const rule = info.message.substring(info.message.lastIndexOf('('), info.message.length);
+          // stylelint rule added in parentheses at the end
+          const rule = linter === 'stylelint' ?
+            info.message.substring(info.message.lastIndexOf('('), info.message.length) :
+            / at line \d.+$/;
+          // csslint
           let message = escapeHtml(info.message.replace(rule, ''));
-          if (message.length > 100) {
-            message = message.substr(0, 100) + '...';
-          }
           if (isActiveLine || oldMarkers[pos] === message) {
             delete oldMarkers[pos];
           }
           newMarkers[pos] = message;
           return `<tr class="${info.severity}">
-            <td role="severity" class="CodeMirror-lint-marker-${info.severity}" title="Rule: ${rule}">
+            <td role="severity" class="CodeMirror-lint-marker-${info.severity}"
+              ${linter === 'stylelint' ? 'title="Rule: ' + rule + '"' : ''}>
               ${info.severity}
             </td>
             <td role="line">${info.from.line + 1}</td>
@@ -1100,7 +1113,7 @@ function updateLintReport(cm, delay) {
             <td role="col">${info.from.ch + 1}</td>
             <td role="message" title="${message}">${message}</td>
           </tr>`
-        }) + '</tbody>';
+        }).join('') + '</tbody>';
       scopedState.markedLast = newMarkers;
       fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
       if (scopedState.html !== html) {
@@ -1866,17 +1879,25 @@ function showKeyMapHelp() {
 }
 
 function showLintHelp() {
-  let content = t('issuesHelp') + '<ul class="rules">',
-    rules = [];
-  $$('#lint td[role="severity"]').forEach(el => {
-    const rule = el.title.replace('Rule: (', '').replace(/[()]/g, '').trim();
-    if (!rules.includes(rule)) {
-      content += `<li>
-          <a target="_blank" href="https://stylelint.io/user-guide/rules/${rule}/">${rule}</a>
-        </li>`;
-      rules.push(rule);
-    }
-  });
+  let list = '<ul class="rules">';
+  let content = '';
+  if (prefs.get('editor.linter') === 'csslint') {
+    content = t('issuesHelp', '<a href="https://github.com/CSSLint/csslint" target="_blank">CSSLint</a>') + list +
+      CSSLint.getRules().map(rule =>
+        '<li><b>' + rule.name + '</b><br>' + rule.desc + '</li>'
+      ).join('');
+  } else {
+    let rules = [];
+    const url = 'https://stylelint.io/user-guide/rules/';
+    content = t('issuesHelp', `<a href="${url}" target="_blank">stylelint</a>`) + list;
+    $$('#lint td[role="severity"]').forEach(el => {
+      const rule = el.title.replace('Rule: (', '').replace(/[()]/g, '').trim();
+      if (!rules.includes(rule)) {
+        content += `<li><a target="_blank" href="${url}${rule}/">${rule}</a></li>`;
+        rules.push(rule);
+      }
+    });
+  }
   return showHelp(t('issues'), content + '</ul>');
 }
 

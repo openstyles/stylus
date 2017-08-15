@@ -657,8 +657,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "Проблемы и предупреждения по версии <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> с данными включенными правилами:",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "Проблемы и предупреждения по версии $link$ с данными включенными правилами:",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "Бейдж на пиктограмме в тулбаре",

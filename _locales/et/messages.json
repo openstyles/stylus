@@ -653,8 +653,8 @@
 		"description": "Go to Options UI"
 	},
 	"issuesHelp": {
-		"message": "<a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> poolt leitud vead nende lubatud reeglitega:",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "$link$ poolt leitud vead nende lubatud reeglitega:",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"optionsCustomizeBadge": {
 		"message": "Number tööriistaribaikoonil",

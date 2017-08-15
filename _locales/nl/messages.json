@@ -345,8 +345,8 @@
 		"description": "Label for the button to check all styles for updates"
 	},
 	"issuesHelp": {
-		"message": "De door stylelint gevonden problemen, <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a>, met deze ingeschakelde regels:",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "De door stylelint gevonden problemen, $link$, met deze ingeschakelde regels:",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"confirmNo": {
 		"message": "Nee",

@@ -357,8 +357,8 @@
 		"description": "Label for the button to check all styles for updates"
 	},
 	"issuesHelp": {
-		"message": "Проблем пронађен од стране <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> са овим омогућеним правилима:",
-		"description": "Help popup message for the stylelint issues block on the style edit page"
+		"message": "Проблем пронађен од стране $link$ са овим омогућеним правилима:",
+		"description": "Help popup message for the selected linter issues block on the style edit page"
 	},
 	"confirmNo": {
 		"message": "Не",

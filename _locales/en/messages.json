@@ -135,6 +135,10 @@
     "message": "Double-click to maximize/restore the height",
     "description": "Tooltip for the resize grip in style editor"
   },
+  "cm_linter": {
+    "message": "CSS Linter",
+    "description": "Select the linter to check for CSS issues"
+  },
   "dysfunctional": {
     "message": "Stylus cannot function because Firefox is either in private mode or is applying its website cookies policy to IndexedDB storage used by Stylus, which erroneously marks the secure moz-extension:// origin as insecure even though WebExtensions aren't websites and Stylus doesn't use cookies.\n\n1. Open Firefox options\n2. Go to 'Privacy & Security'\n3. Set 'History' mode to 'Use custom settings'\n4. Click 'Exceptions'\n5. Paste our manifest URL and click 'Allow'\n6. Click 'Save settings'\n7. Uncheck 'Always use private browsing mode'\n\nThe actual manifest URL is shown below.\nYou can also find it on about:debugging page.",
     "description": "Displayed in Firefox when its settings make Stylus dysfunctional"
@@ -342,8 +346,13 @@
     "description": "Label for the stylelint issues block on the style edit page"
   },
   "issuesHelp": {
-    "message": "The issues found by <a href='https://stylelint.io/user-guide/rules/' target='_blank'>stylelint</a> with these rules enabled:",
-    "description": "Help popup message for the stylelint issues block on the style edit page"
+    "message": "The issues found by $link$ with these rules enabled:",
+    "description": "Help popup message for the selected linter issues block on the style edit page",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
   },
   "manageFilters": {
     "message": "Filters",
