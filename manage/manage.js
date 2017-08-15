@@ -5,6 +5,8 @@ let installed;
 const filtersSelector = {
   hide: '',
   unhide: '',
+  numShown: 0,
+  numTotal: 0,
 };
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
@@ -829,6 +831,7 @@ function reapplyFilter(container = installed) {
     filterContainer({hide: true});
   }
   if (!toHide.length) {
+    showFiltersStats();
     return;
   }
   for (const entry of toHide) {
@@ -842,6 +845,7 @@ function reapplyFilter(container = installed) {
       installed.appendChild(entry);
     }
     installed.insertBefore(container, $('.entry.hidden'));
+    showFiltersStats();
     return;
   }
   // normal filtering of the page or a single-element job from handleUpdate()
@@ -853,7 +857,10 @@ function reapplyFilter(container = installed) {
   if (toHide.length === 1 && toHide[0].parentElement !== installed) {
     installed.appendChild(toHide[0]);
   }
+  showFiltersStats();
   return;
+
+  /***************************************/
 
   function filterContainer({hide}) {
     const selector = filtersSelector[hide ? 'hide' : 'unhide'];
@@ -957,6 +964,24 @@ function reapplyFilter(container = installed) {
       a++;
     }
     return entries[entries[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
+  }
+}
+
+
+function showFiltersStats({immediately} = {}) {
+  if (!immediately) {
+    debounce(showFiltersStats, 100, {immediately: true});
+    return;
+  }
+  $('#filters').classList.toggle('active', filtersSelector.hide !== '');
+  const numTotal = BG.cachedStyles.list.length;
+  const numHidden = installed.getElementsByClassName('entry hidden').length;
+  const numShown = Math.min(numTotal - numHidden, installed.children.length);
+  if (filtersSelector.numShown !== numShown ||
+      filtersSelector.numTotal !== numTotal) {
+    filtersSelector.numShown = numShown;
+    filtersSelector.numTotal = numTotal;
+    $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
   }
 }
 

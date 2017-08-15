@@ -539,9 +539,27 @@ fieldset {
   margin: 1em 0;
 }
 
-fieldset > * {
+fieldset > *:not(legend) {
   display: flex;
   align-items: center;
+}
+
+#filters {
+  border: 1px solid transparent;
+}
+
+#filters.active {
+  background-color: darkcyan;
+  border-color: darkcyan;
+  color: white;
+}
+
+#filters:not(.active) #filters-stats {
+  display: none;
+}
+
+#filters-stats::before {
+  content: ": ";
 }
 
 #search {
