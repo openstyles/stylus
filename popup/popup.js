@@ -400,8 +400,10 @@ function handleDelete(id) {
 function detectSloppyRegexps({entry, style}) {
   // make sure all regexps are compiled
   const rxCache = BG.cachedStyles.regexps;
+  let hasRegExp = false;
   for (const section of style.sections) {
     for (const regexp of section.regexps) {
+      hasRegExp = true;
       for (let pass = 1; pass <= 2; pass++) {
         const cacheKey = pass === 1 ? regexp : BG.SLOPPY_REGEXP_PREFIX + regexp;
         if (!rxCache.has(cacheKey)) {
@@ -413,6 +415,9 @@ function detectSloppyRegexps({entry, style}) {
         }
       }
     }
+  }
+  if (!hasRegExp) {
+    return;
   }
   const {
     appliedSections =
