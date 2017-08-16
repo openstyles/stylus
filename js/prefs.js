@@ -193,7 +193,7 @@ var prefs = new function Prefs() {
   if (!BG || BG === window) {
     affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
 
-    const importFromSync = synced => {
+    const importFromSync = (synced = {}) => {
       for (const key in defaults) {
         if (key in synced) {
           this.set(key, synced[key], {sync: false});
