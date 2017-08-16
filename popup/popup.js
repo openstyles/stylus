@@ -9,7 +9,7 @@ const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 getActiveTabRealURL().then(url => {
-  tabURL = URLS.supported.test(url) ? url : '';
+  tabURL = URLS.supported(url) ? url : '';
   Promise.all([
     tabURL && getStylesSafe({matchUrl: tabURL}),
     onDOMready().then(() => {

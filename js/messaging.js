@@ -31,19 +31,14 @@ const URLS = {
   chromeProtectsNTP:
     parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) >= 3161,
 
-  supported: null,
+  supported: url => (
+    url.startsWith('http') && !url.startsWith(URLS.browserWebStore) ||
+    url.startsWith('ftp') ||
+    url.startsWith('file') ||
+    url.startsWith(URLS.ownOrigin) ||
+    !URLS.chromeProtectsNTP && url.startsWith('chrome://newtab/')
+  ),
 };
-
-URLS.supported = new RegExp(
-  '^(file|ftps?|http)://|' +
-  `^https://(?!${
-    URLS.browserWebStore.split('://')[1].replace(/\./g, '\\.')
-  })|` +
-  (URLS.chromeProtectsNTP
-    ? '^chrome://(?!newtab)/|'
-    : '') +
-  '^' + chrome.runtime.getURL('')
-);
 
 let BG = chrome.extension.getBackgroundPage();
 if (BG && !BG.getStyles && BG !== window) {

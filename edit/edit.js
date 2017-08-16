@@ -1862,7 +1862,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
   });
   queryTabs().then(tabs => {
     const supported = tabs.map(tab => tab.url)
-      .filter(url => URLS.supported.test(url));
+      .filter(url => URLS.supported(url));
     const unique = [...new Set(supported).values()];
     for (const rxData of regexps) {
       const {rx, urls} = rxData;

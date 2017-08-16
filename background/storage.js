@@ -129,12 +129,7 @@ function filterStyles({
     exposeIframes: prefs.get('exposeIframes'),
   };
 
-  if (matchUrl && (
-    // Web Store doesn't run content scripts
-    matchUrl.startsWith(URLS.browserWebStore) ||
-    // Chrome 61.0.3161+ doesn't run content scripts on NTP
-    URLS.chromeProtectsNTP && matchUrl.startsWith('chrome://newtab/')
-  )) {
+  if (matchUrl && !URLS.supported(matchUrl)) {
     return asHash ? {} : [];
   }
 
@@ -193,6 +188,7 @@ function filterStylesInternal({
   }
 
   const needSections = asHash || matchUrl !== null;
+  const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
   let style;
   for (let i = 0; (style = styles[i]); i++) {
@@ -200,7 +196,14 @@ function filterStylesInternal({
     && (url === null || style.url === url)
     && (id === null || style.id === id)) {
       const sections = needSections &&
-        getApplicableSections({style, matchUrl, strictRegexp, stopOnFirst: !asHash});
+        getApplicableSections({
+          style,
+          matchUrl,
+          strictRegexp,
+          stopOnFirst: !asHash,
+          skipUrlCheck: true,
+          matchUrlBase,
+        });
       if (asHash) {
         if (sections.length) {
           filtered[style.id] = sections;
@@ -322,11 +325,20 @@ function deleteStyle({id, notify = true}) {
 }
 
 
-function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirst}) {
-  if (!matchUrl.startsWith('http')
-  && !matchUrl.startsWith('ftp')
-  && !matchUrl.startsWith('file')
-  && !matchUrl.startsWith(URLS.ownOrigin)) {
+function getApplicableSections({
+  style,
+  matchUrl,
+  strictRegexp = true,
+  // filterStylesInternal() sets the following to avoid recalc on each style:
+  stopOnFirst,
+  skipUrlCheck,
+  matchUrlBase = matchUrl.includes('#') && matchUrl.split('#', 1)[0],
+  // as per spec the fragment portion is ignored in @-moz-document:
+  // https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
+  // but the spec is outdated and doesn't account for SPA sites
+  // so we only respect it in case of url("http://exact.url/without/hash")
+}) {
+  if (!skipUrlCheck && !URLS.supported(matchUrl)) {
     return [];
   }
   const sections = [];
@@ -335,7 +347,7 @@ function getApplicableSections({style, matchUrl, strictRegexp = true, stopOnFirs
     const isGlobal = !urls.length && !urlPrefixes.length && !domains.length && !regexps.length;
     const isMatching = !isGlobal && (
       urls.length
-        && urls.indexOf(matchUrl) >= 0
+        && (urls.includes(matchUrl) || matchUrlBase && urls.includes(matchUrlBase))
       || urlPrefixes.length
         && arraySomeIsPrefix(urlPrefixes, matchUrl)
       || domains.length
