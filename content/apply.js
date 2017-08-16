@@ -12,7 +12,7 @@ var styleElements = new Map();
 var disabledElements = new Map();
 var retiredStyleTimers = new Map();
 var docRewriteObserver;
-var docHeadObserver;
+var docRootObserver;
 
 requestStyles();
 chrome.runtime.onMessage.addListener(applyOnMessage);
@@ -203,6 +203,7 @@ function applyStyles(styles) {
     applySections(id, styles[id]);
   }
   initDocRewriteObserver();
+  initDocRootObserver();
   if (retiredStyleTimers.size) {
     setTimeout(() => {
       for (const [id, timer] of retiredStyleTimers.entries()) {
@@ -210,17 +211,6 @@ function applyStyles(styles) {
         clearTimeout(timer);
       }
     });
-  }
-  if (styleElements.size && !document.head && !docHeadObserver) {
-    // HEAD is not yet present so we'll wait for it and move the style elements
-    docHeadObserver = new MutationObserver(() => {
-      docHeadObserver.disconnect();
-      docHeadObserver = null;
-      for (const el of styleElements.values()) {
-        ROOT.insertBefore(el, document.body);
-      }
-    });
-    docHeadObserver.observe(ROOT, {childList: true});
   }
 }
 
@@ -310,6 +300,36 @@ function initDocRewriteObserver() {
 }
 
 
+function initDocRootObserver() {
+  if (!styleElements.size || document.body || docRootObserver) {
+    return;
+  }
+  // wait for BODY and move all style elements after it
+  docRootObserver = new MutationObserver(() => {
+    let expectedPrevSibling = document.body || document.head;
+    if (!expectedPrevSibling) {
+      return;
+    }
+    docRootObserver.disconnect();
+    for (const el of styleElements.values()) {
+      if (el.previousElementSibling !== expectedPrevSibling) {
+        ROOT.insertBefore(el, expectedPrevSibling.nextSibling);
+        expectedPrevSibling = el;
+      }
+    }
+    if (document.body) {
+      docRootObserver = null;
+    } else {
+      docRootObserver.connect();
+    }
+  });
+  docRootObserver.connect = () => {
+    docRootObserver.observe(ROOT, {childList: true});
+  };
+  docRootObserver.connect();
+}
+
+
 function orphanCheck() {
   const port = chrome.runtime.connect();
   if (port) {
@@ -319,9 +339,7 @@ function orphanCheck() {
 
   // we're orphaned due to an extension update
   // we can detach the mutation observer
-  if (docRewriteObserver) {
-    docRewriteObserver.disconnect();
-  }
+  [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.disconnect());
   // we can detach event listeners
   window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
@@ -334,6 +352,7 @@ function orphanCheck() {
     'applyStyleState',
     'doDisableAll',
     'initDocRewriteObserver',
+    'initDocRootObserver',
     'orphanCheck',
     'removeStyle',
     'replaceAll',
@@ -344,5 +363,6 @@ function orphanCheck() {
     'retiredStyleTimers',
     'styleElements',
     'docRewriteObserver',
+    'docRootObserver',
   ].forEach(fn => (window[fn] = null));
 }
