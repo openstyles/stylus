@@ -314,8 +314,8 @@ function initDocRootObserver() {
     for (const el of styleElements.values()) {
       if (el.previousElementSibling !== expectedPrevSibling) {
         ROOT.insertBefore(el, expectedPrevSibling.nextSibling);
-        expectedPrevSibling = el;
       }
+      expectedPrevSibling = el;
     }
     if (document.body) {
       docRootObserver = null;
