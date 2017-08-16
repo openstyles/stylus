@@ -15,10 +15,9 @@
 })(function(CodeMirror) {
 "use strict";
 
-CodeMirror.registerHelper("lint", "css", function(text) {
+CodeMirror.registerHelper("lint", "csslint", function(text) {
   let found = [];
-  const linter = prefs.get('editor.linter');
-  if (linter === 'csslint' && window.CSSLint) {
+  if (window.CSSLint) {
 
     /* STYLISH: hack start (part 1) */
     var rules = CSSLint.getRules();
@@ -59,31 +58,35 @@ CodeMirror.registerHelper("lint", "css", function(text) {
         severity : message.type
       });
     }
-  } else if (linter === 'stylelint') {
-    const stylelint = require('stylelint').lint;
-    if (stylelint) {
-      return stylelint({
-          code: text,
-          // stylelintConfig stored in stylelint-config.js & loaded by edit.html
-          config: stylelintConfig
-        }).then(output => {
-          const warnings = output.results.length ? output.results[0].warnings : [],
-            len = warnings.length;
-          let i, warning;
-          if (len) {
-            for (i = 0; i < len; i++) {
-              warning = warnings[i];
-              found.push({
-                from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
-                to: CodeMirror.Pos(warning.line - 1, warning.column),
-                message: warning.text,
-                severity : warning.severity
-              });
-            }
-          }
-          return found;
-        });
-    }
+  }
+  return found;
+});
+
+CodeMirror.registerHelper("lint", "stylelint", function(text) {
+  let found = [];
+  const stylelint = require('stylelint').lint;
+  if (stylelint) {
+    return stylelint({
+      code: text,
+      // stylelintConfig stored in stylelint-config.js & loaded by edit.html
+      config: stylelintConfig
+    }).then(output => {
+      const warnings = output.results.length ? output.results[0].warnings : [],
+        len = warnings.length;
+      let i, warning;
+      if (len) {
+        for (i = 0; i < len; i++) {
+          warning = warnings[i];
+          found.push({
+            from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
+            to: CodeMirror.Pos(warning.line - 1, warning.column),
+            message: warning.text,
+            severity : warning.severity
+          });
+        }
+      }
+      return found;
+    });
   }
   return found;
 });
