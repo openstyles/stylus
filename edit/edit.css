@@ -77,16 +77,19 @@ input[type="checkbox"] {
 h2 .svg-icon, label .svg-icon {
   margin-top: -1px;
 }
-.svg-icon.info {
+.svg-icon.info,
+.svg-icon.settings {
   width: 14px;
   height: 16px;
 }
 .svg-icon:hover,
-.svg-icon.info {
+.svg-icon.info,
+.svg-icon.settings {
   fill: #666;
 }
 .svg-icon,
-.svg-icon.info:hover {
+.svg-icon.info:hover,
+.svg-icon.settings:hover {
   fill: #000;
 }
 #enabled {
@@ -365,10 +368,27 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
 }
+#help-popup .settings {
+  min-width: 500px;
+  min-height: 200px;
+  max-width: 48vw;
+}
 #help-popup .dismiss {
   position: absolute;
   right: 4px;
   top: .5em;
+}
+#help-popup .error {
+  display: none;
+  margin-left: 10px;
+  color: #900;
+  font-weight: bold;
+}
+#help-popup .error a {
+  color: #f00;
+}
+#help-popup .error.show {
+  display: inline-block;
 }
 
 .keymap-list {
@@ -417,7 +437,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   border-spacing: 0;
   margin-bottom: 1rem;
   line-height: 1.0;
-  width: 245px;
 }
 #lint table:last-child {
   margin-bottom: 0;

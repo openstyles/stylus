@@ -1,4 +1,4 @@
-const stylelintConfig = {
+const stylelintDefaultConfig = {
   // 'sugarss' is a indent-based syntax like Sass or Stylus
   // ref: https://github.com/postcss/postcss#syntaxes
   syntax: 'sugarss',

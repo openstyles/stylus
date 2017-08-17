@@ -506,6 +506,23 @@
     "message": "Remove section",
     "description": "Label for the button to remove a section"
   },
+  "setStylelintLink": {
+    "message": "Get a full list of rules from $link$",
+    "description": "Stylelint rules link",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "setStylelintRules": {
+    "message": "Set stylelint rules",
+    "description": "Stylelint popup header"
+  },
+  "setStylelintError": {
+    "message": "Invalid JSON format",
+    "description": "Stylelint invalid JSON message"
+  },
   "shortcuts": {
     "message": "Shortcuts",
     "description": "Go to shortcut configuration"

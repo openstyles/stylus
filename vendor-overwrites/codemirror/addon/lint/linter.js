@@ -66,26 +66,34 @@ CodeMirror.registerHelper("lint", "stylelint", function(text) {
   let found = [];
   const stylelint = require('stylelint').lint;
   if (stylelint) {
-    return stylelint({
-      code: text,
-      // stylelintConfig stored in stylelint-config.js & loaded by edit.html
-      config: stylelintConfig
-    }).then(output => {
-      const warnings = output.results.length ? output.results[0].warnings : [],
-        len = warnings.length;
-      let i, warning;
-      if (len) {
-        for (i = 0; i < len; i++) {
-          warning = warnings[i];
-          found.push({
-            from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
-            to: CodeMirror.Pos(warning.line - 1, warning.column),
-            message: warning.text,
-            severity : warning.severity
-          });
-        }
+    return BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
+      // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit.html
+      if (Object.keys(rules).length === 0) {
+        rules = stylelintDefaultConfig.rules;
       }
-      return found;
+      return stylelint({
+        code: text,
+        config: {
+          syntax: stylelintDefaultConfig.syntax,
+          rules: rules
+        }
+      }).then(output => {
+        const warnings = output.results.length ? output.results[0].warnings : [],
+          len = warnings.length;
+        let i, warning;
+        if (len) {
+          for (i = 0; i < len; i++) {
+            warning = warnings[i];
+            found.push({
+              from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
+              to: CodeMirror.Pos(warning.line - 1, warning.column),
+              message: warning.text,
+              severity : warning.severity
+            });
+          }
+        }
+        return found;
+      });
     });
   }
   return found;

@@ -1,15 +1,24 @@
-/* global CodeMirror CSSLint editors makeSectionVisible showHelp */
+/* global CodeMirror CSSLint editors makeSectionVisible showHelp stylelintDefaultConfig BG */
 'use strict';
 
-function initLintHooks() {
+function initLint() {
   document.getElementById('lint-help').addEventListener('click', showLintHelp);
   document.getElementById('lint').addEventListener('click', gotoLintIssue);
   window.addEventListener('resize', resizeLintReport);
+  document.getElementById('stylelint-settings').addEventListener('click', openStylelintSettings);
 
   // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
   if ('ontouchstart' in document.body) {
     document.querySelector('#lint h2').addEventListener('click', toggleLintReport);
   }
+  BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
+}
+
+function setStylelintRules(rules = {}) {
+  if (Object.keys(rules).length === 0) {
+    rules = deepCopy(stylelintDefaultConfig.rules);
+  }
+  BG.chromeLocal.setValue('editorStylelintRules', rules);
 }
 
 function setLinter(name) {
@@ -17,6 +26,18 @@ function setLinter(name) {
     getAnnotations: CodeMirror.lint[name],
     delay: prefs.get('editor.lintDelay')
   };
+}
+
+function updateLinter(name = 'csslint') {
+  if (prefs.get('editor.linter') !== name) {
+    prefs.set('editor.linter', name);
+  }
+  editors.forEach(cm => {
+    cm.setOption('lint', setLinter(name));
+    updateLintReport(cm, 200);
+  });
+  $('#stylelint-settings').style.display = name === 'stylelint' ?
+    'inline-block' : 'none';
 }
 
 function updateLintReport(cm, delay) {
@@ -177,4 +198,52 @@ function showLintHelp() {
     });
   }
   return showHelp(t('issues'), header + list + '</ul>');
+}
+
+function setupStylelintSettingsEvents() {
+  let timer;
+  $('#help-popup .save').addEventListener('click', () => {
+    try {
+      setStylelintRules(JSON.parse($('#help-popup textarea').value).rules);
+      // it is possible to have stylelint rules popup open & switch to csslint
+      if (prefs.get('editor.linter') === 'stylelint') {
+        updateLinter('stylelint');
+      }
+    } catch (err) {
+      $('#help-popup .error').classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // popup may be closed at this point
+        const error = $('#help-popup .error');
+        if (error) {
+          error.classList.remove('show');
+        }
+      }, 3000);
+    }
+    return false;
+  });
+  $('#help-popup .reset').addEventListener('click', () => {
+    setStylelintRules();
+    $('#help-popup .settings').value = JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2);
+    if (prefs.get('editor.linter') === 'stylelint') {
+      updateLinter('stylelint');
+    }
+    return false;
+  });
+}
+
+function openStylelintSettings() {
+  BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
+    const link = '<a target="_blank" href="https://stylelint.io/demo/">Stylelint</a>';
+    const text = JSON.stringify({rules: rules}, null, 2);
+    const content = `<textarea class="contents settings">${text}</textarea>
+      <p>${t('setStylelintLink', link)}</p>
+      <button class="save" type="button">Save</button>&nbsp;
+      <button class="reset" type="button">Reset</button>
+      <span class="error">
+        ${t('setStylelintError')} (<a target="_blank" href="https://jsonlint.com/">JSONLint</a>)
+      </span>`;
+    showHelp(t('setStylelintRules'), content);
+    setupStylelintSettingsEvents();
+  });
 }

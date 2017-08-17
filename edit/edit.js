@@ -1,5 +1,5 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
-/* global CodeMirror exports css_beautify parserlib CSSLint initLintHooks setLinter updateLintReport renderLintReport */
+/* global CodeMirror exports css_beautify parserlib CSSLint initLint setLinter updateLintReport renderLintReport updateLinter */
 'use strict';
 
 let styleId = null;
@@ -168,7 +168,7 @@ function initCodeMirror() {
     matchBrackets: true,
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
-    lint: setLinter('csslint'),
+    lint: setLinter(prefs.get('editor.linter')),
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',
@@ -351,15 +351,7 @@ function acmeEventListener(event) {
       break;
     case 'linter':
       if (value !== null && editors.length) {
-        if (prefs.get(el.id) !== value) {
-          prefs.set(el.id, value || 'csslint');
-        }
-        editors.forEach(cm => {
-          console.log('set linter to', value);
-          cm.setOption('lint', setLinter(value || 'csslint'));
-        });
-        // CodeMirror.signal(editors.lastActive || editors[0], "change");
-        // save();
+        updateLinter(value);
       }
       break;
   }
@@ -1251,7 +1243,7 @@ function initHooks() {
   document.getElementById('sections-help').addEventListener('click', showSectionHelp, false);
   document.getElementById('keyMap-help').addEventListener('click', showKeyMapHelp, false);
   document.getElementById('cancel-button').addEventListener('click', goBackToManage);
-  initLintHooks();
+  initLint();
 
   if (!FIREFOX) {
     $$([
