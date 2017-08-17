@@ -424,6 +424,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #help-popup .rules {
   padding: 0 15px;
 }
+#help-popup .save {
+  margin-right: 3px;
+}
 
 /************ lint ************/
 #lint {
@@ -574,7 +577,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     margin-bottom: 0;
   }
   #lint > div {
-    max-height: 0;
+    max-height: 20vh;
   }
   #lint.collapsed > div {
     display: none;

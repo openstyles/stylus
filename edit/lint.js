@@ -144,17 +144,20 @@ function renderLintReport(someBlockChanged) {
     document.getElementById('issue-count').textContent = issueCount;
     container.replaceChild(newContent, content);
     container.style.display = newContent.children.length ? 'block' : 'none';
-    resizeLintReport(null, newContent);
+    resizeLintReport();
   }
 }
 
-function resizeLintReport(event, content) {
-  content = content || document.getElementById('lint').children[1];
+function resizeLintReport() {
+  const magicBuffer = 20; // subtracted value to prevent scrollbar
+  const content = $('#lint table');
   if (content.children.length) {
     const bounds = content.getBoundingClientRect();
-    const newMaxHeight = bounds.bottom <= innerHeight ? '' : (innerHeight - bounds.top) + 'px';
+    const newMaxHeight = bounds.bottom <= window.innerHeight ? '' :
+      // subtract out a bit of padding or the vertical scrollbar extends beyond the viewport
+      (window.innerHeight - bounds.top - magicBuffer) + 'px';
     if (newMaxHeight !== content.style.maxHeight) {
-      content.style.maxHeight = newMaxHeight;
+      content.parentNode.style.maxHeight = newMaxHeight;
     }
   }
 }
@@ -189,6 +192,7 @@ function showLintHelp() {
     const rules = [];
     const url = 'https://stylelint.io/user-guide/rules/';
     header = t('issuesHelp', `<a href="${url}" target="_blank">stylelint</a>`);
+    // to-do: change this to a generator
     $$('#lint td[role="severity"]').forEach(el => {
       const rule = el.title.replace('Rule: (', '').replace(/[()]/g, '').trim();
       if (!rules.includes(rule)) {
