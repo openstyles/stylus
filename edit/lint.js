@@ -1,4 +1,4 @@
-/* global CodeMirror CSSLint editors makeSectionVisible showHelp stylelintDefaultConfig BG */
+/* global CodeMirror CSSLint editors makeSectionVisible showHelp stylelintDefaultConfig */
 'use strict';
 
 function initLint() {
