@@ -207,13 +207,14 @@ function showLintHelp() {
 function setupStylelintSettingsEvents() {
   let timer;
   $('#help-popup .save').addEventListener('click', () => {
-    try {
-      setStylelintRules(JSON.parse($('#help-popup textarea').value).rules);
+    const json = tryJSONparse($('#help-popup textarea').value);
+    if (json && json.rules) {
+      setStylelintRules(json.rules);
       // it is possible to have stylelint rules popup open & switch to csslint
       if (prefs.get('editor.linter') === 'stylelint') {
         updateLinter('stylelint');
       }
-    } catch (err) {
+    } else {
       $('#help-popup .error').classList.add('show');
       clearTimeout(timer);
       timer = setTimeout(() => {
