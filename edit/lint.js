@@ -206,7 +206,8 @@ function showLintHelp() {
 
 function setupStylelintSettingsEvents() {
   let timer;
-  $('#help-popup .save').addEventListener('click', () => {
+  $('#help-popup .save').addEventListener('click', event => {
+    event.preventDefault();
     const json = tryJSONparse($('#help-popup textarea').value);
     if (json && json.rules) {
       setStylelintRules(json.rules);
@@ -225,15 +226,14 @@ function setupStylelintSettingsEvents() {
         }
       }, 3000);
     }
-    return false;
   });
-  $('#help-popup .reset').addEventListener('click', () => {
+  $('#help-popup .reset').addEventListener('click', event => {
+    event.preventDefault();
     setStylelintRules();
     $('#help-popup .settings').value = JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2);
     if (prefs.get('editor.linter') === 'stylelint') {
       updateLinter('stylelint');
     }
-    return false;
   });
 }
 
