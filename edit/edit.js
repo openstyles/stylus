@@ -1,7 +1,7 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
 /* global exports css_beautify */
-/* global CSSLint initLint setLinter updateLintReport renderLintReport updateLinter */
+/* global CSSLint initLint getLinterConfigForCodeMirror updateLintReport renderLintReport updateLinter */
 'use strict';
 
 let styleId = null;
@@ -170,7 +170,7 @@ function initCodeMirror() {
     matchBrackets: true,
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
-    lint: setLinter(prefs.get('editor.linter')),
+    lint: getLinterConfigForCodeMirror(prefs.get('editor.linter')),
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',

@@ -21,7 +21,7 @@ function setStylelintRules(rules = {}) {
   BG.chromeLocal.setValue('editorStylelintRules', rules);
 }
 
-function setLinter(name) {
+function getLinterConfigForCodeMirror(name) {
   return {
     getAnnotations: CodeMirror.lint[name],
     delay: prefs.get('editor.lintDelay')
@@ -33,7 +33,7 @@ function updateLinter(name = 'csslint') {
     prefs.set('editor.linter', name);
   }
   editors.forEach(cm => {
-    cm.setOption('lint', setLinter(name));
+    cm.setOption('lint', getLinterConfigForCodeMirror(name));
     updateLintReport(cm, 200);
   });
   $('#stylelint-settings').style.display = name === 'stylelint' ?
