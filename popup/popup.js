@@ -8,7 +8,11 @@ const handleEvent = {};
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
-getActiveTabRealURL().then(url => {
+getActiveTab().then(tab =>
+  FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
+  ? getTabRealURLFirefox(tab)
+  : getTabRealURL(tab)
+).then(url => {
   tabURL = URLS.supported(url) ? url : '';
   Promise.all([
     tabURL && getStylesSafe({matchUrl: tabURL}),
@@ -112,9 +116,17 @@ function initPopup(url) {
     return;
   }
 
-  getActiveTab().then(tab => {
+  getActiveTab().then(function ping(tab, retryCountdown = 10) {
     chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
-      if (pong === undefined) {
+      if (pong) {
+        return;
+      }
+      ignoreChromeError();
+      // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
+      // so we'll wait a bit to handle popup being invoked right after switching
+      if (retryCountdown > 0) {
+        setTimeout(ping, 100, tab, --retryCountdown);
+      } else {
         document.body.classList.add('unreachable');
       }
     });
@@ -442,4 +454,35 @@ function detectSloppyRegexps({entry, style}) {
     indicator.onclick = handleEvent.indicator;
     $('.main-controls', entry).appendChild(indicator);
   }
+}
+
+
+function getTabRealURLFirefox(tab) {
+  // wait for FF tab-on-demand to get a real URL (initially about:blank), 5 sec max
+  return new Promise(resolve => {
+    function onNavigation({tabId, url, frameId}) {
+      if (tabId === tab.id && frameId === 0) {
+        detach();
+        resolve(url);
+      }
+    }
+
+    function detach(timedOut) {
+      if (timedOut) {
+        resolve(tab.url);
+      } else {
+        debounce.unregister(detach);
+      }
+      chrome.webNavigation.onBeforeNavigate.removeListener(onNavigation);
+      chrome.webNavigation.onCommitted.removeListener(onNavigation);
+      chrome.tabs.onRemoved.removeListener(detach);
+      chrome.tabs.onReplaced.removeListener(detach);
+    }
+
+    chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);
+    chrome.webNavigation.onCommitted.addListener(onNavigation);
+    chrome.tabs.onRemoved.addListener(detach);
+    chrome.tabs.onReplaced.addListener(detach);
+    debounce(detach, 5000, {timedOut: true});
+  });
 }
