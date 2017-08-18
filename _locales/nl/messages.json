@@ -13,7 +13,7 @@
 	},
 	"issues": {
 		"message": "Problemen",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"cm_tabSize": {
 		"message": "Tabgrootte",
@@ -346,7 +346,12 @@
 	},
 	"issuesHelp": {
 		"message": "De door stylelint gevonden problemen, $link$, met deze ingeschakelde regels:",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"confirmNo": {
 		"message": "Nee",

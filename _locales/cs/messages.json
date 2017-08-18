@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "Problémy",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Barva pozadí",
@@ -654,7 +654,12 @@
 	},
 	"issuesHelp": {
 		"message": "Problémy nalezené aplikací $link$ s těmito povolenými pravidly:",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",

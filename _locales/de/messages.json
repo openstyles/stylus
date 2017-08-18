@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "Probleme",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Hintergrundfarbe",
@@ -634,7 +634,12 @@
 	},
 	"issuesHelp": {
 		"message": "Die von $link$ gefunden Fehler haben die folgenden Einstellungen:",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "Badge auf dem Toolbar-Icon",

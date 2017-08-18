@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "问题",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景颜色",
@@ -658,7 +658,12 @@
 	},
 	"issuesHelp": {
 		"message": "$link$ 在已启用的这些规则中找到问题：",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "样式计数器",

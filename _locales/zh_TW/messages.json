@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "問題",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景顏色",
@@ -662,7 +662,12 @@
 	},
 	"issuesHelp": {
 		"message": "由$link$發現啟用這些規則會產生衝突",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "在工具列圖示上的徽章",

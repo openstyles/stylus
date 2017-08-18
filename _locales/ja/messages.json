@@ -29,7 +29,7 @@
 	},
 	"issues": {
 		"message": "問題点",
-		"description": "Label for the stylelint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景色",
@@ -650,7 +650,12 @@
 	},
 	"issuesHelp": {
 		"message": "これらのルールを有効にして $link$ で見つかった問題:",
-		"description": "Help popup message for the selected linter issues block on the style edit page"
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",
