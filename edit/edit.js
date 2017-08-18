@@ -1,5 +1,7 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
-/* global CodeMirror exports css_beautify parserlib CSSLint initLint setLinter updateLintReport renderLintReport updateLinter */
+/* global CodeMirror parserlib */
+/* global exports css_beautify */
+/* global CSSLint initLint setLinter updateLintReport renderLintReport updateLinter */
 'use strict';
 
 let styleId = null;
