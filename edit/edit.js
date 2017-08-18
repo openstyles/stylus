@@ -450,7 +450,7 @@ queryTabs({currentWindow: true}).then(tabs => {
   const windowId = tabs[0].windowId;
   if (prefs.get('openEditInWindow')) {
     if (
-      sessionStorage.saveSizeOnClose &&
+      /true/.test(sessionStorage.saveSizeOnClose) &&
       'left' in prefs.get('windowPosition', {}) &&
       !isWindowMaximized()
     ) {
