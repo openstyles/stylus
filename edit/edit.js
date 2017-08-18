@@ -1954,7 +1954,6 @@ function onRuntimeMessage(request) {
       break;
     case 'styleDeleted':
       if (styleId && styleId === request.id) {
-        // eslint-disable-next-line no-empty-function
         window.onbeforeunload = () => {};
         window.close();
         break;
