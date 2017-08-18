@@ -78,7 +78,7 @@ function onDOMscripted(scripts) {
   if (onDOMscripted.scriptQueue) {
     return new Promise(resolve => addResolver(resolve));
   }
-  if (document.readyState != 'loading') {
+  if (document.readyState !== 'loading') {
     if (onDOMscripted.resolveOnReady) {
       onDOMscripted.resolveOnReady.forEach(r => r());
       onDOMscripted.resolveOnReady = null;
@@ -92,15 +92,13 @@ function onDOMscripted(scripts) {
     if (!next) {
       onDOMscripted.scriptQueue = null;
       onDOMscripted();
-    }
-    else if (typeof next == 'function') {
+    } else if (typeof next === 'function') {
       Promise.resolve(next())
         .then(loadNextScript);
-    }
-    else {
+    } else {
       Promise.all(
         (next instanceof Array ? next : [next]).map(next =>
-          typeof next == 'function'
+          typeof next === 'function'
             ? next()
             : injectScript({src: next, async: true})
         )
@@ -118,7 +116,7 @@ function onDOMscripted(scripts) {
 
 
 function injectScript(properties) {
-  if (typeof properties == 'string') {
+  if (typeof properties === 'string') {
     properties = {src: properties};
   }
   if (!properties || !properties.src) {
@@ -128,7 +126,7 @@ function injectScript(properties) {
   Object.assign(script, properties);
   if (!properties.onload) {
     return new Promise(resolve => {
-      script.onload = () => { script.onload = null; resolve() };
+      script.onload = () => { script.onload = null; resolve(); };
     });
   }
 }
