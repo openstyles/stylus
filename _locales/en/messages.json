@@ -354,6 +354,10 @@
       }
     }
   },
+  "stylelintConfig": {
+    "message": "Open a popup to configure stylelint rules",
+    "description": "Tooltip on an icon to indicate it opens a popup with stylelint configuration settings"
+  },
   "manageFilters": {
     "message": "Filters",
     "description": "Label for filters container"

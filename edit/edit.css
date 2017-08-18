@@ -387,7 +387,8 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #help-popup .error a {
   color: #f00;
 }
-#help-popup .error.show {
+#help-popup .error.show,
+#options .linter-settings {
   display: inline-block;
 }
 
