@@ -23,7 +23,8 @@ function tHTML(html, tag) {
     return document.createTextNode(html);
   }
   if (typeof html === 'string') {
-    html = html.replace(/>\s+</g, '><'); // spaces are removed; use &nbsp; for an explicit space
+    // spaces are removed; use &nbsp; for an explicit space
+    html = html.replace(/>\s+</g, '><').trim();
     if (tag) {
       html = `<${tag}>${html}</${tag}>`;
     }
@@ -31,13 +32,13 @@ function tHTML(html, tag) {
     if (html.includes('i18n-')) {
       tNodeList(body.getElementsByTagName('*'));
     }
-    // the html string may contain more than one top-level elements
-    if (body.childElementCount <= 1) {
-      return body.firstElementChild;
+    // the html string may contain more than one top-level node
+    if (!body.childNodes[1]) {
+      return body.firstChild;
     }
     const fragment = document.createDocumentFragment();
-    while (body.childElementCount) {
-      fragment.appendChild(body.firstElementChild);
+    while (body.firstChild) {
+      fragment.appendChild(body.firstChild);
     }
     return fragment;
   }
