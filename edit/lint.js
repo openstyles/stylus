@@ -151,7 +151,7 @@ function renderLintReport(someBlockChanged) {
 function resizeLintReport() {
   const magicBuffer = 20; // subtracted value to prevent scrollbar
   const content = $('#lint table');
-  if (content.children.length) {
+  if (content) {
     const bounds = content.getBoundingClientRect();
     const newMaxHeight = bounds.bottom <= window.innerHeight ? '' :
       // subtract out a bit of padding or the vertical scrollbar extends beyond the viewport
