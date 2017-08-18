@@ -29,6 +29,13 @@ a:hover {
   z-index: 9;
 }
 
+#check-all-updates {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 #header h1 {
   margin-top: 0;
 }
