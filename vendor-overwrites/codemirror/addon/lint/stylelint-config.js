@@ -1,36 +1,35 @@
-const stylelintDefaultConfig = {
+const stylelintDefaultConfig = (defaultSeverity => ({
   // 'sugarss' is a indent-based syntax like Sass or Stylus
   // ref: https://github.com/postcss/postcss#syntaxes
   syntax: 'sugarss',
-
+  // ** recommended rules **
+  // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
   rules: {
-    // ** recommended rules **
-    // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
-    'at-rule-no-unknown': [ true, { 'severity': 'warning' }],
-    'block-no-empty': [ true, { 'severity': 'warning' }],
-    'color-no-invalid-hex': [ true, { 'severity': 'warning' }],
-    'comment-no-empty': [ true, { 'severity': 'warning' }],
+    'at-rule-no-unknown': [true, defaultSeverity],
+    'block-no-empty': [true, defaultSeverity],
+    'color-no-invalid-hex': [true, defaultSeverity],
+    'comment-no-empty': [true, defaultSeverity],
     'declaration-block-no-duplicate-properties': [ true, {
       'ignore': ['consecutive-duplicates-with-different-values'],
       'severity': 'warning'
     }],
-    'declaration-block-no-redundant-longhand-properties': [ true, { 'severity': 'warning' }],
-    'declaration-block-no-shorthand-property-overrides': [ true, { 'severity': 'warning' }],
-    'font-family-no-duplicate-names': [ true, { 'severity': 'warning' }],
-    'function-calc-no-unspaced-operator': [ true, { 'severity': 'warning' }],
-    'function-linear-gradient-no-nonstandard-direction': [ true, { 'severity': 'warning' }],
-    'keyframe-declaration-no-important': [ true, { 'severity': 'warning' }],
-    'media-feature-name-no-unknown': [ true, { 'severity': 'warning' }],
+    'declaration-block-no-redundant-longhand-properties': [true, defaultSeverity],
+    'declaration-block-no-shorthand-property-overrides': [true, defaultSeverity],
+    'font-family-no-duplicate-names': [true, defaultSeverity],
+    'function-calc-no-unspaced-operator': [true, defaultSeverity],
+    'function-linear-gradient-no-nonstandard-direction': [true, defaultSeverity],
+    'keyframe-declaration-no-important': [true, defaultSeverity],
+    'media-feature-name-no-unknown': [true, defaultSeverity],
     'no-empty-source': false, /* recommended true */
-    'no-extra-semicolons': [ true, { 'severity': 'warning' }],
-    'no-invalid-double-slash-comments': [ true, { 'severity': 'warning' }],
-    'property-no-unknown': [ true, { 'severity': 'warning' }],
-    'selector-pseudo-class-no-unknown': [ true, { 'severity': 'warning' }],
-    'selector-pseudo-element-no-unknown': [ true, { 'severity': 'warning' }],
-    'selector-type-no-unknown': [ true, { 'severity': 'warning' }],
-    'shorthand-property-no-redundant-values': [ true, { 'severity': 'warning' }],
-    'string-no-newline': [ true, { 'severity': 'warning' }],
-    'unit-no-unknown': [ true, { 'severity': 'warning' }]
+    'no-extra-semicolons': [true, defaultSeverity],
+    'no-invalid-double-slash-comments': [true, defaultSeverity],
+    'property-no-unknown': [true, defaultSeverity],
+    'selector-pseudo-class-no-unknown': [true, defaultSeverity],
+    'selector-pseudo-element-no-unknown': [true, defaultSeverity],
+    'selector-type-no-unknown': [true, defaultSeverity],
+    'shorthand-property-no-redundant-values': [true, defaultSeverity],
+    'string-no-newline': [true, defaultSeverity],
+    'unit-no-unknown': [true, defaultSeverity]
 
     // ** stylistic rules **
     /*
@@ -163,4 +162,4 @@ const stylelintDefaultConfig = {
     'value-list-max-empty-lines': 0
     */
   }
-};
+}))({severity: 'warning'});
