@@ -11,6 +11,31 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   }
 }
 
+{
+  // display a full text tooltip on buttons with ellipsis overflow and no inherent title
+  const addTooltipsToEllipsized = () => {
+    for (const btn of document.getElementsByTagName('button')) {
+      if (btn.title && !btn.titleIsForEllipsis ||
+          btn.clientWidth === btn.preresizeClientWidth) {
+        continue;
+      }
+      btn.preresizeClientWidth = btn.clientWidth;
+      const padding = btn.offsetWidth - btn.clientWidth;
+      const displayedWidth = btn.getBoundingClientRect().width - padding;
+      if (btn.scrollWidth > displayedWidth) {
+        btn.title = btn.textContent;
+        btn.titleIsForEllipsis = true;
+      } else if (btn.title) {
+        btn.title = '';
+      }
+    }
+  };
+  // enqueue after DOMContentLoaded/load events
+  setTimeout(addTooltipsToEllipsized);
+  // throttle on continuous resizing
+  window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
+}
+
 // add favicon in Firefox
 // eslint-disable-next-line no-unused-expressions
 navigator.userAgent.includes('Firefox') && setTimeout(() => {
