@@ -9,7 +9,7 @@ const filtersSelector = {
 };
 
 
-onDOMready().then(() => {
+onDOMready().then(onBackgroundReady).then(() => {
   $('#search').oninput = searchStyles;
 
   $$('[data-filter]').forEach(el => {
