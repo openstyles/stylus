@@ -54,7 +54,13 @@
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
       "all_frames": false,
-      "js": ["content/install.js"]
+      "js": ["content/userstyles.js"]
+    },
+    {
+      "matches": ["http://freestyler.ws/*", "https://freestyler.ws/*"],
+      "run_at": "document_end",
+      "all_frames": false,
+      "js": ["content/freestyler.js"]
     },
     {
       "matches": ["<all_urls>"],

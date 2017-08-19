@@ -56,7 +56,9 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    const maybeUpdate = style.usercssData ? maybeUpdateUsercss : maybeUpdateUSO;
+    const maybeUpdate = style.usercssData ? maybeUpdateUsercss :
+      style.freestylerData ? maybeUpdateFWS :
+      maybeUpdateUSO;
     return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
       .then(checkIfEdited)
       .then(maybeUpdate)
@@ -111,6 +113,29 @@ var updater = {
             return Promise.reject(updater.ERROR_VERSION);
         }
         return usercss.buildCode(json);
+      });
+    }
+
+    function maybeUpdateFWS() {
+      return updater.invokeFreestylerAPI('check_updates', {
+        json: [style.freestylerData]
+      }).then(data => (
+        !data || !data[0] ? Promise.reject(updater.ERROR_JSON) :
+        !data[0].isUpdated ? Promise.reject(updater.SAME_MD5) :
+        true
+      )).then(() => updater.invokeFreestylerAPI('get_updates', {
+        json: [style.freestylerData]
+      })).then(data => {
+        data = data && data[0] || {};
+        const newStyle = tryJSONparse(data.newJson);
+        if (newStyle) {
+          newStyle.freestylerData = {
+            id: data.id,
+            hash: data.newHash,
+            params: data.newParams,
+          };
+        }
+        return newStyle;
       });
     }
 
@@ -196,6 +221,18 @@ var updater = {
       });
     }
   })(),
+
+  invokeFreestylerAPI(method, params) {
+    return new Promise(resolve => {
+      const encodeParam = k =>
+        encodeURIComponent(k === 'json' ? JSON.stringify(params[k]) : params[k]);
+      const query = Object.keys(params)
+        .map(k => k + '=' + encodeParam(k))
+        .join('&');
+      download(`https://freestyler.ws/api/v2/${method}.php?${query}`)
+        .then(text => resolve(params.json ? tryJSONparse(text) : text));
+    });
+  }
 };
 
 updater.schedule();

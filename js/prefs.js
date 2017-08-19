@@ -16,6 +16,7 @@ var prefs = new function Prefs() {
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
     'popup.borders': false,         // add white borders on the sides
+    'popup.findStylesSource': 'userstyles',
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
@@ -104,8 +105,12 @@ var prefs = new function Prefs() {
       return deepCopy(values);
     },
 
-    set(key, value, {broadcast = true, sync = true, fromBroadcast} = {}) {
-      const oldValue = values[key];
+    set(key, value, {
+      broadcast = true,
+      sync = true,
+      onlyIfChanged = false,
+      fromBroadcast,
+    } = {}) {
       switch (typeof defaults[key]) {
         case typeof value:
           break;
@@ -119,9 +124,13 @@ var prefs = new function Prefs() {
           value = value === true || value === 'true';
           break;
       }
+      const oldValue = values[key];
+      const hasChanged = !equal(value, oldValue);
+      if (!hasChanged && onlyIfChanged) {
+        return;
+      }
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
-      const hasChanged = !equal(value, oldValue);
       if (!fromBroadcast) {
         if (BG && BG !== window) {
           BG.prefs.set(key, BG.deepCopy(value), {broadcast, sync});
