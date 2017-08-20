@@ -1,6 +1,6 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
-/* global exports css_beautify */
+/* global exports css_beautify onDOMscripted */
 /* global CSSLint initLint getLinterConfigForCodeMirror updateLintReport renderLintReport updateLinter */
 'use strict';
 
@@ -1058,9 +1058,9 @@ function getEditorInSight(nearbyElement) {
 }
 
 function beautify(event) {
-  const script = document.head.appendChild(document.createElement('script'));
-  script.src = 'vendor-overwrites/beautify/beautify-css-mod.js';
-  script.onload = doBeautify;
+  const script = $('script[src*="beautify-css-mod"]') ?
+    [] : ['vendor-overwrites/beautify/beautify-css-mod.js'];
+  onDOMscripted(script).then(doBeautify);
 
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
