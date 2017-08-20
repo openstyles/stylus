@@ -3714,7 +3714,7 @@ var Properties = module.exports = {
     "pitch-range"                   : 1,
     "play-during"                   : 1,
     "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
-    "position"                      : "static | relative | absolute | fixed",
+    "position"                      : "static | relative | absolute | fixed | sticky",
     "presentation-level"            : 1,
     "punctuation-trim"              : 1,
 
