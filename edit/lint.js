@@ -306,7 +306,7 @@ function setupStylelintPopup(rules) {
 }
 
 function loadSelectedLinter(name) {
-  let scripts = [];
+  const scripts = [];
   if (name !== 'null' && !$('script[src*="css-lint.js"]')) {
     // inject css
     injectCSS('vendor/codemirror/addon/lint/lint.css');
