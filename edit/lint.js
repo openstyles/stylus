@@ -279,10 +279,7 @@ function setupStylelintPopup(rules) {
       $element({
         tag: 'span',
         className: 'error',
-        appendChild: [
-          t('setStylelintError') + ' ',
-          makeLink('https://jsonlint.com/', 'jsonlint')
-        ]
+        textContent: t('setStylelintError')
       })
     ]
   }));
