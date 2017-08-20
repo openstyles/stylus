@@ -5,10 +5,13 @@
 'use strict';
 
 let styleId = null;
-let dirty = {};       // only the actually dirty items here
-const editors = [];     // array of all CodeMirror instances
+// only the actually dirty items here
+let dirty = {};
+// array of all CodeMirror instances
+const editors = [];
 let saveSizeOnClose;
-let useHistoryBack;   // use browser history back when 'back to manage' is clicked
+// use browser history back when 'back to manage' is clicked
+let useHistoryBack;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -34,7 +37,8 @@ Element.prototype.closest = Element.prototype.closest || function (selector) {
 };
 
 // eslint-disable-next-line no-extend-native
-Array.prototype.rotate = function (amount) { // negative amount == rotate left
+Array.prototype.rotate = function (amount) {
+  // negative amount == rotate left
   const r = this.slice(-amount, this.length);
   Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
   return r;
@@ -93,7 +97,8 @@ function onChange(event) {
   } else {
     // the manually added section's applies-to is dirty only when the value is non-empty
     setCleanItem(node, node.localName !== 'input' || !node.value.trim());
-    delete node.savedValue; // only valid when actually saved
+    // only valid when actually saved
+    delete node.savedValue;
   }
   updateTitle();
 }
@@ -137,7 +142,8 @@ function isCleanGlobal() {
 
 function setCleanGlobal() {
   document.querySelectorAll('#header, #sections > div').forEach(setCleanSection);
-  dirty = {}; // forget the dirty applies-to ids from a deleted section after the style was saved
+  // forget the dirty applies-to ids from a deleted section after the style was saved
+  dirty = {};
 }
 
 function setCleanSection(section) {
@@ -178,7 +184,8 @@ function initCodeMirror() {
     styleActiveLine: true,
     theme: 'default',
     keyMap: prefs.get('editor.keyMap'),
-    extraKeys: { // independent of current keyMap
+    extraKeys: {
+      // independent of current keyMap
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'
@@ -208,9 +215,12 @@ function initCodeMirror() {
     CM.keyMap.macDefault['Cmd-J'] = 'jumpToLine';
   }
   if (!extraKeysCommands.autocomplete) {
-    CM.keyMap.pcDefault['Ctrl-Space'] = 'autocomplete'; // will be used by 'sublime' on PC via fallthrough
-    CM.keyMap.macDefault['Alt-Space'] = 'autocomplete'; // OSX uses Ctrl-Space and Cmd-Space for something else
-    CM.keyMap.emacsy['Alt-/'] = 'autocomplete'; // copied from 'emacs' keymap
+    // will be used by 'sublime' on PC via fallthrough
+    CM.keyMap.pcDefault['Ctrl-Space'] = 'autocomplete';
+    // OSX uses Ctrl-Space and Cmd-Space for something else
+    CM.keyMap.macDefault['Alt-Space'] = 'autocomplete';
+    // copied from 'emacs' keymap
+    CM.keyMap.emacsy['Alt-/'] = 'autocomplete';
     // 'vim' and 'emacs' define their own autocomplete hotkeys
   }
   if (!extraKeysCommands.blockComment) {
@@ -228,8 +238,10 @@ function initCodeMirror() {
 
     // try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
     ['N', 'T', 'W'].forEach(char => {
-      [{from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
-       {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']} // Note: modifier order in CM is S-C-A
+      [
+        {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
+        // Note: modifier order in CM is S-C-A
+        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']}
       ].forEach(remap => {
         const oldKey = remap.from + char;
         Object.keys(CM.keyMap).forEach(keyMapName => {
@@ -319,7 +331,8 @@ function acmeEventListener(event) {
         break;
       }
       const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
-      if (themeLink.href === url) { // preloaded in initCodeMirror()
+      if (themeLink.href === url) {
+        // preloaded in initCodeMirror()
         break;
       }
       // avoid flicker: wait for the second stylesheet to load, then apply the theme
@@ -400,8 +413,10 @@ function setupCodeMirror(textarea, index) {
     }
     lastClickTime = Date.now();
     const minHeight = cm.defaultTextHeight() +
-      cm.display.lineDiv.offsetParent.offsetTop + /* .CodeMirror-lines padding */
-      wrapper.offsetHeight - wrapper.clientHeight; /* borders */
+      /* .CodeMirror-lines padding */
+      cm.display.lineDiv.offsetParent.offsetTop +
+      /* borders */
+      wrapper.offsetHeight - wrapper.clientHeight;
     wrapper.style.pointerEvents = 'none';
     document.body.style.cursor = 's-resize';
     function resize(e) {
@@ -715,9 +730,11 @@ function setupGlobalSearch() {
   const originalOpenDialog = CodeMirror.prototype.openDialog;
   const originalOpenConfirm = CodeMirror.prototype.openConfirm;
 
-  let curState; // cm.state.search for last used 'find'
+  // cm.state.search for last used 'find'
+  let curState;
 
-  function shouldIgnoreCase(query) { // treat all-lowercase non-regexp queries as case-insensitive
+  function shouldIgnoreCase(query) {
+    // treat all-lowercase non-regexp queries as case-insensitive
     return typeof query === 'string' && query === query.toLowerCase();
   }
 
@@ -787,7 +804,8 @@ function setupGlobalSearch() {
       return;
     }
     let pos = activeCM.getCursor(reverse ? 'from' : 'to');
-    activeCM.setSelection(activeCM.getCursor()); // clear the selection, don't move the cursor
+    // clear the selection, don't move the cursor
+    activeCM.setSelection(activeCM.getCursor());
 
     const rxQuery = typeof state.query === 'object'
       ? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? 'i' : '');
@@ -1045,7 +1063,8 @@ function getEditorInSight(nearbyElement) {
   return cm;
 
   function offscreenDistance(cm) {
-    const LINES_VISIBLE = 2; // closest editor should have at least # lines visible
+    // closest editor should have at least # lines visible
+    const LINES_VISIBLE = 2;
     const bounds = cm.getSection().getBoundingClientRect();
     if (bounds.top < 0) {
       return -bounds.top;
@@ -1149,7 +1168,8 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
   initCodeMirror();
   const params = getParams();
-  if (!params.id) { // match should be 2 - one for the whole thing, one for the parentheses
+  if (!params.id) {
+    // match should be 2 - one for the whole thing, one for the parentheses
     // This is an add
     $('#heading').textContent = t('addStyleTitle');
     const section = {code: ''};
@@ -1593,8 +1613,12 @@ function fromMozillaFormat() {
     // do onetime housekeeping as the imported text is confirmed to be a valid style
     function initFirstSection(section) {
       // skip adding the first global section when there's no code/comments
-      if (!section.code.replace('@namespace url(http://www.w3.org/1999/xhtml);', '') /* ignore boilerplate NS */
-          .replace(/[\s\n]/g, '')) { /* ignore all whitespace including new lines */
+      if (
+        /* ignore boilerplate NS */
+        !section.code.replace('@namespace url(http://www.w3.org/1999/xhtml);', '')
+          /* ignore all whitespace including new lines */
+          .replace(/[\s\n]/g, '')
+      ) {
         return false;
       }
       if (replaceOldStyle) {
@@ -1889,7 +1913,8 @@ function showHelp(title, body) {
 
   if (getComputedStyle(div).display === 'none') {
     document.addEventListener('keydown', closeHelp);
-    div.querySelector('.dismiss').onclick = closeHelp; // avoid chaining on multiple showHelp() calls
+    // avoid chaining on multiple showHelp() calls
+    div.querySelector('.dismiss').onclick = closeHelp;
   }
 
   div.style.display = 'block';

@@ -37,7 +37,8 @@ function updateLinter(name) {
     editors.forEach(cm => {
       // set lint to "null" to disable
       cm.setOption('lint', options);
-      cm.refresh(); // enabling/disabling linting changes the gutter width
+      // enabling/disabling linting changes the gutter width
+      cm.refresh();
       updateLintReport(cm, 200);
     });
   }
@@ -161,7 +162,8 @@ function renderLintReport(someBlockChanged) {
 }
 
 function resizeLintReport() {
-  const magicBuffer = 20; // subtracted value to prevent scrollbar
+  // subtracted value to prevent scrollbar
+  const magicBuffer = 20;
   const content = $('#lint table');
   if (content) {
     const bounds = content.getBoundingClientRect();
