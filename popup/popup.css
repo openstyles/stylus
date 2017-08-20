@@ -34,9 +34,16 @@ input[type=checkbox] {
 }
 
 .style-name {
-  cursor: default;
+  height: 100%;
+  line-height: 26px;
+  cursor: pointer;
   font-weight: bold;
-  display: block;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 5px;
 }
 
 a {
@@ -78,15 +85,21 @@ body.blocked > DIV {
   overflow-y: auto;
 }
 
-#installed.disabled .style-name {
+#installed .disabled .style-name, #installed.disabled .style-name {
   text-decoration: line-through;
 }
 
 #installed .actions {
+  display: flex;
   cursor: default;
 }
 
 #installed .actions a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 18px;
+  width: 18px;
   cursor: pointer;
   text-decoration: none;
 }
@@ -96,35 +109,19 @@ body.blocked > DIV {
 .entry {
   display: flex;
   align-items: center;
-  padding: 5px 0.75em;
+  padding: 0 0.75em;
+  height: 26px;
 }
 
 .entry:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.entry .style-edit-link {
-  margin-right: 2px;
-}
-
-.entry .style-edit-link,
-.entry .delete {
-  display: inline-block;
-  padding: 0 1px 0;
-}
-
 .entry .main-controls {
   display: flex;
-  width: calc(100% - 20px);
+  width: 100%;
+  height: 100%;
   align-items: center;
-}
-
-.entry .main-controls label {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 5px;
 }
 
 .not-applied .checker,
@@ -204,6 +201,70 @@ body.blocked > DIV {
   fill: #666;
 }
 
+.svg-icon.on, .svg-icon.off {
+  width: 18px;
+  height: 18px;
+}
+
+.svg-icon.on {
+  fill: hsl(0, 0%, 28%);
+}
+
+.svg-icon.off {
+  fill: hsl(0, 100%, 45%);
+}
+
+#installed.disabled .svg-icon.on {
+  fill: hsl(45, 100%, 38%);
+}
+
+
+#disableAll-label {
+  cursor: pointer;
+  display:flex;
+}
+
+#disableAll-label:hover .svg-icon.all-off, #disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label:hover .svg-icon.all-off, #installed.disabled a:hover .svg-icon.on {
+  fill: hsl(0, 0%, 0%);
+}
+
+#disableAll-label .svg-icon.all-off {
+  height: 18px;
+  width: 18px;
+  fill: hsl(0, 0%, 28%);
+}
+
+#disable-all-wrapper input[type="checkbox"]:checked + .main-controls .svg-icon.all-off {
+  width: 18px;
+  fill: hsl(0, 100%, 45%);
+}
+
+#disableAll-label::before {
+  content: "";
+  border-radius: 3px;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  background: #000 url(/images/icon/16.png)no-repeat center;
+  border: #000 solid;
+  border-width: 1px 0;
+  box-shadow: 0 0 3px #000, 0 0 3px hsla(0, 0%, 0%, .5);
+  margin: 0 4px 0 0;
+  transition: background .3s, border .3s, box-shadow .3s;
+}
+
+#disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label::before {
+  background: #000 url(/images/icon/16x.png)no-repeat center;
+}
+
+#installed .actions a.delete .svg-icon {
+  margin-top: -1px;
+}
+
+#installed .actions a.enable, #installed .actions a.disable {
+  margin: 0 2px;
+}
+
 a:hover .svg-icon {
   fill: #000;
 }
@@ -230,11 +291,16 @@ body.blocked .actions > .left-gutter {
 
 /* Never shown, but can be enabled with a style */
 
-.enable,
-.disable {
+#installed .enabled .actions a.enable,
+#installed .disabled .actions a.disable,
+#installed .left-gutter,
+#disable-all-wrapper .left-gutter input[type="checkbox"] {
   display: none;
 }
 
+.actions .left-gutter {
+  width: 0;
+}
 /* 'New style' links */
 
 #write-style {

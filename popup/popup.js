@@ -254,7 +254,7 @@ function createStyleElement({
   const styleName = $('.style-name', entry);
   Object.assign(styleName, {
     htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
-    onclick: handleEvent.name,
+  /*  onclick: handleEvent.name, */
   });
   styleName.checkbox = checkbox;
   styleName.appendChild(document.createTextNode(style.name));
@@ -361,6 +361,8 @@ Object.assign(handleEvent, {
       event.button === 2)) {
       return;
     }
+
+    /*
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
@@ -368,6 +370,8 @@ Object.assign(handleEvent, {
       event.preventDefault();
       return;
     }
+    */
+    
     // prevent the popup being opened in a background tab
     // when an irrelevant link was accidentally clicked
     if (event.target.closest('a')) {
