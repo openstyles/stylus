@@ -1,13 +1,20 @@
 'use strict';
 
 function messageBox({
-  title,          // [mandatory] string
-  contents,       // [mandatory] 1) DOM element 2) string
-  className = '', // string, CSS class name of the message box element
-  buttons = [],   // array of strings used as labels
-  onshow,         // function(messageboxElement) invoked after the messagebox is shown
-  blockScroll,    // boolean, blocks the page scroll
-}) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
+  // [mandatory] string
+  title,
+  // [mandatory] 1) DOM element 2) string
+  contents,
+  // string, CSS class name of the message box element
+  className = '',
+  // array of strings used as labels
+  buttons = [],
+  // function(messageboxElement) invoked after the messagebox is shown
+  onshow,
+  // boolean, blocks the page scroll
+  blockScroll,
+  // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
+}) {
   initOwnListeners();
   bindGlobalListeners();
   createElement();

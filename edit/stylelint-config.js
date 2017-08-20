@@ -1,3 +1,5 @@
+'use strict';
+
 window.stylelintDefaultConfig = (defaultSeverity => ({
   // 'sugarss' is a indent-based syntax like Sass or Stylus
   // ref: https://github.com/postcss/postcss#syntaxes
@@ -9,7 +11,7 @@ window.stylelintDefaultConfig = (defaultSeverity => ({
     'block-no-empty': [true, defaultSeverity],
     'color-no-invalid-hex': [true, defaultSeverity],
     'comment-no-empty': [true, defaultSeverity],
-    'declaration-block-no-duplicate-properties': [ true, {
+    'declaration-block-no-duplicate-properties': [true, {
       'ignore': ['consecutive-duplicates-with-different-values'],
       'severity': 'warning'
     }],
@@ -20,7 +22,8 @@ window.stylelintDefaultConfig = (defaultSeverity => ({
     'function-linear-gradient-no-nonstandard-direction': [true, defaultSeverity],
     'keyframe-declaration-no-important': [true, defaultSeverity],
     'media-feature-name-no-unknown': [true, defaultSeverity],
-    'no-empty-source': false, /* recommended true */
+    /* recommended true */
+    'no-empty-source': false,
     'no-extra-semicolons': [true, defaultSeverity],
     'no-invalid-double-slash-comments': [true, defaultSeverity],
     'property-no-unknown': [true, defaultSeverity],

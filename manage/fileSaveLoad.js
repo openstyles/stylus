@@ -72,8 +72,10 @@ function importFromString(jsonString) {
   let index = 0;
   let lastRenderTime = performance.now();
   const renderQueue = [];
-  const RENDER_NAP_TIME_MAX = 1000; // ms
-  const RENDER_QUEUE_MAX = 50; // number of styles
+  // ms
+  const RENDER_NAP_TIME_MAX = 1000;
+  // number of styles
+  const RENDER_QUEUE_MAX = 50;
   const SAVE_OPTIONS = {reason: 'import', notify: false};
 
   return new Promise(proceed);

@@ -22,7 +22,7 @@
   CodeMirror.registerHelper('lint', 'csslint', text => {
     const found = [];
     if (window.CSSLint) {
-      /* STYLISH: hack start (part 1) */
+      /* STYLUS: hack start (part 1) */
       const rules = CSSLint.getRules();
       const allowedRules = [
         'display-property-grouping',
@@ -37,7 +37,7 @@
           CSSLint.addRule(rule);
         }
       });
-      /* STYLISH: hack end */
+      /* STYLUS: hack end */
 
       const results = CSSLint.verify(text);
       const messages = results.messages;
@@ -46,7 +46,7 @@
       for (let i = 0; i < messages.length; i++) {
         message = messages[i];
 
-        /* STYLISH: hack start (part 2) */
+        /* STYLUS: hack start (part 2) */
         if (message.type === 'warning') {
            // @font-face {font-family: 'Ampersand'; unicode-range: U+26;}
           if (message.message.indexOf('unicode-range') !== -1) {
@@ -59,7 +59,7 @@
             continue;
           }
         }
-        /* STYLISH: hack end */
+        /* STYLUS: hack end */
         const startLine = message.line - 1;
         const endLine = message.line - 1;
         const startCol = message.col - 1;
