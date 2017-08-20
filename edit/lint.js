@@ -288,7 +288,8 @@ function setupStylelintPopup(rules) {
   }));
   const contents = popup.querySelector('.contents');
   const loadJSON = window.jsonlint ? [] : [
-    'vendor-overwrites/codemirror/addon/lint/json-lint.js',
+    'vendor/codemirror/mode/javascript/javascript.js',
+    'vendor/codemirror/addon/lint/json-lint.js',
     'vendor/jsonlint/jsonlint.js'
   ];
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
