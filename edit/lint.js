@@ -298,7 +298,7 @@ function setupStylelintPopup(rules) {
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
   popup.codebox.setValue(rules);
-  onDOMscripted(loadJSON).then(() => { setJSONMode(popup.codebox); });
+  onDOMscripted(loadJSON).then(() => setJSONMode(popup.codebox));
   setupStylelintSettingsEvents(popup);
 }
 
