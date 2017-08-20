@@ -319,7 +319,7 @@ function loadSelectedLinter(name) {
     );
   }
   if (name === 'csslint' && !window.CSSLint) {
-    scripts.push('vendor/csslint/csslint-worker.js');
+    scripts.push('vendor-overwrites/csslint/csslint-worker.js');
   } else if (name === 'stylelint' && !window.stylelint) {
     scripts.push(
       'vendor-overwrites/stylelint/stylelint-bundle.min.js',
