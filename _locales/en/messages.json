@@ -511,17 +511,16 @@
     "description": "Label for the button to remove a section"
   },
   "setStylelintLink": {
-    "message": "Get a full list of rules from $link$",
-    "description": "Stylelint rules link",
-    "placeholders": {
-      "link": {
-        "content": "$1"
-      }
-    }
+    "message": "Get a full list of rules",
+    "description": "Stylelint rules label before link"
   },
   "setStylelintRules": {
     "message": "Set stylelint rules",
     "description": "Stylelint popup header"
+  },
+  "resetStylelintRules": {
+    "message": "Reset",
+    "description": "Reset stylelint rules"
   },
   "setStylelintError": {
     "message": "Invalid JSON format",

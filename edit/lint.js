@@ -1,4 +1,5 @@
-/* global CodeMirror CSSLint editors makeSectionVisible showHelp stylelintDefaultConfig */
+/* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup */
+/* global stylelintDefaultConfig onDOMscripted */
 'use strict';
 
 function initLint() {
@@ -204,11 +205,11 @@ function showLintHelp() {
   return showHelp(t('issues'), header + list + '</ul>');
 }
 
-function setupStylelintSettingsEvents() {
+function setupStylelintSettingsEvents(popup) {
   let timer;
-  $('#help-popup .save').addEventListener('click', event => {
+  popup.querySelector('.save').addEventListener('click', event => {
     event.preventDefault();
-    const json = tryJSONparse($('#help-popup textarea').value);
+    const json = tryJSONparse(popup.codebox.getValue());
     if (json && json.rules) {
       setStylelintRules(json.rules);
       // it is possible to have stylelint rules popup open & switch to csslint
@@ -227,10 +228,10 @@ function setupStylelintSettingsEvents() {
       }, 3000);
     }
   });
-  $('#help-popup .reset').addEventListener('click', event => {
+  popup.querySelector('reset').addEventListener('click', event => {
     event.preventDefault();
     setStylelintRules();
-    $('#help-popup .settings').value = JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2);
+    popup.codebox.setValue(JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2));
     if (prefs.get('editor.linter') === 'stylelint') {
       updateLinter('stylelint');
     }
@@ -239,16 +240,56 @@ function setupStylelintSettingsEvents() {
 
 function openStylelintSettings() {
   BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
-    const link = '<a target="_blank" href="https://stylelint.io/demo/">Stylelint</a>';
-    const text = JSON.stringify({rules: rules}, null, 2);
-    const content = `<textarea class="contents settings">${text}</textarea>
-      <p>${t('setStylelintLink', link)}</p>
-      <button class="save" type="button">Save</button>&nbsp;
-      <button class="reset" type="button">Reset</button>
-      <span class="error">
-        ${t('setStylelintError')} (<a target="_blank" href="https://jsonlint.com/">JSONLint</a>)
-      </span>`;
-    showHelp(t('setStylelintRules'), content);
-    setupStylelintSettingsEvents();
+    const rulesString = JSON.stringify({rules: rules}, null, 2);
+    setupStylelintPopup(rulesString);
   });
+}
+
+function setupStylelintPopup(rules) {
+  function makeButton(className, text) {
+    return $element({tag: 'button', className, type: 'button', textContent: t(text)});
+  }
+  function makeLink(url, textContent) {
+    return $element({tag: 'a', target: '_blank', href: url, textContent});
+  }
+  function setJSONMode(cm) {
+    cm.setOption('mode', 'application/json');
+  }
+  const popup = showCodeMirrorPopup(t('setStylelintRules'), $element({
+    className: 'contents',
+    appendChild: [
+      $element({
+        tag: 'p',
+        appendChild: [
+          t('setStylelintLink') + ' ',
+          makeLink('https://stylelint.io/demo/', 'Stylelint')
+        ]
+      }),
+      makeButton('save', 'styleSaveLabel'),
+      makeButton('reset', 'resetStylelintRules'),
+      $element({
+        tag: 'span',
+        className: 'error',
+        appendChild: [
+          t('setStylelintError'),
+          makeLink('https://jsonlint.com/', 'Stylelint')
+        ]
+      })
+    ]
+  }));
+  const contents = popup.querySelector('.contents');
+  contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
+  popup.codebox.focus();
+  popup.codebox.setValue(rules);
+  if (!$('script[src*="json-lint.js"]')) {
+    onDOMscripted(
+      ['vendor/codemirror/addon/lint/json-lint.js'],
+      () => {
+        setJSONMode(popup.codebox);
+      }
+    );
+  } else {
+    setJSONMode(popup.codebox);
+  }
+  setupStylelintSettingsEvents(popup);
 }
