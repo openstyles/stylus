@@ -287,11 +287,14 @@ function setupStylelintPopup(rules) {
     ]
   }));
   const contents = popup.querySelector('.contents');
-  const loadJSON = window.jsonlint ? [] : ['vendor/codemirror/addon/lint/json-lint.js'];
+  const loadJSON = window.jsonlint ? [] : [
+    'vendor-overwrites/codemirror/addon/lint/json-lint.js',
+    'vendor/jsonlint/jsonlint.js'
+  ];
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
   popup.codebox.setValue(rules);
-  onDOMscripted(loadJSON, () => { setJSONMode(popup.codebox); });
+  onDOMscripted(loadJSON).then(() => { setJSONMode(popup.codebox); });
   setupStylelintSettingsEvents(popup);
 }
 
