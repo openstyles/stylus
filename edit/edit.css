@@ -24,10 +24,6 @@ body {
   margin-top: 1rem;
   margin-left: 1.7rem;
 }
-section {
-  box-sizing: border-box;
-  width: 100%;
-}
 .aligned {
   display: table-row;
 }
@@ -459,7 +455,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #lint td[role="severity"] {
   font-size: 0;
   width: 16px;
-  padding-right: 0.25rem;
 }
 #lint td[role="line"], #lint td[role="sep"] {
   text-align: right;
@@ -471,9 +466,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 #lint td[role="message"] {
   text-align: left;
-  max-width: 140px;
   text-overflow: ellipsis;
-  white-space: pre;
   overflow: hidden;
 }
 

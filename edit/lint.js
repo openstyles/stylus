@@ -93,23 +93,23 @@ function updateLintReport(cm, delay) {
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
           // stylelint rule added in parentheses at the end
           const rule = linter === 'stylelint' ?
-            info.message.substring(info.message.lastIndexOf('('), info.message.length) :
+            info.message.substring(info.message.lastIndexOf('('), info.message.length).replace(/[()]/g, '') :
             / at line \d.+$/;
           // csslint
-          const message = escapeHtml(info.message.replace(rule, ''));
+          const title = escapeHtml(info.message);
+          const message = title.length > 100 ? title.substr(0, 100) + '...' : title;
           if (isActiveLine || oldMarkers[pos] === message) {
             delete oldMarkers[pos];
           }
           newMarkers[pos] = message;
           return `<tr class="${info.severity}">
-            <td role="severity" class="CodeMirror-lint-marker-${info.severity}"
-              ${linter === 'stylelint' ? 'title="Rule: ' + rule + '"' : ''}>
-              ${info.severity}
+            <td role="severity" ${linter === 'stylelint' ? 'data-rule="' + rule + '"' : ''}>
+              <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
             </td>
             <td role="line">${info.from.line + 1}</td>
             <td role="sep">:</td>
             <td role="col">${info.from.ch + 1}</td>
-            <td role="message" title="${message}">${message}</td>
+            <td role="message" title="${title}">${message}</td>
           </tr>`;
         }).join('') + '</tbody>';
       scopedState.markedLast = newMarkers;
@@ -211,7 +211,7 @@ function showLintHelp() {
     header = t('issuesHelp', `<a href="${url}" target="_blank">stylelint</a>`);
     // to-do: change this to a generator
     $$('#lint td[role="severity"]').forEach(el => {
-      const rule = el.title.replace('Rule: (', '').replace(/[()]/g, '').trim();
+      const rule = el.dataset.rule;
       if (!rules.includes(rule)) {
         list += `<li><a target="_blank" href="${url}${rule}/">${rule}</a></li>`;
         rules.push(rule);
