@@ -21,3 +21,4 @@ Stylelint bundle file created by:
     This prevents a js error when stylelint attempts to access a local file. The
     other `fs.readFile` entries are not accessed because we're using stylelint's
     standalone method.
+5. The script was then "minified" by manually running it through Google's [Closure Compiler](http://closure-compiler.appspot.com/home) set to "Whitespace only".

@@ -1,5 +1,5 @@
 /* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup */
-/* global stylelintDefaultConfig onDOMscripted */
+/* global stylelintDefaultConfig onDOMscripted injectCSS require */
 'use strict';
 
 function initLint() {
@@ -23,19 +23,29 @@ function setStylelintRules(rules = {}) {
 }
 
 function getLinterConfigForCodeMirror(name) {
-  return {
+  return CodeMirror.lint && CodeMirror.lint[name] ? {
     getAnnotations: CodeMirror.lint[name],
     delay: prefs.get('editor.lintDelay')
-  };
+  } : false;
 }
 
-function updateLinter(name = 'csslint') {
+function updateLinter(name) {
+  function updateEditors() {
+    const options = getLinterConfigForCodeMirror(name);
+    CodeMirror.defaults.lint = options === 'null' ? false : options;
+    editors.forEach(cm => {
+      // set lint to "null" to disable
+      cm.setOption('lint', options);
+      cm.refresh(); // enabling/disabling linting changes the gutter width
+      updateLintReport(cm, 200);
+    });
+  }
   if (prefs.get('editor.linter') !== name) {
     prefs.set('editor.linter', name);
   }
-  editors.forEach(cm => {
-    cm.setOption('lint', getLinterConfigForCodeMirror(name));
-    updateLintReport(cm, 200);
+  // load scripts
+  loadSelectedLinter(name).then(() => {
+    updateEditors();
   });
   $('#stylelint-settings').style.display = name === 'stylelint' ?
     'inline-block' : 'none';
@@ -228,7 +238,7 @@ function setupStylelintSettingsEvents(popup) {
       }, 3000);
     }
   });
-  popup.querySelector('reset').addEventListener('click', event => {
+  popup.querySelector('.reset').addEventListener('click', event => {
     event.preventDefault();
     setStylelintRules();
     popup.codebox.setValue(JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2));
@@ -254,6 +264,7 @@ function setupStylelintPopup(rules) {
   }
   function setJSONMode(cm) {
     cm.setOption('mode', 'application/json');
+    cm.setOption('lint', 'json');
   }
   const popup = showCodeMirrorPopup(t('setStylelintRules'), $element({
     className: 'contents',
@@ -278,18 +289,32 @@ function setupStylelintPopup(rules) {
     ]
   }));
   const contents = popup.querySelector('.contents');
+  const loadJSON = window.jsonlint ? [] : ['vendor/codemirror/addon/lint/json-lint.js'];
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
   popup.codebox.setValue(rules);
-  if (!$('script[src*="json-lint.js"]')) {
-    onDOMscripted(
-      ['vendor/codemirror/addon/lint/json-lint.js'],
-      () => {
-        setJSONMode(popup.codebox);
-      }
-    );
-  } else {
-    setJSONMode(popup.codebox);
-  }
+  onDOMscripted(loadJSON, () => { setJSONMode(popup.codebox); });
   setupStylelintSettingsEvents(popup);
+}
+
+function loadSelectedLinter(name) {
+  let scripts = [];
+  if (name !== 'null' && !$('script[src*="css-lint.js"]')) {
+    // inject css
+    injectCSS('vendor/codemirror/addon/lint/lint.css');
+    // load CodeMirror lint code
+    scripts = scripts.concat([
+      'vendor/codemirror/addon/lint/lint.js',
+      'vendor-overwrites/codemirror/addon/lint/css-lint.js'
+    ]);
+  }
+  if (name === 'csslint' && !window.CSSLint) {
+    scripts.push('vendor/csslint/csslint-worker.js');
+  } else if (name === 'stylelint' && !window.stylelint) {
+    scripts = scripts.concat([
+      'vendor-overwrites/stylelint/stylelint-bundle.min.js',
+      'vendor-overwrites/codemirror/addon/lint/stylelint-config.js'
+    ]);
+  }
+  return onDOMscripted(scripts);
 }

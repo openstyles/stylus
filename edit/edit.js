@@ -154,6 +154,9 @@ function setCleanSection(section) {
 function initCodeMirror() {
   const CM = CodeMirror;
   const isWindowsOS = navigator.appVersion.indexOf('Windows') > 0;
+  // lint.js is not loaded initially
+  const hasLinter = typeof getLinterConfigForCodeMirror !== 'undefined' ?
+    getLinterConfigForCodeMirror(prefs.get('editor.linter')) : false;
 
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
@@ -170,7 +173,7 @@ function initCodeMirror() {
     matchBrackets: true,
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
-    lint: getLinterConfigForCodeMirror(prefs.get('editor.linter')),
+    lint: hasLinter,
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',
@@ -352,9 +355,7 @@ function acmeEventListener(event) {
       }
       break;
     case 'linter':
-      if (value !== null && editors.length) {
-        updateLinter(value);
-      }
+      updateLinter(value);
       break;
   }
   CodeMirror.setOption(option, value);
@@ -427,7 +428,7 @@ function indicateCodeChange(cm) {
   const section = cm.getSection();
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
-  updateLintReport(cm);
+  updateLintReportIfEnabled(cm);
 }
 
 function getSectionForChild(e) {
@@ -554,7 +555,7 @@ window.onbeforeunload = () => {
   if (isCleanGlobal()) {
     return;
   }
-  updateLintReport(null, 0);
+  updateLintReportIfEnabled(null, 0);
   return confirm(t('styleChangesNotSaved'));
 };
 
@@ -1223,11 +1224,13 @@ function initWithStyle({style, codeIsUpdated}) {
     const sectionDiv = addSection(null, queue.shift());
     maximizeCodeHeight(sectionDiv, !queue.length);
     const cm = sectionDiv.CodeMirror;
-    setTimeout(() => {
-      cm.setOption('lint', CodeMirror.defaults.lint);
-      // update lint issue table after a short delay
-      updateLintReport(cm, 200);
-    }, prefs.get('editor.lintDelay'));
+    if (CodeMirror.lint) {
+      setTimeout(() => {
+        cm.setOption('lint', CodeMirror.defaults.lint);
+        // update lint issue table after a short delay
+        updateLintReport(cm, 200);
+      }, prefs.get('editor.lintDelay'));
+    }
   }
 }
 
@@ -1365,8 +1368,14 @@ function validate() {
   return null;
 }
 
+function updateLintReportIfEnabled(cm, time) {
+  if (CodeMirror.lint) {
+    updateLintReport(cm, time);
+  }
+}
+
 function save() {
-  updateLintReport(null, 0);
+  updateLintReportIfEnabled(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
   for (let i = 0; i < editors.length; i++) {

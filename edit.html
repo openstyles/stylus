@@ -34,16 +34,6 @@
 
     <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
 
-    <!-- CSSLint -->
-    <script src="vendor/csslint/csslint-worker.js"></script>
-    <!-- stylelint -->
-    <script src="vendor-overwrites/stylelint/stylelint-bundle.min.js"></script>
-    <script src="vendor-overwrites/codemirror/addon/lint/stylelint-config.js"></script>
-    <!-- linter -->
-    <link rel="stylesheet" href="vendor/codemirror/addon/lint/lint.css" />
-    <script src="vendor/codemirror/addon/lint/lint.js"></script>
-    <script src="vendor-overwrites/codemirror/addon/lint/css-lint.js"></script>
-
     <link rel="stylesheet" href="vendor/codemirror/addon/hint/show-hint.css" />
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
     <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
@@ -196,12 +186,13 @@
           <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
           <select id="editor.linter">
             <option value="csslint" selected>CSSLint</option>
-            <option value="stylelint">stylelint</option>
+            <option value="stylelint">Stylelint</option>
+            <option value="null" i18n-text="genericDisabledLabel"></option>
           </select>
           <span class="linter-settings" i18n-title="stylelintConfig">
             <svg id="stylelint-settings" class="svg-icon settings">
               <use xlink:href="#svg-icon-settings"/>
-            </svg>
+            </svg>&nbsp;
           </span>
       </section>
       <section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>

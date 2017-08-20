@@ -64,8 +64,8 @@ CodeMirror.registerHelper("lint", "csslint", function(text) {
 
 CodeMirror.registerHelper("lint", "stylelint", function(text) {
   let found = [];
-  const stylelint = require('stylelint').lint;
-  if (stylelint) {
+  window.stylelint = require('stylelint').lint;
+  if (window.stylelint) {
     return BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
       // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit.html
       if (Object.keys(rules).length === 0) {
