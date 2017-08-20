@@ -1902,7 +1902,9 @@ function showHelp(title, body) {
       ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
     ) {
       div.style.display = '';
-      document.querySelector('.contents').textContent = '';
+      const contents = $('.contents');
+      contents.textContent = '';
+      clearTimeout(contents.timer);
       document.removeEventListener('keydown', closeHelp);
     }
   }

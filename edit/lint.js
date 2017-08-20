@@ -216,7 +216,6 @@ function showLintHelp() {
 }
 
 function setupStylelintSettingsEvents(popup) {
-  let timer;
   popup.querySelector('.save').addEventListener('click', event => {
     event.preventDefault();
     const json = tryJSONparse(popup.codebox.getValue());
@@ -228,8 +227,8 @@ function setupStylelintSettingsEvents(popup) {
       }
     } else {
       $('#help-popup .error').classList.add('show');
-      clearTimeout(timer);
-      timer = setTimeout(() => {
+      clearTimeout($('#help-popup .contents').timer);
+      $('#help-popup .contents').timer = setTimeout(() => {
         // popup may be closed at this point
         const error = $('#help-popup .error');
         if (error) {
@@ -267,7 +266,6 @@ function setupStylelintPopup(rules) {
     cm.setOption('lint', 'json');
   }
   const popup = showCodeMirrorPopup(t('setStylelintRules'), $element({
-    className: 'contents',
     appendChild: [
       $element({
         tag: 'p',
