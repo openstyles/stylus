@@ -3,14 +3,14 @@
 'use strict';
 
 function initLint() {
-  document.getElementById('lint-help').addEventListener('click', showLintHelp);
-  document.getElementById('lint').addEventListener('click', gotoLintIssue);
+  $('#lint-help').addEventListener('click', showLintHelp);
+  $('#lint').addEventListener('click', gotoLintIssue);
   window.addEventListener('resize', resizeLintReport);
-  document.getElementById('stylelint-settings').addEventListener('click', openStylelintSettings);
+  $('#stylelint-settings').addEventListener('click', openStylelintSettings);
 
   // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
   if ('ontouchstart' in document.body) {
-    document.querySelector('#lint h2').addEventListener('click', toggleLintReport);
+    $('#lint h2').addEventListener('click', toggleLintReport);
   }
   BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
 }
@@ -133,7 +133,7 @@ function updateLintReport(cm, delay) {
 }
 
 function renderLintReport(someBlockChanged) {
-  const container = document.getElementById('lint');
+  const container = $('#lint');
   const content = container.children[1];
   const label = t('sectionCode');
   const newContent = content.cloneNode(false);
@@ -153,7 +153,7 @@ function renderLintReport(someBlockChanged) {
     }
   });
   if (someBlockChanged || newContent.children.length !== content.children.length) {
-    document.getElementById('issue-count').textContent = issueCount;
+    $('#issue-count').textContent = issueCount;
     container.replaceChild(newContent, content);
     container.style.display = newContent.children.length ? 'block' : 'none';
     resizeLintReport();
@@ -183,13 +183,13 @@ function gotoLintIssue(event) {
   makeSectionVisible(block.cm);
   block.cm.focus();
   block.cm.setSelection({
-    line: parseInt(issue.querySelector('td[role="line"]').textContent) - 1,
-    ch: parseInt(issue.querySelector('td[role="col"]').textContent) - 1
+    line: parseInt($('td[role="line"]', issue).textContent) - 1,
+    ch: parseInt($('td[role="col"]', issue).textContent) - 1
   });
 }
 
 function toggleLintReport() {
-  document.getElementById('lint').classList.toggle('collapsed');
+  $('#lint').classList.toggle('collapsed');
 }
 
 function showLintHelp() {
@@ -217,7 +217,7 @@ function showLintHelp() {
 }
 
 function setupStylelintSettingsEvents(popup) {
-  popup.querySelector('.save').addEventListener('click', event => {
+  $('.save', popup).addEventListener('click', event => {
     event.preventDefault();
     const json = tryJSONparse(popup.codebox.getValue());
     if (json && json.rules) {
@@ -238,7 +238,7 @@ function setupStylelintSettingsEvents(popup) {
       }, 3000);
     }
   });
-  popup.querySelector('.reset').addEventListener('click', event => {
+  $('.reset', popup).addEventListener('click', event => {
     event.preventDefault();
     setStylelintRules();
     popup.codebox.setValue(JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2));
@@ -287,7 +287,7 @@ function setupStylelintPopup(rules) {
       })
     ]
   }));
-  const contents = popup.querySelector('.contents');
+  const contents = $('.contents', popup);
   const loadJSON = window.jsonlint ? [] : [
     'vendor/codemirror/mode/javascript/javascript.js',
     'vendor/codemirror/addon/lint/json-lint.js',
