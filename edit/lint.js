@@ -15,11 +15,12 @@ function initLint() {
   BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
 }
 
-function setStylelintRules(rules = '') {
+function setStylelintRules(rules = []) {
   if (Object.keys(rules).length === 0 && typeof stylelintDefaultConfig !== 'undefined') {
     rules = deepCopy(stylelintDefaultConfig.rules);
   }
   BG.chromeLocal.setValue('editorStylelintRules', rules);
+  return rules;
 }
 
 function getLinterConfigForCodeMirror(name) {
@@ -248,7 +249,10 @@ function setupStylelintSettingsEvents(popup) {
 }
 
 function openStylelintSettings() {
-  BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
+  BG.chromeLocal.getValue('editorStylelintRules').then(rules => {
+    if (rules.length === 0) {
+      rules = setStylelintRules(rules);
+    }
     const rulesString = JSON.stringify({rules: rules}, null, 2);
     setupStylelintPopup(rulesString);
   });
