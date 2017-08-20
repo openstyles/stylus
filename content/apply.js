@@ -245,7 +245,9 @@ function applySections(styleId, sections) {
 function addStyleElement(el) {
   if (ROOT && !document.getElementById(el.id)) {
     ROOT.appendChild(el);
-    el.disabled = disableAll;
+    if (disableAll) {
+      el.disabled = true;
+    }
   }
 }
 
@@ -314,6 +316,10 @@ function initDocRootObserver() {
     for (const el of styleElements.values()) {
       if (el.previousElementSibling !== expectedPrevSibling) {
         ROOT.insertBefore(el, expectedPrevSibling.nextSibling);
+        if (el.disabled !== disableAll) {
+          // moving an element resets its 'disabled' state
+          el.disabled = disableAll;
+        }
       }
       expectedPrevSibling = el;
     }
