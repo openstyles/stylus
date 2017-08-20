@@ -466,8 +466,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 #lint td[role="message"] {
   text-align: left;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
 
 /************ CSS beautifier ************/
