@@ -15,8 +15,8 @@ function initLint() {
   BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
 }
 
-function setStylelintRules(rules = {}) {
-  if (Object.keys(rules).length === 0) {
+function setStylelintRules(rules = '') {
+  if (Object.keys(rules).length === 0 && typeof stylelintDefaultConfig !== 'undefined') {
     rules = deepCopy(stylelintDefaultConfig.rules);
   }
   BG.chromeLocal.setValue('editorStylelintRules', rules);
