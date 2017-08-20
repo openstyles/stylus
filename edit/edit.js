@@ -1227,8 +1227,7 @@ function initWithStyle({style, codeIsUpdated}) {
     if (CodeMirror.lint) {
       setTimeout(() => {
         cm.setOption('lint', CodeMirror.defaults.lint);
-        // update lint issue table after a short delay
-        updateLintReport(cm, 200);
+        updateLintReport(cm, 0);
       }, prefs.get('editor.lintDelay'));
     }
   }
