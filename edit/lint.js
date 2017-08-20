@@ -308,18 +308,18 @@ function loadSelectedLinter(name) {
     // inject css
     injectCSS('vendor/codemirror/addon/lint/lint.css');
     // load CodeMirror lint code
-    scripts = scripts.concat([
+    scripts.push(
       'vendor/codemirror/addon/lint/lint.js',
       'vendor-overwrites/codemirror/addon/lint/css-lint.js'
-    ]);
+    );
   }
   if (name === 'csslint' && !window.CSSLint) {
     scripts.push('vendor/csslint/csslint-worker.js');
   } else if (name === 'stylelint' && !window.stylelint) {
-    scripts = scripts.concat([
+    scripts.push(
       'vendor-overwrites/stylelint/stylelint-bundle.min.js',
       'vendor-overwrites/codemirror/addon/lint/stylelint-config.js'
-    ]);
+    );
   }
   return onDOMscripted(scripts);
 }
