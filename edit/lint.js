@@ -91,10 +91,12 @@ function updateLintReport(cm, delay) {
           const info = mark.__annotation;
           const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          // stylelint rule added in parentheses at the end
-          const rule = linter === 'stylelint' ?
-            info.message.substring(info.message.lastIndexOf('('), info.message.length).replace(/[()]/g, '') :
-            / at line \d.+$/;
+          // stylelint rule added in parentheses at the end; extract it out for the stylelint info popup
+          const stylelintRule = linter === 'stylelint' ? ` data-rule ="${
+            info.message
+              .substring(info.message.lastIndexOf('('), info.message.length)
+              .replace(/[()]/g, '')}"`
+            : '';
           // csslint
           const title = escapeHtml(info.message);
           const message = title.length > 100 ? title.substr(0, 100) + '...' : title;
@@ -103,7 +105,7 @@ function updateLintReport(cm, delay) {
           }
           newMarkers[pos] = message;
           return `<tr class="${info.severity}">
-            <td role="severity" ${linter === 'stylelint' ? 'data-rule="' + rule + '"' : ''}>
+            <td role="severity" ${stylelintRule}>
               <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
             </td>
             <td role="line">${info.from.line + 1}</td>

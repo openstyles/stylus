@@ -94,13 +94,19 @@
           const warnings = output.results.length ? output.results[0].warnings : [];
           const len = warnings.length;
           let warning;
+          let message;
           if (len) {
             for (let i = 0; i < len; i++) {
               warning = warnings[i];
+              message = warning.text
+                .replace('Unexpected ', '')
+                .replace(/^./, function (firstLetter) {
+                  return firstLetter.toUpperCase();
+                });
               found.push({
                 from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
                 to: CodeMirror.Pos(warning.line - 1, warning.column),
-                message: warning.text,
+                message,
                 severity : warning.severity
               });
             }
