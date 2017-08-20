@@ -126,7 +126,10 @@ function injectScript(properties) {
   Object.assign(script, properties);
   if (!properties.onload) {
     return new Promise(resolve => {
-      script.onload = () => { script.onload = null; resolve(); };
+      script.onload = () => {
+        script.onload = null;
+        resolve();
+      };
     });
   }
 }

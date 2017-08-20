@@ -60,7 +60,10 @@ function updateLintReport(cm, delay) {
     return;
   }
   if (delay > 0) {
-    setTimeout(cm => { cm.performLint(); update(cm); }, delay, cm);
+    setTimeout(cm => {
+      cm.performLint();
+      update(cm);
+    }, delay, cm);
     return;
   }
   // eslint-disable-next-line no-var
