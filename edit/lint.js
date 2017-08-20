@@ -321,7 +321,7 @@ function loadSelectedLinter(name) {
   } else if (name === 'stylelint' && !window.stylelint) {
     scripts.push(
       'vendor-overwrites/stylelint/stylelint-bundle.min.js',
-      'vendor-overwrites/codemirror/addon/lint/stylelint-config.js'
+      'edit/stylelint-config.js'
     );
   }
   return onDOMscripted(scripts);
