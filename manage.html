@@ -143,13 +143,19 @@
       <input id="manage.onlyEnabled" type="checkbox"
              data-filter=".enabled"
              data-filter-hide=".disabled">
-      <span i18n-text="manageOnlyEnabled"></span>
+      <select id="manage.onlyEnabled.invert">
+        <option i18n-text="manageOnlyEnabled" value="false"></option>
+        <option i18n-text="manageOnlyDisabled" value="true"></option>
+      </select>
     </label>
     <label>
       <input id="manage.onlyLocal" type="checkbox"
              data-filter=":not(.updatable)"
              data-filter-hide=".updatable">
-      <span i18n-text="manageOnlyLocal" i18n-title="manageOnlyLocalTooltip"></span>
+      <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
+        <option i18n-text="manageOnlyLocal" value="false"></option>
+        <option i18n-text="manageOnlyExternal" value="true"></option>
+      </select>
     </label>
     <label id="onlyUpdates" class="hidden">
       <input type="checkbox"
