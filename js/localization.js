@@ -30,7 +30,7 @@ function tHTML(html, tag) {
     }
     const body = t.DOMParser.parseFromString(html, 'text/html').body;
     if (html.includes('i18n-')) {
-      tNodeList(body.getElementsByTagName('*'));
+      tNodeList($$('*', body));
     }
     // the html string may contain more than one top-level node
     if (!body.childNodes[1]) {
@@ -115,7 +115,7 @@ function tDocLoader() {
   const cacheLength = Object.keys(t.cache).length;
 
   // localize HEAD
-  tNodeList(document.getElementsByTagName('*'));
+  tNodeList($$('*'));
 
   // localize BODY
   const process = mutations => {

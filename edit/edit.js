@@ -49,7 +49,7 @@ Object.defineProperty(Array.prototype, 'last', {get: function () { return this[t
 
 // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
 new MutationObserver((mutations, observer) => {
-  const themeElement = document.getElementById('cm-theme');
+  const themeElement = $('#cm-theme');
   if (themeElement) {
     themeElement.href = prefs.get('editor.theme') === 'default' ? ''
       : 'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css';
@@ -131,7 +131,7 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
   const clean = Object.keys(dirty).length === 0;
   setDirtyClass(document.body, !clean);
-    // let saveBtn = document.getElementById('save-button')
+    // let saveBtn = $('#save-button')
     // if (clean){
     //     //saveBtn.removeAttribute('disabled');
     // }else{
@@ -141,13 +141,13 @@ function isCleanGlobal() {
 }
 
 function setCleanGlobal() {
-  document.querySelectorAll('#header, #sections > div').forEach(setCleanSection);
+  $$('#header, #sections > div').forEach(setCleanSection);
   // forget the dirty applies-to ids from a deleted section after the style was saved
   dirty = {};
 }
 
 function setCleanSection(section) {
-  section.querySelectorAll('.style-contributor').forEach(node => { setCleanItem(node, true); });
+  $$('.style-contributor', section).forEach(node => { setCleanItem(node, true); });
 
   // #header section has no codemirror
   const cm = section.CodeMirror;
@@ -284,7 +284,8 @@ function initCodeMirror() {
     }
     parent.appendChild(fragment);
   }
-  const themeControl = document.getElementById('editor.theme');
+  // no need to escape the period in the id
+  const themeControl = $('#editor.theme');
   const themeList = localStorage.codeMirrorThemes;
   if (themeList) {
     optionsFromArray(themeControl, themeList.split(/\s+/));
@@ -299,7 +300,7 @@ function initCodeMirror() {
     });
   }
   optionsFromArray($('#editor.keyMap'), Object.keys(CM.keyMap).sort());
-  document.getElementById('options').addEventListener('change', acmeEventListener, false);
+  $('#options').addEventListener('change', acmeEventListener, false);
   setupLivePrefs();
 
   hotkeyRerouter.setState(true);
@@ -319,7 +320,7 @@ function acmeEventListener(event) {
       CodeMirror.setOption('indentUnit', Number(value));
       break;
     case 'theme': {
-      const themeLink = document.getElementById('cm-theme');
+      const themeLink = $('#cm-theme');
       // use non-localized 'default' internally
       if (!value || value === 'default' || value === t('defaultTheme')) {
         value = 'default';
@@ -451,13 +452,13 @@ function getSectionForChild(e) {
 }
 
 function getSections() {
-  return document.querySelectorAll('#sections > div');
+  return $$('#sections > div');
 }
 
 // remind Chrome to repaint a previously invisible editor box by toggling any element's transform
 // this bug is present in some versions of Chrome (v37-40 or something)
 document.addEventListener('scroll', () => {
-  const style = document.getElementById('name').style;
+  const style = $('#name').style;
   style.webkitTransform = style.webkitTransform ? '' : 'scale(1)';
 });
 
@@ -575,7 +576,7 @@ window.onbeforeunload = () => {
 };
 
 function addAppliesTo(list, name, value) {
-  const showingEverything = list.querySelector('.applies-to-everything') !== null;
+  const showingEverything = $('.applies-to-everything', list) !== null;
   // blow away 'Everything' if it's there
   if (showingEverything) {
     list.removeChild(list.firstChild);
@@ -583,19 +584,19 @@ function addAppliesTo(list, name, value) {
   let e;
   if (name && value) {
     e = template.appliesTo.cloneNode(true);
-    e.querySelector('[name=applies-type]').value = name;
-    e.querySelector('[name=applies-value]').value = value;
-    e.querySelector('.remove-applies-to').addEventListener('click', removeAppliesTo, false);
+    $('[name=applies-type]', e).value = name;
+    $('[name=applies-value]', e).value = value;
+    $('.remove-applies-to', e).addEventListener('click', removeAppliesTo, false);
   } else if (showingEverything || list.hasChildNodes()) {
     e = template.appliesTo.cloneNode(true);
     if (list.hasChildNodes()) {
-      e.querySelector('[name=applies-type]').value = list.querySelector('li:last-child [name="applies-type"]').value;
+      $('[name=applies-type]', e).value = $('li:last-child [name="applies-type"]', list).value;
     }
-    e.querySelector('.remove-applies-to').addEventListener('click', removeAppliesTo, false);
+    $('.remove-applies-to', e).addEventListener('click', removeAppliesTo, false);
   } else {
     e = template.appliesToEverything.cloneNode(true);
   }
-  e.querySelector('.add-applies-to').addEventListener('click', function () {
+  $('.add-applies-to', e).addEventListener('click', function () {
     addAppliesTo(this.parentNode.parentNode);
   }, false);
   list.appendChild(e);
@@ -603,13 +604,13 @@ function addAppliesTo(list, name, value) {
 
 function addSection(event, section) {
   const div = template.section.cloneNode(true);
-  div.querySelector('.applies-to-help').addEventListener('click', showAppliesToHelp, false);
-  div.querySelector('.remove-section').addEventListener('click', removeSection, false);
-  div.querySelector('.add-section').addEventListener('click', addSection, false);
-  div.querySelector('.beautify-section').addEventListener('click', beautify);
+  $('.applies-to-help', div).addEventListener('click', showAppliesToHelp, false);
+  $('.remove-section', div).addEventListener('click', removeSection, false);
+  $('.add-section', div).addEventListener('click', addSection, false);
+  $('.beautify-section', div).addEventListener('click', beautify);
 
-  const codeElement = div.querySelector('.code');
-  const appliesTo = div.querySelector('.applies-to-list');
+  const codeElement = $('.code', div);
+  const appliesTo = $('.applies-to-list', div);
   let appliesToAdded = false;
 
   if (section) {
@@ -632,24 +633,25 @@ function addSection(event, section) {
 
   toggleTestRegExpVisibility();
   appliesTo.addEventListener('change', toggleTestRegExpVisibility);
-  div.querySelector('.test-regexp').onclick = showRegExpTester;
+  $('.test-regexp', div).onclick = showRegExpTester;
   function toggleTestRegExpVisibility() {
     const show = [...appliesTo.children].some(item =>
       !item.matches('.applies-to-everything') &&
-      item.querySelector('.applies-type').value === 'regexp' &&
-      item.querySelector('.applies-value').value.trim());
+      $('.applies-type', item).value === 'regexp' &&
+      $('.applies-value', item).value.trim()
+    );
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
       if (
         event.target.matches('.applies-value') &&
-        event.target.parentElement.querySelector('.applies-type').value === 'regexp'
+        $('.applies-type', event.target.parentElement).value === 'regexp'
       ) {
         showRegExpTester(null, div);
       }
     });
   }
 
-  const sections = document.getElementById('sections');
+  const sections = $('#sections');
   let cm;
   if (event) {
     const clickedSection = getSectionForChild(event.target);
@@ -686,7 +688,7 @@ function removeSection(event) {
 }
 
 function removeAreaAndSetDirty(area) {
-  const contributors = area.querySelectorAll('.style-contributor');
+  const contributors = $$('.style-contributor', area);
   if (!contributors.length) {
     setCleanItem(area, false);
   }
@@ -846,7 +848,7 @@ function setupGlobalSearch() {
     originalCommand[reverse ? 'findPrev' : 'findNext'](activeCM);
 
     function searchAppliesTo(cm) {
-      let inputs = [].slice.call(cm.getSection().querySelectorAll('.applies-value'));
+      let inputs = $$('.applies-value', cm.getSection());
       if (reverse) {
         inputs = inputs.reverse();
       }
@@ -909,7 +911,7 @@ function setupGlobalSearch() {
           } else {
             doConfirm(cm);
             callback(replacement);
-            if (!cm.getWrapperElement().querySelector('.CodeMirror-dialog')) {
+            if (!$('.CodeMirror-dialog', cm.getWrapperElement())) {
               // no dialog == nothing found in the current CM, move to the next
               doReplace();
             }
@@ -933,7 +935,7 @@ function setupGlobalSearch() {
           const cmp = CodeMirror.cmpPos(cm.getCursor(), pos);
           wrapAround |= cmp <= 0;
 
-          const dlg = cm.getWrapperElement().querySelector('.CodeMirror-dialog');
+          const dlg = $('.CodeMirror-dialog', cm.getWrapperElement());
           if (!dlg || cmp === 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
             if (dlg) {
               dlg.remove();
@@ -1026,14 +1028,14 @@ function autocompletePicked(cm) {
 
 function refocusMinidialog(cm) {
   const section = cm.getSection();
-  if (!section.querySelector('.CodeMirror-dialog')) {
+  if (!$('.CodeMirror-dialog', section)) {
     return;
   }
   // close the currently opened minidialog
   cm.focus();
   // make sure to focus the input in newly opened minidialog
   setTimeout(() => {
-    section.querySelector('.CodeMirror-dialog').focus();
+    $('.CodeMirror-dialog', section).focus();
   }, 0);
 }
 
@@ -1103,7 +1105,7 @@ function beautify(event) {
       '</div>' +
       '<div><button role="undo"></button></div>');
 
-    const undoButton = document.querySelector('#help-popup button[role="undo"]');
+    const undoButton = $('#help-popup button[role="undo"]');
     undoButton.textContent = t(scope.length === 1 ? 'undo' : 'undoGlobal');
     undoButton.addEventListener('click', () => {
       let undoable = false;
@@ -1142,7 +1144,7 @@ function beautify(event) {
       }, 0);
     });
 
-    document.querySelector('.beautify-options').onchange = ({target}) => {
+    $('.beautify-options').onchange = ({target}) => {
       const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;
       prefs.set('editor.beautify', Object.assign(options, {[target.dataset.option]: value}));
       if (target.parentNode.hasAttribute('newline')) {
@@ -1183,7 +1185,7 @@ function init() {
       addSection(null, section);
       editors[0].setOption('lint', CodeMirror.defaults.lint);
       // default to enabled
-      document.getElementById('enabled').checked = true;
+      $('#enabled').checked = true;
       initHooks();
     };
     return;
@@ -1210,9 +1212,9 @@ function init() {
 }
 
 function setStyleMeta(style) {
-  document.getElementById('name').value = style.name;
-  document.getElementById('enabled').checked = style.enabled;
-  document.getElementById('url').href = style.url;
+  $('#name').value = style.name;
+  $('#enabled').checked = style.enabled;
+  $('#url').href = style.url;
 }
 
 function initWithStyle({style, codeIsUpdated}) {
@@ -1254,19 +1256,19 @@ function initWithStyle({style, codeIsUpdated}) {
 }
 
 function initHooks() {
-  document.querySelectorAll('#header .style-contributor').forEach(node => {
+  $$('#header .style-contributor').forEach(node => {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
   });
-  document.getElementById('toggle-style-help').addEventListener('click', showToggleStyleHelp);
-  document.getElementById('to-mozilla').addEventListener('click', showMozillaFormat, false);
-  document.getElementById('to-mozilla-help').addEventListener('click', showToMozillaHelp, false);
-  document.getElementById('from-mozilla').addEventListener('click', fromMozillaFormat);
-  document.getElementById('beautify').addEventListener('click', beautify);
-  document.getElementById('save-button').addEventListener('click', save, false);
-  document.getElementById('sections-help').addEventListener('click', showSectionHelp, false);
-  document.getElementById('keyMap-help').addEventListener('click', showKeyMapHelp, false);
-  document.getElementById('cancel-button').addEventListener('click', goBackToManage);
+  $('#toggle-style-help').addEventListener('click', showToggleStyleHelp);
+  $('#to-mozilla').addEventListener('click', showMozillaFormat, false);
+  $('#to-mozilla-help').addEventListener('click', showToMozillaHelp, false);
+  $('#from-mozilla').addEventListener('click', fromMozillaFormat);
+  $('#beautify').addEventListener('click', beautify);
+  $('#save-button').addEventListener('click', save, false);
+  $('#sections-help').addEventListener('click', showSectionHelp, false);
+  $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
+  $('#cancel-button').addEventListener('click', goBackToManage);
   initLint();
 
   if (!FIREFOX) {
@@ -1332,7 +1334,7 @@ function maximizeCodeHeight(sectionDiv, isLast) {
     return;
   }
   // scale heights to fill the gap between last section and bottom edge of the window
-  const sections = document.getElementById('sections');
+  const sections = $('#sections');
   const available = window.innerHeight - sections.getBoundingClientRect().bottom -
     parseFloat(getComputedStyle(sections).marginBottom);
   if (available <= 0) {
@@ -1349,25 +1351,25 @@ function maximizeCodeHeight(sectionDiv, isLast) {
 function updateTitle() {
   const DIRTY_TITLE = '* $';
 
-  const name = document.getElementById('name').savedValue;
+  const name = $('#name').savedValue;
   const clean = isCleanGlobal();
   const title = styleId === null ? t('addStyleTitle') : t('editStyleTitle', [name]);
   document.title = clean ? title : DIRTY_TITLE.replace('$', title);
 }
 
 function validate() {
-  const name = document.getElementById('name').value;
+  const name = $('#name').value;
   if (name === '') {
     return t('styleMissingName');
   }
   // validate the regexps
-  if (document.querySelectorAll('.applies-to-list').some(list => {
+  if ($$('.applies-to-list').some(list => {
     list.childNodes.some(li => {
       if (li.className === template.appliesToEverything.className) {
         return false;
       }
-      const valueElement = li.querySelector('[name=applies-value]');
-      const type = li.querySelector('[name=applies-type]').value;
+      const valueElement = $('[name=applies-value]', li);
+      const type = $('[name=applies-type]', li).value;
       const value = valueElement.value;
       if (type && value) {
         if (type === 'regexp') {
@@ -1406,8 +1408,8 @@ function save() {
     alert(error);
     return;
   }
-  const name = document.getElementById('name').value;
-  const enabled = document.getElementById('enabled').checked;
+  const name = $('#name').value;
+  const enabled = $('#enabled').checked;
   saveStyleSafe({
     id: styleId,
     name: name,
@@ -1434,12 +1436,12 @@ function getSectionsHashes() {
 
 function getMeta(e) {
   const meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
-  e.querySelector('.applies-to-list').childNodes.forEach(li => {
+  $('.applies-to-list', e).childNodes.forEach(li => {
     if (li.className === template.appliesToEverything.className) {
       return;
     }
-    const type = li.querySelector('[name=applies-type]').value;
-    const value = li.querySelector('[name=applies-value]').value;
+    const type = $('[name=applies-type]', li).value;
+    const value = $('[name=applies-value]', li).value;
     if (type && value) {
       const property = CssToProperty[type];
       meta[property].push(value);
@@ -1488,12 +1490,12 @@ function fromMozillaFormat() {
     </div>`
   ));
 
-  const contents = popup.querySelector('.contents');
+  const contents = $('.contents', popup);
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
 
-  popup.querySelector('[name="import-append"]').addEventListener('click', doImport);
-  popup.querySelector('[name="import-replace"]').addEventListener('click', doImport);
+  $('[name="import-append"]', popup).addEventListener('click', doImport);
+  $('[name="import-replace"]', popup).addEventListener('click', doImport);
 
   popup.codebox.on('change', () => {
     clearTimeout(popup.mozillaTimeout);
@@ -1504,7 +1506,7 @@ function fromMozillaFormat() {
 
   function doImport() {
     const replaceOldStyle = this.name === 'import-replace';
-    popup.querySelector('.dismiss').onclick();
+    $('.dismiss', popup).onclick();
     const mozStyle = trimNewLines(popup.codebox.getValue());
     const parser = new parserlib.css.Parser();
     const lines = mozStyle.split('\n');
@@ -1627,7 +1629,7 @@ function fromMozillaFormat() {
         });
       } else if (!editors.last.getValue()) {
         // nuke the last blank section
-        if (editors.last.getSection().querySelector('.applies-to-everything')) {
+        if ($('.applies-to-everything', editors.last.getSection())) {
           removeSection({target: editors.last.getSection()});
         }
       }
@@ -1679,10 +1681,10 @@ function showKeyMapHelp() {
       '</tbody>' +
     '</table>');
 
-  const table = document.querySelector('#help-popup table');
+  const table = $('#help-popup table');
   table.addEventListener('input', filterTable);
 
-  const inputs = table.querySelectorAll('input');
+  const inputs = $$('input', table);
   inputs[0].addEventListener('keydown', hotkeyHandler);
   inputs[1].focus();
 
@@ -1769,11 +1771,12 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = showRegExpTester.cachedRegexps =
     showRegExpTester.cachedRegexps || new Map();
-  const regexps = [...section.querySelector('.applies-to-list').children]
+  const regexps = [...$('.applies-to-list', section).children]
     .map(item =>
       !item.matches('.applies-to-everything') &&
-      item.querySelector('.applies-type').value === 'regexp' &&
-      item.querySelector('.applies-value').value.trim())
+      $('.applies-type', item).value === 'regexp' &&
+      $('.applies-value', item).value.trim()
+    )
     .filter(item => item)
     .map(text => {
       const rxData = Object.assign({text}, cachedRegexps.get(text));
@@ -1786,7 +1789,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       return rxData;
     });
   chrome.tabs.onUpdated.addListener(function _(tabId, info) {
-    if (document.querySelector('.regexp-report')) {
+    if ($('.regexp-report')) {
       if (info.url) {
         showRegExpTester(event, section);
       }
@@ -1894,7 +1897,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
     }
     showHelp(t('styleRegexpTestTitle'), report);
 
-    document.querySelector('.regexp-report').onclick = event => {
+    $('.regexp-report').onclick = event => {
       const target = event.target.closest('a, .regexp-report div');
       if (target) {
         openURL({url: target.href || target.textContent});
@@ -1914,7 +1917,7 @@ function showHelp(title, body) {
   if (getComputedStyle(div).display === 'none') {
     document.addEventListener('keydown', closeHelp);
     // avoid chaining on multiple showHelp() calls
-    div.querySelector('.dismiss').onclick = closeHelp;
+    $('.dismiss', div).onclick = closeHelp;
   }
 
   div.style.display = 'block';
@@ -1939,7 +1942,7 @@ function showCodeMirrorPopup(title, html, options) {
   const popup = showHelp(title, html);
   popup.classList.add('big');
 
-  popup.codebox = CodeMirror(popup.querySelector('.contents'), Object.assign({
+  popup.codebox = CodeMirror($('.contents', popup), Object.assign({
     mode: 'css',
     lineNumbers: true,
     lineWrapping: true,
