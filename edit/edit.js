@@ -1504,8 +1504,14 @@ function fromMozillaFormat() {
     }, 100);
   });
 
-  function doImport() {
-    const replaceOldStyle = this.name === 'import-replace';
+  function doImport(event) {
+    // parserlib contained in CSSLint-worker.js
+    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js'])
+      .then(() => doImportWhenReady(event.target));
+  }
+
+  function doImportWhenReady(target) {
+    const replaceOldStyle = target.name === 'import-replace';
     $('.dismiss', popup).onclick();
     const mozStyle = trimNewLines(popup.codebox.getValue());
     const parser = new parserlib.css.Parser();
