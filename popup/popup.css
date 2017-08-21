@@ -21,10 +21,6 @@ input[type=checkbox] {
   outline: none;
 }
 
-#disable-all-wrapper {
-  padding: 0.3em 0 0.6em;
-}
-
 #no-styles {
   font-style: italic;
 }
@@ -206,6 +202,12 @@ body.blocked > DIV {
   height: 18px;
 }
 
+.svg-icon.find-styles, .svg-icon.open-manager, .svg-icon.open-options, .svg-icon.open-shortcuts {
+  width: 18px;
+  height: 18px;
+  fill: hsl(0, 0%, 28%);
+}
+
 .svg-icon.on {
   fill: hsl(0, 0%, 28%);
 }
@@ -221,7 +223,6 @@ body.blocked > DIV {
 
 #disableAll-label {
   cursor: pointer;
-  display:flex;
 }
 
 #disableAll-label:hover .svg-icon.all-off, #disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label:hover .svg-icon.all-off, #installed.disabled a:hover .svg-icon.on {
@@ -270,11 +271,26 @@ a:hover .svg-icon {
 }
 
 body > .actions {
-  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.75em;
 }
 
-.actions > div:not(:last-child):not(#disable-all-wrapper),
-.actions > .main-controls > div:not(:last-child) {
+body > .actions > .actions-inner {
+  display: flex;
+  flex-direction: row;
+}
+
+body > .actions > .actions-inner > div[id] {
+  margin-right: 14px;
+}
+
+body > .actions > .actions-inner #disableAll-label, body > .actions > .actions-inner a{
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.actions > div {
   margin-bottom: 0.75em;
 }
 
@@ -374,22 +390,6 @@ body.blocked .actions > .left-gutter {
   color: inherit;
   text-decoration: underline;
   text-decoration-skip: ink;
-}
-
-/* action buttons */
-
-#popup-options {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 1.2em 1px;
-}
-
-#popup-options button {
-  width: 32%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .firefox #popup-options button {
