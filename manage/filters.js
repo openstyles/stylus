@@ -12,6 +12,38 @@ const filtersSelector = {
 onDOMready().then(onBackgroundReady).then(() => {
   $('#search').oninput = searchStyles;
 
+  $$('select[id$=".invert"]').forEach(el => {
+    const slave = $('#' + el.id.replace('.invert', ''));
+    const slaveData = slave.dataset;
+    const valueMap = new Map([
+      [false, slaveData.filter],
+      [true, slaveData.filterHide],
+    ]);
+    //
+    // enable slave control when user switches the value
+    el.oninput = () => {
+      if (!slave.checked) {
+        // oninput occurs before onchange
+        setTimeout(() => {
+          if (!slave.checked) {
+            slave.checked = true;
+            slave.dispatchEvent(new Event('change', {bubbles: true}));
+          }
+        });
+      }
+    };
+    // swap slave control's filtering rules
+    el.onchange = event => {
+      const value = el.value === 'true';
+      const filter = valueMap.get(value);
+      if (slaveData.filter !== filter) {
+        slaveData.filter = filter;
+        slaveData.filterHide = valueMap.get(!value);
+        debounce(filterOnChange, 0, event);
+      }
+    };
+  });
+
   $$('[data-filter]').forEach(el => {
     el.onchange = filterOnChange;
     if (el.closest('.hidden')) {

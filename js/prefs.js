@@ -17,6 +17,8 @@ var prefs = new function Prefs() {
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
+    'manage.onlyEnabled.invert': false, // display only disabled styles
+    'manage.onlyLocal.invert': false,   // display only externally installed styles
     'manage.newUI': true,           // use the new compact layout
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons

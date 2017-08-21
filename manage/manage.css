@@ -569,6 +569,11 @@ fieldset > *:not(legend) {
   content: ": ";
 }
 
+#manage\.onlyEnabled\.invert,
+#manage\.onlyLocal\.invert {
+  border: none;
+}
+
 #search {
   width: calc(100% - 4px);
   margin: 0.25rem 4px 0;
