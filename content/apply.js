@@ -276,8 +276,7 @@ function initDocRewriteObserver() {
     }
     ROOT = document.documentElement;
     for (const el of styleElements.values()) {
-      // invalidate CSSOM cache
-      el.textContent += ' ';
+      el.textContent += ' '; // invalidate CSSOM cache
       addStyleElement(document.importNode(el, true));
     }
   };
@@ -351,8 +350,7 @@ function orphanCheck() {
   window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy our globals in this context to free up memory
-  [
-    // functions
+  [ // functions
     'addStyleElement',
     'applyOnMessage',
     'applySections',

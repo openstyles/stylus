@@ -1,7 +1,6 @@
 'use strict';
 
-// non-Windows Chromium
-const CHROMIUM = /Chromium/.test(navigator.userAgent);
+const CHROMIUM = /Chromium/.test(navigator.userAgent); // non-Windows Chromium
 const FIREFOX = /Firefox/.test(navigator.userAgent);
 const VIVALDI = /Vivaldi/.test(navigator.userAgent);
 const OPERA = /OPR/.test(navigator.userAgent);

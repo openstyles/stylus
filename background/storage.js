@@ -10,21 +10,14 @@ var SLOPPY_REGEXP_PREFIX = '\0';
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
 var cachedStyles = {
-  // array of all styles
-  list: null,
-  // all styles indexed by id
-  byId: new Map(),
-  // filterStyles() parameters mapped to the returned results, 10k max
-  filters: new Map(),
-  // compiled style regexps
-  regexps: new Map(),
-  // getDomain() results for 100 last checked urls
-  urlDomains: new Map(),
+  list: null,            // array of all styles
+  byId: new Map(),       // all styles indexed by id
+  filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
+  regexps: new Map(),    // compiled style regexps
+  urlDomains: new Map(), // getDomain() results for 100 last checked urls
   mutex: {
-    // while getStyles() is reading IndexedDB all subsequent calls
-    inProgress: false,
-    // to getStyles() are queued and resolved when the first one finishes
-    onDone: [],
+    inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
+    onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
 
@@ -255,10 +248,8 @@ function saveStyle(style) {
     });
   }
   if (reason === 'import') {
-    // TODO: remove in the future
-    style.originalDigest = style.originalDigest || style.styleDigest;
-    // TODO: remove in the future
-    delete style.styleDigest;
+    style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
+    delete style.styleDigest; // TODO: remove in the future
     if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
       delete style.originalDigest;
     }
@@ -533,8 +524,7 @@ function cleanupCachedFilters({force = false} = {}) {
   const now = Date.now();
   const timeSpan = now - oldestHit;
   const recencyWeight = 5 / size;
-  // we make ~4 hits per URL
-  const hitWeight = 1 / 4;
+  const hitWeight = 1 / 4; // we make ~4 hits per URL
   const lastHitWeight = 10;
   // delete the oldest 10%
   [...cachedStyles.filters.entries()]

@@ -151,7 +151,7 @@ rules:
   no-implicit-coercion: [1]
   no-implicit-globals: [0]
   no-implied-eval: [2]
-  no-inline-comments: [2]
+  no-inline-comments: [0]
   no-inner-declarations: [2]
   no-invalid-regexp: [2]
   no-invalid-this: [0]

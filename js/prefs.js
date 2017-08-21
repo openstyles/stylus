@@ -4,56 +4,34 @@
 // eslint-disable-next-line no-var
 var prefs = new function Prefs() {
   const defaults = {
-    // new editor opens in a own browser window
-    'openEditInWindow': false,
-    // detached window position
-    'windowPosition': {},
-    // display text on popup menu icon
-    'show-badge': true,
-    // boss key
-    'disableAll': false,
-    // Add 'stylus-iframe' attribute to HTML element in all iframes
-    'exposeIframes': false,
+    'openEditInWindow': false,      // new editor opens in a own browser window
+    'windowPosition': {},           // detached window position
+    'show-badge': true,             // display text on popup menu icon
+    'disableAll': false,            // boss key
+    'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
 
-    // display 'New style' links as URL breadcrumbs
-    'popup.breadcrumbs': true,
-    // use URL path for 'this URL'
-    'popup.breadcrumbs.usePath': false,
-    // display enabled styles before disabled styles
-    'popup.enabledFirst': true,
-    // display enabled styles before disabled styles
-    'popup.stylesFirst': true,
+    'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
+    'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
+    'popup.enabledFirst': true,     // display enabled styles before disabled styles
+    'popup.stylesFirst': true,      // display enabled styles before disabled styles
 
-    // display only enabled styles
-    'manage.onlyEnabled': false,
-    // display only styles created locally
-    'manage.onlyLocal': false,
+    'manage.onlyEnabled': false,    // display only enabled styles
+    'manage.onlyLocal': false,      // display only styles created locally
     'manage.onlyEnabled.invert': false, // display only disabled styles
     'manage.onlyLocal.invert': false,   // display only externally installed styles
-    // use the new compact layout
-    'manage.newUI': true,
-    // show favicons for the sites in applies-to
-    'manage.newUI.favicons': false,
-    // gray out favicons
-    'manage.newUI.faviconsGray': true,
-    // max number of applies-to targets visible: 0 = none
-    'manage.newUI.targets': 3,
+    'manage.newUI': true,           // use the new compact layout
+    'manage.newUI.favicons': false, // show favicons for the sites in applies-to
+    'manage.newUI.faviconsGray': true, // gray out favicons
+    'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
-    // CodeMirror.defaults.*
-    'editor.options': {},
-    // word wrap
-    'editor.lineWrapping': true,
-    // 'smart' indent
-    'editor.smartIndent': true,
-    // smart indent with tabs
-    'editor.indentWithTabs': false,
-    // tab width, in spaces
-    'editor.tabSize': 4,
+    'editor.options': {},           // CodeMirror.defaults.*
+    'editor.lineWrapping': true,    // word wrap
+    'editor.smartIndent': true,     // 'smart' indent
+    'editor.indentWithTabs': false, // smart indent with tabs
+    'editor.tabSize': 4,            // tab width, in spaces
     'editor.keyMap': navigator.appVersion.indexOf('Windows') > 0 ? 'sublime' : 'default',
-    // CSS theme
-    'editor.theme': 'default',
-    // CSS beautifier
-    'editor.beautify': {
+    'editor.theme': 'default',      // CSS theme
+    'editor.beautify': {            // CSS beautifier
       selector_separator_newline: true,
       newline_before_open_brace: false,
       newline_after_open_brace: true,
@@ -63,34 +41,24 @@ var prefs = new function Prefs() {
       end_with_newline: false,
       indent_conditional: true,
     },
-    // lint gutter marker update delay, ms
-    'editor.lintDelay': 500,
-    // Options: 'csslint', 'stylelint' or 'null'
-    'editor.linter': 'csslint',
-    // lint report update delay, ms
-    'editor.lintReportDelay': 4500,
-    // token = token/word under cursor even if nothing is selected
-    // selection = only when something is selected
-    // '' (empty string) = disabled
-    'editor.matchHighlight': 'token',
-    // show autocomplete dropdown on typing a word token
-    'editor.autocompleteOnTyping': false,
-    // "Delete" item in context menu
-    'editor.contextDelete': contextDeleteMissing(),
+    'editor.lintDelay': 500,        // lint gutter marker update delay, ms
+    'editor.linter': 'csslint',     // Choose csslint or stylelint
+    'editor.lintReportDelay': 4500, // lint report update delay, ms
+    'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
+                                      // selection = only when something is selected
+                                      // '' (empty string) = disabled
+    'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
+    'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
-     // 0 = dark-themed icon; 1 = light-themed icon
-    'iconset': 0,
+    'iconset': 0,                   // 0 = dark-themed icon
+                                    // 1 = light-themed icon
 
-    // badge background color when disabled
-    'badgeDisabled': '#8B0000',
-    // badge background color
-    'badgeNormal': '#006666',
+    'badgeDisabled': '#8B0000',     // badge background color when disabled
+    'badgeNormal': '#006666',       // badge background color
 
-    // popup width in pixels
-    'popupWidth': 246,
+    'popupWidth': 246,              // popup width in pixels
 
-    // user-style automatic update interval, hours (0 = disable)
-    'updateInterval': 24,
+    'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
   const values = deepCopy(defaults);
 

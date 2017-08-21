@@ -100,8 +100,7 @@ var updater = {
       }
       return !save ? json :
         saveStyle(Object.assign(json, {
-          // keep local name customizations
-          name: null,
+          name: null, // keep local name customizations
           reason: 'update',
         }));
     }
