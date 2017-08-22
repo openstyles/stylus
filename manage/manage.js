@@ -19,6 +19,7 @@ const newUI = {
   },
 };
 newUI.renderClass();
+usePrefsDuringPageLoad();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
@@ -501,4 +502,25 @@ function switchUI({styleOnly} = {}) {
 
 function rememberScrollPosition() {
   history.replaceState({scrollY: window.scrollY}, document.title);
+}
+
+
+function usePrefsDuringPageLoad() {
+  const observer = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        // [naively] assuming each element of addedNodes is a childless element
+        const prefValue = node.id ? prefs.readOnlyValues[node.id] : undefined;
+        if (prefValue !== undefined) {
+          if (node.type === 'checkbox') {
+            node.checked = prefValue;
+          } else {
+            node.value = prefValue;
+          }
+        }
+      }
+    }
+  });
+  observer.observe(document, {subtree: true, childList: true});
+  onDOMready().then(() => observer.disconnect());
 }
