@@ -507,6 +507,7 @@ function rememberScrollPosition() {
 
 function usePrefsDuringPageLoad() {
   const observer = new MutationObserver(mutations => {
+    const adjustedNodes = [];
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         // [naively] assuming each element of addedNodes is a childless element
@@ -517,10 +518,23 @@ function usePrefsDuringPageLoad() {
           } else {
             node.value = prefValue;
           }
+          if (node.adjustWidth) {
+            adjustedNodes.push(node);
+          }
         }
       }
     }
+    if (adjustedNodes.length) {
+      observer.disconnect();
+      for (const node of adjustedNodes) {
+        node.adjustWidth();
+      }
+      startObserver();
+    }
   });
-  observer.observe(document, {subtree: true, childList: true});
+  function startObserver() {
+    observer.observe(document, {subtree: true, childList: true});
+  }
+  startObserver();
   onDOMready().then(() => observer.disconnect());
 }

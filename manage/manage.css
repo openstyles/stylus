@@ -544,6 +544,8 @@ fieldset {
   border-width: 1px;
   border-radius: 6px;
   margin: 1em 0;
+  min-width: 0;
+  max-width: 250px;
 }
 
 fieldset > *:not(legend) {
@@ -572,6 +574,8 @@ fieldset > *:not(legend) {
 #manage\.onlyEnabled\.invert,
 #manage\.onlyLocal\.invert {
   border: none;
+  max-width: calc(100% - 2em);
+  background-color: transparent;
 }
 
 #search {
