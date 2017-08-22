@@ -8,6 +8,17 @@ const filtersSelector = {
   numTotal: 0,
 };
 
+HTMLSelectElement.prototype.adjustWidth = function () {
+  const parent = this.parentNode;
+  const singleSelect = this.cloneNode(false);
+  singleSelect.style.width = '';
+  singleSelect.appendChild(this.selectedOptions[0].cloneNode(true));
+  parent.replaceChild(singleSelect, this);
+  if (this.style.width !== singleSelect.offsetWidth + 'px') {
+    this.style.width = singleSelect.offsetWidth + 'px';
+  }
+  parent.replaceChild(this, singleSelect);
+};
 
 onDOMready().then(onBackgroundReady).then(() => {
   $('#search').oninput = searchStyles;
@@ -19,7 +30,6 @@ onDOMready().then(onBackgroundReady).then(() => {
       [false, slaveData.filter],
       [true, slaveData.filterHide],
     ]);
-    //
     // enable slave control when user switches the value
     el.oninput = () => {
       if (!slave.checked) {
@@ -36,12 +46,18 @@ onDOMready().then(onBackgroundReady).then(() => {
     el.onchange = event => {
       const value = el.value === 'true';
       const filter = valueMap.get(value);
-      if (slaveData.filter !== filter) {
-        slaveData.filter = filter;
-        slaveData.filterHide = valueMap.get(!value);
-        debounce(filterOnChange, 0, event);
+      if (slaveData.filter === filter) {
+        return;
+      }
+      slaveData.filter = filter;
+      slaveData.filterHide = valueMap.get(!value);
+      debounce(filterOnChange, 0, event);
+      // avoid triggering MutationObserver during page load
+      if (document.readyState === 'complete') {
+        el.adjustWidth();
       }
     };
+    el.onchange({target: el});
   });
 
   $$('[data-filter]').forEach(el => {
@@ -51,8 +67,7 @@ onDOMready().then(onBackgroundReady).then(() => {
     }
   });
 
-  // let manage::initGlobalEvents run onDOMready first
-  debounce(filterOnChange, 0, {forceRefilter: true});
+  filterOnChange({forceRefilter: true});
 });
 
 
@@ -78,7 +93,9 @@ function filterOnChange({target: el, forceRefilter}) {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
-  reapplyFilter();
+  if (installed) {
+    reapplyFilter();
+  }
 }
 
 
