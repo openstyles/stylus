@@ -425,6 +425,10 @@
     "message": "More Options",
     "description": "Subheading for options section on manage page."
   },
+  "popupManageTooltip": {
+    "message": "Shift-click or right-click opens manager with styles applicable for current site",
+    "description": "Tooltip for the 'Manage' button in the popup."
+  },
   "popupStylesFirst": {
     "message": "Styles before commands",
     "description": "Label for the checkbox controlling section order in the popup."
@@ -455,6 +459,10 @@
   },
   "searchStyles": {
     "message": "Search contents",
+    "description": "Label for the search filter textbox on the Manage styles page"
+  },
+  "searchStylesTooltip": {
+    "message": "To show styles for a URL, prefix it with 'url:'\nFor example, url:https://github.com/openstyles/stylus",
     "description": "Label for the search filter textbox on the Manage styles page"
   },
   "sectionAdd": {

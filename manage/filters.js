@@ -8,6 +8,11 @@ const filtersSelector = {
   numTotal: 0,
 };
 
+const urlFilterParam = new URLSearchParams(location.search).get('url');
+if (location.search) {
+  history.replaceState(0, document.title, location.origin + location.pathname);
+}
+
 HTMLSelectElement.prototype.adjustWidth = function () {
   const parent = this.parentNode;
   const singleSelect = this.cloneNode(false);
@@ -22,6 +27,9 @@ HTMLSelectElement.prototype.adjustWidth = function () {
 
 onDOMready().then(onBackgroundReady).then(() => {
   $('#search').oninput = searchStyles;
+  if (urlFilterParam) {
+    $('#search').value = 'url:' + urlFilterParam;
+  }
 
   $$('select[id$=".invert"]').forEach(el => {
     const slave = $('#' + el.id.replace('.invert', ''));
@@ -306,7 +314,10 @@ function showFiltersStats({immediately} = {}) {
 
 function searchStyles({immediately, container}) {
   const searchElement = $('#search');
-  const query = searchElement.value.toLocaleLowerCase();
+  const urlMode = /^\s*url:/i.test(searchElement.value);
+  const query = urlMode
+    ? searchElement.value.replace(/^\s*url:/i, '').trim()
+    : searchElement.value.toLocaleLowerCase();
   const queryPrev = searchElement.lastValue || '';
   if (query === queryPrev && !immediately && !container) {
     return;
@@ -317,15 +328,18 @@ function searchStyles({immediately, container}) {
   }
   searchElement.lastValue = query;
 
-  const searchInVisible = queryPrev && query.includes(queryPrev);
+  const searchInVisible = !urlMode && queryPrev && query.includes(queryPrev);
   const entries = container && container.children || container ||
     (searchInVisible ? $$('.entry:not(.hidden)') : installed.children);
+  const siteStyleIds = urlMode &&
+    new Set(BG.filterStyles({matchUrl: query}).map(style => style.id));
   let needsRefilter = false;
   for (const entry of entries) {
     let isMatching = !query;
     if (!isMatching) {
-      const style = BG.cachedStyles.byId.get(entry.styleId) || {};
-      isMatching = Boolean(style && (
+      const style = urlMode ? siteStyleIds.has(entry.styleId) :
+        BG.cachedStyles.byId.get(entry.styleId) || {};
+      isMatching = urlMode ? style : Boolean(style && (
         isMatchingText(style.name) ||
         style.url && isMatchingText(style.url) ||
         isMatchingStyle(style)));
