@@ -89,7 +89,11 @@ function initPopup(url) {
   setupLivePrefs();
 
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
-  $('#popup-manage-button').onclick = handleEvent.openURLandHide;
+  Object.assign($('#popup-manage-button'), {
+    onclick: handleEvent.openManager,
+    onmouseup: handleEvent.openManager,
+    oncontextmenu: handleEvent.openManager,
+  });
 
   $('#popup-options-button').onclick = () => {
     chrome.runtime.openOptionsPage();
@@ -385,6 +389,16 @@ Object.assign(handleEvent, {
     event.preventDefault();
     openURL({url: this.href || this.dataset.href})
       .then(window.close);
+  },
+
+  openManager(event) {
+    event.preventDefault();
+    if (!this.eventHandled) {
+      this.eventHandled = true;
+      this.dataset.href += event.shiftKey || event.button === 2 ?
+        '?url=' + encodeURIComponent(tabURL) : '';
+      handleEvent.openURLandHide.call(this, event);
+    }
   },
 });
 
