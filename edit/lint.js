@@ -205,7 +205,7 @@ function showLintHelp() {
   if (prefs.get('editor.linter') === 'csslint') {
     header = t('issuesHelp', '<a href="https://github.com/CSSLint/csslint" target="_blank">CSSLint</a>');
     list += CSSLint.getRules().map(rule =>
-      `<li><b><a href="${rule.url}">${rule.name}</a></b><br>${rule.desc}</li>`
+      `<li><b><a target="_blank" href="${rule.url}">${rule.name}</a></b><br>${rule.desc}</li>`
     ).join('');
   } else {
     const rules = [];
