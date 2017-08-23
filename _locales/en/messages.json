@@ -346,7 +346,7 @@
     "description": "Label for the CSS linter issues block on the style edit page"
   },
   "issuesHelp": {
-    "message": "The issues found by $link$ with these rules enabled:",
+    "message": "The issues found by $link$ rules:",
     "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
@@ -510,21 +510,30 @@
     "message": "Remove section",
     "description": "Label for the button to remove a section"
   },
-  "setStylelintLink": {
-    "message": "Get a full list of rules",
-    "description": "Stylelint rules label before link"
+  "setLinterLink": {
+    "message": "See a full list of rules",
+    "description": "Stylelint or CSSLint rules label added before a link"
   },
-  "setStylelintRules": {
-    "message": "Set stylelint rules",
-    "description": "Stylelint popup header"
+  "setLinterRulesTitle": {
+    "message": "Set rules for $linter$",
+    "description": "Stylelint or CSSLint popup header",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
   },
-  "resetStylelintRules": {
+  "resetLinterRules": {
     "message": "Reset",
-    "description": "Reset stylelint rules"
+    "description": "Reset Stylelint or CSSLint rules"
   },
-  "setStylelintError": {
+  "setLinterError": {
     "message": "Invalid JSON format",
-    "description": "Stylelint invalid JSON message"
+    "description": "Setting linter rules with invalid JSON message"
+  },
+  "showCSSLintSettings": {
+    "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
+    "description": "CSSLint rule settings values"
   },
   "shortcuts": {
     "message": "Shortcuts",

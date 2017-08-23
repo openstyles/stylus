@@ -4,7 +4,7 @@
 // Depends on csslint.js from https://github.com/stubbornella/csslint
 
 /* global CodeMirror require define */
-/* global CSSLint stylelint stylelintDefaultConfig */
+/* global CSSLint stylelint stylelintDefaultConfig csslintDefaultRuleset */
 'use strict';
 
 (mod => {
@@ -21,28 +21,21 @@
 })(CodeMirror => {
   CodeMirror.registerHelper('lint', 'csslint', text => {
     const found = [];
-    if (window.CSSLint) {
-      /* STYLUS: hack start (part 1) */
-      const rules = CSSLint.getRules();
-      const allowedRules = [
-        'display-property-grouping',
-        'duplicate-properties',
-        'empty-rules',
-        'errors',
-        'known-properties'
-      ];
-      CSSLint.clearRules();
-      rules.forEach(rule => {
-        if (allowedRules.indexOf(rule.id) >= 0) {
-          CSSLint.addRule(rule);
-        }
-      });
-      /* STYLUS: hack end */
-
-      const results = CSSLint.verify(text);
+    if (!window.CSSLint) {
+      return found;
+    }
+    /* STYLUS: hack start (part 1) */
+    return BG.chromeLocal.getValue('editorCSSLintRules').then((ruleset = csslintDefaultRuleset) => {
+      // csslintDefaultRuleset stored in csslint-ruleset.js & loaded by edit/lint.js
+      if (Object.keys(ruleset).length === 0) {
+        ruleset = Object.assign({}, csslintDefaultRuleset);
+      }
+      const results = CSSLint.verify(text, ruleset);
       const messages = results.messages;
       const hslRegex = /hsla?\(\s*(-?\d+)%?\s*,\s*(-?\d+)%\s*,\s*(-?\d+|-?\d*.\d+)%(\s*,\s*(-?\d+|-?\d*.\d+))?\s*\)/;
       let message = null;
+      /* STYLUS: hack end */
+
       for (let i = 0; i < messages.length; i++) {
         message = messages[i];
 
@@ -59,20 +52,21 @@
             continue;
           }
         }
-        /* STYLUS: hack end */
         const startLine = message.line - 1;
         const endLine = message.line - 1;
         const startCol = message.col - 1;
         const endCol = message.col;
+        /* STYLUS: hack end */
+
         found.push({
           from: CodeMirror.Pos(startLine, startCol),
           to: CodeMirror.Pos(endLine, endCol),
-          message: message.message,
+          message: message.message + ` (${message.rule.id})`,
           severity : message.type
         });
       }
-    }
-    return found;
+      return found;
+    });
   });
 
   CodeMirror.registerHelper('lint', 'stylelint', text => {
@@ -80,7 +74,7 @@
     window.stylelint = require('stylelint').lint;
     if (window.stylelint) {
       return BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
-        // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit.html
+        // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit/lint.js
         if (Object.keys(rules).length === 0) {
           rules = stylelintDefaultConfig.rules;
         }

@@ -1,18 +1,20 @@
 /* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup */
-/* global stylelintDefaultConfig onDOMscripted injectCSS require */
+/* global stylelintDefaultConfig csslintDefaultRuleset onDOMscripted injectCSS require */
 'use strict';
 
 function initLint() {
   $('#lint-help').addEventListener('click', showLintHelp);
   $('#lint').addEventListener('click', gotoLintIssue);
   window.addEventListener('resize', resizeLintReport);
-  $('#stylelint-settings').addEventListener('click', openStylelintSettings);
+  $('#linter-settings').addEventListener('click', openStylelintSettings);
 
   // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
   if ('ontouchstart' in document.body) {
     $('#lint h2').addEventListener('click', toggleLintReport);
   }
+  // initialize storage of rules
   BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
+  BG.chromeLocal.getValue('editorCSSLintRules').then(ruleset => setCSSLintRules(ruleset));
 }
 
 function setStylelintRules(rules = []) {
@@ -23,6 +25,14 @@ function setStylelintRules(rules = []) {
   return rules;
 }
 
+function setCSSLintRules(ruleset = []) {
+  if (Object.keys(ruleset).length === 0 && typeof csslintDefaultRuleset !== 'undefined') {
+    ruleset = Object.assign({}, csslintDefaultRuleset);
+  }
+  BG.chromeLocal.setValue('editorCSSLintRules', ruleset);
+  return ruleset;
+}
+
 function getLinterConfigForCodeMirror(name) {
   return CodeMirror.lint && CodeMirror.lint[name] ? {
     getAnnotations: CodeMirror.lint[name],
@@ -30,9 +40,9 @@ function getLinterConfigForCodeMirror(name) {
   } : false;
 }
 
-function updateLinter(name) {
+function updateLinter(linter) {
   function updateEditors() {
-    const options = getLinterConfigForCodeMirror(name);
+    const options = getLinterConfigForCodeMirror(linter);
     CodeMirror.defaults.lint = options === 'null' ? false : options;
     editors.forEach(cm => {
       // set lint to "null" to disable
@@ -42,15 +52,12 @@ function updateLinter(name) {
       updateLintReport(cm, 200);
     });
   }
-  if (prefs.get('editor.linter') !== name) {
-    prefs.set('editor.linter', name);
-  }
   // load scripts
-  loadSelectedLinter(name).then(() => {
+  loadSelectedLinter(linter).then(() => {
     updateEditors();
   });
-  $('#stylelint-settings').style.display = name === 'stylelint' ?
-    'inline-block' : 'none';
+  $('#linter-settings').style.display = linter === 'null' ?
+    'none' : 'inline-block';
 }
 
 function updateLintReport(cm, delay) {
@@ -82,7 +89,6 @@ function updateLintReport(cm, delay) {
     let changed = false;
     let fixedOldIssues = false;
     scope.forEach(cm => {
-      const linter = prefs.get('editor.linter');
       const scopedState = cm.state.lint || {};
       const oldMarkers = scopedState.markedLast || {};
       const newMarkers = {};
@@ -92,12 +98,9 @@ function updateLintReport(cm, delay) {
           const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
           // stylelint rule added in parentheses at the end; extract it out for the stylelint info popup
-          const stylelintRule = linter === 'stylelint' ? ` data-rule ="${
-            info.message
-              .substring(info.message.lastIndexOf('('), info.message.length)
-              .replace(/[()]/g, '')}"`
-            : '';
-          // csslint
+          const lintRuleName = info.message
+            .substring(info.message.lastIndexOf('('), info.message.length)
+            .replace(/[()]/g, '');
           const title = escapeHtml(info.message);
           const message = title.length > 100 ? title.substr(0, 100) + '...' : title;
           if (isActiveLine || oldMarkers[pos] === message) {
@@ -105,7 +108,7 @@ function updateLintReport(cm, delay) {
           }
           newMarkers[pos] = message;
           return `<tr class="${info.severity}">
-            <td role="severity" ${stylelintRule}>
+            <td role="severity" data-rule="${lintRuleName}">
               <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
             </td>
             <td role="line">${info.from.line + 1}</td>
@@ -200,39 +203,60 @@ function toggleLintReport() {
 }
 
 function showLintHelp() {
+  const CSSLintRules = CSSLint.getRules();
+  const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
+  const makeLink = (url, txt) => `<a target="_blank" href="${url}">${txt}</a>`;
+  const linter = prefs.get('editor.linter');
+  const url = linter === 'stylelint'
+    ? 'https://stylelint.io/user-guide/rules/'
+    // some CSSLint rules do not have a url
+    : 'https://github.com/CSSLint/csslint/issues/535';
+  const rules = [];
+  let template;
   let list = '<ul class="rules">';
   let header = '';
-  if (prefs.get('editor.linter') === 'csslint') {
-    header = t('issuesHelp', '<a href="https://github.com/CSSLint/csslint" target="_blank">CSSLint</a>');
-    list += CSSLint.getRules().map(rule =>
-      `<li><b><a target="_blank" href="${rule.url}">${rule.name}</a></b><br>${rule.desc}</li>`
-    ).join('');
+  if (linter === 'csslint') {
+    header = t('issuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
+    template = ruleID => {
+      const rule = findCSSLintRule(ruleID);
+      return rule ? `<li><b>${makeLink(rule.url || url, rule.name)}</b><br>${rule.desc}</li>` : '';
+    };
   } else {
-    const rules = [];
-    const url = 'https://stylelint.io/user-guide/rules/';
-    header = t('issuesHelp', `<a href="${url}" target="_blank">stylelint</a>`);
-    // to-do: change this to a generator
-    $$('#lint td[role="severity"]').forEach(el => {
-      const rule = el.dataset.rule;
-      if (!rules.includes(rule)) {
-        list += `<li><a target="_blank" href="${url}${rule}/">${rule}</a></li>`;
-        rules.push(rule);
-      }
-    });
+    header = t('issuesHelp', makeLink(url, 'stylelint'));
+    template = rule => `<li>${makeLink(url + rule, rule)}</li>`;
   }
+  // to-do: change this to a generator
+  $$('#lint td[role="severity"]').forEach(el => {
+    const rule = el.dataset.rule;
+    if (!rules.includes(rule)) {
+      list += template(rule);
+      rules.push(rule);
+    }
+  });
   return showHelp(t('issues'), header + list + '</ul>');
 }
 
-function setupStylelintSettingsEvents(popup) {
+function checkLinter(linter = prefs.get('editor.linter')) {
+  linter = linter.toLowerCase();
+  if (prefs.get('editor.linter') !== linter) {
+    prefs.set('editor.linter', linter);
+  }
+  return linter;
+}
+
+function setupLinterSettingsEvents(popup) {
   $('.save', popup).addEventListener('click', event => {
     event.preventDefault();
+    const linter = checkLinter(event.target.dataset.linter);
     const json = tryJSONparse(popup.codebox.getValue());
     if (json && json.rules) {
-      setStylelintRules(json.rules);
       // it is possible to have stylelint rules popup open & switch to csslint
-      if (prefs.get('editor.linter') === 'stylelint') {
-        updateLinter('stylelint');
+      if (linter === 'stylelint') {
+        setStylelintRules(json.rules);
+      } else {
+        setCSSLintRules(json.rules);
       }
+      updateLinter(linter);
     } else {
       $('#help-popup .error').classList.add('show');
       clearTimeout($('#help-popup .contents').timer);
@@ -247,27 +271,42 @@ function setupStylelintSettingsEvents(popup) {
   });
   $('.reset', popup).addEventListener('click', event => {
     event.preventDefault();
-    setStylelintRules();
-    popup.codebox.setValue(JSON.stringify({rules: stylelintDefaultConfig.rules}, null, 2));
-    if (prefs.get('editor.linter') === 'stylelint') {
-      updateLinter('stylelint');
+    const linter = checkLinter(event.target.dataset.linter);
+    let rules;
+    if (linter === 'stylelint') {
+      setStylelintRules();
+      rules = {rules: stylelintDefaultConfig.rules};
+    } else {
+      setCSSLintRules();
+      rules = {rules: csslintDefaultRuleset};
     }
+    popup.codebox.setValue(JSON.stringify(rules, null, 2));
+    updateLinter(linter);
   });
 }
 
 function openStylelintSettings() {
-  BG.chromeLocal.getValue('editorStylelintRules').then(rules => {
+  const linter = prefs.get('editor.linter');
+  BG.chromeLocal.getValue(
+    linter === 'stylelint'
+      ? 'editorStylelintRules'
+      : 'editorCSSLintRules'
+    ).then(rules => {
     if (rules.length === 0) {
-      rules = setStylelintRules(rules);
+      rules = linter === 'stylelint'
+        ? setStylelintRules(rules)
+        : setCSSLintRules(rules);
     }
     const rulesString = JSON.stringify({rules: rules}, null, 2);
-    setupStylelintPopup(rulesString);
+    setupLinterPopup(rulesString);
   });
 }
 
-function setupStylelintPopup(rules) {
+function setupLinterPopup(rules) {
+  const linter = prefs.get('editor.linter');
+  const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
   function makeButton(className, text) {
-    return $element({tag: 'button', className, type: 'button', textContent: t(text)});
+    return $element({tag: 'button', className, type: 'button', textContent: t(text), dataset: {linter}});
   }
   function makeLink(url, textContent) {
     return $element({tag: 'a', target: '_blank', href: url, textContent});
@@ -276,21 +315,27 @@ function setupStylelintPopup(rules) {
     cm.setOption('mode', 'application/json');
     cm.setOption('lint', 'json');
   }
-  const popup = showCodeMirrorPopup(t('setStylelintRules'), $element({
+  const popup = showCodeMirrorPopup(t('setLinterRulesTitle', linterTitle), $element({
     appendChild: [
       $element({
         tag: 'p',
         appendChild: [
-          t('setStylelintLink') + ' ',
-          makeLink('https://stylelint.io/demo/', 'Stylelint')
+          t('setLinterLink') + ' ',
+          makeLink(
+            linter === 'stylelint'
+              ? 'https://stylelint.io/demo/'
+              : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
+            linterTitle
+          ),
+          linter === 'csslint' ? ' ' + t('showCSSLintSettings') : ''
         ]
       }),
       makeButton('save', 'styleSaveLabel'),
-      makeButton('reset', 'resetStylelintRules'),
+      makeButton('reset', 'resetLinterRules'),
       $element({
         tag: 'span',
         className: 'error',
-        textContent: t('setStylelintError')
+        textContent: t('setLinterError')
       })
     ]
   }));
@@ -304,7 +349,7 @@ function setupStylelintPopup(rules) {
   popup.codebox.focus();
   popup.codebox.setValue(rules);
   onDOMscripted(loadJSON).then(() => setJSONMode(popup.codebox));
-  setupStylelintSettingsEvents(popup);
+  setupLinterSettingsEvents(popup);
 }
 
 function loadSelectedLinter(name) {
@@ -319,7 +364,10 @@ function loadSelectedLinter(name) {
     );
   }
   if (name === 'csslint' && !window.CSSLint) {
-    scripts.push('vendor-overwrites/csslint/csslint-worker.js');
+    scripts.push(
+      'edit/csslint-ruleset.js',
+      'vendor-overwrites/csslint/csslint-worker.js'
+    );
   } else if (name === 'stylelint' && !window.stylelint) {
     scripts.push(
       'vendor-overwrites/stylelint/stylelint-bundle.min.js',
