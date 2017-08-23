@@ -301,7 +301,7 @@ function showFiltersStats({immediately} = {}) {
   }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
   const numTotal = BG.cachedStyles.list.length;
-  const numHidden = $$('.entry.hidden', installed).length;
+  const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = Math.min(numTotal - numHidden, installed.children.length);
   if (filtersSelector.numShown !== numShown ||
       filtersSelector.numTotal !== numTotal) {

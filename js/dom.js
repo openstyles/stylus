@@ -14,7 +14,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 {
   // display a full text tooltip on buttons with ellipsis overflow and no inherent title
   const addTooltipsToEllipsized = () => {
-    for (const btn of $$('button')) {
+    for (const btn of document.getElementsByTagName('button')) {
       if (btn.title && !btn.titleIsForEllipsis ||
           btn.clientWidth === btn.preresizeClientWidth) {
         continue;
