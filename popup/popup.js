@@ -124,7 +124,12 @@ function initPopup(url) {
       ignoreChromeError();
       // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
       // so we'll wait a bit to handle popup being invoked right after switching
-      if (retryCountdown > 0) {
+      if (
+        retryCountdown > 0 && (
+          tab.status !== 'complete' ||
+          FIREFOX && tab.url === 'about:blank'
+        )
+      ) {
         setTimeout(ping, 100, tab, --retryCountdown);
       } else {
         document.body.classList.add('unreachable');
