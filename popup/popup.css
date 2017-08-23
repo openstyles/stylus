@@ -8,11 +8,6 @@ body {
   background-color: #fff;
 }
 
-body > div:not(#installed) {
-  margin-left: 0.75em;
-  margin-right: 0.75em;
-}
-
 .firefox .chromium-only {
   display: none;
 }
@@ -92,10 +87,10 @@ body.blocked > DIV {
 
 #installed .actions a {
   display: inline-flex;
+  height: 24px;
+  width: 23px;
   justify-content: center;
   align-items: center;
-  height: 18px;
-  width: 18px;
   cursor: pointer;
   text-decoration: none;
 }
@@ -192,70 +187,72 @@ body.blocked > DIV {
 .svg-icon {
   pointer-events: none;
   transition: fill .5s;
-  width: 14px;
-  height: 16px;
   fill: #666;
 }
 
 .svg-icon.on, .svg-icon.off {
+  width: 23px;
+  height: 20px;
+}
+
+a:hover .svg-icon.on, .svg-icon.off {
+  fill: #999;
+}
+
+a:hover .svg-icon.off {
+  fill: #666;
+}
+
+.svg-icon.remove {
   width: 18px;
   height: 18px;
 }
 
-.svg-icon.find-styles, .svg-icon.open-manager, .svg-icon.open-options, .svg-icon.open-shortcuts {
+.svg-icon.write-style {
+  fill: #000;
+  width: 20px;
+  height: 20px;
+}
+
+.svg-icon.open-manager {
+  width: 20px;
+  height: 20px;
+}
+
+.svg-icon.open-options {
   width: 18px;
   height: 18px;
-  fill: hsl(0, 0%, 28%);
 }
 
-.svg-icon.on {
-  fill: hsl(0, 0%, 28%);
+.svg-icon.find-styles {
+  width: 20px;
+  height: 20px;
 }
 
-.svg-icon.off {
-  fill: hsl(0, 100%, 45%);
+.svg-icon.open-shortcuts {
+  width: 24px;
+  height: 24px;
 }
 
-#installed.disabled .svg-icon.on {
-  fill: hsl(45, 100%, 38%);
+#installed .actions a.enable .svg-icon {
+  transform: matrix(-1, 0, 0, 1, 0, 0);
 }
-
 
 #disableAll-label {
   cursor: pointer;
 }
 
-#disableAll-label:hover .svg-icon.all-off, #disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label:hover .svg-icon.all-off, #installed.disabled a:hover .svg-icon.on {
-  fill: hsl(0, 0%, 0%);
-}
-
-#disableAll-label .svg-icon.all-off {
+#disableAll-label .svg-icon.disable-all {
   height: 18px;
   width: 18px;
-  fill: hsl(0, 0%, 28%);
 }
 
-#disable-all-wrapper input[type="checkbox"]:checked + .main-controls .svg-icon.all-off {
-  width: 18px;
-  fill: hsl(0, 100%, 45%);
+#disable-all-wrapper input[type="checkbox"]:not(:checked) + .main-controls .svg-icon.disable-all.all-off {
+  display: none;
 }
 
-#disableAll-label::before {
-  content: "";
-  border-radius: 3px;
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  background: #000 url(/images/icon/16.png)no-repeat center;
-  border: #000 solid;
-  border-width: 1px 0;
-  box-shadow: 0 0 3px #000, 0 0 3px hsla(0, 0%, 0%, .5);
-  margin: 0 4px 0 0;
-  transition: background .3s, border .3s, box-shadow .3s;
-}
-
-#disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label::before {
-  background: #000 url(/images/icon/16x.png)no-repeat center;
+#disable-all-wrapper input[type="checkbox"]:checked + .main-controls .svg-icon.disable-all.all-on {
+  display: none;
 }
 
 #installed .actions a.delete .svg-icon {
@@ -263,11 +260,16 @@ body.blocked > DIV {
 }
 
 #installed .actions a.enable, #installed .actions a.disable {
-  margin: 0 2px;
+  margin: 0 4px;
 }
 
-a:hover .svg-icon {
+a:hover .svg-icon, #disableAll-label:hover .svg-icon {
   fill: #000;
+}
+
+.style-name:hover {
+  color: #000;
+  text-decoration: underline;
 }
 
 body > .actions {
@@ -279,15 +281,22 @@ body > .actions {
 body > .actions > .actions-inner {
   display: flex;
   flex-direction: row;
+  padding-left: 6px;
 }
 
 body > .actions > .actions-inner > div[id] {
   margin-right: 14px;
+  height: 24px;
+  width: 24px;
 }
 
 body > .actions > .actions-inner #disableAll-label, body > .actions > .actions-inner a{
   display: inline-flex;
   cursor: pointer;
+  height: 24px;
+  width: 24px;
+  justify-content: center;
+  align-items: center;
 }
 
 .actions > div {
@@ -326,7 +335,7 @@ body.blocked .actions > .left-gutter {
 }
 
 #write-style-for {
-  margin-right: .6ex
+  margin: 0 4px 0 10px;
 }
 
 .write-style-link {
@@ -342,6 +351,7 @@ body.blocked .actions > .left-gutter {
   display: block;
   flex-grow: 9;
   min-width: 200px;
+  line-height: 20px;
 }
 
 /* "breadcrumbs" 'new style' links */
