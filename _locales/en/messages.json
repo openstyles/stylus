@@ -135,6 +135,14 @@
     "message": "Double-click to maximize/restore the height",
     "description": "Tooltip for the resize grip in style editor"
   },
+  "dysfunctional": {
+    "message": "Stylus cannot function because Firefox is either in private mode or is applying its website cookies policy to IndexedDB storage used by Stylus, which erroneously marks the secure moz-extension:// origin as insecure even though WebExtensions aren't websites and Stylus doesn't use cookies.\n\n1. Open Firefox options\n2. Go to 'Privacy & Security'\n3. Set 'History' mode to 'Use custom settings'\n4. Click 'Exceptions'\n5. Paste our manifest URL and click 'Allow'\n6. Click 'Save settings'\n7. Uncheck 'Always use private browsing mode'\n\nThe actual manifest URL is shown below.\nYou can also find it on about:debugging page.",
+    "description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+  },
+  "dysfunctionalBackgroundConnection": {
+    "message": "Cannot function properly because of a known bug in this version of Firefox: chrome.extension.getBackgroundPage() doesn't return a valid result",
+    "description": "Displayed in style manager when unable to connect to the background page"
+  },
   "genericDisabledLabel": {
     "message": "Disabled",
     "description": "Used in various lists/options to indicate that something is disabled"

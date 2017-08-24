@@ -39,6 +39,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 // add favicon in Firefox
 // eslint-disable-next-line no-unused-expressions
 navigator.userAgent.includes('Firefox') && setTimeout(() => {
+  dieOnDysfunction();
   const iconset = ['', 'light/'][prefs.get('iconset')] || '';
   for (const size of [38, 32, 19, 16]) {
     document.head.appendChild($element({
@@ -171,5 +172,31 @@ function retranslateCSS(selectorToMessageMap) {
     if (msg) {
       rule.style.content = '"' + msg.replace(/__MSG_(\w+)__/g, (_, id) => t(id)) + '"';
     }
+  }
+}
+
+
+function dieOnDysfunction() {
+  function die() {
+    location.href = '/msgbox/dysfunctional.html';
+    throw 0;
+  }
+  (() => {
+    try {
+      return indexedDB;
+    } catch (e) {
+      die();
+    }
+  })();
+  Object.assign(indexedDB.open('test'), {
+    onerror: die,
+    onupgradeneeded: indexedDB.deleteDatabase('test'),
+  });
+  // TODO: fallback to sendMessage in FF since private windows can't get bg page
+  chrome.windows.getCurrent(wnd => wnd.incognito && die());
+  // check if privacy settings were fixed but the extension wasn't reloaded
+  const bg = chrome.extension.getBackgroundPage();
+  if (bg && !(bg.cachedStyles || {}).list) {
+    chrome.runtime.reload();
   }
 }

@@ -59,7 +59,7 @@ function dbExec(method, data) {
         }
       },
       onerror(event) {
-        console.warn(event.target.errorCode);
+        console.warn(event.target.error || event.target.errorCode);
         reject(event);
       },
       onupgradeneeded(event) {

@@ -35,7 +35,8 @@ Promise.all([
 });
 
 if (FIREFOX) {
-  // TODO: remove when this bug is fixed in FF
+  // TODO: remove when these bugs are fixed in FF
+  dieOnNullBackground();
   retranslateCSS({
     '.disabled h2::after':
       '__MSG_genericDisabledLabel__',
@@ -537,4 +538,25 @@ function usePrefsDuringPageLoad() {
   }
   startObserver();
   onDOMready().then(() => observer.disconnect());
+}
+
+
+function dieOnNullBackground() {
+  if (BG) {
+    return;
+  }
+  chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
+    if (health && !chrome.extension.getBackgroundPage()) {
+      onDOMready().then(() => {
+        chrome.runtime.sendMessage({method: 'getStyles'}, showStyles);
+        messageBox({
+          title: 'Stylus',
+          className: 'danger center',
+          contents: t('dysfunctionalBackgroundConnection'),
+          onshow: () => $('#message-box-close-icon').remove(),
+        });
+        document.documentElement.style.pointerEvents = 'none';
+      });
+    }
+  });
 }
