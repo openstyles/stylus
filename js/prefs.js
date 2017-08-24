@@ -74,6 +74,9 @@ var prefs = new function Prefs() {
     specific: new Map(),
   };
 
+  // FF may think localStorage is a cookie or that it's not secure
+  const localStorage = tryCatch(() => localStorage) ? window.localStorage : {};
+
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
 
@@ -203,7 +206,7 @@ var prefs = new function Prefs() {
       }
     };
 
-    getSync().get('settings', ({settings}) => importFromSync(settings));
+    getSync().get('settings', ({settings} = {}) => importFromSync(settings));
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'sync' && 'settings' in changes) {

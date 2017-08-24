@@ -5,10 +5,8 @@
 var browserCommands, contextMenus;
 
 // *************************************************************************
-// preload the DB and report errors
-dbExec().catch((...args) => {
-  args.forEach(arg => 'message' in arg && console.error(arg.message));
-});
+// preload the DB
+tryCatch(getStyles);
 
 // *************************************************************************
 // register all listeners

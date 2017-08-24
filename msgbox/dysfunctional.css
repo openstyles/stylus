@@ -1,0 +1,21 @@
+html {
+  height: 100vh;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: pre-wrap;
+  background-color: #555;
+  box-sizing: border-box;
+  border: 2vw solid black;
+}
+
+body {
+  margin: 2em;
+  color: white;
+  max-width: 600px;
+}
+
+div {
+  color: antiquewhite;
+}
