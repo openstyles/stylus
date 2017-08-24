@@ -95,6 +95,10 @@ body.blocked > DIV {
   text-decoration: none;
 }
 
+#installed .actions a.delete {
+  width: 18px;
+}
+
 /* entry */
 
 .entry {
@@ -190,17 +194,53 @@ body.blocked > DIV {
   fill: #666;
 }
 
-.svg-icon.on, .svg-icon.off {
+a:hover .svg-icon.remove {
+  fill: #666;
+}
+
+.svg-icon.remove  {
+  fill: #999;
+}
+
+.svg-icon.style-enabled, .svg-icon.style-disabled {
   width: 23px;
   height: 20px;
 }
 
-a:hover .svg-icon.on, .svg-icon.off {
-  fill: #999;
+#installed .actions a.enable .svg-icon {
+  transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
-a:hover .svg-icon.off {
-  fill: #666;
+#installed .actions a.enable, #installed .actions a.disable {
+	position: relative;
+}
+
+#installed .actions a.enable:before, #installed .actions a.disable:before {
+  content: '';
+  height: 12px;
+  width: 21px;
+  position: absolute;
+  top: 6px;
+  left: 1px;
+  border-radius: 10px;
+  transition: background-color .5s;
+  z-index: -1;
+}
+
+#installed .actions a.enable:before {
+  background-color: hsl(0, 0%, 88%);
+}
+
+#installed .actions a.disable:before {
+  background-color: hsl(0, 0%, 100%);
+}
+
+a:hover .svg-icon.style-enabled, .svg-icon.style-enabled {
+  fill: hsl(0, 0%, 60%);
+}
+
+a:hover .svg-icon.style-disabled, .svg-icon.style-disabled {
+  fill: hsl(0, 0%, 44%);
 }
 
 .svg-icon.remove {
@@ -215,18 +255,18 @@ a:hover .svg-icon.off {
 }
 
 .svg-icon.open-manager {
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  height: 23px;
 }
 
 .svg-icon.open-options {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .svg-icon.find-styles {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 
 .svg-icon.open-shortcuts {
@@ -234,29 +274,23 @@ a:hover .svg-icon.off {
   height: 24px;
 }
 
-#installed .actions a.enable .svg-icon {
-  transform: matrix(-1, 0, 0, 1, 0, 0);
-}
-
 #disableAll-label {
   cursor: pointer;
 }
 
 #disableAll-label .svg-icon.disable-all {
-  height: 18px;
-  width: 18px;
+  height: 22px;
+  width: 22px;
+  transition: transform .3s, fill .5s;
 }
 
-#disable-all-wrapper input[type="checkbox"]:not(:checked) + .main-controls .svg-icon.disable-all.all-off {
-  display: none;
+#disable-all-wrapper input[type="checkbox"]:checked + .main-controls .svg-icon.disable-all {
+  fill: #999;
+  transform: rotate(180deg);
 }
 
-#disable-all-wrapper input[type="checkbox"]:checked + .main-controls .svg-icon.disable-all.all-on {
-  display: none;
-}
-
-#installed .actions a.delete .svg-icon {
-  margin-top: -1px;
+#disable-all-wrapper input[type="checkbox"]:checked + .main-controls #disableAll-label:hover .svg-icon.disable-all {
+  fill: #666;
 }
 
 #installed .actions a.enable, #installed .actions a.disable {
@@ -264,7 +298,7 @@ a:hover .svg-icon.off {
 }
 
 a:hover .svg-icon, #disableAll-label:hover .svg-icon {
-  fill: #000;
+  fill: #999;
 }
 
 .style-name:hover {
@@ -290,7 +324,27 @@ body > .actions > .actions-inner > div[id] {
   width: 24px;
 }
 
-body > .actions > .actions-inner #disableAll-label, body > .actions > .actions-inner a{
+#manage {
+  order: 1;
+}
+
+#find-styles {
+  order: 2;
+}
+
+#options {
+  order: 3;
+}
+
+#shortcuts {
+  order: 4;
+}
+
+#disable-all-wrapper {
+  order: 5;
+}
+
+body > .actions > .actions-inner #disableAll-label, body > .actions > .actions-inner a {
   display: inline-flex;
   cursor: pointer;
   height: 24px;
