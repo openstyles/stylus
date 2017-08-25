@@ -9,6 +9,7 @@
   background-color: rgba(0, 0, 0, .25);
   animation: fadein .25s ease-in-out;
   z-index: 9999990;
+  -moz-user-select: none;
 }
 
 #message-box > div {
@@ -24,6 +25,7 @@
   background-color: white;
   box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.35);
   z-index: 9999991;
+  -moz-user-select: text;
 }
 
 #message-box.fadeout {
