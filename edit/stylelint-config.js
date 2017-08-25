@@ -10,12 +10,10 @@ window.stylelintDefaultConfig = (defaultSeverity => ({
     'at-rule-no-unknown': [true, defaultSeverity],
     'block-no-empty': [true, defaultSeverity],
     'color-no-invalid-hex': [true, defaultSeverity],
-    'comment-no-empty': [true, defaultSeverity],
     'declaration-block-no-duplicate-properties': [true, {
       'ignore': ['consecutive-duplicates-with-different-values'],
       'severity': 'warning'
     }],
-    'declaration-block-no-redundant-longhand-properties': [true, defaultSeverity],
     'declaration-block-no-shorthand-property-overrides': [true, defaultSeverity],
     'font-family-no-duplicate-names': [true, defaultSeverity],
     'function-calc-no-unspaced-operator': [true, defaultSeverity],
@@ -30,9 +28,13 @@ window.stylelintDefaultConfig = (defaultSeverity => ({
     'selector-pseudo-class-no-unknown': [true, defaultSeverity],
     'selector-pseudo-element-no-unknown': [true, defaultSeverity],
     'selector-type-no-unknown': [true, defaultSeverity],
-    'shorthand-property-no-redundant-values': [true, defaultSeverity],
     'string-no-newline': [true, defaultSeverity],
-    'unit-no-unknown': [true, defaultSeverity]
+    'unit-no-unknown': [true, defaultSeverity],
+
+    // ** non-essential rules
+    'comment-no-empty': false,
+    'declaration-block-no-redundant-longhand-properties': false,
+    'shorthand-property-no-redundant-values': false,
 
     // ** stylistic rules **
     /*
