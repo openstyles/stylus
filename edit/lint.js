@@ -331,7 +331,7 @@ function setupLinterPopup(rules) {
         ]
       }),
       makeButton('save', 'styleSaveLabel'),
-      makeButton('reset', 'resetLinterRules'),
+      makeButton('reset', 'genericResetLabel'),
       $element({
         tag: 'span',
         className: 'error',
