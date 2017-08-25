@@ -291,7 +291,7 @@ function openStylelintSettings() {
     linter === 'stylelint'
       ? 'editorStylelintRules'
       : 'editorCSSLintRules'
-    ).then(rules => {
+  ).then(rules => {
     if (rules.length === 0) {
       rules = linter === 'stylelint'
         ? setStylelintRules(rules)
