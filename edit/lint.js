@@ -1,4 +1,4 @@
-/* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup */
+/* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup messageBox */
 /* global stylelintDefaultConfig csslintDefaultRuleset onDOMscripted injectCSS require */
 'use strict';
 
@@ -56,8 +56,7 @@ function updateLinter(linter) {
   loadSelectedLinter(linter).then(() => {
     updateEditors();
   });
-  $('#linter-settings').style.display = linter === 'null' ?
-    'none' : 'inline-block';
+  $('#linter-settings').style.display = linter === 'null' ? 'none' : 'inline-block';
 }
 
 function updateLintReport(cm, delay) {
@@ -236,6 +235,27 @@ function showLintHelp() {
   return showHelp(t('issues'), header + list + '</ul>');
 }
 
+function showLinterErrorMessage(title, contents) {
+  messageBox({
+    title,
+    contents,
+    className: 'danger center lint-config',
+    buttons: [t('confirmOK')],
+  });
+}
+
+function showSavedMessage() {
+  $('#help-popup .saved-message').classList.add('show');
+  clearTimeout($('#help-popup .contents').timer);
+  $('#help-popup .contents').timer = setTimeout(() => {
+    // popup may be closed at this point
+    const msg = $('#help-popup .saved-message');
+    if (msg) {
+      msg.classList.remove('show');
+    }
+  }, 2000);
+}
+
 function checkLinter(linter = prefs.get('editor.linter')) {
   linter = linter.toLowerCase();
   if (prefs.get('editor.linter') !== linter) {
@@ -244,29 +264,41 @@ function checkLinter(linter = prefs.get('editor.linter')) {
   return linter;
 }
 
+function checkRules(linter, rules) {
+  const invalid = [];
+  const linterRules = linter === 'stylelint'
+    ? Object.keys(window.stylelint.rules)
+    : CSSLint.getRules().map(rule => rule.id);
+  Object.keys(rules).forEach(rule => {
+    if (!linterRules.includes(rule)) {
+      invalid.push(rule);
+    }
+  });
+  return invalid;
+}
+
 function setupLinterSettingsEvents(popup) {
   $('.save', popup).addEventListener('click', event => {
     event.preventDefault();
     const linter = checkLinter(event.target.dataset.linter);
     const json = tryJSONparse(popup.codebox.getValue());
     if (json && json.rules) {
-      // it is possible to have stylelint rules popup open & switch to csslint
+      const invalid = checkRules(linter, json.rules);
+      if (invalid.length) {
+        return showLinterErrorMessage(
+          linter,
+          t('setLinterInvalidRuleError') + `<ul><li>${invalid.join('</li><li>')}</li></ul>`
+        );
+      }
       if (linter === 'stylelint') {
         setStylelintRules(json.rules);
       } else {
         setCSSLintRules(json.rules);
       }
       updateLinter(linter);
+      showSavedMessage();
     } else {
-      $('#help-popup .error').classList.add('show');
-      clearTimeout($('#help-popup .contents').timer);
-      $('#help-popup .contents').timer = setTimeout(() => {
-        // popup may be closed at this point
-        const error = $('#help-popup .error');
-        if (error) {
-          error.classList.remove('show');
-        }
-      }, 3000);
+      showLinterErrorMessage(linter, t('setLinterError'));
     }
   });
   $('.reset', popup).addEventListener('click', event => {
@@ -334,8 +366,8 @@ function setupLinterPopup(rules) {
       makeButton('reset', 'genericResetLabel'),
       $element({
         tag: 'span',
-        className: 'error',
-        textContent: t('setLinterError')
+        className: 'saved-message',
+        textContent: t('genericSavedMessage')
       })
     ]
   }));
@@ -357,10 +389,12 @@ function loadSelectedLinter(name) {
   if (name !== 'null' && !$('script[src*="css-lint.js"]')) {
     // inject css
     injectCSS('vendor/codemirror/addon/lint/lint.css');
+    injectCSS('msgbox/msgbox.css');
     // load CodeMirror lint code
     scripts.push(
       'vendor/codemirror/addon/lint/lint.js',
-      'vendor-overwrites/codemirror/addon/lint/css-lint.js'
+      'vendor-overwrites/codemirror/addon/lint/css-lint.js',
+      'msgbox/msgbox.js'
     );
   }
   if (name === 'csslint' && !window.CSSLint) {

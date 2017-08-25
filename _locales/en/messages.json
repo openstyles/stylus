@@ -159,6 +159,10 @@
     "message": "Reset",
     "description": "Used in various parts of UI to indicate that something may be reset to its original state"
   },
+  "genericSavedMessage": {
+    "message": "Saved",
+    "description": "Used in various parts of the UI to indicate that something was saved"
+  },
   "confirmNo": {
     "message": "No",
     "description": "'No' button in a confirm dialog"
@@ -530,6 +534,10 @@
   "setLinterError": {
     "message": "Invalid JSON format",
     "description": "Setting linter rules with invalid JSON message"
+  },
+  "setLinterInvalidRuleError": {
+    "message": "Not saved due to these invalid rules:",
+    "description": "Invalid linter rules will show a message followed by a list of invalid rules"
   },
   "showCSSLintSettings": {
     "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",

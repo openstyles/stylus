@@ -374,16 +374,13 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   right: 4px;
   top: .5em;
 }
-#help-popup .error {
+#help-popup .saved-message {
   display: none;
+  color: #090;
   margin-left: 10px;
-  color: #900;
   font-weight: bold;
 }
-#help-popup .error a {
-  color: #f00;
-}
-#help-popup .error.show,
+#help-popup .saved-message.show,
 #options .linter-settings {
   display: inline-block;
 }
@@ -465,6 +462,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   padding-right: 0.25rem;
 }
 #lint td[role="message"] {
+  text-align: left;
+}
+#message-box.center.lint-config #message-box-contents {
   text-align: left;
 }
 
