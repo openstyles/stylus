@@ -25,7 +25,7 @@
       return found;
     }
     /* STYLUS: hack start (part 1) */
-    return BG.chromeLocal.getValue('editorCSSLintRules').then((ruleset = csslintDefaultRuleset) => {
+    return BG.chromeSync.getValue('editorCSSLintRules').then((ruleset = csslintDefaultRuleset) => {
       // csslintDefaultRuleset stored in csslint-ruleset.js & loaded by edit/lint.js
       if (Object.keys(ruleset).length === 0) {
         ruleset = Object.assign({}, csslintDefaultRuleset);
@@ -73,7 +73,7 @@
     const found = [];
     window.stylelint = require('stylelint');
     if (window.stylelint) {
-      return BG.chromeLocal.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
+      return BG.chromeSync.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
         // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit/lint.js
         if (Object.keys(rules).length === 0) {
           rules = stylelintDefaultConfig.rules;

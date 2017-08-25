@@ -13,23 +13,24 @@ function initLint() {
     $('#lint h2').addEventListener('click', toggleLintReport);
   }
   // initialize storage of rules
-  BG.chromeLocal.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
-  BG.chromeLocal.getValue('editorCSSLintRules').then(ruleset => setCSSLintRules(ruleset));
+  BG.chromeSync.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
+  BG.chromeSync.getValue('editorCSSLintRules').then(ruleset => setCSSLintRules(ruleset));
 }
 
-function setStylelintRules(rules = []) {
-  if (Object.keys(rules).length === 0 && typeof stylelintDefaultConfig !== 'undefined') {
+function setStylelintRules(rules) {
+  // can't use default parameters, because rules may be null
+  if (Object.keys(rules || []).length === 0 && typeof stylelintDefaultConfig !== 'undefined') {
     rules = deepCopy(stylelintDefaultConfig.rules);
   }
-  BG.chromeLocal.setValue('editorStylelintRules', rules);
+  BG.chromeSync.setValue('editorStylelintRules', rules);
   return rules;
 }
 
-function setCSSLintRules(ruleset = []) {
-  if (Object.keys(ruleset).length === 0 && typeof csslintDefaultRuleset !== 'undefined') {
+function setCSSLintRules(ruleset) {
+  if (Object.keys(ruleset || []).length === 0 && typeof csslintDefaultRuleset !== 'undefined') {
     ruleset = Object.assign({}, csslintDefaultRuleset);
   }
-  BG.chromeLocal.setValue('editorCSSLintRules', ruleset);
+  BG.chromeSync.setValue('editorCSSLintRules', ruleset);
   return ruleset;
 }
 
@@ -319,12 +320,12 @@ function setupLinterSettingsEvents(popup) {
 
 function openStylelintSettings() {
   const linter = prefs.get('editor.linter');
-  BG.chromeLocal.getValue(
+  BG.chromeSync.getValue(
     linter === 'stylelint'
       ? 'editorStylelintRules'
       : 'editorCSSLintRules'
   ).then(rules => {
-    if (rules.length === 0) {
+    if (!rules || rules.length === 0) {
       rules = linter === 'stylelint'
         ? setStylelintRules(rules)
         : setCSSLintRules(rules);
