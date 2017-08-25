@@ -203,8 +203,6 @@ function toggleLintReport() {
 }
 
 function showLintHelp() {
-  const CSSLintRules = CSSLint.getRules();
-  const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
   const makeLink = (url, txt) => `<a target="_blank" href="${url}">${txt}</a>`;
   const linter = prefs.get('editor.linter');
   const url = linter === 'stylelint'
@@ -216,6 +214,8 @@ function showLintHelp() {
   let list = '<ul class="rules">';
   let header = '';
   if (linter === 'csslint') {
+    const CSSLintRules = CSSLint.getRules();
+    const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
     header = t('issuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
     template = ruleID => {
       const rule = findCSSLintRule(ruleID);
