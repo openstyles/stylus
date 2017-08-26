@@ -418,7 +418,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #help-popup .rules {
   padding: 0 15px;
 }
-#help-popup .save {
+#help-popup button {
   margin-right: 3px;
 }
 

@@ -322,6 +322,10 @@ function setupLinterSettingsEvents(popup) {
     popup.codebox.setValue(stringifyRules(rules));
     updateLinter(linter);
   });
+  $('.cancel', popup).addEventListener('click', event => {
+    event.preventDefault();
+    $('.dismiss').dispatchEvent(new Event('click'));
+  });
 }
 
 function openStylelintSettings() {
@@ -370,6 +374,7 @@ function setupLinterPopup(rules) {
         ]
       }),
       makeButton('save', 'styleSaveLabel'),
+      makeButton('cancel', 'confirmCancel'),
       makeButton('reset', 'genericResetLabel'),
       $element({
         tag: 'span',
