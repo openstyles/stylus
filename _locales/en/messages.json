@@ -362,9 +362,9 @@
       }
     }
   },
-  "stylelintConfig": {
-    "message": "Open a popup to configure stylelint rules",
-    "description": "Tooltip on an icon to indicate it opens a popup with stylelint configuration settings"
+  "linterConfigTitle": {
+    "message": "Open a popup to configure the linter rules",
+    "description": "Tooltip on an icon to indicate it opens a popup with linter configuration settings"
   },
   "manageFilters": {
     "message": "Filters",
