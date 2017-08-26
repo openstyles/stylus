@@ -279,7 +279,8 @@ function checkRules(linter, rules) {
 }
 
 function stringifyRules(rules) {
-  return JSON.stringify(rules, null, 2);
+  return JSON.stringify(rules, null, 2)
+    .replace(/,\n\s+\{\n\s+("severity":\s"\w+")\n\s+\}/g, ', {$1}');
 }
 
 function setupLinterSettingsEvents(popup) {
