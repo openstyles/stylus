@@ -178,12 +178,15 @@ function openURL({url, currentWindow = true}) {
         }
       }
       getActiveTab().then(tab => {
-        if (tab && tab.url === 'chrome://newtab/'
-        // prevent redirecting incognito NTP to a chrome URL as it crashes Chrome
-        && (!url.startsWith('chrome') || !tab.incognito)) {
+        const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
+        if (tab && tab.url === 'chrome://newtab/' && !chromeInIncognito) {
+          // update current NTP, except for chrome:// or chrome-extension:// in incognito
           chrome.tabs.update({url}, resolve);
         } else {
-          chrome.tabs.create(tab && !FIREFOX ? {url, openerTabId: tab.id} : {url}, resolve);
+          // create a new tab
+          const openerSupported = !FIREFOX && tab && !chromeInIncognito;
+          const options = openerSupported ? {url, openerTabId: tab.id} : {url};
+          chrome.tabs.create(options, resolve);
         }
       });
     });
