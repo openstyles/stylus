@@ -350,8 +350,14 @@ function openStylelintSettings() {
 function setupLinterPopup(rules) {
   const linter = prefs.get('editor.linter');
   const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
-  function makeButton(className, text) {
-    return $element({tag: 'button', className, type: 'button', textContent: t(text), dataset: {linter}});
+  function makeButton(className, text, options = {}) {
+    return $element(Object.assign(options, {
+      tag: 'button',
+      className,
+      type: 'button',
+      textContent: t(text),
+      dataset: {linter}
+    }));
   }
   function makeLink(url, textContent) {
     return $element({tag: 'a', target: '_blank', href: url, textContent});
@@ -377,7 +383,7 @@ function setupLinterPopup(rules) {
       }),
       makeButton('save', 'styleSaveLabel'),
       makeButton('cancel', 'confirmCancel'),
-      makeButton('reset', 'genericResetLabel'),
+      makeButton('reset', 'genericResetLabel', {title: t('setLinterResetMessage')}),
       $element({
         tag: 'span',
         className: 'saved-message',

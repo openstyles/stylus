@@ -539,6 +539,10 @@
     "message": "Not saved due to these invalid rules:",
     "description": "Invalid linter rules will show a message followed by a list of invalid rules"
   },
+  "setLinterResetMessage": {
+    "message": "To undo accidental reset, press Ctrl-Z (or Cmd-Z) in the text box",
+    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+  },
   "showCSSLintSettings": {
     "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
     "description": "CSSLint rule settings values"
