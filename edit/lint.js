@@ -278,13 +278,17 @@ function checkRules(linter, rules) {
   return invalid;
 }
 
+function stringifyRules(rules) {
+  return JSON.stringify(rules, null, 2);
+}
+
 function setupLinterSettingsEvents(popup) {
   $('.save', popup).addEventListener('click', event => {
     event.preventDefault();
     const linter = checkLinter(event.target.dataset.linter);
     const json = tryJSONparse(popup.codebox.getValue());
-    if (json && json.rules) {
-      const invalid = checkRules(linter, json.rules);
+    if (json) {
+      const invalid = checkRules(linter, json);
       if (invalid.length) {
         return showLinterErrorMessage(
           linter,
@@ -292,9 +296,9 @@ function setupLinterSettingsEvents(popup) {
         );
       }
       if (linter === 'stylelint') {
-        setStylelintRules(json.rules);
+        setStylelintRules(json);
       } else {
-        setCSSLintRules(json.rules);
+        setCSSLintRules(json);
       }
       updateLinter(linter);
       showSavedMessage();
@@ -308,12 +312,12 @@ function setupLinterSettingsEvents(popup) {
     let rules;
     if (linter === 'stylelint') {
       setStylelintRules();
-      rules = {rules: stylelintDefaultConfig.rules};
+      rules = stylelintDefaultConfig.rules;
     } else {
       setCSSLintRules();
-      rules = {rules: csslintDefaultRuleset};
+      rules = csslintDefaultRuleset;
     }
-    popup.codebox.setValue(JSON.stringify(rules, null, 2));
+    popup.codebox.setValue(stringifyRules(rules));
     updateLinter(linter);
   });
 }
@@ -330,7 +334,7 @@ function openStylelintSettings() {
         ? setStylelintRules(rules)
         : setCSSLintRules(rules);
     }
-    const rulesString = JSON.stringify({rules: rules}, null, 2);
+    const rulesString = stringifyRules(rules);
     setupLinterPopup(rulesString);
   });
 }
