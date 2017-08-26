@@ -1,4 +1,5 @@
-/* global CodeMirror CSSLint editors makeSectionVisible showHelp showCodeMirrorPopup messageBox */
+/* global CodeMirror messageBox */
+/* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global stylelintDefaultConfig csslintDefaultRuleset onDOMscripted injectCSS require */
 'use strict';
 
@@ -214,7 +215,7 @@ function showLintHelp() {
   let list = '<ul class="rules">';
   let header = '';
   if (linter === 'csslint') {
-    const CSSLintRules = CSSLint.getRules();
+    const CSSLintRules = window.CSSLint.getRules();
     const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
     header = t('issuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
     template = ruleID => {
@@ -269,7 +270,7 @@ function checkRules(linter, rules) {
   const invalid = [];
   const linterRules = linter === 'stylelint'
     ? Object.keys(window.stylelint.rules)
-    : CSSLint.getRules().map(rule => rule.id);
+    : window.CSSLint.getRules().map(rule => rule.id);
   Object.keys(rules).forEach(rule => {
     if (!linterRules.includes(rule)) {
       invalid.push(rule);
