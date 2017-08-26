@@ -43,12 +43,10 @@ function messageBox({
   }
 
   function resolveWith(value) {
-    if (messageBox.resolve) {
-      unbindGlobalListeners();
-      setTimeout(messageBox.resolve, 0, value);
-      animateElement(messageBox.element, {className: 'fadeout', remove: true})
-        .then(removeSelf);
-    }
+    unbindGlobalListeners();
+    setTimeout(messageBox.resolve, 0, value);
+    animateElement(messageBox.element, {className: 'fadeout', remove: true})
+      .then(removeSelf);
   }
 
   function createElement() {
