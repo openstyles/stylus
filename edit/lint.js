@@ -322,7 +322,6 @@ function setupLinterSettingsEvents(popup) {
     }
     popup.codebox.setValue(stringifyRules(rules));
     popup.codebox.focus();
-    updateLinter(linter);
   });
   $('.cancel', popup).addEventListener('click', event => {
     event.preventDefault();
