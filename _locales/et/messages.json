@@ -27,7 +27,7 @@
 		"message": "Ekspordi",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Vead",
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
@@ -652,7 +652,7 @@
 		"message": "Valikute liides",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
+	"linterIssuesHelp": {
 		"message": "$link$ poolt leitud vead nende lubatud reeglitega:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
 		"placeholders": {

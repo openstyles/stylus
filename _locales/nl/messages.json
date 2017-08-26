@@ -11,7 +11,7 @@
 		"message": "Exporteren",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Problemen",
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
@@ -344,7 +344,7 @@
 		"message": "Controleer alle stijlen op updates",
 		"description": "Label for the button to check all styles for updates"
 	},
-	"issuesHelp": {
+	"linterIssuesHelp": {
 		"message": "De door stylelint gevonden problemen, $link$, met deze ingeschakelde regels:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
 		"placeholders": {

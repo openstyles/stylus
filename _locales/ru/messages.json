@@ -27,7 +27,7 @@
 		"message": "Экспорт",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Проблемы",
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
@@ -656,7 +656,7 @@
 		"message": "Настройки",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
+	"linterIssuesHelp": {
 		"message": "Проблемы и предупреждения по версии $link$ с данными включенными правилами:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
 		"placeholders": {

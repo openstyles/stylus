@@ -11,7 +11,7 @@
 		"message": "Извези",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Проблеми",
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
@@ -356,7 +356,7 @@
 		"message": "Проверите ажурирања за све стилове",
 		"description": "Label for the button to check all styles for updates"
 	},
-	"issuesHelp": {
+	"linterIssuesHelp": {
 		"message": "Проблем пронађен од стране $link$ са овим омогућеним правилима:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
 		"placeholders": {

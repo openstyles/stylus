@@ -1571,7 +1571,7 @@ function fromMozillaFormat() {
       firstAddedCM.focus();
 
       if (errors.length) {
-        showHelp(t('issues'), $element({
+        showHelp(t('linterIssues'), $element({
           tag: 'pre',
           textContent: errors.join('\n'),
         }));

@@ -349,11 +349,23 @@
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
   },
-  "issues": {
+  "linterConfigTitle": {
+    "message": "Open a popup to configure the linter rules",
+    "description": "Tooltip on an icon to indicate it opens a popup with linter configuration settings"
+  },
+  "linterCSSLintSettings": {
+    "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
+    "description": "CSSLint rule settings values"
+  },
+  "linterInvalidRuleError": {
+    "message": "Not saved due to these invalid rules:",
+    "description": "Invalid linter rules will show a message followed by a list of invalid rules"
+  },
+  "linterIssues": {
     "message": "Issues",
     "description": "Label for the CSS linter issues block on the style edit page"
   },
-  "issuesHelp": {
+  "linterIssuesHelp": {
     "message": "The issues found by $link$ rules:",
     "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
@@ -362,9 +374,26 @@
       }
     }
   },
-  "linterConfigTitle": {
-    "message": "Open a popup to configure the linter rules",
-    "description": "Tooltip on an icon to indicate it opens a popup with linter configuration settings"
+  "linterJSONError": {
+    "message": "Invalid JSON format",
+    "description": "Setting linter rules with invalid JSON message"
+  },
+  "linterResetMessage": {
+    "message": "To undo accidental reset, press Ctrl-Z (or Cmd-Z) in the text box",
+    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+  },
+  "linterRulesLink": {
+    "message": "See a full list of rules",
+    "description": "Stylelint or CSSLint rules label added before a link"
+  },
+  "linterRulesTitle": {
+    "message": "Set rules for $linter$",
+    "description": "Stylelint or CSSLint popup header",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
   },
   "manageFilters": {
     "message": "Filters",
@@ -517,35 +546,6 @@
   "sectionRemove": {
     "message": "Remove section",
     "description": "Label for the button to remove a section"
-  },
-  "setLinterLink": {
-    "message": "See a full list of rules",
-    "description": "Stylelint or CSSLint rules label added before a link"
-  },
-  "setLinterRulesTitle": {
-    "message": "Set rules for $linter$",
-    "description": "Stylelint or CSSLint popup header",
-    "placeholders": {
-      "linter": {
-        "content": "$1"
-      }
-    }
-  },
-  "setLinterError": {
-    "message": "Invalid JSON format",
-    "description": "Setting linter rules with invalid JSON message"
-  },
-  "setLinterInvalidRuleError": {
-    "message": "Not saved due to these invalid rules:",
-    "description": "Invalid linter rules will show a message followed by a list of invalid rules"
-  },
-  "setLinterResetMessage": {
-    "message": "To undo accidental reset, press Ctrl-Z (or Cmd-Z) in the text box",
-    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
-  },
-  "showCSSLintSettings": {
-    "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
-    "description": "CSSLint rule settings values"
   },
   "shortcuts": {
     "message": "Shortcuts",

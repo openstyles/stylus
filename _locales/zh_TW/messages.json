@@ -27,7 +27,7 @@
 		"message": "導出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "問題",
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
@@ -660,7 +660,7 @@
 		"message": "選項介面",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
+	"linterIssuesHelp": {
 		"message": "由$link$發現啟用這些規則會產生衝突",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
 		"placeholders": {

@@ -217,13 +217,13 @@ function showLintHelp() {
   if (linter === 'csslint') {
     const CSSLintRules = window.CSSLint.getRules();
     const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
-    header = t('issuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
+    header = t('linterIssuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
     template = ruleID => {
       const rule = findCSSLintRule(ruleID);
       return rule ? `<li><b>${makeLink(rule.url || url, rule.name)}</b><br>${rule.desc}</li>` : '';
     };
   } else {
-    header = t('issuesHelp', makeLink(url, 'stylelint'));
+    header = t('linterIssuesHelp', makeLink(url, 'stylelint'));
     template = rule => `<li>${makeLink(url + rule, rule)}</li>`;
   }
   // to-do: change this to a generator
@@ -234,7 +234,7 @@ function showLintHelp() {
       rules.push(rule);
     }
   });
-  return showHelp(t('issues'), header + list + '</ul>');
+  return showHelp(t('linterIssues'), header + list + '</ul>');
 }
 
 function showLinterErrorMessage(title, contents) {
@@ -294,7 +294,7 @@ function setupLinterSettingsEvents(popup) {
       if (invalid.length) {
         return showLinterErrorMessage(
           linter,
-          t('setLinterInvalidRuleError') + `<ul><li>${invalid.join('</li><li>')}</li></ul>`
+          t('linterInvalidRuleError') + `<ul><li>${invalid.join('</li><li>')}</li></ul>`
         );
       }
       if (linter === 'stylelint') {
@@ -305,7 +305,7 @@ function setupLinterSettingsEvents(popup) {
       updateLinter(linter);
       showSavedMessage();
     } else {
-      showLinterErrorMessage(linter, t('setLinterError'));
+      showLinterErrorMessage(linter, t('linterJSONError'));
     }
     popup.codebox.focus();
   });
@@ -365,24 +365,24 @@ function setupLinterPopup(rules) {
     cm.setOption('mode', 'application/json');
     cm.setOption('lint', 'json');
   }
-  const popup = showCodeMirrorPopup(t('setLinterRulesTitle', linterTitle), $element({
+  const popup = showCodeMirrorPopup(t('linterRulesTitle', linterTitle), $element({
     appendChild: [
       $element({
         tag: 'p',
         appendChild: [
-          t('setLinterLink') + ' ',
+          t('linterRulesLink') + ' ',
           makeLink(
             linter === 'stylelint'
               ? 'https://stylelint.io/demo/'
               : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
             linterTitle
           ),
-          linter === 'csslint' ? ' ' + t('showCSSLintSettings') : ''
+          linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : ''
         ]
       }),
       makeButton('save', 'styleSaveLabel'),
       makeButton('cancel', 'confirmCancel'),
-      makeButton('reset', 'genericResetLabel', {title: t('setLinterResetMessage')}),
+      makeButton('reset', 'genericResetLabel', {title: t('linterResetMessage')}),
       $element({
         tag: 'span',
         className: 'saved-message',
