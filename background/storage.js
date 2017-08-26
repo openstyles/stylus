@@ -542,10 +542,10 @@ function cleanupCachedFilters({force = false} = {}) {
 
 
 function getDomains(url) {
-  if (url.indexOf('file:') === 0) {
+  let d = /.*?:\/*([^/:]+)|$/.exec(url)[1];
+  if (!d || url.startsWith('file:')) {
     return [];
   }
-  let d = /.*?:\/*([^/:]+)/.exec(url)[1];
   const domains = [d];
   while (d.indexOf('.') !== -1) {
     d = d.substring(d.indexOf('.') + 1);
