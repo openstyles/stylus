@@ -392,6 +392,7 @@ function setupLinterPopup(rules) {
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
   popup.codebox.setValue(rules);
+  popup.codebox.clearHistory();
   onDOMscripted(loadJSON).then(() => setJSONMode(popup.codebox));
   setupLinterSettingsEvents(popup);
 }
