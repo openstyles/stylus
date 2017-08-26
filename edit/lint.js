@@ -1,6 +1,6 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
-/* global stylelintDefaultConfig csslintDefaultRuleset onDOMscripted injectCSS require */
+/* global stylelintDefaultConfig csslintDefaultRuleConfig onDOMscripted injectCSS require */
 'use strict';
 
 function initLint() {
@@ -28,8 +28,8 @@ function setStylelintRules(rules) {
 }
 
 function setCSSLintRules(ruleset) {
-  if (Object.keys(ruleset || []).length === 0 && typeof csslintDefaultRuleset !== 'undefined') {
-    ruleset = Object.assign({}, csslintDefaultRuleset);
+  if (Object.keys(ruleset || []).length === 0 && typeof csslintDefaultRuleConfig !== 'undefined') {
+    ruleset = Object.assign({}, csslintDefaultRuleConfig);
   }
   BG.chromeSync.setValue('editorCSSLintRules', ruleset);
   return ruleset;
@@ -317,7 +317,7 @@ function setupLinterSettingsEvents(popup) {
       rules = stylelintDefaultConfig.rules;
     } else {
       setCSSLintRules();
-      rules = csslintDefaultRuleset;
+      rules = csslintDefaultRuleConfig;
     }
     popup.codebox.setValue(stringifyRules(rules));
     updateLinter(linter);
@@ -412,7 +412,7 @@ function loadSelectedLinter(name) {
   }
   if (name === 'csslint' && !window.CSSLint) {
     scripts.push(
-      'edit/csslint-ruleset.js',
+      'edit/csslint-config.js',
       'vendor-overwrites/csslint/csslint-worker.js'
     );
   } else if (name === 'stylelint' && !window.stylelint) {

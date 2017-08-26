@@ -4,7 +4,7 @@
  * CSSLint Ruleset values
  * 0 = disabled; 1 = warning; 2 = error
  */
-window.csslintDefaultRuleset = {
+window.csslintDefaultRuleConfig = {
   // Default warnings
   'display-property-grouping': 1,
   'duplicate-properties': 1,
