@@ -32,6 +32,7 @@ function messageBox({
         if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
         && (keyCode === 13 || keyCode === 27)) {
           event.preventDefault();
+          event.stopPropagation();
           resolveWith(keyCode === 13 ? {enter: true} : {esc: true});
         }
       },
@@ -42,14 +43,16 @@ function messageBox({
   }
 
   function resolveWith(value) {
+    unbindGlobalListeners();
     setTimeout(messageBox.resolve, 0, value);
     animateElement(messageBox.element, {className: 'fadeout', remove: true})
-      .then(unbindAndRemoveSelf);
+      .then(removeSelf);
   }
 
   function createElement() {
     if (messageBox.element) {
-      unbindAndRemoveSelf();
+      unbindGlobalListeners();
+      removeSelf();
     }
     const id = 'message-box';
     messageBox.element = $element({id, className, appendChild: [
@@ -82,12 +85,15 @@ function messageBox({
     if (blockScroll) {
       window.addEventListener('scroll', messageBox.listeners.scroll);
     }
-    window.addEventListener('keydown', messageBox.listeners.key);
+    window.addEventListener('keydown', messageBox.listeners.key, true);
   }
 
-  function unbindAndRemoveSelf() {
-    document.removeEventListener('keydown', messageBox.listeners.key);
+  function unbindGlobalListeners() {
+    window.removeEventListener('keydown', messageBox.listeners.key, true);
     window.removeEventListener('scroll', messageBox.listeners.scroll);
+  }
+
+  function removeSelf() {
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
