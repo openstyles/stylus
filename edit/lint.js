@@ -307,6 +307,7 @@ function setupLinterSettingsEvents(popup) {
     } else {
       showLinterErrorMessage(linter, t('setLinterError'));
     }
+    popup.codebox.focus();
   });
   $('.reset', popup).addEventListener('click', event => {
     event.preventDefault();
@@ -320,6 +321,7 @@ function setupLinterSettingsEvents(popup) {
       rules = csslintDefaultRuleConfig;
     }
     popup.codebox.setValue(stringifyRules(rules));
+    popup.codebox.focus();
     updateLinter(linter);
   });
   $('.cancel', popup).addEventListener('click', event => {
