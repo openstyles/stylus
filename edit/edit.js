@@ -481,20 +481,23 @@ getOwnTab().then(tab => {
   useHistoryBack = sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href;
   // When an edit page gets attached or detached, remember its state
   // so we can do the same to the next one to open.
-  chrome.tabs.onAttached.addListener(tabId => {
-    if (tabId === ownTabId) {
-      chrome.tabs.get(tabId, tab => {
-        chrome.windows.get(tab.windowId, {populate: true}, win => {
-          // If there's only one tab in this window, it's been dragged to new window
-          const openEditInWindow = win.tabs.length === 1;
-          if (openEditInWindow && FIREFOX) {
-            // FF-only because Chrome retardedly resets the size during dragging
-            chrome.windows.update(tab.windowId, prefs.get('windowPosition'));
-          }
-          prefs.set('openEditInWindow', openEditInWindow);
-        });
-      });
+  chrome.tabs.onAttached.addListener((tabId, info) => {
+    if (tabId !== ownTabId) {
+      return;
     }
+    if (info.newPosition !== 0) {
+      prefs.set('openEditInWindow', false);
+      return;
+    }
+    chrome.windows.get(info.newWindowId, {populate: true}, win => {
+      // If there's only one tab in this window, it's been dragged to new window
+      const openEditInWindow = win.tabs.length === 1;
+      if (openEditInWindow && FIREFOX) {
+        // FF-only because Chrome retardedly resets the size during dragging
+        chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
+      }
+      prefs.set('openEditInWindow', openEditInWindow);
+    });
   });
 });
 
