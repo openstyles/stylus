@@ -349,24 +349,33 @@
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
   },
-  "linterConfigTitle": {
-    "message": "Open a popup to configure the linter rules",
-    "description": "Tooltip on an icon to indicate it opens a popup with linter configuration settings"
+  "linterConfigPopupTitle": {
+    "message": "Set $linter$ rules configuration",
+    "description": "Stylelint or CSSLint popup header",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Click to configure this linter",
+    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
   },
   "linterCSSLintSettings": {
-    "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
+    "message": "(Set rule as: 0 = disabled; 1 = warning; 2 = error)",
     "description": "CSSLint rule config values"
   },
-  "linterInvalidRuleError": {
-    "message": "Not saved due to these invalid rules:",
-    "description": "Invalid linter rules will show a message followed by a list of invalid rules"
+  "linterInvalidConfigError": {
+    "message": "Not saved due to these invalid configuration settings:",
+    "description": "Invalid linter config will show a message followed by a list of invalid entries"
   },
   "linterIssues": {
     "message": "Issues",
     "description": "Label for the CSS linter issues block on the style edit page"
   },
   "linterIssuesHelp": {
-    "message": "The issues found by $link$ rules:",
+    "message": "These issues were found by $link$:",
     "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
@@ -376,7 +385,7 @@
   },
   "linterJSONError": {
     "message": "Invalid JSON format",
-    "description": "Setting linter rules with invalid JSON message"
+    "description": "Setting linter config with invalid JSON"
   },
   "linterResetMessage": {
     "message": "To undo accidental reset, press Ctrl-Z (or Cmd-Z) in the text box",
@@ -384,16 +393,7 @@
   },
   "linterRulesLink": {
     "message": "See a full list of rules",
-    "description": "Stylelint or CSSLint rules label added before a link"
-  },
-  "linterRulesTitle": {
-    "message": "Set rules for $linter$",
-    "description": "Stylelint or CSSLint popup header",
-    "placeholders": {
-      "linter": {
-        "content": "$1"
-      }
-    }
+    "description": "Stylelint or CSSLint rules label added immediately before a link"
   },
   "manageFilters": {
     "message": "Filters",

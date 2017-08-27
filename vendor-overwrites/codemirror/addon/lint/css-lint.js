@@ -4,7 +4,7 @@
 // Depends on csslint.js from https://github.com/stubbornella/csslint
 
 /* global CodeMirror require define */
-/* global CSSLint stylelint stylelintDefaultConfig csslintDefaultRuleConfig */
+/* global CSSLint stylelint stylelintDefaultConfig csslintDefaultConfig */
 'use strict';
 
 (mod => {
@@ -25,10 +25,10 @@
       return found;
     }
     /* STYLUS: hack start (part 1) */
-    return BG.chromeSync.getValue('editorCSSLintRules').then((config = csslintDefaultRuleConfig) => {
-      // csslintDefaultRuleConfig stored in csslint-config.js & loaded by edit/lint.js
-      if (Object.keys(config).length === 0) {
-        config = Object.assign({}, csslintDefaultRuleConfig);
+    return BG.chromeSync.getValue('editorCSSLintConfig').then(config => {
+      // csslintDefaultConfig stored in csslint-config.js & loaded by edit/lint.js
+      if (Object.keys(config || []).length === 0) {
+        config = Object.assign({}, csslintDefaultConfig);
       }
       const results = CSSLint.verify(text, config);
       const messages = results.messages;
@@ -73,9 +73,9 @@
     const found = [];
     window.stylelint = require('stylelint');
     if (window.stylelint) {
-      return BG.chromeSync.getValue('editorStylelintRules').then((rules = stylelintDefaultConfig.rules) => {
+      return BG.chromeSync.getValue('editorStylelintConfig').then(rules => {
         // stylelintDefaultConfig stored in stylelint-config.js & loaded by edit/lint.js
-        if (Object.keys(rules).length === 0) {
+        if (Object.keys(rules || []).length === 0) {
           rules = stylelintDefaultConfig.rules;
         }
         return stylelint.lint({
