@@ -167,7 +167,6 @@ summary {
 }
 
 .disabled h2::after {
-  content: "__MSG_genericDisabledLabel__";
   font-weight: normal;
   font-size: 11px;
   text-transform: lowercase;
@@ -512,10 +511,6 @@ input[id^="manage.newUI"] {
   background-color: currentColor;
   content: "";
   opacity: .35;
-}
-
-#update-all-no-updates[data-skipped-edited="true"]:after {
-  content: " __MSG_updateAllCheckSucceededSomeEdited__";
 }
 
 #check-all-updates-force {

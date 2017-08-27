@@ -34,16 +34,7 @@ Promise.all([
   showStyles(styles);
 });
 
-if (FIREFOX) {
-  // TODO: remove when these bugs are fixed in FF
-  dieOnNullBackground();
-  retranslateCSS({
-    '.disabled h2::after':
-      '__MSG_genericDisabledLabel__',
-    '#update-all-no-updates[data-skipped-edited="true"]::after':
-      ' __MSG_updateAllCheckSucceededSomeEdited__',
-  });
-}
+dieOnNullBackground();
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
@@ -96,6 +87,16 @@ function initGlobalEvents() {
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
 
   switchUI({styleOnly: true});
+
+  // translate CSS manually
+  document.head.appendChild($element({tag: 'style', textContent: `
+    .disabled h2::after {
+      content: "${t('genericDisabledLabel')}";
+    }
+    #update-all-no-updates[data-skipped-edited="true"]:after {
+      content: " ${t('updateAllCheckSucceededSomeEdited')}";
+    }
+  `}));
 }
 
 
@@ -541,8 +542,9 @@ function usePrefsDuringPageLoad() {
 }
 
 
+// TODO: remove when these bugs are fixed in FF
 function dieOnNullBackground() {
-  if (BG) {
+  if (!FIREFOX || BG) {
     return;
   }
   chrome.runtime.sendMessage({method: 'healthCheck'}, health => {

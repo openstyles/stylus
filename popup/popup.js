@@ -24,20 +24,6 @@ getActiveTab().then(tab =>
   });
 });
 
-if (FIREFOX) {
-  // TODO: remove when this bug is fixed in FF
-  retranslateCSS({
-    '.blocked::before':
-      '__MSG_stylusUnavailableForURL__',
-    '.blocked #installed::before':
-      '__MSG_stylusUnavailableForURLdetails__',
-    '.unreachable::before':
-      '__MSG_unreachableContentScript__',
-    '.unreachable #installed::before':
-      '__MSG_unreachableFileHint__',
-  });
-}
-
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
@@ -117,6 +103,7 @@ function initPopup(url) {
 
   if (!url) {
     document.body.classList.add('blocked');
+    document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
     return;
   }
 
@@ -137,6 +124,7 @@ function initPopup(url) {
         setTimeout(ping, 100, tab, --retryCountdown);
       } else {
         document.body.classList.add('unreachable');
+        document.body.insertBefore(template.unreachableInfo, document.body.firstChild);
       }
     });
   });
@@ -411,6 +399,7 @@ function handleUpdate(style) {
   // Add an entry when a new style for the current url is installed
   if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
     document.body.classList.remove('blocked');
+    $$('.blocked-info').forEach(el => el.remove());
     createStyleElement({style});
   }
 }

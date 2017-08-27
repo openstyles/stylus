@@ -404,36 +404,21 @@ body.blocked .actions > .left-gutter {
   opacity: .25;
 }
 
-.blocked:before,
-.unreachable:before {
-  padding: 5px 0.75em;
+.unreachable .blocked-info {
+  border-bottom: 1px solid black;
+}
+
+.blocked-info label {
+  padding: 5px 0;
   display: block;
   font-weight: bold;
 }
 
-.blocked #installed:before,
-.unreachable #installed:before {
-  padding: 1px 0.75em 9px;
+.blocked-info p {
+  padding: 1px 0 9px;
   display: block;
   font-size: 90%;
-  margin-bottom: 5px;
-}
-
-.blocked:before {
-  content: "__MSG_stylusUnavailableForURL__";
-}
-
-.blocked #installed:before {
-  content: "__MSG_stylusUnavailableForURLdetails__";
-}
-
-.unreachable:before {
-  content: "__MSG_unreachableContentScript__";
-}
-
-.unreachable #installed:before {
-  content: "__MSG_unreachableFileHint__";
-  border-bottom: 1px solid black;
+  margin: 0;
 }
 
 @keyframes lights-off {
