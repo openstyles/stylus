@@ -408,6 +408,10 @@ body.blocked .actions > .left-gutter {
   border-bottom: 1px solid black;
 }
 
+.blocked-info {
+  hyphens: auto;
+}
+
 .blocked-info label {
   padding: 5px 0;
   display: block;

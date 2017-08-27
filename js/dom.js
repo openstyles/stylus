@@ -49,6 +49,8 @@ navigator.userAgent.includes('Firefox') && setTimeout(() => {
       sizes: size + 'x' + size,
     }));
   }
+  // set hyphenation language
+  document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
 });
 
 
