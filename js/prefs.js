@@ -75,7 +75,7 @@ var prefs = new function Prefs() {
   };
 
   // FF may think localStorage is a cookie or that it's not secure
-  const localStorage = tryCatch(() => localStorage) ? window.localStorage : {};
+  const localStorage = tryCatch(() => window.localStorage) ? window.localStorage : {};
 
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
