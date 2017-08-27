@@ -437,6 +437,14 @@
     "message": "Shift-click or right-click opens manager with styles applicable for current site",
     "description": "Tooltip for the 'Manage' button in the popup."
   },
+  "popupOpenEditInWindow": {
+    "message": "Open editor in a new window",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Also enabled by detaching editor tab from a browser window,\nand disabled by attaching a single editor tab into another window.",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupStylesFirst": {
     "message": "Styles before commands",
     "description": "Label for the checkbox controlling section order in the popup."
