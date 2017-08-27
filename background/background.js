@@ -31,19 +31,6 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
     listener('styleReplaceAll', data));
 }
 
-chrome.tabs.onAttached.addListener(tabId => {
-  // When an edit page gets attached or detached, remember its state
-  // so we can do the same to the next one to open.
-  chrome.tabs.get(tabId, tab => {
-    if (tab.url.startsWith(URLS.ownOrigin + 'edit.html')) {
-      chrome.windows.get(tab.windowId, {populate: true}, win => {
-        // If there's only one tab in this window, it's been dragged to new window
-        prefs.set('openEditInWindow', win.tabs.length === 1);
-      });
-    }
-  });
-});
-
 chrome.contextMenus.onClicked.addListener((info, tab) =>
   contextMenus[info.menuItemId].click(info, tab));
 
