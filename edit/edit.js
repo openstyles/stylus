@@ -1370,10 +1370,6 @@ function initHooks() {
   document.getElementById('lint-help').addEventListener('click', showLintHelp);
   document.getElementById('lint').addEventListener('click', gotoLintIssue);
   window.addEventListener('resize', resizeLintReport);
-  window.addEventListener('load', function _() {
-    window.removeEventListener('load', _);
-    window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-  });
 
   // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
   if ('ontouchstart' in document.body) {
@@ -1389,6 +1385,11 @@ function initHooks() {
     ].join(',')
     ).forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
+
+  window.addEventListener('load', function _() {
+    window.removeEventListener('load', _);
+    window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+  });
 
   setupGlobalSearch();
   setCleanGlobal();
