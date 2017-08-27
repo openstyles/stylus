@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * CSSLint Ruleset values
+ * CSSLint Config values
  * 0 = disabled; 1 = warning; 2 = error
  */
 window.csslintDefaultRuleConfig = {

@@ -355,7 +355,7 @@
   },
   "linterCSSLintSettings": {
     "message": "(Set rules: 0 = disabled; 1 = warning; 2 = error)",
-    "description": "CSSLint rule settings values"
+    "description": "CSSLint rule config values"
   },
   "linterInvalidRuleError": {
     "message": "Not saved due to these invalid rules:",

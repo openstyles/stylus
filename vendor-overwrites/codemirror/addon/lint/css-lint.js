@@ -25,12 +25,12 @@
       return found;
     }
     /* STYLUS: hack start (part 1) */
-    return BG.chromeSync.getValue('editorCSSLintRules').then((ruleset = csslintDefaultRuleConfig) => {
+    return BG.chromeSync.getValue('editorCSSLintRules').then((config = csslintDefaultRuleConfig) => {
       // csslintDefaultRuleConfig stored in csslint-config.js & loaded by edit/lint.js
-      if (Object.keys(ruleset).length === 0) {
-        ruleset = Object.assign({}, csslintDefaultRuleConfig);
+      if (Object.keys(config).length === 0) {
+        config = Object.assign({}, csslintDefaultRuleConfig);
       }
-      const results = CSSLint.verify(text, ruleset);
+      const results = CSSLint.verify(text, config);
       const messages = results.messages;
       const hslRegex = /hsla?\(\s*(-?\d+)%?\s*,\s*(-?\d+)%\s*,\s*(-?\d+|-?\d*.\d+)%(\s*,\s*(-?\d+|-?\d*.\d+))?\s*\)/;
       let message = null;

@@ -15,7 +15,7 @@ function initLint() {
   }
   // initialize storage of rules
   BG.chromeSync.getValue('editorStylelintRules').then(rules => setStylelintRules(rules));
-  BG.chromeSync.getValue('editorCSSLintRules').then(ruleset => setCSSLintRules(ruleset));
+  BG.chromeSync.getValue('editorCSSLintRules').then(config => setCSSLintRules(config));
 }
 
 function setStylelintRules(rules) {
@@ -27,12 +27,12 @@ function setStylelintRules(rules) {
   return rules;
 }
 
-function setCSSLintRules(ruleset) {
-  if (Object.keys(ruleset || []).length === 0 && typeof csslintDefaultRuleConfig !== 'undefined') {
-    ruleset = Object.assign({}, csslintDefaultRuleConfig);
+function setCSSLintRules(config) {
+  if (Object.keys(config || []).length === 0 && typeof csslintDefaultRuleConfig !== 'undefined') {
+    config = Object.assign({}, csslintDefaultRuleConfig);
   }
-  BG.chromeSync.setValue('editorCSSLintRules', ruleset);
-  return ruleset;
+  BG.chromeSync.setValue('editorCSSLintRules', config);
+  return config;
 }
 
 function getLinterConfigForCodeMirror(name) {
