@@ -524,7 +524,11 @@ function isWindowMaximized() {
 }
 
 function rememberWindowSize() {
-  if (!isWindowMaximized() && prefs.get('openEditInWindow')) {
+  if (
+    document.visibilityState === 'visible' &&
+    prefs.get('openEditInWindow') &&
+    !isWindowMaximized()
+  ) {
     prefs.set('windowPosition', {
       left: window.screenX,
       top: window.screenY,
