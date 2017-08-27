@@ -485,6 +485,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   #header input[type="checkbox"] {
     vertical-align: middle;
   }
+  #heading,
   h2 {
     display: none;
   }
@@ -514,6 +515,8 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   }
   #options {
     -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
   }
   #options .aligned > *:not(svg) {
     margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
@@ -539,6 +542,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   #lint h2 {
     display: block;
     cursor: default;
+    margin-top: 0;
     margin-bottom: 0;
   }
   #lint > div {
@@ -567,6 +571,8 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 @media(max-width:500px) {
   #options {
     -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
   }
   #options #tabSize-label {
     position: static;
