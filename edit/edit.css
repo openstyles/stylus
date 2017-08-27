@@ -524,9 +524,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     vertical-align: baseline;
     min-height: 1.4rem;
   }
-  .option {
-    -webkit-column-break-inside: avoid;
-  }
   .option label {
     line-height: 1.25rem;
     margin: 0;
