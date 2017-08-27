@@ -669,25 +669,10 @@ fieldset > *:not(legend) {
 }
 
 @media (max-width: 675px) {
-  #header {
-    height: auto;
-    position: static;
-    width: auto;
-    border-right: none;
-    border-bottom: 1px dashed #AAA;
-  }
-
   #installed {
     position: static;
     padding-left: 0;
     overflow: visible;
-  }
-
-  #header h1,
-  #header h2,
-  #header h3,
-  #backup-message {
-    display: none;
   }
 
   #header p,
@@ -719,69 +704,33 @@ fieldset > *:not(legend) {
     flex-direction: column;
   }
 
-  .newUI #header {
+  #header {
     height: auto;
     position: static;
     width: auto;
     border-right: none;
     border-bottom: 1px dashed #AAA;
     overflow: visible;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
   }
 
-  .newUI #installed {
+  #installed {
     padding-left: 0;
   }
 
-  .newUI #header h1,
-  .newUI #header h2,
-  .newUI #header h3,
-  .newUI #header legend,
-  .newUI #backup-message {
+  fieldset {
+    max-width: none;
+    margin-top: 0;
+    margin-right: 2em;
+  }
+
+  #header h1,
+  #header h2,
+  #header h3,
+  #backup-message {
     display: none;
-  }
-
-  .newUI #header p,
-  .newUI #header fieldset div,
-  .newUI #options,
-  .newUI #backup,
-  .newUI #find-editor-styles,
-  .newUI #header fieldset label,
-  .newUI #header fieldset input,
-  .newUI #newUIoptions > * {
-    display: inline;
-    vertical-align: middle;
-    margin-top: 1ex;
-    margin-bottom: 1ex;
-  }
-
-  .newUI #header > * {
-    display: inline-block
-  }
-
-  .newUI #header button,
-  .newUI #header span,
-  .newUI #header div {
-    margin-right: 1ex;
-  }
-
-  .newUI #header label,
-  .newUI #header a {
-    white-space: nowrap
-  }
-
-  .newUI #backup p,
-  .newUI #header fieldset {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-
-  .newUI #header fieldset input {
-    margin-left: 0;
-  }
-
-  .newUI #search {
-    width: auto;
   }
 
   .newUI .entry {
@@ -798,8 +747,31 @@ fieldset > *:not(legend) {
 }
 
 @media (max-width: 500px) {
-  .newUI #header > * {
+  #header {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+  }
+
+  .newUI #header > *:not(h1),
+  .newUI #newUIoptions,
+  #newUIoptions > *,
+  fieldset label {
     display: inline;
+  }
+
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 0 0 1em;
+  }
+
+  fieldset legend {
+    display: none;
+  }
+
+  #header label {
+    white-space: nowrap;
   }
 
   .newUI .style-name {
