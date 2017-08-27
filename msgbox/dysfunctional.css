@@ -8,6 +8,9 @@ html {
   background-color: #555;
   box-sizing: border-box;
   border: 2vw solid black;
+  font-size: 15px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  hyphens: auto;
 }
 
 body {
