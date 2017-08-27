@@ -41,7 +41,7 @@ body {
   align-items: center;
   margin: 1em 0;
   border-bottom: 1px dotted #ccc;
-  padding: 0 16px 1em;
+  padding: 0 16px .75em;
   position: relative;
 }
 
