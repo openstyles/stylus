@@ -489,20 +489,33 @@ function goBackToManage(event) {
 }
 
 function isWindowMaximized() {
-  return window.screenLeft === 0 &&
-    window.screenTop === 0 &&
-    window.outerWidth === screen.availWidth &&
-    window.outerHeight === screen.availHeight;
+  return (
+    window.screenX <= 0 &&
+    window.screenY <= 0 &&
+    window.outerWidth >= screen.availWidth &&
+    window.outerHeight >= screen.availHeight &&
+
+    window.screenX > -10 &&
+    window.screenY > -10 &&
+    window.outerWidth < screen.availWidth + 10 &&
+    window.outerHeight < screen.availHeight + 10
+  );
+}
+
+function rememberWindowSize() {
+  if (!isWindowMaximized() && prefs.get('openEditInWindow')) {
+    prefs.set('windowPosition', {
+      left: window.screenX,
+      top: window.screenY,
+      width: window.outerWidth,
+      height: window.outerHeight,
+    });
+  }
 }
 
 window.onbeforeunload = () => {
-  if (saveSizeOnClose && !isWindowMaximized()) {
-    prefs.set('windowPosition', {
-      left: screenLeft,
-      top: screenTop,
-      width: outerWidth,
-      height: outerHeight
-    });
+  if (saveSizeOnClose) {
+    rememberWindowSize();
   }
   document.activeElement.blur();
   if (isCleanGlobal()) {
@@ -1336,6 +1349,10 @@ function initHooks() {
   document.getElementById('lint-help').addEventListener('click', showLintHelp);
   document.getElementById('lint').addEventListener('click', gotoLintIssue);
   window.addEventListener('resize', resizeLintReport);
+  window.addEventListener('load', function _() {
+    window.removeEventListener('load', _);
+    window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+  });
 
   // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
   if ('ontouchstart' in document.body) {
