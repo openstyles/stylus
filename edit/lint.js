@@ -188,18 +188,18 @@ function updateLintReport(cm, delay) {
           const info = mark.__annotation;
           const isActiveLine = info.from.line === cm.getCursor().line;
           const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          // stylelint rule added in parentheses at the end; extract it out for the stylelint info popup
-          const lintRuleName = info.message
-            .substring(info.message.lastIndexOf('('), info.message.length)
-            .replace(/[()]/g, '');
-          const title = escapeHtml(info.message);
-          const message = title.length > 100 ? title.substr(0, 100) + '...' : title;
+          // rule name added in parentheses at the end; extract it out for the info popup
+          const text = info.message;
+          const parenPos = text.endsWith(')') ? text.lastIndexOf('(') : text.length;
+          const ruleName = text.slice(parenPos + 1, -1);
+          const title = escapeHtml(text);
+          const message = escapeHtml(text.substr(0, Math.min(100, parenPos)), {limit: 100});
           if (isActiveLine || oldMarkers[pos] === message) {
             delete oldMarkers[pos];
           }
           newMarkers[pos] = message;
           return `<tr class="${info.severity}">
-            <td role="severity" data-rule="${lintRuleName}">
+            <td role="severity" data-rule="${ruleName}">
               <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
             </td>
             <td role="line">${info.from.line + 1}</td>
@@ -226,9 +226,14 @@ function updateLintReport(cm, delay) {
       }
     }
   }
-  function escapeHtml(html) {
+  function escapeHtml(html, {limit} = {}) {
     const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'};
-    return html.replace(/[&<>"'/]/g, char => chars[char]);
+    let ellipsis = '';
+    if (limit && html.length > limit) {
+      html = html.substr(0, limit);
+      ellipsis = '...';
+    }
+    return html.replace(/[&<>"'/]/g, char => chars[char]) + ellipsis;
   }
 }
 
