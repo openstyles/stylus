@@ -18,7 +18,7 @@ var updater = {
   ERROR_MD5: 'error: MD5 is invalid',
   ERROR_JSON: 'error: JSON is invalid',
 
-  lastUpdateTime: parseInt(tryCatch(() => localStorage.lastUpdateTime)) || Date.now(),
+  lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
     updater.resetInterval();

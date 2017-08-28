@@ -57,6 +57,13 @@ if (!BG || BG !== window) {
   }
 }
 
+const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage);
+if (FIREFOX_NO_DOM_STORAGE) {
+  // may be disabled via dom.storage.enabled
+  Object.defineProperty(window, 'localStorage', {value: {}});
+  Object.defineProperty(window, 'sessionStorage', {value: {}});
+}
+
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;

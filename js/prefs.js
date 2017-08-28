@@ -1,4 +1,4 @@
-/* global prefs: true, contextMenus */
+/* global prefs: true, contextMenus, FIREFOX_NO_DOM_STORAGE */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -74,9 +74,6 @@ var prefs = new function Prefs() {
     any: new Set(),
     specific: new Map(),
   };
-
-  // FF may think localStorage is a cookie or that it's not secure
-  const localStorage = tryCatch(() => window.localStorage) ? window.localStorage : {};
 
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
@@ -184,6 +181,8 @@ var prefs = new function Prefs() {
           value = tryJSONparse(value) || defaultValue;
           break;
       }
+    } else if (FIREFOX_NO_DOM_STORAGE && BG) {
+      value = BG.localStorage[key] || defaultValue;
     } else {
       value = defaultValue;
     }
