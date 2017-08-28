@@ -3403,6 +3403,7 @@ var Properties = module.exports = {
     "backface-visibility"           : "visible | hidden",
     "background"                    : 1,
     "background-attachment"         : "<attachment>#",
+    "background-blend-mode"         : "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
     "background-clip"               : "<box>#",
     "background-color"              : "<color>",
     "background-image"              : "<bg-image>#",
