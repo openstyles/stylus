@@ -571,7 +571,8 @@ window.onbeforeunload = () => {
     return;
   }
   updateLintReportIfEnabled(null, 0);
-  return confirm(t('styleChangesNotSaved'));
+  // neither confirm() nor custom messages work in modern browsers but just in case
+  return t('styleChangesNotSaved');
 };
 
 function addAppliesTo(list, name, value) {
