@@ -55,12 +55,16 @@ var chromeSync = {
     });
   },
   getLZValue(key) {
-    return chromeSync.get(key).then(data => tryJSONparse(LZString.decompressFromUTF16(data[key])));
+    return chromeSync.getLZValues([key]).then(data => data[key]);
   },
   getLZValues(keys) {
-    return chromeSync.get(keys).then(data =>
-      Object.assign({}, ...keys.map(key =>
-        ({[key]: tryJSONparse(LZString.decompressFromUTF16(data[key]))}))));
+    return chromeSync.get(keys).then((data = {}) => {
+      for (const key of keys) {
+        const value = data[key];
+        data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
+      }
+      return data;
+    });
   },
   setLZValue(key, value) {
     return chromeSync.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
