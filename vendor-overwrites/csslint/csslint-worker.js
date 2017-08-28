@@ -3794,6 +3794,7 @@ var Properties = module.exports = {
     "transition-timing-function"    : 1,
 
     //U
+    "unicode-range"                  : "<unicode-range>#",
     "unicode-bidi"                  : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
     "user-modify"                   : "read-only | read-write | write-only",
     "user-select"                   : "none | text | toggle | element | elements | all",
@@ -6265,6 +6266,10 @@ copy(ValidationTypes, {
 
         "<time>": function(part) {
             return part.type === "time";
+        },
+
+        "<unicode-range>": function(part) {
+            return /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(part);
         },
 
         "<uri>": function(part) {
