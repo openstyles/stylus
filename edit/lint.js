@@ -299,37 +299,50 @@ function toggleLintReport() {
 }
 
 function showLintHelp() {
-  const makeLink = (url, txt) => `<a target="_blank" href="${url}">${txt}</a>`;
+  const makeLink = (href, textContent) => $element({
+    tag: 'a',
+    target: '_blank',
+    href,
+    textContent,
+  });
   const linter = prefs.get('editor.linter');
-  const url = linter === 'stylelint'
+  const baseUrl = linter === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'
     // some CSSLint rules do not have a url
     : 'https://github.com/CSSLint/csslint/issues/535';
-  const rules = [];
-  let template;
-  let list = '<ul class="rules">';
-  let header = '';
+  let headerLink, template;
   if (linter === 'csslint') {
     const CSSLintRules = CSSLint.getRules();
-    const findCSSLintRule = id => CSSLintRules.find(rule => rule.id === id);
-    header = t('linterIssuesHelp', makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint'));
+    headerLink = makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
     template = ruleID => {
-      const rule = findCSSLintRule(ruleID);
-      return rule ? `<li><b>${makeLink(rule.url || url, rule.name)}</b><br>${rule.desc}</li>` : '';
+      const rule = CSSLintRules.find(rule => rule.id === ruleID);
+      return rule &&
+        $element({tag: 'li', appendChild: [
+          $element({tag: 'b', appendChild: makeLink(rule.url || baseUrl, rule.name)}),
+          $element({tag: 'br'}),
+          rule.desc,
+        ]});
     };
   } else {
-    header = t('linterIssuesHelp', makeLink(url, 'stylelint'));
-    template = rule => `<li>${makeLink(url + rule, rule)}</li>`;
+    headerLink = makeLink(baseUrl, 'stylelint');
+    template = rule =>
+      $element({
+        tag: 'li',
+        appendChild: makeLink(baseUrl + rule, rule),
+      });
   }
-  // Only show rules with issues in the popup
-  $$('#lint td[role="severity"]').forEach(el => {
-    const rule = el.dataset.rule;
-    if (!rules.includes(rule)) {
-      list += template(rule);
-      rules.push(rule);
-    }
-  });
-  return showHelp(t('linterIssues'), header + list + '</ul>');
+  const header = t('linterIssuesHelp', '\x01').split('\x01');
+  const activeRules = new Set($$('#lint td[role="severity"]').map(el => el.dataset.rule));
+  return showHelp(t('linterIssues'),
+    $element({appendChild: [
+      header[0], headerLink, header[1],
+      $element({
+        tag: 'ul',
+        className: 'rules',
+        appendChild: [...activeRules.values()].map(template),
+      }),
+    ]})
+  );
 }
 
 function showLinterErrorMessage(title, contents) {
