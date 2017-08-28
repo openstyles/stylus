@@ -4,7 +4,7 @@
  * CSSLint Config values
  * 0 = disabled; 1 = warning; 2 = error
  */
-window.csslintDefaultConfig = {
+window.linterConfig.defaults.csslint = {
   // Default warnings
   'display-property-grouping': 1,
   'duplicate-properties': 1,

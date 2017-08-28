@@ -1,0 +1,31 @@
+/* global CodeMirror CSSLint stylelint linterConfig */
+'use strict';
+
+CodeMirror.registerHelper('lint', 'csslint', code =>
+  CSSLint.verify(code, linterConfig.getCurrent('csslint'))
+    .messages.map(message => ({
+      from: CodeMirror.Pos(message.line - 1, message.col - 1),
+      to: CodeMirror.Pos(message.line - 1, message.col),
+      message: message.message + ` (${message.rule.id})`,
+      severity : message.type
+    }))
+);
+
+CodeMirror.registerHelper('lint', 'stylelint', code =>
+  stylelint.lint({
+    code,
+    config: linterConfig.getCurrent('stylelint'),
+  }).then(({results}) => {
+    if (!results[0]) {
+      return [];
+    }
+    return results[0].warnings.map(warning => ({
+      from: CodeMirror.Pos(warning.line - 1, warning.column - 1),
+      to: CodeMirror.Pos(warning.line - 1, warning.column),
+      message: warning.text
+        .replace('Unexpected ', '')
+        .replace(/^./, firstLetter => firstLetter.toUpperCase()),
+      severity : warning.severity
+    }));
+  })
+);

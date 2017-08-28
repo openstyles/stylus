@@ -1,6 +1,6 @@
 'use strict';
 
-window.stylelintDefaultConfig = (defaultSeverity => ({
+window.linterConfig.defaults.stylelint = (defaultSeverity => ({
   // 'sugarss' is a indent-based syntax like Sass or Stylus
   // ref: https://github.com/postcss/postcss#syntaxes
   syntax: 'sugarss',

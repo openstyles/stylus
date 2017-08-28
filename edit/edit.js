@@ -1,7 +1,7 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
 /* global exports css_beautify onDOMscripted */
-/* global CSSLint initLint getLinterConfigForCodeMirror updateLintReport renderLintReport updateLinter */
+/* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 'use strict';
 
 let styleId = null;
@@ -161,8 +161,7 @@ function initCodeMirror() {
   const CM = CodeMirror;
   const isWindowsOS = navigator.appVersion.indexOf('Windows') > 0;
   // lint.js is not loaded initially
-  const hasLinter = typeof getLinterConfigForCodeMirror !== 'undefined' ?
-    getLinterConfigForCodeMirror(prefs.get('editor.linter')) : false;
+  const hasLinter = window.linterConfig ? linterConfig.getForCodeMirror() : false;
 
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
@@ -1955,7 +1954,7 @@ function showCodeMirrorPopup(title, html, options) {
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
-    lint: getLinterConfigForCodeMirror(prefs.get('editor.linter')),
+    lint: linterConfig.getForCodeMirror(),
     styleActiveLine: true,
     theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap')

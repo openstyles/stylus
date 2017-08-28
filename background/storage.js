@@ -46,7 +46,7 @@ var chromeLocal = {
 var chromeSync = {
   get(options) {
     return new Promise(resolve => {
-      chrome.storage.sync.get(options, data => resolve(data));
+      chrome.storage.sync.get(options, resolve);
     });
   },
   set(data) {
@@ -54,10 +54,15 @@ var chromeSync = {
       chrome.storage.sync.set(data, () => resolve(data));
     });
   },
-  getValue(key) {
+  getLZValue(key) {
     return chromeSync.get(key).then(data => tryJSONparse(LZString.decompressFromUTF16(data[key])));
   },
-  setValue(key, value) {
+  getLZValues(keys) {
+    return chromeSync.get(keys).then(data =>
+      Object.assign({}, ...keys.map(key =>
+        ({[key]: tryJSONparse(LZString.decompressFromUTF16(data[key]))}))));
+  },
+  setLZValue(key, value) {
     return chromeSync.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
   }
 };
