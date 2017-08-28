@@ -1,6 +1,6 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
-/* global exports css_beautify onDOMscripted */
+/* global exports onDOMscripted */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 'use strict';
 
@@ -1125,7 +1125,7 @@ function beautify(event) {
           [].concat.apply([], cm.doc.sel.ranges.map(r =>
             [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
         const text = cm.getValue();
-        const newText = css_beautify(text, options);
+        const newText = exports.css_beautify(text, options);
         if (newText !== text) {
           if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
             // clear the list if last change wasn't a css-beautify
