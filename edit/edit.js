@@ -182,7 +182,8 @@ function initCodeMirror() {
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
     lint: linterConfig.getForCodeMirror(),
-    lintReportDelay: prefs.get('editor.lintReportDelay'),
+    lintReportDelay: 500,
+    //lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',
     keyMap: prefs.get('editor.keyMap'),
@@ -461,10 +462,14 @@ function setupCodeMirror(textarea, index) {
   return cm;
 }
 
-function indicateCodeChange(cm) {
+function indicateCodeChange(cm, change) {
   const section = cm.getSection();
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
+  if (change) {
+    cm.stylusChanges = cm.stylusChanges || [];
+    cm.stylusChanges.push(change);
+  }
   updateLintReportIfEnabled(cm);
 }
 

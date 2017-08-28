@@ -196,17 +196,22 @@ function updateLintReport(cm, delay) {
     update(cm);
     return;
   }
+  const state = cm.state.lint;
   if (delay > 0) {
-    setTimeout(cm => {
+    clearTimeout((state || {}).lintTimeout);
+    (state || {}).lintTimeout = setTimeout(cm => {
+      // the temp monkeypatch only allows sep=false that returns a line array
+      // because during editing this is what we need, not the combined text
+      const _getValue = cm.getValue;
+      cm.getValue = sep => (sep === false ? _getValue.call(cm, sep) : '');
       if (cm.performLint) {
         cm.performLint();
+        cm.getValue = _getValue;
         update(cm);
       }
     }, delay, cm);
     return;
   }
-  // eslint-disable-next-line no-var
-  var state = cm.state.lint;
   if (!state) {
     return;
   }
