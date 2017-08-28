@@ -218,7 +218,7 @@ function webNavigationListener(method, {url, tabId, frameId}) {
         styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
       }, {
         frameId
-      });
+      }, ignoreChromeError);
     }
     // main page frame id is 0
     if (frameId === 0) {

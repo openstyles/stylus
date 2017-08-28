@@ -75,6 +75,7 @@ function notifyAllTabs(msg) {
       style: getStyleWithNoCode(msg.style)
     });
   }
+  const maybeIgnoreLastError = FIREFOX ? ignoreChromeError : undefined;
   const affectsAll = !msg.affects || msg.affects.all;
   const affectsOwnOriginOnly = !affectsAll && (msg.affects.editor || msg.affects.manager);
   const affectsTabs = affectsAll || affectsOwnOriginOnly;
@@ -88,7 +89,7 @@ function notifyAllTabs(msg) {
       && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
       // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
       && (!FIREFOX || tab.width)) {
-        chrome.tabs.sendMessage(tab.id, msg);
+        chrome.tabs.sendMessage(tab.id, msg, maybeIgnoreLastError);
       }
       if (affectsIcon && BG) {
         BG.updateIcon(tab);
@@ -115,7 +116,7 @@ function notifyAllTabs(msg) {
   }
   // notify background page and all open popups
   if (affectsSelf) {
-    chrome.runtime.sendMessage(msg);
+    chrome.runtime.sendMessage(msg, maybeIgnoreLastError);
   }
 }
 
