@@ -307,7 +307,7 @@ function initCodeMirror() {
 
 function acmeEventListener(event) {
   const el = event.target;
-  const option = el.id.replace(/^editor\./, '');
+  let option = el.id.replace(/^editor\./, '');
   //console.log('acmeEventListener heard %s on %s', event.type, el.id);
   if (!option) {
     console.error('acmeEventListener: no "cm_option" %O', el);
@@ -366,6 +366,7 @@ function acmeEventListener(event) {
         default:
           value = null;
       }
+      option = 'highlightSelectionMatches';
       break;
     case 'linter':
       updateLinter(value);
