@@ -264,9 +264,16 @@ function dieOnDysfunction() {
   });
   // TODO: fallback to sendMessage in FF since private windows can't get bg page
   chrome.windows.getCurrent(wnd => wnd.incognito && die());
-  // check if privacy settings were fixed but the extension wasn't reloaded
-  const bg = chrome.extension.getBackgroundPage();
-  if (bg && !(bg.cachedStyles || {}).list) {
-    chrome.runtime.reload();
-  }
+  // check if privacy settings were fixed but the extension wasn't reloaded,
+  // use setTimeout to auto-cancel if already dead
+  setTimeout(() => {
+    const bg = chrome.extension.getBackgroundPage();
+    if (bg && !(bg.cachedStyles || {}).list) {
+      chrome.storage.local.get('reloaded', data => {
+        if (!data || Date.now() - (data.reloaded || 0) > 10e3) {
+          chrome.storage.local.set({reloaded: Date.now()}, () => chrome.runtime.reload());
+        }
+      });
+    }
+  });
 }
