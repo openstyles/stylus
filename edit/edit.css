@@ -73,16 +73,19 @@ input[type="checkbox"] {
 h2 .svg-icon, label .svg-icon {
   margin-top: -1px;
 }
-.svg-icon.info {
+.svg-icon.info,
+.svg-icon.settings {
   width: 14px;
   height: 16px;
 }
 .svg-icon:hover,
-.svg-icon.info {
+.svg-icon.info,
+.svg-icon.settings {
   fill: #666;
 }
 .svg-icon,
-.svg-icon.info:hover {
+.svg-icon.info:hover,
+.svg-icon.settings:hover {
   fill: #000;
 }
 #enabled {
@@ -361,10 +364,25 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
 }
+#help-popup .settings {
+  min-width: 500px;
+  min-height: 200px;
+  max-width: 48vw;
+}
 #help-popup .dismiss {
   position: absolute;
   right: 4px;
   top: .5em;
+}
+#help-popup .saved-message {
+  display: none;
+  color: #090;
+  margin-left: 10px;
+  font-weight: bold;
+}
+#help-popup .saved-message.show,
+#options .linter-settings {
+  display: inline-block;
 }
 
 .keymap-list {
@@ -397,6 +415,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   pointer-events: all;
   opacity: 1.0;
 }
+#help-popup .rules {
+  padding: 0 15px;
+}
+#help-popup button {
+  margin-right: 3px;
+}
 
 /************ lint ************/
 #lint {
@@ -428,7 +452,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #lint td[role="severity"] {
   font-size: 0;
   width: 16px;
-  padding-right: 0.25rem;
 }
 #lint td[role="line"], #lint td[role="sep"] {
   text-align: right;
@@ -439,6 +462,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   padding-right: 0.25rem;
 }
 #lint td[role="message"] {
+  text-align: left;
+}
+#message-box.center.lint-config #message-box-contents {
   text-align: left;
 }
 
@@ -543,7 +569,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     margin-bottom: 0;
   }
   #lint > div {
-    max-height: 0;
+    max-height: 20vh;
   }
   #lint.collapsed > div {
     display: none;
@@ -551,6 +577,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   #lint:hover > div {
     margin-top: 1em;
     max-height: 30vh;
+  }
+  #lint table {
+    width: 100%;
+  }
+  #lint td[role="message"] {
+    max-width: none;
   }
   #sections {
     padding-left: 0;

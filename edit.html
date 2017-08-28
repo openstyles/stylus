@@ -9,6 +9,7 @@
     <script src="content/apply.js"></script>
     <link rel="stylesheet" href="edit/edit.css">
     <script src="edit/edit.js"></script>
+    <script src="edit/lint.js"></script>
 
     <script src="vendor/codemirror/lib/codemirror.js"></script>
     <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.css">
@@ -32,11 +33,6 @@
     <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
 
     <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
-
-    <link rel="stylesheet" href="vendor/codemirror/addon/lint/lint.css" />
-    <script src="vendor/csslint/csslint-worker.js"></script>
-    <script src="vendor/codemirror/addon/lint/lint.js"></script>
-    <script src="vendor-overwrites/codemirror/addon/lint/css-lint.js"></script>
 
     <link rel="stylesheet" href="vendor/codemirror/addon/hint/show-hint.css" />
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
@@ -186,8 +182,20 @@
             <option i18n-text="genericDisabledLabel" value="">
           </select>
         </div>
+        <div class="option aligned">
+          <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
+          <select id="editor.linter">
+            <option value="csslint" selected>CSSLint</option>
+            <option value="stylelint">Stylelint</option>
+            <option value="null" i18n-text="genericDisabledLabel"></option>
+          </select>
+          <span class="linter-settings" i18n-title="linterConfigTooltip">
+            <svg id="linter-settings" class="svg-icon settings">
+              <use xlink:href="#svg-icon-settings"/>
+            </svg>&nbsp;
+          </span>
       </section>
-      <section id="lint"><h2 i18n-text="issues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
+      <section id="lint"><h2 i18n-text="linterIssues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
     </div>
     <section id="sections">
       <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
@@ -206,6 +214,9 @@
       </symbol>
       <symbol id="svg-icon-close" height="16" width="12" viewBox="0 0 12 16">
         <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
+      </symbol>
+      <symbol id="svg-icon-settings" height="12" width="12" viewBox="0 0 16 16">
+        <path d="M16 9.45V6.52l-1.8-.3c-.14-.5-.34-.95-.56-1.35L14.7 3.4l-2.07-2.1-1.5 1.03c-.43-.24-.9-.43-1.37-.56L9.46 0H6.54l-.3 1.8c-.5.13-.94.33-1.36.55L3.4 1.32 1.3 3.4l1.07 1.45c-.24.45-.44.92-.57 1.42L0 6.53v2.95l1.8.3c.14.52.33.95.57 1.37l-1.07 1.5 2.06 2.08 1.5-1.07c.44.24.9.45 1.4.57l.3 1.77H9.5l.32-1.8c.47-.13.95-.32 1.34-.56l1.5 1.06 2.07-2.05-1.03-1.5c.24-.45.44-.9.56-1.36L16 9.44v-.02zm-8 1.6C6.3 11.05 4.93 9.7 4.93 8S6.33 4.9 8 4.9s3.06 1.4 3.06 3.1S9.7 11.04 8 11.04z"/>
       </symbol>
     </svg>
 

@@ -143,7 +143,8 @@ function initPopup(url) {
     title: `url-prefix("${url}")`,
     textContent: prefs.get('popup.breadcrumbs.usePath')
       ? new URL(url).pathname.slice(1)
-      : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+      // this&nbsp;URL
+      : t('writeStyleForURL').replace(/ /g, '\u00a0'),
     onclick: handleEvent.openLink,
   });
   if (prefs.get('popup.breadcrumbs')) {

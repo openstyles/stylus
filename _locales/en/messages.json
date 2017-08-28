@@ -107,6 +107,26 @@
     "message": "Word wrap",
     "description": "Label for the checkbox controlling word wrap option for the style editor."
   },
+  "cm_linter": {
+    "message": "CSS Linter",
+    "description": "Select the linter to check for CSS issues"
+  },
+  "cm_matchHighlight": {
+    "message": "Highlight",
+    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Selection only",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token under cursor",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+  },
+  "cm_resizeGripHint": {
+    "message": "Double-click to maximize/restore the height",
+    "description": "Tooltip for the resize grip in style editor"
+  },
   "cm_smartIndent": {
     "message": "Use smart indentation",
     "description": "Label for the checkbox controlling smart indentation option for the style editor."
@@ -118,22 +138,6 @@
   "cm_theme": {
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
-  },
-  "cm_matchHighlight": {
-    "message": "Highlight",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
-  },
-  "cm_matchHighlightToken": {
-    "message": "Token under cursor",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
-  },
-  "cm_matchHighlightSelection": {
-    "message": "Selection only",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-  },
-  "cm_resizeGripHint": {
-    "message": "Double-click to maximize/restore the height",
-    "description": "Tooltip for the resize grip in style editor"
   },
   "dysfunctional": {
     "message": "Stylus cannot function because Firefox is either in private mode or is applying its website cookies policy to IndexedDB storage used by Stylus, which erroneously marks the secure moz-extension:// origin as insecure even though WebExtensions aren't websites and Stylus doesn't use cookies.\n\n1. Open Firefox options\n2. Go to 'Privacy & Security'\n3. Set 'History' mode to 'Use custom settings'\n4. Click 'Exceptions'\n5. Paste our manifest URL and click 'Allow'\n6. Click 'Save settings'\n7. Uncheck 'Always use private browsing mode'\n\nThe actual manifest URL is shown below.\nYou can also find it on about:debugging page.",
@@ -150,6 +154,14 @@
   "genericHistoryLabel": {
     "message": "History",
     "description": "Used in various places to show a history log of something"
+  },
+  "genericResetLabel": {
+    "message": "Reset",
+    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+  },
+  "genericSavedMessage": {
+    "message": "Saved",
+    "description": "Used in various parts of the UI to indicate that something was saved"
   },
   "confirmNo": {
     "message": "No",
@@ -337,13 +349,51 @@
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
   },
-  "issues": {
-    "message": "Issues",
-    "description": "Label for the CSSLint issues block on the style edit page"
+  "linterConfigPopupTitle": {
+    "message": "Set $linter$ rules configuration",
+    "description": "Stylelint or CSSLint popup header",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
   },
-  "issuesHelp": {
-    "message": "The issues found by <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> with these rules enabled:",
-    "description": "Help popup message for the CSSLint issues block on the style edit page"
+  "linterConfigTooltip": {
+    "message": "Click to configure this linter",
+    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+  },
+  "linterCSSLintSettings": {
+    "message": "(Set rule as: 0 = disabled; 1 = warning; 2 = error)",
+    "description": "CSSLint rule config values"
+  },
+  "linterInvalidConfigError": {
+    "message": "Not saved due to these invalid configuration settings:",
+    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+  },
+  "linterIssues": {
+    "message": "Issues",
+    "description": "Label for the CSS linter issues block on the style edit page"
+  },
+  "linterIssuesHelp": {
+    "message": "These issues were found by $link$:",
+    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Invalid JSON format",
+    "description": "Setting linter config with invalid JSON"
+  },
+  "linterResetMessage": {
+    "message": "To undo accidental reset, press Ctrl-Z (or Cmd-Z) in the text box",
+    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+  },
+  "linterRulesLink": {
+    "message": "See a full list of rules",
+    "description": "Stylelint or CSSLint rules label added immediately before a link"
   },
   "manageFilters": {
     "message": "Filters",

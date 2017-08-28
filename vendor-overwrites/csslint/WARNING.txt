@@ -9,6 +9,9 @@
 2. Apply our hacks unless supported natively
   (use git history for the file as this warning may be obsolete):
 
+  * 449a27cc Add CSSLint position sticky rule
+  * d49e44dd CSS variables
+  * 2e86c958 fire startdocument on {
   * bc63ecca support "i" in attribute selector
   * 2468784e fix crashing on unclosed calc() at eof
   * 3287b79f Support :any(), :-webkit-any(), :-moz-any()

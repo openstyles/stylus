@@ -1,3 +1,4 @@
+/* global LZString */
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -39,6 +40,26 @@ var chromeLocal = {
   setValue(key, value) {
     return chromeLocal.set({[key]: value});
   },
+};
+
+// eslint-disable-next-line no-var
+var chromeSync = {
+  get(options) {
+    return new Promise(resolve => {
+      chrome.storage.sync.get(options, data => resolve(data));
+    });
+  },
+  set(data) {
+    return new Promise(resolve => {
+      chrome.storage.sync.set(data, () => resolve(data));
+    });
+  },
+  getValue(key) {
+    return chromeSync.get(key).then(data => tryJSONparse(LZString.decompressFromUTF16(data[key])));
+  },
+  setValue(key, value) {
+    return chromeSync.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
+  }
 };
 
 

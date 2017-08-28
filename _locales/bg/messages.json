@@ -27,9 +27,9 @@
 		"message": "Изнасяне",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Проблеми",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Цвят на фона",
@@ -664,9 +664,14 @@
 		"message": "Прозорец за настройките",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
-		"message": "Проблеми, намерени от <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> при следните правила:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	"linterIssuesHelp": {
+		"message": "Проблеми, намерени от $link$ при следните правила:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "Значка на иконката на лентата",

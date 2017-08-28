@@ -27,9 +27,9 @@
 		"message": "Exportovat",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "Problémy",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "Barva pozadí",
@@ -652,9 +652,14 @@
 		"message": "Možnosti rozhraní",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
-		"message": "Problémy nalezené aplikací <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> s těmito povolenými pravidly:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	"linterIssuesHelp": {
+		"message": "Problémy nalezené aplikací $link$ s těmito povolenými pravidly:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",

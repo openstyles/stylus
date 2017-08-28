@@ -21,6 +21,7 @@
   "background": {
     "scripts": [
       "js/messaging.js",
+      "vendor-overwrites/lz-string/LZString-2xspeedup.js",
       "background/storage.js",
       "js/prefs.js",
       "background/background.js",

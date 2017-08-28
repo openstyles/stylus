@@ -67,6 +67,86 @@ function onDOMready() {
 }
 
 
+function onDOMscripted(scripts) {
+  if (scripts) {
+    return new Promise(resolve => {
+      addResolver(resolve);
+      onDOMscripted.scriptQueue = scripts;
+      loadNextScript();
+    });
+  }
+  if (onDOMscripted.scriptQueue) {
+    return new Promise(resolve => addResolver(resolve));
+  }
+  if (document.readyState !== 'loading') {
+    if (onDOMscripted.resolveOnReady) {
+      onDOMscripted.resolveOnReady.forEach(r => r());
+      onDOMscripted.resolveOnReady = null;
+    }
+    return Promise.resolve();
+  }
+  return onDOMready().then(onDOMscripted);
+
+  function loadNextScript() {
+    const next = onDOMscripted.scriptQueue.shift();
+    if (!next) {
+      onDOMscripted.scriptQueue = null;
+      onDOMscripted();
+    } else if (typeof next === 'function') {
+      Promise.resolve(next())
+        .then(loadNextScript);
+    } else {
+      Promise.all(
+        (next instanceof Array ? next : [next]).map(next =>
+          typeof next === 'function'
+            ? next()
+            : injectScript({src: next, async: true})
+        )
+      ).then(loadNextScript);
+    }
+  }
+
+  function addResolver(r) {
+    if (!onDOMscripted.resolveOnReady) {
+      onDOMscripted.resolveOnReady = [];
+    }
+    onDOMscripted.resolveOnReady.push(r);
+  }
+}
+
+
+function injectScript(properties) {
+  if (typeof properties === 'string') {
+    properties = {src: properties};
+  }
+  if (!properties || !properties.src) {
+    return;
+  }
+  const script = document.head.appendChild(document.createElement('script'));
+  Object.assign(script, properties);
+  if (!properties.onload) {
+    return new Promise(resolve => {
+      script.onload = () => {
+        script.onload = null;
+        resolve();
+      };
+    });
+  }
+}
+
+
+function injectCSS(url) {
+  if (!url) {
+    return;
+  }
+  document.head.appendChild($element({
+    tag: 'link',
+    rel: 'stylesheet',
+    href: url
+  }));
+}
+
+
 function scrollElementIntoView(element) {
   // align to the top/bottom of the visible area if wasn't visible
   const bounds = element.getBoundingClientRect();

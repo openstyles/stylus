@@ -42,6 +42,7 @@ var prefs = new function Prefs() {
       indent_conditional: true,
     },
     'editor.lintDelay': 500,        // lint gutter marker update delay, ms
+    'editor.linter': 'csslint',     // Choose csslint or stylelint
     'editor.lintReportDelay': 4500, // lint report update delay, ms
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected
@@ -321,11 +322,11 @@ var prefs = new function Prefs() {
 // and establishes a two-way connection between the document elements and the actual prefs
 function setupLivePrefs(
   IDs = Object.getOwnPropertyNames(prefs.readOnlyValues)
-    .filter(id => document.getElementById(id))
+    .filter(id => $('#' + id))
 ) {
   const checkedProps = {};
   for (const id of IDs) {
-    const element = document.getElementById(id);
+    const element = $('#' + id);
     checkedProps[id] = element.type === 'checkbox' ? 'checked' : 'value';
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
@@ -341,7 +342,7 @@ function setupLivePrefs(
   function updateElement({
     id,
     value = prefs.get(id),
-    element = document.getElementById(id),
+    element = $('#' + id),
     force,
   }) {
     const prop = checkedProps[id];

@@ -27,9 +27,9 @@
 		"message": "エクスポート",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"issues": {
+	"linterIssues": {
 		"message": "問題点",
-		"description": "Label for the CSSLint issues block on the style edit page"
+		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景色",
@@ -648,9 +648,14 @@
 		"message": "オプション UI",
 		"description": "Go to Options UI"
 	},
-	"issuesHelp": {
-		"message": "これらのルールを有効にして <a href='https://github.com/CSSLint/csslint' target='_blank'>CSSLint</a> で見つかった問題:",
-		"description": "Help popup message for the CSSLint issues block on the style edit page"
+	"linterIssuesHelp": {
+		"message": "これらのルールを有効にして $link$ で見つかった問題:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",
