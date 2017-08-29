@@ -93,7 +93,7 @@ var linterConfig = {
       if (area === 'sync') {
         for (const name of ['editorCSSLintConfig', 'editorStylelintConfig']) {
           if (name in changes && changes[name].newValue !== changes[name].oldValue) {
-            this.loadAll().then(() => debounce(updateLinter));
+            this.loadAll().then(updateLinter);
             break;
           }
         }
@@ -132,9 +132,16 @@ function initLint() {
 
   linterConfig.loadAll();
   linterConfig.watchStorage();
+  prefs.subscribe(updateLinter, ['editor.linter']);
+  updateLinter();
 }
 
-function updateLinter(linter = prefs.get('editor.linter')) {
+function updateLinter({immediately} = {}) {
+  if (!immediately) {
+    debounce(updateLinter, 0, {immediately: true});
+    return;
+  }
+  const linter = prefs.get('editor.linter');
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
   function updateEditors() {
@@ -147,7 +154,7 @@ function updateLinter(linter = prefs.get('editor.linter')) {
         updateGutters(cm, guttersOption);
       }
       cm.refresh();
-      updateLintReport(cm, 200);
+      updateLintReport(cm);
     });
   }
 
@@ -408,7 +415,7 @@ function setupLinterSettingsEvents(popup) {
       }
       linterConfig.save(json);
       linterConfig.showSavedMessage();
-      debounce(updateLinter);
+      updateLinter();
     } else {
       showLinterErrorMessage(linter, t('linterJSONError'));
     }

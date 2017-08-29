@@ -371,9 +371,6 @@ function acmeEventListener(event) {
       }
       option = 'highlightSelectionMatches';
       break;
-    case 'linter':
-      debounce(updateLinter);
-      break;
   }
   CodeMirror.setOption(option, value);
 }
