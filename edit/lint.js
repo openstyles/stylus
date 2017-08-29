@@ -191,7 +191,7 @@ function updateLinter({immediately} = {}) {
 }
 
 function updateLintReport(cm, delay) {
-  const state = cm.state.lint || {};
+  const state = cm && cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
     clearTimeout(state.lintTimeout);
@@ -219,7 +219,7 @@ function updateLintReport(cm, delay) {
   // user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
   // or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
   clearTimeout(state.reportTimeout);
-  state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
+  state.reportTimeout = setTimeout(update, (state.options || {}).delay + 100, cm);
   state.postponeNewIssues = delay === undefined || delay === null;
 
   function update(cm) {
