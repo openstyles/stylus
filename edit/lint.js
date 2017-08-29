@@ -206,9 +206,9 @@ function updateLintReport(cm, delay) {
       cm.getValue = sep => (sep === false ? _getValue.call(cm, sep) : '');
       if (cm.performLint) {
         cm.performLint();
-        cm.getValue = _getValue;
         update(cm);
       }
+      cm.getValue = _getValue;
     }, delay, cm);
     return;
   }

@@ -62,8 +62,13 @@
     // cache the config for subsequent *lintOnRange
     config = deepCopy(linterConfig.getCurrent());
     let ranges;
-    if (!cm.stylusChanges || !cm.stylusChanges.length) {
+    if (
+      !cm.stylusChanges ||
+      !cm.stylusChanges.length ||
+      cm.stylusChanges.some(change => change.origin === 'setValue')
+    ) {
       // first run: lint everything
+      cm.state.lint.marked = [];
       // the temp monkeypatch in updateLintReport() is there
       // only to allow sep=false that returns a line array
       ranges = [{
@@ -74,12 +79,22 @@
     } else {
       // sort by 'from' position in ascending order
       const changes = cm.stylusChanges.sort((a, b) => cmpPos(a.from, b.from));
+      // extend ranges with pasted text
+      for (const change of changes) {
+        const addedLines = Math.max(0, change.text.length - 1);
+        const removedLines = Math.max(0, change.removed.length - 1);
+        const delta = addedLines - removedLines;
+        change.to = CodeMirror.Pos(
+          Math.max(0, change.to.line + delta),
+          Math.max(0, change.to.ch + change.text.last.length - change.removed.last.length + 1)
+        );
+      }
       // merge pass 1
       ranges = mergeRanges(changes);
       // extend up to previous } and down to next }
       for (const range of ranges) {
         range.from = findBlockEndBefore(range.from, 2);
-        range.to = findBlockEndAfter(range.to, 2);
+        range.to = findBlockEndAfter(range.from, 4);
       }
       // merge pass 2 on the extended ranges
       ranges = mergeRanges(ranges);
@@ -99,24 +114,34 @@
       const PREV_CMT_END = find('*/', pos, -1);
       const PREV_CMT_START = (prev => cmp(prev, pos) < 0 && prev)(find('/*', PREV_CMT_END, +1));
       const NEXT_CMT_END = PREV_CMT_START && (find('*/', PREV_CMT_START, +1) || EOF);
-      const cursor = cm.getSearchCursor(/\/\*|\*\/|}/, pos, {caseFold: false});
+      const cursor = cm.getSearchCursor(/\/\*|\*\/|[{}]/, pos, {caseFold: false});
       let cmtStart = PREV_CMT_START;
       let cmtEnd = cmtStart && cmp(NEXT_CMT_END, pos) > 0 && NEXT_CMT_END;
+      let blockStart;
       let blockEnd;
       while (cursor.findPrevious()) {
         switch (cursor.pos.match[0]) {
+          case '{':
+            if (!cmtStart || cmp(cmtStart, cursor.pos.to) > 0) {
+              blockStart = cursor.pos.from;
+            }
+            break;
           case '}':
             if (!cmtStart || cmp(cmtStart, cursor.pos.to) > 0) {
               blockEnd = cursor.pos.to;
-              if (--repetitions <= 0) {
+              if (--repetitions <= 0 || !blockStart) {
                 return blockEnd;
               }
+              blockStart = null;
             }
             break;
           case '/*':
             cmtStart = cursor.pos.to;
             if (cmp(cmtEnd, blockEnd) > 0) {
               blockEnd = null;
+            }
+            if (cmp(cmtEnd, blockStart) > 0) {
+              blockStart = null;
             }
             break;
           case '*/':
@@ -133,13 +158,19 @@
     function findBlockEndAfter(pos, repetitions = 1) {
       const PREV_CMT_END = find('*/', pos, -1);
       const PREV_CMT_START = (prev => cmp(prev, pos) < 0 && prev)(find('/*', PREV_CMT_END, +1));
-      const cursor = cm.getSearchCursor(/\/\*|\*\/|}/, pos, {caseFold: false});
+      const cursor = cm.getSearchCursor(/\/\*|\*\/|[{}]/, pos, {caseFold: false});
       let cmtStart = PREV_CMT_START;
+      let depth = 0;
       while (cursor.findNext()) {
         switch (cursor.pos.match[0]) {
+          case '{':
+            if (!cmtStart) {
+              depth++;
+            }
+            break;
           case '}':
-            if (!cmtStart && --repetitions <= 0) {
-              return cursor.pos.to;
+            if (!cmtStart && (--depth <= 0 && --repetitions <= 0)) {
+              return depth < 0 ? cursor.pos.from : cursor.pos.to;
             }
             break;
           case '/*':
@@ -212,7 +243,7 @@
     const finalAnns = [];
     const unique = new Set();
     const pushUnique = item => {
-      const key = item.line + ' ' + item.ch + ' ' + item.message;
+      const key = item.from.line + ' ' + item.from.ch + ' ' + item.message;
       if (!unique.has(key)) {
         unique.add(key);
         finalAnns.push(item);
