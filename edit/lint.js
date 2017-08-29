@@ -3,6 +3,8 @@
 /* global onDOMscripted injectCSS require CSSLint stylelint */
 'use strict';
 
+loadLinterAssets();
+
 // eslint-disable-next-line no-var
 var linterConfig = {
   csslint: {},
@@ -133,19 +135,49 @@ function initLint() {
 }
 
 function updateLinter(linter = prefs.get('editor.linter')) {
+  const GUTTERS_CLASS = 'CodeMirror-lint-markers';
+
   function updateEditors() {
-    const options = linterConfig.getForCodeMirror(linter);
-    CodeMirror.defaults.lint = options;
+    CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
+    const guttersOption = prepareGuttersOption();
     editors.forEach(cm => {
-      // set lint to "null" to disable
-      cm.setOption('lint', options);
-      // enabling/disabling linting changes the gutter width
+      cm.setOption('lint', CodeMirror.defaults.lint);
+      if (guttersOption) {
+        cm.setOption('guttersOption', guttersOption);
+        updateGutters(cm, guttersOption);
+      }
       cm.refresh();
       updateLintReport(cm, 200);
     });
   }
+
+  function prepareGuttersOption() {
+    const gutters = CodeMirror.defaults.gutters;
+    const needRefresh = Boolean(linter) !== gutters.includes(GUTTERS_CLASS);
+    if (needRefresh) {
+      if (linter) {
+        gutters.push(GUTTERS_CLASS);
+      } else {
+        gutters.splice(gutters.indexOf(GUTTERS_CLASS), 1);
+      }
+    }
+    return needRefresh && gutters;
+  }
+
+  function updateGutters(cm, guttersOption) {
+    cm.options.gutters = guttersOption;
+    const el = $('.' + GUTTERS_CLASS, cm.display.gutters);
+    if (linter && !el) {
+      cm.display.gutters.appendChild($element({
+        className: 'CodeMirror-gutter ' + GUTTERS_CLASS
+      }));
+    } else if (!linter && el) {
+      el.remove();
+    }
+  }
+
   // load scripts
-  loadSelectedLinter(linter).then(() => {
+  loadLinterAssets(linter).then(() => {
     updateEditors();
   });
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
@@ -159,8 +191,10 @@ function updateLintReport(cm, delay) {
   }
   if (delay > 0) {
     setTimeout(cm => {
-      cm.performLint();
-      update(cm);
+      if (cm.performLint) {
+        cm.performLint();
+        update(cm);
+      }
     }, delay, cm);
     return;
   }
@@ -374,7 +408,7 @@ function setupLinterSettingsEvents(popup) {
       }
       linterConfig.save(json);
       linterConfig.showSavedMessage();
-      debounce(updateLinter, 0, linter);
+      debounce(updateLinter);
     } else {
       showLinterErrorMessage(linter, t('linterJSONError'));
     }
@@ -450,7 +484,11 @@ function setupLinterPopup(config) {
   setupLinterSettingsEvents(popup);
 }
 
-function loadSelectedLinter(name) {
+function loadLinterAssets(name = prefs.get('editor.linter')) {
+  if (loadLinterAssets.loadingName === name) {
+    return onDOMscripted();
+  }
+  loadLinterAssets.loadingName = name;
   const scripts = [];
   if (name === 'csslint' && !window.CSSLint) {
     scripts.push(
@@ -473,5 +511,6 @@ function loadSelectedLinter(name) {
       'msgbox/msgbox.js'
     );
   }
-  return onDOMscripted(scripts);
+  return onDOMscripted(scripts)
+    .then(() => (loadLinterAssets.loadingName = null));
 }

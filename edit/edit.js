@@ -162,8 +162,6 @@ function initCodeMirror() {
   const CM = CodeMirror;
   const isWindowsOS = navigator.appVersion.indexOf('Windows') > 0;
   // lint.js is not loaded initially
-  const hasLinter = window.linterConfig ? linterConfig.getForCodeMirror() : false;
-
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
     prefs.reset('editor.keyMap');
@@ -175,11 +173,15 @@ function initCodeMirror() {
     lineNumbers: true,
     lineWrapping: true,
     foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    gutters: [
+      'CodeMirror-linenumbers',
+      'CodeMirror-foldgutter',
+      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
+    ],
     matchBrackets: true,
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
-    lint: hasLinter,
+    lint: linterConfig.getForCodeMirror(),
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',
@@ -370,7 +372,7 @@ function acmeEventListener(event) {
       option = 'highlightSelectionMatches';
       break;
     case 'linter':
-      updateLinter(value);
+      debounce(updateLinter);
       break;
   }
   CodeMirror.setOption(option, value);
