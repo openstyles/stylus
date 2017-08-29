@@ -2,7 +2,7 @@
 'use strict';
 
 CodeMirror.registerHelper('lint', 'csslint', code =>
-  CSSLint.verify(code, linterConfig.getCurrent('csslint'))
+  CSSLint.verify(code, deepCopy(linterConfig.getCurrent('csslint')))
     .messages.map(message => ({
       from: CodeMirror.Pos(message.line - 1, message.col - 1),
       to: CodeMirror.Pos(message.line - 1, message.col),
@@ -14,7 +14,7 @@ CodeMirror.registerHelper('lint', 'csslint', code =>
 CodeMirror.registerHelper('lint', 'stylelint', code =>
   stylelint.lint({
     code,
-    config: linterConfig.getCurrent('stylelint'),
+    config: deepCopy(linterConfig.getCurrent('stylelint')),
   }).then(({results}) => {
     if (!results[0]) {
       return [];
