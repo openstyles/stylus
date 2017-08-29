@@ -1217,6 +1217,8 @@ function init() {
     // default to enabled
     $('#enabled').checked = true;
     initHooks();
+    setCleanGlobal();
+    updateTitle();
     return;
   }
   // This is an edit
@@ -1255,9 +1257,11 @@ function initWithStyle({style, codeIsUpdated}) {
     return;
   }
   // if this was done in response to an update, we need to clear existing sections
-  getSections().forEach(div => { div.remove(); });
+  editors.length = 0;
+  getSections().forEach(div => div.remove());
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
   const queueStart = new Date().getTime();
+  maximizeCodeHeight.stats = null;
   // after 100ms the sections will be added asynchronously
   while (new Date().getTime() - queueStart <= 100 && queue.length) {
     add();
@@ -1269,16 +1273,20 @@ function initWithStyle({style, codeIsUpdated}) {
     }
   })();
   initHooks();
+  setCleanGlobal();
+  updateTitle();
 
   function add() {
     const sectionDiv = addSection(null, queue.shift());
-    const isLast = !queue.length;
-    maximizeCodeHeight(sectionDiv, isLast);
-    updateLintReport(sectionDiv.CodeMirror, !isLast && 100);
+    maximizeCodeHeight(sectionDiv, !queue.length);
   }
 }
 
 function initHooks() {
+  if (initHooks.alreadyDone) {
+    return;
+  }
+  initHooks.alreadyDone = true;
   $$('#header .style-contributor').forEach(node => {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
@@ -1310,8 +1318,6 @@ function initHooks() {
   });
 
   setupGlobalSearch();
-  setCleanGlobal();
-  updateTitle();
 }
 
 
