@@ -396,7 +396,18 @@ function setupCodeMirror(textarea, index) {
     hotkeyRerouter.setState(false);
     wrapper.classList.add('CodeMirror-active');
   });
-  cm.on('paste', () => {
+  cm.on('paste', (cm, event) => {
+    const text = event.clipboardData.getData('text') || '';
+    if (
+      text.includes('@-moz-document') &&
+      text.replace(/\/\*[\s\S]*?\*\//g, '')
+        .match(/@-moz-document[\s\r\n]+(url|url-prefix|domain|regexp)\(/)
+    ) {
+      event.preventDefault();
+      fromMozillaFormat();
+      $('#help-popup').codebox.setValue(text);
+      $('#help-popup').codebox.markClean();
+    }
     if (editors.length === 1) {
       setTimeout(() => {
         if (cm.display.sizer.clientHeight > cm.display.wrapper.clientHeight) {
