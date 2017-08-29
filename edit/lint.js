@@ -416,7 +416,6 @@ function setupLinterSettingsEvents(popup) {
       linterConfig.save(json);
       linterConfig.showSavedMessage();
       popup.codebox.markClean();
-      updateLinter();
     } else {
       showLinterErrorMessage(linter, t('linterJSONError'));
     }
