@@ -415,6 +415,7 @@ function setupLinterSettingsEvents(popup) {
       }
       linterConfig.save(json);
       linterConfig.showSavedMessage();
+      popup.codebox.markClean();
       updateLinter();
     } else {
       showLinterErrorMessage(linter, t('linterJSONError'));
@@ -436,6 +437,7 @@ function setupLinterSettingsEvents(popup) {
 function setupLinterPopup(config) {
   const linter = prefs.get('editor.linter');
   const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
+
   function makeButton(className, text, options = {}) {
     return $element(Object.assign(options, {
       tag: 'button',
@@ -448,11 +450,9 @@ function setupLinterPopup(config) {
   function makeLink(url, textContent) {
     return $element({tag: 'a', target: '_blank', href: url, textContent});
   }
-  function setJSONMode(cm) {
-    cm.setOption('mode', 'application/json');
-    cm.setOption('lint', 'json');
-  }
-  const popup = showCodeMirrorPopup(t('linterConfigPopupTitle', linterTitle), $element({
+
+  const title = t('linterConfigPopupTitle', linterTitle);
+  const contents = $element({
     appendChild: [
       $element({
         tag: 'p',
@@ -467,7 +467,7 @@ function setupLinterPopup(config) {
           linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : ''
         ]
       }),
-      makeButton('save', 'styleSaveLabel'),
+      makeButton('save', 'styleSaveLabel', {disabled: true}),
       makeButton('cancel', 'confirmCancel'),
       makeButton('reset', 'genericResetLabel', {title: t('linterResetMessage')}),
       $element({
@@ -476,19 +476,25 @@ function setupLinterPopup(config) {
         textContent: t('genericSavedMessage')
       })
     ]
-  }));
-  const contents = $('.contents', popup);
-  const loadJSON = window.jsonlint ? [] : [
-    'vendor/codemirror/mode/javascript/javascript.js',
-    'vendor/codemirror/addon/lint/json-lint.js',
-    'vendor/jsonlint/jsonlint.js'
-  ];
-  contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
+  });
+  const popup = showCodeMirrorPopup(title, contents, {lint: false});
+  contents.parentNode.appendChild(contents);
   popup.codebox.focus();
   popup.codebox.setValue(config);
   popup.codebox.clearHistory();
-  onDOMscripted(loadJSON).then(() => setJSONMode(popup.codebox));
+  popup.codebox.markClean();
+  popup.codebox.on('change', cm => {
+    $('.save', popup).disabled = cm.isClean();
+  });
   setupLinterSettingsEvents(popup);
+  onDOMscripted([
+    'vendor/codemirror/mode/javascript/javascript.js',
+    'vendor/codemirror/addon/lint/json-lint.js',
+    'vendor/jsonlint/jsonlint.js'
+  ]).then(() => {
+    popup.codebox.setOption('mode', 'application/json');
+    popup.codebox.setOption('lint', 'json');
+  });
 }
 
 function loadLinterAssets(name = prefs.get('editor.linter')) {
