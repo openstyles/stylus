@@ -396,6 +396,16 @@ function setupCodeMirror(textarea, index) {
     hotkeyRerouter.setState(false);
     wrapper.classList.add('CodeMirror-active');
   });
+  cm.on('paste', () => {
+    if (editors.length === 1) {
+      setTimeout(() => {
+        if (cm.display.sizer.clientHeight > cm.display.wrapper.clientHeight) {
+          maximizeCodeHeight.stats = null;
+          maximizeCodeHeight(cm.getSection(), true);
+        }
+      });
+    }
+  });
   if (!FIREFOX) {
     cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
   }
