@@ -1212,14 +1212,11 @@ function init() {
         section[CssToProperty[i]] = [params[i]];
       }
     }
-    window.onload = () => {
-      window.onload = null;
-      addSection(null, section);
-      editors[0].setOption('lint', CodeMirror.defaults.lint);
-      // default to enabled
-      $('#enabled').checked = true;
-      initHooks();
-    };
+    addSection(null, section);
+    editors[0].setOption('lint', CodeMirror.defaults.lint);
+    // default to enabled
+    $('#enabled').checked = true;
+    initHooks();
     return;
   }
   // This is an edit
