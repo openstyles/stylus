@@ -68,14 +68,15 @@ function onDOMready() {
 
 
 function onDOMscripted(scripts) {
+  const queue = onDOMscripted.queue = onDOMscripted.queue || [];
   if (scripts) {
     return new Promise(resolve => {
       addResolver(resolve);
-      onDOMscripted.scriptQueue = scripts;
+      queue.push(...scripts.filter(el => !queue.includes(el)));
       loadNextScript();
     });
   }
-  if (onDOMscripted.scriptQueue) {
+  if (queue.length) {
     return new Promise(resolve => addResolver(resolve));
   }
   if (document.readyState !== 'loading') {
@@ -88,9 +89,9 @@ function onDOMscripted(scripts) {
   return onDOMready().then(onDOMscripted);
 
   function loadNextScript() {
-    const next = onDOMscripted.scriptQueue.shift();
-    if (!next) {
-      onDOMscripted.scriptQueue = null;
+    const empty = !queue.length;
+    const next = !empty && queue.shift();
+    if (empty) {
       onDOMscripted();
     } else if (typeof next === 'function') {
       Promise.resolve(next())
