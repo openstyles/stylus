@@ -1287,19 +1287,18 @@ function initWithStyle({style, codeIsUpdated}) {
     updateTitle();
     return;
   }
-
   // if this was done in response to an update, we need to clear existing sections
   getSections().forEach(div => { div.remove(); });
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
-  const queueStart = new Date().getTime();
+  const t0 = performance.now();
   // after 100ms the sections will be added asynchronously
-  while (new Date().getTime() - queueStart <= 100 && queue.length) {
+  while (performance.now() - t0 <= 100 && queue.length) {
     add();
   }
   (function processQueue() {
     if (queue.length) {
       add();
-      setTimeout(processQueue, 0);
+      setTimeout(processQueue);
     }
   })();
   initHooks();
@@ -1307,12 +1306,8 @@ function initWithStyle({style, codeIsUpdated}) {
   function add() {
     const sectionDiv = addSection(null, queue.shift());
     maximizeCodeHeight(sectionDiv, !queue.length);
-    const cm = sectionDiv.CodeMirror;
-    if (CodeMirror.lint) {
-      setTimeout(() => {
-        cm.setOption('lint', CodeMirror.defaults.lint);
-        updateLintReport(cm, 0);
-      }, prefs.get('editor.lintDelay'));
+    if (!queue.length) {
+      editors.last.state.renderLintReportNow = true;
     }
   }
 }
@@ -1451,9 +1446,9 @@ function validate() {
   return null;
 }
 
-function updateLintReportIfEnabled(cm, time) {
-  if (CodeMirror.lint) {
-    updateLintReport(cm, time);
+function updateLintReportIfEnabled(...args) {
+  if (CodeMirror.defaults.lint) {
+    updateLintReport(...args);
   }
 }
 
@@ -1568,8 +1563,10 @@ function fromMozillaFormat() {
 
   function doImport(event) {
     // parserlib contained in CSSLint-worker.js
-    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js'])
-      .then(() => doImportWhenReady(event.target));
+    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js']).then(() => {
+      doImportWhenReady(event.target);
+      editors.last.state.renderLintReportNow = true;
+    });
   }
 
   function doImportWhenReady(target) {

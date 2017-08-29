@@ -191,13 +191,24 @@ function updateLinter({immediately} = {}) {
 }
 
 function updateLintReport(cm, delay) {
+  if (cm && !cm.options.lint) {
+    // add 'lint' option back to the freshly created section
+    setTimeout(() => {
+      if (!cm.options.lint) {
+        cm.setOption('lint', linterConfig.getForCodeMirror());
+      }
+    });
+  }
+  const state = cm && cm.state && cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
+    clearTimeout(state.lintTimeout);
     update(cm);
     return;
   }
   if (delay > 0) {
-    setTimeout(cm => {
+    clearTimeout(state.lintTimeout);
+    state.lintTimeout = setTimeout(cm => {
       if (cm.performLint) {
         cm.performLint();
         update(cm);
@@ -205,15 +216,10 @@ function updateLintReport(cm, delay) {
     }, delay, cm);
     return;
   }
-  // eslint-disable-next-line no-var
-  var state = cm.state.lint;
-  if (!state) {
-    return;
-  }
   // user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
   // or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
   clearTimeout(state.reportTimeout);
-  state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
+  state.reportTimeout = setTimeout(update, (state.options || {}).delay + 100, cm);
   state.postponeNewIssues = delay === undefined || delay === null;
 
   function update(cm) {
@@ -251,19 +257,18 @@ function updateLintReport(cm, delay) {
         }).join('') + '</tbody>';
       scopedState.markedLast = newMarkers;
       fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
-      if (scopedState.html !== html) {
+      if ((scopedState.html || '') !== html) {
         scopedState.html = html;
         changed = true;
       }
     });
     if (changed) {
       clearTimeout(state ? state.renderTimeout : undefined);
-      if (!state || !state.postponeNewIssues || fixedOldIssues) {
+      if (!state || !state.postponeNewIssues || fixedOldIssues || editors.last.state.renderLintReportNow) {
+        editors.last.state.renderLintReportNow = false;
         renderLintReport(true);
       } else {
-        state.renderTimeout = setTimeout(() => {
-          renderLintReport(true);
-        }, CodeMirror.defaults.lintReportDelay);
+        state.renderTimeout = setTimeout(renderLintReport, CodeMirror.defaults.lintReportDelay, true);
       }
     }
   }
