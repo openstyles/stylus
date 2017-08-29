@@ -5911,13 +5911,17 @@ var Validation = module.exports = {
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
                 part = expression.peek();
-                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+                if (part.name !== 'var' || part.type !== 'function') {
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+                }
             } else {
                 throw new ValidationError("Expected (" + ValidationTypes.describe(types) + ") but found '" + value + "'.", value.line, value.col);
             }
         } else if (expression.hasNext()) {
             part = expression.next();
-            throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            if (part.name !== 'var' || part.type !== 'function') {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            }
         }
 
     }
