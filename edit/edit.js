@@ -470,7 +470,7 @@ function indicateCodeChange(cm, change) {
     cm.stylusChanges = cm.stylusChanges || [];
     cm.stylusChanges.push(change);
   }
-  updateLintReportIfEnabled(cm);
+  updateLintReport(cm);
 }
 
 function getSectionForChild(e) {
@@ -597,7 +597,7 @@ window.onbeforeunload = () => {
   if (isCleanGlobal()) {
     return;
   }
-  updateLintReportIfEnabled(null, 0);
+  updateLintReport(null, 0);
   // neither confirm() nor custom messages work in modern browsers but just in case
   return t('styleChangesNotSaved');
 };
@@ -1275,21 +1275,9 @@ function initWithStyle({style, codeIsUpdated}) {
 
   function add() {
     const sectionDiv = addSection(null, queue.shift());
-    maximizeCodeHeight(sectionDiv, !queue.length);
-    const cm = sectionDiv.CodeMirror;
-    if (prefs.get('editor.linter')) {
-      setTimeout(() => {
-        cm.setOption('lint', linterConfig.getForCodeMirror());
-        updateLintReport(cm, 100);
-        if (!queue.length) {
-          setTimeout(() => {
-            const state = cm.state.lint || {};
-            clearTimeout(state.renderTimeout);
-            renderLintReport();
-          }, 100);
-        }
-      });
-    }
+    const isLast = !queue.length;
+    maximizeCodeHeight(sectionDiv, isLast);
+    updateLintReport(sectionDiv.CodeMirror, !isLast && 100);
   }
 }
 
@@ -1427,14 +1415,8 @@ function validate() {
   return null;
 }
 
-function updateLintReportIfEnabled(cm, time) {
-  if (CodeMirror.lint) {
-    updateLintReport(cm, time);
-  }
-}
-
 function save() {
-  updateLintReportIfEnabled(null, 0);
+  updateLintReport(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
   for (let i = 0; i < editors.length; i++) {

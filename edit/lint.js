@@ -191,7 +191,24 @@ function updateLinter({immediately} = {}) {
 }
 
 function updateLintReport(cm, delay) {
-  const state = cm && cm.state.lint || {};
+  if (!CodeMirror.defaults.lint) {
+    return;
+  }
+  if (cm && !cm.options.lint) {
+    setTimeout(() => {
+      if (cm.options.lint) {
+        return;
+      }
+      cm.setOption('lint', linterConfig.getForCodeMirror());
+      if (!delay) {
+        setTimeout(() => {
+          clearTimeout((cm.state.lint || {}).renderTimeout);
+          renderLintReport();
+        }, 100);
+      }
+    });
+  }
+  const state = cm && cm.state && cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
     clearTimeout(state.lintTimeout);
@@ -211,9 +228,6 @@ function updateLintReport(cm, delay) {
       }
       cm.getValue = _getValue;
     }, delay, cm);
-    return;
-  }
-  if (!state) {
     return;
   }
   // user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
