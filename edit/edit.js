@@ -1,6 +1,7 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
-/* global exports onDOMscripted */
+/* global onDOMscripted */
+/* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 'use strict';
 
@@ -1080,9 +1081,14 @@ function getEditorInSight(nearbyElement) {
 }
 
 function beautify(event) {
-  const script = $('script[src*="beautify-css-mod"]') ?
-    [] : ['vendor-overwrites/beautify/beautify-css-mod.js'];
-  onDOMscripted(script).then(doBeautify);
+  onDOMscripted([
+    'vendor-overwrites/beautify/beautify-css-mod.js',
+    () => {
+      if (!window.css_beautify && window.exports) {
+        window.css_beautify = window.exports.css_beautify;
+      }
+    },
+  ]).then(doBeautify);
 
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
@@ -1127,7 +1133,7 @@ function beautify(event) {
           [].concat.apply([], cm.doc.sel.ranges.map(r =>
             [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
         const text = cm.getValue();
-        const newText = exports.css_beautify(text, options);
+        const newText = css_beautify(text, options);
         if (newText !== text) {
           if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
             // clear the list if last change wasn't a css-beautify

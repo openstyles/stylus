@@ -122,6 +122,14 @@ function injectScript(properties) {
   if (!properties || !properties.src) {
     return;
   }
+  if (injectScript.cache) {
+    if (injectScript.cache.has(properties.src)) {
+      return Promise.resolve();
+    }
+  } else {
+    injectScript.cache = new Set();
+  }
+  injectScript.cache.add(properties.src);
   const script = document.head.appendChild(document.createElement('script'));
   Object.assign(script, properties);
   if (!properties.onload) {
