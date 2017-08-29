@@ -191,15 +191,16 @@ function updateLinter({immediately} = {}) {
 }
 
 function updateLintReport(cm, delay) {
+  const state = cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
+    clearTimeout(state.lintTimeout);
     update(cm);
     return;
   }
-  const state = cm.state.lint;
   if (delay > 0) {
-    clearTimeout((state || {}).lintTimeout);
-    (state || {}).lintTimeout = setTimeout(cm => {
+    clearTimeout(state.lintTimeout);
+    state.lintTimeout = setTimeout(cm => {
       // the temp monkeypatch only allows sep=false that returns a line array
       // because during editing this is what we need, not the combined text
       const _getValue = cm.getValue;

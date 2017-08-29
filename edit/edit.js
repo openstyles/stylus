@@ -1257,7 +1257,6 @@ function initWithStyle({style, codeIsUpdated}) {
     updateTitle();
     return;
   }
-
   // if this was done in response to an update, we need to clear existing sections
   getSections().forEach(div => { div.remove(); });
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
@@ -1278,11 +1277,18 @@ function initWithStyle({style, codeIsUpdated}) {
     const sectionDiv = addSection(null, queue.shift());
     maximizeCodeHeight(sectionDiv, !queue.length);
     const cm = sectionDiv.CodeMirror;
-    if (CodeMirror.lint) {
+    if (prefs.get('editor.linter')) {
       setTimeout(() => {
-        cm.setOption('lint', CodeMirror.defaults.lint);
-        updateLintReport(cm, 0);
-      }, prefs.get('editor.lintDelay'));
+        cm.setOption('lint', linterConfig.getForCodeMirror());
+        updateLintReport(cm, 100);
+        if (!queue.length) {
+          setTimeout(() => {
+            const state = cm.state.lint || {};
+            clearTimeout(state.renderTimeout);
+            renderLintReport();
+          }, 100);
+        }
+      });
     }
   }
 }
