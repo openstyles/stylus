@@ -306,13 +306,7 @@ function updateIcon(tab, styles) {
 
 function onRuntimeMessage(request, sender, sendResponse) {
   // prevent browser exception bug on sending a response to a closed tab
-  sendResponse = (sendResponseOriginal =>
-    data => {
-      try {
-        sendResponseOriginal(data);
-      } catch (e) {}
-    }
-  )(sendResponse);
+  sendResponse = (send => data => tryCatch(send, data))(sendResponse);
   switch (request.method) {
     case 'getStyles':
       getStyles(request).then(sendResponse);
