@@ -23,7 +23,7 @@ var loadScript = (function () {
         cache.set(path, script);
       };
       script.onerror = event => {
-        reject(event);
+        reject(new Error(`failed to load script: ${path}`));
         script.onload = null;
         script.onerror = null;
         script.parentNode.removeChild(script);
