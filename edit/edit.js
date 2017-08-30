@@ -1105,9 +1105,9 @@ function getEditorInSight(nearbyElement) {
   }
 
   function findClosest() {
-    // side-effect: sets 'cm' of the parent function
+    const last = editors.length - 1;
     let a = 0;
-    let b = editors.length - 1;
+    let b = last;
     let c;
     let cm, distance;
     while (a < b - 1) {
@@ -1117,7 +1117,7 @@ function getEditorInSight(nearbyElement) {
         break;
       }
       const distancePrev = offscreenDistance(c - 1);
-      const distanceNext = c <= b ? offscreenDistance(c + 1) : 1e20;
+      const distanceNext = c < last ? offscreenDistance(c + 1) : 1e20;
       if (distancePrev <= distance && distance <= distanceNext) {
         b = c;
       } else {
