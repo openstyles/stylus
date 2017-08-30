@@ -127,7 +127,7 @@ var mozParser = (function () {
     // Parse mozilla-format userstyle into sections
     parse(text) {
       if (typeof parserlib === 'undefined') {
-        return loadScript('vendor/csslint/csslint-worker.js')
+        return loadScript('vendor-overwrites/csslint/csslint-worker.js')
           .then(() => parseMozFormat(text));
       }
       return parseMozFormat(text);
