@@ -1816,7 +1816,8 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       const rxData = Object.assign({text}, cachedRegexps.get(text));
       if (!rxData.urls) {
         cachedRegexps.set(text, Object.assign(rxData, {
-          rx: tryRegExp(text),
+          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
+          rx: tryRegExp('^' + text + '$'),
           urls: new Map(),
         }));
       }
@@ -1882,6 +1883,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         } else {
           partial.push($element({appendChild: [
             icon,
+            url.substr(0, match.index),
             $element({tag: 'mark', textContent: match}),
             url.substr(match.length),
           ]}));
