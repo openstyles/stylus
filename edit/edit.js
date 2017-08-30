@@ -1076,28 +1076,62 @@ function getEditorInSight(nearbyElement) {
   } else {
     cm = editors.lastActive;
   }
-  if (!cm || offscreenDistance(cm) > 0) {
-    const sorted = editors
-      .map((cm, index) => ({cm: cm, distance: offscreenDistance(cm), index: index}))
-      .sort((a, b) => a.distance - b.distance || a.index - b.index);
-    cm = sorted[0].cm;
-    if (sorted[0].distance > 0) {
+  // closest editor should have at least 2 lines visible
+  const lineHeight = editors[0].defaultTextHeight();
+  const scrollY = window.scrollY;
+  const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
+  const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
+  const distances = [];
+  const alreadyInView = cm && offscreenDistance(null, cm) === 0;
+  return alreadyInView ? cm : findClosest();
+
+  function offscreenDistance(index, cm) {
+    if (index >= 0 && distances[index] !== undefined) {
+      return distances[index];
+    }
+    const section = (cm || editors[index]).getSection();
+    const top = allSectionsContainerTop + section.offsetTop;
+    if (top < scrollY + lineHeight) {
+      return Math.max(0, scrollY - top - lineHeight);
+    }
+    if (top < windowBottom) {
+      return 0;
+    }
+    const distance = top - windowBottom + section.offsetHeight;
+    if (index >= 0) {
+      distances[index] = distance;
+    }
+    return distance;
+  }
+
+  function findClosest() {
+    // side-effect: sets 'cm' of the parent function
+    let a = 0;
+    let b = editors.length - 1;
+    let c;
+    let cm, distance;
+    while (a < b - 1) {
+      c = (a + b) / 2 | 0;
+      distance = offscreenDistance(c);
+      if (!distance || !c) {
+        break;
+      }
+      const distancePrev = offscreenDistance(c - 1);
+      const distanceNext = c <= b ? offscreenDistance(c + 1) : 1e20;
+      if (distancePrev <= distance && distance <= distanceNext) {
+        b = c;
+      } else {
+        a = c;
+      }
+    }
+    while (b && offscreenDistance(b - 1) <= offscreenDistance(b)) {
+      b--;
+    }
+    cm = editors[b];
+    if (distances[b] > 0) {
       makeSectionVisible(cm);
     }
-  }
-  return cm;
-
-  function offscreenDistance(cm) {
-    // closest editor should have at least # lines visible
-    const LINES_VISIBLE = 2;
-    const bounds = cm.getSection().getBoundingClientRect();
-    if (bounds.top < 0) {
-      return -bounds.top;
-    } else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
-      return 0;
-    } else {
-      return bounds.top - bounds.height;
-    }
+    return cm;
   }
 }
 
