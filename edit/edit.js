@@ -406,6 +406,7 @@ function setupCodeMirror(textarea, index) {
       event.preventDefault();
       fromMozillaFormat();
       $('#help-popup').codebox.setValue(text);
+      $('#help-popup').codebox.clearHistory();
       $('#help-popup').codebox.markClean();
     }
     if (editors.length === 1) {
