@@ -1866,6 +1866,8 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       chrome.tabs.onUpdated.removeListener(_);
     }
   });
+  const getMatchInfo = m => m && {text: m[0], pos: m.index};
+
   queryTabs().then(tabs => {
     const supported = tabs.map(tab => tab.url)
       .filter(url => URLS.supported(url));
@@ -1875,7 +1877,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       if (rx) {
         const urlsNow = new Map();
         for (const url of unique) {
-          const match = urls.get(url) || (url.match(rx) || [])[0];
+          const match = urls.get(url) || getMatchInfo(url.match(rx));
           if (match) {
             urlsNow.set(url, match);
           }
@@ -1909,7 +1911,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
           ? OWN_ICON
           : GET_FAVICON_URL + new URL(url).hostname;
         const icon = $element({tag: 'img', src: faviconUrl});
-        if (match.length === url.length) {
+        if (match.text.length === url.length) {
           full.push($element({appendChild: [
             icon,
             url,
@@ -1917,9 +1919,9 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         } else {
           partial.push($element({appendChild: [
             icon,
-            url.substr(0, match.index),
-            $element({tag: 'mark', textContent: match}),
-            url.substr(match.length),
+            url.substr(0, match.pos),
+            $element({tag: 'mark', textContent: match.text}),
+            url.substr(match.pos + match.text.length),
           ]}));
         }
       }
