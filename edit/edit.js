@@ -902,9 +902,9 @@ function setupGlobalSearch() {
     let query;
     let replacement;
     activeCM = focusClosestCM(activeCM);
-    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], txt => {
+    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], function (txt) {
       query = txt;
-      customizeOpenDialog(activeCM, template.replaceWith, txt => {
+      customizeOpenDialog(activeCM, template.replaceWith, function (txt) {
         replacement = txt;
         queue = editors.rotate(-editors.indexOf(activeCM));
         if (all) {
