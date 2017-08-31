@@ -80,6 +80,10 @@
   font-weight: bold;
 }
 
+#message-box.danger #message-box-close-icon svg {
+  fill: maroon;
+}
+
 #message-box.danger #message-box-close-icon svg:hover {
   fill: #600;
 }
