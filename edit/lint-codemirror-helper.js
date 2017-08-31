@@ -6,7 +6,8 @@ CodeMirror.registerHelper('lint', 'csslint', code =>
     .messages.map(message => ({
       from: CodeMirror.Pos(message.line - 1, message.col - 1),
       to: CodeMirror.Pos(message.line - 1, message.col),
-      message: message.message + ` (${message.rule.id})`,
+      message: message.message,
+      rule: message.rule.id,
       severity : message.type
     }))
 );
@@ -24,7 +25,9 @@ CodeMirror.registerHelper('lint', 'stylelint', code =>
       to: CodeMirror.Pos(warning.line - 1, warning.column),
       message: warning.text
         .replace('Unexpected ', '')
-        .replace(/^./, firstLetter => firstLetter.toUpperCase()),
+        .replace(/^./, firstLetter => firstLetter.toUpperCase())
+        .replace(/\s*\([^(]+\)$/, ''), // strip the rule,
+      rule: warning.text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
       severity : warning.severity
     }));
   })
