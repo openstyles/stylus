@@ -169,7 +169,7 @@ function animateElement(
   element, {
     className = 'highlight',
     removeExtraClasses = [],
-    remove = false,
+    onComplete,
   } = {}) {
   return element && new Promise(resolve => {
     element.addEventListener('animationend', function _() {
@@ -180,9 +180,9 @@ function animateElement(
         // This is helpful to clean-up on the same frame
         ...removeExtraClasses
       );
-      // TODO: investigate why animation restarts if the elements is removed in .then()
-      if (remove) {
-        element.remove();
+      // TODO: investigate why animation restarts for 'display' modification in .then()
+      if (typeof onComplete === 'function') {
+        onComplete.call(element);
       }
       resolve();
     });

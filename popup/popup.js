@@ -312,8 +312,10 @@ Object.assign(handleEvent, {
     };
     function confirm(ok) {
       window.onkeydown = null;
-      animateElement(box, {className: 'lights-on'})
-        .then(() => (box.dataset.display = false));
+      animateElement(box, {
+        className: 'lights-on',
+        onComplete: () => (box.dataset.display = false),
+      });
       if (ok) {
         deleteStyleSafe({id}).then(() => {
           // update view with 'No styles installed for this site' message
