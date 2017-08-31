@@ -244,6 +244,12 @@ function $element(opt) {
     Object.assign(element.dataset, opt.dataset);
     delete opt.dataset;
   }
+  if (opt.attributes) {
+    for (const attr in opt.attributes) {
+      element.setAttribute(attr, opt.attributes[attr]);
+    }
+    delete opt.attributes;
+  }
   if (ns) {
     for (const attr in opt) {
       element.setAttributeNS(null, attr, opt[attr]);

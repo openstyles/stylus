@@ -152,9 +152,9 @@ function updateLinter({immediately} = {}) {
       if (guttersOption) {
         cm.setOption('guttersOption', guttersOption);
         updateGutters(cm, guttersOption);
+        cm.refresh();
       }
-      cm.refresh();
-      updateLintReport(cm);
+      setTimeout(updateLintReport, 0, cm);
     });
   }
 
@@ -188,6 +188,9 @@ function updateLinter({immediately} = {}) {
     updateEditors();
   });
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
+  if (!linter) {
+    $('#lint > div').textContent = '';
+  }
 }
 
 function updateLintReport(cm, delay) {
@@ -203,7 +206,7 @@ function updateLintReport(cm, delay) {
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
     clearTimeout(state.lintTimeout);
-    update(cm);
+    updateLintReportInternal(cm);
     return;
   }
   if (delay > 0) {
@@ -211,73 +214,79 @@ function updateLintReport(cm, delay) {
     state.lintTimeout = setTimeout(cm => {
       if (cm.performLint) {
         cm.performLint();
-        update(cm);
+        updateLintReportInternal(cm);
       }
     }, delay, cm);
     return;
   }
-  // user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
-  // or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
-  clearTimeout(state.reportTimeout);
-  state.reportTimeout = setTimeout(update, (state.options || {}).delay + 100, cm);
-  state.postponeNewIssues = delay === undefined || delay === null;
+  if (state.options) {
+    clearTimeout(state.reportTimeout);
+    const delay = cm && cm.state.renderLintReportNow ? 0 : state.options.delay + 100;
+    state.reportTimeout = setTimeout(updateLintReportInternal, delay, cm, {
+      postponeNewIssues: delay === undefined || delay === null
+    });
+  }
+}
 
-  function update(cm) {
-    const scope = cm ? [cm] : editors;
-    let changed = false;
-    let fixedOldIssues = false;
-    scope.forEach(cm => {
-      const scopedState = cm.state.lint || {};
-      const oldMarkers = scopedState.markedLast || {};
-      const newMarkers = {};
-      const html = !scopedState.marked || scopedState.marked.length === 0 ? '' : '<tbody>' +
-        scopedState.marked.map(mark => {
+function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
+  scope = scope ? [scope] : editors;
+  let changed = false;
+  let fixedOldIssues = false;
+  const clipString = (str, limit) =>
+    str.length <= limit ? str : str.substr(0, limit) + '...';
+  scope.forEach(cm => {
+    const lintState = cm.state.lint || {};
+    const oldMarkers = lintState.markedLast || new Map();
+    const newMarkers = lintState.markedLast = new Map();
+    const marked = lintState.marked || {};
+    const activeLine = cm.getCursor().line;
+    if (marked.length) {
+      const body = $element({tag: 'tbody',
+        appendChild: marked.map(mark => {
           const info = mark.__annotation;
-          const isActiveLine = info.from.line === cm.getCursor().line;
-          const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          // rule name added in parentheses at the end; extract it out for the info popup
-          const text = info.message;
-          const title = escapeHtml(text + `\n(${info.rule})`, {limit: 1000});
-          const message = escapeHtml(text, {limit: 100});
+          const {line, ch} = info.from;
+          const isActiveLine = line === activeLine;
+          const pos = isActiveLine ? 'cursor' : (line + ',' + ch);
+          const title = clipString(info.message, 1000) + `\n(${info.rule})`;
+          const message = clipString(info.message, 100);
           if (isActiveLine || oldMarkers[pos] === message) {
-            delete oldMarkers[pos];
+            oldMarkers.delete(pos);
           }
-          newMarkers[pos] = message;
-          return `<tr class="${info.severity}">
-            <td role="severity" data-rule="${info.rule}">
-              <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
-            </td>
-            <td role="line">${info.from.line + 1}</td>
-            <td role="sep">:</td>
-            <td role="col">${info.from.ch + 1}</td>
-            <td role="message" title="${title}">${message}</td>
-          </tr>`;
-        }).join('') + '</tbody>';
-      scopedState.markedLast = newMarkers;
-      fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
-      if ((scopedState.html || '') !== html) {
-        scopedState.html = html;
+          newMarkers.set(pos, message);
+          return $element({tag: 'tr',
+            className: info.severity,
+            appendChild: [
+              $element({tag: 'td',
+                attributes: {role: 'severity'},
+                dataset: {rule: info.rule},
+                appendChild: $element({
+                  className: 'CodeMirror-lint-marker-' + info.severity,
+                  textContent: info.severity,
+                }),
+              }),
+              $element({tag: 'td', attributes: {role: 'line'}, textContent: line + 1}),
+              $element({tag: 'td', attributes: {role: 'sep'}, textContent: ':'}),
+              $element({tag: 'td', attributes: {role: 'col'}, textContent: ch + 1}),
+              $element({tag: 'td', attributes: {role: 'message'}, textContent: message, title}),
+            ],
+          });
+        })
+      });
+      const text = body.textContentCached = body.textContent;
+      if (text !== ((lintState.body || {}).textContentCached || '')) {
+        lintState.body = body;
         changed = true;
       }
-    });
-    if (changed) {
-      clearTimeout(state ? state.renderTimeout : undefined);
-      if (!state || !state.postponeNewIssues || fixedOldIssues || editors.last.state.renderLintReportNow) {
-        editors.last.state.renderLintReportNow = false;
-        renderLintReport(true);
-      } else {
-        state.renderTimeout = setTimeout(renderLintReport, CodeMirror.defaults.lintReportDelay, true);
-      }
     }
-  }
-  function escapeHtml(html, {limit} = {}) {
-    const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'};
-    let ellipsis = '';
-    if (limit && html.length > limit) {
-      html = html.substr(0, limit);
-      ellipsis = '...';
+    fixedOldIssues |= lintState.reportDisplayed && oldMarkers.size;
+  });
+  if (changed) {
+    if (!postponeNewIssues || fixedOldIssues || editors.last.state.renderLintReportNow) {
+      editors.last.state.renderLintReportNow = false;
+      renderLintReport(true);
+    } else {
+      debounce(renderLintReport, CodeMirror.defaults.lintReportDelay, true);
     }
-    return html.replace(/[&<>"'/]/g, char => chars[char]) + ellipsis;
   }
 }
 
@@ -288,18 +297,29 @@ function renderLintReport(someBlockChanged) {
   const newContent = content.cloneNode(false);
   let issueCount = 0;
   editors.forEach((cm, index) => {
-    if (cm.state.lint && cm.state.lint.html) {
-      const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
-      const newBlock = newContent.appendChild(tHTML(html, 'table'));
-
-      newBlock.cm = cm;
-      issueCount += newBlock.rows.length;
-
-      const block = content.children[newContent.children.length - 1];
-      const blockChanged = !block || cm !== block.cm || html !== block.innerHTML;
-      someBlockChanged |= blockChanged;
-      cm.state.lint.reportDisplayed = blockChanged;
+    const lintState = cm.state.lint || {};
+    const body = lintState.body;
+    if (!body) {
+      return;
     }
+    const newBlock = $element({
+      tag: 'table',
+      appendChild: [
+        $element({tag: 'caption', textContent: label + ' ' + (index + 1)}),
+        body,
+      ],
+      cm,
+    });
+    newContent.appendChild(newBlock);
+    issueCount += newBlock.rows.length;
+
+    const block = content.children[newContent.children.length - 1];
+    const blockChanged =
+      !block ||
+      block.cm !== cm ||
+      body.textContentCached !== block.textContentCached;
+    someBlockChanged |= blockChanged;
+    lintState.reportDisplayed = blockChanged;
   });
   if (someBlockChanged || newContent.children.length !== content.children.length) {
     $('#issue-count').textContent = issueCount;

@@ -154,7 +154,7 @@ function setCleanSection(section) {
   const cm = section.CodeMirror;
   if (cm) {
     section.savedValue = cm.changeGeneration();
-    indicateCodeChange(cm);
+    updateTitle();
   }
 }
 
@@ -1570,6 +1570,7 @@ function fromMozillaFormat() {
     // parserlib contained in CSSLint-worker.js
     onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js']).then(() => {
       doImportWhenReady(event.target);
+      editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
       editors.last.state.renderLintReportNow = true;
     });
   }
