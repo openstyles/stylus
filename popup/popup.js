@@ -318,6 +318,8 @@ Object.assign(handleEvent, {
       });
       if (ok) {
         deleteStyleSafe({id}).then(() => {
+          // don't wait for the async notifyAllTabs as we check the children right away
+          handleDelete(id);
           // update view with 'No styles installed for this site' message
           if (!installed.children.length) {
             showStyles([]);
@@ -402,7 +404,7 @@ function handleUpdate(style) {
   // Add an entry when a new style for the current url is installed
   if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
     document.body.classList.remove('blocked');
-    $$('.blocked-info').forEach(el => el.remove());
+    $$('.blocked-info, #no-styles').forEach(el => el.remove());
     createStyleElement({style});
   }
 }
