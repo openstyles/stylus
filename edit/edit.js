@@ -355,7 +355,7 @@ function acmeEventListener(event) {
     case 'autocompleteOnTyping':
       editors.forEach(cm => {
         const onOff = el.checked ? 'on' : 'off';
-        cm[onOff]('change', autocompleteOnTyping);
+        cm[onOff]('changes', autocompleteOnTyping);
         cm[onOff]('pick', autocompletePicked);
       });
       return;
@@ -380,9 +380,9 @@ function setupCodeMirror(textarea, index) {
   const cm = CodeMirror.fromTextArea(textarea, {lint: null});
   const wrapper = cm.display.wrapper;
 
-  cm.on('change', indicateCodeChange);
+  cm.on('changes', cm => debounce(indicateCodeChange, 200, cm));
   if (prefs.get('editor.autocompleteOnTyping')) {
-    cm.on('change', autocompleteOnTyping);
+    cm.on('changes', autocompleteOnTyping);
     cm.on('pick', autocompletePicked);
   }
   cm.on('blur', () => {
@@ -1019,7 +1019,7 @@ function toggleSectionHeight(cm) {
   }
 }
 
-function autocompleteOnTyping(cm, info, debounced) {
+function autocompleteOnTyping(cm, [info], debounced) {
   if (
     cm.state.completionActive ||
     info.origin && !info.origin.includes('input') ||
@@ -1032,7 +1032,7 @@ function autocompleteOnTyping(cm, info, debounced) {
     return;
   }
   if (!debounced) {
-    debounce(autocompleteOnTyping, 100, cm, info, true);
+    debounce(autocompleteOnTyping, 100, cm, [info], true);
     return;
   }
   if (info.text.last.match(/[-\w!]+$/)) {
