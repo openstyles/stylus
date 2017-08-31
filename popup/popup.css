@@ -332,13 +332,9 @@ body.blocked .actions > .left-gutter {
 
 /* confirm */
 
-#confirm,
-#confirm > div > span {
+#confirm {
   align-items: center;
   justify-content: center;
-}
-
-#confirm {
   z-index: 2147483647;
   display: none;
   position: absolute;
@@ -358,6 +354,7 @@ body.blocked .actions > .left-gutter {
   animation-fill-mode: both;
 }
 
+#confirm.lights-on,
 #confirm.lights-on > div {
   display: none;
 }
@@ -368,36 +365,32 @@ body.blocked .actions > .left-gutter {
 
 #confirm > div {
   width: 80%;
-  height: 100px;
   max-height: 80%;
-  min-height: 8em;
+  min-height: 6em;
+  padding: 1em;
   background-color: #fff;
   display: flex;
   flex-direction: column;
   border: solid 2px rgba(0, 0, 0, 0.5);
 }
 
-#confirm > div > span {
-  display: flex;
-  flex: 1;
-  padding: 0 10px;
-}
-
-#confirm > div > b {
-  padding: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+#confirm > div > *:not(:last-child) {
+  padding-bottom: .5em;
 }
 
 #confirm > div > div {
-  padding: 10px;
   text-align: center;
 }
 
 .non-windows #confirm > div > div {
   direction: rtl;
   text-align: right;
+}
+
+#confirm > button {
+  /* add a gap between buttons both for horizontal
+  or vertical (when the label is wide) layout */
+  margin: 0 .25em .25em 0;
 }
 
 .unreachable .entry {
