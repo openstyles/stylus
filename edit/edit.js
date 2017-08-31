@@ -182,7 +182,8 @@ function initCodeMirror() {
     highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
     lint: linterConfig.getForCodeMirror(),
-    lintReportDelay: prefs.get('editor.lintReportDelay'),
+    lintReportDelay: 500,
+    //lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
     theme: 'default',
     keyMap: prefs.get('editor.keyMap'),
@@ -462,11 +463,15 @@ function setupCodeMirror(textarea, index) {
   return cm;
 }
 
-function indicateCodeChange(cm) {
+function indicateCodeChange(cm, change) {
   const section = cm.getSection();
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
-  updateLintReportIfEnabled(cm);
+  if (change) {
+    cm.stylusChanges = cm.stylusChanges || [];
+    cm.stylusChanges.push(change);
+  }
+  updateLintReport(cm);
 }
 
 function getSectionForChild(e) {
@@ -593,7 +598,7 @@ window.onbeforeunload = () => {
   if (isCleanGlobal()) {
     return;
   }
-  updateLintReportIfEnabled(null, 0);
+  updateLintReport(null, 0);
   // neither confirm() nor custom messages work in modern browsers but just in case
   return t('styleChangesNotSaved');
 };
@@ -1242,14 +1247,13 @@ function init() {
         section[CssToProperty[i]] = [params[i]];
       }
     }
-    window.onload = () => {
-      window.onload = null;
-      addSection(null, section);
-      editors[0].setOption('lint', CodeMirror.defaults.lint);
-      // default to enabled
-      $('#enabled').checked = true;
-      initHooks();
-    };
+    addSection(null, section);
+    editors[0].setOption('lint', CodeMirror.defaults.lint);
+    // default to enabled
+    $('#enabled').checked = true;
+    initHooks();
+    setCleanGlobal();
+    updateTitle();
     return;
   }
   // This is an edit
@@ -1287,11 +1291,12 @@ function initWithStyle({style, codeIsUpdated}) {
     updateTitle();
     return;
   }
-
   // if this was done in response to an update, we need to clear existing sections
-  getSections().forEach(div => { div.remove(); });
+  editors.length = 0;
+  getSections().forEach(div => div.remove());
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
   const queueStart = new Date().getTime();
+  maximizeCodeHeight.stats = null;
   // after 100ms the sections will be added asynchronously
   while (new Date().getTime() - queueStart <= 100 && queue.length) {
     add();
@@ -1303,21 +1308,20 @@ function initWithStyle({style, codeIsUpdated}) {
     }
   })();
   initHooks();
+  setCleanGlobal();
+  updateTitle();
 
   function add() {
     const sectionDiv = addSection(null, queue.shift());
     maximizeCodeHeight(sectionDiv, !queue.length);
-    const cm = sectionDiv.CodeMirror;
-    if (CodeMirror.lint) {
-      setTimeout(() => {
-        cm.setOption('lint', CodeMirror.defaults.lint);
-        updateLintReport(cm, 0);
-      }, prefs.get('editor.lintDelay'));
-    }
   }
 }
 
 function initHooks() {
+  if (initHooks.alreadyDone) {
+    return;
+  }
+  initHooks.alreadyDone = true;
   $$('#header .style-contributor').forEach(node => {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
@@ -1349,8 +1353,6 @@ function initHooks() {
   });
 
   setupGlobalSearch();
-  setCleanGlobal();
-  updateTitle();
 }
 
 
@@ -1451,14 +1453,8 @@ function validate() {
   return null;
 }
 
-function updateLintReportIfEnabled(cm, time) {
-  if (CodeMirror.lint) {
-    updateLintReport(cm, time);
-  }
-}
-
 function save() {
-  updateLintReportIfEnabled(null, 0);
+  updateLintReport(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
   for (let i = 0; i < editors.length; i++) {
