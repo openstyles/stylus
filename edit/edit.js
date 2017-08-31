@@ -1300,6 +1300,11 @@ function initWithStyle({style, codeIsUpdated}) {
     if (queue.length) {
       add();
       setTimeout(processQueue);
+      if (performance.now() - t0 > 500) {
+        setGlobalProgress(editors.length, style.sections.length);
+      }
+    } else {
+      setGlobalProgress();
     }
   })();
   initHooks();
@@ -2163,4 +2168,18 @@ function getCodeMirrorThemes() {
       });
     });
   });
+}
+
+function setGlobalProgress(done, total) {
+  const progressElement = $('#global-progress') ||
+    total && document.body.appendChild($element({id: 'global-progress'}));
+  if (total) {
+    const progress = (done / Math.max(done, total) * 100).toFixed(1);
+    progressElement.style.borderLeftWidth = progress + 'vw';
+    setTimeout(() => {
+      progressElement.title = progress + '%';
+    });
+  } else if (progressElement) {
+    progressElement.remove();
+  }
 }

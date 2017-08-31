@@ -2,6 +2,23 @@ body {
   margin: 0;
   font: 12px arial,sans-serif;
 }
+
+#global-progress {
+  position: fixed;
+  height: 4px;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: hsla(180, 66%, 36%, .25);
+  border-left: 0 solid darkcyan;
+  z-index: 2147483647;
+  opacity: 0;
+  transition: opacity 2s;
+}
+#global-progress[title] {
+  opacity: 1;
+}
+
 /************ header ************/
 #header {
   width: 280px;
