@@ -189,7 +189,7 @@ function updateLinter({immediately} = {}) {
   });
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
   if (!linter) {
-    $('#lint > div').textContent = '';
+    $('#lint').style.display = 'none';
   }
 }
 
