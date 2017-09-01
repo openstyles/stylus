@@ -103,7 +103,11 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
   t.DOMParser = new DOMParser();
-  t.cache = tryJSONparse(localStorage.L10N) || {};
+  try {
+    t.cache = JSON.parse(localStorage.L10N);
+  } catch (err) {
+    t.cache = {};
+  }
 
   // reset L10N cache on UI language change
   const UIlang = chrome.i18n.getUILanguage();
