@@ -144,8 +144,8 @@
           <button id="to-mozilla" i18n-text="exportLabel"></button>
         </div>
       </section>
-      <section id="options">
-        <h2 id="options-heading" i18n-text="optionsHeading"></h2>
+      <details id="options">
+        <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
         <div class="option">
           <input id="editor.lineWrapping" type="checkbox">
           <label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
@@ -195,7 +195,8 @@
               <use xlink:href="#svg-icon-settings"/>
             </svg>&nbsp;
           </span>
-      </section>
+        </div>
+      </details>
       <section id="lint"><h2 i18n-text="linterIssues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
     </div>
     <section id="sections">

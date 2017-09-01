@@ -25,6 +25,7 @@ var prefs = new function Prefs() {
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
     'editor.options': {},           // CodeMirror.defaults.*
+    'editor.options.expanded': true,// UI element state: expanded/collapsed
     'editor.lineWrapping': true,    // word wrap
     'editor.smartIndent': true,     // 'smart' indent
     'editor.indentWithTabs': false, // smart indent with tabs

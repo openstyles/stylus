@@ -118,6 +118,15 @@ h2 .svg-icon, label .svg-icon {
   margin-bottom: 0.5rem;
 }
 /* options */
+#options summary {
+  align-items: center;
+  margin-left: -13px;
+  cursor: pointer;
+  outline: none;
+}
+#options summary h2 {
+  display: inline-block;
+}
 #options [type="number"] {
   max-width: 2.5rem;
   text-align: right;
