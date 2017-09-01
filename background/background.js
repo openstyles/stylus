@@ -341,5 +341,56 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .then(sendResponse)
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
+
+    case 'injectResource':
+      injectResource(request, sender.tab.id).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+  }
+}
+
+function injectResource({resources}, tabId) {
+  return Promise.all(doInject())
+    .then(() => ({status: 'success'}))
+    .catch(err => ({status: 'error', error: err.message}));
+
+  function *doInject() {
+    for (const resource of resources) {
+      const type = resource.match(/\.\w+$/i)[0];
+      if (type === '.js') {
+        yield injectScript(resource, tabId);
+      } else if (type === '.css') {
+        yield injectStyle(resource, tabId);
+      }
+    }
+  }
+
+  function injectScript(url, tabId) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.executeScript(tabId, {
+        file: url,
+        runAt: 'document_start'
+      }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  function injectStyle(url, tabId) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.insertCSS(tabId, {
+        file: url,
+        runAt: 'document_start'
+      }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }
