@@ -380,7 +380,7 @@ function setupCodeMirror(textarea, index) {
   const cm = CodeMirror.fromTextArea(textarea, {lint: null});
   const wrapper = cm.display.wrapper;
 
-  cm.on('changes', cm => debounce(indicateCodeChange, 200, cm));
+  cm.on('changes', indicateCodeChangeDebounced);
   if (prefs.get('editor.autocompleteOnTyping')) {
     cm.on('changes', autocompleteOnTyping);
     cm.on('pick', autocompletePicked);
@@ -467,6 +467,11 @@ function indicateCodeChange(cm) {
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
   updateLintReportIfEnabled(cm);
+}
+
+function indicateCodeChangeDebounced(cm, ...args) {
+  clearTimeout(cm.state.stylusOnChangeTimer);
+  cm.state.stylusOnChangeTimer = setTimeout(indicateCodeChange, 200, cm, ...args);
 }
 
 function getSectionForChild(e) {
