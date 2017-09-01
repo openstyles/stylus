@@ -1484,6 +1484,7 @@ function updateTitle() {
 function validate() {
   const name = $('#name').value;
   if (name === '') {
+    $('#name').focus();
     return t('styleMissingName');
   }
   // validate the regexps
