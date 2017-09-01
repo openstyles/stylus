@@ -171,6 +171,14 @@
     "message": "No",
     "description": "'No' button in a confirm dialog"
   },
+  "confirmDefault": {
+    "message": "Use default",
+    "description": "'Set to default' button in a confirm dialog"
+  },
+  "confirmSave": {
+    "message": "Save",
+    "description": "'Save' button in a confirm dialog"
+  },
   "confirmStop": {
     "message": "Stop",
     "description": "'Stop' button in a confirm dialog"

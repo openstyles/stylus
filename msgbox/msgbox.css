@@ -145,17 +145,3 @@
   border-radius: .25rem;
   border-width: 1px;
 }
-
-#message-box.regular-form input[type=text].value-update {
-  animation-name: input-fadeout;
-  animation-duration: .4s;
-}
-
-@keyframes input-fadeout {
-  from {
-    background: palegreen;
-  }
-  to {
-    background: white;
-  }
-}

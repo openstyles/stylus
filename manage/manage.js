@@ -282,34 +282,84 @@ Object.assign(handleEvent, {
   },
 
   config(event, {styleMeta: style}) {
-    let isChanged = false;
+    const form = buildConfigForm();
 
     messageBox({
       title: `Configure ${style.name}`,
       className: 'regular-form',
-      contents: buildConfigForm(),
-      buttons: [t('confirmClose')]
-    }).then(() => {
-      if (!isChanged) {
+      contents: form.el,
+      buttons: [
+        t('confirmSave'),
+        {
+          textContent: t('confirmDefault'),
+          onclick: form.useDefault
+        },
+        t('confirmCancel')
+      ]
+    }).then(result => {
+      if (result.button !== 0 && !result.enter) {
         return;
       }
       style.reason = 'config';
+      const vars = form.getVars();
+      let dirty = false;
+      for (const key of Object.keys(vars)) {
+        if (vars[key].dirty) {
+          dirty = true;
+          style.vars[key].value = vars[key].value;
+        }
+      }
+      if (!dirty) {
+        return;
+      }
       saveStyleSafe(style);
     });
 
     function buildConfigForm() {
       const labels = [];
-      for (const va of Object.values(style.vars)) {
-        const input = $element({tag: 'input', type: 'text', value: va.value});
-        input.oninput = () => {
-          isChanged = true;
-          va.value = input.value;
-          animateElement(input, {className: 'value-update'});
+      const vars = deepCopy(style.vars);
+      for (const key of Object.keys(vars)) {
+        const va = vars[key];
+        va.input = $element({tag: 'input', type: 'text', value: va.value});
+        va.input.oninput = () => {
+          va.dirty = true;
+          va.value = va.input.value;
         };
-        const label = $element({tag: 'label', appendChild: [va.label, input]});
+        const label = $element({
+          tag: 'label',
+          appendChild: [va.label, va.input]
+        });
         labels.push(label);
       }
-      return labels;
+      drawValues();
+
+      function drawValues() {
+        for (const key of Object.keys(vars)) {
+          const va = vars[key];
+          va.input.value = va.value === null || va.value === undefined ?
+            va.default : va.value;
+        }
+      }
+
+      function useDefault() {
+        for (const key of Object.keys(vars)) {
+          const va = vars[key];
+          va.dirty = va.value !== null && va.value !== undefined &&
+            va.value !== va.default;
+          va.value = null;
+        }
+        drawValues();
+      }
+
+      function getVars() {
+        return vars;
+      }
+
+      return {
+        el: labels,
+        useDefault,
+        getVars
+      };
     }
   },
 
