@@ -4,7 +4,7 @@ function messageBox({
   title,          // [mandatory] string
   contents,       // [mandatory] 1) DOM element 2) string
   className = '', // string, CSS class name of the message box element
-  buttons = [],   // array of strings used as labels
+  buttons = [],   // array of strings or objects like {textContent[string], onclick[function]}.
   onshow,         // function(messageboxElement) invoked after the messagebox is shown
   blockScroll,    // boolean, blocks the page scroll
 }) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
@@ -67,14 +67,21 @@ function messageBox({
           onclick: messageBox.listeners.closeIcon}),
         $element({id: `${id}-contents`, appendChild: tHTML(contents)}),
         $element({id: `${id}-buttons`, appendChild:
-          buttons.map((textContent, buttonIndex) => textContent &&
-            $element({
+          buttons.map((textContent, buttonIndex) => {
+            if (!textContent) {
+              return;
+            }
+            let onclick = messageBox.listeners.button;
+            if (typeof textContent === 'object') {
+              ({onclick = onclick, textContent} = textContent);
+            }
+            return $element({
               tag: 'button',
               buttonIndex,
               textContent,
-              onclick: messageBox.listeners.button,
-            })
-          )
+              onclick,
+            });
+          })
         }),
       ]}),
     ]});
