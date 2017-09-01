@@ -152,7 +152,8 @@ var usercss = (function () {
         style.vars[key] = {
           type: guessType(value),
           label: label1 || label2,
-          value: value
+          value: null,  // '.value' holds the value set by users.
+          default: value // '.default' holds the value extract from meta.
         }
       ))
     );
@@ -168,10 +169,12 @@ var usercss = (function () {
       builder = BUILDER.default;
     }
 
+    const vars = simpleVars(style.vars);
+
     return Promise.resolve().then(() => {
       // preprocess
       if (builder.preprocess) {
-        return builder.preprocess(style.source, style.vars);
+        return builder.preprocess(style.source, vars);
       }
       return style.source;
     }).then(mozStyle =>
@@ -184,9 +187,22 @@ var usercss = (function () {
     ).then(() => {
       // postprocess
       if (builder.postprocess) {
-        return builder.postprocess(style.sections, style.vars);
+        return builder.postprocess(style.sections, vars);
       }
     }).then(() => style);
+  }
+
+  function simpleVars(vars) {
+    // simplify vars by merging `va.default` to `va.value`, so BUILDER don't
+    // need to test each va's default value.
+    return Object.keys(vars).reduce((output, key) => {
+      const va = vars[key];
+      output[key] = {
+        value: va.value === null || va.value === undefined ?
+          va.default : va.value
+      };
+      return output;
+    }, {});
   }
 
   function validate(style) {
