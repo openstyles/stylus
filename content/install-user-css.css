@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font: 12px arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.header {
+  width: 280px;
+  padding: 15px;
+  border-right: 1px dashed #aaa;
+  box-shadow: 0 0 50px -18px black;
+}
+
+.header h1:first-child {
+  margin-top: 0;
+}
+
+.meta {
+  font-size: 1.4em;
+}
+
+.warning {
+  padding: 3px 6px;
+  border: 1px dashed black;
+
+  border-color: #ef6969;
+  background: #ffe2e2;
+}
+
+.header .warning {
+  margin: 3px 0;
+}
+
+.actions {
+  margin: 15px 0;
+}
+
+.actions > * {
+  display: inline-block;
+}
+
+.code {
+  padding: 2em;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
