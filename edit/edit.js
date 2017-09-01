@@ -1299,6 +1299,7 @@ function init() {
     }
     addSection(null, section);
     editors[0].setOption('lint', CodeMirror.defaults.lint);
+    editors[0].focus();
     // default to enabled
     $('#enabled').checked = true;
     initHooks();
@@ -1362,6 +1363,7 @@ function initWithStyle({style, codeIsUpdated}) {
       setGlobalProgress();
     }
   })();
+  editors[0].focus();
   initHooks();
   setCleanGlobal();
   updateTitle();
