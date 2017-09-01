@@ -146,6 +146,12 @@ h2 .svg-icon, label .svg-icon {
 #sections {
   counter-reset: codebox;
 }
+#sections > div > label {
+  animation: 2s highlight;
+  animation-play-state: paused;
+  animation-direction: reverse;
+  animation-fill-mode: both;
+}
 #sections > div > label::after {
   counter-increment: codebox;
   content: counter(codebox);

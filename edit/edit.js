@@ -196,8 +196,8 @@ function initCodeMirror() {
 
   // additional commands
   CM.commands.jumpToLine = jumpToLine;
-  CM.commands.nextEditor = cm => { nextPrevEditor(cm, 1); };
-  CM.commands.prevEditor = cm => { nextPrevEditor(cm, -1); };
+  CM.commands.nextEditor = cm => nextPrevEditor(cm, 1);
+  CM.commands.prevEditor = cm => nextPrevEditor(cm, -1);
   CM.commands.save = save;
   CM.commands.blockComment = cm => {
     cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
@@ -385,6 +385,7 @@ function setupCodeMirror(textarea, index) {
     cm.on('changes', autocompleteOnTyping);
     cm.on('pick', autocompletePicked);
   }
+  wrapper.addEventListener('keydown', event => nextPrevEditorOnKeydown(cm, event), true);
   cm.on('blur', () => {
     editors.lastActive = cm;
     hotkeyRerouter.setState(true);
@@ -1071,6 +1072,55 @@ function nextPrevEditor(cm, direction) {
   cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
   makeSectionVisible(cm);
   cm.focus();
+  return cm;
+}
+
+function nextPrevEditorOnKeydown(cm, event) {
+  const key = event.which;
+  if (key < 37 || key > 40 || event.shiftKey || event.altKey || event.metaKey) {
+    return;
+  }
+  const {line, ch} = cm.getCursor();
+  switch (key) {
+    case 37:
+      // arrow Left
+      if (line || ch) {
+        return;
+      }
+    // fallthrough to arrow Up
+    case 38:
+      // arrow Up
+      if (line > 0 || cm === editors[0]) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      cm = nextPrevEditor(cm, -1);
+      cm.setCursor(cm.doc.size - 1, key === 37 ? 1e20 : ch);
+      break;
+    case 39:
+      // arrow Right
+      if (line < cm.doc.size - 1 || ch < cm.getLine(line).length - 1) {
+        return;
+      }
+    // fallthrough to arrow Down
+    case 40:
+      // arrow Down
+      if (line < cm.doc.size - 1 || cm === editors.last) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      cm = nextPrevEditor(cm, 1);
+      cm.setCursor(0, 0);
+      break;
+  }
+  const animation = (cm.getSection().firstElementChild.getAnimations() || [])[0];
+  if (animation) {
+    animation.playbackRate = -1;
+    animation.currentTime = 2000;
+    animation.play();
+  }
 }
 
 function getEditorInSight(nearbyElement) {
