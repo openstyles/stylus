@@ -22,7 +22,7 @@ var loadScript = (function () {
 
         cache.set(path, script);
       };
-      script.onerror = event => {
+      script.onerror = () => {
         reject(new Error(`failed to load script: ${path}`));
         script.onload = null;
         script.onerror = null;
