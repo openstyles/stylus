@@ -1,6 +1,6 @@
 html {
   height: 100vh;
-  min-height: 450px;
+  min-height: 12em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +16,7 @@ html {
 body {
   margin: 2em;
   color: white;
-  max-width: 600px;
+  max-width: 20em;
 }
 
 div {

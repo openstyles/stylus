@@ -38,20 +38,31 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 
 // add favicon in Firefox
 // eslint-disable-next-line no-unused-expressions
-navigator.userAgent.includes('Firefox') && setTimeout(() => {
-  dieOnDysfunction();
-  const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-  for (const size of [38, 32, 19, 16]) {
-    document.head.appendChild($element({
-      tag: 'link',
-      rel: 'icon',
-      href: `/images/icon/${iconset}${size}.png`,
-      sizes: size + 'x' + size,
-    }));
-  }
+if (navigator.userAgent.includes('Firefox')) {
+  chrome.windows.getCurrent(wnd => {
+    if (!BG && wnd.incognito) {
+      // private windows can't get bg page
+      location.href = '/msgbox/dysfunctional.html';
+      throw 0;
+    }
+  });
+  setTimeout(() => {
+    if (!window.prefs) {
+      return;
+    }
+    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
+    for (const size of [38, 32, 19, 16]) {
+      document.head.appendChild($element({
+        tag: 'link',
+        rel: 'icon',
+        href: `/images/icon/${iconset}${size}.png`,
+        sizes: size + 'x' + size,
+      }));
+    }
+  });
   // set hyphenation language
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
-});
+}
 
 
 function onDOMready() {
@@ -258,37 +269,4 @@ function $element(opt) {
     Object.assign(element, opt);
   }
   return element;
-}
-
-
-function dieOnDysfunction() {
-  function die() {
-    location.href = '/msgbox/dysfunctional.html';
-    throw 0;
-  }
-  (() => {
-    try {
-      return indexedDB;
-    } catch (e) {
-      die();
-    }
-  })();
-  Object.assign(indexedDB.open('test'), {
-    onerror: die,
-    onupgradeneeded: indexedDB.deleteDatabase('test'),
-  });
-  // TODO: fallback to sendMessage in FF since private windows can't get bg page
-  chrome.windows.getCurrent(wnd => wnd.incognito && die());
-  // check if privacy settings were fixed but the extension wasn't reloaded,
-  // use setTimeout to auto-cancel if already dead
-  setTimeout(() => {
-    const bg = chrome.extension.getBackgroundPage();
-    if (bg && !(bg.cachedStyles || {}).list) {
-      chrome.storage.local.get('reloaded', data => {
-        if (!data || Date.now() - (data.reloaded || 0) > 10e3) {
-          chrome.storage.local.set({reloaded: Date.now()}, () => chrome.runtime.reload());
-        }
-      });
-    }
-  });
 }

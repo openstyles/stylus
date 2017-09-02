@@ -40,6 +40,11 @@ var chromeLocal = {
       chrome.storage.local.set(data, () => resolve(data));
     });
   },
+  remove(keyOrKeys) {
+    return new Promise(resolve => {
+      chrome.storage.local.remove(keyOrKeys, resolve);
+    });
+  },
   getValue(key) {
     return chromeLocal.get(key).then(data => data[key]);
   },
@@ -77,8 +82,54 @@ var chromeSync = {
   }
 };
 
+// eslint-disable-next-line no-var
+var dbExec = dbExecIndexedDB;
 
-function dbExec(method, data) {
+// we use chrome.storage.local fallback if IndexedDB doesn't save data,
+// which, once detected on the first run, is remembered in chrome.storage.local
+// for reliablility and in localStorage for fast synchronous access
+// (FF may block localStorage depending on its privacy options)
+do {
+  const fallback = () => {
+    dbExec = dbExecChromeStorage;
+    chromeLocal.set({dbInChromeStorage: true});
+    localStorage.dbInChromeStorage = 'true';
+    ignoreChromeError();
+    getStyles();
+  };
+  const fallbackSet = localStorage.dbInChromeStorage;
+  if (fallbackSet === 'true' || !tryCatch(() => indexedDB)) {
+    fallback();
+    break;
+  } else if (fallbackSet === 'false') {
+    getStyles();
+    break;
+  }
+  chromeLocal.get('dbInChromeStorage')
+    .then(data =>
+      data && data.dbInChromeStorage && Promise.reject())
+    .then(() => dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1))
+    .then(({target}) => (
+      (target.result || [])[0] ?
+        Promise.reject('ok') :
+        dbExecIndexedDB('get', -1)))
+    .then(({target}) => (
+      (target.result || {}).id === -1 ?
+        dbExecIndexedDB('delete', -1).then(() => 'ok') :
+        Promise.reject()))
+    .catch(result => {
+      if (result === 'ok') {
+        chromeLocal.set({dbInChromeStorage: false});
+        localStorage.dbInChromeStorage = 'false';
+        getStyles();
+      } else {
+        fallback();
+      }
+    });
+} while (0);
+
+
+function dbExecIndexedDB(method, ...args) {
   return new Promise((resolve, reject) => {
     Object.assign(indexedDB.open('stylish', 2), {
       onsuccess(event) {
@@ -88,7 +139,7 @@ function dbExec(method, data) {
         } else {
           const transaction = database.transaction(['styles'], 'readwrite');
           const store = transaction.objectStore('styles');
-          Object.assign(store[method](data), {
+          Object.assign(store[method](...args), {
             onsuccess: event => resolve(event, store, transaction, database),
             onerror: reject,
           });
@@ -108,6 +159,45 @@ function dbExec(method, data) {
       },
     });
   });
+}
+
+
+function dbExecChromeStorage(method, data) {
+  const STYLE_KEY_PREFIX = 'style-';
+  switch (method) {
+    case 'get':
+      return chromeLocal.getValue(STYLE_KEY_PREFIX + data)
+        .then(result => ({target: {result}}));
+
+    case 'put':
+      if (!data.id) {
+        return getStyles().then(() => {
+          data.id = 1;
+          for (const style of cachedStyles.list) {
+            data.id = Math.max(data.id, style.id + 1);
+          }
+          return dbExecChromeStorage('put', data);
+        });
+      }
+      return chromeLocal.setValue(STYLE_KEY_PREFIX + data.id, data)
+        .then(() => (chrome.runtime.lastError ? Promise.reject() : data.id));
+
+    case 'delete':
+      return chromeLocal.remove(STYLE_KEY_PREFIX + data);
+
+    case 'getAll':
+      return chromeLocal.get(null).then(storage => {
+        const styles = [];
+        for (const key in storage) {
+          if (key.startsWith(STYLE_KEY_PREFIX) &&
+              Number(key.substr(STYLE_KEY_PREFIX.length))) {
+            styles.push(storage[key]);
+          }
+        }
+        return {target: {result: styles}};
+      });
+  }
+  return Promise.reject();
 }
 
 

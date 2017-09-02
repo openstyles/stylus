@@ -6,10 +6,6 @@
 var browserCommands, contextMenus;
 
 // *************************************************************************
-// preload the DB
-tryCatch(getStyles);
-
-// *************************************************************************
 // register all listeners
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
