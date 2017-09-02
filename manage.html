@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="msgbox/msgbox.css">
 
   <style id="style-overrides"></style>
+  <style id="firefox-transitions-bug-suppressor">
+    /* increased specificity to override sane selectors in user styles */
+    html#stylus.firefox #stylus-manage #header *:not(body) {
+      transition: none !important;
+    }
+  </style>
 
   <!-- Notes:
     * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
