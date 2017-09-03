@@ -160,14 +160,15 @@ function filterStyles({
   ) {
     return cachedStyles.list;
   }
-  const blankHash = asHash && {
-    disableAll: prefs.get('disableAll'),
-    exposeIframes: prefs.get('exposeIframes'),
-  };
 
   if (matchUrl && !URLS.supported(matchUrl)) {
     return asHash ? {} : [];
   }
+
+  const blankHash = asHash && {
+    disableAll: prefs.get('disableAll'),
+    exposeIframes: prefs.get('exposeIframes'),
+  };
 
   // add \t after url to prevent collisions (not sure it can actually happen though)
   const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
@@ -216,8 +217,8 @@ function filterStylesInternal({
   const styles = id === null
     ? cachedStyles.list
     : [cachedStyles.byId.get(id)];
-  const filtered = asHash ? {} : [];
-  if (!styles) {
+  const filtered = asHash ? blankHash : [];
+  if (!styles[0]) {
     // may happen when users [accidentally] reopen an old URL
     // of edit.html with a non-existent style id parameter
     return filtered;
@@ -259,9 +260,7 @@ function filterStylesInternal({
     cleanupCachedFilters();
   }
 
-  return asHash
-    ? Object.assign(blankHash, filtered)
-    : filtered;
+  return filtered;
 }
 
 
