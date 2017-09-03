@@ -119,11 +119,15 @@ do {
     .then(({target}) => (
       (target.result || [])[0] ?
         Promise.reject('ok') :
-        dbExecIndexedDB('get', -1)))
+        dbExecIndexedDB('put', {id: -1})))
+    .then(() =>
+      dbExecIndexedDB('get', -1))
     .then(({target}) => (
       (target.result || {}).id === -1 ?
-        dbExecIndexedDB('delete', -1).then(() => 'ok') :
+        dbExecIndexedDB('delete', -1) :
         Promise.reject()))
+    .then(() =>
+      Promise.reject('ok'))
     .catch(result => {
       if (result === 'ok') {
         chromeLocal.set({dbInChromeStorage: false});
