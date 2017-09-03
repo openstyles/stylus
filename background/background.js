@@ -39,7 +39,6 @@ if ('commands' in chrome) {
 // *************************************************************************
 // set the default icon displayed after a tab is created until webNavigation kicks in
 prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
-updateIcon({id: undefined}, {});
 
 // *************************************************************************
 {
@@ -59,24 +58,6 @@ updateIcon({id: undefined}, {});
         browserUIlanguage: chrome.i18n.getUILanguage(),
       });
     }
-    // TODO: remove in the future
-    // embed style digests
-    chrome.storage.local.get(null, data => {
-      const digestKeys = Object.keys(data).filter(key => key.startsWith('originalDigest'));
-      if (!digestKeys.length) {
-        return;
-      }
-      chrome.storage.local.remove(digestKeys);
-      getStyles().then(styles => {
-        for (const style of styles) {
-          const digest = data['originalDigest' + style.id];
-          if (!style.originalDigest && digest) {
-            style.originalDigest = digest;
-            dbExec('put', style);
-          }
-        }
-      });
-    });
   };
   // bind for 60 seconds max and auto-unbind if it's a normal run
   chrome.runtime.onInstalled.addListener(onInstall);
@@ -156,7 +137,11 @@ contextMenus = Object.assign({
 
 // *************************************************************************
 // [re]inject content scripts
-{
+window.addEventListener('storageReady', function _() {
+  window.removeEventListener('storageReady', _);
+
+  updateIcon({id: undefined}, {});
+
   const NTP = 'chrome://newtab/';
   const PING = {method: 'ping'};
   const ALL_URLS = '<all_urls>';
@@ -203,8 +188,7 @@ contextMenus = Object.assign({
           setTimeout(pingCS, 0, cs, tab));
       }
     }));
-}
-
+});
 
 // *************************************************************************
 

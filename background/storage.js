@@ -84,25 +84,32 @@ var chromeSync = {
 
 // eslint-disable-next-line no-var
 var dbExec = dbExecIndexedDB;
+dbExec.initialized = false;
 
 // we use chrome.storage.local fallback if IndexedDB doesn't save data,
 // which, once detected on the first run, is remembered in chrome.storage.local
 // for reliablility and in localStorage for fast synchronous access
 // (FF may block localStorage depending on its privacy options)
 do {
+  const done = () => {
+    getStyles().then(() => {
+      dbExec.initialized = true;
+      window.dispatchEvent(new Event('storageReady'));
+    });
+  };
   const fallback = () => {
     dbExec = dbExecChromeStorage;
     chromeLocal.set({dbInChromeStorage: true});
     localStorage.dbInChromeStorage = 'true';
     ignoreChromeError();
-    getStyles();
+    done();
   };
   const fallbackSet = localStorage.dbInChromeStorage;
   if (fallbackSet === 'true' || !tryCatch(() => indexedDB)) {
     fallback();
     break;
   } else if (fallbackSet === 'false') {
-    getStyles();
+    done();
     break;
   }
   chromeLocal.get('dbInChromeStorage')
@@ -121,7 +128,7 @@ do {
       if (result === 'ok') {
         chromeLocal.set({dbInChromeStorage: false});
         localStorage.dbInChromeStorage = 'false';
-        getStyles();
+        done();
       } else {
         fallback();
       }
