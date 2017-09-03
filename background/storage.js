@@ -318,13 +318,12 @@ function filterStylesInternal({
   const styles = id === null
     ? cachedStyles.list
     : [cachedStyles.byId.get(id)];
-  const filtered = asHash ? blankHash : [];
   if (!styles[0]) {
     // may happen when users [accidentally] reopen an old URL
     // of edit.html with a non-existent style id parameter
-    return filtered;
+    return asHash ? blankHash : [];
   }
-
+  const filtered = asHash ? {} : [];
   const needSections = asHash || matchUrl !== null;
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
@@ -361,7 +360,10 @@ function filterStylesInternal({
     cleanupCachedFilters();
   }
 
-  return filtered;
+  // a shallow copy is needed because the cache doesn't store options like disableAll
+  return asHash
+    ? Object.assign(blankHash, filtered)
+    : filtered;
 }
 
 
