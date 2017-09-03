@@ -576,6 +576,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     -moz-column-count: 2;
     column-count: 2;
   }
+  #options h2 {
+    margin: 0 0 .5em;
+  }
   #options .aligned > *:not(svg) {
     margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
     padding-right: 0.4rem;
