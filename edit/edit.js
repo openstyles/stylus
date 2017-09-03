@@ -1395,10 +1395,12 @@ function initHooks() {
   $('#sections-help').addEventListener('click', showSectionHelp, false);
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
+
   $('#options').open = prefs.get('editor.options.expanded');
   $('#options h2').addEventListener('click', () => {
     setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
   });
+  prefs.subscribe((key, value) => ($('#options').open = value), ['editor.options.expanded']);
 
   initLint();
 
