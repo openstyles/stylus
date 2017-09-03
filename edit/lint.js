@@ -229,64 +229,62 @@ function updateLintReport(cm, delay) {
 }
 
 function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
-  scope = scope ? [scope] : editors;
-  let changed = false;
-  let fixedOldIssues = false;
-  const clipString = (str, limit) =>
-    str.length <= limit ? str : str.substr(0, limit) + '...';
-  scope.forEach(cm => {
-    const lintState = cm.state.lint || {};
-    const oldMarkers = lintState.markedLast || new Map();
-    const newMarkers = lintState.markedLast = new Map();
-    const marked = lintState.marked || {};
-    const activeLine = cm.getCursor().line;
-    if (marked.length) {
-      const body = $element({tag: 'tbody',
-        appendChild: marked.map(mark => {
-          const info = mark.__annotation;
-          const {line, ch} = info.from;
-          const isActiveLine = line === activeLine;
-          const pos = isActiveLine ? 'cursor' : (line + ',' + ch);
-          const title = clipString(info.message, 1000) + `\n(${info.rule})`;
-          const message = clipString(info.message, 100);
-          if (isActiveLine || oldMarkers[pos] === message) {
-            oldMarkers.delete(pos);
-          }
-          newMarkers.set(pos, message);
-          return $element({tag: 'tr',
-            className: info.severity,
-            appendChild: [
-              $element({tag: 'td',
-                attributes: {role: 'severity'},
-                dataset: {rule: info.rule},
-                appendChild: $element({
-                  className: 'CodeMirror-lint-marker-' + info.severity,
-                  textContent: info.severity,
-                }),
-              }),
-              $element({tag: 'td', attributes: {role: 'line'}, textContent: line + 1}),
-              $element({tag: 'td', attributes: {role: 'sep'}, textContent: ':'}),
-              $element({tag: 'td', attributes: {role: 'col'}, textContent: ch + 1}),
-              $element({tag: 'td', attributes: {role: 'message'}, textContent: message, title}),
-            ],
-          });
-        })
-      });
-      const text = body.textContentCached = body.textContent;
-      if (text !== ((lintState.body || {}).textContentCached || '')) {
-        lintState.body = body;
-        changed = true;
-      }
-    }
-    fixedOldIssues |= lintState.reportDisplayed && oldMarkers.size;
-  });
+  const {changed, fixedSome} = (scope ? [scope] : editors).reduce(process, {});
   if (changed) {
-    if (!postponeNewIssues || fixedOldIssues || editors.last.state.renderLintReportNow) {
-      editors.last.state.renderLintReportNow = false;
-      renderLintReport(true);
-    } else {
-      debounce(renderLintReport, CodeMirror.defaults.lintReportDelay, true);
-    }
+    const renderNow = editors.last.state.renderLintReportNow =
+      !postponeNewIssues || fixedSome || editors.last.state.renderLintReportNow;
+    debounce(renderLintReport, renderNow ? 0 : CodeMirror.defaults.lintReportDelay, true);
+  }
+
+  function process(result, cm) {
+    const lintState = cm.state.lint || {};
+    const oldMarkers = lintState.stylusMarkers || new Map();
+    const newMarkers = lintState.stylusMarkers = new Map();
+    const oldText = (lintState.body || {}).textContentCached || '';
+    const activeLine = cm.getCursor().line;
+    const body = !(lintState.marked || {}).length ? {} : $element({
+      tag: 'tbody',
+      appendChild: lintState.marked.map(mark => {
+        const info = mark.__annotation;
+        const {line, ch} = info.from;
+        const isActiveLine = line === activeLine;
+        const pos = isActiveLine ? 'cursor' : (line + ',' + ch);
+        const title = clipString(info.message, 1000) + `\n(${info.rule})`;
+        const message = clipString(info.message, 100);
+        if (isActiveLine || oldMarkers[pos] === message) {
+          oldMarkers.delete(pos);
+        }
+        newMarkers.set(pos, message);
+        return $element({
+          tag: 'tr',
+          className: info.severity,
+          appendChild: [
+            $element({
+              tag: 'td',
+              attributes: {role: 'severity'},
+              dataset: {rule: info.rule},
+              appendChild: $element({
+                className: 'CodeMirror-lint-marker-' + info.severity,
+                textContent: info.severity,
+              }),
+            }),
+            $element({tag: 'td', attributes: {role: 'line'}, textContent: line + 1}),
+            $element({tag: 'td', attributes: {role: 'sep'}, textContent: ':'}),
+            $element({tag: 'td', attributes: {role: 'col'}, textContent: ch + 1}),
+            $element({tag: 'td', attributes: {role: 'message'}, textContent: message, title}),
+          ],
+        });
+      })
+    });
+    body.textContentCached = body.textContent || '';
+    lintState.body = body.textContentCached && body;
+    result.changed |= oldText !== body.textContentCached;
+    result.fixedSome |= lintState.reportDisplayed && oldMarkers.size;
+    return result;
+  }
+
+  function clipString(str, limit) {
+    return str.length <= limit ? str : str.substr(0, limit) + '...';
   }
 }
 
@@ -297,6 +295,7 @@ function renderLintReport(someBlockChanged) {
   const newContent = content.cloneNode(false);
   let issueCount = 0;
   editors.forEach((cm, index) => {
+    cm.state.renderLintReportNow = false;
     const lintState = cm.state.lint || {};
     const body = lintState.body;
     if (!body) {
