@@ -42,7 +42,7 @@ if ('commands' in chrome) {
 
 // *************************************************************************
 // set the default icon displayed after a tab is created until webNavigation kicks in
-prefs.subscribe(() => updateIcon({id: undefined}, {}), ['iconset']);
+prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
 updateIcon({id: undefined}, {});
 
 // *************************************************************************
@@ -143,7 +143,9 @@ contextMenus = Object.assign({
     }
   };
   createContextMenus();
-  prefs.subscribe((id, checked) => {
+  const toggleableIds = Object.keys(contextMenus).filter(key =>
+    typeof prefs.readOnlyValues[key] === 'boolean');
+  prefs.subscribe(toggleableIds, (id, checked) => {
     if (id === 'editor.contextDelete') {
       if (checked) {
         createContextMenus([id]);
@@ -153,7 +155,7 @@ contextMenus = Object.assign({
     } else {
       chrome.contextMenus.update(id, {checked}, ignoreChromeError);
     }
-  }, Object.keys(contextMenus).filter(key => typeof prefs.readOnlyValues[key] === 'boolean'));
+  });
 }
 
 // *************************************************************************

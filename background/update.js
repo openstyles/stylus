@@ -157,4 +157,4 @@ var updater = {
 };
 
 updater.schedule();
-prefs.subscribe(updater.schedule, ['updateInterval']);
+prefs.subscribe(['updateInterval'], updater.schedule);

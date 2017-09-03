@@ -132,7 +132,7 @@ function initLint() {
 
   linterConfig.loadAll();
   linterConfig.watchStorage();
-  prefs.subscribe(updateLinter, ['editor.linter']);
+  prefs.subscribe(['editor.linter'], updateLinter);
   updateLinter();
 }
 

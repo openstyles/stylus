@@ -153,7 +153,10 @@ var prefs = new function Prefs() {
       }
     },
 
-    subscribe(listener, keys) {
+    subscribe(keys, listener) {
+      // keys:     string[] ids
+      //           or a falsy value to subscribe to everything
+      // listener: function (key, value)
       if (keys) {
         for (const key of keys) {
           onChange.specific.set(key, listener);
@@ -332,7 +335,7 @@ function setupLivePrefs(
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
   }
-  prefs.subscribe((id, value) => updateElement({id, value}), IDs);
+  prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 
   function onChange() {
     const value = this[checkedProps[this.id]];

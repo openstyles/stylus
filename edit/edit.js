@@ -1400,7 +1400,9 @@ function initHooks() {
   $('#options h2').addEventListener('click', () => {
     setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
   });
-  prefs.subscribe((key, value) => ($('#options').open = value), ['editor.options.expanded']);
+  prefs.subscribe(['editor.options.expanded'], (key, value) => {
+    $('#options').open = value;
+  });
 
   initLint();
 

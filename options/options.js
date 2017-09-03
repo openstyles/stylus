@@ -81,7 +81,7 @@ function setupRadioButtons() {
     sets[name][prefs.get(name)].checked = true;
   }
   // listen to pref changes and update the values
-  prefs.subscribe((key, value) => {
+  prefs.subscribe(Object.keys(sets), (key, value) => {
     sets[key][value].checked = true;
-  }, Object.keys(sets));
+  });
 }
