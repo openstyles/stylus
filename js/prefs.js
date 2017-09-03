@@ -183,7 +183,8 @@ var prefs = new function Prefs() {
           break;
       }
     } else if (FIREFOX_NO_DOM_STORAGE && BG) {
-      value = BG.localStorage[key] || defaultValue;
+      value = BG.localStorage[key];
+      value = value === undefined ? defaultValue : value;
     } else {
       value = defaultValue;
     }
