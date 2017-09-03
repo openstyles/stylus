@@ -1329,9 +1329,9 @@ function init() {
 }
 
 function setStyleMeta(style) {
-  $('#name').value = style.name;
-  $('#enabled').checked = style.enabled;
-  $('#url').href = style.url;
+  $('#name').value = style.name || '';
+  $('#enabled').checked = style.enabled !== false;
+  $('#url').href = style.url || '';
 }
 
 function initWithStyle({style, codeIsUpdated}) {
