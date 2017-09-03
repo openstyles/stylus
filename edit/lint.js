@@ -144,6 +144,10 @@ function updateLinter({immediately} = {}) {
   const linter = prefs.get('editor.linter');
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
+  loadLinterAssets(linter).then(updateEditors);
+  $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
+  $('#lint').style.display = 'none';
+
   function updateEditors() {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
     const guttersOption = prepareGuttersOption();
@@ -181,15 +185,6 @@ function updateLinter({immediately} = {}) {
     } else if (!linter && el) {
       el.remove();
     }
-  }
-
-  // load scripts
-  loadLinterAssets(linter).then(() => {
-    updateEditors();
-  });
-  $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
-  if (!linter) {
-    $('#lint').style.display = 'none';
   }
 }
 
