@@ -2,6 +2,17 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
+    <style id="firefox-transitions-bug-suppressor">
+      /* restrict to FF */
+      @-moz-document url-prefix("") {
+        /* increased specificity to override sane selectors in user styles */
+        html#stylus.firefox #stylus-edit #header *,
+        html#stylus.firefox #stylus-edit #sections * {
+          transition: none !important;
+        }
+      }
+    </style>
+
     <script src="js/dom.js"></script>
     <script src="js/messaging.js"></script>
     <script src="js/prefs.js"></script>

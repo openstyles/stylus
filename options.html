@@ -3,6 +3,17 @@
 <head>
   <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="options/options.css">
+
+  <style id="firefox-transitions-bug-suppressor">
+    /* restrict to FF */
+    @-moz-document url-prefix("") {
+      /* increased specificity to override sane selectors in user styles */
+      html#stylus.firefox #options *, #stylus #notes * {
+        transition: none !important;
+      }
+    }
+  </style>
+
   <script src="js/dom.js"></script>
   <script src="js/messaging.js"></script>
   <script src="js/localization.js"></script>

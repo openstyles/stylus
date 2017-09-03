@@ -196,7 +196,7 @@ function webNavigationListener(method, {url, tabId, frameId}) {
   getStyles({matchUrl: url, enabled: true, asHash: true}).then(styles => {
     if (method && URLS.supported(url) && tabId >= 0) {
       if (method === 'styleApply') {
-        handleCssTransitionBug(tabId, frameId, styles);
+        handleCssTransitionBug({tabId, frameId, url, styles});
       }
       chrome.tabs.sendMessage(tabId, {
         method,

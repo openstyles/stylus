@@ -726,7 +726,7 @@ function calcStyleDigest(style) {
 }
 
 
-function handleCssTransitionBug(tabId, frameId, styles) {
+function handleCssTransitionBug({tabId, frameId, url, styles}) {
   for (let id in styles) {
     id |= 0;
     if (!id) {
@@ -743,7 +743,7 @@ function handleCssTransitionBug(tabId, frameId, styles) {
         continue;
       }
     }
-    if (FIREFOX) {
+    if (FIREFOX && !url.startsWith(URLS.ownOrigin)) {
       patchFirefox();
     } else {
       styles.needTransitionPatch = true;

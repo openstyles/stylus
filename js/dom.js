@@ -36,9 +36,10 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
 }
 
-// add favicon in Firefox
-// eslint-disable-next-line no-unused-expressions
+onDOMready().then(() => $('#firefox-transitions-bug-suppressor').remove());
+
 if (navigator.userAgent.includes('Firefox')) {
+  // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
     if (!BG && wnd.incognito) {
       // private windows can't get bg page
@@ -46,6 +47,7 @@ if (navigator.userAgent.includes('Firefox')) {
       throw 0;
     }
   });
+  // add favicon in Firefox
   setTimeout(() => {
     if (!window.prefs) {
       return;
