@@ -76,10 +76,6 @@ onDOMready().then(onBackgroundReady).then(() => {
   });
 
   filterOnChange({forceRefilter: true});
-
-  if (FIREFOX) {
-    $('#firefox-transitions-bug-suppressor').remove();
-  }
 });
 
 

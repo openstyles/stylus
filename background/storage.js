@@ -8,6 +8,11 @@ const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 // eslint-disable-next-line no-var
 var SLOPPY_REGEXP_PREFIX = '\0';
 
+// CSS transition bug workaround: since we insert styles asynchronously,
+// the browsers, especially Firefox, may apply all transitions on page load
+const CSS_TRANSITION_SUPPRESSOR = '* { transition: none !important; }';
+const RX_CSS_TRANSITION_DETECTOR = /([\s\n;/{]|-webkit-|-moz-)transition[\s\n]*:[\s\n]*(?!none)/;
+
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
 var cachedStyles = {
@@ -16,6 +21,7 @@ var cachedStyles = {
   filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
   regexps: new Map(),    // compiled style regexps
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
+  needTransitionPatch: new Map(), // FF bug workaround
   mutex: {
     inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
@@ -517,6 +523,7 @@ function invalidateCache({added, updated, deletedId} = {}) {
     if (cached) {
       Object.assign(cached, updated);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
       return;
     } else {
       added = updated;
@@ -527,6 +534,7 @@ function invalidateCache({added, updated, deletedId} = {}) {
       cachedStyles.list.push(added);
       cachedStyles.byId.set(added.id, added);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
     }
     return;
   }
@@ -536,11 +544,13 @@ function invalidateCache({added, updated, deletedId} = {}) {
       cachedStyles.list.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
       return;
     }
   }
   cachedStyles.list = null;
   cachedStyles.filters.clear();
+  cachedStyles.needTransitionPatch.clear(id);
 }
 
 
@@ -610,5 +620,80 @@ function calcStyleDigest(style) {
       parts.push((PAD8 + view.getUint32(i).toString(16)).slice(-8));
     }
     return parts.join('');
+  }
+}
+
+
+function handleCssTransitionBug(tabId, frameId, styles) {
+  for (let id in styles) {
+    id |= 0;
+    if (!id) {
+      continue;
+    }
+    let need = cachedStyles.needTransitionPatch.get(id);
+    if (need === false) {
+      continue;
+    }
+    if (need !== true) {
+      need = styles[id].some(sectionContainsTransitions);
+      cachedStyles.needTransitionPatch.set(id, need);
+      if (!need) {
+        continue;
+      }
+    }
+    if (FIREFOX) {
+      patchFirefox();
+    } else {
+      styles.needTransitionPatch = true;
+    }
+    break;
+  }
+
+  function patchFirefox() {
+    browser.tabs.insertCSS(tabId, {
+      frameId,
+      code: CSS_TRANSITION_SUPPRESSOR,
+      cssOrigin: 'user',
+      runAt: 'document_start',
+      matchAboutBlank: true,
+    }).then(() => setTimeout(() => {
+      browser.tabs.removeCSS(tabId, {
+        frameId,
+        code: CSS_TRANSITION_SUPPRESSOR,
+        cssOrigin: 'user',
+        matchAboutBlank: true,
+      }).catch(ignoreChromeError);
+    })).catch(ignoreChromeError);
+  }
+
+  function sectionContainsTransitions(section) {
+    let code = section.code;
+    const firstTransition = code.indexOf('transition');
+    if (firstTransition < 0) {
+      return false;
+    }
+    const firstCmt = code.indexOf('/*');
+    // check the part before the first comment
+    if (firstCmt < 0 || firstTransition < firstCmt) {
+      if (quickCheckAround(code, firstTransition)) {
+        return true;
+      } else if (firstCmt < 0) {
+        return false;
+      }
+    }
+    // check the rest
+    const lastCmt = code.lastIndexOf('*/');
+    if (lastCmt < firstCmt) {
+      // the comment is unclosed and we already checked the preceding part
+      return false;
+    }
+    let mid = code.slice(firstCmt, lastCmt + 2);
+    mid = mid.indexOf('*/') === mid.length - 2 ? '' : mid.replace(RX_CSS_COMMENTS, '');
+    code = mid + code.slice(lastCmt + 2);
+    return quickCheckAround(code) || RX_CSS_TRANSITION_DETECTOR.test(code);
+  }
+
+  function quickCheckAround(code, pos = code.indexOf('transition')) {
+    return RX_CSS_TRANSITION_DETECTOR.test(code.substr(Math.max(0, pos - 10), 50));
   }
 }

@@ -1,4 +1,5 @@
 /* global dbExec, getStyles, saveStyle */
+/* global handleCssTransitionBug */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -211,7 +212,10 @@ contextMenus = Object.assign({
 
 function webNavigationListener(method, {url, tabId, frameId}) {
   getStyles({matchUrl: url, enabled: true, asHash: true}).then(styles => {
-    if (method && !url.startsWith('chrome:') && tabId >= 0) {
+    if (method && URLS.supported(url) && tabId >= 0) {
+      if (method === 'styleApply') {
+        handleCssTransitionBug(tabId, frameId, styles);
+      }
       chrome.tabs.sendMessage(tabId, {
         method,
         // ping own page so it retrieves the styles directly
