@@ -7,7 +7,7 @@ function configDialog(style) {
   const form = buildConfigForm();
 
   return messageBox({
-    title: `Configure ${style.name}`,
+    title: style.name,
     className: 'config-dialog',
     contents: form.el,
     buttons: [
@@ -42,14 +42,21 @@ function configDialog(style) {
           va.value = colorParser.format(color);
           va.inputColor.style.opacity = color.a;
         };
-        appendChild = [va.label, va.inputColor, va.inputAlpha];
+        appendChild = [
+          $element({appendChild: [va.inputColor, va.inputAlpha]})
+        ];
       } else if (va.type === 'checkbox') {
         va.input = $element({tag: 'input', type: 'checkbox'});
         va.input.onchange = () => {
           va.dirty = true;
           va.value = String(Number(va.input.checked));
         };
-        appendChild = [va.input, $element({tag: 'span', appendChild: va.label})];
+        appendChild = [
+          $element({tag: 'span', className: 'onoffswitch', appendChild: [
+            va.input,
+            $element({tag: 'span'})
+          ]})
+        ];
       } else if (va.type === 'select') {
         va.input = $element({
           tag: 'select',
@@ -61,15 +68,16 @@ function configDialog(style) {
           va.dirty = true;
           va.value = va.input.value;
         };
-        appendChild = [va.label, va.input];
+        appendChild = [va.input];
       } else {
         va.input = $element({tag: 'input', type: 'text'});
         va.input.oninput = () => {
           va.dirty = true;
           va.value = va.input.value;
         };
-        appendChild = [va.label, va.input];
+        appendChild = [va.input];
       }
+      appendChild.unshift($element({tag: 'span', appendChild: va.label}));
       labels.push($element({
         tag: 'label',
         className: `config-${va.type}`,

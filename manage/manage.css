@@ -642,30 +642,48 @@ fieldset > *:not(legend) {
 }
 
 /* config dialog */
-#message-box.config-dialog input,
-#message-box.config-dialog select {
-  display: block;
+.config-dialog label {
+  display: flex;
+  padding: .75em 0;
+  align-items: center;
+  border-top: 1px dotted #ccc;
+}
+
+.config-dialog label:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.config-dialog label > :first-child {
+  margin-right: 8px;
+  flex-grow: 1;
+}
+
+.config-dialog label:not([disabled]) > :first-child {
+  cursor: default;
+}
+
+.config-dialog label:not([disabled]):hover > :first-child {
+  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
+  cursor: pointer;
+}
+
+.config-dialog input,
+.config-dialog select {
   width: 100%;
-  margin: .4rem 0 .6rem;
-  padding-left: .25rem;
-  border-radius: .25rem;
-  border-width: 1px;
+  margin: 0;
+  height: 2em;
+  box-sizing: border-box;
 }
 
-#message-box.config-dialog .config-checkbox::after {
-  content: "";
-  display: block;
+.config-dialog input[type="text"] {
+  padding-left: 0.25em;
 }
 
-#message-box.config-dialog .config-checkbox > * {
-  display: inline-block;
-  vertical-align: middle;
-  margin: .4rem 0 .6rem;
-}
-
-#message-box.config-dialog input[type=checkbox] {
-  width: auto;
-  margin-right: 0.4em;
+.config-dialog label > :last-child {
+  width: 60px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 @keyframes fadein {

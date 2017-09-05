@@ -1,0 +1,59 @@
+/* On/Off FlipSwitch https://proto.io/freebies/onoff/ */
+
+.onoffswitch {
+  position: relative;
+  margin: 1ex 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.onoffswitch input {
+  display: none;
+}
+
+.onoffswitch span {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 12px;
+  padding: 0;
+  line-height: 12px;
+  border: 0 solid #E3E3E3;
+  border-radius: 12px;
+  background-color: #E0E0E0;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.onoffswitch span::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: -3px;
+  background: #efefef;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 46px;
+  border-radius: 18px;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
+}
+
+.onoffswitch input:checked + span {
+  background-color: #CAEBE3;
+}
+
+.onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
+  border-color: #CAEBE3;
+}
+
+.onoffswitch input:checked + span .onoffswitch-inner {
+  margin-left: 0;
+}
+
+.onoffswitch input:checked + span::before {
+  right: 0;
+  background-color: #04BA9F;
+  box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
+}
