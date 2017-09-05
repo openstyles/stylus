@@ -27,6 +27,7 @@
       "js/prefs.js",
       "js/script-loader.js",
       "background/background.js",
+      "vendor/node-semver/semver.js",
       "background/update.js"
     ]
   },

@@ -9,30 +9,6 @@ var usercss = (function () {
     'namespace', 'noframes', 'preprocessor', 'supportURL', 'var', 'version'
   ];
 
-  // FIXME: use a real semver module
-  function semverTest(a, b) {
-    a = a.split('.').map(Number);
-    b = b.split('.').map(Number);
-
-    for (let i = 0; i < a.length; i++) {
-      if (!(i in b)) {
-        return 1;
-      }
-      if (a[i] < b[i]) {
-        return -1;
-      }
-      if (a[i] > b[i]) {
-        return 1;
-      }
-    }
-
-    if (a.length < b.length) {
-      return -1;
-    }
-
-    return 0;
-  }
-
   const BUILDER = {
     default: {
       postprocess(sections, vars) {
@@ -243,5 +219,5 @@ var usercss = (function () {
     // FIXME: validate variable formats
   }
 
-  return {buildMeta, buildCode, semverTest};
+  return {buildMeta, buildCode};
 })();

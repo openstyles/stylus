@@ -1,5 +1,6 @@
 /* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
-/* global calcStyleDigest, usercss */
+/* global calcStyleDigest */
+/* global usercss semverCompare */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -100,10 +101,10 @@ var updater = {
           return Promise.reject(updater.ERROR_VERSION);
         }
         if (style.version) {
-          if (usercss.semverTest(style.version, json.version) === 0) {
+          if (semverCompare(style.version, json.version) === 0) {
             return Promise.reject(updater.SAME_VERSION);
           }
-          if (usercss.semverTest(style.version, json.version) > 0) {
+          if (semverCompare(style.version, json.version) > 0) {
             return Promise.reject(updater.ERROR_VERSION);
           }
         }

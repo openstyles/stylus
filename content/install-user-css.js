@@ -1,4 +1,4 @@
-/* global usercss */
+/* global semverCompare */
 
 'use strict';
 
@@ -63,8 +63,8 @@ function getAppliesTo(style) {
 }
 
 function initInstallPage({style, dup}) {
-  pendingResource.then(() => {
-    const versionTest = dup && usercss.semverTest(style.version, dup.version);
+  return pendingResource.then(() => {
+    const versionTest = dup && semverCompare(style.version, dup.version);
     document.body.innerHTML = '';
     // FIXME: i18n
     document.body.appendChild(tHTML(`
@@ -113,7 +113,7 @@ function initInstallPage({style, dup}) {
 }
 
 function initErrorPage(err, source) {
-  pendingResource.then(() => {
+  return pendingResource.then(() => {
     document.body.innerHTML = '';
     // FIXME: i18n
     document.body.appendChild(tHTML(`
@@ -135,6 +135,7 @@ function initUsercssInstall() {
       '/js/dom.js',
       '/js/localization.js',
       '/js/usercss.js',
+      '/vendor/node-semver/semver.js',
       '/content/install-user-css.css'
     ]
   });
