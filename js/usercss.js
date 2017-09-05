@@ -46,6 +46,49 @@ var usercss = (function () {
     }
   };
 
+  const colorParser = (function () {
+    const el = document.createElement('div');
+    // https://bugs.webkit.org/show_bug.cgi?id=14563
+    document.head.appendChild(el);
+
+    function _parse(color) {
+      const [r, g, b, a = 1] = color.match(/[.\d]+/g).map(Number);
+      return {r, g, b, a};
+    }
+
+    function parse(color) {
+      el.style.color = color;
+      if (el.style.color === '') {
+        throw new Error(`"${color}" is not a valid color`);
+      }
+      color = getComputedStyle(el).color;
+      el.style.color = '';
+      return _parse(color);
+    }
+
+    function format({r, g, b, a = 1}) {
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+
+    function pad(s) {
+      if (s.padStart) {
+        // chrome 57+
+        return s.padStart(2, '0');
+      }
+      return `00${s}`.slice(-2);
+    }
+
+    function formatHex({r, g, b, a = null}) {
+      const values = [r, g, b];
+      if (a !== null) {
+        values.push(Math.floor(a * 255));
+      }
+      return '#' + values.map(n => pad(n.toString(16))).join('');
+    }
+
+    return {parse, format, formatHex};
+  })();
+
   function getMetaSource(source) {
     const commentRe = /\/\*[\s\S]*?\*\//g;
     const metaRe = /==userstyle==[\s\S]*?==\/userstyle==/i;
@@ -219,5 +262,5 @@ var usercss = (function () {
     // FIXME: validate variable formats
   }
 
-  return {buildMeta, buildCode};
+  return {buildMeta, buildCode, colorParser};
 })();
