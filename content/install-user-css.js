@@ -19,7 +19,6 @@ function install(style) {
   const request = Object.assign(style, {
     method: 'saveUsercss',
     reason: 'install',
-    url: location.href,
     updateUrl: location.href
   });
   return communicate(request)
