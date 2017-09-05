@@ -24,7 +24,7 @@ function install(style) {
   });
   return communicate(request)
     .then(() => {
-      $$('.meta-version + .warning')
+      $$('.warning')
         .forEach(el => el.remove());
       $('button.install').textContent = 'Installed';
       $('button.install').disabled = true;
@@ -46,6 +46,23 @@ function communicate(request) {
   });
 }
 
+function getAppliesTo(style) {
+  function *_gen() {
+    for (const section of style.sections) {
+      for (const type of ['urls', 'urlPrefixes', 'domains', 'regexps']) {
+        if (section[type]) {
+          yield *section[type];
+        }
+      }
+    }
+  }
+  const result = [..._gen()];
+  if (!result.length) {
+    result.push('All URLs');
+  }
+  return result;
+}
+
 function initInstallPage({style, dup}) {
   pendingResource.then(() => {
     const versionTest = dup && usercss.semverTest(style.version, dup.version);
@@ -54,13 +71,22 @@ function initInstallPage({style, dup}) {
     document.body.appendChild(tHTML(`
       <div class="container">
         <div class="header">
-          <h1>Install Usercss</h1>
-          <h2>Name</h2>
-          <span class="meta meta-name">${style.name}</span>
-          <h2>Version</h2>
-          <span class="meta meta-version">${style.version}</span>
+          <h1>${style.name} <small class="meta-version">v${style.version}</small></h1>
+          <p>${style.description}</p>
+          <h3>Author</h3>
+          ${style.author}
+          <h3>License</h3>
+          ${style.license}
+          <h3>Applies to</h3>
+          <ul>
+            ${getAppliesTo(style).map(s => `<li>${s}</li>`)}
+          </ul>
           <div class="actions">
             <button class="install">${!dup ? 'Install' : versionTest > 0 ? 'Update' : 'Reinstall'}</button>
+          </div>
+          <div class="external">
+            <a href="${style.url}" target="_blank">Homepage</a>
+            <a href="${style.supportURL}" target="_blank">Support</a>
           </div>
         </div>
         <div class="code"></div>
@@ -68,7 +94,7 @@ function initInstallPage({style, dup}) {
     `));
     if (versionTest < 0) {
       // FIXME: i18n
-      $('.meta-version').after(tHTML(`
+      $('.actions').before(tHTML(`
         <div class="warning">
           The version is older then installed style.
         </div>
@@ -93,7 +119,8 @@ function initErrorPage(err, source) {
     // FIXME: i18n
     document.body.appendChild(tHTML(`
       <div class="warning">
-        Stylus failed to parse usercss: ${err}
+        Stylus failed to parse usercss:
+        <pre>${err}</pre>
       </div>
       <div class="code"></div>
     `));

@@ -24,8 +24,8 @@ body {
   margin-top: 0;
 }
 
-.meta {
-  font-size: 1.4em;
+h1 small {
+  font-size: 0.6em;
 }
 
 .warning {
@@ -46,6 +46,21 @@ body {
 
 .actions > * {
   display: inline-block;
+}
+
+.external {
+  text-align: center;
+}
+
+.external > * {
+  margin: 0 7.5px;
+}
+
+button.install {
+  display: block;
+  margin: 0 auto;
+  font-size: 2em;
+  padding: 0.4em 0.8em;
 }
 
 .code {
