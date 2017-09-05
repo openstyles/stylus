@@ -274,11 +274,17 @@ function filterUsercss(req) {
     if (!style.id && req.id) {
       style.id = req.id;
     }
-    if (!style.id && req.checkDup) {
-      return findDupUsercss(style)
-        .then(dup => ({status: 'success', style, dup}));
+    let pending;
+    if (!style.sections || !style.sections.length) {
+      pending = usercss.buildCode(style);
+    } else {
+      pending = Promise.resolve(style);
     }
-    return {status: 'success', style};
+    if (!style.id && req.checkDup) {
+      return Promise.all([pending, findDupUsercss(style)])
+        .then(([, dup]) => ({status: 'success', style, dup}));
+    }
+    return pending.then(() => ({status: 'success', style}));
   }).catch(err => ({status: 'error', error: String(err)}));
 }
 
