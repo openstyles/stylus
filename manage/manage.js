@@ -286,7 +286,7 @@ Object.assign(handleEvent, {
 
     messageBox({
       title: `Configure ${style.name}`,
-      className: 'regular-form',
+      className: 'config-dialog',
       contents: form.el,
       buttons: [
         t('confirmSave'),
@@ -320,24 +320,67 @@ Object.assign(handleEvent, {
       const vars = deepCopy(style.vars);
       for (const key of Object.keys(vars)) {
         const va = vars[key];
-        va.input = $element({tag: 'input', type: 'text', value: va.value});
-        va.input.oninput = () => {
-          va.dirty = true;
-          va.value = va.input.value;
-        };
-        const label = $element({
+        let appendChild;
+        if (va.type === 'color') {
+          va.inputColor = $element({tag: 'input', type: 'color'});
+          // FIXME: i18n
+          va.inputAlpha = $element({tag: 'input', type: 'range', min: 0, max: 255, title: 'Opacity'});
+          va.inputColor.onchange = va.inputAlpha.oninput = () => {
+            va.dirty = true;
+            va.value = va.inputColor.value + Number(va.inputAlpha.value).toString(16);
+            va.inputColor.style.opacity = va.inputAlpha.value / 255;
+          };
+          appendChild = [va.label, va.inputColor, va.inputAlpha];
+        } else if (va.type === 'checkbox') {
+          va.input = $element({tag: 'input', type: 'checkbox'});
+          va.input.onchange = () => {
+            va.dirty = true;
+            va.value = String(Number(va.input.checked));
+          };
+          appendChild = [va.input, $element({tag: 'span', appendChild: va.label})];
+        } else if (va.type === 'select') {
+          va.input = $element({
+            tag: 'select',
+            appendChild: Object.keys(va.select).map(key => $element({
+              tag: 'option', value: key, appendChild: va.select[key]
+            }))
+          });
+          va.input.onchange = () => {
+            va.dirty = true;
+            va.value = va.input.value;
+          };
+          appendChild = [va.label, va.input];
+        } else {
+          va.input = $element({tag: 'input', type: 'text'});
+          va.input.oninput = () => {
+            va.dirty = true;
+            va.value = va.input.value;
+          };
+          appendChild = [va.label, va.input];
+        }
+        labels.push($element({
           tag: 'label',
-          appendChild: [va.label, va.input]
-        });
-        labels.push(label);
+          className: `config-${va.type}`,
+          appendChild
+        }));
       }
       drawValues();
 
       function drawValues() {
         for (const key of Object.keys(vars)) {
           const va = vars[key];
-          va.input.value = va.value === null || va.value === undefined ?
+          const value = va.value === null || va.value === undefined ?
             va.default : va.value;
+
+          if (va.type === 'color') {
+            va.inputColor.value = value.slice(0, -2);
+            va.inputAlpha.value = parseInt(value.slice(-2), 16);
+            va.inputColor.style.opacity = va.inputAlpha.value / 255;
+          } else if (va.type === 'checkbox') {
+            va.input.checked = Number(value);
+          } else {
+            va.input.value = value;
+          }
         }
       }
 

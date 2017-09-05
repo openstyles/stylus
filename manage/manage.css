@@ -641,6 +641,33 @@ fieldset > *:not(legend) {
   text-overflow: ellipsis;
 }
 
+/* config dialog */
+#message-box.config-dialog input,
+#message-box.config-dialog select {
+  display: block;
+  width: 100%;
+  margin: .4rem 0 .6rem;
+  padding-left: .25rem;
+  border-radius: .25rem;
+  border-width: 1px;
+}
+
+#message-box.config-dialog .config-checkbox::after {
+  content: "";
+  display: block;
+}
+
+#message-box.config-dialog .config-checkbox > * {
+  display: inline-block;
+  vertical-align: middle;
+  margin: .4rem 0 .6rem;
+}
+
+#message-box.config-dialog input[type=checkbox] {
+  width: auto;
+  margin-right: 0.4em;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
