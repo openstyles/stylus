@@ -96,6 +96,7 @@ a:hover {
 }
 
 .left-gutter {
+  position: relative;
   display: inline-flex;
 }
 
