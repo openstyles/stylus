@@ -3,6 +3,10 @@
 		"message": "Kõik",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Vead",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "vaikimisi",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -27,9 +31,9 @@
 		"message": "Ekspordi",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"linterIssues": {
-		"message": "Vead",
-		"description": "Label for the CSS linter issues block on the style edit page"
+	"linterJSONError": {
+		"message": "Vigane JSON-formaat",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "Taustavärv",
@@ -60,7 +64,7 @@
 		"description": ""
 	},
 	"appliesDomainOption": {
-		"message": "URLe domeenis",
+		"message": "URLid domeenis",
 		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
@@ -112,7 +116,7 @@
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"manageFaviconsGray": {
-		"message": "Halliks tehtud",
+		"message": "Tee halliks",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"confirmYes": {
@@ -139,6 +143,10 @@
 		"message": "Lubatud",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Selle linteri seadistamiseks klõpsa",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "Koodi Mozilla-vormingut saab üles laadida saidile userstyles.org ja kasutada klassikalise Firefoxi Stylish'iga",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -154,6 +162,10 @@
 	"styleSaveLabel": {
 		"message": "Salvesta",
 		"description": "Label for save button for style editing"
+	},
+	"genericSavedMessage": {
+		"message": "Salvestatud",
+		"description": "Used in various parts of the UI to indicate that something was saved"
 	},
 	"confirmDelete": {
 		"message": "Kustuta",
@@ -172,7 +184,7 @@
 		"description": "'Stop' button in a confirm dialog"
 	},
 	"writeStyleForURL": {
-		"message": "sellele URLile",
+		"message": "see URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
 	"optionsSubheading": {
@@ -184,11 +196,11 @@
 		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
-		"message": "URLid, mis vastavad regulaaravaldisele",
+		"message": "Regulaaravaldisele vastavad URLid",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "Lubab iframe'i-põhilise CSS-koodi kirjutamist, nagu \"html[stylus-iframe] h1 { display:none }\"",
+		"message": "Lubab iframe'i-põhise CSS-koodi kirjutamise, nagu \"html[stylus-iframe] h1 { display:none }\"",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -196,7 +208,7 @@
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
-		"message": "Installid \"$stylename$\" Stylus-esse?",
+		"message": "Installida \"$stylename$\" Stylus'isse?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -219,6 +231,15 @@
 	"manageOnlyLocal": {
 		"message": "Ainult kohalikult loodud stiilid",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "$link$ leidis need vead:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Otsi sisu",
@@ -245,7 +266,7 @@
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
-		"message": "Favicon'id \"rakendub\"-tulbas",
+		"message": "Lehe ikoonid rakendub-tulbas",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
@@ -309,7 +330,7 @@
 		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
-		"message": "Rakendub: $applies$",
+		"message": "Rakendub saitidele: $applies$",
 		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
@@ -334,6 +355,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Stylus ei saa privaatsetes akendes töötada, sest Firefox ei luba otseühendust laienduse sisemisele taustalehe kontekstile.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Jaotised",
 		"description": "Title for the style sections section"
@@ -341,6 +366,10 @@
 	"importReportLegendInvalid": {
 		"message": "sobimatut vahele jäetud",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "Lähtesta",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "Muuda stiili $stylename$",
@@ -428,7 +457,7 @@
 		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
-		"message": "Rakendub",
+		"message": "Rakendub saitidele",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
 	"openOptionsPopup": {
@@ -460,6 +489,18 @@
 		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
 		"description": ""
 	},
+	"filteredStyles": {
+		"message": "$numShown$/$numTotal$ kuvatud",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportTitle": {
 		"message": "Stiilide importimine lõpetatud",
 		"description": "Title of the report shown after importing styles"
@@ -476,6 +517,10 @@
 		"message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga).",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "(Määra reegel kui: 0 = keelatud; 1 = hoiatus; 2 = viga)",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Taanda @media, @supports",
 		"description": "CSS-beautifier option"
@@ -487,6 +532,10 @@
 	"sectionRemove": {
 		"message": "Eemalda jaotis",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "Et näidata stiile teatud URL-i jaoks, lisa selle ette 'url:'\nNäiteks url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Lülita kõik stiilid välja",
@@ -508,6 +557,10 @@
 		"message": "Uuendus teostatud.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "Ei saa korralikult töötada, sest selles Firefoxi versioonis on tuntud viga: chrome.extension.getBackgroundPage() ei tagasta kehtivat tulemit",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Kontrollin...",
 		"description": "Text to display when checking a style for an update"
@@ -517,8 +570,12 @@
 		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
-		"message": "\"Rakendub\"-üksuste arv",
+		"message": "Rakendub-üksuste arv",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"popupManageTooltip": {
+		"message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega",
+		"description": "Tooltip for the 'Manage' button in the popup."
 	},
 	"manageFaviconsHelp": {
 		"message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons",
@@ -527,6 +584,10 @@
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Seda stiili muudeti kohalikult.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Vaata reeglite täielikku loendit",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "Lähtesta valikud",
@@ -539,6 +600,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "Linteri $linter$ reeglite seadistuse määramine",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "said uuenduse nii metaandmetele kui koodile",
@@ -568,6 +638,10 @@
 		"message": "Automaattäide kirjutamisel",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"manageOnlyDisabled": {
+		"message": "Ainult keelatud stiilid",
+		"description": "Checkbox to show only disabled styles"
+	},
 	"stylusUnavailableForURLdetails": {
 		"message": "Turvakaalutlustel keelab brauser laiendustel sisseehitatud lehtede (nagu chrome://version, standardne uue kaardi leht alates versioonist Chrome 61, about:addons jne) ning ka teiste laienduste lehtede muutmise. Iga brauser piirab lisaks juurdepääsu oma laienduste galeriile (nagu Chrome'i veebipood või AMO).",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
@@ -596,8 +670,12 @@
 		"message": "Kirjuta stiil üle",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "Lubatakse ka redaktori kaardi veebilehitseja aknast eraldamisel,\nja keelatakse üksiku redaktori kaardi haakimisel teise aknasse.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"dbError": {
-		"message": "Stylus'e andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?",
+		"message": "Stylus'i andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?",
 		"description": "Prompt when a DB error is encountered"
 	},
 	"optionsAdvanced": {
@@ -623,6 +701,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Sobimatud regulaaravaldised vahele jäetud",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"manageOnlyExternal": {
+		"message": "Ainult välised stiilid",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"replaceAll": {
 		"message": "Asenda kõik",
@@ -652,15 +734,6 @@
 		"message": "Valikute liides",
 		"description": "Go to Options UI"
 	},
-	"linterIssuesHelp": {
-		"message": "$link$ poolt leitud vead nende lubatud reeglitega:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
 	"optionsCustomizeBadge": {
 		"message": "Number tööriistaribaikoonil",
 		"description": ""
@@ -672,6 +745,10 @@
 	"optionsPopupWidth": {
 		"message": "Hüpikakna laius (pikslites)",
 		"description": ""
+	},
+	"linterInvalidConfigError": {
+		"message": "Ei salvestatud nende vigaste seadistuste tõttu:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
 	},
 	"confirmNo": {
 		"message": "Ei",
@@ -741,6 +818,10 @@
 		"message": "Teema",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"popupOpenEditInWindow": {
+		"message": "Ava redaktor uues aknas",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"backupMessage": {
 		"message": "Vali fail või lohista see siia lehele.",
 		"description": "Message for backup"
@@ -753,8 +834,12 @@
 		"message": "Kirjuta käsu nimi",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"linterResetMessage": {
+		"message": "Kogemata tehtud lähtestamiste tagasi võtmiseks vajuta tekstikastis Ctrl-Z (või Cmd-Z)",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
+	},
 	"description": {
-		"message": "Disaini veeb ümber Stylus'ega - kasutajastiilide haldur. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",
+		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",
 		"description": "Extension description"
 	}
 }

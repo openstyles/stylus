@@ -3,12 +3,16 @@
 		"message": "Todos los sitios",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Problemas",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "predeterminado",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"styleRegexpTestTitle": {
-		"message": "Lista de pestañas coincidentes abiertas (haga clic en la URL para poner el foco en esa pestaña)",
+		"message": "Lista de pestañas coincidentes abiertas (pulse en el URL para poner el foco en esa pestaña)",
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
@@ -27,9 +31,9 @@
 		"message": "Exportar",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"linterIssues": {
-		"message": "Problemas",
-		"description": "Label for the CSS linter issues block on the style edit page"
+	"linterJSONError": {
+		"message": "Formato JSON no válido",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "Color de fondo",
@@ -143,6 +147,10 @@
 		"message": "Activado",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Pulse para configurar este deshilvanador (linter)",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "El formato Mozilla del código se puede enviar a userstyles.org y usarse con el Stylish para Firefox clásico.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -159,8 +167,12 @@
 		"message": "Guardar",
 		"description": "Label for save button for style editing"
 	},
+	"genericSavedMessage": {
+		"message": "Guardado",
+		"description": "Used in various parts of the UI to indicate that something was saved"
+	},
 	"confirmDelete": {
-		"message": "Borrar",
+		"message": "Eliminar",
 		"description": ""
 	},
 	"confirmCancel": {
@@ -223,6 +235,15 @@
 	"manageOnlyLocal": {
 		"message": "Sólo estilos creados localmente",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "Estos problemas fueron encontrados por $link$:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Buscar contenidos",
@@ -338,6 +359,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Stylus no puede funcionar en ventanas privadas porque Firefox no permite conexión directa al contexto de la página de entorno interna de la extensión.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Secciones",
 		"description": "Title for the style sections section"
@@ -345,6 +370,10 @@
 	"importReportLegendInvalid": {
 		"message": "no válidos omitidos",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "Restablecer",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "Editar estilo $stylename$",
@@ -464,6 +493,18 @@
 		"message": "Buscar e instalar todas las actualizaciones disponibles",
 		"description": ""
 	},
+	"filteredStyles": {
+		"message": "$numShown$ mostrados de $numTotal$ en total",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportTitle": {
 		"message": "Se completó la importación de estilos",
 		"description": "Title of the report shown after importing styles"
@@ -480,6 +521,10 @@
 		"message": "Este estilo utiliza expresiones regulares (regexps) parcialmente coincidentes violando así la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia completa de URL. Las secciones CSS afectadas no se aplicaron a la página. Probablemente este estilo fue creado con Stylish-para-Chrome, que evalúa de modo incorrecto las reglas 'regexp()' desde la primera versión (un fallo conocido).",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "(Establezca la regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Sangrar @media, @supports",
 		"description": "CSS-beautifier option"
@@ -491,6 +536,10 @@
 	"sectionRemove": {
 		"message": "Eliminar sección",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "Para mostrar estilos para una URL, precédala con 'url:'\nPor ejemplo, url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Desactivar todos los estilos",
@@ -512,6 +561,10 @@
 		"message": "Actualización completada.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "No puede funcionar adecuadamente a causa de un fallo conocido en esta versión de Firefox: chrome.extension.getBackgroundPage() no devuelve un resultado válido.",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Buscando...",
 		"description": "Text to display when checking a style for an update"
@@ -524,13 +577,21 @@
 		"message": "Número de elementos se-aplica-a",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"popupManageTooltip": {
+		"message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual.",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
 	"manageFaviconsHelp": {
 		"message": "Stylus usa un servicio externo https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"updateCheckSkippedLocallyEdited": {
-		"message": "Este estilo se editó localmente",
+		"message": "Este estilo se editó localmente.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Vea una lista completa de reglas",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "Restablecer opciones",
@@ -543,6 +604,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "Añadir 'Eliminar' al menú contextual del editor",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "Establezcer configuración de $linter$ reglas",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "actualizarón tanto meta información como código",
@@ -572,6 +642,10 @@
 		"message": "Autocompletar al escribir",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"manageOnlyDisabled": {
+		"message": "Sólo estilos deshabilitados",
+		"description": "Checkbox to show only disabled styles"
+	},
 	"stylusUnavailableForURLdetails": {
 		"message": "Como precaución de seguridad, el navegador prohíbe que las extensiones afecten a sus páginas integradas (como chrome://version, o la página estándar de nueva pestaña desde Chrome 61, o about:addons, y demás) así como las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO).",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
@@ -599,6 +673,10 @@
 	"importReplaceLabel": {
 		"message": "Sobrescribir estilo",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "También se habilita al desacoplar la pestaña del editor de una ventana de navegador,\ny se deshabilita al acoplar una única pestaña de editor en otra ventana.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
 	},
 	"dbError": {
 		"message": "Ocurrió un error con la base de datos de Stylus. ¿Desea visitar una página web con posibles soluciones?",
@@ -628,6 +706,10 @@
 		"message": "Expresiones regulares no válidas omitidas",
 		"description": "RegExp test report: label for the invalid expressions"
 	},
+	"manageOnlyExternal": {
+		"message": "Sólo estilos externos",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
+	},
 	"replaceAll": {
 		"message": "Reemplazar todo",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -656,15 +738,6 @@
 		"message": "Interfaz de opciones",
 		"description": "Go to Options UI"
 	},
-	"linterIssuesHelp": {
-		"message": "Problemas encontrados por $link$ con estas reglas aplicadas:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
 	"optionsCustomizeBadge": {
 		"message": "Distintivo en el icono de barra de herramientas",
 		"description": ""
@@ -676,6 +749,10 @@
 	"optionsPopupWidth": {
 		"message": "Anchura del diálogo emergente (en píxeles)",
 		"description": ""
+	},
+	"linterInvalidConfigError": {
+		"message": "No se guardó debido a estos ajustes de configuración no válidos:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
 	},
 	"undo": {
 		"message": "Deshacer",
@@ -718,7 +795,7 @@
 		"description": ""
 	},
 	"addStyleLabel": {
-		"message": "Escribir un nuevo estilo",
+		"message": "Escribir un estilo nuevo",
 		"description": "Label for the button to go to the add style page"
 	},
 	"optionsUpdateIntervalNote": {
@@ -741,6 +818,10 @@
 		"message": "Temas",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"popupOpenEditInWindow": {
+		"message": "Abrir editor en una nueva ventana",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"backupMessage": {
 		"message": "Seleccione un fichero o arrástrelo y suéltelo en esta página.",
 		"description": "Message for backup"
@@ -752,6 +833,10 @@
 	"helpKeyMapCommand": {
 		"message": "Nombre del comando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"linterResetMessage": {
+		"message": "Para deshacer este restablecimiento accidental, pulse Ctrl+Z (o Cmd+Z) en el cuadro de texto",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
 		"message": "Rediseñe la web con Stylus, un administrador de estilos de usuario. Stylus le permite instalar fácilmente temas y coberturas para muchos sitios populares.",
