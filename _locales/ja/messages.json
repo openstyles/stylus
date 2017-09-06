@@ -355,6 +355,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Stylusはプライベートウィンドウでは機能しません。これは、Firefoxが拡張機能の内部のバックグラウンドページに直接接続することを禁止しているためです。",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "セクション",
 		"description": "Title for the style sections section"
