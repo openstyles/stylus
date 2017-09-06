@@ -249,10 +249,7 @@ function createStyleElement({
     onclick: handleEvent.name,
   });
   styleName.checkbox = checkbox;
-    var styleNameSpan = document.createElement("span");
-    styleName.appendChild(styleNameSpan);
-    styleNameSpan.setAttribute("class","style-name-span");
-    styleNameSpan.appendChild(document.createTextNode(style.name));
+  $('.style-name-text', entry).textContent = style.name;
 
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;

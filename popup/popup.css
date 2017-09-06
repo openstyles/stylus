@@ -32,15 +32,15 @@ body {
 
 input[type="checkbox"]:checked:hover + .svg-icon.checked,
 .style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
-  fill: #666;
+  fill: hsl(0, 0%, 100%);
 }
 
 input[type="checkbox"]:checked + .svg-icon.checked {
   display: inline-flex;
+  transition: fill .25s;
 }
 
-input[type="checkbox"],
-.entry.disabled:not(.not-applied) .style-name:hover input[type="checkbox"] {
+input[type="checkbox"] {
   -moz-appearance: none;
   -webkit-appearance: none;
   border: 1px solid hsl(0, 0%, 20%);
@@ -51,34 +51,25 @@ input[type="checkbox"],
   background-color: hsl(0, 0%, 94%);
   outline: none;
   margin: 0;
-  transition: background-color .5s, border-color .5s;
+  transition: background-color .25s, border-color .25s;
 }
 
-input[type="checkbox"]:hover, .style-name:hover input[type="checkbox"] {
-  background-color: hsl(0, 0%, 100%);
-  border-color: hsl(0, 0%, 50%);
+input[type="checkbox"]:checked:hover, .style-name:hover input[type="checkbox"]:checked {
+  background-color: hsl(0, 0%, 54%);
+  border-color: #000;
 }
 
-.entry.disabled:not(.not-applied) input[type="checkbox"],
+input[type="checkbox"]:hover, .style-name:hover input[type="checkbox"],
+.entry.disabled .style-name:hover input[type="checkbox"] {
+  border-color: #000;
+  background-color: hsl(0, 0%, 74%);
+}
+
+.entry.disabled input[type="checkbox"],
 .entry.not-applied input[type="checkbox"],
-.entry.disabled:not(.not-applied) input[type="checkbox"] + .svg-icon.checked,
-.entry.not-applied input[type="checkbox"] + .svg-icon.checked,
-.entry.disabled:not(.not-applied) .style-name,
-.entry.not-applied .style-name {
-  transition: none;
-}
-
-.entry.disabled:not(.not-applied) .style-name:hover .style-name-span {
-  color: #000;
-}
-
-a:hover, input[type="checkbox"]:hover + .svg-icon + label {
-  color: #666;
-}
-
-label {
-  color: #000;
-  transition: color .5s;
+.entry.disabled input[type="checkbox"] + .svg-icon.checked,
+.entry.not-applied input[type="checkbox"] + .svg-icon.checked {
+  transition: background-color .5s ease-in-out .25s, border-color .5s ease-in-out .25s, fill .5s ease-in-out .25s;
 }
 
 #no-styles {
@@ -165,7 +156,7 @@ body.blocked > DIV {
 
 }
 
-.entry .main-controls .style-name {
+.entry .style-name {
   display: flex;
   flex-grow: 1;
   overflow: hidden;
@@ -173,7 +164,8 @@ body.blocked > DIV {
   align-items: center;
 }
 
-.entry .main-controls .style-name-span{
+.entry  .style-name-text {
+  color: #000;
   cursor: default;
   font-weight: bold;
   overflow: hidden;
@@ -181,6 +173,10 @@ body.blocked > DIV {
   text-overflow: ellipsis;
   margin: 1px 0 0 4px;
   pointer-events: none;
+}
+
+.entry .style-name:hover .style-name-text {
+  color: #000;
 }
  
 .entry.disabled:not(.not-applied) .style-name,
@@ -208,15 +204,20 @@ body.blocked > DIV {
   opacity: 1;
 }
 
-.not-applied .style-name, .not-applied .style-name-span {
+.entry.not-applied .style-name .style-name-text,
+.entry.disabled.not-applied .style-name  .style-name-text,
+.entry.not-applied .style-name:hover .style-name-text,
+.entry.disabled.not-applied .style-name:hover .style-name-text {
   color: hsl(0, 100%, 30%);
 }
 
-.entry.not-applied .svg-icon, .not-applied input[type="checkbox"]:checked + .svg-icon.checked,
+.entry.not-applied .svg-icon,
+.not-applied input[type="checkbox"]:checked + .svg-icon.checked,
 .entry.not-applied .style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
   fill: hsl(0, 100%, 30%);
 }
 
+.entry.not-applied .style-name:hover input[type="checkbox"]:checked + .svg-icon.checked,
 .entry.not-applied a:hover .svg-icon.remove {
   fill: hsl(0, 100%, 50%);
 }
@@ -225,9 +226,16 @@ body.blocked > DIV {
   fill: hsl(170, 70%, 38%);
 }
 
-.entry.not-applied input[type="checkbox"], .entry.not-applied .style-name:hover input[type="checkbox"] {
+.entry.not-applied input[type="checkbox"],
+.entry.not-applied .style-name:hover input[type="checkbox"] {
   background-color: hsl(0, 0%, 100%);
   border-color: hsl(0, 100%, 30%);
+}
+
+.entry.not-applied .style-name:hover input[type="checkbox"],
+.entry.disabled.not-applied .style-name:hover input[type="checkbox"] {
+  background-color: hsl(0, 0%, 100%);
+  border-color: hsl(0, 100%, 50%);
 }
 
 .regexp-problem-indicator {
@@ -248,7 +256,7 @@ body.blocked > DIV {
 
 .regexp-partial .actions,
 .regexp-invalid .actions {
-    order: 2;
+  order: 2;
 }
 
 #regexp-explanation {
