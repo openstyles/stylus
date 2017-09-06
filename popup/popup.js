@@ -62,12 +62,6 @@ function initPopup(url) {
 
   setPopupWidth();
 
-  // force Chrome to resize the popup
-  if (!FIREFOX) {
-    document.body.style.height = '10px';
-    document.documentElement.style.height = '10px';
-  }
-
   // action buttons
   $('#disableAll').onchange = function () {
     installed.classList.toggle('disabled', this.checked);
@@ -255,7 +249,10 @@ function createStyleElement({
     onclick: handleEvent.name,
   });
   styleName.checkbox = checkbox;
-  styleName.appendChild(document.createTextNode(style.name));
+    var styleNameSpan = document.createElement("span");
+    styleName.appendChild(styleNameSpan);
+    styleNameSpan.setAttribute("class","style-name-span");
+    styleNameSpan.appendChild(document.createTextNode(style.name));
 
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;

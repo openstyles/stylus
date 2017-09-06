@@ -1,42 +1,88 @@
+html, body {
+  height: min-content;
+}
+
 body {
-  width: 252px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0 9px 9px;
   font-size: 12px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   margin: 0;
 }
+
 .firefox body {
   background-color: #fff;
-}
-
-body > div:not(#installed) {
-  margin-left: 0.75em;
-  margin-right: 0.75em;
 }
 
 .firefox .chromium-only {
   display: none;
 }
 
-input[type=checkbox] {
-  outline: none;
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
 }
 
-#disable-all-wrapper {
-  padding: 0.3em 0 0.6em;
+input[type="checkbox"]:checked:hover + .svg-icon.checked,
+.style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
+  fill: #666;
+}
+
+input[type="checkbox"]:checked + .svg-icon.checked {
+  display: inline-flex;
+}
+
+input[type="checkbox"],
+.entry.disabled:not(.not-applied) .style-name:hover input[type="checkbox"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid hsl(0, 0%, 20%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 94%);
+  outline: none;
+  margin: 0;
+  transition: background-color .5s, border-color .5s;
+}
+
+input[type="checkbox"]:hover, .style-name:hover input[type="checkbox"] {
+  background-color: hsl(0, 0%, 100%);
+  border-color: hsl(0, 0%, 50%);
+}
+
+.entry.disabled:not(.not-applied) input[type="checkbox"],
+.entry.not-applied input[type="checkbox"],
+.entry.disabled:not(.not-applied) input[type="checkbox"] + .svg-icon.checked,
+.entry.not-applied input[type="checkbox"] + .svg-icon.checked,
+.entry.disabled:not(.not-applied) .style-name,
+.entry.not-applied .style-name {
+  transition: none;
+}
+
+.entry.disabled:not(.not-applied) .style-name:hover .style-name-span {
+  color: #000;
+}
+
+a:hover, input[type="checkbox"]:hover + .svg-icon + label {
+  color: #666;
+}
+
+label {
+  color: #000;
+  transition: color .5s;
 }
 
 #no-styles {
   font-style: italic;
-}
-
-.checker {
-  display: inline;
-}
-
-.style-name {
-  cursor: default;
-  font-weight: bold;
-  display: block;
 }
 
 a {
@@ -50,19 +96,11 @@ a:hover {
 }
 
 .left-gutter {
-  display: table-cell;
-  width: 16px;
-  vertical-align: top;
+  display: inline-flex;
 }
 
-.left-gutter input {
-  margin-bottom: 1px;
-  margin-top: 0;
-  margin-left: 0;
-}
-
-.main-controls {
-  display: table-cell;
+.style-name .left-gutter {
+  pointer-events: none;
 }
 
 body > DIV:last-of-type,
@@ -71,19 +109,19 @@ body.blocked > DIV {
 }
 
 #installed {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   padding-bottom: 2px;
   padding-top: 2px;
+  margin: 0 -9px;
+  flex-grow: 1;
+  width: 100%;
   max-height: 445px;
   overflow-y: auto;
 }
 
-#installed.disabled .style-name {
-  text-decoration: line-through;
-}
-
 #installed .actions {
   cursor: default;
+  display: inline-flex;
 }
 
 #installed .actions a {
@@ -96,7 +134,8 @@ body.blocked > DIV {
 .entry {
   display: flex;
   align-items: center;
-  padding: 5px 0.75em;
+  padding: 0 9px;
+  height: 26px;
 }
 
 .entry:nth-child(even) {
@@ -109,39 +148,85 @@ body.blocked > DIV {
 
 .entry .style-edit-link,
 .entry .delete {
-  display: inline-block;
-  padding: 0 1px 0;
+  display: inline-flex;
+  height: 24px;
+  width: 18px;
+  align-items: center;
+  justify-content: center;
 }
 
 .entry .main-controls {
+  display: inline-flex;
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+  padding-right: 5px;
+
+}
+
+.entry .main-controls .style-name {
   display: flex;
-  width: calc(100% - 20px);
+  flex-grow: 1;
+  overflow: hidden;
+  height: 100%;
   align-items: center;
 }
 
-.entry .main-controls label {
-  flex: 1;
+.entry .main-controls .style-name-span{
+  cursor: default;
+  font-weight: bold;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 5px;
+  text-overflow: ellipsis;
+  margin: 1px 0 0 4px;
+  pointer-events: none;
+}
+ 
+.entry.disabled:not(.not-applied) .style-name,
+.entry.disabled:not(.not-applied) .actions,
+.entry.not-applied .style-name,
+.entry.not-applied .actions {
+  opacity: .4;
+  transition: opacity .5s ease-in-out .25s;
 }
 
-.not-applied .checker,
-.not-applied .style-name,
-.not-applied .actions > * {
+#installed.disabled {
   opacity: .2;
-  transition: opacity .5s ease-in-out .25s, color .5s ease-in-out .25s;
+  transition: opacity .5s ease-in-out .25s;
 }
 
-.not-applied:hover .checker,
-.not-applied:hover .style-name,
-.not-applied:hover .actions > * {
+#installed.disabled:hover,
+#installed.disabled:not(:hover) .entry.disabled:not(.not-applied) .style-name,
+#installed.disabled:not(:hover) .entry.disabled:not(.not-applied) .actions,
+#installed.disabled:not(:hover) .entry.not-applied .style-name,
+#installed.disabled:not(:hover) .entry.not-applied .actions,
+.entry.not-applied:hover .style-name,
+.entry.not-applied:hover .actions,
+.entry.disabled:not(.not-applied):hover .style-name,
+.entry.disabled:not(.not-applied):hover .actions {
   opacity: 1;
 }
 
-.not-applied:hover .style-name {
-  color: darkred;
+.not-applied .style-name, .not-applied .style-name-span {
+  color: hsl(0, 100%, 30%);
+}
+
+.entry.not-applied .svg-icon, .not-applied input[type="checkbox"]:checked + .svg-icon.checked,
+.entry.not-applied .style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
+  fill: hsl(0, 100%, 30%);
+}
+
+.entry.not-applied a:hover .svg-icon.remove {
+  fill: hsl(0, 100%, 50%);
+}
+
+.entry.not-applied a:hover .svg-icon.edit {
+  fill: hsl(170, 70%, 38%);
+}
+
+.entry.not-applied input[type="checkbox"], .entry.not-applied .style-name:hover input[type="checkbox"] {
+  background-color: hsl(0, 0%, 100%);
+  border-color: hsl(0, 100%, 30%);
 }
 
 .regexp-problem-indicator {
@@ -180,6 +265,14 @@ body.blocked > DIV {
   z-index: 999999;
 }
 
+#regexp-explanation button {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: auto;
+}
+
 #regexp-explanation > div {
   display: none;
   list-style-type: none;
@@ -206,20 +299,6 @@ body.blocked > DIV {
 
 a:hover .svg-icon {
   fill: #000;
-}
-
-body > .actions {
-  margin-top: 0.5em;
-}
-
-.actions > div:not(:last-child):not(#disable-all-wrapper),
-.actions > .main-controls > div:not(:last-child) {
-  margin-bottom: 0.75em;
-}
-
-.actions input,
-.actions label {
-  vertical-align: middle;
 }
 
 body.blocked #installed > *,
@@ -257,9 +336,8 @@ body.blocked .actions > .left-gutter {
 
 #match {
   overflow-wrap: break-word;
-  display: block;
-  flex-grow: 9;
-  min-width: 200px;
+  flex-grow: 1;
+  min-width: 100%;
 }
 
 /* "breadcrumbs" 'new style' links */
@@ -310,25 +388,38 @@ body.blocked .actions > .left-gutter {
   text-decoration-skip: ink;
 }
 
-/* action buttons */
+/* actions/buttons and wrappers */
 
-#popup-options {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 1.2em 1px;
-}
-
-#popup-options button {
-  width: 32%;
+#popup-manage-button, #popup-shortcuts-button, #popup-options-button  {
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.firefox #popup-options button {
-  width: 49%;
+#popup-manage-wrapper, #popup-shortcuts-wrapper, #popup-options-wrapper {
+  width: 32%;
 }
+
+.firefox #popup-options button {
+  width: 48%;
+}
+
+#disable-all-wrapper, #write-style-wrapper, #find-styles-wrapper {
+  width: 100%;
+}
+#disable-all-wrapper {
+  padding: 12px 0;
+}
+
+#write-style-wrapper, #find-styles-wrapper {
+  padding: 0 0 12px;
+}
+
+#disableAll-label {
+  padding-left: 4px;
+}
+
 
 /* confirm */
 
@@ -379,7 +470,8 @@ body.blocked .actions > .left-gutter {
 }
 
 #confirm > div > div {
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .non-windows #confirm > div > div {
@@ -387,10 +479,19 @@ body.blocked .actions > .left-gutter {
   text-align: right;
 }
 
-#confirm > button {
-  /* add a gap between buttons both for horizontal
-  or vertical (when the label is wide) layout */
-  margin: 0 .25em .25em 0;
+#confirm button {
+  max-width: calc(50% - 9px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#confirm button:first-of-type {
+  margin-right: 3px;
+}
+
+#confirm button:nth-of-type(2) {
+  margin-left: 3px;
 }
 
 .unreachable .entry {
