@@ -1,4 +1,4 @@
-/* global loadScript mozParser */
+/* global loadScript mozParser semverCompare */
 
 'use strict';
 
@@ -132,11 +132,6 @@ var usercss = (function () {
     return match;
   }
 
-  // FIXME: need color converter
-  function normalizeColor(color) {
-    return color;
-  }
-
   function parseVar(source) {
     const result = {
       label: null,
@@ -160,10 +155,8 @@ var usercss = (function () {
       source = match.follow;
     }
 
-    // value
-    if (result.type === 'color') {
-      source = normalizeColor(source);
-    } else if (result.type === 'select') {
+    // select type has an additional field
+    if (result.type === 'select') {
       const match = matchString(source);
       result.select = JSON.parse(match.follow);
       source = match.value;
@@ -259,8 +252,39 @@ var usercss = (function () {
         throw new Error(chrome.i18n.getMessage('styleMissingMeta', prop));
       }
     }
-    // FIXME: validate variable formats
+    // validate version
+    semverCompare(style.version, '0.0.0');
+
+    // validate vars
+    for (const key of Object.keys(style.vars)) {
+      validVar(style.vars[key]);
+    }
   }
 
-  return {buildMeta, buildCode, colorParser};
+  function validVar(va, value = 'default') {
+    // FIXME: i18n
+    if (va.type === 'select' && !va.select[va[value]]) {
+      throw new Error(`Invalid @var select: missing key '${va[value]}'`);
+    } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {
+      throw new Error('Invalid @var checkbox: value must be 0 or 1');
+    } else if (va.type === 'color') {
+      va[value] = colorParser.format(colorParser.parse(va[value]));
+    }
+  }
+
+  function assignVars(style, old) {
+    // The type of var might be changed during the update. Set value to null if the value is invalid.
+    for (const key of Object.keys(style.vars)) {
+      if (old.vars[key] && old.vars[key].value) {
+        style.vars[key].value = old.vars[key].value;
+        try {
+          validVar(style.vars[key], 'value');
+        } catch (err) {
+          style.vars[key].value = null;
+        }
+      }
+    }
+  }
+
+  return {buildMeta, buildCode, colorParser, assignVars};
 })();

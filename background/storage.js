@@ -346,11 +346,7 @@ function saveStyle(style) {
         return;
       }
       // preserve style.vars during update
-      for (const key of Object.keys(style.vars)) {
-        if (key in dup.vars) {
-          style.vars[key].value = dup.vars[key].value;
-        }
-      }
+      usercss.assignVars(style, dup);
     })
     .then(() => usercss.buildCode(style));
   }
