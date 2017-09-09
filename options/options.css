@@ -50,6 +50,14 @@ body {
   padding-bottom: 0;
 }
 
+.collapsed, .collapsible h1 {
+  cursor: pointer;
+}
+
+.collapsed .items {
+  display: none;
+}
+
 h1 {
   width: 30%;
   margin: 0;
