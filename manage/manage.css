@@ -20,6 +20,16 @@ select {
   font-size: 12px;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
+.nowrap > * {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 #header {
   width: 280px;
   height: 100vh;
@@ -35,9 +45,6 @@ select {
 
 #check-all-updates {
   max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 #header h1 {
