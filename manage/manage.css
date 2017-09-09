@@ -16,6 +16,10 @@ a:hover {
   color: #666;
 }
 
+select {
+  font-size: 12px;
+}
+
 #header {
   width: 280px;
   height: 100vh;
