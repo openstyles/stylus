@@ -1197,47 +1197,61 @@ function beautify(event) {
 
 document.addEventListener('DOMContentLoaded', init);
 
+function createEmptyStyle() {
+  const params = getParams();
+  const style = {
+    id: null,
+    name: '',
+    enabled: true,
+    sections: [{code: ''}]
+  };
+  for (const i in CssToProperty) {
+    if (params[i]) {
+      style.sections[0][CssToProperty[i]] = [params[i]];
+    }
+  }
+  return style;
+}
+
+function windowLoaded() {
+  if (document.readyState !== 'loading') {
+    return Promise.resolve();
+  }
+  return new Promise(resolve => {
+    window.addEventListener('load', function self() {
+      window.removeEventListener('load', self);
+      resolve();
+    });
+  });
+}
+
 function init() {
   initCodeMirror();
   const params = getParams();
-  if (!params.id) {
-    // match should be 2 - one for the whole thing, one for the parentheses
-    // This is an add
-    $('#heading').textContent = t('addStyleTitle');
-    const section = {code: ''};
-    for (const i in CssToProperty) {
-      if (params[i]) {
-        section[CssToProperty[i]] = [params[i]];
+  return Promise.resolve().then(() => {
+    if (!params.id) {
+      // match should be 2 - one for the whole thing, one for the parentheses
+      // This is an add
+      $('#heading').textContent = t('addStyleTitle');
+      return createEmptyStyle();
+    }
+    $('#heading').textContent = t('editStyleHeading');
+    // This is an edit
+    return getStylesSafe({id: params.id}).then(styles => {
+      let style = styles[0];
+      if (!style) {
+        style = createEmptyStyle();
+        history.replaceState({}, document.title, location.pathname);
       }
-    }
-    window.onload = () => {
-      window.onload = null;
-      addSection(null, section);
-      editors[0].setOption('lint', CodeMirror.defaults.lint);
-      // default to enabled
-      $('#enabled').checked = true;
-      initHooks();
-    };
-    return;
-  }
-  // This is an edit
-  $('#heading').textContent = t('editStyleHeading');
-  getStylesSafe({id: params.id}).then(styles => {
-    let style = styles[0];
-    if (!style) {
-      style = {id: null, sections: []};
-      history.replaceState({}, document.title, location.pathname);
-    }
+      return style;
+    });
+  }).then(style => {
     styleId = style.id;
     sessionStorage.justEditedStyleId = styleId;
-    setStyleMeta(style);
-    window.onload = () => {
-      window.onload = null;
+
+    return windowLoaded().then(() => {
       initWithStyle({style});
-    };
-    if (document.readyState !== 'loading') {
-      window.onload();
-    }
+    });
   });
 }
 
