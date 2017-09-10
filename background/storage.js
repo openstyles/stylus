@@ -290,7 +290,14 @@ function filterUsercss(req) {
 
 function saveUsercss(style) {
   // This function use `saveStyle`, however the response is different.
-  return saveStyle(style)
+  return Promise.resolve()
+    .then(() => {
+      if (!style.name || !style.namespace) {
+        return Object.assign(usercss.buildMeta(style.source), style);
+      }
+      return style;
+    })
+    .then(saveStyle)
     .then(result => ({
       status: 'success',
       style: result
