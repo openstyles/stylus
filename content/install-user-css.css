@@ -44,8 +44,15 @@ h1 small {
   margin: 15px 0;
 }
 
-.actions > * {
-  display: inline-block;
+.live-reload {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  margin: 0.5em auto;
+}
+
+.live-reload input {
+  margin: 0 0.5em 0 0;
 }
 
 .external {
@@ -67,4 +74,8 @@ button.install {
   padding: 2em;
   font-family: monospace;
   white-space: pre-wrap;
+}
+
+.main {
+  flex-grow: 1;
 }

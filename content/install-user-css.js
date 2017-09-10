@@ -4,17 +4,6 @@
 
 let pendingResource;
 
-function fetchText(url) {
-  return new Promise((resolve, reject) => {
-    // you can't use fetch in Chrome under 'file:' protocol
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    xhr.addEventListener('load', () => resolve(xhr.responseText));
-    xhr.addEventListener('error', () => reject(xhr));
-    xhr.send();
-  });
-}
-
 function install(style) {
   const request = Object.assign(style, {
     method: 'saveUsercss',
@@ -22,11 +11,12 @@ function install(style) {
     updateUrl: location.href
   });
   return communicate(request)
-    .then(() => {
+    .then(result => {
       $$('.warning')
         .forEach(el => el.remove());
       $('button.install').textContent = 'Installed';
       $('button.install').disabled = true;
+      window.dispatchEvent(new CustomEvent('installed', {detail: result}));
     })
     .catch(err => {
       alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
@@ -62,7 +52,7 @@ function getAppliesTo(style) {
   return result;
 }
 
-function initInstallPage({style, dup}) {
+function initInstallPage({style, dup}, sourceLoader) {
   return pendingResource.then(() => {
     const versionTest = dup && semverCompare(style.version, dup.version);
     document.body.innerHTML = '';
@@ -88,7 +78,9 @@ function initInstallPage({style, dup}) {
             <a href="${style.supportURL}" target="_blank">Support</a>
           </div>
         </div>
-        <div class="code"></div>
+        <div class="main">
+          <div class="code"></div>
+        </div>
       </div>
     `));
     if (versionTest < 0) {
@@ -109,7 +101,62 @@ function initInstallPage({style, dup}) {
         install(style);
       }
     };
+
+    if (location.protocol === 'file:') {
+      initLiveReload(sourceLoader);
+    }
   });
+}
+
+function initLiveReload(sourceLoader) {
+  let installed;
+  const watcher = sourceLoader.watch(source => {
+    $('.code').textContent = source;
+    return communicate({
+      method: 'saveUsercss',
+      id: installed.id,
+      source: source
+    }).then(() => {
+      $$('.main .warning').forEach(e => e.remove());
+    }).catch(err => {
+      const oldWarning = $('.main .warning');
+      // FIXME: i18n
+      const warning = tHTML(`
+        <div class="warning">
+          Stylus failed to parse usercss:
+          <pre>${err}</pre>
+        </div>
+      `);
+      if (oldWarning) {
+        oldWarning.replaceWith(warning);
+      } else {
+        $('.main').prepend(warning);
+      }
+    });
+  });
+  window.addEventListener('installed', ({detail: {style}}) => {
+    installed = style;
+    if ($('.live-reload-checkbox').checked) {
+      watcher.start();
+    }
+  });
+  // FIXME: i18n
+  $('.actions').append(tHTML(`
+    <label class="live-reload">
+      <input type="checkbox" class="live-reload-checkbox">
+      <span>Live reload</span>
+    </label>
+  `));
+  $('.live-reload-checkbox').onchange = e => {
+    if (!installed) {
+      return;
+    }
+    if (e.target.checked) {
+      watcher.start();
+    } else {
+      watcher.stop();
+    }
+  };
 }
 
 function initErrorPage(err, source) {
@@ -127,8 +174,65 @@ function initErrorPage(err, source) {
   });
 }
 
-function initUsercssInstall() {
+function createSourceLoader() {
   let source;
+
+  function fetchText(url) {
+    return new Promise((resolve, reject) => {
+      // you can't use fetch in Chrome under 'file:' protocol
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url);
+      xhr.addEventListener('load', () => resolve(xhr.responseText));
+      xhr.addEventListener('error', () => reject(xhr));
+      xhr.send();
+    });
+  }
+
+  function load() {
+    return fetchText(location.href)
+      .then(_source => {
+        source = _source;
+        return source;
+      });
+  }
+
+  function watch(cb) {
+    let timer;
+    const DELAY = 1000;
+
+    function start() {
+      if (timer) {
+        return;
+      }
+      timer = setTimeout(check, DELAY);
+    }
+
+    function stop() {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    function check() {
+      fetchText(location.href)
+        .then(_source => {
+          if (source !== _source) {
+            source = _source;
+            return cb(source);
+          }
+        })
+        .catch(console.log)
+        .then(() => {
+          timer = setTimeout(check, DELAY);
+        });
+    }
+
+    return {start, stop};
+  }
+
+  return {load, watch, source: () => source};
+}
+
+function initUsercssInstall() {
   pendingResource = communicate({
     method: 'injectResource',
     resources: [
@@ -139,17 +243,18 @@ function initUsercssInstall() {
       '/content/install-user-css.css'
     ]
   });
-  fetchText(location.href)
-    .then(_source => {
-      source = _source;
-      return communicate({
+
+  const sourceLoader = createSourceLoader();
+  sourceLoader.load()
+    .then(() =>
+      communicate({
         method: 'filterUsercss',
-        source,
+        source: sourceLoader.source(),
         checkDup: true
-      });
-    })
-    .then(initInstallPage)
-    .catch(err => initErrorPage(err, source));
+      })
+    )
+    .then(result => initInstallPage(result, sourceLoader))
+    .catch(err => initErrorPage(err, sourceLoader.source()));
 }
 
 function isUsercss() {
