@@ -86,5 +86,9 @@ function dirtyReporter() {
     };
   }
 
-  return wrap({add, remove, modify, clear, isDirty, onChange});
+  function has(key) {
+    return dirty.has(key);
+  }
+
+  return wrap({add, remove, modify, clear, isDirty, onChange, has});
 }

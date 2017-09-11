@@ -173,6 +173,7 @@ var usercss = (function () {
       usercss: true,
       version: null,
       source: source,
+      edited: false,
       enabled: true,
       sections: [],
       vars: {},

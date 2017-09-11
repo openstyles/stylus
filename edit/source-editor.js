@@ -111,6 +111,7 @@ function createSourceEditor(style) {
       reason: 'editSave',
       id: style.id,
       enabled: style.enabled,
+      edited: dirty.has('source'),
       source: style.source
     };
     return onBackgroundReady().then(() => BG.saveUsercss(req))

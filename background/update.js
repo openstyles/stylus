@@ -19,9 +19,17 @@ var updater = {
   SAME_VERSION: 'up-to-date: version is unchanged',
   ERROR_MD5: 'error: MD5 is invalid',
   ERROR_JSON: 'error: JSON is invalid',
-  ERROR_VERSION: 'error: version is invalid',
+  ERROR_VERSION: 'error: version is older than installed style',
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
+
+  isSame(code) {
+    return code === updater.SAME_MD5 || code === updater.SAME_CODE || code === updater.SAME_VERSION;
+  },
+
+  isEdited(code) {
+    return code === updater.EDITED || code === updater.MAYBE_EDITED;
+  },
 
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
     updater.resetInterval();
@@ -72,11 +80,12 @@ var updater = {
       });
 
     function checkIfEdited(digest) {
-      if (style.usercss) {
-        // FIXME: remove this after we can calculate digest from style.source
+      if (ignoreDigest) {
         return;
       }
-      if (!ignoreDigest && style.originalDigest && style.originalDigest !== digest) {
+      if (style.usercss && style.edited) {
+        return Promise.reject(updater.EDITED);
+      } else if (style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
     }
@@ -97,34 +106,33 @@ var updater = {
     function maybeUpdateUsercss() {
       return download(style.updateUrl).then(text => {
         const json = usercss.buildMeta(text);
-        if (!json.version) {
+        // re-install is invalid in a soft upgrade
+        if (semverCompare(style.version, json.version) === 0 && !ignoreDigest) {
+          return Promise.reject(updater.SAME_VERSION);
+        }
+        // downgrade is always invalid
+        if (semverCompare(style.version, json.version) > 0) {
           return Promise.reject(updater.ERROR_VERSION);
         }
-        if (style.version) {
-          if (semverCompare(style.version, json.version) === 0) {
-            return Promise.reject(updater.SAME_VERSION);
-          }
-          if (semverCompare(style.version, json.version) > 0) {
-            return Promise.reject(updater.ERROR_VERSION);
-          }
-        }
-        json.id = style.id;
         return json;
       });
     }
 
     function maybeSave(json) {
-      if (!styleJSONseemsValid(json)) {
-        return Promise.reject(updater.ERROR_JSON);
-      }
       json.id = style.id;
-      if (styleSectionsEqual(json, style)) {
-        // JSONs may have different order of items even if sections are effectively equal
-        // so we'll update the digest anyway
-        saveStyle(Object.assign(json, {reason: 'update-digest'}));
-        return Promise.reject(updater.SAME_CODE);
-      } else if (!style.originalDigest && !ignoreDigest) {
-        return Promise.reject(updater.MAYBE_EDITED);
+      // no need to compare section code for usercss, they are built dynamically
+      if (!json.usercss) {
+        if (!styleJSONseemsValid(json)) {
+          return Promise.reject(updater.ERROR_JSON);
+        }
+        if (styleSectionsEqual(json, style)) {
+          // JSONs may have different order of items even if sections are effectively equal
+          // so we'll update the digest anyway
+          saveStyle(Object.assign(json, {reason: 'update-digest'}));
+          return Promise.reject(updater.SAME_CODE);
+        } else if (!style.originalDigest && !ignoreDigest) {
+          return Promise.reject(updater.MAYBE_EDITED);
+        }
       }
       return !save ? json :
         saveStyle(Object.assign(json, {
