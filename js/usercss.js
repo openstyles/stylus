@@ -59,7 +59,7 @@ var usercss = (function () {
     function parse(color) {
       el.style.color = color;
       if (el.style.color === '') {
-        throw new Error(`"${color}" is not a valid color`);
+        throw new Error(chrome.i18n.getMessage('styleMetaErrorColor', color));
       }
       color = getComputedStyle(el).color;
       el.style.color = '';
@@ -158,7 +158,11 @@ var usercss = (function () {
     // select type has an additional field
     if (result.type === 'select') {
       const match = matchString(source);
-      result.select = JSON.parse(match.follow);
+      try {
+        result.select = JSON.parse(match.follow);
+      } catch (err) {
+        throw new Error(chrome.i18n.getMessage('styleMetaErrorSelect', err.message));
+      }
       source = match.value;
     }
 
@@ -266,11 +270,10 @@ var usercss = (function () {
   }
 
   function validVar(va, value = 'default') {
-    // FIXME: i18n
     if (va.type === 'select' && !va.select[va[value]]) {
-      throw new Error(`Invalid @var select: missing key '${va[value]}'`);
+      throw new Error(chrome.i18n.getMessage('styleMetaErrorSelectMissingKey', va[value]));
     } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {
-      throw new Error('Invalid @var checkbox: value must be 0 or 1');
+      throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
       va[value] = colorParser.format(colorParser.parse(va[value]));
     }

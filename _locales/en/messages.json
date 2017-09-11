@@ -673,6 +673,37 @@
       }
     }
   },
+  "styleMetaErrorCheckbox": {
+    "message": "Invalid @var checkbox: value must be 0 or 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "styleMetaErrorColor": {
+    "message": "$COLOR$ is not a valid color",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelectMissingKey": {
+    "message": "Invalid @var select: missing key '$KEY$'",
+    "description": "Error displayed when the value of @var select is not a valid key",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelect": {
+    "message": "Invalid @var select: $ERROR$",
+    "description": "Error displayed when the value of @var select is invalid",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
   "styleMissingMeta": {
     "message": "Missing medata @$KEY$",
     "description": "Error displayed when a mandatory metadata is missing",
