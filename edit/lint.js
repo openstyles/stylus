@@ -1,6 +1,7 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global onDOMscripted injectCSS require CSSLint stylelint */
+/* global escapeHtml */
 'use strict';
 
 loadLinterAssets();
@@ -266,15 +267,6 @@ function updateLintReport(cm, delay) {
         }, CodeMirror.defaults.lintReportDelay);
       }
     }
-  }
-  function escapeHtml(html, {limit} = {}) {
-    const chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'};
-    let ellipsis = '';
-    if (limit && html.length > limit) {
-      html = html.substr(0, limit);
-      ellipsis = '...';
-    }
-    return html.replace(/[&<>"'/]/g, char => chars[char]) + ellipsis;
   }
 }
 

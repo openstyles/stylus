@@ -1,4 +1,4 @@
-/* global semverCompare */
+/* global semverCompare escapeHtml */
 
 'use strict';
 
@@ -47,7 +47,7 @@ function getAppliesTo(style) {
   }
   const result = [..._gen()];
   if (!result.length) {
-    result.push('All URLs');
+    result.push(chrome.i18n.getMessage('appliesToEverything'));
   }
   return result;
 }
@@ -56,26 +56,31 @@ function initInstallPage({style, dup}, sourceLoader) {
   return pendingResource.then(() => {
     const versionTest = dup && semverCompare(style.version, dup.version);
     document.body.innerHTML = '';
-    // FIXME: i18n
     document.body.appendChild(tHTML(`
       <div class="container">
         <div class="header">
-          <h1>${style.name} <small class="meta-version">v${style.version}</small></h1>
-          <p>${style.description}</p>
-          <h3>Author</h3>
-          ${style.author}
-          <h3>License</h3>
-          ${style.license}
-          <h3>Applies to</h3>
+          <h1>
+            ${escapeHtml(style.name)}
+            <small class="meta-version">v${escapeHtml(style.version)}</small>
+          </h1>
+          <p>${escapeHtml(style.description)}</p>
+          <h3 i18n-text="author"></h3>
+          ${escapeHtml(style.author)}
+          <h3 i18n-text="license"></h3>
+          ${escapeHtml(style.license)}
+          <h3 i18n-text="appliesLabel"></h3>
           <ul>
-            ${getAppliesTo(style).map(s => `<li>${s}</li>`)}
+            ${getAppliesTo(style).map(s => `<li>${escapeHtml(s)}</li>`)}
           </ul>
           <div class="actions">
-            <button class="install">${!dup ? 'Install' : versionTest > 0 ? 'Update' : 'Reinstall'}</button>
+            <button class="install">${t(
+              !dup ? 'installButton' : versionTest > 0 ?
+                'installButtonUpdate' : 'installButtonReinstall'
+            )}</button>
           </div>
           <div class="external">
-            <a href="${style.url}" target="_blank">Homepage</a>
-            <a href="${style.supportURL}" target="_blank">Support</a>
+            <a href="${decodeURI(style.url)}" target="_blank" i18n-text="externalHomepage" rel="noopener"></a>
+            <a href="${decodeURI(style.supportURL)}" target="_blank" i18n-text="externalSupport" rel="noopener"></a>
           </div>
         </div>
         <div class="main">
@@ -84,11 +89,8 @@ function initInstallPage({style, dup}, sourceLoader) {
       </div>
     `));
     if (versionTest < 0) {
-      // FIXME: i18n
       $('.actions').before(tHTML(`
-        <div class="warning">
-          The version is older then installed style.
-        </div>
+        <div class="warning" i18n-text="versionInvalidOlder"></div>
       `));
     }
     $('.code').textContent = style.source;
@@ -120,11 +122,9 @@ function initLiveReload(sourceLoader) {
       $$('.main .warning').forEach(e => e.remove());
     }).catch(err => {
       const oldWarning = $('.main .warning');
-      // FIXME: i18n
       const warning = tHTML(`
-        <div class="warning">
-          Stylus failed to parse usercss:
-          <pre>${err}</pre>
+        <div class="warning" i18n-text="parseUsercssError">
+          <pre>${escapeHtml(err)}</pre>
         </div>
       `);
       if (oldWarning) {
@@ -140,11 +140,10 @@ function initLiveReload(sourceLoader) {
       watcher.start();
     }
   });
-  // FIXME: i18n
   $('.actions').append(tHTML(`
     <label class="live-reload">
       <input type="checkbox" class="live-reload-checkbox">
-      <span>Live reload</span>
+      <span i18n-text="liveReloadLabel"></span>
     </label>
   `));
   $('.live-reload-checkbox').onchange = e => {
@@ -162,11 +161,9 @@ function initLiveReload(sourceLoader) {
 function initErrorPage(err, source) {
   return pendingResource.then(() => {
     document.body.innerHTML = '';
-    // FIXME: i18n
     document.body.appendChild(tHTML(`
-      <div class="warning">
-        Stylus failed to parse usercss:
-        <pre>${err}</pre>
+      <div class="warning" i18n-text="parseUsercssError">
+        <pre>${escapeHtml(err)}</pre>
       </div>
       <div class="code"></div>
     `));
