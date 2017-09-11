@@ -147,7 +147,7 @@ function updateLinter({immediately} = {}) {
   function updateEditors() {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
     const guttersOption = prepareGuttersOption();
-    editors.forEach(cm => {
+    $$('#sections .CodeMirror').map(e => e.CodeMirror).forEach(cm => {
       cm.setOption('lint', CodeMirror.defaults.lint);
       if (guttersOption) {
         cm.setOption('guttersOption', guttersOption);
@@ -217,7 +217,7 @@ function updateLintReport(cm, delay) {
   state.postponeNewIssues = delay === undefined || delay === null;
 
   function update(cm) {
-    const scope = cm ? [cm] : editors;
+    const scope = cm ? [cm] : $$('#sections .CodeMirror').map(e => e.CodeMirror);
     let changed = false;
     let fixedOldIssues = false;
     scope.forEach(cm => {
@@ -284,7 +284,7 @@ function renderLintReport(someBlockChanged) {
   const label = t('sectionCode');
   const newContent = content.cloneNode(false);
   let issueCount = 0;
-  editors.forEach((cm, index) => {
+  $$('#sections .CodeMirror').map(e => e.CodeMirror).forEach((cm, index) => {
     if (cm.state.lint && cm.state.lint.html) {
       const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
       const newBlock = newContent.appendChild(tHTML(html, 'table'));

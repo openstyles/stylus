@@ -496,6 +496,17 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+/************ single editor **************/
+#sections .single-editor {
+  margin: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.single-editor .CodeMirror {
+  height: 100%;
+}
+
 /************ reponsive layouts ************/
 @media(max-width:737px) {
   #header {

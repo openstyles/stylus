@@ -3,7 +3,7 @@
 /* global onDOMscripted */
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
-/* global mozParser */
+/* global mozParser createSourceEditor */
 
 'use strict';
 
@@ -19,6 +19,8 @@ let useHistoryBack;
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
 const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'domains', 'regexp': 'regexps'};
+
+let editor;
 
 // if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
 onBackgroundReady();
@@ -271,10 +273,12 @@ function initCodeMirror() {
   CM.getOption = o => CodeMirror.defaults[o];
   CM.setOption = (o, v) => {
     CodeMirror.defaults[o] = v;
-    editors.forEach(editor => {
+    $$('.CodeMirror').map(e => e.CodeMirror).forEach(editor => {
       editor.setOption(o, v);
     });
   };
+
+  CM.modeURL = '/vendor/codemirror/mode/%N/%N.js';
 
   CM.prototype.getSection = function () {
     return this.display.wrapper.parentNode;
@@ -355,11 +359,9 @@ function acmeEventListener(event) {
       return;
     }
     case 'autocompleteOnTyping':
-      editors.forEach(cm => {
-        const onOff = el.checked ? 'on' : 'off';
-        cm[onOff]('change', autocompleteOnTyping);
-        cm[onOff]('pick', autocompletePicked);
-      });
+      $$('.CodeMirror')
+        .map(e => e.CodeMirror)
+        .forEach(cm => setupAutocomplete(cm, el.checked));
       return;
     case 'matchHighlight':
       switch (value) {
@@ -384,8 +386,7 @@ function setupCodeMirror(textarea, index) {
 
   cm.on('change', indicateCodeChange);
   if (prefs.get('editor.autocompleteOnTyping')) {
-    cm.on('change', autocompleteOnTyping);
-    cm.on('pick', autocompletePicked);
+    setupAutocomplete(cm);
   }
   cm.on('blur', () => {
     editors.lastActive = cm;
@@ -996,6 +997,13 @@ function jumpToLine(cm) {
 }
 
 function toggleStyle() {
+  if (!editor) {
+    return _toggleStyle();
+  }
+  editor.toggleStyle();
+}
+
+function _toggleStyle() {
   $('#enabled').checked = !$('#enabled').checked;
   save();
 }
@@ -1019,6 +1027,12 @@ function toggleSectionHeight(cm) {
       window.scrollBy(0, bounds.top);
     }
   }
+}
+
+function setupAutocomplete(cm, enable = true) {
+  const onOff = enable ? 'on' : 'off';
+  cm[onOff]('change', autocompleteOnTyping);
+  cm[onOff]('pick', autocompletePicked);
 }
 
 function autocompleteOnTyping(cm, info, debounced) {
@@ -1079,7 +1093,7 @@ function getEditorInSight(nearbyElement) {
     cm = editors.lastActive;
   }
   if (!cm || offscreenDistance(cm) > 0) {
-    const sorted = editors
+    const sorted = $$('#sections .CodeMirror').map(e => e.CodeMirror)
       .map((cm, index) => ({cm: cm, distance: offscreenDistance(cm), index: index}))
       .sort((a, b) => a.distance - b.distance || a.index - b.index);
     cm = sorted[0].cm;
@@ -1120,7 +1134,7 @@ function beautify(event) {
     options.indent_char = tabs ? '\t' : ' ';
 
     const section = getSectionForChild(event.target);
-    const scope = section ? [section.CodeMirror] : editors;
+    const scope = section ? [section.CodeMirror] : $$('#sections .CodeMirror').map(e => e.CodeMirror);
 
     showHelp(t('styleBeautify'), '<div class="beautify-options">' +
       optionHtml('.selector1,', 'selector_separator_newline') +
@@ -1261,7 +1275,20 @@ function setStyleMeta(style) {
   $('#url').href = style.url;
 }
 
-function initWithStyle({style, codeIsUpdated}) {
+function initWithStyle({style}) {
+  // FIXME: what does codeIsUpdated do?
+  if (!style.usercss) {
+    return _initWithStyle({style});
+  }
+
+  if (editor) {
+    editor.replaceStyle(style);
+  } else {
+    editor = createSourceEditor(style);
+  }
+}
+
+function _initWithStyle({style, codeIsUpdated}) {
   setStyleMeta(style);
 
   if (codeIsUpdated === false) {
@@ -1440,6 +1467,13 @@ function updateLintReportIfEnabled(cm, time) {
 }
 
 function save() {
+  if (!editor) {
+    return _save();
+  }
+  editor.save();
+}
+
+function _save() {
   updateLintReportIfEnabled(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
