@@ -19,6 +19,8 @@ function createSourceEditor(style) {
   // draw CodeMirror
   $('#sections textarea').value = style.source;
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
+  // too many functions depend on this global
+  editors.push(cm);
 
   // dirty reporter
   const dirty = dirtyReporter();
