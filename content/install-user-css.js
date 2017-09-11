@@ -89,9 +89,9 @@ function initInstallPage({style, dup}, sourceLoader) {
       </div>
     `));
     if (versionTest < 0) {
-      $('.actions').before(tHTML(`
+      $('.actions').parentNode.insertBefore(tHTML(`
         <div class="warning" i18n-text="versionInvalidOlder"></div>
-      `));
+      `), $('.actions'));
     }
     $('.code').textContent = style.source;
     $('button.install').onclick = () => {
@@ -130,7 +130,7 @@ function initLiveReload(sourceLoader) {
       if (oldWarning) {
         oldWarning.replaceWith(warning);
       } else {
-        $('.main').prepend(warning);
+        $('.main').insertBefore(warning, $('.main').childNodes[0]);
       }
     });
   });
@@ -140,7 +140,7 @@ function initLiveReload(sourceLoader) {
       watcher.start();
     }
   });
-  $('.actions').append(tHTML(`
+  $('.actions').appendChild(tHTML(`
     <label class="live-reload">
       <input type="checkbox" class="live-reload-checkbox">
       <span i18n-text="liveReloadLabel"></span>
