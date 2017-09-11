@@ -263,9 +263,23 @@ var usercss = (function () {
     // validate version
     semverCompare(style.version, '0.0.0');
 
+    // validate URLs
+    validUrl(style.url);
+    validUrl(style.supportURL);
+
     // validate vars
     for (const key of Object.keys(style.vars)) {
       validVar(style.vars[key]);
+    }
+  }
+
+  function validUrl(url) {
+    if (!url) {
+      return;
+    }
+    url = new URL(url);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new Error(`${url.protocol} is not a valid protocol`);
     }
   }
 
