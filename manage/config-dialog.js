@@ -33,8 +33,14 @@ function configDialog(style) {
       let appendChild;
       if (va.type === 'color') {
         va.inputColor = $element({tag: 'input', type: 'color'});
-        // FIXME: i18n
-        va.inputAlpha = $element({tag: 'input', type: 'range', min: 0, max: 1, title: 'Opacity', step: 'any'});
+        va.inputAlpha = $element({
+          tag: 'input',
+          type: 'range',
+          min: 0,
+          max: 1,
+          title: chrome.i18n.getMessage('alphaChannel'),
+          step: 'any'
+        });
         va.inputColor.onchange = va.inputAlpha.oninput = () => {
           va.dirty = true;
           const color = colorParser.parse(va.inputColor.value);
