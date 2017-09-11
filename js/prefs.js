@@ -25,6 +25,7 @@ var prefs = new function Prefs() {
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
     'editor.options': {},           // CodeMirror.defaults.*
+    'editor.options.expanded': true, // UI element state: expanded/collapsed
     'editor.lineWrapping': true,    // word wrap
     'editor.smartIndent': true,     // 'smart' indent
     'editor.indentWithTabs': false, // smart indent with tabs
@@ -152,7 +153,10 @@ var prefs = new function Prefs() {
       }
     },
 
-    subscribe(listener, keys) {
+    subscribe(keys, listener) {
+      // keys:     string[] ids
+      //           or a falsy value to subscribe to everything
+      // listener: function (key, value)
       if (keys) {
         for (const key of keys) {
           onChange.specific.set(key, listener);
@@ -182,7 +186,8 @@ var prefs = new function Prefs() {
           break;
       }
     } else if (FIREFOX_NO_DOM_STORAGE && BG) {
-      value = BG.localStorage[key] || defaultValue;
+      value = BG.localStorage[key];
+      value = value === undefined ? defaultValue : value;
     } else {
       value = defaultValue;
     }
@@ -236,6 +241,13 @@ var prefs = new function Prefs() {
   return;
 
   function doBroadcast() {
+    if (BG && BG === window && !BG.dbExec.initialized) {
+      window.addEventListener('storageReady', function _() {
+        window.removeEventListener('storageReady', _);
+        doBroadcast();
+      });
+      return;
+    }
     const affects = {
       all: 'disableAll' in broadcastPrefs
         || 'exposeIframes' in broadcastPrefs,
@@ -330,7 +342,7 @@ function setupLivePrefs(
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
   }
-  prefs.subscribe((id, value) => updateElement({id, value}), IDs);
+  prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 
   function onChange() {
     const value = this[checkedProps[this.id]];

@@ -36,22 +36,35 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
 }
 
-// add favicon in Firefox
-// eslint-disable-next-line no-unused-expressions
-navigator.userAgent.includes('Firefox') && setTimeout(() => {
-  dieOnDysfunction();
-  const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-  for (const size of [38, 32, 19, 16]) {
-    document.head.appendChild($element({
-      tag: 'link',
-      rel: 'icon',
-      href: `/images/icon/${iconset}${size}.png`,
-      sizes: size + 'x' + size,
-    }));
-  }
+onDOMready().then(() => $('#firefox-transitions-bug-suppressor').remove());
+
+if (navigator.userAgent.includes('Firefox')) {
+  // die if unable to access BG directly
+  chrome.windows.getCurrent(wnd => {
+    if (!BG && wnd.incognito) {
+      // private windows can't get bg page
+      location.href = '/msgbox/dysfunctional.html';
+      throw 0;
+    }
+  });
+  // add favicon in Firefox
+  setTimeout(() => {
+    if (!window.prefs) {
+      return;
+    }
+    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
+    for (const size of [38, 32, 19, 16]) {
+      document.head.appendChild($element({
+        tag: 'link',
+        rel: 'icon',
+        href: `/images/icon/${iconset}${size}.png`,
+        sizes: size + 'x' + size,
+      }));
+    }
+  });
   // set hyphenation language
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
-});
+}
 
 
 function onDOMready() {
@@ -169,7 +182,7 @@ function animateElement(
   element, {
     className = 'highlight',
     removeExtraClasses = [],
-    remove = false,
+    onComplete,
   } = {}) {
   return element && new Promise(resolve => {
     element.addEventListener('animationend', function _() {
@@ -180,9 +193,9 @@ function animateElement(
         // This is helpful to clean-up on the same frame
         ...removeExtraClasses
       );
-      // TODO: investigate why animation restarts if the elements is removed in .then()
-      if (remove) {
-        element.remove();
+      // TODO: investigate why animation restarts for 'display' modification in .then()
+      if (typeof onComplete === 'function') {
+        onComplete.call(element);
       }
       resolve();
     });
@@ -244,6 +257,12 @@ function $element(opt) {
     Object.assign(element.dataset, opt.dataset);
     delete opt.dataset;
   }
+  if (opt.attributes) {
+    for (const attr in opt.attributes) {
+      element.setAttribute(attr, opt.attributes[attr]);
+    }
+    delete opt.attributes;
+  }
   if (ns) {
     for (const attr in opt) {
       element.setAttributeNS(null, attr, opt[attr]);
@@ -252,39 +271,6 @@ function $element(opt) {
     Object.assign(element, opt);
   }
   return element;
-}
-
-
-function dieOnDysfunction() {
-  function die() {
-    location.href = '/msgbox/dysfunctional.html';
-    throw 0;
-  }
-  (() => {
-    try {
-      return indexedDB;
-    } catch (e) {
-      die();
-    }
-  })();
-  Object.assign(indexedDB.open('test'), {
-    onerror: die,
-    onupgradeneeded: indexedDB.deleteDatabase('test'),
-  });
-  // TODO: fallback to sendMessage in FF since private windows can't get bg page
-  chrome.windows.getCurrent(wnd => wnd.incognito && die());
-  // check if privacy settings were fixed but the extension wasn't reloaded,
-  // use setTimeout to auto-cancel if already dead
-  setTimeout(() => {
-    const bg = chrome.extension.getBackgroundPage();
-    if (bg && !(bg.cachedStyles || {}).list) {
-      chrome.storage.local.get('reloaded', data => {
-        if (!data || Date.now() - (data.reloaded || 0) > 10e3) {
-          chrome.storage.local.set({reloaded: Date.now()}, () => chrome.runtime.reload());
-        }
-      });
-    }
-  });
 }
 
 

@@ -4,6 +4,16 @@ setupLivePrefs();
 setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 
+if (!FIREFOX && !OPERA) {
+  const block = $('#advanced');
+  block.classList.add('collapsed');
+  block.onclick = event => {
+    if (block.classList.contains('collapsed') || event.target.closest('h1')) {
+      block.classList.toggle('collapsed');
+    }
+  };
+}
+
 // actions
 document.onclick = e => {
   const target = e.target.closest('[data-cmd]');
@@ -81,7 +91,7 @@ function setupRadioButtons() {
     sets[name][prefs.get(name)].checked = true;
   }
   // listen to pref changes and update the values
-  prefs.subscribe((key, value) => {
+  prefs.subscribe(Object.keys(sets), (key, value) => {
     sets[key][value].checked = true;
-  }, Object.keys(sets));
+  });
 }

@@ -1,12 +1,10 @@
-/* global dbExec, getStyles, saveStyle, filterUsercss, saveUsercss */
+/* global dbExec, getStyles, saveStyle */
+/* global handleCssTransitionBug */
+/* global filterUsercss, saveUsercss */
 'use strict';
 
 // eslint-disable-next-line no-var
 var browserCommands, contextMenus;
-
-// *************************************************************************
-// preload the DB
-tryCatch(getStyles);
 
 // *************************************************************************
 // register all listeners
@@ -41,8 +39,7 @@ if ('commands' in chrome) {
 
 // *************************************************************************
 // set the default icon displayed after a tab is created until webNavigation kicks in
-prefs.subscribe(() => updateIcon({id: undefined}, {}), ['iconset']);
-updateIcon({id: undefined}, {});
+prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
 
 // *************************************************************************
 {
@@ -62,24 +59,6 @@ updateIcon({id: undefined}, {});
         browserUIlanguage: chrome.i18n.getUILanguage(),
       });
     }
-    // TODO: remove in the future
-    // embed style digests
-    chrome.storage.local.get(null, data => {
-      const digestKeys = Object.keys(data).filter(key => key.startsWith('originalDigest'));
-      if (!digestKeys.length) {
-        return;
-      }
-      chrome.storage.local.remove(digestKeys);
-      getStyles().then(styles => {
-        for (const style of styles) {
-          const digest = data['originalDigest' + style.id];
-          if (!style.originalDigest && digest) {
-            style.originalDigest = digest;
-            dbExec('put', style);
-          }
-        }
-      });
-    });
   };
   // bind for 60 seconds max and auto-unbind if it's a normal run
   chrome.runtime.onInstalled.addListener(onInstall);
@@ -142,7 +121,9 @@ contextMenus = Object.assign({
     }
   };
   createContextMenus();
-  prefs.subscribe((id, checked) => {
+  const toggleableIds = Object.keys(contextMenus).filter(key =>
+    typeof prefs.readOnlyValues[key] === 'boolean');
+  prefs.subscribe(toggleableIds, (id, checked) => {
     if (id === 'editor.contextDelete') {
       if (checked) {
         createContextMenus([id]);
@@ -152,12 +133,16 @@ contextMenus = Object.assign({
     } else {
       chrome.contextMenus.update(id, {checked}, ignoreChromeError);
     }
-  }, Object.keys(contextMenus).filter(key => typeof prefs.readOnlyValues[key] === 'boolean'));
+  });
 }
 
 // *************************************************************************
 // [re]inject content scripts
-{
+window.addEventListener('storageReady', function _() {
+  window.removeEventListener('storageReady', _);
+
+  updateIcon({id: undefined}, {});
+
   const NTP = 'chrome://newtab/';
   const PING = {method: 'ping'};
   const ALL_URLS = '<all_urls>';
@@ -204,14 +189,16 @@ contextMenus = Object.assign({
           setTimeout(pingCS, 0, cs, tab));
       }
     }));
-}
-
+});
 
 // *************************************************************************
 
 function webNavigationListener(method, {url, tabId, frameId}) {
   getStyles({matchUrl: url, enabled: true, asHash: true}).then(styles => {
-    if (method && !url.startsWith('chrome:') && tabId >= 0) {
+    if (method && URLS.supported(url) && tabId >= 0) {
+      if (method === 'styleApply') {
+        handleCssTransitionBug({tabId, frameId, url, styles});
+      }
       chrome.tabs.sendMessage(tabId, {
         method,
         // ping own page so it retrieves the styles directly
@@ -306,13 +293,7 @@ function updateIcon(tab, styles) {
 
 function onRuntimeMessage(request, sender, sendResponse) {
   // prevent browser exception bug on sending a response to a closed tab
-  sendResponse = (sendResponseOriginal =>
-    data => {
-      try {
-        sendResponseOriginal(data);
-      } catch (e) {}
-    }
-  )(sendResponse);
+  sendResponse = (send => data => tryCatch(send, data))(sendResponse);
   switch (request.method) {
     case 'getStyles':
       getStyles(request).then(sendResponse);

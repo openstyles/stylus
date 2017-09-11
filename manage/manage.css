@@ -16,6 +16,20 @@ a:hover {
   color: #666;
 }
 
+select {
+  font-size: 12px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.nowrap > * {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 #header {
   width: 280px;
   height: 100vh;
@@ -31,9 +45,6 @@ a:hover {
 
 #check-all-updates {
   max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 #header h1 {
@@ -231,7 +242,7 @@ summary {
   font-family: sans-serif;
   text-indent: -2em;
   padding-left: 3em;
-  padding-right: 30px;
+  padding-right: 40px;
 }
 
 .newUI .homepage .svg-icon {
@@ -241,7 +252,7 @@ summary {
 }
 
 .newUI .actions {
-  width: 60px;
+  width: 75px;
   height: 20px;
   white-space: nowrap;
 }

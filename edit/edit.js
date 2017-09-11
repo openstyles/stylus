@@ -158,7 +158,7 @@ function setCleanSection(section) {
   const cm = section.CodeMirror;
   if (cm) {
     section.savedValue = cm.changeGeneration();
-    indicateCodeChange(cm);
+    updateTitle();
   }
 }
 
@@ -200,8 +200,8 @@ function initCodeMirror() {
 
   // additional commands
   CM.commands.jumpToLine = jumpToLine;
-  CM.commands.nextEditor = cm => { nextPrevEditor(cm, 1); };
-  CM.commands.prevEditor = cm => { nextPrevEditor(cm, -1); };
+  CM.commands.nextEditor = cm => nextPrevEditor(cm, 1);
+  CM.commands.prevEditor = cm => nextPrevEditor(cm, -1);
   CM.commands.save = save;
   CM.commands.blockComment = cm => {
     cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
@@ -384,10 +384,11 @@ function setupCodeMirror(textarea, index) {
   const cm = CodeMirror.fromTextArea(textarea, {lint: null});
   const wrapper = cm.display.wrapper;
 
-  cm.on('change', indicateCodeChange);
+  cm.on('changes', indicateCodeChangeDebounced);
   if (prefs.get('editor.autocompleteOnTyping')) {
     setupAutocomplete(cm);
   }
+  wrapper.addEventListener('keydown', event => nextPrevEditorOnKeydown(cm, event), true);
   cm.on('blur', () => {
     editors.lastActive = cm;
     hotkeyRerouter.setState(true);
@@ -470,6 +471,11 @@ function indicateCodeChange(cm) {
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
   updateLintReportIfEnabled(cm);
+}
+
+function indicateCodeChangeDebounced(cm, ...args) {
+  clearTimeout(cm.state.stylusOnChangeTimer);
+  cm.state.stylusOnChangeTimer = setTimeout(indicateCodeChange, 200, cm, ...args);
 }
 
 function getSectionForChild(e) {
@@ -905,9 +911,9 @@ function setupGlobalSearch() {
     let query;
     let replacement;
     activeCM = focusClosestCM(activeCM);
-    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], txt => {
+    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], function (txt) {
       query = txt;
-      customizeOpenDialog(activeCM, template.replaceWith, txt => {
+      customizeOpenDialog(activeCM, template.replaceWith, function (txt) {
         replacement = txt;
         queue = editors.rotate(-editors.indexOf(activeCM));
         if (all) {
@@ -1035,7 +1041,7 @@ function setupAutocomplete(cm, enable = true) {
   cm[onOff]('pick', autocompletePicked);
 }
 
-function autocompleteOnTyping(cm, info, debounced) {
+function autocompleteOnTyping(cm, [info], debounced) {
   if (
     cm.state.completionActive ||
     info.origin && !info.origin.includes('input') ||
@@ -1048,7 +1054,7 @@ function autocompleteOnTyping(cm, info, debounced) {
     return;
   }
   if (!debounced) {
-    debounce(autocompleteOnTyping, 100, cm, info, true);
+    debounce(autocompleteOnTyping, 100, cm, [info], true);
     return;
   }
   if (info.text.last.match(/[-\w!]+$/)) {
@@ -1082,6 +1088,55 @@ function nextPrevEditor(cm, direction) {
   cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
   makeSectionVisible(cm);
   cm.focus();
+  return cm;
+}
+
+function nextPrevEditorOnKeydown(cm, event) {
+  const key = event.which;
+  if (key < 37 || key > 40 || event.shiftKey || event.altKey || event.metaKey) {
+    return;
+  }
+  const {line, ch} = cm.getCursor();
+  switch (key) {
+    case 37:
+      // arrow Left
+      if (line || ch) {
+        return;
+      }
+    // fallthrough to arrow Up
+    case 38:
+      // arrow Up
+      if (line > 0 || cm === editors[0]) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      cm = nextPrevEditor(cm, -1);
+      cm.setCursor(cm.doc.size - 1, key === 37 ? 1e20 : ch);
+      break;
+    case 39:
+      // arrow Right
+      if (line < cm.doc.size - 1 || ch < cm.getLine(line).length - 1) {
+        return;
+      }
+    // fallthrough to arrow Down
+    case 40:
+      // arrow Down
+      if (line < cm.doc.size - 1 || cm === editors.last) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      cm = nextPrevEditor(cm, 1);
+      cm.setCursor(0, 0);
+      break;
+  }
+  const animation = (cm.getSection().firstElementChild.getAnimations() || [])[0];
+  if (animation) {
+    animation.playbackRate = -1;
+    animation.currentTime = 2000;
+    animation.play();
+  }
 }
 
 function getEditorInSight(nearbyElement) {
@@ -1092,28 +1147,62 @@ function getEditorInSight(nearbyElement) {
   } else {
     cm = editors.lastActive;
   }
-  if (!cm || offscreenDistance(cm) > 0) {
-    const sorted = $$('#sections .CodeMirror').map(e => e.CodeMirror)
-      .map((cm, index) => ({cm: cm, distance: offscreenDistance(cm), index: index}))
-      .sort((a, b) => a.distance - b.distance || a.index - b.index);
-    cm = sorted[0].cm;
-    if (sorted[0].distance > 0) {
+  // closest editor should have at least 2 lines visible
+  const lineHeight = editors[0].defaultTextHeight();
+  const scrollY = window.scrollY;
+  const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
+  const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
+  const distances = [];
+  const alreadyInView = cm && offscreenDistance(null, cm) === 0;
+  return alreadyInView ? cm : findClosest();
+
+  function offscreenDistance(index, cm) {
+    if (index >= 0 && distances[index] !== undefined) {
+      return distances[index];
+    }
+    const section = (cm || editors[index]).getSection();
+    const top = allSectionsContainerTop + section.offsetTop;
+    if (top < scrollY + lineHeight) {
+      return Math.max(0, scrollY - top - lineHeight);
+    }
+    if (top < windowBottom) {
+      return 0;
+    }
+    const distance = top - windowBottom + section.offsetHeight;
+    if (index >= 0) {
+      distances[index] = distance;
+    }
+    return distance;
+  }
+
+  function findClosest() {
+    const last = editors.length - 1;
+    let a = 0;
+    let b = last;
+    let c;
+    let cm, distance;
+    while (a < b - 1) {
+      c = (a + b) / 2 | 0;
+      distance = offscreenDistance(c);
+      if (!distance || !c) {
+        break;
+      }
+      const distancePrev = offscreenDistance(c - 1);
+      const distanceNext = c < last ? offscreenDistance(c + 1) : 1e20;
+      if (distancePrev <= distance && distance <= distanceNext) {
+        b = c;
+      } else {
+        a = c;
+      }
+    }
+    while (b && offscreenDistance(b - 1) <= offscreenDistance(b)) {
+      b--;
+    }
+    cm = editors[b];
+    if (distances[b] > 0) {
       makeSectionVisible(cm);
     }
-  }
-  return cm;
-
-  function offscreenDistance(cm) {
-    // closest editor should have at least # lines visible
-    const LINES_VISIBLE = 2;
-    const bounds = cm.getSection().getBoundingClientRect();
-    if (bounds.top < 0) {
-      return -bounds.top;
-    } else if (bounds.top < window.innerHeight - cm.defaultTextHeight() * LINES_VISIBLE) {
-      return 0;
-    } else {
-      return bounds.top - bounds.height;
-    }
+    return cm;
   }
 }
 
@@ -1209,7 +1298,7 @@ function beautify(event) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+onDOMready().then(init);
 
 function createEmptyStyle() {
   const params = getParams();
@@ -1270,9 +1359,9 @@ function init() {
 }
 
 function setStyleMeta(style) {
-  $('#name').value = style.name;
-  $('#enabled').checked = style.enabled;
-  $('#url').href = style.url;
+  $('#name').value = style.name || '';
+  $('#enabled').checked = style.enabled !== false;
+  $('#url').href = style.url || '';
 }
 
 function initWithStyle({style}) {
@@ -1296,37 +1385,46 @@ function _initWithStyle({style, codeIsUpdated}) {
     updateTitle();
     return;
   }
-
   // if this was done in response to an update, we need to clear existing sections
-  getSections().forEach(div => { div.remove(); });
+  editors.length = 0;
+  getSections().forEach(div => div.remove());
   const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
-  const queueStart = new Date().getTime();
+  const t0 = performance.now();
+  maximizeCodeHeight.stats = null;
   // after 100ms the sections will be added asynchronously
-  while (new Date().getTime() - queueStart <= 100 && queue.length) {
+  while (performance.now() - t0 <= 100 && queue.length) {
     add();
   }
   (function processQueue() {
     if (queue.length) {
       add();
-      setTimeout(processQueue, 0);
+      setTimeout(processQueue);
+      if (performance.now() - t0 > 500) {
+        setGlobalProgress(editors.length, style.sections.length);
+      }
+    } else {
+      setGlobalProgress();
     }
   })();
+  editors[0].focus();
   initHooks();
+  setCleanGlobal();
+  updateTitle();
 
   function add() {
     const sectionDiv = addSection(null, queue.shift());
     maximizeCodeHeight(sectionDiv, !queue.length);
-    const cm = sectionDiv.CodeMirror;
-    if (CodeMirror.lint) {
-      setTimeout(() => {
-        cm.setOption('lint', CodeMirror.defaults.lint);
-        updateLintReport(cm, 0);
-      }, prefs.get('editor.lintDelay'));
+    if (!queue.length) {
+      editors.last.state.renderLintReportNow = true;
     }
   }
 }
 
 function initHooks() {
+  if (initHooks.alreadyDone) {
+    return;
+  }
+  initHooks.alreadyDone = true;
   $$('#header .style-contributor').forEach(node => {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
@@ -1340,6 +1438,15 @@ function initHooks() {
   $('#sections-help').addEventListener('click', showSectionHelp, false);
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
+
+  $('#options').open = prefs.get('editor.options.expanded');
+  $('#options h2').addEventListener('click', () => {
+    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
+  });
+  prefs.subscribe(['editor.options.expanded'], (key, value) => {
+    $('#options').open = value;
+  });
+
   initLint();
 
   if (!FIREFOX) {
@@ -1358,8 +1465,6 @@ function initHooks() {
   });
 
   setupGlobalSearch();
-  setCleanGlobal();
-  updateTitle();
 }
 
 
@@ -1431,6 +1536,7 @@ function updateTitle() {
 function validate() {
   const name = $('#name').value;
   if (name === '') {
+    $('#name').focus();
     return t('styleMissingName');
   }
   // validate the regexps
@@ -1460,9 +1566,9 @@ function validate() {
   return null;
 }
 
-function updateLintReportIfEnabled(cm, time) {
-  if (CodeMirror.lint) {
-    updateLintReport(cm, time);
+function updateLintReportIfEnabled(...args) {
+  if (CodeMirror.defaults.lint) {
+    updateLintReport(...args);
   }
 }
 
@@ -1574,8 +1680,11 @@ function fromMozillaFormat() {
 
   function doImport(event) {
     // parserlib contained in CSSLint-worker.js
-    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js'])
-      .then(() => doImportWhenReady(event.target));
+    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js']).then(() => {
+      doImportWhenReady(event.target);
+      editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
+      editors.last.state.renderLintReportNow = true;
+    });
   }
 
   function doImportWhenReady(target) {
@@ -1754,7 +1863,8 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       const rxData = Object.assign({text}, cachedRegexps.get(text));
       if (!rxData.urls) {
         cachedRegexps.set(text, Object.assign(rxData, {
-          rx: tryRegExp(text),
+          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
+          rx: tryRegExp('^' + text + '$'),
           urls: new Map(),
         }));
       }
@@ -1769,6 +1879,8 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       chrome.tabs.onUpdated.removeListener(_);
     }
   });
+  const getMatchInfo = m => m && {text: m[0], pos: m.index};
+
   queryTabs().then(tabs => {
     const supported = tabs.map(tab => tab.url)
       .filter(url => URLS.supported(url));
@@ -1778,7 +1890,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
       if (rx) {
         const urlsNow = new Map();
         for (const url of unique) {
-          const match = urls.get(url) || (url.match(rx) || [])[0];
+          const match = urls.get(url) || getMatchInfo(url.match(rx));
           if (match) {
             urlsNow.set(url, match);
           }
@@ -1812,7 +1924,7 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
           ? OWN_ICON
           : GET_FAVICON_URL + new URL(url).hostname;
         const icon = $element({tag: 'img', src: faviconUrl});
-        if (match.length === url.length) {
+        if (match.text.length === url.length) {
           full.push($element({appendChild: [
             icon,
             url,
@@ -1820,8 +1932,9 @@ function showRegExpTester(event, section = getSectionForChild(this)) {
         } else {
           partial.push($element({appendChild: [
             icon,
-            $element({tag: 'mark', textContent: match}),
-            url.substr(match.length),
+            url.substr(0, match.pos),
+            $element({tag: 'mark', textContent: match.text}),
+            url.substr(match.pos + match.text.length),
           ]}));
         }
       }
@@ -2060,4 +2173,18 @@ function getCodeMirrorThemes() {
       });
     });
   });
+}
+
+function setGlobalProgress(done, total) {
+  const progressElement = $('#global-progress') ||
+    total && document.body.appendChild($element({id: 'global-progress'}));
+  if (total) {
+    const progress = (done / Math.max(done, total) * 100).toFixed(1);
+    progressElement.style.borderLeftWidth = progress + 'vw';
+    setTimeout(() => {
+      progressElement.title = progress + '%';
+    });
+  } else if (progressElement) {
+    progressElement.remove();
+  }
 }

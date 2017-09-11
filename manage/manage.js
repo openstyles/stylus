@@ -577,7 +577,10 @@ function dieOnNullBackground() {
           title: 'Stylus',
           className: 'danger center',
           contents: t('dysfunctionalBackgroundConnection'),
-          onshow: () => $('#message-box-close-icon').remove(),
+          onshow: () => {
+            $('#message-box-close-icon').remove();
+            window.removeEventListener('keydown', messageBox.listeners.key, true);
+          }
         });
         document.documentElement.style.pointerEvents = 'none';
       });

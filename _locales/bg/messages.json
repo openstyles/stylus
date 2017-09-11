@@ -27,10 +27,6 @@
 		"message": "Изнасяне",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"linterIssues": {
-		"message": "Проблеми",
-		"description": "Label for the CSS linter issues block on the style edit page"
-	},
 	"optionsBadgeNormal": {
 		"message": "Цвят на фона",
 		"description": ""
@@ -663,15 +659,6 @@
 	"openOptionsManage": {
 		"message": "Прозорец за настройките",
 		"description": "Go to Options UI"
-	},
-	"linterIssuesHelp": {
-		"message": "Проблеми, намерени от $link$ при следните правила:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
 	},
 	"optionsCustomizeBadge": {
 		"message": "Значка на иконката на лентата",

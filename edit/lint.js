@@ -133,7 +133,7 @@ function initLint() {
 
   linterConfig.loadAll();
   linterConfig.watchStorage();
-  prefs.subscribe(updateLinter, ['editor.linter']);
+  prefs.subscribe(['editor.linter'], updateLinter);
   updateLinter();
 }
 
@@ -145,6 +145,10 @@ function updateLinter({immediately} = {}) {
   const linter = prefs.get('editor.linter');
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
+  loadLinterAssets(linter).then(updateEditors);
+  $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
+  $('#lint').style.display = 'none';
+
   function updateEditors() {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
     const guttersOption = prepareGuttersOption();
@@ -153,9 +157,9 @@ function updateLinter({immediately} = {}) {
       if (guttersOption) {
         cm.setOption('guttersOption', guttersOption);
         updateGutters(cm, guttersOption);
+        cm.refresh();
       }
-      cm.refresh();
-      updateLintReport(cm);
+      setTimeout(updateLintReport, 0, cm);
     });
   }
 
@@ -183,90 +187,100 @@ function updateLinter({immediately} = {}) {
       el.remove();
     }
   }
-
-  // load scripts
-  loadLinterAssets(linter).then(() => {
-    updateEditors();
-  });
-  $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
 }
 
 function updateLintReport(cm, delay) {
+  if (cm && !cm.options.lint) {
+    // add 'lint' option back to the freshly created section
+    setTimeout(() => {
+      if (!cm.options.lint) {
+        cm.setOption('lint', linterConfig.getForCodeMirror());
+      }
+    });
+  }
+  const state = cm && cm.state && cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
-    update(cm);
+    clearTimeout(state.lintTimeout);
+    updateLintReportInternal(cm);
     return;
   }
   if (delay > 0) {
-    setTimeout(cm => {
+    clearTimeout(state.lintTimeout);
+    state.lintTimeout = setTimeout(cm => {
       if (cm.performLint) {
         cm.performLint();
-        update(cm);
+        updateLintReportInternal(cm);
       }
     }, delay, cm);
     return;
   }
-  // eslint-disable-next-line no-var
-  var state = cm.state.lint;
-  if (!state) {
-    return;
-  }
-  // user is editing right now: postpone updating the report for the new issues (default: 500ms lint + 4500ms)
-  // or update it as soon as possible (default: 500ms lint + 100ms) in case an existing issue was just fixed
-  clearTimeout(state.reportTimeout);
-  state.reportTimeout = setTimeout(update, state.options.delay + 100, cm);
-  state.postponeNewIssues = delay === undefined || delay === null;
-
-  function update(cm) {
-    const scope = cm ? [cm] : $$('#sections .CodeMirror').map(e => e.CodeMirror);
-    let changed = false;
-    let fixedOldIssues = false;
-    scope.forEach(cm => {
-      const scopedState = cm.state.lint || {};
-      const oldMarkers = scopedState.markedLast || {};
-      const newMarkers = {};
-      const html = !scopedState.marked || scopedState.marked.length === 0 ? '' : '<tbody>' +
-        scopedState.marked.map(mark => {
-          const info = mark.__annotation;
-          const isActiveLine = info.from.line === cm.getCursor().line;
-          const pos = isActiveLine ? 'cursor' : (info.from.line + ',' + info.from.ch);
-          // rule name added in parentheses at the end; extract it out for the info popup
-          const text = info.message;
-          const parenPos = text.endsWith(')') ? text.lastIndexOf('(') : text.length;
-          const ruleName = text.slice(parenPos + 1, -1);
-          const title = escapeHtml(text);
-          const message = escapeHtml(text.substr(0, Math.min(100, parenPos)), {limit: 100});
-          if (isActiveLine || oldMarkers[pos] === message) {
-            delete oldMarkers[pos];
-          }
-          newMarkers[pos] = message;
-          return `<tr class="${info.severity}">
-            <td role="severity" data-rule="${ruleName}">
-              <div class="CodeMirror-lint-marker-${info.severity}">${info.severity}</div>
-            </td>
-            <td role="line">${info.from.line + 1}</td>
-            <td role="sep">:</td>
-            <td role="col">${info.from.ch + 1}</td>
-            <td role="message" title="${title}">${message}</td>
-          </tr>`;
-        }).join('') + '</tbody>';
-      scopedState.markedLast = newMarkers;
-      fixedOldIssues |= scopedState.reportDisplayed && Object.keys(oldMarkers).length > 0;
-      if (scopedState.html !== html) {
-        scopedState.html = html;
-        changed = true;
-      }
+  if (state.options) {
+    clearTimeout(state.reportTimeout);
+    const delay = cm && cm.state.renderLintReportNow ? 0 : state.options.delay + 100;
+    state.reportTimeout = setTimeout(updateLintReportInternal, delay, cm, {
+      postponeNewIssues: delay === undefined || delay === null
     });
-    if (changed) {
-      clearTimeout(state ? state.renderTimeout : undefined);
-      if (!state || !state.postponeNewIssues || fixedOldIssues) {
-        renderLintReport(true);
-      } else {
-        state.renderTimeout = setTimeout(() => {
-          renderLintReport(true);
-        }, CodeMirror.defaults.lintReportDelay);
-      }
-    }
+  }
+}
+
+function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
+  const {changed, fixedSome} = (scope ? [scope] : editors).reduce(process, {});
+  if (changed) {
+    const renderNow = editors.last.state.renderLintReportNow =
+      !postponeNewIssues || fixedSome || editors.last.state.renderLintReportNow;
+    debounce(renderLintReport, renderNow ? 0 : CodeMirror.defaults.lintReportDelay, true);
+  }
+
+  function process(result, cm) {
+    const lintState = cm.state.lint || {};
+    const oldMarkers = lintState.stylusMarkers || new Map();
+    const newMarkers = lintState.stylusMarkers = new Map();
+    const oldText = (lintState.body || {}).textContentCached || '';
+    const activeLine = cm.getCursor().line;
+    const body = !(lintState.marked || {}).length ? {} : $element({
+      tag: 'tbody',
+      appendChild: lintState.marked.map(mark => {
+        const info = mark.__annotation;
+        const {line, ch} = info.from;
+        const isActiveLine = line === activeLine;
+        const pos = isActiveLine ? 'cursor' : (line + ',' + ch);
+        const title = clipString(info.message, 1000) + `\n(${info.rule})`;
+        const message = clipString(info.message, 100);
+        if (isActiveLine || oldMarkers[pos] === message) {
+          oldMarkers.delete(pos);
+        }
+        newMarkers.set(pos, message);
+        return $element({
+          tag: 'tr',
+          className: info.severity,
+          appendChild: [
+            $element({
+              tag: 'td',
+              attributes: {role: 'severity'},
+              dataset: {rule: info.rule},
+              appendChild: $element({
+                className: 'CodeMirror-lint-marker-' + info.severity,
+                textContent: info.severity,
+              }),
+            }),
+            $element({tag: 'td', attributes: {role: 'line'}, textContent: line + 1}),
+            $element({tag: 'td', attributes: {role: 'sep'}, textContent: ':'}),
+            $element({tag: 'td', attributes: {role: 'col'}, textContent: ch + 1}),
+            $element({tag: 'td', attributes: {role: 'message'}, textContent: message, title}),
+          ],
+        });
+      })
+    });
+    body.textContentCached = body.textContent || '';
+    lintState.body = body.textContentCached && body;
+    result.changed |= oldText !== body.textContentCached;
+    result.fixedSome |= lintState.reportDisplayed && oldMarkers.size;
+    return result;
+  }
+
+  function clipString(str, limit) {
+    return str.length <= limit ? str : str.substr(0, limit) + '...';
   }
 }
 
@@ -276,19 +290,31 @@ function renderLintReport(someBlockChanged) {
   const label = t('sectionCode');
   const newContent = content.cloneNode(false);
   let issueCount = 0;
-  $$('#sections .CodeMirror').map(e => e.CodeMirror).forEach((cm, index) => {
-    if (cm.state.lint && cm.state.lint.html) {
-      const html = '<caption>' + label + ' ' + (index + 1) + '</caption>' + cm.state.lint.html;
-      const newBlock = newContent.appendChild(tHTML(html, 'table'));
-
-      newBlock.cm = cm;
-      issueCount += newBlock.rows.length;
-
-      const block = content.children[newContent.children.length - 1];
-      const blockChanged = !block || cm !== block.cm || html !== block.innerHTML;
-      someBlockChanged |= blockChanged;
-      cm.state.lint.reportDisplayed = blockChanged;
+  editors.forEach((cm, index) => {
+    cm.state.renderLintReportNow = false;
+    const lintState = cm.state.lint || {};
+    const body = lintState.body;
+    if (!body) {
+      return;
     }
+    const newBlock = $element({
+      tag: 'table',
+      appendChild: [
+        $element({tag: 'caption', textContent: label + ' ' + (index + 1)}),
+        body,
+      ],
+      cm,
+    });
+    newContent.appendChild(newBlock);
+    issueCount += newBlock.rows.length;
+
+    const block = content.children[newContent.children.length - 1];
+    const blockChanged =
+      !block ||
+      block.cm !== cm ||
+      body.textContentCached !== block.textContentCached;
+    someBlockChanged |= blockChanged;
+    lintState.reportDisplayed = blockChanged;
   });
   if (someBlockChanged || newContent.children.length !== content.children.length) {
     $('#issue-count').textContent = issueCount;

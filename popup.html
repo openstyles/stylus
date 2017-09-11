@@ -4,6 +4,16 @@
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <link rel="stylesheet" href="popup/popup.css">
 
+  <style id="firefox-transitions-bug-suppressor">
+    /* restrict to FF */
+    @-moz-document url-prefix("") {
+      /* increased specificity to override sane selectors in user styles */
+      html#stylus.firefox #stylus-popup #actions * {
+        transition: none !important;
+      }
+    }
+  </style>
+
   <!-- Notes:
     * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
     * inter-tag whitespace in templates is automatically removed in localization.js

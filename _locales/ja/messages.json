@@ -3,6 +3,10 @@
 		"message": "すべて",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "問題点",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "デフォルト",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -27,9 +31,9 @@
 		"message": "エクスポート",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"linterIssues": {
-		"message": "問題点",
-		"description": "Label for the CSS linter issues block on the style edit page"
+	"linterJSONError": {
+		"message": "不正なJSONフォーマットです",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景色",
@@ -139,6 +143,10 @@
 		"message": "有効",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Linter の設定を行うときはクリックしてください",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "Mozilla 形式のコードは、userstyles.org に投稿することができ、また従来の Stylish for Firefox でも使用できます。",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -154,6 +162,10 @@
 	"styleSaveLabel": {
 		"message": "保存",
 		"description": "Label for save button for style editing"
+	},
+	"genericSavedMessage": {
+		"message": "保存しました",
+		"description": "Used in various parts of the UI to indicate that something was saved"
 	},
 	"confirmDelete": {
 		"message": "削除",
@@ -220,6 +232,15 @@
 		"message": "ローカルに作成されたスタイルのみ",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"linterIssuesHelp": {
+		"message": "$link$ によってこれらの問題点が見つかりました :",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
+	},
 	"searchStyles": {
 		"message": "コンテンツの検索",
 		"description": "Label for the search filter textbox on the Manage styles page"
@@ -233,7 +254,7 @@
 		"description": "Label for the button to apply all detected updates"
 	},
 	"unreachableFileHint": {
-		"message": "Stylusはchrome://extensionsページのStylus拡張機能に対応するチェックボックスを有効にした場合にのみ、file:// URLにアクセスできます。",
+		"message": "chrome://extensions ページでStylus拡張機能の当該チェックボックスを有効にした場合にのみ、Stylusは file:// URLにアクセスできます。",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"disableStyleLabel": {
@@ -334,6 +355,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Stylusはプライベートウィンドウでは機能しません。これは、Firefoxが拡張機能の内部のバックグラウンドページに直接接続することを禁止しているためです。",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "セクション",
 		"description": "Title for the style sections section"
@@ -341,6 +366,10 @@
 	"importReportLegendInvalid": {
 		"message": "件の無効なスタイルをスキップしました",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "リセット",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "スタイル「$stylename$」を編集",
@@ -460,6 +489,18 @@
 		"message": "使用可能なすべての更新を確認してインストールする",
 		"description": ""
 	},
+	"filteredStyles": {
+		"message": "$numTotal$ 件中の $numShown$ 件を表示",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportTitle": {
 		"message": "スタイルのインポートが終了しました",
 		"description": "Title of the report shown after importing styles"
@@ -472,6 +513,10 @@
 		"message": "このスタイルは、完全なURLの一致を要求する <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 仕様</a> に違反した部分一致の正規表現を使用しています。影響を受けるCSSセクションはページに適用されませんでした。このスタイルは、'regexp()' のルールを誤ってチェックしていた かなり初期のバージョンの Stylish-for-Chrome で作成された可能性があります（既知のバグです）",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "（次のようにルールを設定してください : 0=無効, 1=警告, 2=エラー）",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "@media, @supports をインデント",
 		"description": "CSS-beautifier option"
@@ -483,6 +528,10 @@
 	"sectionRemove": {
 		"message": "セクションを削除",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "URLに対応するスタイルを探すときは、「url:」という接頭辞を付けてください。\n例. url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "すべてのスタイルをオフにする",
@@ -504,6 +553,10 @@
 		"message": "更新が完了しました",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "このバージョンのFirefoxの次の既知のバグのために正常に機能しません : chrome.extension.getBackgroundPage() が正しい結果を返しません",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "チェック中...",
 		"description": "Text to display when checking a style for an update"
@@ -516,6 +569,10 @@
 		"message": "適用先欄の表示件数",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"popupManageTooltip": {
+		"message": "Shift-クリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます。",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
 	"manageFaviconsHelp": {
 		"message": "Stylusは外部サービスを使用します https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -523,6 +580,10 @@
 	"updateCheckSkippedLocallyEdited": {
 		"message": "このスタイルはローカルで編集されました。",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "ルールの完全なリストを見る",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "オプションをリセット",
@@ -535,6 +596,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "エディタのコンテキストメニューに「削除」を追加します",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "$linter$ のルールを設定する",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "件のメタ情報とコードを更新しました",
@@ -549,7 +619,7 @@
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "[適用先] を使用すると、このセクションのコードが適用される URL を制限することができます。",
+		"message": "「適用先」を使用すると、このセクションのコードが適用される URL を制限することができます。",
 		"description": "Help text for 'applies to' section"
 	},
 	"editStyleHeading": {
@@ -563,6 +633,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "入力の自動補完",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"manageOnlyDisabled": {
+		"message": "無効なスタイルのみ",
+		"description": "Checkbox to show only disabled styles"
 	},
 	"stylusUnavailableForURLdetails": {
 		"message": "セキュリティ上の予防措置として、ブラウザは拡張機能がビルトイン ページ（chrome://version, Chrome 61 の標準の新しいタブページ, about:addons 等）に影響を与えることを禁止しています。これは他の拡張機能のページについても同様です。各ブラウザはまた、自身の拡張機能ギャラリーへのアクセスについても制限しています（Chrome Web ストア や AMO 等）",
@@ -592,6 +666,10 @@
 		"message": "スタイルを上書き",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "エディタのタブをブラウザのウィンドウから切り離すことでも有効になります。\nそして、分離したエディタのタブを他のブラウザのウィンドウに結合すれば無効になります。",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"dbError": {
 		"message": "Stylusのデータベース使用中にエラーが発生しました。考えられる解決策を記載したWebページを開きますか？",
 		"description": "Prompt when a DB error is encountered"
@@ -605,7 +683,7 @@
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"editorStylesButton": {
-		"message": "エディタスタイルを見つける",
+		"message": "エディタのスタイルを見つける",
 		"description": "Find styles for the editor"
 	},
 	"optionsOpen": {
@@ -619,6 +697,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "無効な正規表現がスキップされました",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"manageOnlyExternal": {
+		"message": "外部から取得したスタイルのみ",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"replaceAll": {
 		"message": "すべて置換",
@@ -648,15 +730,6 @@
 		"message": "オプション UI",
 		"description": "Go to Options UI"
 	},
-	"linterIssuesHelp": {
-		"message": "これらのルールを有効にして $link$ で見つかった問題:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",
 		"description": ""
@@ -668,6 +741,10 @@
 	"optionsPopupWidth": {
 		"message": "ポップアップの幅（ピクセル単位）",
 		"description": ""
+	},
+	"linterInvalidConfigError": {
+		"message": "これらの不正な設定のために保存されませんでした :",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
 	},
 	"confirmNo": {
 		"message": "いいえ",
@@ -737,6 +814,10 @@
 		"message": "テーマ",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"popupOpenEditInWindow": {
+		"message": "新しいウィンドウでエディタを開く",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"backupMessage": {
 		"message": "ファイルを選択するか、このページにドラッグ＆ドロップします。",
 		"description": "Message for backup"
@@ -749,8 +830,12 @@
 		"message": "コマンド名を入力",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"linterResetMessage": {
+		"message": "予期しないリセットを復旧するには、テキストボックス内で Ctrl-Z（または Cmd-Z）を押してください",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
+	},
 	"description": {
-		"message": "Stylus はユーザー スタイルを管理するツールで、ウェブのスタイルを変更することができます。Stylus を利用すると、さまざまなサイトに対応したテーマやスキンを簡単にインストールできます。",
+		"message": "Stylus でウェブのデザインを変更しましょう。これは、ユーザースタイルを管理するツールです。Stylus を利用すると、多くの人気サイト向けのテーマやスキンを簡単にインストールできます。",
 		"description": "Extension description"
 	}
 }

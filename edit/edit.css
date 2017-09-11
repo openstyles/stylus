@@ -2,6 +2,23 @@ body {
   margin: 0;
   font: 12px arial,sans-serif;
 }
+
+#global-progress {
+  position: fixed;
+  height: 4px;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: hsla(180, 66%, 36%, .25);
+  border-left: 0 solid darkcyan;
+  z-index: 2147483647;
+  opacity: 0;
+  transition: opacity 2s;
+}
+#global-progress[title] {
+  opacity: 1;
+}
+
 /************ header ************/
 #header {
   width: 280px;
@@ -101,6 +118,15 @@ h2 .svg-icon, label .svg-icon {
   margin-bottom: 0.5rem;
 }
 /* options */
+#options summary {
+  align-items: center;
+  margin-left: -13px;
+  cursor: pointer;
+  outline: none;
+}
+#options summary h2 {
+  display: inline-block;
+}
 #options [type="number"] {
   max-width: 2.5rem;
   text-align: right;
@@ -128,6 +154,12 @@ h2 .svg-icon, label .svg-icon {
 }
 #sections {
   counter-reset: codebox;
+}
+#sections > div > label {
+  animation: 2s highlight;
+  animation-play-state: paused;
+  animation-direction: reverse;
+  animation-fill-mode: both;
 }
 #sections > div > label::after {
   counter-increment: codebox;
@@ -554,6 +586,9 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     -webkit-column-count: 2;
     -moz-column-count: 2;
     column-count: 2;
+  }
+  #options h2 {
+    margin: 0 0 .5em;
   }
   #options .aligned > *:not(svg) {
     margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */

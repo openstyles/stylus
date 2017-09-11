@@ -339,7 +339,8 @@ function searchStyles({immediately, container}) {
     if (!isMatching) {
       const style = urlMode ? siteStyleIds.has(entry.styleId) :
         BG.cachedStyles.byId.get(entry.styleId) || {};
-      isMatching = urlMode ? style : Boolean(style && (
+      isMatching = Boolean(style && (
+        urlMode ||
         isMatchingText(style.name) ||
         style.url && isMatchingText(style.url) ||
         isMatchingStyle(style)));

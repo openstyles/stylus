@@ -3,6 +3,10 @@
 		"message": "Все",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Проблемы",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "по-умолчанию",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -27,9 +31,9 @@
 		"message": "Экспорт",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
-	"linterIssues": {
-		"message": "Проблемы",
-		"description": "Label for the CSS linter issues block on the style edit page"
+	"linterJSONError": {
+		"message": "Ошибка формата JSON",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "Цвет фона",
@@ -143,6 +147,10 @@
 		"message": "Включено",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Настроить проверку CSS",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "Формат кода Mozilla можно отправлять на сайт userstyles.org и использовать в дополнении Stylish для Firefox.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -158,6 +166,10 @@
 	"styleSaveLabel": {
 		"message": "Сохранить",
 		"description": "Label for save button for style editing"
+	},
+	"genericSavedMessage": {
+		"message": "Сохранено",
+		"description": "Used in various parts of the UI to indicate that something was saved"
 	},
 	"confirmDelete": {
 		"message": "Удалить",
@@ -223,6 +235,15 @@
 	"manageOnlyLocal": {
 		"message": "Только локально созданные стили",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "Проблемы, найденные правилами $link$:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Искать по содержимому",
@@ -338,6 +359,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Стилус не работает в приватном окне, т.к. браузер Firefox не разрешает прямое соединение с внутренним контекстом фоновой страницы расширения.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Разделы",
 		"description": "Title for the style sections section"
@@ -345,6 +370,10 @@
 	"importReportLegendInvalid": {
 		"message": "некорректных пропущено",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "Сброс",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "Изменение стиля \"$stylename$\"",
@@ -464,6 +493,18 @@
 		"message": "Найти и установить обновления стилей",
 		"description": ""
 	},
+	"filteredStyles": {
+		"message": "найдено $numShown$ из $numTotal$всего",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportTitle": {
 		"message": "Импорт стилей завершен",
 		"description": "Title of the report shown after importing styles"
@@ -480,6 +521,10 @@
 		"message": "В стиле используются regexp-выражения, которые соответствуют лишь части адреса, что нарушает <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>спецификацию CSS4 @document</a>, требующую соответствия всего адреса целиком. Секции стиля с такими regexp не были применены к странице. Вероятно, этот стиль был создан в \"Stylish для Chrome\", который некорректно проверяет regexp (известный баг).",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "(значения: 0 = выключить, 1 = предупреждение; 2 = ошибка)",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Отступ внутри @media, @supports",
 		"description": "CSS-beautifier option"
@@ -491,6 +536,10 @@
 	"sectionRemove": {
 		"message": "Удалить раздел",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "Префикс url: покажет стили для сайта.\nНапример, url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Выключить все стили",
@@ -512,6 +561,10 @@
 		"message": "Обновление завершено.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "Функционирование невозможно из-за известной ошибки в вашей версии браузера: chrome.extension.getBackgroundPage() возвращает нулевое значение",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Проверка…",
 		"description": "Text to display when checking a style for an update"
@@ -524,6 +577,10 @@
 		"message": "Кол-во целевых сайтов/выражений",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"popupManageTooltip": {
+		"message": "Shift-клик или правый клик откроет менеджер с стилями только для этого сайта.",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
 	"manageFaviconsHelp": {
 		"message": "Используется сторонний сервис https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -531,6 +588,10 @@
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Стиль был изменен локально.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Открыть полный список правил",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "Сброс настроек",
@@ -543,6 +604,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "Показывать команду \"Удалить\" в контекстном меню редактора",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "Установить конфиграцию правил $linter$",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "обновлены мета-данные и код",
@@ -572,6 +642,10 @@
 		"message": "Подсказки при наборе кода",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"manageOnlyDisabled": {
+		"message": "Только неактивные стили",
+		"description": "Checkbox to show only disabled styles"
+	},
 	"stylusUnavailableForURLdetails": {
 		"message": "В целях обеспечения безопасности браузер запрещает расширениям изменять встроенные страницы (например, chrome://version, стандартная страница новой вкладки начиная с Chrome 61, about:addons и т.д.), страницы других расширений и \"магазин\" расширений (Chrome Web Store в chromium-браузерах, AMO в Firefox и т.д.)",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
@@ -600,6 +674,10 @@
 		"message": "Заменить стиль",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "Также включается вытаскиванием вкладки из окна браузера\nи выключается перетаскиванием вкладки в другое окно браузера.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"dbError": {
 		"message": "Возникла ошибка доступа к базе данных Stylus. Хотите перейти на страницу с возможными способами решения?",
 		"description": "Prompt when a DB error is encountered"
@@ -624,9 +702,17 @@
 		"message": "Нажмите клавишу",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"cm_linter": {
+		"message": "Проверка CSS",
+		"description": "Select the linter to check for CSS issues"
+	},
 	"styleRegexpTestInvalid": {
 		"message": "Пропущены некомпилируемые регулярки",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"manageOnlyExternal": {
+		"message": "Только сторонние стили",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"replaceAll": {
 		"message": "Заменить все",
@@ -656,15 +742,6 @@
 		"message": "Настройки",
 		"description": "Go to Options UI"
 	},
-	"linterIssuesHelp": {
-		"message": "Проблемы и предупреждения по версии $link$ с данными включенными правилами:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
 	"optionsCustomizeBadge": {
 		"message": "Бейдж на пиктограмме в тулбаре",
 		"description": ""
@@ -676,6 +753,10 @@
 	"optionsPopupWidth": {
 		"message": "Ширина всплывающего окна (в пикселах)",
 		"description": ""
+	},
+	"linterInvalidConfigError": {
+		"message": "Не сохранено из-за неправильных настроек ниже:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
 	},
 	"confirmNo": {
 		"message": "Нет",
@@ -745,6 +826,10 @@
 		"message": "Тема",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"popupOpenEditInWindow": {
+		"message": "Открывать редактор в новом окне",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"backupMessage": {
 		"message": "Нажмите Импорт чтобы выбрать файл или просто перетащите его на эту страницу",
 		"description": "Message for backup"
@@ -756,6 +841,10 @@
 	"helpKeyMapCommand": {
 		"message": "Введите имя команды",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"linterResetMessage": {
+		"message": "Для отмены случайного сброса нажмите Ctrl-Z (или Cmd-Z) в окне ввода",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
 		"message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylus. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",

@@ -10,6 +10,11 @@ const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 // eslint-disable-next-line no-var
 var SLOPPY_REGEXP_PREFIX = '\0';
 
+// CSS transition bug workaround: since we insert styles asynchronously,
+// the browsers, especially Firefox, may apply all transitions on page load
+const CSS_TRANSITION_SUPPRESSOR = '* { transition: none !important; }';
+const RX_CSS_TRANSITION_DETECTOR = /([\s\n;/{]|-webkit-|-moz-)transition[\s\n]*:[\s\n]*(?!none)/;
+
 // Note, only 'var'-declared variables are visible from another extension page
 // eslint-disable-next-line no-var
 var cachedStyles = {
@@ -18,6 +23,7 @@ var cachedStyles = {
   filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
   regexps: new Map(),    // compiled style regexps
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
+  needTransitionPatch: new Map(), // FF bug workaround
   mutex: {
     inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
@@ -34,6 +40,11 @@ var chromeLocal = {
   set(data) {
     return new Promise(resolve => {
       chrome.storage.local.set(data, () => resolve(data));
+    });
+  },
+  remove(keyOrKeys) {
+    return new Promise(resolve => {
+      chrome.storage.local.remove(keyOrKeys, resolve);
     });
   },
   getValue(key) {
@@ -73,8 +84,65 @@ var chromeSync = {
   }
 };
 
+// eslint-disable-next-line no-var
+var dbExec = dbExecIndexedDB;
+dbExec.initialized = false;
 
-function dbExec(method, data) {
+// we use chrome.storage.local fallback if IndexedDB doesn't save data,
+// which, once detected on the first run, is remembered in chrome.storage.local
+// for reliablility and in localStorage for fast synchronous access
+// (FF may block localStorage depending on its privacy options)
+do {
+  const done = () => {
+    getStyles().then(() => {
+      dbExec.initialized = true;
+      window.dispatchEvent(new Event('storageReady'));
+    });
+  };
+  const fallback = () => {
+    dbExec = dbExecChromeStorage;
+    chromeLocal.set({dbInChromeStorage: true});
+    localStorage.dbInChromeStorage = 'true';
+    ignoreChromeError();
+    done();
+  };
+  const fallbackSet = localStorage.dbInChromeStorage;
+  if (fallbackSet === 'true' || !tryCatch(() => indexedDB)) {
+    fallback();
+    break;
+  } else if (fallbackSet === 'false') {
+    done();
+    break;
+  }
+  chromeLocal.get('dbInChromeStorage')
+    .then(data =>
+      data && data.dbInChromeStorage && Promise.reject())
+    .then(() => dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1))
+    .then(({target}) => (
+      (target.result || [])[0] ?
+        Promise.reject('ok') :
+        dbExecIndexedDB('put', {id: -1})))
+    .then(() =>
+      dbExecIndexedDB('get', -1))
+    .then(({target}) => (
+      (target.result || {}).id === -1 ?
+        dbExecIndexedDB('delete', -1) :
+        Promise.reject()))
+    .then(() =>
+      Promise.reject('ok'))
+    .catch(result => {
+      if (result === 'ok') {
+        chromeLocal.set({dbInChromeStorage: false});
+        localStorage.dbInChromeStorage = 'false';
+        done();
+      } else {
+        fallback();
+      }
+    });
+} while (0);
+
+
+function dbExecIndexedDB(method, ...args) {
   return new Promise((resolve, reject) => {
     Object.assign(indexedDB.open('stylish', 2), {
       onsuccess(event) {
@@ -84,7 +152,7 @@ function dbExec(method, data) {
         } else {
           const transaction = database.transaction(['styles'], 'readwrite');
           const store = transaction.objectStore('styles');
-          Object.assign(store[method](data), {
+          Object.assign(store[method](...args), {
             onsuccess: event => resolve(event, store, transaction, database),
             onerror: reject,
           });
@@ -104,6 +172,45 @@ function dbExec(method, data) {
       },
     });
   });
+}
+
+
+function dbExecChromeStorage(method, data) {
+  const STYLE_KEY_PREFIX = 'style-';
+  switch (method) {
+    case 'get':
+      return chromeLocal.getValue(STYLE_KEY_PREFIX + data)
+        .then(result => ({target: {result}}));
+
+    case 'put':
+      if (!data.id) {
+        return getStyles().then(() => {
+          data.id = 1;
+          for (const style of cachedStyles.list) {
+            data.id = Math.max(data.id, style.id + 1);
+          }
+          return dbExecChromeStorage('put', data);
+        });
+      }
+      return chromeLocal.setValue(STYLE_KEY_PREFIX + data.id, data)
+        .then(() => (chrome.runtime.lastError ? Promise.reject() : data.id));
+
+    case 'delete':
+      return chromeLocal.remove(STYLE_KEY_PREFIX + data);
+
+    case 'getAll':
+      return chromeLocal.get(null).then(storage => {
+        const styles = [];
+        for (const key in storage) {
+          if (key.startsWith(STYLE_KEY_PREFIX) &&
+              Number(key.substr(STYLE_KEY_PREFIX.length))) {
+            styles.push(storage[key]);
+          }
+        }
+        return {target: {result: styles}};
+      });
+  }
+  return Promise.reject();
 }
 
 
@@ -156,14 +263,15 @@ function filterStyles({
   ) {
     return cachedStyles.list;
   }
-  const blankHash = asHash && {
-    disableAll: prefs.get('disableAll'),
-    exposeIframes: prefs.get('exposeIframes'),
-  };
 
   if (matchUrl && !URLS.supported(matchUrl)) {
     return asHash ? {} : [];
   }
+
+  const blankHash = asHash && {
+    disableAll: prefs.get('disableAll'),
+    exposeIframes: prefs.get('exposeIframes'),
+  };
 
   // add \t after url to prevent collisions (not sure it can actually happen though)
   const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
@@ -212,13 +320,12 @@ function filterStylesInternal({
   const styles = id === null
     ? cachedStyles.list
     : [cachedStyles.byId.get(id)];
-  const filtered = asHash ? {} : [];
-  if (!styles) {
+  if (!styles[0]) {
     // may happen when users [accidentally] reopen an old URL
     // of edit.html with a non-existent style id parameter
-    return filtered;
+    return asHash ? blankHash : [];
   }
-
+  const filtered = asHash ? {} : [];
   const needSections = asHash || matchUrl !== null;
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
@@ -255,6 +362,7 @@ function filterStylesInternal({
     cleanupCachedFilters();
   }
 
+  // a shallow copy is needed because the cache doesn't store options like disableAll
   return asHash
     ? Object.assign(blankHash, filtered)
     : filtered;
@@ -604,6 +712,7 @@ function invalidateCache({added, updated, deletedId} = {}) {
     if (cached) {
       Object.assign(cached, updated);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
       return;
     } else {
       added = updated;
@@ -614,6 +723,7 @@ function invalidateCache({added, updated, deletedId} = {}) {
       cachedStyles.list.push(added);
       cachedStyles.byId.set(added.id, added);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
     }
     return;
   }
@@ -623,11 +733,13 @@ function invalidateCache({added, updated, deletedId} = {}) {
       cachedStyles.list.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
       cachedStyles.filters.clear();
+      cachedStyles.needTransitionPatch.delete(id);
       return;
     }
   }
   cachedStyles.list = null;
   cachedStyles.filters.clear();
+  cachedStyles.needTransitionPatch.clear(id);
 }
 
 
@@ -697,5 +809,80 @@ function calcStyleDigest(style) {
       parts.push((PAD8 + view.getUint32(i).toString(16)).slice(-8));
     }
     return parts.join('');
+  }
+}
+
+
+function handleCssTransitionBug({tabId, frameId, url, styles}) {
+  for (let id in styles) {
+    id |= 0;
+    if (!id) {
+      continue;
+    }
+    let need = cachedStyles.needTransitionPatch.get(id);
+    if (need === false) {
+      continue;
+    }
+    if (need !== true) {
+      need = styles[id].some(sectionContainsTransitions);
+      cachedStyles.needTransitionPatch.set(id, need);
+      if (!need) {
+        continue;
+      }
+    }
+    if (FIREFOX && !url.startsWith(URLS.ownOrigin)) {
+      patchFirefox();
+    } else {
+      styles.needTransitionPatch = true;
+    }
+    break;
+  }
+
+  function patchFirefox() {
+    browser.tabs.insertCSS(tabId, {
+      frameId,
+      code: CSS_TRANSITION_SUPPRESSOR,
+      cssOrigin: 'user',
+      runAt: 'document_start',
+      matchAboutBlank: true,
+    }).then(() => setTimeout(() => {
+      browser.tabs.removeCSS(tabId, {
+        frameId,
+        code: CSS_TRANSITION_SUPPRESSOR,
+        cssOrigin: 'user',
+        matchAboutBlank: true,
+      }).catch(ignoreChromeError);
+    })).catch(ignoreChromeError);
+  }
+
+  function sectionContainsTransitions(section) {
+    let code = section.code;
+    const firstTransition = code.indexOf('transition');
+    if (firstTransition < 0) {
+      return false;
+    }
+    const firstCmt = code.indexOf('/*');
+    // check the part before the first comment
+    if (firstCmt < 0 || firstTransition < firstCmt) {
+      if (quickCheckAround(code, firstTransition)) {
+        return true;
+      } else if (firstCmt < 0) {
+        return false;
+      }
+    }
+    // check the rest
+    const lastCmt = code.lastIndexOf('*/');
+    if (lastCmt < firstCmt) {
+      // the comment is unclosed and we already checked the preceding part
+      return false;
+    }
+    let mid = code.slice(firstCmt, lastCmt + 2);
+    mid = mid.indexOf('*/') === mid.length - 2 ? '' : mid.replace(RX_CSS_COMMENTS, '');
+    code = mid + code.slice(lastCmt + 2);
+    return quickCheckAround(code) || RX_CSS_TRANSITION_DETECTOR.test(code);
+  }
+
+  function quickCheckAround(code, pos = code.indexOf('transition')) {
+    return RX_CSS_TRANSITION_DETECTOR.test(code.substr(Math.max(0, pos - 10), 50));
   }
 }
