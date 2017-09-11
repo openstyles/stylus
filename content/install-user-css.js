@@ -79,8 +79,8 @@ function initInstallPage({style, dup}, sourceLoader) {
             )}</button>
           </div>
           <div class="external">
-            <a href="${decodeURI(style.url)}" target="_blank" i18n-text="externalHomepage" rel="noopener"></a>
-            <a href="${decodeURI(style.supportURL)}" target="_blank" i18n-text="externalSupport" rel="noopener"></a>
+            <a href="${encodeURI(style.url)}" target="_blank" i18n-text="externalHomepage" rel="noopener"></a>
+            <a href="${encodeURI(style.supportURL)}" target="_blank" i18n-text="externalSupport" rel="noopener"></a>
           </div>
         </div>
         <div class="main">
