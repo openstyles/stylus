@@ -203,7 +203,10 @@ var usercss = (function () {
 
   function buildCode(style) {
     let builder;
-    if (style.preprocessor && style.preprocessor in BUILDER) {
+    if (style.preprocessor) {
+      if (!BUILDER.hasOwnProperty(style.preprocessor)) {
+        return Promise.reject(new Error(`Unsupported preprocessor: ${style.preprocessor}`));
+      }
       builder = BUILDER[style.preprocessor];
     } else {
       builder = BUILDER.default;
