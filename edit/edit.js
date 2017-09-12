@@ -273,7 +273,7 @@ function initCodeMirror() {
   CM.getOption = o => CodeMirror.defaults[o];
   CM.setOption = (o, v) => {
     CodeMirror.defaults[o] = v;
-    $$('.CodeMirror').map(e => e.CodeMirror).forEach(editor => {
+    editors.forEach(editor => {
       editor.setOption(o, v);
     });
   };
@@ -359,9 +359,7 @@ function acmeEventListener(event) {
       return;
     }
     case 'autocompleteOnTyping':
-      $$('.CodeMirror')
-        .map(e => e.CodeMirror)
-        .forEach(cm => setupAutocomplete(cm, el.checked));
+      editors.forEach(cm => setupAutocomplete(cm, el.checked));
       return;
     case 'matchHighlight':
       switch (value) {
@@ -1223,7 +1221,7 @@ function beautify(event) {
     options.indent_char = tabs ? '\t' : ' ';
 
     const section = getSectionForChild(event.target);
-    const scope = section ? [section.CodeMirror] : $$('#sections .CodeMirror').map(e => e.CodeMirror);
+    const scope = section ? [section.CodeMirror] : editors;
 
     showHelp(t('styleBeautify'), '<div class="beautify-options">' +
       optionHtml('.selector1,', 'selector_separator_newline') +
