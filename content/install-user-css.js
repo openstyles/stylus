@@ -231,7 +231,7 @@ function createSourceLoader() {
 
 function initUsercssInstall() {
   pendingResource = communicate({
-    method: 'injectResource',
+    method: 'injectContent',
     resources: [
       '/js/dom.js',
       '/js/localization.js',

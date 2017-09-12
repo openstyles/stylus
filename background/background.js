@@ -323,13 +323,13 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
 
-    case 'injectResource':
-      injectResource(request, sender.tab.id).then(sendResponse);
+    case 'injectContent':
+      injectContent(request, sender.tab.id).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
   }
 }
 
-function injectResource({resources}, tabId) {
+function injectContent({resources}, tabId) {
   return Promise.all(doInject())
     .then(() => ({status: 'success'}))
     .catch(err => ({status: 'error', error: err.message}));
