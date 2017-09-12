@@ -1302,12 +1302,21 @@ onDOMready().then(init);
 function init() {
   initCodeMirror();
   const params = getParams();
-  return Promise.resolve().then(() => {
+  getStyle().then(style => {
+    styleId = style.id;
+    sessionStorage.justEditedStyleId = styleId;
+
+    return windowLoaded().then(() => {
+      initWithStyle({style});
+    });
+  });
+
+  function getStyle() {
     if (!params.id) {
       // match should be 2 - one for the whole thing, one for the parentheses
       // This is an add
       $('#heading').textContent = t('addStyleTitle');
-      return createEmptyStyle();
+      return Promise.resolve(createEmptyStyle());
     }
     $('#heading').textContent = t('editStyleHeading');
     // This is an edit
@@ -1319,14 +1328,7 @@ function init() {
       }
       return style;
     });
-  }).then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-
-    return windowLoaded().then(() => {
-      initWithStyle({style});
-    });
-  });
+  }
 
   function createEmptyStyle() {
     const params = getParams();
