@@ -1002,12 +1002,13 @@ function jumpToLine(cm) {
 
 function toggleStyle() {
   if (!editor) {
-    return _toggleStyle();
+    toggleSectionStyle();
+    return;
   }
   editor.toggleStyle();
 }
 
-function _toggleStyle() {
+function toggleSectionStyle() {
   $('#enabled').checked = !$('#enabled').checked;
   save();
 }
@@ -1365,7 +1366,8 @@ function setStyleMeta(style) {
 function initWithStyle({style}) {
   // FIXME: what does codeIsUpdated do?
   if (!style.usercss) {
-    return _initWithStyle({style});
+    initWithSectionStyle({style});
+    return;
   }
 
   if (editor) {
@@ -1375,7 +1377,7 @@ function initWithStyle({style}) {
   }
 }
 
-function _initWithStyle({style, codeIsUpdated}) {
+function initWithSectionStyle({style, codeIsUpdated}) {
   setStyleMeta(style);
 
   if (codeIsUpdated === false) {
@@ -1572,12 +1574,13 @@ function updateLintReportIfEnabled(...args) {
 
 function save() {
   if (!editor) {
-    return _save();
+    saveSectionStyle();
+    return;
   }
   editor.save();
 }
 
-function _save() {
+function saveSectionStyle() {
   updateLintReportIfEnabled(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
