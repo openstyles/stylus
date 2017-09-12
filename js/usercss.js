@@ -50,7 +50,7 @@ var usercss = (function () {
     // https://bugs.webkit.org/show_bug.cgi?id=14563
     document.head.appendChild(el);
 
-    function _parse(color) {
+    function parseRGB(color) {
       const [r, g, b, a = 1] = color.match(/[.\d]+/g).map(Number);
       return {r, g, b, a};
     }
@@ -62,7 +62,7 @@ var usercss = (function () {
       }
       color = getComputedStyle(el).color;
       el.style.color = '';
-      return _parse(color);
+      return parseRGB(color);
     }
 
     function format({r, g, b, a = 1}) {
