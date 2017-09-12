@@ -69,7 +69,7 @@ function dirtyReporter() {
     for (const cb of onchanges) {
       try {
         cb();
-      } catch (err) {
+      } catch (e) {
         console.error(err);
       }
     }
