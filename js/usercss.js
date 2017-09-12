@@ -72,20 +72,13 @@ var usercss = (function () {
       return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
 
-    function pad(s) {
-      if (s.padStart) {
-        // chrome 57+
-        return s.padStart(2, '0');
-      }
-      return `00${s}`.slice(-2);
-    }
-
     function formatHex({r, g, b, a = null}) {
       const values = [r, g, b];
+      let hex = '#' + (0x1000000 + (r << 16) + (g << 8) + (b | 0)).toString(16).substr(1);
       if (a !== null) {
-        values.push(Math.floor(a * 255));
+        hex += (0x100 + Math.floor(a * 255)).toString(16).substr(1);
       }
-      return '#' + values.map(n => pad(n.toString(16))).join('');
+      return hex;
     }
 
     return {parse, format, formatHex};
