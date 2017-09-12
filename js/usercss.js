@@ -66,6 +66,9 @@ var usercss = (function () {
     }
 
     function format({r, g, b, a = 1}) {
+      if (a === 1) {
+        return `rgb(${r}, ${g}, ${b})`;
+      }
       return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
 
