@@ -372,28 +372,43 @@ function filterStylesInternal({
 // Parse the source and find the duplication
 // {id: int, style: object, source: string, checkDup: boolean}
 function filterUsercss(req) {
-  return Promise.resolve().then(() => {
-    let style;
-    if (req.source) {
-      style = usercss.buildMeta(req.source);
-    } else {
-      style = req.style;
-    }
-    if (!style.id && req.id) {
-      style.id = req.id;
-    }
-    let pending;
+  let style;
+  let pendingBuild;
+  return buildMeta()
+    .then(buildSection)
+    .then(decide)
+    .catch(err => ({status: 'error', error: err.message}));
+
+  function buildMeta() {
+    return new Promise(resolve => {
+      if (req.source) {
+        style = usercss.buildMeta(req.source);
+      } else {
+        style = req.style;
+      }
+      if (!style.id && req.id) {
+        style.id = req.id;
+      }
+      resolve();
+    });
+  }
+
+  function buildSection() {
     if (!style.sections || !style.sections.length) {
-      pending = usercss.buildCode(style);
+      pendingBuild = usercss.buildCode(style);
     } else {
-      pending = Promise.resolve(style);
+      pendingBuild = Promise.resolve(style);
     }
+  }
+
+  function decide() {
+    // decide result
     if (!style.id && req.checkDup) {
-      return Promise.all([pending, findDupUsercss(style)])
+      return Promise.all([pendingBuild, findDupUsercss(style)])
         .then(([, dup]) => ({status: 'success', style, dup}));
     }
-    return pending.then(() => ({status: 'success', style}));
-  }).catch(err => ({status: 'error', error: String(err)}));
+    return pendingBuild.then(() => ({status: 'success', style}));
+  }
 }
 
 function saveUsercss(style) {
