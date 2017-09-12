@@ -12,11 +12,10 @@ var usercss = (function () {
   const BUILDER = {
     default: {
       postprocess(sections, vars) {
-        let varDef = ':root {\n';
-        for (const key of Object.keys(vars)) {
-          varDef += `  --${key}: ${vars[key].value};\n`;
-        }
-        varDef += '}\n';
+        let varDef =
+          ':root {\n' +
+          Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('') +
+          '}\n';
 
         for (const section of sections) {
           section.code = varDef + section.code;
