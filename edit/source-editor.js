@@ -10,11 +10,11 @@ function createSourceEditor(style) {
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
 
-  $('#sections').appendChild(tHTML(`
-    <div class="single-editor">
-      <textarea></textarea>
-    </div>
-  `));
+  $('#sections').appendChild(
+    $element({className: 'single-editor', appendChild: [
+      $element({tag: 'textarea'})
+    ]})
+  );
 
   // draw CodeMirror
   $('#sections textarea').value = style.source;
