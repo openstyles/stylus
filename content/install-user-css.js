@@ -270,9 +270,6 @@ function initUsercssInstall() {
 }
 
 function isUsercss() {
-  if (!/\.user\.(css|styl|less|scss|sass)$/i.test(location.pathname)) {
-    return false;
-  }
   if (!/text\/(css|plain)/.test(document.contentType)) {
     return false;
   }
