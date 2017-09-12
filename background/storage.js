@@ -563,9 +563,7 @@ function findDupUsercss(style) {
     return getStyles({id: style.id}).then(s => s[0]);
   }
   return getStyles().then(styles =>
-    styles.find(
-      s => s.name === style.name && s.namespace === style.namespace
-    )
+    styles.find(s => s.name === style.name && s.namespace === style.namespace)
   );
 }
 
