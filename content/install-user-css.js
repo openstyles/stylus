@@ -55,43 +55,14 @@ function getAppliesTo(style) {
 function initInstallPage({style, dup}, sourceLoader) {
   return pendingResource.then(() => {
     const versionTest = dup && semverCompare(style.version, dup.version);
-    document.body.innerHTML = '';
-    document.body.appendChild(tHTML(`
-      <div class="container">
-        <div class="header">
-          <h1>
-            ${escapeHtml(style.name)}
-            <small class="meta-version">v${escapeHtml(style.version)}</small>
-          </h1>
-          <p>${escapeHtml(style.description)}</p>
-          <h3 i18n-text="author"></h3>
-          ${escapeHtml(style.author)}
-          <h3 i18n-text="license"></h3>
-          ${escapeHtml(style.license)}
-          <h3 i18n-text="appliesLabel"></h3>
-          <ul>
-            ${getAppliesTo(style).map(s => `<li>${escapeHtml(s)}</li>`)}
-          </ul>
-          <div class="actions">
-            <button class="install">${t(
-              !dup ? 'installButton' : versionTest > 0 ?
-                'installButtonUpdate' : 'installButtonReinstall'
-            )}</button>
-          </div>
-          <div class="external">
-            <a href="${encodeURI(style.url)}" target="_blank" i18n-text="externalHomepage" rel="noopener"></a>
-            <a href="${encodeURI(style.supportURL)}" target="_blank" i18n-text="externalSupport" rel="noopener"></a>
-          </div>
-        </div>
-        <div class="main">
-          <div class="code"></div>
-        </div>
-      </div>
-    `));
+    document.body.textContent = '';
+    document.body.appendChild(buildPage());
+
     if (versionTest < 0) {
-      $('.actions').parentNode.insertBefore(tHTML(`
-        <div class="warning" i18n-text="versionInvalidOlder"></div>
-      `), $('.actions'));
+      $('.actions').parentNode.insertBefore(
+        $element({className: 'warning', appendChild: t('versionInvalidOlder')}),
+        $('.actions')
+      );
     }
     $('.code').textContent = style.source;
     $('button.install').onclick = () => {
@@ -106,6 +77,51 @@ function initInstallPage({style, dup}, sourceLoader) {
 
     if (location.protocol === 'file:') {
       initLiveReload(sourceLoader);
+    }
+
+    function buildPage() {
+      return $element({className: 'container', appendChild: [
+        $element({className: 'header', appendChild: [
+          $element({tag: 'h1', appendChild: [
+            style.name,
+            $element({tag: 'small', className: 'meta-version', appendChild: style.version})
+          ]}),
+          $element({tag: 'p', appendChild: style.description}),
+          $element({tag: 'h3', appendChild: t('author')}),
+          style.author,
+          $element({tag: 'h3', appendChild: t('license')}),
+          style.license,
+          $element({tag: 'h3', appendChild: t('appliesLabel')}),
+          $element({tag: 'ul', appendChild: getAppliesTo(style).map(
+            pattern => $element({tag: 'li', appendChild: pattern})
+          )}),
+          $element({className: 'actions', appendChild: [
+            $element({tag: 'button', className: 'install', appendChild: installButtonLabel()})
+          ]}),
+          $element({className: 'external', appendChild: [
+            externalLink('externalHomepage', style.url),
+            externalLink('externalSupport', style.support)
+          ]})
+        ]}),
+        $element({className: 'main', appendChild: [
+          $element({className: 'code'})
+        ]})
+      ]});
+    }
+
+    function externalLink(name, url) {
+      return $element({
+        tag: 'a',
+        href: url,
+        target: '_blank',
+        appendChild: t(name),
+        rel: 'noopener'
+      });
+    }
+
+    function installButtonLabel() {
+      return t(!dup ? 'installButton' :
+        versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall');
     }
   });
 }
@@ -122,11 +138,7 @@ function initLiveReload(sourceLoader) {
       $$('.main .warning').forEach(e => e.remove());
     }).catch(err => {
       const oldWarning = $('.main .warning');
-      const warning = tHTML(`
-        <div class="warning" i18n-text="parseUsercssError">
-          <pre>${escapeHtml(err)}</pre>
-        </div>
-      `);
+      const warning = buildWarning(err);
       if (oldWarning) {
         oldWarning.replaceWith(warning);
       } else {
@@ -140,12 +152,10 @@ function initLiveReload(sourceLoader) {
       watcher.start();
     }
   });
-  $('.actions').appendChild(tHTML(`
-    <label class="live-reload">
-      <input type="checkbox" class="live-reload-checkbox">
-      <span i18n-text="liveReloadLabel"></span>
-    </label>
-  `));
+  $('.actions').appendChild($element({tag: 'label', className: 'live-reload', appendChild: [
+    $element({tag: 'input', type: 'checkbox', className: 'live-reload-checkbox'}),
+    $element({tag: 'span', appendChild: t('liveReloadLabel')})
+  ]}));
   $('.live-reload-checkbox').onchange = e => {
     if (!installed) {
       return;
@@ -158,15 +168,20 @@ function initLiveReload(sourceLoader) {
   };
 }
 
+function buildWarning(err) {
+  return $element({className: 'warning', appendChild: [
+    t('parseUsercssError'),
+    $element({tag: 'pre', appendChild: String(err)})
+  ]})
+}
+
 function initErrorPage(err, source) {
   return pendingResource.then(() => {
     document.body.innerHTML = '';
-    document.body.appendChild(tHTML(`
-      <div class="warning" i18n-text="parseUsercssError">
-        <pre>${escapeHtml(err)}</pre>
-      </div>
-      <div class="code"></div>
-    `));
+    [
+      buildWarning(err),
+      $element({className: 'code'})
+    ].forEach(e => document.body.appendChild(e));
     $('.code').textContent = source;
   });
 }
