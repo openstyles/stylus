@@ -700,12 +700,8 @@
       }
     }
   },
-  "styleInstallNoName": {
-    "message": "Install this style into stylus?",
-    "description": "Confirmation when installing a style"
-  },
   "styleInstallFailed": {
-    "message": "Failed to install userstyle!\n$ERROR$",
+    "message": "Failed to install userstyle!\n$error$",
     "description": "Warning when installation failed",
     "placeholders": {
       "error": {
@@ -718,7 +714,7 @@
     "description": "Error displayed when the value of @var checkbox is invalid"
   },
   "styleMetaErrorColor": {
-    "message": "$COLOR$ is not a valid color",
+    "message": "$color$ is not a valid color",
     "description": "Error displayed when the value of @var color is invalid",
     "placeholders": {
       "color": {
@@ -727,7 +723,7 @@
     }
   },
   "styleMetaErrorSelectMissingKey": {
-    "message": "Invalid @var select: missing key '$KEY$'",
+    "message": "Invalid @var select: missing key '$key$'",
     "description": "Error displayed when the value of @var select is not a valid key",
     "placeholders": {
       "key": {
@@ -736,7 +732,7 @@
     }
   },
   "styleMetaErrorSelect": {
-    "message": "Invalid @var select: $ERROR$",
+    "message": "Invalid @var select: $error$",
     "description": "Error displayed when the value of @var select is invalid",
     "placeholders": {
       "error": {
@@ -745,7 +741,7 @@
     }
   },
   "styleMissingMeta": {
-    "message": "Missing medata @$KEY$",
+    "message": "Missing medata @$key$",
     "description": "Error displayed when a mandatory metadata is missing",
     "placeholders": {
       "key": {
