@@ -469,20 +469,21 @@ function saveStyle(style) {
   return decide();
 
   function processUsercss(style) {
-    return findDupUsercss(style).then(dup => {
-      if (!dup) {
-        return;
-      }
-      if (!id) {
-        id = dup.id;
-      }
-      if (reason === 'config') {
-        return;
-      }
-      // preserve style.vars during update
-      usercss.assignVars(style, dup);
-    })
-    .then(() => usercss.buildCode(style));
+    return findDupUsercss(style)
+      .then(dup => {
+        if (!dup) {
+          return;
+        }
+        if (!id) {
+          id = dup.id;
+        }
+        if (reason === 'config') {
+          return;
+        }
+        // preserve style.vars during update
+        usercss.assignVars(style, dup);
+      })
+      .then(() => usercss.buildCode(style));
   }
 
   function decide() {
