@@ -85,8 +85,8 @@ function createSourceEditor(style) {
     $('#beautify').disabled = Boolean(style.preprocessor);
   }
 
-  function replaceStyle(_style) {
-    style = _style;
+  function replaceStyle(newStyle) {
+    style = newStyle;
     updateMetas();
     if (style.source !== cm.getValue()) {
       const cursor = cm.getCursor();
@@ -96,9 +96,9 @@ function createSourceEditor(style) {
     dirty.clear();
   }
 
-  function updateStyleMeta(_style) {
-    dirty.modify('enabled', style.enabled, _style.enabled);
-    style.enabled = _style.enabled;
+  function updateStyleMeta(newStyle) {
+    dirty.modify('enabled', style.enabled, newStyle.enabled);
+    style.enabled = newStyle.enabled;
   }
 
   function toggleStyle() {
