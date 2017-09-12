@@ -1299,34 +1299,6 @@ function beautify(event) {
 
 onDOMready().then(init);
 
-function createEmptyStyle() {
-  const params = getParams();
-  const style = {
-    id: null,
-    name: '',
-    enabled: true,
-    sections: [{code: ''}]
-  };
-  for (const i in CssToProperty) {
-    if (params[i]) {
-      style.sections[0][CssToProperty[i]] = [params[i]];
-    }
-  }
-  return style;
-}
-
-function windowLoaded() {
-  if (document.readyState !== 'loading') {
-    return Promise.resolve();
-  }
-  return new Promise(resolve => {
-    window.addEventListener('load', function self() {
-      window.removeEventListener('load', self);
-      resolve();
-    });
-  });
-}
-
 function init() {
   initCodeMirror();
   const params = getParams();
@@ -1355,6 +1327,34 @@ function init() {
       initWithStyle({style});
     });
   });
+
+  function createEmptyStyle() {
+    const params = getParams();
+    const style = {
+      id: null,
+      name: '',
+      enabled: true,
+      sections: [{code: ''}]
+    };
+    for (const i in CssToProperty) {
+      if (params[i]) {
+        style.sections[0][CssToProperty[i]] = [params[i]];
+      }
+    }
+    return style;
+  }
+
+  function windowLoaded() {
+    if (document.readyState !== 'loading') {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      window.addEventListener('load', function self() {
+        window.removeEventListener('load', self);
+        resolve();
+      });
+    });
+  }
 }
 
 function setStyleMeta(style) {
