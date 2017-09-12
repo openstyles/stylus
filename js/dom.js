@@ -80,18 +80,6 @@ function onDOMready() {
 }
 
 
-function injectCSS(url) {
-  if (!url) {
-    return;
-  }
-  document.head.appendChild($element({
-    tag: 'link',
-    rel: 'stylesheet',
-    href: url
-  }));
-}
-
-
 function scrollElementIntoView(element) {
   // align to the top/bottom of the visible area if wasn't visible
   const bounds = element.getBoundingClientRect();
