@@ -60,7 +60,7 @@ function initInstallPage({style, dup}, sourceLoader) {
 
     if (versionTest < 0) {
       $('.actions').parentNode.insertBefore(
-        $element({className: 'warning', appendChild: t('versionInvalidOlder')}),
+        $element({className: 'warning', textContent: t('versionInvalidOlder')}),
         $('.actions')
       );
     }
@@ -84,19 +84,19 @@ function initInstallPage({style, dup}, sourceLoader) {
         $element({className: 'header', appendChild: [
           $element({tag: 'h1', appendChild: [
             style.name,
-            $element({tag: 'small', className: 'meta-version', appendChild: style.version})
+            $element({tag: 'small', className: 'meta-version', textContent: style.version})
           ]}),
-          $element({tag: 'p', appendChild: style.description}),
-          $element({tag: 'h3', appendChild: t('author')}),
+          $element({tag: 'p', textContent: style.description}),
+          $element({tag: 'h3', textContent: t('author')}),
           style.author,
-          $element({tag: 'h3', appendChild: t('license')}),
+          $element({tag: 'h3', textContent: t('license')}),
           style.license,
-          $element({tag: 'h3', appendChild: t('appliesLabel')}),
+          $element({tag: 'h3', textContent: t('appliesLabel')}),
           $element({tag: 'ul', appendChild: getAppliesTo(style).map(
-            pattern => $element({tag: 'li', appendChild: pattern})
+            pattern => $element({tag: 'li', textContent: pattern})
           )}),
           $element({className: 'actions', appendChild: [
-            $element({tag: 'button', className: 'install', appendChild: installButtonLabel()})
+            $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
           ]}),
           $element({className: 'external', appendChild: [
             externalLink('externalHomepage', style.url),
@@ -114,7 +114,7 @@ function initInstallPage({style, dup}, sourceLoader) {
         tag: 'a',
         href: url,
         target: '_blank',
-        appendChild: t(name),
+        textContent: t(name),
         rel: 'noopener'
       });
     }
@@ -154,7 +154,7 @@ function initLiveReload(sourceLoader) {
   });
   $('.actions').appendChild($element({tag: 'label', className: 'live-reload', appendChild: [
     $element({tag: 'input', type: 'checkbox', className: 'live-reload-checkbox'}),
-    $element({tag: 'span', appendChild: t('liveReloadLabel')})
+    $element({tag: 'span', textContent: t('liveReloadLabel')})
   ]}));
   $('.live-reload-checkbox').onchange = e => {
     if (!installed) {
@@ -171,7 +171,7 @@ function initLiveReload(sourceLoader) {
 function buildWarning(err) {
   return $element({className: 'warning', appendChild: [
     t('parseUsercssError'),
-    $element({tag: 'pre', appendChild: String(err)})
+    $element({tag: 'pre', textContent: String(err)})
   ]});
 }
 
