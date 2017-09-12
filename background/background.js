@@ -324,46 +324,21 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'injectContent':
-      injectContent(request, sender.tab.id).then(sendResponse);
+      injectContent(sender.tab.id, request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
   }
 }
 
-function injectContent({resources}, tabId) {
-  return Promise.all(doInject())
+function injectContent(tabId, {files}) {
+  return Promise.all(files.map(inject))
     .then(() => ({status: 'success'}))
     .catch(err => ({status: 'error', error: err.message}));
 
-  function *doInject() {
-    for (const resource of resources) {
-      const type = resource.match(/\.\w+$/i)[0];
-      if (type === '.js') {
-        yield injectScript(resource, tabId);
-      } else if (type === '.css') {
-        yield injectStyle(resource, tabId);
-      }
-    }
-  }
-
-  function injectScript(url, tabId) {
+  function inject(file) {
     return new Promise((resolve, reject) => {
-      chrome.tabs.executeScript(tabId, {
-        file: url,
-        runAt: 'document_start'
-      }, () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-
-  function injectStyle(url, tabId) {
-    return new Promise((resolve, reject) => {
-      chrome.tabs.insertCSS(tabId, {
-        file: url,
+      const method = file.endsWith('.js') ? 'executeScript' : 'insertCSS';
+      chrome.tabs[method](tabId, {
+        file,
         runAt: 'document_start'
       }, () => {
         if (chrome.runtime.lastError) {

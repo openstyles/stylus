@@ -232,7 +232,7 @@ function createSourceLoader() {
 function initUsercssInstall() {
   pendingResource = communicate({
     method: 'injectContent',
-    resources: [
+    files: [
       '/js/dom.js',
       '/js/localization.js',
       '/js/usercss.js',
