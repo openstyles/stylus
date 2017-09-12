@@ -1305,10 +1305,7 @@ function init() {
   getStyle().then(style => {
     styleId = style.id;
     sessionStorage.justEditedStyleId = styleId;
-
-    return windowLoaded().then(() => {
-      initWithStyle({style});
-    });
+    initWithStyle({style});
   });
 
   function getStyle() {
@@ -1344,18 +1341,6 @@ function init() {
       }
     }
     return style;
-  }
-
-  function windowLoaded() {
-    if (document.readyState !== 'loading') {
-      return Promise.resolve();
-    }
-    return new Promise(resolve => {
-      window.addEventListener('load', function _() {
-        window.removeEventListener('load', _);
-        resolve();
-      });
-    });
   }
 }
 
