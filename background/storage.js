@@ -23,7 +23,8 @@ var cachedStyles = {
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
   needTransitionPatch: new Map(), // FF bug workaround
   mutex: {
-    inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
+    inProgress: true,    // while getStyles() is reading IndexedDB all subsequent calls
+                         // (initially 'true' to prevent rogue getStyles before dbExec.initialized)
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
@@ -92,6 +93,7 @@ dbExec.initialized = false;
 // (FF may block localStorage depending on its privacy options)
 do {
   const done = () => {
+    cachedStyles.mutex.inProgress = false;
     getStyles().then(() => {
       dbExec.initialized = true;
       window.dispatchEvent(new Event('storageReady'));
