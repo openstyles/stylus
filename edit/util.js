@@ -55,6 +55,7 @@ function dirtyReporter() {
   }
 
   function onChange(cb) {
+    // make sure the callback doesn't throw
     onchanges.push(cb);
   }
 
@@ -67,11 +68,7 @@ function dirtyReporter() {
 
   function emitChange() {
     for (const cb of onchanges) {
-      try {
-        cb();
-      } catch (e) {
-        console.error(e);
-      }
+      cb();
     }
   }
 
