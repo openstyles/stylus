@@ -1,34 +1,46 @@
 'use strict';
 
+// loadScript(script: Array<Promise|string>|string): Promise
 // eslint-disable-next-line no-var
 var loadScript = (function () {
   const cache = new Map();
 
-  return function (path) {
-    if (!path.includes('://')) {
-      path = chrome.runtime.getURL(path);
+  function inject(file) {
+    if (!cache.has(file)) {
+      cache.set(file, doInject(file));
     }
-    return new Promise((resolve, reject) => {
-      if (cache.has(path)) {
-        resolve(cache.get(path));
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = path;
-      script.onload = () => {
-        resolve(script);
-        script.onload = null;
-        script.onerror = null;
+    return cache.get(file);
+  }
 
-        cache.set(path, script);
+  function doInject(file) {
+    return new Promise((resolve, reject) => {
+      let el;
+      if (file.endsWith('.js')) {
+        el = document.createElement('script');
+        el.src = file;
+      } else {
+        el = document.createElement('link');
+        el.rel = 'stylesheet';
+        el.href = file;
+      }
+      el.onload = () => {
+        el.onload = null;
+        el.onerror = null;
+        resolve();
       };
-      script.onerror = () => {
-        reject(new Error(`failed to load script: ${path}`));
-        script.onload = null;
-        script.onerror = null;
-        script.parentNode.removeChild(script);
+      el.onerror = () => {
+        el.onload = null;
+        el.onerror = null;
+        reject(new Error(`Failed to load script: ${file}`));
       };
-      document.head.appendChild(script);
+      document.head.appendChild(el);
     });
+  }
+
+  return files => {
+    if (!files.map) {
+      files = [files];
+    }
+    return Promise.all(files.map(f => (typeof f === 'string' ? inject(f) : f)));
   };
 })();

@@ -1,6 +1,6 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
-/* global onDOMscripted injectCSS require CSSLint stylelint */
+/* global loadScript require CSSLint stylelint */
 'use strict';
 
 loadLinterAssets();
@@ -503,10 +503,10 @@ function setupLinterPopup(config) {
     $('.save', popup).disabled = cm.isClean();
   });
   setupLinterSettingsEvents(popup);
-  onDOMscripted([
-    'vendor/codemirror/mode/javascript/javascript.js',
-    'vendor/codemirror/addon/lint/json-lint.js',
-    'vendor/jsonlint/jsonlint.js'
+  loadScript([
+    '/vendor/codemirror/mode/javascript/javascript.js',
+    '/vendor/codemirror/addon/lint/json-lint.js',
+    '/vendor/jsonlint/jsonlint.js'
   ]).then(() => {
     popup.codebox.setOption('mode', 'application/json');
     popup.codebox.setOption('lint', 'json');
@@ -514,32 +514,28 @@ function setupLinterPopup(config) {
 }
 
 function loadLinterAssets(name = prefs.get('editor.linter')) {
-  if (loadLinterAssets.loadingName === name) {
-    return onDOMscripted();
-  }
-  loadLinterAssets.loadingName = name;
   const scripts = [];
   if (name === 'csslint' && !window.CSSLint) {
     scripts.push(
-      'vendor-overwrites/csslint/csslint-worker.js',
-      'edit/lint-defaults-csslint.js'
+      '/vendor-overwrites/csslint/csslint-worker.js',
+      '/edit/lint-defaults-csslint.js'
     );
   } else if (name === 'stylelint' && !window.stylelint) {
     scripts.push(
-      'vendor-overwrites/stylelint/stylelint-bundle.min.js',
-      () => (window.stylelint = require('stylelint')),
-      'edit/lint-defaults-stylelint.js'
+      loadScript([
+        '/vendor-overwrites/stylelint/stylelint-bundle.min.js',
+        '/edit/lint-defaults-stylelint.js'
+      ]).then(() => (window.stylelint = require('stylelint')))
     );
   }
-  if (name && !$('script[src$="vendor/codemirror/addon/lint/lint.js"]')) {
-    injectCSS('vendor/codemirror/addon/lint/lint.css');
-    injectCSS('msgbox/msgbox.css');
+  if (name && !$('script[src$="/vendor/codemirror/addon/lint/lint.js"]')) {
     scripts.push(
-      'vendor/codemirror/addon/lint/lint.js',
-      'edit/lint-codemirror-helper.js',
-      'msgbox/msgbox.js'
+      '/vendor/codemirror/addon/lint/lint.css',
+      '/msgbox/msgbox.css',
+      '/vendor/codemirror/addon/lint/lint.js',
+      '/edit/lint-codemirror-helper.js',
+      '/msgbox/msgbox.js'
     );
   }
-  return onDOMscripted(scripts)
-    .then(() => (loadLinterAssets.loadingName = null));
+  return loadScript(scripts);
 }

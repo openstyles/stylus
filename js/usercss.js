@@ -12,7 +12,7 @@ var usercss = (function () {
   const BUILDER = {
     default: {
       postprocess(sections, vars) {
-        let varDef =
+        const varDef =
           ':root {\n' +
           Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('') +
           '}\n';
@@ -24,7 +24,7 @@ var usercss = (function () {
     },
     stylus: {
       preprocess(source, vars) {
-        return loadScript('vendor/stylus-lang/stylus.min.js').then(() => (
+        return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
             let varDef = '';
             for (const key of Object.keys(vars)) {
@@ -73,7 +73,6 @@ var usercss = (function () {
     }
 
     function formatHex({r, g, b, a = null}) {
-      const values = [r, g, b];
       let hex = '#' + (0x1000000 + (r << 16) + (g << 8) + (b | 0)).toString(16).substr(1);
       if (a !== null) {
         hex += (0x100 + Math.floor(a * 255)).toString(16).substr(1);

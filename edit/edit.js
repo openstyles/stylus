@@ -1,9 +1,9 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
-/* global onDOMscripted */
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
+/* global loadScript */
 
 'use strict';
 
@@ -1206,14 +1206,13 @@ function getEditorInSight(nearbyElement) {
 }
 
 function beautify(event) {
-  onDOMscripted([
-    'vendor-overwrites/beautify/beautify-css-mod.js',
-    () => {
+  loadScript('/vendor-overwrites/beautify/beautify-css-mod.js')
+    .then(() => {
       if (!window.css_beautify && window.exports) {
         window.css_beautify = window.exports.css_beautify;
       }
-    },
-  ]).then(doBeautify);
+    })
+    .then(doBeautify);
 
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
@@ -1352,7 +1351,7 @@ function setStyleMeta(style) {
 
 function initWithStyle(request) {
   if (!editor) {
-    if (!style.usercss) {
+    if (!request.style.usercss) {
       initWithSectionStyle(request);
     } else {
       editor = createSourceEditor(request.style);
@@ -1670,20 +1669,29 @@ function fromMozillaFormat() {
   });
 
   function doImport(event) {
-    // parserlib contained in CSSLint-worker.js
-    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js']).then(() => {
-      doImportWhenReady(event.target);
-      editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
-      editors.last.state.renderLintReportNow = true;
-    });
-  }
-
-  function doImportWhenReady(target) {
-    const replaceOldStyle = target.name === 'import-replace';
-    $('.dismiss', popup).onclick();
+    const replaceOldStyle = event.target.name === 'import-replace';
     const mozStyle = trimNewLines(popup.codebox.getValue());
 
-    mozParser.parse(mozStyle).then(sections => {
+    mozParser.parse(mozStyle)
+      .then(updateSection)
+      .then(() => {
+        editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
+        editors.last.state.renderLintReportNow = true;
+        $('.dismiss', popup).onclick();
+      })
+      .catch(showError);
+
+    function showError(errors) {
+      if (!errors.join) {
+        errors = [errors];
+      }
+      showHelp(t('issues'), $element({
+        tag: 'pre',
+        textContent: errors.join('\n'),
+      }));
+    }
+
+    function updateSection(sections) {
       if (replaceOldStyle) {
         editors.slice(0).reverse().forEach(cm => {
           removeSection({target: cm.getSection().firstElementChild});
@@ -1709,13 +1717,9 @@ function fromMozillaFormat() {
 
       makeSectionVisible(firstAddedCM);
       firstAddedCM.focus();
-    }, errors => {
-      showHelp(t('issues'), $element({
-        tag: 'pre',
-        textContent: errors.join('\n'),
-      }));
-    });
+    }
   }
+
   function trimNewLines(s) {
     return s.replace(/^[\s\n]+/, '').replace(/[\s\n]+$/, '');
   }

@@ -172,7 +172,7 @@ function buildWarning(err) {
   return $element({className: 'warning', appendChild: [
     t('parseUsercssError'),
     $element({tag: 'pre', appendChild: String(err)})
-  ]})
+  ]});
 }
 
 function initErrorPage(err, source) {
