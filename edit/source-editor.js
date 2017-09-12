@@ -95,6 +95,11 @@ function createSourceEditor(style) {
     dirty.clear();
   }
 
+  function updateStyleMeta(_style) {
+    dirty.modify('enabled', style.enabled, _style.enabled);
+    style.enabled = _style.enabled;
+  }
+
   function toggleStyle() {
     const value = !style.enabled;
     dirty.modify('enabled', style.enabled, value);
@@ -132,5 +137,5 @@ function createSourceEditor(style) {
       });
   }
 
-  return {replaceStyle, save, toggleStyle};
+  return {replaceStyle, save, toggleStyle, updateStyleMeta};
 }

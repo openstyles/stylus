@@ -1365,17 +1365,21 @@ function setStyleMeta(style) {
   $('#url').href = style.url || '';
 }
 
-function initWithStyle({style}) {
-  // FIXME: what does codeIsUpdated do?
+function initWithStyle(request) {
   if (!style.usercss) {
-    initWithSectionStyle({style});
+    initWithSectionStyle(request);
     return;
   }
 
-  if (editor) {
-    editor.replaceStyle(style);
+  if (!editor) {
+    editor = createSourceEditor(request.style);
+    return;
+  }
+
+  if (request.codeIsUpdated === false) {
+    editor.updateStyleMeta(request.style);
   } else {
-    editor = createSourceEditor(style);
+    editor.replaceStyle(request.style);
   }
 }
 
