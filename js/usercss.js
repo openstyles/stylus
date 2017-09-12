@@ -155,8 +155,8 @@ var usercss = (function () {
       const match = matchString(source);
       try {
         result.select = JSON.parse(match.follow);
-      } catch (err) {
-        throw new Error(chrome.i18n.getMessage('styleMetaErrorSelect', err.message));
+      } catch (e) {
+        throw new Error(chrome.i18n.getMessage('styleMetaErrorSelect', e.message));
       }
       source = match.value;
     }
@@ -295,7 +295,7 @@ var usercss = (function () {
         style.vars[key].value = old.vars[key].value;
         try {
           validVar(style.vars[key], 'value');
-        } catch (err) {
+        } catch (e) {
           style.vars[key].value = null;
         }
       }

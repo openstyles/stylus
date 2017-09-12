@@ -70,7 +70,7 @@ function dirtyReporter() {
       try {
         cb();
       } catch (e) {
-        console.error(err);
+        console.error(e);
       }
     }
   }
