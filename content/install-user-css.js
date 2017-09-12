@@ -10,7 +10,7 @@ function install(style) {
     reason: 'install',
     updateUrl: location.href
   });
-  return communicate(request)
+  return runtimeSend(request)
     .then(result => {
       $$('.warning')
         .forEach(el => el.remove());
@@ -23,7 +23,7 @@ function install(style) {
     });
 }
 
-function communicate(request) {
+function runtimeSend(request) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(request, result => {
       if (result.status === 'error') {
@@ -114,7 +114,7 @@ function initLiveReload(sourceLoader) {
   let installed;
   const watcher = sourceLoader.watch(source => {
     $('.code').textContent = source;
-    return communicate({
+    return runtimeSend({
       method: 'saveUsercss',
       id: installed.id,
       source: source
@@ -230,7 +230,7 @@ function createSourceLoader() {
 }
 
 function initUsercssInstall() {
-  pendingResource = communicate({
+  pendingResource = runtimeSend({
     method: 'injectContent',
     files: [
       '/js/dom.js',
@@ -244,7 +244,7 @@ function initUsercssInstall() {
   const sourceLoader = createSourceLoader();
   sourceLoader.load()
     .then(() =>
-      communicate({
+      runtimeSend({
         method: 'filterUsercss',
         source: sourceLoader.source(),
         checkDup: true
