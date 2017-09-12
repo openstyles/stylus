@@ -1349,8 +1349,8 @@ function init() {
       return Promise.resolve();
     }
     return new Promise(resolve => {
-      window.addEventListener('load', function self() {
-        window.removeEventListener('load', self);
+      window.addEventListener('load', function _() {
+        window.removeEventListener('load', _);
         resolve();
       });
     });
