@@ -413,13 +413,7 @@ function filterUsercss(req) {
 
 function saveUsercss(style) {
   // This function use `saveStyle`, however the response is different.
-  return Promise.resolve()
-    .then(() => {
-      if (!style.name || !style.namespace) {
-        return Object.assign(usercss.buildMeta(style.source), style);
-      }
-      return style;
-    })
+  return buildMeta()
     .then(saveStyle)
     .then(result => ({
       status: 'success',
@@ -429,6 +423,16 @@ function saveUsercss(style) {
       status: 'error',
       error: String(err)
     }));
+
+  function buildMeta() {
+    return new Promise(resolve => {
+      if (!style.name || !style.namespace) {
+        resolve(Object.assign(usercss.buildMeta(style.source), style));
+        return;
+      }
+      resolve(style);
+    });
+  }
 }
 
 
