@@ -1,4 +1,4 @@
-/* global semverCompare escapeHtml */
+/* global semverCompare */
 
 'use strict';
 

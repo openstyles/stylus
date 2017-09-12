@@ -1,7 +1,6 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global onDOMscripted injectCSS require CSSLint stylelint */
-/* global escapeHtml */
 'use strict';
 
 loadLinterAssets();
