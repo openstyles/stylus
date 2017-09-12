@@ -1366,13 +1366,12 @@ function setStyleMeta(style) {
 }
 
 function initWithStyle(request) {
-  if (!style.usercss) {
-    initWithSectionStyle(request);
-    return;
-  }
-
   if (!editor) {
-    editor = createSourceEditor(request.style);
+    if (!style.usercss) {
+      initWithSectionStyle(request);
+    } else {
+      editor = createSourceEditor(request.style);
+    }
     return;
   }
 
