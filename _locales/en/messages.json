@@ -8,8 +8,8 @@
     "description": "Title of the page for adding styles"
   },
   "alphaChannel": {
-    "message": "Alpha channel",
-    "description": "Label of alpha channel input"
+    "message": "Opacity",
+    "description": "Label of color's opacity"
   },
   "appliesAdd": {
     "message": "Add",
