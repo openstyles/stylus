@@ -177,7 +177,7 @@ function buildWarning(err) {
 
 function initErrorPage(err, source) {
   return pendingResource.then(() => {
-    document.body.innerHTML = '';
+    document.body.textContent = '';
     [
       buildWarning(err),
       $element({className: 'code'})
