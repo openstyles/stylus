@@ -7,7 +7,6 @@
 
 function createSourceEditor(style) {
   // draw HTML
-  document.title = t('editStyleTitle', [style.name]);
   $('#sections').innerHTML = '';
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
@@ -28,9 +27,9 @@ function createSourceEditor(style) {
   const dirty = dirtyReporter();
   dirty.onChange(() => {
     const DIRTY = dirty.isDirty();
-    document.title = (DIRTY ? '* ' : '') + t('editStyleTitle', [style.name]);
     document.body.classList.toggle('dirty', DIRTY);
     $('#save-button').disabled = !DIRTY;
+    updateTitle();
   });
 
   // draw metas info
@@ -259,6 +258,12 @@ function createSourceEditor(style) {
     CodeMirror.autoLoadMode(cm, style.preprocessor || 'css');
     // beautify only works with regular CSS
     $('#beautify').disabled = Boolean(style.preprocessor);
+    updateTitle();
+  }
+
+  function updateTitle() {
+    // title depends on dirty and style meta
+    document.title = (dirty.isDirty() ? '* ' : '') + t('editStyleTitle', [style.name]);
   }
 
   function replaceStyle(newStyle) {
