@@ -183,3 +183,13 @@ function $element(opt) {
   }
   return element;
 }
+
+
+function makeLink(href = '', textContent) {
+  return $element({
+    tag: 'a',
+    target: '_blank',
+    href,
+    textContent,
+  });
+}

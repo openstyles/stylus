@@ -1,4 +1,4 @@
-/* global semverCompare */
+/* global semverCompare makeLink */
 
 'use strict';
 
@@ -99,24 +99,14 @@ function initInstallPage({style, dup}, sourceLoader) {
             $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
           ]}),
           $element({className: 'external', appendChild: [
-            externalLink('externalHomepage', style.url),
-            externalLink('externalSupport', style.support)
+            style.url && makeLink(style.url, t('externalHomepage')),
+            style.support && makeLink(style.support, t('externalSupport'))
           ]})
         ]}),
         $element({className: 'main', appendChild: [
           $element({className: 'code'})
         ]})
       ]});
-    }
-
-    function externalLink(name, url) {
-      return $element({
-        tag: 'a',
-        href: url,
-        target: '_blank',
-        textContent: t(name),
-        rel: 'noopener'
-      });
     }
 
     function installButtonLabel() {

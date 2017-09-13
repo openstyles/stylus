@@ -1,6 +1,7 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global loadScript require CSSLint stylelint */
+/* global makeLink */
 'use strict';
 
 onDOMready().then(loadLinterAssets);
@@ -357,12 +358,6 @@ function toggleLintReport() {
 }
 
 function showLintHelp() {
-  const makeLink = (href, textContent) => $element({
-    tag: 'a',
-    target: '_blank',
-    href,
-    textContent,
-  });
   const linter = prefs.get('editor.linter');
   const baseUrl = linter === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'
