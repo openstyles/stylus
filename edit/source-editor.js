@@ -7,6 +7,7 @@
 
 function createSourceEditor(style) {
   // draw HTML
+  document.title = t('editStyleTitle', [style.name]);
   $('#sections').innerHTML = '';
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
