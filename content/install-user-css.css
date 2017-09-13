@@ -28,6 +28,10 @@ h1 small {
   font-size: 0.6em;
 }
 
+.meta-version::before {
+  content: " v";
+}
+
 .warning {
   padding: 3px 6px;
   border: 1px dashed black;
