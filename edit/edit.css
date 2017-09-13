@@ -539,6 +539,25 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   height: 100%;
 }
 
+/************ line widget *************/
+.CodeMirror-linewidget .applies-to {
+  margin: 1em 0;
+  padding: 1em;
+  padding-right: calc(1em + 20px);
+}
+
+.CodeMirror-linewidget .applies-to li {
+  margin: 0;
+}
+
+.CodeMirror-linewidget .applies-to li + li {
+  margin-top: 0.35rem;
+}
+
+.CodeMirror-linewidget li.applies-to-everything {
+  margin-top: 0.2rem;
+}
+
 /************ reponsive layouts ************/
 @media(max-width:737px) {
   #header {
