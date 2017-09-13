@@ -50,6 +50,7 @@ h1 small {
 
 .live-reload {
   width: fit-content;
+  width: -moz-fit-content;
   display: flex;
   align-items: center;
   margin: 0.5em auto;

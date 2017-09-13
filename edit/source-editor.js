@@ -79,8 +79,12 @@ function createSourceEditor(style) {
     }
 
     function setWidgetStyle(widget) {
-      const borderStyle = style.borderRightWidth !== '0px' ?
-        style.borderRight : '1px solid ' + style.color;
+      let borderStyle = '';
+      if (style.borderRightWidth !== '0px') {
+        borderStyle = `${style.borderRightWidth} ${style.borderRightStyle} ${style.borderRightColor}`;
+      } else {
+        borderStyle = `1px solid ${style.color}`;
+      }
       widget.node.style.backgroundColor = style.backgroundColor;
       widget.node.style.borderTop = borderStyle;
       widget.node.style.borderBottom = borderStyle;

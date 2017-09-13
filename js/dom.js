@@ -36,9 +36,14 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
 }
 
-onDOMready().then(() => $('#firefox-transitions-bug-suppressor').remove());
+onDOMready().then(() => {
+  const el = $('#firefox-transitions-bug-suppressor');
+  if (el) {
+    el.remove();
+  }
+});
 
-if (navigator.userAgent.includes('Firefox')) {
+if (navigator.userAgent.includes('Firefox') && chrome.windows) {
   // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
     if (!BG && wnd.incognito) {
