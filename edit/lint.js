@@ -3,7 +3,7 @@
 /* global loadScript require CSSLint stylelint */
 'use strict';
 
-loadLinterAssets();
+onDOMready().then(loadLinterAssets);
 
 // eslint-disable-next-line no-var
 var linterConfig = {
