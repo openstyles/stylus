@@ -138,5 +138,5 @@ function createSourceEditor(style) {
       });
   }
 
-  return {replaceStyle, save, toggleStyle, updateStyleMeta};
+  return {replaceStyle, save, toggleStyle, updateStyleMeta, isDirty: dirty.isDirty};
 }
