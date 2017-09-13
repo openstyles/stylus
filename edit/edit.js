@@ -424,6 +424,7 @@ function setupCodeMirror(textarea, index) {
     cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
   }
 
+  wrapper.classList.add('resize-grip-enabled');
   let lastClickTime = 0;
   const resizeGrip = wrapper.appendChild(template.resizeGrip.cloneNode(true));
   resizeGrip.onmousedown = event => {

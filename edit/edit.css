@@ -178,7 +178,10 @@ h2 .svg-icon, label .svg-icon {
 .CodeMirror {
   border: solid #CCC 1px;
 }
-.CodeMirror-scroll {
+.CodeMirror-lint-mark-warning {
+  background: none;
+}
+.resize-grip-enabled .CodeMirror-scroll {
   height: auto !important;;
   position: absolute !important;
   top: 0;
@@ -186,16 +189,13 @@ h2 .svg-icon, label .svg-icon {
   right: 0;
   bottom: 6px; /* resize-grip height */
 }
-.CodeMirror-lint-mark-warning {
-  background: none;
-}
-.CodeMirror-vscrollbar {
+.resize-grip-enabled .CodeMirror-vscrollbar {
   margin-bottom: 7px; /* make space for resize-grip */
 }
-.CodeMirror-hscrollbar {
+.resize-grip-enabled .CodeMirror-hscrollbar {
     bottom: 7px; /* make space for resize-grip */
 }
-.CodeMirror-scrollbar-filler {
+.resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
 .CodeMirror-dialog {
