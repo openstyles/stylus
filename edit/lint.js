@@ -509,28 +509,37 @@ function setupLinterPopup(config) {
 }
 
 function loadLinterAssets(name = prefs.get('editor.linter')) {
-  const scripts = [];
-  if (name === 'csslint' && !window.CSSLint) {
-    scripts.push(
-      '/vendor-overwrites/csslint/csslint-worker.js',
-      '/edit/lint-defaults-csslint.js'
-    );
-  } else if (name === 'stylelint' && !window.stylelint) {
-    scripts.push(
-      loadScript([
+  if (!name) {
+    return Promise.resolve();
+  }
+  return loadLibrary().then(loadAddon);
+
+  function loadLibrary() {
+    if (name === 'csslint' && !window.CSSLint) {
+      return loadScript([
+        '/vendor-overwrites/csslint/csslint-worker.js',
+        '/edit/lint-defaults-csslint.js'
+      ]);
+    }
+    if (name === 'stylelint' && !window.stylelint) {
+      return loadScript([
         '/vendor-overwrites/stylelint/stylelint-bundle.min.js',
         '/edit/lint-defaults-stylelint.js'
-      ]).then(() => (window.stylelint = require('stylelint')))
-    );
+      ]).then(() => (window.stylelint = require('stylelint')));
+    }
+    return Promise.resolve();
   }
-  if (name && !$('script[src$="/vendor/codemirror/addon/lint/lint.js"]')) {
-    scripts.push(
+
+  function loadAddon() {
+    if ($('script[src$="/vendor/codemirror/addon/lint/lint.js"]')) {
+      return Promise.resolve();
+    }
+    return loadScript([
       '/vendor/codemirror/addon/lint/lint.css',
       '/msgbox/msgbox.css',
       '/vendor/codemirror/addon/lint/lint.js',
       '/edit/lint-codemirror-helper.js',
       '/msgbox/msgbox.js'
-    );
+    ]);
   }
-  return loadScript(scripts);
 }
