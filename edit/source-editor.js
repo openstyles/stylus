@@ -156,7 +156,7 @@ function createSourceEditor(style) {
           ]})
         )})
       ]});
-      if (!$$('li', el).length) {
+      if (!$('li', el)) {
         $('ul', el).appendChild($element({
           tag: 'li',
           className: 'applies-to-everything',
