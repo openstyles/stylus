@@ -6,6 +6,9 @@
 'use strict';
 
 function createSourceEditor(style) {
+  // style might be an object reference to background page
+  style = deepCopy(style);
+
   // draw HTML
   $('#sections').innerHTML = '';
   $('#name').disabled = true;
@@ -271,7 +274,7 @@ function createSourceEditor(style) {
   }
 
   function replaceStyle(newStyle) {
-    style = newStyle;
+    style = deepCopy(newStyle);
     updateMetas();
     if (style.source !== cm.getValue()) {
       const cursor = cm.getCursor();
