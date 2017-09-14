@@ -82,31 +82,46 @@ function initInstallPage({style, dup}, sourceLoader) {
     function buildPage() {
       return $element({className: 'container', appendChild: [
         $element({className: 'header', appendChild: [
+          $element({className: 'actions', appendChild: [
+            $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
+          ]}),
           $element({tag: 'h1', appendChild: [
             style.name,
             $element({tag: 'small', className: 'meta-version', textContent: style.version})
           ]}),
           $element({tag: 'p', textContent: style.description}),
-          $element({tag: 'h3', textContent: t('author')}),
+          style.author && $element({tag: 'h3', textContent: t('author')}),
           style.author,
-          $element({tag: 'h3', textContent: t('license')}),
+          style.license && $element({tag: 'h3', textContent: t('license')}),
           style.license,
           $element({tag: 'h3', textContent: t('appliesLabel')}),
           $element({tag: 'ul', appendChild: getAppliesTo(style).map(
             pattern => $element({tag: 'li', textContent: pattern})
           )}),
-          $element({className: 'actions', appendChild: [
-            $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
-          ]}),
-          $element({className: 'external', appendChild: [
-            style.url && makeLink(style.url, t('externalHomepage')),
-            style.support && makeLink(style.support, t('externalSupport'))
-          ]})
+          externalLink(style),
         ]}),
         $element({className: 'main', appendChild: [
           $element({className: 'code'})
         ]})
       ]});
+    }
+
+    function externalLink(style) {
+      const urls = [];
+      if (style.url) {
+        urls.push([style.url, t('externalHomepage')]);
+      }
+      if (style.supportURL) {
+        urls.push([style.supportURL, t('externalSupport')]);
+      }
+      if (urls.length) {
+        return $element({appendChild: [
+          $element({tag: 'h3', textContent: t('externalLink')}),
+          $element({tag: 'ul', appendChild: urls.map(args =>
+            $element({tag: 'li', appendChild: makeLink(...args)})
+          )})
+        ]});
+      }
     }
 
     function installButtonLabel() {

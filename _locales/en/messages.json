@@ -289,6 +289,10 @@
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
+  "externalLink": {
+    "message": "External link",
+    "description": "Label for external links"
+  },
   "externalHomepage": {
     "message": "Homepage",
     "description": "Label for the external link to style's homepage"
