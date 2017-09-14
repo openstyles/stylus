@@ -43,15 +43,72 @@ function createSourceEditor(style) {
 
   function initAppliesToReport(cm) {
     const DELAY = 500;
-    let widgets = [];
-    let timer;
-    let fromLine = null;
-    let toLine = null;
-    let style = getComputedStyle(cm.getGutterElement());
+    let widgets = [], timer, fromLine, toLine, style, isInit;
+    const optionEl = buildOption();
 
-    update();
+    $('#options').insertBefore(optionEl, $('#options > .option.aligned'));
 
-    cm.on('change', (cm, {from, to}) => {
+    if (prefs.get('editor.appliesToLineWidget')) {
+      init();
+    }
+
+    prefs.subscribe(['editor.appliesToLineWidget'], (key, value) => {
+      if (!isInit && value) {
+        init();
+      } else if (isInit && !value) {
+        uninit();
+      }
+      optionEl.checked = value;
+    });
+
+    optionEl.addEventListener('change', e => {
+      prefs.set('editor.appliesToLineWidget', e.target.checked);
+    });
+
+    function buildOption() {
+      return $element({className: 'option', appendChild: [
+        $element({
+          tag: 'input',
+          type: 'checkbox',
+          id: 'editor.appliesToLineWidget',
+          checked: prefs.get('editor.appliesToLineWidget')
+        }),
+        $element({
+          tag: 'label',
+          htmlFor: 'editor.appliesToLineWidget',
+          textContent: ' ' + t('appliesLineWidgetLabel'),
+          title: t('appliesLineWidgetWarning')
+        })
+      ]});
+    }
+
+    function init() {
+      isInit = true;
+
+      style = getComputedStyle(cm.getGutterElement());
+      fromLine = null;
+      toLine = null;
+
+      cm.on('change', onChange);
+      cm.on('optionChange', onOptionChange);
+
+      // is it possible to avoid flickering?
+      window.addEventListener('load', updateStyle);
+
+      update();
+    }
+
+    function uninit() {
+      isInit = false;
+
+      widgets.forEach(w => w.clear());
+      widgets.length = 0;
+      cm.off('change', onChange);
+      cm.off('optionChange', onOptionChange);
+      window.removeEventListener('load', updateStyle);
+    }
+
+    function onChange(cm, {from, to}) {
       if (fromLine === null || toLine === null) {
         fromLine = from.line;
         toLine = to.line;
@@ -61,16 +118,13 @@ function createSourceEditor(style) {
       }
       clearTimeout(timer);
       timer = setTimeout(update, DELAY);
-    });
+    }
 
-    cm.on('optionChange', (cm, option) => {
+    function onOptionChange(cm, option) {
       if (option === 'theme') {
         updateStyle();
       }
-    });
-
-    // is it possible to avoid flickering?
-    window.addEventListener('load', updateStyle);
+    }
 
     function update() {
       cm.operation(doUpdate);

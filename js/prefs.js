@@ -51,6 +51,8 @@ var prefs = new function Prefs() {
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
+    'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
+
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 

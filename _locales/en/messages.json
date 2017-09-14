@@ -40,6 +40,14 @@
     "message": "Applies to",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
+  "appliesLineWidgetLabel": {
+    "message": "Display 'Applies to' info",
+    "description": "Label for the checkbox to display applies-to information in the single editor"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Does not work with minified CSS",
+    "description": "A warning that applies-to information won't show properly with minified CSS"
+  },
   "appliesRegexpOption": {
     "message": "URLs matching the regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
