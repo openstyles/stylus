@@ -189,7 +189,7 @@ function createSourceEditor(style) {
     function *findAppliesTo(posStart, posEnd) {
       const text = cm.getValue();
       const re = /^[\t ]*@-moz-document\s+/mg;
-      const applyRe = /^(url|url-prefix|domain|regexp)\(((['"])(?:\\\3|[\s\S])*?\3|[^)]*)\)[\s,]*/i;
+      const applyRe = /^(url|url-prefix|domain|regexp)\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)[\s,]*/i;
       let preIndex = re.lastIndex = posStart;
       let match;
       let pos = cm.posFromIndex(preIndex);
