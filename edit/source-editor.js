@@ -41,6 +41,38 @@ function createSourceEditor(style) {
   initLint();
   initAppliesToReport(cm);
 
+  window.addEventListener('wheel', e => {
+    if (e.target.closest('.CodeMirror') || parentScrollable(e.target)) {
+      return;
+    }
+    const DELTA_MULTIPLIER = [1, 20, window.innerHeight];
+    scrollBy(
+      cm.getWrapperElement().querySelector('.CodeMirror-scroll'),
+      e.deltaY * DELTA_MULTIPLIER[e.deltaMode]
+    );
+  }, {passive: true});
+
+  function parentScrollable(node) {
+    while (node) {
+      if (node.offsetHeight < node.scrollHeight) {
+        const {overflow} = getComputedStyle(node);
+        if (overflow === 'auto' || overflow === 'scroll') {
+          return true;
+        }
+      }
+      node = node.parentNode;
+    }
+    return false;
+  }
+
+  function scrollBy(el, offset) {
+    if (el.scrollBy) {
+      el.scrollBy({top: offset * 40, behavior: 'smooth'});
+    } else {
+      el.scrollTop += offset;
+    }
+  }
+
   function initAppliesToReport(cm) {
     const DELAY = 500;
     let widgets = [], timer, fromLine, toLine, style, isInit;
