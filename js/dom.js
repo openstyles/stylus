@@ -33,7 +33,11 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   // enqueue after DOMContentLoaded/load events
   setTimeout(addTooltipsToEllipsized);
   // throttle on continuous resizing
-  window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
+  let timer;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(addTooltipsToEllipsized, 100);
+  });
 }
 
 onDOMready().then(() => {
