@@ -16,6 +16,7 @@ function install(style) {
         .forEach(el => el.remove());
       $('button.install').textContent = 'Installed';
       $('button.install').disabled = true;
+      $('button.install').classList.add('installed');
       window.dispatchEvent(new CustomEvent('installed', {detail: result}));
     })
     .catch(err => {

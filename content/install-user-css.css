@@ -75,6 +75,22 @@ button.install {
   padding: 0.4em 0.8em;
 }
 
+button.install {
+  background: #3586FF;
+  color: white;
+  border-radius: 0.2em;
+  border: 1px solid #0026ff;
+}
+
+button.install:not([disabled]):active {
+  box-shadow: inset 0px 0px 0.4em 0px #6A3B82;
+}
+
+button.install.installed {
+  background: #00F587;
+  border-color: #00ae08;
+}
+
 .code {
   padding: 2em;
   font-family: monospace;
