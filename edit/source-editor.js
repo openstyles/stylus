@@ -79,8 +79,19 @@ function createSourceEditor(style) {
   }
 
   function initAppliesToReport(cm) {
-    const DELAY = 500;
-    let widgets = [], timer, fromLine, toLine, style, isInit;
+    const APPLIES_TYPE = [
+      [t('appliesUrlOption'), 'url'],
+      [t('appliesUrlPrefixOption'), 'url-prefix'],
+      [t('appliesDomainOption'), 'domain'],
+      [t('appliesRegexpOption'), 'regexp']
+    ];
+    const THROTTLE_DELAY = 400;
+    let widgets = [];
+    let timer;
+    let fromLine;
+    let toLine;
+    let style;
+    let isInit;
     const optionEl = buildOption();
 
     $('#options').insertBefore(optionEl, $('#options > .option.aligned'));
@@ -138,14 +149,17 @@ function createSourceEditor(style) {
     function uninit() {
       isInit = false;
 
-      widgets.forEach(w => w.clear());
+      widgets.forEach(clearWidget);
       widgets.length = 0;
       cm.off('change', onChange);
       cm.off('optionChange', onOptionChange);
       window.removeEventListener('load', updateStyle);
     }
 
-    function onChange(cm, {from, to}) {
+    function onChange(cm, {from, to, origin}) {
+      if (origin === 'appliesTo') {
+        return;
+      }
       if (fromLine === null || toLine === null) {
         fromLine = from.line;
         toLine = to.line;
@@ -154,7 +168,7 @@ function createSourceEditor(style) {
         toLine = Math.max(toLine, to.line);
       }
       clearTimeout(timer);
-      timer = setTimeout(update, DELAY);
+      timer = setTimeout(update, THROTTLE_DELAY);
     }
 
     function onOptionChange(cm, option) {
@@ -216,10 +230,16 @@ function createSourceEditor(style) {
       let i = 0;
       for (const section of findAppliesTo(start, end)) {
         while (removed[i] && removed[i].line.lineNo() < section.pos.line) {
-          removed[i++].clear();
+          clearWidget(removed[i++]);
         }
+        setupMarkers(section);
         if (removed[i] && removed[i].line.lineNo() === section.pos.line) {
           // reuse old widget
+          removed[i].section.applies.forEach(apply => {
+            apply.type.mark.clear();
+            apply.value.mark.clear();
+          });
+          removed[i].section = section;
           const newNode = buildElement(section);
           removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
           removed[i].node = newNode;
@@ -235,10 +255,32 @@ function createSourceEditor(style) {
           noHScroll: true,
           above: true
         });
+        widget.section = section;
         setWidgetStyle(widget);
         yield widget;
       }
-      removed.slice(i).forEach(w => w.clear());
+      removed.slice(i).forEach(clearWidget);
+    }
+
+    function clearWidget(widget) {
+      widget.clear();
+      widget.section.applies.forEach(apply => {
+        apply.type.mark.clear();
+        apply.value.mark.clear();
+      });
+    }
+
+    function setupMarkers({applies}) {
+      for (const apply of applies) {
+        apply.type.mark = cm.markText(
+          cm.posFromIndex(apply.type.start),
+          cm.posFromIndex(apply.type.end)
+        );
+        apply.value.mark = cm.markText(
+          cm.posFromIndex(apply.value.start),
+          cm.posFromIndex(apply.value.end)
+        );
+      }
     }
 
     function buildElement({applies}) {
@@ -248,10 +290,7 @@ function createSourceEditor(style) {
           // $element({tag: 'svg'})
         ]}),
         $element({tag: 'ul', className: 'applies-to-list', appendChild: applies.map(apply =>
-          $element({tag: 'li', appendChild: [
-            $element({tag: 'input', className: 'applies-type', value: typeLabel(apply.type), readOnly: true}),
-            $element({tag: 'input', className: 'applies-value', value: apply.value, readOnly: true})
-          ]})
+          $element({tag: 'li', appendChild: makeInput(apply)})
         )})
       ]});
       if (!$('li', el)) {
@@ -264,16 +303,45 @@ function createSourceEditor(style) {
       return el;
     }
 
-    function typeLabel(type) {
-      switch (type.toLowerCase()) {
-        case 'url':
-          return t('appliesUrlOption');
-        case 'url-prefix':
-          return t('appliesUrlPrefixOption');
-        case 'domain':
-          return t('appliesDomainOption');
-        case 'regexp':
-          return t('appliesRegexpOption');
+    function makeInput(apply) {
+      const typeInput = $element({
+        tag: 'select',
+        className: 'applies-type',
+        appendChild: APPLIES_TYPE.map(([label, value]) => $element({
+          tag: 'option',
+          value: value,
+          textContent: label
+        })),
+        onchange(e) {
+          applyChange(apply.type, e.target.value);
+        }
+      });
+      typeInput.value = apply.type.text;
+      let timer;
+      const valueInput = $element({
+        tag: 'input',
+        className: 'applies-value',
+        value: apply.value.text,
+        oninput(e) {
+          clearTimeout(timer);
+          timer = setTimeout(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
+        }
+      });
+      return [typeInput, valueInput];
+
+      function applyChange(input, newText) {
+        const range = input.mark.find();
+        input.mark.clear();
+        cm.replaceRange(newText, range.from, range.to, 'appliesTo');
+        input.mark = cm.markText(
+          range.from,
+          cm.findPosH(
+            range.from,
+            newText.length,
+            'char'
+          )
+        );
+        input.text = newText;
       }
     }
 
@@ -295,24 +363,18 @@ function createSourceEditor(style) {
         let offset = 0;
         while ((m = t.match(applyRe))) {
           const apply = {
-            type: m[1],
-            value: normalizeString(m[2]),
-            typeStart: null,
-            typeEnd: null,
-            valueStart: null,
-            valueEnd: null,
+            type: {
+              text: m[1]
+            },
+            value: {
+              text: normalizeString(m[2])
+            }
           };
-          apply.typeStart = re.lastIndex + offset;
-          apply.typeEnd = apply.typeStart + apply.type.length;
-          apply.valueStart = apply.typeEnd + (apply.value === m[2] ? 1 : 2);
-          apply.valueEnd = apply.valueStart + apply.value.length;
-          applies.push({
-            typeStart: re.lastIndex + offset;
-            typeEnd: re.lastIndex + offset + m[1].length
-            type: m[1],
-            valueStart:
-            value: value,
-          });
+          apply.type.start = re.lastIndex + offset;
+          apply.type.end = apply.type.start + apply.type.text.length;
+          apply.value.start = apply.type.end + (apply.value.text === m[2] ? 1 : 2);
+          apply.value.end = apply.value.start + apply.value.text.length;
+          applies.push(apply);
           t = t.slice(m[0].length);
           offset += m[0].length;
         }
