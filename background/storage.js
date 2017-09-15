@@ -377,7 +377,7 @@ function filterUsercss(req) {
   return buildMeta()
     .then(buildSection)
     .then(decide)
-    .catch(err => ({status: 'error', error: err.message}));
+    .catch(err => ({status: 'error', error: err.message || String(err)}));
 
   function buildMeta() {
     return new Promise(resolve => {

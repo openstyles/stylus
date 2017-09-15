@@ -5,9 +5,11 @@
 // eslint-disable-next-line no-var
 var usercss = (function () {
   const METAS = [
-    'author', 'description', 'homepageURL', 'icon', 'license', 'name',
+    'author', 'advanced', 'description', 'homepageURL', 'icon', 'license', 'name',
     'namespace', 'noframes', 'preprocessor', 'supportURL', 'var', 'version'
   ];
+
+  const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image'];
 
   const BUILDER = {
     default: {
@@ -41,6 +43,45 @@ var usercss = (function () {
             });
           })
         ));
+      }
+    },
+    uso: {
+      preprocess(source, vars) {
+        const pool = new Map();
+        return Promise.resolve(doReplace(source));
+
+        function getValue(name, rgb) {
+          if (!vars.hasOwnProperty(name)) {
+            if (name.endsWith('-rgb')) {
+              return getValue(name.slice(0, -4), true);
+            }
+            return null;
+          }
+          if (rgb) {
+            if (vars[name].type === 'color') {
+              // eslint-disable-next-line no-use-before-define
+              const color = colorParser.parse(vars[name].value);
+              return `${color.r}, ${color.g}, ${color.b}`;
+            }
+            return null;
+          }
+          if (vars[name].type === 'dropdown') {
+            // prevent infinite recursion
+            pool.set('');
+            return doReplace(vars[name].value);
+          }
+          return vars[name].value;
+        }
+
+        function doReplace(text) {
+          return text.replace(/\/\*\[\[([\w-]+)\]\]\*\//g, (match, name) => {
+            if (!pool.has(name)) {
+              const value = getValue(name);
+              pool.set(name, value === null ? match : value);
+            }
+            return pool.get(name);
+          });
+        }
       }
     }
   };
@@ -104,65 +145,178 @@ var usercss = (function () {
     return style;
   }
 
-  function *parseMetas(source) {
-    for (const line of source.split(/\r?\n/)) {
-      const match = line.match(/@(\w+)/);
-      if (!match) {
-        continue;
-      }
-      yield [match[1], line.slice(match.index + match[0].length).trim()];
+  function parseWord(state, error) {
+    const match = state.text.slice(state.re.lastIndex).match(/^([\w-]+)\s+/);
+    if (!match) {
+      throw new Error(error);
     }
+    state.value = match[1];
+    state.re.lastIndex += match[0].length;
   }
 
-  function matchString(s) {
-    const match = matchFollow(s, /^(?:\w+|(['"])(?:\\\1|.)*?\1)/);
-    match.value = match[1] ? match[0].slice(1, -1) : match[0];
-    return match;
-  }
-
-  function matchFollow(s, re) {
-    const match = s.match(re);
-    match.follow = s.slice(match.index + match[0].length).trim();
-    return match;
-  }
-
-  function parseVar(source) {
+  function parseVar(state) {
     const result = {
+      type: null,
       label: null,
       name: null,
       value: null,
       default: null,
-      select: null
+      options: null
     };
 
-    {
-      // type & name
-      const match = matchFollow(source, /^([\w-]+)\s+([\w-]+)/);
-      ([, result.type, result.name] = match);
-      source = match.follow;
+    parseWord(state, 'missing type');
+    result.type = state.type = state.value;
+    if (!META_VARS.includes(state.type)) {
+      throw new Error(`unknown type: ${state.type}`);
     }
 
-    {
-      // label
-      const match = matchString(source);
-      result.label = match.value;
-      source = match.follow;
-    }
+    parseWord(state, 'missing name');
+    result.name = state.value;
 
-    // select type has an additional field
-    if (result.type === 'select') {
-      const match = matchString(source);
-      try {
-        result.select = JSON.parse(match.follow);
-      } catch (e) {
-        throw new Error(chrome.i18n.getMessage('styleMetaErrorSelect', e.message));
+    parseString(state);
+    result.label = state.value;
+
+    if (state.type === 'checkbox') {
+      const match = state.text.slice(state.re.lastIndex).match(/([01])\s+/);
+      if (!match) {
+        throw new Error('value must be 0 or 1');
       }
-      source = match.value;
+      state.re.lastIndex += match[0].length;
+      result.default = match[1];
+    } else if (state.type === 'select' || (state.type === 'image' && state.key === 'var')) {
+      parseJSON(state);
+      result.options = Object.keys(state.value).map(k => ({
+        label: k,
+        value: state.value[k]
+      }));
+      result.default = result.options[0].value;
+    } else if (state.type === 'dropdown' || state.type === 'image') {
+      if (state.text[state.re.lastIndex] !== '{') {
+        throw new Error('no open {');
+      }
+      result.options = [];
+      state.re.lastIndex++;
+      while (state.text[state.re.lastIndex] !== '}') {
+        const option = {};
+
+        parseStringUnquoted(state);
+        option.name = state.value;
+
+        parseString(state);
+        option.label = state.value;
+
+        if (state.type === 'dropdown') {
+          parseEOT(state);
+        } else {
+          parseString(state);
+        }
+        option.value = state.value;
+
+        result.options.push(option);
+      }
+      state.re.lastIndex++;
+      eatWhitespace(state);
+      result.default = result.options[0].value;
+    } else {
+      // text, color
+      parseStringToEnd(state);
+      result.default = state.value;
     }
+    state.style.vars[result.name] = result;
+  }
 
-    result.default = source;
+  function parseEOT(state) {
+    const match = state.text.slice(state.re.lastIndex).match(/^<<<EOT([\s\S]+?)EOT;/);
+    if (!match) {
+      throw new Error('missing EOT');
+    }
+    state.re.lastIndex += match[0].length;
+    state.value = match[1].trim().replace(/\*\\\//g, '*/');
+    eatWhitespace(state);
+  }
 
-    return result;
+  function parseStringUnquoted(state) {
+    const match = state.text.slice(state.re.lastIndex).match(/^[^"]*/);
+    state.re.lastIndex += match[0].length;
+    state.value = match[0].trim().replace(/\s+/g, '-');
+  }
+
+  function parseString(state) {
+    const match = state.text.slice(state.re.lastIndex).match(/^((['"])(?:\\\2|[^\n])*?\2|\w+)\s+/);
+    state.re.lastIndex += match[0].length;
+    state.value = unquote(match[1]);
+  }
+
+  function parseJSON(state) {
+    const result = looseJSONParse(state.text.slice(state.re.lastIndex));
+    state.re.lastIndex += result.length;
+    state.value = result.json;
+  }
+
+  function looseJSONParse(text) {
+    try {
+      return {
+        json: JSON.parse(text),
+        length: text.length
+      };
+    } catch (e) {
+      let pos;
+      {
+        const match = e.message.match(/after json data at line (\d+) column (\d+)/i);
+        if (match) {
+          const [, line, column] = match.map(Number);
+          pos = indexFromLine(text, line - 1) + column - 1;
+        }
+      }
+      if (pos === undefined) {
+        const match = e.message.match(/at position (\d+)/);
+        if (match) {
+          pos = Number(match[1]);
+        }
+      }
+      if (pos) {
+        try {
+          return {
+            json: JSON.parse(text.slice(0, pos)),
+            length: pos
+          };
+        } catch (e2) {}
+      }
+      throw e;
+    }
+  }
+
+  function indexFromLine(text, line) {
+    if (line === 0) {
+      return 0;
+    }
+    const re = /\r?\n/g;
+    let i = 1;
+    while (re.exec(text)) {
+      if (i++ === line) {
+        return re.lastIndex;
+      }
+    }
+    throw new Error('out of range');
+  }
+
+  function eatWhitespace(state) {
+    const match = state.text.slice(state.re.lastIndex).match(/\s*/);
+    state.re.lastIndex += match[0].length;
+  }
+
+  function parseStringToEnd(state) {
+    const match = state.text.slice(state.re.lastIndex).match(/.+/);
+    state.value = unquote(match[0].trim());
+    state.re.lastIndex += match[0].length;
+  }
+
+  function unquote(s) {
+    const match = s.match(/^(['"])(.*)\1$/);
+    if (match) {
+      return match[2];
+    }
+    return s;
   }
 
   function _buildMeta(source) {
@@ -179,22 +333,34 @@ var usercss = (function () {
       noframes: false
     };
 
-    const metaSource = getMetaSource(source);
+    const text = getMetaSource(source);
+    const re = /@(\w+)\s+/mg;
+    const state = {style, re, text};
 
-    for (const [key, value] of parseMetas(metaSource)) {
-      if (!METAS.includes(key)) {
+    let match;
+    while ((match = re.exec(text))) {
+      state.key = match[1];
+      if (!METAS.includes(state.key)) {
         continue;
       }
-      if (key === 'noframes') {
+      if (state.key === 'noframes') {
         style.noframes = true;
-      } else if (key === 'var') {
-        const va = parseVar(value);
-        style.vars[va.name] = va;
-      } else if (key === 'homepageURL') {
-        style.url = value;
+      } else if (state.key === 'var' || state.key === 'advanced') {
+        if (state.key === 'advanced') {
+          state.maybeUSO = true;
+        }
+        parseVar(state);
       } else {
-        style[key] = value;
+        parseStringToEnd(state);
+        if (state.key === 'homepageURL') {
+          style.url = state.value;
+        } else {
+          style[state.key] = state.value;
+        }
       }
+    }
+    if (state.maybeUSO && !style.preprocessor) {
+      style.preprocessor = 'uso';
     }
 
     return style;
@@ -239,10 +405,10 @@ var usercss = (function () {
     // need to test each va's default value.
     return Object.keys(vars).reduce((output, key) => {
       const va = vars[key];
-      output[key] = {
+      output[key] = Object.assign({}, va, {
         value: va.value === null || va.value === undefined ?
-          va.default : va.value
-      };
+          va.default : va.value,
+      });
       return output;
     }, {});
   }
@@ -278,8 +444,10 @@ var usercss = (function () {
   }
 
   function validVar(va, value = 'default') {
-    if (va.type === 'select' && !va.select[va[value]]) {
-      throw new Error(chrome.i18n.getMessage('styleMetaErrorSelectMissingKey', va[value]));
+    if (va.type === 'select' || va.type === 'dropdown') {
+      if (va.options.every(o => o.value !== va[value])) {
+        throw new Error(chrome.i18n.getMessage('invalid select value'));
+      }
     } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
