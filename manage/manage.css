@@ -365,7 +365,7 @@ summary {
 }
 
 .newUI .applies-to.expanded .targets {
-  max-height: 100vh;
+  max-height: none;
 }
 
 .newUI .target {
