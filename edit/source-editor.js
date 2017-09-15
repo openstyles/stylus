@@ -292,9 +292,29 @@ function createSourceEditor(style) {
         const applies = [];
         let t = text.slice(re.lastIndex);
         let m;
+        let offset = 0;
         while ((m = t.match(applyRe))) {
-          applies.push({type: m[1], value: normalizeString(m[2])});
+          const apply = {
+            type: m[1],
+            value: normalizeString(m[2]),
+            typeStart: null,
+            typeEnd: null,
+            valueStart: null,
+            valueEnd: null,
+          };
+          apply.typeStart = re.lastIndex + offset;
+          apply.typeEnd = apply.typeStart + apply.type.length;
+          apply.valueStart = apply.typeEnd + (apply.value === m[2] ? 1 : 2);
+          apply.valueEnd = apply.valueStart + apply.value.length;
+          applies.push({
+            typeStart: re.lastIndex + offset;
+            typeEnd: re.lastIndex + offset + m[1].length
+            type: m[1],
+            valueStart:
+            value: value,
+          });
           t = t.slice(m[0].length);
+          offset += m[0].length;
         }
         yield {pos, applies};
         preIndex = match.index;
