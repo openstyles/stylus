@@ -63,11 +63,12 @@ function configDialog(style) {
             $element({tag: 'span'})
           ]})
         ];
-      } else if (va.type === 'select') {
+      } else if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
+        // TODO: a image picker input?
         va.input = $element({
           tag: 'select',
-          appendChild: Object.keys(va.select).map(key => $element({
-            tag: 'option', value: key, appendChild: va.select[key]
+          appendChild: va.options.map(o => $element({
+            tag: 'option', value: o.value, textContent: o.label
           }))
         });
         va.input.onchange = () => {
