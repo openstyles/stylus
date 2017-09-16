@@ -152,7 +152,7 @@ function updateLinter({immediately} = {}) {
   function updateEditors() {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
     const guttersOption = prepareGuttersOption();
-    $$('#sections .CodeMirror').map(e => e.CodeMirror).forEach(cm => {
+    editors.forEach(cm => {
       cm.setOption('lint', CodeMirror.defaults.lint);
       if (guttersOption) {
         cm.setOption('guttersOption', guttersOption);
