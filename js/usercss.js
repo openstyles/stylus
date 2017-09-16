@@ -158,8 +158,8 @@ var usercss = (function () {
     return style;
   }
 
-  function parseWord(state, error) {
-    const match = state.text.slice(state.re.lastIndex).match(/^([\w-]+)\s+/);
+  function parseWord(state, error = 'invalid word') {
+    const match = state.text.slice(state.re.lastIndex).match(/^([\w-]+)\s*/);
     if (!match) {
       throw new Error(error);
     }
@@ -255,15 +255,95 @@ var usercss = (function () {
   }
 
   function parseString(state) {
-    const match = state.text.slice(state.re.lastIndex).match(/^((['"])(?:\\\2|[^\n])*?\2|\w+)\s+/);
+    const match = state.text.slice(state.re.lastIndex).match(
+      /^((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/);
     state.re.lastIndex += match[0].length;
     state.value = unquote(match[1]);
   }
 
   function parseJSON(state) {
     const result = looseJSONParse(state.text.slice(state.re.lastIndex));
-    state.re.lastIndex += result.length;
-    state.value = result.json;
+    if (result) {
+      state.re.lastIndex += result.length;
+      state.value = result.json;
+    } else {
+      // fallback to our parser
+      parseJSONValue(state);
+    }
+  }
+
+  function parseJSONValue(state) {
+    const JSON_PRIME = {
+      __proto__: null,
+      'null': null,
+      'true': true,
+      'false': false
+    };
+    if (state.text[state.re.lastIndex] === '{') {
+      // object
+      const obj = {};
+      state.re.lastIndex++;
+      eatWhitespace(state);
+      while (state.text[state.re.lastIndex] !== '}') {
+        parseString(state);
+        const key = state.value;
+        if (state.text[state.re.lastIndex] !== ':') {
+          throw new Error('missing \':\'');
+        }
+        state.re.lastIndex++;
+        eatWhitespace(state);
+        parseJSONValue(state);
+        obj[key] = state.value;
+        if (state.text[state.re.lastIndex] === ',') {
+          state.re.lastIndex++;
+          eatWhitespace(state);
+        } else if (state.text[state.re.lastIndex] !== '}') {
+          throw new Error('missing \',\' or \'}\'');
+        }
+      }
+      state.re.lastIndex++;
+      eatWhitespace(state);
+      state.value = obj;
+    } else if (state.text[state.re.lastIndex] === '[') {
+      // array
+      const arr = [];
+      state.re.lastIndex++;
+      eatWhitespace(state);
+      while (state.text[state.re.lastIndex] !== ']') {
+        parseJSONValue(state);
+        arr.push(state.value);
+        if (state.text[state.re.lastIndex] === ',') {
+          state.re.lastIndex++;
+          eatWhitespace(state);
+        } else if (state.text[state.re.lastIndex] !== ']') {
+          throw new Error('missing \',\' or \']\'');
+        }
+      }
+      state.re.lastIndex++;
+      eatWhitespace(state);
+      state.value = arr;
+    } else if (state.text[state.re.lastIndex] === '"') {
+      // string
+      parseString(state);
+    } else if (/\d/.test(state.text[state.re.lastIndex])) {
+      // number
+      parseNumber(state);
+    } else {
+      parseWord(state);
+      if (!(state.value in JSON_PRIME)) {
+        throw new Error(`unknown literal '${state.value}'`);
+      }
+      state.value = JSON_PRIME[state.value];
+    }
+  }
+
+  function parseNumber(state) {
+    const match = state.slice(state.re.lastIndex).match(/^-?\d+(\.\d+)?\s*/);
+    if (!match) {
+      throw new Error('invalid number');
+    }
+    state.value = Number(match[0].trim());
+    state.re.lastIndex += match[0].length;
   }
 
   function looseJSONParse(text) {
@@ -287,14 +367,15 @@ var usercss = (function () {
           pos = Number(match[1]);
         }
       }
-      if (pos) {
-        try {
-          return {
-            json: JSON.parse(text.slice(0, pos)),
-            length: pos
-          };
-        } catch (e2) {}
+      if (!pos) {
+        return null;
       }
+      try {
+        return {
+          json: JSON.parse(text.slice(0, pos)),
+          length: pos
+        };
+      } catch (e2) {}
       throw e;
     }
   }
