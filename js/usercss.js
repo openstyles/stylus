@@ -4,10 +4,23 @@
 
 // eslint-disable-next-line no-var
 var usercss = (function () {
-  const METAS = [
-    'author', 'advanced', 'description', 'homepageURL', 'icon', 'license', 'name',
-    'namespace', 'noframes', 'preprocessor', 'supportURL', 'var', 'version'
-  ];
+  // true for global, false for private
+  const METAS = {
+    __proto__: null,
+    author: true,
+    advanced: false,
+    description: true,
+    homepageURL: false,
+    // icon: false,
+    license: false,
+    name: true,
+    namespace: false,
+    // noframes: false,
+    preprocessor: false,
+    supportURL: false,
+    'var': false,
+    version: false
+  };
 
   const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image'];
 
@@ -222,7 +235,7 @@ var usercss = (function () {
       parseStringToEnd(state);
       result.default = state.value;
     }
-    state.style.vars[result.name] = result;
+    state.usercssData.vars[result.name] = result;
   }
 
   function parseEOT(state) {
@@ -319,72 +332,71 @@ var usercss = (function () {
     return s;
   }
 
-  function _buildMeta(source) {
-    const style = {
-      name: null,
-      usercss: true,
-      version: null,
-      source: source,
-      edited: false,
-      enabled: true,
-      sections: [],
-      vars: {},
-      preprocessor: null,
-      noframes: false
+  function _buildMeta(sourceCode) {
+    const usercssData = {
+      vars: {}
     };
 
-    const text = getMetaSource(source);
+    const style = {
+      enabled: true,
+      sourceCode,
+      sections: [],
+      usercssData
+    };
+
+    const text = getMetaSource(sourceCode);
     const re = /@(\w+)\s+/mg;
-    const state = {style, re, text};
+    const state = {style, re, text, usercssData};
 
     let match;
     while ((match = re.exec(text))) {
       state.key = match[1];
-      if (!METAS.includes(state.key)) {
+      if (!(state.key in METAS)) {
         continue;
       }
-      if (state.key === 'noframes') {
-        style.noframes = true;
-      } else if (state.key === 'var' || state.key === 'advanced') {
+      if (state.key === 'var' || state.key === 'advanced') {
         if (state.key === 'advanced') {
           state.maybeUSO = true;
         }
         parseVar(state);
       } else {
         parseStringToEnd(state);
-        if (state.key === 'homepageURL') {
-          style.url = state.value;
-        } else {
-          style[state.key] = state.value;
-        }
+        usercssData[state.key] = state.value;
+      }
+      if (METAS[state.key]) {
+        style[state.key] = usercssData[state.key];
       }
     }
-    if (state.maybeUSO && !style.preprocessor) {
-      style.preprocessor = 'uso';
+    if (state.maybeUSO && !usercssData.preprocessor) {
+      usercssData.preprocessor = 'uso';
+    }
+    if (usercssData.homepageURL) {
+      style.url = usercssData.homepageURL;
     }
 
     return style;
   }
 
   function buildCode(style) {
+    const {usercssData: {preprocessor, vars}, sourceCode} = style;
     let builder;
-    if (style.preprocessor) {
-      if (!BUILDER.hasOwnProperty(style.preprocessor)) {
-        return Promise.reject(new Error(`Unsupported preprocessor: ${style.preprocessor}`));
+    if (preprocessor) {
+      if (!BUILDER[preprocessor]) {
+        return Promise.reject(new Error(`Unsupported preprocessor: ${preprocessor}`));
       }
-      builder = BUILDER[style.preprocessor];
+      builder = BUILDER[preprocessor];
     } else {
       builder = BUILDER.default;
     }
 
-    const vars = simpleVars(style.vars);
+    const sVars = simpleVars(vars);
 
     return Promise.resolve().then(() => {
       // preprocess
       if (builder.preprocess) {
-        return builder.preprocess(style.source, vars);
+        return builder.preprocess(sourceCode, sVars);
       }
-      return style.source;
+      return sourceCode;
     }).then(mozStyle =>
       // moz-parser
       loadScript('/js/moz-parser.js').then(() =>
@@ -395,7 +407,7 @@ var usercss = (function () {
     ).then(() => {
       // postprocess
       if (builder.postprocess) {
-        return builder.postprocess(style.sections, vars);
+        return builder.postprocess(style.sections, sVars);
       }
     }).then(() => style);
   }
@@ -414,22 +426,23 @@ var usercss = (function () {
   }
 
   function validate(style) {
+    const {usercssData: data} = style;
     // mandatory fields
     for (const prop of ['name', 'namespace', 'version']) {
-      if (!style[prop]) {
+      if (!data[prop]) {
         throw new Error(chrome.i18n.getMessage('styleMissingMeta', prop));
       }
     }
     // validate version
-    semverCompare(style.version, '0.0.0');
+    semverCompare(data.version, '0.0.0');
 
     // validate URLs
-    validUrl(style.url);
-    validUrl(style.supportURL);
+    validUrl(data.homepageURL);
+    validUrl(data.supportURL);
 
     // validate vars
-    for (const key of Object.keys(style.vars)) {
-      validVar(style.vars[key]);
+    for (const key of Object.keys(data.vars)) {
+      validVar(data.vars[key]);
     }
   }
 
@@ -456,14 +469,16 @@ var usercss = (function () {
   }
 
   function assignVars(style, old) {
+    const {usercssData: {vars}} = style;
+    const {usercssData: {vars: oldVars}} = old;
     // The type of var might be changed during the update. Set value to null if the value is invalid.
-    for (const key of Object.keys(style.vars)) {
-      if (old.vars[key] && old.vars[key].value) {
-        style.vars[key].value = old.vars[key].value;
+    for (const key of Object.keys(vars)) {
+      if (oldVars[key] && oldVars[key].value) {
+        vars[key].value = oldVars[key].value;
         try {
-          validVar(style.vars[key], 'value');
+          validVar(vars[key], 'value');
         } catch (e) {
-          style.vars[key].value = null;
+          vars[key].value = null;
         }
       }
     }

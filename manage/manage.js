@@ -193,7 +193,7 @@ function createStyleElement({style, name}) {
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
-  if (style.vars && Object.keys(style.vars).length && newUI.enabled) {
+  if (shouldShowConfig() && newUI.enabled) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
@@ -202,6 +202,13 @@ function createStyleElement({style, name}) {
   createStyleTargetsElement({entry, style, postponeFavicons: name});
 
   return entry;
+
+  function shouldShowConfig() {
+    if (!style.usercssData) {
+      return false;
+    }
+    return Object.keys(style.usercssData.vars).length > 0;
+  }
 }
 
 
@@ -293,7 +300,7 @@ Object.assign(handleEvent, {
       }
       style.reason = 'config';
       for (const key of keys) {
-        style.vars[key].value = vars[key].value;
+        style.usercssData.vars[key].value = vars[key].value;
       }
       saveStyleSafe(style);
     });

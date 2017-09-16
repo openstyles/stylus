@@ -7,7 +7,7 @@ let pendingResource;
 function install(style) {
   const request = Object.assign(style, {
     method: 'saveUsercss',
-    reason: 'install',
+    reason: 'update',
     updateUrl: location.href
   });
   return runtimeSend(request)
@@ -55,7 +55,9 @@ function getAppliesTo(style) {
 
 function initInstallPage({style, dup}, sourceLoader) {
   return pendingResource.then(() => {
-    const versionTest = dup && semverCompare(style.version, dup.version);
+    const data = style.usercssData;
+    const dupData = dup && dup.usercssData;
+    const versionTest = dup && semverCompare(data.version, dupData.version);
     document.body.textContent = '';
     document.body.appendChild(buildPage());
 
@@ -65,13 +67,15 @@ function initInstallPage({style, dup}, sourceLoader) {
         $('.actions')
       );
     }
-    $('.code').textContent = style.source;
+    $('.code').textContent = style.sourceCode;
     $('button.install').onclick = () => {
       if (dup) {
-        if (confirm(chrome.i18n.getMessage('styleInstallOverwrite', [style.name, dup.version, style.version]))) {
+        if (confirm(chrome.i18n.getMessage('styleInstallOverwrite', [
+          data.name, dupData.version, data.version
+        ]))) {
           install(style);
         }
-      } else if (confirm(chrome.i18n.getMessage('styleInstall', [style.name]))) {
+      } else if (confirm(chrome.i18n.getMessage('styleInstall', [data.name]))) {
         install(style);
       }
     };
@@ -87,19 +91,19 @@ function initInstallPage({style, dup}, sourceLoader) {
             $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
           ]}),
           $element({tag: 'h1', appendChild: [
-            style.name,
-            $element({tag: 'small', className: 'meta-version', textContent: style.version})
+            data.name,
+            $element({tag: 'small', className: 'meta-version', textContent: data.version})
           ]}),
-          $element({tag: 'p', textContent: style.description}),
-          style.author && $element({tag: 'h3', textContent: t('author')}),
-          style.author,
-          style.license && $element({tag: 'h3', textContent: t('license')}),
-          style.license,
+          $element({tag: 'p', textContent: data.description}),
+          data.author && $element({tag: 'h3', textContent: t('author')}),
+          data.author,
+          data.license && $element({tag: 'h3', textContent: t('license')}),
+          data.license,
           $element({tag: 'h3', textContent: t('appliesLabel')}),
           $element({tag: 'ul', appendChild: getAppliesTo(style).map(
             pattern => $element({tag: 'li', textContent: pattern})
           )}),
-          externalLink(style),
+          externalLink(),
         ]}),
         $element({className: 'main', appendChild: [
           $element({className: 'code'})
@@ -107,13 +111,13 @@ function initInstallPage({style, dup}, sourceLoader) {
       ]});
     }
 
-    function externalLink(style) {
+    function externalLink() {
       const urls = [];
-      if (style.url) {
-        urls.push([style.url, t('externalHomepage')]);
+      if (data.homepageURL) {
+        urls.push([data.homepageURL, t('externalHomepage')]);
       }
-      if (style.supportURL) {
-        urls.push([style.supportURL, t('externalSupport')]);
+      if (data.supportURL) {
+        urls.push([data.supportURL, t('externalSupport')]);
       }
       if (urls.length) {
         return $element({appendChild: [
@@ -139,7 +143,7 @@ function initLiveReload(sourceLoader) {
     return runtimeSend({
       method: 'saveUsercss',
       id: installed.id,
-      source: source
+      sourceCode: source
     }).then(() => {
       $$('.main .warning').forEach(e => e.remove());
     }).catch(err => {
@@ -267,7 +271,7 @@ function initUsercssInstall() {
     .then(() =>
       runtimeSend({
         method: 'filterUsercss',
-        source: sourceLoader.source(),
+        sourceCode: sourceLoader.source(),
         checkDup: true
       })
     )

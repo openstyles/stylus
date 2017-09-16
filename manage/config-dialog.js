@@ -27,7 +27,7 @@ function configDialog(style) {
 
   function buildConfigForm() {
     const labels = [];
-    const vars = deepCopy(style.vars);
+    const vars = deepCopy(style.usercssData.vars);
     for (const key of Object.keys(vars)) {
       const va = vars[key];
       let appendChild;

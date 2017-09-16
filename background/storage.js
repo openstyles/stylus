@@ -370,7 +370,7 @@ function filterStylesInternal({
 
 
 // Parse the source and find the duplication
-// {id: int, style: object, source: string, checkDup: boolean}
+// {id: int, style: object, sourceCode: string, checkDup: boolean}
 function filterUsercss(req) {
   let style;
   let pendingBuild;
@@ -381,8 +381,8 @@ function filterUsercss(req) {
 
   function buildMeta() {
     return new Promise(resolve => {
-      if (req.source) {
-        style = usercss.buildMeta(req.source);
+      if (req.sourceCode) {
+        style = usercss.buildMeta(req.sourceCode);
       } else {
         style = req.style;
       }
@@ -426,8 +426,8 @@ function saveUsercss(style) {
 
   function buildMeta() {
     return new Promise(resolve => {
-      if (!style.name || !style.namespace) {
-        resolve(Object.assign(usercss.buildMeta(style.source), style));
+      if (!style.usercssData) {
+        resolve(Object.assign(usercss.buildMeta(style.sourceCode), style));
         return;
       }
       resolve(style);
@@ -449,26 +449,32 @@ function saveStyle(style) {
   let existed;
   let codeIsUpdated;
 
-  if (style.usercss) {
-    return processUsercss(style).then(decide);
-  }
+  const maybeProcess = style.usercssData ? processUsercss() : Promise.resolve();
 
-  if (reason === 'update' || reason === 'update-digest') {
-    return calcStyleDigest(style).then(digest => {
-      style.originalDigest = digest;
-      return decide();
-    });
-  }
-  if (reason === 'import') {
-    style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
-    delete style.styleDigest; // TODO: remove in the future
-    if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
-      delete style.originalDigest;
+  return maybeProcess
+    .then(maybeUpdate)
+    .then(maybeImportFix)
+    .then(decide);
+
+  function maybeUpdate() {
+    if (reason === 'update' || reason === 'update-digest') {
+      return calcStyleDigest(style).then(digest => {
+        style.originalDigest = digest;
+      });
     }
   }
-  return decide();
 
-  function processUsercss(style) {
+  function maybeImportFix() {
+    if (reason === 'import') {
+      style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
+      delete style.styleDigest; // TODO: remove in the future
+      if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
+        delete style.originalDigest;
+      }
+    }
+  }
+
+  function processUsercss() {
     return findDupUsercss(style)
       .then(dup => {
         if (!dup) {
@@ -477,11 +483,10 @@ function saveStyle(style) {
         if (!id) {
           id = dup.id;
         }
-        if (reason === 'config') {
-          return;
+        if (reason !== 'config') {
+          // preserve style.vars during update
+          usercss.assignVars(style, dup);
         }
-        // preserve style.vars during update
-        usercss.assignVars(style, dup);
       })
       .then(() => usercss.buildCode(style));
   }
@@ -538,7 +543,7 @@ function saveStyle(style) {
         style, codeIsUpdated, reason,
       });
     }
-    if (style.usercss && !existed && reason === 'install') {
+    if (style.usercssData && !existed && reason === 'update') {
       // open the editor for usercss with the first install?
       openEditor(style.id);
     }
@@ -563,7 +568,13 @@ function findDupUsercss(style) {
     return getStyles({id: style.id}).then(s => s[0]);
   }
   return getStyles().then(styles =>
-    styles.find(s => s.name === style.name && s.namespace === style.namespace)
+    styles.find(target => {
+      if (!target.usercssData) {
+        return false;
+      }
+      return target.usercssData.name === style.usercssData.name &&
+        target.usercssData.namespace === style.usercssData.namespace;
+    })
   );
 }
 
@@ -815,7 +826,8 @@ function normalizeStyleSections({sections}) {
 
 
 function calcStyleDigest(style) {
-  const jsonString = JSON.stringify(normalizeStyleSections(style));
+  const jsonString = style.usercssData ?
+    style.sourceCode : JSON.stringify(normalizeStyleSections(style));
   const text = new TextEncoder('utf-8').encode(jsonString);
   return crypto.subtle.digest('SHA-1', text).then(hex);
 

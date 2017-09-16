@@ -1352,7 +1352,7 @@ function setStyleMeta(style) {
 
 function initWithStyle(request) {
   if (!editor) {
-    if (!request.style.usercss) {
+    if (!request.style.usercssData) {
       initWithSectionStyle(request);
     } else {
       editor = createSourceEditor(request.style);

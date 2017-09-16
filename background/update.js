@@ -64,7 +64,7 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    const maybeUpdate = style.usercss ? maybeUpdateUsercss : maybeUpdateUSO;
+    const maybeUpdate = style.usercssData ? maybeUpdateUsercss : maybeUpdateUSO;
     return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
       .then(checkIfEdited)
       .then(maybeUpdate)
@@ -83,9 +83,7 @@ var updater = {
       if (ignoreDigest) {
         return;
       }
-      if (style.usercss && style.edited) {
-        return Promise.reject(updater.EDITED);
-      } else if (style.originalDigest && style.originalDigest !== digest) {
+      if (style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
     }
@@ -106,12 +104,14 @@ var updater = {
     function maybeUpdateUsercss() {
       return download(style.updateUrl).then(text => {
         const json = usercss.buildMeta(text);
+        const {usercssData: {version}} = style;
+        const {usercssData: {version: newVersion}} = json;
         // re-install is invalid in a soft upgrade
-        if (semverCompare(style.version, json.version) === 0 && !ignoreDigest) {
+        if (semverCompare(version, newVersion) === 0 && !ignoreDigest) {
           return Promise.reject(updater.SAME_VERSION);
         }
         // downgrade is always invalid
-        if (semverCompare(style.version, json.version) > 0) {
+        if (semverCompare(version, newVersion) > 0) {
           return Promise.reject(updater.ERROR_VERSION);
         }
         return json;
@@ -121,7 +121,7 @@ var updater = {
     function maybeSave(json) {
       json.id = style.id;
       // no need to compare section code for usercss, they are built dynamically
-      if (!json.usercss) {
+      if (!json.usercssData) {
         if (!styleJSONseemsValid(json)) {
           return Promise.reject(updater.ERROR_JSON);
         }

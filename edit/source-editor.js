@@ -26,7 +26,7 @@ function createSourceEditor(style) {
   );
 
   // draw CodeMirror
-  $('#sections textarea').value = style.source;
+  $('#sections textarea').value = style.sourceCode;
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
   // too many functions depend on this global
   editors.push(cm);
@@ -378,8 +378,8 @@ function createSourceEditor(style) {
     // source
     cm.on('change', () => {
       const value = cm.getValue();
-      dirty.modify('source', style.source, value);
-      style.source = value;
+      dirty.modify('source', style.sourceCode, value);
+      style.sourceCode = value;
 
       updateLintReportIfEnabled(cm);
     });
@@ -402,10 +402,11 @@ function createSourceEditor(style) {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    cm.setOption('mode', MODE[style.preprocessor] || 'css');
-    CodeMirror.autoLoadMode(cm, style.preprocessor || 'css');
+    const {usercssData: {preprocessor}} = style;
+    cm.setOption('mode', MODE[preprocessor] || 'css');
+    CodeMirror.autoLoadMode(cm, MODE[preprocessor] || 'css');
     // beautify only works with regular CSS
-    $('#beautify').disabled = Boolean(style.preprocessor);
+    $('#beautify').disabled = MODE[preprocessor] && MODE[preprocessor] !== 'css';
     updateTitle();
   }
 
@@ -417,9 +418,9 @@ function createSourceEditor(style) {
   function replaceStyle(newStyle) {
     style = deepCopy(newStyle);
     updateMetas();
-    if (style.source !== cm.getValue()) {
+    if (style.sourceCode !== cm.getValue()) {
       const cursor = cm.getCursor();
-      cm.setValue(style.source);
+      cm.setValue(style.sourceCode);
       cm.setCursor(cursor);
     }
     dirty.clear();
@@ -448,8 +449,7 @@ function createSourceEditor(style) {
       reason: 'editSave',
       id: style.id,
       enabled: style.enabled,
-      edited: dirty.has('source'),
-      source: style.source
+      sourceCode: style.sourceCode
     };
     return onBackgroundReady().then(() => BG.saveUsercss(req))
       .then(result => {
