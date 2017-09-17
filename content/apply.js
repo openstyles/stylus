@@ -249,10 +249,11 @@ function applySections(styleId, code) {
   }
   Object.assign(el, {
     id: ID_PREFIX + styleId,
-    className: 'stylus',
     type: 'text/css',
     textContent: code,
   });
+  // SVG className is not a string, but an instance of SVGAnimatedString
+  el.classList.add('stylus');
   addStyleElement(el);
   styleElements.set(el.id, el);
   disabledElements.delete(Number(styleId));
