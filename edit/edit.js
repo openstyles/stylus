@@ -1037,7 +1037,7 @@ function toggleSectionHeight(cm) {
 
 function setupAutocomplete(cm, enable = true) {
   const onOff = enable ? 'on' : 'off';
-  cm[onOff]('change', autocompleteOnTyping);
+  cm[onOff]('changes', autocompleteOnTyping);
   cm[onOff]('pick', autocompletePicked);
 }
 
