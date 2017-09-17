@@ -8,7 +8,7 @@ function install(style) {
   const request = Object.assign(style, {
     method: 'saveUsercss',
     reason: 'update',
-    updateUrl: location.href
+    updateUrl: location.protocol === 'file:' ? null : location.href
   });
   return runtimeSend(request)
     .then(result => {
