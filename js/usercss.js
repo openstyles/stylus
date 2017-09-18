@@ -414,6 +414,8 @@ var usercss = (function () {
   }
 
   function _buildMeta(sourceCode) {
+    sourceCode = sourceCode.replace(/\r\n?/g, '\n');
+
     const usercssData = {
       vars: {}
     };
