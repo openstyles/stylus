@@ -139,14 +139,16 @@ var updater = {
     }
 
     function maybeSave(json) {
-      const doSave = json.usercssData ? usercssHelper.save : saveStyle;
       json.id = style.id;
-      // no need to compare section code for usercss, they are built dynamically
-      return !save ? json :
-        doSave(Object.assign(json, {
-          name: null, // keep local name customizations
-          reason: 'update',
-        }));
+      if (!save) {
+        return json;
+      }
+      json.reason = 'update';
+      if (json.usercssData) {
+        return usercssHelper.save(json);
+      }
+      json.name = null; // keep local name customizations
+      return saveStyle(json);
     }
 
     function styleJSONseemsValid(json) {
