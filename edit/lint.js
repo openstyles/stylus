@@ -131,10 +131,9 @@ function initLint() {
     $('#lint h2').addEventListener('click', toggleLintReport);
   }
 
-  linterConfig.loadAll();
+  linterConfig.loadAll().then(updateLinter);
   linterConfig.watchStorage();
   prefs.subscribe(['editor.linter'], updateLinter);
-  updateLinter();
 }
 
 function updateLinter({immediately} = {}) {
@@ -531,8 +530,8 @@ function loadLinterAssets(name = prefs.get('editor.linter')) {
   }
 
   function loadAddon() {
-    if ($('script[src$="/vendor/codemirror/addon/lint/lint.js"]')) {
-      return Promise.resolve();
+    if (CodeMirror.lint) {
+      return;
     }
     return loadScript([
       '/vendor/codemirror/addon/lint/lint.css',
