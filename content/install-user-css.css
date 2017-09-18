@@ -21,7 +21,7 @@ body {
   overflow-wrap: break-word;
 }
 
-.header h1:first-child {
+.header :first-child {
   margin-top: 0;
 }
 
@@ -54,7 +54,7 @@ h1 small {
   width: -moz-fit-content;
   display: flex;
   align-items: center;
-  margin: 0.5em auto;
+  margin: 0.5em 0;
 }
 
 .live-reload input {
@@ -67,29 +67,6 @@ h1 small {
 
 .external > * {
   margin: 0 7.5px;
-}
-
-button.install {
-  display: block;
-  margin: 0 auto;
-  font-size: 2em;
-  padding: 0.4em 0.8em;
-}
-
-button.install {
-  background: #3586FF;
-  color: white;
-  border-radius: 0.2em;
-  border: 1px solid #0026ff;
-}
-
-button.install:not([disabled]):active {
-  box-shadow: inset 0px 0px 0.4em 0px #6A3B82;
-}
-
-button.install.installed {
-  background: #00F587;
-  border-color: #00ae08;
 }
 
 .code {
