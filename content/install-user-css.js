@@ -26,13 +26,10 @@ function install(style) {
 
 function runtimeSend(request) {
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(request, result => {
-      if (result.status === 'error') {
-        reject(result.error);
-      } else {
-        resolve(result);
-      }
-    });
+    chrome.runtime.sendMessage(
+      request,
+      ({status, result}) => (status === 'error' ? reject : resolve)(result)
+    );
   });
 }
 
@@ -156,7 +153,7 @@ function initLiveReload(sourceLoader) {
       }
     });
   });
-  window.addEventListener('installed', ({detail: {style}}) => {
+  window.addEventListener('installed', ({detail: style}) => {
     installed = style;
     if ($('.live-reload-checkbox').checked) {
       watcher.start();
@@ -270,7 +267,7 @@ function initUsercssInstall() {
   sourceLoader.load()
     .then(() =>
       runtimeSend({
-        method: 'filterUsercss',
+        method: 'buildUsercss',
         sourceCode: sourceLoader.source(),
         checkDup: true
       })

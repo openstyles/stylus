@@ -24,6 +24,7 @@
       "vendor-overwrites/lz-string/LZString-2xspeedup.js",
       "js/usercss.js",
       "background/storage.js",
+      "background/usercss-helper.js",
       "js/prefs.js",
       "js/script-loader.js",
       "background/background.js",

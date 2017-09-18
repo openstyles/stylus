@@ -302,7 +302,8 @@ Object.assign(handleEvent, {
       for (const key of keys) {
         style.usercssData.vars[key].value = vars[key].value;
       }
-      saveStyleSafe(style);
+      onBackgroundReady()
+        .then(() => BG.usercssHelper.save(style));
     });
   },
 

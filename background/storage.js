@@ -1,5 +1,5 @@
 /* global LZString */
-/* global usercss, openEditor */
+/* global openEditor */
 
 'use strict';
 
@@ -369,75 +369,8 @@ function filterStylesInternal({
 }
 
 
-// Parse the source and find the duplication
-// {id: int, style: object, sourceCode: string, checkDup: boolean}
-function filterUsercss(req) {
-  let style;
-  let pendingBuild;
-  return buildMeta()
-    .then(buildSection)
-    .then(decide)
-    .catch(err => ({status: 'error', error: err.message || String(err)}));
-
-  function buildMeta() {
-    return new Promise(resolve => {
-      if (req.sourceCode) {
-        style = usercss.buildMeta(req.sourceCode);
-      } else {
-        style = req.style;
-      }
-      if (!style.id && req.id) {
-        style.id = req.id;
-      }
-      resolve();
-    });
-  }
-
-  function buildSection() {
-    if (!style.sections || !style.sections.length) {
-      pendingBuild = usercss.buildCode(style);
-    } else {
-      pendingBuild = Promise.resolve(style);
-    }
-  }
-
-  function decide() {
-    // decide result
-    if (!style.id && req.checkDup) {
-      return Promise.all([pendingBuild, findDupUsercss(style)])
-        .then(([, dup]) => ({status: 'success', style, dup}));
-    }
-    return pendingBuild.then(() => ({status: 'success', style}));
-  }
-}
-
-function saveUsercss(style) {
-  // This function use `saveStyle`, however the response is different.
-  return buildMeta()
-    .then(saveStyle)
-    .then(result => ({
-      status: 'success',
-      style: result
-    }))
-    .catch(err => ({
-      status: 'error',
-      error: String(err)
-    }));
-
-  function buildMeta() {
-    return new Promise(resolve => {
-      if (!style.usercssData) {
-        resolve(Object.assign(usercss.buildMeta(style.sourceCode), style));
-        return;
-      }
-      resolve(style);
-    });
-  }
-}
-
-
 function saveStyle(style) {
-  let id = Number(style.id) || null;
+  const id = Number(style.id) || null;
   const reason = style.reason;
   const notify = style.notify !== false;
   delete style.method;
@@ -449,19 +382,17 @@ function saveStyle(style) {
   let existed;
   let codeIsUpdated;
 
-  const maybeProcess = style.usercssData ? processUsercss() : Promise.resolve();
-
-  return maybeProcess
-    .then(maybeUpdate)
+  return maybeCalcDigest()
     .then(maybeImportFix)
     .then(decide);
 
-  function maybeUpdate() {
+  function maybeCalcDigest() {
     if (reason === 'update' || reason === 'update-digest') {
       return calcStyleDigest(style).then(digest => {
         style.originalDigest = digest;
       });
     }
+    return Promise.resolve();
   }
 
   function maybeImportFix() {
@@ -472,23 +403,6 @@ function saveStyle(style) {
         delete style.originalDigest;
       }
     }
-  }
-
-  function processUsercss() {
-    return findDupUsercss(style)
-      .then(dup => {
-        if (!dup) {
-          return;
-        }
-        if (!id) {
-          id = dup.id;
-        }
-        if (reason !== 'config') {
-          // preserve style.vars during update
-          usercss.assignVars(style, dup);
-        }
-      })
-      .then(() => usercss.buildCode(style));
   }
 
   function decide() {
@@ -561,21 +475,6 @@ function deleteStyle({id, notify = true}) {
     }
     return id;
   });
-}
-
-function findDupUsercss(style) {
-  if (style.id) {
-    return getStyles({id: style.id}).then(s => s[0]);
-  }
-  return getStyles().then(styles =>
-    styles.find(target => {
-      if (!target.usercssData) {
-        return false;
-      }
-      return target.usercssData.name === style.usercssData.name &&
-        target.usercssData.namespace === style.usercssData.namespace;
-    })
-  );
 }
 
 

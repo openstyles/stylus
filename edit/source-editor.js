@@ -444,23 +444,14 @@ function createSourceEditor(style) {
     if (!dirty.isDirty()) {
       return;
     }
-    const req = {
-      method: 'saveUsercss',
-      reason: 'editSave',
-      id: style.id,
-      enabled: style.enabled,
-      sourceCode: style.sourceCode
-    };
-    return onBackgroundReady().then(() => BG.saveUsercss(req))
-      .then(result => {
-        if (result.status === 'error') {
-          throw new Error(result.error);
-        }
-        return result;
-      })
-      .then(({style}) => {
-        replaceStyle(style);
-      })
+    return onBackgroundReady()
+      .then(() => BG.usercssHelper.save({
+        reason: 'editSave',
+        id: style.id,
+        enabled: style.enabled,
+        sourceCode: style.sourceCode
+      }))
+      .then(replaceStyle)
       .catch(err => {
         console.error(err);
         alert(err);

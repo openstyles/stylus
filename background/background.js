@@ -1,6 +1,6 @@
 /* global dbExec, getStyles, saveStyle */
 /* global handleCssTransitionBug */
-/* global filterUsercss, saveUsercss */
+/* global usercssHelper */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -304,11 +304,11 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'saveUsercss':
-      saveUsercss(request).then(sendResponse);
+      usercssHelper.save(request, true).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
-    case 'filterUsercss':
-      filterUsercss(request).then(sendResponse);
+    case 'buildUsercss':
+      usercssHelper.build(request, true).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
     case 'healthCheck':

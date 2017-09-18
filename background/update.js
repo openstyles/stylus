@@ -1,6 +1,6 @@
 /* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
 /* global calcStyleDigest */
-/* global usercss semverCompare */
+/* global usercss semverCompare usercssHelper */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -68,6 +68,7 @@ var updater = {
     return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
       .then(checkIfEdited)
       .then(maybeUpdate)
+      .then(maybeValidate)
       .then(maybeSave)
       .then(saved => {
         observer(updater.UPDATED, saved);
@@ -114,28 +115,35 @@ var updater = {
         if (semverCompare(version, newVersion) > 0) {
           return Promise.reject(updater.ERROR_VERSION);
         }
-        return json;
+        return usercss.buildCode(json);
       });
     }
 
+    function maybeValidate(json) {
+      if (json.usercssData) {
+        // usercss is already validated while building
+        return json;
+      }
+      if (!styleJSONseemsValid(json)) {
+        return Promise.reject(updater.ERROR_JSON);
+      }
+      if (styleSectionsEqual(json, style)) {
+        // JSONs may have different order of items even if sections are effectively equal
+        // so we'll update the digest anyway
+        saveStyle(Object.assign(json, {reason: 'update-digest'}));
+        return Promise.reject(updater.SAME_CODE);
+      } else if (!style.originalDigest && !ignoreDigest) {
+        return Promise.reject(updater.MAYBE_EDITED);
+      }
+      return json;
+    }
+
     function maybeSave(json) {
+      const doSave = json.usercssData ? usercssHelper.save : saveStyle;
       json.id = style.id;
       // no need to compare section code for usercss, they are built dynamically
-      if (!json.usercssData) {
-        if (!styleJSONseemsValid(json)) {
-          return Promise.reject(updater.ERROR_JSON);
-        }
-        if (styleSectionsEqual(json, style)) {
-          // JSONs may have different order of items even if sections are effectively equal
-          // so we'll update the digest anyway
-          saveStyle(Object.assign(json, {reason: 'update-digest'}));
-          return Promise.reject(updater.SAME_CODE);
-        } else if (!style.originalDigest && !ignoreDigest) {
-          return Promise.reject(updater.MAYBE_EDITED);
-        }
-      }
       return !save ? json :
-        saveStyle(Object.assign(json, {
+        doSave(Object.assign(json, {
           name: null, // keep local name customizations
           reason: 'update',
         }));
