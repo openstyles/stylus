@@ -361,12 +361,19 @@ Object.assign(handleEvent, {
   },
 
   update(event, entry) {
-    // update everything but name
-    saveStyleSafe(Object.assign(entry.updatedCode, {
+    const request = Object.assign(entry.updatedCode, {
       id: entry.styleId,
-      name: null,
       reason: 'update',
-    }));
+    });
+    if (entry.updatedCode.usercssData) {
+      onBackgroundReady().then(() =>
+        BG.usercssHelper.save(request)
+      );
+    } else {
+      // update everything but name
+      request.name = null;
+      saveStyleSafe(request);
+    }
   },
 
   delete(event, entry) {
