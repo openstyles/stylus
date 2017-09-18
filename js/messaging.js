@@ -368,15 +368,47 @@ function deleteStyleSafe({id, notify = true} = {}) {
 
 function download(url) {
   return new Promise((resolve, reject) => {
+    url = new URL(url);
+    const TIMEOUT = 10000;
+    const options = {
+      method: url.search ? 'POST' : 'GET',
+      body: url.search ? url.search.slice(1) : null,
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      }
+    };
+    if (url.protocol === 'file:' && navigator.userAgent.includes('Firefox')) {
+      // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
+      options.mode = 'same-origin';
+      // FIXME: add FetchController when it is available.
+      // https://developer.mozilla.org/en-US/docs/Web/API/FetchController/abort
+      let timer;
+      fetch(url.href, {mode: 'same-origin'})
+        .then(r => {
+          clearTimeout(timer);
+          if (r.status !== 200) {
+            throw new Error(`Server responded failure code: ${r.status}`);
+          }
+          return r.text();
+        })
+        .then(resolve, reject);
+      timer = setTimeout(
+        () => reject(new Error(`Fetch URL timeout: ${url.href}`)),
+        TIMEOUT
+      );
+      return;
+    }
     const xhr = new XMLHttpRequest();
-    xhr.timeout = 10e3;
-    xhr.onloadend = () => (xhr.status === 200
+    xhr.timeout = TIMEOUT;
+    xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
       ? resolve(xhr.responseText)
-      : reject(xhr.status));
-    const [mainUrl, query] = url.split('?');
-    xhr.open(query ? 'POST' : 'GET', mainUrl, true);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.send(query);
+      : reject(new Error(`Server responded failure code: ${xhr.status}`)));
+    xhr.onerror = reject;
+    xhr.open(options.method, url.href, true);
+    for (const key of Object.keys(options.headers)) {
+      xhr.setRequestHeader(key, options.headers[key]);
+    }
+    xhr.send(options.body);
   });
 }
 
