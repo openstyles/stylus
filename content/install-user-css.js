@@ -189,6 +189,16 @@ function initLiveReload(sourceLoader) {
       watcher.start();
     }
   });
+  chrome.runtime.onMessage.addListener(request => {
+    if (request.method === 'styleDeleted') {
+      if (installed && installed.id === request.id) {
+        installed = null;
+        watcher.stop();
+        $('.live-reload-checkbox').checked = false;
+        location.reload();
+      }
+    }
+  });
   $('.actions').appendChild($element({tag: 'label', className: 'live-reload', appendChild: [
     $element({tag: 'input', type: 'checkbox', className: 'live-reload-checkbox'}),
     $element({tag: 'span', textContent: t('liveReloadLabel')})
