@@ -458,5 +458,12 @@ function createSourceEditor(style) {
       });
   }
 
-  return {replaceStyle, save, toggleStyle, updateStyleMeta, isDirty: dirty.isDirty};
+  return {
+    replaceStyle,
+    save,
+    toggleStyle,
+    updateStyleMeta,
+    isDirty: dirty.isDirty,
+    getStyle: () => style
+  };
 }

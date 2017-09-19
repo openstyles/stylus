@@ -2072,8 +2072,9 @@ function onRuntimeMessage(request) {
       }
       break;
     case 'styleDeleted':
-      if (styleId && styleId === request.id) {
+      if (styleId && styleId === request.id || editor && editor.getStyle().id === request.id) {
         window.onbeforeunload = () => {};
+        // FIXME: Scripts may not close windows that were not opened by script.
         window.close();
         break;
       }
