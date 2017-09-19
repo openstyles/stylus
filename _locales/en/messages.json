@@ -405,6 +405,19 @@
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
   },
+  "installUpdateFrom": {
+    "message": "Currently the style is updated from $url$",
+    "description": "Label to describe where the style gets update",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Install update from this URL",
+    "description": "Label for the checkbox to save current URL for update check"
+  },
   "license": {
     "message": "License",
     "description": "Label for the license"

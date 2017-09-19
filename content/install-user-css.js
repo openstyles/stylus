@@ -7,8 +7,7 @@ let pendingResource;
 function install(style) {
   const request = Object.assign(style, {
     method: 'saveUsercss',
-    reason: 'update',
-    updateUrl: location.protocol === 'file:' ? null : location.href
+    reason: 'update'
   });
   return runtimeSend(request)
     .then(result => {
@@ -17,6 +16,9 @@ function install(style) {
       $('button.install').textContent = 'Installed';
       $('button.install').disabled = true;
       $('button.install').classList.add('installed');
+      $('.set-update-url').disabled = true;
+      $('.set-update-url-label').title = result.updateUrl ?
+        t('installUpdateFrom', result.updateUrl) : '';
       window.dispatchEvent(new CustomEvent('installed', {detail: result}));
     })
     .catch(err => {
@@ -76,6 +78,21 @@ function initInstallPage({style, dup}, sourceLoader) {
         install(style);
       }
     };
+    if (dup && dup.updateUrl === location.href) {
+      $('.set-update-url').checked = true;
+      // there is no way to "unset" updateUrl, you can only overwrite it.
+      $('.set-update-url').disabled = true;
+    } else if (!dup && location.protocol !== 'file:') {
+      $('.set-update-url').checked = true;
+      style.updateUrl = location.href;
+    }
+    $('.set-update-url').onchange = e => {
+      if (e.target.checked) {
+        style.updateUrl = location.href;
+      } else {
+        delete style.updateUrl;
+      }
+    };
 
     if (location.protocol === 'file:') {
       initLiveReload(sourceLoader);
@@ -85,7 +102,20 @@ function initInstallPage({style, dup}, sourceLoader) {
       return $element({className: 'container', appendChild: [
         $element({className: 'header', appendChild: [
           $element({className: 'actions', appendChild: [
-            $element({tag: 'button', className: 'install', textContent: installButtonLabel()})
+            $element({tag: 'button', className: 'install', textContent: installButtonLabel()}),
+            $element({
+              tag: 'label',
+              title: dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '',
+              className: 'set-update-url-label',
+              appendChild: [
+                $element({
+                  tag: 'input',
+                  type: 'checkbox',
+                  className: 'set-update-url'
+                }),
+                $element({tag: 'span', textContent: t('installUpdateFromLabel')})
+              ]
+            })
           ]}),
           $element({tag: 'h1', appendChild: [
             data.name,

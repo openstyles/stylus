@@ -49,7 +49,7 @@ h1 small {
   margin: 15px 0;
 }
 
-.live-reload {
+.actions label {
   width: fit-content;
   width: -moz-fit-content;
   display: flex;
@@ -57,7 +57,7 @@ h1 small {
   margin: 0.5em 0;
 }
 
-.live-reload input {
+.actions label input {
   margin: 0 0.5em 0 0;
 }
 
