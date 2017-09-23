@@ -602,12 +602,6 @@ queryTabs({currentWindow: true}).then(tabs => {
       saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
     }
   }
-  chrome.tabs.onRemoved.addListener((tabId, info) => {
-    sessionStorageHash('manageStylesHistory').unset(tabId);
-    if (info.windowId === windowId && info.isWindowClosing) {
-      sessionStorageHash('saveSizeOnClose').unset(windowId);
-    }
-  });
 });
 
 getOwnTab().then(tab => {
