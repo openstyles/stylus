@@ -96,5 +96,30 @@ var usercssHelper = (function () {
     );
   }
 
-  return {build, save, findDup};
+  function openInstallPage(tabId, request) {
+    // FIXME: openURL doesn't reuse old page?
+    const url = '/install-usercss/install-usercss.html' +
+      '?updateUrl=' + encodeURIComponent(request.updateUrl) +
+      '&tabId=' + tabId;
+    const pending = openURL({url})
+      .then(tab => {
+        // FIXME: need a reliable way to check if a new tab is created
+        if (tab.url) {
+          chrome.runtime.onMessage.addListener(function _({method}, sender, sendResponse) {
+            if (method !== 'usercssInstallPageReady') {
+              return;
+            }
+            if (sender.tab.id !== tab.id) {
+              return;
+            }
+            chrome.runtime.onMessage.removeListener(_);
+            wrapReject(Promise.resolve(request)).then(sendResponse);
+            return true;
+          });
+        }
+      });
+    return wrapReject(pending);
+  }
+
+  return {build, save, findDup, openInstallPage};
 })();

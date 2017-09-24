@@ -1,6 +1,7 @@
 body {
   margin: 0;
   font: 12px arial, sans-serif;
+  background: white;
 }
 
 * {
@@ -21,7 +22,7 @@ body {
   overflow-wrap: break-word;
 }
 
-.header :first-child {
+.header > :first-child {
   margin-top: 0;
 }
 
@@ -71,8 +72,6 @@ h1 small {
 
 .code {
   padding: 2em;
-  font-family: monospace;
-  white-space: pre-wrap;
 }
 
 .main {

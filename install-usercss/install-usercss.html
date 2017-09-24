@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Loading...</title>
+  <link rel="stylesheet" href="install-usercss.css">
+  <script src="/js/dom.js"></script>
+  <script src="/js/localization.js"></script>
+  <script src="/vendor/node-semver/semver.js"></script>
+
+  <script src="/vendor/codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="/vendor/codemirror/lib/codemirror.css">
+  <script src="/vendor/codemirror/mode/css/css.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="actions">
+        <button class="install" i18n-text="installButton"></button>
+        <label class="set-update-url">
+          <input type="checkbox">
+          <span i18n-text="installUpdateFromLabel"></span>
+        </label>
+      </div>
+      <h1>
+        <span class="meta-name"></span>
+        <small class="meta-version"></small>
+      </h1>
+      <p class="meta-description"></p>
+      <div>
+        <h3 i18n-text="author"></h3>
+        <span class="meta-author"></span>
+      </div>
+      <div>
+        <h3 i18n-text="license"></h3>
+        <span class="meta-license"></span>
+      </div>
+      <h3 i18n-text="appliesLabel"></h3>
+      <ul class="applies-to">
+      </ul>
+      <div class="external-link"></div>
+    </div>
+    <div class="main">
+      <div class="code">
+        <textarea></textarea>
+      </div>
+    </div>
+  </div>
+  <script src="install-usercss.js"></script>
+</body>
+</html>
