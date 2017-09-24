@@ -98,7 +98,7 @@ var usercssHelper = (function () {
 
   function openInstallPage(tabId, request) {
     // FIXME: openURL doesn't reuse old page?
-    const url = '/install-usercss/install-usercss.html' +
+    const url = '/install-usercss.html' +
       '?updateUrl=' + encodeURIComponent(request.updateUrl) +
       '&tabId=' + tabId;
     const pending = openURL({url})
