@@ -13,9 +13,17 @@
   port.onMessage.addListener(msg => {
     switch (msg.method) {
       case 'getSourceCodeResponse':
-        initSourceCode(msg.sourceCode);
+        if (msg.error) {
+          alert(msg.error);
+        } else {
+          initSourceCode(msg.sourceCode);
+        }
         break;
     }
+  });
+  port.onDisconnect.addListener(() => {
+    // FIXME: Firefox: 1) window.close doesn't work. 2) onDisconnect is fired only if the tab is closed.
+    window.close();
   });
 
   const cm = CodeMirror.fromTextArea($('.code textarea'), {readOnly: true});
@@ -38,11 +46,11 @@
       .then(result => {
         $$('.warning')
           .forEach(el => el.remove());
-        $('button.install').textContent = 'Installed';
-        $('button.install').disabled = true;
-        $('button.install').classList.add('installed');
-        $('.set-update-url').disabled = true;
-        $('.set-update-url-label').title = result.updateUrl ?
+        $('.install').textContent = 'Installed';
+        $('.install').disabled = true;
+        $('.install').classList.add('installed');
+        $('.set-update-url input[type=checkbox]').disabled = true;
+        $('.set-update-url').title = result.updateUrl ?
           t('installUpdateFrom', result.updateUrl) : '';
         window.dispatchEvent(new CustomEvent('installed', {detail: result}));
       })
@@ -76,6 +84,7 @@
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
 
+    // update UI
     if (versionTest < 0) {
       $('.actions').parentNode.insertBefore(
         $element({className: 'warning', textContent: t('versionInvalidOlder')}),
@@ -94,8 +103,10 @@
       }
     };
 
+    // set updateUrl
     const setUpdate = $('.set-update-url input[type=checkbox]');
     const updateUrl = new URL(params.updateUrl);
+    $('.set-update-url > span').textContent = t('installUpdateFromLabel', updateUrl.href);
     if (dup && dup.updateUrl === updateUrl.href) {
       setUpdate.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
@@ -111,6 +122,9 @@
         delete style.updateUrl;
       }
     };
+
+    // update editor
+    cm.setPreprocessor(data.preprocessor);
 
     // update metas
     document.title = data.name;

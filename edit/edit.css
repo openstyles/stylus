@@ -167,19 +167,9 @@ h2 .svg-icon, label .svg-icon {
   margin-left: 0.25rem;
 }
 /* code */
-.CodeMirror-hint:hover {
-  color: white;
-  background: #08f;
-}
 .code {
   height: 10rem;
   width: 40rem;
-}
-.CodeMirror {
-  border: solid #CCC 1px;
-}
-.CodeMirror-lint-mark-warning {
-  background: none;
 }
 .resize-grip-enabled .CodeMirror-scroll {
   height: auto !important;;
@@ -197,22 +187,6 @@ h2 .svg-icon, label .svg-icon {
 }
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
-}
-.CodeMirror-dialog {
-  -webkit-animation: highlight 3s ease-out;
-}
-.CodeMirror-focused {
-  outline: -webkit-focus-ring-color auto 5px;
-  outline-offset: -2px;
-}
-.CodeMirror-search-field {
-  width: 10em;
-}
-.CodeMirror-jump-field {
-  width: 5em;
-}
-.CodeMirror-search-hint {
-  color: #888;
 }
 body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
 body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {

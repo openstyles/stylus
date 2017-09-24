@@ -6,11 +6,6 @@
 'use strict';
 
 function createSourceEditor(style) {
-  const MODE = {
-    stylus: 'stylus',
-    uso: 'css'
-  };
-
   // style might be an object reference to background page
   style = deepCopy(style);
 
@@ -403,10 +398,9 @@ function createSourceEditor(style) {
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     const {usercssData: {preprocessor}} = style;
-    cm.setOption('mode', MODE[preprocessor] || 'css');
-    CodeMirror.autoLoadMode(cm, MODE[preprocessor] || 'css');
+    cm.setPreprocessor(preprocessor);
     // beautify only works with regular CSS
-    $('#beautify').disabled = MODE[preprocessor] && MODE[preprocessor] !== 'css';
+    $('#beautify').disabled = cm.getOption('mode') !== 'css';
     updateTitle();
   }
 

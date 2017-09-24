@@ -1,0 +1,26 @@
+.CodeMirror-hint:hover {
+  color: white;
+  background: #08f;
+}
+.CodeMirror {
+  border: solid #CCC 1px;
+}
+.CodeMirror-lint-mark-warning {
+  background: none;
+}
+.CodeMirror-dialog {
+  -webkit-animation: highlight 3s ease-out;
+}
+.CodeMirror-focused {
+  outline: -webkit-focus-ring-color auto 5px;
+  outline-offset: -2px;
+}
+.CodeMirror-search-field {
+  width: 10em;
+}
+.CodeMirror-jump-field {
+  width: 5em;
+}
+.CodeMirror-search-hint {
+  color: #888;
+}

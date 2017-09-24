@@ -10,16 +10,17 @@ body {
 
 .container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   align-items: stretch;
 }
 
 .header {
-  width: 280px;
+  flex: 0 0 280px;
   padding: 15px;
   border-right: 1px dashed #aaa;
   box-shadow: 0 0 50px -18px black;
   overflow-wrap: break-word;
+  overflow: auto;
 }
 
 .header > :first-child {
@@ -51,8 +52,8 @@ h1 small {
 }
 
 .actions label {
-  width: fit-content;
-  width: -moz-fit-content;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
   display: flex;
   align-items: center;
   margin: 0.5em 0;
@@ -60,6 +61,11 @@ h1 small {
 
 .actions label input {
   margin: 0 0.5em 0 0;
+  flex: 0 0 auto;
+}
+
+.actions label span {
+  min-width: 0;
 }
 
 .external {
@@ -75,7 +81,13 @@ h1 small {
 }
 
 .main {
-  flex-grow: 1;
+  flex: 1 1 auto;
   overflow: hidden;
   overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.main .code,
+.main .CodeMirror {
+  height: 100%;
 }

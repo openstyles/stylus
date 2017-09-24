@@ -164,110 +164,15 @@ function setCleanSection(section) {
 
 function initCodeMirror() {
   const CM = CodeMirror;
-  const isWindowsOS = navigator.appVersion.indexOf('Windows') > 0;
   // lint.js is not loaded initially
-  // CodeMirror miserably fails on keyMap='' so let's ensure it's not
-  if (!prefs.get('editor.keyMap')) {
-    prefs.reset('editor.keyMap');
-  }
-
-  // default option values
-  Object.assign(CM.defaults, {
-    mode: 'css',
-    lineNumbers: true,
-    lineWrapping: true,
-    foldGutter: true,
-    gutters: [
-      'CodeMirror-linenumbers',
-      'CodeMirror-foldgutter',
-      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
-    ],
-    matchBrackets: true,
-    highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
-    hintOptions: {},
-    lint: linterConfig.getForCodeMirror(),
-    lintReportDelay: prefs.get('editor.lintReportDelay'),
-    styleActiveLine: true,
-    theme: 'default',
-    keyMap: prefs.get('editor.keyMap'),
-    extraKeys: {
-      // independent of current keyMap
-      'Alt-Enter': 'toggleStyle',
-      'Alt-PageDown': 'nextEditor',
-      'Alt-PageUp': 'prevEditor'
-    }
-  }, prefs.get('editor.options'));
+  CM.defaults.lint = linterConfig.getForCodeMirror();
 
   // additional commands
   CM.commands.jumpToLine = jumpToLine;
   CM.commands.nextEditor = cm => nextPrevEditor(cm, 1);
   CM.commands.prevEditor = cm => nextPrevEditor(cm, -1);
   CM.commands.save = save;
-  CM.commands.blockComment = cm => {
-    cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
-  };
   CM.commands.toggleStyle = toggleStyle;
-
-  // 'basic' keymap only has basic keys by design, so we skip it
-
-  const extraKeysCommands = {};
-  Object.keys(CM.defaults.extraKeys).forEach(key => {
-    extraKeysCommands[CM.defaults.extraKeys[key]] = true;
-  });
-  if (!extraKeysCommands.jumpToLine) {
-    CM.keyMap.sublime['Ctrl-G'] = 'jumpToLine';
-    CM.keyMap.emacsy['Ctrl-G'] = 'jumpToLine';
-    CM.keyMap.pcDefault['Ctrl-J'] = 'jumpToLine';
-    CM.keyMap.macDefault['Cmd-J'] = 'jumpToLine';
-  }
-  if (!extraKeysCommands.autocomplete) {
-    // will be used by 'sublime' on PC via fallthrough
-    CM.keyMap.pcDefault['Ctrl-Space'] = 'autocomplete';
-    // OSX uses Ctrl-Space and Cmd-Space for something else
-    CM.keyMap.macDefault['Alt-Space'] = 'autocomplete';
-    // copied from 'emacs' keymap
-    CM.keyMap.emacsy['Alt-/'] = 'autocomplete';
-    // 'vim' and 'emacs' define their own autocomplete hotkeys
-  }
-  if (!extraKeysCommands.blockComment) {
-    CM.keyMap.sublime['Shift-Ctrl-/'] = 'blockComment';
-  }
-
-  if (isWindowsOS) {
-    // 'pcDefault' keymap on Windows should have F3/Shift-F3
-    if (!extraKeysCommands.findNext) {
-      CM.keyMap.pcDefault['F3'] = 'findNext';
-    }
-    if (!extraKeysCommands.findPrev) {
-      CM.keyMap.pcDefault['Shift-F3'] = 'findPrev';
-    }
-
-    // try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
-    ['N', 'T', 'W'].forEach(char => {
-      [
-        {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
-        // Note: modifier order in CM is S-C-A
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']}
-      ].forEach(remap => {
-        const oldKey = remap.from + char;
-        Object.keys(CM.keyMap).forEach(keyMapName => {
-          const keyMap = CM.keyMap[keyMapName];
-          const command = keyMap[oldKey];
-          if (!command) {
-            return;
-          }
-          remap.to.some(newMod => {
-            const newKey = newMod + char;
-            if (!(newKey in keyMap)) {
-              delete keyMap[oldKey];
-              keyMap[newKey] = command;
-              return true;
-            }
-          });
-        });
-      });
-    });
-  }
 
   // user option values
   CM.getOption = o => CodeMirror.defaults[o];
@@ -277,8 +182,6 @@ function initCodeMirror() {
       editor.setOption(o, v);
     });
   };
-
-  CM.modeURL = '/vendor/codemirror/mode/%N/%N.js';
 
   CM.prototype.getSection = function () {
     return this.display.wrapper.parentNode;
