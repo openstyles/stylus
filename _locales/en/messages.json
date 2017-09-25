@@ -393,6 +393,10 @@
     "message": "Install",
     "description": "Label for install button"
   },
+  "installButtonInstalled": {
+    "message": "Installed",
+    "description": "Text displayed when the style is successfully installed"
+  },
   "installButtonUpdate": {
     "message": "Update",
     "description": "Label for update button"

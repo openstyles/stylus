@@ -4,6 +4,8 @@
 
 (function () {
   const params = getParams();
+  let liveReload = false;
+  let installed = false;
 
   const port = chrome.tabs.connect(
     Number(params.tabId),
@@ -19,11 +21,104 @@
           initSourceCode(msg.sourceCode);
         }
         break;
+      case 'sourceCodeChanged':
+        if (msg.error) {
+          alert(msg.error);
+        } else {
+          liveReloadUpdate(msg.sourceCode);
+        }
+        break;
     }
   });
   port.onDisconnect.addListener(closeCurrentTab);
 
   const cm = CodeMirror.fromTextArea($('.code textarea'), {readOnly: true});
+  let liveReloadPending = Promise.resolve();
+
+  function liveReloadUpdate(sourceCode) {
+    liveReloadPending = liveReloadPending.then(() => {
+      const scrollInfo = cm.getScrollInfo();
+      const cursor = cm.getCursor();
+      cm.setValue(sourceCode);
+      cm.setCursor(cursor);
+      cm.scrollTo(scrollInfo.left, scrollInfo.top);
+
+      return runtimeSend({
+        method: 'saveUsercss',
+        reason: 'update',
+        sourceCode
+      }).then(updateMeta).catch(showError);
+    });
+  }
+
+  function updateMeta(style, dup) {
+    $$('.main .warning').forEach(e => e.remove());
+
+    const data = style.usercssData;
+    const dupData = dup && dup.usercssData;
+    const versionTest = dup && semverCompare(data.version, dupData.version);
+
+    // update editor
+    cm.setPreprocessor(data.preprocessor);
+
+    // update metas
+    document.title = `${installButtonLabel()} ${data.name}`;
+
+    $('.install').textContent = installButtonLabel();
+    $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
+    $('.meta-name').textContent = data.name;
+    $('.meta-version').textContent = data.version;
+    $('.meta-description').textContent = data.description;
+
+    $('.meta-author').parentNode.style.display = data.author ? '' : 'none';
+    $('.meta-author').textContent = data.author;
+
+    $('.meta-license').parentNode.style.display = data.license ? '' : 'none';
+    $('.meta-license').textContent = data.license;
+
+    $('.applies-to').textContent = '';
+    getAppliesTo(style).forEach(pattern =>
+      $('.applies-to').appendChild($element({tag: 'li', textContent: pattern}))
+    );
+
+    $('.external-link').textContent = '';
+    const externalLink = makeExternalLink();
+    if (externalLink) {
+      $('.external-link').appendChild(externalLink);
+    }
+
+    function makeExternalLink() {
+      const urls = [];
+      if (data.homepageURL) {
+        urls.push([data.homepageURL, t('externalHomepage')]);
+      }
+      if (data.supportURL) {
+        urls.push([data.supportURL, t('externalSupport')]);
+      }
+      if (urls.length) {
+        return $element({appendChild: [
+          $element({tag: 'h3', textContent: t('externalLink')}),
+          $element({tag: 'ul', appendChild: urls.map(args =>
+            $element({tag: 'li', appendChild: makeLink(...args)})
+          )})
+        ]});
+      }
+    }
+
+    function installButtonLabel() {
+      return t(
+        installed ? 'installButtonInstalled' :
+        !dup ? 'installButton' :
+        versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall'
+      );
+    }
+  }
+
+  function showError(err) {
+    $$('.main .warning').forEach(e => e.remove());
+    const main = $('.main');
+    main.insertBefore(buildWarning(err), main.firstChild);
+  }
 
   function runtimeSend(request) {
     return new Promise((resolve, reject) => {
@@ -41,15 +136,25 @@
     });
     return runtimeSend(request)
       .then(result => {
+        installed = true;
+
         $$('.warning')
           .forEach(el => el.remove());
-        $('.install').textContent = 'Installed';
         $('.install').disabled = true;
         $('.install').classList.add('installed');
         $('.set-update-url input[type=checkbox]').disabled = true;
         $('.set-update-url').title = result.updateUrl ?
           t('installUpdateFrom', result.updateUrl) : '';
-        window.dispatchEvent(new CustomEvent('installed', {detail: result}));
+
+        updateMeta(result);
+
+        if (liveReload) {
+          port.postMessage({method: 'liveReloadStart'});
+        }
+        $('.live-reload').addEventListener('change', () => {
+          const method = 'liveReload' + (liveReload ? 'Start' : 'Stop');
+          port.postMessage({method});
+        });
       })
       .catch(err => {
         alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
@@ -80,6 +185,8 @@
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
+
+    updateMeta(style, dup);
 
     // update UI
     if (versionTest < 0) {
@@ -120,59 +227,14 @@
       }
     };
 
-    // update editor
-    cm.setPreprocessor(data.preprocessor);
-
-    // update metas
-    document.title = `${installButtonLabel()} ${data.name}`;
-
-    $('.install').textContent = installButtonLabel();
-    $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
-    $('.meta-name').textContent = data.name;
-    $('.meta-version').textContent = data.version;
-    $('.meta-description').textContent = data.description;
-
-    if (data.author) {
-      $('.meta-author').textContent = data.author;
+    // live reload
+    const setLiveReload = $('.live-reload input[type=checkbox]');
+    if (updateUrl.protocol !== 'file:') {
+      setLiveReload.parentNode.remove();
     } else {
-      $('.meta-author').parentNode.remove();
-    }
-    if (data.license) {
-      $('.meta-license').textContent = data.license;
-    } else {
-      $('.meta-license').parentNode.remove();
-    }
-
-    getAppliesTo(style).forEach(pattern =>
-      $('.applies-to').appendChild($element({tag: 'li', textContent: pattern}))
-    );
-
-    const externalLink = makeExternalLink();
-    if (externalLink) {
-      $('.external-link').appendChild(externalLink);
-    }
-
-    function makeExternalLink() {
-      const urls = [];
-      if (data.homepageURL) {
-        urls.push([data.homepageURL, t('externalHomepage')]);
-      }
-      if (data.supportURL) {
-        urls.push([data.supportURL, t('externalSupport')]);
-      }
-      if (urls.length) {
-        return $element({appendChild: [
-          $element({tag: 'h3', textContent: t('externalLink')}),
-          $element({tag: 'ul', appendChild: urls.map(args =>
-            $element({tag: 'li', appendChild: makeLink(...args)})
-          )})
-        ]});
-      }
-    }
-
-    function installButtonLabel() {
-      return t(!dup ? 'installButton' :
-        versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall');
+      setLiveReload.addEventListener('change', () => {
+        liveReload = setLiveReload.checked;
+      });
     }
   }
 

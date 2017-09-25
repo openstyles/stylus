@@ -68,7 +68,10 @@ function createSourceLoader() {
 }
 
 function initUsercssInstall() {
-  const pendingSource = createSourceLoader().load();
+  const sourceLoader = createSourceLoader();
+  const pendingSource = sourceLoader.load();
+  let watcher;
+
   chrome.runtime.onConnect.addListener(port => {
     // FIXME: is this the correct way to reject a connection?
     // https://developer.chrome.com/extensions/messaging#connect
@@ -82,6 +85,19 @@ function initUsercssInstall() {
           ).catch(err =>
             port.postMessage({method: msg.method + 'Response', error: err.message || String(err)})
           );
+          break;
+
+        case 'liveReloadStart':
+          if (!watcher) {
+            watcher = sourceLoader.watch(sourceCode => {
+              port.postMessage({method: 'sourceCodeChanged', sourceCode});
+            });
+          }
+          watcher.start();
+          break;
+
+        case 'liveReloadStop':
+          watcher.stop();
           break;
       }
     });

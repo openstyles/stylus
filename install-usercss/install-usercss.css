@@ -85,6 +85,18 @@ h1 small {
   overflow: hidden;
   overflow-wrap: break-word;
   min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.main > :first-child {
+  flex: 0 0 auto;
+}
+
+.main > :last-child {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .main .code,
