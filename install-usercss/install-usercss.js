@@ -127,7 +127,7 @@
     cm.setPreprocessor(data.preprocessor);
 
     // update metas
-    document.title = data.name;
+    document.title = `${installButtonLabel()} ${data.name}`;
 
     $('.install').textContent = installButtonLabel();
     $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
@@ -150,9 +150,12 @@
       $('.applies-to').appendChild($element({tag: 'li', textContent: pattern}))
     );
 
-    $('.external-link').appendChild(externalLink());
+    const externalLink = makeExternalLink();
+    if (externalLink) {
+      $('.external-link').appendChild();
+    }
 
-    function externalLink() {
+    function makeExternalLink() {
       const urls = [];
       if (data.homepageURL) {
         urls.push([data.homepageURL, t('externalHomepage')]);
