@@ -21,10 +21,7 @@
         break;
     }
   });
-  port.onDisconnect.addListener(() => {
-    // FIXME: Firefox: 1) window.close doesn't work. 2) onDisconnect is fired only if the tab is closed.
-    window.close();
-  });
+  port.onDisconnect.addListener(closeCurrentTab);
 
   const cm = CodeMirror.fromTextArea($('.code textarea'), {readOnly: true});
 
@@ -152,7 +149,7 @@
 
     const externalLink = makeExternalLink();
     if (externalLink) {
-      $('.external-link').appendChild();
+      $('.external-link').appendChild(externalLink);
     }
 
     function makeExternalLink() {

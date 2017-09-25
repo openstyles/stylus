@@ -438,3 +438,12 @@ function openEditor(id) {
     openURL({url});
   }
 }
+
+
+function closeCurrentTab() {
+  chrome.tabs.getCurrent(tab => {
+    if (tab) {
+      chrome.tabs.remove(tab.id);
+    }
+  });
+}
