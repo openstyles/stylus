@@ -3,7 +3,7 @@
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
-/* global loadScript */
+/* global loadScript closeCurrentTab */
 
 'use strict';
 

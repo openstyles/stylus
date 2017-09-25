@@ -1,4 +1,4 @@
-/* global CodeMirror semverCompare makeLink */
+/* global CodeMirror semverCompare makeLink closeCurrentTab */
 
 'use strict';
 
