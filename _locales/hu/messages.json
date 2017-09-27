@@ -1,0 +1,284 @@
+{
+	"appliesToEverything": {
+		"message": "Minden",
+		"description": "Text displayed for styles that apply to all sites"
+	},
+	"defaultTheme": {
+		"message": "alapértelmezett",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"exportLabel": {
+		"message": "Exportálás",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"cm_tabSize": {
+		"message": "Tabulátorméret",
+		"description": "Label for the text box controlling tab size option for the style editor."
+	},
+	"enableStyleLabel": {
+		"message": "Engedélyezés",
+		"description": "Label for the button to enable a style"
+	},
+	"appliesDomainOption": {
+		"message": "URL-ek a doménon",
+		"description": "Option to make the style apply to the entered string as a domain"
+	},
+	"checkForUpdate": {
+		"message": "Frissítések ellenőrzése",
+		"description": "Label for the button to check a single style for an update"
+	},
+	"importAppendLabel": {
+		"message": "Hozzáadás stílushoz",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"helpAlt": {
+		"message": "Segítség",
+		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Keresés",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"confirmYes": {
+		"message": "Igen",
+		"description": "'Yes' button in a confirm dialog"
+	},
+	"findStylesForSite": {
+		"message": "További stílusok keresése ehhez az oldalhoz",
+		"description": "Text for a link that gets a list of styles for the current site"
+	},
+	"manageHeading": {
+		"message": "Telepített stílusok",
+		"description": "Heading for the manage page"
+	},
+	"sectionAdd": {
+		"message": "Egy újabb szekció hozzáadása",
+		"description": "Label for the button to add a section"
+	},
+	"confirmStop": {
+		"message": "Állj",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"appliesAdd": {
+		"message": "Hozzáadás",
+		"description": "Label for the button to add an 'applies' entry"
+	},
+	"appliesRegexpOption": {
+		"message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek",
+		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"manageText": {
+		"message": "<a href='https://userstyles.org'>Szerezz be stílusokat a userstyles.org-on</a> | <a href='http://add0n.com/stylus.html'>Kérj segítséget</a>",
+		"description": "Help text on the manage page"
+	},
+	"searchStyles": {
+		"message": "Tartalom keresése",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"disableStyleLabel": {
+		"message": "Letiltás",
+		"description": "Label for the button to disable a style"
+	},
+	"prefShowBadge": {
+		"message": "A jelenlegi oldalon aktív stílusok száma",
+		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"menuShowBadge": {
+		"message": "Aktív stílusok számlálójának mutatása",
+		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"cm_lineWrapping": {
+		"message": "Automatikus sortörés",
+		"description": "Label for the checkbox controlling word wrap option for the style editor."
+	},
+	"importLabel": {
+		"message": "Importálás",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"manageFilters": {
+		"message": "Szűrők",
+		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Minden módosítás alkalmazása",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"deleteStyleConfirm": {
+		"message": "Biztos, hogy törölni akarod ezt a stílust?",
+		"description": "Confirmation before deleting a style"
+	},
+	"optionsHeading": {
+		"message": "Beállítások",
+		"description": "Heading for options section on manage page."
+	},
+	"appliesDisplay": {
+		"message": "A következőre érvényesül:$applies$",
+		"description": "Text on the manage screen to describe what the style applies to",
+		"placeholders": {
+			"applies": {
+				"content": "$1"
+			}
+		}
+	},
+	"editStyleTitle": {
+		"message": "A(z) $stylename$ stílus szerkesztése",
+		"description": "Title of the page for editing styles",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesUrlPrefixOption": {
+		"message": "URL-ek adott kezdettel",
+		"description": "Option to make the style apply to the entered string as a URL prefix"
+	},
+	"searchRegexp": {
+		"message": "Használd a /re/ szintaxist a regexp kereséshez",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"importReplaceTooltip": {
+		"message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"popupStylesFirst": {
+		"message": "Parancsok előtti stílusok",
+		"description": "Label for the checkbox controlling section order in the popup."
+	},
+	"sectionHelp": {
+		"message": "A szekciók segítenek egy stílus kódrészleteit különböző URL-ekre alkalmazni. Például egyetlen stílus megváltoztathatja egy oldal honlapját egy bizonyos módon, míg az oldal többi részét máshogyan.",
+		"description": "Help text for sections"
+	},
+	"noStylesForSite": {
+		"message": "Nincs telepítve stílus ehhez az oldalhoz.",
+		"description": "Text displayed when no styles are installed for the current site"
+	},
+	"appliesDisplayTruncatedSuffix": {
+		"message": "és ennél is több",
+		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+	},
+	"appliesRemove": {
+		"message": "Eltávolítás",
+		"description": "Label for the button to remove an 'applies' entry"
+	},
+	"replace": {
+		"message": "Csere",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"appliesLabel": {
+		"message": "Amire érvényesül",
+		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openManage": {
+		"message": "Kezelés",
+		"description": "Link to open the manage page."
+	},
+	"appliesSpecify": {
+		"message": "Szűkítés",
+		"description": "Label for the button to make a style apply only to specific sites"
+	},
+	"installUpdate": {
+		"message": "Frissítés telepítése",
+		"description": "Label for the button to install an update for a single style"
+	},
+	"disableAllStyles": {
+		"message": "Az összes stílus kikapcsolása",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"checkingForUpdate": {
+		"message": "Ellenőrzés...",
+		"description": "Text to display when checking a style for an update"
+	},
+	"sectionCode": {
+		"message": "Kód",
+		"description": "Label for the code for a section"
+	},
+	"cm_smartIndent": {
+		"message": "Intelligens behúzás használata",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
+	},
+	"appliesHelp": {
+		"message": "Használd az \"A következőre érvényesül\" részt, hogy korlátozd, milyen URL-ekre vonatkozzon az itt lévő kód!",
+		"description": "Help text for 'applies to' section"
+	},
+	"editStyleHeading": {
+		"message": "Stílus szerkesztése",
+		"description": "Title of the page for editing styles"
+	},
+	"addStyleTitle": {
+		"message": "Stílus hozzáadása",
+		"description": "Title of the page for adding styles"
+	},
+	"importReplaceLabel": {
+		"message": "Stílus felülírása",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"dbError": {
+		"message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?",
+		"description": "Prompt when a DB error is encountered"
+	},
+	"importAppendTooltip": {
+		"message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"helpKeyMapHotkey": {
+		"message": "Gyorsgomb",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"replaceAll": {
+		"message": "Az összes cseréje",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"editGotoLine": {
+		"message": "Sorra (vagy sor:oszlopra) ugrás",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
+	"checkAllUpdates": {
+		"message": "Az összes stílus frissítésének ellenőrzése",
+		"description": "Label for the button to check all styles for updates"
+	},
+	"confirmNo": {
+		"message": "Nem",
+		"description": "'No' button in a confirm dialog"
+	},
+	"cm_keyMap": {
+		"message": "Billentyűműveletek",
+		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"cm_indentWithTabs": {
+		"message": "Tabulátorok használata intelligens behúzásra",
+		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+	},
+	"replaceWith": {
+		"message": "Csere a következővel",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"deleteStyleLabel": {
+		"message": "Törlés",
+		"description": "Label for the button to delete a style"
+	},
+	"addStyleLabel": {
+		"message": "Új stílus írása",
+		"description": "Label for the button to go to the add style page"
+	},
+	"manageOnlyEnabled": {
+		"message": "Csak a telepített stílusok",
+		"description": "Checkbox to show only enabled styles"
+	},
+	"editStyleLabel": {
+		"message": "Szerkesztés",
+		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Téma",
+		"description": "Label for the style editor's CSS theme."
+	},
+	"helpKeyMapCommand": {
+		"message": "Írj be egy parancsot",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"description": {
+		"message": "Tervezd újra a webet a Stylus-szal, ami egy stíluskezelő. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz.",
+		"description": "Extension description"
+	}
+}

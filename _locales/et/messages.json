@@ -16,7 +16,7 @@
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
-		"message": "Ekspordi stiile",
+		"message": "Ekspordi stiilid",
 		"description": ""
 	},
 	"optionsUpdateInterval": {
@@ -176,7 +176,7 @@
 		"description": ""
 	},
 	"retrieveBckp": {
-		"message": "Impordi stiile",
+		"message": "Impordi stiilid",
 		"description": ""
 	},
 	"confirmStop": {

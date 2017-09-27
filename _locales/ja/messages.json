@@ -229,7 +229,7 @@
 		"description": "Help text on the manage page"
 	},
 	"manageOnlyLocal": {
-		"message": "ローカルに作成されたスタイルのみ",
+		"message": "ローカル作成スタイルのみ",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"linterIssuesHelp": {
@@ -699,7 +699,7 @@
 		"description": "RegExp test report: label for the invalid expressions"
 	},
 	"manageOnlyExternal": {
-		"message": "外部から取得したスタイルのみ",
+		"message": "外部取得スタイルのみ",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"replaceAll": {

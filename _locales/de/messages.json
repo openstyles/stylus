@@ -68,7 +68,7 @@
 		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
-		"message": "Nach Aktualisierungen suchen",
+		"message": "Nach Aktualisierung suchen",
 		"description": "Label for the button to check a single style for an update"
 	},
 	"styleNotAppliedRegexpProblemTooltip": {
@@ -92,7 +92,7 @@
 		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Keine Aktualisierung gefunden",
+		"message": "Keine Aktualisierung gefunden.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"importReportLegendAdded": {
@@ -385,7 +385,7 @@
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"updateCheckManualUpdateHint": {
-		"message": "Eine erzwungene Aktualisierung wird die Lokalen Änderungen überschreiben.",
+		"message": "Eine erzwungene Aktualisierung wird die lokalen Änderungen überschreiben.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"toggleStyle": {
@@ -478,7 +478,7 @@
 		"description": ""
 	},
 	"filteredStyles": {
-		"message": "$numShown$ gefiltert von $numTotal$ gesamt",
+		"message": "$numShown$ von $numTotal$ gesamt",
 		"description": "TL note - make this message short",
 		"placeholders": {
 			"numTotal": {
@@ -522,7 +522,7 @@
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
-		"message": "Schalte alle Stile aus",
+		"message": "Alle Styles deaktivieren",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
@@ -558,7 +558,7 @@
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"popupManageTooltip": {
-		"message": "Shift+Klick oder Rechtsklick öffnen den Stylemanager mit Filter für gültige Styles der aktuellen Seite",
+		"message": "Shift+Klick oder Rechtsklick öffnet den Stylemanager mit Filter für Styles der aktuellen Seite",
 		"description": "Tooltip for the 'Manage' button in the popup."
 	},
 	"manageFaviconsHelp": {
@@ -631,7 +631,7 @@
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
 	"updateAllCheckSucceededSomeEdited": {
-		"message": "Einige Styles wurden nicht aktualisiert, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Aktualisierung für alle Styles erzwungen werden (Lokale Bearbeitungen werden dann überschrieben).",
+		"message": "Einige Styles wurden nicht überprüft, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Aktualisierung und anschließendem Update für alle Styles erzwungen werden (Lokale Bearbeitungen werden dann überschrieben).",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"stylusUnavailableForURL": {
@@ -707,7 +707,7 @@
 		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
-		"message": "Nach Aktualisierungen für alle Styles suchen",
+		"message": "Nach Aktualisierungen suchen",
 		"description": "Label for the button to check all styles for updates"
 	},
 	"openOptionsManage": {

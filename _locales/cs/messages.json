@@ -3,6 +3,10 @@
 		"message": "Vše",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Problémy",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "výchozí",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -26,6 +30,10 @@
 	"exportLabel": {
 		"message": "Exportovat",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"linterJSONError": {
+		"message": "Neplatný JSON formát",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "Barva pozadí",
@@ -135,6 +143,10 @@
 		"message": "Povolen",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Upravit nastavení tohoto linteru",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "Kód v Mozilla formátu může být odeslán na userstyles.org a použit v aplikaci Stylish pro Firefox",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -150,6 +162,10 @@
 	"styleSaveLabel": {
 		"message": "Uložit",
 		"description": "Label for save button for style editing"
+	},
+	"genericSavedMessage": {
+		"message": "Uloženo",
+		"description": "Used in various parts of the UI to indicate that something was saved"
 	},
 	"confirmDelete": {
 		"message": "Smazat",
@@ -215,6 +231,15 @@
 	"manageOnlyLocal": {
 		"message": "Pouze lokální styly",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "Problémy nalezené aplikací $link$:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Prohledat obsah",
@@ -330,6 +355,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "Stylus nemůže fungovat v soukromém okně, protože Firefox znemožňuje přímou komunikaci s interní kontextovou stránkou rozšíření na pozadí.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Sekce",
 		"description": "Title for the style sections section"
@@ -337,6 +366,10 @@
 	"importReportLegendInvalid": {
 		"message": "neplatné přeskočeny",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "Resetovat",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "Upravit styl $stylename$",
@@ -456,6 +489,18 @@
 		"message": "Vyhledávat a instalovat všechny aktualizace",
 		"description": ""
 	},
+	"filteredStyles": {
+		"message": "zobrazeno $numShown$ z $numTotal$",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportTitle": {
 		"message": "Import stylů dokončen",
 		"description": "Title of the report shown after importing styles"
@@ -472,6 +517,10 @@
 		"message": "Tento styl obsahuje částečnou regexp shodu, která je však v rozporu s <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specifikací</a>, která vyžaduje přesnou shodu URL adresy. Dotčené CSS části nebyly na stránku použity. Tento styl byl pravděpodobně vytvořen v rozšíření Stylish pro Chrome, které nesprávně kontroluje regexp() pravidla již od své první verze (známá chyba).",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "(Nastavení pravidel: 0 = vypnuto; 1 = upozornění; 2 = chyba)",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Odsadit @media, @supports",
 		"description": "CSS-beautifier option"
@@ -483,6 +532,10 @@
 	"sectionRemove": {
 		"message": "Odstranit sekci",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "Pro zobrazení stylů pro konkrétní URL adresu použijte předponu „url:“\nPříklad: url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Vypnout všechny styly",
@@ -504,6 +557,10 @@
 		"message": "Aktalizace dokončena.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "Známá chyba v této verzi Firefoxu znemožňuje práci rozšíření. Chyba: chrome.extension.getBackgroundPage() nevrací platný výsledek",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Kontrola…",
 		"description": "Text to display when checking a style for an update"
@@ -516,6 +573,10 @@
 		"message": "Počet položek v části „Platí pro“",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"popupManageTooltip": {
+		"message": "Shift + kliknutím nebo pravým kliknutím otevřít správce se styly použitými na této stránce",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
 	"manageFaviconsHelp": {
 		"message": "Stylus používá externí službu https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -523,6 +584,10 @@
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Tento styl byl upraven lokálně.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Zobrazit celý seznam pravidel",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "Obnovit nastavení",
@@ -535,6 +600,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "Přidat tlačítko Smazat do kontextové nabídky v editoru",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "Nastavení $linter$ pravidel",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "meta informace a kód aktualizován",
@@ -563,6 +637,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Automatické dokončování během psaní",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"manageOnlyDisabled": {
+		"message": "Pouze vypnuté styly",
+		"description": "Checkbox to show only disabled styles"
 	},
 	"stylusUnavailableForURLdetails": {
 		"message": "Jako bezpečností opatření, prohlížeč brání rozšířením v ovlivnění vestavěných stránek (např. chrome://version, nová úvodní stránka Chromu  61, about:addons, vivaldi://extensions atp.) a stránek dalších rozšíření. Každý prohlížeč také omezuje přístup do vlastního obchodu s rozšířeními (např. Chrome Web Store nebo AMO).",
@@ -596,6 +674,10 @@
 		"message": "Přepsat styl",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "K povolení dojde také při odepnutí listu editoru z okna prohlížeče,\na k vypnutí při připnutí samotného listu editoru do dalšího okna.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"dbError": {
 		"message": "Nastala chyba při používání Stylus databáze. Chcete navštívit webovou stránku s možnými řešeními?",
 		"description": "Prompt when a DB error is encountered"
@@ -623,6 +705,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Neplatné regexp přeskočeny",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"manageOnlyExternal": {
+		"message": "Pouze externí styly",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"replaceAll": {
 		"message": "Nahradit vše",
@@ -663,6 +749,10 @@
 	"optionsPopupWidth": {
 		"message": "Šířka vyskakovacího okna [px]",
 		"description": ""
+	},
+	"linterInvalidConfigError": {
+		"message": "Neuloženo z důvodu těchto neplatných nastavení:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
 	},
 	"confirmNo": {
 		"message": "Ne",
@@ -732,6 +822,10 @@
 		"message": "Schéma",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"popupOpenEditInWindow": {
+		"message": "Otevírat editor v novém okně",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"backupMessage": {
 		"message": "Vyberte soubor nebo ho přetáhněte na tuto stránku.",
 		"description": "Message for backup"
@@ -743,6 +837,10 @@
 	"helpKeyMapCommand": {
 		"message": "Napište název příkazu",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"linterResetMessage": {
+		"message": "Chcete-li vrátit změny náhodného resetu, stiskněte v textovém poli Ctrl + Z (resp. Cmd + Z)",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
 		"message": "Změňte vzhled webů pomocí správce uživatelských stylů. Stylus umožňuje snadnou instalaci vzhledů a modifikací pro spoustu webů.",
