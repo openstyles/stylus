@@ -277,7 +277,7 @@ function replaceAll(newStyles) {
   oldStyles.forEach(el => (el.id += '-ghost'));
   styleElements.clear();
   disabledElements.clear();
-  [...retiredStyleTimers.values()].forEach(clearTimeout);
+  Array.prototype.slice.call(retiredStyleTimers.values()).forEach(clearTimeout);
   retiredStyleTimers.clear();
   applyStyles(newStyles);
   oldStyles.forEach(el => el.remove());
