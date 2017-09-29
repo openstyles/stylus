@@ -192,8 +192,10 @@ function openURL({url, currentWindow = true}) {
           chrome.tabs.update({url}, resolve);
         } else {
           // create a new tab
-          const openerSupported = !FIREFOX && tab && !chromeInIncognito;
-          const options = openerSupported ? {url, openerTabId: tab.id} : {url};
+          const options = {url};
+          if (tab && (!FIREFOX || FIREFOX >= 57) && !chromeInIncognito) {
+            options.openerTabId = tab.id;
+          }
           chrome.tabs.create(options, resolve);
         }
       });
