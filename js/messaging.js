@@ -4,8 +4,8 @@
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
 
-const FIREFOX = /Firefox/.test(navigator.userAgent);
-const OPERA = /OPR/.test(navigator.userAgent);
+const FIREFOX = parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+const OPERA = parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
