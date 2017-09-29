@@ -754,19 +754,18 @@ function handleCssTransitionBug({tabId, frameId, url, styles}) {
   }
 
   function patchFirefox() {
-    browser.tabs.insertCSS(tabId, {
+    const options = {
       frameId,
       code: CSS_TRANSITION_SUPPRESSOR,
-      cssOrigin: 'user',
-      runAt: 'document_start',
       matchAboutBlank: true,
-    }).then(() => setTimeout(() => {
-      browser.tabs.removeCSS(tabId, {
-        frameId,
-        code: CSS_TRANSITION_SUPPRESSOR,
-        cssOrigin: 'user',
-        matchAboutBlank: true,
-      }).catch(ignoreChromeError);
+    };
+    if (FIREFOX >= 53) {
+      options.cssOrigin = 'user';
+    }
+    browser.tabs.insertCSS(tabId, Object.assign(options, {
+      runAt: 'document_start',
+    })).then(() => setTimeout(() => {
+      browser.tabs.removeCSS(tabId, options).catch(ignoreChromeError);
     })).catch(ignoreChromeError);
   }
 
