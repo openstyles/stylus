@@ -74,7 +74,6 @@ function initPopup(url) {
   };
   setupLivePrefs();
 
-  $('#find-styles-link').onclick = handleEvent.openURLandHide;
   Object.assign($('#popup-manage-button'), {
     onclick: handleEvent.openManager,
     onmouseup: handleEvent.openManager,
@@ -96,10 +95,11 @@ function initPopup(url) {
       installed);
   }
 
-  // find styles link
-  $('#find-styles a').href =
-    'https://userstyles.org/styles/browse/all/' +
-    encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
+  $('#find-styles-link').onclick = handleEvent.openURLandHide;
+  $('#find-styles-link').href +=
+    url.startsWith(location.protocol) ?
+      '?search_terms=Stylus' :
+      'all/' + encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
 
   if (!url) {
     document.body.classList.add('blocked');
