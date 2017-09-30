@@ -114,7 +114,7 @@ new MutationObserver((mutations, observer) => {
   if (document.body) {
     observer.disconnect();
     // TODO: remove the following statement when USO pagination title is fixed
-    document.title = document.title.replace(/^\d+&category=/, '');
+    document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
     chrome.runtime.sendMessage({
       method: 'getStyles',
       url: getMeta('stylish-id-url') || location.href
