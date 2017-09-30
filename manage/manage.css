@@ -114,7 +114,7 @@ select {
 
 .style-name {
   margin-top: .25em;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .style-name a, .style-edit-link {
@@ -127,7 +127,7 @@ select {
 }
 
 .applies-to {
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .applies-to,

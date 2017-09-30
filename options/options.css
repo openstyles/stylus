@@ -65,7 +65,7 @@ h1 {
   font-weight: bold;
   padding-right: 8px;
   box-sizing: border-box;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .items {
