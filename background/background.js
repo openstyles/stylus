@@ -324,7 +324,7 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'openUsercssInstallPage':
-      usercssHelper.openInstallPage(sender.tab.id, request).then(sendResponse);
+      usercssHelper.openInstallPage(sender.tab, request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
     case 'closeTab':

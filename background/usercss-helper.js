@@ -78,11 +78,15 @@ var usercssHelper = (() => {
     );
   }
 
-  function openInstallPage(tabId, request) {
+  function openInstallPage(tab, request) {
     const url = '/install-usercss.html' +
       '?updateUrl=' + encodeURIComponent(request.updateUrl) +
-      '&tabId=' + tabId;
-    return wrapReject(openURL({url}));
+      '&tabId=' + tab.id;
+    return wrapReject(openURL({
+      url,
+      index: tab.index + 1,
+      openerTabId: tab.id,
+    }));
   }
 
   return {build, save, findDup, openInstallPage};
