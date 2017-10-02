@@ -322,6 +322,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-bottom: .5rem;
   outline: none;
   cursor: default;
+  overflow-wrap: break-word;
 }
 .regexp-report details[data-type="full"] {
   color: darkgreen;
