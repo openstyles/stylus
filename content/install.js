@@ -285,13 +285,9 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
   if (a.length !== b.length) {
     return false;
   }
-  const checkedInB = [];
-  return a.every(sectionA => b.some(sectionB => {
-    if (!checkedInB.includes(sectionB) && propertiesEqual(sectionA, sectionB)) {
-      checkedInB.push(sectionB);
-      return true;
-    }
-  }));
+  // order of sections should be identical to account for the case of multiple
+  // sections matching the same URL because the order of rules is part of cascading
+  return a.every((sectionA, index) => propertiesEqual(sectionA, b[index]));
 
   function propertiesEqual(secA, secB) {
     for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
@@ -312,17 +308,10 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
   }
 
   function arrayMirrors(array1, array2) {
-    for (const el of array1) {
-      if (array2.indexOf(el) < 0) {
-        return false;
-      }
-    }
-    for (const el of array2) {
-      if (array1.indexOf(el) < 0) {
-        return false;
-      }
-    }
-    return true;
+    return (
+      array1.every(el => array2.includes(el)) &&
+      array2.every(el => array1.includes(el))
+    );
   }
 }
 
