@@ -799,6 +799,10 @@
     "message": "Mozilla Format",
     "description": "Heading for the section with buttons to import/export Mozilla format of the style"
   },
+  "styleFromMozillaFormatError": {
+    "message": "Failed to import from mozilla format",
+    "description": "Label for the import error"
+  },
   "styleFromMozillaFormatPrompt": {
     "message": "Paste the Mozilla-format code",
     "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"

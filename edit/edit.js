@@ -1589,7 +1589,7 @@ function fromMozillaFormat() {
       if (!errors.join) {
         errors = [errors];
       }
-      showHelp(t('issues'), $element({
+      showHelp(t('styleFromMozillaFormatError'), $element({
         tag: 'pre',
         textContent: errors.join('\n'),
       }));
