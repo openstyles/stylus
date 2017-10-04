@@ -127,19 +127,20 @@ var updater = {
       if (!styleJSONseemsValid(json)) {
         return Promise.reject(updater.ERROR_JSON);
       }
-      if (styleSectionsEqual(json, style)) {
-        // JSONs may have different order of items even if sections are effectively equal
-        // so we'll update the digest anyway
-        saveStyle(Object.assign(json, {reason: 'update-digest'}));
-        return Promise.reject(updater.SAME_CODE);
-      } else if (!style.originalDigest && !ignoreDigest) {
-        return Promise.reject(updater.MAYBE_EDITED);
-      }
       return json;
     }
 
     function maybeSave(json) {
       json.id = style.id;
+      if (styleSectionsEqual(json, style)) {
+        // JSONs may have different order of items even if sections are effectively equal
+        // so we'll update the digest anyway
+        // always update digest even if (save === false)
+        saveStyle(Object.assign(json, {reason: 'update-digest'}));
+        return Promise.reject(updater.SAME_CODE);
+      } else if (!style.originalDigest && !ignoreDigest) {
+        return Promise.reject(updater.MAYBE_EDITED);
+      }
       if (!save) {
         return json;
       }
