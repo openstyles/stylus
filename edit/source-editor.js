@@ -1,6 +1,6 @@
 /* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global hotkeyRerouter setupAutocomplete */
+/* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
 /* global editors */
 
 'use strict';
@@ -19,6 +19,8 @@ function createSourceEditor(style) {
       $element({tag: 'textarea'})
     ]})
   );
+
+  setupOptionsExpand();
 
   // draw CodeMirror
   $('#sections textarea').value = style.sourceCode;

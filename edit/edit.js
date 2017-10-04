@@ -1313,6 +1313,16 @@ function initWithSectionStyle({style, codeIsUpdated}) {
   }
 }
 
+function setupOptionsExpand() {
+  $('#options').open = prefs.get('editor.options.expanded');
+  $('#options h2').addEventListener('click', () => {
+    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
+  });
+  prefs.subscribe(['editor.options.expanded'], (key, value) => {
+    $('#options').open = value;
+  });
+}
+
 function initHooks() {
   if (initHooks.alreadyDone) {
     return;
@@ -1332,14 +1342,7 @@ function initHooks() {
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
 
-  $('#options').open = prefs.get('editor.options.expanded');
-  $('#options h2').addEventListener('click', () => {
-    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
-  });
-  prefs.subscribe(['editor.options.expanded'], (key, value) => {
-    $('#options').open = value;
-  });
-
+  setupOptionsExpand();
   initLint();
 
   if (!FIREFOX) {
