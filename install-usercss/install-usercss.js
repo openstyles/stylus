@@ -148,13 +148,7 @@
 
         updateMeta(result);
 
-        if (liveReload) {
-          port.postMessage({method: 'liveReloadStart'});
-        }
-        $('.live-reload').addEventListener('change', () => {
-          const method = 'liveReload' + (liveReload ? 'Start' : 'Stop');
-          port.postMessage({method});
-        });
+        window.dispatchEvent(new CustomEvent('installed'));
       })
       .catch(err => {
         alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
@@ -234,6 +228,15 @@
     } else {
       setLiveReload.addEventListener('change', () => {
         liveReload = setLiveReload.checked;
+        if (installed) {
+          const method = 'liveReload' + (liveReload ? 'Start' : 'Stop');
+          port.postMessage({method});
+        }
+      });
+      window.addEventListener('installed', () => {
+        if (liveReload) {
+          port.postMessage({method: 'liveReloadStart'});
+        }
       });
     }
   }
