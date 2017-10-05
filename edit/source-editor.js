@@ -229,23 +229,35 @@ function createSourceEditor(style) {
 
     function clearWidget(widget) {
       widget.clear();
-      widget.section.applies.forEach(apply => {
-        apply.type.mark.clear();
-        apply.value.mark.clear();
-      });
+      widget.section.applies.forEach(clearApply);
+    }
+
+    function clearApply(apply) {
+      apply.type.mark.clear();
+      apply.value.mark.clear();
+      apply.mark.clear();
     }
 
     function setupMarkers({applies}) {
-      for (const apply of applies) {
-        apply.type.mark = cm.markText(
-          cm.posFromIndex(apply.type.start),
-          cm.posFromIndex(apply.type.end)
-        );
-        apply.value.mark = cm.markText(
-          cm.posFromIndex(apply.value.start),
-          cm.posFromIndex(apply.value.end)
-        );
-      }
+      applies.forEach(setupApplyMarkers);
+    }
+
+    function setupApplyMarkers(apply) {
+      apply.type.mark = cm.markText(
+        cm.posFromIndex(apply.type.start),
+        cm.posFromIndex(apply.type.end),
+        {clearWhenEmpty: false}
+      );
+      apply.value.mark = cm.markText(
+        cm.posFromIndex(apply.value.start),
+        cm.posFromIndex(apply.value.end),
+        {clearWhenEmpty: false}
+      );
+      apply.mark = cm.markText(
+        cm.posFromIndex(apply.start),
+        cm.posFromIndex(apply.end),
+        {clearWhenEmpty: false}
+      );
     }
 
     function buildElement({applies}) {
@@ -266,47 +278,125 @@ function createSourceEditor(style) {
         }));
       }
       return el;
-    }
 
-    function makeInput(apply) {
-      const typeInput = $element({
-        tag: 'select',
-        className: 'applies-type',
-        appendChild: APPLIES_TYPE.map(([label, value]) => $element({
-          tag: 'option',
-          value: value,
-          textContent: label
-        })),
-        onchange(e) {
-          applyChange(apply.type, e.target.value);
-        }
-      });
-      typeInput.value = apply.type.text;
-      let timer;
-      const valueInput = $element({
-        tag: 'input',
-        className: 'applies-value',
-        value: apply.value.text,
-        oninput(e) {
-          clearTimeout(timer);
-          timer = setTimeout(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
-        }
-      });
-      return [typeInput, valueInput];
+      function makeInput(apply) {
+        const typeInput = $element({
+          tag: 'select',
+          className: 'applies-type',
+          appendChild: APPLIES_TYPE.map(([label, value]) => $element({
+            tag: 'option',
+            value: value,
+            textContent: label
+          })),
+          onchange(e) {
+            applyChange(apply.type, e.target.value);
+          }
+        });
+        typeInput.value = apply.type.text;
+        let timer;
+        const valueInput = $element({
+          tag: 'input',
+          className: 'applies-value',
+          value: apply.value.text,
+          oninput(e) {
+            clearTimeout(timer);
+            timer = setTimeout(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
+          }
+        });
+        const removeButton = $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-remove',
+          textContent: t('appliesRemove'),
+          onclick(e) {
+            const i = applies.indexOf(apply);
+            let repl;
+            let from;
+            let to;
+            if (applies.length < 2) {
+              alert('Can\'t remove last applies-to');
+              return;
+            }
+            if (i === 0) {
+              from = apply.mark.find().from;
+              to = applies[i + 1].mark.find().from;
+              repl = '';
+            } else if (i === applies.length - 1) {
+              from = applies[i - 1].mark.find().to;
+              to = apply.mark.find().to;
+              repl = '';
+            } else {
+              from = applies[i - 1].mark.find().to;
+              to = applies[i + 1].mark.find().from;
+              repl = ', ';
+            }
+            cm.replaceRange(repl, from, to, 'appliesTo');
+            clearApply(apply);
+            e.target.closest('li').remove();
+            applies.splice(i, 1);
+          }
+        });
+        const addButton = $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-add',
+          textContent: t('appliesAdd'),
+          onclick(e) {
+            const i = applies.indexOf(apply);
+            const pos = apply.mark.find().to;
+            const text = `, ${apply.type.text}("")`;
+            cm.replaceRange(text, pos, pos, 'appliesTo');
+            const index = cm.indexFromPos(pos);
+            const newApply = {
+              type: {
+                text: apply.type.text
+              },
+              value: {
+                text: ''
+              }
+            };
+            newApply.start = index + 2;
+            newApply.type.start = newApply.start;
+            newApply.type.end = newApply.type.start + newApply.type.text.length;
+            newApply.value.start = newApply.type.end + 2;
+            newApply.value.end = newApply.value.start + newApply.value.text.length;
+            newApply.end = newApply.value.end + 2;
+            setupApplyMarkers(newApply);
+            applies.splice(i + 1, 0, newApply);
+            const li = e.target.closest('li');
+            li.parentNode.insertBefore($element({
+              tag: 'li',
+              appendChild: makeInput(newApply)
+            }), li.nextSibling);
+          }
+        });
+        return [typeInput, valueInput, removeButton, addButton];
 
-      function applyChange(input, newText) {
-        const range = input.mark.find();
-        input.mark.clear();
-        cm.replaceRange(newText, range.from, range.to, 'appliesTo');
-        input.mark = cm.markText(
-          range.from,
-          cm.findPosH(
+        function applyChange(input, newText) {
+          const range = input.mark.find();
+          input.mark.clear();
+          cm.replaceRange(newText, range.from, range.to, 'appliesTo');
+          input.mark = cm.markText(
             range.from,
-            newText.length,
-            'char'
-          )
-        );
-        input.text = newText;
+            cm.findPosH(
+              range.from,
+              newText.length,
+              'char'
+            ),
+            {clearWhenEmpty: false}
+          );
+          input.text = newText;
+
+          if (input === apply.type) {
+            const range = apply.mark.find();
+            apply.mark.clear();
+            apply.mark = cm.markText(
+              input.mark.find().from,
+              range.to,
+              {clearWhenEmpty: false}
+            );
+          }
+        }
       }
     }
 
@@ -339,6 +429,8 @@ function createSourceEditor(style) {
           apply.type.end = apply.type.start + apply.type.text.length;
           apply.value.start = apply.type.end + (apply.value.text === m[2] ? 1 : 2);
           apply.value.end = apply.value.start + apply.value.text.length;
+          apply.start = apply.type.start;
+          apply.end = apply.value.end + (apply.value.text === m[2] ? 1 : 2);
           applies.push(apply);
           t = t.slice(m[0].length);
           offset += m[0].length;
