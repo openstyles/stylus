@@ -8,6 +8,11 @@ body {
   box-sizing: border-box;
 }
 
+img.icon {
+  height: 1.4em;
+  vertical-align: middle;
+}
+
 .container {
   display: flex;
   height: 100vh;
