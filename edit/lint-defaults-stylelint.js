@@ -27,7 +27,7 @@ window.linterConfig.defaults.stylelint = (defaultSeverity => ({
     'property-no-unknown': [true, defaultSeverity],
     'selector-pseudo-class-no-unknown': [true, defaultSeverity],
     'selector-pseudo-element-no-unknown': [true, defaultSeverity],
-    'selector-type-no-unknown': [true, defaultSeverity],
+    'selector-type-no-unknown': false, // for scss/less/stylus-lang
     'string-no-newline': [true, defaultSeverity],
     'unit-no-unknown': [true, defaultSeverity],
 
