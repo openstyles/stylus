@@ -446,6 +446,9 @@ var usercss = (function () {
         parseStringToEnd(state);
         usercssData[state.key] = state.value;
       }
+      if (state.key === 'version') {
+        usercssData[state.key] = normalizeVersion(usercssData[state.key]);
+      }
       if (METAS[state.key]) {
         style[state.key] = usercssData[state.key];
       }
@@ -458,6 +461,14 @@ var usercss = (function () {
     }
 
     return style;
+  }
+
+  function normalizeVersion(version) {
+    // https://docs.npmjs.com/misc/semver#versions
+    if (version[0] === 'v' || version[0] === '=') {
+      return version.slice(1);
+    }
+    return version;
   }
 
   function buildCode(style) {
