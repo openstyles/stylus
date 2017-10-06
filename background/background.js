@@ -1,6 +1,6 @@
 /* global dbExec, getStyles, saveStyle */
 /* global handleCssTransitionBug */
-/* global usercssHelper */
+/* global usercssHelper openEditor */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -334,7 +334,34 @@ function onRuntimeMessage(request, sender, sendResponse) {
     case 'initUsercssInstallPage':
       usercssHelper.initInstallPage(sender.tab.id, request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
+
+    case 'closeTab':
+      closeTab(sender.tab.id, request).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'openEditor':
+      openEditor(request.id);
+      return;
   }
+}
+
+function closeTab(tabId, request) {
+  return new Promise(resolve => {
+    if (request.tabId) {
+      tabId = request.tabId;
+    }
+    chrome.tabs.remove(tabId, () => {
+      const {lastError} = chrome.runtime;
+      if (lastError) {
+        resolve({
+          status: 'error',
+          error: lastError.message || String(lastError)
+        });
+        return;
+      }
+      resolve({status: 'success'});
+    });
+  });
 }
 
 function injectContent(tabId, {files}) {

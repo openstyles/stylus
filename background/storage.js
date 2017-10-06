@@ -1,5 +1,4 @@
 /* global LZString */
-/* global openEditor */
 
 'use strict';
 
@@ -456,10 +455,6 @@ function saveStyle(style) {
         method: existed ? 'styleUpdated' : 'styleAdded',
         style, codeIsUpdated, reason,
       });
-    }
-    if (style.usercssData && !existed && reason === 'update') {
-      // open the editor for usercss with the first install?
-      openEditor(style.id);
     }
     return style;
   }

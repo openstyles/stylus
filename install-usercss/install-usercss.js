@@ -184,6 +184,12 @@
 
         updateMeta(result);
 
+        runtimeSend({method: 'openEditor', id: result.id});
+
+        if (!liveReload) {
+          port.postMessage({method: 'closeTab'});
+        }
+
         window.dispatchEvent(new CustomEvent('installed'));
       })
       .catch(err => {

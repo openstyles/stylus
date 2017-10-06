@@ -99,6 +99,14 @@ function initUsercssInstall() {
         case 'liveReloadStop':
           watcher.stop();
           break;
+
+        case 'closeTab':
+          if (history.length > 1) {
+            history.back();
+          } else {
+            runtimeSend({method: 'closeTab'});
+          }
+          break;
       }
     });
   });
