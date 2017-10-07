@@ -44,6 +44,7 @@
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
       return runtimeSend({
+        id: installed.id,
         method: 'saveUsercss',
         reason: 'update',
         sourceCode
@@ -176,7 +177,7 @@
     });
     return runtimeSend(request)
       .then(result => {
-        installed = true;
+        installed = result;
 
         $$('.warning')
           .forEach(el => el.remove());
