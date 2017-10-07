@@ -32,6 +32,18 @@ var linterConfig = {
     } : false;
   },
 
+  getName(cmLintOption) {
+    if (!cmLintOption) {
+      return null;
+    }
+    for (const linter of ['csslint', 'stylelint']) {
+      if (cmLintOption.getAnnotations === CodeMirror.lint[linter]) {
+        return linter;
+      }
+    }
+    return null;
+  },
+
   fallbackToDefaults(config, linter = prefs.get('editor.linter')) {
     if (config && Object.keys(config).length) {
       if (linter === 'stylelint') {
@@ -136,12 +148,11 @@ function initLint() {
   prefs.subscribe(['editor.linter'], updateLinter);
 }
 
-function updateLinter({immediately} = {}) {
+function updateLinter({immediately, linter = prefs.get('editor.linter')} = {}) {
   if (!immediately) {
-    debounce(updateLinter, 0, {immediately: true});
+    debounce(updateLinter, 0, {immediately: true, linter});
     return;
   }
-  const linter = prefs.get('editor.linter');
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
   loadLinterAssets(linter).then(updateEditors);

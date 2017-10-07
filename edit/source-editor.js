@@ -1,7 +1,7 @@
 /* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
-/* global editors */
+/* global editors linterConfig updateLinter */
 
 'use strict';
 
@@ -40,8 +40,29 @@ function createSourceEditor(style) {
   // draw metas info
   updateMetas();
   initHooks();
-  initLint();
   initAppliesToReport(cm);
+
+  // setup linter
+  initLint();
+  const linterEl = $('#editor.linter');
+  cm.on('optionChange', (cm, option) => {
+    if (option === 'mode' || option === 'lint') {
+      const lint = cm.getOption('lint');
+      const mode = cm.getOption('mode');
+
+      if (mode !== 'css' && linterConfig.getName(lint) === 'csslint') {
+        updateLinter({linter: 'stylelint'});
+        linterEl.value = 'stylelint';
+      }
+    }
+  });
+  linterEl.addEventListener('change', () => {
+    if (cm.getOption('mode') !== 'css' && linterEl.value === 'csslint') {
+      setTimeout(() => {
+        linterEl.value = 'stylelint';
+      });
+    }
+  });
 
   function initAppliesToReport(cm) {
     const APPLIES_TYPE = [
