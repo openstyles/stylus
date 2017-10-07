@@ -70,9 +70,13 @@
     $('.meta-version').textContent = data.version;
     $('.meta-description').textContent = data.description;
 
-    $('.meta-author').parentNode.style.display = data.author ? '' : 'none';
-    $('.meta-author').textContent = '';
-    $('.meta-author').appendChild(makeAuthor(data.author));
+    if (data.author) {
+      $('.meta-author').parentNode.style.display = '';
+      $('.meta-author').textContent = '';
+      $('.meta-author').appendChild(makeAuthor(data.author));
+    } else {
+      $('.meta-author').parentNode.style.display = 'none';
+    }
 
     $('.meta-license').parentNode.style.display = data.license ? '' : 'none';
     $('.meta-license').textContent = data.license;
