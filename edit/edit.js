@@ -3,7 +3,7 @@
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
-/* global loadScript closeCurrentTab */
+/* global loadScript closeCurrentTab regExpTester */
 
 'use strict';
 
@@ -568,20 +568,30 @@ function addSection(event, section) {
 
   toggleTestRegExpVisibility();
   appliesTo.addEventListener('change', toggleTestRegExpVisibility);
-  $('.test-regexp', div).onclick = showRegExpTester;
+  $('.test-regexp', div).onclick = () => {
+    regExpTester.toggle();
+    regExpTester.update(getRegExps());
+  };
+
+  function getRegExps() {
+    return [...appliesTo.children]
+      .map(item =>
+        !item.matches('.applies-to-everything') &&
+        $('.applies-type', item).value === 'regexp' &&
+        $('.applies-value', item).value.trim()
+      )
+      .filter(item => item);
+  }
+
   function toggleTestRegExpVisibility() {
-    const show = [...appliesTo.children].some(item =>
-      !item.matches('.applies-to-everything') &&
-      $('.applies-type', item).value === 'regexp' &&
-      $('.applies-value', item).value.trim()
-    );
+    const show = getRegExps().length > 0;
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
       if (
         event.target.matches('.applies-value') &&
         $('.applies-type', event.target.parentElement).value === 'regexp'
       ) {
-        showRegExpTester(null, div);
+        regExpTester.update(getRegExps());
       }
     });
   }
@@ -1769,151 +1779,6 @@ function showKeyMapHelp() {
     });
     return merged;
   }
-}
-
-function showRegExpTester(event, section = getSectionForChild(this)) {
-  const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
-  const OWN_ICON = chrome.runtime.getManifest().icons['16'];
-  const cachedRegexps = showRegExpTester.cachedRegexps =
-    showRegExpTester.cachedRegexps || new Map();
-  const regexps = [...$('.applies-to-list', section).children]
-    .map(item =>
-      !item.matches('.applies-to-everything') &&
-      $('.applies-type', item).value === 'regexp' &&
-      $('.applies-value', item).value.trim()
-    )
-    .filter(item => item)
-    .map(text => {
-      const rxData = Object.assign({text}, cachedRegexps.get(text));
-      if (!rxData.urls) {
-        cachedRegexps.set(text, Object.assign(rxData, {
-          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
-          rx: tryRegExp('^' + text + '$'),
-          urls: new Map(),
-        }));
-      }
-      return rxData;
-    });
-  chrome.tabs.onUpdated.addListener(function _(tabId, info) {
-    if ($('.regexp-report')) {
-      if (info.url) {
-        showRegExpTester(event, section);
-      }
-    } else {
-      chrome.tabs.onUpdated.removeListener(_);
-    }
-  });
-  const getMatchInfo = m => m && {text: m[0], pos: m.index};
-
-  queryTabs().then(tabs => {
-    const supported = tabs.map(tab => tab.url)
-      .filter(url => URLS.supported(url));
-    const unique = [...new Set(supported).values()];
-    for (const rxData of regexps) {
-      const {rx, urls} = rxData;
-      if (rx) {
-        const urlsNow = new Map();
-        for (const url of unique) {
-          const match = urls.get(url) || getMatchInfo(url.match(rx));
-          if (match) {
-            urlsNow.set(url, match);
-          }
-        }
-        rxData.urls = urlsNow;
-      }
-    }
-    const stats = {
-      full: {data: [], label: t('styleRegexpTestFull')},
-      partial: {data: [], label: [
-        t('styleRegexpTestPartial'),
-        template.regexpTestPartial.cloneNode(true),
-      ]},
-      none: {data: [], label: t('styleRegexpTestNone')},
-      invalid: {data: [], label: t('styleRegexpTestInvalid')},
-    };
-    // collect stats
-    for (const {text, rx, urls} of regexps) {
-      if (!rx) {
-        stats.invalid.data.push({text});
-        continue;
-      }
-      if (!urls.size) {
-        stats.none.data.push({text});
-        continue;
-      }
-      const full = [];
-      const partial = [];
-      for (const [url, match] of urls.entries()) {
-        const faviconUrl = url.startsWith(URLS.ownOrigin)
-          ? OWN_ICON
-          : GET_FAVICON_URL + new URL(url).hostname;
-        const icon = $element({tag: 'img', src: faviconUrl});
-        if (match.text.length === url.length) {
-          full.push($element({appendChild: [
-            icon,
-            url,
-          ]}));
-        } else {
-          partial.push($element({appendChild: [
-            icon,
-            url.substr(0, match.pos),
-            $element({tag: 'mark', textContent: match.text}),
-            url.substr(match.pos + match.text.length),
-          ]}));
-        }
-      }
-      if (full.length) {
-        stats.full.data.push({text, urls: full});
-      }
-      if (partial.length) {
-        stats.partial.data.push({text, urls: partial});
-      }
-    }
-    // render stats
-    const report = $element({className: 'regexp-report'});
-    const br = $element({tag: 'br'});
-    for (const type in stats) {
-      // top level groups: full, partial, none, invalid
-      const {label, data} = stats[type];
-      if (!data.length) {
-        continue;
-      }
-      const block = report.appendChild($element({
-        tag: 'details',
-        open: true,
-        dataset: {type},
-        appendChild: $element({tag: 'summary', appendChild: label}),
-      }));
-      // 2nd level: regexp text
-      for (const {text, urls} of data) {
-        if (urls) {
-          // type is partial or full
-          block.appendChild($element({
-            tag: 'details',
-            open: true,
-            appendChild: [
-              $element({tag: 'summary', textContent: text}),
-              // 3rd level: tab urls
-              ...urls,
-            ],
-          }));
-        } else {
-          // type is none or invalid
-          block.appendChild(document.createTextNode(text));
-          block.appendChild(br.cloneNode());
-        }
-      }
-    }
-    showHelp(t('styleRegexpTestTitle'), report);
-
-    $('.regexp-report').onclick = event => {
-      const target = event.target.closest('a, .regexp-report div');
-      if (target) {
-        openURL({url: target.href || target.textContent});
-        event.preventDefault();
-      }
-    };
-  });
 }
 
 function showHelp(title, body) {
