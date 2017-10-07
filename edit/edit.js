@@ -502,7 +502,7 @@ window.onbeforeunload = () => {
     rememberWindowSize();
   }
   document.activeElement.blur();
-  if (isCleanGlobal() && (!editor || !editor.isDirty())) {
+  if ((!editor && isCleanGlobal()) || (editor && !editor.isDirty())) {
     return;
   }
   updateLintReportIfEnabled(null, 0);
