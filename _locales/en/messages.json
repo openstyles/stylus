@@ -967,6 +967,12 @@
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"
   },
+  "optionsAdvancedNewStyleFormat": {
+    "message": "Format of newly created userstyle"
+  },
+  "optionsAdvancedNewStyleFormatRegular": {
+    "message": "Regular"
+  },
   "optionsActions": {
     "message": "Actions"
   },

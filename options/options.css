@@ -95,6 +95,7 @@ label:not([disabled]):hover > :first-child {
 button,
 input[type=number],
 input[type="color"],
+select,
 .onoffswitch {
   width: 60px;
   box-sizing: border-box;

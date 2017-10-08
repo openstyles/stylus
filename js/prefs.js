@@ -9,6 +9,7 @@ var prefs = new function Prefs() {
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+    'newStyleFormat': 'regular',    // 'regular' or 'usercss', the format of userstyle when creating a new style.
 
     'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
