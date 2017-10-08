@@ -78,7 +78,7 @@ var usercss = (function () {
             }
             return null;
           }
-          if (vars[name].type === 'dropdown') {
+          if (vars[name].type === 'dropdown' || vars[name].type === 'select') {
             // prevent infinite recursion
             pool.set(name, '');
             return doReplace(vars[name].value);
