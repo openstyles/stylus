@@ -528,6 +528,10 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-top: 0.35rem;
 }
 
+.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .applies-to-regexp-test {
+  display: none;
+}
+
 .CodeMirror-linewidget li.applies-to-everything {
   margin-top: 0.2rem;
 }

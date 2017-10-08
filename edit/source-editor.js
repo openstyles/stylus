@@ -1,7 +1,7 @@
 /* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
-/* global editors linterConfig updateLinter */
+/* global editors linterConfig updateLinter regExpTester */
 
 'use strict';
 
@@ -287,9 +287,11 @@ function createSourceEditor(style) {
           t('appliesLabel'),
           // $element({tag: 'svg'})
         ]}),
-        $element({tag: 'ul', className: 'applies-to-list', appendChild: applies.map(apply =>
-          $element({tag: 'li', appendChild: makeInput(apply)})
-        )})
+        $element({
+          tag: 'ul',
+          className: 'applies-to-list',
+          appendChild: applies.map(makeInputEl)
+        })
       ]});
       if (!$('li', el)) {
         $('ul', el).appendChild($element({
@@ -299,6 +301,17 @@ function createSourceEditor(style) {
         }));
       }
       return el;
+
+      function makeInputEl(apply) {
+        const el = $element({tag: 'li', appendChild: makeInput(apply)});
+        el.dataset.type = apply.type.text;
+        el.addEventListener('change', e => {
+          if (e.target.classList.contains('applies-type')) {
+            el.dataset.type = apply.type.text;
+          }
+        });
+        return el;
+      }
 
       function makeInput(apply) {
         const typeInput = $element({
@@ -322,6 +335,17 @@ function createSourceEditor(style) {
           oninput(e) {
             clearTimeout(timer);
             timer = setTimeout(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
+          },
+          onfocus: updateRegexpTest
+        });
+        const regexpTestButton = $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-regexp-test',
+          textContent: t('styleRegexpTestButton'),
+          onclick() {
+            regExpTester.toggle();
+            regExpTester.update([apply.value.text]);
           }
         });
         const removeButton = $element({
@@ -385,13 +409,21 @@ function createSourceEditor(style) {
             setupApplyMarkers(newApply);
             applies.splice(i + 1, 0, newApply);
             const li = e.target.closest('li');
-            li.parentNode.insertBefore($element({
-              tag: 'li',
-              appendChild: makeInput(newApply)
-            }), li.nextSibling);
+            li.parentNode.insertBefore(makeInputEl(newApply), li.nextSibling);
           }
         });
-        return [typeInput, valueInput, removeButton, addButton];
+        return [typeInput, valueInput, regexpTestButton, removeButton, addButton];
+
+        function updateRegexpTest() {
+          if (apply.type.text === 'regexp') {
+            const re = apply.value.text.trim();
+            if (re) {
+              regExpTester.update([re]);
+            } else {
+              regExpTester.update([]);
+            }
+          }
+        }
 
         function applyChange(input, newText) {
           const range = input.mark.find();
@@ -417,6 +449,8 @@ function createSourceEditor(style) {
               {clearWhenEmpty: false}
             );
           }
+
+          updateRegexpTest();
         }
       }
     }
