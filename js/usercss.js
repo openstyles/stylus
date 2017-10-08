@@ -263,7 +263,10 @@ var usercss = (function () {
 
   function parseString(state) {
     const match = state.text.slice(state.re.lastIndex).match(
-      /^((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/);
+      state.text[state.re.lastIndex] === '`' ?
+        /^(`(?:\\`|[\s\S])*?`)\s*/ :
+        /^((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/
+    );
     state.re.lastIndex += match[0].length;
     state.value = unquote(match[1]);
   }
@@ -318,7 +321,7 @@ var usercss = (function () {
       state.re.lastIndex++;
       eatWhitespace(state);
       state.value = arr;
-    } else if (state.text[state.re.lastIndex] === '"') {
+    } else if (state.text[state.re.lastIndex] === '"' || state.text[state.re.lastIndex] === '`') {
       // string
       parseString(state);
     } else if (/\d/.test(state.text[state.re.lastIndex])) {
@@ -354,9 +357,18 @@ var usercss = (function () {
   }
 
   function unquote(s) {
-    const match = s.match(/^(['"])(.*)\1$/);
-    if (match) {
-      return match[2];
+    const q = s[0];
+    if (q === s[s.length - 1] && /['"`]/.test(q)) {
+      // http://www.json.org/
+      return s.slice(1, -1).replace(
+        new RegExp(`\\\\([${q}\\\\/bfnrt]|u[0-9a-fA-F]{4})`, 'g'),
+        s => {
+          if (s[1] === q) {
+            return q;
+          }
+          return JSON.parse(`"${s}"`);
+        }
+      );
     }
     return s;
   }
