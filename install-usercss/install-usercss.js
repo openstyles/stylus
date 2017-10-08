@@ -213,6 +213,7 @@
 
   function initError(err) {
     $('.main').insertBefore(buildWarning(err), $('.main').childNodes[0]);
+    $('.header').style.display = 'none';
   }
 
   function buildWarning(err) {
