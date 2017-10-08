@@ -189,7 +189,7 @@
 
         updateMeta(result);
 
-        runtimeSend({method: 'openEditor', id: result.id});
+        chrome.runtime.sendMessage({method: 'openEditor', id: result.id});
 
         if (!liveReload) {
           port.postMessage({method: 'closeTab'});
