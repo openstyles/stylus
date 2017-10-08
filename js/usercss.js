@@ -197,7 +197,7 @@ var usercss = (function () {
       state.re.lastIndex += match[0].length;
       result.default = match[1];
     } else if (state.type === 'select' || (state.type === 'image' && state.key === 'var')) {
-      parseJSON(state);
+      parseJSONValue(state);
       if (Array.isArray(state.value)) {
         result.options = state.value.map(text => ({
           label: text,
@@ -266,17 +266,6 @@ var usercss = (function () {
       /^((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/);
     state.re.lastIndex += match[0].length;
     state.value = unquote(match[1]);
-  }
-
-  function parseJSON(state) {
-    const result = looseJSONParse(state.text.slice(state.re.lastIndex));
-    if (result) {
-      state.re.lastIndex += result.length;
-      state.value = result.json;
-    } else {
-      // fallback to our parser
-      parseJSONValue(state);
-    }
   }
 
   function parseJSONValue(state) {
@@ -351,54 +340,6 @@ var usercss = (function () {
     }
     state.value = Number(match[0].trim());
     state.re.lastIndex += match[0].length;
-  }
-
-  function looseJSONParse(text) {
-    try {
-      return {
-        json: JSON.parse(text),
-        length: text.length
-      };
-    } catch (e) {
-      let pos;
-      {
-        const match = e.message.match(/after json data at line (\d+) column (\d+)/i);
-        if (match) {
-          const [, line, column] = match.map(Number);
-          pos = indexFromLine(text, line - 1) + column - 1;
-        }
-      }
-      if (pos === undefined) {
-        const match = e.message.match(/at position (\d+)/);
-        if (match) {
-          pos = Number(match[1]);
-        }
-      }
-      if (!pos) {
-        return null;
-      }
-      try {
-        return {
-          json: JSON.parse(text.slice(0, pos)),
-          length: pos
-        };
-      } catch (e2) {}
-      throw e;
-    }
-  }
-
-  function indexFromLine(text, line) {
-    if (line === 0) {
-      return 0;
-    }
-    const re = /\r?\n/g;
-    let i = 1;
-    while (re.exec(text)) {
-      if (i++ === line) {
-        return re.lastIndex;
-      }
-    }
-    throw new Error('out of range');
   }
 
   function eatWhitespace(state) {
