@@ -1280,7 +1280,7 @@ function isUsercss(style) {
   if (style.usercssData) {
     return true;
   }
-  if (!style.id && prefs.get('newStyleFormat') === 'usercss') {
+  if (!style.id && prefs.get('newStyleInUsercss')) {
     return true;
   }
   return false;

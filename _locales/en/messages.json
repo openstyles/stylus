@@ -971,11 +971,8 @@
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"
   },
-  "optionsAdvancedNewStyleFormat": {
-    "message": "Format of newly created userstyle"
-  },
-  "optionsAdvancedNewStyleFormatRegular": {
-    "message": "Regular"
+  "optionsAdvancedNewStyleInUsercss": {
+    "message": "Write new style as usercss"
   },
   "optionsActions": {
     "message": "Actions"
