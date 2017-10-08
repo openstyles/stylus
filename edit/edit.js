@@ -306,8 +306,7 @@ function setupCodeMirror(textarea, index) {
     if (
       text.includes('@-moz-document') &&
       text.replace(/\/\*[\s\S]*?\*\//g, '')
-        .match(/@-moz-document[\s\r\n]+(url|url-prefix|domain|regexp)\(/) &&
-      confirm(t('stylePasteMozillaFormat'))
+        .match(/@-moz-document[\s\r\n]+(url|url-prefix|domain|regexp)\(/)
     ) {
       event.preventDefault();
       fromMozillaFormat();
@@ -1487,28 +1486,7 @@ function save() {
   editor.save();
 }
 
-function isUsercssSourceCode() {
-  const sourceCode = editors[0].getValue();
-  return /==UserStyle==[\s\S]+==\/UserStyle==/i.test(sourceCode);
-}
-
 function saveSectionStyle() {
-  if (!styleId && isUsercssSourceCode() && confirm(t('styleSaveAsUsercss'))) {
-    const sourceCode = editors[0].getValue();
-    onBackgroundReady()
-      .then(() => BG.usercssHelper.save({
-        reason: 'editSave',
-        sourceCode,
-        enabled: $('#enabled').checked
-      }))
-      .then(style => {
-        window.onbeforeunload = null;
-        location.href = `/edit.html?id=${style.id}`;
-      })
-      .catch(alert);
-    return;
-  }
-
   updateLintReportIfEnabled(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas

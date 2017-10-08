@@ -787,17 +787,9 @@
     "message": "Enter a name.",
     "description": "Error displayed when user saves without providing a name"
   },
-  "stylePasteMozillaFormat": {
-    "message": "The code you pasted looks like mozilla format style. Would you like to import it?",
-    "description": "The confirmation to import mozilla format style from pasted text"
-  },
   "styleSaveLabel": {
     "message": "Save",
     "description": "Label for save button for style editing"
-  },
-  "styleSaveAsUsercss": {
-    "message": "The source code contains usercss metadata. Would you like to save the source code as usercss?",
-    "description": "The confirmation to create usercss from the editor"
   },
   "styleSectionsTitle": {
     "message": "Sections",
