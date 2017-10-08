@@ -1,14 +1,11 @@
 /* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
-/* global editors linterConfig updateLinter regExpTester */
+/* global editors linterConfig updateLinter regExpTester mozParser */
 
 'use strict';
 
 function createSourceEditor(style) {
-  // style might be an object reference to background page
-  style = deepCopy(style);
-
   // draw HTML
   $('#sections').innerHTML = '';
   $('#name').disabled = true;
@@ -22,12 +19,6 @@ function createSourceEditor(style) {
 
   setupOptionsExpand();
 
-  // draw CodeMirror
-  $('#sections textarea').value = style.sourceCode;
-  const cm = CodeMirror.fromTextArea($('#sections textarea'));
-  // too many functions depend on this global
-  editors.push(cm);
-
   // dirty reporter
   const dirty = dirtyReporter();
   dirty.onChange(() => {
@@ -36,6 +27,20 @@ function createSourceEditor(style) {
     $('#save-button').disabled = !DIRTY;
     updateTitle();
   });
+
+  // normalize style
+  if (!style.id) {
+    setupNewStyle(style);
+  } else {
+    // style might be an object reference to background page
+    style = deepCopy(style);
+  }
+
+  // draw CodeMirror
+  $('#sections textarea').value = style.sourceCode;
+  const cm = CodeMirror.fromTextArea($('#sections textarea'));
+  // too many functions depend on this global
+  editors.push(cm);
 
   // draw metas info
   updateMetas();
@@ -63,6 +68,28 @@ function createSourceEditor(style) {
       });
     }
   });
+
+  function setupNewStyle(style) {
+    style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) + '/* Insert code here... */';
+    let section = mozParser.format(style);
+    if (!section.includes('@-moz-document')) {
+      style.sections[0].domains = ['example.com'];
+      section = mozParser.format(style);
+    }
+
+    const sourceCode = `/* ==UserStyle==
+@name New Style - ${Date.now()}
+@namespace github.com/openstyles/stylus
+@version 0.1.0
+@description A new userstyle
+@author Me
+==/UserStyle== */
+
+${section}
+`;
+    dirty.modify('source', '', sourceCode);
+    style.sourceCode = sourceCode;
+  }
 
   function initAppliesToReport(cm) {
     const APPLIES_TYPE = [
@@ -546,7 +573,7 @@ function createSourceEditor(style) {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    const {usercssData: {preprocessor}} = style;
+    const {usercssData: {preprocessor} = {}} = style;
     cm.setPreprocessor(preprocessor);
     // beautify only works with regular CSS
     $('#beautify').disabled = cm.getOption('mode') !== 'css';
@@ -555,10 +582,17 @@ function createSourceEditor(style) {
 
   function updateTitle() {
     // title depends on dirty and style meta
-    document.title = (dirty.isDirty() ? '* ' : '') + t('editStyleTitle', [style.name]);
+    if (!style.id) {
+      document.title = t('addStyleTitle');
+    } else {
+      document.title = (dirty.isDirty() ? '* ' : '') + t('editStyleTitle', [style.name]);
+    }
   }
 
   function replaceStyle(newStyle) {
+    if (!style.id && newStyle.id) {
+      history.replaceState({}, '', `?id=${newStyle.id}`);
+    }
     style = deepCopy(newStyle);
     updateMetas();
     if (style.sourceCode !== cm.getValue()) {

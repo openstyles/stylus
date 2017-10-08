@@ -1264,12 +1264,13 @@ function setStyleMeta(style) {
 }
 
 function initWithStyle(request) {
+  if (!isUsercss()) {
+    initWithSectionStyle(request);
+    return;
+  }
+
   if (!editor) {
-    if (!request.style.usercssData) {
-      initWithSectionStyle(request);
-    } else {
-      editor = createSourceEditor(request.style);
-    }
+    editor = createSourceEditor(request.style);
     return;
   }
 
@@ -1277,6 +1278,16 @@ function initWithStyle(request) {
     editor.updateStyleMeta(request.style);
   } else {
     editor.replaceStyle(request.style);
+  }
+
+  function isUsercss() {
+    if (request.style.usercssData) {
+      return true;
+    }
+    if (!request.style.id && prefs.get('newStyleFormat') === 'usercss') {
+      return true;
+    }
+    return false;
   }
 }
 
