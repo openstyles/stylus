@@ -198,10 +198,17 @@ var usercss = (function () {
       result.default = match[1];
     } else if (state.type === 'select' || (state.type === 'image' && state.key === 'var')) {
       parseJSON(state);
-      result.options = Object.keys(state.value).map(k => ({
-        label: k,
-        value: state.value[k]
-      }));
+      if (Array.isArray(state.value)) {
+        result.options = state.value.map(text => ({
+          label: text,
+          value: text
+        }));
+      } else {
+        result.options = Object.keys(state.value).map(k => ({
+          label: k,
+          value: state.value[k]
+        }));
+      }
       result.default = result.options[0].value;
     } else if (state.type === 'dropdown' || state.type === 'image') {
       if (state.text[state.re.lastIndex] !== '{') {
