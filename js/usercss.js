@@ -80,7 +80,7 @@ var usercss = (function () {
           }
           if (vars[name].type === 'dropdown') {
             // prevent infinite recursion
-            pool.set('');
+            pool.set(name, '');
             return doReplace(vars[name].value);
           }
           return vars[name].value;
