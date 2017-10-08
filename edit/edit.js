@@ -501,13 +501,21 @@ window.onbeforeunload = () => {
     rememberWindowSize();
   }
   document.activeElement.blur();
-  if ((!editor && isCleanGlobal()) || (editor && !editor.isDirty())) {
+  if (isClean()) {
     return;
   }
   updateLintReportIfEnabled(null, 0);
   // neither confirm() nor custom messages work in modern browsers but just in case
   return t('styleChangesNotSaved');
 };
+
+function isClean() {
+  if (editor) {
+    return !editor.isDirty();
+  } else {
+    return isCleanGlobal();
+  }
+}
 
 function addAppliesTo(list, name, value) {
   const showingEverything = $('.applies-to-everything', list) !== null;
@@ -1218,7 +1226,12 @@ function init() {
   getStyle().then(style => {
     styleId = style.id;
     sessionStorage.justEditedStyleId = styleId;
-    initWithStyle({style});
+
+    if (!isUsercss(style)) {
+      initWithSectionStyle({style});
+    } else {
+      editor = createSourceEditor(style);
+    }
   });
 
   function getStyle() {
@@ -1263,32 +1276,14 @@ function setStyleMeta(style) {
   $('#url').href = style.url || '';
 }
 
-function initWithStyle(request) {
-  if (!isUsercss()) {
-    initWithSectionStyle(request);
-    return;
+function isUsercss(style) {
+  if (style.usercssData) {
+    return true;
   }
-
-  if (!editor) {
-    editor = createSourceEditor(request.style);
-    return;
+  if (!style.id && prefs.get('newStyleFormat') === 'usercss') {
+    return true;
   }
-
-  if (request.codeIsUpdated === false) {
-    editor.updateStyleMeta(request.style);
-  } else {
-    editor.replaceStyle(request.style);
-  }
-
-  function isUsercss() {
-    if (request.style.usercssData) {
-      return true;
-    }
-    if (!request.style.id && prefs.get('newStyleFormat') === 'usercss') {
-      return true;
-    }
-    return false;
-  }
+  return false;
 }
 
 function initWithSectionStyle({style, codeIsUpdated}) {
@@ -1838,18 +1833,35 @@ function getParams() {
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
+function replaceStyle(request) {
+  if (!isClean() && !confirm(t('styleUpdateDiscardChanges'))) {
+    return;
+  }
+
+  if (!isUsercss(request.style)) {
+    initWithSectionStyle(request);
+    return;
+  }
+
+  if (request.codeIsUpdated === false) {
+    editor.updateStyleMeta(request.style);
+  } else {
+    editor.replaceStyle(request.style);
+  }
+}
+
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId === request.style.id && request.reason !== 'editSave') {
+      if (styleId && styleId === request.style.id && request.reason !== 'editSave' && request.reason !== 'config') {
         if ((request.style.sections[0] || {}).code === null) {
           // the code-less style came from notifyAllTabs
           onBackgroundReady().then(() => {
             request.style = BG.cachedStyles.byId.get(request.style.id);
-            initWithStyle(request);
+            replaceStyle(request);
           });
         } else {
-          initWithStyle(request);
+          replaceStyle(request);
         }
       }
       break;

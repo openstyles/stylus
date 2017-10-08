@@ -824,6 +824,10 @@
       }
     }
   },
+  "styleUpdateDiscardChanges": {
+    "message": "The style is changed outside of the editor. Would you like to reload the style?",
+    "description": "Confirmation to update the style in the editor"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus doesn't work on pages like this.",
     "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
