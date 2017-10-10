@@ -697,6 +697,38 @@ fieldset > *:not(legend) {
   flex-shrink: 0;
 }
 
+.detail-table {
+  border-collapse: collapse;
+  display: table;
+}
+
+.detail-table > * {
+  display: table-row
+}
+
+.detail-table > * > * {
+  display: table-cell;
+  padding: 0.3em 0.6em;
+  border: 1px solid silver;
+}
+
+.detail-table .meta-label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.detail-table ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detail-table .icon {
+  height: 1.3em;
+  margin: -0.3em 0;
+  vertical-align: middle;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
