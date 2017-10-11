@@ -222,7 +222,7 @@
       setUpdate.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
       setUpdate.disabled = true;
-    } else if (!dup && updateUrl.protocol !== 'file:') {
+    } else if (updateUrl.protocol !== 'file:') {
       setUpdate.checked = true;
       style.updateUrl = updateUrl.href;
     }
