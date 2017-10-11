@@ -17,6 +17,11 @@ function createSourceEditor(style) {
     ]})
   );
 
+  $('#header').appendChild($element({
+    id: 'footer',
+    appendChild: makeLink('https://github.com/openstyles/stylus/wiki/Usercss', t('externalUsercssDocument'))
+  }));
+
   setupOptionsExpand();
 
   // dirty reporter

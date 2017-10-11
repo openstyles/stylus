@@ -329,6 +329,10 @@
     "message": "Support",
     "description": "Label for the external link to style's support site"
   },
+  "externalUsercssDocument": {
+    "message": "Documentation for Usercss",
+    "description": "Label for the external link to usercss documentation"
+  },
   "filteredStyles": {
     "message": "$numShown$ shown of $numTotal$ total",
     "description": "TL note - make this message short",

@@ -134,6 +134,10 @@ h2 .svg-icon, label .svg-icon {
 #options .option > * {
   padding-right: 0.25rem;
 }
+/* footer */
+#footer {
+  margin-top: 1em;
+}
 /************ content ***********/
 #sections > div {
   margin: 0.7rem;
