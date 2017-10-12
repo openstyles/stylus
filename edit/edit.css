@@ -385,6 +385,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   z-index: 99;
 }
 #help-popup.big {
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
   max-width: 100%;
   left: 3rem;
 }
