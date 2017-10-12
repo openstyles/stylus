@@ -101,11 +101,7 @@
       const [, name, email, url] = match;
       const frag = document.createDocumentFragment();
       if (email) {
-        frag.appendChild($element({
-          tag: 'a',
-          textContent: name,
-          href: `mailto:${email}`
-        }));
+        frag.appendChild(makeLink(`mailto:${email}`, name));
       } else {
         frag.appendChild($element({
           tag: 'span',
@@ -113,17 +109,14 @@
         }));
       }
       if (url) {
-        frag.appendChild($element({
-          tag: 'a',
-          href: url,
-          target: '_blank',
-          rel: 'noopener',
-          appendChild: $element({
+        frag.appendChild(makeLink(
+          url,
+          $element({
             tag: 'img',
             className: 'icon',
             src: '/install-usercss/external.svg'
           })
-        }));
+        ));
       }
       return frag;
     }
