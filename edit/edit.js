@@ -178,6 +178,10 @@ function initCodeMirror() {
   CM.getOption = o => CodeMirror.defaults[o];
   CM.setOption = (o, v) => {
     CodeMirror.defaults[o] = v;
+    if (editors.length > 4 && (o === 'theme' || o === 'lineWrapping')) {
+      throttleSetOption({key: o, value: v, index: 0});
+      return;
+    }
     editors.forEach(editor => {
       editor.setOption(o, v);
     });
@@ -215,6 +219,83 @@ function initCodeMirror() {
   setupLivePrefs();
 
   hotkeyRerouter.setState(true);
+
+  const THROTTLE_AFTER_MS = 100;
+  const THROTTLE_SHOW_PROGRESS_AFTER_MS = 100;
+
+  function throttleSetOption({
+    key,
+    value,
+    index,
+    timeStart = performance.now(),
+    cmStart = editors.lastActive || editors[0],
+    editorsCopy = editors.slice(),
+    progress,
+  }) {
+    if (index === 0) {
+      if (!cmStart) {
+        return;
+      }
+      cmStart.setOption(key, value);
+    }
+    const t0 = performance.now();
+    const total = editorsCopy.length;
+    while (index < total) {
+      const cm = editorsCopy[index++];
+      if (cm === cmStart ||
+          cm !== editors[index] && !editors.includes(cm)) {
+        continue;
+      }
+      cm.setOption(key, value);
+      if (performance.now() - t0 > THROTTLE_AFTER_MS) {
+        break;
+      }
+    }
+    if (index >= total) {
+      if (progress) {
+        progress.remove();
+      }
+      return;
+    }
+    if (!progress &&
+        index < total / 2 &&
+        t0 - timeStart > THROTTLE_SHOW_PROGRESS_AFTER_MS) {
+      let option = $('#editor.' + key);
+      if (option) {
+        if (option.type === 'checkbox') {
+          option = (option.labels || [])[0] || option.nextElementSibling || option;
+        }
+        progress = document.body.appendChild($element({
+          className: 'set-option-progress',
+          targetElement: option,
+        }));
+      }
+    }
+    if (progress) {
+      const optionBounds = progress.targetElement.getBoundingClientRect();
+      const bounds = {
+        top: optionBounds.top + window.scrollY + 1,
+        left: optionBounds.left + window.scrollX + 1,
+        width: (optionBounds.width - 2) * index / total | 0,
+        height: optionBounds.height - 2,
+      };
+      const style = progress.style;
+      for (const prop in bounds) {
+        if (bounds[prop] !== parseFloat(style[prop])) {
+          style[prop] = bounds[prop] + 'px';
+        }
+      }
+    }
+    setTimeout(throttleSetOption, 0, {
+      key,
+      value,
+      index,
+      timeStart,
+      cmStart,
+      editorsCopy,
+      progress,
+    });
+  }
 }
 
 function acmeEventListener(event) {
@@ -426,12 +507,6 @@ queryTabs({currentWindow: true}).then(tabs => {
       saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
     }
   }
-  chrome.tabs.onRemoved.addListener((tabId, info) => {
-    sessionStorageHash('manageStylesHistory').unset(tabId);
-    if (info.windowId === windowId && info.isWindowClosing) {
-      sessionStorageHash('saveSizeOnClose').unset(windowId);
-    }
-  });
 });
 
 getOwnTab().then(tab => {

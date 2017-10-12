@@ -3,6 +3,10 @@
 		"message": "Све",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Проблеми",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "подразумевано",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -111,6 +115,15 @@
 	"manageText": {
 		"message": "<a href='https://userstyles.org'>Преузмите стилове са userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помоћ</a>",
 		"description": "Help text on the manage page"
+	},
+	"linterIssuesHelp": {
+		"message": "Проблем пронађен од стране $link$:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Претражи садржај",

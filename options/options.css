@@ -18,6 +18,7 @@ html.firefox #notes {
 }
 
 body {
+  background: #fff;
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
@@ -65,7 +66,7 @@ h1 {
   font-weight: bold;
   padding-right: 8px;
   box-sizing: border-box;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .items {
@@ -183,7 +184,7 @@ input[type="color"] {
   background-color: #f4f4f4;
   padding: 1.5ex 16px 1ex calc(16px + 2ex);
   font-size: 90%;
-  color: #999;
+  color: #777;
 }
 
 #notes ol {

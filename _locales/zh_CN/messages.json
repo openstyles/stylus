@@ -3,6 +3,10 @@
 		"message": "全部",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "问题",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "默认",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -219,6 +223,15 @@
 	"manageOnlyLocal": {
 		"message": "只显示在本地创建的样式",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "$link$ 在已启用的这些规则中找到问题：",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "搜索内容",

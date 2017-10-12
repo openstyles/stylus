@@ -3,6 +3,10 @@
 		"message": "Всичко",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Проблеми",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "по подразбиране",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -219,6 +223,15 @@
 	"manageOnlyLocal": {
 		"message": "Само местно създадените стилове",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "Проблеми, намерени от $link$ при следните правила:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Търсене на съдържанието",

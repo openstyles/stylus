@@ -4,8 +4,8 @@
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
 
-const FIREFOX = /Firefox/.test(navigator.userAgent);
-const OPERA = /OPR/.test(navigator.userAgent);
+const FIREFOX = parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+const OPERA = parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
@@ -192,8 +192,10 @@ function openURL({url, currentWindow = true}) {
           chrome.tabs.update({url}, resolve);
         } else {
           // create a new tab
-          const openerSupported = !FIREFOX && tab && !chromeInIncognito;
-          const options = openerSupported ? {url, openerTabId: tab.id} : {url};
+          const options = {url};
+          if (tab && (!FIREFOX || FIREFOX >= 57) && !chromeInIncognito) {
+            options.openerTabId = tab.id;
+          }
           chrome.tabs.create(options, resolve);
         }
       });

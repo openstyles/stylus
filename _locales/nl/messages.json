@@ -3,6 +3,10 @@
 		"message": "Alles",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Problemen",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "standaard",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -111,6 +115,15 @@
 	"manageText": {
 		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Verkrijg hulp</a>",
 		"description": "Help text on the manage page"
+	},
+	"linterIssuesHelp": {
+		"message": "De door stylelint gevonden problemen, $link$:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Inhoud doorzoeken",

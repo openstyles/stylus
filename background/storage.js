@@ -24,7 +24,8 @@ var cachedStyles = {
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
   needTransitionPatch: new Map(), // FF bug workaround
   mutex: {
-    inProgress: false,   // while getStyles() is reading IndexedDB all subsequent calls
+    inProgress: true,    // while getStyles() is reading IndexedDB all subsequent calls
+                         // (initially 'true' to prevent rogue getStyles before dbExec.initialized)
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
@@ -93,6 +94,7 @@ dbExec.initialized = false;
 // (FF may block localStorage depending on its privacy options)
 do {
   const done = () => {
+    cachedStyles.mutex.inProgress = false;
     getStyles().then(() => {
       dbExec.initialized = true;
       window.dispatchEvent(new Event('storageReady'));
@@ -763,19 +765,18 @@ function handleCssTransitionBug({tabId, frameId, url, styles}) {
   }
 
   function patchFirefox() {
-    browser.tabs.insertCSS(tabId, {
+    const options = {
       frameId,
       code: CSS_TRANSITION_SUPPRESSOR,
-      cssOrigin: 'user',
-      runAt: 'document_start',
       matchAboutBlank: true,
-    }).then(() => setTimeout(() => {
-      browser.tabs.removeCSS(tabId, {
-        frameId,
-        code: CSS_TRANSITION_SUPPRESSOR,
-        cssOrigin: 'user',
-        matchAboutBlank: true,
-      }).catch(ignoreChromeError);
+    };
+    if (FIREFOX >= 53) {
+      options.cssOrigin = 'user';
+    }
+    browser.tabs.insertCSS(tabId, Object.assign(options, {
+      runAt: 'document_start',
+    })).then(() => setTimeout(() => {
+      browser.tabs.removeCSS(tabId, options).catch(ignoreChromeError);
     })).catch(ignoreChromeError);
   }
 

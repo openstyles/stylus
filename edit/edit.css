@@ -134,6 +134,12 @@ h2 .svg-icon, label .svg-icon {
 #options .option > * {
   padding-right: 0.25rem;
 }
+.set-option-progress {
+  position: absolute;
+  background-color: currentColor;
+  content: "";
+  opacity: .15;
+}
 /* footer */
 #footer {
   margin-top: 1em;
