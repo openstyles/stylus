@@ -194,11 +194,12 @@ function $element(opt) {
 }
 
 
-function makeLink(href = '', textContent) {
+function makeLink(href = '', content) {
   return $element({
     tag: 'a',
     target: '_blank',
     href,
-    textContent,
+    rel: 'noopener',
+    appendChild: content,
   });
 }
