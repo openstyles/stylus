@@ -2,7 +2,7 @@
 /* global filtersSelector, filterAndAppend */
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
-/* global configDialog detailDialog */
+/* global configDialog */
 'use strict';
 
 let installed;
@@ -196,7 +196,6 @@ function createStyleElement({style, name}) {
   if (shouldShowConfig() && newUI.enabled) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
-  $('.actions', entry).appendChild(template.informationIcon.cloneNode(true));
 
   // name being supplied signifies we're invoked by showStyles()
   // which debounces its main loop thus loading the postponed favicons
@@ -287,12 +286,7 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
-    '.configure-usercss': 'config',
-    '.detailed-information': 'showDetails'
-  },
-
-  showDetails(event, {styleMeta: style}) {
-    detailDialog(style);
+    '.configure-usercss': 'config'
   },
 
   config(event, {styleMeta: style}) {

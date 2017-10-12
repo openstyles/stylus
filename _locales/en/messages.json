@@ -159,30 +159,6 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
-  "detailName": {
-    "message": "Name",
-    "description": "Label for the name of the style"
-  },
-  "detailVersion": {
-    "message": "Version",
-    "description": "Label for the version of the style"
-  },
-  "detailAuthor": {
-    "message": "Author",
-    "description": "Label for the author of the style"
-  },
-  "detailHomepageURL": {
-    "message": "Homepage",
-    "description": "Label for the homepage of the style"
-  },
-  "detailSupportURL": {
-    "message": "Support site",
-    "description": "Label for the support site of the style"
-  },
-  "detailUpdateURL": {
-    "message": "Update URL",
-    "description": "Label for the update URL of the style"
-  },
   "dysfunctional": {
     "message": "Stylus cannot function in private windows because Firefox disallows direct connection to the internal background page context of the extension.",
     "description": "Displayed in Firefox when its settings make Stylus dysfunctional"
@@ -246,10 +222,6 @@
   "deleteStyleConfirm": {
     "message": "Are you sure you want to delete this style?",
     "description": "Confirmation before deleting a style"
-  },
-  "detailedInformation": {
-    "message": "Details",
-    "description": "The label for detailed information"
   },
   "dragDropMessage": {
     "message": "Drop your backup file anywhere on this page to import.",

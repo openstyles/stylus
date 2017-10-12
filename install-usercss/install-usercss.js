@@ -1,4 +1,4 @@
-/* global CodeMirror semverCompare makeLink closeCurrentTab makeAuthor */
+/* global CodeMirror semverCompare makeLink closeCurrentTab */
 
 'use strict';
 
@@ -91,6 +91,41 @@
     const externalLink = makeExternalLink();
     if (externalLink) {
       $('.external-link').appendChild(externalLink);
+    }
+
+    function makeAuthor(text) {
+      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
+      if (!match) {
+        return document.createTextNode(text);
+      }
+      const [, name, email, url] = match;
+      const frag = document.createDocumentFragment();
+      if (email) {
+        frag.appendChild($element({
+          tag: 'a',
+          textContent: name,
+          href: `mailto:${email}`
+        }));
+      } else {
+        frag.appendChild($element({
+          tag: 'span',
+          textContent: name
+        }));
+      }
+      if (url) {
+        frag.appendChild($element({
+          tag: 'a',
+          href: url,
+          target: '_blank',
+          rel: 'noopener',
+          appendChild: $element({
+            tag: 'img',
+            className: 'icon',
+            src: '/install-usercss/external.svg'
+          })
+        }));
+      }
+      return frag;
     }
 
     function makeExternalLink() {

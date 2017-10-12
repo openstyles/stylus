@@ -194,38 +194,11 @@ function $element(opt) {
 }
 
 
-function makeLink(href = '', content) {
+function makeLink(href = '', textContent) {
   return $element({
     tag: 'a',
     target: '_blank',
     href,
-    rel: 'noopener',
-    appendChild: content,
+    textContent,
   });
-}
-
-
-function makeAuthor(text) {
-  const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
-  if (!match) {
-    return document.createTextNode(text);
-  }
-  const [, name, email, url] = match;
-  const frag = document.createDocumentFragment();
-  if (email) {
-    frag.appendChild(makeLink(`mailto:${email}`, name));
-  } else {
-    frag.appendChild($element({
-      tag: 'span',
-      textContent: name
-    }));
-  }
-  if (url) {
-    frag.appendChild(makeLink(url, $element({
-      tag: 'img',
-      className: 'icon',
-      src: '/images/external.svg'
-    })));
-  }
-  return frag;
 }
