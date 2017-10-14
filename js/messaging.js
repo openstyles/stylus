@@ -383,13 +383,6 @@ function download(url) {
 }
 
 
-function doTimeout(ms = 0, ...args) {
-  return ms > 0
-    ? () => new Promise(resolve => setTimeout(resolve, ms, ...args))
-    : new Promise(resolve => setTimeout(resolve, 0, ...args));
-}
-
-
 function invokeOrPostpone(isInvoke, fn, ...args) {
   return isInvoke
     ? fn(...args)

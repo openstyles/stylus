@@ -306,41 +306,41 @@ function importFromString(jsonString) {
 $('#file-all-styles').onclick = () => {
   getStylesSafe().then(styles => {
     const text = JSON.stringify(styles, null, '\t');
-    const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-    return url;
-    // for long URLs; https://github.com/schomery/stylus/issues/13#issuecomment-284582600
-  }).then(fetch)
-    .then(res => res.blob())
-    .then(blob => {
-      const objectURL = URL.createObjectURL(blob);
-      let link = $element({
-        tag:'a',
-        href: objectURL,
-        type: 'application/json',
-        download: generateFileName(),
-      });
-      // TODO: remove the fallback when FF multi-process bug is fixed
-      if (!FIREFOX) {
-        link.dispatchEvent(new MouseEvent('click'));
-        setTimeout(() => URL.revokeObjectURL(objectURL));
-      } else {
-        const iframe = document.body.appendChild($element({
-          tag: 'iframe',
-          style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
-        }));
-        doTimeout().then(() => {
+    const blob = new Blob([text], {type : 'application/json'});
+    const objectURL = URL.createObjectURL(blob);
+    let link = $element({
+      tag:'a',
+      href: objectURL,
+      type: 'application/json',
+      download: generateFileName(),
+    });
+    // TODO: remove the fallback when FF multi-process bug is fixed
+    if (!FIREFOX) {
+      link.dispatchEvent(new MouseEvent('click'));
+      setTimeout(() => URL.revokeObjectURL(objectURL));
+    } else {
+      const iframe = document.body.appendChild($element({
+        tag: 'iframe',
+        style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
+      }));
+      doTimeout()
+        .then(() => {
           link = iframe.contentDocument.importNode(link, true);
           iframe.contentDocument.body.appendChild(link);
         })
-        .then(doTimeout)
+        .then(() => doTimeout())
         .then(() => link.dispatchEvent(new MouseEvent('click')))
-        .then(doTimeout(1000))
+        .then(() => doTimeout(1000))
         .then(() => {
           URL.revokeObjectURL(objectURL);
           iframe.remove();
         });
-      }
-    });
+    }
+  });
+
+  function doTimeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   function generateFileName() {
     const today = new Date();
