@@ -653,6 +653,12 @@ fieldset > *:not(legend) {
 }
 
 /* config dialog */
+.config-dialog .config-heading {
+  float: right;
+  margin: -1.25rem 0 0 0;
+  font-size: 0.9em;
+}
+
 .config-dialog label {
   display: flex;
   padding: .75em 0;

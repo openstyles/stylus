@@ -1,4 +1,4 @@
-/* global usercss messageBox */
+/* global usercss messageBox makeLink */
 
 'use strict';
 
@@ -7,9 +7,22 @@ function configDialog(style) {
   const form = buildConfigForm();
 
   return messageBox({
-    title: style.name,
+    title: `${style.name} v${style.usercssData.version}`,
     className: 'config-dialog',
-    contents: form.el,
+    contents: [
+      $element({
+        className: 'config-heading',
+        appendChild: style.usercssData.supportURL && makeLink({
+          className: 'external-support',
+          href: style.usercssData.supportURL,
+          textContent: t('externalFeedback')
+        })
+      }),
+      $element({
+        className: 'config-body',
+        appendChild: form.el
+      })
+    ],
     buttons: [
       t('confirmSave'),
       {

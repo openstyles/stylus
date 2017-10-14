@@ -301,6 +301,10 @@
     "message": "Support",
     "description": "Label for the external link to style's support site"
   },
+  "externalFeedback": {
+    "message": "Feedback",
+    "description": "Label for the external link to send feedback for the style"
+  },
   "externalUsercssDocument": {
     "message": "Documentation for Usercss",
     "description": "Label for the external link to usercss documentation"
