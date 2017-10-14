@@ -663,12 +663,18 @@ fieldset > *:not(legend) {
   display: flex;
   padding: .75em 0;
   align-items: center;
-  border-top: 1px dotted #ccc;
 }
 
 .config-dialog label:first-child {
   padding-top: 0;
-  border-top: none;
+}
+
+.config-dialog label:last-child {
+  padding-bottom: 0;
+}
+
+.config-dialog label:not(:first-child) {
+  border-top: 1px dotted #ccc;
 }
 
 .config-dialog label > :first-child {
