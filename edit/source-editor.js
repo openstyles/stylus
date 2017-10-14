@@ -2,6 +2,7 @@
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
 /* global editors linterConfig updateLinter regExpTester mozParser */
+/* global makeLink */
 
 'use strict';
 
