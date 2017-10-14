@@ -195,11 +195,16 @@ function $element(opt) {
 
 
 function makeLink(href = '', content) {
-  return $element({
+  const opt = {
     tag: 'a',
     target: '_blank',
-    href,
-    rel: 'noopener',
-    appendChild: content,
-  });
+    rel: 'noopener'
+  };
+  if (typeof href === 'object') {
+    Object.assign(opt, href);
+  } else {
+    opt.href = href;
+    opt.appendChild = content;
+  }
+  return $element(opt);
 }
