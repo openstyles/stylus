@@ -130,6 +130,13 @@ var linterConfig = {
       }
     }, 2000);
   },
+
+  init() {
+    if (!linterConfig.init.pending) {
+      linterConfig.init.pending = linterConfig.loadAll();
+    }
+    return linterConfig.init.pending;
+  }
 };
 
 function initLint() {
@@ -143,7 +150,7 @@ function initLint() {
     $('#lint h2').addEventListener('click', toggleLintReport);
   }
 
-  linterConfig.loadAll().then(updateLinter);
+  updateLinter();
   linterConfig.watchStorage();
   prefs.subscribe(['editor.linter'], updateLinter);
 }
@@ -155,7 +162,8 @@ function updateLinter({immediately, linter = prefs.get('editor.linter')} = {}) {
   }
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
-  loadLinterAssets(linter).then(updateEditors);
+  Promise.all([linterConfig.init(), loadLinterAssets(linter)])
+    .then(updateEditors);
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
   $('#lint').style.display = 'none';
 
