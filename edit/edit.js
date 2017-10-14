@@ -1909,7 +1909,8 @@ function getParams() {
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 function replaceStyle(request) {
-  if (!isClean() && !confirm(t('styleUpdateDiscardChanges'))) {
+  const codeIsUpdated = request.codeIsUpdated !== false;
+  if (!isClean() && (!codeIsUpdated || !confirm(t('styleUpdateDiscardChanges')))) {
     return;
   }
 
@@ -1918,11 +1919,7 @@ function replaceStyle(request) {
     return;
   }
 
-  if (request.codeIsUpdated === false) {
-    editor.updateStyleMeta(request.style);
-  } else {
-    editor.replaceStyle(request.style);
-  }
+  editor.replaceStyle(request.style, codeIsUpdated);
 }
 
 function onRuntimeMessage(request) {

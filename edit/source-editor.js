@@ -609,11 +609,6 @@ ${section}
     dirty.clear();
   }
 
-  function updateStyleMeta(newStyle) {
-    dirty.modify('enabled', style.enabled, newStyle.enabled);
-    style.enabled = newStyle.enabled;
-  }
-
   function toggleStyle() {
     const value = !style.enabled;
     dirty.modify('enabled', style.enabled, value);
@@ -645,7 +640,6 @@ ${section}
     replaceStyle,
     save,
     toggleStyle,
-    updateStyleMeta,
     isDirty: dirty.isDirty,
     getStyle: () => style
   };
