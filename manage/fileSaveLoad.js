@@ -306,7 +306,7 @@ function importFromString(jsonString) {
 $('#file-all-styles').onclick = () => {
   getStylesSafe().then(styles => {
     const text = JSON.stringify(styles, null, '\t');
-    const blob = new Blob([text], {type : 'application/json'});
+    const blob = new Blob([text], {type: 'application/json'});
     const objectURL = URL.createObjectURL(blob);
     let link = $element({
       tag:'a',
