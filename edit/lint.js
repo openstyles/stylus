@@ -21,11 +21,20 @@ var linterConfig = {
     stylelint: 'editorStylelintConfig',
   },
 
-  getCurrent(linter = prefs.get('editor.linter')) {
+  getDefault() {
+    // some dirty hacks to override editor.linter getting from prefs
+    const linter = prefs.get('editor.linter');
+    if (linter && editors[0] && editors[0].getOption('mode') !== 'css') {
+      return 'stylelint';
+    }
+    return linter;
+  },
+
+  getCurrent(linter = linterConfig.getDefault()) {
     return this.fallbackToDefaults(this[linter] || {});
   },
 
-  getForCodeMirror(linter = prefs.get('editor.linter')) {
+  getForCodeMirror(linter = linterConfig.getDefault()) {
     return CodeMirror.lint && CodeMirror.lint[linter] ? {
       getAnnotations: CodeMirror.lint[linter],
       delay: prefs.get('editor.lintDelay'),
@@ -44,7 +53,7 @@ var linterConfig = {
     return null;
   },
 
-  fallbackToDefaults(config, linter = prefs.get('editor.linter')) {
+  fallbackToDefaults(config, linter = linterConfig.getDefault()) {
     if (config && Object.keys(config).length) {
       if (linter === 'stylelint') {
         // always use default syntax because we don't expose it in config UI
@@ -56,16 +65,16 @@ var linterConfig = {
     }
   },
 
-  setLinter(linter = prefs.get('editor.linter')) {
+  setLinter(linter = linterConfig.getDefault()) {
     linter = linter.toLowerCase();
     linter = linter === 'csslint' || linter === 'stylelint' ? linter : '';
-    if (prefs.get('editor.linter') !== linter) {
+    if (linterConfig.getDefault() !== linter) {
       prefs.set('editor.linter', linter);
     }
     return linter;
   },
 
-  findInvalidRules(config, linter = prefs.get('editor.linter')) {
+  findInvalidRules(config, linter = linterConfig.getDefault()) {
     const rules = linter === 'stylelint' ? config.rules : config;
     const allRules = new Set(
       linter === 'stylelint'
@@ -76,7 +85,7 @@ var linterConfig = {
   },
 
   stringify(config = this.getCurrent()) {
-    if (prefs.get('editor.linter') === 'stylelint') {
+    if (linterConfig.getDefault() === 'stylelint') {
       config.syntax = undefined;
     }
     return JSON.stringify(config, null, 2)
@@ -85,7 +94,7 @@ var linterConfig = {
 
   save(config) {
     config = this.fallbackToDefaults(config);
-    const linter = prefs.get('editor.linter');
+    const linter = linterConfig.getDefault();
     this[linter] = config;
     BG.chromeSync.setLZValue(this.storageName[linter], config);
     return config;
@@ -155,7 +164,7 @@ function initLint() {
   prefs.subscribe(['editor.linter'], updateLinter);
 }
 
-function updateLinter({immediately, linter = prefs.get('editor.linter')} = {}) {
+function updateLinter({immediately, linter = linterConfig.getDefault()} = {}) {
   if (!immediately) {
     debounce(updateLinter, 0, {immediately: true, linter});
     return;
@@ -376,7 +385,7 @@ function toggleLintReport() {
 }
 
 function showLintHelp() {
-  const linter = prefs.get('editor.linter');
+  const linter = linterConfig.getDefault();
   const baseUrl = linter === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'
     // some CSSLint rules do not have a url
@@ -464,7 +473,7 @@ function setupLinterSettingsEvents(popup) {
 }
 
 function setupLinterPopup(config) {
-  const linter = prefs.get('editor.linter');
+  const linter = linterConfig.getDefault();
   const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
 
   function makeButton(className, text, options = {}) {
@@ -526,7 +535,7 @@ function setupLinterPopup(config) {
   });
 }
 
-function loadLinterAssets(name = prefs.get('editor.linter')) {
+function loadLinterAssets(name = linterConfig.getDefault()) {
   if (!name) {
     return Promise.resolve();
   }

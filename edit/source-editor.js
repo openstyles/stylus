@@ -74,6 +74,9 @@ function createSourceEditor(style) {
       });
     }
   });
+  if (linterEl.value === 'csslint') {
+    linterEl.value = 'stylelint';
+  }
 
   function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) + '/* Insert code here... */';
