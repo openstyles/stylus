@@ -24,10 +24,7 @@ var usercssHelper = (function () {
 
   function wrapReject(pending) {
     return pending.then(result => ({status: 'success', result}))
-      .catch(err => {
-        console.error(err);
-        return {status: 'error', result: err.message || String(err)};
-      });
+      .catch(err => ({status: 'error', result: err.message || String(err)}));
   }
 
   // Parse the source and find the duplication
