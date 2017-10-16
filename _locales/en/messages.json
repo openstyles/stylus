@@ -458,7 +458,7 @@
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint doesn't support $preprocessorname$ preprocessor",
-    "description": "The label to display when the preprocessor doesn't compatible with CSSLint",
+    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
     "placeholders": {
       "preprocessorname": {
         "content": "$1"
