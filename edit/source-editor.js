@@ -55,27 +55,31 @@ function createSourceEditor(style) {
 
   // setup linter
   initLint();
-  const linterEl = $('#editor.linter');
-  cm.on('optionChange', (cm, option) => {
-    if (option === 'mode' || option === 'lint') {
-      const lint = cm.getOption('lint');
-      const mode = cm.getOption('mode');
+  initLinterSwitch();
 
-      if (mode !== 'css' && linterConfig.getName(lint) === 'csslint') {
-        updateLinter({linter: 'stylelint'});
-        linterEl.value = 'stylelint';
+  function initLinterSwitch() {
+    const linterEl = $('#editor.linter');
+    cm.on('optionChange', (cm, option) => {
+      if (option !== 'mode') {
+        return;
+      }
+      updateLinter();
+      update();
+    });
+    linterEl.addEventListener('change', update);
+
+    function update() {
+      linterEl.value = linterConfig.getDefault();
+
+      const cssLintOption = linterEl.querySelector('[value="csslint"]');
+      if (cm.getOption('mode') !== 'css') {
+        cssLintOption.disabled = true;
+        cssLintOption.title = t('linterCSSLintIncompatible', cm.getOption('mode'));
+      } else {
+        cssLintOption.disabled = false;
+        cssLintOption.title = '';
       }
     }
-  });
-  linterEl.addEventListener('change', () => {
-    if (cm.getOption('mode') !== 'css' && linterEl.value === 'csslint') {
-      setTimeout(() => {
-        linterEl.value = 'stylelint';
-      });
-    }
-  });
-  if (linterEl.value === 'csslint') {
-    linterEl.value = 'stylelint';
   }
 
   function setupNewStyle(style) {

@@ -456,6 +456,15 @@
     "message": "(Set rule as: 0 = disabled; 1 = warning; 2 = error)",
     "description": "CSSLint rule config values"
   },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint doesn't support $preprocessorname$ preprocessor",
+    "description": "The label to display when the preprocessor doesn't compatible with CSSLint",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
   "linterInvalidConfigError": {
     "message": "Not saved due to these invalid configuration settings:",
     "description": "Invalid linter config will show a message followed by a list of invalid entries"
