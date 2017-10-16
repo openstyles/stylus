@@ -46,8 +46,12 @@ function dirtyReporter() {
     }
   }
 
-  function clear() {
-    dirty.clear();
+  function clear(obj) {
+    if (obj === undefined) {
+      dirty.clear();
+    } else {
+      dirty.delete(obj);
+    }
   }
 
   function isDirty() {
