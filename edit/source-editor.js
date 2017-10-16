@@ -7,6 +7,9 @@
 'use strict';
 
 function createSourceEditor(style) {
+  // a flag for isWorking()
+  let hadBeenSaved = false;
+
   // draw HTML
   $('#sections').innerHTML = '';
   $('#name').disabled = true;
@@ -614,6 +617,7 @@ ${section}
       cm.setCursor(cursor);
     }
     dirty.clear();
+    hadBeenSaved = false;
   }
 
   function toggleStyle() {
@@ -637,17 +641,33 @@ ${section}
         sourceCode: style.sourceCode
       }))
       .then(replaceStyle)
+      .then(() => {
+        hadBeenSaved = true;
+      })
       .catch(err => {
         console.error(err);
         alert(err);
       });
   }
 
+  function isWarm() {
+    // indicate that the editor had been touched by the user
+    return dirty.isDirty() || hadBeenSaved;
+  }
+
+  function replaceMetas(newStyle) {
+    style.enabled = newStyle.enabled;
+    dirty.clear('enabled');
+    updateMetas();
+  }
+
   return {
     replaceStyle,
+    replaceMetas,
     save,
     toggleStyle,
     isDirty: dirty.isDirty,
-    getStyle: () => style
+    getStyle: () => style,
+    isWarm
   };
 }

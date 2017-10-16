@@ -1910,16 +1910,22 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 function replaceStyle(request) {
   const codeIsUpdated = request.codeIsUpdated !== false;
-  if (!isClean() && (!codeIsUpdated || !confirm(t('styleUpdateDiscardChanges')))) {
+  if (codeIsUpdated && editor && editor.isWarm() && !confirm(t('styleUpdateDiscardChanges'))) {
     return;
   }
+  doReplace();
 
-  if (!isUsercss(request.style)) {
-    initWithSectionStyle(request);
-    return;
+  function doReplace() {
+    if (!isUsercss(request.style)) {
+      initWithSectionStyle(request);
+      return;
+    }
+    if (codeIsUpdated) {
+      editor.replaceStyle(request.style);
+    } else {
+      editor.replaceMetas(request.style);
+    }
   }
-
-  editor.replaceStyle(request.style, codeIsUpdated);
 }
 
 function onRuntimeMessage(request) {
