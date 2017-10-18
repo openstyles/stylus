@@ -1,5 +1,3 @@
-// Not using some slow features of ES6, see http://kpdecker.github.io/six-speed/
-// like destructring, classes, defaults, spread, calculated key names
 /* eslint no-var: 0 */
 'use strict';
 
@@ -40,7 +38,7 @@ function requestStyles(options, callback = applyStyles) {
     asHash: true,
   }, options);
   // On own pages we request the styles directly to minimize delay and flicker
-  if (typeof getStylesSafe !== 'undefined') {
+  if (typeof getStylesSafe === 'function') {
     getStylesSafe(request).then(callback);
   } else {
     chrome.runtime.sendMessage(request, callback);
