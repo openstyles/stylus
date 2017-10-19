@@ -3430,7 +3430,7 @@ var Properties = module.exports = {
     "border-color"                  : "<color>{1,4}",
     "border-image"                  : 1,
     "border-image-outset"           : "[ <length> | <number> ]{1,4}",
-    "border-image-repeat"           : "[ stretch | repeat | round ]{1,2}",
+    "border-image-repeat"           : "[ stretch | repeat | round | space ]{1,2}",
     "border-image-slice"            : "<border-image-slice>",
     "border-image-source"           : "<image> | none",
     "border-image-width"            : "[ <length> | <percentage> | <number> | auto ]{1,4}",
