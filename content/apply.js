@@ -3,7 +3,7 @@
 
 var ID_PREFIX = 'stylus-';
 var ROOT = document.documentElement;
-var isOwnPage = location.href.startsWith('chrome-extension:');
+var isOwnPage = location.protocol.endsWith('-extension:');
 var disableAll = false;
 var exposeIframes = false;
 var styleElements = new Map();
