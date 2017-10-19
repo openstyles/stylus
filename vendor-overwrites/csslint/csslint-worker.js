@@ -3798,7 +3798,7 @@ var Properties = module.exports = {
     "unicode-range"                  : "<unicode-range>#",
     "unicode-bidi"                  : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
     "user-modify"                   : "read-only | read-write | write-only",
-    "user-select"                   : "none | text | toggle | element | elements | all",
+    "user-select"                   : "auto | text | none | contain | all",
 
     //V
     "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
