@@ -6,6 +6,7 @@ body {
 }
 .firefox body {
   background-color: #fff;
+  color: #000;
 }
 
 body > div:not(#installed) {
