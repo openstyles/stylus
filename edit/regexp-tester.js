@@ -8,21 +8,38 @@ var regExpTester = (function () {
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
   let currentRegexps = [];
+  let isInit = false;
 
-  chrome.tabs.onUpdated.addListener(function _(tabId, info) {
+  function init() {
+    isInit = true;
+    chrome.tabs.onUpdated.addListener(onTabUpdate);
+  }
+
+  function uninit() {
+    chrome.tabs.onUpdated.removeListener(onTabUpdate);
+    isInit = false;
+  }
+
+  function onTabUpdate(tabId, info) {
     if (info.url) {
       update();
     }
-  });
+  }
 
   function isShowed() {
-    return $('.regexp-report');
+    return Boolean($('.regexp-report'));
   }
 
   function toggle(state = !isShowed()) {
     if (state && !isShowed()) {
+      if (!isInit) {
+        init();
+      }
       showHelp('', $element({className: 'regexp-report'}));
     } else if (!state && isShowed()) {
+      if (isInit) {
+        uninit();
+      }
       // TODO: need a closeHelp function
       $('#help-popup .dismiss').onclick();
     }
@@ -30,6 +47,9 @@ var regExpTester = (function () {
 
   function update(newRegexps) {
     if (!isShowed()) {
+      if (isInit) {
+        uninit();
+      }
       return;
     }
     if (newRegexps) {
