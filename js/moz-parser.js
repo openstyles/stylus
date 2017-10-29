@@ -3,7 +3,7 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var mozParser = (function () {
+var mozParser = (() => {
   // direct & reverse mapping of @-moz-document keywords and internal property names
   const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
   const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'domains', 'regexp': 'regexps'};

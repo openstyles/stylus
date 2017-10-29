@@ -3,7 +3,7 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var usercss = (function () {
+var usercss = (() => {
   // true for global, false for private
   const METAS = {
     __proto__: null,
@@ -99,7 +99,7 @@ var usercss = (function () {
     }
   };
 
-  const colorParser = (function () {
+  const colorParser = (() => {
     const el = document.createElement('div');
     // https://bugs.webkit.org/show_bug.cgi?id=14563
     document.head.appendChild(el);

@@ -3,7 +3,7 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var usercssHelper = (function () {
+var usercssHelper = (() => {
   function buildMeta(style) {
     if (style.usercssData) {
       return Promise.resolve(style);

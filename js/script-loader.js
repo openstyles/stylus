@@ -2,7 +2,7 @@
 
 // loadScript(script: Array<Promise|string>|string): Promise
 // eslint-disable-next-line no-var
-var loadScript = (function () {
+var loadScript = (() => {
   const cache = new Map();
 
   function inject(file) {

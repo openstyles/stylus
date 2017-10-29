@@ -2,7 +2,7 @@
 
 'use strict';
 
-(function () {
+(() => {
   const params = getParams();
   let liveReload = false;
   let installed = false;

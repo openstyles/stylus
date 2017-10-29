@@ -103,7 +103,7 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
   t.DOMParser = new DOMParser();
-  t.cache = (function () {
+  t.cache = (() => {
     try {
       return JSON.parse(localStorage.L10N);
     } catch (e) {}
