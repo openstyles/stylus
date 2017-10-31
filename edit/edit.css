@@ -128,8 +128,9 @@ h2 .svg-icon, label .svg-icon {
   display: inline-block;
 }
 #options [type="number"] {
-  max-width: 2.5rem;
-  text-align: right;
+  width: 3.5em;
+  text-align: left;
+  padding-left: .25em;
 }
 #options .option > * {
   padding-right: 0.25rem;
