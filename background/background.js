@@ -323,10 +323,6 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
 
-    case 'injectContent':
-      injectContent(sender.tab.id, request).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
-
     case 'openUsercssInstallPage':
       usercssHelper.openInstallPage(sender.tab.id, request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
@@ -358,26 +354,4 @@ function closeTab(tabId, request) {
       resolve({status: 'success'});
     });
   });
-}
-
-function injectContent(tabId, {files}) {
-  return Promise.all(files.map(inject))
-    .then(() => ({status: 'success'}))
-    .catch(err => ({status: 'error', error: err.message}));
-
-  function inject(file) {
-    return new Promise((resolve, reject) => {
-      const method = file.endsWith('.js') ? 'executeScript' : 'insertCSS';
-      chrome.tabs[method](tabId, {
-        file,
-        runAt: 'document_start'
-      }, () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
 }
