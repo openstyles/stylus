@@ -6,7 +6,7 @@
 'use strict';
 
 function createSourceEditor(style) {
-  // a flag for isWorking()
+  // a flag for isWarm()
   let hadBeenSaved = false;
 
   // draw HTML
