@@ -107,8 +107,8 @@
     uso: 'css'
   };
 
-  CodeMirror.prototype.setPreprocessor = function(preprocessor) {
+  CodeMirror.defineExtension('setPreprocessor', function (preprocessor) {
     this.setOption('mode', MODE[preprocessor] || 'css');
     CodeMirror.autoLoadMode(this, MODE[preprocessor] || 'css');
-  };
+  });
 })();
