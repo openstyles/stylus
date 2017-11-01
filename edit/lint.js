@@ -41,18 +41,6 @@ var linterConfig = {
     } : false;
   },
 
-  getName(cmLintOption) {
-    if (!cmLintOption) {
-      return null;
-    }
-    for (const linter of ['csslint', 'stylelint']) {
-      if (cmLintOption.getAnnotations === CodeMirror.lint[linter]) {
-        return linter;
-      }
-    }
-    return null;
-  },
-
   fallbackToDefaults(config, linter = linterConfig.getDefault()) {
     if (config && Object.keys(config).length) {
       if (linter === 'stylelint') {
