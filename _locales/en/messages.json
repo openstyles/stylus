@@ -773,24 +773,6 @@
       }
     }
   },
-  "styleMetaErrorSelectMissingKey": {
-    "message": "Invalid @var select: missing key '$key$'",
-    "description": "Error displayed when the value of @var select is not a valid key",
-    "placeholders": {
-      "key": {
-        "content": "$1"
-      }
-    }
-  },
-  "styleMetaErrorSelect": {
-    "message": "Invalid @var select: $error$",
-    "description": "Error displayed when the value of @var select is invalid",
-    "placeholders": {
-      "error": {
-        "content": "$1"
-      }
-    }
-  },
   "styleMissingMeta": {
     "message": "Missing medata @$key$",
     "description": "Error displayed when a mandatory metadata is missing",
