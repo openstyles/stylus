@@ -1,8 +1,7 @@
-/* global usercss messageBox makeLink */
+/* global colorParser messageBox makeLink */
 'use strict';
 
 function configDialog(style) {
-  const {colorParser} = usercss;
   const form = buildConfigForm();
 
   return messageBox({

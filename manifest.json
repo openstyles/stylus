@@ -22,6 +22,7 @@
     "scripts": [
       "js/messaging.js",
       "vendor-overwrites/lz-string/LZString-2xspeedup.js",
+      "js/color-parser.js",
       "js/usercss.js",
       "background/storage.js",
       "background/usercss-helper.js",
