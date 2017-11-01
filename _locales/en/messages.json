@@ -774,7 +774,7 @@
     }
   },
   "styleMissingMeta": {
-    "message": "Missing medata @$key$",
+    "message": "Missing metadata @$key$",
     "description": "Error displayed when a mandatory metadata is missing",
     "placeholders": {
       "key": {
@@ -799,7 +799,7 @@
     "description": "Heading for the section with buttons to import/export Mozilla format of the style"
   },
   "styleFromMozillaFormatError": {
-    "message": "Failed to import from mozilla format",
+    "message": "Failed to import from Mozilla format",
     "description": "Label for the import error"
   },
   "styleFromMozillaFormatPrompt": {
