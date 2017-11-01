@@ -1,5 +1,4 @@
 /* global showHelp */
-
 'use strict';
 
 // eslint-disable-next-line no-var

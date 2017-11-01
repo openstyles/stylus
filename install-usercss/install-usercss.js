@@ -1,5 +1,4 @@
 /* global CodeMirror semverCompare makeLink closeCurrentTab */
-
 'use strict';
 
 (() => {

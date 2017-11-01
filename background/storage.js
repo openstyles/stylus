@@ -1,5 +1,4 @@
 /* global LZString */
-
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,

@@ -4,7 +4,6 @@
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
 /* global loadScript closeCurrentTab regExpTester */
-
 'use strict';
 
 let styleId = null;

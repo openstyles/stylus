@@ -1,5 +1,4 @@
 /* global loadScript mozParser semverCompare */
-
 'use strict';
 
 // eslint-disable-next-line no-var

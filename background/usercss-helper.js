@@ -1,5 +1,4 @@
 /* global usercss saveStyle getStyles */
-
 'use strict';
 
 // eslint-disable-next-line no-var

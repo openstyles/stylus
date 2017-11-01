@@ -1,5 +1,4 @@
 /* global usercss messageBox makeLink */
-
 'use strict';
 
 function configDialog(style) {
