@@ -17,8 +17,8 @@ function createSourceLoader() {
 
   function load() {
     return fetchText(location.href)
-      .then(_source => {
-        source = _source;
+      .then(newSource => {
+        source = newSource;
         return source;
       });
   }
@@ -41,9 +41,9 @@ function createSourceLoader() {
 
     function check() {
       fetchText(location.href)
-        .then(_source => {
-          if (source !== _source) {
-            source = _source;
+        .then(newSource => {
+          if (source !== newSource) {
+            source = newSource;
             return cb(source);
           }
         })
