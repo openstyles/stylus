@@ -1297,7 +1297,6 @@ onDOMready().then(init);
 
 function init() {
   initCodeMirror();
-  const params = getParams();
   getStyle().then(style => {
     styleId = style.id;
     sessionStorage.justEditedStyleId = styleId;
@@ -1310,7 +1309,8 @@ function init() {
   });
 
   function getStyle() {
-    if (!params.id) {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) {
       // match should be 2 - one for the whole thing, one for the parentheses
       // This is an add
       $('#heading').textContent = t('addStyleTitle');
@@ -1318,7 +1318,7 @@ function init() {
     }
     $('#heading').textContent = t('editStyleHeading');
     // This is an edit
-    return getStylesSafe({id: params.id}).then(styles => {
+    return getStylesSafe({id}).then(styles => {
       let style = styles[0];
       if (!style) {
         style = createEmptyStyle();
@@ -1329,7 +1329,7 @@ function init() {
   }
 
   function createEmptyStyle() {
-    const params = getParams();
+    const params = new URLSearchParams(location.search);
     const style = {
       id: null,
       name: '',
@@ -1337,8 +1337,8 @@ function init() {
       sections: [{code: ''}]
     };
     for (const i in CssToProperty) {
-      if (params[i]) {
-        style.sections[0][CssToProperty[i]] = [params[i]];
+      if (params.get(i)) {
+        style.sections[0][CssToProperty[i]] = [params.get(i)];
       }
     }
     return style;
@@ -1891,19 +1891,6 @@ function showCodeMirrorPopup(title, html, options) {
   popup.codebox.on('focus', () => { hotkeyRerouter.setState(false); });
   popup.codebox.on('blur', () => { hotkeyRerouter.setState(true); });
   return popup;
-}
-
-function getParams() {
-  const params = {};
-  const urlParts = location.href.split('?', 2);
-  if (urlParts.length === 1) {
-    return params;
-  }
-  urlParts[1].split('&').forEach(keyValue => {
-    const splitKeyValue = keyValue.split('=', 2);
-    params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
-  });
-  return params;
 }
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);

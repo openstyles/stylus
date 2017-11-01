@@ -2,12 +2,12 @@
 'use strict';
 
 (() => {
-  const params = getParams();
+  const params = new URLSearchParams(location.search);
   let liveReload = false;
   let installed = false;
 
   const port = chrome.tabs.connect(
-    Number(params.tabId),
+    Number(params.get('tabId')),
     {name: 'usercss-install', frameId: 0}
   );
   port.postMessage({method: 'getSourceCode'});
@@ -234,7 +234,7 @@
 
     // set updateUrl
     const setUpdate = $('.set-update-url input[type=checkbox]');
-    const updateUrl = new URL(params.updateUrl);
+    const updateUrl = new URL(params.get('updateUrl'));
     $('.set-update-url > span').textContent = t('installUpdateFromLabel', updateUrl.href);
     if (dup && dup.updateUrl === updateUrl.href) {
       setUpdate.checked = true;
@@ -270,23 +270,6 @@
         }
       });
     }
-  }
-
-  function getParams() {
-    // URL.searchParams needs chrome 51+
-    const {search} = location;
-    const result = {};
-    for (const param of search.slice(1).split('&')) {
-      let key, value;
-      if (param.includes('=')) {
-        [key, value] = param.split('=').map(decodeURIComponent);
-      } else {
-        key = decodeURIComponent(param);
-        value = true;
-      }
-      result[key] = value;
-    }
-    return result;
   }
 
   function getAppliesTo(style) {
