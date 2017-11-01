@@ -1944,7 +1944,7 @@ function onRuntimeMessage(request) {
       }
       break;
     case 'styleDeleted':
-      if (styleId && styleId === request.id || editor && editor.getStyle().id === request.id) {
+      if (styleId === request.id || editor && editor.getStyle().id === request.id) {
         window.onbeforeunload = () => {};
         closeCurrentTab();
         break;
