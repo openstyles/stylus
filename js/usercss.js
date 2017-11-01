@@ -521,9 +521,9 @@ var usercss = (() => {
     }
   }
 
-  function assignVars(style, old) {
+  function assignVars(style, oldStyle) {
     const {usercssData: {vars}} = style;
-    const {usercssData: {vars: oldVars}} = old;
+    const {usercssData: {vars: oldVars}} = oldStyle;
     // The type of var might be changed during the update. Set value to null if the value is invalid.
     for (const key of Object.keys(vars)) {
       if (oldVars[key] && oldVars[key].value) {
