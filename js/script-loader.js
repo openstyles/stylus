@@ -38,7 +38,7 @@ var loadScript = (() => {
   }
 
   return files => {
-    if (!files.map) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
     return Promise.all(files.map(f => (typeof f === 'string' ? inject(f) : f)));
