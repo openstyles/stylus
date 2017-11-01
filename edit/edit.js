@@ -1,9 +1,10 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
+/* global loadScript */
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
-/* global loadScript closeCurrentTab regExpTester */
+/* global closeCurrentTab regExpTester */
 'use strict';
 
 let styleId = null;
