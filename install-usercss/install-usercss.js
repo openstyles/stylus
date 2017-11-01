@@ -1,4 +1,4 @@
-/* global CodeMirror semverCompare makeLink closeCurrentTab */
+/* global CodeMirror semverCompare makeLink closeCurrentTab runtimeSend */
 'use strict';
 
 (() => {
@@ -151,15 +151,6 @@
     $$('.main .warning').forEach(e => e.remove());
     const main = $('.main');
     main.insertBefore(buildWarning(err), main.firstChild);
-  }
-
-  function runtimeSend(request) {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        request,
-        ({status, result}) => (status === 'error' ? reject : resolve)(result)
-      );
-    });
   }
 
   function install(style) {

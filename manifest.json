@@ -59,7 +59,7 @@
       "include_globs": ["*.user.css", "*.user.styl"],
       "run_at": "document_idle",
       "all_frames": false,
-      "js": ["content/install-user-css.js"]
+      "js": ["content/util.js", "content/install-user-css.js"]
     }
   ],
   "browser_action": {

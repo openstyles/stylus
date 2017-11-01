@@ -27,24 +27,18 @@ var usercssHelper = (() => {
   }
 
   // Parse the source and find the duplication
-  // style: {sourceCode: string, checkDup: boolean}
-  function build(request, noReject) {
-    const pending = buildMeta(request)
-      .then(style => Promise.all([buildCode(style), checkDup(style)]))
+  function build({sourceCode, checkDup = false}, noReject) {
+    const pending = buildMeta({sourceCode})
+      .then(style => Promise.all([
+        buildCode(style),
+        checkDup && findDup(style)
+      ]))
       .then(([style, dup]) => ({style, dup}));
 
     if (noReject) {
       return wrapReject(pending);
     }
     return pending;
-
-    function checkDup(style) {
-      const {checkDup} = style;
-      delete style.checkDup;
-      if (checkDup) {
-        return findDup(style);
-      }
-    }
   }
 
   function save(style, noReject) {
