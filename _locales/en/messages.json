@@ -773,6 +773,10 @@
       }
     }
   },
+  "styleMetaErrorSelectValueMismatch": {
+    "message": "Invalid @select: value doesn't exist in the list",
+    "description": "Error displayed when the value of @select is invalid"
+  },
   "styleMissingMeta": {
     "message": "Missing metadata @$key$",
     "description": "Error displayed when a mandatory metadata is missing",

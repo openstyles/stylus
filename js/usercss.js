@@ -512,7 +512,7 @@ var usercss = (() => {
   function validVar(va, value = 'default') {
     if (va.type === 'select' || va.type === 'dropdown') {
       if (va.options.every(o => o.value !== va[value])) {
-        throw new Error(chrome.i18n.getMessage('invalid select value'));
+        throw new Error(chrome.i18n.getMessage('styleMetaErrorSelectValueMismatch'));
       }
     } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
