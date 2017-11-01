@@ -10,7 +10,7 @@ function createSourceEditor(style) {
   let hadBeenSaved = false;
 
   // draw HTML
-  $('#sections').innerHTML = '';
+  $('#sections').textContent = '';
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
 
