@@ -160,17 +160,13 @@ var usercss = (() => {
     } else if (state.type === 'select' || (state.type === 'image' && state.key === 'var')) {
       parseJSONValue(state);
       if (Array.isArray(state.value)) {
-        result.options = state.value.map(text => ({
-          label: text,
-          value: text
-        }));
+        result.options = state.value.map(text => createOption(text));
       } else {
-        result.options = Object.keys(state.value).map(k => ({
-          label: k,
-          value: state.value[k]
-        }));
+        result.options = Object.keys(state.value).map(k =>
+          createOption(k, state.value[k])
+        );
       }
-      result.default = result.options[0].value;
+      result.default = result.options[0].name;
     } else if (state.type === 'dropdown' || state.type === 'image') {
       if (state.text[state.re.lastIndex] !== '{') {
         throw new Error('no open {');
@@ -204,6 +200,21 @@ var usercss = (() => {
       result.default = state.value;
     }
     state.usercssData.vars[result.name] = result;
+  }
+
+  function createOption(label, value) {
+    let name;
+    const match = label.match(/^(\w+):(.*)/);
+    if (match) {
+      ([, name, label] = match);
+    }
+    if (!name) {
+      name = label;
+    }
+    if (!value) {
+      value = name;
+    }
+    return {name, label, value};
   }
 
   function parseEOT(state) {
@@ -434,10 +445,18 @@ var usercss = (() => {
       const va = vars[key];
       output[key] = Object.assign({}, va, {
         value: va.value === null || va.value === undefined ?
-          va.default : va.value,
+          getVarValue(va, 'default') : getVarValue(va, 'value')
       });
       return output;
     }, {});
+  }
+
+  function getVarValue(va, prop) {
+    if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
+      // TODO: handle customized image
+      return va.options.find(o => o.name === va[prop]).value;
+    }
+    return va[prop];
   }
 
   function validate(style) {
@@ -473,7 +492,7 @@ var usercss = (() => {
 
   function validVar(va, value = 'default') {
     if (va.type === 'select' || va.type === 'dropdown') {
-      if (va.options.every(o => o.value !== va[value])) {
+      if (va.options.every(o => o.name !== va[value])) {
         throw new Error(chrome.i18n.getMessage('styleMetaErrorSelectValueMismatch'));
       }
     } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {

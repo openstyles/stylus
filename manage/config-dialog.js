@@ -79,7 +79,7 @@ function configDialog(style) {
         va.input = $element({
           tag: 'select',
           appendChild: va.options.map(o => $element({
-            tag: 'option', value: o.value, textContent: o.label
+            tag: 'option', value: o.name, textContent: o.label
           }))
         });
         va.input.onchange = () => {
