@@ -117,7 +117,9 @@ do {
   chromeLocal.get('dbInChromeStorage')
     .then(data =>
       data && data.dbInChromeStorage && Promise.reject())
-    .then(() => dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1))
+    .then(() =>
+      tryCatch(dbExecIndexedDB, 'getAllKeys', IDBKeyRange.lowerBound(1), 1) ||
+      Promise.reject())
     .then(({target}) => (
       (target.result || [])[0] ?
         Promise.reject('ok') :
