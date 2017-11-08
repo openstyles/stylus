@@ -247,7 +247,7 @@ ${section}
     return dirty.isDirty() || hadBeenSaved;
   }
 
-  function replaceMetas(newStyle) {
+  function replaceMeta(newStyle) {
     style.enabled = newStyle.enabled;
     dirty.clear('enabled');
     updateMetas();
@@ -255,7 +255,7 @@ ${section}
 
   return {
     replaceStyle,
-    replaceMetas,
+    replaceMeta,
     save,
     toggleStyle,
     isDirty: dirty.isDirty,

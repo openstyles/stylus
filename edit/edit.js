@@ -1907,7 +1907,7 @@ function replaceStyle(request) {
     if (codeIsUpdated) {
       editor.replaceStyle(request.style);
     } else {
-      editor.replaceMetas(request.style);
+      editor.replaceMeta(request.style);
     }
   }
 }
