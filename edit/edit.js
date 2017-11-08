@@ -1352,13 +1352,10 @@ function setStyleMeta(style) {
 }
 
 function isUsercss(style) {
-  if (style.usercssData) {
-    return true;
-  }
-  if (!style.id && prefs.get('newStyleInUsercss')) {
-    return true;
-  }
-  return false;
+  return (
+    style.usercssData ||
+    !style.id && prefs.get('newStyleInUsercss')
+  );
 }
 
 function initWithSectionStyle({style, codeIsUpdated}) {
