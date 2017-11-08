@@ -1,4 +1,4 @@
-/* global regExpTester debounce */
+/* global regExpTester debounce messageBox */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
@@ -259,7 +259,11 @@ function createAppliesToLineWidget(cm) {
           let from;
           let to;
           if (applies.length < 2) {
-            alert('Can\'t remove last applies-to');
+            messageBox({
+              title: 'Error',
+              contents: 'Can\'t remove last applies-to',
+              buttons: [t('confirmClose')]
+            });
             return;
           }
           if (i === 0) {
