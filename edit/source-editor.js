@@ -51,7 +51,7 @@ function createSourceEditor(style) {
   editors.push(cm);
 
   // draw metas info
-  updateMetas();
+  updateMeta();
   initHooks();
   initAppliesToLineWidget();
 
@@ -177,7 +177,7 @@ ${section}
     }
   }
 
-  function updateMetas() {
+  function updateMeta() {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
@@ -202,7 +202,7 @@ ${section}
       history.replaceState({}, '', `?id=${newStyle.id}`);
     }
     style = deepCopy(newStyle);
-    updateMetas();
+    updateMeta();
     if (style.sourceCode !== cm.getValue()) {
       const cursor = cm.getCursor();
       cm.setValue(style.sourceCode);
@@ -216,7 +216,7 @@ ${section}
     const value = !style.enabled;
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
-    updateMetas();
+    updateMeta();
     // save when toggle enable state?
     save();
   }
@@ -250,7 +250,7 @@ ${section}
   function replaceMeta(newStyle) {
     style.enabled = newStyle.enabled;
     dirty.clear('enabled');
-    updateMetas();
+    updateMeta();
   }
 
   return {
