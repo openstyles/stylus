@@ -16,11 +16,10 @@ function createSourceLoader() {
   }
 
   function load() {
-    return fetchText(location.href)
-      .then(newSource => {
-        source = newSource;
-        return source;
-      });
+    return fetchText(location.href).then(newSource => {
+      source = newSource;
+      return source;
+    });
   }
 
   function watch(cb) {

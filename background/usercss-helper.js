@@ -50,17 +50,16 @@ var usercssHelper = (() => {
       if (style.reason === 'config' && style.id) {
         return style;
       }
-      return findDup(style)
-        .then(dup => {
-          if (dup) {
-            style.id = dup.id;
-            if (style.reason !== 'config') {
-              // preserve style.vars during update
-              usercss.assignVars(style, dup);
-            }
+      return findDup(style).then(dup => {
+        if (dup) {
+          style.id = dup.id;
+          if (style.reason !== 'config') {
+            // preserve style.vars during update
+            usercss.assignVars(style, dup);
           }
-          return style;
-        });
+        }
+        return style;
+      });
     }
   }
 
