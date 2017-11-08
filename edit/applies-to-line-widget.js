@@ -303,8 +303,7 @@ function createAppliesToLineWidget(cm) {
           );
           setupApplyMarkers(newApply);
           applies.splice(i + 1, 0, newApply);
-          const li = this.closest('li');
-          li.parentNode.insertBefore(makeLi(newApply), li.nextSibling);
+          this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
         }
       });
       return [typeInput, valueInput, regexpTestButton, removeButton, addButton];
