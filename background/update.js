@@ -107,13 +107,16 @@ var updater = {
         const json = usercss.buildMeta(text);
         const {usercssData: {version}} = style;
         const {usercssData: {version: newVersion}} = json;
-        // re-install is invalid in a soft upgrade
-        if (semverCompare(version, newVersion) === 0 && !ignoreDigest) {
-          return Promise.reject(updater.SAME_VERSION);
-        }
-        // downgrade is always invalid
-        if (semverCompare(version, newVersion) > 0) {
-          return Promise.reject(updater.ERROR_VERSION);
+        switch (Math.sign(semverCompare(version, newVersion))) {
+          case 0:
+            // re-install is invalid in a soft upgrade
+            if (!ignoreDigest) {
+              return Promise.reject(updater.SAME_VERSION);
+            }
+            break;
+          case 1:
+            // downgrade is always invalid
+            return Promise.reject(updater.ERROR_VERSION);
         }
         return usercss.buildCode(json);
       });
