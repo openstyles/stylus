@@ -192,7 +192,7 @@ function createAppliesToLineWidget(cm) {
       $element({
         tag: 'ul',
         className: 'applies-to-list',
-        appendChild: applies.map(makeInputEl)
+        appendChild: applies.map(makeLi)
       })
     ]});
     if (!$('li', el)) {
@@ -204,7 +204,7 @@ function createAppliesToLineWidget(cm) {
     }
     return el;
 
-    function makeInputEl(apply) {
+    function makeLi(apply) {
       const el = $element({tag: 'li', appendChild: makeInput(apply)});
       el.dataset.type = apply.type.text;
       el.addEventListener('change', e => {
@@ -309,7 +309,7 @@ function createAppliesToLineWidget(cm) {
           setupApplyMarkers(newApply);
           applies.splice(i + 1, 0, newApply);
           const li = e.target.closest('li');
-          li.parentNode.insertBefore(makeInputEl(newApply), li.nextSibling);
+          li.parentNode.insertBefore(makeLi(newApply), li.nextSibling);
         }
       });
       return [typeInput, valueInput, regexpTestButton, removeButton, addButton];
