@@ -10,7 +10,7 @@ function createAppliesToLineWidget(cm) {
   ];
   const THROTTLE_DELAY = 400;
   let widgets = [];
-  let timer, fromLine, toLine, style, isInit;
+  let timer, fromLine, toLine, gutterStyle, isInit;
 
   return {toggle};
 
@@ -25,7 +25,7 @@ function createAppliesToLineWidget(cm) {
   function init() {
     isInit = true;
 
-    style = getComputedStyle(cm.getGutterElement());
+    gutterStyle = getComputedStyle(cm.getGutterElement());
     fromLine = null;
     toLine = null;
 
@@ -33,7 +33,7 @@ function createAppliesToLineWidget(cm) {
     cm.on('optionChange', onOptionChange);
 
     // is it possible to avoid flickering?
-    window.addEventListener('load', updateStyle);
+    window.addEventListener('load', updateWidgetStyle);
 
     update();
   }
@@ -45,7 +45,7 @@ function createAppliesToLineWidget(cm) {
     widgets.length = 0;
     cm.off('change', onChange);
     cm.off('optionChange', onOptionChange);
-    window.removeEventListener('load', updateStyle);
+    window.removeEventListener('load', updateWidgetStyle);
   }
 
   function onChange(cm, {from, to, origin}) {
@@ -65,7 +65,7 @@ function createAppliesToLineWidget(cm) {
 
   function onOptionChange(cm, option) {
     if (option === 'theme') {
-      updateStyle();
+      updateWidgetStyle();
     }
   }
 
@@ -73,19 +73,19 @@ function createAppliesToLineWidget(cm) {
     cm.operation(doUpdate);
   }
 
-  function updateStyle() {
-    style = getComputedStyle(cm.getGutterElement());
+  function updateWidgetStyle() {
+    gutterStyle = getComputedStyle(cm.getGutterElement());
     widgets.forEach(setWidgetStyle);
   }
 
   function setWidgetStyle(widget) {
     let borderStyle = '';
-    if (style.borderRightWidth !== '0px') {
-      borderStyle = `${style.borderRightWidth} ${style.borderRightStyle} ${style.borderRightColor}`;
+    if (gutterStyle.borderRightWidth !== '0px') {
+      borderStyle = `${gutterStyle.borderRightWidth} ${gutterStyle.borderRightStyle} ${gutterStyle.borderRightColor}`;
     } else {
-      borderStyle = `1px solid ${style.color}`;
+      borderStyle = `1px solid ${gutterStyle.color}`;
     }
-    widget.node.style.backgroundColor = style.backgroundColor;
+    widget.node.style.backgroundColor = gutterStyle.backgroundColor;
     widget.node.style.borderTop = borderStyle;
     widget.node.style.borderBottom = borderStyle;
   }
