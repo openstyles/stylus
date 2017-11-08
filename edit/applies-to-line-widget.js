@@ -388,8 +388,8 @@ function createAppliesToLineWidget(cm) {
         const apply = createApply(
           re.lastIndex + offset,
           m[1],
-          normalizeString(m[2]),
-          normalizeString(m[2]) !== m[2]
+          unquote(m[2]),
+          unquote(m[2]) !== m[2]
         );
         applies.push(apply);
         t = t.slice(m[0].length);
@@ -401,10 +401,8 @@ function createAppliesToLineWidget(cm) {
     }
   }
 
-  function normalizeString(s) {
-    if (/^(['"])[\s\S]*\1$/.test(s)) {
-      return s.slice(1, -1);
-    }
-    return s;
+  function unquote(s) {
+    const first = s.charAt(0);
+    return (first === '"' || first === "'") && s.endsWith(first) ? s.slice(1, -1) : s;
   }
 }
