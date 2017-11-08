@@ -253,7 +253,7 @@ function createAppliesToLineWidget(cm) {
         type: 'button',
         className: 'applies-to-remove',
         textContent: t('appliesRemove'),
-        onclick(e) {
+        onclick() {
           const i = applies.indexOf(apply);
           let repl;
           let from;
@@ -281,7 +281,7 @@ function createAppliesToLineWidget(cm) {
           }
           cm.replaceRange(repl, from, to, 'appliesTo');
           clearApply(apply);
-          e.target.closest('li').remove();
+          this.closest('li').remove();
           applies.splice(i, 1);
         }
       });
@@ -290,7 +290,7 @@ function createAppliesToLineWidget(cm) {
         type: 'button',
         className: 'applies-to-add',
         textContent: t('appliesAdd'),
-        onclick(e) {
+        onclick() {
           const i = applies.indexOf(apply);
           const pos = apply.mark.find().to;
           const text = `, ${apply.type.text}("")`;
@@ -303,7 +303,7 @@ function createAppliesToLineWidget(cm) {
           );
           setupApplyMarkers(newApply);
           applies.splice(i + 1, 0, newApply);
-          const li = e.target.closest('li');
+          const li = this.closest('li');
           li.parentNode.insertBefore(makeLi(newApply), li.nextSibling);
         }
       });
