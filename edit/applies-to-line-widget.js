@@ -224,8 +224,8 @@ function createAppliesToLineWidget(cm) {
           value: value,
           textContent: label
         })),
-        onchange(e) {
-          applyChange(apply.type, e.target.value);
+        onchange() {
+          applyChange(apply.type, this.value);
         }
       });
       typeInput.value = apply.type.text;
@@ -233,8 +233,8 @@ function createAppliesToLineWidget(cm) {
         tag: 'input',
         className: 'applies-value',
         value: apply.value.text,
-        oninput(e) {
-          debounce(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
+        oninput() {
+          debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
         },
         onfocus: updateRegexpTest
       });
