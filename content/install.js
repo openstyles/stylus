@@ -5,13 +5,13 @@ const FIREFOX = !chrome.app;
 const VIVALDI = chrome.app && /Vivaldi/.test(navigator.userAgent);
 const OPERA = chrome.app && /OPR/.test(navigator.userAgent);
 
-document.addEventListener('stylishUpdate', onUpdateClicked);
-document.addEventListener('stylishUpdateChrome', onUpdateClicked);
-document.addEventListener('stylishUpdateOpera', onUpdateClicked);
+document.addEventListener('stylishUpdate', onClick);
+document.addEventListener('stylishUpdateChrome', onClick);
+document.addEventListener('stylishUpdateOpera', onClick);
 
-document.addEventListener('stylishInstall', onInstallClicked);
-document.addEventListener('stylishInstallChrome', onInstallClicked);
-document.addEventListener('stylishInstallOpera', onInstallClicked);
+document.addEventListener('stylishInstall', onClick);
+document.addEventListener('stylishInstallChrome', onClick);
+document.addEventListener('stylishInstallOpera', onClick);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
@@ -191,32 +191,45 @@ function sendEvent(type, detail = null) {
 }
 
 
-function onInstallClicked() {
-  if (!orphanCheck || !orphanCheck()) {
+function onClick(event) {
+  if (onClick.processing || !orphanCheck || !orphanCheck()) {
     return;
   }
-  getResource(getMeta('stylish-description'))
+  onClick.processing = true;
+  (event.type.includes('Update') ? onUpdate() : onInstall())
+    .then(done, done);
+  function done() {
+    setTimeout(() => {
+      onClick.processing = false;
+    });
+  }
+}
+
+
+function onInstall() {
+  return getResource(getMeta('stylish-description'))
     .then(name => saveStyleCode('styleInstall', name))
     .then(() => getResource(getMeta('stylish-install-ping-url-chrome')));
 }
 
 
-function onUpdateClicked() {
-  if (!orphanCheck || !orphanCheck()) {
-    return;
-  }
-  chrome.runtime.sendMessage({
-    method: 'getStyles',
-    url: getMeta('stylish-id-url') || location.href,
-  }, ([style]) => {
-    saveStyleCode('styleUpdate', style.name, {id: style.id});
+function onUpdate() {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({
+      method: 'getStyles',
+      url: getMeta('stylish-id-url') || location.href,
+    }, ([style]) => {
+      saveStyleCode('styleUpdate', style.name, {id: style.id})
+        .then(resolve, reject);
+    });
   });
 }
 
 
 function saveStyleCode(message, name, addProps) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (!confirm(chrome.i18n.getMessage(message, [name]))) {
+      reject();
       return;
     }
     enableUpdateButton(false);
@@ -335,13 +348,13 @@ function orphanCheck() {
   }
   // we're orphaned due to an extension update
   // we can detach event listeners
-  document.removeEventListener('stylishUpdate', onUpdateClicked);
-  document.removeEventListener('stylishUpdateChrome', onUpdateClicked);
-  document.removeEventListener('stylishUpdateOpera', onUpdateClicked);
+  document.removeEventListener('stylishUpdate', onClick);
+  document.removeEventListener('stylishUpdateChrome', onClick);
+  document.removeEventListener('stylishUpdateOpera', onClick);
 
-  document.removeEventListener('stylishInstall', onInstallClicked);
-  document.removeEventListener('stylishInstallChrome', onInstallClicked);
-  document.removeEventListener('stylishInstallOpera', onInstallClicked);
+  document.removeEventListener('stylishInstall', onClick);
+  document.removeEventListener('stylishInstallChrome', onClick);
+  document.removeEventListener('stylishInstallOpera', onClick);
 
   // we can't detach chrome.runtime.onMessage because it's no longer connected internally
   // we can destroy global functions in this context to free up memory
@@ -350,8 +363,9 @@ function orphanCheck() {
     'getMeta',
     'getResource',
     'onDOMready',
-    'onInstallClicked',
-    'onUpdateClicked',
+    'onClick',
+    'onInstall',
+    'onUpdate',
     'orphanCheck',
     'saveStyleCode',
     'sendEvent',
