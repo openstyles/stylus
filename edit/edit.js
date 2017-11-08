@@ -998,11 +998,11 @@ function jumpToLine(cm) {
 }
 
 function toggleStyle() {
-  if (!editor) {
+  if (editor) {
+    editor.toggleStyle();
+  } else {
     toggleSectionStyle();
-    return;
   }
-  editor.toggleStyle();
 }
 
 function toggleSectionStyle() {
@@ -1560,11 +1560,11 @@ function updateLintReportIfEnabled(...args) {
 }
 
 function save() {
-  if (!editor) {
+  if (editor) {
+    editor.save();
+  } else {
     saveSectionStyle();
-    return;
   }
-  editor.save();
 }
 
 function saveSectionStyle() {
