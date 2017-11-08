@@ -1677,7 +1677,7 @@ function fromMozillaFormat() {
       .catch(showError);
 
     function showError(errors) {
-      if (!errors.join) {
+      if (!Array.isArray(errors)) {
         errors = [errors];
       }
       showHelp(t('styleFromMozillaFormatError'), $element({
