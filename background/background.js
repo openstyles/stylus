@@ -346,12 +346,12 @@ function closeTab(tabId, request) {
       const {lastError} = chrome.runtime;
       if (lastError) {
         resolve({
-          status: 'error',
+          success: false,
           error: lastError.message || String(lastError)
         });
         return;
       }
-      resolve({status: 'success'});
+      resolve({success: true});
     });
   });
 }

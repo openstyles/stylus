@@ -4,7 +4,7 @@ function runtimeSend(request) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(
       request,
-      ({status, result}) => (status === 'error' ? reject : resolve)(result)
+      ({success, result}) => (success ? resolve : reject)(result)
     );
   });
 }
