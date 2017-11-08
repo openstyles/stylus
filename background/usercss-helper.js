@@ -35,10 +35,7 @@ var usercssHelper = (() => {
       ]))
       .then(([style, dup]) => ({style, dup}));
 
-    if (noReject) {
-      return wrapReject(pending);
-    }
-    return pending;
+    return noReject ? wrapReject(pending) : pending;
   }
 
   function save(style, noReject) {
@@ -47,11 +44,7 @@ var usercssHelper = (() => {
       .then(buildCode)
       .then(saveStyle);
 
-    if (noReject) {
-      return wrapReject(pending);
-    }
-
-    return pending;
+    return noReject ? wrapReject(pending) : pending;
 
     function assignVars(style) {
       if (style.reason === 'config' && style.id) {
