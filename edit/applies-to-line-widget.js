@@ -325,11 +325,7 @@ function createAppliesToLineWidget(cm) {
         cm.replaceRange(newText, range.from, range.to, 'appliesTo');
         input.mark = cm.markText(
           range.from,
-          cm.findPosH(
-            range.from,
-            newText.length,
-            'char'
-          ),
+          cm.findPosH(range.from, newText.length, 'char'),
           {clearWhenEmpty: false}
         );
         input.text = newText;
