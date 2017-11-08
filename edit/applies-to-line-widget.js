@@ -1,4 +1,4 @@
-/* global regExpTester */
+/* global regExpTester debounce */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
@@ -10,7 +10,7 @@ function createAppliesToLineWidget(cm) {
   ];
   const THROTTLE_DELAY = 400;
   let widgets = [];
-  let timer, fromLine, toLine, gutterStyle, isInit;
+  let fromLine, toLine, gutterStyle, isInit;
 
   return {toggle};
 
@@ -59,8 +59,7 @@ function createAppliesToLineWidget(cm) {
       fromLine = Math.min(fromLine, from.line);
       toLine = Math.max(toLine, to.line);
     }
-    clearTimeout(timer);
-    timer = setTimeout(update, THROTTLE_DELAY);
+    debounce(update, THROTTLE_DELAY);
   }
 
   function onOptionChange(cm, option) {
@@ -233,14 +232,12 @@ function createAppliesToLineWidget(cm) {
         }
       });
       typeInput.value = apply.type.text;
-      let timer;
       const valueInput = $element({
         tag: 'input',
         className: 'applies-value',
         value: apply.value.text,
         oninput(e) {
-          clearTimeout(timer);
-          timer = setTimeout(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
+          debounce(applyChange, THROTTLE_DELAY, apply.value, e.target.value);
         },
         onfocus: updateRegexpTest
       });
