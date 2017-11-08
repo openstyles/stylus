@@ -107,10 +107,7 @@ function createAppliesToLineWidget(cm) {
     const toIndex = widgets[j] ? cm.indexFromPos({line: widgets[j].line.lineNo(), ch: 0}) : cm.getValue().length;
 
     // splice
-    if (i < 0) {
-      i = 0;
-    }
-
+    i = Math.max(0, i);
     widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i)));
 
     fromLine = null;
