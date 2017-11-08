@@ -295,21 +295,12 @@ function createAppliesToLineWidget(cm) {
           const pos = apply.mark.find().to;
           const text = `, ${apply.type.text}("")`;
           cm.replaceRange(text, pos, pos, 'appliesTo');
-          const index = cm.indexFromPos(pos);
-          const newApply = {
-            type: {
-              text: apply.type.text
-            },
-            value: {
-              text: ''
-            }
-          };
-          newApply.start = index + 2;
-          newApply.type.start = newApply.start;
-          newApply.type.end = newApply.type.start + newApply.type.text.length;
-          newApply.value.start = newApply.type.end + 2;
-          newApply.value.end = newApply.value.start + newApply.value.text.length;
-          newApply.end = newApply.value.end + 2;
+          const newApply = createApply(
+            cm.indexFromPos(pos) + 2,
+            apply.type.text,
+            '',
+            true
+          );
           setupApplyMarkers(newApply);
           applies.splice(i + 1, 0, newApply);
           const li = e.target.closest('li');
@@ -359,6 +350,29 @@ function createAppliesToLineWidget(cm) {
     }
   }
 
+  function createApply(pos, typeText, valueText, isQuoted = false) {
+    const start = pos;
+    const typeStart = start;
+    const typeEnd = typeStart + typeText.length;
+    const valueStart = typeEnd + 1 + Number(isQuoted);
+    const valueEnd = valueStart + valueText.length;
+    const end = valueEnd + Number(isQuoted) + 1;
+    return {
+      start,
+      type: {
+        text: typeText,
+        start: typeStart,
+        end: typeEnd,
+      },
+      value: {
+        text: valueText,
+        start: valueStart,
+        end: valueEnd,
+      },
+      end
+    };
+  }
+
   function *findAppliesTo(posStart, posEnd) {
     const text = cm.getValue();
     const re = /^[\t ]*@-moz-document\s+/mg;
@@ -376,20 +390,12 @@ function createAppliesToLineWidget(cm) {
       let m;
       let offset = 0;
       while ((m = t.match(applyRe))) {
-        const apply = {
-          type: {
-            text: m[1]
-          },
-          value: {
-            text: normalizeString(m[2])
-          }
-        };
-        apply.type.start = re.lastIndex + offset;
-        apply.type.end = apply.type.start + apply.type.text.length;
-        apply.value.start = apply.type.end + (apply.value.text === m[2] ? 1 : 2);
-        apply.value.end = apply.value.start + apply.value.text.length;
-        apply.start = apply.type.start;
-        apply.end = apply.value.end + (apply.value.text === m[2] ? 1 : 2);
+        const apply = createApply(
+          re.lastIndex + offset,
+          m[1],
+          normalizeString(m[2]),
+          normalizeString(m[2]) !== m[2]
+        );
         applies.push(apply);
         t = t.slice(m[0].length);
         offset += m[0].length;
