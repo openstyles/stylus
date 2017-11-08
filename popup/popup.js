@@ -62,12 +62,6 @@ function initPopup(url) {
 
   setPopupWidth();
 
-  // force Chrome to resize the popup
-  if (!FIREFOX) {
-    document.body.style.height = '10px';
-    document.documentElement.style.height = '10px';
-  }
-
   // action buttons
   $('#disableAll').onchange = function () {
     installed.classList.toggle('disabled', this.checked);
