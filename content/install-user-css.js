@@ -71,11 +71,9 @@ function initUsercssInstall() {
     port.onMessage.addListener(msg => {
       switch (msg.method) {
         case 'getSourceCode':
-          pendingSource.then(sourceCode =>
-            port.postMessage({method: msg.method + 'Response', sourceCode})
-          ).catch(err =>
-            port.postMessage({method: msg.method + 'Response', error: err.message || String(err)})
-          );
+          pendingSource
+            .then(sourceCode => port.postMessage({method: msg.method + 'Response', sourceCode}))
+            .catch(err => port.postMessage({method: msg.method + 'Response', error: err.message || String(err)}));
           break;
 
         case 'liveReloadStart':
