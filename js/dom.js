@@ -1,6 +1,6 @@
 'use strict';
 
-if (!navigator.userAgent.includes('Windows')) {
+if (!/^Win\d+/.test(navigator.platform)) {
   document.documentElement.classList.add('non-windows');
 }
 
@@ -38,7 +38,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 
 onDOMready().then(() => $('#firefox-transitions-bug-suppressor').remove());
 
-if (navigator.userAgent.includes('Firefox')) {
+if (!chrome.app) {
   // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
     if (!BG && wnd.incognito) {

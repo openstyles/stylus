@@ -1,11 +1,22 @@
 /* global BG: true, onRuntimeMessage, applyOnMessage, handleUpdate, handleDelete */
+/* global FIREFOX: true */
 'use strict';
 
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
 
-const FIREFOX = parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
-const OPERA = parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
+let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+const OPERA = chrome.app && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
+
+if (!chrome.app && !chrome.browserAction.openPopup) {
+  // in FF pre-57 legacy addons can override useragent so we assume the worst
+  // until we know for sure in the async getBrowserInfo()
+  // (browserAction.openPopup was added in 57)
+  FIREFOX = 50;
+  browser.runtime.getBrowserInfo().then(info => {
+    FIREFOX = parseFloat(info.version);
+  });
+}
 
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
@@ -29,6 +40,7 @@ const URLS = {
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP:
+    chrome.app &&
     parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) >= 3161,
 
   supported: url => (
@@ -52,7 +64,7 @@ if (!BG || BG !== window) {
   document.documentElement.classList.toggle('opera', OPERA);
   // TODO: remove once our manifest's minimum_chrome_version is 50+
   // Chrome 49 doesn't report own extension pages in webNavigation apparently
-  if (navigator.userAgent.includes('Chrome/49.')) {
+  if (chrome.app && navigator.userAgent.includes('Chrome/49.')) {
     getActiveTab().then(BG.updateIcon);
   }
 }

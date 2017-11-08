@@ -317,7 +317,7 @@ var prefs = new function Prefs() {
   }
 
   function contextDeleteMissing() {
-    return (
+    return chrome.app && (
       // detect browsers without Delete by looking at the end of UA string
       /Vivaldi\/[\d.]+$/.test(navigator.userAgent) ||
       // Chrome and co.

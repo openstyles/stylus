@@ -1,9 +1,9 @@
 'use strict';
 
-const CHROMIUM = /Chromium/.test(navigator.userAgent); // non-Windows Chromium
-const FIREFOX = /Firefox/.test(navigator.userAgent);
-const VIVALDI = /Vivaldi/.test(navigator.userAgent);
-const OPERA = /OPR/.test(navigator.userAgent);
+const CHROMIUM = chrome.app && /Chromium/.test(navigator.userAgent); // non-Windows Chromium
+const FIREFOX = !chrome.app;
+const VIVALDI = chrome.app && /Vivaldi/.test(navigator.userAgent);
+const OPERA = chrome.app && /OPR/.test(navigator.userAgent);
 
 document.addEventListener('stylishUpdate', onUpdateClicked);
 document.addEventListener('stylishUpdateChrome', onUpdateClicked);
