@@ -159,8 +159,10 @@ function updateLinter({immediately, linter = linterConfig.getDefault()} = {}) {
   }
   const GUTTERS_CLASS = 'CodeMirror-lint-markers';
 
-  Promise.all([linterConfig.init(), loadLinterAssets(linter)])
-    .then(updateEditors);
+  Promise.all([
+    linterConfig.init(),
+    loadLinterAssets(linter)
+  ]).then(updateEditors);
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
   $('#lint').style.display = 'none';
 
