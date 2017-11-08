@@ -909,8 +909,8 @@
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
   "versionInvalidOlder": {
-    "message": "The version is older then installed style.",
-    "description": "Displayed when the version of style is older then installed one"
+    "message": "The version is older than the installed style.",
+    "description": "Displayed when the version of style is older than the installed one"
   },
   "writeStyleFor": {
     "message": "Write style for: ",
