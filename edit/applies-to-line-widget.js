@@ -10,11 +10,7 @@ function createAppliesToLineWidget(cm) {
   ];
   const THROTTLE_DELAY = 400;
   let widgets = [];
-  let timer;
-  let fromLine;
-  let toLine;
-  let style;
-  let isInit;
+  let timer, fromLine, toLine, style, isInit;
 
   return {toggle};
 
