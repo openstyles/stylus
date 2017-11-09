@@ -363,9 +363,8 @@ Object.assign(handleEvent, {
       reason: 'update',
     });
     if (entry.updatedCode.usercssData) {
-      onBackgroundReady().then(() =>
-        BG.usercssHelper.save(request)
-      );
+      onBackgroundReady()
+        .then(() => BG.usercssHelper.save(request));
     } else {
       // update everything but name
       request.name = null;
