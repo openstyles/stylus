@@ -498,6 +498,10 @@
     "message": "Live reload",
     "description": "The label of live-reload feature"
   },
+  "liveReloadError": {
+    "message": "An error occurred while watching the file",
+    "description": "The label of live-reload error"
+  },
   "manageFilters": {
     "message": "Filters",
     "description": "Label for filters container"

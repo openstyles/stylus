@@ -46,7 +46,9 @@ function createSourceLoader() {
             return cb(source);
           }
         })
-        .catch(console.log)
+        .catch(error => {
+          console.log(t('liveReloadError', error));
+        })
         .then(() => {
           timer = setTimeout(check, DELAY);
         });
