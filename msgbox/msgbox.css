@@ -41,6 +41,10 @@
   text-align: center;
 }
 
+#message-box.center #message-box-contents pre {
+  text-align: left;
+}
+
 #message-box.center > div {
   top: unset;
   right: unset;
