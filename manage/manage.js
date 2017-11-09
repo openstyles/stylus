@@ -204,10 +204,7 @@ function createStyleElement({style, name}) {
   return entry;
 
   function shouldShowConfig() {
-    if (!style.usercssData) {
-      return false;
-    }
-    return Object.keys(style.usercssData.vars).length > 0;
+    return style.usercssData && Object.keys(style.usercssData.vars).length > 0;
   }
 }
 
