@@ -105,7 +105,10 @@ var usercss = (() => {
       const commentSource = source.slice(m.index, m.index + m[0].length);
       const n = commentSource.match(metaRe);
       if (n) {
-        return n[0];
+        return {
+          index: m.index + n.index,
+          text: n[0]
+        };
       }
     }
   }
@@ -189,6 +192,7 @@ var usercss = (() => {
       result.default = state.value;
     }
     state.usercssData.vars[result.name] = result;
+    validVar(result);
   }
 
   function createOption(label, value) {
@@ -352,32 +356,47 @@ var usercss = (() => {
       usercssData
     };
 
-    const text = getMetaSource(sourceCode);
+    const {text, index: metaIndex} = getMetaSource(sourceCode);
     const re = /@(\w+)\s+/mg;
     const state = {style, re, text, usercssData};
 
-    let match;
-    while ((match = re.exec(text))) {
-      state.key = match[1];
-      if (!(state.key in METAS)) {
-        continue;
-      }
-      if (state.key === 'var' || state.key === 'advanced') {
-        if (state.key === 'advanced') {
-          state.maybeUSO = true;
+    function doParse() {
+      let match;
+      while ((match = re.exec(text))) {
+        state.key = match[1];
+        if (!(state.key in METAS)) {
+          continue;
         }
-        parseVar(state);
-      } else {
-        parseStringToEnd(state);
-        usercssData[state.key] = state.value;
-      }
-      if (state.key === 'version') {
-        usercssData[state.key] = normalizeVersion(usercssData[state.key]);
-      }
-      if (METAS[state.key]) {
-        style[state.key] = usercssData[state.key];
+        if (state.key === 'var' || state.key === 'advanced') {
+          if (state.key === 'advanced') {
+            state.maybeUSO = true;
+          }
+          parseVar(state);
+        } else {
+          parseStringToEnd(state);
+          usercssData[state.key] = state.value;
+        }
+        if (state.key === 'version') {
+          usercssData[state.key] = normalizeVersion(usercssData[state.key]);
+          validVersion(usercssData[state.key]);
+        }
+        if (METAS[state.key]) {
+          style[state.key] = usercssData[state.key];
+        }
+        if (state.key === 'homepageURL' || state.key === 'supportURL') {
+          validUrl(usercssData[state.key]);
+        }
       }
     }
+
+    try {
+      doParse();
+    } catch (e) {
+      // grab additional info
+      e.index = metaIndex + state.re.lastIndex;
+      throw e;
+    }
+
     if (state.maybeUSO && !usercssData.preprocessor) {
       usercssData.preprocessor = 'uso';
     }
@@ -463,7 +482,7 @@ var usercss = (() => {
       }
     }
     // validate version
-    semverCompare(data.version, '0.0.0');
+    validVersion(data.version);
 
     // validate URLs
     validUrl(data.homepageURL);
@@ -473,6 +492,10 @@ var usercss = (() => {
     for (const key of Object.keys(data.vars)) {
       validVar(data.vars[key]);
     }
+  }
+
+  function validVersion(version) {
+    semverCompare(version, '0.0.0');
   }
 
   function validUrl(url) {
