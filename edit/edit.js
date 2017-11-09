@@ -582,15 +582,15 @@ window.onbeforeunload = () => {
   updateLintReportIfEnabled(null, 0);
   // neither confirm() nor custom messages work in modern browsers but just in case
   return t('styleChangesNotSaved');
-};
 
-function isClean() {
-  if (editor) {
-    return !editor.isDirty();
-  } else {
-    return isCleanGlobal();
+  function isClean() {
+    if (editor) {
+      return !editor.isDirty();
+    } else {
+      return isCleanGlobal();
+    }
   }
-}
+};
 
 function addAppliesTo(list, name, value) {
   const showingEverything = $('.applies-to-everything', list) !== null;
