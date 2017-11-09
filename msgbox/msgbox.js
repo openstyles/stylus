@@ -99,3 +99,17 @@ function messageBox({
     messageBox.resolve = null;
   }
 }
+
+messageBox.alert = text =>
+  messageBox({
+    contents: text,
+    className: 'pre center',
+    buttons: [t('confirmClose')]
+  });
+
+messageBox.confirm = text =>
+  messageBox({
+    contents: text,
+    className: 'pre center',
+    buttons: [t('confirmYes'), t('confirmNo')]
+  }).then(result => result.button === 0 || result.enter);

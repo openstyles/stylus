@@ -3,26 +3,6 @@
 'use strict';
 
 (() => {
-  const dialog = (() => {
-    function alert(text) {
-      return messageBox({
-        contents: text,
-        className: 'pre center',
-        buttons: [t('confirmClose')]
-      });
-    }
-
-    function confirm(text) {
-      return messageBox({
-        contents: text,
-        className: 'pre center',
-        buttons: [t('confirmYes'), t('confirmNo')]
-      }).then(result => result.button === 0 || result.enter);
-    }
-
-    return {alert, confirm};
-  })();
-
   const params = new URLSearchParams(location.search);
   let liveReload = false;
   let installed = false;
@@ -36,14 +16,14 @@
     switch (msg.method) {
       case 'getSourceCodeResponse':
         if (msg.error) {
-          dialog.alert(msg.error);
+          messageBox.alert(msg.error);
         } else {
           initSourceCode(msg.sourceCode);
         }
         break;
       case 'sourceCodeChanged':
         if (msg.error) {
-          dialog.alert(msg.error);
+          messageBox.alert(msg.error);
         } else {
           liveReloadUpdate(msg.sourceCode);
         }
@@ -207,7 +187,7 @@
         window.dispatchEvent(new CustomEvent('installed'));
       })
       .catch(err => {
-        dialog.alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
+        messageBox.alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
       });
   }
 
@@ -253,7 +233,7 @@
         ]) :
         chrome.i18n.getMessage('styleInstall', [data.name]);
 
-      dialog.confirm(message).then(result => {
+      messageBox.confirm(message).then(result => {
         if (result) {
           return install(style);
         }
