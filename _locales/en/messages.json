@@ -56,6 +56,10 @@
     "message": "Remove",
     "description": "Label for the button to remove an 'applies' entry"
   },
+  "appliesRemoveError": {
+    "message": "Can not remove last 'applies to' entry",
+    "description": "Error displayed when the last 'applies' is going to be removed"
+  },
   "appliesSpecify": {
     "message": "Specify",
     "description": "Label for the button to make a style apply only to specific sites"

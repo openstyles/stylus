@@ -264,8 +264,7 @@ function createAppliesToLineWidget(cm) {
           let to;
           if (applies.length < 2) {
             messageBox({
-              title: 'Error',
-              contents: 'Can\'t remove last applies-to',
+              contents: chrome.i18n.getMessage('appliesRemoveError'),
               buttons: [t('confirmClose')]
             });
             return;
