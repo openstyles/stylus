@@ -10,20 +10,24 @@ function createAppliesToLineWidget(cm) {
   ];
   const THROTTLE_DELAY = 400;
   let widgets = [];
-  let fromLine, toLine, gutterStyle, isInit;
+  let fromLine, toLine, gutterStyle;
+  let initialized = false;
 
   return {toggle};
 
-  function toggle(state = !isInit) {
-    if (!isInit && state) {
-      init();
-    } else if (isInit && !state) {
-      uninit();
+  function toggle(newState = !initialized) {
+    newState = Boolean(newState);
+    if (newState !== initialized) {
+      if (newState) {
+        init();
+      } else {
+        uninit();
+      }
     }
   }
 
   function init() {
-    isInit = true;
+    initialized = true;
 
     gutterStyle = getComputedStyle(cm.getGutterElement());
     fromLine = null;
@@ -39,7 +43,7 @@ function createAppliesToLineWidget(cm) {
   }
 
   function uninit() {
-    isInit = false;
+    initialized = false;
 
     widgets.forEach(clearWidget);
     widgets.length = 0;
