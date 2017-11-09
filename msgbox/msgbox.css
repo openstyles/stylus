@@ -46,6 +46,10 @@
   right: unset;
 }
 
+#message-box.pre #message-box-contents {
+  white-space: pre-line;
+}
+
 #message-box-title {
   font-weight: bold;
   background-color: rgb(145, 208, 198);
