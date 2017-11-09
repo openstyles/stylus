@@ -137,8 +137,7 @@ function configDialog(style) {
     function useDefault() {
       for (const key of Object.keys(vars)) {
         const va = vars[key];
-        va.dirty = va.value !== null && va.value !== undefined &&
-          va.value !== va.default;
+        va.dirty = va.value !== null && va.value !== undefined && va.value !== va.default;
         va.value = null;
       }
       drawValues();
