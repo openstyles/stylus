@@ -40,10 +40,7 @@ var usercss = (() => {
       preprocess(source, vars) {
         return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
-            let varDef = '';
-            for (const key of Object.keys(vars)) {
-              varDef += `${key} = ${vars[key].value};\n`;
-            }
+            const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
 
             // eslint-disable-next-line no-undef
             stylus(varDef + source).render((err, output) => {
