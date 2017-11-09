@@ -379,7 +379,7 @@ function download(url) {
         'Content-type': 'application/x-www-form-urlencoded'
       }
     };
-    if (url.protocol === 'file:' && navigator.userAgent.includes('Firefox')) {
+    if (url.protocol === 'file:' && FIREFOX) {
       // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
       options.mode = 'same-origin';
       // FIXME: add FetchController when it is available.
