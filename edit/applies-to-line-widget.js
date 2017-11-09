@@ -374,33 +374,30 @@ function createAppliesToLineWidget(cm) {
   function *findAppliesTo(posStart, posEnd) {
     const text = cm.getValue();
     const re = /^[\t ]*@-moz-document\s+/mg;
-    const applyRe = /^(url|url-prefix|domain|regexp)\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)[\s,]*/i;
-    let preIndex = re.lastIndex = posStart;
+    const applyRe = /(url|url-prefix|domain|regexp)\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)[\s,]*/iyg;
     let match;
-    let pos = cm.posFromIndex(preIndex);
+    re.lastIndex = posStart;
     while ((match = re.exec(text))) {
       if (match.index >= posEnd) {
         return;
       }
-      pos = cm.findPosH(pos, match.index - preIndex, 'char');
       const applies = [];
-      let t = text.slice(re.lastIndex);
       let m;
-      let offset = 0;
-      while ((m = t.match(applyRe))) {
+      applyRe.lastIndex = re.lastIndex;
+      while ((m = applyRe.exec(text))) {
         const apply = createApply(
-          re.lastIndex + offset,
+          m.index,
           m[1],
           unquote(m[2]),
           unquote(m[2]) !== m[2]
         );
         applies.push(apply);
-        t = t.slice(m[0].length);
-        offset += m[0].length;
+        re.lastIndex = applyRe.lastIndex;
       }
-      yield {pos, applies};
-      preIndex = match.index;
-      re.lastIndex = text.length - t.length;
+      yield {
+        pos: cm.posFromIndex(match.index),
+        applies
+      };
     }
   }
 
