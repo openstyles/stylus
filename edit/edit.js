@@ -4,7 +4,7 @@
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
-/* global closeCurrentTab regExpTester */
+/* global closeCurrentTab regExpTester messageBox */
 'use strict';
 
 let styleId = null;
