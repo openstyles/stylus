@@ -110,12 +110,6 @@ var usercss = (() => {
     }
   }
 
-  function buildMeta(source) {
-    const style = _buildMeta(source);
-    validate(style);
-    return style;
-  }
-
   function parseWord(state, error = 'invalid word') {
     const match = state.text.slice(state.re.lastIndex).match(/^([\w-]+)\s*/);
     if (!match) {
@@ -344,7 +338,7 @@ var usercss = (() => {
     return s;
   }
 
-  function _buildMeta(sourceCode) {
+  function buildMeta(sourceCode) {
     sourceCode = sourceCode.replace(/\r\n?/g, '\n');
 
     const usercssData = {
@@ -390,6 +384,8 @@ var usercss = (() => {
     if (usercssData.homepageURL) {
       style.url = usercssData.homepageURL;
     }
+
+    validate(style);
 
     return style;
   }
