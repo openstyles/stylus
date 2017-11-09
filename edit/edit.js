@@ -1894,21 +1894,16 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 function replaceStyle(request) {
   const codeIsUpdated = request.codeIsUpdated !== false;
-  if (codeIsUpdated && editor && editor.isTouched() && !confirm(t('styleUpdateDiscardChanges'))) {
+  if (!isUsercss(request.style)) {
+    initWithSectionStyle(request);
     return;
   }
-  doReplace();
-
-  function doReplace() {
-    if (!isUsercss(request.style)) {
-      initWithSectionStyle(request);
-      return;
-    }
-    if (codeIsUpdated) {
-      editor.replaceStyle(request.style);
-    } else {
-      editor.replaceMeta(request.style);
-    }
+  if (!codeIsUpdated) {
+    editor.replaceMeta(request.style);
+  } else if (editor.isTouched() && !confirm(t('styleUpdateDiscardChanges'))) {
+    editor.setStyleDirty(request.style);
+  } else {
+    editor.replaceStyle(request.style);
   }
 }
 

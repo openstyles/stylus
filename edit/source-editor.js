@@ -212,6 +212,12 @@ ${section}
     hadBeenSaved = false;
   }
 
+  function setStyleDirty(newStyle) {
+    dirty.clear();
+    dirty.modify('source', newStyle.sourceCode, style.sourceCode);
+    dirty.modify('enabled', newStyle.enabled, style.enabled);
+  }
+
   function toggleStyle() {
     const value = !style.enabled;
     dirty.modify('enabled', style.enabled, value);
@@ -256,6 +262,7 @@ ${section}
   return {
     replaceStyle,
     replaceMeta,
+    setStyleDirty,
     save,
     toggleStyle,
     isDirty: dirty.isDirty,
