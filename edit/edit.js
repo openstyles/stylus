@@ -1354,7 +1354,7 @@ function setStyleMeta(style) {
 function isUsercss(style) {
   return (
     style.usercssData ||
-    !style.id && prefs.get('newStyleInUsercss')
+    !style.id && prefs.get('newStyleAsUsercss')
   );
 }
 
