@@ -68,7 +68,8 @@
         method: 'saveUsercss',
         reason: 'update',
         sourceCode
-      }).then(updateMeta).catch(showError);
+      }).then(updateMeta)
+        .catch(showError);
     });
   }
 
