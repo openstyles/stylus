@@ -2,7 +2,7 @@
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
 /* global editors linterConfig updateLinter regExpTester mozParser */
-/* global makeLink createAppliesToLineWidget */
+/* global makeLink createAppliesToLineWidget messageBox */
 'use strict';
 
 function createSourceEditor(style) {
@@ -243,9 +243,30 @@ ${section}
         hadBeenSaved = true;
       })
       .catch(err => {
+        const contents = [String(err)];
+        if (Number.isInteger(err.index)) {
+          const pos = cm.posFromIndex(err.index);
+          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
+          contents.push($element({
+            tag: 'pre',
+            textContent: drawLinePointer(pos)
+          }));
+        }
         console.error(err);
-        alert(err);
+        messageBox.alert(contents);
       });
+
+    function drawLinePointer(pos) {
+      const SIZE = 60;
+      const line = cm.getLine(pos.line);
+      const pointer = ' '.repeat(pos.ch) + '^';
+      const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
+      const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
+      const leftPad = start !== 0 ? '...' : '';
+      const rightPad = end !== line.length ? '...' : '';
+      return leftPad + line.slice(start, end) + rightPad + '\n' +
+        ' '.repeat(leftPad.length) + pointer.slice(start, end);
+    }
   }
 
   function isTouched() {
