@@ -1900,10 +1900,23 @@ function replaceStyle(request) {
   }
   if (!codeIsUpdated) {
     editor.replaceMeta(request.style);
-  } else if (editor.isTouched() && !confirm(t('styleUpdateDiscardChanges'))) {
-    editor.setStyleDirty(request.style);
-  } else {
-    editor.replaceStyle(request.style);
+    return;
+  }
+
+  askDiscardChanges()
+    .then(result => {
+      if (result) {
+        editor.replaceStyle(request.style);
+      } else {
+        editor.setStyleDirty(request.style);
+      }
+    });
+
+  function askDiscardChanges() {
+    if (!editor.isTouched()) {
+      return Promise.resolve(true);
+    }
+    return messageBox.confirm(t('styleUpdateDiscardChanges'));
   }
 }
 
