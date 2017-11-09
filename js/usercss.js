@@ -159,9 +159,7 @@ var usercss = (() => {
       if (Array.isArray(state.value)) {
         result.options = state.value.map(text => createOption(text));
       } else {
-        result.options = Object.keys(state.value).map(k =>
-          createOption(k, state.value[k])
-        );
+        result.options = Object.keys(state.value).map(k => createOption(k, state.value[k]));
       }
       result.default = result.options[0].name;
     } else if (state.type === 'dropdown' || state.type === 'image') {
