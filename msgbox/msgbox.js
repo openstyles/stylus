@@ -69,21 +69,12 @@ function messageBox({
           onclick: messageBox.listeners.closeIcon}),
         $element({id: `${id}-contents`, appendChild: tHTML(contents)}),
         $element({id: `${id}-buttons`, appendChild:
-          buttons.map((textContent, buttonIndex) => {
-            if (!textContent) {
-              return;
-            }
-            let onclick = messageBox.listeners.button;
-            if (typeof textContent === 'object') {
-              ({onclick = onclick, textContent} = textContent);
-            }
-            return $element({
-              tag: 'button',
-              buttonIndex,
-              textContent,
-              onclick,
-            });
-          })
+          buttons.map((content, buttonIndex) => content && $element({
+            tag: 'button',
+            buttonIndex,
+            textContent: content.textContent || content,
+            onclick: content.onclick || messageBox.listeners.button,
+          }))
         }),
       ]}),
     ]});
