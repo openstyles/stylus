@@ -42,58 +42,68 @@ function configDialog(style) {
     for (const key of Object.keys(vars)) {
       const va = vars[key];
       let appendChild;
-      if (va.type === 'color') {
-        va.inputColor = $element({tag: 'input', type: 'color'});
-        va.inputAlpha = $element({
-          tag: 'input',
-          type: 'range',
-          min: 0,
-          max: 1,
-          title: chrome.i18n.getMessage('alphaChannel'),
-          step: 'any'
-        });
-        va.inputColor.onchange = va.inputAlpha.oninput = () => {
-          va.dirty = true;
-          const color = colorParser.parse(va.inputColor.value);
-          color.a = Number(va.inputAlpha.value);
-          va.value = colorParser.format(color);
-          va.inputColor.style.opacity = color.a;
-        };
-        appendChild = [
-          $element({appendChild: [va.inputColor, va.inputAlpha]})
-        ];
-      } else if (va.type === 'checkbox') {
-        va.input = $element({tag: 'input', type: 'checkbox'});
-        va.input.onchange = () => {
-          va.dirty = true;
-          va.value = String(Number(va.input.checked));
-        };
-        appendChild = [
-          $element({tag: 'span', className: 'onoffswitch', appendChild: [
-            va.input,
-            $element({tag: 'span'})
-          ]})
-        ];
-      } else if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
-        // TODO: a image picker input?
-        va.input = $element({
-          tag: 'select',
-          appendChild: va.options.map(o => $element({
-            tag: 'option', value: o.name, textContent: o.label
-          }))
-        });
-        va.input.onchange = () => {
-          va.dirty = true;
-          va.value = va.input.value;
-        };
-        appendChild = [va.input];
-      } else {
-        va.input = $element({tag: 'input', type: 'text'});
-        va.input.oninput = () => {
-          va.dirty = true;
-          va.value = va.input.value;
-        };
-        appendChild = [va.input];
+      switch (va.type) {
+        case 'color':
+          va.inputColor = $element({tag: 'input', type: 'color'});
+          va.inputAlpha = $element({
+            tag: 'input',
+            type: 'range',
+            min: 0,
+            max: 1,
+            title: chrome.i18n.getMessage('alphaChannel'),
+            step: 'any'
+          });
+          va.inputColor.onchange = va.inputAlpha.oninput = () => {
+            va.dirty = true;
+            const color = colorParser.parse(va.inputColor.value);
+            color.a = Number(va.inputAlpha.value);
+            va.value = colorParser.format(color);
+            va.inputColor.style.opacity = color.a;
+          };
+          appendChild = [
+            $element({appendChild: [va.inputColor, va.inputAlpha]})
+          ];
+          break;
+
+        case 'checkbox':
+          va.input = $element({tag: 'input', type: 'checkbox'});
+          va.input.onchange = () => {
+            va.dirty = true;
+            va.value = String(Number(va.input.checked));
+          };
+          appendChild = [
+            $element({tag: 'span', className: 'onoffswitch', appendChild: [
+              va.input,
+              $element({tag: 'span'})
+            ]})
+          ];
+          break;
+
+        case 'select':
+        case 'dropdown':
+        case 'image':
+          // TODO: a image picker input?
+          va.input = $element({
+            tag: 'select',
+            appendChild: va.options.map(o => $element({
+              tag: 'option', value: o.name, textContent: o.label
+            }))
+          });
+          va.input.onchange = () => {
+            va.dirty = true;
+            va.value = va.input.value;
+          };
+          appendChild = [va.input];
+          break;
+
+        default:
+          va.input = $element({tag: 'input', type: 'text'});
+          va.input.oninput = () => {
+            va.dirty = true;
+            va.value = va.input.value;
+          };
+          appendChild = [va.input];
+          break;
       }
       appendChild.unshift($element({tag: 'span', appendChild: va.label}));
       labels.push($element({
