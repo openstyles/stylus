@@ -188,7 +188,7 @@ var usercss = (() => {
       }
       state.re.lastIndex++;
       eatWhitespace(state);
-      result.default = result.options[0].value;
+      result.default = result.options[0].name;
     } else {
       // text, color
       parseStringToEnd(state);
