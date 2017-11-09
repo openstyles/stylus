@@ -1894,7 +1894,7 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 function replaceStyle(request) {
   const codeIsUpdated = request.codeIsUpdated !== false;
-  if (codeIsUpdated && editor && editor.isWarm() && !confirm(t('styleUpdateDiscardChanges'))) {
+  if (codeIsUpdated && editor && editor.isTouched() && !confirm(t('styleUpdateDiscardChanges'))) {
     return;
   }
   doReplace();

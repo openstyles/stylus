@@ -6,7 +6,7 @@
 'use strict';
 
 function createSourceEditor(style) {
-  // a flag for isWarm()
+  // a flag for isTouched()
   let hadBeenSaved = false;
 
   // draw HTML
@@ -242,7 +242,7 @@ ${section}
       });
   }
 
-  function isWarm() {
+  function isTouched() {
     // indicate that the editor had been touched by the user
     return dirty.isDirty() || hadBeenSaved;
   }
@@ -260,6 +260,6 @@ ${section}
     toggleStyle,
     isDirty: dirty.isDirty,
     getStyle: () => style,
-    isWarm
+    isTouched
   };
 }
