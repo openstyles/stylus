@@ -213,7 +213,9 @@ var usercss = (() => {
   }
 
   function parseEOT(state) {
-    const match = state.text.slice(state.re.lastIndex).match(/^<<<EOT([\s\S]+?)EOT;/);
+    const re = /<<<EOT([\s\S]+?)EOT;/y;
+    re.lastIndex = state.re.lastIndex;
+    const match = state.text.match(re);
     if (!match) {
       throw new Error('missing EOT');
     }
@@ -223,7 +225,9 @@ var usercss = (() => {
   }
 
   function parseStringUnquoted(state) {
-    const match = state.text.slice(state.re.lastIndex).match(/^[^"]*/);
+    const re = /[^"]*/y;
+    re.lastIndex = state.re.lastIndex;
+    const match = state.text.match(re);
     state.re.lastIndex += match[0].length;
     state.value = match[0].trim().replace(/\s+/g, '-');
   }
