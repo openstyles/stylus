@@ -111,9 +111,13 @@
         frag.appendChild(makeLink(
           url,
           $element({
-            tag: 'img',
-            className: 'icon',
-            src: '/install-usercss/external.svg'
+            tag: 'svg#svg',
+            viewBox: '0 0 20 20',
+            class: 'icon',
+            appendChild: $element({
+              tag: 'svg#path',
+              d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z'
+            })
           })
         ));
       }

@@ -8,7 +8,8 @@ body {
   box-sizing: border-box;
 }
 
-img.icon {
+img.icon,
+svg.icon {
   height: 1.4em;
   vertical-align: middle;
 }
