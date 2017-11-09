@@ -443,7 +443,8 @@ function openEditor(id) {
 
 
 function closeCurrentTab() {
-  chrome.tabs.getCurrent(tab => {
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1409375
+  getOwnTab().then(tab => {
     if (tab) {
       chrome.tabs.remove(tab.id);
     }
