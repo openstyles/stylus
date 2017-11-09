@@ -773,6 +773,15 @@
       }
     }
   },
+  "styleMetaErrorPreprocessor": {
+    "message": "Unsupported @preprocessor: $preprocessor$",
+    "description": "Error displayed when the value of @preprocessor is not supported",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "styleMetaErrorSelectValueMismatch": {
     "message": "Invalid @select: value doesn't exist in the list",
     "description": "Error displayed when the value of @select is invalid"

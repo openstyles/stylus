@@ -403,7 +403,7 @@ var usercss = (() => {
     let builder;
     if (preprocessor) {
       if (!BUILDER[preprocessor]) {
-        return Promise.reject(new Error(`Unsupported preprocessor: ${preprocessor}`));
+        return Promise.reject(chrome.i18n.getMessage('styleMetaErrorPreprocessor', preprocessor));
       }
       builder = BUILDER[preprocessor];
     } else {
