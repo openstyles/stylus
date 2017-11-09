@@ -389,7 +389,7 @@ function download(url) {
         .then(r => {
           clearTimeout(timer);
           if (r.status !== 200) {
-            throw new Error(`Server responded failure code: ${r.status}`);
+            throw r.status;
           }
           return r.text();
         })
@@ -404,7 +404,7 @@ function download(url) {
     xhr.timeout = TIMEOUT;
     xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
       ? resolve(xhr.responseText)
-      : reject(new Error(`Server responded failure code: ${xhr.status}`)));
+      : reject(xhr.status));
     xhr.onerror = reject;
     xhr.open(options.method, url.href, true);
     for (const key of Object.keys(options.headers)) {
