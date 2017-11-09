@@ -18,7 +18,7 @@ function configDialog(style) {
       }),
       $element({
         className: 'config-body',
-        appendChild: form.el
+        appendChild: form.elements
       })
     ],
     buttons: [
@@ -148,7 +148,7 @@ function configDialog(style) {
     }
 
     return {
-      el: labels,
+      elements: labels,
       useDefault,
       getVars
     };
