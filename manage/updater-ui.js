@@ -114,8 +114,12 @@ function reportUpdateState(state, style, details) {
       if (entry.classList.contains('can-update')) {
         break;
       }
-      const same = BG.updater.isSame(details);
-      const edited = BG.updater.isEdited(details);
+      const same = (
+        details === BG.updater.SAME_MD5 ||
+        details === BG.updater.SAME_CODE ||
+        details === BG.updater.SAME_VERSION
+      );
+      const edited = details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED;
       entry.dataset.details = details;
       if (!details) {
         details = t('updateCheckFailServerUnreachable');

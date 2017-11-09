@@ -23,14 +23,6 @@ var updater = {
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
-  isSame(code) {
-    return code === updater.SAME_MD5 || code === updater.SAME_CODE || code === updater.SAME_VERSION;
-  },
-
-  isEdited(code) {
-    return code === updater.EDITED || code === updater.MAYBE_EDITED;
-  },
-
   checkAllStyles({observer = () => {}, save = true, ignoreDigest} = {}) {
     updater.resetInterval();
     updater.checkAllStyles.running = true;
