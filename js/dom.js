@@ -47,7 +47,7 @@ onDOMready().then(() => {
   }
 });
 
-if (navigator.userAgent.includes('Firefox') && chrome.windows) {
+if (navigator.userAgent.includes('Firefox')) {
   // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
     if (!BG && wnd.incognito) {
