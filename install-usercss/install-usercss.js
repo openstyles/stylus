@@ -243,7 +243,7 @@
     // set updateUrl
     const setUpdate = $('.set-update-url input[type=checkbox]');
     const updateUrl = new URL(params.get('updateUrl'));
-    $('.set-update-url > span').textContent = t('installUpdateFromLabel', updateUrl.href);
+    $('.set-update-url > span').textContent = t('installUpdateFromLabel');
     if (dup && dup.updateUrl === updateUrl.href) {
       setUpdate.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.

@@ -431,13 +431,8 @@
     }
   },
   "installUpdateFromLabel": {
-    "message": "Install update from $url$",
-    "description": "Label for the checkbox to save current URL for update check",
-    "placeholders": {
-      "url": {
-        "content": "$1"
-      }
-    }
+    "message": "Check for updates",
+    "description": "Label for the checkbox to save current URL for update check"
   },
   "license": {
     "message": "License",
