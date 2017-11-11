@@ -701,6 +701,12 @@ fieldset > *:not(legend) {
   vertical-align: middle;
 }
 
+.config-dialog select {
+  width: auto;
+  min-width: 60px;
+  max-width: 124px;
+}
+
 .config-dialog .onoffswitch {
   height: auto;
   margin: calc((2em - 12px) / 2) 0;
