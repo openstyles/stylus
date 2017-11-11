@@ -8,6 +8,16 @@ body {
   box-sizing: border-box;
 }
 
+a {
+  color: #000;
+  transition: color .5s;
+  text-decoration-skip: ink;
+}
+
+a:hover {
+  color: #666;
+}
+
 img.icon,
 svg.icon {
   height: 1.4em;
