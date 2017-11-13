@@ -1,6 +1,7 @@
 /* global dbExec, getStyles, saveStyle */
 /* global handleCssTransitionBug */
 /* global usercssHelper openEditor */
+/* global styleViaAPI */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -316,6 +317,10 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .then(() => sendResponse(true))
         .catch(() => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
+
+    case 'styleViaAPI':
+      styleViaAPI(request, sender);
+      return;
 
     case 'download':
       download(request.url)
