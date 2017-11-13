@@ -131,7 +131,7 @@ rules:
   no-duplicate-imports: [2]
   no-else-return: [0]
   no-empty-character-class: [2]
-  no-empty-function: [1]
+  no-empty-function: [0]
   no-empty-pattern: [2]
   no-empty: [2, {allowEmptyCatch: true}]
   no-eq-null: [2]
