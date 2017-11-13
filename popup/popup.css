@@ -88,6 +88,11 @@ body.blocked > DIV {
   text-decoration: line-through;
 }
 
+#installed.disabled + .actions #disableAll-label {
+  font-weight: bold;
+  color: firebrick;
+}
+
 #installed .actions {
   cursor: default;
 }
