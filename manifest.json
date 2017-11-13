@@ -30,6 +30,7 @@
       "js/script-loader.js",
       "background/background.js",
       "vendor/node-semver/semver.js",
+      "background/style-via-api.js",
       "background/update.js"
     ]
   },
