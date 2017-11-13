@@ -111,7 +111,7 @@ function doDisableAll(disable = disableAll) {
   }
   disableAll = disable;
   Array.prototype.forEach.call(document.styleSheets, stylesheet => {
-    if (stylesheet.ownerNode.matches(`STYLE.stylus[id^="${ID_PREFIX}"]`)
+    if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
     && stylesheet.disabled !== disable) {
       stylesheet.disabled = disable;
     }
@@ -263,7 +263,7 @@ function addStyleElement(el) {
 
 function replaceAll(newStyles) {
   const oldStyles = Array.prototype.slice.call(
-    document.querySelectorAll(`STYLE.stylus[id^="${ID_PREFIX}"]`));
+    document.querySelectorAll(`style.stylus[id^="${ID_PREFIX}"]`));
   oldStyles.forEach(el => (el.id += '-ghost'));
   styleElements.clear();
   disabledElements.clear();
