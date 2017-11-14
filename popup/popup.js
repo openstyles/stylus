@@ -8,6 +8,8 @@ const handleEvent = {};
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
+toggleSideBorders();
+
 getActiveTab().then(tab =>
   FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
   ? getTabRealURLFirefox(tab)
@@ -45,6 +47,8 @@ function onRuntimeMessage(msg) {
         document.body.insertBefore(installed, before);
       } else if ('popupWidth' in msg.prefs) {
         setPopupWidth(msg.prefs.popupWidth);
+      } else if ('popup.borders' in msg.prefs) {
+        toggleSideBorders(msg.prefs['popup.borders']);
       }
       break;
   }
@@ -54,6 +58,19 @@ function onRuntimeMessage(msg) {
 function setPopupWidth(width = prefs.get('popupWidth')) {
   document.body.style.width =
     Math.max(200, Math.min(800, width)) + 'px';
+}
+
+
+function toggleSideBorders(state = prefs.get('popup.borders')) {
+  // runs before <body> is parsed
+  const style = document.documentElement.style;
+  if (CHROME >= 3167 && state) {
+    style.cssText +=
+      'border-left: 2px solid white !important;' +
+      'border-right: 2px solid white !important;';
+  } else if (style.cssText) {
+    style.borderLeft = style.borderRight = '';
+  }
 }
 
 

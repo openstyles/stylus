@@ -593,6 +593,12 @@
     "message": "Stylus failed to parse usercss:",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupBorders": {
+    "message": "Add white borders on the sides"
+  },
+  "popupBordersTooltip": {
+    "message": "Useful for dark themes in new Chrome as it no longer paints the side borders"
+  },
   "popupManageTooltip": {
     "message": "Shift-click or right-click opens manager with styles applicable for current site",
     "description": "Tooltip for the 'Manage' button in the popup."

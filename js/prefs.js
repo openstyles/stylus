@@ -15,6 +15,7 @@ var prefs = new function Prefs() {
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
+    'popup.borders': false,         // add white borders on the sides
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
