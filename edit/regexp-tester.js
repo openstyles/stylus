@@ -170,7 +170,10 @@ var regExpTester = (() => {
       $('.regexp-report').onclick = event => {
         const target = event.target.closest('a, .regexp-report div');
         if (target) {
-          openURL({url: target.href || target.textContent});
+          openURL({
+            url: target.href || target.textContent,
+            currentWindow: null,
+          });
           event.preventDefault();
         }
       };
