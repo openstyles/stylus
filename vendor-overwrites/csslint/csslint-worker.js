@@ -4258,14 +4258,14 @@ PropertyValuePart.parseString = function(str) {
  * Helper method to serialize a CSS string.
  */
 PropertyValuePart.serializeString = function(value) {
-    var replacer = function(match, c) {
+    var replacer = function(c) {
         if (c === "\"") {
             return "\\" + c;
         }
-        var cp = String.codePointAt ? String.codePointAt(0) :
+        var cp = String.codePointAt ? c.codePointAt(0) :
             // We only escape non-surrogate chars, so using charCodeAt
             // is harmless here.
-            String.charCodeAt(0);
+            c.charCodeAt(0);
         return "\\" + cp.toString(16) + " ";
     };
     return "\"" + value.replace(/["\r\n\f]/g, replacer) + "\"";
