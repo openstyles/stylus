@@ -599,7 +599,7 @@ function addAppliesTo(list, name, value) {
     list.removeChild(list.firstChild);
   }
   let e;
-  if (name && value) {
+  if (name) {
     e = template.appliesTo.cloneNode(true);
     $('[name=applies-type]', e).value = name;
     $('[name=applies-value]', e).value = value;

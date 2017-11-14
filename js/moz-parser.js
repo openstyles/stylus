@@ -44,24 +44,25 @@ var mozParser = (() => {
           lastSection.code = '';
         }
         for (const f of e.functions) {
-          const m = f && f.match(/^([\w-]*)\((['"]?)(.+?)\2?\)$/);
+          const m = f && f.match(/^([\w-]*)\((.+?)\)$/);
           if (!m || !/^(url|url-prefix|domain|regexp)$/.test(m[1])) {
             errors.push(`${e.line}:${e.col + 1} invalid function "${m ? m[1] : f || ''}"`);
             continue;
           }
           const aType = CssToProperty[m[1]];
-          const aValue = aType !== 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
+          const aValue = unquote(aType !== 'regexps' ? m[2] : m[2].replace(/\\\\/g, '\\'));
           (section[aType] = section[aType] || []).push(aValue);
         }
         sectionStack.push(section);
       });
 
-      parser.addListener('enddocument', function () {
-        const end = backtrackTo(this, parserlib.css.Tokens.RBRACE, 'start');
+      parser.addListener('enddocument', e => {
         const section = sectionStack.pop();
         const lastSection = sectionStack[sectionStack.length - 1];
+        const end = {line: e.line, col: e.col - 1};
         section.code += getRange(section.start, end);
-        lastSection.start = (++end.col, end);
+        end.col += 2;
+        lastSection.start = end;
         doAddSection(section);
       });
 
@@ -118,6 +119,11 @@ var mozParser = (() => {
           return;
         }
         sections.push(Object.assign({}, section));
+      }
+
+      function unquote(s) {
+        const first = s.charAt(0);
+        return (first === '"' || first === "'") && s.endsWith(first) ? s.slice(1, -1) : s;
       }
     });
   }
