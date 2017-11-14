@@ -11,6 +11,7 @@ env:
 globals:
   # messaging.js
   KEEP_CHANNEL_OPEN: false
+  CHROME: false
   FIREFOX: false
   OPERA: false
   URLS: false

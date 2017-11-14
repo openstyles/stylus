@@ -1,7 +1,7 @@
 /* global getStyles */
 'use strict';
 
-const styleViaAPI = !chrome.app && (() => {
+const styleViaAPI = !CHROME && (() => {
   const ACTIONS = {
     styleApply,
     styleDeleted,
