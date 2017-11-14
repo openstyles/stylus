@@ -111,4 +111,16 @@
     this.setOption('mode', MODE[preprocessor] || 'css');
     CodeMirror.autoLoadMode(this, MODE[preprocessor] || 'css');
   });
+
+  CodeMirror.defineExtension('isBlank', function () {
+    // superfast checking as it runs only until the first non-blank line
+    let isBlank = true;
+    this.doc.eachLine(line => {
+      if (line.text && line.text.trim()) {
+        isBlank = false;
+        return true;
+      }
+    });
+    return isBlank;
+  });
 })();
