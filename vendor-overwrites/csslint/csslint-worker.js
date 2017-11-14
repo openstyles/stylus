@@ -1717,7 +1717,6 @@ Parser.prototype = function() {
 
                 tokenStream.mustMatch(Tokens.RBRACE);
                 token = tokenStream.token();
-                this._readWhitespace();
 
                 this.fire({
                     type:      "enddocument",
@@ -1726,6 +1725,8 @@ Parser.prototype = function() {
                     line:      token.startLine,
                     col:       token.startCol
                 });
+
+                this._readWhitespace();
             },
 
             _document_function: function() {
