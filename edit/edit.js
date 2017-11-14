@@ -1643,19 +1643,27 @@ function toMozillaFormat() {
 }
 
 function fromMozillaFormat() {
-  const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'), tHTML(`<div>
-      <button name="import-append" i18n-text="importAppendLabel" i18n-title="importAppendTooltip"></button>
-      <button name="import-replace" i18n-text="importReplaceLabel" i18n-title="importReplaceTooltip"></button>
-    </div>`
-  ));
+  const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
+    $element({appendChild: [
+      $element({
+        tag: 'button',
+        name: 'import-append',
+        textContent: t('importAppendLabel'),
+        title: t('importAppendTooltip'),
+        onclick: doImport,
+      }),
+      $element({
+        tag: 'button',
+        name: 'import-replace',
+        textContent: t('importReplaceLabel'),
+        title: t('importReplaceTooltip'),
+        onclick: doImport,
+      }),
+    ]}));
 
   const contents = $('.contents', popup);
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
-
-  $('[name="import-append"]', popup).addEventListener('click', doImport);
-  $('[name="import-replace"]', popup).addEventListener('click', doImport);
-
   popup.codebox.on('change', () => {
     clearTimeout(popup.mozillaTimeout);
     popup.mozillaTimeout = setTimeout(() => {
