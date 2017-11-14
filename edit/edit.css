@@ -141,6 +141,10 @@ h2 .svg-icon, label .svg-icon {
   content: "";
   opacity: .15;
 }
+/* footer */
+#footer {
+  margin-top: 1em;
+}
 /************ content ***********/
 #sections > div {
   margin: 0.7rem;
@@ -174,18 +178,11 @@ h2 .svg-icon, label .svg-icon {
   margin-left: 0.25rem;
 }
 /* code */
-.CodeMirror-hint:hover {
-  color: white;
-  background: #08f;
-}
 .code {
   height: 10rem;
   width: 40rem;
 }
-.CodeMirror {
-  border: solid #CCC 1px;
-}
-.CodeMirror-scroll {
+.resize-grip-enabled .CodeMirror-scroll {
   height: auto !important;;
   position: absolute !important;
   top: 0;
@@ -193,33 +190,14 @@ h2 .svg-icon, label .svg-icon {
   right: 0;
   bottom: 6px; /* resize-grip height */
 }
-.CodeMirror-lint-mark-warning {
-  background: none;
-}
-.CodeMirror-vscrollbar {
+.resize-grip-enabled .CodeMirror-vscrollbar {
   margin-bottom: 7px; /* make space for resize-grip */
 }
-.CodeMirror-hscrollbar {
+.resize-grip-enabled .CodeMirror-hscrollbar {
     bottom: 7px; /* make space for resize-grip */
 }
-.CodeMirror-scrollbar-filler {
+.resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
-}
-.CodeMirror-dialog {
-  -webkit-animation: highlight 3s ease-out;
-}
-.CodeMirror-focused {
-  outline: -webkit-focus-ring-color auto 5px;
-  outline-offset: -2px;
-}
-.CodeMirror-search-field {
-  width: 10em;
-}
-.CodeMirror-jump-field {
-  width: 5em;
-}
-.CodeMirror-search-hint {
-  color: #888;
 }
 body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
 body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
@@ -534,6 +512,40 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .beautify-options select {
   border: none;
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+/************ single editor **************/
+#sections .single-editor {
+  margin: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.single-editor .CodeMirror {
+  height: 100%;
+}
+
+/************ line widget *************/
+.CodeMirror-linewidget .applies-to {
+  margin: 1em 0;
+  padding: 1em;
+  padding-right: calc(1em + 20px);
+}
+
+.CodeMirror-linewidget .applies-to li {
+  margin: 0;
+}
+
+.CodeMirror-linewidget .applies-to li + li {
+  margin-top: 0.35rem;
+}
+
+.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .applies-to-regexp-test {
+  display: none;
+}
+
+.CodeMirror-linewidget li.applies-to-everything {
+  margin-top: 0.2rem;
 }
 
 /************ reponsive layouts ************/

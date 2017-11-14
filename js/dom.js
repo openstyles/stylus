@@ -33,10 +33,19 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   // enqueue after DOMContentLoaded/load events
   setTimeout(addTooltipsToEllipsized);
   // throttle on continuous resizing
-  window.addEventListener('resize', () => debounce(addTooltipsToEllipsized, 100));
+  let timer;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(addTooltipsToEllipsized, 100);
+  });
 }
 
-onDOMready().then(() => $('#firefox-transitions-bug-suppressor').remove());
+onDOMready().then(() => {
+  const el = $('#firefox-transitions-bug-suppressor');
+  if (el) {
+    el.remove();
+  }
+});
 
 if (!chrome.app) {
   // die if unable to access BG directly
@@ -77,95 +86,6 @@ function onDOMready() {
       resolve();
     });
   });
-}
-
-
-function onDOMscripted(scripts) {
-  const queue = onDOMscripted.queue = onDOMscripted.queue || [];
-  if (scripts) {
-    return new Promise(resolve => {
-      addResolver(resolve);
-      queue.push(...scripts.filter(el => !queue.includes(el)));
-      loadNextScript();
-    });
-  }
-  if (queue.length) {
-    return new Promise(resolve => addResolver(resolve));
-  }
-  if (document.readyState !== 'loading') {
-    if (onDOMscripted.resolveOnReady) {
-      onDOMscripted.resolveOnReady.forEach(r => r());
-      onDOMscripted.resolveOnReady = null;
-    }
-    return Promise.resolve();
-  }
-  return onDOMready().then(onDOMscripted);
-
-  function loadNextScript() {
-    const empty = !queue.length;
-    const next = !empty && queue.shift();
-    if (empty) {
-      onDOMscripted();
-    } else if (typeof next === 'function') {
-      Promise.resolve(next())
-        .then(loadNextScript);
-    } else {
-      Promise.all(
-        (next instanceof Array ? next : [next]).map(next =>
-          typeof next === 'function'
-            ? next()
-            : injectScript({src: next, async: true})
-        )
-      ).then(loadNextScript);
-    }
-  }
-
-  function addResolver(r) {
-    if (!onDOMscripted.resolveOnReady) {
-      onDOMscripted.resolveOnReady = [];
-    }
-    onDOMscripted.resolveOnReady.push(r);
-  }
-}
-
-
-function injectScript(properties) {
-  if (typeof properties === 'string') {
-    properties = {src: properties};
-  }
-  if (!properties || !properties.src) {
-    return;
-  }
-  if (injectScript.cache) {
-    if (injectScript.cache.has(properties.src)) {
-      return Promise.resolve();
-    }
-  } else {
-    injectScript.cache = new Set();
-  }
-  injectScript.cache.add(properties.src);
-  const script = document.head.appendChild(document.createElement('script'));
-  Object.assign(script, properties);
-  if (!properties.onload) {
-    return new Promise(resolve => {
-      script.onload = () => {
-        script.onload = null;
-        resolve();
-      };
-    });
-  }
-}
-
-
-function injectCSS(url) {
-  if (!url) {
-    return;
-  }
-  document.head.appendChild($element({
-    tag: 'link',
-    rel: 'stylesheet',
-    href: url
-  }));
 }
 
 
@@ -271,4 +191,20 @@ function $element(opt) {
     Object.assign(element, opt);
   }
   return element;
+}
+
+
+function makeLink(href = '', content) {
+  const opt = {
+    tag: 'a',
+    target: '_blank',
+    rel: 'noopener'
+  };
+  if (typeof href === 'object') {
+    Object.assign(opt, href);
+  } else {
+    opt.href = href;
+    opt.appendChild = content;
+  }
+  return $element(opt);
 }

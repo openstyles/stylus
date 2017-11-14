@@ -1,0 +1,1 @@
+The content of this folder belongs to [stylus preprocessor](https://github.com/stylus/stylus/).

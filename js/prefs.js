@@ -9,6 +9,7 @@ var prefs = new function Prefs() {
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+    'newStyleAsUsercss': false,     // create new style in usercss format
 
     'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
@@ -50,6 +51,8 @@ var prefs = new function Prefs() {
                                       // '' (empty string) = disabled
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
+
+    'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
 
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon

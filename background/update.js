@@ -1,5 +1,6 @@
 /* global getStyles, saveStyle, styleSectionsEqual, chromeLocal */
 /* global calcStyleDigest */
+/* global usercss semverCompare usercssHelper */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -15,8 +16,10 @@ var updater = {
   MAYBE_EDITED: 'may be locally edited',
   SAME_MD5: 'up-to-date: MD5 is unchanged',
   SAME_CODE: 'up-to-date: code sections are unchanged',
+  SAME_VERSION: 'up-to-date: version is unchanged',
   ERROR_MD5: 'error: MD5 is invalid',
   ERROR_JSON: 'error: JSON is invalid',
+  ERROR_VERSION: 'error: version is older than installed style',
 
   lastUpdateTime: parseInt(localStorage.lastUpdateTime) || Date.now(),
 
@@ -53,9 +56,11 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
+    const maybeUpdate = style.usercssData ? maybeUpdateUsercss : maybeUpdateUSO;
     return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
-      .then(maybeFetchMd5)
-      .then(maybeFetchCode)
+      .then(checkIfEdited)
+      .then(maybeUpdate)
+      .then(maybeValidate)
       .then(maybeSave)
       .then(saved => {
         observer(updater.UPDATED, saved);
@@ -67,42 +72,79 @@ var updater = {
         updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
       });
 
-    function maybeFetchMd5(digest) {
-      if (!ignoreDigest && style.originalDigest && style.originalDigest !== digest) {
+    function checkIfEdited(digest) {
+      if (ignoreDigest) {
+        return;
+      }
+      if (style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
-      return download(style.md5Url);
     }
 
-    function maybeFetchCode(md5) {
-      if (!md5 || md5.length !== 32) {
-        return Promise.reject(updater.ERROR_MD5);
-      }
-      if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
-        return Promise.reject(updater.SAME_MD5);
-      }
-      return download(style.updateUrl);
+    function maybeUpdateUSO() {
+      return download(style.md5Url).then(md5 => {
+        if (!md5 || md5.length !== 32) {
+          return Promise.reject(updater.ERROR_MD5);
+        }
+        if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
+          return Promise.reject(updater.SAME_MD5);
+        }
+        return download(style.updateUrl)
+          .then(text => tryJSONparse(text));
+      });
     }
 
-    function maybeSave(text) {
-      const json = tryJSONparse(text);
+    function maybeUpdateUsercss() {
+      return download(style.updateUrl).then(text => {
+        const json = usercss.buildMeta(text);
+        const {usercssData: {version}} = style;
+        const {usercssData: {version: newVersion}} = json;
+        switch (Math.sign(semverCompare(version, newVersion))) {
+          case 0:
+            // re-install is invalid in a soft upgrade
+            if (!ignoreDigest) {
+              return Promise.reject(updater.SAME_VERSION);
+            }
+            break;
+          case 1:
+            // downgrade is always invalid
+            return Promise.reject(updater.ERROR_VERSION);
+        }
+        return usercss.buildCode(json);
+      });
+    }
+
+    function maybeValidate(json) {
+      if (json.usercssData) {
+        // usercss is already validated while building
+        return json;
+      }
       if (!styleJSONseemsValid(json)) {
         return Promise.reject(updater.ERROR_JSON);
       }
+      return json;
+    }
+
+    function maybeSave(json) {
       json.id = style.id;
       if (styleSectionsEqual(json, style)) {
         // JSONs may have different order of items even if sections are effectively equal
         // so we'll update the digest anyway
+        // always update digest even if (save === false)
         saveStyle(Object.assign(json, {reason: 'update-digest'}));
         return Promise.reject(updater.SAME_CODE);
       } else if (!style.originalDigest && !ignoreDigest) {
         return Promise.reject(updater.MAYBE_EDITED);
       }
-      return !save ? json :
-        saveStyle(Object.assign(json, {
-          name: null, // keep local name customizations
-          reason: 'update',
-        }));
+      if (!save) {
+        return json;
+      }
+      json.reason = 'update';
+      if (json.usercssData) {
+        return usercssHelper.save(json);
+      }
+      json.name = null; // keep local name customizations
+      return saveStyle(json);
     }
 
     function styleJSONseemsValid(json) {

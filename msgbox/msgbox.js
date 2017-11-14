@@ -4,7 +4,7 @@ function messageBox({
   title,          // [mandatory] string
   contents,       // [mandatory] 1) DOM element 2) string
   className = '', // string, CSS class name of the message box element
-  buttons = [],   // array of strings used as labels
+  buttons = [],   // array of strings or objects like {textContent[string], onclick[function]}.
   onshow,         // function(messageboxElement) invoked after the messagebox is shown
   blockScroll,    // boolean, blocks the page scroll
 }) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
@@ -69,14 +69,12 @@ function messageBox({
           onclick: messageBox.listeners.closeIcon}),
         $element({id: `${id}-contents`, appendChild: tHTML(contents)}),
         $element({id: `${id}-buttons`, appendChild:
-          buttons.map((textContent, buttonIndex) => textContent &&
-            $element({
-              tag: 'button',
-              buttonIndex,
-              textContent,
-              onclick: messageBox.listeners.button,
-            })
-          )
+          buttons.map((content, buttonIndex) => content && $element({
+            tag: 'button',
+            buttonIndex,
+            textContent: content.textContent || content,
+            onclick: content.onclick || messageBox.listeners.button,
+          }))
         }),
       ]}),
     ]});
@@ -101,3 +99,17 @@ function messageBox({
     messageBox.resolve = null;
   }
 }
+
+messageBox.alert = text =>
+  messageBox({
+    contents: text,
+    className: 'pre center',
+    buttons: [t('confirmClose')]
+  });
+
+messageBox.confirm = text =>
+  messageBox({
+    contents: text,
+    className: 'pre center',
+    buttons: [t('confirmYes'), t('confirmNo')]
+  }).then(result => result.button === 0 || result.enter);

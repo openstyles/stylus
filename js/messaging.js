@@ -382,15 +382,47 @@ function deleteStyleSafe({id, notify = true} = {}) {
 
 function download(url) {
   return new Promise((resolve, reject) => {
+    url = new URL(url);
+    const TIMEOUT = 10000;
+    const options = {
+      method: url.search ? 'POST' : 'GET',
+      body: url.search ? url.search.slice(1) : null,
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      }
+    };
+    if (url.protocol === 'file:' && FIREFOX) {
+      // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
+      options.mode = 'same-origin';
+      // FIXME: add FetchController when it is available.
+      // https://developer.mozilla.org/en-US/docs/Web/API/FetchController/abort
+      let timer;
+      fetch(url.href, {mode: 'same-origin'})
+        .then(r => {
+          clearTimeout(timer);
+          if (r.status !== 200) {
+            throw r.status;
+          }
+          return r.text();
+        })
+        .then(resolve, reject);
+      timer = setTimeout(
+        () => reject(new Error(`Fetch URL timeout: ${url.href}`)),
+        TIMEOUT
+      );
+      return;
+    }
     const xhr = new XMLHttpRequest();
-    xhr.timeout = 10e3;
-    xhr.onloadend = () => (xhr.status === 200
+    xhr.timeout = TIMEOUT;
+    xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
       ? resolve(xhr.responseText)
       : reject(xhr.status));
-    const [mainUrl, query] = url.split('?');
-    xhr.open(query ? 'POST' : 'GET', mainUrl, true);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.send(query);
+    xhr.onerror = reject;
+    xhr.open(options.method, url.href, true);
+    for (const key of Object.keys(options.headers)) {
+      xhr.setRequestHeader(key, options.headers[key]);
+    }
+    xhr.send(options.body);
   });
 }
 
@@ -399,4 +431,27 @@ function invokeOrPostpone(isInvoke, fn, ...args) {
   return isInvoke
     ? fn(...args)
     : setTimeout(invokeOrPostpone, 0, true, fn, ...args);
+}
+
+
+function openEditor(id) {
+  let url = '/edit.html';
+  if (id) {
+    url += `?id=${id}`;
+  }
+  if (prefs.get('openEditInWindow')) {
+    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
+  } else {
+    openURL({url});
+  }
+}
+
+
+function closeCurrentTab() {
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1409375
+  getOwnTab().then(tab => {
+    if (tab) {
+      chrome.tabs.remove(tab.id);
+    }
+  });
 }

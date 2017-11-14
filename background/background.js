@@ -1,5 +1,6 @@
 /* global dbExec, getStyles, saveStyle */
 /* global handleCssTransitionBug */
+/* global usercssHelper openEditor */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -302,6 +303,14 @@ function onRuntimeMessage(request, sender, sendResponse) {
       saveStyle(request).then(sendResponse);
       return KEEP_CHANNEL_OPEN;
 
+    case 'saveUsercss':
+      usercssHelper.save(request, true).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'buildUsercss':
+      usercssHelper.build(request, true).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
     case 'healthCheck':
       dbExec()
         .then(() => sendResponse(true))
@@ -313,5 +322,36 @@ function onRuntimeMessage(request, sender, sendResponse) {
         .then(sendResponse)
         .catch(() => sendResponse(null));
       return KEEP_CHANNEL_OPEN;
+
+    case 'openUsercssInstallPage':
+      usercssHelper.openInstallPage(sender.tab.id, request).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'closeTab':
+      closeTab(sender.tab.id, request).then(sendResponse);
+      return KEEP_CHANNEL_OPEN;
+
+    case 'openEditor':
+      openEditor(request.id);
+      return;
   }
+}
+
+function closeTab(tabId, request) {
+  return new Promise(resolve => {
+    if (request.tabId) {
+      tabId = request.tabId;
+    }
+    chrome.tabs.remove(tabId, () => {
+      const {lastError} = chrome.runtime;
+      if (lastError) {
+        resolve({
+          success: false,
+          error: lastError.message || String(lastError)
+        });
+        return;
+      }
+      resolve({success: true});
+    });
+  });
 }

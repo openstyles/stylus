@@ -7,6 +7,10 @@
     "message": "Add Style",
     "description": "Title of the page for adding styles"
   },
+  "alphaChannel": {
+    "message": "Opacity",
+    "description": "Label of color's opacity"
+  },
   "appliesAdd": {
     "message": "Add",
     "description": "Label for the button to add an 'applies' entry"
@@ -36,6 +40,14 @@
     "message": "Applies to",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
+  "appliesLineWidgetLabel": {
+    "message": "Display 'Applies to' info",
+    "description": "Label for the checkbox to display applies-to information in the single editor"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Does not work with minified CSS",
+    "description": "A warning that applies-to information won't show properly with minified CSS"
+  },
   "appliesRegexpOption": {
     "message": "URLs matching the regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
@@ -43,6 +55,10 @@
   "appliesRemove": {
     "message": "Remove",
     "description": "Label for the button to remove an 'applies' entry"
+  },
+  "appliesRemoveError": {
+    "message": "Can not remove last 'applies to' entry",
+    "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "appliesSpecify": {
     "message": "Specify",
@@ -64,6 +80,10 @@
     "message": "Apply all updates",
     "description": "Label for the button to apply all detected updates"
   },
+  "author": {
+    "message": "Author",
+    "description": "Label for the style author"
+  },
   "backupButtons": {
     "message": "Backup",
     "description": "Heading for backup"
@@ -82,6 +102,10 @@
   },
   "updateCheckHistory": {
     "message": "History of update checks"
+  },
+  "configureStyle": {
+    "message": "Configure",
+    "description": "Label for the button to configure userstyle"
   },
   "checkForUpdate": {
     "message": "Check for update",
@@ -167,6 +191,14 @@
     "message": "No",
     "description": "'No' button in a confirm dialog"
   },
+  "confirmDefault": {
+    "message": "Use default",
+    "description": "'Set to default' button in a confirm dialog"
+  },
+  "confirmSave": {
+    "message": "Save",
+    "description": "'Save' button in a confirm dialog"
+  },
   "confirmStop": {
     "message": "Stop",
     "description": "'Stop' button in a confirm dialog"
@@ -174,6 +206,10 @@
   "confirmYes": {
     "message": "Yes",
     "description": "'Yes' button in a confirm dialog"
+  },
+  "confirmClose": {
+    "message": "Close",
+    "description": "'Close' button in a confirm dialog"
   },
   "dbError": {
     "message": "An error has occurred using the Stylus database. Would you like to visit a web page with possible solutions?",
@@ -256,6 +292,26 @@
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+  },
+  "externalLink": {
+    "message": "External link",
+    "description": "Label for external links"
+  },
+  "externalHomepage": {
+    "message": "Homepage",
+    "description": "Label for the external link to style's homepage"
+  },
+  "externalSupport": {
+    "message": "Support",
+    "description": "Label for the external link to style's support site"
+  },
+  "externalFeedback": {
+    "message": "Feedback",
+    "description": "Label for the external link to send feedback for the style"
+  },
+  "externalUsercssDocument": {
+    "message": "Documentation for Usercss",
+    "description": "Label for the external link to usercss documentation"
   },
   "filteredStyles": {
     "message": "$numShown$ shown of $numTotal$ total",
@@ -345,9 +401,42 @@
     "message": "Discard contents of current style and overwrite it with the imported style",
     "description": "Label for the button to import and overwrite current style"
   },
+  "installButton": {
+    "message": "Install",
+    "description": "Label for install button"
+  },
+  "installButtonInstalled": {
+    "message": "Installed",
+    "description": "Text displayed when the style is successfully installed"
+  },
+  "installButtonUpdate": {
+    "message": "Update",
+    "description": "Label for update button"
+  },
+  "installButtonReinstall": {
+    "message": "Reinstall",
+    "description": "Label for reinstall button"
+  },
   "installUpdate": {
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
+  },
+  "installUpdateFrom": {
+    "message": "Currently the style is updated from $url$",
+    "description": "Label to describe where the style gets update",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Check for updates",
+    "description": "Label for the checkbox to save current URL for update check"
+  },
+  "license": {
+    "message": "License",
+    "description": "Label for the license"
   },
   "linterConfigPopupTitle": {
     "message": "Set $linter$ rules configuration",
@@ -365,6 +454,15 @@
   "linterCSSLintSettings": {
     "message": "(Set rule as: 0 = disabled; 1 = warning; 2 = error)",
     "description": "CSSLint rule config values"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint doesn't support $preprocessorname$ preprocessor",
+    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
   },
   "linterInvalidConfigError": {
     "message": "Not saved due to these invalid configuration settings:",
@@ -394,6 +492,14 @@
   "linterRulesLink": {
     "message": "See a full list of rules",
     "description": "Stylelint or CSSLint rules label added immediately before a link"
+  },
+  "liveReloadLabel": {
+    "message": "Live reload",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadError": {
+    "message": "An error occurred while watching the file",
+    "description": "The label of live-reload error"
   },
   "manageFilters": {
     "message": "Filters",
@@ -482,6 +588,10 @@
   "optionsSubheading": {
     "message": "More Options",
     "description": "Subheading for options section on manage page."
+  },
+  "parseUsercssError": {
+    "message": "Stylus failed to parse usercss:",
+    "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupManageTooltip": {
     "message": "Shift-click or right-click opens manager with styles applicable for current site",
@@ -629,6 +739,65 @@
       }
     }
   },
+  "styleInstallOverwrite" : {
+    "message": "'$stylename$' is already installed. Overwrite?\nVersion: $oldVersion$ -> $newVersion$",
+    "description": "Confirmation when re-installing a style",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "newVersion": {
+        "content": "$3"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Failed to install userstyle!\n$error$",
+    "description": "Warning when installation failed",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorCheckbox": {
+    "message": "Invalid @var checkbox: value must be 0 or 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ is not a valid color",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorPreprocessor": {
+    "message": "Unsupported @preprocessor: $preprocessor$",
+    "description": "Error displayed when the value of @preprocessor is not supported",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelectValueMismatch": {
+    "message": "Invalid @select: value doesn't exist in the list",
+    "description": "Error displayed when the value of @select is invalid"
+  },
+  "styleMissingMeta": {
+    "message": "Missing metadata @$key$",
+    "description": "Error displayed when a mandatory metadata is missing",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
   "styleMissingName": {
     "message": "Enter a name.",
     "description": "Error displayed when user saves without providing a name"
@@ -644,6 +813,10 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla Format",
     "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+  },
+  "styleFromMozillaFormatError": {
+    "message": "Failed to import from Mozilla format",
+    "description": "Label for the import error"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Paste the Mozilla-format code",
@@ -665,6 +838,10 @@
         "content": "$1"
       }
     }
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "The style is changed outside of the editor. Would you like to reload the style?",
+    "description": "Confirmation to update the style in the editor"
   },
   "stylusUnavailableForURL": {
     "message": "Stylus doesn't work on pages like this.",
@@ -743,6 +920,10 @@
     "message": "Updates installed:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
+  "versionInvalidOlder": {
+    "message": "The version is older than the installed style.",
+    "description": "Displayed when the version of style is older than the installed one"
+  },
   "writeStyleFor": {
     "message": "Write style for: ",
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -804,6 +985,9 @@
   },
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Write new style as usercss"
   },
   "optionsActions": {
     "message": "Actions"

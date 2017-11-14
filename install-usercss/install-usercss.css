@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  font: 12px arial, sans-serif;
+  background: white;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #000;
+  transition: color .5s;
+  text-decoration-skip: ink;
+}
+
+a:hover {
+  color: #666;
+}
+
+img.icon,
+svg.icon {
+  height: 1.4em;
+  vertical-align: middle;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  align-items: stretch;
+}
+
+.header {
+  flex: 0 0 280px;
+  padding: 15px;
+  border-right: 1px dashed #aaa;
+  box-shadow: 0 0 50px -18px black;
+  overflow-wrap: break-word;
+  overflow: auto;
+}
+
+.header > :first-child {
+  margin-top: 0;
+}
+
+h1 small {
+  font-size: 0.6em;
+}
+
+.meta-version::before {
+  content: " v";
+}
+
+.warning {
+  padding: 3px 6px;
+  border: 1px dashed black;
+
+  border-color: #ef6969;
+  background: #ffe2e2;
+}
+
+.header .warning {
+  margin: 3px 0;
+}
+
+.actions {
+  margin: 15px 0;
+}
+
+.actions label {
+  max-width: fit-content;
+  max-width: -moz-fit-content;
+  display: flex;
+  align-items: center;
+  margin: 0.5em 0;
+}
+
+.actions label input {
+  margin: 0 0.5em 0 0;
+  flex: 0 0 auto;
+}
+
+.actions label span {
+  min-width: 0;
+}
+
+.external {
+  text-align: center;
+}
+
+.external > * {
+  margin: 0 7.5px;
+}
+
+.code {
+  padding: 2em;
+}
+
+.main {
+  flex: 1 1 auto;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.main > :first-child {
+  flex: 0 0 auto;
+}
+
+.main > :last-child {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.main .code,
+.main .CodeMirror {
+  height: 100%;
+}

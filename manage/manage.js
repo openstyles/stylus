@@ -2,6 +2,7 @@
 /* global filtersSelector, filterAndAppend */
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
+/* global configDialog */
 'use strict';
 
 let installed;
@@ -192,12 +193,19 @@ function createStyleElement({style, name}) {
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
+  if (shouldShowConfig() && newUI.enabled) {
+    $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
+  }
 
   // name being supplied signifies we're invoked by showStyles()
   // which debounces its main loop thus loading the postponed favicons
   createStyleTargetsElement({entry, style, postponeFavicons: name});
 
   return entry;
+
+  function shouldShowConfig() {
+    return style.usercssData && Object.keys(style.usercssData.vars).length > 0;
+  }
 }
 
 
@@ -275,6 +283,25 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
+    '.configure-usercss': 'config'
+  },
+
+  config(event, {styleMeta: style}) {
+    configDialog(style).then(vars => {
+      if (!vars) {
+        return;
+      }
+      const keys = Object.keys(vars).filter(k => vars[k].dirty);
+      if (!keys.length) {
+        return;
+      }
+      style.reason = 'config';
+      for (const key of keys) {
+        style.usercssData.vars[key].value = vars[key].value;
+      }
+      onBackgroundReady()
+        .then(() => BG.usercssHelper.save(style));
+    });
   },
 
   entryClicked(event) {
@@ -331,12 +358,18 @@ Object.assign(handleEvent, {
   },
 
   update(event, entry) {
-    // update everything but name
-    saveStyleSafe(Object.assign(entry.updatedCode, {
+    const request = Object.assign(entry.updatedCode, {
       id: entry.styleId,
-      name: null,
       reason: 'update',
-    }));
+    });
+    if (entry.updatedCode.usercssData) {
+      onBackgroundReady()
+        .then(() => BG.usercssHelper.save(request));
+    } else {
+      // update everything but name
+      request.name = null;
+      saveStyleSafe(request);
+    }
   },
 
   delete(event, entry) {

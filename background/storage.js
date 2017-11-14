@@ -383,20 +383,29 @@ function saveStyle(style) {
   }
   let existed;
   let codeIsUpdated;
-  if (reason === 'update' || reason === 'update-digest') {
-    return calcStyleDigest(style).then(digest => {
-      style.originalDigest = digest;
-      return decide();
-    });
+
+  return maybeCalcDigest()
+    .then(maybeImportFix)
+    .then(decide);
+
+  function maybeCalcDigest() {
+    if (reason === 'update' || reason === 'update-digest') {
+      return calcStyleDigest(style).then(digest => {
+        style.originalDigest = digest;
+      });
+    }
+    return Promise.resolve();
   }
-  if (reason === 'import') {
-    style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
-    delete style.styleDigest; // TODO: remove in the future
-    if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
-      delete style.originalDigest;
+
+  function maybeImportFix() {
+    if (reason === 'import') {
+      style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
+      delete style.styleDigest; // TODO: remove in the future
+      if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
+        delete style.originalDigest;
+      }
     }
   }
-  return decide();
 
   function decide() {
     if (id !== null) {
@@ -714,7 +723,8 @@ function normalizeStyleSections({sections}) {
 
 
 function calcStyleDigest(style) {
-  const jsonString = JSON.stringify(normalizeStyleSections(style));
+  const jsonString = style.usercssData ?
+    style.sourceCode : JSON.stringify(normalizeStyleSections(style));
   const text = new TextEncoder('utf-8').encode(jsonString);
   return crypto.subtle.digest('SHA-1', text).then(hex);
 

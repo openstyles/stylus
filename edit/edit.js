@@ -1,8 +1,10 @@
 /* eslint brace-style: 0, operator-linebreak: 0 */
 /* global CodeMirror parserlib */
-/* global onDOMscripted */
+/* global loadScript */
 /* global css_beautify */
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
+/* global mozParser createSourceEditor */
+/* global closeCurrentTab regExpTester messageBox */
 'use strict';
 
 let styleId = null;
@@ -17,6 +19,8 @@ let useHistoryBack;
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
 const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'domains', 'regexp': 'regexps'};
+
+let editor;
 
 // if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
 onBackgroundReady();
@@ -160,110 +164,15 @@ function setCleanSection(section) {
 
 function initCodeMirror() {
   const CM = CodeMirror;
-  const isWindowsOS = navigator.appVersion.indexOf('Windows') > 0;
   // lint.js is not loaded initially
-  // CodeMirror miserably fails on keyMap='' so let's ensure it's not
-  if (!prefs.get('editor.keyMap')) {
-    prefs.reset('editor.keyMap');
-  }
-
-  // default option values
-  Object.assign(CM.defaults, {
-    mode: 'css',
-    lineNumbers: true,
-    lineWrapping: true,
-    foldGutter: true,
-    gutters: [
-      'CodeMirror-linenumbers',
-      'CodeMirror-foldgutter',
-      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
-    ],
-    matchBrackets: true,
-    highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
-    hintOptions: {},
-    lint: linterConfig.getForCodeMirror(),
-    lintReportDelay: prefs.get('editor.lintReportDelay'),
-    styleActiveLine: true,
-    theme: 'default',
-    keyMap: prefs.get('editor.keyMap'),
-    extraKeys: {
-      // independent of current keyMap
-      'Alt-Enter': 'toggleStyle',
-      'Alt-PageDown': 'nextEditor',
-      'Alt-PageUp': 'prevEditor'
-    }
-  }, prefs.get('editor.options'));
+  CM.defaults.lint = linterConfig.getForCodeMirror();
 
   // additional commands
   CM.commands.jumpToLine = jumpToLine;
   CM.commands.nextEditor = cm => nextPrevEditor(cm, 1);
   CM.commands.prevEditor = cm => nextPrevEditor(cm, -1);
   CM.commands.save = save;
-  CM.commands.blockComment = cm => {
-    cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
-  };
   CM.commands.toggleStyle = toggleStyle;
-
-  // 'basic' keymap only has basic keys by design, so we skip it
-
-  const extraKeysCommands = {};
-  Object.keys(CM.defaults.extraKeys).forEach(key => {
-    extraKeysCommands[CM.defaults.extraKeys[key]] = true;
-  });
-  if (!extraKeysCommands.jumpToLine) {
-    CM.keyMap.sublime['Ctrl-G'] = 'jumpToLine';
-    CM.keyMap.emacsy['Ctrl-G'] = 'jumpToLine';
-    CM.keyMap.pcDefault['Ctrl-J'] = 'jumpToLine';
-    CM.keyMap.macDefault['Cmd-J'] = 'jumpToLine';
-  }
-  if (!extraKeysCommands.autocomplete) {
-    // will be used by 'sublime' on PC via fallthrough
-    CM.keyMap.pcDefault['Ctrl-Space'] = 'autocomplete';
-    // OSX uses Ctrl-Space and Cmd-Space for something else
-    CM.keyMap.macDefault['Alt-Space'] = 'autocomplete';
-    // copied from 'emacs' keymap
-    CM.keyMap.emacsy['Alt-/'] = 'autocomplete';
-    // 'vim' and 'emacs' define their own autocomplete hotkeys
-  }
-  if (!extraKeysCommands.blockComment) {
-    CM.keyMap.sublime['Shift-Ctrl-/'] = 'blockComment';
-  }
-
-  if (isWindowsOS) {
-    // 'pcDefault' keymap on Windows should have F3/Shift-F3
-    if (!extraKeysCommands.findNext) {
-      CM.keyMap.pcDefault['F3'] = 'findNext';
-    }
-    if (!extraKeysCommands.findPrev) {
-      CM.keyMap.pcDefault['Shift-F3'] = 'findPrev';
-    }
-
-    // try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
-    ['N', 'T', 'W'].forEach(char => {
-      [
-        {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
-        // Note: modifier order in CM is S-C-A
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']}
-      ].forEach(remap => {
-        const oldKey = remap.from + char;
-        Object.keys(CM.keyMap).forEach(keyMapName => {
-          const keyMap = CM.keyMap[keyMapName];
-          const command = keyMap[oldKey];
-          if (!command) {
-            return;
-          }
-          remap.to.some(newMod => {
-            const newKey = newMod + char;
-            if (!(newKey in keyMap)) {
-              delete keyMap[oldKey];
-              keyMap[newKey] = command;
-              return true;
-            }
-          });
-        });
-      });
-    });
-  }
 
   // user option values
   CM.getOption = o => CodeMirror.defaults[o];
@@ -434,11 +343,7 @@ function acmeEventListener(event) {
       return;
     }
     case 'autocompleteOnTyping':
-      editors.forEach(cm => {
-        const onOff = el.checked ? 'on' : 'off';
-        cm[onOff]('changes', autocompleteOnTyping);
-        cm[onOff]('pick', autocompletePicked);
-      });
+      editors.forEach(cm => setupAutocomplete(cm, el.checked));
       return;
     case 'matchHighlight':
       switch (value) {
@@ -463,8 +368,7 @@ function setupCodeMirror(textarea, index) {
 
   cm.on('changes', indicateCodeChangeDebounced);
   if (prefs.get('editor.autocompleteOnTyping')) {
-    cm.on('changes', autocompleteOnTyping);
-    cm.on('pick', autocompletePicked);
+    setupAutocomplete(cm);
   }
   wrapper.addEventListener('keydown', event => nextPrevEditorOnKeydown(cm, event), true);
   cm.on('blur', () => {
@@ -504,6 +408,7 @@ function setupCodeMirror(textarea, index) {
     cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
   }
 
+  wrapper.classList.add('resize-grip-enabled');
   let lastClickTime = 0;
   const resizeGrip = wrapper.appendChild(template.resizeGrip.cloneNode(true));
   resizeGrip.onmousedown = event => {
@@ -671,12 +576,20 @@ window.onbeforeunload = () => {
     rememberWindowSize();
   }
   document.activeElement.blur();
-  if (isCleanGlobal()) {
+  if (isClean()) {
     return;
   }
   updateLintReportIfEnabled(null, 0);
   // neither confirm() nor custom messages work in modern browsers but just in case
   return t('styleChangesNotSaved');
+
+  function isClean() {
+    if (editor) {
+      return !editor.isDirty();
+    } else {
+      return isCleanGlobal();
+    }
+  }
 };
 
 function addAppliesTo(list, name, value) {
@@ -737,20 +650,30 @@ function addSection(event, section) {
 
   toggleTestRegExpVisibility();
   appliesTo.addEventListener('change', toggleTestRegExpVisibility);
-  $('.test-regexp', div).onclick = showRegExpTester;
+  $('.test-regexp', div).onclick = () => {
+    regExpTester.toggle();
+    regExpTester.update(getRegExps());
+  };
+
+  function getRegExps() {
+    return [...appliesTo.children]
+      .map(item =>
+        !item.matches('.applies-to-everything') &&
+        $('.applies-type', item).value === 'regexp' &&
+        $('.applies-value', item).value.trim()
+      )
+      .filter(item => item);
+  }
+
   function toggleTestRegExpVisibility() {
-    const show = [...appliesTo.children].some(item =>
-      !item.matches('.applies-to-everything') &&
-      $('.applies-type', item).value === 'regexp' &&
-      $('.applies-value', item).value.trim()
-    );
+    const show = getRegExps().length > 0;
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
       if (
         event.target.matches('.applies-value') &&
         $('.applies-type', event.target.parentElement).value === 'regexp'
       ) {
-        showRegExpTester(null, div);
+        regExpTester.update(getRegExps());
       }
     });
   }
@@ -1075,6 +998,14 @@ function jumpToLine(cm) {
 }
 
 function toggleStyle() {
+  if (editor) {
+    editor.toggleStyle();
+  } else {
+    toggleSectionStyle();
+  }
+}
+
+function toggleSectionStyle() {
   $('#enabled').checked = !$('#enabled').checked;
   save();
 }
@@ -1098,6 +1029,12 @@ function toggleSectionHeight(cm) {
       window.scrollBy(0, bounds.top);
     }
   }
+}
+
+function setupAutocomplete(cm, enable = true) {
+  const onOff = enable ? 'on' : 'off';
+  cm[onOff]('changes', autocompleteOnTyping);
+  cm[onOff]('pick', autocompletePicked);
 }
 
 function autocompleteOnTyping(cm, [info], debounced) {
@@ -1266,14 +1203,13 @@ function getEditorInSight(nearbyElement) {
 }
 
 function beautify(event) {
-  onDOMscripted([
-    'vendor-overwrites/beautify/beautify-css-mod.js',
-    () => {
+  loadScript('/vendor-overwrites/beautify/beautify-css-mod.js')
+    .then(() => {
       if (!window.css_beautify && window.exports) {
         window.css_beautify = window.exports.css_beautify;
       }
-    },
-  ]).then(doBeautify);
+    })
+    .then(doBeautify);
 
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
@@ -1361,46 +1297,52 @@ onDOMready().then(init);
 
 function init() {
   initCodeMirror();
-  const params = getParams();
-  if (!params.id) {
-    // match should be 2 - one for the whole thing, one for the parentheses
-    // This is an add
-    $('#heading').textContent = t('addStyleTitle');
-    const section = {code: ''};
-    for (const i in CssToProperty) {
-      if (params[i]) {
-        section[CssToProperty[i]] = [params[i]];
-      }
-    }
-    addSection(null, section);
-    editors[0].setOption('lint', CodeMirror.defaults.lint);
-    editors[0].focus();
-    // default to enabled
-    $('#enabled').checked = true;
-    initHooks();
-    setCleanGlobal();
-    updateTitle();
-    return;
-  }
-  // This is an edit
-  $('#heading').textContent = t('editStyleHeading');
-  getStylesSafe({id: params.id}).then(styles => {
-    let style = styles[0];
-    if (!style) {
-      style = {id: null, sections: []};
-      history.replaceState({}, document.title, location.pathname);
-    }
+  getStyle().then(style => {
     styleId = style.id;
     sessionStorage.justEditedStyleId = styleId;
-    setStyleMeta(style);
-    window.onload = () => {
-      window.onload = null;
-      initWithStyle({style});
-    };
-    if (document.readyState !== 'loading') {
-      window.onload();
+
+    if (!isUsercss(style)) {
+      initWithSectionStyle({style});
+    } else {
+      editor = createSourceEditor(style);
     }
   });
+
+  function getStyle() {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) {
+      // match should be 2 - one for the whole thing, one for the parentheses
+      // This is an add
+      $('#heading').textContent = t('addStyleTitle');
+      return Promise.resolve(createEmptyStyle());
+    }
+    $('#heading').textContent = t('editStyleHeading');
+    // This is an edit
+    return getStylesSafe({id}).then(styles => {
+      let style = styles[0];
+      if (!style) {
+        style = createEmptyStyle();
+        history.replaceState({}, document.title, location.pathname);
+      }
+      return style;
+    });
+  }
+
+  function createEmptyStyle() {
+    const params = new URLSearchParams(location.search);
+    const style = {
+      id: null,
+      name: '',
+      enabled: true,
+      sections: [{code: ''}]
+    };
+    for (const i in CssToProperty) {
+      if (params.get(i)) {
+        style.sections[0][CssToProperty[i]] = [params.get(i)];
+      }
+    }
+    return style;
+  }
 }
 
 function setStyleMeta(style) {
@@ -1409,7 +1351,14 @@ function setStyleMeta(style) {
   $('#url').href = style.url || '';
 }
 
-function initWithStyle({style, codeIsUpdated}) {
+function isUsercss(style) {
+  return (
+    style.usercssData ||
+    !style.id && prefs.get('newStyleAsUsercss')
+  );
+}
+
+function initWithSectionStyle({style, codeIsUpdated}) {
   setStyleMeta(style);
 
   if (codeIsUpdated === false) {
@@ -1452,6 +1401,16 @@ function initWithStyle({style, codeIsUpdated}) {
   }
 }
 
+function setupOptionsExpand() {
+  $('#options').open = prefs.get('editor.options.expanded');
+  $('#options h2').addEventListener('click', () => {
+    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
+  });
+  prefs.subscribe(['editor.options.expanded'], (key, value) => {
+    $('#options').open = value;
+  });
+}
+
 function initHooks() {
   if (initHooks.alreadyDone) {
     return;
@@ -1471,14 +1430,7 @@ function initHooks() {
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
 
-  $('#options').open = prefs.get('editor.options.expanded');
-  $('#options h2').addEventListener('click', () => {
-    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
-  });
-  prefs.subscribe(['editor.options.expanded'], (key, value) => {
-    $('#options').open = value;
-  });
-
+  setupOptionsExpand();
   initLint();
 
   if (!FIREFOX) {
@@ -1605,6 +1557,14 @@ function updateLintReportIfEnabled(...args) {
 }
 
 function save() {
+  if (editor) {
+    editor.save();
+  } else {
+    saveSectionStyle();
+  }
+}
+
+function saveSectionStyle() {
   updateLintReportIfEnabled(null, 0);
 
   // save the contents of the CodeMirror editors back into the textareas
@@ -1679,17 +1639,7 @@ function showMozillaFormat() {
 }
 
 function toMozillaFormat() {
-  return getSectionsHashes().map(section => {
-    let cssMds = [];
-    for (const i in propertyToCss) {
-      if (section[i]) {
-        cssMds = cssMds.concat(section[i].map(v =>
-          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
-        ));
-      }
-    }
-    return cssMds.length ? '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' : section.code;
-  }).join('\n\n');
+  return mozParser.format({sections: getSectionsHashes()});
 }
 
 function fromMozillaFormat() {
@@ -1714,133 +1664,29 @@ function fromMozillaFormat() {
   });
 
   function doImport(event) {
-    // parserlib contained in CSSLint-worker.js
-    onDOMscripted(['vendor-overwrites/csslint/csslint-worker.js']).then(() => {
-      doImportWhenReady(event.target);
-      editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
-      editors.last.state.renderLintReportNow = true;
-    });
-  }
-
-  function doImportWhenReady(target) {
-    const replaceOldStyle = target.name === 'import-replace';
-    $('.dismiss', popup).onclick();
+    const replaceOldStyle = event.target.name === 'import-replace';
     const mozStyle = trimNewLines(popup.codebox.getValue());
-    const parser = new parserlib.css.Parser();
-    const lines = mozStyle.split('\n');
-    const sectionStack = [{code: '', start: {line: 1, col: 1}}];
-    const errors = [];
-    // let oldSectionCount = editors.length;
-    let firstAddedCM;
 
-    parser.addListener('startdocument', function (e) {
-      let outerText = getRange(sectionStack.last.start, (--e.col, e));
-      const gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-      const section = {code: '', start: backtrackTo(this, parserlib.css.Tokens.LBRACE, 'end')};
-      // move last comment before @-moz-document inside the section
-      if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
-        section.code = gapComment[1] + '\n';
-        outerText = trimNewLines(outerText.substring(0, gapComment.index));
+    mozParser.parse(mozStyle)
+      .then(updateSection)
+      .then(() => {
+        editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
+        editors.last.state.renderLintReportNow = true;
+        $('.dismiss', popup).onclick();
+      })
+      .catch(showError);
+
+    function showError(errors) {
+      if (!Array.isArray(errors)) {
+        errors = [errors];
       }
-      if (outerText.trim()) {
-        sectionStack.last.code = outerText;
-        doAddSection(sectionStack.last);
-        sectionStack.last.code = '';
-      }
-      for (const f of e.functions) {
-        const m = f && f.match(/^([\w-]*)\((['"]?)(.+?)\2?\)$/);
-        if (!m || !/^(url|url-prefix|domain|regexp)$/.test(m[1])) {
-          errors.push(`${e.line}:${e.col + 1} invalid function "${m ? m[1] : f || ''}"`);
-          continue;
-        }
-        const aType = CssToProperty[m[1]];
-        const aValue = aType !== 'regexps' ? m[3] : m[3].replace(/\\\\/g, '\\');
-        (section[aType] = section[aType] || []).push(aValue);
-      }
-      sectionStack.push(section);
-    });
-
-    parser.addListener('enddocument', function () {
-      const end = backtrackTo(this, parserlib.css.Tokens.RBRACE, 'start');
-      const section = sectionStack.pop();
-      section.code += getRange(section.start, end);
-      sectionStack.last.start = (++end.col, end);
-      doAddSection(section);
-    });
-
-    parser.addListener('endstylesheet', () => {
-      // add nonclosed outer sections (either broken or the last global one)
-      const endOfText = {line: lines.length, col: lines.last.length + 1};
-      sectionStack.last.code += getRange(sectionStack.last.start, endOfText);
-      sectionStack.forEach(doAddSection);
-
-      delete maximizeCodeHeight.stats;
-      editors.forEach(cm => {
-        maximizeCodeHeight(cm.getSection(), cm === editors.last);
-      });
-
-      makeSectionVisible(firstAddedCM);
-      firstAddedCM.focus();
-
-      if (errors.length) {
-        showHelp(t('linterIssues'), $element({
-          tag: 'pre',
-          textContent: errors.join('\n'),
-        }));
-      }
-    });
-
-    parser.addListener('error', e => {
-      errors.push(e.line + ':' + e.col + ' ' +
-        e.message.replace(/ at line \d.+$/, ''));
-    });
-
-    parser.parse(mozStyle);
-
-    function getRange(start, end) {
-      const L1 = start.line - 1;
-      const C1 = start.col - 1;
-      const L2 = end.line - 1;
-      const C2 = end.col - 1;
-      if (L1 === L2) {
-        return lines[L1].substr(C1, C2 - C1 + 1);
-      } else {
-        const middle = lines.slice(L1 + 1, L2).join('\n');
-        return lines[L1].substr(C1) + '\n' + middle +
-          (L2 >= lines.length ? '' : ((middle ? '\n' : '') + lines[L2].substring(0, C2)));
-      }
+      showHelp(t('styleFromMozillaFormatError'), $element({
+        tag: 'pre',
+        textContent: errors.join('\n'),
+      }));
     }
-    function doAddSection(section) {
-      section.code = section.code.trim();
-      // don't add empty sections
-      if (
-        !section.code &&
-        !section.urls &&
-        !section.urlPrefixes &&
-        !section.domains &&
-        !section.regexps
-      ) {
-        return;
-      }
-      if (!firstAddedCM) {
-        if (!initFirstSection(section)) {
-          return;
-        }
-      }
-      setCleanItem(addSection(null, section), false);
-      firstAddedCM = firstAddedCM || editors.last;
-    }
-    // do onetime housekeeping as the imported text is confirmed to be a valid style
-    function initFirstSection(section) {
-      // skip adding the first global section when there's no code/comments
-      if (
-        /* ignore boilerplate NS */
-        !section.code.replace('@namespace url(http://www.w3.org/1999/xhtml);', '')
-          /* ignore all whitespace including new lines */
-          .replace(/[\s\n]/g, '')
-      ) {
-        return false;
-      }
+
+    function updateSection(sections) {
       if (replaceOldStyle) {
         editors.slice(0).reverse().forEach(cm => {
           removeSection({target: cm.getSection().firstElementChild});
@@ -1851,17 +1697,24 @@ function fromMozillaFormat() {
           removeSection({target: editors.last.getSection()});
         }
       }
-      return true;
-    }
-  }
-  function backtrackTo(parser, tokenType, startEnd) {
-    const tokens = parser._tokenStream._lt;
-    for (let i = parser._tokenStream._ltIndex - 1; i >= 0; --i) {
-      if (tokens[i].type === tokenType) {
-        return {line: tokens[i][startEnd + 'Line'], col: tokens[i][startEnd + 'Col']};
+
+      const firstSection = sections[0];
+      setCleanItem(addSection(null, firstSection), false);
+      const firstAddedCM = editors.last;
+      for (const section of sections.slice(1)) {
+        setCleanItem(addSection(null, section), false);
       }
+
+      delete maximizeCodeHeight.stats;
+      editors.forEach(cm => {
+        maximizeCodeHeight(cm.getSection(), cm === editors.last);
+      });
+
+      makeSectionVisible(firstAddedCM);
+      firstAddedCM.focus();
     }
   }
+
   function trimNewLines(s) {
     return s.replace(/^[\s\n]+/, '').replace(/[\s\n]+$/, '');
   }
@@ -1984,151 +1837,6 @@ function showKeyMapHelp() {
   }
 }
 
-function showRegExpTester(event, section = getSectionForChild(this)) {
-  const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
-  const OWN_ICON = chrome.runtime.getManifest().icons['16'];
-  const cachedRegexps = showRegExpTester.cachedRegexps =
-    showRegExpTester.cachedRegexps || new Map();
-  const regexps = [...$('.applies-to-list', section).children]
-    .map(item =>
-      !item.matches('.applies-to-everything') &&
-      $('.applies-type', item).value === 'regexp' &&
-      $('.applies-value', item).value.trim()
-    )
-    .filter(item => item)
-    .map(text => {
-      const rxData = Object.assign({text}, cachedRegexps.get(text));
-      if (!rxData.urls) {
-        cachedRegexps.set(text, Object.assign(rxData, {
-          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
-          rx: tryRegExp('^' + text + '$'),
-          urls: new Map(),
-        }));
-      }
-      return rxData;
-    });
-  chrome.tabs.onUpdated.addListener(function _(tabId, info) {
-    if ($('.regexp-report')) {
-      if (info.url) {
-        showRegExpTester(event, section);
-      }
-    } else {
-      chrome.tabs.onUpdated.removeListener(_);
-    }
-  });
-  const getMatchInfo = m => m && {text: m[0], pos: m.index};
-
-  queryTabs().then(tabs => {
-    const supported = tabs.map(tab => tab.url)
-      .filter(url => URLS.supported(url));
-    const unique = [...new Set(supported).values()];
-    for (const rxData of regexps) {
-      const {rx, urls} = rxData;
-      if (rx) {
-        const urlsNow = new Map();
-        for (const url of unique) {
-          const match = urls.get(url) || getMatchInfo(url.match(rx));
-          if (match) {
-            urlsNow.set(url, match);
-          }
-        }
-        rxData.urls = urlsNow;
-      }
-    }
-    const stats = {
-      full: {data: [], label: t('styleRegexpTestFull')},
-      partial: {data: [], label: [
-        t('styleRegexpTestPartial'),
-        template.regexpTestPartial.cloneNode(true),
-      ]},
-      none: {data: [], label: t('styleRegexpTestNone')},
-      invalid: {data: [], label: t('styleRegexpTestInvalid')},
-    };
-    // collect stats
-    for (const {text, rx, urls} of regexps) {
-      if (!rx) {
-        stats.invalid.data.push({text});
-        continue;
-      }
-      if (!urls.size) {
-        stats.none.data.push({text});
-        continue;
-      }
-      const full = [];
-      const partial = [];
-      for (const [url, match] of urls.entries()) {
-        const faviconUrl = url.startsWith(URLS.ownOrigin)
-          ? OWN_ICON
-          : GET_FAVICON_URL + new URL(url).hostname;
-        const icon = $element({tag: 'img', src: faviconUrl});
-        if (match.text.length === url.length) {
-          full.push($element({appendChild: [
-            icon,
-            url,
-          ]}));
-        } else {
-          partial.push($element({appendChild: [
-            icon,
-            url.substr(0, match.pos),
-            $element({tag: 'mark', textContent: match.text}),
-            url.substr(match.pos + match.text.length),
-          ]}));
-        }
-      }
-      if (full.length) {
-        stats.full.data.push({text, urls: full});
-      }
-      if (partial.length) {
-        stats.partial.data.push({text, urls: partial});
-      }
-    }
-    // render stats
-    const report = $element({className: 'regexp-report'});
-    const br = $element({tag: 'br'});
-    for (const type in stats) {
-      // top level groups: full, partial, none, invalid
-      const {label, data} = stats[type];
-      if (!data.length) {
-        continue;
-      }
-      const block = report.appendChild($element({
-        tag: 'details',
-        open: true,
-        dataset: {type},
-        appendChild: $element({tag: 'summary', appendChild: label}),
-      }));
-      // 2nd level: regexp text
-      for (const {text, urls} of data) {
-        if (urls) {
-          // type is partial or full
-          block.appendChild($element({
-            tag: 'details',
-            open: true,
-            appendChild: [
-              $element({tag: 'summary', textContent: text}),
-              // 3rd level: tab urls
-              ...urls,
-            ],
-          }));
-        } else {
-          // type is none or invalid
-          block.appendChild(document.createTextNode(text));
-          block.appendChild(br.cloneNode());
-        }
-      }
-    }
-    showHelp(t('styleRegexpTestTitle'), report);
-
-    $('.regexp-report').onclick = event => {
-      const target = event.target.closest('a, .regexp-report div');
-      if (target) {
-        openURL({url: target.href || target.textContent});
-        event.preventDefault();
-      }
-    };
-  });
-}
-
 function showHelp(title, body) {
   const div = $('#help-popup');
   div.classList.remove('big');
@@ -2182,40 +1890,55 @@ function showCodeMirrorPopup(title, html, options) {
   return popup;
 }
 
-function getParams() {
-  const params = {};
-  const urlParts = location.href.split('?', 2);
-  if (urlParts.length === 1) {
-    return params;
-  }
-  urlParts[1].split('&').forEach(keyValue => {
-    const splitKeyValue = keyValue.split('=', 2);
-    params[decodeURIComponent(splitKeyValue[0])] = decodeURIComponent(splitKeyValue[1]);
-  });
-  return params;
-}
-
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+function replaceStyle(request) {
+  const codeIsUpdated = request.codeIsUpdated !== false;
+  if (!isUsercss(request.style)) {
+    initWithSectionStyle(request);
+    return;
+  }
+  if (!codeIsUpdated) {
+    editor.replaceMeta(request.style);
+    return;
+  }
+
+  askDiscardChanges()
+    .then(result => {
+      if (result) {
+        editor.replaceStyle(request.style);
+      } else {
+        editor.setStyleDirty(request.style);
+      }
+    });
+
+  function askDiscardChanges() {
+    if (!editor.isTouched()) {
+      return Promise.resolve(true);
+    }
+    return messageBox.confirm(t('styleUpdateDiscardChanges'));
+  }
+}
 
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId === request.style.id && request.reason !== 'editSave') {
+      if (styleId && styleId === request.style.id && request.reason !== 'editSave' && request.reason !== 'config') {
         if ((request.style.sections[0] || {}).code === null) {
           // the code-less style came from notifyAllTabs
           onBackgroundReady().then(() => {
             request.style = BG.cachedStyles.byId.get(request.style.id);
-            initWithStyle(request);
+            replaceStyle(request);
           });
         } else {
-          initWithStyle(request);
+          replaceStyle(request);
         }
       }
       break;
     case 'styleDeleted':
-      if (styleId && styleId === request.id) {
+      if (styleId === request.id || editor && editor.getStyle().id === request.id) {
         window.onbeforeunload = () => {};
-        window.close();
+        closeCurrentTab();
         break;
       }
       break;
