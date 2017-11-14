@@ -44,7 +44,7 @@
 		"description": ""
 	},
 	"cm_tabSize": {
-		"message": "Rozmiar karty",
+		"message": "Rozmiar tabulatora",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
@@ -783,7 +783,7 @@
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "Użyj kart z inteligentnym wcięciem",
+		"message": "Użyj tabulacji z inteligentnym wcięciem",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {

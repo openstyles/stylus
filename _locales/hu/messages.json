@@ -7,9 +7,21 @@
 		"message": "alapértelmezett",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
+	"bckpInstStyles": {
+		"message": "Stílusok exportálása",
+		"description": ""
+	},
+	"optionsUpdateInterval": {
+		"message": "Az összes stílus elérhető frissítéseinek automatikus ellenőrzése és telepítése (órában)",
+		"description": ""
+	},
 	"exportLabel": {
 		"message": "Exportálás",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"optionsBadgeNormal": {
+		"message": "Háttérszín",
+		"description": ""
 	},
 	"cm_tabSize": {
 		"message": "Tabulátorméret",
@@ -18,6 +30,10 @@
 	"enableStyleLabel": {
 		"message": "Engedélyezés",
 		"description": "Label for the button to enable a style"
+	},
+	"styleMissingName": {
+		"message": "Írj be egy nevet!",
+		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {
 		"message": "URL-ek a doménon",
@@ -30,6 +46,18 @@
 	"importAppendLabel": {
 		"message": "Hozzáadás stílushoz",
 		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"optionsOpenManager": {
+		"message": "Stílusok kezelése",
+		"description": ""
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "Nem találhatók frissítések.",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Mozilla formátumú kód beillesztése",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"helpAlt": {
 		"message": "Segítség",
@@ -51,13 +79,45 @@
 		"message": "Telepített stílusok",
 		"description": "Heading for the manage page"
 	},
+	"styleBeautify": {
+		"message": "Csinosít",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
+	"styleEnabledLabel": {
+		"message": "Engedélyezve",
+		"description": "Label for the enabled state of styles"
+	},
+	"styleToMozillaFormatHelp": {
+		"message": "A Mozilla formátumú kódot beküldheted a userstyles.org-ra és használhatod a klasszikus Stylish Firefoxkiegészítővel.",
+		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+	},
 	"sectionAdd": {
 		"message": "Egy újabb szekció hozzáadása",
 		"description": "Label for the button to add a section"
 	},
+	"styleSaveLabel": {
+		"message": "Mentés",
+		"description": "Label for save button for style editing"
+	},
+	"confirmCancel": {
+		"message": "Mégsem",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "Stílusok importálása",
+		"description": ""
+	},
 	"confirmStop": {
 		"message": "Állj",
 		"description": "'Stop' button in a confirm dialog"
+	},
+	"writeStyleForURL": {
+		"message": "ehhez az URL-hez",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "Még több beállítás",
+		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
 		"message": "Hozzáadás",
@@ -66,6 +126,23 @@
 	"appliesRegexpOption": {
 		"message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek",
 		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"styleInstall": {
+		"message": "Telepíted a(z) „$stylename$” nevű stílust a Stylusba?",
+		"description": "Confirmation when installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"optionsBadgeDisabled": {
+		"message": "Háttérszín, amikor le van tiltva",
+		"description": ""
+	},
+	"optionsCheck": {
+		"message": "Stílusok frissítése",
+		"description": ""
 	},
 	"manageText": {
 		"message": "<a href='https://userstyles.org'>Szerezz be stílusokat a userstyles.org-on</a> | <a href='http://add0n.com/stylus.html'>Kérj segítséget</a>",
@@ -91,9 +168,21 @@
 		"message": "Automatikus sortörés",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
+	"styleCancelEditLabel": {
+		"message": "Vissza a kezeléshez",
+		"description": "Label for cancel button for style editing"
+	},
+	"styleChangesNotSaved": {
+		"message": "Nem mentetted a stílusban lévő változásokat.",
+		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+	},
 	"importLabel": {
 		"message": "Importálás",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"updateCheckFailServerUnreachable": {
+		"message": "Sikertelen frissítés: nem érhető el a szerver.",
+		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
 	"manageFilters": {
 		"message": "Szűrők",
@@ -106,6 +195,10 @@
 	"deleteStyleConfirm": {
 		"message": "Biztos, hogy törölni akarod ezt a stílust?",
 		"description": "Confirmation before deleting a style"
+	},
+	"styleBadRegexp": {
+		"message": "Érvénytelen regexp.",
+		"description": "Validation message for a bad regexp in a style"
 	},
 	"optionsHeading": {
 		"message": "Beállítások",
@@ -120,6 +213,23 @@
 			}
 		}
 	},
+	"openStylesManager": {
+		"message": "A frissítéskezelő megnyitása",
+		"description": "Label for the style maanger opener in the browser action context menu."
+	},
+	"styleUpdate": {
+		"message": "Biztos, hogy frissíteni akarod a(z) „$stylename$” stílust?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleSectionsTitle": {
+		"message": "Szekciók",
+		"description": "Title for the style sections section"
+	},
 	"editStyleTitle": {
 		"message": "A(z) $stylename$ stílus szerkesztése",
 		"description": "Title of the page for editing styles",
@@ -128,6 +238,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"updateCheckSucceededNoUpdate": {
+		"message": "A stílus legfrissebb verziója van telepítve.",
+		"description": "Text that displays when an update check completed and no update is available"
 	},
 	"appliesUrlPrefixOption": {
 		"message": "URL-ek adott kezdettel",
@@ -161,6 +275,14 @@
 		"message": "Eltávolítás",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"styleToMozillaFormatTitle": {
+		"message": "Mozilla formátumú stílus",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"writeStyleFor": {
+		"message": "Stílus írása a következőhöz:",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
 	"replace": {
 		"message": "Csere",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
@@ -169,9 +291,22 @@
 		"message": "Amire érvényesül",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"openOptionsPopup": {
+		"message": "Beállítások",
+		"description": "Go to Options UI"
+	},
 	"openManage": {
 		"message": "Kezelés",
 		"description": "Link to open the manage page."
+	},
+	"updateCheckFailBadResponseCode": {
+		"message": "Sikertelen frissítés: a szerver $code$kóddal válaszolt.",
+		"description": "Text that displays when an update check failed because the response code indicates an error",
+		"placeholders": {
+			"code": {
+				"content": "$1"
+			}
+		}
 	},
 	"appliesSpecify": {
 		"message": "Szűkítés",
@@ -181,9 +316,29 @@
 		"message": "Frissítés telepítése",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"optionsCheckUpdate": {
+		"message": "Az összes frissítés ellenőrzése és telepítése",
+		"description": ""
+	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla formátum",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
+	"sectionRemove": {
+		"message": "Szekció eltávolítása",
+		"description": "Label for the button to remove a section"
+	},
 	"disableAllStyles": {
 		"message": "Az összes stílus kikapcsolása",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "VIsszavonás mindegyik szekcióban",
+		"description": "CSS-beautify global Undo button label"
+	},
+	"updateCompleted": {
+		"message": "A frissítés befejeződött.",
+		"description": "Text that displays when an update completed"
 	},
 	"checkingForUpdate": {
 		"message": "Ellenőrzés...",
@@ -221,6 +376,14 @@
 		"message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"editorStylesButton": {
+		"message": "A szerkesztő stílusainak keresése",
+		"description": "Find styles for the editor"
+	},
+	"optionsOpen": {
+		"message": "Megnyitás",
+		"description": ""
+	},
 	"helpKeyMapHotkey": {
 		"message": "Gyorsgomb",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
@@ -228,6 +391,10 @@
 	"replaceAll": {
 		"message": "Az összes cseréje",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"optionsActions": {
+		"message": "Műveletek",
+		"description": ""
 	},
 	"editGotoLine": {
 		"message": "Sorra (vagy sor:oszlopra) ugrás",
@@ -237,9 +404,21 @@
 		"message": "Az összes stílus frissítésének ellenőrzése",
 		"description": "Label for the button to check all styles for updates"
 	},
+	"openOptionsManage": {
+		"message": "A beállítások felülete",
+		"description": "Go to Options UI"
+	},
+	"optionsPopupWidth": {
+		"message": "Felugró ablak szélessége (pixelben)",
+		"description": ""
+	},
 	"confirmNo": {
 		"message": "Nem",
 		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "VIsszavonás",
+		"description": "Button label"
 	},
 	"cm_keyMap": {
 		"message": "Billentyűműveletek",
@@ -261,6 +440,14 @@
 		"message": "Új stílus írása",
 		"description": "Label for the button to go to the add style page"
 	},
+	"optionsUpdateIntervalNote": {
+		"message": "Az automatikus stílusfrissítések ellenőrzésének letiltásához állítsd 0-ra",
+		"description": ""
+	},
+	"backupButtons": {
+		"message": "Biztonsági mentés",
+		"description": "Heading for backup"
+	},
 	"manageOnlyEnabled": {
 		"message": "Csak a telepített stílusok",
 		"description": "Checkbox to show only enabled styles"
@@ -272,6 +459,10 @@
 	"cm_theme": {
 		"message": "Téma",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"backupMessage": {
+		"message": "Válassz ki egy fájlt vagy húzd erre az oldalra!",
+		"description": "Message for backup"
 	},
 	"helpKeyMapCommand": {
 		"message": "Írj be egy parancsot",

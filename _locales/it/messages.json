@@ -3,6 +3,34 @@
 		"message": "Tutto",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"defaultTheme": {
+		"message": "predefinito",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"bckpInstStyles": {
+		"message": "Esporta stili",
+		"description": ""
+	},
+	"optionsUpdateInterval": {
+		"message": "Controlla e installa automaticamente tutti gli aggiornamenti stili disponibili (in ore)",
+		"description": ""
+	},
+	"exportLabel": {
+		"message": "Esporta",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"linterJSONError": {
+		"message": "Formato JSON non valido",
+		"description": "Setting linter config with invalid JSON"
+	},
+	"optionsBadgeNormal": {
+		"message": "Colore sfondo",
+		"description": ""
+	},
+	"updateCheckHistory": {
+		"message": "Cronologia controlli aggiornamento",
+		"description": ""
+	},
 	"enableStyleLabel": {
 		"message": "Attiva",
 		"description": "Label for the button to enable a style"
@@ -10,6 +38,10 @@
 	"styleMissingName": {
 		"message": "Inserisci un nome.",
 		"description": "Error displayed when user saves without providing a name"
+	},
+	"genericHistoryLabel": {
+		"message": "Cronologia",
+		"description": "Used in various places to show a history log of something"
 	},
 	"appliesDomainOption": {
 		"message": "URL nel dominio",
@@ -19,9 +51,37 @@
 		"message": "Verifica la presenza di aggiornamenti",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"optionsIconDark": {
+		"message": "Temi browser scuri",
+		"description": ""
+	},
+	"optionsOpenManager": {
+		"message": "Organizza stili",
+		"description": ""
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "Nessun aggiornamento trovato",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"importReportLegendAdded": {
+		"message": "aggiunto",
+		"description": "Text after the number of styles added in the report shown after importing styles"
+	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Incolla il codice formato Mozilla",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
 	"helpAlt": {
 		"message": "Guida",
 		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Cerca",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"confirmYes": {
+		"message": "Si",
+		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
 		"message": "Trova più stili per questo sito",
@@ -47,6 +107,30 @@
 		"message": "Salva",
 		"description": "Label for save button for style editing"
 	},
+	"genericSavedMessage": {
+		"message": "Salvato",
+		"description": "Used in various parts of the UI to indicate that something was saved"
+	},
+	"confirmDelete": {
+		"message": "Elimina",
+		"description": ""
+	},
+	"confirmCancel": {
+		"message": "Annulla",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "Importa stili",
+		"description": ""
+	},
+	"writeStyleForURL": {
+		"message": "questo URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "Più Opzioni",
+		"description": "Subheading for options section on manage page."
+	},
 	"appliesAdd": {
 		"message": "Aggiungi",
 		"description": "Label for the button to add an 'applies' entry"
@@ -54,6 +138,10 @@
 	"appliesRegexpOption": {
 		"message": "URL corrispondenti all'espressione regolare",
 		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"importReportLegendUpdatedCode": {
+		"message": "codice aggiornato",
+		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
 		"message": "Installare \"$stylename$\" in Stylus?",
@@ -63,6 +151,26 @@
 				"content": "$1"
 			}
 		}
+	},
+	"optionsBadgeDisabled": {
+		"message": "Colore sfondo quanto disattivato",
+		"description": ""
+	},
+	"optionsCheck": {
+		"message": "Aggiorna stili",
+		"description": ""
+	},
+	"manageOnlyLocal": {
+		"message": "Solo stili creati localmente",
+		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"searchStyles": {
+		"message": "Contenuti ricerca",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"checkAllUpdatesForce": {
+		"message": "Controlla di nuovo, non ho modificato nessuno stile!",
+		"description": "Label for the button to apply all detected updates"
 	},
 	"disableStyleLabel": {
 		"message": "Disattiva",
@@ -76,13 +184,41 @@
 		"message": "Hai apportato modifiche a questo stile senza salvare.",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
+	"importLabel": {
+		"message": "Importa",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Aggiornamento non riuscito: server non raggiungibile.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
+	"manageFilters": {
+		"message": "Filtri",
+		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Applica tutti gli aggiornamenti",
+		"description": "Label for the button to apply all detected updates"
+	},
+	"optionsReset": {
+		"message": "Reimposta le opzioni ai valori predefiniti",
+		"description": ""
+	},
+	"optionsCustomizeUpdate": {
+		"message": "Aggiornamenti",
+		"description": ""
+	},
 	"deleteStyleConfirm": {
 		"message": "Vuoi eliminare questo stile?",
 		"description": "Confirmation before deleting a style"
+	},
+	"styleBadRegexp": {
+		"message": "Regexp non valida.",
+		"description": "Validation message for a bad regexp in a style"
+	},
+	"optionsHeading": {
+		"message": "Opzioni",
+		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
 		"message": "Applica a: $applies$",
@@ -93,9 +229,25 @@
 			}
 		}
 	},
+	"optionsIconLight": {
+		"message": "Temi browser chiari",
+		"description": ""
+	},
+	"openStylesManager": {
+		"message": "Apri gestore stili",
+		"description": "Label for the style maanger opener in the browser action context menu."
+	},
+	"dysfunctional": {
+		"message": "Stylus non può funzionare in finestre anonime perché Firefox disattiva la connessione diretta al contesto della pagina di background interna dell'estensione.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Sezioni",
 		"description": "Title for the style sections section"
+	},
+	"genericResetLabel": {
+		"message": "Reimposta",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "Modifica dello stile $stylename$",
@@ -130,9 +282,29 @@
 		"message": "Rimuovi",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"updatesCurrentlyInstalled": {
+		"message": "Aggiornamenti installati:",
+		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+	},
+	"styleToMozillaFormatTitle": {
+		"message": "Stile in formato Mozilla",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"writeStyleFor": {
+		"message": "Scrivi stile per:",
+		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"replace": {
+		"message": "Sostituisci",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
 	"appliesLabel": {
 		"message": "Vale per",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openOptionsPopup": {
+		"message": "Opzioni",
+		"description": "Go to Options UI"
 	},
 	"openManage": {
 		"message": "Gestisci gli stili installati",
@@ -155,21 +327,73 @@
 		"message": "Installa aggiornamento",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"filteredStyles": {
+		"message": "$numShown$ mostrati di $numTotal$ totali",
+		"description": "TL note - make this message short",
+		"placeholders": {
+			"numTotal": {
+				"content": "$2"
+			},
+			"numShown": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMozillaFormatHeading": {
+		"message": "Formato Mozilla",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"sectionRemove": {
 		"message": "Rimuovi sezione",
 		"description": "Label for the button to remove a section"
+	},
+	"searchStylesTooltip": {
+		"message": "Per mostrare gli stili per un URL, inserisci il prefisso 'url:'\nAd esempio, url:https://github.com/openstyles/stylus",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"disableAllStyles": {
+		"message": "Disattiva tutti gli stili",
+		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"updateCompleted": {
 		"message": "Aggiornamento completato.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "Non può funzionare correttamente a causa di un bug conosciuto in questa versione di Firefox: chrome.extension.getBackgroundPage() non restituisce un risultato valido",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Verifica in corso...",
 		"description": "Text to display when checking a style for an update"
 	},
+	"popupManageTooltip": {
+		"message": "Shift-click o click destro apre il gestore con gli stili applicabili per il sito corrente",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
+	"manageFaviconsHelp": {
+		"message": "Stylus utilizza un servizio esterno https://www.google.com/s2/favicons",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"updateCheckSkippedLocallyEdited": {
+		"message": "Questo stile è stato editato localmente.",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Vedi una lista completa di regole",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
+	},
+	"optionsResetButton": {
+		"message": "Reimposta opzioni",
+		"description": ""
+	},
 	"sectionCode": {
 		"message": "Codice",
 		"description": "Label for the code for a section"
+	},
+	"styleRegexpTestButton": {
+		"message": "Test RegExp",
+		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
 		"message": "Utilizza i controlli \"Applica a\" per limitare gli URL a cui viene applicato il codice in questa sezione.",
@@ -179,13 +403,69 @@
 		"message": "Modifica di stili",
 		"description": "Title of the page for editing styles"
 	},
+	"editDeleteText": {
+		"message": "Elimina",
+		"description": "Label for the context menu item in the editor to delete selected text"
+	},
+	"manageOnlyDisabled": {
+		"message": "Solo stili disattivati",
+		"description": "Checkbox to show only disabled styles"
+	},
+	"stylusUnavailableForURL": {
+		"message": "Stylus non funziona in pagine come questa.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
 	"addStyleTitle": {
 		"message": "Aggiunta di stili",
 		"description": "Title of the page for adding styles"
 	},
+	"importReplaceLabel": {
+		"message": "Sovrascrivi stile",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"optionsAdvanced": {
+		"message": "Avanzato",
+		"description": ""
+	},
+	"optionsOpen": {
+		"message": "Apri",
+		"description": ""
+	},
+	"manageOnlyExternal": {
+		"message": "Solo stili esterni",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
+	},
+	"replaceAll": {
+		"message": "Sostituisci tutto",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"importReportUnchanged": {
+		"message": "Non è stato cambiato nulla.",
+		"description": "Message in the report shown after importing styles"
+	},
+	"optionsActions": {
+		"message": "Azioni",
+		"description": ""
+	},
 	"checkAllUpdates": {
 		"message": "Verifica la disponibilità di aggiornamenti per tutti gli stili",
 		"description": "Label for the button to check all styles for updates"
+	},
+	"openOptionsManage": {
+		"message": "Opzioni UI",
+		"description": "Go to Options UI"
+	},
+	"optionsPopupWidth": {
+		"message": "Larghezza popup (in pixel)",
+		"description": ""
+	},
+	"genericDisabledLabel": {
+		"message": "Disattivato",
+		"description": "Used in various lists/options to indicate that something is disabled"
+	},
+	"replaceWith": {
+		"message": "Sostituisci con",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
 		"message": "Elimina",
@@ -195,9 +475,33 @@
 		"message": "Scrivi nuovo stile",
 		"description": "Label for the button to go to the add style page"
 	},
+	"optionsUpdateIntervalNote": {
+		"message": "Per disattivare il controllo automatico degli aggiornamenti degli stili, imposta l'intervallo a 0",
+		"description": ""
+	},
+	"manageOnlyEnabled": {
+		"message": "Solo stili attivati",
+		"description": "Checkbox to show only enabled styles"
+	},
 	"editStyleLabel": {
 		"message": "Modifica",
 		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Tema",
+		"description": "Label for the style editor's CSS theme."
+	},
+	"popupOpenEditInWindow": {
+		"message": "Apri editor in una nuova finestra",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"backupMessage": {
+		"message": "Seleziona un file o trascinalo in questa pagina.",
+		"description": "Message for backup"
+	},
+	"helpKeyMapCommand": {
+		"message": "Inserisci il nome di un comando",
+		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"description": {
 		"message": "Modifica lo stile del Web con Stylus, un gestore di stili utente. Stylus consente di installare facilmente temi e skin per Google, Facebook, YouTube, Orkut e moltissimi altri siti.",
