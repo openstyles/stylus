@@ -9,7 +9,6 @@ function createSourceEditor(style) {
   // a flag for isTouched()
   let hadBeenSaved = false;
 
-  // draw HTML
   $('#sections').textContent = '';
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
@@ -27,7 +26,6 @@ function createSourceEditor(style) {
 
   setupOptionsExpand();
 
-  // dirty reporter
   const dirty = dirtyReporter();
   dirty.onChange(() => {
     const DIRTY = dirty.isDirty();
@@ -44,24 +42,18 @@ function createSourceEditor(style) {
     style = deepCopy(style);
   }
 
-  // draw CodeMirror
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
   cm.startOperation();
   cm.setValue(style.sourceCode);
   cm.clearHistory();
   cm.markClean();
-
-  // too many functions depend on this global
   editors.push(cm);
-
-  // draw metas info
   updateMeta();
   cm.endOperation();
 
   initHooks();
   initAppliesToLineWidget();
 
-  // setup linter
   initLint();
   initLinterSwitch();
 
