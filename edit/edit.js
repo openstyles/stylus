@@ -1384,12 +1384,14 @@ function addSections(sections, onAdded = () => {}) {
   const t0 = performance.now();
   const divs = [];
   let index = 0;
+
   return new Promise(function run(resolve) {
     while (index < sections.length) {
       const div = addSection(null, sections[index]);
       maximizeCodeHeight(div, index === sections.length - 1);
       onAdded(div, index);
       divs.push(div);
+      maybeFocusFirstCM();
       index++;
       const elapsed = performance.now() - t0;
       if (elapsed > 500) {
@@ -1401,15 +1403,19 @@ function addSections(sections, onAdded = () => {}) {
         return;
       }
     }
-    if (divs[0]) {
-      makeSectionVisible(divs[0].CodeMirror);
-      divs[0].CodeMirror.focus();
-    }
     editors.last.state.renderLintReportNow = true;
     addSections.running = false;
     setGlobalProgress();
     resolve(divs);
   });
+
+  function maybeFocusFirstCM() {
+    const isPageLocked = document.documentElement.style.pointerEvents;
+    if (divs[0] && (isPageLocked ? index === sections.length : index === 0)) {
+      makeSectionVisible(divs[0].CodeMirror);
+      divs[0].CodeMirror.focus();
+    }
+  }
 }
 
 function setupOptionsExpand() {
