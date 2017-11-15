@@ -38,6 +38,7 @@ function createAppliesToLineWidget(cm) {
 
     // is it possible to avoid flickering?
     window.addEventListener('load', updateWidgetStyle);
+    chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
     update();
   }
@@ -50,6 +51,7 @@ function createAppliesToLineWidget(cm) {
     cm.off('change', onChange);
     cm.off('optionChange', onOptionChange);
     window.removeEventListener('load', updateWidgetStyle);
+    chrome.runtime.onMessage.removeListener(onRuntimeMessage);
   }
 
   function onChange(cm, {from, to, origin}) {
@@ -69,6 +71,14 @@ function createAppliesToLineWidget(cm) {
   function onOptionChange(cm, option) {
     if (option === 'theme') {
       updateWidgetStyle();
+    }
+  }
+
+  function onRuntimeMessage(msg) {
+    if (msg.style || msg.styles ||
+        msg.prefs && 'disableAll' in msg.prefs ||
+        msg.method === 'styleDeleted') {
+      requestAnimationFrame(updateWidgetStyle);
     }
   }
 
