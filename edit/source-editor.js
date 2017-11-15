@@ -49,6 +49,7 @@ function createSourceEditor(style) {
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
   // too many functions depend on this global
   editors.push(cm);
+  cm.focus();
 
   // draw metas info
   updateMeta();
