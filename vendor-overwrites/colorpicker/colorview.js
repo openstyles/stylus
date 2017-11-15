@@ -1,434 +1,457 @@
-(function(mod) {
-    if (typeof exports == "object" && typeof module == "object") // CommonJS
-        mod(require("codemirror"));
-    else if (typeof define == "function" && define.amd) // AMD
-        define(["codemirror"], mod);
-    else // Plain browser env
-        mod(CodeMirror);
-})(function(CodeMirror) {
-    "use strict";
+/* global CodeMirror */
+'use strict';
 
-    // color names
-    var color_names={aliceblue:"rgb(240, 248, 255)",antiquewhite:"rgb(250, 235, 215)",aqua:"rgb(0, 255, 255)",aquamarine:"rgb(127, 255, 212)",azure:"rgb(240, 255, 255)",beige:"rgb(245, 245, 220)",bisque:"rgb(255, 228, 196)",black:"rgb(0, 0, 0)",blanchedalmond:"rgb(255, 235, 205)",blue:"rgb(0, 0, 255)",blueviolet:"rgb(138, 43, 226)",brown:"rgb(165, 42, 42)",burlywood:"rgb(222, 184, 135)",cadetblue:"rgb(95, 158, 160)",chartreuse:"rgb(127, 255, 0)",chocolate:"rgb(210, 105, 30)",coral:"rgb(255, 127, 80)",cornflowerblue:"rgb(100, 149, 237)",cornsilk:"rgb(255, 248, 220)",crimson:"rgb(237, 20, 61)",cyan:"rgb(0, 255, 255)",darkblue:"rgb(0, 0, 139)",darkcyan:"rgb(0, 139, 139)",darkgoldenrod:"rgb(184, 134, 11)",darkgray:"rgb(169, 169, 169)",darkgrey:"rgb(169, 169, 169)",darkgreen:"rgb(0, 100, 0)",darkkhaki:"rgb(189, 183, 107)",darkmagenta:"rgb(139, 0, 139)",darkolivegreen:"rgb(85, 107, 47)",darkorange:"rgb(255, 140, 0)",darkorchid:"rgb(153, 50, 204)",darkred:"rgb(139, 0, 0)",darksalmon:"rgb(233, 150, 122)",darkseagreen:"rgb(143, 188, 143)",darkslateblue:"rgb(72, 61, 139)",darkslategray:"rgb(47, 79, 79)",darkslategrey:"rgb(47, 79, 79)",darkturquoise:"rgb(0, 206, 209)",darkviolet:"rgb(148, 0, 211)",deeppink:"rgb(255, 20, 147)",deepskyblue:"rgb(0, 191, 255)",dimgray:"rgb(105, 105, 105)",dimgrey:"rgb(105, 105, 105)",dodgerblue:"rgb(30, 144, 255)",firebrick:"rgb(178, 34, 34)",floralwhite:"rgb(255, 250, 240)",forestgreen:"rgb(34, 139, 34)",fuchsia:"rgb(255, 0, 255)",gainsboro:"rgb(220, 220, 220)",ghostwhite:"rgb(248, 248, 255)",gold:"rgb(255, 215, 0)",goldenrod:"rgb(218, 165, 32)",gray:"rgb(128, 128, 128)",grey:"rgb(128, 128, 128)",green:"rgb(0, 128, 0)",greenyellow:"rgb(173, 255, 47)",honeydew:"rgb(240, 255, 240)",hotpink:"rgb(255, 105, 180)",indianred:"rgb(205, 92, 92)",indigo:"rgb(75, 0, 130)",ivory:"rgb(255, 255, 240)",khaki:"rgb(240, 230, 140)",lavender:"rgb(230, 230, 250)",lavenderblush:"rgb(255, 240, 245)",lawngreen:"rgb(124, 252, 0)",lemonchiffon:"rgb(255, 250, 205)",lightblue:"rgb(173, 216, 230)",lightcoral:"rgb(240, 128, 128)",lightcyan:"rgb(224, 255, 255)",lightgoldenrodyellow:"rgb(250, 250, 210)",lightgreen:"rgb(144, 238, 144)",lightgray:"rgb(211, 211, 211)",lightgrey:"rgb(211, 211, 211)",lightpink:"rgb(255, 182, 193)",lightsalmon:"rgb(255, 160, 122)",lightseagreen:"rgb(32, 178, 170)",lightskyblue:"rgb(135, 206, 250)",lightslategray:"rgb(119, 136, 153)",lightslategrey:"rgb(119, 136, 153)",lightsteelblue:"rgb(176, 196, 222)",lightyellow:"rgb(255, 255, 224)",lime:"rgb(0, 255, 0)",limegreen:"rgb(50, 205, 50)",linen:"rgb(250, 240, 230)",magenta:"rgb(255, 0, 255)",maroon:"rgb(128, 0, 0)",mediumaquamarine:"rgb(102, 205, 170)",mediumblue:"rgb(0, 0, 205)",mediumorchid:"rgb(186, 85, 211)",mediumpurple:"rgb(147, 112, 219)",mediumseagreen:"rgb(60, 179, 113)",mediumslateblue:"rgb(123, 104, 238)",mediumspringgreen:"rgb(0, 250, 154)",mediumturquoise:"rgb(72, 209, 204)",mediumvioletred:"rgb(199, 21, 133)",midnightblue:"rgb(25, 25, 112)",mintcream:"rgb(245, 255, 250)",mistyrose:"rgb(255, 228, 225)",moccasin:"rgb(255, 228, 181)",navajowhite:"rgb(255, 222, 173)",navy:"rgb(0, 0, 128)",oldlace:"rgb(253, 245, 230)",olive:"rgb(128, 128, 0)",olivedrab:"rgb(107, 142, 35)",orange:"rgb(255, 165, 0)",orangered:"rgb(255, 69, 0)",orchid:"rgb(218, 112, 214)",palegoldenrod:"rgb(238, 232, 170)",palegreen:"rgb(152, 251, 152)",paleturquoise:"rgb(175, 238, 238)",palevioletred:"rgb(219, 112, 147)",papayawhip:"rgb(255, 239, 213)",peachpuff:"rgb(255, 218, 185)",peru:"rgb(205, 133, 63)",pink:"rgb(255, 192, 203)",plum:"rgb(221, 160, 221)",powderblue:"rgb(176, 224, 230)",purple:"rgb(128, 0, 128)",rebeccapurple:"rgb(102, 51, 153)",red:"rgb(255, 0, 0)",rosybrown:"rgb(188, 143, 143)",royalblue:"rgb(65, 105, 225)",saddlebrown:"rgb(139, 69, 19)",salmon:"rgb(250, 128, 114)",sandybrown:"rgb(244, 164, 96)",seagreen:"rgb(46, 139, 87)",seashell:"rgb(255, 245, 238)",sienna:"rgb(160, 82, 45)",silver:"rgb(192, 192, 192)",skyblue:"rgb(135, 206, 235)",slateblue:"rgb(106, 90, 205)",slategray:"rgb(112, 128, 144)",slategrey:"rgb(112, 128, 144)",snow:"rgb(255, 250, 250)",springgreen:"rgb(0, 255, 127)",steelblue:"rgb(70, 130, 180)",tan:"rgb(210, 180, 140)",teal:"rgb(0, 128, 128)",thistle:"rgb(216, 191, 216)",tomato:"rgb(255, 99, 71)",turquoise:"rgb(64, 224, 208)",violet:"rgb(238, 130, 238)",wheat:"rgb(245, 222, 179)",white:"rgb(255, 255, 255)",whitesmoke:"rgb(245, 245, 245)",yellow:"rgb(255, 255, 0)",yellowgreen:"rgb(154, 205, 50)",transparent:"rgba(0, 0, 0, 0)"};
+(() => {
+  const OWN_TOKEN_NAME = 'colorview';
+  const OWN_DOM_CLASS = 'cm-' + OWN_TOKEN_NAME;
+  const OWN_BACKGROUND_CLASS = 'codemirror-colorview-background';
+  const HOOKED_TOKEN = new Map([
+    ['atom', colorizeAtom],
+    ['keyword', colorizeKeyword],
+  ].map(([name, fn]) => [name, {override: name + ' ' + OWN_TOKEN_NAME, process: fn}]));
 
-    var colorpicker_class = 'codemirror-colorview';
-    var colorpicker_background_class = 'codemirror-colorview-background';
+  const NAMED_COLORS = getNamedColorsMap();
+  const TRANSPARENT = {
+    color: 'transparent',
+    colorValue: 'rgba(0, 0, 0, 0)', // as per the CSS spec
+  };
+  const RX_COLOR = {
+    hex: /#(?:[a-f\d]{3,4}|[a-f\d]{6}|[a-f\d]{8})\b/yi,
+    rgb: /rgb\((?:\s*\d{1,3}\s*,\s*){2}\d{1,3}\s*\)/yi,
+    rgba: /rgba\((?:\s*\d{1,3}\s*,\s*){3}\d*\.?\d+\s*\)/yi,
+    hsl: /hsl\(\s*(?:-?\d+|-?\d*\.\d+)\s*(?:,\s*(?:-?\d+|-?\d*\.\d+)%\s*){2}\)/yi,
+    hsla: /hsla\(\s*(?:-?\d+|-?\d*\.\d+)\s*(?:,\s*(?:-?\d+|-?\d*\.\d+)%\s*){2},\s*(?:-?\d+|-?\d*\.\d+)\s*\)/yi,
+    named: new RegExp([...NAMED_COLORS.keys()].join('|'), 'i'),
+  };
 
-    // Excluded tokens do not show color views..
-    var excluded_token = ['comment'];
+  const CodeMirrorEvents = {
+    update(cm) {
+      if (cm.state.colorpicker.cache.size) {
+        renderVisibleTokens(cm);
+      }
+    },
+    keyup(cm) {
+      const popup = cm.state.colorpicker.popup;
+      if (popup && popup.options.isShortCut === false) {
+        popup.hide();
+      }
+    },
+    mousedown(cm, event) {
+      const self = cm.state.colorpicker;
+      const isMarker = event.button === 0 && event.target.classList.contains(OWN_BACKGROUND_CLASS);
+      window.dispatchEvent(new CustomEvent('close-colorpicker-popup', {detail: isMarker && self.popup}));
+      if (isMarker) {
+        event.preventDefault();
+        self.openPopupForToken(event.target.parentNode);
+      }
+    },
+  };
 
-    CodeMirror.defineOption("colorpicker", false, function (cm, val, old) {
+  function registerEvents(cm) {
+    Object.keys(CodeMirrorEvents).forEach(name => cm.on(name, CodeMirrorEvents[name]));
+  }
 
-        if (old && old != CodeMirror.Init) {
+  function unregisterEvents(cm) {
+    Object.keys(CodeMirrorEvents).forEach(name => cm.off(name, CodeMirrorEvents[name]));
+  }
 
-            if (cm.state.colorpicker)
-            {
-                cm.state.colorpicker.destroy();
-                cm.state.colorpicker = null;
+  function registerHooks() {
+    const mx = CodeMirror.modeExtensions.css;
+    if (!mx || mx.token !== colorizeToken) {
+      CodeMirror.extendMode('css', {
+        token: colorizeToken,
+      });
+    }
+  }
 
-            }
-            // remove event listener
+  function unregisterHooks() {
+    const mx = CodeMirror.modeExtensions.css;
+    if (mx && mx.token === colorizeToken) {
+      delete mx.token;
+    }
+  }
+
+  function resetMode(cm) {
+    cm.setOption('mode', cm.getMode().name);
+  }
+
+  function colorizeToken(stream, state) {
+    const token = this._token.apply(this, arguments);
+    const hookedToken = token && HOOKED_TOKEN.get(token);
+    if (!token || !hookedToken) {
+      return token;
+    }
+    const data = state.colorpicker = (state.colorpicker || {});
+    const cache = data.cache = (data.cache || stream.lineOracle.doc.cm.state.colorpicker.cache);
+    const string = stream.string;
+    const sameString = string === data.lastString;
+
+    data.lastString = string;
+
+    let lineCache = data.lineCache = (sameString ? data.lineCache : cache.get(string));
+    if (lineCache && lineCache.get(stream.start)) {
+      return hookedToken.override;
+    }
+
+    const color = hookedToken.process(stream);
+    if (color) {
+      if (!lineCache) {
+        lineCache = data.lineCache = new Map();
+        cache.set(string, lineCache);
+      }
+      lineCache.set(stream.start, color);
+      lineCache.set('lastAccessTime', performance.now());
+      return hookedToken.override;
+    }
+
+    return token;
+  }
+
+  function colorizeAtom(stream) {
+    const {start, pos, string} = stream;
+    const c1 = string.charAt(start);
+    if ((c1 === 't' || c1 === 'T') && string.slice(start, pos).toLowerCase() === 'transparent') {
+      return TRANSPARENT;
+    }
+    const maybeHex = c1 === '#';
+    const s = !maybeHex && string.charAt(pos) === '(' && string.slice(start, pos).toLowerCase();
+    if (maybeHex || (s === 'rgb' || s === 'rgba' || s === 'hsl' || s === 'hsla')) {
+      const rx = maybeHex ? RX_COLOR.hex : RX_COLOR[s];
+      rx.lastIndex = start;
+      const match = rx.exec(string);
+      return match && {color: match[0]};
+    }
+  }
+
+  function colorizeKeyword(stream) {
+    const {start, pos, string} = stream;
+    if (string.charAt(start) !== '!') {
+      const color = string.slice(start, pos);
+      const colorValue = NAMED_COLORS.get(color.toLowerCase());
+      return colorValue && {color, colorValue};
+    }
+  }
+
+  function renderVisibleTokens(cm) {
+    const {cache, options} = cm.state.colorpicker;
+    let line = cm.display.viewFrom - 1;
+    for (const {line: lineHandle, text} of cm.display.renderedView) {
+      if (!lineHandle.parent) {
+        continue;
+      }
+      line++;
+      const styles = lineHandle.styles;
+      if (!styles) {
+        continue;
+      }
+      const lineCache = cache.get(lineHandle.text);
+      if (!lineCache) {
+        continue;
+      }
+      let lineCacheAlive = false;
+      let elementIndex = 0;
+      let elements;
+      for (let i = 1; i < styles.length; i += 2) {
+        const token = styles[i + 1];
+        if (!token || !token.includes(OWN_TOKEN_NAME)) {
+          continue;
         }
-
-        if (val)
-        {
-            cm.state.colorpicker = new codemirror_colorpicker(cm, val);
+        const start = styles[i - 2] || 0;
+        const data = lineCache.get(start);
+        if (!data) {
+          continue;
         }
-    });
-
-    function onChange(cm, evt) {
-        if (evt.origin == 'setValue') {  // if content is changed by setValue method, it initialize markers
-            cm.state.colorpicker.close_color_picker();
-            cm.state.colorpicker.init_color_update();
-            cm.state.colorpicker.style_color_update();
-        } else {
-            cm.state.colorpicker.style_color_update(cm.getCursor().line);
+        elements = elements || text.getElementsByClassName(OWN_DOM_CLASS);
+        const el = elements[elementIndex++];
+        if (el.colorpickerData && el.colorpickerData.color === data.color) {
+          continue;
         }
-
-    }
-
-    function onUpdate(cm, evt) {
-        if (!cm.state.colorpicker.isUpdate) {
-            cm.state.colorpicker.isUpdate = true;
-            cm.state.colorpicker.close_color_picker();
-            cm.state.colorpicker.init_color_update();
-            cm.state.colorpicker.style_color_update();
+        el.colorpickerData = Object.assign({line, ch: start}, data);
+        let bg = el.firstElementChild;
+        if (!bg) {
+          bg = document.createElement('div');
+          bg.className = OWN_BACKGROUND_CLASS;
+          bg.title = options.tooltip;
+          el.appendChild(bg);
         }
+        bg.style.setProperty('background-color', data.color, 'important');
+        lineCacheAlive = true;
+      }
+      if (lineCacheAlive) {
+        lineCache.set('lastAccessTime', performance.now());
+      }
+    }
+    trimCache(cm);
+  }
+
+  function trimCache(cm, debounced) {
+    if (!debounced) {
+      clearTimeout(trimCache.timer);
+      trimCache.timer = setTimeout(trimCache, 20e3, cm, true);
+      return;
+    }
+    const cutoff = performance.now() - 60e3;
+    const {cache} = cm.state.colorpicker;
+    const textToKeep = new Set();
+    cm.doc.iter(({text}) => textToKeep.add(text));
+    for (const [text, lineCache] of cache.entries()) {
+      if (lineCache.get('lastAccessTime') < cutoff && !textToKeep.has(text)) {
+        cache.delete(text);
+      }
+    }
+  }
+
+  function getNamedColorsMap() {
+    return new Map([
+      ['aliceblue', '#f0f8ff'],
+      ['antiquewhite', '#faebd7'],
+      ['aqua', '#00ffff'],
+      ['aquamarine', '#7fffd4'],
+      ['azure', '#f0ffff'],
+      ['beige', '#f5f5dc'],
+      ['bisque', '#ffe4c4'],
+      ['black', '#000000'],
+      ['blanchedalmond', '#ffebcd'],
+      ['blue', '#0000ff'],
+      ['blueviolet', '#8a2be2'],
+      ['brown', '#a52a2a'],
+      ['burlywood', '#deb887'],
+      ['cadetblue', '#5f9ea0'],
+      ['chartreuse', '#7fff00'],
+      ['chocolate', '#d2691e'],
+      ['coral', '#ff7f50'],
+      ['cornflowerblue', '#6495ed'],
+      ['cornsilk', '#fff8dc'],
+      ['crimson', '#dc143c'],
+      ['cyan', '#00ffff'],
+      ['darkblue', '#00008b'],
+      ['darkcyan', '#008b8b'],
+      ['darkgoldenrod', '#b8860b'],
+      ['darkgray', '#a9a9a9'],
+      ['darkgreen', '#006400'],
+      ['darkgrey', '#a9a9a9'],
+      ['darkkhaki', '#bdb76b'],
+      ['darkmagenta', '#8b008b'],
+      ['darkolivegreen', '#556b2f'],
+      ['darkorange', '#ff8c00'],
+      ['darkorchid', '#9932cc'],
+      ['darkred', '#8b0000'],
+      ['darksalmon', '#e9967a'],
+      ['darkseagreen', '#8fbc8f'],
+      ['darkslateblue', '#483d8b'],
+      ['darkslategray', '#2f4f4f'],
+      ['darkslategrey', '#2f4f4f'],
+      ['darkturquoise', '#00ced1'],
+      ['darkviolet', '#9400d3'],
+      ['deeppink', '#ff1493'],
+      ['deepskyblue', '#00bfff'],
+      ['dimgray', '#696969'],
+      ['dimgrey', '#696969'],
+      ['dodgerblue', '#1e90ff'],
+      ['firebrick', '#b22222'],
+      ['floralwhite', '#fffaf0'],
+      ['forestgreen', '#228b22'],
+      ['fuchsia', '#ff00ff'],
+      ['gainsboro', '#dcdcdc'],
+      ['ghostwhite', '#f8f8ff'],
+      ['gold', '#ffd700'],
+      ['goldenrod', '#daa520'],
+      ['gray', '#808080'],
+      ['green', '#008000'],
+      ['greenyellow', '#adff2f'],
+      ['grey', '#808080'],
+      ['honeydew', '#f0fff0'],
+      ['hotpink', '#ff69b4'],
+      ['indianred', '#cd5c5c'],
+      ['indigo', '#4b0082'],
+      ['ivory', '#fffff0'],
+      ['khaki', '#f0e68c'],
+      ['lavender', '#e6e6fa'],
+      ['lavenderblush', '#fff0f5'],
+      ['lawngreen', '#7cfc00'],
+      ['lemonchiffon', '#fffacd'],
+      ['lightblue', '#add8e6'],
+      ['lightcoral', '#f08080'],
+      ['lightcyan', '#e0ffff'],
+      ['lightgoldenrodyellow', '#fafad2'],
+      ['lightgray', '#d3d3d3'],
+      ['lightgreen', '#90ee90'],
+      ['lightgrey', '#d3d3d3'],
+      ['lightpink', '#ffb6c1'],
+      ['lightsalmon', '#ffa07a'],
+      ['lightseagreen', '#20b2aa'],
+      ['lightskyblue', '#87cefa'],
+      ['lightslategray', '#778899'],
+      ['lightslategrey', '#778899'],
+      ['lightsteelblue', '#b0c4de'],
+      ['lightyellow', '#ffffe0'],
+      ['lime', '#00ff00'],
+      ['limegreen', '#32cd32'],
+      ['linen', '#faf0e6'],
+      ['magenta', '#ff00ff'],
+      ['maroon', '#800000'],
+      ['mediumaquamarine', '#66cdaa'],
+      ['mediumblue', '#0000cd'],
+      ['mediumorchid', '#ba55d3'],
+      ['mediumpurple', '#9370db'],
+      ['mediumseagreen', '#3cb371'],
+      ['mediumslateblue', '#7b68ee'],
+      ['mediumspringgreen', '#00fa9a'],
+      ['mediumturquoise', '#48d1cc'],
+      ['mediumvioletred', '#c71585'],
+      ['midnightblue', '#191970'],
+      ['mintcream', '#f5fffa'],
+      ['mistyrose', '#ffe4e1'],
+      ['moccasin', '#ffe4b5'],
+      ['navajowhite', '#ffdead'],
+      ['navy', '#000080'],
+      ['oldlace', '#fdf5e6'],
+      ['olive', '#808000'],
+      ['olivedrab', '#6b8e23'],
+      ['orange', '#ffa500'],
+      ['orangered', '#ff4500'],
+      ['orchid', '#da70d6'],
+      ['palegoldenrod', '#eee8aa'],
+      ['palegreen', '#98fb98'],
+      ['paleturquoise', '#afeeee'],
+      ['palevioletred', '#db7093'],
+      ['papayawhip', '#ffefd5'],
+      ['peachpuff', '#ffdab9'],
+      ['peru', '#cd853f'],
+      ['pink', '#ffc0cb'],
+      ['plum', '#dda0dd'],
+      ['powderblue', '#b0e0e6'],
+      ['purple', '#800080'],
+      ['rebeccapurple', '#663399'],
+      ['red', '#ff0000'],
+      ['rosybrown', '#bc8f8f'],
+      ['royalblue', '#4169e1'],
+      ['saddlebrown', '#8b4513'],
+      ['salmon', '#fa8072'],
+      ['sandybrown', '#f4a460'],
+      ['seagreen', '#2e8b57'],
+      ['seashell', '#fff5ee'],
+      ['sienna', '#a0522d'],
+      ['silver', '#c0c0c0'],
+      ['skyblue', '#87ceeb'],
+      ['slateblue', '#6a5acd'],
+      ['slategray', '#708090'],
+      ['slategrey', '#708090'],
+      ['snow', '#fffafa'],
+      ['springgreen', '#00ff7f'],
+      ['steelblue', '#4682b4'],
+      ['tan', '#d2b48c'],
+      ['teal', '#008080'],
+      ['thistle', '#d8bfd8'],
+      ['tomato', '#ff6347'],
+      ['turquoise', '#40e0d0'],
+      ['violet', '#ee82ee'],
+      ['wheat', '#f5deb3'],
+      ['white', '#ffffff'],
+      ['whitesmoke', '#f5f5f5'],
+      ['yellow', '#ffff00'],
+      ['yellowgreen', '#9acd32'],
+    ]);
+  }
+
+  class ColorMarker {
+    constructor(cm, {
+      tooltip = 'Open color picker',
+      popupOptions = {},
+      colorpicker,
+      forceUpdate,
+    } = {}) {
+      this.cm = cm;
+      this.options = {
+        tooltip,
+        popup: Object.assign({
+          hideDelay: 2000,
+          hexUppercase: false,
+          tooltipForSwitcher: 'Switch formats: HEX -> RGB -> HSL',
+        }, popupOptions),
+      };
+      this.popup = cm.colorpicker ? cm.colorpicker() : colorpicker;
+      this.cache = new Map();
+      registerHooks(cm);
+      registerEvents(cm);
+      if (forceUpdate) {
+        resetMode(cm);
+      }
     }
 
-    function onRefresh(cm, evt) {
-        onChange(cm, { origin : 'setValue'});
+    destroy() {
+      unregisterHooks(this.cm);
+      unregisterEvents(this.cm);
+      resetMode(this.cm);
+      this.cm.state.colorpicker = null;
     }
 
-    function onKeyup(cm, evt) {
-        cm.state.colorpicker.keyup(evt);
-    }
-
-    function onMousedown(cm, evt) {
-        if (cm.state.colorpicker.is_edit_mode())
-        {
-            cm.state.colorpicker.check_mousedown(evt);
+    openPopup(defaultColor = '#FFFFFF') {
+      const cursor = this.cm.getCursor();
+      const data = {
+        line: cursor.line,
+        ch: cursor.ch,
+        color: defaultColor,
+        isShortCut: true,
+      };
+      for (const {from, marker} of this.cm.getLineHandle(cursor.line).markedSpans || []) {
+        if (from <= data.ch && (marker.replacedWith || {}).colorpickerData) {
+          const {color, colorValue} = marker.replacedWith.colorpickerData;
+          if (data.ch <= from + color.length) {
+            data.ch = from;
+            data.color = color;
+            data.colorValue = colorValue;
+            break;
+          }
         }
+      }
+      this.openPopupForToken({colorpickerData: data});
     }
 
-    function onPaste (cm, evt) {
-        onChange(cm, { origin : 'setValue'});
+    openPopupForToken({colorpickerData: data}) {
+      if (this.popup) {
+        const {left, bottom: top} = this.cm.charCoords(data, 'window');
+        this.popup.show(Object.assign(this.options.popup, data, {
+          top,
+          left,
+          cm: this.cm,
+          color: data.colorValue || data.color,
+          prevColor: data.color,
+          isShortCut: false,
+          callback: ColorMarker.popupOnChange,
+        }));
+      }
     }
 
-    function onScroll (cm) {
-        cm.state.colorpicker.close_color_picker();
+    closePopup() {
+      if (this.popup) {
+        this.popup.hide();
+      }
     }
 
-    function debounce (callback, delay) {
-
-        var t = undefined;
-
-        return function (cm, e) {
-            if (t) {
-                clearTimeout(t);
-            }
-
-            t = setTimeout(function () {
-                callback(cm, e);
-            }, delay || 300);
-        }
+    static popupOnChange(newColor) {
+      const {cm, line, ch, embedderCallback} = this;
+      const to = {line, ch: ch + this.prevColor.length};
+      if (cm.getRange(this, to) !== newColor) {
+        this.prevColor = newColor;
+        cm.replaceRange(newColor, this, to, '*colorpicker');
+      }
+      if (typeof embedderCallback === 'function') {
+        embedderCallback(this);
+      }
     }
+  }
 
-    function has_class(el, cls) {
-        if (!el || !el.className) {
-            return false;
-        } else {
-            var newClass = ' ' + el.className + ' ';
-            return newClass.indexOf(' ' + cls + ' ') > -1;
-        }
+  CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
+    if (oldValue && oldValue !== CodeMirror.Init && cm.state.colorpicker) {
+      cm.state.colorpicker.destroy();
     }
-
-    function codemirror_colorpicker (cm, opt) {
-        var self = this;
-
-        if (typeof opt == 'boolean')
-        {
-            opt = { mode : 'view' };
-        } else {
-            opt = Object.assign({ mode: 'view' }, opt || {});
-        }
-
-        this.opt = opt;
-        this.cm = cm;
-        this.markers = {};
-
-        // set excluded token
-        excluded_token = this.opt.excluded_token || excluded_token;
-
-        if (this.cm.colorpicker) {
-            this.colorpicker = this.cm.colorpicker();
-        } else if (this.opt.colorpicker) {
-            this.colorpicker = this.opt.colorpicker;
-        }
-
-        this.init_event();
-
+    if (value) {
+      cm.state.colorpicker = new ColorMarker(cm, value);
     }
-
-    codemirror_colorpicker.prototype.init_event = function () {
-
-        this.cm.on('mousedown', onMousedown);
-        this.cm.on('keyup', onKeyup);
-        this.cm.on('change', onChange);
-        this.cm.on('update', onUpdate);
-        this.cm.on('refresh', onRefresh);
-
-        // create paste callback
-        this.onPasteCallback = (function (cm, callback) {
-            return  function (evt) {
-                callback.call(this, cm, evt);
-            }
-        })(this.cm, onPaste);
-
-        this.cm.getWrapperElement().addEventListener('paste', this.onPasteCallback);
-
-        if (this.is_edit_mode())
-        {
-            this.cm.on('scroll', debounce(onScroll, 50));
-        }
-
-    }
-
-    codemirror_colorpicker.prototype.is_edit_mode = function () {
-        return this.opt.mode == 'edit';
-    }
-
-    codemirror_colorpicker.prototype.is_view_mode = function () {
-        return this.opt.mode == 'view';
-    }
-
-    codemirror_colorpicker.prototype.destroy = function () {
-        this.cm.off('mousedown', onMousedown);
-        this.cm.off('keyup', onKeyup);
-        this.cm.off('change', onChange)
-        this.cm.getWrapperElement().removeEventListener('paste', this.onPasteCallback);
-
-        if (this.is_edit_mode())
-        {
-            this.cm.off('scroll');
-        }
-    }
-
-    codemirror_colorpicker.prototype.hasClass = function (el, className) {
-        if (!el.className)
-        {
-            return false;
-        } else {
-            var newClass = ' ' + el.className + ' ';
-            return newClass.indexOf(' ' + className + ' ') > -1;
-        }
-    }
-
-    codemirror_colorpicker.prototype.check_mousedown = function (evt) {
-        if (this.hasClass(evt.target, colorpicker_background_class) )
-        {
-            this.open_color_picker(evt.target.parentNode);
-        } else {
-            this.close_color_picker();
-        }
-    }
-
-    codemirror_colorpicker.prototype.popup_color_picker = function (defalutColor) {
-        var cursor = this.cm.getCursor();
-        var self = this;
-        var colorMarker = {
-            lineNo : cursor.line,
-            ch : cursor.ch,
-            color: defalutColor || '#FFFFFF',
-            isShortCut : true
-        };
-
-        Object.keys(this.markers).forEach(function(key) {
-            var searchKey = "#" + key;
-            if (searchKey.indexOf( "#" + colorMarker.lineNo + ":") > -1) {
-                var marker = self.markers[key];
-
-                if (marker.ch <= colorMarker.ch && colorMarker.ch <= marker.ch + marker.color.length) {
-                    // when cursor has marker
-                    colorMarker.ch = marker.ch;
-                    colorMarker.color = marker.color;
-                    colorMarker.nameColor = marker.nameColor;
-                }
-
-            }
-        });
-
-        this.open_color_picker(colorMarker);
-    }
-
-    codemirror_colorpicker.prototype.open_color_picker = function (el) {
-        var lineNo = el.lineNo;
-        var ch = el.ch;
-        var nameColor = el.nameColor;
-        var color = el.color;
-
-
-        if (this.colorpicker) {
-            var self = this;
-            var prevColor = color;
-            var pos = this.cm.charCoords({line : lineNo, ch : ch });
-            this.colorpicker.show({
-                left : pos.left,
-                top : pos.bottom,
-                isShortCut : el.isShortCut || false,
-                hideDelay : self.opt.hideDelay || 2000
-            }, nameColor || color, function (newColor) {
-                self.cm.replaceRange(newColor, { line : lineNo, ch : ch } , { line : lineNo, ch : ch + prevColor.length }, '*colorpicker');
-                prevColor = newColor;
-            });
-
-        }
-
-    }
-
-    codemirror_colorpicker.prototype.close_color_picker = function (el) {
-        if (this.colorpicker)
-        {
-            this.colorpicker.hide();
-        }
-    }
-
-    codemirror_colorpicker.prototype.key = function (lineNo, ch) {
-        return [lineNo, ch].join(":");
-    }
-
-
-    codemirror_colorpicker.prototype.keyup = function (evt) {
-
-        if (this.colorpicker ) {
-            if (evt.key == 'Escape') {
-                this.colorpicker.hide();
-            } else if (this.colorpicker.isShortCut() == false) {
-                this.colorpicker.hide();
-            }
-        }
-    }
-
-    codemirror_colorpicker.prototype.init_color_update = function () {
-        this.markers = {};  // initialize marker list
-    }
-
-    codemirror_colorpicker.prototype.style_color_update = function (lineHandle) {
-
-        if (lineHandle) {
-            this.match(lineHandle);
-        } else {
-            var max = this.cm.lineCount();
-
-            for(var lineNo = 0; lineNo < max; lineNo++) {
-                this.match(lineNo);
-            }
-        }
-
-    }
-
-    codemirror_colorpicker.prototype.empty_marker = function (lineNo, lineHandle) {
-        var list = lineHandle.markedSpans || [];
-
-        for(var i = 0, len = list.length; i < len; i++) {
-            var key = this.key(lineNo, list[i].from);
-
-            if (key && has_class(list[i].marker.replacedWith, colorpicker_class)) {
-                delete this.markers[key];
-                list[i].marker.clear();
-            }
-
-        }
-    }
-
-    codemirror_colorpicker.prototype.color_regexp = /(#(?:[\da-f]{3}){1,2}|rgb\((?:\s*\d{1,3},\s*){2}\d{1,3}\s*\)|rgba\((?:\s*\d{1,3},\s*){3}\d*\.?\d+\s*\)|hsl\(\s*\d{1,3}(?:,\s*\d{1,3}%){2}\s*\)|hsla\(\s*\d{1,3}(?:,\s*\d{1,3}%){2},\s*\d*\.?\d+\s*\)|([\w_\-]+))/gi;
-
-    codemirror_colorpicker.prototype.match_result = function (lineHandle) {
-        return lineHandle.text.match(this.color_regexp);
-    }
-
-    codemirror_colorpicker.prototype.match = function (lineNo) {
-        var lineHandle = this.cm.getLineHandle(lineNo);
-
-        this.empty_marker(lineNo, lineHandle);
-
-        var result = this.match_result(lineHandle);
-        if (result)
-        {
-            var obj = { next : 0 };
-            for(var i = 0, len = result.length; i < len; i++) {
-
-                if (result[i].indexOf('#') > -1 || result[i].indexOf('rgb') > -1 || result[i].indexOf('hsl') > -1) {
-                    this.render(obj, lineNo, lineHandle, result[i]);
-                } else {
-                    var nameColor = color_names[result[i]];
-                    if (nameColor) {
-                        this.render(obj, lineNo, lineHandle, result[i], nameColor);
-                    }
-                }
-            }
-        }
-    }
-
-    codemirror_colorpicker.prototype.make_element = function () {
-        var el = document.createElement('div');
-
-        el.className = colorpicker_class;
-
-        if (this.is_edit_mode())
-        {
-            el.title ="open color picker";
-        } else {
-            el.title ="";
-        }
-
-        el.back_element = this.make_background_element();
-        el.appendChild(el.back_element);
-
-        return el;
-    }
-
-    codemirror_colorpicker.prototype.make_background_element = function () {
-        var el = document.createElement('div');
-
-        el.className = colorpicker_background_class;
-
-        return el;
-    }
-
-    codemirror_colorpicker.prototype.set_state = function (lineNo, start, color, nameColor) {
-        var marker = this.create_marker(lineNo, start);
-
-
-        marker.lineNo = lineNo;
-        marker.ch = start;
-        marker.color = color;
-        marker.nameColor = nameColor;
-
-        return marker;
-    }
-
-    codemirror_colorpicker.prototype.create_marker = function (lineNo, start) {
-
-        var key = this.key(lineNo,start);
-
-        if (!this.markers[key]) {
-            this.markers[key] = this.make_element();
-        }
-
-
-        return this.markers[key];
-
-    }
-
-    codemirror_colorpicker.prototype.has_marker = function (lineNo, start) {
-        var key = this.key(lineNo,start);
-        return !!(this.markers[key])
-    }
-
-    codemirror_colorpicker.prototype.update_element = function (el, color) {
-        el.back_element.style.backgroundColor = color;
-    }
-
-    codemirror_colorpicker.prototype.set_mark = function (line, ch, el) {
-        this.cm.setBookmark({ line : line, ch : ch}, { widget : el, handleMouseEvents : true} );
-
-    }
-
-    codemirror_colorpicker.prototype.is_excluded_token = function (line, ch) {
-        var token = this.cm.getTokenAt({line : line, ch : ch});
-        var count = 0;
-        for(var i = 0, len = excluded_token.length; i < len; i++) {
-            if (token.type === excluded_token[i]) {
-                count++;
-                break;
-            }
-        }
-
-        return count > 0;   // true is that it has a excluded token
-    }
-
-    codemirror_colorpicker.prototype.render = function (cursor, lineNo, lineHandle, color, nameColor) {
-        var start = lineHandle.text.indexOf(color, cursor.next);
-
-        if (this.is_excluded_token(lineNo, start) === true) {
-            // excluded token do not show.
-            return;
-        }
-
-        cursor.next = start + color.length;
-
-        if (this.has_marker(lineNo, start))
-        {
-            this.update_element(this.create_marker(lineNo, start), nameColor || color);
-            this.set_state(lineNo, start, color, nameColor);
-            return;
-        }
-
-        var el  = this.create_marker(lineNo, start);
-
-        this.update_element(el, nameColor || color);
-        this.set_state(lineNo, start, color, nameColor || color);
-        this.set_mark(lineNo, start, el);
-    }
-});
+  });
+
+  // initial runMode is performed by CodeMirror before setting our option
+  // so we register the hooks right away - not a problem as our js is loaded on demand
+  registerHooks();
+})();

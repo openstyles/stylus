@@ -7,6 +7,12 @@
 /* global closeCurrentTab regExpTester messageBox */
 'use strict';
 
+onDOMready()
+  .then(() => Promise.all([
+    onColorpickerReady(),
+  ]))
+  .then(init);
+
 let styleId = null;
 // only the actually dirty items here
 let dirty = {};
@@ -362,6 +368,8 @@ function acmeEventListener(event) {
       }
       option = 'highlightSelectionMatches';
       break;
+    case 'colorpicker':
+      return;
   }
   CodeMirror.setOption(option, value);
 }
@@ -1298,8 +1306,6 @@ function beautify(event) {
   }
 }
 
-onDOMready().then(init);
-
 function init() {
   initCodeMirror();
   getStyle().then(style => {
@@ -2063,5 +2069,39 @@ function setGlobalProgress(done, total) {
     });
   } else if (progressElement) {
     progressElement.remove();
+  }
+}
+
+function onColorpickerReady() {
+  const scripts = [
+    '/vendor-overwrites/colorpicker/colorpicker.css',
+    '/vendor-overwrites/colorpicker/colorpicker.js',
+    '/vendor-overwrites/colorpicker/colorview.js',
+  ];
+  prefs.subscribe(['editor.colorpicker'], colorpickerOnDemand);
+  return prefs.get('editor.colorpicker') && colorpickerOnDemand(null, true);
+
+  function colorpickerOnDemand(id, enabled) {
+    return loadScript(enabled && scripts)
+      .then(() => setColorpickerOption(id, enabled));
+  }
+
+  function setColorpickerOption(id, enabled) {
+    CodeMirror.defaults.colorpicker = enabled && {
+      forceUpdate: editors.length > 0,
+      tooltip: t('colorpickerTooltip'),
+      popupOptions: {
+        tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
+        hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
+        hideDelay: 5000,
+        embedderCallback: state => {
+          if (state && state.hexUppercase !== prefs.get('editor.colorpicker.hexUppercase')) {
+            prefs.set('editor.colorpicker.hexUppercase', state.hexUppercase);
+          }
+        },
+      },
+    };
+    // on page load runs before CodeMirror.setOption is defined
+    editors.forEach(cm => cm.setOption('colorpicker', CodeMirror.defaults.colorpicker));
   }
 }

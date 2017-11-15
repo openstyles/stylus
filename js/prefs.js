@@ -56,6 +56,11 @@ var prefs = new function Prefs() {
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
 
+    // show CSS colors as clickable colored rectangles
+    'editor.colorpicker': true,
+    // #DEAD or #beef
+    'editor.colorpicker.hexUppercase': false,
+
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 
