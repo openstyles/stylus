@@ -191,7 +191,7 @@ html:not(.firefox):not(.opera) #options > .block:nth-last-of-type(3) {
   margin-bottom: 0;
 }
 
-#advanced.collapsible:not(.collapsed) .collapsible-resizer {
+#advanced.collapsible:not(.collapsed) .collapsible-resizer, .collapsible-resizer {
   padding-right: 8px;
   box-sizing: border-box;
   width: 30%;
@@ -204,6 +204,12 @@ html:not(.firefox):not(.opera) #options > .block:nth-last-of-type(3) {
   transition: color .5s;
   display: inline-flex;
   align-items: center;
+}
+
+.collapsible-resizer h1 {
+  width: unset;
+  padding: 0;
+  display: inline-flex;
 }
 
 #advanced.collapsible:not(.collapsed) h1:hover {
