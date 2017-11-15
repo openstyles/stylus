@@ -180,6 +180,73 @@ input[type="color"] {
   display: none;
 }
 
+#advanced.collapsed {
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+#options > .block:nth-last-of-type(3) {
+  margin-bottom: 0;
+}
+
+#advanced:not(.collapsed) .collapsible-resizer {
+  padding-right: 8px;
+  box-sizing: border-box;
+  width: 30%;
+}
+
+#advanced h1 {
+  width: unset;
+  padding: 0;
+  color: #333;
+  transition: color .5s;
+  display: inline-flex;
+  align-items: center;
+}
+
+#advanced:not(.collapsed) h1:hover {
+  color: #666;
+}
+
+#advanced.collapsed h1 {
+  padding: 0;
+  color: #666;
+}
+
+#advanced.collapsed:hover h1 {
+  color: #333;
+}
+
+#advanced .svg-icon {
+  fill: #333;
+  transition: fill .5s;
+  height: 16px;
+  width: 16px;
+}
+
+#advanced.collapsed .svg-icon,
+#advanced:not(.collapsed) h1:hover .svg-icon {
+  fill: #666;
+}
+
+#advanced.collapsed:hover .svg-icon {
+  fill: #333;
+}
+
+#advanced h1 .svg-icon {
+  margin-left: 2px;
+}
+
+#advanced.collapsed .is-expanded {
+  display: none;
+}
+
+#advanced:not(.collapsed) .is-collapsed {
+  display: none;
+}
+
 #notes {
   background-color: #f4f4f4;
   padding: 1.5ex 16px 1ex calc(16px + 2ex);
