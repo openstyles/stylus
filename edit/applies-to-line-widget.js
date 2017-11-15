@@ -10,7 +10,7 @@ function createAppliesToLineWidget(cm) {
   ];
   const THROTTLE_DELAY = 400;
   let widgets = [];
-  let fromLine, toLine, gutterStyle;
+  let fromLine, toLine, styleVariables;
   let initialized = false;
 
   return {toggle};
@@ -29,7 +29,7 @@ function createAppliesToLineWidget(cm) {
   function init() {
     initialized = true;
 
-    gutterStyle = getComputedStyle(cm.getGutterElement());
+    styleVariables = $element({tag: 'style'});
     fromLine = null;
     toLine = null;
 
@@ -40,6 +40,7 @@ function createAppliesToLineWidget(cm) {
     window.addEventListener('load', updateWidgetStyle);
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
+    updateWidgetStyle();
     update();
   }
 
@@ -52,6 +53,7 @@ function createAppliesToLineWidget(cm) {
     cm.off('optionChange', onOptionChange);
     window.removeEventListener('load', updateWidgetStyle);
     chrome.runtime.onMessage.removeListener(onRuntimeMessage);
+    styleVariables.remove();
   }
 
   function onChange(cm, {from, to, origin}) {
@@ -87,20 +89,24 @@ function createAppliesToLineWidget(cm) {
   }
 
   function updateWidgetStyle() {
-    gutterStyle = getComputedStyle(cm.getGutterElement());
-    widgets.forEach(setWidgetStyle);
-  }
-
-  function setWidgetStyle(widget) {
-    let borderStyle = '';
-    if (gutterStyle.borderRightWidth !== '0px') {
-      borderStyle = `${gutterStyle.borderRightWidth} ${gutterStyle.borderRightStyle} ${gutterStyle.borderRightColor}`;
-    } else {
-      borderStyle = `1px solid ${gutterStyle.color}`;
-    }
-    widget.node.style.backgroundColor = gutterStyle.backgroundColor;
-    widget.node.style.borderTop = borderStyle;
-    widget.node.style.borderBottom = borderStyle;
+    const gutterStyle = getComputedStyle(cm.getGutterElement());
+    const borderStyle = gutterStyle.borderRightWidth !== '0px' ?
+      `${gutterStyle.borderRightWidth} ${gutterStyle.borderRightStyle} ${gutterStyle.borderRightColor}` :
+      `1px solid ${gutterStyle.color}`;
+    const id = Date.now();
+    styleVariables.textContent = `
+      .single-editor {
+        --at-background-color-${id}: ${gutterStyle.backgroundColor};
+        --at-border-top-${id}: ${borderStyle};
+        --at-border-bottom-${id}: ${borderStyle};
+      }
+      .applies-to {
+        background-color: var(--at-background-color-${id});
+        border-top: var(--at-border-top-${id});
+        border-bottom: var(--at-border-bottom-${id});
+      }
+    `;
+    document.documentElement.appendChild(styleVariables);
   }
 
   function doUpdate() {
@@ -145,7 +151,6 @@ function createAppliesToLineWidget(cm) {
         const newNode = buildElement(section);
         removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
         removed[i].node = newNode;
-        setWidgetStyle(removed[i]);
         removed[i].changed();
         yield removed[i];
         i++;
@@ -158,7 +163,6 @@ function createAppliesToLineWidget(cm) {
         above: true
       });
       widget.section = section;
-      setWidgetStyle(widget);
       yield widget;
     }
     removed.slice(i).forEach(clearWidget);
