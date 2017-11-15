@@ -45,13 +45,19 @@ function createSourceEditor(style) {
   }
 
   // draw CodeMirror
-  $('#sections textarea').value = style.sourceCode;
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
+  cm.startOperation();
+  cm.setValue(style.sourceCode);
+  cm.clearHistory();
+  cm.markClean();
+
   // too many functions depend on this global
   editors.push(cm);
 
   // draw metas info
   updateMeta();
+  cm.endOperation();
+
   initHooks();
   initAppliesToLineWidget();
 
