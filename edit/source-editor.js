@@ -49,7 +49,6 @@ function createSourceEditor(style) {
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
   // too many functions depend on this global
   editors.push(cm);
-  cm.focus();
 
   // draw metas info
   updateMeta();
@@ -59,6 +58,9 @@ function createSourceEditor(style) {
   // setup linter
   initLint();
   initLinterSwitch();
+
+  // focus must be the last action, otherwise the style is duplicated on saving
+  cm.focus();
 
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
