@@ -191,7 +191,7 @@ html:not(.firefox):not(.opera) #options > .block:nth-last-of-type(3) {
   margin-bottom: 0;
 }
 
-#advanced.collapsible:not(.collapsed) .collapsible-resizer, .collapsible-resizer {
+#advanced.collapsible:not(.collapsed) .collapsible-resizer, #advanced:not(.collapsible) .collapsible-resizer {
   padding-right: 8px;
   box-sizing: border-box;
   width: 30%;
@@ -206,7 +206,7 @@ html:not(.firefox):not(.opera) #options > .block:nth-last-of-type(3) {
   align-items: center;
 }
 
-.collapsible-resizer h1 {
+#advanced:not(.collapsible) .collapsible-resizer h1 {
   width: unset;
   padding: 0;
   display: inline-flex;
