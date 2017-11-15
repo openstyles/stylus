@@ -129,6 +129,8 @@ const styleViaAPI = !CHROME && (() => {
       const tasks = Object.keys(frameStyles)
         .map(id => removeCSS(tab.id, frameId, frameStyles[id].join('\n')));
       return Promise.all(tasks);
+    } else {
+      return NOP;
     }
   }
 
