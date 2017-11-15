@@ -6,7 +6,7 @@ enforceInputRange($('#popupWidth'));
 
 if (!FIREFOX && !OPERA) {
   const block = $('#advanced');
-  block.classList.add('collapsed');
+  block.classList.add('collapsible', 'collapsed');
   block.onclick = event => {
     if (block.classList.contains('collapsed') || event.target.closest('h1')) {
       block.classList.toggle('collapsed');
