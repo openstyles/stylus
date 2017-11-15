@@ -1360,45 +1360,56 @@ function isUsercss(style) {
 
 function initWithSectionStyle({style, codeIsUpdated}) {
   setStyleMeta(style);
-
-  if (codeIsUpdated === false) {
-    setCleanGlobal();
-    updateTitle();
-    return;
+  if (codeIsUpdated !== false) {
+    editors.length = 0;
+    getSections().forEach(div => div.remove());
+    addSections(style.sections.length ? style.sections : [{code: ''}]);
+    initHooks();
   }
-  // if this was done in response to an update, we need to clear existing sections
-  editors.length = 0;
-  getSections().forEach(div => div.remove());
-  const queue = style.sections.length ? style.sections.slice() : [{code: ''}];
-  const t0 = performance.now();
-  maximizeCodeHeight.stats = null;
-  // after 100ms the sections will be added asynchronously
-  while (performance.now() - t0 <= 100 && queue.length) {
-    add();
-  }
-  (function processQueue() {
-    if (queue.length) {
-      add();
-      setTimeout(processQueue);
-      if (performance.now() - t0 > 500) {
-        setGlobalProgress(editors.length, style.sections.length);
-      }
-    } else {
-      setGlobalProgress();
-    }
-  })();
-  editors[0].focus();
-  initHooks();
   setCleanGlobal();
   updateTitle();
+}
 
-  function add() {
-    const sectionDiv = addSection(null, queue.shift());
-    maximizeCodeHeight(sectionDiv, !queue.length);
-    if (!queue.length) {
-      editors.last.state.renderLintReportNow = true;
-    }
+function addSections(sections, onAdded = () => {}) {
+  if (addSections.running) {
+    console.error('addSections cannot be re-entered: please report to the developers');
+    // TODO: handle this properly e.g. on update/import
+    return;
   }
+  addSections.running = true;
+  maximizeCodeHeight.stats = null;
+  // make a shallow copy since we might run asynchronously
+  // and the original array might get modified
+  sections = sections.slice();
+  const t0 = performance.now();
+  const divs = [];
+  let index = 0;
+  return new Promise(function run(resolve) {
+    while (index < sections.length) {
+      const div = addSection(null, sections[index]);
+      maximizeCodeHeight(div, index === sections.length - 1);
+      onAdded(div, index);
+      divs.push(div);
+      index++;
+      const elapsed = performance.now() - t0;
+      if (elapsed > 500) {
+        setGlobalProgress(index, sections.length);
+      }
+      if (elapsed > 100) {
+        // after 100ms the sections are added asynchronously
+        setTimeout(run, 0, resolve);
+        return;
+      }
+    }
+    if (divs[0]) {
+      makeSectionVisible(divs[0].CodeMirror);
+      divs[0].CodeMirror.focus();
+    }
+    editors.last.state.renderLintReportNow = true;
+    addSections.running = false;
+    setGlobalProgress();
+    resolve(divs);
+  });
 }
 
 function setupOptionsExpand() {
@@ -1657,74 +1668,61 @@ function fromMozillaFormat() {
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
         title: t('importReplaceTooltip'),
-        onclick: doImport,
+        onclick: () => doImport({replaceOldStyle: true}),
       }),
     ]}));
-
   const contents = $('.contents', popup);
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
-  popup.codebox.on('change', () => {
-    clearTimeout(popup.mozillaTimeout);
-    popup.mozillaTimeout = setTimeout(() => {
-      popup.classList.toggle('ready', trimNewLines(popup.codebox.getValue()));
-    }, 100);
+  popup.codebox.on('changes', cm => {
+    popup.classList.toggle('ready', !cm.isBlank());
   });
+  // overwrite default extraKeys as those are inapplicable in popup context
+  popup.codebox.options.extraKeys = {
+    'Ctrl-Enter': doImport,
+    'Shift-Ctrl-Enter': () => doImport({replaceOldStyle: true}),
+  };
 
-  function doImport(event) {
-    const replaceOldStyle = event.target.name === 'import-replace';
-    const mozStyle = trimNewLines(popup.codebox.getValue());
-
-    mozParser.parse(mozStyle)
-      .then(updateSection)
-      .then(() => {
-        editors.forEach(cm => updateLintReportIfEnabled(cm, 1));
-        editors.last.state.renderLintReportNow = true;
+  function doImport({replaceOldStyle = false}) {
+    lockPageUI(true);
+    new Promise(setTimeout)
+      .then(() => mozParser.parse(popup.codebox.getValue().trim()))
+      .then(sections => {
+        removeOldSections(replaceOldStyle);
+        return addSections(sections, div => setCleanItem(div, false));
+      })
+      .then(sectionDivs => {
+        sectionDivs.forEach(div => updateLintReportIfEnabled(div.CodeMirror, 1));
         $('.dismiss', popup).onclick();
       })
-      .catch(showError);
-
-    function showError(errors) {
-      if (!Array.isArray(errors)) {
-        errors = [errors];
-      }
-      showHelp(t('styleFromMozillaFormatError'), $element({
-        tag: 'pre',
-        textContent: errors.join('\n'),
-      }));
-    }
-
-    function updateSection(sections) {
-      if (replaceOldStyle) {
-        editors.slice(0).reverse().forEach(cm => {
-          removeSection({target: cm.getSection().firstElementChild});
-        });
-      } else if (!editors.last.getValue()) {
-        // nuke the last blank section
-        if ($('.applies-to-everything', editors.last.getSection())) {
-          removeSection({target: editors.last.getSection()});
-        }
-      }
-
-      const firstSection = sections[0];
-      setCleanItem(addSection(null, firstSection), false);
-      const firstAddedCM = editors.last;
-      for (const section of sections.slice(1)) {
-        setCleanItem(addSection(null, section), false);
-      }
-
-      delete maximizeCodeHeight.stats;
-      editors.forEach(cm => {
-        maximizeCodeHeight(cm.getSection(), cm === editors.last);
-      });
-
-      makeSectionVisible(firstAddedCM);
-      firstAddedCM.focus();
-    }
+      .catch(showError)
+      .then(() => lockPageUI(false));
   }
 
-  function trimNewLines(s) {
-    return s.replace(/^[\s\n]+/, '').replace(/[\s\n]+$/, '');
+  function removeOldSections(removeAll) {
+    let toRemove;
+    if (removeAll) {
+      toRemove = editors.slice().reverse();
+    } else if (editors.last.isBlank() && $('.applies-to-everything', editors.last.getSection())) {
+      toRemove = [editors.last];
+    } else {
+      return;
+    }
+    toRemove.forEach(cm => removeSection({target: cm.getSection()}));
+  }
+
+  function lockPageUI(locked) {
+    document.documentElement.style.pointerEvents = locked ? 'none' : '';
+    popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
+    popup.codebox.options.readOnly = locked;
+    popup.codebox.display.wrapper.style.opacity = locked ? '.5' : '';
+  }
+
+  function showError(errors) {
+    showHelp(t('styleFromMozillaFormatError'), $element({
+      tag: 'pre',
+      textContent: Array.isArray(errors) ? errors.join('\n') : errors,
+    }));
   }
 }
 
