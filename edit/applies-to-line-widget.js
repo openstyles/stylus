@@ -30,8 +30,8 @@ function createAppliesToLineWidget(cm) {
     initialized = true;
 
     styleVariables = $element({tag: 'style'});
-    fromLine = null;
-    toLine = null;
+    fromLine = 0;
+    toLine = cm.doc.size;
 
     cm.on('change', onChange);
     cm.on('optionChange', onOptionChange);
@@ -60,13 +60,8 @@ function createAppliesToLineWidget(cm) {
     if (origin === 'appliesTo') {
       return;
     }
-    if (fromLine === null || toLine === null) {
-      fromLine = from.line;
-      toLine = to.line;
-    } else {
-      fromLine = Math.min(fromLine, from.line);
-      toLine = Math.max(toLine, to.line);
-    }
+    fromLine = Math.min(fromLine === null ? from.line : fromLine, from.line);
+    toLine = Math.max(toLine === null ? to.line : toLine, to.line);
     debounce(update, THROTTLE_DELAY);
   }
 
@@ -85,7 +80,39 @@ function createAppliesToLineWidget(cm) {
   }
 
   function update() {
-    cm.operation(doUpdate);
+    const changed = {fromLine, toLine};
+    fromLine = Math.max(fromLine || 0, cm.display.viewFrom);
+    toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo);
+    const visible = {fromLine, toLine};
+    if (fromLine >= cm.display.viewFrom && toLine <= cm.display.viewTo) {
+      cm.operation(doUpdate);
+    }
+    if (changed.fromLine !== visible.fromLine || changed.toLine !== visible.toLine) {
+      setTimeout(updateInvisible, 0, changed, visible);
+    }
+  }
+
+  function updateInvisible(changed, visible) {
+    let inOp = false;
+    if (changed.fromLine < visible.fromLine) {
+      fromLine = Math.min(fromLine, changed.fromLine);
+      toLine = Math.min(changed.toLine, visible.fromLine);
+      inOp = true;
+      cm.startOperation();
+      doUpdate();
+    }
+    if (changed.toLine > visible.toLine) {
+      fromLine = Math.max(fromLine, changed.toLine);
+      toLine = Math.max(changed.toLine, visible.toLine);
+      if (!inOp) {
+        inOp = true;
+        cm.startOperation();
+      }
+      cm.operation(doUpdate);
+    }
+    if (inOp) {
+      cm.endOperation();
+    }
   }
 
   function updateWidgetStyle() {
@@ -113,8 +140,8 @@ function createAppliesToLineWidget(cm) {
     // find which widgets needs to be update
     // some widgets (lines) might be deleted
     widgets = widgets.filter(w => w.line.lineNo() !== null);
-    let i = fromLine === null ? 0 : widgets.findIndex(w => w.line.lineNo() > fromLine) - 1;
-    let j = toLine === null ? 0 : widgets.findIndex(w => w.line.lineNo() > toLine);
+    let i = widgets.findIndex(w => w.line.lineNo() > fromLine) - 1;
+    let j = widgets.findIndex(w => w.line.lineNo() > toLine);
     if (i === -2) {
       i = widgets.length - 1;
     }
@@ -124,7 +151,7 @@ function createAppliesToLineWidget(cm) {
 
     // decide search range
     const fromIndex = widgets[i] ? cm.indexFromPos({line: widgets[i].line.lineNo(), ch: 0}) : 0;
-    const toIndex = widgets[j] ? cm.indexFromPos({line: widgets[j].line.lineNo(), ch: 0}) : cm.getValue().length;
+    const toIndex = cm.indexFromPos({line: widgets[j] ? widgets[j].line.lineNo() : toLine, ch: 0});
 
     // splice
     i = Math.max(0, i);
