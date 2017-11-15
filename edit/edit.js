@@ -1411,7 +1411,7 @@ function addSections(sections, onAdded = () => {}) {
 
   function maybeFocusFirstCM() {
     const isPageLocked = document.documentElement.style.pointerEvents;
-    if (divs[0] && (isPageLocked ? index === sections.length : index === 0)) {
+    if (divs[0] && (isPageLocked ? divs.length === sections.length : index === 0)) {
       makeSectionVisible(divs[0].CodeMirror);
       divs[0].CodeMirror.focus();
     }
