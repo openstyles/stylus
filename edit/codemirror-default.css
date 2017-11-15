@@ -15,6 +15,13 @@
   outline: -webkit-focus-ring-color auto 5px;
   outline-offset: -2px;
 }
+@-moz-document url-prefix("") {
+  /* restrict to FF */
+  .CodeMirror-focused {
+    outline: #7dadd9 auto 1px;
+    outline-offset: -1px;
+  }
+}
 .CodeMirror-search-field {
   width: 10em;
 }
