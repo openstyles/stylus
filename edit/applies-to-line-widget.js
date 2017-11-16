@@ -1,6 +1,16 @@
 /* global regExpTester debounce messageBox CodeMirror */
 'use strict';
 
+function templateCache(cache) {
+  function clone(id) {
+    if (typeof cache[id] === 'function') {
+      cache[id] = cache[id]();
+    }
+    return cache[id].cloneNode(true);
+  }
+  return {clone};
+}
+
 function createAppliesToLineWidget(cm) {
   const APPLIES_TYPE = [
     [t('appliesUrlOption'), 'url'],
@@ -12,6 +22,57 @@ function createAppliesToLineWidget(cm) {
   let widgets = [];
   let fromLine, toLine, styleVariables;
   let initialized = false;
+
+  const template = templateCache({
+    container: () =>
+      $element({className: 'applies-to', appendChild: [
+        $element({tag: 'label', appendChild: t('appliesLabel')}),
+        $element({
+          tag: 'ul',
+          className: 'applies-to-list'
+        })
+      ]}),
+    listItem: () =>
+      $element({tag: 'li', appendChild: [
+        $element({
+          tag: 'select',
+          className: 'applies-type',
+          appendChild: APPLIES_TYPE.map(([label, value]) => $element({
+            tag: 'option',
+            value: value,
+            textContent: label
+          }))
+        }),
+        $element({
+          tag: 'input',
+          className: 'applies-value'
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-regexp-test',
+          textContent: t('styleRegexpTestButton')
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-remove',
+          textContent: t('appliesRemove')
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-add',
+          textContent: t('appliesAdd')
+        })
+      ]}),
+    appliesToEverything: () =>
+      $element({
+        tag: 'li',
+        className: 'applies-to-everything',
+        textContent: t('appliesToEverything')
+      })
+  });
 
   return {toggle};
 
@@ -240,128 +301,93 @@ function createAppliesToLineWidget(cm) {
   }
 
   function buildElement({applies}) {
-    const el = $element({className: 'applies-to', appendChild: [
-      $element({tag: 'label', appendChild: [
-        t('appliesLabel'),
-        // $element({tag: 'svg'})
-      ]}),
-      $element({
-        tag: 'ul',
-        className: 'applies-to-list',
-        appendChild: applies.map(makeLi)
-      })
-    ]});
-    if (!$('li', el)) {
-      $('ul', el).appendChild($element({
-        tag: 'li',
-        className: 'applies-to-everything',
-        textContent: t('appliesToEverything')
-      }));
+    const el = template.clone('container');
+    const appliesToList = $('.applies-to-list', el);
+    applies.map(makeLi)
+      .forEach(item => appliesToList.appendChild(item));
+    if (!appliesToList.childNodes.length) {
+      appliesToList.appendChild(template.clone('appliesToEverything'));
     }
     return el;
 
     function makeLi(apply) {
-      const el = $element({tag: 'li', appendChild: makeInput(apply)});
+      const el = template.clone('listItem');
       el.dataset.type = apply.type.text;
       el.addEventListener('change', e => {
         if (e.target.classList.contains('applies-type')) {
           el.dataset.type = apply.type.text;
         }
       });
-      return el;
-    }
 
-    function makeInput(apply) {
-      const typeInput = $element({
-        tag: 'select',
-        className: 'applies-type',
-        appendChild: APPLIES_TYPE.map(([label, value]) => $element({
-          tag: 'option',
-          value: value,
-          textContent: label
-        })),
-        onchange() {
-          applyChange(apply.type, this.value);
-        }
-      });
+      const typeInput = $('.applies-type', el);
       typeInput.value = apply.type.text;
-      const valueInput = $element({
-        tag: 'input',
-        className: 'applies-value',
-        value: apply.value.text,
-        oninput() {
-          debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
-        },
-        onfocus: updateRegexpTest
-      });
-      const regexpTestButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-regexp-test',
-        textContent: t('styleRegexpTestButton'),
-        onclick() {
-          regExpTester.toggle();
-          regExpTester.update([apply.value.text]);
+      typeInput.onchange = function () {
+        applyChange(apply.type, this.value);
+      };
+
+      const valueInput = $('.applies-value', el);
+      valueInput.value = apply.value.text;
+      valueInput.oninput = function () {
+        debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
+      };
+      valueInput.onfocus = updateRegexpTest;
+
+      const regexpTestButton = $('.applies-to-regexp-test', el);
+      regexpTestButton.onclick = () => {
+        regExpTester.toggle();
+        regExpTester.update([apply.value.text]);
+      };
+
+      const removeButton = $('.applies-to-remove', el);
+      removeButton.onclick = function () {
+        const i = applies.indexOf(apply);
+        let repl;
+        let from;
+        let to;
+        if (applies.length < 2) {
+          messageBox({
+            contents: chrome.i18n.getMessage('appliesRemoveError'),
+            buttons: [t('confirmClose')]
+          });
+          return;
         }
-      });
-      const removeButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-remove',
-        textContent: t('appliesRemove'),
-        onclick() {
-          const i = applies.indexOf(apply);
-          let repl;
-          let from;
-          let to;
-          if (applies.length < 2) {
-            messageBox({
-              contents: chrome.i18n.getMessage('appliesRemoveError'),
-              buttons: [t('confirmClose')]
-            });
-            return;
-          }
-          if (i === 0) {
-            from = apply.mark.find().from;
-            to = applies[i + 1].mark.find().from;
-            repl = '';
-          } else if (i === applies.length - 1) {
-            from = applies[i - 1].mark.find().to;
-            to = apply.mark.find().to;
-            repl = '';
-          } else {
-            from = applies[i - 1].mark.find().to;
-            to = applies[i + 1].mark.find().from;
-            repl = ', ';
-          }
-          cm.replaceRange(repl, from, to, 'appliesTo');
-          clearApply(apply);
-          this.closest('li').remove();
-          applies.splice(i, 1);
+        if (i === 0) {
+          from = apply.mark.find().from;
+          to = applies[i + 1].mark.find().from;
+          repl = '';
+        } else if (i === applies.length - 1) {
+          from = applies[i - 1].mark.find().to;
+          to = apply.mark.find().to;
+          repl = '';
+        } else {
+          from = applies[i - 1].mark.find().to;
+          to = applies[i + 1].mark.find().from;
+          repl = ', ';
         }
-      });
-      const addButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-add',
-        textContent: t('appliesAdd'),
-        onclick() {
-          const i = applies.indexOf(apply);
-          const pos = apply.mark.find().to;
-          const text = `, ${apply.type.text}("")`;
-          cm.replaceRange(text, pos, pos, 'appliesTo');
-          const newApply = createApply(
-            cm.indexFromPos(pos) + 2,
-            apply.type.text,
-            '',
-            true
-          );
-          setupApplyMarkers(newApply);
-          applies.splice(i + 1, 0, newApply);
-          this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
-        }
-      });
-      return [typeInput, valueInput, regexpTestButton, removeButton, addButton];
+        cm.replaceRange(repl, from, to, 'appliesTo');
+        clearApply(apply);
+        this.closest('li').remove();
+        applies.splice(i, 1);
+      };
+
+      const addButton = $('.applies-to-add', el);
+      addButton.onclick = function () {
+        const i = applies.indexOf(apply);
+        const pos = apply.mark.find().to;
+        const text = `, ${apply.type.text}("")`;
+        cm.replaceRange(text, pos, pos, 'appliesTo');
+        const newApply = createApply(
+          cm.indexFromPos(pos) + 2,
+          apply.type.text,
+          '',
+          true
+        );
+        setupApplyMarkers(newApply);
+        applies.splice(i + 1, 0, newApply);
+        this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
+      };
+
+      return el;
 
       function updateRegexpTest() {
         if (apply.type.text === 'regexp') {
