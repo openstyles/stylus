@@ -312,6 +312,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 .regexp-report details {
   margin-left: 1rem;
+  word-break: break-all;
 }
 .regexp-report details:not(:last-child) {
   margin-bottom: 1rem;
