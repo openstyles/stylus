@@ -345,6 +345,11 @@ function acmeEventListener(event) {
     case 'autocompleteOnTyping':
       editors.forEach(cm => setupAutocomplete(cm, el.checked));
       return;
+    case 'autoCloseBrackets':
+      Promise.resolve(value && loadScript('/vendor/codemirror/addon/edit/closebrackets.js')).then(() => {
+        CodeMirror.setOption(option, value);
+      });
+      return;
     case 'matchHighlight':
       switch (value) {
         case 'token':

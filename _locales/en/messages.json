@@ -115,6 +115,14 @@
     "message": "Checking...",
     "description": "Text to display when checking a style for an update"
   },
+  "cm_autoCloseBrackets": {
+    "message": "Autoclose brackets and quotes",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Automatically add a closing pair when typing an opening one of ()[]{}''\"\"",
+    "description": "Label for the checkbox in the style editor."
+  },
   "cm_autocompleteOnTyping": {
     "message": "Autocomplete on typing",
     "description": "Label for the checkbox in the style editor."
