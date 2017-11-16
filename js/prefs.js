@@ -136,9 +136,13 @@ var prefs = new function Prefs() {
         }
       }
       if (hasChanged) {
-        const listener = onChange.specific.get(key);
-        if (listener) {
-          listener(key, value);
+        const specific = onChange.specific.get(key);
+        if (typeof specific === 'function') {
+          specific(key, value);
+        } else if (specific instanceof Set) {
+          for (const listener of specific.values()) {
+            listener(key, value);
+          }
         }
         for (const listener of onChange.any.values()) {
           listener(key, value);
@@ -164,7 +168,14 @@ var prefs = new function Prefs() {
       // listener: function (key, value)
       if (keys) {
         for (const key of keys) {
-          onChange.specific.set(key, listener);
+          const existing = onChange.specific.get(key);
+          if (!existing) {
+            onChange.specific.set(key, listener);
+          } else if (existing instanceof Set) {
+            existing.add(listener);
+          } else {
+            onChange.specific.set(key, new Set([existing, listener]));
+          }
         }
       } else {
         onChange.any.add(listener);
