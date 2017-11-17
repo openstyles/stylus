@@ -106,6 +106,8 @@ function initPopup(url) {
       installed);
   }
 
+  $('#load-styles-link').onclick = handleEvent.loadRemoteStyles;
+
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
   $('#find-styles-link').href +=
     url.startsWith(location.protocol) ?
@@ -387,6 +389,11 @@ Object.assign(handleEvent, {
       event.preventDefault();
       return;
     }
+  },
+
+  loadRemoteStyles(event) {
+    event.preventDefault();
+    console.log("loadRemoteStyles event:", event);
   },
 
   openURLandHide(event) {
