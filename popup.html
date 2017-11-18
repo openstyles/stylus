@@ -3,6 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <link rel="stylesheet" href="popup/popup.css">
+  <link rel="stylesheet" href="popup/remoteStyles.css">
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -79,12 +80,43 @@
     </div>
   </template>
 
+  <template data-id="searchResult">
+    <div class="searchResult">
+      <img class="searchResult-screenshot"
+          src="https://userstyles.org/style_screenshot_thumbnails/118959_after.png"
+          title="Style screenshot" />
+      <a class="searchResult-title"
+        href="https://userstyles.org/styles/118959/darksearch-for-google"
+        target="_blank"
+        title="DarkSearch for Google">
+        DarkSearch for Google
+      </a>
+      <div class="searchResult-description"
+          title="The best Dark theme for Google.">
+        The best Dark theme for Google.
+      </div>
+      <div class="searchResult-author">
+        By:
+        <a class="searchResult-authorLink"
+          href="https://userstyles.org/users/280080"
+          target="_blank"
+          title="Nass O">
+          Nass O
+        </a>
+      </div>
+      <div class="actions">
+        <button class="remote-style-install" i18n-text="remoteStyleInstall" i18n-title="remoteStyleInstallTooltip"></button>
+      </div>
+    </div>
+  </template>
+
   <script src="js/dom.js"></script>
   <script src="js/messaging.js"></script>
   <script src="js/localization.js"></script>
   <script src="js/prefs.js"></script>
   <script src="content/apply.js"></script>
   <script src="popup/popup.js"></script>
+  <script src="popup/remoteStyles.js"></script>
 </head>
 
 <body id="stylus-popup">
@@ -113,9 +145,19 @@
     </div>
     <div class="left-gutter"></div>
     <div class="main-controls">
-      <div id="load-styles">
-        <a id="load-styles-link" href="#"
+      <div id="load-remote-styles">
+        <a id="load-remote-styles-link" href="#"
            i18n-text="loadStylesForSite"></a>
+      </div>
+      <div id="remote-styles">
+        <div id="searchResults"></div>
+        <div id="searchResultsNav">
+          <button id="searchResultsNav-prev">&lt;</button>
+          <span id="searchResultsNav-currentPage">1</span>
+          /
+          <span id="searchResultsNav-totalPages">200</span>
+          <button id="searchResultsNav-next">&gt;</button>
+        </div>
       </div>
       <div id="find-styles">
         <a id="find-styles-link" href="https://userstyles.org/styles/browse/"

@@ -106,8 +106,6 @@ function initPopup(url) {
       installed);
   }
 
-  $('#load-styles-link').onclick = handleEvent.loadRemoteStyles;
-
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
   $('#find-styles-link').href +=
     url.startsWith(location.protocol) ?

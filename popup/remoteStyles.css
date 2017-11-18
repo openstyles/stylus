@@ -1,0 +1,40 @@
+#remote-styles {
+  width: 200px;
+  overflow: hidden;
+  background-color: rgba(150,150,150,0.3);
+}
+
+#remote-styles-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding: 5px;
+}
+.remote-style img {
+  display: block;
+  width: 180px;
+  height: 99px;
+}
+
+li.remote-style {
+  list-style: none;
+  padding: 5px;
+}
+li.remote-style:hover {
+  background-color: rgba(50, 150, 255, 0.5);
+}
+
+li.remote-style > .title {
+  font-weight: bold;
+}
+
+li.remote-style > .description {
+  overflow: hidden;
+  font-style: italic;
+}
+
+li.remote-style > * {
+  width: 180px;
+  overflow-x: ellipsis;
+  white-space: nowrap;
+}

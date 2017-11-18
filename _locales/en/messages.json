@@ -337,6 +337,14 @@
     "message": "Load Styles",
     "description": "Text for a link that loads styles within the popup"
   },
+  "remoteStyleInstall": {
+    "message": "Install",
+    "description": "Text for a button that installs a remote style"
+  },
+  "remoteStyleInstallTooltip": {
+    "message": "Install this style permanently",
+    "description": "Tooltip for a button that installs a remote style"
+  },
   "findStylesForSite": {
     "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
