@@ -1,40 +1,63 @@
-#remote-styles {
-  width: 200px;
+#disable-all-wrapper {
+  border-bottom: solid 1px #000;
+  margin-bottom: 5px;
+}
+
+#remote-styles.hidden,
+#load-remote-styles.hidden {
+  display: none;
+}
+
+#remote-styles, #searchResults {
+  max-width: 200px;
   overflow: hidden;
-  background-color: rgba(150,150,150,0.3);
 }
 
-#remote-styles-list {
-  padding-inline-start: 0;
-  margin-block-start: 0;
-  margin-block-end: 0;
+.searchResult {
   padding: 5px;
 }
-.remote-style img {
-  display: block;
-  width: 180px;
-  height: 99px;
-}
-
-li.remote-style {
-  list-style: none;
-  padding: 5px;
-}
-li.remote-style:hover {
+.searchResult:hover {
   background-color: rgba(50, 150, 255, 0.5);
 }
 
-li.remote-style > .title {
+.searchResult img {
+  width: 50px;
+  height: 40px;
+}
+
+.searchResult-title {
   font-weight: bold;
 }
 
-li.remote-style > .description {
+.searchResult-description {
   overflow: hidden;
   font-style: italic;
 }
 
-li.remote-style > * {
-  width: 180px;
+.searchResult > * {
+  max-width: 108px;
   overflow-x: ellipsis;
   white-space: nowrap;
+}
+
+#searchResultsNav {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+}
+
+#searchResultsNav label {
+  width: 20px;
+  display: inline-block;
+}
+
+#searchResultsNav button {
+  text-align: center;
+  width: 10px;
+}
+
+#searchResultsNav-prev[disabled],
+#searchResultsNav-next[disabled] {
+  cursor: not-allowed;
+  background-image: linear-gradient(rgba(90, 90, 90, 0.5), rgba(90, 90, 90, 0.5));
 }

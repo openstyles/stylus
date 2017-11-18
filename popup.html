@@ -82,27 +82,12 @@
 
   <template data-id="searchResult">
     <div class="searchResult">
-      <img class="searchResult-screenshot"
-          src="https://userstyles.org/style_screenshot_thumbnails/118959_after.png"
-          title="Style screenshot" />
-      <a class="searchResult-title"
-        href="https://userstyles.org/styles/118959/darksearch-for-google"
-        target="_blank"
-        title="DarkSearch for Google">
-        DarkSearch for Google
-      </a>
-      <div class="searchResult-description"
-          title="The best Dark theme for Google.">
-        The best Dark theme for Google.
-      </div>
+      <img class="searchResult-screenshot" />
+      <a class="searchResult-title" target="_blank"></a>
+      <div class="searchResult-description"></div>
       <div class="searchResult-author">
         By:
-        <a class="searchResult-authorLink"
-          href="https://userstyles.org/users/280080"
-          target="_blank"
-          title="Nass O">
-          Nass O
-        </a>
+        <a class="searchResult-authorLink" target="_blank"></a>
       </div>
       <div class="actions">
         <button class="remote-style-install" i18n-text="remoteStyleInstall" i18n-title="remoteStyleInstallTooltip"></button>
@@ -143,21 +128,24 @@
         <label id="disableAll-label" for="disableAll" i18n-text="disableAllStyles"></label>
       </div>
     </div>
+    <div id="remote-styles" class="hidden">
+      <h3>Search Results for <span id="searchResults-terms">-</span></h3>
+      <div id="searchResults"></div>
+      <div id="searchResultsNav">
+        <button id="searchResultsNav-prev" title="Previous page" disabled>&lt;</button>
+        <label>
+          <span id="searchResultsNav-currentPage" title="Current page">-</span>
+          /
+          <span id="searchResultsNav-totalPages" title="Total pages of search results">-</span>
+        </label>
+        <button id="searchResultsNav-next" title="Next page" disabled>&gt;</button>
+      </div>
+    </div>
     <div class="left-gutter"></div>
     <div class="main-controls">
       <div id="load-remote-styles">
         <a id="load-remote-styles-link" href="#"
            i18n-text="loadStylesForSite"></a>
-      </div>
-      <div id="remote-styles">
-        <div id="searchResults"></div>
-        <div id="searchResultsNav">
-          <button id="searchResultsNav-prev">&lt;</button>
-          <span id="searchResultsNav-currentPage">1</span>
-          /
-          <span id="searchResultsNav-totalPages">200</span>
-          <button id="searchResultsNav-next">&gt;</button>
-        </div>
       </div>
       <div id="find-styles">
         <a id="find-styles-link" href="https://userstyles.org/styles/browse/"
