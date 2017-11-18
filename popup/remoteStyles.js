@@ -16,7 +16,6 @@ function fetchSearchResults(queryParams) {
       'Accept': '*/*'
     };
     const url = 'https://userstyles.org/api/v1/styles/search?' + queryParams;
-    console.log('fetchSearchResults url:', url);
     const xhr = new XMLHttpRequest();
     xhr.timeout = TIMEOUT;
     xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
@@ -31,6 +30,10 @@ function fetchSearchResults(queryParams) {
   });
 }
 
+/**
+ *
+ * @param {Object} searchResult The JSON object from userstyles.org representing a search result.
+ */
 function createSearchResultElement(searchResult) {
   /*
     searchResult format:
@@ -45,14 +48,11 @@ function createSearchResultElement(searchResult) {
       }
     }
   */
-  console.log('createSearchResultElement searchResult:', searchResult);
-
   const entry = template.searchResult.cloneNode(true);
   Object.assign(entry, {
     id: ENTRY_ID_PREFIX_RAW + searchResult.id,
     styleId: searchResult.id
   });
-  console.log('createSearchResultElement entry:', entry);
 
   const title = $('.searchResult-title', entry);
   Object.assign(title, {
@@ -69,14 +69,14 @@ function createSearchResultElement(searchResult) {
   }
   Object.assign(screenshot, {
     src: ss_url,
-    title: 'Screenshot of ' + searchResult.name
+    title: searchResult.name
   });
 
   // TODO: Expand/collapse description
   const description = $('.searchResult-description', entry);
   Object.assign(description, {
     textContent: searchResult.description.replace(/<.*?>/g, ""),
-    title: searchResult.description.replace(/<.*?>/g, ""),
+    title: searchResult.description.replace(/<.*?>/g, "")
   });
 
   const authorLink = $('.searchResult-authorLink', entry);

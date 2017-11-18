@@ -21,11 +21,13 @@
 }
 
 .searchResult img {
-  width: 50px;
-  height: 40px;
+  display: block;
+  max-width: 180px;
+  max-height: 180px;
 }
 
 .searchResult-title {
+  display: block;
   font-weight: bold;
 }
 
@@ -35,25 +37,24 @@
 }
 
 .searchResult > * {
-  max-width: 108px;
-  overflow-x: ellipsis;
+  overflow-x: hidden;
   white-space: nowrap;
 }
 
 #searchResultsNav {
-  display: flex;
   flex-direction: row;
   text-align: center;
+  word-break: keep-all;
 }
 
 #searchResultsNav label {
-  width: 20px;
+  width: 40px;
   display: inline-block;
+  word-break: keep-all;
 }
 
 #searchResultsNav button {
   text-align: center;
-  width: 10px;
 }
 
 #searchResultsNav-prev[disabled],
