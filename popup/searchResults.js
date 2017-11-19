@@ -1,7 +1,6 @@
 'use strict';
 
 let currentPage = 1;
-let hostname;
 
 /**
  * Fetches JSON object from userstyles.org API
@@ -30,7 +29,7 @@ function fetchUserstylesAPI(path, queryParams) {
           reject("Failed to parse JSON from " + url + "\nJSON Text: " + xhr.responseText);
         }
       } else {
-        reject(xhr.status);
+        reject("Error code " + xhr.status);
       }
     };
     xhr.onerror = reject;
@@ -108,9 +107,21 @@ function createSearchResultElement(searchResult) {
       event.preventDefault();
       // TODO: Install style
       fetchUserstylesAPI("/api/v1/styles/" + searchResult.id)
-        .then( styleObject => {
+        .then(styleObject => {
           console.log("TODO: Install style ID", searchResult.id);
           console.log("Full styleObject:", styleObject);
+          /*
+           * Sample full styleObject: https://userstyles.org/api/v1/styles/70271
+           * The "id" is the ID of the userstyles.org style (e.g. 70271 above)
+           * saveStyleSafe({...}) expects an "id" referring to the Stylus ID (1-n)
+           */
+          delete styleObject.id;
+          Object.assign(styleObject, {
+            enabled: true,
+            reason: 'update',
+            notify: true
+          });
+          saveStyleSafe(styleObject);
           alert("TODO: Install style ID #" + searchResult.id + " name '" + searchResult.name + "'");
         })
         .catch(reason => {
@@ -176,7 +187,7 @@ function loadSearchResults(event) {
   $('#searchResults-list').innerHTML = "";
   // Find styles for the current active tab
   getActiveTab().then(tab => {
-    hostname = new URL(tab.url).hostname;
+    const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, "$1");
     const queryParams = [
       'search=' + encodeURIComponent(hostname),
       'page=' + currentPage,
@@ -195,10 +206,12 @@ function loadSearchResults(event) {
         processSearchResults(code);
       })
       .catch(reason => {
-        throw reason;
+        $('#load-search-results').classList.remove("hidden");
+        $('#searchResults').classList.add("hidden");
+        alert("Error while loading search results: " + reason);
       });
   });
-  return false;
+  return true;
 }
 
 onDOMready().then(() => {
