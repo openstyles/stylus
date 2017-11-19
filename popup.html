@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <link rel="stylesheet" href="popup/popup.css">
-  <link rel="stylesheet" href="popup/remoteStyles.css">
+  <link rel="stylesheet" href="popup/searchResults.css">
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -90,7 +90,7 @@
         <a class="searchResult-authorLink" target="_blank"></a>
       </div>
       <div class="actions">
-        <button class="remote-style-install" i18n-text="remoteStyleInstall" i18n-title="remoteStyleInstallTooltip"></button>
+        <button class="searchResult-install" i18n-text="searchResultInstall" i18n-title="searchResultInstallTooltip"></button>
       </div>
     </div>
   </template>
@@ -101,7 +101,7 @@
   <script src="js/prefs.js"></script>
   <script src="content/apply.js"></script>
   <script src="popup/popup.js"></script>
-  <script src="popup/remoteStyles.js"></script>
+  <script src="popup/searchResults.js"></script>
 </head>
 
 <body id="stylus-popup">
@@ -128,9 +128,9 @@
         <label id="disableAll-label" for="disableAll" i18n-text="disableAllStyles"></label>
       </div>
     </div>
-    <div id="remote-styles" class="hidden">
+    <div id="searchResults" class="hidden">
       <h3>Search Results for <span id="searchResults-terms">-</span></h3>
-      <div id="searchResults"></div>
+      <div id="searchResults-list"></div>
       <div id="searchResultsNav">
         <button id="searchResultsNav-prev" title="Previous page" disabled>Prev</button>
         <label>
@@ -143,8 +143,8 @@
     </div>
     <div class="left-gutter"></div>
     <div class="main-controls">
-      <div id="load-remote-styles">
-        <a id="load-remote-styles-link" href="#"
+      <div id="load-search-results">
+        <a id="load-search-results-link" href="#"
            i18n-text="loadStylesForSite"></a>
       </div>
       <div id="find-styles">

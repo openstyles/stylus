@@ -3,12 +3,17 @@
   margin-bottom: 5px;
 }
 
-#remote-styles.hidden,
-#load-remote-styles.hidden {
+#searchResults,
+#load-search-results {
+  display: block;
+}
+
+#searchResults.hidden,
+#load-search-results.hidden {
   display: none;
 }
 
-#remote-styles, #searchResults {
+#searchResults, #searchResults-list {
   max-width: 200px;
   overflow: hidden;
 }
@@ -55,6 +60,10 @@
 
 #searchResultsNav button {
   text-align: center;
+}
+
+.searchResult-install {
+  width: 100%;
 }
 
 #searchResultsNav-prev[disabled],

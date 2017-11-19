@@ -4,23 +4,35 @@ let currentPage = 1;
 let hostname;
 
 /**
- * Fetches and parses search results (in JSON) from userstyles.org
- * @return {Object} Search results from userstyles.org
+ * Fetches JSON object from userstyles.org API
+ * @param {string} path Path on userstyles.org (e.g. /api/v1/styles)
  * @param {string} queryParams Query parameters to send in search request.
+ * @return {Object} API response object from userstyles.org
  */
-function fetchSearchResults(queryParams) {
+function fetchUserstylesAPI(path, queryParams) {
   return new Promise(function(resolve, reject) {
     const TIMEOUT = 10000;
     const headers = {
       'Content-type': 'application/json',
       'Accept': '*/*'
     };
-    const url = 'https://userstyles.org/api/v1/styles/search?' + queryParams;
+    let url = 'https://userstyles.org' + path;
+    if (queryParams) {
+      url += "?" + queryParams;
+    }
     const xhr = new XMLHttpRequest();
     xhr.timeout = TIMEOUT;
-    xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
-      ? resolve(JSON.parse(xhr.responseText))
-      : reject(xhr.status));
+    xhr.onload = () => {
+      if (xhr.status === 200 || url.protocol === 'file:') {
+        try {
+          resolve(JSON.parse(xhr.responseText));
+        } catch (err) {
+          reject("Failed to parse JSON from " + url + "\nJSON Text: " + xhr.responseText);
+        }
+      } else {
+        reject(xhr.status);
+      }
+    };
     xhr.onerror = reject;
     xhr.open('GET', url, true);
     for (const key of Object.keys(headers)) {
@@ -31,13 +43,12 @@ function fetchSearchResults(queryParams) {
 }
 
 /**
- *
+ * Adds an entry to the Search Results DOM
  * @param {Object} searchResult The JSON object from userstyles.org representing a search result.
  */
 function createSearchResultElement(searchResult) {
   /*
-    searchResult format:
-    {
+    searchResult format: {
       id: 100835,
       name: "Reddit Flat Dark",
       screenshot_url: "19339_after.png",
@@ -87,7 +98,29 @@ function createSearchResultElement(searchResult) {
     onclick: handleEvent.openURLandHide
   });
 
-  $('#searchResults').appendChild(entry);
+  // TODO: Total & Weekly Install Counts
+  // TODO: Rating
+
+  const install = $('.searchResult-install', entry);
+  const name = searchResult.name;
+  Object.assign(install, {
+    onclick: (event) => {
+      event.preventDefault();
+      // TODO: Install style
+      fetchUserstylesAPI("/api/v1/styles/" + searchResult.id)
+        .then( styleObject => {
+          console.log("TODO: Install style ID", searchResult.id);
+          console.log("Full styleObject:", styleObject);
+          alert("TODO: Install style ID #" + searchResult.id + " name '" + searchResult.name + "'");
+        })
+        .catch(reason => {
+          throw reason;
+        });
+      return true;
+    }
+  });
+
+  $('#searchResults-list').appendChild(entry);
 }
 
 function updateSearchResultsNav(currentPage, totalPages) {
@@ -106,11 +139,13 @@ function updateSearchResultsNav(currentPage, totalPages) {
     } else {
       $('#searchResultsNav-prev').removeAttribute('disabled');
     }
+
+    // Update current/total counts
     $('#searchResultsNav-currentPage').textContent = currentPage;
     $('#searchResultsNav-totalPages').textContent = totalPages;
 }
 
-function insertRemoteStyles(searchResults) {
+function processSearchResults(searchResults) {
   /*
     searchResults: {
       data: [...],
@@ -125,8 +160,21 @@ function insertRemoteStyles(searchResults) {
   searchResults.data.forEach(createSearchResultElement);
 }
 
-function loadRemoteStyles(event) {
+function loadNextPage(event) {
+  currentPage += 1;
+  loadSearchResults(event);
+}
+
+function loadPrevPage(event) {
+  currentPage = Math.max(1, currentPage - 1);
+  loadSearchResults(event);
+}
+
+function loadSearchResults(event) {
   event.preventDefault();
+  // Clear search results
+  $('#searchResults-list').innerHTML = "";
+  // Find styles for the current active tab
   getActiveTab().then(tab => {
     hostname = new URL(tab.url).hostname;
     const queryParams = [
@@ -135,11 +183,17 @@ function loadRemoteStyles(event) {
       'per_page=3'
     ].join('&');
 
-    $('#searchresults-terms').textContent = hostname;
-    $('#remote-styles').classList.remove("hidden");
-    $('#load-remote-styles').classList.add("hidden");
-    fetchSearchResults(queryParams)
-      .then(insertRemoteStyles)
+    // Hide load button
+    $('#load-search-results').classList.add("hidden");
+
+    // Display results container
+    $('#searchResults').classList.remove("hidden");
+    $('#searchResults-terms').textContent = hostname;
+
+    fetchUserstylesAPI("/api/v1/styles/search", queryParams)
+      .then(code => {
+        processSearchResults(code);
+      })
       .catch(reason => {
         throw reason;
       });
@@ -147,10 +201,8 @@ function loadRemoteStyles(event) {
   return false;
 }
 
-function initRemoteStyles() {
-  $('#load-remote-styles-link').onclick = loadRemoteStyles;
-}
-
 onDOMready().then(() => {
-  initRemoteStyles();
+  $('#load-search-results-link').onclick = loadSearchResults;
+  $('#searchResultsNav-prev').onclick = loadPrevPage;
+  $('#searchResultsNav-next').onclick = loadNextPage;
 });
