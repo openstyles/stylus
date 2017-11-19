@@ -239,6 +239,48 @@ body.blocked .actions > .left-gutter {
   display: none;
 }
 
+#find-styles svg {
+  vertical-align: sub;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#find-styles-sources {
+  display: flex;
+  transition: opacity .5s .1s cubic-bezier(.25,.02,1,.21);
+  flex-direction: column;
+  position: absolute;
+  background-color: white;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+  border: 1px solid darkgray;
+  bottom: .75em;
+  right: .75em;
+  padding: .5em 0;
+}
+
+#find-styles-sources > * {
+  padding: .5em 1em;
+}
+
+#find-styles-sources > *:hover {
+  background-color: lightgray;
+}
+
+#find-styles img {
+  max-height: 18px;
+  -webkit-filter: grayscale(1) brightness(1.15);
+  filter: grayscale(1) brightness(1.15);
+  transition: -webkit-filter .5s;
+  transition: filter .5s;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+#find-styles a:hover img {
+  -webkit-filter: none;
+  filter: none;
+}
+
 /* Never shown, but can be enabled with a style */
 
 .enable,
@@ -427,6 +469,10 @@ body.blocked .actions > .left-gutter {
   display: block;
   font-size: 90%;
   margin: 0;
+}
+
+.hidden {
+  display: none !important;
 }
 
 @keyframes lights-off {

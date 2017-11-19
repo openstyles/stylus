@@ -337,6 +337,10 @@
     "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
+  "findStylesSiteSelectorTooltip": {
+    "message": "Choose where to search for the styles.\n'Find more styles' will also use the choice.",
+    "description": "Short text for a link that gets a list of styles for the current site"
+  },
   "helpAlt": {
     "message": "Help",
     "description": "Alternate text for help buttons"

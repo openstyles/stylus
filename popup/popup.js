@@ -18,9 +18,7 @@ getActiveTab().then(tab =>
   tabURL = URLS.supported(url) ? url : '';
   Promise.all([
     tabURL && getStylesSafe({matchUrl: tabURL}),
-    onDOMready().then(() => {
-      initPopup(tabURL);
-    }),
+    onDOMready().then(initPopup),
   ]).then(([styles]) => {
     showStyles(styles);
   });
@@ -74,7 +72,7 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
 }
 
 
-function initPopup(url) {
+function initPopup() {
   installed = $('#installed');
 
   setPopupWidth();
@@ -106,17 +104,54 @@ function initPopup(url) {
       installed);
   }
 
-  $('#find-styles-link').onclick = handleEvent.openURLandHide;
-  $('#find-styles-link').href +=
-    url.startsWith(location.protocol) ?
-      '?search_terms=Stylus' :
-      'all/' + encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
+  $$('[data-toggle-on-click]').forEach(el => {
+    // dataset on SVG doesn't work in Chrome 49-??, works in 57+
+    const target = $(el.getAttribute('data-toggle-on-click'));
+    el.onclick = () => target.classList.toggle('hidden');
+  });
 
-  if (!url) {
+  if (!tabURL) {
     document.body.classList.add('blocked');
     document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
     return;
   }
+
+  const findStylesElement = $('#find-styles-link');
+  findStylesElement.onclick = handleEvent.openURLandHide;
+  function openAndRememberSource(event) {
+    prefs.set('popup.findStylesSource', this.dataset.prefValue, {onlyIfChanged: true});
+    handleEvent.openURLandHide.call(this, event);
+  }
+  $$('#find-styles-sources a').forEach(a => (a.onclick = openAndRememberSource));
+  // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
+  if ('ontouchstart' in document.body) {
+    const menu = $('#find-styles-sources');
+    const menuData = menu.dataset;
+    const closeOnOutsideTouch = event => {
+      if (!menu.contains(event.target)) {
+        delete menuData.show;
+        window.removeEventListener('touchstart', closeOnOutsideTouch);
+      }
+    };
+    findStylesElement.onclick = event => {
+      if (menuData.show) {
+        closeOnOutsideTouch(event);
+      } else {
+        menuData.show = true;
+        window.addEventListener('touchstart', closeOnOutsideTouch);
+        event.preventDefault();
+      }
+    };
+  }
+  // freestyler: strip 'www.' when hostname has 3+ parts
+  $('#find-styles a[href*="freestyler"]').href +=
+    encodeURIComponent(new URL(tabURL).hostname.replace(/^www\.(?=.+?\.)/, ''));
+  // userstyles: send just 'file:' for file:// links
+  $('#find-styles a[href*="userstyles"]').href +=
+    encodeURIComponent(tabURL.startsWith('file:') ? 'file:' : tabURL);
+  // set the default link to the last used one
+  $$(`#find-styles a[data-pref-value="${(prefs.get('popup.findStylesSource') || 'userstyles')}"]`)
+    .forEach(a => (findStylesElement.href = a.href));
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
     chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
@@ -150,10 +185,10 @@ function initPopup(url) {
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
   Object.assign(urlLink, {
-    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
-    title: `url-prefix("${url}")`,
+    href: 'edit.html?url-prefix=' + encodeURIComponent(tabURL),
+    title: `url-prefix("${tabURL}")`,
     textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? new URL(url).pathname.slice(1)
+      ? new URL(tabURL).pathname.slice(1)
       // this&nbsp;URL
       : t('writeStyleForURL').replace(/ /g, '\u00a0'),
     onclick: handleEvent.openLink,
@@ -167,7 +202,7 @@ function initPopup(url) {
   matchTargets.appendChild(urlLink);
 
   // For domain
-  const domains = BG.getDomains(url);
+  const domains = BG.getDomains(tabURL);
   for (const domain of domains) {
     const numParts = domain.length - domain.replace(/\./g, '').length + 1;
     // Don't include TLD
