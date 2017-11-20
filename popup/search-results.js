@@ -1,3 +1,4 @@
+/* global handleEvent */
 'use strict';
 
 /**
@@ -163,27 +164,27 @@ const SearchResults = (() => {
 
     const entry = template.searchResult.cloneNode(true);
     Object.assign(entry, {
-      id: ENTRY_ID_PREFIX_RAW + userstyleSearchResult.id,
       styleId: userstyleSearchResult.id
     });
     $('#searchResults-list').appendChild(entry);
 
+    const searchResultName = userstyleSearchResult.name;
     const title = $('.searchResult-title', entry);
     Object.assign(title, {
-      textContent: userstyleSearchResult.name,
-      title: userstyleSearchResult.name,
+      textContent: searchResultName,
+      title: searchResultName,
       href: 'https://userstyles.org' + userstyleSearchResult.url,
       onclick: handleEvent.openURLandHide
     });
 
     const screenshot = $('.searchResult-screenshot', entry);
-    let ss_url = userstyleSearchResult.screenshot_url;
-    if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(ss_url)) {
-      ss_url = 'https://userstyles.org/style_screenshot_thumbnails/' + ss_url;
+    let screenshotUrl = userstyleSearchResult.screenshot_url;
+    if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(screenshotUrl)) {
+      screenshotUrl = 'https://userstyles.org/style_screenshot_thumbnails/' + screenshotUrl;
     }
     Object.assign(screenshot, {
-      src: ss_url,
-      title: userstyleSearchResult.name
+      src: screenshotUrl,
+      title: searchResultName
     });
 
     // TODO: Expand/collapse description
@@ -205,13 +206,12 @@ const SearchResults = (() => {
     // TODO: Rating
 
     const installButton = $('.searchResult-install', entry);
-    const name = userstyleSearchResult.name;
     Object.assign(installButton, {
       onclick: install
     });
 
     /** Installs the current userstyleSearchResult into stylus. */
-    function install(event) {
+    function install() {
       UserStylesAPI.fetch('/api/v1/styles/' + userstyleSearchResult.id)
         .then(styleObject => {
           console.log('TODO: Install style ID', userstyleSearchResult.id);
@@ -233,7 +233,7 @@ const SearchResults = (() => {
             notify: true
           });
           saveStyleSafe(styleObject);
-          alert('TODO: Install style ID #' + userstyleSearchResult.id + ' name "' + userstyleSearchResult.name + '"');
+          alert('TODO: Install style ID #' + userstyleSearchResult.id + ' name "' + searchResultName + '"');
         })
         .catch(reason => {
           console.log('Error during installation:', reason);
