@@ -389,11 +389,6 @@ Object.assign(handleEvent, {
     }
   },
 
-  loadRemoteStyles(event) {
-    event.preventDefault();
-    console.log("loadRemoteStyles event:", event);
-  },
-
   openURLandHide(event) {
     event.preventDefault();
     openURL({url: this.href || this.dataset.href})
