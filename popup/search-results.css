@@ -9,8 +9,17 @@
 }
 
 #searchResults.hidden,
+#searchResults-error.hidden,
 #load-search-results.hidden {
   display: none;
+}
+
+#searchResults-error {
+  background-color: rgba(255, 0, 0, 0.4);
+  font-weight: bold;
+  padding: 5px;
+  text-align: center;
+  margin-right: 20px;
 }
 
 #searchResults, #searchResults-list {

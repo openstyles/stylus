@@ -1,4 +1,4 @@
-/* global handleEvent */
+/* global handleEvent tryJSONparse */
 'use strict';
 
 /**
@@ -21,21 +21,19 @@ const UserStylesAPI = (() => {
         'Content-type': 'application/json',
         'Accept': '*/*'
       };
-      let url = 'https://userstyles.org' + path;
+
+      const url = new URL('https://userstyles.org');
+      url.pathname = path;
       if (queryParams) {
-        url += '?' + queryParams;
+        url.search = '?' + queryParams;
       }
       const xhr = new XMLHttpRequest();
       xhr.timeout = TIMEOUT;
       xhr.onload = () => {
-        if (xhr.status === 200 || url.protocol === 'file:') {
-          try {
-            resolve(JSON.parse(xhr.responseText));
-          } catch (err) {
-            reject('Failed to parse JSON from ' + url + '\nJSON Text: ' + xhr.responseText);
-          }
+        if (xhr.status === 200) {
+          resolve(tryJSONparse(xhr.responseText));
         } else {
-          reject('Error code ' + xhr.status);
+          reject(xhr.status);
         }
       };
       xhr.onerror = reject;
@@ -56,7 +54,37 @@ const UserStylesAPI = (() => {
 const SearchResults = (() => {
   let currentPage = 1;
 
-  return {load, next, prev}
+  return {load, next, prev};
+
+  /** Increments currentPage and loads results. */
+  function next(event) {
+    currentPage += 1;
+    return load(event);
+  }
+
+  /** Decrements currentPage and loads results. */
+  function prev(event) {
+    currentPage = Math.max(1, currentPage - 1);
+    return load(event);
+  }
+
+  /**
+   * Display error message to user.
+   * @param {string} message  Message to display to user.
+   */
+  function error(reason) {
+    let message;
+    if (reason === 404) {
+      // TODO: i18n message
+      message = 'No results found';
+    } else {
+      console.log('Error loading search results: ' + reason);
+      message = 'Error loading search results: ' + reason;
+    }
+    $('#searchResults').classList.add('hidden');
+    $('#searchResults-error').innerHTML = message;
+    $('#searchResults-error').classList.remove('hidden');
+  }
 
   /**
    * Loads search result for the (page number is currentPage).
@@ -70,6 +98,7 @@ const SearchResults = (() => {
     getActiveTab().then(tab => {
       $('#load-search-results').classList.add('hidden');
       $('#searchResults').classList.remove('hidden');
+      $('#searchResults-error').classList.add('hidden');
 
       const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, '$1');
       $('#searchResults-terms').textContent = hostname;
@@ -79,6 +108,7 @@ const SearchResults = (() => {
         'page=' + currentPage,
         'per_page=3'
       ].join('&');
+
       UserStylesAPI.fetch('/api/v1/styles/search', queryParams)
         .then(searchResults => {
           /*
@@ -91,31 +121,15 @@ const SearchResults = (() => {
             }
           */
           if (searchResults.data.length === 0) {
-            throw 'No results found';
+            throw 404;
           }
           currentPage = searchResults.current_page;
           updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
           searchResults.data.forEach(createSearchResult);
         })
-        .catch(reason => {
-          $('#load-search-results').classList.remove('hidden');
-          $('#searchResults').classList.add('hidden');
-          alert('Error while loading search results: ' + reason);
-        });
-    });
+        .catch(error);
+      });
     return true;
-  }
-
-  /** Increments currentPage and loads results. */
-  function next(event) {
-    currentPage += 1;
-    return load(event);
-  }
-
-  /** Decrements currentPage and loads results. */
-  function prev(event) {
-    currentPage = Math.max(1, currentPage - 1);
-    return load(event);
   }
 
   /** Updates prev/next buttons and currentPage/totalPage labels. */
@@ -206,38 +220,22 @@ const SearchResults = (() => {
     // TODO: Rating
 
     const installButton = $('.searchResult-install', entry);
-    Object.assign(installButton, {
-      onclick: install
-    });
+    installButton.onclick = install;
 
     /** Installs the current userstyleSearchResult into stylus. */
     function install() {
-      UserStylesAPI.fetch('/api/v1/styles/' + userstyleSearchResult.id)
-        .then(styleObject => {
-          console.log('TODO: Install style ID', userstyleSearchResult.id);
-          console.log('Full styleObject:', styleObject);
-          /*
-           * FIXME
-           * Sample full styleObject: https://userstyles.org/api/v1/styles/70271
-           * We need to convert this sytleObject into the format expected by saveStyleSafe
-           * I.e. styleObject.id is the ID of the userstyles.org style (e.g. 70271 above)
-           */
-
-          // messaging.js#saveStyleSafe({...}) expects an "id" referring to the Stylus ID (1-n).
-          delete styleObject.id;
-
-          Object.assign(styleObject, {
-            // TODO: Massage styleObject into the format expected by saveStyleSafe
-            enabled: true,
-            reason: 'update',
-            notify: true
-          });
-          saveStyleSafe(styleObject);
-          alert('TODO: Install style ID #' + userstyleSearchResult.id + ' name "' + searchResultName + '"');
+      // TODO: Detect if style has customizations, point to style page if so.
+      const styleId = userstyleSearchResult.id;
+      const url = 'https://userstyles.org/styles/chrome/' + styleId + '.json';
+      download(url)
+        .then(responseText => {
+          saveStyleSafe(tryJSONparse(responseText));
+          installButton.disabled = 'disabled';
+          installButton.textContent = 'Installed';
         })
         .catch(reason => {
-          console.log('Error during installation:', reason);
-          alert('Error installing style: ' + reason);
+          console.log('Error while installing from ' + url + ': ' + reason);
+          alert('Error while installing from ' + url + ': ' + reason);
         });
       return true;
     }
