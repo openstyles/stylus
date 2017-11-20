@@ -1,140 +1,124 @@
 'use strict';
 
-let currentPage = 1;
-
 /**
- * Fetches JSON object from userstyles.org API
- * @param {string} path Path on userstyles.org (e.g. /api/v1/styles)
- * @param {string} queryParams Query parameters to send in search request.
- * @return {Object} API response object from userstyles.org
+ * Library for interacting with userstyles.org
+ * @returns {Object} Includes fetch() method which promises userstyles.org resources.
  */
-function fetchUserstylesAPI(path, queryParams) {
-  return new Promise(function(resolve, reject) {
-    const TIMEOUT = 10000;
-    const headers = {
-      'Content-type': 'application/json',
-      'Accept': '*/*'
-    };
-    let url = 'https://userstyles.org' + path;
-    if (queryParams) {
-      url += "?" + queryParams;
-    }
-    const xhr = new XMLHttpRequest();
-    xhr.timeout = TIMEOUT;
-    xhr.onload = () => {
-      if (xhr.status === 200 || url.protocol === 'file:') {
-        try {
-          resolve(JSON.parse(xhr.responseText));
-        } catch (err) {
-          reject("Failed to parse JSON from " + url + "\nJSON Text: " + xhr.responseText);
+const UserStylesAPI = (() => {
+  return {fetch}
+
+  /**
+   * Fetches (and JSON-parses) the result from a userstyles.org API
+   * @param {string} path Path on userstyles.org (e.g. "/api/v1/styles/search")
+   * @param {string} queryParams Query parameters to send in search request (e.g. "key=value&name=that)".
+   * @return {Object} Response object from userstyles.org
+   */
+  function fetch(path, queryParams) {
+    return new Promise(function (resolve, reject) {
+      const TIMEOUT = 10000;
+      const headers = {
+        'Content-type': 'application/json',
+        'Accept': '*/*'
+      };
+      let url = 'https://userstyles.org' + path;
+      if (queryParams) {
+        url += "?" + queryParams;
+      }
+      const xhr = new XMLHttpRequest();
+      xhr.timeout = TIMEOUT;
+      xhr.onload = () => {
+        if (xhr.status === 200 || url.protocol === 'file:') {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (err) {
+            reject("Failed to parse JSON from " + url + "\nJSON Text: " + xhr.responseText);
+          }
+        } else {
+          reject("Error code " + xhr.status);
         }
-      } else {
-        reject("Error code " + xhr.status);
+      };
+      xhr.onerror = reject;
+      xhr.open('GET', url, true);
+      for (const key of Object.keys(headers)) {
+        xhr.setRequestHeader(key, headers[key]);
       }
-    };
-    xhr.onerror = reject;
-    xhr.open('GET', url, true);
-    for (const key of Object.keys(headers)) {
-      xhr.setRequestHeader(key, headers[key]);
-    }
-    xhr.send();
-  });
-}
+      xhr.send();
+    });
+
+  }
+})();
 
 /**
- * Adds an entry to the Search Results DOM
- * @param {Object} searchResult The JSON object from userstyles.org representing a search result.
+ * Represents the search results within the Stylus popup.
+ * @returns {Object} Includes load(), next(), and prev() methods to alter the search results.
  */
-function createSearchResultElement(searchResult) {
-  /*
-    searchResult format: {
-      id: 100835,
-      name: "Reddit Flat Dark",
-      screenshot_url: "19339_after.png",
-      description: "...",
-      user: {
-        id: 48470,
-        name: "holloh"
-      }
-    }
-  */
-  const entry = template.searchResult.cloneNode(true);
-  Object.assign(entry, {
-    id: ENTRY_ID_PREFIX_RAW + searchResult.id,
-    styleId: searchResult.id
-  });
+const SearchResults = (() => {
+  let currentPage = 1;
 
-  const title = $('.searchResult-title', entry);
-  Object.assign(title, {
-    textContent: searchResult.name,
-    title: searchResult.name,
-    href: 'https://userstyles.org' + searchResult.url,
-    onclick: handleEvent.openURLandHide
-  });
+  return {load, next, prev}
 
-  const screenshot = $('.searchResult-screenshot', entry);
-  let ss_url = searchResult.screenshot_url;
-  if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(ss_url)) {
-    ss_url = 'https://userstyles.org/style_screenshot_thumbnails/' + ss_url;
-  }
-  Object.assign(screenshot, {
-    src: ss_url,
-    title: searchResult.name
-  });
+  /**
+   * Loads search result for the (page number is currentPage).
+   * @param {Object} event The click event
+   */
+  function load(event) {
+    if (event) event.preventDefault();
+    // Clear search results
+    $('#searchResults-list').innerHTML = "";
+    // Find styles for the current active tab
+    getActiveTab().then(tab => {
+      $('#load-search-results').classList.add("hidden");
+      $('#searchResults').classList.remove("hidden");
 
-  // TODO: Expand/collapse description
-  const description = $('.searchResult-description', entry);
-  Object.assign(description, {
-    textContent: searchResult.description.replace(/<.*?>/g, ""),
-    title: searchResult.description.replace(/<.*?>/g, "")
-  });
+      const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, "$1");
+      $('#searchResults-terms').textContent = hostname;
 
-  const authorLink = $('.searchResult-authorLink', entry);
-  Object.assign(authorLink, {
-    textContent: searchResult.user.name,
-    title: searchResult.user.name,
-    href: 'https://userstyles.org/users/' + searchResult.user.id,
-    onclick: handleEvent.openURLandHide
-  });
-
-  // TODO: Total & Weekly Install Counts
-  // TODO: Rating
-
-  const install = $('.searchResult-install', entry);
-  const name = searchResult.name;
-  Object.assign(install, {
-    onclick: (event) => {
-      event.preventDefault();
-      // TODO: Install style
-      fetchUserstylesAPI("/api/v1/styles/" + searchResult.id)
-        .then(styleObject => {
-          console.log("TODO: Install style ID", searchResult.id);
-          console.log("Full styleObject:", styleObject);
+      const queryParams = [
+        'search=' + encodeURIComponent(hostname),
+        'page=' + currentPage,
+        'per_page=3'
+      ].join('&');
+      UserStylesAPI.fetch("/api/v1/styles/search", queryParams)
+        .then(searchResults => {
           /*
-           * Sample full styleObject: https://userstyles.org/api/v1/styles/70271
-           * The "id" is the ID of the userstyles.org style (e.g. 70271 above)
-           * saveStyleSafe({...}) expects an "id" referring to the Stylus ID (1-n)
-           */
-          delete styleObject.id;
-          Object.assign(styleObject, {
-            enabled: true,
-            reason: 'update',
-            notify: true
-          });
-          saveStyleSafe(styleObject);
-          alert("TODO: Install style ID #" + searchResult.id + " name '" + searchResult.name + "'");
+            searchResults: {
+              data: [...],
+              current_page: 1,
+              per_page: 15;
+              total_pages: 6,
+              total_entries: 85
+            }
+          */
+          if (searchResults.data.length === 0) {
+            throw "No results found";
+          }
+          currentPage = searchResults.current_page;
+          updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
+          searchResults.data.forEach(createSearchResult);
         })
         .catch(reason => {
-          throw reason;
+          $('#load-search-results').classList.remove("hidden");
+          $('#searchResults').classList.add("hidden");
+          alert("Error while loading search results: " + reason);
         });
-      return true;
-    }
-  });
+    });
+    return true;
+  }
 
-  $('#searchResults-list').appendChild(entry);
-}
+  /** Increments currentPage and loads results. */
+  function next(event) {
+    currentPage += 1;
+    return load(event);
+  }
 
-function updateSearchResultsNav(currentPage, totalPages) {
+  /** Decrements currentPage and loads results. */
+  function prev(event) {
+    currentPage = Math.max(1, currentPage - 1);
+    return load(event);
+  }
+
+  /** Updates prev/next buttons and currentPage/totalPage labels. */
+  function updateSearchResultsNav(currentPage, totalPages) {
     // Update 'next' button
     if (currentPage >= totalPages) {
       currentPage = totalPages;
@@ -154,68 +138,114 @@ function updateSearchResultsNav(currentPage, totalPages) {
     // Update current/total counts
     $('#searchResultsNav-currentPage').textContent = currentPage;
     $('#searchResultsNav-totalPages').textContent = totalPages;
-}
+  }
 
-function processSearchResults(searchResults) {
-  /*
-    searchResults: {
-      data: [...],
-      current_page: 1,
-      per_page: 15;
-      total_pages: 6,
-      total_entries: 85
+  /**
+   * Constructs and adds the given search result to the popup's Search Results container.
+   * @param {Object} userstyleSearchResult The SearchResult object from userstyles.org
+   */
+  function createSearchResult(userstyleSearchResult) {
+    /*
+      userstyleSearchResult format: {
+        id: 100835,
+        name: "Reddit Flat Dark",
+        screenshot_url: "19339_after.png",
+        description: "...",
+        user: {
+          id: 48470,
+          name: "holloh"
+        }
+      }
+    */
+
+    // TODO: Check if search result is already installed.
+    //       If so hide it, or mark as installed with an "Uninstall" button.
+
+    const entry = template.searchResult.cloneNode(true);
+    Object.assign(entry, {
+      id: ENTRY_ID_PREFIX_RAW + userstyleSearchResult.id,
+      styleId: userstyleSearchResult.id
+    });
+    $('#searchResults-list').appendChild(entry);
+
+    const title = $('.searchResult-title', entry);
+    Object.assign(title, {
+      textContent: userstyleSearchResult.name,
+      title: userstyleSearchResult.name,
+      href: 'https://userstyles.org' + userstyleSearchResult.url,
+      onclick: handleEvent.openURLandHide
+    });
+
+    const screenshot = $('.searchResult-screenshot', entry);
+    let ss_url = userstyleSearchResult.screenshot_url;
+    if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(ss_url)) {
+      ss_url = 'https://userstyles.org/style_screenshot_thumbnails/' + ss_url;
     }
-  */
-  currentPage = searchResults.current_page;
-  updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
-  searchResults.data.forEach(createSearchResultElement);
-}
+    Object.assign(screenshot, {
+      src: ss_url,
+      title: userstyleSearchResult.name
+    });
 
-function loadNextPage(event) {
-  currentPage += 1;
-  loadSearchResults(event);
-}
+    // TODO: Expand/collapse description
+    const description = $('.searchResult-description', entry);
+    Object.assign(description, {
+      textContent: userstyleSearchResult.description.replace(/<.*?>/g, ""),
+      title: userstyleSearchResult.description.replace(/<.*?>/g, "")
+    });
 
-function loadPrevPage(event) {
-  currentPage = Math.max(1, currentPage - 1);
-  loadSearchResults(event);
-}
+    const authorLink = $('.searchResult-authorLink', entry);
+    Object.assign(authorLink, {
+      textContent: userstyleSearchResult.user.name,
+      title: userstyleSearchResult.user.name,
+      href: 'https://userstyles.org/users/' + userstyleSearchResult.user.id,
+      onclick: handleEvent.openURLandHide
+    });
 
-function loadSearchResults(event) {
-  event.preventDefault();
-  // Clear search results
-  $('#searchResults-list').innerHTML = "";
-  // Find styles for the current active tab
-  getActiveTab().then(tab => {
-    const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, "$1");
-    const queryParams = [
-      'search=' + encodeURIComponent(hostname),
-      'page=' + currentPage,
-      'per_page=3'
-    ].join('&');
+    // TODO: Total & Weekly Install Counts
+    // TODO: Rating
 
-    // Hide load button
-    $('#load-search-results').classList.add("hidden");
+    const installButton = $('.searchResult-install', entry);
+    const name = userstyleSearchResult.name;
+    Object.assign(installButton, {
+      onclick: install
+    });
 
-    // Display results container
-    $('#searchResults').classList.remove("hidden");
-    $('#searchResults-terms').textContent = hostname;
+    /** Installs the current userstyleSearchResult into stylus. */
+    function install(event) {
+      UserStylesAPI.fetch("/api/v1/styles/" + userstyleSearchResult.id)
+        .then(styleObject => {
+          console.log("TODO: Install style ID", userstyleSearchResult.id);
+          console.log("Full styleObject:", styleObject);
+          /*
+           * FIXME
+           * Sample full styleObject: https://userstyles.org/api/v1/styles/70271
+           * We need to convert this sytleObject into the format expected by saveStyleSafe
+           * I.e. styleObject.id is the ID of the userstyles.org style (e.g. 70271 above)
+           */
 
-    fetchUserstylesAPI("/api/v1/styles/search", queryParams)
-      .then(code => {
-        processSearchResults(code);
-      })
-      .catch(reason => {
-        $('#load-search-results').classList.remove("hidden");
-        $('#searchResults').classList.add("hidden");
-        alert("Error while loading search results: " + reason);
-      });
-  });
-  return true;
-}
+          // messaging.js#saveStyleSafe({...}) expects an "id" referring to the Stylus ID (1-n).
+          delete styleObject.id;
+
+          Object.assign(styleObject, {
+            // TODO: Massage styleObject into the format expected by saveStyleSafe
+            enabled: true,
+            reason: 'update',
+            notify: true
+          });
+          saveStyleSafe(styleObject);
+          alert("TODO: Install style ID #" + userstyleSearchResult.id + " name '" + userstyleSearchResult.name + "'");
+        })
+        .catch(reason => {
+          console.log("Error during installation:", reason);
+          alert("Error installing style: " + reason);
+        });
+      return true;
+    }
+  }
+})();
 
 onDOMready().then(() => {
-  $('#load-search-results-link').onclick = loadSearchResults;
-  $('#searchResultsNav-prev').onclick = loadPrevPage;
-  $('#searchResultsNav-next').onclick = loadNextPage;
+  $('#load-search-results-link').onclick = SearchResults.load;
+  $('#searchResultsNav-prev').onclick = SearchResults.prev;
+  $('#searchResultsNav-next').onclick = SearchResults.next;
 });
