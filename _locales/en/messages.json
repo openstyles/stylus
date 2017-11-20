@@ -127,6 +127,10 @@
     "message": "Autocomplete on typing",
     "description": "Label for the checkbox in the style editor."
   },
+  "cm_colorpicker": {
+    "message": "Colorpickers for CSS colors",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+  },
   "cm_indentWithTabs": {
     "message": "Use tabs with smart indentation",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -170,6 +174,14 @@
   "cm_theme": {
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Switch formats: HEX -> RGB -> HSL",
+    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+  },
+  "colorpickerTooltip": {
+    "message": "Open color picker",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
   },
   "dysfunctional": {
     "message": "Stylus cannot function in private windows because Firefox disallows direct connection to the internal background page context of the extension.",
