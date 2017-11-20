@@ -5,12 +5,12 @@
  * @returns {Object} Includes fetch() method which promises userstyles.org resources.
  */
 const UserStylesAPI = (() => {
-  return {fetch}
+  return {fetch};
 
   /**
    * Fetches (and JSON-parses) the result from a userstyles.org API
-   * @param {string} path Path on userstyles.org (e.g. "/api/v1/styles/search")
-   * @param {string} queryParams Query parameters to send in search request (e.g. "key=value&name=that)".
+   * @param {string} path Path on userstyles.org (e.g. '/api/v1/styles/search')
+   * @param {string} queryParams Query parameters to send in search request (e.g. 'key=value&name=that)'.
    * @return {Object} Response object from userstyles.org
    */
   function fetch(path, queryParams) {
@@ -22,7 +22,7 @@ const UserStylesAPI = (() => {
       };
       let url = 'https://userstyles.org' + path;
       if (queryParams) {
-        url += "?" + queryParams;
+        url += '?' + queryParams;
       }
       const xhr = new XMLHttpRequest();
       xhr.timeout = TIMEOUT;
@@ -31,10 +31,10 @@ const UserStylesAPI = (() => {
           try {
             resolve(JSON.parse(xhr.responseText));
           } catch (err) {
-            reject("Failed to parse JSON from " + url + "\nJSON Text: " + xhr.responseText);
+            reject('Failed to parse JSON from ' + url + '\nJSON Text: ' + xhr.responseText);
           }
         } else {
-          reject("Error code " + xhr.status);
+          reject('Error code ' + xhr.status);
         }
       };
       xhr.onerror = reject;
@@ -64,13 +64,13 @@ const SearchResults = (() => {
   function load(event) {
     if (event) event.preventDefault();
     // Clear search results
-    $('#searchResults-list').innerHTML = "";
+    $('#searchResults-list').innerHTML = '';
     // Find styles for the current active tab
     getActiveTab().then(tab => {
-      $('#load-search-results').classList.add("hidden");
-      $('#searchResults').classList.remove("hidden");
+      $('#load-search-results').classList.add('hidden');
+      $('#searchResults').classList.remove('hidden');
 
-      const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, "$1");
+      const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, '$1');
       $('#searchResults-terms').textContent = hostname;
 
       const queryParams = [
@@ -78,7 +78,7 @@ const SearchResults = (() => {
         'page=' + currentPage,
         'per_page=3'
       ].join('&');
-      UserStylesAPI.fetch("/api/v1/styles/search", queryParams)
+      UserStylesAPI.fetch('/api/v1/styles/search', queryParams)
         .then(searchResults => {
           /*
             searchResults: {
@@ -90,16 +90,16 @@ const SearchResults = (() => {
             }
           */
           if (searchResults.data.length === 0) {
-            throw "No results found";
+            throw 'No results found';
           }
           currentPage = searchResults.current_page;
           updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
           searchResults.data.forEach(createSearchResult);
         })
         .catch(reason => {
-          $('#load-search-results').classList.remove("hidden");
-          $('#searchResults').classList.add("hidden");
-          alert("Error while loading search results: " + reason);
+          $('#load-search-results').classList.remove('hidden');
+          $('#searchResults').classList.add('hidden');
+          alert('Error while loading search results: ' + reason);
         });
     });
     return true;
@@ -189,8 +189,8 @@ const SearchResults = (() => {
     // TODO: Expand/collapse description
     const description = $('.searchResult-description', entry);
     Object.assign(description, {
-      textContent: userstyleSearchResult.description.replace(/<.*?>/g, ""),
-      title: userstyleSearchResult.description.replace(/<.*?>/g, "")
+      textContent: userstyleSearchResult.description.replace(/<.*?>/g, ''),
+      title: userstyleSearchResult.description.replace(/<.*?>/g, '')
     });
 
     const authorLink = $('.searchResult-authorLink', entry);
@@ -212,10 +212,10 @@ const SearchResults = (() => {
 
     /** Installs the current userstyleSearchResult into stylus. */
     function install(event) {
-      UserStylesAPI.fetch("/api/v1/styles/" + userstyleSearchResult.id)
+      UserStylesAPI.fetch('/api/v1/styles/' + userstyleSearchResult.id)
         .then(styleObject => {
-          console.log("TODO: Install style ID", userstyleSearchResult.id);
-          console.log("Full styleObject:", styleObject);
+          console.log('TODO: Install style ID', userstyleSearchResult.id);
+          console.log('Full styleObject:', styleObject);
           /*
            * FIXME
            * Sample full styleObject: https://userstyles.org/api/v1/styles/70271
@@ -233,11 +233,11 @@ const SearchResults = (() => {
             notify: true
           });
           saveStyleSafe(styleObject);
-          alert("TODO: Install style ID #" + userstyleSearchResult.id + " name '" + userstyleSearchResult.name + "'");
+          alert('TODO: Install style ID #' + userstyleSearchResult.id + ' name "' + userstyleSearchResult.name + '"');
         })
         .catch(reason => {
-          console.log("Error during installation:", reason);
-          alert("Error installing style: " + reason);
+          console.log('Error during installation:', reason);
+          alert('Error installing style: ' + reason);
         });
       return true;
     }
