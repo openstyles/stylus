@@ -48,7 +48,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "输入名称。",
+		"message": "输入名称",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {

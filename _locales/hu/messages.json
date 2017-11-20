@@ -7,6 +7,10 @@
 		"message": "alapértelmezett",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
+	"styleRegexpTestTitle": {
+		"message": "Illeszkedő megnyitott fülek megjelenítése (kattints az URL-re az arra a fülre való ugráshoz)",
+		"description": "RegExp test report: title of the report"
+	},
 	"bckpInstStyles": {
 		"message": "Stílusok exportálása",
 		"description": ""
@@ -32,7 +36,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Írj be egy nevet!",
+		"message": "Írj be egy nevet",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {
@@ -42,6 +46,10 @@
 	"checkForUpdate": {
 		"message": "Frissítések ellenőrzése",
 		"description": "Label for the button to check a single style for an update"
+	},
+	"styleRegexpInvalidExplanation": {
+		"message": "Egyes „regexp()” szabályokat nem lehetett lefordítani.",
+		"description": ""
 	},
 	"importAppendLabel": {
 		"message": "Hozzáadás stílushoz",
@@ -59,6 +67,10 @@
 		"message": "Mozilla formátumú kód beillesztése",
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
+	"dragDropMessage": {
+		"message": "Ejtsd a biztonsági másolat fájlt bárhova erre az oldalra az importáláshoz!",
+		"description": "Drag'n'drop message"
+	},
 	"helpAlt": {
 		"message": "Segítség",
 		"description": "Alternate text for help buttons"
@@ -66,6 +78,10 @@
 	"search": {
 		"message": "Keresés",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"manageFaviconsGray": {
+		"message": "Szürke mód",
+		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"confirmYes": {
 		"message": "Igen",
@@ -99,6 +115,10 @@
 		"message": "Mentés",
 		"description": "Label for save button for style editing"
 	},
+	"confirmDelete": {
+		"message": "Törlés",
+		"description": ""
+	},
 	"confirmCancel": {
 		"message": "Mégsem",
 		"description": ""
@@ -127,6 +147,14 @@
 		"message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
+	"optionsAdvancedExposeIframesNote": {
+		"message": "Engedélyezi az olyan iframe-specifikus CSS írását, mint a „html[stylus-iframe] h1 { display:none }”",
+		"description": ""
+	},
+	"importReportLegendUpdatedCode": {
+		"message": "frissített kód",
+		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+	},
 	"styleInstall": {
 		"message": "Telepíted a(z) „$stylename$” nevű stílust a Stylusba?",
 		"description": "Confirmation when installing a style",
@@ -152,6 +180,10 @@
 		"message": "Tartalom keresése",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
+	"unreachableFileHint": {
+		"message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon.",
+		"description": "Note in the toolbar popup for file:// URLs"
+	},
 	"disableStyleLabel": {
 		"message": "Letiltás",
 		"description": "Label for the button to disable a style"
@@ -159,6 +191,10 @@
 	"prefShowBadge": {
 		"message": "A jelenlegi oldalon aktív stílusok száma",
 		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"manageFavicons": {
+		"message": "Faviconok az alkalmazási oszlopban",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
 		"message": "Aktív stílusok számlálójának mutatása",
@@ -180,6 +216,10 @@
 		"message": "Importálás",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
+	"shortcuts": {
+		"message": "Gyorsbillentyűk",
+		"description": "Go to shortcut configuration"
+	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Sikertelen frissítés: nem érhető el a szerver.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
@@ -192,9 +232,21 @@
 		"message": "Minden módosítás alkalmazása",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"optionsReset": {
+		"message": "Beállítások visszaállítása alapértelmezett értékekre.",
+		"description": ""
+	},
+	"optionsCustomizeUpdate": {
+		"message": "Frissítések",
+		"description": ""
+	},
 	"deleteStyleConfirm": {
 		"message": "Biztos, hogy törölni akarod ezt a stílust?",
 		"description": "Confirmation before deleting a style"
+	},
+	"optionsCustomizePopup": {
+		"message": "Felugró",
+		"description": ""
 	},
 	"styleBadRegexp": {
 		"message": "Érvénytelen regexp.",
@@ -251,6 +303,14 @@
 		"message": "Használd a /re/ szintaxist a regexp kereséshez",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"updateCheckManualUpdateHint": {
+		"message": "Egy frissítés erőltetése minden helyi szerkesztést felül fog írni.",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"toggleStyle": {
+		"message": "Stílus be-/kikapcsolása",
+		"description": "Label for the checkbox to enable/disable a style"
+	},
 	"importReplaceTooltip": {
 		"message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal",
 		"description": "Label for the button to import and overwrite current style"
@@ -275,6 +335,10 @@
 		"message": "Eltávolítás",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"updatesCurrentlyInstalled": {
+		"message": "Frissítve:",
+		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+	},
 	"styleToMozillaFormatTitle": {
 		"message": "Mozilla formátumú stílus",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
@@ -286,6 +350,10 @@
 	"replace": {
 		"message": "Csere",
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
+	"styleRegexpTestNone": {
+		"message": "Nincs illeszkedő fül",
+		"description": "RegExp test report: label for expressions that didn't match any tabs"
 	},
 	"appliesLabel": {
 		"message": "Amire érvényesül",
@@ -324,6 +392,10 @@
 		"message": "Mozilla formátum",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
+	"styleRegexpPartialExplanation": {
+		"message": "Ez a stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, melyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, mely szerint egy teljes URL-illeszkedésre van szükség. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. Ez a stílus valószínűleg a Stylish Chrome-kiegészítőben lett létrehozva, amely helytelenül ellenőrzi a „regexp()” szabályokat az első verziótól fogva (ismert hiba).",
+		"description": ""
+	},
 	"sectionRemove": {
 		"message": "Szekció eltávolítása",
 		"description": "Label for the button to remove a section"
@@ -331,6 +403,10 @@
 	"disableAllStyles": {
 		"message": "Az összes stílus kikapcsolása",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"updateCheckSkippedMaybeLocallyEdited": {
+		"message": "Lehet, hogy ezt a stílust helyileg szerkesztették",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
 		"message": "VIsszavonás mindegyik szekcióban",
@@ -343,6 +419,26 @@
 	"checkingForUpdate": {
 		"message": "Ellenőrzés...",
 		"description": "Text to display when checking a style for an update"
+	},
+	"styleRegexpTestFull": {
+		"message": "Illeszkedő fülek",
+		"description": "RegExp test report: label for the fully matching expressions"
+	},
+	"manageMaxTargets": {
+		"message": "Megjelenítendő célok száma",
+		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"manageFaviconsHelp": {
+		"message": "A Stylus egy külső szolgáltatást használ (https://www.google.com/s2/favicons)",
+		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"updateCheckSkippedLocallyEdited": {
+		"message": "Ez a stílus helyileg lett szerkesztve.",
+		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"optionsResetButton": {
+		"message": "Beállítások visszaállítása alapra",
+		"description": ""
 	},
 	"sectionCode": {
 		"message": "Kód",
@@ -360,6 +456,18 @@
 		"message": "Stílus szerkesztése",
 		"description": "Title of the page for editing styles"
 	},
+	"stylusUnavailableForURLdetails": {
+		"message": "Biztonsági okokból a böngésző megtiltja, hogy a kiegészítők változtatásokat tegyenek a beépített oldalain (pl. chrome://verzió, a Chrome 61 alapértelmezett „új lap” oldala, about:addons és így tovább) valamint más kiterjesztések oldalain. Ezen kívül mindegyik böngésző korlátozza a saját kiegészítőgalériájának elérését (pl. Chrome webáruház vagy a Mozilla kiegészítők oldala)",
+		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
+	"updateAllCheckSucceededSomeEdited": {
+		"message": "Egyes frissíthető stílusok nem lettek ellenőrizve, nehogy elvesszenek a helyi változtatások. A frissítéseket lehet erőltetni egyéni ellenőrzéssel külön-külön vagy az összes stílus ismételt ellenőrzésével (ez felülírja a helyi módosításokat).",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
+	"stylusUnavailableForURL": {
+		"message": "A Stylus nem működik az ilyen oldalakon.",
+		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+	},
 	"addStyleTitle": {
 		"message": "Stílus hozzáadása",
 		"description": "Title of the page for adding styles"
@@ -371,6 +479,10 @@
 	"dbError": {
 		"message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"optionsAdvanced": {
+		"message": "Haladó",
+		"description": ""
 	},
 	"importAppendTooltip": {
 		"message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
@@ -392,6 +504,10 @@
 		"message": "Az összes cseréje",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
+	"importReportUnchanged": {
+		"message": "Semmi sem változott.",
+		"description": "Message in the report shown after importing styles"
+	},
 	"optionsActions": {
 		"message": "Műveletek",
 		"description": ""
@@ -400,6 +516,10 @@
 		"message": "Sorra (vagy sor:oszlopra) ugrás",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
+	"manageOnlyLocalTooltip": {
+		"message": "(a stílusok nem egy userstyles.org oldalon lettek telepítve)",
+		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+	},
 	"checkAllUpdates": {
 		"message": "Az összes stílus frissítésének ellenőrzése",
 		"description": "Label for the button to check all styles for updates"
@@ -407,6 +527,10 @@
 	"openOptionsManage": {
 		"message": "A beállítások felülete",
 		"description": "Go to Options UI"
+	},
+	"importReportLegendIdentical": {
+		"message": "kihagyott egyezések",
+		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"optionsPopupWidth": {
 		"message": "Felugró ablak szélessége (pixelben)",
@@ -424,6 +548,18 @@
 		"message": "Billentyűműveletek",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
+	"manageNewUI": {
+		"message": "Az új kezelési felületkiosztás",
+		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"importReportUndoneTitle": {
+		"message": "Az importálás vissza lett vonva",
+		"description": "Title of the message box shown after undoing the import of styles"
+	},
+	"genericDisabledLabel": {
+		"message": "Letiltott",
+		"description": "Used in various lists/options to indicate that something is disabled"
+	},
 	"cm_indentWithTabs": {
 		"message": "Tabulátorok használata intelligens behúzásra",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -435,6 +571,10 @@
 	"deleteStyleLabel": {
 		"message": "Törlés",
 		"description": "Label for the button to delete a style"
+	},
+	"optionsAdvancedExposeIframes": {
+		"message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül",
+		"description": ""
 	},
 	"addStyleLabel": {
 		"message": "Új stílus írása",

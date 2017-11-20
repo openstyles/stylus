@@ -12,7 +12,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Εισάγετε ένα όνομα.",
+		"message": "Εισάγετε ένα όνομα",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {

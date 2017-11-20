@@ -31,6 +31,14 @@
 		"message": "Exportieren",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "Installieren",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "Ungültige @var Checkbox: Wert muss 0 oder 1 sein",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "Ungültiges JSON Format",
 		"description": "Setting linter config with invalid JSON"
@@ -40,7 +48,7 @@
 		"description": ""
 	},
 	"updateCheckHistory": {
-		"message": "Verlauf der Aktualisierungs-Überprüfungen",
+		"message": "Verlauf der Updatesuche",
 		"description": ""
 	},
 	"cm_tabSize": {
@@ -52,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Bitte einen Namen eingeben.",
+		"message": "Bitte einen Namen eingeben",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -68,7 +76,7 @@
 		"description": "Option to make the style apply to the entered string as a domain"
 	},
 	"checkForUpdate": {
-		"message": "Nach Aktualisierung suchen",
+		"message": "Nach Update suchen",
 		"description": "Label for the button to check a single style for an update"
 	},
 	"styleNotAppliedRegexpProblemTooltip": {
@@ -83,6 +91,10 @@
 		"message": "Dunkle Browser-Themes",
 		"description": ""
 	},
+	"styleFromMozillaFormatError": {
+		"message": "Import vom Mozilla Format fehlgeschlagen",
+		"description": "Label for the import error"
+	},
 	"importAppendLabel": {
 		"message": "Zum Style anfügen",
 		"description": "Label for the button to import a style and append to the existing sections"
@@ -92,7 +104,7 @@
 		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
-		"message": "Keine Aktualisierung gefunden.",
+		"message": "Keine Updates gefunden.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"importReportLegendAdded": {
@@ -118,6 +130,10 @@
 	"manageFaviconsGray": {
 		"message": "Ausgegraut",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "Die Version des Styles ist älter als die des bereits installierten.",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "Ja",
@@ -167,9 +183,17 @@
 		"message": "Löschen",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "Voreinstellung verwenden",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "Abbrechen",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "Wenn ( [ { ' \" geschrieben werden, automatisch schließende ) ] } ' \" setzen",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "Styles Importieren",
@@ -196,7 +220,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "Aktiviert die iFrame-spezifische CSS Auszeichnung wie 'html[stylus-iframe] h1 { display:none; }'",
+		"message": "Aktiviert die iFrame-spezifische CSS Auszeichnung wie \"html[stylus-iframe] h1 { display:none; }\"",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -228,6 +252,15 @@
 		"message": "Nur lokale Styles",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "Nicht unterstützter @preprocessor: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "Folgende Probleme wurden von $link$ gefunden:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -237,17 +270,25 @@
 			}
 		}
 	},
+	"parseUsercssError": {
+		"message": "Usercss parsen fehlgeschlagen:",
+		"description": "The error message to show when stylus failed to parse usercss"
+	},
 	"searchStyles": {
 		"message": "Inhalte durchsuchen",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"optionsUpdateImportNote": {
-		"message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Überprüfung der Aktualisierungen (Updates) in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind.",
+		"message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Updatesuche in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind.",
 		"description": ""
 	},
 	"checkAllUpdatesForce": {
 		"message": "Nochmals überprüfen, ich habe keine Styles bearbeitet!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"liveReloadLabel": {
+		"message": "Echtzeitaktualisierung",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus kann nur auf das file:// Protokoll in der URL zugreifen, wenn dies in den Einstellungen der Erweiterung unter chrome://extensions festgelegt wurde.",
@@ -262,7 +303,7 @@
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
-		"message": "Favicons in der 'Gilt für' Spalte anzeigen",
+		"message": "Favicons in der \"Gilt für\" Spalte anzeigen",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"menuShowBadge": {
@@ -313,6 +354,10 @@
 		"message": "Regulärer Ausdruck ist ungültig.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Lizenz",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Optionen",
 		"description": "Heading for options section on manage page."
@@ -335,7 +380,7 @@
 		"description": "Label for the style maanger opener in the browser action context menu."
 	},
 	"styleUpdate": {
-		"message": "Möchtest Du '$stylename$' wirklich aktualisieren?",
+		"message": "Möchtest Du \"$stylename$\" wirklich aktualisieren?",
 		"description": "Confirmation when updating a style",
 		"placeholders": {
 			"stylename": {
@@ -354,6 +399,10 @@
 	"importReportLegendInvalid": {
 		"message": "Ungültige übersprungen",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Schreibe neuen Style als usercss",
+		"description": ""
 	},
 	"genericResetLabel": {
 		"message": "Zurücksetzen",
@@ -384,6 +433,10 @@
 		"message": "Verwende die /re/ Syntax zur Suche als Regulärer Ausdruck",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "Nützlich für dunkle Themes im neuen Chrome, da dort die Seitenränder nicht mehr gefärbt werden",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "Eine erzwungene Aktualisierung wird die lokalen Änderungen überschreiben.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -395,6 +448,10 @@
 	"importReplaceTooltip": {
 		"message": "Verwerfe den aktuellen Style-Inhalt und überschreibe ihn mit dem importierten",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "Nach Updates suchen",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "Doppelklick, um Höhe zu maximieren / wiederherzustellen",
@@ -421,7 +478,7 @@
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"updatesCurrentlyInstalled": {
-		"message": "Installierte Aktualisierungen:",
+		"message": "Installierte Updates:",
 		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
 	},
 	"styleToMozillaFormatTitle": {
@@ -470,11 +527,11 @@
 		"description": "Label for the button to make a style apply only to specific sites"
 	},
 	"installUpdate": {
-		"message": "Aktualisierung installieren",
+		"message": "Update installieren",
 		"description": "Label for the button to install an update for a single style"
 	},
 	"optionsCheckUpdate": {
-		"message": "Alle verfügbaren Aktualisierungen Installieren",
+		"message": "Alle verfügbaren Updates Installieren",
 		"description": ""
 	},
 	"filteredStyles": {
@@ -525,6 +582,10 @@
 		"message": "Alle Styles deaktivieren",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "Zeige \"Gilt für\" Info",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "Dieser Style scheint lokal bearbeitet worden zu sein.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -546,7 +607,7 @@
 		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
-		"message": "Suche nach Aktualisierungen...",
+		"message": "Suche nach Updates...",
 		"description": "Text to display when checking a style for an update"
 	},
 	"styleRegexpTestFull": {
@@ -554,7 +615,7 @@
 		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
-		"message": "Anzahl der 'Gilt für' Elemente",
+		"message": "Anzahl der \"Gilt für\" Elemente",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"popupManageTooltip": {
@@ -565,20 +626,43 @@
 		"message": "Stylus nutzt hierzu den externen Dienst https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "\"$stylename$\" ist bereits installiert. Überschreiben?\nVersion: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Dieser Style wurde lokal bearbeitet.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"linterRulesLink": {
-		"message": "Vollständige Liste der Regeln anzeigen",
+		"message": "Vollständige Liste der Regeln anzeigen für",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
+	},
+	"styleUpdateDiscardChanges": {
+		"message": "Der Style wurde außerhalb des Editors verändert. Style neu laden?",
+		"description": "Confirmation to update the style in the editor"
 	},
 	"optionsResetButton": {
 		"message": "Optionen zurücksetzen",
 		"description": ""
 	},
+	"externalUsercssDocument": {
+		"message": "Dokumentation für Usercss",
+		"description": "Label for the external link to usercss documentation"
+	},
 	"optionsAdvancedContextDelete": {
-		"message": "'Löschen' im Editor-Kontextmenü hinzufügen",
+		"message": "\"Löschen\" im Editor-Kontextmenü hinzufügen",
 		"description": ""
 	},
 	"linterConfigPopupTitle": {
@@ -589,6 +673,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "Konfigurieren",
+		"description": "Label for the button to configure userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "Aktualisierte Meta Infos und Codes",
@@ -603,7 +691,7 @@
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "Lege mit den Einstellungen von 'Gilt für' fest, für welche URLs der Code in diesem Bereich gelten soll.",
+		"message": "Lege mit den Einstellungen von \"Gilt für\" fest, für welche URLs der Code in diesem Bereich gelten soll.",
 		"description": "Help text for 'applies to' section"
 	},
 	"editStyleHeading": {
@@ -618,6 +706,28 @@
 		"message": "Autovervollständigen bei Eingabe",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLint unterstützt $preprocessorname$ nicht",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "Ungültiges @select: Wert existiert nicht in der Liste",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$ist kein gültiger Farbcode",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
 	"manageOnlyDisabled": {
 		"message": "Nur deaktivierte Styles",
 		"description": "Checkbox to show only disabled styles"
@@ -631,20 +741,28 @@
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
 	"updateAllCheckSucceededSomeEdited": {
-		"message": "Einige Styles wurden nicht überprüft, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Aktualisierung und anschließendem Update für alle Styles erzwungen werden (Lokale Bearbeitungen werden dann überschrieben).",
+		"message": "Einige Styles wurden nicht überprüft, um dem Verlust von lokalen Bearbeitungen vorzubeugen. Die Aktualisierungen können entweder durch einzelne manuelle Überprüfung oder durch eine erneute Ausführung der Updatesuche (und anschließendem Update) für alle Styles erzwungen werden. Lokale Bearbeitungen werden dann überschrieben.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"stylusUnavailableForURL": {
 		"message": "Stylus funktioniert nicht auf Seiten wie diesen.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Weiße Rahmen an den Seiten hinzufügen",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
-		"message": "Nur mit Aktualisierungen oder Problemen",
+		"message": "Nur mit Updates oder Problemen",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
 		"message": "Style hinzufügen",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Externer Link",
+		"description": "Label for external links"
 	},
 	"importReplaceLabel": {
 		"message": "Style überschreiben",
@@ -661,6 +779,10 @@
 	"optionsAdvanced": {
 		"message": "Erweitert",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Deckkraft",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Füge den importierten Style an den aktuellen",
@@ -707,7 +829,7 @@
 		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
-		"message": "Nach Aktualisierungen suchen",
+		"message": "Nach Updates suchen",
 		"description": "Label for the button to check all styles for updates"
 	},
 	"openOptionsManage": {
@@ -718,6 +840,15 @@
 		"message": "Badge auf dem Toolbar-Icon",
 		"description": ""
 	},
+	"installUpdateFrom": {
+		"message": "Style erhält momentan Updates von $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportLegendIdentical": {
 		"message": "Identische übersprungen",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
@@ -725,6 +856,14 @@
 	"optionsPopupWidth": {
 		"message": "Popup-Breite (in Pixeln)",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "Klammern automatisch schließen",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "Neuinstallieren",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "Nicht gespeichert aufgrund folgender ungültiger Einstellungen:",
@@ -734,6 +873,19 @@
 		"message": "Nein",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "Erforderliche Metadaten fehlen: @$key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "Funktioniert nicht mit minified CSS",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "Rückgängig",
 		"description": "Button label"
@@ -741,6 +893,14 @@
 	"cm_keyMap": {
 		"message": "Tastaturbelegung",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "zur Supportseite",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Speichern",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "Neues Verwaltungs Design-Layout.",
@@ -762,13 +922,26 @@
 		"message": "Ersetzen durch",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "Bei der Echtzeitaktualisierung der Datei ist ein Fehler aufgetreten",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "Löschen",
 		"description": "Label for the button to delete a style"
 	},
 	"updateCheckManualUpdateForce": {
-		"message": "Aktualisierungen installieren (Lokale Bearbeitungen werden überschrieben)",
+		"message": "Updates installieren (Lokale Bearbeitungen werden überschrieben)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"styleInstallFailed": {
+		"message": "Installation des Userstyles fehlgeschlagen!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsAdvancedExposeIframes": {
 		"message": "Ermögliche Iframes via HTML[stylus-iframe]",
@@ -779,8 +952,12 @@
 		"description": "Label for the button to go to the add style page"
 	},
 	"optionsUpdateIntervalNote": {
-		"message": "Zum Deaktivieren der automatischen Aktualisierungs-Überprüfung den Wert auf 0 setzen.",
+		"message": "Zum Deaktivieren der automatischen Updateüberprüfung den Wert auf 0 setzen.",
 		"description": ""
+	},
+	"installButtonUpdate": {
+		"message": "Aktualisieren",
+		"description": "Label for update button"
 	},
 	"backupButtons": {
 		"message": "Datensicherung",
@@ -794,9 +971,21 @@
 		"message": "Bearbeiten",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Installiert",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "Autor",
+		"description": "Label for the style author"
+	},
 	"popupOpenEditInWindow": {
 		"message": "Editor in neuem Fenster öffnen",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "Kann letzten \"Gilt für\" Eintrag nicht entfernen",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "Wähle eine Datei aus oder ziehe die Datei auf diese Seite. (Drag and Drop)",
@@ -817,5 +1006,9 @@
 	"description": {
 		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele populäre Websites zu installieren.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Schließen",
+		"description": "'Close' button in a confirm dialog"
 	}
 }

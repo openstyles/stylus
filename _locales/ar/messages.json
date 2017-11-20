@@ -8,7 +8,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "أدخل اسمًا.",
+		"message": "أدخل اسمًا",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {

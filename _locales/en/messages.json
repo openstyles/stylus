@@ -813,7 +813,7 @@
     }
   },
   "styleMissingName": {
-    "message": "Enter a name.",
+    "message": "Enter a name",
     "description": "Error displayed when user saves without providing a name"
   },
   "styleSaveLabel": {

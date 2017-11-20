@@ -31,6 +31,14 @@
 		"message": "導出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "安裝",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "無效的 @var 勾選框：值必須為 0 或 1",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "無效的 JSON 格式",
 		"description": "Setting linter config with invalid JSON"
@@ -52,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "請輸入名稱。",
+		"message": "請輸入名稱",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +90,10 @@
 	"optionsIconDark": {
 		"message": "暗色瀏覽器主題",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "從 Mozilla 格式匯入失敗",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "追加到樣式",
@@ -122,6 +134,10 @@
 	"manageFaviconsGray": {
 		"message": "灰階淡出",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "版本舊於已安裝的樣式。",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "是",
@@ -175,9 +191,17 @@
 		"message": "刪除",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "使用預設值",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "取消",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "當輸入開放的 ()[]{}''\"\" 時自動新增另一邊的標點符號",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "匯入樣式",
@@ -236,6 +260,15 @@
 		"message": "僅本機建立的樣式",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "不支援的 @preprocessor：$preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "這些問題被 $link$ 找到了：",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -244,6 +277,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"parseUsercssError": {
+		"message": "Stylus 解析 usercss 失敗：",
+		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
 		"message": "搜索內容",
@@ -256,6 +293,10 @@
 	"checkAllUpdatesForce": {
 		"message": "再次檢查，我沒有編輯任何樣式！",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"liveReloadLabel": {
+		"message": "即時重新整理",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus 僅在您於 chrome://extensions 啟用了 Stylus 擴充套件中對應的勾選框時才能存取 file:// 的 URL。",
@@ -329,6 +370,10 @@
 		"message": "正規表示式無效。",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "授權條款",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "選項",
 		"description": "Heading for options section on manage page."
@@ -371,6 +416,10 @@
 		"message": "已跳過無效的",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "以 usercss 編寫新樣式",
+		"description": ""
+	},
 	"genericResetLabel": {
 		"message": "重設",
 		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -400,6 +449,10 @@
 		"message": "使用/re/句法正則表達式搜索",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "對新 Chrome 中的暗色主題很有用，因為其不再繪製邊框",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "強制更新覆蓋任何本機編輯。",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -411,6 +464,10 @@
 	"importReplaceTooltip": {
 		"message": "棄用當前樣式內容并用導入樣式覆蓋",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "檢查更新",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "雙擊以最大化／復原高度",
@@ -545,6 +602,10 @@
 		"message": "禁用所有樣式",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "顯示「套用至」資訊",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "這個樣式可能在本機被編輯過。",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -585,6 +646,21 @@
 		"message": "Stylus 使用外部服務 https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "「$stylename$」已安裝。要覆寫嗎？\n版本：$oldVersion$→$newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "這個樣式已在本機編輯。",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -593,6 +669,10 @@
 		"message": "見完整的規則清單",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "樣式已在編輯器外變更。您想要重新載入樣式嗎？",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "重設選項",
 		"description": ""
@@ -600,6 +680,10 @@
 	"sectionCode": {
 		"message": "代碼",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Usercss 的文件",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "在編輯器的右鍵選單中加入「刪除」",
@@ -613,6 +697,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "設定",
+		"description": "Label for the button to configure userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "後設資訊與程式碼均已更新",
@@ -642,6 +730,32 @@
 		"message": "在輸入時自動完成",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLint 不支援 $preprocessorname$ 預處理器",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "無效的 @select：值不存在於清單中",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$是無效的顏色",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "回饋",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "僅已停用的樣式",
 		"description": "Checkbox to show only disabled styles"
@@ -666,6 +780,10 @@
 		"message": "Stylus 不能在諸如此類的網頁上生效。",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "在邊邊新增白色邊框",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "僅有更新或是有問題的",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -673,6 +791,14 @@
 	"addStyleTitle": {
 		"message": "添加樣式",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "外部連結",
+		"description": "Label for external links"
+	},
+	"externalHomepage": {
+		"message": "首頁",
+		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
 		"message": "覆蓋樣式",
@@ -689,6 +815,10 @@
 	"optionsAdvanced": {
 		"message": "進階",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "不透明度",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "追加導入的樣式到當前樣式",
@@ -746,6 +876,15 @@
 		"message": "在工具列圖示上的徽章",
 		"description": ""
 	},
+	"installUpdateFrom": {
+		"message": "目前從 $url$ 更新樣式",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportLegendIdentical": {
 		"message": "已跳過相同的",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
@@ -753,6 +892,14 @@
 	"optionsPopupWidth": {
 		"message": "彈出視窗寬度（以像素計）",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "自動關閉括號與引號",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "重新安裝",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "因為無效的設定所以未儲存：",
@@ -762,6 +909,19 @@
 		"message": "否",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "遺失詮釋資料 @ $key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "無法與最小化的 CSS 一起運作",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "撤銷",
 		"description": "Button label"
@@ -769,6 +929,14 @@
 	"cm_keyMap": {
 		"message": "鍵盤映射",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "支援",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "儲存",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "新的管理介面佈局",
@@ -790,6 +958,10 @@
 		"message": "替換為",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "觀看檔案時發生錯誤",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "删除",
 		"description": "Label for the button to delete a style"
@@ -797,6 +969,15 @@
 	"updateCheckManualUpdateForce": {
 		"message": "安裝更新（本機編輯將會被覆寫）",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"styleInstallFailed": {
+		"message": "安裝使用者樣式失敗！\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsAdvancedExposeIframes": {
 		"message": "透過 HTML[stylus-iframe] 公開 iframes",
@@ -810,6 +991,10 @@
 		"message": "要停用自動化使用者樣式更新檢查，設定間隔為 0",
 		"description": ""
 	},
+	"installButtonUpdate": {
+		"message": "更新",
+		"description": "Label for update button"
+	},
 	"backupButtons": {
 		"message": "備份",
 		"description": "Heading for backup"
@@ -822,6 +1007,14 @@
 		"message": "編輯",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "已安裝",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "作者",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "主題",
 		"description": "Label for the style editor's CSS theme."
@@ -829,6 +1022,10 @@
 	"popupOpenEditInWindow": {
 		"message": "在新視窗開啟編輯器",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "無法移除最後的「套用到」項目",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "選取檔案並拖曳到此頁面。",
@@ -849,5 +1046,9 @@
 	"description": {
 		"message": "用Stylus（一個用戶樣式管理器）重塑網頁。 Stylus 讓你能為诸多主流網站輕鬆的安裝主題和皮膚。",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "關閉",
+		"description": "'Close' button in a confirm dialog"
 	}
 }

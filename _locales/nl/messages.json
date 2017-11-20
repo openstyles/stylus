@@ -24,7 +24,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Vul een naam in.",
+		"message": "Vul een naam in",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {

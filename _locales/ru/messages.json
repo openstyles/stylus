@@ -31,6 +31,14 @@
 		"message": "Экспорт",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "Установить",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "Ошибочный @var checkbox: значение должно быть 0 или 1",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "Ошибка формата JSON",
 		"description": "Setting linter config with invalid JSON"
@@ -52,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Введите название.",
+		"message": "Введите название",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +90,10 @@
 	"optionsIconDark": {
 		"message": "Тёмный интерфейс браузера",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Ошибка импорта формата Mozilla",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "Добавить к стилю",
@@ -122,6 +134,10 @@
 	"manageFaviconsGray": {
 		"message": "Обесцвечивать",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "Версия меньше установленной.",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "Да",
@@ -175,9 +191,17 @@
 		"message": "Удалить",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "По умолчанию",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "Отмена",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "Автоматически вставлять закрывающий символ при наборе открывающего из ()[]{}''\"\"",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "Импорт стилей",
@@ -236,6 +260,15 @@
 		"message": "Только локально созданные стили",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "Ошибочный @preprocessor: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "Проблемы, найденные правилами $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -244,6 +277,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"parseUsercssError": {
+		"message": "Stylus не смог распарсить usercss:",
+		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
 		"message": "Искать по содержимому",
@@ -256,6 +293,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Я не менял стили, проверить заново!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"liveReloadLabel": {
+		"message": "Автозагрузка изменений",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "Доступ к адресам file:// возможен только если включить соответствующую опцию для Stylus на странице chrome://extensions.",
@@ -329,6 +370,10 @@
 		"message": "Ошибка в регулярном выражении.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Лицензия",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Настройки",
 		"description": "Heading for options section on manage page."
@@ -371,6 +416,10 @@
 		"message": "некорректных пропущено",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Создавать стили в формате usercss",
+		"description": ""
+	},
 	"genericResetLabel": {
 		"message": "Сброс",
 		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -400,6 +449,10 @@
 		"message": "Используйте нотацию /re/ для поиска регулярными выражениями",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "Полезно для темных тем оформления т.к. новый Chrome не рисует боковые бордюры",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "Форсирование обновления удалит локальные изменения.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -411,6 +464,10 @@
 	"importReplaceTooltip": {
 		"message": "Удалить содержимое редактируемого стиля и заменить его на импортируемый стиль",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "Проверить обновления",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "Двойной клик = переключить максимальный размер",
@@ -545,6 +602,10 @@
 		"message": "Выключить все стили",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "Показать целевые сайты секций",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "Возможно был изменен локально.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -585,6 +646,21 @@
 		"message": "Используется сторонний сервис https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "'$stylename$' уже установлен. Обновить?\nВерсии: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Стиль был изменен локально.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -593,6 +669,10 @@
 		"message": "Открыть полный список правил",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "Стиль был изменен вне редактора. Перезагрузить?",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "Сброс настроек",
 		"description": ""
@@ -600,6 +680,10 @@
 	"sectionCode": {
 		"message": "Код",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Документация по usercss",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "Показывать команду \"Удалить\" в контекстном меню редактора",
@@ -613,6 +697,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "Настроить",
+		"description": "Label for the button to configure userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "обновлены мета-данные и код",
@@ -642,6 +730,32 @@
 		"message": "Подсказки при наборе кода",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLint не поддерживает препроцессор $preprocessorname$",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "Ошибочный @select: значение не в списке",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$ - цвет не распознан",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "Отзывы",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "Только неактивные стили",
 		"description": "Checkbox to show only disabled styles"
@@ -662,6 +776,10 @@
 		"message": "Такие адреса не поддерживаются.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Добавить белый бордюр по бокам",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "Только обновляемые и проблемные",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -669,6 +787,14 @@
 	"addStyleTitle": {
 		"message": "Добавление стиля",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Внешняя ссылка",
+		"description": "Label for external links"
+	},
+	"externalHomepage": {
+		"message": "Домашняя страницы",
+		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
 		"message": "Заменить стиль",
@@ -685,6 +811,10 @@
 	"optionsAdvanced": {
 		"message": "Другое",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Прозрачность",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Добавить импортируемый стиль к редактируемому",
@@ -746,6 +876,15 @@
 		"message": "Бейдж на пиктограмме в тулбаре",
 		"description": ""
 	},
+	"installUpdateFrom": {
+		"message": "Источник обновления стиля: $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportLegendIdentical": {
 		"message": "идентичные пропущены",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
@@ -753,6 +892,14 @@
 	"optionsPopupWidth": {
 		"message": "Ширина всплывающего окна (в пикселах)",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "Закрывать скобки/кавычки при наборе",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "Переустановить",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "Не сохранено из-за неправильных настроек ниже:",
@@ -762,6 +909,19 @@
 		"message": "Нет",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "Отсутствуют метаданные @$key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "Не работает с минифицированным CSS",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "Отменить",
 		"description": "Button label"
@@ -769,6 +929,14 @@
 	"cm_keyMap": {
 		"message": "Раскладка",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "Поддержка",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Сохранить",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "Новый интерфейс",
@@ -790,6 +958,10 @@
 		"message": "Заменить на",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "Ошибка слежения за файлом",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "Удалить",
 		"description": "Label for the button to delete a style"
@@ -797,6 +969,15 @@
 	"updateCheckManualUpdateForce": {
 		"message": "Установить обновление (локальные изменения будут утеряны)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"styleInstallFailed": {
+		"message": "Ошибка установки стиля!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsAdvancedExposeIframes": {
 		"message": "Выявлять iframe путем добавления HTML[stylus-iframe]",
@@ -810,6 +991,10 @@
 		"message": "Для отключения автоматического обновления стилей введите 0 (ноль)",
 		"description": ""
 	},
+	"installButtonUpdate": {
+		"message": "Обновить",
+		"description": "Label for update button"
+	},
 	"backupButtons": {
 		"message": "Резервное копирование",
 		"description": "Heading for backup"
@@ -822,6 +1007,14 @@
 		"message": "Изменить",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Установлен",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "Автор",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "Тема",
 		"description": "Label for the style editor's CSS theme."
@@ -829,6 +1022,10 @@
 	"popupOpenEditInWindow": {
 		"message": "Открывать редактор в новом окне",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "Нельзя удалить последний элемент",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "Нажмите Импорт чтобы выбрать файл или просто перетащите его на эту страницу",
@@ -849,5 +1046,9 @@
 	"description": {
 		"message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylus. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Закрыть",
+		"description": "'Close' button in a confirm dialog"
 	}
 }

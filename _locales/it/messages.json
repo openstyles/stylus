@@ -36,7 +36,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Inserisci un nome.",
+		"message": "Inserisci un nome",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {

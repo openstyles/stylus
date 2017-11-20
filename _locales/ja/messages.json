@@ -31,6 +31,14 @@
 		"message": "エクスポート",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "インストール",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "不正な @var チェックボックス: 値は0か1である必要があります",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "不正なJSONフォーマットです",
 		"description": "Setting linter config with invalid JSON"
@@ -52,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "名前を入力してください。",
+		"message": "名前を入力してください",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +90,10 @@
 	"optionsIconDark": {
 		"message": "暗いブラウザのテーマ",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Mozilla形式のインポートに失敗しました",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "スタイルに追加",
@@ -118,6 +130,10 @@
 	"manageFaviconsGray": {
 		"message": "グレー表示",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "インストール済みのスタイルより古いバージョンです。",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "はい",
@@ -171,9 +187,17 @@
 		"message": "削除",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "デフォルトを使用",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "キャンセル",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "()[]{}''\"\" の開き括弧/引用符の入力時に、自動的に対応する閉じ括弧/引用符を追加します",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "スタイルをインポート",
@@ -200,7 +224,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "'html[stylus-iframe] h1 { display:none }' のようにiframe用のCSSを書くことができるようになります。",
+		"message": "「html[stylus-iframe] h1 { display:none }」のようにiframe用のCSSを書くことができるようになります。",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -232,6 +256,15 @@
 		"message": "ローカル作成スタイルのみ",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "未サポートの @preprocessor: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "$link$ によってこれらの問題点が見つかりました :",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -240,6 +273,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"parseUsercssError": {
+		"message": "Stylusはusercssの解析に失敗しました: ",
+		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
 		"message": "コンテンツの検索",
@@ -252,6 +289,10 @@
 	"checkAllUpdatesForce": {
 		"message": "全スタイルを再チェックします。私はスタイルを編集していません！",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"liveReloadLabel": {
+		"message": "自動リロード",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "chrome://extensions ページでStylus拡張機能の当該チェックボックスを有効にした場合にのみ、Stylusは file:// URLにアクセスできます。",
@@ -325,6 +366,10 @@
 		"message": "正規表現は無効です。",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "ライセンス",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "オプション",
 		"description": "Heading for options section on manage page."
@@ -367,6 +412,10 @@
 		"message": "件の無効なスタイルをスキップしました",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "新しいスタイルを usercss として作成します",
+		"description": ""
+	},
 	"genericResetLabel": {
 		"message": "リセット",
 		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -396,6 +445,10 @@
 		"message": "正規表現検索に /re/ シンタックスを使用する",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "新しいChromeが横の境界線を塗りつぶさなくなったため、暗いテーマで有効です",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "更新を強制すると、すべてのローカルでの編集内容が上書きされます。",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -407,6 +460,10 @@
 	"importReplaceTooltip": {
 		"message": "現在のスタイルの内容を破棄し、インポートされたスタイルで上書きする",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "更新をチェック",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "ダブルクリックで高さを最大化/元に戻す",
@@ -425,7 +482,7 @@
 		"description": "Text displayed when no styles are installed for the current site"
 	},
 	"appliesDisplayTruncatedSuffix": {
-		"message": "サイトを追加",
+		"message": "さらに表示",
 		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
 	},
 	"appliesRemove": {
@@ -537,6 +594,10 @@
 		"message": "すべてのスタイルをオフにする",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "「適用先」の情報を表示",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "このスタイルはローカルで編集されている可能性があります。",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -577,6 +638,21 @@
 		"message": "Stylusは外部サービスを使用します https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "「$stylename$」はすでにインストール済みです。上書きしますか?\nバージョン: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "このスタイルはローカルで編集されました。",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -585,6 +661,10 @@
 		"message": "ルールの完全なリストを見る",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "このスタイルはエディタの外部で変更されました。このスタイルをリロードしますか?",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "オプションをリセット",
 		"description": ""
@@ -592,6 +672,10 @@
 	"sectionCode": {
 		"message": "コード",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Usercssの文書",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "エディタのコンテキストメニューに「削除」を追加します",
@@ -605,6 +689,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "設定",
+		"description": "Label for the button to configure userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "件のメタ情報とコードを更新しました",
@@ -634,6 +722,32 @@
 		"message": "入力の自動補完",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLintは「$preprocessorname$」プリプロセッサをサポートしていません",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "不正な @select: 値がリストに存在しません",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$ は有効な色ではありません",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "フィードバック",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "無効なスタイルのみ",
 		"description": "Checkbox to show only disabled styles"
@@ -654,6 +768,10 @@
 		"message": "このようなページではStylusは動作しません。",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "横に白い境界線を追加する",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "更新または問題があるスタイルのみ",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -661,6 +779,14 @@
 	"addStyleTitle": {
 		"message": "スタイルを追加",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "外部リンク",
+		"description": "Label for external links"
+	},
+	"externalHomepage": {
+		"message": "ホームページ",
+		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
 		"message": "スタイルを上書き",
@@ -677,6 +803,10 @@
 	"optionsAdvanced": {
 		"message": "上級者向け",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "透明度",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "インポートされたスタイルを現在のスタイルに追加する",
@@ -734,6 +864,15 @@
 		"message": "ツールバーアイコンのバッジ",
 		"description": ""
 	},
+	"installUpdateFrom": {
+		"message": "現在、このスタイルは「$url$」から更新されます",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
+	},
 	"importReportLegendIdentical": {
 		"message": "件の同一のスタイルをスキップしました",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
@@ -741,6 +880,14 @@
 	"optionsPopupWidth": {
 		"message": "ポップアップの幅（ピクセル単位）",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "括弧と引用符を自動的に閉じる",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "再インストール",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "これらの不正な設定のために保存されませんでした :",
@@ -750,6 +897,19 @@
 		"message": "いいえ",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "メタデータがありません @$key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "圧縮されたCSSでは機能しません",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "元に戻す",
 		"description": "Button label"
@@ -757,6 +917,14 @@
 	"cm_keyMap": {
 		"message": "キーマップ",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "サポート",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "保存",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "新しい管理UIレイアウト",
@@ -778,6 +946,10 @@
 		"message": "次に置換",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "ファイルの監視中にエラーが発生しました",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "削除",
 		"description": "Label for the button to delete a style"
@@ -785,6 +957,15 @@
 	"updateCheckManualUpdateForce": {
 		"message": "更新をインストール（ローカルでの編集内容は上書きされます）",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"styleInstallFailed": {
+		"message": "ユーザースタイルのインストールに失敗しました!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
 	},
 	"optionsAdvancedExposeIframes": {
 		"message": "HTML[stylus-iframe] によってiframeへのアクセスを可能にします",
@@ -798,6 +979,10 @@
 		"message": "ユーザースタイルの自動更新チェックを無効にするには、間隔を0に設定します。",
 		"description": ""
 	},
+	"installButtonUpdate": {
+		"message": "更新",
+		"description": "Label for update button"
+	},
 	"backupButtons": {
 		"message": "バックアップ",
 		"description": "Heading for backup"
@@ -810,6 +995,14 @@
 		"message": "編集",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "インストール済み",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "作者",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "テーマ",
 		"description": "Label for the style editor's CSS theme."
@@ -817,6 +1010,10 @@
 	"popupOpenEditInWindow": {
 		"message": "新しいウィンドウでエディタを開く",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "「適用先」の最後の項目を削除することはできません",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "ファイルを選択するか、このページにドラッグ＆ドロップします。",
@@ -837,5 +1034,9 @@
 	"description": {
 		"message": "Stylus でウェブのデザインを変更しましょう。これは、ユーザースタイルを管理するツールです。Stylus を利用すると、多くの人気サイト向けのテーマやスキンを簡単にインストールできます。",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "閉じる",
+		"description": "'Close' button in a confirm dialog"
 	}
 }
