@@ -17,8 +17,12 @@
   background-repeat: repeat;
 }
 
-.cm-colorview + .cm-colorview.cm-overlay::before,
-.cm-colorview.cm-overlay + .cm-colorview::before {
+/* overlay at the start splits our colorview: don't style the tail */
+.cm-colorview.cm-overlay + .cm-colorview:not([data-colorpicker])::before,
+/* overlay in the middle splits our colorview: don't style the middle */
+.cm-colorview + .cm-colorview.cm-overlay:not([data-colorpicker])::before,
+/* ...and the tail */
+.cm-colorview + .cm-colorview.cm-overlay:not([data-colorpicker]) + .cm-colorview:not([data-colorpicker])::before {
   content: none;
 }
 

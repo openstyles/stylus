@@ -163,6 +163,17 @@
         }
         elements = elements || text.getElementsByClassName(OWN_DOM_CLASS);
         const el = elements[elementIndex++];
+        while (true) {
+          const nextStyle = styles[i + 3];
+          const nextStart = styles[i];
+          if (nextStyle && nextStyle.includes(OWN_TOKEN_NAME) &&
+              nextStart > start && nextStart <= start + data.color.length) {
+            elementIndex++;
+            i += 2;
+          } else {
+            break;
+          }
+        }
         if (el.colorpickerData && el.colorpickerData.color === data.color) {
           continue;
         }
