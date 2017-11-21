@@ -127,16 +127,11 @@ new MutationObserver((mutations, observer) => {
   we need to fix this URL using "stylish-update-url" meta key
 */
 function getStyleURL() {
-  const url = getMeta('stylish-code-chrome');
-  // TODO: remove when USO is fixed
-  const directUrl = getMeta('stylish-update-url');
-  if (directUrl.includes('?') && !url.includes('?')) {
-    /* get custom settings from the update url */
-    return Object.assign(new URL(url), {
-      search: (new URL(directUrl)).search
-    }).href;
-  }
-  return url;
+  const textUrl = getMeta('stylish-update-url') || '';
+  const jsonUrl = getMeta('stylish-code-chrome') ||
+    textUrl.replace(/styles\/(\d+)\/[^?]*/, 'styles/chrome/$1.json');
+  const paramsMissing = !jsonUrl.includes('?') && textUrl.includes('?');
+  return jsonUrl + (paramsMissing ? textUrl.replace(/^[^?]+/, '') : '');
 }
 
 function checkUpdatability([installedStyle]) {
@@ -154,9 +149,9 @@ function checkUpdatability([installedStyle]) {
       reportUpdatable(md5 !== installedStyle.originalMd5);
     });
   } else {
-    getResource(getStyleURL()).then(code => {
-      reportUpdatable(code === null ||
-        !styleSectionsEqual(JSON.parse(code), installedStyle));
+    getStyleJson().then(json => {
+      reportUpdatable(!json ||
+        !styleSectionsEqual(json, installedStyle));
     });
   }
 
@@ -233,9 +228,14 @@ function saveStyleCode(message, name, addProps) {
       return;
     }
     enableUpdateButton(false);
-    getResource(getStyleURL()).then(code => {
+    getStyleJson().then(json => {
+      if (!json) {
+        prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
+          'https://github.com/openstyles/stylus/issues/195');
+        return;
+      }
       chrome.runtime.sendMessage(
-        Object.assign(JSON.parse(code), addProps, {
+        Object.assign(json, addProps, {
           method: 'saveStyle',
           reason: 'update',
         }),
@@ -273,6 +273,18 @@ function getResource(url) {
       resolve(document.getElementById(url.slice(1)).textContent);
     } else {
       chrome.runtime.sendMessage({method: 'download', url}, resolve);
+    }
+  });
+}
+
+
+function getStyleJson() {
+  const url = getStyleURL();
+  return getResource(url).then(code => {
+    try {
+      return JSON.parse(code);
+    } catch (e) {
+      return fetch(url).then(r => r.json()).catch(() => null);
     }
   });
 }
