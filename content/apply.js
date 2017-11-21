@@ -224,8 +224,12 @@ function applyStyles(styles) {
   for (const id in styles) {
     applySections(id, styles[id].map(section => section.code).join('\n'));
   }
-  initDocRewriteObserver();
-  initDocRootObserver();
+  if (!isOwnPage && !docRewriteObserver && styleElements.size) {
+    initDocRewriteObserver();
+  }
+  if (!docRootObserver && styleElements.size) {
+    initDocRootObserver();
+  }
   if (retiredStyleTimers.size) {
     setTimeout(() => {
       for (const [id, timer] of retiredStyleTimers.entries()) {
@@ -290,9 +294,6 @@ function replaceAll(newStyles) {
 
 
 function initDocRewriteObserver() {
-  if (isOwnPage || docRewriteObserver || !styleElements.size) {
-    return;
-  }
   // re-add styles if we detect documentElement being recreated
   const reinjectStyles = () => {
     if (!styleElements) {
@@ -327,36 +328,57 @@ function initDocRewriteObserver() {
 
 
 function initDocRootObserver() {
-  if (!styleElements.size || document.body || docRootObserver) {
-    return;
+  let lastRestorationTime = 0;
+  let restorationCounter = 0;
+
+  docRootObserver = new MutationObserver(findMisplacedStyles);
+  connectObserver();
+
+  function connectObserver() {
+    docRootObserver.observe(ROOT, {childList: true});
   }
-  // wait for BODY and move all style elements after it
-  docRootObserver = new MutationObserver(() => {
+
+  function findMisplacedStyles() {
     let expectedPrevSibling = document.body || document.head;
     if (!expectedPrevSibling) {
       return;
     }
-    docRootObserver.disconnect();
+    const list = [];
     for (const el of styleElements.values()) {
       if (el.previousElementSibling !== expectedPrevSibling) {
-        ROOT.insertBefore(el, expectedPrevSibling.nextSibling);
-        if (el.disabled !== disableAll) {
-          // moving an element resets its 'disabled' state
-          el.disabled = disableAll;
-        }
+        list.push({el, before: expectedPrevSibling.nextSibling});
       }
       expectedPrevSibling = el;
     }
-    if (document.body) {
-      docRootObserver = null;
-    } else {
-      docRootObserver.connect();
+    if (list.length && !restorationLimitExceeded()) {
+      restoreMisplacedStyles(list);
     }
-  });
-  docRootObserver.connect = () => {
-    docRootObserver.observe(ROOT, {childList: true});
-  };
-  docRootObserver.connect();
+  }
+
+  function restoreMisplacedStyles(list) {
+    docRootObserver.disconnect();
+    for (const {el, before} of list) {
+      ROOT.insertBefore(el, before);
+      if (el.disabled !== disableAll) {
+        // moving an element resets its 'disabled' state
+        el.disabled = disableAll;
+      }
+    }
+    connectObserver();
+  }
+
+  function restorationLimitExceeded() {
+    const t = performance.now();
+    if (t - lastRestorationTime > 1000) {
+      restorationCounter = 0;
+    }
+    lastRestorationTime = t;
+    if (++restorationCounter > 100) {
+      console.error('Stylus stopped restoring userstyle elements after 100 failed attempts.\n' +
+        'Please report on https://github.com/openstyles/stylus/issues');
+      return true;
+    }
+  }
 }
 
 
