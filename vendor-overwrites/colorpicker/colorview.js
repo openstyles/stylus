@@ -58,9 +58,8 @@
   function registerHooks() {
     const mx = CodeMirror.modeExtensions.css;
     if (!mx || mx.token !== colorizeToken) {
-      CodeMirror.extendMode('css', {
-        token: colorizeToken,
-      });
+      CodeMirror.extendMode('css', {token: colorizeToken});
+      CodeMirror.extendMode('stylus', {token: colorizeToken});
     }
   }
 
@@ -128,7 +127,7 @@
     if (string.charAt(start) !== '!') {
       const color = string.slice(start, pos);
       const colorValue = NAMED_COLORS.get(color.toLowerCase());
-      return colorValue && {color, colorValue};
+      return colorValue ? {color, colorValue} : colorizeAtom(stream);
     }
   }
 
