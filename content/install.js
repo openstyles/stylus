@@ -24,17 +24,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 document.documentElement.appendChild(document.createElement('script')).text = '(' +
   function () {
     let settings;
+    const originalResponseJson = Response.prototype.json;
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
       settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search);
+      if (!settings) {
+        Response.prototype.json = originalResponseJson;
+      }
     });
-    const originalResponseJson = Response.prototype.json;
     Response.prototype.json = function (...args) {
       return originalResponseJson.call(this, ...args).then(json => {
-        Response.prototype.json = originalResponseJson;
         if (!settings || typeof ((json || {}).style_settings || {}).every !== 'function') {
           return json;
         }
+        Response.prototype.json = originalResponseJson;
         const images = new Map();
         for (const jsonSetting of json.style_settings) {
           let value = settings.get('ik-' + jsonSetting.install_key);
