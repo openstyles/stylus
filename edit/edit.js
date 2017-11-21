@@ -2144,12 +2144,17 @@ function configureColorpicker() {
     onkeydown(event) {
       const key = CodeMirror.keyName(event);
       // ignore: [Shift?] characters, modifiers-only, [Shift?] Esc, Enter, [Shift?] Tab
-      if (/^(Enter|(Shift-)?(Esc|Tab|[!-~])|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
+      if (/^(Enter|(Shift-)?(Esc|Tab))$/.test(key)) {
+        this.setCustomValidity('');
         return;
+      } else if (/^((Shift-)?[!-~]|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
+        this.setCustomValidity('Not allowed');
+      } else {
+        this.setCustomValidity('');
+        prefs.set('editor.colorpicker.hotkey', key);
       }
       event.preventDefault();
       event.stopPropagation();
-      prefs.set('editor.colorpicker.hotkey', key);
       this.value = key;
     },
     oninput() {
