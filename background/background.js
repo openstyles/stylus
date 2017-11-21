@@ -50,9 +50,13 @@ prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
     // Open FAQs page once after installation to guide new users.
     // Do not display it in development mode.
     if (reason === 'install' && manifest.update_url) {
-      setTimeout(openURL, 100, {
-        url: 'http://add0n.com/stylus.html'
-      });
+      // don't hardcode homepage URL, extract it from "Get Help" label translation
+      // TODO: add a built-in tour page in the extension
+      const getHelpHtml = chrome.i18n.getMessage('manageText').match(/<a\s+href=[^>]+/g);
+      const url = (getHelpHtml[1] || '').replace(/^.+?=\s*/, '').replace(/^['"]|["']$/g, '');
+      if (url) {
+        setTimeout(openURL, 100, {url});
+      }
     }
     // reset L10N cache on update
     if (reason === 'update') {
