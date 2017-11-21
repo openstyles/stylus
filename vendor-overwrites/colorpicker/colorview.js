@@ -64,9 +64,11 @@
   }
 
   function unregisterHooks() {
-    const mx = CodeMirror.modeExtensions.css;
-    if (mx && mx.token === colorizeToken) {
-      delete mx.token;
+    for (const name in CodeMirror.modeExtensions) {
+      const mx = CodeMirror.modeExtensions[name];
+      if (mx && mx.token === colorizeToken) {
+        delete mx.token;
+      }
     }
   }
 
