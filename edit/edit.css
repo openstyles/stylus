@@ -44,7 +44,7 @@ body {
 .aligned {
   display: table-row;
 }
-.aligned > *:not(svg) {
+.aligned > *:not(.svg-inline-wrapper) {
   display: table-cell;
   margin-top: 0.1rem;
   min-height: 1.4rem;
@@ -83,8 +83,6 @@ input[type="checkbox"] {
   transition: fill .5s;
   width: 16px;
   height: 16px;
-}
-.svg-icon:not(.dismiss) {
   margin-left: 0.2rem;
 }
 h2 .svg-icon, label .svg-icon {
@@ -132,7 +130,7 @@ h2 .svg-icon, label .svg-icon {
   text-align: left;
   padding-left: .25em;
 }
-#options .option > * {
+#options .option.aligned > * {
   padding-right: 0.25rem;
 }
 .set-option-progress {
@@ -400,8 +398,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-left: 10px;
   font-weight: bold;
 }
-#help-popup .saved-message.show,
-#options .linter-settings {
+#help-popup .saved-message.show {
   display: inline-block;
 }
 
@@ -601,7 +598,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   #options h2 {
     margin: 0 0 .5em;
   }
-  #options .aligned > *:not(svg) {
+  #options .aligned > *:not(.svg-inline-wrapper) {
     margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
     padding-right: 0.4rem;
     vertical-align: baseline;

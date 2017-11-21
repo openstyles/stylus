@@ -201,7 +201,9 @@
         <div class="option aligned">
           <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
           <select id="editor.keyMap"></select>
-          <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          <span class="svg-inline-wrapper">
+            <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </span>
         </div>
         <div class="option aligned">
           <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
@@ -222,10 +224,10 @@
             <option value="stylelint">Stylelint</option>
             <option value="" i18n-text="genericDisabledLabel"></option>
           </select>
-          <span class="linter-settings" i18n-title="linterConfigTooltip">
+          <span class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
             <svg id="linter-settings" class="svg-icon settings">
               <use xlink:href="#svg-icon-settings"/>
-            </svg>&nbsp;
+            </svg>
           </span>
         </div>
       </details>
