@@ -397,23 +397,16 @@
       this.cm.state.colorpicker = null;
     }
 
-    openPopup(defaultColor = '#FFFFFF') {
-      const cursor = this.cm.getCursor();
-      const data = {
-        line: cursor.line,
-        ch: cursor.ch,
-        color: defaultColor,
-        isShortCut: true,
-      };
-      for (const {from, marker} of this.cm.getLineHandle(cursor.line).markedSpans || []) {
-        if (from <= data.ch && (marker.replacedWith || {}).colorpickerData) {
-          const {color, colorValue} = marker.replacedWith.colorpickerData;
-          if (data.ch <= from + color.length) {
-            data.ch = from;
-            data.color = color;
-            data.colorValue = colorValue;
-            break;
-          }
+    openPopup(color) {
+      let {line, ch} = this.cm.getCursor();
+      const lineText = this.cm.getLine(line);
+      ch -= (lineText.lastIndexOf('!important', ch) >= ch - '!important'.length) ? '!important'.length : 0;
+      const lineCache = this.cm.state.colorpicker.cache.get(lineText);
+      const data = {line, ch, color, isShortCut: true};
+      for (const [start, {color, colorValue}] of lineCache && lineCache.entries() || []) {
+        if (start <= ch && ch <= start + color.length) {
+          Object.assign(data, {ch: start, color, colorValue});
+          break;
         }
       }
       this.openPopupForToken({colorpickerData: data});
@@ -426,8 +419,8 @@
           top,
           left,
           cm: this.cm,
-          color: data.colorValue || data.color,
-          prevColor: data.color,
+          color: data.colorValue || data.color || '#fff',
+          prevColor: data.color || '',
           isShortCut: false,
           callback: ColorMarker.popupOnChange,
         }));
