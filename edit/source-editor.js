@@ -1,4 +1,4 @@
-/* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
+/* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp configureColorpicker */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
 /* global editors linterConfig updateLinter regExpTester mozParser */
@@ -145,6 +145,7 @@ ${section}
     $('#save-button').onclick = save;
     $('#beautify').onclick = beautify;
     $('#keyMap-help').onclick = showKeyMapHelp;
+    $('#colorpicker-settings').addEventListener('click', configureColorpicker);
     $('#toggle-style-help').onclick = showToggleStyleHelp;
     $('#cancel-button').onclick = goBackToManage;
 
