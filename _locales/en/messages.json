@@ -176,7 +176,7 @@
     "description": "Label for the style editor's CSS theme."
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Switch formats: HEX -> RGB -> HSL",
+    "message": "Switch formats: HEX -> RGB -> HSL.\nShift-click to reverse the direction.\nAlso via PgUp (PageUp), PgDn (PageDown), Tab keys.",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
   },
   "colorpickerTooltip": {

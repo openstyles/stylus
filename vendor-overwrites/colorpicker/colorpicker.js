@@ -211,7 +211,6 @@ CodeMirror.defineExtension('colorpicker', function () {
     reposition();
     setFromColor(opt.color);
     setFromHexLettercaseElement();
-    $inputs[currentFormat][0].focus();
   }
 
   function hide() {
@@ -312,11 +311,13 @@ CodeMirror.defineExtension('colorpicker', function () {
     renderInputs();
   }
 
-  function setFromFormatElement() {
+  function setFromFormatElement({shiftKey}) {
     userActivity = performance.now();
-    const nextFormat = {hex: 'rgb', rgb: 'hsl', hsl: 'hex'}[currentFormat];
     HSV.a = isNaN(HSV.a) ? 1 : HSV.a;
-    switchInputGroup(nextFormat);
+    const formats = ['hex', 'rgb', 'hsl'];
+    const dir = shiftKey ? -1 : 1;
+    const total = formats.length;
+    switchInputGroup(formats[(formats.indexOf(currentFormat) + dir + total) % total]);
     renderInputs();
   }
 
@@ -332,6 +333,78 @@ CodeMirror.defineExtension('colorpicker', function () {
   function setFromInputs() {
     userActivity = performance.now();
     if ($inputs[currentFormat].every(validateInput)) {
+      setFromColor($inputs.color);
+    }
+  }
+
+  function setFromKeyboard(event) {
+    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift, metaKey: meta} = event;
+    switch (which) {
+      case 9: // Tab
+      case 33: // PgUp
+      case 34: // PgDn
+        if (!ctrl && !alt && !meta) {
+          const el = document.activeElement;
+          const inputs = $inputs[currentFormat];
+          if (which !== 9 && !shift ||
+              el === inputs[0] && shift ||
+              el === inputs[inputs.length - 1] && !shift) {
+            event.preventDefault();
+            setFromFormatElement({shift: which === 33 || shift});
+          }
+        }
+        return;
+      case 38: // Up
+      case 40: // Down
+        if (!event.metaKey &&
+            document.activeElement.localName === 'input' &&
+            document.activeElement.checkValidity()) {
+          setFromKeyboardIncrement(event);
+        }
+        return;
+    }
+  }
+
+  function setFromKeyboardIncrement(event) {
+    const el = document.activeElement;
+    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
+    const dir = which === 38 ? 1 : -1;
+    let value, newValue;
+    if (currentFormat === 'hex') {
+      value = el.value.trim();
+      const isShort = value.length <= 5;
+      const [r, g, b, a = ''] = el.value.match(isShort ? /[\da-f]/g : /[\da-f]{2}/g);
+      let ceiling, data;
+      if (!ctrl && !shift && !alt) {
+        ceiling = isShort ? 0xFFF : 0xFFFFFF;
+        data = [[true, r + g + b]];
+      } else {
+        ceiling = isShort ? 15 : 255;
+        data = [[ctrl, r], [shift, g], [alt, b]];
+      }
+      newValue = '#' + data.map(([affected, part]) => {
+        part = constrain(0, ceiling, parseInt(part, 16) + dir * (affected ? 1 : 0));
+        return (part + ceiling + 1).toString(16).slice(1);
+      }).join('') + a;
+      newValue = options.hexUppercase ? newValue.toUpperCase() : newValue.toLowerCase();
+    } else if (!alt) {
+      const delta =
+        shift && !ctrl ? 10 :
+        ctrl && !shift ? 100 :
+        1;
+      value = parseFloat(el.value);
+      const isHue = el === $inputs.hsl[0];
+      const isAlpha = el === $inputs[currentFormat][3];
+      const min = isHue ? -360 : 0;
+      const max = isHue ? 360 : isAlpha ? 1 : currentFormat === 'rgb' ? 255 : 100;
+      const scale = isAlpha ? .01 : 1;
+      newValue = constrain(min, max, value + delta * scale * dir);
+      newValue = isAlpha ? alphaToString(newValue) : newValue;
+    }
+    event.preventDefault();
+    userActivity = performance.now();
+    if (newValue !== undefined && newValue !== value) {
+      el.value = newValue;
       setFromColor($inputs.color);
     }
   }
@@ -377,6 +450,7 @@ CodeMirror.defineExtension('colorpicker', function () {
       }
     }
     $inputGroups[format].dataset.active = '';
+    $inputs[format][0].focus();
     currentFormat = format;
   }
 
@@ -572,6 +646,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     $root.addEventListener('mouseleave', snooze);
     $root.addEventListener('mouseenter', stopSnoozing);
     $root.addEventListener('input', setFromInputs);
+    $root.addEventListener('keydown', setFromKeyboard);
     $formatChangeButton.addEventListener('click', setFromFormatElement);
     $sat.addEventListener('mousedown', onSaturationMouseDown);
     $sat.addEventListener('mouseup', onSaturationMouseUp);
@@ -747,10 +822,7 @@ CodeMirror.defineExtension('colorpicker', function () {
   }
 
   function alphaToString(a = HSV.a) {
-    return isNaN(a) ? '' :
-      a.toString().slice(0, 8)
-        .replace(/(\.[^0]*)0+$/, '$1')
-        .replace(/^1$/, '');
+    return isNaN(a) ? '' : (a + .5e-6).toFixed(7).slice(0, -1).replace(/^0(?=\.[1-9])|^1\.0+?$|\.?0+$/g, '');
   }
 
   //endregion
