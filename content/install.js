@@ -223,10 +223,12 @@ function onUpdate() {
 
 function saveStyleCode(message, name, addProps) {
   return new Promise((resolve, reject) => {
-    if (!confirm(chrome.i18n.getMessage(message, [name]))) {
+    const needsConfirmation = message === 'styleInstall' || !saveStyleCode.confirmed;
+    if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
       reject();
       return;
     }
+    saveStyleCode.confirmed = true;
     enableUpdateButton(false);
     getStyleJson().then(json => {
       if (!json) {
