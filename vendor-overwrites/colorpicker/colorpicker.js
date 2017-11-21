@@ -203,7 +203,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     options = PUBLIC_API.options = opt;
     prevFocusedElement = document.activeElement;
     userActivity = 0;
-    lastOutputColor = opt.color;
+    lastOutputColor = opt.color || '';
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     opt.hideDelay = Math.max(0, opt.hideDelay) || 2000;
 
@@ -337,7 +337,7 @@ CodeMirror.defineExtension('colorpicker', function () {
   }
 
   function validateInput(el) {
-    const isAlpha = el.type === 'text';
+    const isAlpha = el === $inputs[currentFormat][3];
     let isValid = (isAlpha || el.value.trim()) && el.checkValidity();
     if (!isAlpha && !isValid && currentFormat === 'rgb') {
       isValid = parseAs(el, parseInt);
@@ -352,8 +352,9 @@ CodeMirror.defineExtension('colorpicker', function () {
   //endregion
   //region State-to-DOM
 
-  function setFromColor(color = '#FF0000') {
+  function setFromColor(color) {
     color = typeof color === 'string' ? stringToColor(color) : color;
+    color = color || stringToColor('#f00');
     const newHSV = color.type === 'hsl' ? HSLtoHSV(color) : RGBtoHSV(color);
     if (Object.keys(newHSV).every(k => Math.abs(newHSV[k] - HSV[k]) < 1e-3)) {
       return;
@@ -440,7 +441,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     }
   }
 
-  function onSaturationMouseUp() {
+  function onSaturationMouseUp(event) {
     if (event.button === 0) {
       dragging.saturation = false;
       releaseMouse();
@@ -454,7 +455,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     }
   }
 
-  function onOpacityKnobMouseDown() {
+  function onOpacityKnobMouseDown(event) {
     if (event.button === 0) {
       dragging.opacity = true;
       captureMouse();
@@ -517,6 +518,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
       switch (e.which) {
         case 13:
+          setFromInputs();
           colorpickerCallback();
         // fallthrough to 27
         case 27:
@@ -647,7 +649,6 @@ CodeMirror.defineExtension('colorpicker', function () {
         str.match(/(..)/g).map(c => parseInt(c, 16));
       return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
     }
-    return;
   }
 
   function RGBtoHSV({r, g, b, a}) {

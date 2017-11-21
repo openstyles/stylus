@@ -400,10 +400,11 @@
     openPopup(color) {
       let {line, ch} = this.cm.getCursor();
       const lineText = this.cm.getLine(line);
-      ch -= (lineText.lastIndexOf('!important', ch) >= ch - '!important'.length) ? '!important'.length : 0;
+      const atImportant = lineText.lastIndexOf('!important', ch);
+      ch -= (atImportant >= Math.max(0, ch - '!important'.length)) ? '!important'.length : 0;
       const lineCache = this.cm.state.colorpicker.cache.get(lineText);
-      const data = {line, ch, color, isShortCut: true};
-      for (const [start, {color, colorValue}] of lineCache && lineCache.entries() || []) {
+      const data = {line, ch, colorValue: color, isShortCut: true};
+      for (const [start, {color, colorValue = color}] of lineCache && lineCache.entries() || []) {
         if (start <= ch && ch <= start + color.length) {
           Object.assign(data, {ch: start, color, colorValue});
           break;
@@ -419,7 +420,7 @@
           top,
           left,
           cm: this.cm,
-          color: data.colorValue || data.color || '#fff',
+          color: data.colorValue || data.color,
           prevColor: data.color || '',
           isShortCut: false,
           callback: ColorMarker.popupOnChange,
@@ -437,8 +438,8 @@
       const {cm, line, ch, embedderCallback} = this;
       const to = {line, ch: ch + this.prevColor.length};
       if (cm.getRange(this, to) !== newColor) {
-        this.prevColor = newColor;
         cm.replaceRange(newColor, this, to, '*colorpicker');
+        this.prevColor = newColor;
       }
       if (typeof embedderCallback === 'function') {
         embedderCallback(this);

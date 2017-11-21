@@ -60,6 +60,10 @@ var prefs = new function Prefs() {
     'editor.colorpicker': true,
     // #DEAD or #beef
     'editor.colorpicker.hexUppercase': false,
+    // default hotkey
+    'editor.colorpicker.hotkey': '',
+    // last color
+    'editor.colorpicker.color': '',
 
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
