@@ -344,8 +344,9 @@ function initDocRootObserver() {
       return;
     }
     const list = [];
-    for (const el of styleElements.values()) {
-      if (el.previousElementSibling !== expectedPrevSibling) {
+    for (const [id, el] of styleElements.entries()) {
+      if (!disabledElements.has(parseInt(id.substr(ID_PREFIX.length))) &&
+          el.previousElementSibling !== expectedPrevSibling) {
         list.push({el, before: expectedPrevSibling.nextSibling});
       }
       expectedPrevSibling = el;
