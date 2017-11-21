@@ -388,16 +388,17 @@ CodeMirror.defineExtension('colorpicker', function () {
       }).join('') + a;
       newValue = options.hexUppercase ? newValue.toUpperCase() : newValue.toLowerCase();
     } else if (!alt) {
-      const delta =
-        shift && !ctrl ? 10 :
-        ctrl && !shift ? 100 :
-        1;
       value = parseFloat(el.value);
       const isHue = el === $inputs.hsl[0];
       const isAlpha = el === $inputs[currentFormat][3];
+      const isRGB = currentFormat === 'rgb';
       const min = isHue ? -360 : 0;
-      const max = isHue ? 360 : isAlpha ? 1 : currentFormat === 'rgb' ? 255 : 100;
+      const max = isHue ? 360 : isAlpha ? 1 : isRGB ? 255 : 100;
       const scale = isAlpha ? .01 : 1;
+      const delta =
+        shift && !ctrl ? 10 :
+        ctrl && !shift ? (isHue || isRGB ? 100 : 50) :
+        1;
       newValue = constrain(min, max, value + delta * scale * dir);
       newValue = isAlpha ? alphaToString(newValue) : newValue;
     }
