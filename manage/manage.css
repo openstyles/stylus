@@ -60,6 +60,10 @@ select {
   margin-bottom: .25em;
 }
 
+#newStyleAsUsercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
+  fill: #aaa;
+}
+
 .nobreak {
   white-space: nowrap;
 }

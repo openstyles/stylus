@@ -216,17 +216,18 @@
   <p>
     <a href="edit.html">
       <button id="add-style-label" i18n-text="addStyleLabel"></button>
-      <label class="nobreak"
-             i18n-text-append="manageNewStyleAsUsercss"
-             i18n-title="optionsAdvancedNewStyleAsUsercss">
-        <input type="checkbox" id="newStyleAsUsercss">
-      </label>
-      <a href="https://github.com/openstyles/stylus/wiki/Usercss" i18n-title="externalUsercssDocument">
+    </a>
+    <label id="newStyleAsUsercss-wrapper" class="nobreak">
+      <input type="checkbox" id="newStyleAsUsercss">
+      <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
+      <a id="usercss-wiki"
+         href="https://github.com/openstyles/stylus/wiki/Usercss"
+         i18n-title="externalUsercssDocument">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
         </svg>
       </a>
-    </a>
+    </label>
   </p>
   <div id="options">
     <h2 id="options-heading" i18n-text="optionsHeading"></h2>
