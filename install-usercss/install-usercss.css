@@ -192,7 +192,7 @@ li {
   }
 }
 
-@media (max-width:4.5in) {
+@media (max-width:4in) {
   .header {
     overflow-x: hidden;
     overflow-y: auto;
