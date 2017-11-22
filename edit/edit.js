@@ -375,9 +375,13 @@ function acmeEventListener(event) {
   CodeMirror.setOption(option, value);
 }
 
-// replace given textarea with the CodeMirror editor
-function setupCodeMirror(textarea, index) {
-  const cm = CodeMirror.fromTextArea(textarea, {lint: null});
+function setupCodeMirror(sectionDiv, code, index) {
+  const cm = CodeMirror(wrapper => {
+    $('.code-label', sectionDiv).insertAdjacentElement('afterend', wrapper);
+  }, {
+    value: code,
+    lint: null,
+  });
   const wrapper = cm.display.wrapper;
 
   cm.on('changes', indicateCodeChangeDebounced);
@@ -640,12 +644,12 @@ function addSection(event, section) {
   $('.add-section', div).addEventListener('click', addSection, false);
   $('.beautify-section', div).addEventListener('click', beautify);
 
-  const codeElement = $('.code', div);
+  const code = (section || {}).code || '';
+
   const appliesTo = $('.applies-to-list', div);
   let appliesToAdded = false;
 
   if (section) {
-    codeElement.value = section.code;
     for (const i in propertyToCss) {
       if (section[i]) {
         section[i].forEach(url => {
@@ -698,13 +702,13 @@ function addSection(event, section) {
     const clickedSection = getSectionForChild(event.target);
     sections.insertBefore(div, clickedSection.nextElementSibling);
     const newIndex = getSections().indexOf(clickedSection) + 1;
-    cm = setupCodeMirror(codeElement, newIndex);
+    cm = setupCodeMirror(div, code, newIndex);
     makeSectionVisible(cm);
-    cm.focus();
     renderLintReport();
+    cm.focus();
   } else {
     sections.appendChild(div);
-    cm = setupCodeMirror(codeElement);
+    cm = setupCodeMirror(div, code);
   }
   div.CodeMirror = cm;
   setCleanSection(div);
@@ -1595,11 +1599,6 @@ function save() {
 
 function saveSectionStyle() {
   updateLintReportIfEnabled(null, 0);
-
-  // save the contents of the CodeMirror editors back into the textareas
-  for (let i = 0; i < editors.length; i++) {
-    editors[i].save();
-  }
 
   const error = validate();
   if (error) {

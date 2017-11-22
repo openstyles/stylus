@@ -14,9 +14,7 @@ function createSourceEditor(style) {
   $('#mozilla-format-heading').parentNode.remove();
 
   $('#sections').appendChild(
-    $element({className: 'single-editor', appendChild: [
-      $element({tag: 'textarea'})
-    ]})
+    $element({className: 'single-editor'})
   );
 
   $('#header').appendChild($element({
@@ -42,7 +40,7 @@ function createSourceEditor(style) {
     style = deepCopy(style);
   }
 
-  const cm = CodeMirror.fromTextArea($('#sections textarea'));
+  const cm = CodeMirror($('.single-editor'));
   editors.push(cm);
   updateMeta().then(() => {
     initLint();
