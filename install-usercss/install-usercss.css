@@ -4,10 +4,6 @@ body {
   background: white;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 a {
   color: #000;
   transition: color .5s;
@@ -32,6 +28,7 @@ svg.icon {
 
 .header {
   flex: 0 0 280px;
+  box-sizing: border-box;
   padding: 15px;
   border-right: 1px dashed #aaa;
   box-shadow: 0 0 50px -18px black;
@@ -53,9 +50,7 @@ h1 small {
 
 .warning {
   padding: 3px 6px;
-  border: 1px dashed black;
-
-  border-color: #ef6969;
+  border: 1px dashed #ef6969;
   background: #ffe2e2;
 }
 
@@ -68,11 +63,17 @@ h1 small {
 }
 
 .actions label {
-  max-width: fit-content;
   max-width: -moz-fit-content;
+  max-width: fit-content;
   display: flex;
   align-items: center;
   margin: 0.5em 0;
+}
+
+.install {
+  padding: 1ex 1em;
+  font-weight: bold;
+  margin-bottom: 1ex;
 }
 
 .actions label input {
@@ -92,6 +93,10 @@ h1 small {
   margin: 0 7.5px;
 }
 
+li {
+  margin-left: -2em;
+}
+
 .code {
   padding: 2em;
 }
@@ -101,9 +106,7 @@ h1 small {
   overflow: hidden;
   overflow-wrap: break-word;
   min-width: 0;
-
   display: flex;
-  flex-direction: column;
 }
 
 .main > :first-child {
@@ -118,4 +121,26 @@ h1 small {
 .main .code,
 .main .CodeMirror {
   height: 100%;
+}
+
+/************ reponsive layouts ************/
+@media (max-width:7.5in) {
+  .container {
+    flex-direction: column;
+  }
+  .header {
+    flex-basis: auto;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+    z-index: 2;
+  }
+  .main {
+    padding-left: 0;
+  }
+  .code {
+    padding: 0;
+  }
 }
