@@ -215,7 +215,10 @@
 
   function parseColorAtCursor(lineText, lineTextLC = lineText.toLowerCase(), ch) {
     const iHex = lineTextLC.lastIndexOf('#', ch);
-    const iParen = lineTextLC.lastIndexOf('(', ch);
+    const iParen = (
+      lineTextLC.lastIndexOf('(', ch) + 1 ||
+      lineTextLC.indexOf('(', ch) + 1
+    ) - 1;
     let start = Math.max(iHex, iParen);
     let match, end, color, colorValue;
     if (start >= 0) {
