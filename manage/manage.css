@@ -55,6 +55,20 @@ select {
   text-decoration: none;
 }
 
+#add-style-label {
+  margin-right: .25em;
+  margin-bottom: .25em;
+}
+
+.nobreak {
+  white-space: nowrap;
+}
+
+label.nobreak input {
+  vertical-align: middle;
+  margin: 0;
+}
+
 .firefox .chromium-only {
   display: none;
 }

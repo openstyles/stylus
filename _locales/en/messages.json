@@ -529,6 +529,10 @@
     "message": "Installed Styles",
     "description": "Heading for the manage page"
   },
+  "manageNewStyleAsUsercss": {
+    "message": "as Usercss",
+    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+  },
   "manageOnlyEnabled": {
     "message": "Only enabled styles",
     "description": "Checkbox to show only enabled styles"
@@ -548,6 +552,14 @@
   "manageOnlyLocalTooltip": {
     "message": "(the styles not installed through a userstyles.org page)",
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Only non-Usercss styles",
+    "description": "Checkbox to show only non-Usercss (standard) styles"
+  },
+  "manageOnlyUsercss": {
+    "message": "Only Usercss styles",
+    "description": "Checkbox to show only Usercss styles"
   },
   "manageOnlyUpdates": {
     "message": "Only with updates or issues",
