@@ -119,3 +119,45 @@ h1 small {
 .main .CodeMirror {
   height: 100%;
 }
+
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .header {
+    flex: 1 1 auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 4px 0;
+  }
+  .actions label {
+    margin: 0 0 0 8px;
+  }
+
+  h1,
+  h3,
+  .meta-group {
+    margin: 12px 0;
+  }
+
+  h3 {
+    margin-bottom: 8px;
+  }
+
+  .main {
+    max-height: 100vh;
+  }
+
+  p,
+  ul {
+    margin: 8px 0;
+  }
+}
