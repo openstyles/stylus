@@ -237,6 +237,10 @@
       start++;
       (color = lineTextLC.slice(start, end));
       colorValue = NAMED_COLORS.get(color);
+      if (!colorValue) {
+        start = ch;
+        color = '';
+      }
     }
     return color && {ch: start, color, colorValue};
   }
