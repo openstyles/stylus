@@ -44,21 +44,22 @@ function createSourceEditor(style) {
 
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
   cm.startOperation();
-  cm.setValue(style.sourceCode);
-  cm.clearHistory();
-  cm.markClean();
-  editors.push(cm);
-  updateMeta();
-  cm.endOperation();
+  updateMeta().then(() => {
+    cm.setValue(style.sourceCode);
+    cm.clearHistory();
+    cm.markClean();
+    editors.push(cm);
+    cm.endOperation();
 
-  initHooks();
-  initAppliesToLineWidget();
+    initHooks();
+    initAppliesToLineWidget();
+
+    // focus must be the last action, otherwise the style is duplicated on saving
+    cm.focus();
+  });
 
   initLint();
   initLinterSwitch();
-
-  // focus must be the last action, otherwise the style is duplicated on saving
-  cm.focus();
 
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
@@ -183,10 +184,10 @@ ${section}
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     const {usercssData: {preprocessor} = {}} = style;
-    cm.setPreprocessor(preprocessor);
     // beautify only works with regular CSS
     $('#beautify').disabled = cm.getOption('mode') !== 'css';
     updateTitle();
+    return cm.setPreprocessor(preprocessor);
   }
 
   function updateTitle() {

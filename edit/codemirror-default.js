@@ -1,4 +1,4 @@
-/* global CodeMirror prefs */
+/* global CodeMirror prefs loadScript */
 
 'use strict';
 
@@ -100,16 +100,16 @@
     });
   }
 
-  CodeMirror.modeURL = '/vendor/codemirror/mode/%N/%N.js';
-
   const MODE = {
     stylus: 'stylus',
     uso: 'css'
   };
 
   CodeMirror.defineExtension('setPreprocessor', function (preprocessor) {
-    this.setOption('mode', MODE[preprocessor] || 'css');
-    CodeMirror.autoLoadMode(this, MODE[preprocessor] || 'css');
+    const mode = MODE[preprocessor] || 'css';
+    return loadScript(mode !== 'css' && `/vendor/codemirror/mode/${mode}/${mode}.js`).then(() => {
+      this.setOption('mode', mode);
+    });
   });
 
   CodeMirror.defineExtension('isBlank', function () {
