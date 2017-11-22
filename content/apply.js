@@ -204,6 +204,16 @@ function applyStyles(styles) {
     doExposeIframes(styles.exposeIframes);
     delete styles.exposeIframes;
   }
+
+  const gotNewStyles = Object.keys(styles).length || styles.needTransitionPatch;
+  if (gotNewStyles) {
+    if (docRootObserver) {
+      docRootObserver.stop();
+    } else {
+      initDocRootObserver();
+    }
+  }
+
   if (styles.needTransitionPatch) {
     // CSS transition bug workaround: since we insert styles asynchronously,
     // the browsers, especially Firefox, may apply all transitions on page load
@@ -221,15 +231,18 @@ function applyStyles(styles) {
       document.documentElement.classList.remove(className);
     });
   }
-  for (const id in styles) {
-    applySections(id, styles[id].map(section => section.code).join('\n'));
+
+  if (gotNewStyles) {
+    for (const id in styles) {
+      applySections(id, styles[id].map(section => section.code).join('\n'));
+    }
+    docRootObserver.start({sort: true});
   }
+
   if (!isOwnPage && !docRewriteObserver && styleElements.size) {
     initDocRewriteObserver();
   }
-  if (!docRootObserver && styleElements.size) {
-    initDocRootObserver();
-  }
+
   if (retiredStyleTimers.size) {
     setTimeout(() => {
       for (const [id, timer] of retiredStyleTimers.entries()) {
@@ -257,6 +270,7 @@ function applySections(styleId, code) {
     el = document.createElement('style');
   }
   Object.assign(el, {
+    styleId,
     id: ID_PREFIX + styleId,
     type: 'text/css',
     textContent: code,
@@ -270,13 +284,27 @@ function applySections(styleId, code) {
 }
 
 
-function addStyleElement(el) {
-  if (ROOT && !document.getElementById(el.id)) {
-    ROOT.appendChild(el);
-    if (disableAll) {
-      el.disabled = true;
+function addStyleElement(newElement) {
+  if (!ROOT) {
+    return;
+  }
+  let next;
+  const newStyleId = getStyleId(newElement);
+  for (const el of styleElements.values()) {
+    if (el.parentNode && !el.id.endsWith('-ghost') && getStyleId(el) > newStyleId) {
+      next = el.parentNode === ROOT ? el : null;
+      break;
     }
   }
+  if (next === newElement.nextElementSibling) {
+    return;
+  }
+  docRootObserver.stop();
+  ROOT.insertBefore(newElement, next || null);
+  if (disableAll) {
+    newElement.disabled = true;
+  }
+  docRootObserver.start();
 }
 
 
@@ -294,17 +322,6 @@ function replaceAll(newStyles) {
 
 
 function initDocRewriteObserver() {
-  // re-add styles if we detect documentElement being recreated
-  const reinjectStyles = () => {
-    if (!styleElements) {
-      return orphanCheck && orphanCheck();
-    }
-    ROOT = document.documentElement;
-    for (const el of styleElements.values()) {
-      el.textContent += ' '; // invalidate CSSOM cache
-      addStyleElement(document.importNode(el, true));
-    }
-  };
   // detect documentElement being rewritten from inside the script
   docRewriteObserver = new MutationObserver(mutations => {
     for (let m = mutations.length; --m >= 0;) {
@@ -324,48 +341,102 @@ function initDocRewriteObserver() {
       reinjectStyles();
     }
   });
+  // re-add styles if we detect documentElement being recreated
+  function reinjectStyles() {
+    if (!styleElements) {
+      if (orphanCheck) {
+        orphanCheck();
+      }
+      return;
+    }
+    ROOT = document.documentElement;
+    docRootObserver.stop();
+    const imported = [];
+    for (const [id, el] of styleElements.entries()) {
+      const copy = document.importNode(el, true);
+      el.textContent += ' '; // invalidate CSSOM cache
+      imported.push([id, copy]);
+      addStyleElement(copy);
+    }
+    docRootObserver.start();
+    styleElements = new Map(imported);
+  }
 }
 
 
 function initDocRootObserver() {
   let lastRestorationTime = 0;
   let restorationCounter = 0;
+  let observing = false;
 
-  docRootObserver = new MutationObserver(findMisplacedStyles);
-  connectObserver();
+  docRootObserver = Object.assign(new MutationObserver(sortStyleElements), {
+    start({sort = false} = {}) {
+      if (sort && sortStyleMap()) {
+        sortStyleElements();
+      }
+      if (!observing) {
+        this.observe(ROOT, {childList: true});
+        observing = true;
+      }
+    },
+    stop() {
+      if (observing) {
+        this.disconnect();
+        observing = false;
+      }
+    },
+  });
+  return;
 
-  function connectObserver() {
-    docRootObserver.observe(ROOT, {childList: true});
+  function sortStyleMap() {
+    const list = [];
+    let prevStyleId = 0;
+    let needsSorting = false;
+    for (const entry of styleElements.entries()) {
+      list.push(entry);
+      const el = entry[1];
+      const styleId = getStyleId(el);
+      el.styleId = styleId;
+      needsSorting |= styleId < prevStyleId;
+      prevStyleId = styleId;
+    }
+    if (needsSorting) {
+      styleElements = new Map(list.sort((a, b) => a[1].styleId - b[1].styleId));
+      return true;
+    }
   }
 
-  function findMisplacedStyles() {
-    let expectedPrevSibling = document.body || document.head;
-    if (!expectedPrevSibling) {
+  function sortStyleElements() {
+    let prev = document.body || document.head;
+    if (!prev) {
       return;
     }
-    const list = [];
-    for (const [id, el] of styleElements.entries()) {
-      if (!disabledElements.has(parseInt(id.substr(ID_PREFIX.length))) &&
-          el.previousElementSibling !== expectedPrevSibling) {
-        list.push({el, before: expectedPrevSibling.nextSibling});
+    let appliedChanges = false;
+    for (const el of styleElements.values()) {
+      if (!el.parentNode) {
+        continue;
       }
-      expectedPrevSibling = el;
-    }
-    if (list.length && !restorationLimitExceeded()) {
-      restoreMisplacedStyles(list);
-    }
-  }
-
-  function restoreMisplacedStyles(list) {
-    docRootObserver.disconnect();
-    for (const {el, before} of list) {
-      ROOT.insertBefore(el, before);
+      if (el.previousElementSibling === prev) {
+        prev = el;
+        continue;
+      }
+      if (!appliedChanges) {
+        if (restorationLimitExceeded()) {
+          return;
+        }
+        appliedChanges = true;
+        docRootObserver.stop();
+      }
+      prev.insertAdjacentElement('afterend', el);
       if (el.disabled !== disableAll) {
         // moving an element resets its 'disabled' state
         el.disabled = disableAll;
       }
+      prev = el;
     }
-    connectObserver();
+    if (appliedChanges) {
+      docRootObserver.start();
+    }
   }
 
   function restorationLimitExceeded() {
@@ -380,6 +451,11 @@ function initDocRootObserver() {
       return true;
     }
   }
+}
+
+
+function getStyleId(el) {
+  return parseInt(el.id.substr(ID_PREFIX.length));
 }
 
 
