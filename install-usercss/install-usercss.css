@@ -196,6 +196,7 @@ li {
   .header {
     overflow-x: hidden;
     overflow-y: auto;
+    max-height: 100%;
   }
   .header,
   .warning {
