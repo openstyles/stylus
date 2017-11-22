@@ -76,6 +76,7 @@ const hotkeyRerouter = {
     save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
     find: true, findNext: true, findPrev: true, replace: true, replaceAll: true,
     toggleStyle: true,
+    colorpicker: true,
   },
   setState: enable => {
     setTimeout(() => {
