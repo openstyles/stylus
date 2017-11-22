@@ -595,8 +595,7 @@ fieldset > *:not(legend) {
   content: ": ";
 }
 
-#manage\.onlyEnabled\.invert,
-#manage\.onlyLocal\.invert {
+fieldset select {
   border: none;
   max-width: calc(100% - 2em);
   background-color: transparent;
