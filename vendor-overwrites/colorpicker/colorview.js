@@ -21,7 +21,6 @@
     rgba: /rgba\((?:\s*\d{1,3}\s*,\s*){3}\d*\.?\d+\s*\)/yi,
     hsl: /hsl\(\s*(?:-?\d+|-?\d*\.\d+)\s*(?:,\s*(?:-?\d+|-?\d*\.\d+)%\s*){2}\)/yi,
     hsla: /hsla\(\s*(?:-?\d+|-?\d*\.\d+)\s*(?:,\s*(?:-?\d+|-?\d*\.\d+)%\s*){2},\s*(?:-?\d+|-?\d*\.\d+)\s*\)/yi,
-    named: new RegExp([...NAMED_COLORS.keys()].join('|'), 'i'),
   };
 
   const CodeMirrorEvents = {
@@ -214,6 +213,34 @@
     }
   }
 
+  function parseColorAtCursor(lineText, lineTextLC = lineText.toLowerCase(), ch) {
+    const iHex = lineTextLC.lastIndexOf('#', ch);
+    const iParen = lineTextLC.lastIndexOf('(', ch);
+    let start = Math.max(iHex, iParen);
+    let match, end, color, colorValue;
+    if (start >= 0) {
+      if (start === iHex) {
+        match = RX_COLOR.hex;
+      } else {
+        const tokenLen = lineTextLC.charAt(start - 1) === 'a' ? 4 : 3;
+        start -= tokenLen;
+        match = RX_COLOR[lineTextLC.substr(start, tokenLen)];
+      }
+      if (match) {
+        match.lastIndex = start;
+        ([color] = match.exec(lineText) || []);
+      }
+    } else {
+      const isLetterAt = (i, code = lineTextLC.charCodeAt(i)) => code >= 97 && code <= 122;
+      for (start = ch; isLetterAt(start); start--) {} // eslint-disable-line no-empty
+      for (end = ch; isLetterAt(end); end++) {} // eslint-disable-line no-empty
+      start++;
+      (color = lineTextLC.slice(start, end));
+      colorValue = NAMED_COLORS.get(color);
+    }
+    return color && {ch: start, color, colorValue};
+  }
+
   function getNamedColorsMap() {
     return new Map([
       ['aliceblue', '#f0f8ff'],
@@ -401,17 +428,20 @@
 
     openPopup(color) {
       let {line, ch} = this.cm.getCursor();
-      const lineText = this.cm.getLine(line);
-      const atImportant = lineText.lastIndexOf('!important', ch);
+      const lineText = this.cm.getLine(line).toLowerCase();
+      const lineTextLC = lineText.toLowerCase();
+      const atImportant = lineTextLC.lastIndexOf('!important', ch);
       ch -= (atImportant >= Math.max(0, ch - '!important'.length)) ? '!important'.length : 0;
       const lineCache = this.cm.state.colorpicker.cache.get(lineText);
       const data = {line, ch, colorValue: color, isShortCut: true};
       for (const [start, {color, colorValue = color}] of lineCache && lineCache.entries() || []) {
         if (start <= ch && ch <= start + color.length) {
           Object.assign(data, {ch: start, color, colorValue});
-          break;
+          this.openPopupForToken({colorpickerData: data});
+          return;
         }
       }
+      Object.assign(data, parseColorAtCursor(lineText, lineTextLC, ch));
       this.openPopupForToken({colorpickerData: data});
     }
 
