@@ -49,6 +49,7 @@ window.initColorpicker = () => {
   }
 
   function registerHotkey(id, hotkey) {
+    CodeMirror.commands.colorpicker = invokeColorpicker;
     const extraKeys = CodeMirror.defaults.extraKeys;
     for (const key in extraKeys) {
       if (extraKeys[key] === 'colorpicker') {
