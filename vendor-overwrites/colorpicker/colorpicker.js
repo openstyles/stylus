@@ -346,12 +346,17 @@ CodeMirror.defineExtension('colorpicker', function () {
         if (!ctrl && !alt && !meta) {
           const el = document.activeElement;
           const inputs = $inputs[currentFormat];
-          if (which !== 9 && !shift ||
-              el === inputs[0] && shift ||
-              el === inputs[inputs.length - 1] && !shift) {
-            event.preventDefault();
+          const lastInput = inputs[inputs.length - 1];
+          if (which === 9 && shift && el === inputs[0]) {
+            lastInput.focus();
+          } else if (which === 9 && !shift && el === lastInput) {
+            inputs[0].focus();
+          } else if (which !== 9 && !shift) {
             setFromFormatElement({shift: which === 33 || shift});
+          } else {
+            return;
           }
+          event.preventDefault();
         }
         return;
       case 38: // Up
