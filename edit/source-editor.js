@@ -43,13 +43,14 @@ function createSourceEditor(style) {
   }
 
   const cm = CodeMirror.fromTextArea($('#sections textarea'));
-  cm.startOperation();
+  editors.push(cm);
   updateMeta().then(() => {
+    initLint();
+    initLinterSwitch();
+
     cm.setValue(style.sourceCode);
     cm.clearHistory();
     cm.markClean();
-    editors.push(cm);
-    cm.endOperation();
 
     initHooks();
     initAppliesToLineWidget();
@@ -57,9 +58,6 @@ function createSourceEditor(style) {
     // focus must be the last action, otherwise the style is duplicated on saving
     cm.focus();
   });
-
-  initLint();
-  initLinterSwitch();
 
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
@@ -104,6 +102,7 @@ function createSourceEditor(style) {
       update();
     });
     linterEl.addEventListener('change', update);
+    update();
 
     function update() {
       linterEl.value = linterConfig.getDefault();
