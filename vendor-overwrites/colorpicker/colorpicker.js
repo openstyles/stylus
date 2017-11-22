@@ -330,8 +330,8 @@ CodeMirror.defineExtension('colorpicker', function () {
     setFromInputs();
   }
 
-  function setFromInputs() {
-    userActivity = performance.now();
+  function setFromInputs(event) {
+    userActivity = event ? performance.now() : userActivity;
     if ($inputs[currentFormat].every(validateInput)) {
       setFromColor($inputs.color);
     }
@@ -598,7 +598,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
       switch (e.which) {
         case 13:
-          setFromInputs();
+          setFromInputs({});
           colorpickerCallback();
         // fallthrough to 27
         case 27:
