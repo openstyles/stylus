@@ -1,4 +1,4 @@
-/* global CodeMirror loadScript editors */
+/* global CodeMirror loadScript editors showHelp */
 'use strict';
 
 window.initColorpicker = () => {
@@ -75,9 +75,10 @@ window.initColorpicker = () => {
       onkeydown(event) {
         const key = CodeMirror.keyName(event);
         // ignore: [Shift?] characters, modifiers-only, [Shift?] Esc, Enter, [Shift?] Tab
-        if (/^(Enter|(Shift-)?(Esc|Tab))$/.test(key)) {
+        if (key === 'Enter' || key === 'Esc') {
+          $('#help-popup .dismiss').onclick();
           return;
-        } else if (/^((Shift-)?[!-~]|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
+        } else if (/^((Shift-)?(Esc|Tab|[!-~])|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
           this.setCustomValidity('Not allowed');
         } else {
           this.setCustomValidity('');
