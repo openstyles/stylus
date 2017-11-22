@@ -185,7 +185,8 @@ function createStyleElement({style, name}) {
   entry.styleMeta = getStyleWithNoCode(style);
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
-    (style.updateUrl ? ' updatable' : '');
+    (style.updateUrl ? ' updatable' : '') +
+    (style.usercssData ? ' usercss' : '');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));

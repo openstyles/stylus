@@ -180,6 +180,15 @@
         <option i18n-text="manageOnlyExternal" value="true"></option>
       </select>
     </label>
+    <label>
+      <input id="manage.onlyUsercss" type="checkbox"
+             data-filter=".usercss"
+             data-filter-hide=":not(.usercss)">
+      <select id="manage.onlyUsercss.invert">
+        <option i18n-text="manageOnlyUsercss" value="false"></option>
+        <option i18n-text="manageOnlyNonUsercss" value="true"></option>
+      </select>
+    </label>
     <label id="onlyUpdates" class="hidden">
       <input type="checkbox"
              data-filter=".can-update, .update-problem, .update-done"
