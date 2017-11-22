@@ -32,8 +32,9 @@
   });
   port.onDisconnect.addListener(closeCurrentTab);
 
-  const cm = CodeMirror.fromTextArea($('.code textarea'), {readOnly: true});
+  const cm = CodeMirror($('.main'), {readOnly: true});
   let liveReloadPending = Promise.resolve();
+  window.addEventListener('resize', adjustCodeHeight);
 
   function liveReloadUpdate(sourceCode) {
     liveReloadPending = liveReloadPending.then(() => {
@@ -54,8 +55,6 @@
   }
 
   function updateMeta(style, dup) {
-    $$('.main .warning').forEach(e => e.remove());
-
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
@@ -93,6 +92,11 @@
     if (externalLink) {
       $('.external-link').appendChild(externalLink);
     }
+
+    $('.header').classList.add('meta-init');
+    $('.header').classList.remove('meta-init-error');
+    showError('');
+    requestAnimationFrame(adjustCodeHeight);
 
     function makeAuthor(text) {
       const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
@@ -154,9 +158,13 @@
   }
 
   function showError(err) {
-    $$('.main .warning').forEach(e => e.remove());
-    const main = $('.main');
-    main.insertBefore(buildWarning(err), main.firstChild);
+    $('.warnings').textContent = '';
+    if (err) {
+      $('.warnings').appendChild(buildWarning(err));
+    }
+    $('.warnings').classList.toggle('visible', Boolean(err));
+    $('.container').classList.toggle('has-warnings', Boolean(err));
+    adjustCodeHeight();
   }
 
   function install(style) {
@@ -193,16 +201,17 @@
 
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
+    cm.refresh();
     runtimeSend({
       method: 'buildUsercss',
       sourceCode,
       checkDup: true
-    }).then(init, initError);
+    }).then(init, onInitError);
   }
 
-  function initError(err) {
-    $('.main').insertBefore(buildWarning(err), $('.main').childNodes[0]);
-    $('.header').style.display = 'none';
+  function onInitError(err) {
+    $('.header').classList.add('meta-init-error');
+    showError(err);
   }
 
   function buildWarning(err) {
@@ -295,5 +304,16 @@
       result.push(chrome.i18n.getMessage('appliesToEverything'));
     }
     return result;
+  }
+
+  function adjustCodeHeight() {
+    // Chrome-only bug (apparently): it doesn't limit the scroller element height
+    const scroller = cm.display.scroller;
+    const prevWindowHeight = adjustCodeHeight.prevWindowHeight;
+    if (scroller.scrollHeight === scroller.clientHeight ||
+        prevWindowHeight && window.innerHeight !== prevWindowHeight) {
+      adjustCodeHeight.prevWindowHeight = window.innerHeight;
+      cm.setSize(null, $('.main').offsetHeight - $('.warnings').offsetHeight);
+    }
   }
 })();
