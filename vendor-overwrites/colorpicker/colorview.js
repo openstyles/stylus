@@ -437,14 +437,19 @@
       const lineText = this.cm.getLine(line);
       const lineTextLC = lineText.toLowerCase();
       const atImportant = lineTextLC.lastIndexOf('!important', ch);
-      ch -= (atImportant >= Math.max(0, ch - '!important'.length)) ? '!important'.length : 0;
-      const lineCache = this.cm.state.colorpicker.cache.get(lineText);
+      if (atImportant >= Math.max(0, ch - '!important'.length)) {
+        ch -= Math.max(0, ch - atImportant);
+      }
       const data = {line, ch, colorValue: color, isShortCut: true};
-      for (const [start, {color, colorValue = color}] of lineCache && lineCache.entries() || []) {
-        if (start <= ch && ch <= start + color.length) {
-          Object.assign(data, {ch: start, color, colorValue});
-          this.openPopupForToken({colorpickerData: data});
-          return;
+      const lineCache = this.cm.state.colorpicker.cache.get(lineText);
+      if (lineCache) {
+        for (const [start, {color, colorValue = color}] of lineCache.entries()) {
+          // one entry is for lastAccessTime
+          if (lineCache.size === 2 || start <= ch && ch <= start + color.length) {
+            Object.assign(data, {ch: start, color, colorValue});
+            this.openPopupForToken({colorpickerData: data});
+            return;
+          }
         }
       }
       Object.assign(data, parseColorAtCursor(lineText, lineTextLC, ch));
