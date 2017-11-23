@@ -100,6 +100,8 @@
     });
   }
 
+  CodeMirror.mimeModes['text/css'].propertyKeywords['mix-blend-mode'] = true;
+
   const MODE = {
     stylus: 'stylus',
     uso: 'css'
