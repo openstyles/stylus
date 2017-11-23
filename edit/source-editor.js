@@ -22,7 +22,7 @@ function createSourceEditor(style) {
     appendChild: makeLink('https://github.com/openstyles/stylus/wiki/Usercss', t('externalUsercssDocument'))
   }));
 
-  setupOptionsExpand();
+  initCollapsibles();
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {

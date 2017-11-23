@@ -30,6 +30,7 @@ var prefs = new function Prefs() {
 
     'editor.options': {},           // CodeMirror.defaults.*
     'editor.options.expanded': true, // UI element state: expanded/collapsed
+    'editor.lint.expanded': true,   // UI element state: expanded/collapsed
     'editor.lineWrapping': true,    // word wrap
     'editor.smartIndent': true,     // 'smart' indent
     'editor.indentWithTabs': false, // smart indent with tabs

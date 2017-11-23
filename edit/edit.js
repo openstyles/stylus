@@ -1434,14 +1434,26 @@ function addSections(sections, onAdded = () => {}) {
   }
 }
 
-function setupOptionsExpand() {
-  $('#options').open = prefs.get('editor.options.expanded');
-  $('#options h2').addEventListener('click', () => {
-    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
-  });
-  prefs.subscribe(['editor.options.expanded'], (key, value) => {
-    $('#options').open = value;
-  });
+function initCollapsibles() {
+  function saveStateDelayed(event) {
+    if (event.target.closest('.intercepts-click')) {
+      event.preventDefault();
+    } else {
+      setTimeout(saveState, 0, event.target.closest('details'));
+    }
+  }
+  function saveState(el) {
+    prefs.set(`editor.${el.id}.expanded`, el.open);
+  }
+  function loadState(key, value) {
+    $('#' + key.split('.')[1]).open = value;
+  }
+  const collapsibles = $$('#header details');
+  for (const el of collapsibles) {
+    el.open = prefs.get(`editor.${el.id}.expanded`);
+    $('h2', el).addEventListener('click', saveStateDelayed);
+  }
+  prefs.subscribe(collapsibles.map(el => `editor.${el.id}.expanded`), loadState);
 }
 
 function initHooks() {
@@ -1463,7 +1475,7 @@ function initHooks() {
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
 
-  setupOptionsExpand();
+  initCollapsibles();
   initLint();
 
   if (!FIREFOX) {

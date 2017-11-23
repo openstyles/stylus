@@ -119,16 +119,24 @@ input:invalid {
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
 }
-/* options */
-#options summary {
+/* collapsibles */
+#header summary {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
   outline: none;
 }
-#options summary h2 {
+#header summary h2 {
   display: inline-block;
+  border-bottom: 2px dotted transparent;
 }
+#header summary h2:hover {
+  border-color: #bbb;
+}
+#header summary svg {
+  margin-top: -3px;
+}
+/* options */
 #options [type="number"] {
   width: 3.5em;
   text-align: left;
@@ -620,10 +628,10 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     position: relative;
     top: 0.2rem;
   }
-  #lint h2 {
-    display: block;
-    cursor: default;
+  #options:not([open]) + #lint h2 {
     margin-top: 0;
+  }
+  #lint:not([open]) h2 {
     margin-bottom: 0;
   }
   #lint > div {
@@ -631,10 +639,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   }
   #lint.collapsed > div {
     display: none;
-  }
-  #lint:hover > div {
-    margin-top: 1em;
-    max-height: 30vh;
   }
   #lint table {
     width: 100%;
