@@ -1,3 +1,7 @@
+:root {
+  --header-narrow-min-height: 12em;
+}
+
 body {
   margin: 0;
   font: 12px arial,sans-serif;
@@ -19,6 +23,10 @@ body {
   opacity: 1;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /************ header ************/
 #header {
   width: 280px;
@@ -29,7 +37,9 @@ body {
   padding: 15px;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 3rem -1.2rem black;
+  box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
+  z-index: 10;
 }
 #header h1 {
   margin-top: 0;
@@ -136,6 +146,12 @@ input:invalid {
 #header summary svg {
   margin-top: -3px;
 }
+#options:not([open]) + #lint h2 {
+  margin-top: 0;
+}
+#lint:not([open]) h2 {
+  margin-bottom: 0;
+}
 /* options */
 #options [type="number"] {
   width: 3.5em;
@@ -154,6 +170,7 @@ input:invalid {
 /* footer */
 #footer {
   margin-top: 1em;
+  margin-bottom: .5em;
 }
 /************ content ***********/
 #sections > div {
@@ -452,9 +469,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 
 /************ lint ************/
-#lint {
-  display: none;
-}
 #lint > div {
   overflow-y: auto;
 }
@@ -526,13 +540,41 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 
 /************ single editor **************/
+.usercss body {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-items: normal;
+}
+
 #sections .single-editor {
   margin: 0;
-  height: 100%;
+  padding: 0;
+  display: flex;
   box-sizing: border-box;
 }
 
 .single-editor .CodeMirror {
+  width: 100%;
+  height: auto;
+  border: none;
+  outline: none;
+}
+
+#footer a {
+  color: #333;
+  transition: color .5s;
+  text-decoration-skip: ink;
+  animation: fadein 10s;
+}
+
+#footer a:hover {
+  color: #666;
+}
+
+.usercss.firefox #sections,
+.usercss.firefox .single-editor,
+.usercss.firefox .CodeMirror {
   height: 100%;
 }
 
@@ -567,6 +609,8 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     position: inherit;
     border-right: none;
     border-bottom: 1px dashed #AAA;
+    min-height: var(--header-narrow-min-height);
+    max-height: 50vh;
   }
   #header section:not(:last-child) {
     margin-bottom: 0.4rem;
@@ -628,17 +672,11 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
     position: relative;
     top: 0.2rem;
   }
-  #options:not([open]) + #lint h2 {
-    margin-top: 0;
-  }
-  #lint:not([open]) h2 {
-    margin-bottom: 0;
+  #options:not([open]) ~ #lint {
+    margin-top: -1ex;
   }
   #lint > div {
     max-height: 20vh;
-  }
-  #lint.collapsed > div {
-    display: none;
   }
   #lint table {
     width: 100%;
@@ -657,6 +695,13 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   }
   .applies-type {
     width: 30%;
+  }
+  .usercss .CodeMirror-scroll {
+    max-height: calc(100vh - var(--header-narrow-min-height));
+  }
+  .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
+  .usercss #lint:not([open]) + #footer {
+    margin-top: -.25em;
   }
 }
 @media(max-width:500px) {
