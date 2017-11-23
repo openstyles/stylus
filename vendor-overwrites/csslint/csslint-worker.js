@@ -3404,7 +3404,7 @@ var Properties = module.exports = {
     "backface-visibility"           : "visible | hidden",
     "background"                    : 1,
     "background-attachment"         : "<attachment>#",
-    "background-blend-mode"         : "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
+    "background-blend-mode"         : "<blend-mode>",
     "background-clip"               : "<box>#",
     "background-color"              : "<color>",
     "background-image"              : "<bg-image>#",
@@ -3668,6 +3668,7 @@ var Properties = module.exports = {
     "max-width"                     : "<length> | <percentage> | <content-sizing> | none",
     "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
     "min-width"                     : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "mix-blend-mode"                : "<blend-mode>",
     "move-to"                       : 1,
 
     //N
@@ -6106,6 +6107,8 @@ copy(ValidationTypes, {
         "<basic-shape>": "inset() | circle() | ellipse() | polygon()",
 
         "<bg-image>": "<image> | <gradient> | none",
+
+        "<blend-mode>": "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
 
         "<border-style>":
             "none | hidden | dotted | dashed | solid | double | groove | " +
