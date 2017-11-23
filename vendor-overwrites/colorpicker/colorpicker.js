@@ -378,7 +378,7 @@ CodeMirror.defineExtension('colorpicker', function () {
     if (currentFormat === 'hex') {
       value = el.value.trim();
       const isShort = value.length <= 5;
-      const [r, g, b, a = ''] = el.value.match(isShort ? /[\da-f]/g : /[\da-f]{2}/g);
+      const [r, g, b, a = ''] = el.value.match(isShort ? /[\da-f]/gi : /[\da-f]{2}/gi);
       let ceiling, data;
       if (!ctrl && !shift && !alt) {
         ceiling = isShort ? 0xFFF : 0xFFFFFF;
