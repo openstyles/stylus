@@ -257,10 +257,17 @@ function saveStyleCode(message, name, addProps) {
   });
 
   function enableUpdateButton(state) {
+    const important = s => s.replace(/;/g, '!important;');
     const button = document.getElementById('update_style_button');
     if (button) {
-      button.style.cssText = state ? '' :
-        'pointer-events: none !important; opacity: .25 !important;';
+      button.style.cssText = state ? '' : important('pointer-events: none; opacity: .35;');
+      const icon = button.querySelector('img[src*=".svg"]');
+      if (icon) {
+        icon.style.cssText = state ? '' : important('transition: transform 5s; transform: rotate(0);');
+        if (state) {
+          setTimeout(() => (icon.style.cssText += important('transform: rotate(10turn);')));
+        }
+      }
     }
   }
 }
