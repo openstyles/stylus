@@ -100,7 +100,13 @@
     });
   }
 
-  CodeMirror.mimeModes['text/css'].propertyKeywords['mix-blend-mode'] = true;
+  Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
+    'mix-blend-mode': true,
+    'isolation': true,
+  });
+  Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
+    'isolate': true,
+  });
 
   const MODE = {
     stylus: 'stylus',
