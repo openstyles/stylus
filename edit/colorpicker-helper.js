@@ -79,7 +79,7 @@ window.initColorpicker = () => {
         if (key === 'Enter' || key === 'Esc') {
           $('#help-popup .dismiss').onclick();
           return;
-        } else if (/^((Shift-)?(Esc|Tab|[!-~])|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
+        } else if (/^(Space|(Shift-)?(Esc|Tab|[!-~])|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
           this.setCustomValidity('Not allowed');
         } else {
           this.setCustomValidity('');
