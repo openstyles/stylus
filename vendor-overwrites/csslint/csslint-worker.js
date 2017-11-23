@@ -5662,7 +5662,7 @@ var Tokens = module.exports = [
 
     // ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/ },
-    { name: "COMMENT", comment: true, hide: true, channel: "comment" },
+    { name: "COMMENT", whitespace: true, comment: true, hide: true/*, channel: "comment"*/ },
 
     // attribute equality
     { name: "INCLUDES", text: "~=" },
@@ -7107,15 +7107,12 @@ TokenStreamBase.prototype = {
             tokenTypes = [tokenTypes];
         }
 
-        var tt  = this.get(channel),
-            i   = 0,
-            len = tokenTypes.length;
-
-        while (i < len) {
-            if (tt === tokenTypes[i++]) {
+        do {
+            var tt = this.get(channel);
+            if (tokenTypes.includes(tt)) {
                 return true;
             }
-        }
+        } while (tt === 4 && this.LA(0) !== 0);
 
         //no match found, put the token back
         this.unget();
@@ -7140,7 +7137,7 @@ TokenStreamBase.prototype = {
             tokenTypes = [tokenTypes];
         }
 
-        if (!this.match.apply(this, arguments)) {
+        if (!this.match(tokenTypes)) {
             token = this.LT(1);
             throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);

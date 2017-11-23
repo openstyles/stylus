@@ -182,7 +182,7 @@
         string[start + 3] === '[' &&
         string[pos - 3] === ']' &&
         string[pos - 4] === ']') {
-      if (editor &&
+      if (typeof editor !== 'undefined' &&
           Object.hasOwnProperty.call(
             editor.getStyle().usercssData.vars,
             string.slice(start + 4, pos - 4))) {
