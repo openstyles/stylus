@@ -435,7 +435,7 @@
 
     openPopup(color) {
       let {line, ch} = this.cm.getCursor();
-      const lineText = this.cm.getLine(line).toLowerCase();
+      const lineText = this.cm.getLine(line);
       const lineTextLC = lineText.toLowerCase();
       const atImportant = lineTextLC.lastIndexOf('!important', ch);
       ch -= (atImportant >= Math.max(0, ch - '!important'.length)) ? '!important'.length : 0;
