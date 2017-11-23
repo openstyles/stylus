@@ -3623,6 +3623,7 @@ var Properties = module.exports = {
     "image-resolution"              : 1,
     "ime-mode"                      : "auto | normal | active | inactive | disabled",
     "inline-box-align"              : "last | <integer>",
+    "isolation"                     : "auto | isolate",
 
     //J
     "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
