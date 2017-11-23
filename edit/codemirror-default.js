@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript */
+/* global CodeMirror prefs loadScript editor */
 
 'use strict';
 
@@ -131,4 +131,66 @@
     });
     return isBlank;
   });
+})();
+
+(() => {
+  const USO_VAR = 'uso-variable';
+  const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
+  const USO_INVALID_VAR = 'error ' + USO_VAR;
+
+  CodeMirror.registerHelper('hint', 'css', function (cm) {
+    const {line, ch} = cm.getCursor();
+    const {styles, text} = cm.getLineHandle(line);
+    if (!styles || !editor) {
+      return;
+    }
+    let prev = 0;
+    for (let i = 1; i < styles.length; i += 2) {
+      let end = styles[i];
+      if (prev <= ch && ch <= end &&
+          (styles[i + 1] || '').includes(USO_VAR)) {
+        const adjust = text[prev] === '/' ? 4 : 0;
+        prev += adjust;
+        end -= adjust;
+        const leftPart = text.slice(prev, ch);
+        const list = Object.keys(editor.getStyle().usercssData.vars)
+          .filter(name => name.startsWith(leftPart));
+        console.log(leftPart, ...list);
+        return {
+          list,
+          from: {line, ch: prev},
+          to: {line, ch: end},
+        };
+      }
+      prev = end;
+    }
+  });
+
+  const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
+  const originalCommentHook = hooks['/'];
+  hooks['/'] = tokenizeUsoVariables;
+
+  function tokenizeUsoVariables(stream) {
+    const token = originalCommentHook.apply(this, arguments);
+    if (token[1] !== 'comment') {
+      return token;
+    }
+    const {string, start, pos} = stream;
+    // /*[[install-key]]*/
+    // 01234          43210
+    if (string[start + 2] === '[' &&
+        string[start + 3] === '[' &&
+        string[pos - 3] === ']' &&
+        string[pos - 4] === ']') {
+      if (editor &&
+          Object.hasOwnProperty.call(
+            editor.getStyle().usercssData.vars,
+            string.slice(start + 4, pos - 4))) {
+        token[0] = USO_VALID_VAR;
+      } else {
+        token[0] = USO_INVALID_VAR;
+      }
+    }
+    return token;
+  }
 })();

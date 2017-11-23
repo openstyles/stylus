@@ -31,3 +31,6 @@
 .CodeMirror-search-hint {
   color: #888;
 }
+.cm-uso-variable {
+  font-weight: bold;
+}
