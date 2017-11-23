@@ -2,6 +2,7 @@
 'use strict';
 
 window.initColorpicker = () => {
+  initOverlayHooks();
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
@@ -104,5 +105,52 @@ window.initColorpicker = () => {
       popup.style.right = 'auto';
     }
     input.focus();
+  }
+
+  function initOverlayHooks() {
+    const COLORVIEW_DISABLED_SUFFIX = ' colorview-disabled';
+    const originalAddOverlay = CodeMirror.prototype.addOverlay;
+    CodeMirror.prototype.addOverlay = addOverlayHook;
+
+    function addOverlayHook(overlay) {
+      if (overlay === (this.state.matchHighlighter || {}).overlay) {
+        if (overlay.token !== tokenHook) {
+          overlay.stylusColorpickerHelper = {
+            token: overlay.token,
+          };
+          overlay.token = tokenHook;
+        }
+      }
+      originalAddOverlay.apply(this, arguments);
+    }
+
+    function tokenHook(stream) {
+      const style = this.stylusColorpickerHelper.token.call(this, stream);
+      if (style === 'matchhighlight') {
+        return tokenHookForHighlighter.call(this, stream, style);
+      } else {
+        return style;
+      }
+    }
+
+    function tokenHookForHighlighter(stream, style) {
+      const {start, pos, lineOracle: {baseTokens}} = stream;
+      if (!baseTokens) {
+        return style;
+      }
+      for (let prev = 0, i = 1; i < baseTokens.length; i += 2) {
+        const end = baseTokens[i];
+        if (prev < start && start < end) {
+          const base = baseTokens[i + 1];
+          if (base && base.includes('colorview')) {
+            return style + COLORVIEW_DISABLED_SUFFIX;
+          }
+        } else if (end > pos) {
+          break;
+        }
+        prev = end;
+      }
+      return style;
+    }
   }
 };
