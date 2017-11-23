@@ -5,11 +5,13 @@
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
 /* global closeCurrentTab regExpTester messageBox */
+/* global initColorpicker */
 'use strict';
 
 onDOMready()
   .then(() => Promise.all([
-    window.initColorpicker(),
+    initColorpicker(),
+    initCollapsibles(),
   ]))
   .then(init);
 

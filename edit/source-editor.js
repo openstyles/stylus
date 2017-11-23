@@ -1,6 +1,6 @@
 /* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global hotkeyRerouter setupAutocomplete setupOptionsExpand */
+/* global hotkeyRerouter setupAutocomplete */
 /* global editors linterConfig updateLinter regExpTester mozParser */
 /* global makeLink createAppliesToLineWidget messageBox */
 'use strict';
@@ -9,6 +9,7 @@ function createSourceEditor(style) {
   // a flag for isTouched()
   let hadBeenSaved = false;
 
+  document.documentElement.classList.add('usercss');
   $('#sections').textContent = '';
   $('#name').disabled = true;
   $('#mozilla-format-heading').parentNode.remove();
@@ -21,8 +22,6 @@ function createSourceEditor(style) {
     id: 'footer',
     appendChild: makeLink('https://github.com/openstyles/stylus/wiki/Usercss', t('externalUsercssDocument'))
   }));
-
-  initCollapsibles();
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {

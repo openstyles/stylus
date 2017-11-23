@@ -142,11 +142,6 @@ function initLint() {
   $('#linter-settings').addEventListener('click', linterConfig.openOnClick);
   window.addEventListener('resize', resizeLintReport);
 
-  // touch devices don't have onHover events so the element we'll be toggled via clicking (touching)
-  if ('ontouchstart' in document.body) {
-    $('#lint h2').addEventListener('click', toggleLintReport);
-  }
-
   updateLinter();
   linterConfig.watchStorage();
   prefs.subscribe(['editor.linter'], updateLinter);
@@ -164,7 +159,7 @@ function updateLinter({immediately, linter = linterConfig.getDefault()} = {}) {
     loadLinterAssets(linter)
   ]).then(updateEditors);
   $('#linter-settings').style.display = !linter ? 'none' : 'inline-block';
-  $('#lint').style.display = 'none';
+  $('#lint').classList.add('hidden');
 
   function updateEditors() {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
@@ -336,7 +331,7 @@ function renderLintReport(someBlockChanged) {
   if (someBlockChanged || newContent.children.length !== content.children.length) {
     $('#issue-count').textContent = issueCount;
     container.replaceChild(newContent, content);
-    container.style.display = newContent.children.length ? 'block' : 'none';
+    container.classList.toggle('hidden', !newContent.children.length);
     resizeLintReport();
   }
 }
@@ -368,10 +363,6 @@ function gotoLintIssue(event) {
     line: parseInt($('td[role="line"]', issue).textContent) - 1,
     ch: parseInt($('td[role="col"]', issue).textContent) - 1
   });
-}
-
-function toggleLintReport() {
-  $('#lint').classList.toggle('collapsed');
 }
 
 function showLintHelp() {
