@@ -69,11 +69,13 @@
       return;
     }
     const {line, ch} = this.getCursor();
-    const rx = query instanceof RegExp ? query : new RegExp(`\\b${query}\\b`);
-    const start = Math.max(0, ch - rx.source.length + 4 + 1);
-    const end = ch + rx.source.length - 4;
+    const rx = query instanceof RegExp && query;
+    const queryLen = rx ? rx.source.length - 4 : query.length;
+    const start = Math.max(0, ch - queryLen + 1);
+    const end = ch + queryLen;
     const area = this.getLine(line).substring(start, end);
-    const startInArea = (area.match(rx) || {}).index;
+    const startInArea = rx ? (area.match(rx) || {}).index :
+      (area.indexOf(query) + 1 || NaN) - 1;
     if (start + startInArea <= ch) {
       // same token on cursor => prevent the highlighter from rerunning
       state.stylusMHLHelper = {
