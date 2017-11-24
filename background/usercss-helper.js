@@ -23,11 +23,7 @@ var usercssHelper = (() => {
 
   function wrapReject(pending) {
     return pending
-      .then(result => ({success: true, result}))
-      .catch(err => ({
-        success: false,
-        result: Array.isArray(err) ? err.join('\n') : err.message || String(err),
-      }));
+      .catch(err => new Error(Array.isArray(err) ? err.join('\n') : err.message || String(err)));
   }
 
   // Parse the source and find the duplication

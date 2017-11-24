@@ -1,4 +1,4 @@
-/* global CodeMirror semverCompare makeLink closeCurrentTab runtimeSend */
+/* global CodeMirror semverCompare makeLink closeCurrentTab */
 /* global messageBox */
 'use strict';
 
@@ -44,7 +44,7 @@
       cm.setCursor(cursor);
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
-      return runtimeSend({
+      return sendMessage({
         id: installed.id,
         method: 'saveUsercss',
         reason: 'update',
@@ -168,50 +168,36 @@
   }
 
   function install(style) {
-    const request = Object.assign(style, {
-      method: 'saveUsercss',
-      reason: 'update'
-    });
-    return runtimeSend(request)
-      .then(result => {
-        installed = result;
+    installed = style;
 
-        $$('.warning')
-          .forEach(el => el.remove());
-        $('.install').disabled = true;
-        $('.install').classList.add('installed');
-        $('.set-update-url input[type=checkbox]').disabled = true;
-        $('.set-update-url').title = result.updateUrl ?
-          t('installUpdateFrom', result.updateUrl) : '';
+    $$('.warning')
+      .forEach(el => el.remove());
+    $('.install').disabled = true;
+    $('.install').classList.add('installed');
+    $('.set-update-url input[type=checkbox]').disabled = true;
+    $('.set-update-url').title = style.updateUrl ?
+      t('installUpdateFrom', style.updateUrl) : '';
 
-        updateMeta(result);
+    updateMeta(style);
 
-        chrome.runtime.sendMessage({method: 'openEditor', id: result.id});
+    sendMessage({method: 'openEditor', id: style.id});
 
-        if (!liveReload) {
-          port.postMessage({method: 'closeTab'});
-        }
+    if (!liveReload) {
+      port.postMessage({method: 'closeTab'});
+    }
 
-        window.dispatchEvent(new CustomEvent('installed'));
-      })
-      .catch(err => {
-        messageBox.alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
-      });
+    window.dispatchEvent(new CustomEvent('installed'));
   }
 
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
     cm.refresh();
-    runtimeSend({
-      method: 'buildUsercss',
-      sourceCode,
-      checkDup: true
-    }).then(init, onInitError);
-  }
-
-  function onInitError(err) {
-    $('.header').classList.add('meta-init-error');
-    showError(err);
+    sendMessage({method: 'buildUsercss', sourceCode, checkDup: true})
+      .then(init)
+      .catch(err => {
+        $('.header').classList.add('meta-init-error');
+        showError(err);
+      });
   }
 
   function buildWarning(err) {
@@ -236,17 +222,14 @@
       );
     }
     $('button.install').onclick = () => {
-      const message = dup ?
-        chrome.i18n.getMessage('styleInstallOverwrite', [
-          data.name, dupData.version, data.version
-        ]) :
-        chrome.i18n.getMessage('styleInstall', [data.name]);
-
-      messageBox.confirm(message).then(result => {
-        if (result) {
-          return install(style);
-        }
-      });
+      messageBox.confirm(dup ?
+        t('styleInstallOverwrite', [data.name, dupData.version, data.version]) :
+        t('styleInstall', [data.name])
+      ).then(ok => ok &&
+        sendMessage(Object.assign(style, {method: 'saveUsercss', reason: 'update'}))
+          .then(install)
+          .catch(err => messageBox.alert(t('styleInstallFailed', err)))
+      );
     };
 
     // set updateUrl

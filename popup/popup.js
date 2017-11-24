@@ -119,7 +119,7 @@ function initPopup(url) {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
+    sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
       if (pong) {
         return;
       }

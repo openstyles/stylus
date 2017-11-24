@@ -1,4 +1,3 @@
-/* global runtimeSend */
 'use strict';
 
 function createSourceLoader() {
@@ -95,16 +94,16 @@ function initUsercssInstall() {
           if (history.length > 1) {
             history.back();
           } else {
-            runtimeSend({method: 'closeTab'});
+            chrome.runtime.sendMessage({method: 'closeTab'});
           }
           break;
       }
     });
   });
-  return runtimeSend({
+  chrome.runtime.sendMessage({
     method: 'openUsercssInstallPage',
-    updateUrl: location.href
-  }).catch(alert);
+    updateUrl: location.href,
+  }, r => r && r.__ERROR__ && alert(r.__ERROR__));
 }
 
 function isUsercss() {

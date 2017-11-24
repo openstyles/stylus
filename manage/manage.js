@@ -581,10 +581,10 @@ function dieOnNullBackground() {
   if (!FIREFOX || BG) {
     return;
   }
-  chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
+  sendMessage({method: 'healthCheck'}, health => {
     if (health && !chrome.extension.getBackgroundPage()) {
       onDOMready().then(() => {
-        chrome.runtime.sendMessage({method: 'getStyles'}, showStyles);
+        sendMessage({method: 'getStyles'}, showStyles);
         messageBox({
           title: 'Stylus',
           className: 'danger center',

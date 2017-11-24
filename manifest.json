@@ -54,14 +54,14 @@
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
       "all_frames": false,
-      "js": ["content/install.js"]
+      "js": ["content/install-hook-userstyles.js"]
     },
     {
       "matches": ["<all_urls>"],
       "include_globs": ["*.user.css", "*.user.styl"],
       "run_at": "document_idle",
       "all_frames": false,
-      "js": ["content/util.js", "content/install-user-css.js"]
+      "js": ["content/install-hook-usercss.js"]
     }
   ],
   "browser_action": {

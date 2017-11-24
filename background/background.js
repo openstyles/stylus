@@ -110,7 +110,7 @@ contextMenus = Object.assign({
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      chrome.tabs.sendMessage(tab.id, {method: 'editDeleteText'});
+      sendMessage(tab.id, {method: 'editDeleteText'});
     },
   }
 });
@@ -179,15 +179,12 @@ window.addEventListener('storageReady', function _() {
   };
 
   const pingCS = (cs, {id, url}) => {
+    const maybeInject = pong => !pong && injectCS(cs, PING.tabId);
     cs.matches.some(match => {
-      if ((match === ALL_URLS || url.match(match))
-        && (!url.startsWith('chrome') || url === NTP)) {
-        chrome.tabs.sendMessage(id, PING, pong => {
-          if (!pong) {
-            injectCS(cs, id);
-          }
-          ignoreChromeError();
-        });
+      if ((match === ALL_URLS || url.match(match)) &&
+          (!url.startsWith('chrome') || url === NTP)) {
+        PING.tabId = id;
+        sendMessage(PING).then(maybeInject);
         return true;
       }
     });
@@ -211,13 +208,13 @@ function webNavigationListener(method, {url, tabId, frameId}) {
       if (method === 'styleApply') {
         handleCssTransitionBug({tabId, frameId, url, styles});
       }
-      chrome.tabs.sendMessage(tabId, {
+      sendMessage({
+        tabId,
+        frameId,
         method,
         // ping own page so it retrieves the styles directly
         styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
-      }, {
-        frameId
-      }, ignoreChromeError);
+      });
     }
     // main page frame id is 0
     if (frameId === 0) {
@@ -303,9 +300,15 @@ function updateIcon(tab, styles) {
 }
 
 
-function onRuntimeMessage(request, sender, sendResponse) {
-  // prevent browser exception bug on sending a response to a closed tab
-  sendResponse = (send => data => tryCatch(send, data))(sendResponse);
+function onRuntimeMessage(request, sender, sendResponseInternal) {
+  const sendResponse = data => {
+    // wrap Error object instance as {__ERROR__: message} - will be unwrapped in sendMessage
+    if (data instanceof Error) {
+      data = {__ERROR__: data.message};
+    }
+    // prevent browser exception bug on sending a response to a closed tab
+    tryCatch(sendResponseInternal, data);
+  };
   switch (request.method) {
     case 'getStyles':
       getStyles(request).then(sendResponse);
@@ -352,6 +355,7 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return;
   }
 }
+
 
 function closeTab(tabId, request) {
   return new Promise(resolve => {
