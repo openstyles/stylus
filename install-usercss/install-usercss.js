@@ -227,14 +227,17 @@
       );
     }
     $('button.install').onclick = () => {
-      messageBox.confirm(dup ?
-        t('styleInstallOverwrite', [data.name, dupData.version, data.version]) :
-        t('styleInstall', [data.name])
+      (!dup ?
+        Promise.resolve(true) :
+        messageBox.confirm(t('styleInstallOverwrite', [
+          data.name,
+          dupData.version,
+          data.version,
+        ]))
       ).then(ok => ok &&
         sendMessage(Object.assign(style, {method: 'saveUsercss', reason: 'update'}))
           .then(install)
-          .catch(err => messageBox.alert(t('styleInstallFailed', err)))
-      );
+          .catch(err => messageBox.alert(t('styleInstallFailed', err))));
     };
 
     // set updateUrl
