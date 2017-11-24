@@ -1,4 +1,4 @@
-/* global handleEvent tryJSONparse */
+/* global handleEvent tryJSONparse getStylesSafe */
 'use strict';
 
 /**
@@ -125,7 +125,17 @@ const SearchResults = (() => {
           }
           currentPage = searchResults.current_page;
           updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
-          searchResults.data.forEach(createSearchResult);
+
+          searchResults.data.forEach(searchResult => {
+            getMatchingInstalledStyles(searchResult)
+              .then(matchingStyles => {
+                // TODO: Should we display the search result with an option to "Uninstall"?
+                if (matchingStyles.length === 0) {
+                  // Only show non-installed styles in search results.
+                  createSearchResult(searchResult);
+                }
+              });
+          });
         })
         .catch(error);
       });
@@ -154,6 +164,28 @@ const SearchResults = (() => {
     $('#searchResultsNav-currentPage').textContent = currentPage;
     $('#searchResultsNav-totalPages').textContent = totalPages;
   }
+  /**
+   * Promises a list of installed styles that match the provided search result.
+   * @param {Object} userstyleSearchResult Search result object from userstyles.org
+   */
+  function getMatchingInstalledStyles(userstyleSearchResult) {
+    return new Promise(function (resolve, reject) {
+      getStylesSafe()
+        .then(installedStyles => {
+          const matchingStyles = installedStyles.filter(installedStyle => {
+            // Compare installed name to search result name.
+            let isMatch = installedStyle.name === userstyleSearchResult.name;
+            // Also compare if search result ID (userstyles ID) is mentioned in the installed updateUrl.
+            if (installedStyle.updateUrl) {
+              isMatch &= installedStyle.updateUrl.indexOf('/' + userstyleSearchResult.id + '.json') >= 0;
+            }
+            return isMatch;
+          });
+          resolve(matchingStyles);
+        })
+        .catch(reject);
+    });
+  }
 
   /**
    * Constructs and adds the given search result to the popup's Search Results container.
@@ -173,12 +205,9 @@ const SearchResults = (() => {
       }
     */
 
-    // TODO: Check if search result is already installed.
-    //       If so hide it, or mark as installed with an "Uninstall" button.
-
     const entry = template.searchResult.cloneNode(true);
     Object.assign(entry, {
-      styleId: userstyleSearchResult.id
+      id: 'searchResult-' + userstyleSearchResult.id
     });
     $('#searchResults-list').appendChild(entry);
 
@@ -224,14 +253,17 @@ const SearchResults = (() => {
 
     /** Installs the current userstyleSearchResult into stylus. */
     function install() {
+      entry.classList.add('loading');
       // TODO: Detect if style has customizations, point to style page if so.
       const styleId = userstyleSearchResult.id;
       const url = 'https://userstyles.org/styles/chrome/' + styleId + '.json';
       download(url)
         .then(responseText => {
-          saveStyleSafe(tryJSONparse(responseText));
-          installButton.disabled = 'disabled';
-          installButton.textContent = 'Installed';
+          saveStyleSafe(tryJSONparse(responseText))
+            .then(() => {
+              // Hide search result after installing
+              entry.parentNode.removeChild(entry);
+            });
         })
         .catch(reason => {
           console.log('Error while installing from ' + url + ': ' + reason);

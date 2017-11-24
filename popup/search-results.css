@@ -33,6 +33,9 @@
 .searchResult:hover {
   background-color: rgba(50, 150, 255, 0.5);
 }
+.searchResult.loading {
+  opacity: 0.5;
+}
 
 .searchResult img {
   display: block;
