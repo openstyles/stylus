@@ -28,6 +28,16 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
   chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
     listener('styleReplaceAll', data));
+
+  if (FIREFOX) {
+    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+    chrome.webNavigation.onCommitted.addListener(webNavUsercssInstallerFF, {
+      url: [
+        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.css'},
+        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.styl'},
+      ]
+    });
+  }
 }
 
 if (chrome.contextMenus) {
@@ -238,6 +248,21 @@ function webNavigationListenerChrome(method, data) {
       data.url = tab.url;
     }
     webNavigationListener(method, data);
+  });
+}
+
+
+function webNavUsercssInstallerFF(data) {
+  const {tabId} = data;
+  Promise.all([
+    sendMessage({tabId, method: 'ping'}),
+    // we need tab index to open the installer next to the original one
+    // and also to skip the double-invocation in FF which assigns tab url later
+    getTab(tabId),
+  ]).then(([pong, tab]) => {
+    if (pong !== true && tab.url !== 'about:blank') {
+      usercssHelper.openInstallPage(tab, {direct: true});
+    }
   });
 }
 

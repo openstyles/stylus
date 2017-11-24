@@ -1,5 +1,5 @@
 /* global CodeMirror semverCompare makeLink closeCurrentTab */
-/* global messageBox */
+/* global messageBox download chromeLocal */
 'use strict';
 
 (() => {
@@ -7,30 +7,35 @@
   let liveReload = false;
   let installed = false;
 
-  const port = chrome.tabs.connect(
-    Number(params.get('tabId')),
-    {name: 'usercss-install', frameId: 0}
-  );
-  port.postMessage({method: 'getSourceCode'});
-  port.onMessage.addListener(msg => {
-    switch (msg.method) {
-      case 'getSourceCodeResponse':
-        if (msg.error) {
-          messageBox.alert(msg.error);
-        } else {
-          initSourceCode(msg.sourceCode);
-        }
-        break;
-      case 'sourceCodeChanged':
-        if (msg.error) {
-          messageBox.alert(msg.error);
-        } else {
-          liveReloadUpdate(msg.sourceCode);
-        }
-        break;
-    }
-  });
-  port.onDisconnect.addListener(closeCurrentTab);
+  const tabId = Number(params.get('tabId'));
+  let port;
+
+  if (tabId < 0) {
+    $('.live-reload').remove();
+    getCodeDirectly();
+  } else {
+    port = chrome.tabs.connect(tabId);
+    port.postMessage({method: 'getSourceCode'});
+    port.onMessage.addListener(msg => {
+      switch (msg.method) {
+        case 'getSourceCodeResponse':
+          if (msg.error) {
+            messageBox.alert(msg.error);
+          } else {
+            initSourceCode(msg.sourceCode);
+          }
+          break;
+        case 'sourceCodeChanged':
+          if (msg.error) {
+            messageBox.alert(msg.error);
+          } else {
+            liveReloadUpdate(msg.sourceCode);
+          }
+          break;
+      }
+    });
+    port.onDisconnect.addListener(closeCurrentTab);
+  }
 
   const cm = CodeMirror($('.main'), {readOnly: true});
   let liveReloadPending = Promise.resolve();
@@ -183,7 +188,7 @@
     sendMessage({method: 'openEditor', id: style.id});
 
     if (!liveReload) {
-      port.postMessage({method: 'closeTab'});
+      chrome.runtime.sendMessage({method: 'closeTab'});
     }
 
     window.dispatchEvent(new CustomEvent('installed'));
@@ -252,6 +257,10 @@
       }
     };
 
+    if (!port) {
+      return;
+    }
+
     // live reload
     const setLiveReload = $('.live-reload input[type=checkbox]');
     if (updateUrl.protocol !== 'file:') {
@@ -298,5 +307,39 @@
       adjustCodeHeight.prevWindowHeight = window.innerHeight;
       cm.setSize(null, $('.main').offsetHeight - $('.warnings').offsetHeight);
     }
+  }
+
+  function getCodeDirectly() {
+    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+    // To circumvent that, the bg process downloads the code directly
+    const key = 'tempUsercssCode' + (-tabId);
+    chrome.storage.local.get(key, data => {
+      const code = data && data[key];
+
+      // bg already downloaded the code
+      if (typeof code === 'string') {
+        initSourceCode(code);
+        chrome.storage.local.remove(key);
+        return;
+      }
+
+      // bg still downloads the code
+      if (code && code.loading) {
+        const waitForCodeInStorage = (changes, area) => {
+          if (area === 'local' && key in changes) {
+            initSourceCode(changes[key].newValue);
+            chrome.storage.onChanged.removeListener(waitForCodeInStorage);
+            chrome.storage.local.remove(key);
+          }
+        };
+        chrome.storage.onChanged.addListener(waitForCodeInStorage);
+        return;
+      }
+
+      // on the off-chance dbExecChromeStorage.getAll ran right after bg download was saved
+      download(params.get('updateUrl'))
+        .then(initSourceCode)
+        .catch(err => messageBox.alert(t('styleInstallFailed', String(err))));
+    });
   }
 })();

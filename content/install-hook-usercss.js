@@ -65,10 +65,6 @@ function initUsercssInstall() {
   let watcher;
 
   chrome.runtime.onConnect.addListener(port => {
-    // FIXME: is this the correct way to reject a connection?
-    // https://developer.chrome.com/extensions/messaging#connect
-    console.assert(port.name === 'usercss-install');
-
     port.onMessage.addListener(msg => {
       switch (msg.method) {
         case 'getSourceCode':
@@ -102,7 +98,7 @@ function initUsercssInstall() {
   });
   chrome.runtime.sendMessage({
     method: 'openUsercssInstallPage',
-    updateUrl: location.href,
+    url: location.href,
   }, r => r && r.__ERROR__ && alert(r.__ERROR__));
 }
 
