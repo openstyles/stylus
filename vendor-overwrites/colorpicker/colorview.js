@@ -177,7 +177,6 @@
         if (el.colorpickerData && el.colorpickerData.color === data.color) {
           continue;
         }
-        el.dataset.colorpicker = '';
         el.colorpickerData = Object.assign({line, ch: start}, data);
         let bg = el.firstElementChild;
         if (!bg) {

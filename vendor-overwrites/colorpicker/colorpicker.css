@@ -16,6 +16,9 @@
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
   background-repeat: repeat;
 }
+.cm-colorview-next-disabled + .cm-colorview::before {
+  content: none;
+}
 
 .codemirror-colorview-background {
   position: absolute;

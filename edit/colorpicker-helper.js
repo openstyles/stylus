@@ -1,7 +1,8 @@
 /* global CodeMirror loadScript editors showHelp */
 'use strict';
 
-window.initColorpicker = () => {
+// eslint-disable-next-line no-var
+var initColorpicker = () => {
   initOverlayHooks();
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
@@ -109,41 +110,37 @@ window.initColorpicker = () => {
 
   function initOverlayHooks() {
     const COLORVIEW_DISABLED_SUFFIX = ' colorview-disabled';
+    const COLORVIEW_NEXT_DISABLED_SUFFIX = ' colorview-next-disabled';
     const originalAddOverlay = CodeMirror.prototype.addOverlay;
     CodeMirror.prototype.addOverlay = addOverlayHook;
 
     function addOverlayHook(overlay) {
-      if (overlay === (this.state.matchHighlighter || {}).overlay) {
-        if (overlay.token !== tokenHook) {
-          overlay.stylusColorpickerHelper = {
-            token: overlay.token,
-          };
-          overlay.token = tokenHook;
-        }
+      if (overlay.token !== tokenHook && (
+          overlay === (this.state.matchHighlighter || {}).overlay ||
+          overlay === (this.state.search || {}).overlay)) {
+        overlay.colopickerHelper = {token: overlay.token};
+        overlay.token = tokenHook;
       }
       originalAddOverlay.apply(this, arguments);
     }
 
     function tokenHook(stream) {
-      const style = this.stylusColorpickerHelper.token.call(this, stream);
-      if (style === 'matchhighlight') {
-        return tokenHookForHighlighter.call(this, stream, style);
-      } else {
+      const style = this.colopickerHelper.token.apply(this, arguments);
+      if (!style) {
         return style;
       }
-    }
-
-    function tokenHookForHighlighter(stream, style) {
       const {start, pos, lineOracle: {baseTokens}} = stream;
       if (!baseTokens) {
         return style;
       }
       for (let prev = 0, i = 1; i < baseTokens.length; i += 2) {
         const end = baseTokens[i];
-        if (prev < start && start < end) {
+        if (prev <= start && start <= end) {
           const base = baseTokens[i + 1];
           if (base && base.includes('colorview')) {
-            return style + COLORVIEW_DISABLED_SUFFIX;
+            return style +
+              (start > prev ? COLORVIEW_DISABLED_SUFFIX : '') +
+              (pos < end ? COLORVIEW_NEXT_DISABLED_SUFFIX : '');
           }
         } else if (end > pos) {
           break;

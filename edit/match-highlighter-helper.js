@@ -28,7 +28,10 @@
 
   function addOverlayForHighlighter(overlay) {
     const state = this.state.matchHighlighter || {};
-    const helper = state.stylusMHLHelper || {};
+    const helper = state.highlightHelper = state.highlightHelper || {};
+
+    clearTimeout(helper.hookTimer);
+
     if (helper.matchesonscroll) {
       // restore the original addon's unwanted removeOverlay effects
       // (in case the token under cursor hasn't changed)
@@ -38,22 +41,22 @@
       helper.overlay = null;
       return true;
     }
+
     if (overlay.token !== tokenHook) {
-      overlay.stylusMHLHelper = {
+      overlay.highlightHelper = {
         token: overlay.token,
         occurrences: 0,
       };
       overlay.token = tokenHook;
     }
-    clearTimeout(helper.hookTimer);
   }
 
   function tokenHook(stream) {
-    const style = this.stylusMHLHelper.token.call(this, stream);
+    const style = this.highlightHelper.token.call(this, stream);
     if (style !== 'matchhighlight') {
       return style;
     }
-    const num = ++this.stylusMHLHelper.occurrences;
+    const num = ++this.highlightHelper.occurrences;
     if (num === 1) {
       stream.lineOracle.doc.cm.display.wrapper.classList.remove(HL_APPROVED);
     } else if (num === 2) {
@@ -64,38 +67,54 @@
 
   function removeOverlayForHighlighter() {
     const state = this.state.matchHighlighter || {};
-    const {query} = state.matchesonscroll || {};
+    const {query} = state.highlightHelper || state.matchesonscroll || {};
     if (!query) {
       return;
     }
-    const {line, ch} = this.getCursor();
     const rx = query instanceof RegExp && query;
-    const queryLen = rx ? rx.source.length - 4 : query.length;
-    const start = Math.max(0, ch - queryLen + 1);
-    const end = ch + queryLen;
-    const area = this.getLine(line).substring(start, end);
-    const startInArea = rx ? (area.match(rx) || {}).index :
-      (area.indexOf(query) + 1 || NaN) - 1;
-    if (start + startInArea <= ch) {
-      // same token on cursor => prevent the highlighter from rerunning
-      state.stylusMHLHelper = {
-        overlay: state.overlay,
-        matchesonscroll: state.matchesonscroll,
-        hookTimer: setTimeout(removeOverlayIfExpired, 0, this, state),
-      };
-      state.matchesonscroll = null;
-      return true;
+    const sel = this.getSelection();
+    if (sel && (rx && !rx.test(sel) || sel.toLowerCase() !== query)) {
+      return;
     }
+    if (!sel) {
+      const {line, ch} = this.getCursor();
+      const queryLen = rx ? rx.source.length - 4 : query.length;
+      const start = Math.max(0, ch - queryLen + 1);
+      const end = ch + queryLen;
+      const area = this.getLine(line).substring(start, end);
+      const startInArea = rx ? (area.match(rx) || {}).index :
+        (area.indexOf(query) + 1 || NaN) - 1;
+      if (start + startInArea > ch) {
+        return;
+      }
+    }
+    // same token on cursor => prevent the highlighter from rerunning
+    state.highlightHelper = {
+      overlay: state.overlay,
+      matchesonscroll: state.matchesonscroll,
+      showMatchesOnScrollbar: this.showMatchesOnScrollbar,
+      hookTimer: setTimeout(removeOverlayIfExpired, 0, this, state),
+    };
+    state.matchesonscroll = null;
+    this.showMatchesOnScrollbar = scrollbarForHighlighter;
+    return true;
   }
 
   function removeOverlayIfExpired(self, state) {
-    const {overlay, matchesonscroll} = state.stylusMHLHelper || {};
+    const {overlay, matchesonscroll} = state.highlightHelper || {};
     if (overlay) {
       originalRemoveOverlay.call(self, overlay);
     }
     if (matchesonscroll) {
       matchesonscroll.clear();
     }
-    state.stylusMHLHelper = null;
+    self.showMatchesOnScrollbar = state.showMatchesOnScrollbar;
+    state.highlightHelper = null;
+  }
+
+  function scrollbarForHighlighter(query) {
+    const helper = this.state.matchHighlighter.highlightHelper;
+    this.showMatchesOnScrollbar = helper.showMatchesOnScrollbar;
+    helper.query = query;
   }
 })();
