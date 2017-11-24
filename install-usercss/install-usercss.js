@@ -41,6 +41,16 @@
   let liveReloadPending = Promise.resolve();
   window.addEventListener('resize', adjustCodeHeight);
 
+  setTimeout(() => {
+    if (!installed) {
+      const div = $element({});
+      $('.header').appendChild($element({
+        className: 'lds-spinner',
+        appendChild: new Array(12).fill(div).map(e => e.cloneNode()),
+      }));
+    }
+  }, 200);
+
   function liveReloadUpdate(sourceCode) {
     liveReloadPending = liveReloadPending.then(() => {
       const scrollInfo = cm.getScrollInfo();
@@ -100,6 +110,8 @@
 
     $('.header').classList.add('meta-init');
     $('.header').classList.remove('meta-init-error');
+    setTimeout(() => $('.lds-spinner').remove(), 1000);
+
     showError('');
     requestAnimationFrame(adjustCodeHeight);
 
