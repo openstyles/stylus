@@ -347,31 +347,15 @@ function onRuntimeMessage(request, sender, sendResponseInternal) {
       return KEEP_CHANNEL_OPEN;
 
     case 'closeTab':
-      closeTab(sender.tab.id, request).then(sendResponse);
+      chrome.tabs.remove(request.tabId || sender.tab.id, () => {
+        if (chrome.runtime.lastError) {
+          sendResponse(new Error(chrome.runtime.lastError.message));
+        }
+      });
       return KEEP_CHANNEL_OPEN;
 
     case 'openEditor':
       openEditor(request.id);
       return;
   }
-}
-
-
-function closeTab(tabId, request) {
-  return new Promise(resolve => {
-    if (request.tabId) {
-      tabId = request.tabId;
-    }
-    chrome.tabs.remove(tabId, () => {
-      const {lastError} = chrome.runtime;
-      if (lastError) {
-        resolve({
-          success: false,
-          error: lastError.message || String(lastError)
-        });
-        return;
-      }
-      resolve({success: true});
-    });
-  });
 }
