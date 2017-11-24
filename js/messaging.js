@@ -408,49 +408,47 @@ function deleteStyleSafe({id, notify = true} = {}) {
 }
 
 
-function download(url) {
+function download(url, {
+  method = url.includes('?') ? 'POST' : 'GET',
+  body = url.includes('?') ? url.slice(url.indexOf('?')) : null,
+  requiredStatusCode = 200,
+  timeout = 10e3,
+  headers = {
+    'Content-type': 'application/x-www-form-urlencoded',
+  },
+} = {}) {
   return new Promise((resolve, reject) => {
     url = new URL(url);
-    const TIMEOUT = 10000;
-    const options = {
-      method: url.search ? 'POST' : 'GET',
-      body: url.search ? url.search.slice(1) : null,
-      headers: {
-        'Content-type': 'application/x-www-form-urlencoded'
-      }
-    };
     if (url.protocol === 'file:' && FIREFOX) {
       // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
-      options.mode = 'same-origin';
       // FIXME: add FetchController when it is available.
-      // https://developer.mozilla.org/en-US/docs/Web/API/FetchController/abort
-      let timer;
+      const timer = setTimeout(reject, timeout, new Error('Timeout fetching ' + url.href));
       fetch(url.href, {mode: 'same-origin'})
         .then(r => {
           clearTimeout(timer);
-          if (r.status !== 200) {
-            throw r.status;
-          }
-          return r.text();
+          return r.status === 200 ? r.text() : Promise.reject(r.status);
         })
-        .then(resolve, reject);
-      timer = setTimeout(
-        () => reject(new Error(`Fetch URL timeout: ${url.href}`)),
-        TIMEOUT
-      );
+        .catch(reject)
+        .then(resolve);
       return;
     }
     const xhr = new XMLHttpRequest();
-    xhr.timeout = TIMEOUT;
-    xhr.onload = () => (xhr.status === 200 || url.protocol === 'file:'
-      ? resolve(xhr.responseText)
-      : reject(xhr.status));
-    xhr.onerror = reject;
-    xhr.open(options.method, url.href, true);
-    for (const key of Object.keys(options.headers)) {
-      xhr.setRequestHeader(key, options.headers[key]);
+    xhr.timeout = timeout;
+    xhr.onloadend = event => {
+      if (event.type !== 'error' && (
+          xhr.status === requiredStatusCode || !requiredStatusCode ||
+          url.protocol === 'file:')) {
+        resolve(xhr.responseText);
+      } else {
+        reject(xhr.status);
+      }
+    };
+    xhr.onerror = xhr.onloadend;
+    xhr.open(method, url.href, true);
+    for (const key in headers) {
+      xhr.setRequestHeader(key, headers[key]);
     }
-    xhr.send(options.body);
+    xhr.send(body);
   });
 }
 
