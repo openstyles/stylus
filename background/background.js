@@ -166,7 +166,6 @@ window.addEventListener('storageReady', function _() {
   updateIcon({id: undefined}, {});
 
   const NTP = 'chrome://newtab/';
-  const PING = {method: 'ping'};
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
   // expand * as .*?
@@ -189,12 +188,11 @@ window.addEventListener('storageReady', function _() {
   };
 
   const pingCS = (cs, {id, url}) => {
-    const maybeInject = pong => !pong && injectCS(cs, PING.tabId);
+    const maybeInject = pong => !pong && injectCS(cs, id);
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {
-        PING.tabId = id;
-        sendMessage(PING).then(maybeInject);
+        sendMessage({method: 'ping', tabId: id}, maybeInject);
         return true;
       }
     });
