@@ -128,7 +128,7 @@ function notifyAllTabs(msg) {
   }
   // notify background page and all open popups
   if (affectsSelf) {
-    msg.tabId = null;
+    msg.tabId = undefined;
     sendMessage(msg, ignoreChromeError);
   }
 }
@@ -144,8 +144,8 @@ function sendMessage(msg, callback) {
     - enabled by passing a second param
   */
   const {tabId, frameId} = msg;
-  const fn = tabId ? chrome.tabs.sendMessage : chrome.runtime.sendMessage;
-  const args = tabId ? [tabId, msg, {frameId}] : [msg];
+  const fn = tabId >= 0 ? chrome.tabs.sendMessage : chrome.runtime.sendMessage;
+  const args = tabId >= 0 ? [tabId, msg, {frameId}] : [msg];
   if (callback) {
     fn(...args, callback);
   } else {

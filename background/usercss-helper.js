@@ -85,7 +85,8 @@ var usercssHelper = (() => {
     return wrapReject(openURL({
       url: '/install-usercss.html' +
         '?updateUrl=' + encodeURIComponent(url) +
-        '&tabId=' + (direct ? -tab.id : tab.id),
+        '&tabId=' + tab.id +
+        (direct ? '&direct=yes' : ''),
       index: tab.index + 1,
       openerTabId: tab.id,
     }));

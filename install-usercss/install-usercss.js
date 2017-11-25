@@ -10,7 +10,7 @@
   const tabId = Number(params.get('tabId'));
   let port;
 
-  if (tabId < 0) {
+  if (params.has('direct')) {
     $('.live-reload').remove();
     getCodeDirectly();
   } else {
@@ -327,7 +327,7 @@
   function getCodeDirectly() {
     // FF applies page CSP even to content scripts, https://bugzil.la/1267027
     // To circumvent that, the bg process downloads the code directly
-    const key = 'tempUsercssCode' + (-tabId);
+    const key = 'tempUsercssCode' + tabId;
     chrome.storage.local.get(key, data => {
       const code = data && data[key];
 
