@@ -19,6 +19,10 @@
 		"message": "Styles Exportieren",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Nur Usercss styles",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Automatischer Update- und Installations-Intervall (in Stunden)",
 		"description": ""
@@ -60,7 +64,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Bitte einen Namen eingeben",
+		"message": "Bitte Namen eingeben",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +86,10 @@
 	"styleNotAppliedRegexpProblemTooltip": {
 		"message": "Der Style wurde aufgrund ungültiger Regulärer Ausdrücke nicht angewandt.",
 		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Formate wechseln: HEX -> RGB ->HSL.\nShift-Klick, um Richtung umzukehren.\nKürzel: Bild auf- und Bild ab-Tasten.",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
 	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Einige Regeln der Regulären Ausdrücke konnten nicht überprüft werden.",
@@ -286,6 +294,10 @@
 		"message": "Nochmals überprüfen, ich habe keine Styles bearbeitet!",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"manageOnlyNonUsercss": {
+		"message": "Keine Usercss styles",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
 	"liveReloadLabel": {
 		"message": "Echtzeitaktualisierung",
 		"description": "The label of live-reload feature"
@@ -484,6 +496,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Style im Mozilla Format",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "Farbwähler für CSS-Farben",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "Style erstellen für:",
@@ -836,6 +852,10 @@
 		"message": "Optionen",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Farbwähler öffnen",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Badge auf dem Toolbar-Icon",
 		"description": ""
@@ -852,6 +872,10 @@
 	"importReportLegendIdentical": {
 		"message": "Identische übersprungen",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+	},
+	"manageNewStyleAsUsercss": {
+		"message": "als Usercss",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
 	},
 	"optionsPopupWidth": {
 		"message": "Popup-Breite (in Pixeln)",

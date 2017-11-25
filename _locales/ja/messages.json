@@ -24,7 +24,7 @@
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
-		"message": "Alt-Enterを押して、有効/無効の状態を切り替え、スタイルを保存します",
+		"message": "Alt-Enterを押すと、有効/無効の状態を切り替え、スタイルを保存します",
 		"description": "Help text for the '[x] enable' checkbox in the editor"
 	},
 	"exportLabel": {
@@ -164,7 +164,7 @@
 		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
 	},
 	"styleToMozillaFormatHelp": {
-		"message": "Mozilla 形式のコードは、userstyles.org に投稿することができ、また従来の Stylish for Firefox でも使用できます。",
+		"message": "Mozilla 形式のコードは、userstyles.org に投稿することができ、また従来の Stylish for Firefox でも使用できます",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
@@ -196,7 +196,7 @@
 		"description": ""
 	},
 	"cm_autoCloseBracketsTooltip": {
-		"message": "()[]{}''\"\" の開き括弧/引用符の入力時に、自動的に対応する閉じ括弧/引用符を追加します",
+		"message": "()[]{}''\"\" の開き括弧/引用符の入力時に、対応する閉じ括弧/引用符を自動的に追加します",
 		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
@@ -224,7 +224,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "「html[stylus-iframe] h1 { display:none }」のようにiframe用のCSSを書くことができるようになります。",
+		"message": "「 html[stylus-iframe] h1 { display:none } 」のようにiframe用のCSSを書くことができるようになります。",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -430,7 +430,7 @@
 		}
 	},
 	"updateCheckSucceededNoUpdate": {
-		"message": "スタイルは最新の状態です",
+		"message": "スタイルは最新の状態です。",
 		"description": "Text that displays when an update check completed and no update is available"
 	},
 	"appliesUrlPrefixOption": {
@@ -446,7 +446,7 @@
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"popupBordersTooltip": {
-		"message": "新しいChromeが横の境界線を塗りつぶさなくなったため、暗いテーマで有効です",
+		"message": "新しいChromeが横の境界線を描かなくなったため、暗いテーマで有効です",
 		"description": ""
 	},
 	"updateCheckManualUpdateHint": {
@@ -496,6 +496,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Mozilla形式のスタイル",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "CSSの色選択ツール",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "次のスタイルを書く:",
@@ -567,7 +571,7 @@
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
 	},
 	"styleRegexpPartialExplanation": {
-		"message": "このスタイルは、完全なURLの一致を要求する <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 仕様</a> に違反した部分一致の正規表現を使用しています。影響を受けるCSSセクションはページに適用されませんでした。このスタイルは、'regexp()' のルールを誤ってチェックしていた かなり初期のバージョンの Stylish-for-Chrome で作成された可能性があります（既知のバグです）",
+		"message": "このスタイルは、完全なURLの一致を要求する <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 仕様</a> に違反した部分一致の正規表現を使用しています。影響を受けるCSSセクションはページに適用されませんでした。このスタイルは、'regexp()' のルールを誤ってチェックしていた かなり初期のバージョンの Stylish-for-Chrome で作成された可能性があります（既知のバグです）。",
 		"description": ""
 	},
 	"linterCSSLintSettings": {
@@ -611,7 +615,7 @@
 		"description": ""
 	},
 	"updateCompleted": {
-		"message": "更新が完了しました",
+		"message": "更新が完了しました。",
 		"description": "Text that displays when an update completed"
 	},
 	"dysfunctionalBackgroundConnection": {
@@ -631,7 +635,7 @@
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"popupManageTooltip": {
-		"message": "Shift-クリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます。",
+		"message": "Shift-クリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます",
 		"description": "Tooltip for the 'Manage' button in the popup."
 	},
 	"manageFaviconsHelp": {
@@ -753,7 +757,7 @@
 		"description": "Checkbox to show only disabled styles"
 	},
 	"stylusUnavailableForURLdetails": {
-		"message": "セキュリティ上の予防措置として、ブラウザは拡張機能がビルトイン ページ（chrome://version, Chrome 61 の標準の新しいタブページ, about:addons 等）に影響を与えることを禁止しています。これは他の拡張機能のページについても同様です。各ブラウザはまた、自身の拡張機能ギャラリーへのアクセスについても制限しています（Chrome Web ストア や AMO 等）",
+		"message": "セキュリティ上の予防措置として、ブラウザは拡張機能がビルトイン ページ（chrome://version, Chrome 61 の標準の新しいタブページ, about:addons 等）に影響を与えることを禁止しています。これは他の拡張機能のページについても同様です。各ブラウザはまた、自身の拡張機能ギャラリーへのアクセスについても制限しています（Chrome Web ストア や AMO 等）。",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"cm_matchHighlightSelection": {
@@ -837,7 +841,7 @@
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"importReportUnchanged": {
-		"message": "変更がありませんでした",
+		"message": "変更がありませんでした。",
 		"description": "Message in the report shown after importing styles"
 	},
 	"optionsActions": {
@@ -859,6 +863,10 @@
 	"openOptionsManage": {
 		"message": "オプション UI",
 		"description": "Go to Options UI"
+	},
+	"colorpickerTooltip": {
+		"message": "色選択ツールを開きます",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
 	},
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",

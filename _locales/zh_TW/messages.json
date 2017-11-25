@@ -60,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "請輸入名稱",
+		"message": "輸入名稱",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -501,6 +501,10 @@
 		"message": "Mozilla格式樣式表",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
+	"cm_colorpicker": {
+		"message": "用於 CSS 色彩的顏色挑選器",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
+	},
 	"writeStyleFor": {
 		"message": "編寫樣式給：",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -871,6 +875,10 @@
 	"openOptionsManage": {
 		"message": "選項介面",
 		"description": "Go to Options UI"
+	},
+	"colorpickerTooltip": {
+		"message": "開啟顏色挑選器",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
 	},
 	"optionsCustomizeBadge": {
 		"message": "在工具列圖示上的徽章",

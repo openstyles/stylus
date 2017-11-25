@@ -19,6 +19,10 @@
 		"message": "Экспорт стилей",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Только Usercss стили",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Автоматически проверять и устанавливать обновления стилей (интервал в часах)",
 		"description": ""
@@ -82,6 +86,10 @@
 	"styleNotAppliedRegexpProblemTooltip": {
 		"message": "Стиль не был применен из-за некорректного regexp()",
 		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Сменить формат: #FFF -> RGB -> HSL.\nКлик с Shift меняет в обратном направлении.\nТакже клавишами PgUp, PgDn (\"Страница вверх\" и \"Страница вниз\").",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
 	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Некоторые 'regexp()' выражения не удалось скомпилировать.",
@@ -294,6 +302,10 @@
 		"message": "Я не менял стили, проверить заново!",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"manageOnlyNonUsercss": {
+		"message": "Спрятать Usercss стили",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
 	"liveReloadLabel": {
 		"message": "Автозагрузка изменений",
 		"description": "The label of live-reload feature"
@@ -500,6 +512,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Стиль в формате Mozilla",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "Раскрашивать цвета в CSS",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "Создать стиль для:",
@@ -872,6 +888,10 @@
 		"message": "Настройки",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Изменить цвет",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Бейдж на пиктограмме в тулбаре",
 		"description": ""
@@ -888,6 +908,10 @@
 	"importReportLegendIdentical": {
 		"message": "идентичные пропущены",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+	},
+	"manageNewStyleAsUsercss": {
+		"message": "в формате Usercss",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
 	},
 	"optionsPopupWidth": {
 		"message": "Ширина всплывающего окна (в пикселах)",

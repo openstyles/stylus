@@ -19,6 +19,10 @@
 		"message": "Eksportuj style",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Tylko style Usercss",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Automatycznie sprawdzaj i zainstaluj wszystkie dostępne aktualizacje stylów użytkownika (w godzinach)",
 		"description": ""
@@ -60,7 +64,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Wprowadź nazwę",
+		"message": "Wpisz nazwę",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +86,10 @@
 	"styleNotAppliedRegexpProblemTooltip": {
 		"message": "Styl nie został zastosowany z powodu nieprawidłowego użycia 'regexp()'",
 		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Zmiana formatu: HEX -> RGB -> HSL.\nShift i kliknięcie do odwrócenia kierunku.\nTakże klawiszami PgUp (PageUp), PgDn (PageDown).",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
 	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Niektóre reguły 'regexp()', których nie można było w ogóle skompilować.",
@@ -290,6 +298,10 @@
 		"message": "Sprawdź ponownie, nie edytowałem żadnych stylów!",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"manageOnlyNonUsercss": {
+		"message": "Tylko style nie-Usercss",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
 	"liveReloadLabel": {
 		"message": "Przeładuj na żywo",
 		"description": "The label of live-reload feature"
@@ -496,6 +508,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Styl w formacie Mozilla",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "Próbniki kolorów CSS",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "Napisz styl dla:",
@@ -872,6 +888,10 @@
 		"message": "Opcje interfejsu",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Otwórz próbnik kolorów",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Emblemat na ikonie paska narzędzi",
 		"description": ""
@@ -888,6 +908,10 @@
 	"importReportLegendIdentical": {
 		"message": "identyczne pominięte",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+	},
+	"manageNewStyleAsUsercss": {
+		"message": "jako Usercss",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
 	},
 	"optionsPopupWidth": {
 		"message": "Szerokość okna (w pikselach)",
