@@ -299,7 +299,7 @@ var prefs = new function Prefs() {
 
   // Polyfill for Firefox < 53 https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
   function getSync() {
-    if ('sync' in chrome.storage) {
+    if ('sync' in chrome.storage && !chrome.runtime.id.includes('@temporary')) {
       return chrome.storage.sync;
     }
     const crappyStorage = {};

@@ -372,11 +372,13 @@ function updateIcon(tab, styles) {
       }
       // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
       chrome.browserAction.setBadgeBackgroundColor({color});
-      getTab(tab.id).then(realTab => {
-        // skip pre-rendered tabs
-        if (realTab.index >= 0) {
-          chrome.browserAction.setBadgeText({text, tabId: tab.id});
-        }
+      setTimeout(() => {
+        getTab(tab.id).then(realTab => {
+          // skip pre-rendered tabs
+          if (realTab.index >= 0) {
+            chrome.browserAction.setBadgeText({text, tabId: tab.id});
+          }
+        });
       });
     });
   }
@@ -427,7 +429,7 @@ function onRuntimeMessage(request, sender, sendResponseInternal) {
 
     case 'closeTab':
       chrome.tabs.remove(request.tabId || sender.tab.id, () => {
-        if (chrome.runtime.lastError) {
+        if (chrome.runtime.lastError && request.tabId !== sender.tab.id) {
           sendResponse(new Error(chrome.runtime.lastError.message));
         }
       });
