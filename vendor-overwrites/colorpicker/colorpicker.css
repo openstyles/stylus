@@ -16,6 +16,7 @@
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
   background-repeat: repeat;
 }
+.CodeMirror-lint-mark-warning + .cm-colorview::before,
 .cm-colorview-next-disabled + .cm-colorview::before {
   content: none;
 }
