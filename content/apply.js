@@ -163,7 +163,9 @@ function applyStyleState({id, enabled}) {
   } else {
     if (inDoc) {
       disabledElements.set(id, inDoc);
+      docRootObserver.stop();
       inDoc.remove();
+      docRootObserver.start();
     }
   }
 }
@@ -412,8 +414,8 @@ function initDocRootObserver() {
       return;
     }
     let appliedChanges = false;
-    for (const el of styleElements.values()) {
-      if (!el.parentNode) {
+    for (const [idStr, el] of styleElements.entries()) {
+      if (!el.parentNode && disabledElements.has(getStyleId(idStr))) {
         continue;
       }
       if (el.previousElementSibling === prev) {
@@ -455,7 +457,7 @@ function initDocRootObserver() {
 
 
 function getStyleId(el) {
-  return parseInt(el.id.substr(ID_PREFIX.length));
+  return parseInt((el.id || el).substr(ID_PREFIX.length));
 }
 
 
