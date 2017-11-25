@@ -133,16 +133,18 @@
   });
 })();
 
-(() => {
+// eslint-disable-next-line no-unused-expressions
+CodeMirror.hint && (() => {
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
 
+  const originalHelper = CodeMirror.hint.css || (() => {});
   CodeMirror.registerHelper('hint', 'css', function (cm) {
     const {line, ch} = cm.getCursor();
     const {styles, text} = cm.getLineHandle(line);
     if (!styles || !editor) {
-      return;
+      return originalHelper(cm);
     }
     let prev = 0;
     for (let i = 1; i < styles.length; i += 2) {
@@ -155,7 +157,6 @@
         const leftPart = text.slice(prev, ch);
         const list = Object.keys(editor.getStyle().usercssData.vars)
           .filter(name => name.startsWith(leftPart));
-        console.log(leftPart, ...list);
         return {
           list,
           from: {line, ch: prev},
@@ -164,6 +165,7 @@
       }
       prev = end;
     }
+    return originalHelper(cm);
   });
 
   const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
