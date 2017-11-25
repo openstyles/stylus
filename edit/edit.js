@@ -1073,7 +1073,7 @@ function autocompleteOnTyping(cm, [info], debounced) {
     debounce(autocompleteOnTyping, 100, cm, [info], true);
     return;
   }
-  if (info.text.last.match(/[-\w!]+$/)) {
+  if (info.text.last.match(/[-a-z!]+$/i)) {
     cm.state.autocompletePicked = false;
     cm.options.hintOptions.completeSingle = false;
     cm.execCommand('autocomplete');
