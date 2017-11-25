@@ -16,6 +16,7 @@
     "webNavigation",
     "contextMenus",
     "storage",
+    "declarativeContent",
     "<all_urls>"
   ],
   "background": {
@@ -43,13 +44,6 @@
     }
   },
   "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "run_at": "document_start",
-      "all_frames": true,
-      "match_about_blank": true,
-      "js": ["content/apply.js"]
-    },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",

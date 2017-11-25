@@ -150,6 +150,13 @@ function sendMessage(msg, callback) {
     - enabled by passing a second param
   */
   const {tabId, frameId} = msg;
+  if (tabId >= 0 && FIREFOX) {
+    // FF: reroute all tabs messages to styleViaAPI
+    const msgInBG = BG === window ? msg : BG.deepCopy(msg);
+    const sender = {tab: {id: tabId}, frameId};
+    const task = BG.styleViaAPI.process(msgInBG, sender);
+    return callback ? task.then(callback) : task;
+  }
   const fn = tabId >= 0 ? chrome.tabs.sendMessage : chrome.runtime.sendMessage;
   const args = tabId >= 0 ? [tabId, msg, {frameId}] : [msg];
   if (callback) {

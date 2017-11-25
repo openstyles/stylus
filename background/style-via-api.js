@@ -1,7 +1,8 @@
 /* global getStyles */
 'use strict';
 
-const styleViaAPI = !CHROME && (() => {
+// eslint-disable-next-line no-var
+var styleViaAPI = !CHROME && (() => {
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -9,8 +10,10 @@ const styleViaAPI = !CHROME && (() => {
     styleAdded,
     styleReplaceAll,
     prefChanged,
+    ping,
   };
   const NOP = Promise.resolve(new Error('NOP'));
+  const PONG = Promise.resolve(true);
   const onError = () => {};
 
   /* <tabId>: Object
@@ -19,18 +22,46 @@ const styleViaAPI = !CHROME && (() => {
          <styleId>: Array of strings
            section code */
   const cache = new Map();
+  const allFrameUrls = new Map();
 
   let observingTabs = false;
 
-  return (request, sender) => {
-    const action = ACTIONS[request.action];
-    return !action ? NOP :
-      action(request, sender)
-        .catch(onError)
-        .then(maybeToggleObserver);
+  return {
+    process,
+    getFrameUrl,
+    setFrameUrl,
+    allFrameUrls,
+    cache,
   };
 
-  function styleApply({id = null, ignoreUrlCheck}, {tab, frameId, url}) {
+  function process(request, sender) {
+    const action = ACTIONS[request.action || request.method];
+    if (!action) {
+      return NOP;
+    }
+    const {frameId, tab: {id: tabId}} = sender;
+    if (isNaN(frameId)) {
+      const frameIds = Object.keys(allFrameUrls.get(tabId) || {});
+      if (frameIds.length > 1) {
+        return Promise.all(
+          frameIds.map(frameId =>
+            process(request, Object.assign({}, sender, {frameId: Number(frameId)}))));
+      }
+      sender.frameId = 0;
+    }
+    return action(request, sender)
+      .catch(onError)
+      .then(maybeToggleObserver);
+  }
+
+  function styleApply({
+    id = null,
+    ignoreUrlCheck,
+  }, {
+    tab,
+    frameId,
+    url = getFrameUrl(tab.id, frameId),
+  }) {
     if (prefs.get('disableAll')) {
       return NOP;
     }
@@ -64,22 +95,20 @@ const styleViaAPI = !CHROME && (() => {
             matchAboutBlank: true,
           }).catch(onError));
       }
-      if (!removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles)) {
-        Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
-        tabFrames[frameId] = frameStyles;
-        cache.set(tab.id, tabFrames);
-      }
+      Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
+      tabFrames[frameId] = frameStyles;
+      cache.set(tab.id, tabFrames);
       return Promise.all(tasks);
     });
   }
 
   function styleDeleted({id}, {tab, frameId}) {
-    const {tabFrames, frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
+    const {frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
     const code = styleSections.join('\n');
     if (code && !duplicateCodeExists({frameStyles, id, code})) {
-      delete frameStyles[id];
-      removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles);
-      return removeCSS(tab.id, frameId, code);
+      return removeCSS(tab.id, frameId, code).then(() => {
+        delete frameStyles[id];
+      });
     } else {
       return NOP;
     }
@@ -125,7 +154,7 @@ const styleViaAPI = !CHROME && (() => {
       if (isEmpty(frameStyles)) {
         return NOP;
       }
-      removeFrameIfEmpty(tab.id, frameId, tabFrames, {});
+      delete tabFrames[frameId];
       const tasks = Object.keys(frameStyles)
         .map(id => removeCSS(tab.id, frameId, frameStyles[id].join('\n')));
       return Promise.all(tasks);
@@ -134,21 +163,26 @@ const styleViaAPI = !CHROME && (() => {
     }
   }
 
+  function ping() {
+    return PONG;
+  }
+
   /* utilities */
 
-  function maybeToggleObserver() {
+  function maybeToggleObserver(passthru) {
     let method;
     if (!observingTabs && cache.size) {
       method = 'addListener';
     } else if (observingTabs && !cache.size) {
       method = 'removeListener';
     } else {
-      return;
+      return passthru;
     }
     observingTabs = !observingTabs;
     chrome.webNavigation.onCommitted[method](onNavigationCommitted);
     chrome.tabs.onRemoved[method](onTabRemoved);
     chrome.tabs.onReplaced[method](onTabReplaced);
+    return passthru;
   }
 
   function onNavigationCommitted({tabId, frameId}) {
@@ -157,7 +191,7 @@ const styleViaAPI = !CHROME && (() => {
       return;
     }
     const tabFrames = cache.get(tabId);
-    if (frameId in tabFrames) {
+    if (tabFrames && frameId in tabFrames) {
       delete tabFrames[frameId];
       if (isEmpty(tabFrames)) {
         onTabRemoved(tabId);
@@ -174,21 +208,25 @@ const styleViaAPI = !CHROME && (() => {
     onTabRemoved(removedTabId);
   }
 
-  function removeFrameIfEmpty(tabId, frameId, tabFrames, frameStyles) {
-    if (isEmpty(frameStyles)) {
-      delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
-        cache.delete(tabId);
-      }
-      return true;
-    }
-  }
-
   function getCachedData(tabId, frameId, styleId) {
     const tabFrames = cache.get(tabId) || {};
     const frameStyles = tabFrames[frameId] || {};
     const styleSections = styleId && frameStyles[styleId] || [];
     return {tabFrames, frameStyles, styleSections};
+  }
+
+  function getFrameUrl(tabId, frameId = 0) {
+    const frameUrls = allFrameUrls.get(tabId);
+    return frameUrls && frameUrls[frameId] || '';
+  }
+
+  function setFrameUrl(tabId, frameId, url) {
+    const frameUrls = allFrameUrls.get(tabId);
+    if (frameUrls) {
+      frameUrls[frameId] = url;
+    } else {
+      allFrameUrls.set(tabId, {[frameId]: url});
+    }
   }
 
   function getFrameStylesJoined({

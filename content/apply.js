@@ -23,10 +23,6 @@
   }
 
   function requestStyles(options, callback = applyStyles) {
-    if (!chrome.app && document instanceof XMLDocument) {
-      chrome.runtime.sendMessage({method: 'styleViaAPI', action: 'styleApply'});
-      return;
-    }
     var matchUrl = location.href;
     if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
       // dynamic about: and javascript: iframes don't have an URL yet
@@ -60,17 +56,6 @@
         request.styles = styles;
         applyOnMessage(request);
       });
-      return;
-    }
-
-    if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
-      request.action = request.method;
-      request.method = 'styleViaAPI';
-      request.styles = null;
-      if (request.style) {
-        request.style.sections = null;
-      }
-      chrome.runtime.sendMessage(request);
       return;
     }
 
