@@ -505,7 +505,7 @@ document.addEventListener('wheel', event => {
   }
 });
 
-queryTabs({currentWindow: true}).then(tabs => {
+chrome.windows && queryTabs({currentWindow: true}).then(tabs => {
   const windowId = tabs[0].windowId;
   if (prefs.get('openEditInWindow')) {
     if (
@@ -532,6 +532,9 @@ queryTabs({currentWindow: true}).then(tabs => {
 getOwnTab().then(tab => {
   const ownTabId = tab.id;
   useHistoryBack = sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href;
+  if (!chrome.windows) {
+    return;
+  }
   // When an edit page gets attached or detached, remember its state
   // so we can do the same to the next one to open.
   chrome.tabs.onAttached.addListener((tabId, info) => {
@@ -1500,7 +1503,7 @@ function initHooks() {
 
 
 function toggleContextMenuDelete(event) {
-  if (event.button === 2 && prefs.get('editor.contextDelete')) {
+  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
     chrome.contextMenus.update('editor.contextDelete', {
       enabled: Boolean(
         this.selectionStart !== this.selectionEnd ||

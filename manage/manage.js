@@ -333,7 +333,7 @@ Object.assign(handleEvent, {
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
     const url = event.target.closest('[href]').href;
     if (openWindow || openBackgroundTab || openForegroundTab) {
-      if (openWindow) {
+      if (chrome.windows && openWindow) {
         chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
       } else {
         openURL({url, active: openForegroundTab});

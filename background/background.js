@@ -30,12 +30,19 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
     listener('styleReplaceAll', data));
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) =>
-  contextMenus[info.menuItemId].click(info, tab));
+if (chrome.contextMenus) {
+  chrome.contextMenus.onClicked.addListener((info, tab) =>
+    contextMenus[info.menuItemId].click(info, tab));
+}
 
-if ('commands' in chrome) {
+if (chrome.commands) {
   // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
+}
+
+if (!chrome.browserAction ||
+    !['setIcon', 'setBadgeBackgroundColor', 'setBadgeText'].every(name => chrome.browserAction[name])) {
+  window.updateIcon = () => {};
 }
 
 // *************************************************************************
@@ -108,7 +115,7 @@ contextMenus = Object.assign({
   }
 });
 
-{
+if (chrome.contextMenus) {
   const createContextMenus = (ids = Object.keys(contextMenus)) => {
     for (const id of ids) {
       const item = Object.assign({id}, contextMenus[id]);

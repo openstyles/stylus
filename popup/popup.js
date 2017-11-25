@@ -354,7 +354,7 @@ Object.assign(handleEvent, {
   },
 
   openLink(event) {
-    if (!prefs.get('openEditInWindow', false)) {
+    if (!chrome.windows || !prefs.get('openEditInWindow', false)) {
       handleEvent.openURLandHide.call(this, event);
       return;
     }

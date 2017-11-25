@@ -7,6 +7,7 @@ const KEEP_CHANNEL_OPEN = true;
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
 const OPERA = CHROME && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
+const ANDROID = !chrome.windows;
 let FIREFOX = !CHROME && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
 if (!CHROME && !chrome.browserAction.openPopup) {
@@ -204,7 +205,8 @@ function openURL({url, index, openerTabId, currentWindow = true}) {
         } else {
           // create a new tab
           const options = {url, index};
-          if (tab && (!FIREFOX || FIREFOX >= 57) && !chromeInIncognito) {
+          // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
+          if (tab && (!FIREFOX || FIREFOX >= 57 && chrome.windows) && !chromeInIncognito) {
             options.openerTabId = tab.id;
           }
           chrome.tabs.create(options, resolve);
@@ -220,7 +222,7 @@ function activateTab(tab) {
     new Promise(resolve => {
       chrome.tabs.update(tab.id, {active: true}, resolve);
     }),
-    new Promise(resolve => {
+    chrome.windows && new Promise(resolve => {
       chrome.windows.update(tab.windowId, {focused: true}, resolve);
     }),
   ]);
@@ -438,7 +440,7 @@ function openEditor(id) {
   if (id) {
     url += `?id=${id}`;
   }
-  if (prefs.get('openEditInWindow')) {
+  if (chrome.windows && prefs.get('openEditInWindow')) {
     chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
   } else {
     openURL({url});

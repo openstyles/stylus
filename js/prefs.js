@@ -23,7 +23,8 @@ var prefs = new function Prefs() {
     'manage.onlyEnabled.invert': false, // display only disabled styles
     'manage.onlyLocal.invert': false,   // display only externally installed styles
     'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
-    'manage.newUI': true,           // use the new compact layout
+    // the new compact layout doesn't look good on Android yet
+    'manage.newUI': !navigator.appVersion.includes('Android'),
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
