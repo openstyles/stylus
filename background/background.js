@@ -12,10 +12,11 @@ var browserCommands, contextMenus;
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 {
-  const listener =
-    URLS.chromeProtectsNTP
-      ? webNavigationListenerChrome
-      : webNavigationListener;
+  const [listener] = [
+    [webNavigationListenerChrome, CHROME],
+    [webNavigationListenerFF, FIREFOX],
+    [webNavigationListener, true],
+  ].find(([, selected]) => selected);
 
   chrome.webNavigation.onBeforeNavigate.addListener(data =>
     listener(null, data));
@@ -44,7 +45,6 @@ if (chrome.contextMenus) {
   chrome.contextMenus.onClicked.addListener((info, tab) =>
     contextMenus[info.menuItemId].click(info, tab));
 }
-
 if (chrome.commands) {
   // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
@@ -79,6 +79,24 @@ prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
     if (reason === 'update') {
       localStorage.L10N = JSON.stringify({
         browserUIlanguage: chrome.i18n.getUILanguage(),
+      });
+    }
+    if (!FIREFOX && chrome.declarativeContent) {
+      chrome.declarativeContent.onPageChanged.removeRules(null, () => {
+        chrome.declarativeContent.onPageChanged.addRules([{
+          conditions: [
+            new chrome.declarativeContent.PageStateMatcher({
+              pageUrl: {urlContains: ':'},
+            })
+          ],
+          actions: [
+            new chrome.declarativeContent.RequestContentScript({
+              js: ['/content/apply.js'],
+              allFrames: true,
+              matchAboutBlank: true,
+            }),
+          ],
+        }]);
       });
     }
   };
@@ -168,6 +186,15 @@ window.addEventListener('storageReady', function _() {
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
+  if (!FIREFOX) {
+    contentScripts.push({
+      js: ['content/apply.js'],
+      matches: ['<all_urls>'],
+      run_at: 'document_start',
+      match_about_blank: true,
+      all_frames: true
+    });
+  }
   // expand * as .*?
   const wildcardAsRegExp = (s, flags) => new RegExp(
       s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
@@ -200,8 +227,18 @@ window.addEventListener('storageReady', function _() {
 
   queryTabs().then(tabs =>
     tabs.forEach(tab => {
-      // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-      if (!FIREFOX || tab.width) {
+      if (FIREFOX) {
+        const tabId = tab.id;
+        const frameUrls = {'0': tab.url};
+        styleViaAPI.allFrameUrls.set(tabId, frameUrls);
+        chrome.webNavigation.getAllFrames({tabId}, frames => frames &&
+          frames.forEach(({frameId, parentFrameId, url}) => {
+            if (frameId) {
+              frameUrls[frameId] = url === 'about:blank' ? frameUrls[parentFrameId] : url;
+            }
+          }));
+      } else if (tab.width) {
+        // skip lazy-loaded aka unloaded tabs that seem to start loading on message
         contentScripts.forEach(cs =>
           setTimeout(pingCS, 0, cs, tab));
       }
@@ -233,18 +270,44 @@ function webNavigationListener(method, {url, tabId, frameId}) {
 
 
 function webNavigationListenerChrome(method, data) {
-  // Chrome 61.0.3161+ doesn't run content scripts on NTP
-  if (
-    !data.url.startsWith('https://www.google.') ||
-    !data.url.includes('/_/chrome/newtab?')
-  ) {
+  const {tabId, frameId, url} = data;
+  if (url.startsWith('https://www.google.') && url.includes('/_/chrome/newtab?')) {
+    // Chrome 61.0.3161+ doesn't run content scripts on NTP
+    getTab(tabId).then(tab => {
+      data.url = tab.url === 'chrome://newtab/' ? tab.url : url;
+      webNavigationListener(method, data);
+    });
+  } else {
+    webNavigationListener(method, data);
+    // chrome.declarativeContent doesn't inject scripts in about:blank iframes
+    if (method && frameId && url === 'about:blank') {
+      chrome.tabs.executeScript(tabId, {
+        file: '/content/apply.js',
+        runAt: 'document_start',
+        matchAboutBlank: true,
+        frameId,
+      }, ignoreChromeError);
+    }
+  }
+}
+
+
+function webNavigationListenerFF(method, data) {
+  const {tabId, frameId, url} = data;
+  if (url !== 'about:blank' || !frameId) {
+    styleViaAPI.setFrameUrl(tabId, frameId, url);
     webNavigationListener(method, data);
     return;
   }
-  getTab(data.tabId).then(tab => {
-    if (tab.url === 'chrome://newtab/') {
-      data.url = tab.url;
-    }
+  const frames = styleViaAPI.allFrameUrls.get(tabId);
+  if (Object.keys(frames).length === 1) {
+    frames[frameId] = frames['0'];
+    webNavigationListener(method, data);
+    return;
+  }
+  chrome.webNavigation.getFrame({tabId, frameId}, info => {
+    const hasParent = !chrome.runtime.lastError && info.parentFrameId >= 0;
+    frames[frameId] = hasParent ? frames[info.parentFrameId] : url;
     webNavigationListener(method, data);
   });
 }
@@ -252,13 +315,10 @@ function webNavigationListenerChrome(method, data) {
 
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
-  Promise.all([
-    sendMessage({tabId, method: 'ping'}),
-    // we need tab index to open the installer next to the original one
-    // and also to skip the double-invocation in FF which assigns tab url later
-    getTab(tabId),
-  ]).then(([pong, tab]) => {
-    if (pong !== true && tab.url !== 'about:blank') {
+  // we need tab index to open the installer next to the original one
+  // and also to skip the double-invocation in FF which assigns tab url later
+  getTab(tabId).then(tab => {
+    if (tab.url !== 'about:blank') {
       usercssHelper.openInstallPage(tab, {direct: true});
     }
   });
@@ -354,10 +414,6 @@ function onRuntimeMessage(request, sender, sendResponseInternal) {
         .then(() => sendResponse(true))
         .catch(() => sendResponse(false));
       return KEEP_CHANNEL_OPEN;
-
-    case 'styleViaAPI':
-      styleViaAPI(request, sender);
-      return;
 
     case 'download':
       download(request.url)
