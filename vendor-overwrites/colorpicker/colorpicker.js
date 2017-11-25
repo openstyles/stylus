@@ -34,6 +34,8 @@ CodeMirror.defineExtension('colorpicker', function () {
   const $hsl = {};
   const $hexLettercase = {};
 
+  const allowInputFocus = !('ontouchstart' in document) || window.innerHeight > 800;
+
   const dragging = {
     saturationPointerPos: {x: 0, y: 0},
     hueKnobPos: 0,
@@ -348,9 +350,9 @@ CodeMirror.defineExtension('colorpicker', function () {
           const inputs = $inputs[currentFormat];
           const lastInput = inputs[inputs.length - 1];
           if (which === 9 && shift && el === inputs[0]) {
-            lastInput.focus();
+            maybeFocus(lastInput);
           } else if (which === 9 && !shift && el === lastInput) {
-            inputs[0].focus();
+            maybeFocus(inputs[0]);
           } else if (which !== 9 && !shift) {
             setFromFormatElement({shift: which === 33 || shift});
           } else {
@@ -456,7 +458,7 @@ CodeMirror.defineExtension('colorpicker', function () {
       }
     }
     $inputGroups[format].dataset.active = '';
-    $inputs[format][0].focus();
+    maybeFocus($inputs[format][0]);
     currentFormat = format;
   }
 
@@ -879,6 +881,12 @@ CodeMirror.defineExtension('colorpicker', function () {
       timerFadeColorPicker = setTimeout(fade, Math.max(0, delay - 500), {fadingStage: 2});
     } else {
       timerCloseColorPicker = setTimeout(hide, 500);
+    }
+  }
+
+  function maybeFocus(el) {
+    if (allowInputFocus) {
+      el.focus();
     }
   }
 
