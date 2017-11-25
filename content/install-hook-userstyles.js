@@ -1,17 +1,15 @@
 'use strict';
 
-const CHROMIUM = chrome.app && /Chromium/.test(navigator.userAgent); // non-Windows Chromium
 const FIREFOX = !chrome.app;
 const VIVALDI = chrome.app && /Vivaldi/.test(navigator.userAgent);
 const OPERA = chrome.app && /OPR/.test(navigator.userAgent);
 
-document.addEventListener('stylishUpdate', onClick);
-document.addEventListener('stylishUpdateChrome', onClick);
-document.addEventListener('stylishUpdateOpera', onClick);
+window.dispatchEvent(new CustomEvent(chrome.runtime.id + '-install'));
+window.addEventListener(chrome.runtime.id + '-install', orphanCheck, true);
 
-document.addEventListener('stylishInstall', onClick);
-document.addEventListener('stylishInstallChrome', onClick);
-document.addEventListener('stylishInstallOpera', onClick);
+['Update', 'Install'].forEach(type =>
+  ['', 'Chrome', 'Opera'].forEach(browser =>
+    document.addEventListener('stylish' + type + browser, onClick)));
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // orphaned content script check
@@ -190,7 +188,7 @@ function sendEvent(type, detail = null) {
 
 
 function onClick(event) {
-  if (onClick.processing || !orphanCheck || !orphanCheck()) {
+  if (onClick.processing) {
     return;
   }
   onClick.processing = true;
@@ -361,27 +359,8 @@ function orphanCheck() {
   }
   // we're orphaned due to an extension update
   // we can detach event listeners
-  document.removeEventListener('stylishUpdate', onClick);
-  document.removeEventListener('stylishUpdateChrome', onClick);
-  document.removeEventListener('stylishUpdateOpera', onClick);
-
-  document.removeEventListener('stylishInstall', onClick);
-  document.removeEventListener('stylishInstallChrome', onClick);
-  document.removeEventListener('stylishInstallOpera', onClick);
-
-  // we can't detach chrome.runtime.onMessage because it's no longer connected internally
-  // we can destroy global functions in this context to free up memory
-  [
-    'checkUpdatability',
-    'getMeta',
-    'getResource',
-    'onDOMready',
-    'onClick',
-    'onInstall',
-    'onUpdate',
-    'orphanCheck',
-    'saveStyleCode',
-    'sendEvent',
-    'styleSectionsEqual',
-  ].forEach(fn => (window[fn] = null));
+  window.removeEventListener(chrome.runtime.id + '-install', orphanCheck, true);
+  ['Update', 'Install'].forEach(type =>
+    ['', 'Chrome', 'Opera'].forEach(browser =>
+      document.addEventListener('stylish' + type + browser, onClick)));
 }
