@@ -139,11 +139,6 @@ label.nobreak input {
   text-decoration: none;
 }
 
-.style-name-link:hover {
-  text-decoration: underline;
-  color: #000;
-}
-
 .applies-to {
   overflow-wrap: break-word;
 }
@@ -195,7 +190,7 @@ summary {
   display: none;
 }
 
-.disabled h2::after {
+.disabled h2::after, .entry.usercss .style-name-link::after {
   font-weight: normal;
   font-size: 11px;
   text-transform: lowercase;
@@ -203,6 +198,12 @@ summary {
   padding: 2px 5px 3px;
   border-radius: 4px;
   margin-left: 1ex;
+}
+
+.entry.usercss .style-name-link::after {
+  content: "usercss";
+  background-color: #0295a2;
+  color: white;
 }
 
 .disabled {
@@ -242,6 +243,17 @@ summary {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
+.newUI .entry:hover .style-name::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, hsla(180, 100%, 25%, 0.16), transparent);
+  pointer-events: none;
+}
+
 .newUI .entry > * {
   padding: .9rem 0 1rem;
   margin: 0;
@@ -261,6 +273,7 @@ summary {
   text-indent: -2em;
   padding-left: 3em;
   padding-right: 40px;
+  position: relative;
 }
 
 .newUI .homepage .svg-icon {
