@@ -595,6 +595,10 @@ fieldset > *:not(legend) {
   align-items: center;
 }
 
+fieldset > label:hover {
+  background-color: hsla(0, 0%, 50%, .1);
+}
+
 #filters {
   border: 1px solid transparent;
 }
