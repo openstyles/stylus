@@ -115,6 +115,7 @@ var usercss = (() => {
         };
       }
     }
+    return {text: '', index: 0};
   }
 
   function parseWord(state, error = 'invalid word') {
