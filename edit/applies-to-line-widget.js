@@ -217,25 +217,40 @@ function createAppliesToLineWidget(cm) {
     }
 
     // decide search range
-    const fromIndex = widgets[i] ? cm.indexFromPos({line: widgets[i].line.lineNo(), ch: 0}) : 0;
-    const toIndex = cm.indexFromPos({line: widgets[j] ? widgets[j].line.lineNo() : toLine + 1, ch: 0});
+    const fromPos = {line: widgets[i] ? widgets[i].line.lineNo() : 0, ch: 0};
+    const toPos = {line: widgets[j] ? widgets[j].line.lineNo() : toLine + 1, ch: 0};
+
+    // calc index->pos lookup table
+    let line = 0;
+    let index = 0;
+    let fromIndex, toIndex;
+    const lineIndexes = [index];
+    cm.doc.iter(({text}) => {
+      fromIndex = line === fromPos.line ? index : fromIndex;
+      lineIndexes.push((index += text.length + 1));
+      line++;
+      toIndex = line >= toPos.line ? index : toIndex;
+      return toIndex;
+    });
 
     // splice
     i = Math.max(0, i);
-    widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i)));
+    widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i), lineIndexes));
 
     fromLine = null;
     toLine = null;
   }
 
-  function *createWidgets(start, end, removed) {
+  function *createWidgets(start, end, removed, lineIndexes) {
     let i = 0;
     let itemHeight;
     for (const section of findAppliesTo(start, end)) {
       while (removed[i] && removed[i].line.lineNo() < section.pos.line) {
         clearWidget(removed[i++]);
       }
-      setupMarkers(section);
+      for (const a of section.applies) {
+        setupApplyMarkers(a, lineIndexes);
+      }
       if (removed[i] && removed[i].line.lineNo() === section.pos.line) {
         // reuse old widget
         removed[i].section.applies.forEach(apply => {
@@ -278,26 +293,47 @@ function createAppliesToLineWidget(cm) {
     apply.mark.clear();
   }
 
-  function setupMarkers({applies}) {
-    applies.forEach(setupApplyMarkers);
-  }
-
-  function setupApplyMarkers(apply) {
+  function setupApplyMarkers(apply, lineIndexes) {
     apply.type.mark = cm.markText(
-      cm.posFromIndex(apply.type.start),
-      cm.posFromIndex(apply.type.end),
+      posFromIndex(cm, apply.type.start, lineIndexes),
+      posFromIndex(cm, apply.type.end, lineIndexes),
       {clearWhenEmpty: false}
     );
     apply.value.mark = cm.markText(
-      cm.posFromIndex(apply.value.start),
-      cm.posFromIndex(apply.value.end),
+      posFromIndex(cm, apply.value.start, lineIndexes),
+      posFromIndex(cm, apply.value.end, lineIndexes),
       {clearWhenEmpty: false}
     );
     apply.mark = cm.markText(
-      cm.posFromIndex(apply.start),
-      cm.posFromIndex(apply.end),
+      posFromIndex(cm, apply.start, lineIndexes),
+      posFromIndex(cm, apply.end, lineIndexes),
       {clearWhenEmpty: false}
     );
+  }
+
+  function posFromIndex(cm, index, lineIndexes) {
+    if (!lineIndexes) {
+      return cm.posFromIndex(index);
+    }
+    let line = lineIndexes.prev || 0;
+    const prev = lineIndexes[line];
+    const next = lineIndexes[line + 1];
+    if (prev <= index && index < next) {
+      return {line, ch: index - prev};
+    }
+    let a = index < prev ? 0 : line;
+    let b = index < next ? line + 1 : lineIndexes.length - 1;
+    while (a < b - 1) {
+      const mid = (a + b) >> 1;
+      if (lineIndexes[mid] < index) {
+        a = mid;
+      } else {
+        b = mid;
+      }
+    }
+    line = lineIndexes[b] > index ? a : b;
+    Object.defineProperty(lineIndexes, 'prev', {value: line, configurable: true});
+    return {line, ch: index - lineIndexes[line]};
   }
 
   function buildElement({applies}) {
