@@ -100,7 +100,7 @@ browserCommands = {
 
 // *************************************************************************
 // context menus
-contextMenus = Object.assign({
+contextMenus = {
   'show-badge': {
     title: 'menuShowBadge',
     click: info => prefs.set(info.menuItemId, info.checked),
@@ -113,22 +113,27 @@ contextMenus = Object.assign({
     title: 'openStylesManager',
     click: browserCommands.openManage,
   },
-}, !FIREFOX && prefs.get('editor.contextDelete') && {
   'editor.contextDelete': {
+    presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
     title: 'editDeleteText',
     type: 'normal',
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      sendMessage(tab.id, {method: 'editDeleteText'});
+      sendMessage({tabId: tab.id, method: 'editDeleteText'});
     },
   }
-});
+};
 
 if (chrome.contextMenus) {
-  const createContextMenus = (ids = Object.keys(contextMenus)) => {
+  const createContextMenus = ids => {
     for (const id of ids) {
-      const item = Object.assign({id}, contextMenus[id]);
+      let item = contextMenus[id];
+      if (item.presentIf && !item.presentIf()) {
+        continue;
+      }
+      item = Object.assign({id}, item);
+      delete item.presentIf;
       const prefValue = prefs.readOnlyValues[id];
       item.title = chrome.i18n.getMessage(item.title);
       if (!item.type && typeof prefValue === 'boolean') {
@@ -142,20 +147,20 @@ if (chrome.contextMenus) {
       chrome.contextMenus.create(item, ignoreChromeError);
     }
   };
-  createContextMenus();
-  const toggleableIds = Object.keys(contextMenus).filter(key =>
-    typeof prefs.readOnlyValues[key] === 'boolean');
-  prefs.subscribe(toggleableIds, (id, checked) => {
-    if (id === 'editor.contextDelete') {
-      if (checked) {
-        createContextMenus([id]);
-      } else {
-        chrome.contextMenus.remove(id, ignoreChromeError);
-      }
+  const toggleCheckmark = (id, checked) => {
+    chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+  };
+  const togglePresence = (id, checked) => {
+    if (checked) {
+      createContextMenus([id]);
     } else {
-      chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+      chrome.contextMenus.remove(id, ignoreChromeError);
     }
-  });
+  };
+  const keys = Object.keys(contextMenus);
+  prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
+  createContextMenus(keys);
 }
 
 // *************************************************************************
