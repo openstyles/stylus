@@ -1,4 +1,4 @@
-/* global loadScript mozParser semverCompare colorParser */
+/* global loadScript mozParser semverCompare colorParser styleCodeEmpty */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -30,9 +30,10 @@ var usercss = (() => {
           ':root {\n' +
           Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('') +
           '}\n';
-
         for (const section of sections) {
-          section.code = varDef + section.code;
+          if (!styleCodeEmpty(section.code)) {
+            section.code = varDef + section.code;
+          }
         }
       }
     },
