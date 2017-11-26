@@ -139,11 +139,6 @@ label.nobreak input {
   text-decoration: none;
 }
 
-.style-name-link:hover {
-  text-decoration: underline;
-  color: #000;
-}
-
 .applies-to {
   overflow-wrap: break-word;
 }
@@ -195,7 +190,7 @@ summary {
   display: none;
 }
 
-.disabled h2::after {
+.disabled h2::after, .entry.usercss .style-name-link::after {
   font-weight: normal;
   font-size: 11px;
   text-transform: lowercase;
@@ -203,6 +198,12 @@ summary {
   padding: 2px 5px 3px;
   border-radius: 4px;
   margin-left: 1ex;
+}
+
+.entry.usercss .style-name-link::after {
+  content: "usercss";
+  background-color: hsla(180, 100%, 20%, 1);
+  color: white;
 }
 
 .disabled {
