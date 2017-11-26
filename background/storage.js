@@ -424,7 +424,7 @@ function saveStyle(style) {
           return style;
         }
         codeIsUpdated = !existed || 'sections' in style && !styleSectionsEqual(style, oldStyle);
-        style = Object.assign({}, oldStyle, style);
+        style = Object.assign({installDate: Date.now()}, oldStyle, style);
         return write(style, store);
       });
     } else {
