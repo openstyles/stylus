@@ -33,6 +33,11 @@ body {
   }
 }
 
+.firefox body {
+  /* match the default FF theme */
+  background-color: #f9f9fa;
+}
+
 .firefox .chromium-only {
   display: none;
 }
