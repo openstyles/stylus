@@ -9,19 +9,12 @@ function createSourceEditor(style) {
   // a flag for isTouched()
   let hadBeenSaved = false;
 
-  document.documentElement.classList.add('usercss');
-  $('#sections').textContent = '';
   $('#name').disabled = true;
-  $('#mozilla-format-heading').parentNode.remove();
-
+  $('#mozilla-format-container').remove();
+  $('#sections').textContent = '';
   $('#sections').appendChild(
     $element({className: 'single-editor'})
   );
-
-  $('#header').appendChild($element({
-    id: 'footer',
-    appendChild: makeLink('https://github.com/openstyles/stylus/wiki/Usercss', t('externalUsercssDocument'))
-  }));
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
@@ -59,34 +52,8 @@ function createSourceEditor(style) {
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
     const widget = createAppliesToLineWidget(cm);
-    const optionEl = buildOption();
-
-    $('#options').insertBefore(optionEl, $('#options > .option.aligned'));
     widget.toggle(prefs.get(PREF_NAME));
-    prefs.subscribe([PREF_NAME], (key, value) => {
-      widget.toggle(value);
-      optionEl.checked = value;
-    });
-    optionEl.addEventListener('change', e => {
-      prefs.set(PREF_NAME, e.target.checked);
-    });
-
-    function buildOption() {
-      return $element({className: 'option', appendChild: [
-        $element({
-          tag: 'input',
-          type: 'checkbox',
-          id: PREF_NAME,
-          checked: prefs.get(PREF_NAME)
-        }),
-        $element({
-          tag: 'label',
-          htmlFor: PREF_NAME,
-          textContent: ' ' + t('appliesLineWidgetLabel'),
-          title: t('appliesLineWidgetWarning')
-        })
-      ]});
-    }
+    prefs.subscribe([PREF_NAME], (key, value) => widget.toggle(value));
   }
 
   function initLinterSwitch() {
@@ -123,18 +90,27 @@ function createSourceEditor(style) {
       section = mozParser.format(style);
     }
 
-    const sourceCode = `/* ==UserStyle==
-@name New Style - ${Date.now()}
-@namespace github.com/openstyles/stylus
-@version 0.1.0
-@description A new userstyle
-@author Me
-==/UserStyle== */
-
-${section}
-`;
-    dirty.modify('source', '', sourceCode);
-    style.sourceCode = sourceCode;
+    const DEFAULT_CODE = `
+      /* ==UserStyle==
+      @name           ${t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}
+      @namespace      github.com/openstyles/stylus
+      @version        0.1.0
+      @description    A new userstyle
+      @author         Me
+      ==/UserStyle== */
+      
+      ${section}
+    `.replace(/^\s+/gm, '');
+    dirty.clear('source');
+    style.sourceCode = '';
+    BG.chromeSync.getLZValue('usercssTemplate').then(code => {
+      style.sourceCode = code || DEFAULT_CODE;
+      cm.startOperation();
+      cm.setValue(style.sourceCode);
+      cm.clearHistory();
+      cm.markClean();
+      cm.endOperation();
+    });
   }
 
   function initHooks() {
@@ -187,11 +163,10 @@ ${section}
   }
 
   function updateTitle() {
-    // title depends on dirty and style meta
-    if (!style.id) {
-      document.title = t('addStyleTitle');
-    } else {
-      document.title = (dirty.isDirty() ? '* ' : '') + t('editStyleTitle', [style.name]);
+    const newTitle = (dirty.isDirty() ? '* ' : '') +
+      (style.id ? t('editStyleTitle', [style.name]) : t('addStyleTitle'));
+    if (document.title !== newTitle) {
+      document.title = newTitle;
     }
   }
 
@@ -241,6 +216,17 @@ ${section}
         hadBeenSaved = true;
       })
       .catch(err => {
+        if (err.message === t('styleMissingMeta', 'name')) {
+          messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
+            BG.chromeSync.setLZValue('usercssTemplate', style.sourceCode)
+              .then(() => BG.chromeSync.getLZValue('usercssTemplate'))
+              .then(saved => {
+                if (saved !== style.sourceCode) {
+                  messageBox.alert(t('syncStorageErrorSaving'));
+                }
+              }));
+          return;
+        }
         const contents = [String(err)];
         if (Number.isInteger(err.index)) {
           const pos = cm.posFromIndex(err.index);
@@ -250,7 +236,6 @@ ${section}
             textContent: drawLinePointer(pos)
           }));
         }
-        console.error(err);
         messageBox.alert(contents);
       });
 

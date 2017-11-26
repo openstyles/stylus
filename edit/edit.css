@@ -547,6 +547,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   justify-items: normal;
 }
 
+html:not(.usercss) .usercss-only,
+.usercss #mozilla-format-container,
+.usercss #sections > h2 {
+  display: none !important; /* hide during page init */
+}
+
 #sections .single-editor {
   margin: 0;
   padding: 0;
@@ -565,7 +571,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   color: #333;
   transition: color .5s;
   text-decoration-skip: ink;
-  animation: fadein 10s;
 }
 
 #footer a:hover {

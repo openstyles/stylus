@@ -96,6 +96,9 @@ var usercss = (() => {
     }
   };
 
+  const RX_NUMBER = /^-?\d+(\.\d+)?\s*/y;
+  const RX_WHITESPACE = /\s*/y;
+
   function getMetaSource(source) {
     const commentRe = /\/\*[\s\S]*?\*\//g;
     const metaRe = /==userstyle==[\s\S]*?==\/userstyle==/i;
@@ -307,7 +310,8 @@ var usercss = (() => {
   }
 
   function parseNumber(state) {
-    const match = state.slice(state.re.lastIndex).match(/^-?\d+(\.\d+)?\s*/);
+    RX_NUMBER.lastIndex = state.re.lastIndex;
+    const match = RX_NUMBER.exec(state.text);
     if (!match) {
       throw new Error('invalid number');
     }
@@ -316,19 +320,20 @@ var usercss = (() => {
   }
 
   function eatWhitespace(state) {
-    const match = state.text.slice(state.re.lastIndex).match(/\s*/);
-    state.re.lastIndex += match[0].length;
+    RX_WHITESPACE.lastIndex = state.re.lastIndex;
+    state.re.lastIndex += RX_WHITESPACE.exec(state.text)[0].length;
   }
 
   function parseStringToEnd(state) {
-    const match = state.text.slice(state.re.lastIndex).match(/.+/);
-    state.value = unquote(match[0].trim());
-    state.re.lastIndex += match[0].length;
+    const EOL = state.text.indexOf('\n', state.re.lastIndex);
+    const match = state.text.slice(state.re.lastIndex, EOL >= 0 ? EOL : undefined);
+    state.value = unquote(match.trim());
+    state.re.lastIndex += match.length;
   }
 
   function unquote(s) {
     const q = s[0];
-    if (q === s[s.length - 1] && /['"`]/.test(q)) {
+    if (q === s[s.length - 1] && (q === '"' || q === "'")) {
       // http://www.json.org/
       return s.slice(1, -1).replace(
         new RegExp(`\\\\([${q}\\\\/bfnrt]|u[0-9a-fA-F]{4})`, 'g'),
@@ -367,6 +372,10 @@ var usercss = (() => {
         state.key = match[1];
         if (!(state.key in METAS)) {
           continue;
+        }
+        if (text[re.lastIndex - 1] === '\n') {
+          // an empty value should point to EOL
+          re.lastIndex--;
         }
         if (state.key === 'var' || state.key === 'advanced') {
           if (state.key === 'advanced') {

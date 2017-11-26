@@ -1,4 +1,4 @@
-/* global regExpTester debounce messageBox */
+/* global regExpTester debounce messageBox CodeMirror */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
@@ -56,13 +56,19 @@ function createAppliesToLineWidget(cm) {
     styleVariables.remove();
   }
 
-  function onChange(cm, {from, to, origin}) {
+  function onChange(cm, event) {
+    const {from, to, origin} = event;
     if (origin === 'appliesTo') {
       return;
     }
+    const lastChanged = CodeMirror.changeEnd(event).line;
     fromLine = Math.min(fromLine === null ? from.line : fromLine, from.line);
-    toLine = Math.max(toLine === null ? to.line : toLine, to.line);
-    debounce(update, THROTTLE_DELAY);
+    toLine = Math.max(toLine === null ? lastChanged : toLine, to.line);
+    if (origin === 'setValue') {
+      update();
+    } else {
+      debounce(update, THROTTLE_DELAY);
+    }
   }
 
   function onOptionChange(cm, option) {
@@ -82,9 +88,9 @@ function createAppliesToLineWidget(cm) {
   function update() {
     const changed = {fromLine, toLine};
     fromLine = Math.max(fromLine || 0, cm.display.viewFrom);
-    toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo);
+    toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo || toLine);
     const visible = {fromLine, toLine};
-    if (fromLine >= cm.display.viewFrom && toLine <= cm.display.viewTo) {
+    if (fromLine >= cm.display.viewFrom && toLine <= (cm.display.viewTo || toLine)) {
       cm.operation(doUpdate);
     }
     if (changed.fromLine !== visible.fromLine || changed.toLine !== visible.toLine) {

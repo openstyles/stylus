@@ -8,14 +8,6 @@
 /* global initColorpicker */
 'use strict';
 
-onDOMready()
-  .then(() => Promise.all([
-    initColorpicker(),
-    initCollapsibles(),
-    initHooksCommon(),
-  ]))
-  .then(init);
-
 let styleId = null;
 // only the actually dirty items here
 let dirty = {};
@@ -31,24 +23,49 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-// if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
-onBackgroundReady();
+Promise.all([
+  initStyleData().then(style => {
+    styleId = style.id;
+    sessionStorage.justEditedStyleId = styleId;
+    // we set "usercss" class on <html> when <body> is empty
+    // so there'll be no flickering of the elements that depend on it
+    if (isUsercss(style)) {
+      document.documentElement.classList.add('usercss');
+    }
+    // strip URL parameters when invoked for a non-existent id
+    if (!styleId) {
+      history.replaceState({}, document.title, location.pathname);
+    }
+    return style;
+  }),
+  onDOMready(),
+  onBackgroundReady(),
+])
+.then(([style]) => Promise.all([
+  style,
+  initColorpicker(),
+  initCollapsibles(),
+  initHooksCommon(),
+]))
+.then(([style]) => {
+  initCodeMirror();
+
+  const usercss = isUsercss(style);
+  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
+  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+
+  if (usercss) {
+    editor = createSourceEditor(style);
+  } else {
+    initWithSectionStyle({style});
+  }
+});
 
 // make querySelectorAll enumeration code readable
 ['forEach', 'some', 'indexOf', 'map'].forEach(method => {
   NodeList.prototype[method] = Array.prototype[method];
 });
-
-// Chrome pre-34
-Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
-
-// Chrome pre-41 polyfill
-Element.prototype.closest = Element.prototype.closest || function (selector) {
-  let e;
-  // eslint-disable-next-line no-empty
-  for (e = this; e && !e.matches(selector); e = e.parentElement) {}
-  return e;
-};
 
 // eslint-disable-next-line no-extend-native
 Array.prototype.rotate = function (amount) {
@@ -1317,54 +1334,25 @@ function beautify(event) {
   }
 }
 
-function init() {
-  initCodeMirror();
-  getStyle().then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-
-    if (!isUsercss(style)) {
-      initWithSectionStyle({style});
-    } else {
-      editor = createSourceEditor(style);
-    }
+function initStyleData() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const createEmptyStyle = () => ({
+    id: null,
+    name: '',
+    enabled: true,
+    sections: [
+      Object.assign({code: ''},
+        ...Object.keys(CssToProperty)
+          .map(name => ({
+            [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
+          }))
+      )
+    ],
   });
-
-  function getStyle() {
-    const id = new URLSearchParams(location.search).get('id');
-    if (!id) {
-      // match should be 2 - one for the whole thing, one for the parentheses
-      // This is an add
-      $('#heading').textContent = t('addStyleTitle');
-      return Promise.resolve(createEmptyStyle());
-    }
-    $('#heading').textContent = t('editStyleHeading');
-    // This is an edit
-    return getStylesSafe({id}).then(styles => {
-      let style = styles[0];
-      if (!style) {
-        style = createEmptyStyle();
-        history.replaceState({}, document.title, location.pathname);
-      }
-      return style;
-    });
-  }
-
-  function createEmptyStyle() {
-    const params = new URLSearchParams(location.search);
-    const style = {
-      id: null,
-      name: '',
-      enabled: true,
-      sections: [{code: ''}]
-    };
-    for (const i in CssToProperty) {
-      if (params.get(i)) {
-        style.sections[0][CssToProperty[i]] = [params.get(i)];
-      }
-    }
-    return style;
-  }
+  return !id ?
+    Promise.resolve(createEmptyStyle()) :
+    getStylesSafe({id}).then(([style]) => style || createEmptyStyle());
 }
 
 function setStyleMeta(style) {

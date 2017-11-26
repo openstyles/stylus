@@ -143,7 +143,7 @@
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" i18n-placeholder="styleMissingName" spellcheck="false">
+          <input id="name" class="style-contributor" spellcheck="false">
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">
@@ -160,7 +160,7 @@
           <button id="beautify" i18n-text="styleBeautify"></button>
           <a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
         </div>
-        <div>
+        <div id="mozilla-format-container">
           <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
           <button id="from-mozilla" i18n-text="importLabel"></button>
           <button id="to-mozilla" i18n-text="exportLabel"></button>
@@ -198,6 +198,12 @@
               <use xlink:href="#svg-icon-settings"/>
             </svg>
           </span>
+        </div>
+        <div class="option usercss-only">
+          <input id="editor.appliesToLineWidget" type="checkbox">
+          <label for="editor.appliesToLineWidget"
+                 i18n-text="appliesLineWidgetLabel"
+                 i18n-title="appliesLineWidgetWarning"></label>
         </div>
         <div class="option aligned">
           <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
@@ -246,6 +252,11 @@
         </summary>
         <div></div>
       </details>
+      <div id="footer">
+        <a href="https://github.com/openstyles/stylus/wiki/Usercss"
+           i18n-text="externalUsercssDocument"
+           target="_blank"></a>
+      </div>
     </div>
     <section id="sections">
       <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
