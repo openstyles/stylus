@@ -12,6 +12,7 @@ onDOMready()
   .then(() => Promise.all([
     initColorpicker(),
     initCollapsibles(),
+    initHooksCommon(),
   ]))
   .then(init);
 
@@ -1480,7 +1481,6 @@ function initHooks() {
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
 
-  initCollapsibles();
   initLint();
 
   if (!FIREFOX) {
@@ -1493,14 +1493,33 @@ function initHooks() {
     ).forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
 
-  window.addEventListener('load', function _() {
-    window.removeEventListener('load', _);
-    window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-  });
-
   setupGlobalSearch();
 }
 
+// common for usercss and classic
+function initHooksCommon() {
+  showKeyInSaveButtonTooltip();
+  prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
+  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+
+  function showKeyInSaveButtonTooltip(prefName, value) {
+    $('#save-button').title = findKeyForCommand('save', value);
+  }
+  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
+    const map = CodeMirror.keyMap[mapName];
+    let key = Object.keys(map).find(k => map[k] === command);
+    if (key) {
+      return key;
+    }
+    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
+      key = ft && findKeyForCommand(command, ft);
+      if (key) {
+        return key;
+      }
+    }
+    return '';
+  }
+}
 
 function toggleContextMenuDelete(event) {
   if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
