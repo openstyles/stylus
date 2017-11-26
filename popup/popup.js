@@ -1,4 +1,3 @@
-/* global retranslateCSS */
 'use strict';
 
 let installed;
@@ -267,6 +266,11 @@ function createStyleElement({
   });
   styleName.checkbox = checkbox;
   styleName.appendChild(document.createTextNode(style.name));
+  setTimeout((el = styleName) => {
+    if (el.scrollWidth > el.clientWidth + 1) {
+      el.title = el.textContent;
+    }
+  });
 
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;
