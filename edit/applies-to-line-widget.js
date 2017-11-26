@@ -169,6 +169,7 @@ function createAppliesToLineWidget(cm) {
 
   function *createWidgets(start, end, removed) {
     let i = 0;
+    let itemHeight;
     for (const section of findAppliesTo(start, end)) {
       while (removed[i] && removed[i].line.lineNo() < section.pos.line) {
         clearWidget(removed[i++]);
@@ -182,7 +183,9 @@ function createAppliesToLineWidget(cm) {
         });
         removed[i].section = section;
         const newNode = buildElement(section);
-        removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
+        if (removed[i].node.parentNode) {
+          removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
+        }
         removed[i].node = newNode;
         removed[i].changed();
         yield removed[i];
@@ -193,9 +196,11 @@ function createAppliesToLineWidget(cm) {
       const widget = cm.addLineWidget(section.pos.line, buildElement(section), {
         coverGutter: true,
         noHScroll: true,
-        above: true
+        above: true,
+        height: itemHeight ? section.applies.length * itemHeight : undefined,
       });
       widget.section = section;
+      itemHeight = itemHeight || widget.node.offsetHeight;
       yield widget;
     }
     removed.slice(i).forEach(clearWidget);
