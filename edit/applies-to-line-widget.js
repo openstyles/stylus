@@ -276,7 +276,7 @@ function createAppliesToLineWidget(cm) {
         height: itemHeight ? section.applies.length * itemHeight : undefined,
       });
       widget.section = section;
-      itemHeight = itemHeight || widget.node.offsetHeight;
+      itemHeight = itemHeight || widget.node.offsetHeight / (section.applies.length || 1);
       yield widget;
     }
     removed.slice(i).forEach(clearWidget);
