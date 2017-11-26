@@ -8,6 +8,7 @@
 function createSourceEditor(style) {
   // a flag for isTouched()
   let hadBeenSaved = false;
+  let savedGeneration = 0;
 
   $('#name').disabled = true;
   $('#mozilla-format-container').remove();
@@ -18,9 +19,8 @@ function createSourceEditor(style) {
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
-    const DIRTY = dirty.isDirty();
-    document.body.classList.toggle('dirty', DIRTY);
-    $('#save-button').disabled = !DIRTY;
+    document.body.classList.toggle('dirty', dirty.isDirty());
+    $('#save-button').disabled = !dirty.isDirty();
     updateTitle();
   });
 
@@ -41,6 +41,7 @@ function createSourceEditor(style) {
     cm.setValue(style.sourceCode);
     cm.clearHistory();
     cm.markClean();
+    savedGeneration = cm.changeGeneration();
 
     initHooks();
     initAppliesToLineWidget();
@@ -101,7 +102,7 @@ function createSourceEditor(style) {
       
       ${section}
     `.replace(/^\s+/gm, '');
-    dirty.clear('source');
+    dirty.clear('sourceGeneration');
     style.sourceCode = '';
     BG.chromeSync.getLZValue('usercssTemplate').then(code => {
       style.sourceCode = code || DEFAULT_CODE;
@@ -110,45 +111,35 @@ function createSourceEditor(style) {
       cm.clearHistory();
       cm.markClean();
       cm.endOperation();
+      dirty.clear('sourceGeneration');
+      savedGeneration = cm.changeGeneration();
     });
   }
 
   function initHooks() {
-    // sidebar commands
     $('#save-button').onclick = save;
     $('#beautify').onclick = beautify;
     $('#keyMap-help').onclick = showKeyMapHelp;
     $('#toggle-style-help').onclick = showToggleStyleHelp;
     $('#cancel-button').onclick = goBackToManage;
 
-    // enable
-    $('#enabled').onchange = e => {
-      const value = e.target.checked;
+    $('#enabled').onchange = function () {
+      const value = this.checked;
       dirty.modify('enabled', style.enabled, value);
       style.enabled = value;
     };
 
-    // source
-    cm.on('change', () => {
-      const value = cm.getValue();
-      dirty.modify('source', style.sourceCode, value);
-      style.sourceCode = value;
-
+    cm.on('changes', () => {
+      dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
       updateLintReportIfEnabled(cm);
     });
 
-    // hotkeyRerouter
-    cm.on('focus', () => {
-      hotkeyRerouter.setState(false);
-    });
-    cm.on('blur', () => {
-      hotkeyRerouter.setState(true);
-    });
+    cm.on('focus', () => hotkeyRerouter.setState(false));
+    cm.on('blur', () => hotkeyRerouter.setState(true));
 
-    // autocomplete
-    if (prefs.get('editor.autocompleteOnTyping')) {
-      setupAutocomplete(cm);
-    }
+    //if (prefs.get('editor.autocompleteOnTyping')) {
+    //  setupAutocomplete(cm);
+    //}
   }
 
   function updateMeta() {
@@ -170,25 +161,36 @@ function createSourceEditor(style) {
     }
   }
 
-  function replaceStyle(newStyle) {
-    if (!style.id && newStyle.id) {
-      history.replaceState({}, '', `?id=${newStyle.id}`);
+  function replaceStyle(newStyle, codeIsUpdated) {
+    const sameCode = newStyle.sourceCode === cm.getValue();
+    hadBeenSaved = sameCode;
+    if (sameCode) {
+      savedGeneration = cm.changeGeneration();
+      dirty.clear('sourceGeneration');
     }
-    style = deepCopy(newStyle);
-    updateMeta();
-    if (style.sourceCode !== cm.getValue()) {
-      const cursor = cm.getCursor();
-      cm.setValue(style.sourceCode);
-      cm.setCursor(cursor);
+    if (codeIsUpdated === false || sameCode) {
+      style.enabled = newStyle.enabled;
+      dirty.clear('enabled');
+      updateMeta();
+      return;
     }
-    dirty.clear();
-    hadBeenSaved = false;
-  }
-
-  function setStyleDirty(newStyle) {
-    dirty.clear();
-    dirty.modify('source', newStyle.sourceCode, style.sourceCode);
-    dirty.modify('enabled', newStyle.enabled, style.enabled);
+    Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
+      if (!ok) {
+        return;
+      }
+      if (!style.id && newStyle.id) {
+        history.replaceState({}, '', `?id=${newStyle.id}`);
+      }
+      style = deepCopy(newStyle);
+      updateMeta();
+      if (!sameCode) {
+        const cursor = cm.getCursor();
+        cm.setValue(style.sourceCode);
+        cm.setCursor(cursor);
+        savedGeneration = cm.changeGeneration();
+      }
+      dirty.clear();
+    });
   }
 
   function toggleStyle() {
@@ -209,12 +211,9 @@ function createSourceEditor(style) {
         reason: 'editSave',
         id: style.id,
         enabled: style.enabled,
-        sourceCode: style.sourceCode
+        sourceCode: cm.getValue(),
       }))
       .then(replaceStyle)
-      .then(() => {
-        hadBeenSaved = true;
-      })
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
@@ -257,16 +256,8 @@ function createSourceEditor(style) {
     return dirty.isDirty() || hadBeenSaved;
   }
 
-  function replaceMeta(newStyle) {
-    style.enabled = newStyle.enabled;
-    dirty.clear('enabled');
-    updateMeta();
-  }
-
   return {
     replaceStyle,
-    replaceMeta,
-    setStyleDirty,
     save,
     toggleStyle,
     isDirty: dirty.isDirty,

@@ -1939,46 +1939,20 @@ function showCodeMirrorPopup(title, html, options) {
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-function replaceStyle(request) {
-  const codeIsUpdated = request.codeIsUpdated !== false;
-  if (!isUsercss(request.style)) {
-    initWithSectionStyle(request);
-    return;
-  }
-  if (!codeIsUpdated) {
-    editor.replaceMeta(request.style);
-    return;
-  }
-
-  askDiscardChanges()
-    .then(result => {
-      if (result) {
-        editor.replaceStyle(request.style);
-      } else {
-        editor.setStyleDirty(request.style);
-      }
-    });
-
-  function askDiscardChanges() {
-    if (!editor.isTouched()) {
-      return Promise.resolve(true);
-    }
-    return messageBox.confirm(t('styleUpdateDiscardChanges'));
-  }
-}
-
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId === request.style.id && request.reason !== 'editSave' && request.reason !== 'config') {
+      if (styleId && styleId === request.style.id &&
+          request.reason !== 'editSave' &&
+          request.reason !== 'config') {
+        // code-less style from notifyAllTabs
         if ((request.style.sections[0] || {}).code === null) {
-          // the code-less style came from notifyAllTabs
-          onBackgroundReady().then(() => {
-            request.style = BG.cachedStyles.byId.get(request.style.id);
-            replaceStyle(request);
-          });
+          request.style = BG.cachedStyles.byId.get(request.style.id);
+        }
+        if (isUsercss(request.style)) {
+          editor.replaceStyle(request.style, request.codeIsUpdated);
         } else {
-          replaceStyle(request);
+          initWithSectionStyle(request);
         }
       }
       break;

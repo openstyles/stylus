@@ -113,9 +113,16 @@
     uso: 'css'
   };
 
-  CodeMirror.defineExtension('setPreprocessor', function (preprocessor) {
+  CodeMirror.defineExtension('setPreprocessor', function (preprocessor, force = false) {
     const mode = MODE[preprocessor] || 'css';
-    return loadScript(mode !== 'css' && `/vendor/codemirror/mode/${mode}/${mode}.js`).then(() => {
+    if ((this.doc.mode || {}).name === mode && !force) {
+      return Promise.resolve();
+    }
+    if (mode === 'css') {
+      this.setOption('mode', mode);
+      return Promise.resolve();
+    }
+    return loadScript(`/vendor/codemirror/mode/${mode}/${mode}.js`).then(() => {
       this.setOption('mode', mode);
     });
   });
