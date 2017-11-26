@@ -151,7 +151,7 @@ function createAppliesToLineWidget(cm) {
 
     // decide search range
     const fromIndex = widgets[i] ? cm.indexFromPos({line: widgets[i].line.lineNo(), ch: 0}) : 0;
-    const toIndex = cm.indexFromPos({line: (widgets[j] ? widgets[j].line.lineNo() : toLine) + 1, ch: 0});
+    const toIndex = cm.indexFromPos({line: widgets[j] ? widgets[j].line.lineNo() : toLine + 1, ch: 0});
 
     // splice
     i = Math.max(0, i);
