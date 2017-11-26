@@ -278,7 +278,7 @@ Object.assign(handleEvent, {
 
   ENTRY_ROUTES: {
     '.checker, .enable, .disable': 'toggle',
-    '.style-name-link': 'edit',
+    '.style-name': 'edit',
     '.homepage': 'external',
     '.check-update': 'check',
     '.update': 'update',
@@ -331,7 +331,7 @@ Object.assign(handleEvent, {
     const openWindow = left && shift && !ctrl;
     const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const url = event.target.closest('[href]').href;
+    const url = $('[href]', event.target.closest('.entry')).href;
     if (openWindow || openBackgroundTab || openForegroundTab) {
       if (chrome.windows && openWindow) {
         chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));

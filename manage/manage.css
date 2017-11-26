@@ -262,6 +262,23 @@ summary {
   text-indent: -2em;
   padding-left: 3em;
   padding-right: 40px;
+  position: relative;
+  cursor: pointer;
+}
+
+.newUI .entry .style-name:hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+  pointer-events: none;
+}
+
+.newUI .style-name:hover .style-name-link {
+  color: hsla(180, 100%, 15%, 1);
 }
 
 .newUI .homepage .svg-icon {
