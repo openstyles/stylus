@@ -98,8 +98,7 @@ input[type="checkbox"] {
 h2 .svg-icon, label .svg-icon {
   margin-top: -1px;
 }
-.svg-icon.info,
-.svg-icon.settings {
+.svg-icon.info {
   width: 14px;
   height: 16px;
 }

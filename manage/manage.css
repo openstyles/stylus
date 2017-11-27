@@ -100,20 +100,22 @@ label.nobreak input {
   transition: fill .5s;
   width: 20px;
   height: 20px;
+  fill: #666;
 }
 
 .svg-icon:hover {
   fill: #000;
 }
 
-.svg-icon {
-  fill: #666;
-}
-
 .svg-icon.info {
   width: 14px;
   height: 16px;
   margin-left: .5ex;
+}
+
+.svg-icon.configure {
+  width: 16px;
+  height: 16px;
 }
 
 .homepage {

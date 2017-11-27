@@ -29,11 +29,13 @@ function configDialog(style) {
       },
       t('confirmCancel')
     ]
-  }).then(result => {
-    if (result.button !== 0 && !result.enter) {
-      return;
+  }).then(({button, enter}) => {
+    if (button !== 1) {
+      colorpicker.hide();
     }
-    return form.getVars();
+    if (button === 0 || enter) {
+      return form.getVars();
+    }
   });
 
   function buildConfigForm() {
