@@ -766,6 +766,29 @@ fieldset select {
   margin-right: 4px;
 }
 
+.cm-colorview::before,
+.color-swatch {
+  width: 60px !important;
+  height: 20px !important;
+}
+
+.cm-colorview::before {
+  margin: 1px !important;
+}
+
+.color-swatch {
+  position: absolute;
+  border: 1px solid gray;
+  margin-top: -22px;
+  cursor: pointer;
+}
+
+.colorpicker-popup {
+  z-index: 2147483647 !important;
+  border: none !important;
+  box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;

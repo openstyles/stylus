@@ -478,6 +478,9 @@
     }
 
     static popupOnChange(newColor) {
+      if (!newColor) {
+        return;
+      }
       const {cm, line, ch, embedderCallback} = this;
       const to = {line, ch: ch + this.prevColor.length};
       if (cm.getRange(this, to) !== newColor) {

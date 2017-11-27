@@ -1,7 +1,7 @@
 /* global CodeMirror */
 'use strict';
 
-CodeMirror.defineExtension('colorpicker', function () {
+(window.CodeMirror ? window.CodeMirror.prototype : window).colorpicker = function () {
   const cm = this;
   const CSS_PREFIX = 'colorpicker-';
   const HUE_COLORS = [
@@ -188,18 +188,6 @@ CodeMirror.defineExtension('colorpicker', function () {
     if (!initialized) {
       init();
     }
-    $root.style = `
-      display: block;
-      position: fixed;
-      left: -10000px;
-      top: -10000px;
-    `.replace(/;/g, '!important;');
-    $root.classList.add(CSS_PREFIX + 'theme-' +
-      (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme : guessTheme()));
-    document.body.appendChild($root);
-
-    shown = true;
-
     HSV = {};
     currentFormat = '';
     options = PUBLIC_API.options = opt;
@@ -209,8 +197,23 @@ CodeMirror.defineExtension('colorpicker', function () {
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     opt.hideDelay = Math.max(0, opt.hideDelay) || 2000;
 
+    if (!isNaN(options.left) && !isNaN(options.top)) {
+      $root.style = `
+        display: block;
+        position: fixed;
+      `.replace(/;/g, '!important;');
+      reposition();
+    }
+
+    $root.classList.add(CSS_PREFIX + 'theme-' +
+      (opt.theme === 'dark' || opt.theme === 'light' ?
+        opt.theme :
+        guessTheme()));
+    document.body.appendChild($root);
+
+    shown = true;
+
     registerEvents();
-    reposition();
     setFromColor(opt.color);
     setFromHexLettercaseElement();
   }
@@ -601,9 +604,9 @@ CodeMirror.defineExtension('colorpicker', function () {
       switch (e.which) {
         case 13:
           setFromInputs({});
-          colorpickerCallback();
         // fallthrough to 27
         case 27:
+          colorpickerCallback(e.which === 27 ? '' : undefined);
           e.preventDefault();
           e.stopPropagation();
           hide();
@@ -622,6 +625,10 @@ CodeMirror.defineExtension('colorpicker', function () {
   //region Event utilities
 
   function colorpickerCallback(colorString = currentColorToString()) {
+    // Esc pressed?
+    if (!colorString) {
+      options.callback('');
+    }
     if (
       userActivity &&
       $inputs[currentFormat].every(el => el.checkValidity()) &&
@@ -914,7 +921,8 @@ CodeMirror.defineExtension('colorpicker', function () {
 
   function guessTheme() {
     const realColor = {r: 255, g: 255, b: 255, a: 1};
-    const start = ((cm.display.renderedView || [])[0] || {}).text || cm.display.lineDiv;
+    const start = options.guessBrightness ||
+      ((cm.display.renderedView || [])[0] || {}).text || cm.display.lineDiv;
     for (let el = start; el; el = el.parentElement) {
       const bgColor = getComputedStyle(el).backgroundColor;
       const [r, g, b, a = 255] = bgColor.match(/\d+/g).map(Number);
@@ -953,4 +961,4 @@ CodeMirror.defineExtension('colorpicker', function () {
   }
 
   //endregion
-});
+};

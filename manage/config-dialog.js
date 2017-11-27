@@ -1,8 +1,9 @@
-/* global colorParser messageBox makeLink */
+/* global messageBox makeLink */
 'use strict';
 
 function configDialog(style) {
   const form = buildConfigForm();
+  const colorpicker = window.colorpicker();
 
   return messageBox({
     title: `${style.name} v${style.usercssData.version}`,
@@ -34,7 +35,7 @@ function configDialog(style) {
       colorpicker.hide();
     }
     if (button === 0 || enter) {
-      return form.getVars();
+    return form.getVars();
     }
   });
 
@@ -46,25 +47,14 @@ function configDialog(style) {
       let appendChild;
       switch (va.type) {
         case 'color':
-          va.inputColor = $element({tag: 'input', type: 'color'});
-          va.inputAlpha = $element({
-            tag: 'input',
-            type: 'range',
-            min: 0,
-            max: 1,
-            title: chrome.i18n.getMessage('alphaChannel'),
-            step: 'any'
-          });
-          va.inputColor.onchange = va.inputAlpha.oninput = () => {
-            va.dirty = true;
-            const color = colorParser.parse(va.inputColor.value);
-            color.a = Number(va.inputAlpha.value);
-            va.value = colorParser.format(color);
-            va.inputColor.style.opacity = color.a;
-          };
-          appendChild = [
-            $element({appendChild: [va.inputColor, va.inputAlpha]})
-          ];
+          appendChild = [$element({
+            className: 'cm-colorview',
+            appendChild: va.inputColor = $element({
+              va,
+              className: 'color-swatch',
+              onclick: onColorClicked,
+            })
+          })];
           break;
 
         case 'checkbox':
@@ -119,15 +109,10 @@ function configDialog(style) {
     function drawValues() {
       for (const key of Object.keys(vars)) {
         const va = vars[key];
-        const value = va.value === null || va.value === undefined ?
-          va.default : va.value;
-
+        const useDefault = va.value === null || va.value === undefined;
+        const value = useDefault ? va.default : va.value;
         if (va.type === 'color') {
-          const color = colorParser.parse(value);
-          va.inputAlpha.value = color.a;
-          va.inputColor.style.opacity = color.a;
-          delete color.a;
-          va.inputColor.value = colorParser.formatHex(color);
+          va.inputColor.style.backgroundColor = value;
         } else if (va.type === 'checkbox') {
           va.input.checked = Number(value);
         } else {
@@ -147,6 +132,30 @@ function configDialog(style) {
 
     function getVars() {
       return vars;
+    }
+
+    function onColorClicked() {
+      window.removeEventListener('keydown', messageBox.listeners.key, true);
+      const box = $('#message-box-contents');
+      colorpicker.show({
+        color: this.va.value || this.va.default,
+        top: this.getBoundingClientRect().bottom - 5,
+        left: box.getBoundingClientRect().left - 360,
+        hideDelay: 1e6,
+        guessBrightness: box,
+        callback: newColor => {
+          if (newColor) {
+            this.va.dirty = true;
+            this.va.value = newColor;
+            this.style.backgroundColor = newColor;
+          }
+          setTimeout(() => {
+            if (!$('.colorpicker-popup')) {
+              window.addEventListener('keydown', messageBox.listeners.key, true);
+            }
+          });
+        },
+      });
     }
 
     return {
