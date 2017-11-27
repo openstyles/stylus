@@ -53,15 +53,16 @@ function configDialog(style) {
       const bgva = bgVars[va.name];
       let error;
       if (!bgva) {
-        error = `${va.name}: deleted`;
+        error = 'deleted';
+        delete styleVars[va.name];
       } else
       if (bgva.type !== va.type) {
-        error = `${va.name}: type '${va.type}' != '${bgva.type}'`;
+        error = ['type ', '*' + va.type, ' != ', '*' + bgva.type];
       } else
       if ((va.type === 'select' || va.type === 'dropdown') &&
           va.value !== null && va.value !== undefined &&
           bgva.options.every(o => o.name !== va.value)) {
-        error = `${va.name}: '${va.value}' not in the updated '${va.type}' list`;
+        error = `'${va.value}' not in the updated '${va.type}' list`;
       } else if (!va.dirty) {
         continue;
       } else {
@@ -69,16 +70,19 @@ function configDialog(style) {
         numValid++;
         continue;
       }
-      invalid.push(error);
-      delete styleVars[va.name];
+      invalid.push(['*' + va.name, ': ', ...error].map(e =>
+        e[0] === '*' && $element({tag: 'b', textContent: e.slice(1)}) || e));
+      if (bgva) {
+        styleVars[va.name].value = deepCopy(bgva);
+      }
     }
     if (invalid.length) {
       messageBox.alert([
         $element({textContent: t('usercssConfigIncomplete'), style: 'max-width: 34em'}),
         $element({
           tag: 'ol',
-          style: 'text-align: left; font-weight: bold;',
-          appendChild: invalid.map(s => $element({tag: 'li', textContent: s})),
+          style: 'text-align: left',
+          appendChild: invalid.map(msg => $element({tag: 'li', appendChild: msg})),
         }),
       ]);
     }
