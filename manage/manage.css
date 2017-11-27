@@ -15,7 +15,7 @@ body {
   height: 100%;
 }
 
-a {
+a, .disabled a:hover {
   color: #000;
   transition: color .5s;
   text-decoration-skip: ink;
@@ -218,8 +218,10 @@ summary {
   color: white;
 }
 
-.disabled {
+.disabled h2 .style-name-link,
+.disabled .applies-to {
   opacity: 0.5;
+  font-weight: normal;
 }
 
 .disabled .disable {
@@ -240,11 +242,6 @@ summary {
 
 .newUI .disabled {
   opacity: 1;
-}
-
-.newUI .disabled .style-name,
-.newUI .disabled .applies-to {
-  opacity: .5;
 }
 
 .newUI .entry {
@@ -289,7 +286,7 @@ summary {
   pointer-events: none;
 }
 
-.newUI .style-name:hover .style-name-link {
+.newUI .entry.enabled .style-name:hover .style-name-link {
   color: hsla(180, 100%, 15%, 1);
 }
 
