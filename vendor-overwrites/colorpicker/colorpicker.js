@@ -520,57 +520,39 @@
   }
 
   function onSaturationMouseDown(event) {
-    if (event.button === 0) {
+    if (captureMouse(event, 'saturation')) {
       setFromSaturationElement(event);
-      dragging.saturation = true;
-      captureMouse();
     }
   }
 
   function onSaturationMouseUp(event) {
-    if (event.button === 0) {
-      dragging.saturation = false;
-      releaseMouse();
-    }
+    releaseMouse(event, 'saturation');
   }
 
   function onHueKnobMouseDown(event) {
-    if (event.button === 0) {
-      dragging.hue = true;
-      captureMouse();
-    }
+    captureMouse(event, 'hue');
   }
 
   function onOpacityKnobMouseDown(event) {
-    if (event.button === 0) {
-      dragging.opacity = true;
-      captureMouse();
-    }
+    captureMouse(event, 'opacity');
   }
 
   function onHueMouseDown(event) {
-    if (event.button === 0) {
-      dragging.hue = true;
+    if (captureMouse(event, 'hue')) {
       setFromHueElement(event);
-      captureMouse();
     }
   }
 
   function onOpacityMouseDown(event) {
-    if (event.button === 0) {
-      dragging.opacity = true;
+    if (captureMouse(event, 'opacity')) {
       setFromOpacityElement(event);
-      captureMouse();
     }
   }
 
   function onMouseUp(event) {
-    if (event.button === 0) {
-      releaseMouse();
-      dragging.saturation = dragging.hue = dragging.opacity = false;
-      if (!event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
-        hide();
-      }
+    if (releaseMouse(event, ['saturation', 'hue', 'opacity']) &&
+        !event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
+      hide();
     }
   }
 
@@ -640,16 +622,36 @@
     }
   }
 
-  function captureMouse() {
+  function captureMouse({button}, mode) {
+    if (button !== 0) {
+      return;
+    }
     document.addEventListener('mouseup', onMouseUp);
     document.addEventListener('mousemove', onMouseMove);
+    if (!mode) {
+      return;
+    }
+    for (const m of (Array.isArray(mode) ? mode : [mode])) {
+      dragging[m] = true;
+    }
     userActivity = performance.now();
+    return true;
   }
 
-  function releaseMouse() {
+  function releaseMouse(event, mode) {
+    if (event && event.button !== 0) {
+      return;
+    }
     document.removeEventListener('mouseup', onMouseUp);
     document.removeEventListener('mousemove', onMouseMove);
+    if (!mode) {
+      return;
+    }
+    for (const m of (Array.isArray(mode) ? mode : [mode])) {
+      dragging[m] = false;
+    }
     userActivity = performance.now();
+    return true;
   }
 
   function getTouchPosition(event) {
