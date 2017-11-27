@@ -298,7 +298,8 @@
 
   function setFromHueElement(event) {
     const {left, width} = getScreenBounds($hue);
-    const currentX = event ? getTouchPosition(event).clientX : left + width * (HSV.h / 360);
+    const currentX = event ? getTouchPosition(event).clientX :
+      left + width * constrainHue(HSV.h) / 360;
     const normalizedH = constrain(0, 1, (currentX - left) / width);
     const x = dragging.hueKnobPos = width * normalizedH;
     $hueKnob.style.left = (x - Math.round($hueKnob.offsetWidth / 2)) + 'px';
@@ -472,7 +473,7 @@
     $satPointer.style.top = (y - 5) + 'px';
     dragging.saturationPointerPos = {x, y};
 
-    const hueX = $hue.offsetWidth * (HSV.h / 360);
+    const hueX = $hue.offsetWidth * constrain(0, 1, HSV.h / 360);
     $hueKnob.style.left = (hueX - 7.5) + 'px';
     dragging.hueKnobPos = hueX;
 
@@ -741,6 +742,12 @@
     }
   }
 
+  function constrainHue(h) {
+    return h < 0 ? h % 360 + 360 :
+      h > 360 ? h % 360 :
+        h;
+  }
+
   function RGBtoHSV({r, g, b, a}) {
     r /= 255;
     g /= 255;
@@ -755,10 +762,7 @@
       MaxC === g ? 60 * (((b - r) / DeltaC) + 2) :
       MaxC === b ? 60 * (((r - g) / DeltaC) + 4) :
       0;
-    h =
-      h < 0 ? h % 360 + 360 :
-      h > 360 ? h % 360 :
-      h;
+    h = constrainHue(h);
     return {
       h,
       s: MaxC === 0 ? 0 : DeltaC / MaxC,
@@ -768,9 +772,7 @@
   }
 
   function HSVtoRGB({h, s, v}) {
-    if (h === 360) {
-      h = 0;
-    }
+    h = constrainHue(h) % 360;
     const C = s * v;
     const X = C * (1 - Math.abs((h / 60) % 2 - 1));
     const m = v - C;
@@ -791,7 +793,7 @@
   function HSLtoHSV({h, s, l, a}) {
     const t = s * (l < 50 ? l : 100 - l) / 100;
     return {
-      h,
+      h: constrainHue(h),
       s: t + l ? 200 * t / (t + l) / 100 : 0,
       v: (t + l) / 100,
       a,
@@ -802,7 +804,7 @@
     const l = (2 - s) * v / 2;
     const t = l < .5 ? l * 2 : 2 - l * 2;
     return {
-      h: Math.round(h),
+      h: Math.round(constrainHue(h)),
       s: Math.round(t ? s * v / t * 100 : 0),
       l: Math.round(l * 100),
     };
@@ -954,7 +956,9 @@
 
   function parseAs(el, parser) {
     const num = parser(el.value);
-    if (!isNaN(num)) {
+    if (!isNaN(num) &&
+        (!el.min || num >= parseFloat(el.min)) &&
+        (!el.max || num <= parseFloat(el.max))) {
       el.value = num;
       return true;
     }
