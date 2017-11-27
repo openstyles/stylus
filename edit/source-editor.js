@@ -244,13 +244,20 @@ function createSourceEditor(style) {
     function drawLinePointer(pos) {
       const SIZE = 60;
       const line = cm.getLine(pos.line);
+      const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
       const pointer = ' '.repeat(pos.ch) + '^';
       const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
       const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
       const leftPad = start !== 0 ? '...' : '';
       const rightPad = end !== line.length ? '...' : '';
-      return leftPad + line.slice(start, end) + rightPad + '\n' +
-        ' '.repeat(leftPad.length) + pointer.slice(start, end);
+      return (
+        leftPad +
+        line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
+        rightPad +
+        '\n' +
+        ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
+        pointer.slice(start, end)
+      );
     }
   }
 

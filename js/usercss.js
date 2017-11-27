@@ -96,8 +96,11 @@ var usercss = (() => {
     }
   };
 
-  const RX_NUMBER = /^-?\d+(\.\d+)?\s*/y;
+  const RX_NUMBER = /-?\d+(\.\d+)?\s*/y;
   const RX_WHITESPACE = /\s*/y;
+  const RX_WORD = /([\w-]+)\s*/y;
+  const RX_STRING_BACKTICK = /(`(?:\\`|[\s\S])*?`)\s*/y;
+  const RX_STRING_QUOTED = /((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/y;
 
   function getMetaSource(source) {
     const commentRe = /\/\*[\s\S]*?\*\//g;
@@ -119,9 +122,10 @@ var usercss = (() => {
   }
 
   function parseWord(state, error = 'invalid word') {
-    const match = state.text.slice(state.re.lastIndex).match(/^([\w-]+)\s*/);
+    RX_WORD.lastIndex = state.re.lastIndex;
+    const match = RX_WORD.exec(state.text);
     if (!match) {
-      throw new Error(error);
+      throw new Error((state.errorPrefix || '') + error);
     }
     state.value = match[1];
     state.re.lastIndex += match[0].length;
@@ -139,6 +143,7 @@ var usercss = (() => {
 
     parseWord(state, 'missing type');
     result.type = state.type = state.value;
+
     if (!META_VARS.includes(state.type)) {
       throw new Error(`unknown type: ${state.type}`);
     }
@@ -149,52 +154,69 @@ var usercss = (() => {
     parseString(state);
     result.label = state.value;
 
-    if (state.type === 'checkbox') {
-      const match = state.text.slice(state.re.lastIndex).match(/([01])\s+/);
-      if (!match) {
-        throw new Error('value must be 0 or 1');
-      }
-      state.re.lastIndex += match[0].length;
-      result.default = match[1];
-    } else if (state.type === 'select' || (state.type === 'image' && state.key === 'var')) {
-      parseJSONValue(state);
-      if (Array.isArray(state.value)) {
-        result.options = state.value.map(text => createOption(text));
-      } else {
-        result.options = Object.keys(state.value).map(k => createOption(k, state.value[k]));
-      }
-      result.default = result.options[0].name;
-    } else if (state.type === 'dropdown' || state.type === 'image') {
-      if (state.text[state.re.lastIndex] !== '{') {
-        throw new Error('no open {');
-      }
-      result.options = [];
-      state.re.lastIndex++;
-      while (state.text[state.re.lastIndex] !== '}') {
-        const option = {};
+    const {re, type, text} = state;
 
-        parseStringUnquoted(state);
-        option.name = state.value;
-
-        parseString(state);
-        option.label = state.value;
-
-        if (state.type === 'dropdown') {
-          parseEOT(state);
-        } else {
-          parseString(state);
+    switch (type === 'image' && state.key === 'var' ? '@image@var' : type) {
+      case 'checkbox': {
+        const match = text.slice(re.lastIndex).match(/([01])\s+/);
+        if (!match) {
+          throw new Error('value must be 0 or 1');
         }
-        option.value = state.value;
-
-        result.options.push(option);
+        re.lastIndex += match[0].length;
+        result.default = match[1];
+        break;
       }
-      state.re.lastIndex++;
-      eatWhitespace(state);
-      result.default = result.options[0].name;
-    } else {
-      // text, color
-      parseStringToEnd(state);
-      result.default = state.value;
+
+      case 'select':
+      case '@image@var': {
+        state.errorPrefix = 'Invalid JSON: ';
+        parseJSONValue(state);
+        state.errorPrefix = '';
+        if (Array.isArray(state.value)) {
+          result.options = state.value.map(text => createOption(text));
+        } else {
+          result.options = Object.keys(state.value).map(k => createOption(k, state.value[k]));
+        }
+        result.default = (result.options[0] || {}).name || '';
+        break;
+      }
+
+      case 'dropdown':
+      case 'image': {
+        if (text[re.lastIndex] !== '{') {
+          throw new Error('no open {');
+        }
+        result.options = [];
+        re.lastIndex++;
+        while (text[re.lastIndex] !== '}') {
+          const option = {};
+
+          parseStringUnquoted(state);
+          option.name = state.value;
+
+          parseString(state);
+          option.label = state.value;
+
+          if (type === 'dropdown') {
+            parseEOT(state);
+          } else {
+            parseString(state);
+          }
+          option.value = state.value;
+
+          result.options.push(option);
+        }
+        re.lastIndex++;
+        eatWhitespace(state);
+        result.default = result.options[0].name;
+        break;
+      }
+
+      default: {
+        // text, color
+        parseStringToEnd(state);
+        result.default = state.value;
+      }
     }
     state.usercssData.vars[result.name] = result;
     validVar(result);
@@ -228,19 +250,20 @@ var usercss = (() => {
   }
 
   function parseStringUnquoted(state) {
-    const re = /[^"]*/y;
-    re.lastIndex = state.re.lastIndex;
-    const match = state.text.match(re);
-    state.re.lastIndex += match[0].length;
-    state.value = match[0].trim().replace(/\s+/g, '-');
+    const pos = state.re.lastIndex;
+    const nextQuoteOrEOL = posOrEnd(state.text, '"', pos);
+    state.re.lastIndex = Math.max(0, nextQuoteOrEOL - 1);
+    state.value = state.text.slice(pos, nextQuoteOrEOL).trim().replace(/\s+/g, '-');
   }
 
   function parseString(state) {
-    const match = state.text.slice(state.re.lastIndex).match(
-      state.text[state.re.lastIndex] === '`' ?
-        /^(`(?:\\`|[\s\S])*?`)\s*/ :
-        /^((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/
-    );
+    const pos = state.re.lastIndex;
+    const rx = state.text[pos] === '`' ? RX_STRING_BACKTICK : RX_STRING_QUOTED;
+    rx.lastIndex = pos;
+    const match = rx.exec(state.text);
+    if (!match) {
+      throw new Error((state.errorPrefix || '') + 'Quoted string expected');
+    }
     state.re.lastIndex += match[0].length;
     state.value = unquote(match[1]);
   }
@@ -252,59 +275,60 @@ var usercss = (() => {
       'true': true,
       'false': false
     };
-    if (state.text[state.re.lastIndex] === '{') {
+    const {text, re, errorPrefix} = state;
+    if (text[re.lastIndex] === '{') {
       // object
       const obj = {};
-      state.re.lastIndex++;
+      re.lastIndex++;
       eatWhitespace(state);
-      while (state.text[state.re.lastIndex] !== '}') {
+      while (text[re.lastIndex] !== '}') {
         parseString(state);
         const key = state.value;
-        if (state.text[state.re.lastIndex] !== ':') {
-          throw new Error('missing \':\'');
+        if (text[re.lastIndex] !== ':') {
+          throw new Error(`${errorPrefix}missing ':'`);
         }
-        state.re.lastIndex++;
+        re.lastIndex++;
         eatWhitespace(state);
         parseJSONValue(state);
         obj[key] = state.value;
-        if (state.text[state.re.lastIndex] === ',') {
-          state.re.lastIndex++;
+        if (text[re.lastIndex] === ',') {
+          re.lastIndex++;
           eatWhitespace(state);
-        } else if (state.text[state.re.lastIndex] !== '}') {
-          throw new Error('missing \',\' or \'}\'');
+        } else if (text[re.lastIndex] !== '}') {
+          throw new Error(`${errorPrefix}missing ',' or '}'`);
         }
       }
-      state.re.lastIndex++;
+      re.lastIndex++;
       eatWhitespace(state);
       state.value = obj;
-    } else if (state.text[state.re.lastIndex] === '[') {
+    } else if (text[re.lastIndex] === '[') {
       // array
       const arr = [];
-      state.re.lastIndex++;
+      re.lastIndex++;
       eatWhitespace(state);
-      while (state.text[state.re.lastIndex] !== ']') {
+      while (text[re.lastIndex] !== ']') {
         parseJSONValue(state);
         arr.push(state.value);
-        if (state.text[state.re.lastIndex] === ',') {
-          state.re.lastIndex++;
+        if (text[re.lastIndex] === ',') {
+          re.lastIndex++;
           eatWhitespace(state);
-        } else if (state.text[state.re.lastIndex] !== ']') {
-          throw new Error('missing \',\' or \']\'');
+        } else if (text[re.lastIndex] !== ']') {
+          throw new Error(`${errorPrefix}missing ',' or ']'`);
         }
       }
-      state.re.lastIndex++;
+      re.lastIndex++;
       eatWhitespace(state);
       state.value = arr;
-    } else if (state.text[state.re.lastIndex] === '"' || state.text[state.re.lastIndex] === '`') {
+    } else if (text[re.lastIndex] === '"' || text[re.lastIndex] === '`') {
       // string
       parseString(state);
-    } else if (/\d/.test(state.text[state.re.lastIndex])) {
+    } else if (/\d/.test(text[re.lastIndex])) {
       // number
       parseNumber(state);
     } else {
       parseWord(state);
       if (!(state.value in JSON_PRIME)) {
-        throw new Error(`unknown literal '${state.value}'`);
+        throw new Error(`${errorPrefix}unknown literal '${state.value}'`);
       }
       state.value = JSON_PRIME[state.value];
     }
@@ -314,7 +338,7 @@ var usercss = (() => {
     RX_NUMBER.lastIndex = state.re.lastIndex;
     const match = RX_NUMBER.exec(state.text);
     if (!match) {
-      throw new Error('invalid number');
+      throw new Error((state.errorPrefix || '') + 'invalid number');
     }
     state.value = Number(match[0].trim());
     state.re.lastIndex += match[0].length;
@@ -326,8 +350,9 @@ var usercss = (() => {
   }
 
   function parseStringToEnd(state) {
-    const EOL = state.text.indexOf('\n', state.re.lastIndex);
-    const match = state.text.slice(state.re.lastIndex, EOL >= 0 ? EOL : undefined);
+    rewindToEOL(state);
+    const EOL = posOrEnd(state.text, '\n', state.re.lastIndex);
+    const match = state.text.slice(state.re.lastIndex, EOL);
     state.value = unquote(match.trim());
     state.re.lastIndex += match.length;
   }
@@ -347,6 +372,15 @@ var usercss = (() => {
       );
     }
     return s;
+  }
+
+  function posOrEnd(haystack, needle, start) {
+    const pos = haystack.indexOf(needle, start);
+    return pos < 0 ? haystack.length : pos;
+  }
+
+  function rewindToEOL({re, text}) {
+    re.lastIndex -= text[re.lastIndex - 1] === '\n' ? 1 : 0;
   }
 
   function buildMeta(sourceCode) {
@@ -374,10 +408,6 @@ var usercss = (() => {
         if (!(state.key in METAS)) {
           continue;
         }
-        if (text[re.lastIndex - 1] === '\n') {
-          // an empty value should point to EOL
-          re.lastIndex--;
-        }
         if (state.key === 'var' || state.key === 'advanced') {
           if (state.key === 'advanced') {
             state.maybeUSO = true;
@@ -404,7 +434,9 @@ var usercss = (() => {
       doParse();
     } catch (e) {
       // grab additional info
-      e.index = metaIndex + state.re.lastIndex;
+      let pos = state.re.lastIndex;
+      while (pos && /[\s\n]/.test(state.text[--pos])) { /**/ }
+      e.index = metaIndex + pos;
       throw e;
     }
 
