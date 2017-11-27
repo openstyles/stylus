@@ -165,7 +165,7 @@ function $element(opt) {
   const element = ns
     ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
     : document.createElement(tag || 'div');
-  const children = opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild];
+  const children = Array.isArray(opt.appendChild) ? opt.appendChild : [opt.appendChild];
   for (const child of children) {
     if (child) {
       element.appendChild(child instanceof Node ? child : document.createTextNode(child));
