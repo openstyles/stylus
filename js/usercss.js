@@ -334,7 +334,7 @@ var usercss = (() => {
 
   function unquote(s) {
     const q = s[0];
-    if (q === s[s.length - 1] && (q === '"' || q === "'")) {
+    if (q === s[s.length - 1] && (q === '"' || q === "'" || q === '`')) {
       // http://www.json.org/
       return s.slice(1, -1).replace(
         new RegExp(`\\\\([${q}\\\\/bfnrt]|u[0-9a-fA-F]{4})`, 'g'),

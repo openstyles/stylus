@@ -169,7 +169,8 @@ function createSourceEditor(style) {
       dirty.clear('sourceGeneration');
     }
     if (codeIsUpdated === false || sameCode) {
-      style.enabled = newStyle.enabled;
+      // copy changed meta anyway
+      style = deepCopy(newStyle);
       dirty.clear('enabled');
       updateMeta();
       return;
