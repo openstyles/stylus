@@ -59,6 +59,7 @@ function configDialog(style) {
         error = `${va.name}: type '${va.type}' != '${bgva.type}'`;
       } else
       if ((va.type === 'select' || va.type === 'dropdown') &&
+          va.value !== null && va.value !== undefined &&
           bgva.options.every(o => o.name !== va.value)) {
         error = `${va.name}: '${va.value}' not in the updated '${va.type}' list`;
       } else if (!va.dirty) {
