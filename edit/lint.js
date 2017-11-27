@@ -38,6 +38,9 @@ var linterConfig = {
     return CodeMirror.lint && CodeMirror.lint[linter] ? {
       getAnnotations: CodeMirror.lint[linter],
       delay: prefs.get('editor.lintDelay'),
+      onUpdateLinting(annotationsNotSorted, annotations, cm) {
+        updateLintReport(cm, 0);
+      },
     } : false;
   },
 
@@ -64,12 +67,18 @@ var linterConfig = {
 
   findInvalidRules(config, linter = linterConfig.getDefault()) {
     const rules = linter === 'stylelint' ? config.rules : config;
-    const allRules = new Set(
-      linter === 'stylelint'
-      ? Object.keys(stylelint.rules)
-      : CSSLint.getRules().map(rule => rule.id)
-    );
-    return Object.keys(rules).filter(rule => !allRules.has(rule));
+    return new Promise(resolve => {
+      if (linter === 'stylelint') {
+        resolve(Object.keys(stylelint.rules));
+      } else {
+        CSSLint.onmessage = ({data}) =>
+          resolve(data.map(rule => rule.id));
+        CSSLint.postMessage({action: 'getRules'});
+      }
+    }).then(allRules => {
+      allRules = new Set(allRules);
+      return Object.keys(rules).filter(rule => !allRules.has(rule));
+    });
   },
 
   stringify(config = this.getCurrent()) {
@@ -140,7 +149,6 @@ function initLint() {
   $('#lint-help').addEventListener('click', showLintHelp);
   $('#lint').addEventListener('click', gotoLintIssue);
   $('#linter-settings').addEventListener('click', linterConfig.openOnClick);
-  window.addEventListener('resize', resizeLintReport);
 
   updateLinter();
   linterConfig.watchStorage();
@@ -332,22 +340,6 @@ function renderLintReport(someBlockChanged) {
     $('#issue-count').textContent = issueCount;
     container.replaceChild(newContent, content);
     container.classList.toggle('hidden', !newContent.children.length);
-    resizeLintReport();
-  }
-}
-
-function resizeLintReport() {
-  // subtracted value to prevent scrollbar
-  const magicBuffer = 20;
-  const content = $('#lint table');
-  if (content) {
-    const bounds = content.getBoundingClientRect();
-    const newMaxHeight = bounds.bottom <= window.innerHeight ? '' :
-      // subtract out a bit of padding or the vertical scrollbar extends beyond the viewport
-      (window.innerHeight - bounds.top - magicBuffer) + 'px';
-    if (newMaxHeight !== content.style.maxHeight) {
-      content.parentNode.style.maxHeight = newMaxHeight;
-    }
   }
 }
 
@@ -421,7 +413,11 @@ function setupLinterSettingsEvents(popup) {
     const linter = linterConfig.setLinter(event.target.dataset.linter);
     const json = tryJSONparse(popup.codebox.getValue());
     if (json) {
-      const invalid = linterConfig.findInvalidRules(json, linter);
+      showLinterErrorMessage(linter, t('linterJSONError'));
+      popup.codebox.focus();
+      return;
+    }
+    linterConfig.findInvalidRules(json, linter).then(invalid => {
       if (invalid.length) {
         showLinterErrorMessage(linter, [
           t('linterInvalidConfigError'),
@@ -436,10 +432,8 @@ function setupLinterSettingsEvents(popup) {
       linterConfig.save(json);
       linterConfig.showSavedMessage();
       popup.codebox.markClean();
-    } else {
-      showLinterErrorMessage(linter, t('linterJSONError'));
-    }
-    popup.codebox.focus();
+      popup.codebox.focus();
+    });
   });
   $('.reset', popup).addEventListener('click', event => {
     event.preventDefault();
@@ -524,8 +518,8 @@ function loadLinterAssets(name = linterConfig.getDefault()) {
 
   function loadLibrary() {
     if (name === 'csslint' && !window.CSSLint) {
+      window.CSSLint = new Worker('/vendor-overwrites/csslint/csslint-worker.js');
       return loadScript([
-        '/vendor-overwrites/csslint/csslint-worker.js',
         '/edit/lint-defaults-csslint.js'
       ]);
     }

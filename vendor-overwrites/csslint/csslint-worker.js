@@ -10931,31 +10931,40 @@ CSSLint.addFormatter({
     }
 });
 
-/*
- * Web worker for CSSLint
- */
+if (!CSSLint.suppressUsoVarError) {
+  CSSLint.suppressUsoVarError = true;
+  parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
+  const isUsoVar = ({value}) => value.startsWith('/*[[') && value.endsWith(']]*/');
+  CSSLint.addRule({
+    id: 'uso-vars',
+    init(parser, reporter) {
+      parser.addListener('error', function ({message, line, col}) {
+        if (!isUsoVar(this._tokenStream._token)) {
+          const {_lt, _ltIndex: i} = this._tokenStream;
+          if (i < 2 || !_lt.slice(0, i - 1).reverse().some(isUsoVar)) {
+            reporter.error(message, line, col);
+          }
+        }
+      });
+    },
+  });
+}
 
-/* global self, JSON */
+self.onmessage = ({data: {action, code, config}}) => {
+  switch (action) {
 
-// message indicates to start linting
-self.onmessage = function(event) {
-    "use strict";
-    var data = event.data,
-        message,
-        text,
-        ruleset,
-        results;
+    case 'getRules':
+      self.postMessage(CSSLint.getRules());
+      return;
 
-    try {
-        message = JSON.parse(data);
-        text = message.text;
-        ruleset = message.ruleset;
-    } catch (ex) {
-        text = data;
-    }
-
-    results = CSSLint.verify(text, ruleset);
-
-    // Not all browsers support structured clone, so JSON stringify results
-    self.postMessage(JSON.stringify(results));
+    case 'verify':
+      Object.defineProperty(config, 'errors', {get: () => 0, set: () => 0});
+      config['uso-vars'] = 1;
+      self.postMessage(CSSLint.verify(code, config).messages.map(m => {
+        // the functions are non-tranferable and we need only an id
+        m.rule = {id: m.rule.id};
+        return m;
+      }));
+      return;
+  }
 };
