@@ -336,7 +336,8 @@ function acmeEventListener(event) {
   let value = el.type === 'checkbox' ? el.checked : el.value;
   switch (option) {
     case 'tabSize':
-      CodeMirror.setOption('indentUnit', Number(value));
+      value = Number(value);
+      CodeMirror.setOption('indentUnit', value);
       break;
     case 'theme': {
       const themeLink = $('#cm-theme');
