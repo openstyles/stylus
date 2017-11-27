@@ -194,7 +194,7 @@ function createStyleElement({style, name}) {
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
-  if (shouldShowConfig() && newUI.enabled) {
+  if (style.usercssData && Object.keys(style.usercssData.vars).length > 0 && newUI.enabled) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
@@ -203,10 +203,6 @@ function createStyleElement({style, name}) {
   createStyleTargetsElement({entry, style, postponeFavicons: name});
 
   return entry;
-
-  function shouldShowConfig() {
-    return style.usercssData && Object.keys(style.usercssData.vars).length > 0;
-  }
 }
 
 
@@ -285,24 +281,6 @@ Object.assign(handleEvent, {
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
     '.configure-usercss': 'config'
-  },
-
-  config(event, {styleMeta: style}) {
-    configDialog(style).then(vars => {
-      if (!vars) {
-        return;
-      }
-      const keys = Object.keys(vars).filter(k => vars[k].dirty);
-      if (!keys.length) {
-        return;
-      }
-      style.reason = 'config';
-      for (const key of keys) {
-        style.usercssData.vars[key].value = vars[key].value;
-      }
-      onBackgroundReady()
-        .then(() => BG.usercssHelper.save(style));
-    });
   },
 
   entryClicked(event) {
@@ -406,6 +384,10 @@ Object.assign(handleEvent, {
         delete img.dataset.src;
       }
     }
+  },
+
+  config(event, {styleMeta}) {
+    configDialog(styleMeta);
   },
 });
 

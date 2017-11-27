@@ -973,6 +973,9 @@
   "usercssReplaceTemplateConfirmation": {
     "message": "Replace the default template for new Usercss styles with the current code?"
   },
+  "usercssConfigIncomplete": {
+    "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
+  },
   "versionInvalidOlder": {
     "message": "The version is older than the installed style.",
     "description": "Displayed when the version of style is older than the installed one"

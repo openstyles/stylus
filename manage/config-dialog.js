@@ -2,8 +2,14 @@
 'use strict';
 
 function configDialog(style) {
-  const form = buildConfigForm();
+  const varsHash = deepCopy(style.usercssData.vars) || {};
+  const varNames = Object.keys(varsHash);
+  const vars = varNames.map(name => varsHash[name]);
+  const elements = [];
   const colorpicker = window.colorpicker();
+
+  buildConfigForm();
+  renderValues();
 
   return messageBox({
     title: `${style.name} v${style.usercssData.version}`,
@@ -19,31 +25,67 @@ function configDialog(style) {
       }),
       $element({
         className: 'config-body',
-        appendChild: form.elements
+        appendChild: elements
       })
     ],
     buttons: [
       t('confirmSave'),
       {
         textContent: t('confirmDefault'),
-        onclick: form.useDefault
+        onclick: useDefault
       },
       t('confirmCancel')
     ]
-  }).then(({button, enter}) => {
+  }).then(({button, esc}) => {
     if (button !== 1) {
       colorpicker.hide();
     }
-    if (button === 0 || enter) {
-    return form.getVars();
+    if (button > 0 || esc || !vars.length || !vars.some(va => va.dirty)) {
+      return;
     }
+    style.reason = 'config';
+    const styleVars = style.usercssData.vars;
+    const bgStyle = BG.cachedStyles.byId.get(style.id);
+    const bgVars = bgStyle && (bgStyle.usercssData || {}).vars || {};
+    const invalid = [];
+    let numValid = 0;
+    for (const va of vars) {
+      const bgva = bgVars[va.name];
+      let error;
+      if (!bgva) {
+        error = `${va.name}: deleted`;
+      } else
+      if (bgva.type !== va.type) {
+        error = `${va.name}: type '${va.type}' != '${bgva.type}'`;
+      } else
+      if ((va.type === 'select' || va.type === 'dropdown') &&
+          bgva.options.every(o => o.name !== va.value)) {
+        error = `${va.name}: '${va.value}' not in the updated '${va.type}' list`;
+      } else if (!va.dirty) {
+        continue;
+      } else {
+        styleVars[va.name].value = va.value;
+        numValid++;
+        continue;
+      }
+      invalid.push(error);
+      delete styleVars[va.name];
+    }
+    if (invalid.length) {
+      messageBox.alert([
+        $element({textContent: t('usercssConfigIncomplete'), style: 'max-width: 34em'}),
+        $element({
+          tag: 'ol',
+          style: 'text-align: left; font-weight: bold;',
+          appendChild: invalid.map(s => $element({tag: 'li', textContent: s})),
+        }),
+      ]);
+    }
+    return numValid && BG.usercssHelper.save(style);
   });
 
   function buildConfigForm() {
-    const labels = [];
-    const vars = deepCopy(style.usercssData.vars);
-    for (const key of Object.keys(vars)) {
-      const va = vars[key];
+    for (const va of vars) {
       let appendChild;
       switch (va.type) {
         case 'color':
@@ -52,7 +94,7 @@ function configDialog(style) {
             appendChild: va.inputColor = $element({
               va,
               className: 'color-swatch',
-              onclick: onColorClicked,
+              onclick: showColorpicker,
             })
           })];
           break;
@@ -97,71 +139,69 @@ function configDialog(style) {
           appendChild = [va.input];
           break;
       }
-      appendChild.unshift($element({tag: 'span', appendChild: va.label}));
-      labels.push($element({
+      elements.push($element({
         tag: 'label',
         className: `config-${va.type}`,
-        appendChild
+        appendChild: [
+          $element({tag: 'span', appendChild: va.label}),
+          ...appendChild,
+        ],
       }));
     }
-    drawValues();
+  }
 
-    function drawValues() {
-      for (const key of Object.keys(vars)) {
-        const va = vars[key];
-        const useDefault = va.value === null || va.value === undefined;
-        const value = useDefault ? va.default : va.value;
-        if (va.type === 'color') {
-          va.inputColor.style.backgroundColor = value;
-        } else if (va.type === 'checkbox') {
-          va.input.checked = Number(value);
-        } else {
-          va.input.value = value;
+  function renderValues() {
+    for (const va of vars) {
+      const useDefault = va.value === null || va.value === undefined;
+      const value = useDefault ? va.default : va.value;
+      if (va.type === 'color') {
+        va.inputColor.style.backgroundColor = value;
+        if (colorpicker.options.va === va) {
+          colorpicker.setColor(value);
         }
+      } else if (va.type === 'checkbox') {
+        va.input.checked = Number(value);
+      } else {
+        va.input.value = value;
       }
     }
+  }
 
-    function useDefault() {
-      for (const key of Object.keys(vars)) {
-        const va = vars[key];
-        va.dirty = va.value !== null && va.value !== undefined && va.value !== va.default;
-        va.value = null;
-      }
-      drawValues();
+  function useDefault() {
+    for (const va of vars) {
+      const hasValue = va.value !== null && va.value !== undefined;
+      va.dirty = hasValue && va.value !== va.default;
+      va.value = null;
     }
+    renderValues();
+  }
 
-    function getVars() {
-      return vars;
+  function showColorpicker() {
+    window.removeEventListener('keydown', messageBox.listeners.key, true);
+    const box = $('#message-box-contents');
+    colorpicker.show({
+      va: this.va,
+      color: this.va.value || this.va.default,
+      top: this.getBoundingClientRect().bottom - 5,
+      left: box.getBoundingClientRect().left - 360,
+      hideDelay: 1e6,
+      guessBrightness: box,
+      callback: onColorChanged,
+    });
+  }
+
+  function onColorChanged(newColor) {
+    if (newColor) {
+      this.va.dirty = true;
+      this.va.value = newColor;
+      this.va.inputColor.style.backgroundColor = newColor;
     }
+    debounce(restoreEscInDialog);
+  }
 
-    function onColorClicked() {
-      window.removeEventListener('keydown', messageBox.listeners.key, true);
-      const box = $('#message-box-contents');
-      colorpicker.show({
-        color: this.va.value || this.va.default,
-        top: this.getBoundingClientRect().bottom - 5,
-        left: box.getBoundingClientRect().left - 360,
-        hideDelay: 1e6,
-        guessBrightness: box,
-        callback: newColor => {
-          if (newColor) {
-            this.va.dirty = true;
-            this.va.value = newColor;
-            this.style.backgroundColor = newColor;
-          }
-          setTimeout(() => {
-            if (!$('.colorpicker-popup')) {
-              window.addEventListener('keydown', messageBox.listeners.key, true);
-            }
-          });
-        },
-      });
+  function restoreEscInDialog() {
+    if (!$('.colorpicker-popup') && messageBox.element) {
+      window.addEventListener('keydown', messageBox.listeners.key, true);
     }
-
-    return {
-      elements: labels,
-      useDefault,
-      getVars
-    };
   }
 }
