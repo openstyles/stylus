@@ -189,6 +189,26 @@ function initPopup(url) {
     matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
   }
   writeStyle.appendChild(matchWrapper);
+
+  // hotkeys
+  window.addEventListener('keydown', event => {
+    if (event.ctrlKey || event.altKey || event.metaKey) {
+      return;
+    }
+    const k = event.which;
+    let entry;
+    if (k >= 48 && k <= 57) {
+      entry = installed.children[k === 48 ? 9 : k - 49];
+    } else if (k >= 65 && k <= 90) {
+      const letter = new RegExp('^\\x' + k.toString(16), 'i');
+      entry = [...installed.children].find(entry => letter.test(entry.textContent));
+    }
+    if (!entry) {
+      return;
+    }
+    const target = $(event.shiftKey ? '.style-edit-link' : '.checker', entry);
+    target.dispatchEvent(new MouseEvent('click'));
+  });
 }
 
 
