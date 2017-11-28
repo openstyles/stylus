@@ -198,10 +198,13 @@
 
     updateMeta(style);
 
-    sendMessage({method: 'openEditor', id: style.id});
-
-    if (!liveReload) {
-      chrome.runtime.sendMessage({method: 'closeTab'});
+    if (!liveReload && !prefs.get('openEditInWindow')) {
+      chrome.tabs.update({url: '/edit.html?id=' + style.id});
+    } else {
+      BG.openEditor(style.id);
+      if (!liveReload) {
+        closeCurrentTab();
+      }
     }
 
     window.dispatchEvent(new CustomEvent('installed'));
