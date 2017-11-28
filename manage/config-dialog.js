@@ -105,7 +105,7 @@ function configDialog(style) {
           break;
 
         case 'checkbox':
-          va.input = $element({tag: 'input', type: 'checkbox'});
+          va.input = $element({tag: 'input', type: 'checkbox', className: 'slider'});
           va.input.onchange = () => {
             va.dirty = true;
             va.value = String(Number(va.input.checked));
