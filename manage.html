@@ -162,33 +162,39 @@
     <legend id="filters">
       <span i18n-text="manageFilters"></span><span id="filters-stats"></span>
     </legend>
-    <label>
-      <input id="manage.onlyEnabled" type="checkbox"
-             data-filter=".enabled"
-             data-filter-hide=".disabled">
+	<div class="filter-selection">
+      <label>
+        <input id="manage.onlyEnabled" type="checkbox"
+               data-filter=".enabled"
+               data-filter-hide=".disabled">
+      </label>
       <select id="manage.onlyEnabled.invert">
         <option i18n-text="manageOnlyEnabled" value="false"></option>
         <option i18n-text="manageOnlyDisabled" value="true"></option>
       </select>
-    </label>
-    <label>
-      <input id="manage.onlyLocal" type="checkbox"
-             data-filter=":not(.updatable)"
-             data-filter-hide=".updatable">
+	</div>
+	<div class="filter-selection">
+      <label>
+        <input id="manage.onlyLocal" type="checkbox"
+               data-filter=":not(.updatable)"
+               data-filter-hide=".updatable">
+      </label>
       <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
         <option i18n-text="manageOnlyLocal" value="false"></option>
         <option i18n-text="manageOnlyExternal" value="true"></option>
       </select>
-    </label>
-    <label>
-      <input id="manage.onlyUsercss" type="checkbox"
-             data-filter=".usercss"
-             data-filter-hide=":not(.usercss)">
+	</div>
+	<div class="filter-selection">
+      <label>
+        <input id="manage.onlyUsercss" type="checkbox"
+               data-filter=".usercss"
+               data-filter-hide=":not(.usercss)">
+      </label>
       <select id="manage.onlyUsercss.invert">
         <option i18n-text="manageOnlyUsercss" value="false"></option>
         <option i18n-text="manageOnlyNonUsercss" value="true"></option>
       </select>
-    </label>
+	</div>
     <label id="onlyUpdates" class="hidden">
       <input type="checkbox"
              data-filter=".can-update, .update-problem, .update-done"
