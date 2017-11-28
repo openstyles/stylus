@@ -1336,7 +1336,8 @@ function beautify(event) {
 }
 
 function initStyleData() {
-  const params = new URLSearchParams(location.search);
+  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   const id = params.get('id');
   const createEmptyStyle = () => ({
     id: null,

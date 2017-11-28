@@ -3,7 +3,8 @@
 'use strict';
 
 (() => {
-  const params = new URLSearchParams(location.search);
+  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   let liveReload = false;
   let installed = false;
 

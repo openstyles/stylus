@@ -280,7 +280,8 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
     document.currentScript.remove();
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
-      settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search);
+      // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+      settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search.replace(/^\?/, ''));
       if (!settings) {
         Response.prototype.json = originalResponseJson;
       }
