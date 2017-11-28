@@ -1702,14 +1702,14 @@ function fromMozillaFormat() {
         tag: 'button',
         name: 'import-append',
         textContent: t('importAppendLabel'),
-        title: t('importAppendTooltip'),
+        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
         onclick: doImport,
       }),
       $element({
         tag: 'button',
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
-        title: t('importReplaceTooltip'),
+        title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
       }),
     ]}));
