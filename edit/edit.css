@@ -396,7 +396,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #help-popup.big {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
   max-width: 100%;
-  left: 3rem;
+  left: calc(280px - 3rem);
 }
 #help-popup.big .CodeMirror {
   min-height: 2rem;
@@ -709,6 +709,9 @@ html:not(.usercss) .usercss-only,
   .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
   .usercss #lint:not([open]) + #footer {
     margin-top: -.25em;
+  }
+  #help-popup.big {
+    left: 3rem;
   }
 }
 @media(max-width:500px) {
