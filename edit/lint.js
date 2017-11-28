@@ -430,7 +430,7 @@ function showLinterErrorMessage(title, contents, popup) {
     contents,
     className: 'danger center lint-config',
     buttons: [t('confirmOK')],
-  }).then(() => popup && popup.codebox.focus());
+  }).then(() => popup && popup.codebox && popup.codebox.focus());
 }
 
 function setupLinterPopup(config) {
@@ -514,6 +514,7 @@ function setupLinterPopup(config) {
     if (!json) {
       showLinterErrorMessage(linter, t('linterJSONError'), popup);
       cm.focus();
+      return;
     }
     linterConfig.findInvalidRules(json, linter).then(invalid => {
       if (invalid.length) {
@@ -536,9 +537,7 @@ function setupLinterPopup(config) {
 
   function reset(event) {
     event.preventDefault();
-    if (linterConfig.getName() !== linter) {
-      linterConfig.setLinter(linter);
-    }
+    linterConfig.setLinter(linter);
     cm.setValue(defaultConfig);
     cm.focus();
     updateButtonState();
