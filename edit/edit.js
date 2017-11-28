@@ -1718,6 +1718,7 @@ function fromMozillaFormat() {
   popup.codebox.focus();
   popup.codebox.on('changes', cm => {
     popup.classList.toggle('ready', !cm.isBlank());
+    cm.markClean();
   });
   // overwrite default extraKeys as those are inapplicable in popup context
   popup.codebox.options.extraKeys = {
@@ -1885,15 +1886,18 @@ function showKeyMapHelp() {
   }
 }
 
-function showHelp(title, body) {
+function showHelp(title = '', body) {
   const div = $('#help-popup');
   div.classList.remove('big');
-  $('.contents', div).textContent = '';
-  $('.contents', div).appendChild(typeof body === 'string' ? tHTML(body) : body);
+  const contents = $('.contents', div);
+  contents.textContent = '';
+  if (body) {
+    contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
+  }
   $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {
-    document.addEventListener('keydown', closeHelp);
+    window.addEventListener('keydown', closeHelp, true);
     // avoid chaining on multiple showHelp() calls
     $('.dismiss', div).onclick = closeHelp;
   }
@@ -1902,16 +1906,19 @@ function showHelp(title, body) {
   return div;
 
   function closeHelp(e) {
-    if (
-      !e ||
-      e.type === 'click' ||
-      ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
-    ) {
+    if (!e || e.type === 'click' ||
+        (e.which === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey &&
+          !$('.CodeMirror-hints, #message-box') && !(document.activeElement instanceof HTMLInputElement))) {
+      if (e && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+        messageBox.confirm(t('confirmDiscardChanges')).then(ok => ok && closeHelp());
+        return;
+      }
       div.style.display = '';
-      const contents = $('.contents');
       contents.textContent = '';
       clearTimeout(contents.timer);
-      document.removeEventListener('keydown', closeHelp);
+      window.removeEventListener('keydown', closeHelp, true);
+      window.dispatchEvent(new Event('closeHelp'));
+      (editors.lastActive || editors[0]).focus();
     }
   }
 }

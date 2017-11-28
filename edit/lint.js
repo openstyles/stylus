@@ -1,5 +1,5 @@
 /* global CodeMirror messageBox */
-/* global editors makeSectionVisible showCodeMirrorPopup showHelp */
+/* global editors makeSectionVisible showCodeMirrorPopup showHelp hotkeyRerouter */
 /* global loadScript require CSSLint stylelint */
 /* global makeLink */
 'use strict';
@@ -20,8 +20,16 @@ var linterConfig = {
     csslint: 'editorCSSLintConfig',
     stylelint: 'editorStylelintConfig',
   },
+  worker: {
+    csslint: {path: '/vendor-overwrites/csslint/csslint-worker.js'},
+    stylelint: {path: '/vendor-overwrites/stylelint/stylelint-bundle.min.js'},
+  },
+  allRuleIds: {
+    csslint: null,
+    stylelint: null,
+  },
 
-  getDefault() {
+  getName() {
     // some dirty hacks to override editor.linter getting from prefs
     const linter = prefs.get('editor.linter');
     if (linter && editors[0] && editors[0].getOption('mode') !== 'css') {
@@ -30,11 +38,11 @@ var linterConfig = {
     return linter;
   },
 
-  getCurrent(linter = linterConfig.getDefault()) {
+  getCurrent(linter = linterConfig.getName()) {
     return this.fallbackToDefaults(this[linter] || {});
   },
 
-  getForCodeMirror(linter = linterConfig.getDefault()) {
+  getForCodeMirror(linter = linterConfig.getName()) {
     return CodeMirror.lint && CodeMirror.lint[linter] ? {
       getAnnotations: CodeMirror.lint[linter],
       delay: prefs.get('editor.lintDelay'),
@@ -44,7 +52,7 @@ var linterConfig = {
     } : false;
   },
 
-  fallbackToDefaults(config, linter = linterConfig.getDefault()) {
+  fallbackToDefaults(config, linter = linterConfig.getName()) {
     if (config && Object.keys(config).length) {
       if (linter === 'stylelint') {
         // always use default syntax because we don't expose it in config UI
@@ -56,33 +64,52 @@ var linterConfig = {
     }
   },
 
-  setLinter(linter = linterConfig.getDefault()) {
+  setLinter(linter = linterConfig.getName()) {
     linter = linter.toLowerCase();
     linter = linter === 'csslint' || linter === 'stylelint' ? linter : '';
-    if (linterConfig.getDefault() !== linter) {
+    if (linterConfig.getName() !== linter) {
       prefs.set('editor.linter', linter);
     }
     return linter;
   },
 
-  findInvalidRules(config, linter = linterConfig.getDefault()) {
-    const rules = linter === 'stylelint' ? config.rules : config;
+  invokeWorker(message) {
+    const worker = linterConfig.worker[message.linter || linterConfig.getName()];
+    if (!worker.queue) {
+      worker.queue = [];
+      worker.instance.onmessage = ({data}) => {
+        worker.queue.shift().resolve(data);
+        if (worker.queue.length) {
+          worker.instance.postMessage(worker.queue[0].message);
+        }
+      };
+    }
     return new Promise(resolve => {
-      if (linter === 'stylelint') {
-        resolve(Object.keys(stylelint.rules));
-      } else {
-        CSSLint.onmessage = ({data}) =>
-          resolve(data.map(rule => rule.id));
-        CSSLint.postMessage({action: 'getRules'});
+      worker.queue.push({message, resolve});
+      if (worker.queue.length === 1) {
+        worker.instance.postMessage(message);
       }
-    }).then(allRules => {
-      allRules = new Set(allRules);
-      return Object.keys(rules).filter(rule => !allRules.has(rule));
+    });
+  },
+
+  getAllRuleIds(linter = linterConfig.getName()) {
+    return Promise.resolve(
+      this.allRuleIds[linter] ||
+      this.invokeWorker({linter, action: 'getAllRuleIds'})
+        .then(ids => (this.allRuleIds[linter] = ids.sort()))
+    );
+  },
+
+  findInvalidRules(config, linter = linterConfig.getName()) {
+    return this.getAllRuleIds(linter).then(allRuleIds => {
+      const allRuleIdsSet = new Set(allRuleIds);
+      const rules = linter === 'stylelint' ? config.rules : config;
+      return Object.keys(rules).filter(rule => !allRuleIdsSet.has(rule));
     });
   },
 
   stringify(config = this.getCurrent()) {
-    if (linterConfig.getDefault() === 'stylelint') {
+    if (linterConfig.getName() === 'stylelint') {
       config.syntax = undefined;
     }
     return JSON.stringify(config, null, 2)
@@ -91,7 +118,7 @@ var linterConfig = {
 
   save(config) {
     config = this.fallbackToDefaults(config);
-    const linter = linterConfig.getDefault();
+    const linter = linterConfig.getName();
     this[linter] = config;
     BG.chromeSync.setLZValue(this.storageName[linter], config);
     return config;
@@ -155,7 +182,7 @@ function initLint() {
   prefs.subscribe(['editor.linter'], updateLinter);
 }
 
-function updateLinter({immediately, linter = linterConfig.getDefault()} = {}) {
+function updateLinter({immediately, linter = linterConfig.getName()} = {}) {
   if (!immediately) {
     debounce(updateLinter, 0, {immediately: true, linter});
     return;
@@ -358,17 +385,16 @@ function gotoLintIssue(event) {
 }
 
 function showLintHelp() {
-  const linter = linterConfig.getDefault();
+  const linter = linterConfig.getName();
   const baseUrl = linter === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'
     // some CSSLint rules do not have a url
     : 'https://github.com/CSSLint/csslint/issues/535';
   let headerLink, template;
   if (linter === 'csslint') {
-    const CSSLintRules = CSSLint.getRules();
     headerLink = makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
     template = ruleID => {
-      const rule = CSSLintRules.find(rule => rule.id === ruleID);
+      const rule = linterConfig.allRuleIds.csslint.find(rule => rule.id === ruleID);
       return rule &&
         $element({tag: 'li', appendChild: [
           $element({tag: 'b', appendChild: makeLink(rule.url || baseUrl, rule.name)}),
@@ -398,150 +424,202 @@ function showLintHelp() {
   );
 }
 
-function showLinterErrorMessage(title, contents) {
+function showLinterErrorMessage(title, contents, popup) {
   messageBox({
     title,
     contents,
     className: 'danger center lint-config',
     buttons: [t('confirmOK')],
-  });
-}
-
-function setupLinterSettingsEvents(popup) {
-  $('.save', popup).addEventListener('click', event => {
-    event.preventDefault();
-    const linter = linterConfig.setLinter(event.target.dataset.linter);
-    const json = tryJSONparse(popup.codebox.getValue());
-    if (json) {
-      showLinterErrorMessage(linter, t('linterJSONError'));
-      popup.codebox.focus();
-      return;
-    }
-    linterConfig.findInvalidRules(json, linter).then(invalid => {
-      if (invalid.length) {
-        showLinterErrorMessage(linter, [
-          t('linterInvalidConfigError'),
-          $element({
-            tag: 'ul',
-            appendChild: invalid.map(name =>
-              $element({tag: 'li', textContent: name})),
-          }),
-        ]);
-        return;
-      }
-      linterConfig.save(json);
-      linterConfig.showSavedMessage();
-      popup.codebox.markClean();
-      popup.codebox.focus();
-    });
-  });
-  $('.reset', popup).addEventListener('click', event => {
-    event.preventDefault();
-    const linter = linterConfig.setLinter(event.target.dataset.linter);
-    popup.codebox.setValue(linterConfig.stringify(linterConfig.defaults[linter] || {}));
-    popup.codebox.focus();
-  });
-  $('.cancel', popup).addEventListener('click', event => {
-    event.preventDefault();
-    $('.dismiss').dispatchEvent(new Event('click'));
-  });
+  }).then(() => popup && popup.codebox.focus());
 }
 
 function setupLinterPopup(config) {
-  const linter = linterConfig.getDefault();
+  const linter = linterConfig.getName();
   const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
-
-  function makeButton(className, text, options = {}) {
-    return $element(Object.assign(options, {
-      tag: 'button',
-      className,
-      type: 'button',
-      textContent: t(text),
-      dataset: {linter}
-    }));
-  }
-  function makeLink(url, textContent) {
-    return $element({tag: 'a', target: '_blank', href: url, textContent});
-  }
-
+  const defaultConfig = linterConfig.stringify(linterConfig.defaults[linter] || {});
   const title = t('linterConfigPopupTitle', linterTitle);
-  const contents = $element({
-    appendChild: [
-      $element({
-        tag: 'p',
-        appendChild: [
-          t('linterRulesLink') + ' ',
-          makeLink(
-            linter === 'stylelint'
-              ? 'https://stylelint.io/user-guide/rules/'
-              : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
-            linterTitle
-          ),
-          linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : ''
-        ]
-      }),
-      makeButton('save', 'styleSaveLabel', {disabled: true}),
-      makeButton('cancel', 'confirmCancel'),
-      makeButton('reset', 'genericResetLabel', {title: t('linterResetMessage')}),
-      $element({
-        tag: 'span',
-        className: 'saved-message',
-        textContent: t('genericSavedMessage')
-      })
-    ]
+  const popup = showCodeMirrorPopup(title, null, {
+    lint: false,
+    extraKeys: {'Ctrl-Enter': save},
+    hintOptions: {hint},
   });
-  const popup = showCodeMirrorPopup(title, contents, {lint: false});
-  contents.parentNode.appendChild(contents);
-  popup.codebox.focus();
-  popup.codebox.setValue(config);
-  popup.codebox.clearHistory();
-  popup.codebox.markClean();
-  popup.codebox.on('change', cm => {
-    $('.save', popup).disabled = cm.isClean();
+  $('.contents', popup).appendChild(makeFooter());
+
+  const cm = popup.codebox;
+  cm.focus();
+  cm.setValue(config);
+  cm.clearHistory();
+  cm.markClean();
+  cm.on('changes', updateButtonState);
+  updateButtonState();
+
+  hotkeyRerouter.setState(false);
+  window.addEventListener('closeHelp', function _() {
+    window.removeEventListener('closeHelp', _);
+    hotkeyRerouter.setState(true);
   });
-  setupLinterSettingsEvents(popup);
+
   loadScript([
     '/vendor/codemirror/mode/javascript/javascript.js',
     '/vendor/codemirror/addon/lint/json-lint.js',
     '/vendor/jsonlint/jsonlint.js'
   ]).then(() => {
-    popup.codebox.setOption('mode', 'application/json');
-    popup.codebox.setOption('lint', 'json');
+    cm.setOption('mode', 'application/json');
+    cm.setOption('lint', 'json');
   });
+
+  function makeFooter() {
+    const makeButton = (className, onclick, text, options = {}) =>
+      $element(Object.assign(options, {
+        className,
+        onclick,
+        tag: 'button',
+        type: 'button',
+        textContent: t(text),
+      }));
+    return $element({
+      appendChild: [
+        $element({
+          tag: 'p',
+          appendChild: [
+            t('linterRulesLink') + ' ',
+            $element({
+              tag: 'a',
+              target: '_blank',
+              href: linter === 'stylelint'
+                ? 'https://stylelint.io/user-guide/rules/'
+                : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
+              textContent: linterTitle
+            }),
+            linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : ''
+          ]
+        }),
+        makeButton('save', save, 'styleSaveLabel', {title: 'Ctrl-Enter'}),
+        makeButton('cancel', cancel, 'confirmClose'),
+        makeButton('reset', reset, 'genericResetLabel', {title: t('linterResetMessage')}),
+        $element({
+          tag: 'span',
+          className: 'saved-message',
+          textContent: t('genericSavedMessage')
+        })
+      ]
+    });
+  }
+
+  function save(event) {
+    if (event instanceof Event) {
+      event.preventDefault();
+    }
+    const json = tryJSONparse(cm.getValue());
+    if (!json) {
+      showLinterErrorMessage(linter, t('linterJSONError'), popup);
+      cm.focus();
+    }
+    linterConfig.findInvalidRules(json, linter).then(invalid => {
+      if (invalid.length) {
+        showLinterErrorMessage(linter, [
+          t('linterInvalidConfigError'),
+          $element({tag: 'ul', appendChild: invalid.map(name =>
+            $element({tag: 'li', textContent: name})),
+          }),
+        ], popup);
+        return;
+      }
+      linterConfig.setLinter(linter);
+      linterConfig.save(json);
+      linterConfig.showSavedMessage();
+      cm.markClean();
+      cm.focus();
+      updateButtonState();
+    });
+  }
+
+  function reset(event) {
+    event.preventDefault();
+    if (linterConfig.getName() !== linter) {
+      linterConfig.setLinter(linter);
+    }
+    cm.setValue(defaultConfig);
+    cm.focus();
+    updateButtonState();
+  }
+
+  function cancel(event) {
+    event.preventDefault();
+    $('.dismiss').dispatchEvent(new Event('click'));
+  }
+
+  function updateButtonState() {
+    $('.save', popup).disabled = cm.isClean();
+    $('.reset', popup).disabled = cm.getValue() === defaultConfig;
+    $('.cancel', popup).textContent = t(cm.isClean() ? 'confirmClose' : 'confirmCancel');
+  }
+
+  function hint(cm) {
+    return Promise.all([
+      linterConfig.getAllRuleIds(linter),
+      linter !== 'stylelint' || hint.allOptions ||
+        linterConfig.invokeWorker({action: 'getAllRuleOptions', linter})
+          .then(options => (hint.allOptions = options)),
+    ])
+    .then(([ruleIds, options]) => {
+      const cursor = cm.getCursor();
+      const {start, end, string, type, state: {lexical}} = cm.getTokenAt(cursor);
+      const {line, ch} = cursor;
+
+      const quoted = string.startsWith('"');
+      const leftPart = string.slice(quoted ? 1 : 0, ch - start).trim();
+      const depth = getLexicalDepth(lexical);
+
+      const search = cm.getSearchCursor(/"([-\w]+)"/, {line, ch: start - 1});
+      let [, prevWord] = search.find(true) || [];
+      let words = [];
+
+      if (depth === 1 && linter === 'stylelint') {
+        words = quoted ? ['rules'] : [];
+      } else if ((depth === 1 || depth === 2) && type && type.includes('property')) {
+        words = ruleIds;
+      } else if (depth === 2 || depth === 3 && lexical.type === ']') {
+        words = !quoted ? ['true', 'false', 'null'] :
+          ruleIds.includes(prevWord) && (options[prevWord] || [])[0] || [];
+      } else if (depth === 4 && prevWord === 'severity') {
+        words = ['error', 'warning'];
+      } else if (depth === 4) {
+        words = ['ignore', 'ignoreAtRules', 'except', 'severity'];
+      } else if (depth === 5 && lexical.type === ']' && quoted) {
+        while (prevWord && !ruleIds.includes(prevWord)) {
+          prevWord = (search.find(true) || [])[1];
+        }
+        words = (options[prevWord] || []).slice(-1)[0] || ruleIds;
+      }
+      return {
+        list: words.filter(word => word.startsWith(leftPart)),
+        from: {line, ch: start + (quoted ? 1 : 0)},
+        to: {line, ch: string.endsWith('"') ? end - 1 : end},
+      };
+    });
+  }
+
+  function getLexicalDepth(lexicalState) {
+    let depth = 0;
+    while ((lexicalState = lexicalState.prev)) {
+      depth++;
+    }
+    return depth;
+  }
 }
 
-function loadLinterAssets(name = linterConfig.getDefault()) {
-  if (!name) {
-    return Promise.resolve();
-  }
-  return loadLibrary().then(loadAddon);
-
-  function loadLibrary() {
-    if (name === 'csslint' && !window.CSSLint) {
-      window.CSSLint = new Worker('/vendor-overwrites/csslint/csslint-worker.js');
-      return loadScript([
-        '/edit/lint-defaults-csslint.js'
-      ]);
-    }
-    if (name === 'stylelint' && !window.stylelint) {
-      return loadScript([
-        '/vendor-overwrites/stylelint/stylelint-bundle.min.js',
-        '/edit/lint-defaults-stylelint.js'
-      ]).then(() => (window.stylelint = require('stylelint')));
-    }
-    return Promise.resolve();
-  }
-
-  function loadAddon() {
-    if (CodeMirror.lint) {
-      return;
-    }
-    return loadScript([
+function loadLinterAssets(name = linterConfig.getName()) {
+  const worker = linterConfig.worker[name];
+  return !name || !worker || worker.instance ? Promise.resolve() :
+    loadScript((worker.instance ? [] : [
+      (worker.instance = new Worker(worker.path)),
+      `/edit/lint-defaults-${name}.js`,
+    ]).concat(CodeMirror.lint ? [] : [
       '/vendor/codemirror/addon/lint/lint.css',
       '/msgbox/msgbox.css',
       '/vendor/codemirror/addon/lint/lint.js',
       '/edit/lint-codemirror-helper.js',
       '/msgbox/msgbox.js'
-    ]);
-  }
+    ]));
 }

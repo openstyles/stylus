@@ -70,7 +70,7 @@ function createSourceEditor(style) {
     update();
 
     function update() {
-      linterEl.value = linterConfig.getDefault();
+      linterEl.value = linterConfig.getName();
 
       const cssLintOption = linterEl.querySelector('[value="csslint"]');
       if (cm.getOption('mode') !== 'css') {

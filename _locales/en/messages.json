@@ -215,6 +215,10 @@
     "message": "Use default",
     "description": "'Set to default' button in a confirm dialog"
   },
+  "confirmDiscardChanges": {
+    "message": "Discard the changes?",
+    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+  },
   "confirmSave": {
     "message": "Save",
     "description": "'Save' button in a confirm dialog"

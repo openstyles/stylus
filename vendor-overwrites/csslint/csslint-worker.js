@@ -10950,14 +10950,15 @@ if (!CSSLint.suppressUsoVarError) {
   });
 }
 
-self.onmessage = ({data: {action, code, config}}) => {
+self.onmessage = ({data: {action = 'run', code, config}}) => {
   switch (action) {
 
-    case 'getRules':
-      self.postMessage(CSSLint.getRules());
+    case 'getAllRuleIds':
+      // the functions are non-tranferable and we need only an id
+      self.postMessage(CSSLint.getRules().map(rule => rule.id));
       return;
 
-    case 'verify':
+    case 'run':
       Object.defineProperty(config, 'errors', {get: () => 0, set: () => 0});
       config['uso-vars'] = 1;
       self.postMessage(CSSLint.verify(code, config).messages.map(m => {

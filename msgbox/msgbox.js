@@ -15,6 +15,7 @@ function messageBox({
   if (onshow) {
     onshow(messageBox.element);
   }
+  messageBox.element.focus();
   return new Promise(_resolve => {
     messageBox.resolve = _resolve;
   });

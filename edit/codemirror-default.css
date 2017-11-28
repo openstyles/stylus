@@ -1,3 +1,6 @@
+.CodeMirror-hints {
+  z-index: 999;
+}
 .CodeMirror-hint:hover {
   color: white;
   background: #08f;
