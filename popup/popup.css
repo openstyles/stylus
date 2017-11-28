@@ -82,6 +82,7 @@ body.blocked > DIV {
   padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
+  counter-reset: style-number;
 }
 
 #installed.disabled .style-name {
@@ -112,6 +113,15 @@ body.blocked > DIV {
 
 .entry:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.entry:nth-child(-n+10):before {
+  counter-increment: style-number;
+  content: counter(style-number);
+  position: absolute;
+  right: 5px;
+  margin-top: 1px;
+  color: #aaa;
 }
 
 .entry .style-edit-link {
