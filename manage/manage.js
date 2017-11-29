@@ -59,16 +59,6 @@ function initGlobalEvents() {
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
-  // focus search field on / key
-  document.onkeypress = event => {
-    if ((event.keyCode || event.which) === 47
-    && !event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey
-    && !event.target.matches('[type="text"], [type="search"]')) {
-      event.preventDefault();
-      $('#search').focus();
-    }
-  };
-
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
 

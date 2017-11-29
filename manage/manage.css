@@ -584,6 +584,9 @@ input[id^="manage.newUI"] {
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
 }
+.highlight-quick {
+  animation: highlight .5s;
+}
 
 @keyframes highlight {
   from {

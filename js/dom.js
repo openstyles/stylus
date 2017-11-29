@@ -92,8 +92,11 @@ function onDOMready() {
 function scrollElementIntoView(element) {
   // align to the top/bottom of the visible area if wasn't visible
   const bounds = element.getBoundingClientRect();
-  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
-    element.scrollIntoView(bounds.top < 0);
+  const boundsContainer = element.parentNode.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  if (bounds.top < Math.max(boundsContainer.top, windowHeight / 4) ||
+      bounds.top > Math.min(boundsContainer.bottom, windowHeight) - bounds.height - windowHeight / 4) {
+    window.scrollBy(0, bounds.top - windowHeight / 2 + bounds.height);
   }
 }
 
