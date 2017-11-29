@@ -211,3 +211,35 @@ function makeLink(href = '', content) {
   }
   return $element(opt);
 }
+
+
+function initCollapsibles({bindClickOn = 'h2'} = {}) {
+  const prefMap = {};
+  const elements = $$('details[data-pref]');
+
+  for (const el of elements) {
+    const key = el.dataset.pref;
+    prefMap[key] = el;
+    el.open = prefs.get(key);
+    (bindClickOn && $(bindClickOn, el) || el).addEventListener('click', onClick);
+  }
+
+  prefs.subscribe(Object.keys(prefMap), (key, value) => {
+    const el = prefMap[key];
+    if (el.open !== value) {
+      el.open = value;
+    }
+  });
+
+  function onClick(event) {
+    if (event.target.closest('.intercepts-click')) {
+      event.preventDefault();
+    } else {
+      setTimeout(saveState, 0, event.target.closest('details'));
+    }
+  }
+
+  function saveState(el) {
+    prefs.set(el.dataset.pref, el.open);
+  }
+}

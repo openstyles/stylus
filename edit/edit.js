@@ -6,6 +6,7 @@
 /* global mozParser createSourceEditor */
 /* global closeCurrentTab regExpTester messageBox */
 /* global initColorpicker */
+/* global initCollapsibles */
 'use strict';
 
 let styleId = null;
@@ -1428,28 +1429,6 @@ function addSections(sections, onAdded = () => {}) {
       divs[0].CodeMirror.focus();
     }
   }
-}
-
-function initCollapsibles() {
-  function saveStateDelayed(event) {
-    if (event.target.closest('.intercepts-click')) {
-      event.preventDefault();
-    } else {
-      setTimeout(saveState, 0, event.target.closest('details'));
-    }
-  }
-  function saveState(el) {
-    prefs.set(`editor.${el.id}.expanded`, el.open);
-  }
-  function loadState(key, value) {
-    $('#' + key.split('.')[1]).open = value;
-  }
-  const collapsibles = $$('#header details');
-  for (const el of collapsibles) {
-    el.open = prefs.get(`editor.${el.id}.expanded`);
-    $('h2', el).addEventListener('click', saveStateDelayed);
-  }
-  prefs.subscribe(collapsibles.map(el => `editor.${el.id}.expanded`), loadState);
 }
 
 function initHooks() {

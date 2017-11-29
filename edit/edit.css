@@ -139,7 +139,7 @@ input:invalid {
 }
 #header summary h2 {
   display: inline-block;
-  border-bottom: 2px dotted transparent;
+  border-bottom: 1px dotted transparent;
 }
 #header summary h2:hover {
   border-color: #bbb;

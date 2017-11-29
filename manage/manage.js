@@ -3,6 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
+/* global initCollapsibles */
 'use strict';
 
 let installed;
@@ -73,6 +74,9 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+
+  // the options block
+  initCollapsibles();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -519,10 +523,13 @@ function usePrefsDuringPageLoad() {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         // [naively] assuming each element of addedNodes is a childless element
-        const prefValue = node.id ? prefs.readOnlyValues[node.id] : undefined;
+        const key = node.dataset && node.dataset.pref || node.id;
+        const prefValue = key ? prefs.readOnlyValues[key] : undefined;
         if (prefValue !== undefined) {
           if (node.type === 'checkbox') {
             node.checked = prefValue;
+          } else if (node.localName === 'details') {
+            node.open = prefValue;
           } else {
             node.value = prefValue;
           }

@@ -188,17 +188,17 @@ label.nobreak input {
   margin-left: 1ex;
 }
 
-summary {
+.applies-to-extra-expander {
   font-weight: bold;
   cursor: pointer;
   outline: none;
 }
 
-.applies-to-extra summary {
+.applies-to-extra-expander {
   list-style-type: none; /* for FF, allegedly */
 }
 
-.applies-to-extra summary::-webkit-details-marker {
+.applies-to-extra-expander::-webkit-details-marker {
   display: none;
 }
 
@@ -237,6 +237,30 @@ summary {
 
 .enabled .enable {
   display: none;
+}
+
+/* collapsibles */
+
+#header details:not([open]) h2 {
+  margin-bottom: -.25em;
+}
+
+#header summary {
+  align-items: center;
+  margin-left: -13px;
+  cursor: pointer;
+  outline: none;
+}
+
+#header summary h2 {
+  display: inline-block;
+  border-bottom: 1px dotted transparent;
+  margin-top: .2em;
+  margin-bottom: .4em;
+}
+
+#header summary h2:hover {
+  border-color: #bbb;
 }
 
 /* compact layout */

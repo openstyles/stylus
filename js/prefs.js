@@ -23,6 +23,8 @@ var prefs = new function Prefs() {
     'manage.onlyEnabled.invert': false, // display only disabled styles
     'manage.onlyLocal.invert': false,   // display only externally installed styles
     'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
+    // UI element state: expanded/collapsed
+    'manage.options.expanded': true,
     // the new compact layout doesn't look good on Android yet
     'manage.newUI': !navigator.appVersion.includes('Android'),
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
