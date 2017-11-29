@@ -219,6 +219,7 @@ summary {
 }
 
 .disabled h2 .style-name-link,
+.disabled h2::after,
 .disabled .actions,
 .disabled .applies-to {
   opacity: 0.5;
