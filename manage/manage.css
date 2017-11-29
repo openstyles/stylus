@@ -219,9 +219,15 @@ summary {
 }
 
 .disabled h2 .style-name-link,
+.disabled .actions,
 .disabled .applies-to {
   opacity: 0.5;
   font-weight: normal;
+  transition: opacity .5s .1s;
+}
+
+.disabled:hover .actions {
+  opacity: 1;
 }
 
 .disabled .disable {
@@ -268,7 +274,7 @@ summary {
 .newUI .style-name {
   font-size: 14px;
   font-family: sans-serif;
-  text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 1ex);
+  text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
   padding-left: var(--name-padding-left);
   padding-right: var(--name-padding-right);
   position: relative;
