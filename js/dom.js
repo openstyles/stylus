@@ -89,14 +89,14 @@ function onDOMready() {
 }
 
 
-function scrollElementIntoView(element) {
+function scrollElementIntoView(element, {invalidMarginRatio = .25} = {}) {
   // align to the top/bottom of the visible area if wasn't visible
-  const bounds = element.getBoundingClientRect();
-  const boundsContainer = element.parentNode.getBoundingClientRect();
+  const {top, height} = element.getBoundingClientRect();
+  const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
   const windowHeight = window.innerHeight;
-  if (bounds.top < Math.max(boundsContainer.top, windowHeight / 4) ||
-      bounds.top > Math.min(boundsContainer.bottom, windowHeight) - bounds.height - windowHeight / 4) {
-    window.scrollBy(0, bounds.top - windowHeight / 2 + bounds.height);
+  if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
+      top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
+    window.scrollBy(0, top - windowHeight / 2 + height);
   }
 }
 

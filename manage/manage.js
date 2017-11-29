@@ -406,7 +406,7 @@ function handleUpdate(style, {reason, method} = {}) {
   filterAndAppend({entry});
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
-    scrollElementIntoView(entry);
+    scrollElementIntoView(entry, {invalidMarginRatio: 0});
   }
 
   function handleToggledOrCodeOnly() {
