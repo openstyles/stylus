@@ -215,6 +215,7 @@ function createSourceEditor(style) {
         sourceCode: cm.getValue(),
       }))
       .then(replaceStyle)
+      .then(() => cm.setOption('mode', cm.doc.mode))
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
