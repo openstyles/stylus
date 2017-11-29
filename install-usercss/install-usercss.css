@@ -15,9 +15,13 @@ a:hover {
 }
 
 img.icon,
-svg.icon {
+.svg-icon {
   height: 1.4em;
   vertical-align: middle;
+}
+
+.svg-icon {
+  margin-left: 2px;
 }
 
 .container {
