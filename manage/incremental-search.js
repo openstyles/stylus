@@ -64,7 +64,7 @@ onDOMready().then(() => {
       focusedEntry = found;
       focusedLink = $('.style-name-link', found);
       focusedName = found.styleNameLowerCase;
-      scrollElementIntoView(found);
+      scrollElementIntoView(found, {invalidMarginRatio: .25});
       animateElement(found, {className: 'highlight-quick'});
       resizeTo(focusedLink);
       return true;
