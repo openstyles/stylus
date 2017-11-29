@@ -169,21 +169,16 @@ function createSourceEditor(style) {
       dirty.clear('sourceGeneration');
     }
     if (codeIsUpdated === false || sameCode) {
-      // copy changed meta anyway
-      style = deepCopy(newStyle);
+      updateEnvironment();
       dirty.clear('enabled');
-      updateMeta();
       return;
     }
+
     Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
       if (!ok) {
         return;
       }
-      if (!style.id && newStyle.id) {
-        history.replaceState({}, '', `?id=${newStyle.id}`);
-      }
-      style = deepCopy(newStyle);
-      updateMeta();
+      updateEnvironment();
       if (!sameCode) {
         const cursor = cm.getCursor();
         cm.setValue(style.sourceCode);
@@ -192,6 +187,15 @@ function createSourceEditor(style) {
       }
       dirty.clear();
     });
+
+    function updateEnvironment() {
+      if (style.id !== newStyle.id) {
+        history.replaceState({}, '', `?id=${newStyle.id}`);
+      }
+      sessionStorage.justEditedStyleId = newStyle.id;
+      style = deepCopy(newStyle);
+      updateMeta();
+    }
   }
 
   function toggleStyle() {
