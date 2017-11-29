@@ -1,3 +1,12 @@
+:root {
+  --header-width: 280px;
+  --checkbox-width: 24px;
+  --name-padding-left: 40px;
+  --name-padding-right: 40px;
+  --actions-width: 75px;
+  --onoffswitch-width: 60px;
+}
+
 body {
   margin: 0;
   font: 12px arial, sans-serif;
@@ -31,13 +40,14 @@ select {
 }
 
 #header {
-  width: 280px;
+  width: var(--header-width);
   height: 100vh;
   position: fixed;
   top: 0;
   padding: 15px;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 50px -18px black;
+  box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;
   z-index: 9;
@@ -79,7 +89,7 @@ label.nobreak input {
 
 #installed {
   position: relative;
-  padding-left: 280px;
+  padding-left: var(--header-width);
   box-sizing: border-box;
   width: 100%;
 }
@@ -255,15 +265,15 @@ summary {
 .newUI .checker {
   position: relative;
   top: 1px;
-  margin-right: 1ex;
+  margin: 0 1ex 0 0;
 }
 
 .newUI .style-name {
   font-size: 14px;
   font-family: sans-serif;
-  text-indent: -2em;
-  padding-left: 3em;
-  padding-right: 40px;
+  text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 1ex);
+  padding-left: var(--name-padding-left);
+  padding-right: var(--name-padding-right);
   position: relative;
   cursor: pointer;
 }
@@ -290,7 +300,7 @@ summary {
 }
 
 .newUI .actions {
-  width: 75px;
+  width: var(--actions-width);
   height: 20px;
   white-space: nowrap;
 }
@@ -411,7 +421,7 @@ summary {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: calc(100vw - 280px - 60px - 25vw - 3rem);
+  max-width: calc(100vw - var(--header-width) - var(--actions-width) - var(--name-padding-left) - 25vw - var(--name-padding-right));
   box-sizing: border-box;
   padding-right: 1rem;
   line-height: 18px;
@@ -735,7 +745,7 @@ fieldset select {
 .config-dialog input,
 .config-dialog select,
 .config-dialog .onoffswitch {
-  width: 60px;
+  width: var(--onoffswitch-width);
   margin: 0;
   height: 2em;
   box-sizing: border-box;
@@ -744,7 +754,7 @@ fieldset select {
 
 .config-dialog select {
   width: auto;
-  min-width: 60px;
+  min-width: var(--onoffswitch-width);
   max-width: 124px;
 }
 
@@ -768,7 +778,7 @@ fieldset select {
 
 .cm-colorview::before,
 .color-swatch {
-  width: 60px !important;
+  width: var(--onoffswitch-width) !important;
   height: 20px !important;
 }
 
@@ -890,7 +900,7 @@ fieldset select {
   }
 
   .newUI .target {
-    max-width: calc(50vw - 60px);
+    max-width: calc(50vw - var(--actions-width));
   }
 }
 
