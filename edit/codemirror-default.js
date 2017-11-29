@@ -191,10 +191,8 @@ CodeMirror.hint && (() => {
         string[start + 3] === '[' &&
         string[pos - 3] === ']' &&
         string[pos - 4] === ']') {
-      if (typeof editor !== 'undefined' &&
-          Object.hasOwnProperty.call(
-            editor.getStyle().usercssData.vars,
-            string.slice(start + 4, pos - 4))) {
+      const vars = typeof editor !== 'undefined' && (editor.getStyle().usercssData || {}).vars;
+      if (vars && Object.hasOwnProperty.call(vars, string.slice(start + 4, pos - 4))) {
         token[0] = USO_VALID_VAR;
       } else {
         token[0] = USO_INVALID_VAR;
