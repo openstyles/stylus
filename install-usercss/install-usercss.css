@@ -22,6 +22,16 @@ img.icon,
 
 .svg-icon {
   margin-left: 2px;
+  fill: #000;
+  transition: fill .5s;
+}
+
+a:hover .svg-icon {
+  fill: #666;
+}
+
+input:disabled + span {
+  color: rgb(128, 128, 128);
 }
 
 .container {
