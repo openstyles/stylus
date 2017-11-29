@@ -473,6 +473,13 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 #lint {
   overflow-y: auto;
   overflow-x: hidden;}
+#lint > summary {
+  /* workaround for overflow:auto to show the toggle triangle */
+  position: absolute;
+}
+#lint > div {
+  margin-top: 4em;
+}
 #lint table {
   font-size: 100%;
   border-spacing: 0;

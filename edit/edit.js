@@ -61,6 +61,15 @@ Promise.all([
   } else {
     initWithSectionStyle({style});
   }
+
+  // workaround part2 for the <details> not showing its toggle icon: hide <summary> on scroll
+  $('#lint').addEventListener('scroll', function () {
+    const newOpacity = this.scrollTop === 0 ? '' : '0';
+    const style = this.firstElementChild.style;
+    if (style.opacity !== newOpacity) {
+      style.opacity = newOpacity;
+    }
+  }, {passive: true});
 });
 
 // make querySelectorAll enumeration code readable
