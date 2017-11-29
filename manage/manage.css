@@ -222,7 +222,7 @@ label.nobreak input {
 .disabled h2::after,
 .disabled .actions,
 .disabled .applies-to {
-  opacity: 0.5;
+  opacity: 0.6;
   font-weight: normal;
   transition: opacity .5s .1s;
 }
