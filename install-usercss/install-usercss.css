@@ -159,6 +159,7 @@ h1 small {
   filter: brightness(1.1);
   color: #eee;
   text-shadow: none;
+  box-shadow: .5px .5px 5px rgba(0, 0, 0, .3);
 }
 
 .install.reinstall:after {
