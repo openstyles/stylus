@@ -155,8 +155,10 @@ h1 small {
   background-position: center center;
 }
 
-.install-wrapper:hover {
+.install:hover {
   filter: brightness(1.1);
+  color: #eee;
+  text-shadow: none;
 }
 
 .install.reinstall:after {
