@@ -494,5 +494,6 @@ li {
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .install:after {
     background-image: url(../images/icon/32.png);
+    background-size: 16px 16px;
   }
 }
