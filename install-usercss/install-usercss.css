@@ -489,3 +489,10 @@ li {
     padding-bottom: unset;
   }
 }
+
+/* Retina-specific stuff here */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .install:after {
+    background-image: url(../images/icon/32.png);
+  }
+}
