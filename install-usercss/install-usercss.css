@@ -128,6 +128,7 @@ h1 small {
   border-style: none;
   margin-bottom: 1ex;
   cursor: pointer;
+  box-shadow: .5px .5px 5px rgba(0, 0, 0, .3);
 }
 
 .install:before,
@@ -159,7 +160,6 @@ h1 small {
   filter: brightness(1.1);
   color: #eee;
   text-shadow: none;
-  box-shadow: .5px .5px 5px rgba(0, 0, 0, .3);
 }
 
 .install.reinstall:after {
