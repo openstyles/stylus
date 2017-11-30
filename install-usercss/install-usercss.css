@@ -155,9 +155,8 @@ h1 small {
   background-position: center center;
 }
 
-.install:hover {
-  outline: 1px solid lightgray;
-  outline-offset: 1px;
+.install-wrapper:hover {
+  filter: brightness(1.1);
 }
 
 .install.reinstall:after {
