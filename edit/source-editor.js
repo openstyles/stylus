@@ -59,10 +59,16 @@ function createSourceEditor(style) {
 
   function initLinterSwitch() {
     const linterEl = $('#editor.linter');
+    let prevMode = NaN;
     cm.on('optionChange', (cm, option) => {
       if (option !== 'mode') {
         return;
       }
+      const mode = cm.doc.mode;
+      if (mode === prevMode || mode && mode.name === prevMode) {
+        return;
+      }
+      prevMode = mode;
       updateLinter();
       update();
     });
