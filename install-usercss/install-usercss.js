@@ -111,7 +111,7 @@
 
     $('.header').classList.add('meta-init');
     $('.header').classList.remove('meta-init-error');
-    setTimeout(() => $('.lds-spinner').remove(), 1000);
+    setTimeout(() => $('.lds-spinner') && $('.lds-spinner').remove(), 1000);
 
     showError('');
     requestAnimationFrame(adjustCodeHeight);
