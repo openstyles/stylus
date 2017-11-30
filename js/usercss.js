@@ -102,6 +102,8 @@ var usercss = (() => {
   const RX_STRING_BACKTICK = /(`(?:\\`|[\s\S])*?`)\s*/y;
   const RX_STRING_QUOTED = /((['"])(?:\\\2|[^\n])*?\2|\w+)\s*/y;
 
+  const worker = {};
+
   function getMetaSource(source) {
     const commentRe = /\/\*[\s\S]*?\*\//g;
     const metaRe = /==userstyle==[\s\S]*?==\/userstyle==/i;
@@ -474,25 +476,11 @@ var usercss = (() => {
 
     const sVars = simpleVars(vars);
 
-    return Promise.resolve().then(() => {
-      // preprocess
-      if (builder.preprocess) {
-        return builder.preprocess(sourceCode, sVars);
-      }
-      return sourceCode;
-    }).then(mozStyle =>
-      // moz-parser
-      loadScript('/js/moz-parser.js').then(() =>
-        mozParser.parse(mozStyle).then(sections => {
-          style.sections = sections;
-        })
-      )
-    ).then(() => {
-      // postprocess
-      if (builder.postprocess) {
-        return builder.postprocess(style.sections, sVars);
-      }
-    }).then(() => style);
+    return Promise.resolve(builder.preprocess && builder.preprocess(sourceCode, sVars) || sourceCode)
+      .then(mozStyle => invokeWorker({action: 'parse', code: mozStyle}))
+      .then(sections => (style.sections = sections))
+      .then(() => builder.postprocess && builder.postprocess(style.sections, sVars))
+      .then(() => style);
   }
 
   function simpleVars(vars) {
@@ -577,6 +565,25 @@ var usercss = (() => {
         }
       }
     }
+  }
+
+  function invokeWorker(message) {
+    if (!worker.queue) {
+      worker.instance = new Worker('/vendor-overwrites/csslint/csslint-worker.js');
+      worker.queue = [];
+      worker.instance.onmessage = ({data}) => {
+        worker.queue.shift().resolve(data);
+        if (worker.queue.length) {
+          worker.instance.postMessage(worker.queue[0].message);
+        }
+      };
+    }
+    return new Promise(resolve => {
+      worker.queue.push({message, resolve});
+      if (worker.queue.length === 1) {
+        worker.instance.postMessage(message);
+      }
+    });
   }
 
   return {buildMeta, buildCode, assignVars};

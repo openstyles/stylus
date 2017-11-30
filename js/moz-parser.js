@@ -144,7 +144,7 @@ var mozParser = (() => {
   return {
     // Parse mozilla-format userstyle into sections
     parse(text) {
-      return loadScript('/vendor-overwrites/csslint/csslint-worker.js')
+      return Promise.resolve(self.CSSLint || loadScript('/vendor-overwrites/csslint/csslint-worker.js'))
         .then(() => parseMozFormat(text));
     },
     format(style) {

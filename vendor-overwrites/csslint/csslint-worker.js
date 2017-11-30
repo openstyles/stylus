@@ -10967,5 +10967,12 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
         return m;
       }));
       return;
+
+    case 'parse':
+      if (!self.mozParser) {
+        self.importScripts('/js/moz-parser.js');
+      }
+      mozParser.parse(code)
+        .then(sections => self.postMessage(sections));
   }
 };
