@@ -252,7 +252,7 @@ var usercss = (() => {
   function parseStringUnquoted(state) {
     const pos = state.re.lastIndex;
     const nextQuoteOrEOL = posOrEnd(state.text, '"', pos);
-    state.re.lastIndex = Math.max(0, nextQuoteOrEOL - 1);
+    state.re.lastIndex = nextQuoteOrEOL;
     state.value = state.text.slice(pos, nextQuoteOrEOL).trim().replace(/\s+/g, '-');
   }
 
