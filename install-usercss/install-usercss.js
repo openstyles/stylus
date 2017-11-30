@@ -82,6 +82,7 @@
     document.title = `${installButtonLabel()} ${data.name}`;
 
     $('.install').textContent = installButtonLabel();
+    $('.install').classList.add(installButtonClass());
     $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
     $('.meta-name').textContent = data.name;
     $('.meta-version').textContent = data.version;
@@ -166,6 +167,12 @@
       }
     }
 
+    function installButtonClass() {
+      return installed ? 'installed' :
+        !dup ? 'install' :
+        versionTest > 0 ? 'update' : 'reinstall';
+    }
+
     function installButtonLabel() {
       return t(
         installed ? 'installButtonInstalled' :
@@ -190,8 +197,9 @@
 
     $$('.warning')
       .forEach(el => el.remove());
-    $('.install').disabled = true;
-    $('.install').classList.add('installed');
+    $('button.install').disabled = true;
+    $('button.install').classList.add('installed');
+    $('h2.installed').classList.add('active');
     $('.set-update-url input[type=checkbox]').disabled = true;
     $('.set-update-url').title = style.updateUrl ?
       t('installUpdateFrom', style.updateUrl) : '';

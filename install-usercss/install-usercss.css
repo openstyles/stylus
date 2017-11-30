@@ -114,7 +114,64 @@ h1 small {
 }
 
 .install {
-  padding: 1ex 1em;
+  font-family: Arial, "DejaVu Sans", Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  background: linear-gradient(#666, #555);
+  color: white;
+  border-radius: 4px;
+  padding: 6px 35px 6px 8px;
+  position: relative;
+  display: inline-block;
+  text-shadow: 1px 1px 1px #333;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-style: none;
+  margin-bottom: 1ex;
+  cursor: pointer;
+}
+
+.install:before,
+.install:after {
+  content: "";
+  vertical-align: middle;
+  box-sizing: border-box;
+  border-radius: 0 4px 4px 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+}
+
+.install:before {
+  background-image: linear-gradient(#0bb, #0aa);
+  border-left: 1px solid rgba(128, 128, 128, .4);
+  padding: 5px 8px;
+}
+
+.install:after {
+  background-image: url(../images/icon/16.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.install.reinstall:after {
+  background-color: #333;
+  filter: grayscale(100%);
+}
+
+.install.update:before,
+.install.update:after {
+  filter: hue-rotate(-18deg) brightness(.7) contrast(2);
+}
+
+.install.installed,
+h2.installed {
+  display: none;
+}
+
+h2.installed.active {
+  display: inline-block;
   font-weight: bold;
   margin-bottom: 1ex;
 }
