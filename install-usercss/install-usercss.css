@@ -155,6 +155,11 @@ h1 small {
   background-position: center center;
 }
 
+.install:hover {
+  outline: 1px solid lightgray;
+  outline-offset: 1px;
+}
+
 .install.reinstall:after {
   background-color: #333;
   filter: grayscale(100%);
