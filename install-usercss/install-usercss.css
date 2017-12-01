@@ -119,7 +119,7 @@ h1 small {
   background: linear-gradient(#666, #555);
   color: white;
   border-radius: 4px;
-  padding: 6px 35px 6px 8px;
+  padding: 4px 38px 4px 10px;
   position: relative;
   display: inline-block;
   text-shadow: 1px 1px 1px #333;
@@ -128,7 +128,7 @@ h1 small {
   border-style: none;
   margin-bottom: 1ex;
   cursor: pointer;
-  box-shadow: .5px .5px 5px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 hsl(0, 0%, 24%);
 }
 
 .install:before,
@@ -145,8 +145,8 @@ h1 small {
 }
 
 .install:before {
-  background-image: linear-gradient(#0bb, #0aa);
-  border-left: 1px solid rgba(128, 128, 128, .4);
+  background-image: linear-gradient(hsl(176, 44%, 40%), hsl(176, 50%, 35%));
+  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 rgba(0, 0, 0, .3), inset -1px 0 0 0 hsl(0, 0%, 38%);
   padding: 5px 8px;
 }
 
