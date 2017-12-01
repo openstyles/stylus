@@ -131,7 +131,9 @@
   }
 
   function matchesOnScrollbar(query, ...args) {
-    query = new RegExp(/(?:^|[^\w.#\\-])/.source + query.source.slice(2, -2) + /(?:[^\w.#\\-]|$)/.source);
+    if (query instanceof RegExp) {
+      query = new RegExp(/(?:^|[^\w.#\\-])/.source + query.source.slice(2, -2) + /(?:[^\w.#\\-]|$)/.source);
+    }
     return originalMatchesOnScrollbar.call(this, query, ...args);
   }
 })();
