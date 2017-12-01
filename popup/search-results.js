@@ -1,71 +1,152 @@
-/* global handleEvent tryJSONparse getStylesSafe */
+/* global handleEvent tryJSONparse getStylesSafe BG */
 'use strict';
+
+// TODO on Install: Promise.all([fetchJSON, fetchHTML]) -> popup if customization is present, install otheriwse.
 
 /**
  * Library for interacting with userstyles.org
- * @returns {Object} Includes fetch() method which promises userstyles.org resources.
+ * @returns {Object} Exposed methods representing the search results on userstyles.org
  */
-const UserStylesAPI = (() => {
-  return {fetch};
+function SearchUserstyles() {
+  const RESULTS_PER_PAGE = 20;
+  let totalPages, totalResults;
+  let currentPage = 1;
+
+  return {getCurrentPage, getTotalPages, getTotalResults, search, fetchStyleJson};
+
+  function getCurrentPage() {
+    return currentPage;
+  }
+
+  function getTotalPages() {
+    return totalPages;
+  }
+
+  function getTotalResults() {
+    return totalResults;
+  }
 
   /**
-   * Fetches (and JSON-parses) the result from a userstyles.org API
-   * @param {string} path Path on userstyles.org (e.g. '/api/v1/styles/search')
-   * @param {string} queryParams Query parameters to send in search request (e.g. 'key=value&name=that)'.
+   * Fetches the JSON style object from userstyles.org (containing code, sections, updateUrl, etc).
+   * This is fetched from the /styles/chrome/ID.json endpoint.
+   * @param {number} userstylesId The internal "ID" for a style on userstyles.org
+   * @returns {Object} The response as a JSON object.
+   */
+  function fetchStyleJson(userstylesId) {
+    return new Promise((resolve, reject) => {
+      let jsonUrl = 'https://userstyles.org/styles/chrome/' + userstylesId + '.json';
+      download(jsonUrl)
+        .then(responseText => {
+          resolve(tryJSONparse(responseText));
+        })
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Fetches (and JSON-parses) search results from a userstyles.org search API.
+   * Automatically sets currentPage, totalPages, and totalResults.
+   * @param {string} searchText Text to search for.
    * @return {Object} Response object from userstyles.org
    */
-  function fetch(path, queryParams) {
-    return new Promise(function (resolve, reject) {
+  function search(searchText) {
+    return new Promise((resolve, reject) => {
       const TIMEOUT = 10000;
       const headers = {
         'Content-type': 'application/json',
         'Accept': '*/*'
       };
 
-      const url = new URL('https://userstyles.org');
-      url.pathname = path;
-      if (queryParams) {
-        url.search = '?' + queryParams;
-      }
+      const searchUrl = new URL('https://userstyles.org/api/v1/styles/search');
+      let queryParams = 'search=' + encodeURIComponent(searchText);
+      queryParams += '&page=' + currentPage;
+      queryParams += '&per_page=' + RESULTS_PER_PAGE;
+      searchUrl.search = '?' + queryParams;
       const xhr = new XMLHttpRequest();
       xhr.timeout = TIMEOUT;
       xhr.onload = () => {
         if (xhr.status === 200) {
-          resolve(tryJSONparse(xhr.responseText));
+          const responseJson = tryJSONparse(xhr.responseText);
+          currentPage = responseJson.current_page + 1;
+          totalPages = responseJson.total_pages;
+          totalResults = responseJson.total_entries;
+          resolve(responseJson);
         } else {
           reject(xhr.status);
         }
       };
       xhr.onerror = reject;
-      xhr.open('GET', url, true);
+      xhr.open('GET', searchUrl, true);
       for (const key of Object.keys(headers)) {
         xhr.setRequestHeader(key, headers[key]);
       }
       xhr.send();
     });
-
   }
-})();
+}
 
 /**
  * Represents the search results within the Stylus popup.
  * @returns {Object} Includes load(), next(), and prev() methods to alter the search results.
  */
 const SearchResults = (() => {
-  let currentPage = 1;
+  const RESULTS_PER_PAGE = 3; // Number of results to display in popup.html
+  const DELAY_BETWEEN_RESULTS_MS = 500;
+  const searchAPI = SearchUserstyles();
+  const unprocessedResults = []; // Search results not yet processed.
+  const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
+  let tabURL; // The active tab's URL.
+  let currentPage = 1; // Current page number in popup.html
+  let nonApplicableResults = 0; // Number of results that don't apply to the searched site (thx userstyles.org!)
+  let alreadyInstalledResults = 0; // Number of results that are already installed.
 
   return {load, next, prev};
 
+  function render() {
+    // Clear search results
+    $('#searchResults-list').innerHTML = '';
+
+    // Show search results for current page
+    const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+    const endIndex = currentPage * RESULTS_PER_PAGE;
+    const resultSubset = processedResults.slice(startIndex, endIndex);
+    console.log('Render processedResults[' + startIndex + ':' + endIndex + '] = ', resultSubset);
+    resultSubset.forEach(index => {
+      createSearchResult(index);
+    });
+    if (resultSubset.length < RESULTS_PER_PAGE) {
+      // TODO: Show "Results are still loading" message.
+    } else {
+      // TODO: Hide "results are still loading" message.
+    }
+  }
+
+  function loadMoreIfNeeded() {
+    if (processedResults.length < (currentPage + 1) * RESULTS_PER_PAGE) {
+      console.log('loadMoreIfNeeded: YES. currentPage:' + currentPage, 'processedResults.length:' + processedResults.length);
+      setTimeout(load, 1000);
+    } else {
+      console.log('loadMoreIfNeeded: NO. currentPage:' + currentPage, 'processedResults.length:' + processedResults.length);
+    }
+  }
+
   /** Increments currentPage and loads results. */
   function next(event) {
+    if (event) {
+      event.preventDefault();
+    }
     currentPage += 1;
-    return load(event);
+    render();
+    loadMoreIfNeeded();
   }
 
   /** Decrements currentPage and loads results. */
   function prev(event) {
+    if (event) {
+      event.preventDefault();
+    }
     currentPage = Math.max(1, currentPage - 1);
-    return load(event);
+    render();
   }
 
   /**
@@ -91,55 +172,85 @@ const SearchResults = (() => {
    * @param {Object} event The click event
    */
   function load(event) {
-    if (event) event.preventDefault();
-    // Clear search results
-    $('#searchResults-list').innerHTML = '';
+    if (event) {
+      event.preventDefault();
+    }
+    $('#load-search-results').classList.add('hidden');
+    $('#searchResults').classList.remove('hidden');
+    $('#searchResults-error').classList.add('hidden');
+
     // Find styles for the current active tab
     getActiveTab().then(tab => {
-      $('#load-search-results').classList.add('hidden');
-      $('#searchResults').classList.remove('hidden');
-      $('#searchResults-error').classList.add('hidden');
-
-      const hostname = new URL(tab.url).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, '$1');
+      tabURL = tab.url;
+      const hostname = new URL(tabURL).hostname.replace(/^(?:.*\.)?([^.]*\.(co\.)?[^.]*)$/i, '$1');
       $('#searchResults-terms').textContent = hostname;
 
-      const queryParams = [
-        'search=' + encodeURIComponent(hostname),
-        'page=' + currentPage,
-        'per_page=3'
-      ].join('&');
-
-      UserStylesAPI.fetch('/api/v1/styles/search', queryParams)
+      console.log('load#searchAPI.search(' + hostname + ')');
+      searchAPI.search(hostname)
         .then(searchResults => {
-          /*
-            searchResults: {
-              data: [...],
-              current_page: 1,
-              per_page: 15;
-              total_pages: 6,
-              total_entries: 85
-            }
-          */
           if (searchResults.data.length === 0) {
             throw 404;
           }
-          currentPage = searchResults.current_page;
-          updateSearchResultsNav(searchResults.current_page, searchResults.total_pages);
-
-          searchResults.data.forEach(searchResult => {
-            getMatchingInstalledStyles(searchResult)
-              .then(matchingStyles => {
-                // TODO: Should we display the search result with an option to "Uninstall"?
-                if (matchingStyles.length === 0) {
-                  // Only show non-installed styles in search results.
-                  createSearchResult(searchResult);
-                }
-              });
-          });
+          unprocessedResults.push.apply(unprocessedResults, searchResults.data);
+          processNextResult();
         })
         .catch(error);
-      });
+    });
     return true;
+  }
+
+  function processNextResult() {
+    if (unprocessedResults.length === 0) {
+      console.log('processNextResult:unprocessedResults === 0');
+      loadMoreIfNeeded();
+      return;
+    }
+
+    // Process the next result in the queue.
+    const nextResult = unprocessedResults.shift();
+    const matchingStyles = getMatchingInstalledStyles(nextResult);
+    if (matchingStyles.length > 0) {
+      // Style already installed, skip it.
+      // TODO: Include the style anyway with option to "Uninstall" (?)
+      console.log('style "' + nextResult.name + '" already installed');
+      alreadyInstalledResults += 1;
+      setTimeout(processNextResult, 0); // Keep processing
+    } else if (nextResult.category !== 'site') {
+      // Style is not for a website, skip it.
+      console.log('style "' + nextResult.name + '" category is for "' + nextResult.category + '", not "site"');
+      nonApplicableResults += 1;
+      setTimeout(processNextResult, 0); // Keep processing
+    } else {
+      // Style not installed, fetch full style to see if it applies to this site.
+      searchAPI.fetchStyleJson(nextResult.id)
+        .then(userstyleJson => {
+          // Extract applicable sections (i.e. styles that apply to the current site)
+          const applicableSections = BG.getApplicableSections({
+            style: userstyleJson,
+            matchUrl: tabURL,
+            stopOnFirst: true
+          });
+          if (applicableSections.length === 0) {
+            // Style is invalid (does not apply to this site).
+            nonApplicableResults += 1;
+          } else {
+            // Style is valid (can apply to this site).
+            nextResult.json = userstyleJson; // Store Style JSON for easy installing later.
+            processedResults.push(nextResult);
+            render();
+          }
+          console.log('processNextResult:sleep(' + DELAY_BETWEEN_RESULTS_MS + ')');
+          setTimeout(processNextResult, DELAY_BETWEEN_RESULTS_MS); // Keep processing
+        })
+        .catch(reason => {
+          console.log('Error while loading style ID ' + nextResult.id + ': ' + reason);
+          alert('Error while loading style ID ' + nextResult.id + ': ' + reason);
+          console.log('processNextResult:sleep(' + DELAY_BETWEEN_RESULTS_MS + ')');
+          setTimeout(processNextResult, DELAY_BETWEEN_RESULTS_MS); // Keep processing
+        });
+    }
+    console.log('processNextResult:alreadyInstalled:' + alreadyInstalledResults,
+      'nonApplicable:' + nonApplicableResults);
   }
 
   /** Updates prev/next buttons and currentPage/totalPage labels. */
