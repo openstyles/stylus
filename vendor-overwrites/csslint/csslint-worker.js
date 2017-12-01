@@ -3343,9 +3343,9 @@ var Properties = module.exports = {
     __proto__: null,
 
     //A
-    "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
-    "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
-    "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "align-items"                   : "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]",
+    "align-content"                 : "<align-content>",
+    "align-self"                    : "<align-self>",
     "all"                           : "initial | inherit | unset",
     "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
@@ -3494,7 +3494,7 @@ var Properties = module.exports = {
     "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
     "column-count"                  : "<integer> | auto",                      //https://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
-    "column-gap"                    : "<length> | normal",
+    "column-gap"                    : "normal | <length> | <percentage>",
     "column-rule"                   : "<border-width> || <border-style> || <color>",
     "column-rule-color"             : "<color>",
     "column-rule-style"             : "<border-style>",
@@ -3576,6 +3576,7 @@ var Properties = module.exports = {
     "font-weight"                   : "<font-weight>",
 
     //G
+    "gap"                           : "[ <length> | normal ]{1,2}",
     "glyph-orientation-horizontal"  : "<glyph-angle>",
     "glyph-orientation-vertical"    : "auto | <glyph-angle>",
     "grid"                          : 1,
@@ -3626,7 +3627,9 @@ var Properties = module.exports = {
     "isolation"                     : "auto | isolate",
 
     //J
-    "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
+    "justify-content"               : "<justify-content>",
+    "justify-items"                 : "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | [ legacy || [ left | right | center ] ]",
+    "justify-self"                  : "<justify-self>",
     "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
     //K
@@ -3716,6 +3719,9 @@ var Properties = module.exports = {
     "phonemes"                      : 1,
     "pitch"                         : 1,
     "pitch-range"                   : 1,
+    "place-content"                 : "<align-content> <justify-content>?",
+    "place-items"                   : "[ normal | stretch | <baseline-position> | <self-position> ] [ normal | stretch | <baseline-position> | <self-position> ]?",
+    "place-self"                    : "<align-self> <justify-self>?",
     "play-during"                   : 1,
     "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
     "position"                      : "static | relative | absolute | fixed | sticky | -webkit-sticky",
@@ -3735,6 +3741,7 @@ var Properties = module.exports = {
     "right"                         : "<margin-width>",
     "rotation"                      : 1,
     "rotation-point"                : 1,
+    "row-gap"                       : "normal | <length> | <percentage>",
     "ruby-align"                    : 1,
     "ruby-overhang"                 : 1,
     "ruby-position"                 : 1,
@@ -6085,6 +6092,12 @@ copy(ValidationTypes, {
         "<absolute-size>":
             "xx-small | x-small | small | medium | large | x-large | xx-large",
 
+        "<align-content>":
+            "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+
+        "<align-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
+
         "<animateable-feature>":
             "scroll-position | contents | <animateable-feature-name>",
 
@@ -6100,6 +6113,8 @@ copy(ValidationTypes, {
         "<attachment>": "scroll | fixed | local",
 
         "<attr>": "attr()",
+
+        "<baseline-position>": "[ first | last ]? baseline",
 
         // inset() = inset( <shape-arg>{1,4} [round <border-radius>]? )
         // circle() = circle( [<shape-radius>]? [at <position>]? )
@@ -6131,6 +6146,9 @@ copy(ValidationTypes, {
         },
 
         "<content>": "content()",
+
+        "<content-distribution>": "space-between | space-around | space-evenly | stretch",
+        "<content-position>": "center | start | end | flex-start | flex-end",
 
         // https://www.w3.org/TR/css3-sizing/#width-height-keywords
         "<content-sizing>":
@@ -6211,6 +6229,12 @@ copy(ValidationTypes, {
             return part.type === "integer";
         },
 
+        "<justify-content>":
+            "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+
+        "<justify-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ]",
+
         "<length>": function(part) {
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)) {
                 return true;
@@ -6249,6 +6273,8 @@ copy(ValidationTypes, {
             return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
+        "<overflow-position>": "unsafe | safe",
+
         "<padding-width>": "<nonnegative-length-or-percentage>",
 
         "<percentage>": function(part) {
@@ -6256,6 +6282,8 @@ copy(ValidationTypes, {
         },
 
         "<relative-size>": "smaller | larger",
+
+        "<self-position>": "center | start | end | self-start | self-end | flex-start | flex-end",
 
         "<shape>": "rect() | inset-rect()",
 
