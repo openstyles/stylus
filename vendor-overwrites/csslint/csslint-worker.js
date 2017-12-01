@@ -6431,7 +6431,8 @@ copy(ValidationTypes, {
         "<paint>": "<paint-basic> | <uri> <paint-basic>?",
 
         // Helper definition for <paint> above.
-        "<paint-basic>": "none | currentColor | <color-svg> <icccolor>?",
+        // Note: "transparent" is an accepted color now in SVG
+        "<paint-basic>": "none | currentColor | <color-svg> <icccolor>? | transparent",
 
         "<position>":
             // Because our `alt` combinator is ordered, we need to test these
