@@ -5,8 +5,10 @@
   const HL_APPROVED = 'cm-matchhighlight-approved';
   const originalAddOverlay = CodeMirror.prototype.addOverlay;
   const originalRemoveOverlay = CodeMirror.prototype.removeOverlay;
+  const originalMatchesOnScrollbar = CodeMirror.prototype.showMatchesOnScrollbar;
   CodeMirror.prototype.addOverlay = addOverlay;
   CodeMirror.prototype.removeOverlay = removeOverlay;
+  CodeMirror.prototype.showMatchesOnScrollbar = matchesOnScrollbar;
   return;
 
   function shouldIntercept(overlay) {
@@ -48,6 +50,16 @@
         occurrences: 0,
       };
       overlay.token = tokenHook;
+    }
+
+    if (this.options.lineWrapping) {
+      const originalGetOption = CodeMirror.prototype.getOption;
+      CodeMirror.prototype.getOption = function (option) {
+        return option !== 'lineWrapping' && originalGetOption.apply(this, arguments);
+      };
+      setTimeout(() => {
+        CodeMirror.prototype.getOption = originalGetOption;
+      });
     }
   }
 
@@ -116,5 +128,10 @@
     const helper = this.state.matchHighlighter.highlightHelper;
     this.showMatchesOnScrollbar = helper.showMatchesOnScrollbar;
     helper.query = query;
+  }
+
+  function matchesOnScrollbar(query, ...args) {
+    query = new RegExp(/(?:^|[^\w.#\\-])/.source + query.source.slice(2, -2) + /(?:[^\w.#\\-]|$)/.source);
+    return originalMatchesOnScrollbar.call(this, query, ...args);
   }
 })();
