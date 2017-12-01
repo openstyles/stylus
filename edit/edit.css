@@ -173,6 +173,9 @@ input:invalid {
   margin-top: 1em;
   margin-bottom: .5em;
 }
+#lint:not([open]) + #footer {
+  margin-top: 4em;
+}
 /************ content ***********/
 #sections > div {
   margin: 0.7rem;
