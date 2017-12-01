@@ -8,6 +8,7 @@ window.addEventListener('showStyles:done', function _() {
   let togglables = getTogglables();
 
   window.addEventListener('keydown', onKeyDown);
+  initHotkeyInfo();
   return;
 
   function onKeyDown(event) {
@@ -101,5 +102,67 @@ window.addEventListener('showStyles:done', function _() {
         }
       }
     });
+  }
+
+  function initHotkeyInfo() {
+    const container = $('#hotkey-info');
+    let title;
+    container.onclick = ({target}) => {
+      if (target.localName === 'button') {
+        close();
+      } else if (!container.dataset.active) {
+        open();
+      }
+    };
+
+    function close() {
+      delete container.dataset.active;
+      document.body.style.height = '';
+      container.title = title;
+    }
+
+    function open() {
+      title = container.title;
+      container.title = '';
+      container.dataset.active = true;
+      if (!container.firstElementChild) {
+        buildElement();
+      }
+      const height = 4 +
+        container.firstElementChild.scrollHeight +
+        container.lastElementChild.scrollHeight +
+        parseFloat(getComputedStyle(container.firstElementChild).paddingBottom) * 4;
+      if (height > document.body.clientHeight) {
+        document.body.style.height = height + 'px';
+      }
+    }
+
+    function buildElement() {
+      const keysToElements = line =>
+        line
+          .split(/(<.*?>)/)
+          .map(s => (!s.startsWith('<') ? s :
+            $element({tag: 'mark', textContent: s.slice(1, -1)})));
+      const linesToElements = text =>
+        text
+          .trim()
+          .split('\n')
+          .map((line, i, array) =>
+            $element(i < array.length - 1 ? {
+              tag: 'p',
+              appendChild: keysToElements(line),
+            } : {
+              tag: 'a',
+              target: '_blank',
+              href: 'https://github.com/openstyles/stylus/wiki/Popup',
+              textContent: line,
+            }));
+      [
+        linesToElements(t('popupHotkeysInfo')),
+        $element({tag: 'button', textContent: t('confirmOK')}),
+      ].forEach(child => {
+        container.appendChild($element({appendChild: child}));
+      });
+    }
   }
 });
