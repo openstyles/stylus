@@ -6022,12 +6022,19 @@ copy(ValidationTypes, {
     },
 
     describe: function(type) {
-        if (this.complex[type] instanceof Matcher) {
-            return this.complex[type].toString(0);
-        }
-        return type;
+        const complex = this.complex[type];
+        const text = complex instanceof Matcher ? complex.toString(0) : type;
+        return this.explode(text);
     },
 
+    explode(text) {
+        return !text.includes('<') ? text :
+            text.replace(/(<.*?>)([{#?])?/g, (_, rule, mod) => {
+                const ref = this.simple[rule] || this.complex[rule];
+                return !ref || !ref.originalText ? rule :
+                    (mod ? '[' : '') + this.explode(ref.originalText) + (mod ? ']' : '');
+            });
+    },
     /**
      * Determines if the next part(s) of the given expression
      * are any of the given types.
@@ -6466,16 +6473,16 @@ copy(ValidationTypes, {
 Object.keys(ValidationTypes.simple).forEach(function(nt) {
     var rule = ValidationTypes.simple[nt];
     if (typeof rule === "string") {
-        ValidationTypes.simple[nt] = function(part) {
+        ValidationTypes.simple[nt] = Object.defineProperty(function(part) {
             return ValidationTypes.isLiteral(part, rule);
-        };
+        }, 'originalText', {value: rule});
     }
 });
 
 Object.keys(ValidationTypes.complex).forEach(function(nt) {
     var rule = ValidationTypes.complex[nt];
     if (typeof rule === "string") {
-        ValidationTypes.complex[nt] = Matcher.parse(rule);
+        ValidationTypes.complex[nt] = Object.defineProperty(Matcher.parse(rule), 'originalText', {value: rule});
     }
 });
 
