@@ -411,7 +411,6 @@ function setupCodeMirror(sectionDiv, code, index) {
     $('.code-label', sectionDiv).insertAdjacentElement('afterend', wrapper);
   }, {
     value: code,
-    lint: null,
   });
   const wrapper = cm.display.wrapper;
 

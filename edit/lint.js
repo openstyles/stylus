@@ -44,7 +44,11 @@ var linterConfig = {
     return CodeMirror.lint && CodeMirror.lint[linter] ? {
       getAnnotations: CodeMirror.lint[linter],
       delay: prefs.get('editor.lintDelay'),
+      preUpdateLinting(cm) {
+        cm.startOperation();
+      },
       onUpdateLinting(annotationsNotSorted, annotations, cm) {
+        cm.endOperation();
         updateLintReport(cm, 0);
       },
     } : false;
@@ -198,7 +202,9 @@ function updateLinter({immediately, linter = linterConfig.getName()} = {}) {
     CodeMirror.defaults.lint = linterConfig.getForCodeMirror(linter);
     const guttersOption = prepareGuttersOption();
     editors.forEach(cm => {
-      cm.setOption('lint', CodeMirror.defaults.lint);
+      if (cm.options.lint !== CodeMirror.defaults.lint) {
+        cm.setOption('lint', CodeMirror.defaults.lint);
+      }
       if (guttersOption) {
         cm.setOption('guttersOption', guttersOption);
         updateGutters(cm, guttersOption);
@@ -235,14 +241,6 @@ function updateLinter({immediately, linter = linterConfig.getName()} = {}) {
 }
 
 function updateLintReport(cm, delay) {
-  if (cm && !cm.options.lint) {
-    // add 'lint' option back to the freshly created section
-    setTimeout(() => {
-      if (!cm.options.lint) {
-        cm.setOption('lint', linterConfig.getForCodeMirror());
-      }
-    });
-  }
   const state = cm && cm.state && cm.state.lint || {};
   if (delay === 0) {
     // immediately show pending csslint/stylelint messages in onbeforeunload and save
