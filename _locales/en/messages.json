@@ -426,19 +426,19 @@
     "description": "Label for the button to import and overwrite current style"
   },
   "installButton": {
-    "message": "Install",
+    "message": "Install style",
     "description": "Label for install button"
   },
   "installButtonInstalled": {
-    "message": "Installed",
+    "message": "Style installed",
     "description": "Text displayed when the style is successfully installed"
   },
   "installButtonUpdate": {
-    "message": "Update",
+    "message": "Update style",
     "description": "Label for update button"
   },
   "installButtonReinstall": {
-    "message": "Reinstall",
+    "message": "Reinstall style",
     "description": "Label for reinstall button"
   },
   "installUpdate": {
