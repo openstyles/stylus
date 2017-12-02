@@ -6099,12 +6099,6 @@ copy(ValidationTypes, {
         "<absolute-size>":
             "xx-small | x-small | small | medium | large | x-large | xx-large",
 
-        "<align-content>":
-            "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
-
-        "<align-self>":
-            "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
-
         "<animateable-feature>":
             "scroll-position | contents | <animateable-feature-name>",
 
@@ -6120,8 +6114,6 @@ copy(ValidationTypes, {
         "<attachment>": "scroll | fixed | local",
 
         "<attr>": "attr()",
-
-        "<baseline-position>": "[ first | last ]? baseline",
 
         // inset() = inset( <shape-arg>{1,4} [round <border-radius>]? )
         // circle() = circle( [<shape-radius>]? [at <position>]? )
@@ -6236,12 +6228,6 @@ copy(ValidationTypes, {
             return part.type === "integer";
         },
 
-        "<justify-content>":
-            "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
-
-        "<justify-self>":
-            "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ]",
-
         "<length>": function(part) {
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)) {
                 return true;
@@ -6329,6 +6315,12 @@ copy(ValidationTypes, {
     complex: {
         __proto__: null,
 
+        "<align-content>":
+            "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+
+        "<align-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
+
         "<azimuth>":
             "<angle>" +
             " | " +
@@ -6336,6 +6328,8 @@ copy(ValidationTypes, {
             "center-right | right | far-right | right-side ] || behind ]" +
             " | "+
             "leftwards | rightwards",
+
+        "<baseline-position>": "[ first | last ]? baseline",
 
         "<bg-position>": "<position>#",
 
@@ -6423,6 +6417,12 @@ copy(ValidationTypes, {
             // <east-asian-width-values>
             "[ full-width | proportional-width ] || " +
             "ruby",
+
+        "<justify-content>":
+            "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+
+        "<justify-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ]",
 
         // Note that <color> here is "as defined in the SVG spec", which
         // is more restrictive that the <color> defined in the CSS spec.
