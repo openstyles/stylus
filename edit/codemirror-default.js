@@ -30,7 +30,8 @@
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'
-    }
+    },
+    maxHighlightLength: 100e3,
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
