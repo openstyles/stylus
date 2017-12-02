@@ -6,10 +6,11 @@
  * @returns {Object} Exposed methods representing the search results on userstyles.org
  */
 function SearchUserstyles() {
-  let totalPages, totalResults;
+  let totalPages;
   let currentPage = 1;
+  let exhausted = false;
 
-  return {getCurrentPage, getTotalPages, getTotalResults, getCategory, search, fetchStyleJson};
+  return {getCurrentPage, getTotalPages, getCategory, isExhausted, search, fetchStyleJson};
 
   function getCurrentPage() {
     return currentPage;
@@ -19,8 +20,8 @@ function SearchUserstyles() {
     return totalPages;
   }
 
-  function getTotalResults() {
-    return totalResults;
+  function isExhausted() {
+    return exhausted;
   }
 
   function getCategory(url) {
@@ -63,12 +64,13 @@ function SearchUserstyles() {
 
   /**
    * Fetches (and JSON-parses) search results from a userstyles.org search API.
-   * Automatically sets currentPage, totalPages, and totalResults.
+   * Automatically sets currentPage and totalPages.
    * @param {string} category The usrestyles.org "category" (subcategory) OR a any search string.
    * @return {Object} Response object from userstyles.org
    */
   function search(category) {
     return new Promise((resolve, reject) => {
+      console.log('search(' + category + ') currentPage:' + currentPage + ' totalPages:' + totalPages);
       if (totalPages !== undefined && currentPage > totalPages) {
         resolve({'data':[]});
       }
@@ -91,9 +93,10 @@ function SearchUserstyles() {
           const responseJson = tryJSONparse(xhr.responseText);
           currentPage = responseJson.current_page + 1;
           totalPages = responseJson.total_pages;
-          totalResults = responseJson.total_entries;
+          exhausted = (currentPage > totalPages);
           resolve(responseJson);
         } else {
+          exhausted = true;
           reject(xhr.status);
         }
       };
@@ -113,11 +116,13 @@ function SearchUserstyles() {
  */
 const SearchResults = (() => {
   const DISPLAYED_RESULTS_PER_PAGE = 3; // Number of results to display in popup.html
-  const DELAY_BETWEEN_RESULTS_MS = 500; // Millisecs to wait before fetching next batch of search results.
-  const DELAY_BETWEEN_FETCHING_STYLES = 0; // Millisecs to wait before fetching .JSON for next search result.
+  const DELAY_AFTER_FETCHING_STYLES = 500; // Millisecs to wait before fetching next batch of search results.
+  const DELAY_BEFORE_SEARCHING_STYLES = 0; // Millisecs to wait before fetching .JSON for next search result.
   const searchAPI = SearchUserstyles();
   const unprocessedResults = []; // Search results not yet processed.
   const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
+  const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
+                           'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
   let loading = false;
   let tabURL; // The active tab's URL.
   let currentDisplayedPage = 1; // Current page number in popup.html
@@ -143,8 +148,11 @@ const SearchResults = (() => {
     }
     $('#searchResultsNav-currentPage').textContent = currentDisplayedPage;
 
-    // Hack: Add 1 page if there's results left to process.
-    const totalResultsCount = processedResults.length + (unprocessedResults.length ? DISPLAYED_RESULTS_PER_PAGE : 0);
+    let totalResultsCount = processedResults.length;
+    if (unprocessedResults.length > 0) {
+      // Add 1 page if there's results left to process.
+      totalResultsCount += DISPLAYED_RESULTS_PER_PAGE;
+    }
     const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
     if (currentDisplayedPage >= totalPageCount || loading) {
       $('#searchResultsNav-next').setAttribute('disabled', 'disabled');
@@ -162,9 +170,9 @@ const SearchResults = (() => {
   }
 
   function shouldLoadMore() {
-    const result = (processedResults.length < currentDisplayedPage * DISPLAYED_RESULTS_PER_PAGE)
+    const result = (processedResults.length < currentDisplayedPage * DISPLAYED_RESULTS_PER_PAGE);
     console.log('shouldLoadMore:',
-                result ? 'YES' : 'NO',
+                result === true ? 'YES' : 'NO',
                 ' processedResults.length(' + processedResults.length + ')',
                 '< currentDisplayedPage(' + currentDisplayedPage + ')',
                 '* DISPLAYED_RESULTS_PER_PAGE(' + DISPLAYED_RESULTS_PER_PAGE + ')');
@@ -176,7 +184,7 @@ const SearchResults = (() => {
       console.log('loadMoreIfNeeded: YES.');
       loading = true;
       render();
-      setTimeout(load, 1000);
+      setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
     } else {
       console.log('loadMoreIfNeeded: NO.');
       loading = false;
@@ -238,7 +246,14 @@ const SearchResults = (() => {
       return true;
     }
 
-    $('#load-search-results').classList.add('hidden');
+    if (searchAPI.isExhausted()) {
+      console.log('searchAPI is exhausted');
+      loading = false;
+      render();
+      return true;
+    }
+
+    $('#find-styles').classList.add('hidden');
     $('#searchResults').classList.remove('hidden');
     $('#searchResults-error').classList.add('hidden');
 
@@ -283,70 +298,77 @@ const SearchResults = (() => {
 
     // Process the next result in the queue.
     const nextResult = unprocessedResults.shift();
-    const matchingStyles = getMatchingInstalledStyles(nextResult);
-    if (matchingStyles.length > 0) {
-      // Style already installed, skip it.
-      // TODO: Include the style anyway with option to "Uninstall" (?)
-      console.log('[' + unprocessedResults.length + '] style "' + nextResult.name + '" already installed: CONTINUING');
-      alreadyInstalledResults += 1;
-      setTimeout(processNextResult, DELAY_BETWEEN_FETCHING_STYLES); // Keep processing
-    } else if (nextResult.category !== 'site') {
-      // Style is not for a website, skip it.
-      console.log('[' + unprocessedResults.length + '] style "' + nextResult.name + '" category is for "' + nextResult.category + '", not "site": CONTINUING');
-      nonApplicableResults += 1;
-      setTimeout(processNextResult, 0); // Keep processing
-    } else {
-      // Style not installed, fetch full style to see if it applies to this site.
-      console.log('[' + unprocessedResults.length + '] fetching "' + nextResult.name + '": CONTINUING');
-      searchAPI.fetchStyleJson(nextResult.id)
-        .then(userstyleJson => {
-          // Extract applicable sections (i.e. styles that apply to the current site)
-          const applicableSections = BG.getApplicableSections({
-            style: userstyleJson,
-            matchUrl: tabURL,
-            stopOnFirst: true
-          });
-          if (applicableSections.length === 0) {
-            // Style is invalid (does not apply to this site).
-            nonApplicableResults += 1;
-          } else {
-            // Style is valid (can apply to this site).
-            nextResult.json = userstyleJson; // Store Style JSON for easy installing later.
-            processedResults.push(nextResult);
-            render();
-          }
-          console.log('[' + unprocessedResults.length + '] Processed "' + nextResult.name + '"',
-                      'processedResults=' + processedResults.length,
-                      'skipped-installed=' + alreadyInstalledResults,
-                      'skipped-irrelevant=' + nonApplicableResults,
-                      'CONTINUING @ sleep=' + DELAY_BETWEEN_RESULTS_MS);
-          setTimeout(processNextResult, DELAY_BETWEEN_RESULTS_MS); // Keep processing
-        })
-        .catch(reason => {
-          console.log('[' + unprocessedResults.length + '] Error while loading style ID ' + nextResult.id + ': ' + reason);
-          setTimeout(processNextResult, DELAY_BETWEEN_RESULTS_MS); // Keep processing
-        });
-    }
+    isStyleInstalled(nextResult)
+      .then(isInstalled => {
+        if (isInstalled) {
+          // Style already installed, skip it.
+          // TODO: Include the style anyway with option to "Uninstall" (?)
+          console.log('[' + unprocessedResults.length + '] style "' + nextResult.name +
+                      '" already installed: CONTINUING');
+          alreadyInstalledResults += 1;
+          setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+        } else if (nextResult.category !== 'site') {
+          // Style is not for a website, skip it.
+          console.log('[' + unprocessedResults.length + '] style "' + nextResult.name +
+                      '" category is for "' + nextResult.category + '", not "site": CONTINUING');
+          nonApplicableResults += 1;
+          setTimeout(processNextResult, 0); // Keep processing
+        } else {
+          // Style not installed, fetch full style to see if it applies to this site.
+          console.log('[' + unprocessedResults.length + '] fetching "' + nextResult.name + '": CONTINUING');
+          searchAPI.fetchStyleJson(nextResult.id)
+            .then(userstyleJson => {
+              // Extract applicable sections (i.e. styles that apply to the current site)
+              const applicableSections = BG.getApplicableSections({
+                style: userstyleJson,
+                matchUrl: tabURL,
+                stopOnFirst: true
+              });
+              if (applicableSections.length === 0) {
+                // Style is invalid (does not apply to this site).
+                nonApplicableResults += 1;
+              } else {
+                // Style is valid (can apply to this site).
+                nextResult.json = userstyleJson; // Store Style JSON for easy installing later.
+                processedResults.push(nextResult);
+                render();
+              }
+              console.log('[' + unprocessedResults.length + '] Processed "' + nextResult.name + '"',
+                          'processedResults=' + processedResults.length,
+                          'skipped-installed=' + alreadyInstalledResults,
+                          'skipped-irrelevant=' + nonApplicableResults,
+                          'CONTINUING @ sleep=' + DELAY_AFTER_FETCHING_STYLES);
+              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+            })
+            .catch(reason => {
+              console.log('[' + unprocessedResults.length + '] Error while loading style ID ' +
+                          nextResult.id + ': ' + reason);
+              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+            });
+        }
+      });
   }
 
   /**
-   * Promises a list of installed styles that match the provided search result.
+   * Promises if the given searchResult matches an already-installed style.
    * @param {Object} userstyleSearchResult Search result object from userstyles.org
+   * @returns {Promise<boolean>} Resolves if the style is installed.
    */
-  function getMatchingInstalledStyles(userstyleSearchResult) {
+  function isStyleInstalled(userstyleSearchResult) {
     return new Promise(function (resolve, reject) {
       getStylesSafe()
         .then(installedStyles => {
+          console.log('Seeing if searchResult(', userstyleSearchResult, ') is in matchingStyles');
           const matchingStyles = installedStyles.filter(installedStyle => {
             // Compare installed name to search result name.
             let isMatch = installedStyle.name === userstyleSearchResult.name;
-            // Also compare if search result ID (userstyles ID) is mentioned in the installed updateUrl.
+            // Compare if search result ID (userstyles ID) is mentioned in the installed updateUrl.
             if (installedStyle.updateUrl) {
               isMatch &= installedStyle.updateUrl.indexOf('/' + userstyleSearchResult.id + '.json') >= 0;
             }
             return isMatch;
           });
-          resolve(matchingStyles);
+          resolve(matchingStyles.length > 0);
         })
         .catch(reject);
     });
@@ -371,6 +393,10 @@ const SearchResults = (() => {
     */
     console.log('createSearchResultNode(', userstyleSearchResult, ')');
 
+    if (userstyleSearchResult.installed) {
+      return;
+    }
+
     const entry = template.searchResult.cloneNode(true);
     Object.assign(entry, {
       id: 'searchResult-' + userstyleSearchResult.id
@@ -389,7 +415,7 @@ const SearchResults = (() => {
     const screenshot = $('.searchResult-screenshot', entry);
     let screenshotUrl = userstyleSearchResult.screenshot_url;
     if (screenshotUrl === null) {
-      screenshotUrl = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
+      screenshotUrl = BLANK_PIXEL_DATA;
     } else if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(screenshotUrl)) {
       screenshotUrl = 'https://userstyles.org/style_screenshot_thumbnails/' + screenshotUrl;
       screenshot.classList.remove('no-screenshot');
@@ -429,13 +455,24 @@ const SearchResults = (() => {
       // TODO on Install: Promise.all([fetchJSON, fetchHTML]) -> popup if customization is present, install otheriwse.
       const styleId = userstyleSearchResult.id;
       const url = 'https://userstyles.org/styles/chrome/' + styleId + '.json';
-      download(url)
-        .then(responseText => {
-          saveStyleSafe(tryJSONparse(responseText))
-            .then(() => {
-              // Hide search result after installing
-              entry.parentNode.removeChild(entry);
-            });
+      saveStyleSafe(userstyleSearchResult.json)
+        .then(() => {
+          // Remove search result after installing
+          let matchingIndex = -1;
+          processedResults.forEach((processedResult, index) => {
+            console.log('processedResult[' + index + '].id =', processedResult.id,
+                        'userstyleSearchResult.id =', userstyleSearchResult.id);
+            if (processedResult.id === userstyleSearchResult.id) {
+              matchingIndex = index;
+            }
+          });
+          console.log('matchingIndex =', matchingIndex);
+          if (matchingIndex >= 0) {
+            console.log('processedResults.length before', processedResults.length);
+            processedResults.splice(matchingIndex, 1);
+            console.log('processedResults.length after', processedResults.length);
+          }
+          processNextResult();
         })
         .catch(reason => {
           console.log('install:download(', url, ') => [ERROR]: ', reason);
@@ -447,7 +484,7 @@ const SearchResults = (() => {
 })();
 
 onDOMready().then(() => {
-  $('#load-search-results-link').onclick = SearchResults.load;
+  $('#find-styles-link').onclick = SearchResults.load;
   $('#searchResultsNav-prev').onclick = SearchResults.prev;
   $('#searchResultsNav-next').onclick = SearchResults.next;
 });

@@ -333,9 +333,9 @@
       }
     }
   },
-  "loadStylesForSite": {
-    "message": "Load Styles",
-    "description": "Text for a link that loads styles within the popup"
+  "openSearchWebsite": {
+    "message": "Search on userstyles.org",
+    "description": "Text for a link that searches for styles for this current site on userstyles.org"
   },
   "searchResultInstall": {
     "message": "Install",

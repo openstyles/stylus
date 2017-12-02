@@ -106,8 +106,8 @@ function initPopup(url) {
       installed);
   }
 
-  $('#find-styles-link').onclick = handleEvent.openURLandHide;
-  $('#find-styles-link').href +=
+  $('#open-search-link').onclick = handleEvent.openURLandHide;
+  $('#open-search-link').href +=
     url.startsWith(location.protocol) ?
       '?search_terms=Stylus' :
       'all/' + encodeURIComponent(url.startsWith('file:') ? 'file:' : url);

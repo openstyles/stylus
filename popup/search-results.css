@@ -4,13 +4,13 @@
 }
 
 #searchResults,
-#load-search-results {
+#find-styles {
   display: block;
 }
 
 #searchResults.hidden,
 #searchResults-error.hidden,
-#load-search-results.hidden {
+#find-styles.hidden {
   display: none;
 }
 
