@@ -23,9 +23,91 @@ body > div:not(#installed) {
   display: none;
 }
 
-input[type=checkbox] {
-  margin: 0;
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
+}
+
+input[type="checkbox"]:checked:hover + .svg-icon.checked,
+.style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
+  fill: #fff;
+}
+
+input[type="checkbox"]:checked + .svg-icon.checked {
+  display: inline-flex;
+  transition: fill .25s;
+}
+
+input[type="checkbox"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid hsl(0, 0%, 46%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 94%);
   outline: none;
+  margin: 0;
+  transition: background-color .25s, border-color .25s;
+}
+
+input[type="checkbox"]:checked:hover, .style-name:hover input[type="checkbox"]:checked {
+  background-color: hsl(0, 0%, 46%);
+}
+
+input[type="checkbox"]:hover, .style-name:hover input[type="checkbox"],
+.entry.disabled .style-name:hover input[type="checkbox"] {
+  background-color: hsl(0, 0%, 76%);
+}
+
+#installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
+  fill: hsl(0, 68%, 42%);
+}
+
+#installed.disabled + .actions #disableAll:checked {
+  border-color: hsl(0, 68%, 50%);
+}
+
+#installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
+  fill: #fff;
+}
+
+#disableAll:hover {
+  border-color: hsl(0, 68%, 50%);
+  background-color: hsl(20, 70%, 75%);
+}
+
+#disableAll:hover + .svg-icon + label {
+  color: hsl(0, 68%, 42%);
+}
+
+#installed.disabled + .actions #disableAll:checked:hover {
+  border-color: hsl(0, 50%, 56%);
+  background-color: hsl(0, 50%, 56%);
+}
+
+.style-name .checker,
+.style-name .svg-icon.checked {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  pointer-events: none;
+}
+
+#disable-all-wrapper .main-controls .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+label {
+  transition: color .25s;
 }
 
 #disable-all-wrapper {
@@ -34,9 +116,11 @@ input[type=checkbox] {
 
 #disable-all-wrapper .main-controls {
   display: flex;
+  position: relative;
 }
 
-#disable-all-wrapper .main-controls label{
+#disable-all-wrapper .main-controls label {
+  font-size: 12px;
   padding-left: 4px;
 }
 
@@ -119,13 +203,6 @@ html[style] .entry:nth-child(10):before {
 
 .entry .actions {
   display: inline-flex;
-}
-
-.style-name .checker {
-  position: absolute;
-  top: 7px;
-  left: 9px;
-  pointer-events: none;
 }
 
 .style-name {
