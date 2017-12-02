@@ -11,7 +11,7 @@
   const defaults = {
     mode: 'css',
     lineNumbers: true,
-    lineWrapping: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: [
       'CodeMirror-linenumbers',
