@@ -79,7 +79,7 @@ select {
 }
 
 label.nobreak input {
-  vertical-align: middle;
+  vertical-align: sub;
   margin: 0;
 }
 
@@ -970,5 +970,14 @@ fieldset select {
 
   .newUI .style-name {
     word-break: break-all;
+  }
+}
+
+@supports (-moz-appearance:none) {
+
+  /* fixes for Firefox quirks */
+
+  #newStyleAsUsercss-wrapper svg {
+    margin-top: -2px;
   }
 }
