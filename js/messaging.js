@@ -226,7 +226,7 @@ function openURL({url, index, openerTabId, currentWindow = true}) {
       }
       getActiveTab().then(tab => {
         const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
-        if (tab && tab.url === 'chrome://newtab/' && !chromeInIncognito) {
+        if (tab && (tab.url === 'chrome://newtab/' || tab.url === 'about:newtab') && !chromeInIncognito) {
           // update current NTP, except for chrome:// or chrome-extension:// in incognito
           chrome.tabs.update({url}, resolve);
         } else {
