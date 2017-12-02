@@ -15,8 +15,8 @@ body {
 }
 
 body > div:not(#installed) {
-  margin-left: 0.75em;
-  margin-right: 0.75em;
+  margin-left: 9px;
+  margin-right: 9px;
 }
 
 .firefox .chromium-only {
@@ -24,11 +24,20 @@ body > div:not(#installed) {
 }
 
 input[type=checkbox] {
+  margin: 0;
   outline: none;
 }
 
 #disable-all-wrapper {
   padding: 0.3em 0 0.6em;
+}
+
+#disable-all-wrapper .main-controls {
+  display: flex;
+}
+
+#disable-all-wrapper .main-controls label{
+  padding-left: 4px;
 }
 
 #no-styles {
@@ -37,12 +46,6 @@ input[type=checkbox] {
 
 .checker {
   display: inline;
-}
-
-.style-name {
-  cursor: default;
-  font-weight: bold;
-  display: block;
 }
 
 a {
@@ -55,16 +58,8 @@ a:hover {
   color: #666;
 }
 
-.left-gutter {
-  display: table-cell;
-  width: 16px;
-  vertical-align: top;
-}
-
-.left-gutter input {
-  margin-bottom: 1px;
-  margin-top: 0;
-  margin-left: 0;
+.actions > .main-controls {
+  padding-left: 16px;
 }
 
 .main-controls {
@@ -108,8 +103,51 @@ body.blocked > DIV {
 .entry {
   display: flex;
   align-items: center;
-  padding: 5px 0.75em;
+  height: 26px;
+  padding: 0 14px 0 0;
   position: relative;
+}
+
+html[style] .entry {
+  padding: 0 16px 0 0;
+}
+
+html[style] .entry:nth-child(-n+10):before,
+html[style] .entry:nth-child(10):before {
+  right: 7px;
+}
+
+.entry .actions {
+  display: inline-flex;
+}
+
+.style-name .checker {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  pointer-events: none;
+}
+
+.style-name {
+  height: 100%;
+  width: 100%;
+  line-height: 28px;
+  cursor: default;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 26px;
+  position: relative;
+}
+
+.entry .main-controls {
+  height: 100%;
+  display: inline-flex;
+  flex-grow: 1;
+  overflow: hidden;
+  align-items: center;
+  padding-right: 5px;
 }
 
 .entry:nth-child(even) {
@@ -138,20 +176,6 @@ body.blocked > DIV {
 .entry .delete {
   display: inline-block;
   padding: 0 1px 0;
-}
-
-.entry .main-controls {
-  display: flex;
-  width: calc(100% - 20px);
-  align-items: center;
-}
-
-.entry .main-controls label {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 5px;
 }
 
 .not-applied .checker,
@@ -253,8 +277,7 @@ body > .actions {
 }
 
 body.blocked #installed > *,
-body.blocked .actions > .main-controls,
-body.blocked .actions > .left-gutter {
+body.blocked .actions > .main-controls {
   display: none;
 }
 
