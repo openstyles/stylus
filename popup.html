@@ -82,7 +82,7 @@
 
   <template data-id="searchResult">
     <div class="searchResult">
-      <img class="searchResult-screenshot" />
+      <img class="searchResult-screenshot no-screenshot" />
       <a class="searchResult-title" target="_blank"></a>
       <div class="searchResult-description"></div>
       <div class="searchResult-author">
@@ -130,7 +130,6 @@
     </div>
     <div id="searchResults" class="hidden">
       <h3>Search Results for <span id="searchResults-terms">-</span></h3>
-      <div id="searchResults-list"></div>
       <div id="searchResultsNav">
         <button id="searchResultsNav-prev" title="Previous page" disabled>Prev</button>
         <label>
@@ -140,6 +139,7 @@
         </label>
         <button id="searchResultsNav-next" title="Next page" disabled>Next</button>
       </div>
+      <div id="searchResults-list"></div>
     </div>
     <div class="left-gutter"></div>
     <div class="main-controls">

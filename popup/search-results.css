@@ -42,6 +42,10 @@
   max-width: 180px;
   max-height: 180px;
 }
+.searchResult-screenshot.no-screenshot {
+  width: 180px;
+  height: 40px;
+}
 
 .searchResult-title {
   display: block;
@@ -58,10 +62,18 @@
   white-space: nowrap;
 }
 
+.searchResult-install {
+  width: 100%;
+}
+
 #searchResultsNav {
   flex-direction: row;
   text-align: center;
   word-break: keep-all;
+  opacity: 1.0;
+}
+#searchResultsNav.loading {
+  opacity: 0.5;
 }
 
 #searchResultsNav label {
@@ -72,10 +84,6 @@
 
 #searchResultsNav button {
   text-align: center;
-}
-
-.searchResult-install {
-  width: 100%;
 }
 
 #searchResultsNav-prev[disabled],
