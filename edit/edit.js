@@ -564,21 +564,32 @@ function showHelp(title = '', body) {
   div.style = 'display: block';
   return div;
 
-  function closeHelp(e) {
-    if (!e || e.type === 'click' ||
-        (e.which === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey &&
-          !$('.CodeMirror-hints, #message-box') && !(document.activeElement instanceof HTMLInputElement))) {
-      if (e && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
-        messageBox.confirm(t('confirmDiscardChanges')).then(ok => ok && closeHelp());
-        return;
-      }
-      div.style.display = '';
-      contents.textContent = '';
-      clearTimeout(contents.timer);
-      window.removeEventListener('keydown', closeHelp, true);
-      window.dispatchEvent(new Event('closeHelp'));
-      (editors.lastActive || editors[0]).focus();
+  function closeHelp(event) {
+    const canClose =
+      !event ||
+      event.type === 'click' ||
+      (
+        event.which === 27 &&
+        !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey &&
+        !$('.CodeMirror-hints, #message-box') &&
+        (
+          !document.activeElement ||
+          document.activeElement.matches(':not(input), .can-close-on-esc')
+        )
+      );
+    if (!canClose) {
+      return;
     }
+    if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+      messageBox.confirm(t('confirmDiscardChanges')).then(ok => ok && closeHelp());
+      return;
+    }
+    div.style.display = '';
+    contents.textContent = '';
+    clearTimeout(contents.timer);
+    window.removeEventListener('keydown', closeHelp, true);
+    window.dispatchEvent(new Event('closeHelp'));
+    (editors.lastActive || editors[0]).focus();
   }
 }
 
