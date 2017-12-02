@@ -173,8 +173,8 @@
     </label>
     <label>
       <input id="manage.onlyLocal" type="checkbox"
-             data-filter=":not(.updatable)"
-             data-filter-hide=".updatable">
+             data-filter=":not(.updatable):not(.update-done)"
+             data-filter-hide=".updatable, .update-done">
       <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
         <option i18n-text="manageOnlyLocal" value="false"></option>
         <option i18n-text="manageOnlyExternal" value="true"></option>
