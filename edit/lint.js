@@ -1,5 +1,5 @@
 /* global CodeMirror messageBox */
-/* global editors makeSectionVisible showCodeMirrorPopup showHelp hotkeyRerouter */
+/* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global loadScript require CSSLint stylelint */
 /* global makeLink */
 'use strict';
@@ -449,10 +449,10 @@ function setupLinterPopup(config) {
   cm.on('changes', updateButtonState);
   updateButtonState();
 
-  hotkeyRerouter.setState(false);
+  cm.rerouteHotkeys(false);
   window.addEventListener('closeHelp', function _() {
     window.removeEventListener('closeHelp', _);
-    hotkeyRerouter.setState(true);
+    cm.rerouteHotkeys(true);
   });
 
   loadScript([

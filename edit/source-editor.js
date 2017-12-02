@@ -1,6 +1,5 @@
-/* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
+/* global CodeMirror dirtyReporter initLint */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global hotkeyRerouter setupAutocomplete */
 /* global editors linterConfig updateLinter regExpTester mozParser */
 /* global makeLink createAppliesToLineWidget messageBox */
 'use strict';
@@ -124,10 +123,7 @@ function createSourceEditor(style) {
 
   function initHooks() {
     $('#save-button').onclick = save;
-    $('#beautify').onclick = beautify;
-    $('#keyMap-help').onclick = showKeyMapHelp;
     $('#toggle-style-help').onclick = showToggleStyleHelp;
-    $('#cancel-button').onclick = goBackToManage;
 
     $('#enabled').onchange = function () {
       const value = this.checked;
@@ -140,11 +136,13 @@ function createSourceEditor(style) {
       updateLintReportIfEnabled(cm);
     });
 
-    cm.on('focus', () => hotkeyRerouter.setState(false));
-    cm.on('blur', () => hotkeyRerouter.setState(true));
+    cm.on('focus', () => cm.rerouteHotkeys(false));
+    cm.on('blur', () => cm.rerouteHotkeys(true));
 
     CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
     CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
+    CodeMirror.commands.toggleStyle = toggleStyle;
+    CodeMirror.commands.save = save;
   }
 
   function updateMeta() {
