@@ -32,11 +32,6 @@ body > div:not(#installed) {
   margin: 2px 0 0 2px;
 }
 
-input[type="checkbox"]:checked:hover + .svg-icon.checked,
-.style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
-  fill: #fff;
-}
-
 input[type="checkbox"]:checked + .svg-icon.checked {
   display: inline-flex;
   transition: fill .25s;
@@ -57,12 +52,14 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:checked:hover, .style-name:hover input[type="checkbox"]:checked {
-  background-color: hsl(0, 0%, 46%);
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
 }
 
 input[type="checkbox"]:hover, .style-name:hover input[type="checkbox"],
 .entry.disabled .style-name:hover input[type="checkbox"] {
-  background-color: hsl(0, 0%, 76%);
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
 }
 
 #installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
