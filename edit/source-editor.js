@@ -143,9 +143,8 @@ function createSourceEditor(style) {
     cm.on('focus', () => hotkeyRerouter.setState(false));
     cm.on('blur', () => hotkeyRerouter.setState(true));
 
-    //if (prefs.get('editor.autocompleteOnTyping')) {
-    //  setupAutocomplete(cm);
-    //}
+    CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
+    CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
   }
 
   function updateMeta() {
@@ -275,6 +274,47 @@ function createSourceEditor(style) {
   function isTouched() {
     // indicate that the editor had been touched by the user
     return dirty.isDirty() || hadBeenSaved;
+  }
+
+  function nextPrevMozDocument(cm, dir) {
+    const cursor = cm.getCursor();
+    let line = cursor.line;
+    let found;
+    if (dir > 0) {
+      cm.doc.iter(cursor.line + 1, cm.doc.size, ({text}) => ++line && goFind(text));
+      if (!found && cursor.line > 0) {
+        line = -1;
+        cm.doc.iter(0, cursor.line, ({text}) => ++line && goFind(text));
+      }
+    } else {
+      let handle, parentLines;
+      let passesRemain = line < cm.doc.size - 1 ? 2 : 1;
+      while (passesRemain--) {
+        let indexInParent = 0;
+        while (line--) {
+          if (!indexInParent--) {
+            handle = cm.getLineHandle(line);
+            parentLines = handle.parent.lines;
+            indexInParent = parentLines.indexOf(handle);
+          } else {
+            handle = parentLines[indexInParent];
+          }
+          if (goFind(handle.text)) {
+            return true;
+          }
+        }
+        line = cm.doc.size;
+      }
+    }
+    function goFind(text) {
+      const ch = text.indexOf('@-moz-document');
+      if (ch >= 0 && cm.getTokenTypeAt({line, ch}) === 'def') {
+        cm.scrollIntoView({line: line + 1, ch}, Math.min(50, cm.display.scroller.clientHeight / 4));
+        cm.setCursor(line, ch);
+        found = true;
+        return true;
+      }
+    }
   }
 
   return {
