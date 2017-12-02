@@ -1,39 +1,56 @@
-/* global CodeMirror semverCompare makeLink closeCurrentTab runtimeSend */
-/* global messageBox */
+/* global CodeMirror semverCompare makeLink closeCurrentTab */
+/* global messageBox download chromeLocal */
 'use strict';
 
 (() => {
-  const params = new URLSearchParams(location.search);
+  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   let liveReload = false;
   let installed = false;
 
-  const port = chrome.tabs.connect(
-    Number(params.get('tabId')),
-    {name: 'usercss-install', frameId: 0}
-  );
-  port.postMessage({method: 'getSourceCode'});
-  port.onMessage.addListener(msg => {
-    switch (msg.method) {
-      case 'getSourceCodeResponse':
-        if (msg.error) {
-          messageBox.alert(msg.error);
-        } else {
-          initSourceCode(msg.sourceCode);
-        }
-        break;
-      case 'sourceCodeChanged':
-        if (msg.error) {
-          messageBox.alert(msg.error);
-        } else {
-          liveReloadUpdate(msg.sourceCode);
-        }
-        break;
-    }
-  });
-  port.onDisconnect.addListener(closeCurrentTab);
+  const tabId = Number(params.get('tabId'));
+  let port;
 
-  const cm = CodeMirror.fromTextArea($('.code textarea'), {readOnly: true});
+  if (params.has('direct')) {
+    $('.live-reload').remove();
+    getCodeDirectly();
+  } else {
+    port = chrome.tabs.connect(tabId);
+    port.postMessage({method: 'getSourceCode'});
+    port.onMessage.addListener(msg => {
+      switch (msg.method) {
+        case 'getSourceCodeResponse':
+          if (msg.error) {
+            messageBox.alert(msg.error);
+          } else {
+            initSourceCode(msg.sourceCode);
+          }
+          break;
+        case 'sourceCodeChanged':
+          if (msg.error) {
+            messageBox.alert(msg.error);
+          } else {
+            liveReloadUpdate(msg.sourceCode);
+          }
+          break;
+      }
+    });
+    port.onDisconnect.addListener(closeCurrentTab);
+  }
+
+  const cm = CodeMirror($('.main'), {readOnly: true});
   let liveReloadPending = Promise.resolve();
+  window.addEventListener('resize', adjustCodeHeight);
+
+  setTimeout(() => {
+    if (!installed) {
+      const div = $element({});
+      $('.header').appendChild($element({
+        className: 'lds-spinner',
+        appendChild: new Array(12).fill(div).map(e => e.cloneNode()),
+      }));
+    }
+  }, 200);
 
   function liveReloadUpdate(sourceCode) {
     liveReloadPending = liveReloadPending.then(() => {
@@ -43,7 +60,7 @@
       cm.setCursor(cursor);
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
-      return runtimeSend({
+      return sendMessage({
         id: installed.id,
         method: 'saveUsercss',
         reason: 'update',
@@ -54,8 +71,6 @@
   }
 
   function updateMeta(style, dup) {
-    $$('.main .warning').forEach(e => e.remove());
-
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
@@ -67,6 +82,7 @@
     document.title = `${installButtonLabel()} ${data.name}`;
 
     $('.install').textContent = installButtonLabel();
+    $('.install').classList.add(installButtonClass());
     $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
     $('.meta-name').textContent = data.name;
     $('.meta-version').textContent = data.version;
@@ -94,6 +110,13 @@
       $('.external-link').appendChild(externalLink);
     }
 
+    $('.header').classList.add('meta-init');
+    $('.header').classList.remove('meta-init-error');
+    setTimeout(() => $('.lds-spinner') && $('.lds-spinner').remove(), 1000);
+
+    showError('');
+    requestAnimationFrame(adjustCodeHeight);
+
     function makeAuthor(text) {
       const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
       if (!match) {
@@ -115,7 +138,7 @@
           $element({
             tag: 'svg#svg',
             viewBox: '0 0 20 20',
-            class: 'icon',
+            class: 'svg-icon',
             appendChild: $element({
               tag: 'svg#path',
               d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z'
@@ -144,6 +167,12 @@
       }
     }
 
+    function installButtonClass() {
+      return installed ? 'installed' :
+        !dup ? 'install' :
+        versionTest > 0 ? 'update' : 'reinstall';
+    }
+
     function installButtonLabel() {
       return t(
         installed ? 'installButtonInstalled' :
@@ -154,55 +183,50 @@
   }
 
   function showError(err) {
-    $$('.main .warning').forEach(e => e.remove());
-    const main = $('.main');
-    main.insertBefore(buildWarning(err), main.firstChild);
+    $('.warnings').textContent = '';
+    if (err) {
+      $('.warnings').appendChild(buildWarning(err));
+    }
+    $('.warnings').classList.toggle('visible', Boolean(err));
+    $('.container').classList.toggle('has-warnings', Boolean(err));
+    adjustCodeHeight();
   }
 
   function install(style) {
-    const request = Object.assign(style, {
-      method: 'saveUsercss',
-      reason: 'update'
-    });
-    return runtimeSend(request)
-      .then(result => {
-        installed = result;
+    installed = style;
 
-        $$('.warning')
-          .forEach(el => el.remove());
-        $('.install').disabled = true;
-        $('.install').classList.add('installed');
-        $('.set-update-url input[type=checkbox]').disabled = true;
-        $('.set-update-url').title = result.updateUrl ?
-          t('installUpdateFrom', result.updateUrl) : '';
+    $$('.warning')
+      .forEach(el => el.remove());
+    $('button.install').disabled = true;
+    $('button.install').classList.add('installed');
+    $('h2.installed').classList.add('active');
+    $('.set-update-url input[type=checkbox]').disabled = true;
+    $('.set-update-url').title = style.updateUrl ?
+      t('installUpdateFrom', style.updateUrl) : '';
 
-        updateMeta(result);
+    updateMeta(style);
 
-        chrome.runtime.sendMessage({method: 'openEditor', id: result.id});
+    if (!liveReload && !prefs.get('openEditInWindow')) {
+      chrome.tabs.update({url: '/edit.html?id=' + style.id});
+    } else {
+      BG.openEditor(style.id);
+      if (!liveReload) {
+        closeCurrentTab();
+      }
+    }
 
-        if (!liveReload) {
-          port.postMessage({method: 'closeTab'});
-        }
-
-        window.dispatchEvent(new CustomEvent('installed'));
-      })
-      .catch(err => {
-        messageBox.alert(chrome.i18n.getMessage('styleInstallFailed', String(err)));
-      });
+    window.dispatchEvent(new CustomEvent('installed'));
   }
 
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
-    runtimeSend({
-      method: 'buildUsercss',
-      sourceCode,
-      checkDup: true
-    }).then(init, initError);
-  }
-
-  function initError(err) {
-    $('.main').insertBefore(buildWarning(err), $('.main').childNodes[0]);
-    $('.header').style.display = 'none';
+    cm.refresh();
+    sendMessage({method: 'buildUsercss', sourceCode, checkDup: true})
+      .then(init)
+      .catch(err => {
+        $('.header').classList.add('meta-init-error');
+        showError(err);
+      });
   }
 
   function buildWarning(err) {
@@ -227,17 +251,17 @@
       );
     }
     $('button.install').onclick = () => {
-      const message = dup ?
-        chrome.i18n.getMessage('styleInstallOverwrite', [
-          data.name, dupData.version, data.version
-        ]) :
-        chrome.i18n.getMessage('styleInstall', [data.name]);
-
-      messageBox.confirm(message).then(result => {
-        if (result) {
-          return install(style);
-        }
-      });
+      (!dup ?
+        Promise.resolve(true) :
+        messageBox.confirm(t('styleInstallOverwrite', [
+          data.name,
+          dupData.version,
+          data.version,
+        ]))
+      ).then(ok => ok &&
+        sendMessage(Object.assign(style, {method: 'saveUsercss', reason: 'update'}))
+          .then(install)
+          .catch(err => messageBox.alert(t('styleInstallFailed', err))));
     };
 
     // set updateUrl
@@ -259,6 +283,10 @@
         delete style.updateUrl;
       }
     };
+
+    if (!port) {
+      return;
+    }
 
     // live reload
     const setLiveReload = $('.live-reload input[type=checkbox]');
@@ -295,5 +323,50 @@
       result.push(chrome.i18n.getMessage('appliesToEverything'));
     }
     return result;
+  }
+
+  function adjustCodeHeight() {
+    // Chrome-only bug (apparently): it doesn't limit the scroller element height
+    const scroller = cm.display.scroller;
+    const prevWindowHeight = adjustCodeHeight.prevWindowHeight;
+    if (scroller.scrollHeight === scroller.clientHeight ||
+        prevWindowHeight && window.innerHeight !== prevWindowHeight) {
+      adjustCodeHeight.prevWindowHeight = window.innerHeight;
+      cm.setSize(null, $('.main').offsetHeight - $('.warnings').offsetHeight);
+    }
+  }
+
+  function getCodeDirectly() {
+    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+    // To circumvent that, the bg process downloads the code directly
+    const key = 'tempUsercssCode' + tabId;
+    chrome.storage.local.get(key, data => {
+      const code = data && data[key];
+
+      // bg already downloaded the code
+      if (typeof code === 'string') {
+        initSourceCode(code);
+        chrome.storage.local.remove(key);
+        return;
+      }
+
+      // bg still downloads the code
+      if (code && code.loading) {
+        const waitForCodeInStorage = (changes, area) => {
+          if (area === 'local' && key in changes) {
+            initSourceCode(changes[key].newValue);
+            chrome.storage.onChanged.removeListener(waitForCodeInStorage);
+            chrome.storage.local.remove(key);
+          }
+        };
+        chrome.storage.onChanged.addListener(waitForCodeInStorage);
+        return;
+      }
+
+      // on the off-chance dbExecChromeStorage.getAll ran right after bg download was saved
+      download(params.get('updateUrl'))
+        .then(initSourceCode)
+        .catch(err => messageBox.alert(t('styleInstallFailed', String(err))));
+    });
   }
 })();

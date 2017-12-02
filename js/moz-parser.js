@@ -18,18 +18,15 @@ var mozParser = (() => {
       parser.addListener('startdocument', e => {
         const lastSection = sectionStack[sectionStack.length - 1];
         let outerText = getRange(lastSection.start, {line: e.line, col: e.col - 1});
-        const gapComment = outerText.match(/(\/\*[\s\S]*?\*\/)[\s\n]*$/);
-        const section = {
-          code: '',
-          start: {
-            line: parser._tokenStream._token.endLine,
-            col: parser._tokenStream._token.endCol,
-          },
-        };
+        const lastCmt = getLastComment(outerText);
+        const {endLine: line, endCol: col} = parser._tokenStream._token;
+        const section = {code: '', start: {line, col}};
         // move last comment before @-moz-document inside the section
-        if (gapComment && !gapComment[1].match(/\/\*\s*AGENT_SHEET\s*\*\//)) {
-          section.code = gapComment[1] + '\n';
-          outerText = outerText.substring(0, gapComment.index).trim();
+        if (!/\/\*[\s\n]*AGENT_SHEET[\s\n]*\*\//.test(lastCmt)) {
+          section.code = lastCmt + '\n';
+          const indent = outerText.match(/^\s*/)[0];
+          outerText = outerText.slice(0, -lastCmt.length);
+          outerText = indent + outerText.trim();
         }
         if (outerText.trim()) {
           lastSection.code = outerText;
@@ -118,13 +115,36 @@ var mozParser = (() => {
         const first = s.charAt(0);
         return (first === '"' || first === "'") && s.endsWith(first) ? s.slice(1, -1) : s;
       }
+
+      function getLastComment(text) {
+        let open = text.length;
+        let close;
+        while (open) {
+          // at this point we're guaranteed to be outside of a comment
+          close = text.lastIndexOf('*/', open - 2);
+          if (close < 0) {
+            break;
+          }
+          // stop if a non-whitespace precedes and return what we currently have
+          const tailEmpty = !text.substring(close + 2, open).trim();
+          if (!tailEmpty) {
+            break;
+          }
+          // find a closed preceding comment
+          const prevClose = text.lastIndexOf('*/', close);
+          // then find the real start of current comment
+          // e.g. /* preceding */  /* current /* current /* current */
+          open = text.indexOf('/*', prevClose < 0 ? 0 : prevClose + 2);
+        }
+        return text.substr(open);
+      }
     });
   }
 
   return {
     // Parse mozilla-format userstyle into sections
     parse(text) {
-      return loadScript('/vendor-overwrites/csslint/csslint-worker.js')
+      return Promise.resolve(self.CSSLint || loadScript('/vendor-overwrites/csslint/csslint-worker.js'))
         .then(() => parseMozFormat(text));
     },
     format(style) {

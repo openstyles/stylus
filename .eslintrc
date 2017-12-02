@@ -17,6 +17,7 @@ globals:
   URLS: false
   BG: false
   notifyAllTabs: false
+  sendMessage: false
   queryTabs: false
   getTab: false
   getOwnTab: false

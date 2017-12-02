@@ -8,7 +8,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "请输入名称.",
+		"message": "请输入名称",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {

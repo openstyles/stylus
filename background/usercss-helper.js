@@ -1,4 +1,4 @@
-/* global usercss saveStyle getStyles */
+/* global usercss saveStyle getStyles chromeLocal */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -22,8 +22,8 @@ var usercssHelper = (() => {
   }
 
   function wrapReject(pending) {
-    return pending.then(result => ({success: true, result}))
-      .catch(err => ({success: false, result: err.message || String(err)}));
+    return pending
+      .catch(err => new Error(Array.isArray(err) ? err.join('\n') : err.message || String(err)));
   }
 
   // Parse the source and find the duplication
@@ -78,15 +78,29 @@ var usercssHelper = (() => {
     );
   }
 
-  function openInstallPage(tab, request) {
-    const url = '/install-usercss.html' +
-      '?updateUrl=' + encodeURIComponent(request.updateUrl) +
-      '&tabId=' + tab.id;
+  function openInstallPage(tab, {url = tab.url, direct} = {}) {
+    if (direct) {
+      prefetchCodeForInstallation(tab.id, url);
+    }
     return wrapReject(openURL({
-      url,
+      url: '/install-usercss.html' +
+        '?updateUrl=' + encodeURIComponent(url) +
+        '&tabId=' + tab.id +
+        (direct ? '&direct=yes' : ''),
       index: tab.index + 1,
       openerTabId: tab.id,
     }));
+  }
+
+  function prefetchCodeForInstallation(tabId, url) {
+    const key = 'tempUsercssCode' + tabId;
+    Promise.all([
+      download(url),
+      chromeLocal.setValue(key, {loading: true}),
+    ]).then(([code]) => {
+      chromeLocal.setValue(key, code);
+      setTimeout(() => chromeLocal.remove(key), 60e3);
+    });
   }
 
   return {build, save, findDup, openInstallPage};

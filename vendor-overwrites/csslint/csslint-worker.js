@@ -3343,9 +3343,9 @@ var Properties = module.exports = {
     __proto__: null,
 
     //A
-    "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
-    "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
-    "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "align-items"                   : "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]",
+    "align-content"                 : "<align-content>",
+    "align-self"                    : "<align-self>",
     "all"                           : "initial | inherit | unset",
     "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
@@ -3404,7 +3404,7 @@ var Properties = module.exports = {
     "backface-visibility"           : "visible | hidden",
     "background"                    : 1,
     "background-attachment"         : "<attachment>#",
-    "background-blend-mode"         : "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
+    "background-blend-mode"         : "<blend-mode>",
     "background-clip"               : "<box>#",
     "background-color"              : "<color>",
     "background-image"              : "<bg-image>#",
@@ -3494,7 +3494,7 @@ var Properties = module.exports = {
     "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
     "column-count"                  : "<integer> | auto",                      //https://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
-    "column-gap"                    : "<length> | normal",
+    "column-gap"                    : "normal | <length> | <percentage>",
     "column-rule"                   : "<border-width> || <border-style> || <color>",
     "column-rule-color"             : "<color>",
     "column-rule-style"             : "<border-style>",
@@ -3576,6 +3576,7 @@ var Properties = module.exports = {
     "font-weight"                   : "<font-weight>",
 
     //G
+    "gap"                           : "[ <length> | normal ]{1,2}",
     "glyph-orientation-horizontal"  : "<glyph-angle>",
     "glyph-orientation-vertical"    : "auto | <glyph-angle>",
     "grid"                          : 1,
@@ -3623,9 +3624,12 @@ var Properties = module.exports = {
     "image-resolution"              : 1,
     "ime-mode"                      : "auto | normal | active | inactive | disabled",
     "inline-box-align"              : "last | <integer>",
+    "isolation"                     : "auto | isolate",
 
     //J
-    "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
+    "justify-content"               : "<justify-content>",
+    "justify-items"                 : "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | [ legacy || [ left | right | center ] ]",
+    "justify-self"                  : "<justify-self>",
     "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
     //K
@@ -3668,6 +3672,7 @@ var Properties = module.exports = {
     "max-width"                     : "<length> | <percentage> | <content-sizing> | none",
     "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
     "min-width"                     : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "mix-blend-mode"                : "<blend-mode>",
     "move-to"                       : 1,
 
     //N
@@ -3714,6 +3719,9 @@ var Properties = module.exports = {
     "phonemes"                      : 1,
     "pitch"                         : 1,
     "pitch-range"                   : 1,
+    "place-content"                 : "<align-content> <justify-content>?",
+    "place-items"                   : "[ normal | stretch | <baseline-position> | <self-position> ] [ normal | stretch | <baseline-position> | <self-position> ]?",
+    "place-self"                    : "<align-self> <justify-self>?",
     "play-during"                   : 1,
     "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
     "position"                      : "static | relative | absolute | fixed | sticky | -webkit-sticky",
@@ -3733,6 +3741,7 @@ var Properties = module.exports = {
     "right"                         : "<margin-width>",
     "rotation"                      : 1,
     "rotation-point"                : 1,
+    "row-gap"                       : "normal | <length> | <percentage>",
     "ruby-align"                    : 1,
     "ruby-overhang"                 : 1,
     "ruby-position"                 : 1,
@@ -5660,7 +5669,7 @@ var Tokens = module.exports = [
 
     // ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/ },
-    { name: "COMMENT", comment: true, hide: true, channel: "comment" },
+    { name: "COMMENT", whitespace: true, comment: true, hide: true/*, channel: "comment"*/ },
 
     // attribute equality
     { name: "INCLUDES", text: "~=" },
@@ -6013,12 +6022,19 @@ copy(ValidationTypes, {
     },
 
     describe: function(type) {
-        if (this.complex[type] instanceof Matcher) {
-            return this.complex[type].toString(0);
-        }
-        return type;
+        const complex = this.complex[type];
+        const text = complex instanceof Matcher ? complex.toString(0) : type;
+        return this.explode(text);
     },
 
+    explode(text) {
+        return !text.includes('<') ? text :
+            text.replace(/(<.*?>)([{#?])?/g, (_, rule, mod) => {
+                const ref = this.simple[rule] || this.complex[rule];
+                return !ref || !ref.originalText ? rule :
+                    (mod ? '[' : '') + this.explode(ref.originalText) + (mod ? ']' : '');
+            });
+    },
     /**
      * Determines if the next part(s) of the given expression
      * are any of the given types.
@@ -6107,6 +6123,8 @@ copy(ValidationTypes, {
 
         "<bg-image>": "<image> | <gradient> | none",
 
+        "<blend-mode>": "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
+
         "<border-style>":
             "none | hidden | dotted | dashed | solid | double | groove | " +
             "ridge | inset | outset",
@@ -6127,6 +6145,9 @@ copy(ValidationTypes, {
         },
 
         "<content>": "content()",
+
+        "<content-distribution>": "space-between | space-around | space-evenly | stretch",
+        "<content-position>": "center | start | end | flex-start | flex-end",
 
         // https://www.w3.org/TR/css3-sizing/#width-height-keywords
         "<content-sizing>":
@@ -6245,6 +6266,8 @@ copy(ValidationTypes, {
             return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
+        "<overflow-position>": "unsafe | safe",
+
         "<padding-width>": "<nonnegative-length-or-percentage>",
 
         "<percentage>": function(part) {
@@ -6252,6 +6275,8 @@ copy(ValidationTypes, {
         },
 
         "<relative-size>": "smaller | larger",
+
+        "<self-position>": "center | start | end | self-start | self-end | flex-start | flex-end",
 
         "<shape>": "rect() | inset-rect()",
 
@@ -6290,6 +6315,12 @@ copy(ValidationTypes, {
     complex: {
         __proto__: null,
 
+        "<align-content>":
+            "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+
+        "<align-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
+
         "<azimuth>":
             "<angle>" +
             " | " +
@@ -6297,6 +6328,8 @@ copy(ValidationTypes, {
             "center-right | right | far-right | right-side ] || behind ]" +
             " | "+
             "leftwards | rightwards",
+
+        "<baseline-position>": "[ first | last ]? baseline",
 
         "<bg-position>": "<position>#",
 
@@ -6385,6 +6418,12 @@ copy(ValidationTypes, {
             "[ full-width | proportional-width ] || " +
             "ruby",
 
+        "<justify-content>":
+            "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+
+        "<justify-self>":
+            "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ]",
+
         // Note that <color> here is "as defined in the SVG spec", which
         // is more restrictive that the <color> defined in the CSS spec.
         // none | currentColor | <color> [<icccolor>]? |
@@ -6392,7 +6431,8 @@ copy(ValidationTypes, {
         "<paint>": "<paint-basic> | <uri> <paint-basic>?",
 
         // Helper definition for <paint> above.
-        "<paint-basic>": "none | currentColor | <color-svg> <icccolor>?",
+        // Note: "transparent" is an accepted color now in SVG
+        "<paint-basic>": "none | currentColor | <color-svg> <icccolor>? | transparent",
 
         "<position>":
             // Because our `alt` combinator is ordered, we need to test these
@@ -6434,16 +6474,16 @@ copy(ValidationTypes, {
 Object.keys(ValidationTypes.simple).forEach(function(nt) {
     var rule = ValidationTypes.simple[nt];
     if (typeof rule === "string") {
-        ValidationTypes.simple[nt] = function(part) {
+        ValidationTypes.simple[nt] = Object.defineProperty(function(part) {
             return ValidationTypes.isLiteral(part, rule);
-        };
+        }, 'originalText', {value: rule});
     }
 });
 
 Object.keys(ValidationTypes.complex).forEach(function(nt) {
     var rule = ValidationTypes.complex[nt];
     if (typeof rule === "string") {
-        ValidationTypes.complex[nt] = Matcher.parse(rule);
+        ValidationTypes.complex[nt] = Object.defineProperty(Matcher.parse(rule), 'originalText', {value: rule});
     }
 });
 
@@ -7103,15 +7143,12 @@ TokenStreamBase.prototype = {
             tokenTypes = [tokenTypes];
         }
 
-        var tt  = this.get(channel),
-            i   = 0,
-            len = tokenTypes.length;
-
-        while (i < len) {
-            if (tt === tokenTypes[i++]) {
+        do {
+            var tt = this.get(channel);
+            if (tokenTypes.includes(tt)) {
                 return true;
             }
-        }
+        } while (tt === 4 && this.LA(0) !== 0);
 
         //no match found, put the token back
         this.unget();
@@ -7136,7 +7173,7 @@ TokenStreamBase.prototype = {
             tokenTypes = [tokenTypes];
         }
 
-        if (!this.match.apply(this, arguments)) {
+        if (!this.match(tokenTypes)) {
             token = this.LT(1);
             throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
@@ -10930,31 +10967,48 @@ CSSLint.addFormatter({
     }
 });
 
-/*
- * Web worker for CSSLint
- */
+if (!CSSLint.suppressUsoVarError) {
+  CSSLint.suppressUsoVarError = true;
+  parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
+  const isUsoVar = ({value}) => value.startsWith('/*[[') && value.endsWith(']]*/');
+  CSSLint.addRule({
+    id: 'uso-vars',
+    init(parser, reporter) {
+      parser.addListener('error', function ({message, line, col}) {
+        if (!isUsoVar(this._tokenStream._token)) {
+          const {_lt, _ltIndex: i} = this._tokenStream;
+          if (i < 2 || !_lt.slice(0, i - 1).reverse().some(isUsoVar)) {
+            reporter.error(message, line, col);
+          }
+        }
+      });
+    },
+  });
+}
 
-/* global self, JSON */
+self.onmessage = ({data: {action = 'run', code, config}}) => {
+  switch (action) {
 
-// message indicates to start linting
-self.onmessage = function(event) {
-    "use strict";
-    var data = event.data,
-        message,
-        text,
-        ruleset,
-        results;
+    case 'getAllRuleIds':
+      // the functions are non-tranferable and we need only an id
+      self.postMessage(CSSLint.getRules().map(rule => rule.id));
+      return;
 
-    try {
-        message = JSON.parse(data);
-        text = message.text;
-        ruleset = message.ruleset;
-    } catch (ex) {
-        text = data;
-    }
+    case 'run':
+      Object.defineProperty(config, 'errors', {get: () => 0, set: () => 0});
+      config['uso-vars'] = 1;
+      self.postMessage(CSSLint.verify(code, config).messages.map(m => {
+        // the functions are non-tranferable and we need only an id
+        m.rule = {id: m.rule.id};
+        return m;
+      }));
+      return;
 
-    results = CSSLint.verify(text, ruleset);
-
-    // Not all browsers support structured clone, so JSON stringify results
-    self.postMessage(JSON.stringify(results));
+    case 'parse':
+      if (!self.mozParser) {
+        self.importScripts('/js/moz-parser.js');
+      }
+      mozParser.parse(code)
+        .then(sections => self.postMessage(sections));
+  }
 };

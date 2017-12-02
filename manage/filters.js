@@ -8,7 +8,8 @@ const filtersSelector = {
   numTotal: 0,
 };
 
-const urlFilterParam = new URLSearchParams(location.search).get('url');
+// TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+const urlFilterParam = new URLSearchParams(location.search.replace(/^\?/, '')).get('url');
 if (location.search) {
   history.replaceState(0, document.title, location.origin + location.pathname);
 }

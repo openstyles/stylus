@@ -19,12 +19,6 @@
 // highlighting the matches. If annotateScrollbar is enabled, the occurences
 // will be highlighted on the scrollbar via the matchesonscrollbar addon.
 
-/* STYLUS: hack start (part 1) */
-/* eslint curly: 1, brace-style:1, strict: 0, quotes: 0, semi: 1, indent: 1 */
-/* eslint no-var: 0, block-scoped-var: 0, no-redeclare: 0, no-unused-expressions: 1 */
-/* global CodeMirror, require, define */
-/* STYLUS: hack end (part 1) */
-
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("./matchesonscrollbar"));
@@ -94,9 +88,7 @@
 
   function addOverlay(cm, query, hasBoundary, style) {
     var state = cm.state.matchHighlighter;
-    /* STYLUS: hack start (part 2) */
-    cm.addOverlay(state.overlay = makeOverlay(cm, query, hasBoundary, style));
-    /* STYLUS: hack end (part 2) */
+    cm.addOverlay(state.overlay = makeOverlay(query, hasBoundary, style));
     if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
       var searchFor = hasBoundary ? new RegExp("\\b" + query + "\\b") : query;
       state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false,
@@ -119,24 +111,16 @@
   function highlightMatches(cm) {
     cm.operation(function() {
       var state = cm.state.matchHighlighter;
+      removeOverlay(cm);
       if (!cm.somethingSelected() && state.options.showToken) {
         var re = state.options.showToken === true ? /[\w$]/ : state.options.showToken;
         var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
         while (start && re.test(line.charAt(start - 1))) --start;
         while (end < line.length && re.test(line.charAt(end))) ++end;
-        /* STYLUS: hack start */
-        const token = line.slice(start, end);
-        if (token !== state.lastToken) {
-          state.lastToken = token;
-          removeOverlay(cm);
-          if (token) {
-            addOverlay(cm, token, re, state.options.style);
-          }
-        }
+        if (start < end)
+          addOverlay(cm, line.slice(start, end), re, state.options.style);
         return;
       }
-      removeOverlay(cm);
-      /* STYLUS: hack end */
       var from = cm.getCursor("from"), to = cm.getCursor("to");
       if (from.line != to.line) return;
       if (state.options.wordsOnly && !isWord(cm, from, to)) return;
@@ -169,28 +153,11 @@
       (stream.pos == stream.string.length || !re.test(stream.string.charAt(stream.pos)));
   }
 
-  function makeOverlay(cm, query, hasBoundary, style) {
-    /* STYLUS: hack start (part 3) */
-    const approvedClassName = `cm-${style}-approved`;
-    let timer;
-    let occurrences = 0;
+  function makeOverlay(query, hasBoundary, style) {
     return {token: function(stream) {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        occurrences = 0;
-        timer = null;
-      });
       if (stream.match(query) &&
-          (!hasBoundary || boundariesAround(stream, hasBoundary))) {
-        occurrences++;
-        if (occurrences == 1) {
-          cm.display.wrapper.classList.remove(approvedClassName);
-        } else if (occurrences == 2) {
-          cm.display.wrapper.classList.add(approvedClassName);
-        }
+          (!hasBoundary || boundariesAround(stream, hasBoundary)))
         return style;
-      }
-      /* STYLUS: hack end (part 3) */
       stream.next();
       stream.skipTo(query.charAt(0)) || stream.skipToEnd();
     }};

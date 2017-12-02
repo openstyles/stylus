@@ -1,4 +1,3 @@
-/* global retranslateCSS */
 'use strict';
 
 let installed;
@@ -119,7 +118,7 @@ function initPopup(url) {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    chrome.tabs.sendMessage(tab.id, {method: 'ping'}, {frameId: 0}, pong => {
+    sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
       if (pong) {
         return;
       }
@@ -229,6 +228,7 @@ function showStyles(styles) {
           });
         }
       }
+      window.dispatchEvent(new Event('showStyles:done'));
     });
 }
 
@@ -267,6 +267,11 @@ function createStyleElement({
   });
   styleName.checkbox = checkbox;
   styleName.appendChild(document.createTextNode(style.name));
+  setTimeout((el = styleName) => {
+    if (el.scrollWidth > el.clientWidth + 1) {
+      el.title = el.textContent;
+    }
+  });
 
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;
@@ -354,7 +359,7 @@ Object.assign(handleEvent, {
   },
 
   openLink(event) {
-    if (!prefs.get('openEditInWindow', false)) {
+    if (!chrome.windows || !prefs.get('openEditInWindow', false)) {
       handleEvent.openURLandHide.call(this, event);
       return;
     }

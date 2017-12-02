@@ -1,5 +1,15 @@
-/* global regExpTester debounce messageBox */
+/* global regExpTester debounce messageBox CodeMirror */
 'use strict';
+
+function templateCache(cache) {
+  function clone(id) {
+    if (typeof cache[id] === 'function') {
+      cache[id] = cache[id]();
+    }
+    return cache[id].cloneNode(true);
+  }
+  return {clone};
+}
 
 function createAppliesToLineWidget(cm) {
   const APPLIES_TYPE = [
@@ -12,6 +22,57 @@ function createAppliesToLineWidget(cm) {
   let widgets = [];
   let fromLine, toLine, styleVariables;
   let initialized = false;
+
+  const template = templateCache({
+    container: () =>
+      $element({className: 'applies-to', appendChild: [
+        $element({tag: 'label', appendChild: t('appliesLabel')}),
+        $element({
+          tag: 'ul',
+          className: 'applies-to-list'
+        })
+      ]}),
+    listItem: () =>
+      $element({tag: 'li', appendChild: [
+        $element({
+          tag: 'select',
+          className: 'applies-type',
+          appendChild: APPLIES_TYPE.map(([label, value]) => $element({
+            tag: 'option',
+            value: value,
+            textContent: label
+          }))
+        }),
+        $element({
+          tag: 'input',
+          className: 'applies-value'
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-regexp-test',
+          textContent: t('styleRegexpTestButton')
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-remove',
+          textContent: t('appliesRemove')
+        }),
+        $element({
+          tag: 'button',
+          type: 'button',
+          className: 'applies-to-add',
+          textContent: t('appliesAdd')
+        })
+      ]}),
+    appliesToEverything: () =>
+      $element({
+        tag: 'li',
+        className: 'applies-to-everything',
+        textContent: t('appliesToEverything')
+      })
+  });
 
   return {toggle};
 
@@ -56,13 +117,19 @@ function createAppliesToLineWidget(cm) {
     styleVariables.remove();
   }
 
-  function onChange(cm, {from, to, origin}) {
+  function onChange(cm, event) {
+    const {from, to, origin} = event;
     if (origin === 'appliesTo') {
       return;
     }
+    const lastChanged = CodeMirror.changeEnd(event).line;
     fromLine = Math.min(fromLine === null ? from.line : fromLine, from.line);
-    toLine = Math.max(toLine === null ? to.line : toLine, to.line);
-    debounce(update, THROTTLE_DELAY);
+    toLine = Math.max(toLine === null ? lastChanged : toLine, to.line);
+    if (origin === 'setValue') {
+      update();
+    } else {
+      debounce(update, THROTTLE_DELAY);
+    }
   }
 
   function onOptionChange(cm, option) {
@@ -82,9 +149,9 @@ function createAppliesToLineWidget(cm) {
   function update() {
     const changed = {fromLine, toLine};
     fromLine = Math.max(fromLine || 0, cm.display.viewFrom);
-    toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo);
+    toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo || toLine);
     const visible = {fromLine, toLine};
-    if (fromLine >= cm.display.viewFrom && toLine <= cm.display.viewTo) {
+    if (fromLine >= cm.display.viewFrom && toLine <= (cm.display.viewTo || toLine)) {
       cm.operation(doUpdate);
     }
     if (changed.fromLine !== visible.fromLine || changed.toLine !== visible.toLine) {
@@ -150,24 +217,40 @@ function createAppliesToLineWidget(cm) {
     }
 
     // decide search range
-    const fromIndex = widgets[i] ? cm.indexFromPos({line: widgets[i].line.lineNo(), ch: 0}) : 0;
-    const toIndex = cm.indexFromPos({line: widgets[j] ? widgets[j].line.lineNo() : toLine, ch: 0});
+    const fromPos = {line: widgets[i] ? widgets[i].line.lineNo() : 0, ch: 0};
+    const toPos = {line: widgets[j] ? widgets[j].line.lineNo() : toLine + 1, ch: 0};
+
+    // calc index->pos lookup table
+    let line = 0;
+    let index = 0;
+    let fromIndex, toIndex;
+    const lineIndexes = [index];
+    cm.doc.iter(({text}) => {
+      fromIndex = line === fromPos.line ? index : fromIndex;
+      lineIndexes.push((index += text.length + 1));
+      line++;
+      toIndex = line >= toPos.line ? index : toIndex;
+      return toIndex;
+    });
 
     // splice
     i = Math.max(0, i);
-    widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i)));
+    widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i), lineIndexes));
 
     fromLine = null;
     toLine = null;
   }
 
-  function *createWidgets(start, end, removed) {
+  function *createWidgets(start, end, removed, lineIndexes) {
     let i = 0;
+    let itemHeight;
     for (const section of findAppliesTo(start, end)) {
       while (removed[i] && removed[i].line.lineNo() < section.pos.line) {
         clearWidget(removed[i++]);
       }
-      setupMarkers(section);
+      for (const a of section.applies) {
+        setupApplyMarkers(a, lineIndexes);
+      }
       if (removed[i] && removed[i].line.lineNo() === section.pos.line) {
         // reuse old widget
         removed[i].section.applies.forEach(apply => {
@@ -176,7 +259,9 @@ function createAppliesToLineWidget(cm) {
         });
         removed[i].section = section;
         const newNode = buildElement(section);
-        removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
+        if (removed[i].node.parentNode) {
+          removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
+        }
         removed[i].node = newNode;
         removed[i].changed();
         yield removed[i];
@@ -187,9 +272,11 @@ function createAppliesToLineWidget(cm) {
       const widget = cm.addLineWidget(section.pos.line, buildElement(section), {
         coverGutter: true,
         noHScroll: true,
-        above: true
+        above: true,
+        height: itemHeight ? section.applies.length * itemHeight : undefined,
       });
       widget.section = section;
+      itemHeight = itemHeight || widget.node.offsetHeight / (section.applies.length || 1);
       yield widget;
     }
     removed.slice(i).forEach(clearWidget);
@@ -206,151 +293,137 @@ function createAppliesToLineWidget(cm) {
     apply.mark.clear();
   }
 
-  function setupMarkers({applies}) {
-    applies.forEach(setupApplyMarkers);
-  }
-
-  function setupApplyMarkers(apply) {
+  function setupApplyMarkers(apply, lineIndexes) {
     apply.type.mark = cm.markText(
-      cm.posFromIndex(apply.type.start),
-      cm.posFromIndex(apply.type.end),
+      posFromIndex(cm, apply.type.start, lineIndexes),
+      posFromIndex(cm, apply.type.end, lineIndexes),
       {clearWhenEmpty: false}
     );
     apply.value.mark = cm.markText(
-      cm.posFromIndex(apply.value.start),
-      cm.posFromIndex(apply.value.end),
+      posFromIndex(cm, apply.value.start, lineIndexes),
+      posFromIndex(cm, apply.value.end, lineIndexes),
       {clearWhenEmpty: false}
     );
     apply.mark = cm.markText(
-      cm.posFromIndex(apply.start),
-      cm.posFromIndex(apply.end),
+      posFromIndex(cm, apply.start, lineIndexes),
+      posFromIndex(cm, apply.end, lineIndexes),
       {clearWhenEmpty: false}
     );
   }
 
+  function posFromIndex(cm, index, lineIndexes) {
+    if (!lineIndexes) {
+      return cm.posFromIndex(index);
+    }
+    let line = lineIndexes.prev || 0;
+    const prev = lineIndexes[line];
+    const next = lineIndexes[line + 1];
+    if (prev <= index && index < next) {
+      return {line, ch: index - prev};
+    }
+    let a = index < prev ? 0 : line;
+    let b = index < next ? line + 1 : lineIndexes.length - 1;
+    while (a < b - 1) {
+      const mid = (a + b) >> 1;
+      if (lineIndexes[mid] < index) {
+        a = mid;
+      } else {
+        b = mid;
+      }
+    }
+    line = lineIndexes[b] > index ? a : b;
+    Object.defineProperty(lineIndexes, 'prev', {value: line, configurable: true});
+    return {line, ch: index - lineIndexes[line]};
+  }
+
   function buildElement({applies}) {
-    const el = $element({className: 'applies-to', appendChild: [
-      $element({tag: 'label', appendChild: [
-        t('appliesLabel'),
-        // $element({tag: 'svg'})
-      ]}),
-      $element({
-        tag: 'ul',
-        className: 'applies-to-list',
-        appendChild: applies.map(makeLi)
-      })
-    ]});
-    if (!$('li', el)) {
-      $('ul', el).appendChild($element({
-        tag: 'li',
-        className: 'applies-to-everything',
-        textContent: t('appliesToEverything')
-      }));
+    const el = template.clone('container');
+    const appliesToList = $('.applies-to-list', el);
+    applies.map(makeLi)
+      .forEach(item => appliesToList.appendChild(item));
+    if (!appliesToList.childNodes.length) {
+      appliesToList.appendChild(template.clone('appliesToEverything'));
     }
     return el;
 
     function makeLi(apply) {
-      const el = $element({tag: 'li', appendChild: makeInput(apply)});
+      const el = template.clone('listItem');
       el.dataset.type = apply.type.text;
       el.addEventListener('change', e => {
         if (e.target.classList.contains('applies-type')) {
           el.dataset.type = apply.type.text;
         }
       });
-      return el;
-    }
 
-    function makeInput(apply) {
-      const typeInput = $element({
-        tag: 'select',
-        className: 'applies-type',
-        appendChild: APPLIES_TYPE.map(([label, value]) => $element({
-          tag: 'option',
-          value: value,
-          textContent: label
-        })),
-        onchange() {
-          applyChange(apply.type, this.value);
-        }
-      });
+      const typeInput = $('.applies-type', el);
       typeInput.value = apply.type.text;
-      const valueInput = $element({
-        tag: 'input',
-        className: 'applies-value',
-        value: apply.value.text,
-        oninput() {
-          debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
-        },
-        onfocus: updateRegexpTest
-      });
-      const regexpTestButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-regexp-test',
-        textContent: t('styleRegexpTestButton'),
-        onclick() {
-          regExpTester.toggle();
-          regExpTester.update([apply.value.text]);
+      typeInput.onchange = function () {
+        applyChange(apply.type, this.value);
+      };
+
+      const valueInput = $('.applies-value', el);
+      valueInput.value = apply.value.text;
+      valueInput.oninput = function () {
+        debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
+      };
+      valueInput.onfocus = updateRegexpTest;
+
+      const regexpTestButton = $('.applies-to-regexp-test', el);
+      regexpTestButton.onclick = () => {
+        regExpTester.toggle();
+        regExpTester.update([apply.value.text]);
+      };
+
+      const removeButton = $('.applies-to-remove', el);
+      removeButton.onclick = function () {
+        const i = applies.indexOf(apply);
+        let repl;
+        let from;
+        let to;
+        if (applies.length < 2) {
+          messageBox({
+            contents: chrome.i18n.getMessage('appliesRemoveError'),
+            buttons: [t('confirmClose')]
+          });
+          return;
         }
-      });
-      const removeButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-remove',
-        textContent: t('appliesRemove'),
-        onclick() {
-          const i = applies.indexOf(apply);
-          let repl;
-          let from;
-          let to;
-          if (applies.length < 2) {
-            messageBox({
-              contents: chrome.i18n.getMessage('appliesRemoveError'),
-              buttons: [t('confirmClose')]
-            });
-            return;
-          }
-          if (i === 0) {
-            from = apply.mark.find().from;
-            to = applies[i + 1].mark.find().from;
-            repl = '';
-          } else if (i === applies.length - 1) {
-            from = applies[i - 1].mark.find().to;
-            to = apply.mark.find().to;
-            repl = '';
-          } else {
-            from = applies[i - 1].mark.find().to;
-            to = applies[i + 1].mark.find().from;
-            repl = ', ';
-          }
-          cm.replaceRange(repl, from, to, 'appliesTo');
-          clearApply(apply);
-          this.closest('li').remove();
-          applies.splice(i, 1);
+        if (i === 0) {
+          from = apply.mark.find().from;
+          to = applies[i + 1].mark.find().from;
+          repl = '';
+        } else if (i === applies.length - 1) {
+          from = applies[i - 1].mark.find().to;
+          to = apply.mark.find().to;
+          repl = '';
+        } else {
+          from = applies[i - 1].mark.find().to;
+          to = applies[i + 1].mark.find().from;
+          repl = ', ';
         }
-      });
-      const addButton = $element({
-        tag: 'button',
-        type: 'button',
-        className: 'applies-to-add',
-        textContent: t('appliesAdd'),
-        onclick() {
-          const i = applies.indexOf(apply);
-          const pos = apply.mark.find().to;
-          const text = `, ${apply.type.text}("")`;
-          cm.replaceRange(text, pos, pos, 'appliesTo');
-          const newApply = createApply(
-            cm.indexFromPos(pos) + 2,
-            apply.type.text,
-            '',
-            true
-          );
-          setupApplyMarkers(newApply);
-          applies.splice(i + 1, 0, newApply);
-          this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
-        }
-      });
-      return [typeInput, valueInput, regexpTestButton, removeButton, addButton];
+        cm.replaceRange(repl, from, to, 'appliesTo');
+        clearApply(apply);
+        this.closest('li').remove();
+        applies.splice(i, 1);
+      };
+
+      const addButton = $('.applies-to-add', el);
+      addButton.onclick = function () {
+        const i = applies.indexOf(apply);
+        const pos = apply.mark.find().to;
+        const text = `, ${apply.type.text}("")`;
+        cm.replaceRange(text, pos, pos, 'appliesTo');
+        const newApply = createApply(
+          cm.indexFromPos(pos) + 2,
+          apply.type.text,
+          '',
+          true
+        );
+        setupApplyMarkers(newApply);
+        applies.splice(i + 1, 0, newApply);
+        this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
+      };
+
+      return el;
 
       function updateRegexpTest() {
         if (apply.type.text === 'regexp') {

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html id="stylus">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="options/options.css">
   <link rel="stylesheet" href="options/onoffswitch.css">
@@ -23,7 +24,7 @@
   <script src="content/apply.js"></script>
 </head>
 
-<body>
+<body id="stylus-options">
   <div id="options">
 
     <div class="block">
@@ -56,7 +57,7 @@
         <label>
           <span i18n-text="prefShowBadge"></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="show-badge">
+            <input type="checkbox" id="show-badge" class="slider">
             <span></span>
           </span>
         </label>
@@ -82,21 +83,21 @@
           <span i18n-text="popupOpenEditInWindow"
                 i18n-title="popupOpenEditInWindowTooltip"></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="openEditInWindow">
+            <input type="checkbox" id="openEditInWindow" class="slider">
             <span></span>
           </span>
         </label>
         <label>
           <span i18n-text="popupStylesFirst"></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="popup.stylesFirst">
+            <input type="checkbox" id="popup.stylesFirst" class="slider">
             <span></span>
           </span>
         </label>
         <label class="chromium-only">
           <span i18n-text="popupBorders" i18n-title="popupBordersTooltip"></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="popup.borders">
+            <input type="checkbox" id="popup.borders" class="slider">
             <span></span>
           </span>
         </label>
@@ -126,23 +127,16 @@
       </div>
       <div class="items">
         <label>
-          <span i18n-text="optionsAdvancedNewStyleAsUsercss"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="newStyleAsUsercss">
-            <span></span>
-          </span>
-        </label>
-        <label>
           <span i18n-text="optionsAdvancedExposeIframes"> <sup>2</sup></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="exposeIframes">
+            <input type="checkbox" id="exposeIframes" class="slider">
             <span></span>
           </span>
         </label>
         <label class="chromium-only">
           <span i18n-text="optionsAdvancedContextDelete"></span>
           <span class="onoffswitch">
-            <input type="checkbox" id="editor.contextDelete">
+            <input type="checkbox" id="editor.contextDelete" class="slider">
             <span></span>
           </span>
         </label>

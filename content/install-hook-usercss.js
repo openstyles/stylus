@@ -1,4 +1,3 @@
-/* global runtimeSend */
 'use strict';
 
 function createSourceLoader() {
@@ -66,10 +65,6 @@ function initUsercssInstall() {
   let watcher;
 
   chrome.runtime.onConnect.addListener(port => {
-    // FIXME: is this the correct way to reject a connection?
-    // https://developer.chrome.com/extensions/messaging#connect
-    console.assert(port.name === 'usercss-install');
-
     port.onMessage.addListener(msg => {
       switch (msg.method) {
         case 'getSourceCode':
@@ -95,16 +90,16 @@ function initUsercssInstall() {
           if (history.length > 1) {
             history.back();
           } else {
-            runtimeSend({method: 'closeTab'});
+            chrome.runtime.sendMessage({method: 'closeTab'});
           }
           break;
       }
     });
   });
-  return runtimeSend({
+  chrome.runtime.sendMessage({
     method: 'openUsercssInstallPage',
-    updateUrl: location.href
-  }).catch(alert);
+    url: location.href,
+  }, r => r && r.__ERROR__ && alert(r.__ERROR__));
 }
 
 function isUsercss() {

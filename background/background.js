@@ -28,14 +28,31 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
   chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
     listener('styleReplaceAll', data));
+
+  if (FIREFOX) {
+    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+    chrome.webNavigation.onCommitted.addListener(webNavUsercssInstallerFF, {
+      url: [
+        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.css'},
+        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.styl'},
+      ]
+    });
+  }
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) =>
-  contextMenus[info.menuItemId].click(info, tab));
+if (chrome.contextMenus) {
+  chrome.contextMenus.onClicked.addListener((info, tab) =>
+    contextMenus[info.menuItemId].click(info, tab));
+}
 
-if ('commands' in chrome) {
+if (chrome.commands) {
   // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
+}
+
+if (!chrome.browserAction ||
+    !['setIcon', 'setBadgeBackgroundColor', 'setBadgeText'].every(name => chrome.browserAction[name])) {
+  window.updateIcon = () => {};
 }
 
 // *************************************************************************
@@ -50,9 +67,13 @@ prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
     // Open FAQs page once after installation to guide new users.
     // Do not display it in development mode.
     if (reason === 'install' && manifest.update_url) {
-      setTimeout(openURL, 100, {
-        url: 'http://add0n.com/stylus.html'
-      });
+      // don't hardcode homepage URL, extract it from "Get Help" label translation
+      // TODO: add a built-in tour page in the extension
+      const getHelpHtml = chrome.i18n.getMessage('manageText').match(/<a\s+href=[^>]+/g);
+      const url = (getHelpHtml[1] || '').replace(/^.+?=\s*/, '').replace(/^['"]|["']$/g, '');
+      if (url) {
+        setTimeout(openURL, 100, {url});
+      }
     }
     // reset L10N cache on update
     if (reason === 'update') {
@@ -79,7 +100,7 @@ browserCommands = {
 
 // *************************************************************************
 // context menus
-contextMenus = Object.assign({
+contextMenus = {
   'show-badge': {
     title: 'menuShowBadge',
     click: info => prefs.set(info.menuItemId, info.checked),
@@ -92,22 +113,27 @@ contextMenus = Object.assign({
     title: 'openStylesManager',
     click: browserCommands.openManage,
   },
-}, !FIREFOX && prefs.get('editor.contextDelete') && {
   'editor.contextDelete': {
+    presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
     title: 'editDeleteText',
     type: 'normal',
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      chrome.tabs.sendMessage(tab.id, {method: 'editDeleteText'});
+      sendMessage({tabId: tab.id, method: 'editDeleteText'});
     },
   }
-});
+};
 
-{
-  const createContextMenus = (ids = Object.keys(contextMenus)) => {
+if (chrome.contextMenus) {
+  const createContextMenus = ids => {
     for (const id of ids) {
-      const item = Object.assign({id}, contextMenus[id]);
+      let item = contextMenus[id];
+      if (item.presentIf && !item.presentIf()) {
+        continue;
+      }
+      item = Object.assign({id}, item);
+      delete item.presentIf;
       const prefValue = prefs.readOnlyValues[id];
       item.title = chrome.i18n.getMessage(item.title);
       if (!item.type && typeof prefValue === 'boolean') {
@@ -121,20 +147,20 @@ contextMenus = Object.assign({
       chrome.contextMenus.create(item, ignoreChromeError);
     }
   };
-  createContextMenus();
-  const toggleableIds = Object.keys(contextMenus).filter(key =>
-    typeof prefs.readOnlyValues[key] === 'boolean');
-  prefs.subscribe(toggleableIds, (id, checked) => {
-    if (id === 'editor.contextDelete') {
-      if (checked) {
-        createContextMenus([id]);
-      } else {
-        chrome.contextMenus.remove(id, ignoreChromeError);
-      }
+  const toggleCheckmark = (id, checked) => {
+    chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+  };
+  const togglePresence = (id, checked) => {
+    if (checked) {
+      createContextMenus([id]);
     } else {
-      chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+      chrome.contextMenus.remove(id, ignoreChromeError);
     }
-  });
+  };
+  const keys = Object.keys(contextMenus);
+  prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
+  createContextMenus(keys);
 }
 
 // *************************************************************************
@@ -145,7 +171,6 @@ window.addEventListener('storageReady', function _() {
   updateIcon({id: undefined}, {});
 
   const NTP = 'chrome://newtab/';
-  const PING = {method: 'ping'};
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
   // expand * as .*?
@@ -168,15 +193,11 @@ window.addEventListener('storageReady', function _() {
   };
 
   const pingCS = (cs, {id, url}) => {
+    const maybeInject = pong => !pong && injectCS(cs, id);
     cs.matches.some(match => {
-      if ((match === ALL_URLS || url.match(match))
-        && (!url.startsWith('chrome') || url === NTP)) {
-        chrome.tabs.sendMessage(id, PING, pong => {
-          if (!pong) {
-            injectCS(cs, id);
-          }
-          ignoreChromeError();
-        });
+      if ((match === ALL_URLS || url.match(match)) &&
+          (!url.startsWith('chrome') || url === NTP)) {
+        sendMessage({method: 'ping', tabId: id}, maybeInject);
         return true;
       }
     });
@@ -200,13 +221,13 @@ function webNavigationListener(method, {url, tabId, frameId}) {
       if (method === 'styleApply') {
         handleCssTransitionBug({tabId, frameId, url, styles});
       }
-      chrome.tabs.sendMessage(tabId, {
+      sendMessage({
+        tabId,
+        frameId,
         method,
         // ping own page so it retrieves the styles directly
         styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
-      }, {
-        frameId
-      }, ignoreChromeError);
+      });
     }
     // main page frame id is 0
     if (frameId === 0) {
@@ -230,6 +251,21 @@ function webNavigationListenerChrome(method, data) {
       data.url = tab.url;
     }
     webNavigationListener(method, data);
+  });
+}
+
+
+function webNavUsercssInstallerFF(data) {
+  const {tabId} = data;
+  Promise.all([
+    sendMessage({tabId, method: 'ping'}),
+    // we need tab index to open the installer next to the original one
+    // and also to skip the double-invocation in FF which assigns tab url later
+    getTab(tabId),
+  ]).then(([pong, tab]) => {
+    if (pong !== true && tab.url !== 'about:blank') {
+      usercssHelper.openInstallPage(tab, {direct: true});
+    }
   });
 }
 
@@ -281,20 +317,28 @@ function updateIcon(tab, styles) {
       }
       // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
       chrome.browserAction.setBadgeBackgroundColor({color});
-      getTab(tab.id).then(realTab => {
-        // skip pre-rendered tabs
-        if (realTab.index >= 0) {
-          chrome.browserAction.setBadgeText({text, tabId: tab.id});
-        }
+      setTimeout(() => {
+        getTab(tab.id).then(realTab => {
+          // skip pre-rendered tabs
+          if (realTab.index >= 0) {
+            chrome.browserAction.setBadgeText({text, tabId: tab.id});
+          }
+        });
       });
     });
   }
 }
 
 
-function onRuntimeMessage(request, sender, sendResponse) {
-  // prevent browser exception bug on sending a response to a closed tab
-  sendResponse = (send => data => tryCatch(send, data))(sendResponse);
+function onRuntimeMessage(request, sender, sendResponseInternal) {
+  const sendResponse = data => {
+    // wrap Error object instance as {__ERROR__: message} - will be unwrapped in sendMessage
+    if (data instanceof Error) {
+      data = {__ERROR__: data.message};
+    }
+    // prevent browser exception bug on sending a response to a closed tab
+    tryCatch(sendResponseInternal, data);
+  };
   switch (request.method) {
     case 'getStyles':
       getStyles(request).then(sendResponse);
@@ -333,30 +377,15 @@ function onRuntimeMessage(request, sender, sendResponse) {
       return KEEP_CHANNEL_OPEN;
 
     case 'closeTab':
-      closeTab(sender.tab.id, request).then(sendResponse);
+      chrome.tabs.remove(request.tabId || sender.tab.id, () => {
+        if (chrome.runtime.lastError && request.tabId !== sender.tab.id) {
+          sendResponse(new Error(chrome.runtime.lastError.message));
+        }
+      });
       return KEEP_CHANNEL_OPEN;
 
     case 'openEditor':
       openEditor(request.id);
       return;
   }
-}
-
-function closeTab(tabId, request) {
-  return new Promise(resolve => {
-    if (request.tabId) {
-      tabId = request.tabId;
-    }
-    chrome.tabs.remove(tabId, () => {
-      const {lastError} = chrome.runtime;
-      if (lastError) {
-        resolve({
-          success: false,
-          error: lastError.message || String(lastError)
-        });
-        return;
-      }
-      resolve({success: true});
-    });
-  });
 }

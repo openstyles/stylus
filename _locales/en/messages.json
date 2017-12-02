@@ -127,6 +127,10 @@
     "message": "Autocomplete on typing",
     "description": "Label for the checkbox in the style editor."
   },
+  "cm_colorpicker": {
+    "message": "Colorpickers for CSS colors",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+  },
   "cm_indentWithTabs": {
     "message": "Use tabs with smart indentation",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
@@ -171,6 +175,14 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Switch formats: HEX -> RGB -> HSL.\nShift-click to reverse the direction.\nAlso via PgUp (PageUp), PgDn (PageDown) keys.",
+    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+  },
+  "colorpickerTooltip": {
+    "message": "Open color picker",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+  },
   "dysfunctional": {
     "message": "Stylus cannot function in private windows because Firefox disallows direct connection to the internal background page context of the extension.",
     "description": "Displayed in Firefox when its settings make Stylus dysfunctional"
@@ -202,6 +214,10 @@
   "confirmDefault": {
     "message": "Use default",
     "description": "'Set to default' button in a confirm dialog"
+  },
+  "confirmDiscardChanges": {
+    "message": "Discard the changes?",
+    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
   },
   "confirmSave": {
     "message": "Save",
@@ -422,19 +438,19 @@
     "description": "Label for the button to import and overwrite current style"
   },
   "installButton": {
-    "message": "Install",
+    "message": "Install style",
     "description": "Label for install button"
   },
   "installButtonInstalled": {
-    "message": "Installed",
+    "message": "Style installed",
     "description": "Text displayed when the style is successfully installed"
   },
   "installButtonUpdate": {
-    "message": "Update",
+    "message": "Update style",
     "description": "Label for update button"
   },
   "installButtonReinstall": {
-    "message": "Reinstall",
+    "message": "Reinstall style",
     "description": "Label for reinstall button"
   },
   "installUpdate": {
@@ -529,6 +545,10 @@
     "message": "Installed Styles",
     "description": "Heading for the manage page"
   },
+  "manageNewStyleAsUsercss": {
+    "message": "as Usercss",
+    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+  },
   "manageOnlyEnabled": {
     "message": "Only enabled styles",
     "description": "Checkbox to show only enabled styles"
@@ -548,6 +568,14 @@
   "manageOnlyLocalTooltip": {
     "message": "(the styles not installed through a userstyles.org page)",
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Only non-Usercss styles",
+    "description": "Checkbox to show only non-Usercss (standard) styles"
+  },
+  "manageOnlyUsercss": {
+    "message": "Only Usercss styles",
+    "description": "Checkbox to show only Usercss styles"
   },
   "manageOnlyUpdates": {
     "message": "Only with updates or issues",
@@ -622,6 +650,14 @@
   "popupManageTooltip": {
     "message": "Shift-click or right-click opens manager with styles applicable for current site",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>-<9>, <0>, also on numpad - toggles Nth style (0 is 10)\n<A>-<Z> toggles first style with a name that starts with the letter\n<Shift> opens editor instead of toggling\n<Numpad +> enables listed styles\n<Numpad –> disables listed styles\n<Numpad *> and <`> (backtick) - toggles initially enabled styles; doesn't apply to subsequently enabled styles while the popup is open so you can restore the initial selection after testing stuff: simply disable all, then toggle i.e. <Numpad –> <Numpad *>\nMore info on wiki",
+    "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+  },
+  "popupHotkeysTooltip": {
+    "message": "Click to see available hotkeys",
+    "description": "Tooltip displayed when hovering the right edge of the extension popup"
   },
   "popupOpenEditInWindow": {
     "message": "Open editor in a new window",
@@ -825,7 +861,7 @@
     }
   },
   "styleMissingName": {
-    "message": "Enter a name.",
+    "message": "Enter a name",
     "description": "Error displayed when user saves without providing a name"
   },
   "styleSaveLabel": {
@@ -876,6 +912,10 @@
   "stylusUnavailableForURLdetails": {
     "message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version, the standard new tab page as of Chrome 61, about:addons, and so on) as well as other extensions' pages. Each browser also restricts access to its own extensions gallery (like Chrome Web Store or AMO).",
     "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
+  "syncStorageErrorSaving": {
+    "message": "The value cannot be saved. Try reducing the amount of text.",
+    "description": "Displayed when trying to save an excessively big value via storage.sync API"
   },
   "toggleStyle": {
     "message": "Toggle style",
@@ -945,6 +985,20 @@
   "updatesCurrentlyInstalled": {
     "message": "Updates installed:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Specify @name in the code",
+    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "Empty @name replaces the default template",
+    "description": "The text shown after @name when creating a new Usercss style"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Replace the default template for new Usercss styles with the current code?"
+  },
+  "usercssConfigIncomplete": {
+    "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
   },
   "versionInvalidOlder": {
     "message": "The version is older than the installed style.",

@@ -1,11 +1,13 @@
 <html id="stylus">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="manage/manage.css">
   <link rel="stylesheet" href="msgbox/msgbox.css">
   <link rel="stylesheet" href="options/onoffswitch.css">
+  <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
 
   <style id="style-overrides"></style>
 
@@ -86,10 +88,8 @@
 
   <template data-id="configureIcon">
     <span class="configure-usercss" i18n-title="configureStyle">
-      <svg class="svg-icon" viewBox="0 0 20 20">
-        <path
-        d="M 10,2.0423828 A 7.9575898,7.9575898 0 0 0 8.8908203,2.1285156 V 4.355664 A 5.7578608,5.7578608 0 0 0 6.7919922,5.2240235 l -1.575,-1.575 A 7.9575898,7.9575898 0 0 0 3.6507813,5.21875 L 5.2222656,6.7902344 A 5.7578608,5.7578608 0 0 0 4.3521485,8.8908203 H 2.1302735 A 7.9575898,7.9575898 0 0 0 2.0423828,10 7.9575898,7.9575898 0 0 0 2.1285156,11.10918 H 4.355664 a 5.7578608,5.7578608 0 0 0 0.8683595,2.098828 l -1.575,1.575 A 7.9575898,7.9575898 0 0 0 5.21875,16.349219 l 1.5714844,-1.571484 a 5.7578608,5.7578608 0 0 0 2.1005859,0.870117 v 2.221875 A 7.9575898,7.9575898 0 0 0 10,17.957617 a 7.9575898,7.9575898 0 0 0 1.10918,-0.08613 v -2.227149 a 5.7578608,5.7578608 0 0 0 2.098828,-0.868359 l 1.575,1.575 a 7.9575898,7.9575898 0 0 0 1.566211,-1.569727 l -1.571484,-1.571485 a 5.7578608,5.7578608 0 0 0 0.870117,-2.100585 h 2.221875 A 7.9575898,7.9575898 0 0 0 17.957617,10 7.9575898,7.9575898 0 0 0 17.871485,8.8908203 H 15.644336 A 5.7578608,5.7578608 0 0 0 14.775977,6.7919922 l 1.575,-1.575 A 7.9575898,7.9575898 0 0 0 14.78125,3.6507813 L 13.209765,5.2222656 A 5.7578608,5.7578608 0 0 0 11.10918,4.3521485 V 2.1302735 A 7.9575898,7.9575898 0 0 0 10,2.0423828 Z m 0,4.2574219 A 3.6994645,3.6994645 0 0 1 13.700195,10 3.6994645,3.6994645 0 0 1 10,13.700195 3.6994645,3.6994645 0 0 1 6.2998047,10 3.6994645,3.6994645 0 0 1 10,6.2998047 Z"
-        />
+      <svg class="svg-icon configure" viewBox="0 0 16 16">
+        <path d="M8,0C7.6,0,7.3,0,6.9,0.1v2.2C6.1,2.5,5.4,2.8,4.8,3.2L3.2,1.6c-0.6,0.4-1.1,1-1.6,1.6l1.6,1.6C2.8,5.4,2.5,6.1,2.3,6.9H0.1C0,7.3,0,7.6,0,8c0,0.4,0,0.7,0.1,1.1h2.2c0.1,0.8,0.4,1.5,0.9,2.1l-1.6,1.6c0.4,0.6,1,1.1,1.6,1.6l1.6-1.6c0.6,0.4,1.4,0.7,2.1,0.9v2.2C7.3,16,7.6,16,8,16c0.4,0,0.7,0,1.1-0.1v-2.2c0.8-0.1,1.5-0.4,2.1-0.9l1.6,1.6c0.6-0.4,1.1-1,1.6-1.6l-1.6-1.6c0.4-0.6,0.7-1.4,0.9-2.1h2.2C16,8.7,16,8.4,16,8c0-0.4,0-0.7-0.1-1.1h-2.2c-0.1-0.8-0.4-1.5-0.9-2.1l1.6-1.6c-0.4-0.6-1-1.1-1.6-1.6l-1.6,1.6c-0.6-0.4-1.4-0.7-2.1-0.9V0.1C8.7,0,8.4,0,8,0z M8,4.3c2.1,0,3.7,1.7,3.7,3.7c0,0,0,0,0,0c0,2.1-1.7,3.7-3.7,3.7c0,0,0,0,0,0c-2.1,0-3.7-1.7-3.7-3.7c0,0,0,0,0,0C4.3,5.9,5.9,4.3,8,4.3C8,4.3,8,4.3,8,4.3z"></path>
       </svg>
     </span>
   </template>
@@ -138,7 +138,7 @@
 
   <template data-id="extraAppliesTo">
     <details class="applies-to-extra">
-      <summary i18n-text="appliesDisplayTruncatedSuffix"></summary>
+      <summary class="applies-to-extra-expander" i18n-text="appliesDisplayTruncatedSuffix"></summary>
     </details>
   </template>
 
@@ -150,7 +150,7 @@
   <script src="manage/filters.js"></script>
   <script src="manage/updater-ui.js"></script>
   <script src="manage/object-diff.js"></script>
-  <script src="js/color-parser.js"></script>
+  <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
   <script src="manage/config-dialog.js"></script>
   <script src="manage/manage.js"></script>
 </head>
@@ -173,11 +173,20 @@
     </label>
     <label>
       <input id="manage.onlyLocal" type="checkbox"
-             data-filter=":not(.updatable)"
-             data-filter-hide=".updatable">
+             data-filter=":not(.updatable):not(.update-done)"
+             data-filter-hide=".updatable, .update-done">
       <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
         <option i18n-text="manageOnlyLocal" value="false"></option>
         <option i18n-text="manageOnlyExternal" value="true"></option>
+      </select>
+    </label>
+    <label>
+      <input id="manage.onlyUsercss" type="checkbox"
+             data-filter=".usercss"
+             data-filter-hide=":not(.usercss)">
+      <select id="manage.onlyUsercss.invert">
+        <option i18n-text="manageOnlyUsercss" value="false"></option>
+        <option i18n-text="manageOnlyNonUsercss" value="true"></option>
       </select>
     </label>
     <label id="onlyUpdates" class="hidden">
@@ -208,9 +217,20 @@
     <a href="edit.html">
       <button id="add-style-label" i18n-text="addStyleLabel"></button>
     </a>
+    <label id="newStyleAsUsercss-wrapper" class="nobreak">
+      <input type="checkbox" id="newStyleAsUsercss">
+      <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
+      <a id="usercss-wiki"
+         href="https://github.com/openstyles/stylus/wiki/Usercss"
+         i18n-title="externalUsercssDocument">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
+        </svg>
+      </a>
+    </label>
   </p>
-  <div id="options">
-    <h2 id="options-heading" i18n-text="optionsHeading"></h2>
+  <details id="options" data-pref="manage.options.expanded">
+    <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
     <label><input id="manage.newUI" type="checkbox"><span i18n-text="manageNewUI"></span></label>
     <div id="newUIoptions">
       <div>
@@ -238,7 +258,7 @@
          i18n-title="editorStylesButton"
          target="_blank"><button i18n-text="cm_theme"></button></a>
     </p>
-  </div>
+  </details>
   <div id="backup">
     <h2 id="backup-title" i18n-text="backupButtons"></h2>
     <span id="backup-message" i18n-text="backupMessage"></span>
@@ -251,8 +271,9 @@
 </div>
 <div id="installed"></div>
 
-<script src="manage/fileSaveLoad.js"></script>
+<script src="manage/import-export.js"></script>
 <script src="msgbox/msgbox.js"></script>
+<script src="manage/incremental-search.js" async></script>
 
 </body>
 </html>

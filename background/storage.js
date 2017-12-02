@@ -203,11 +203,17 @@ function dbExecChromeStorage(method, data) {
     case 'getAll':
       return chromeLocal.get(null).then(storage => {
         const styles = [];
+        const leftovers = [];
         for (const key in storage) {
           if (key.startsWith(STYLE_KEY_PREFIX) &&
               Number(key.substr(STYLE_KEY_PREFIX.length))) {
             styles.push(storage[key]);
+          } else if (key.startsWith('tempUsercssCode')) {
+            leftovers.push(key);
           }
+        }
+        if (leftovers.length) {
+          chromeLocal.remove(leftovers);
         }
         return {target: {result: styles}};
       });
@@ -389,7 +395,7 @@ function saveStyle(style) {
     .then(decide);
 
   function maybeCalcDigest() {
-    if (reason === 'update' || reason === 'update-digest') {
+    if (['install', 'update', 'update-digest'].includes(reason)) {
       return calcStyleDigest(style).then(digest => {
         style.originalDigest = digest;
       });
@@ -418,7 +424,7 @@ function saveStyle(style) {
           return style;
         }
         codeIsUpdated = !existed || 'sections' in style && !styleSectionsEqual(style, oldStyle);
-        style = Object.assign({}, oldStyle, style);
+        style = Object.assign({installDate: Date.now()}, oldStyle, style);
         return write(style, store);
       });
     } else {

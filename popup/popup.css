@@ -84,6 +84,7 @@ body.blocked > DIV {
   padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
+  counter-reset: style-number;
 }
 
 #installed.disabled .style-name {
@@ -110,10 +111,25 @@ body.blocked > DIV {
   display: flex;
   align-items: center;
   padding: 5px 0.75em;
+  position: relative;
 }
 
 .entry:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.entry:nth-child(-n+10):before,
+.entry:nth-child(10):before {
+  counter-increment: style-number;
+  content: counter(style-number);
+  position: absolute;
+  top: .9ex;
+  right: 5px;
+  color: #aaa;
+}
+
+.entry:nth-child(10):before {
+  content: "0";
 }
 
 .entry .style-edit-link {
@@ -223,6 +239,9 @@ a:hover .svg-icon {
 
 body > .actions {
   margin-top: 0.5em;
+  /* raise the actions above the hotkey-info */
+  position: relative;
+  z-index: 4;
 }
 
 .actions > div:not(:last-child):not(#disable-all-wrapper),
@@ -430,6 +449,76 @@ body.blocked .actions > .left-gutter {
   font-size: 90%;
   margin: 0;
 }
+
+/******************************************/
+
+#hotkey-info {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  cursor: help;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+  hyphens: auto;
+}
+
+#hotkey-info:not([data-active]) > * {
+  display: none;
+}
+
+#hotkey-info[data-active] {
+  left: 6ex;
+  width: auto;
+  cursor: auto;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid white;
+  box-shadow: 0 0 90px rgba(0, 0, 0, .5);
+  z-index: 5;
+}
+
+#hotkey-info div:first-child {
+  flex-grow: 1;
+  padding: 0 1em;
+  font-size: 11px;
+  overflow-y: auto;
+}
+
+#hotkey-info div {
+  padding: 1em;
+  border-top: 1px solid #ddd;
+  background-color: white;
+}
+
+#hotkey-info div:last-child {
+  box-shadow: 0 0 90px rgba(0, 0, 0, .25);
+  position: relative;
+}
+
+#hotkey-info p {
+  text-indent: -3px;
+}
+
+#hotkey-info p:last-child {
+  margin-bottom: 0;
+}
+
+#hotkey-info mark {
+  display: inline-block;
+  background: linear-gradient(#ccc, #fff);
+  padding: 1px 6px 0;
+  margin: 2px;
+  border: 1px solid white;
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/******************************************/
 
 @keyframes lights-off {
   from {

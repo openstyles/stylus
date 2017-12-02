@@ -5,6 +5,8 @@
 /* global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter */
 /* global mozParser createSourceEditor */
 /* global closeCurrentTab regExpTester messageBox */
+/* global initColorpicker */
+/* global initCollapsibles */
 'use strict';
 
 let styleId = null;
@@ -22,24 +24,58 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-// if background page hasn't been loaded yet, increase the chances it has before DOMContentLoaded
-onBackgroundReady();
+Promise.all([
+  initStyleData().then(style => {
+    styleId = style.id;
+    sessionStorage.justEditedStyleId = styleId;
+    // we set "usercss" class on <html> when <body> is empty
+    // so there'll be no flickering of the elements that depend on it
+    if (isUsercss(style)) {
+      document.documentElement.classList.add('usercss');
+    }
+    // strip URL parameters when invoked for a non-existent id
+    if (!styleId) {
+      history.replaceState({}, document.title, location.pathname);
+    }
+    return style;
+  }),
+  onDOMready(),
+  onBackgroundReady(),
+])
+.then(([style]) => Promise.all([
+  style,
+  initColorpicker(),
+  initCollapsibles(),
+  initHooksCommon(),
+]))
+.then(([style]) => {
+  initCodeMirror();
+
+  const usercss = isUsercss(style);
+  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
+  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+
+  if (usercss) {
+    editor = createSourceEditor(style);
+  } else {
+    initWithSectionStyle({style});
+  }
+
+  // workaround part2 for the <details> not showing its toggle icon: hide <summary> on scroll
+  $('#lint').addEventListener('scroll', function () {
+    const newOpacity = this.scrollTop === 0 ? '' : '0';
+    const style = this.firstElementChild.style;
+    if (style.opacity !== newOpacity) {
+      style.opacity = newOpacity;
+    }
+  }, {passive: true});
+});
 
 // make querySelectorAll enumeration code readable
 ['forEach', 'some', 'indexOf', 'map'].forEach(method => {
   NodeList.prototype[method] = Array.prototype[method];
 });
-
-// Chrome pre-34
-Element.prototype.matches = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
-
-// Chrome pre-41 polyfill
-Element.prototype.closest = Element.prototype.closest || function (selector) {
-  let e;
-  // eslint-disable-next-line no-empty
-  for (e = this; e && !e.matches(selector); e = e.parentElement) {}
-  return e;
-};
 
 // eslint-disable-next-line no-extend-native
 Array.prototype.rotate = function (amount) {
@@ -70,6 +106,7 @@ const hotkeyRerouter = {
     save: true, jumpToLine: true, nextEditor: true, prevEditor: true,
     find: true, findNext: true, findPrev: true, replace: true, replaceAll: true,
     toggleStyle: true,
+    colorpicker: true,
   },
   setState: enable => {
     setTimeout(() => {
@@ -309,7 +346,8 @@ function acmeEventListener(event) {
   let value = el.type === 'checkbox' ? el.checked : el.value;
   switch (option) {
     case 'tabSize':
-      CodeMirror.setOption('indentUnit', Number(value));
+      value = Number(value);
+      CodeMirror.setOption('indentUnit', value);
       break;
     case 'theme': {
       const themeLink = $('#cm-theme');
@@ -362,13 +400,18 @@ function acmeEventListener(event) {
       }
       option = 'highlightSelectionMatches';
       break;
+    case 'colorpicker':
+      return;
   }
   CodeMirror.setOption(option, value);
 }
 
-// replace given textarea with the CodeMirror editor
-function setupCodeMirror(textarea, index) {
-  const cm = CodeMirror.fromTextArea(textarea, {lint: null});
+function setupCodeMirror(sectionDiv, code, index) {
+  const cm = CodeMirror(wrapper => {
+    $('.code-label', sectionDiv).insertAdjacentElement('afterend', wrapper);
+  }, {
+    value: code,
+  });
   const wrapper = cm.display.wrapper;
 
   cm.on('changes', indicateCodeChangeDebounced);
@@ -490,7 +533,7 @@ document.addEventListener('wheel', event => {
   }
 });
 
-queryTabs({currentWindow: true}).then(tabs => {
+chrome.windows && queryTabs({currentWindow: true}).then(tabs => {
   const windowId = tabs[0].windowId;
   if (prefs.get('openEditInWindow')) {
     if (
@@ -517,6 +560,9 @@ queryTabs({currentWindow: true}).then(tabs => {
 getOwnTab().then(tab => {
   const ownTabId = tab.id;
   useHistoryBack = sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href;
+  if (!chrome.windows) {
+    return;
+  }
   // When an edit page gets attached or detached, remember its state
   // so we can do the same to the next one to open.
   chrome.tabs.onAttached.addListener((tabId, info) => {
@@ -631,12 +677,12 @@ function addSection(event, section) {
   $('.add-section', div).addEventListener('click', addSection, false);
   $('.beautify-section', div).addEventListener('click', beautify);
 
-  const codeElement = $('.code', div);
+  const code = (section || {}).code || '';
+
   const appliesTo = $('.applies-to-list', div);
   let appliesToAdded = false;
 
   if (section) {
-    codeElement.value = section.code;
     for (const i in propertyToCss) {
       if (section[i]) {
         section[i].forEach(url => {
@@ -689,13 +735,13 @@ function addSection(event, section) {
     const clickedSection = getSectionForChild(event.target);
     sections.insertBefore(div, clickedSection.nextElementSibling);
     const newIndex = getSections().indexOf(clickedSection) + 1;
-    cm = setupCodeMirror(codeElement, newIndex);
+    cm = setupCodeMirror(div, code, newIndex);
     makeSectionVisible(cm);
-    cm.focus();
     renderLintReport();
+    cm.focus();
   } else {
     sections.appendChild(div);
-    cm = setupCodeMirror(codeElement);
+    cm = setupCodeMirror(div, code);
   }
   div.CodeMirror = cm;
   setCleanSection(div);
@@ -1058,7 +1104,7 @@ function autocompleteOnTyping(cm, [info], debounced) {
     debounce(autocompleteOnTyping, 100, cm, [info], true);
     return;
   }
-  if (info.text.last.match(/[-\w!]+$/)) {
+  if (info.text.last.match(/[-a-z!]+$/i)) {
     cm.state.autocompletePicked = false;
     cm.options.hintOptions.completeSingle = false;
     cm.execCommand('autocomplete');
@@ -1298,56 +1344,26 @@ function beautify(event) {
   }
 }
 
-onDOMready().then(init);
-
-function init() {
-  initCodeMirror();
-  getStyle().then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-
-    if (!isUsercss(style)) {
-      initWithSectionStyle({style});
-    } else {
-      editor = createSourceEditor(style);
-    }
+function initStyleData() {
+  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
+  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
+  const id = params.get('id');
+  const createEmptyStyle = () => ({
+    id: null,
+    name: '',
+    enabled: true,
+    sections: [
+      Object.assign({code: ''},
+        ...Object.keys(CssToProperty)
+          .map(name => ({
+            [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
+          }))
+      )
+    ],
   });
-
-  function getStyle() {
-    const id = new URLSearchParams(location.search).get('id');
-    if (!id) {
-      // match should be 2 - one for the whole thing, one for the parentheses
-      // This is an add
-      $('#heading').textContent = t('addStyleTitle');
-      return Promise.resolve(createEmptyStyle());
-    }
-    $('#heading').textContent = t('editStyleHeading');
-    // This is an edit
-    return getStylesSafe({id}).then(styles => {
-      let style = styles[0];
-      if (!style) {
-        style = createEmptyStyle();
-        history.replaceState({}, document.title, location.pathname);
-      }
-      return style;
-    });
-  }
-
-  function createEmptyStyle() {
-    const params = new URLSearchParams(location.search);
-    const style = {
-      id: null,
-      name: '',
-      enabled: true,
-      sections: [{code: ''}]
-    };
-    for (const i in CssToProperty) {
-      if (params.get(i)) {
-        style.sections[0][CssToProperty[i]] = [params.get(i)];
-      }
-    }
-    return style;
-  }
+  return !id ?
+    Promise.resolve(createEmptyStyle()) :
+    getStylesSafe({id}).then(([style]) => style || createEmptyStyle());
 }
 
 function setStyleMeta(style) {
@@ -1423,16 +1439,6 @@ function addSections(sections, onAdded = () => {}) {
   }
 }
 
-function setupOptionsExpand() {
-  $('#options').open = prefs.get('editor.options.expanded');
-  $('#options h2').addEventListener('click', () => {
-    setTimeout(() => prefs.set('editor.options.expanded', $('#options').open));
-  });
-  prefs.subscribe(['editor.options.expanded'], (key, value) => {
-    $('#options').open = value;
-  });
-}
-
 function initHooks() {
   if (initHooks.alreadyDone) {
     return;
@@ -1452,7 +1458,6 @@ function initHooks() {
   $('#keyMap-help').addEventListener('click', showKeyMapHelp, false);
   $('#cancel-button').addEventListener('click', goBackToManage);
 
-  setupOptionsExpand();
   initLint();
 
   if (!FIREFOX) {
@@ -1465,17 +1470,36 @@ function initHooks() {
     ).forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
 
-  window.addEventListener('load', function _() {
-    window.removeEventListener('load', _);
-    window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-  });
-
   setupGlobalSearch();
 }
 
+// common for usercss and classic
+function initHooksCommon() {
+  showKeyInSaveButtonTooltip();
+  prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
+  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+
+  function showKeyInSaveButtonTooltip(prefName, value) {
+    $('#save-button').title = findKeyForCommand('save', value);
+  }
+  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
+    const map = CodeMirror.keyMap[mapName];
+    let key = Object.keys(map).find(k => map[k] === command);
+    if (key) {
+      return key;
+    }
+    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
+      key = ft && findKeyForCommand(command, ft);
+      if (key) {
+        return key;
+      }
+    }
+    return '';
+  }
+}
 
 function toggleContextMenuDelete(event) {
-  if (event.button === 2 && prefs.get('editor.contextDelete')) {
+  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
     chrome.contextMenus.update('editor.contextDelete', {
       enabled: Boolean(
         this.selectionStart !== this.selectionEnd ||
@@ -1589,11 +1613,6 @@ function save() {
 function saveSectionStyle() {
   updateLintReportIfEnabled(null, 0);
 
-  // save the contents of the CodeMirror editors back into the textareas
-  for (let i = 0; i < editors.length; i++) {
-    editors[i].save();
-  }
-
   const error = validate();
   if (error) {
     alert(error);
@@ -1671,14 +1690,14 @@ function fromMozillaFormat() {
         tag: 'button',
         name: 'import-append',
         textContent: t('importAppendLabel'),
-        title: t('importAppendTooltip'),
+        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
         onclick: doImport,
       }),
       $element({
         tag: 'button',
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
-        title: t('importReplaceTooltip'),
+        title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
       }),
     ]}));
@@ -1687,6 +1706,7 @@ function fromMozillaFormat() {
   popup.codebox.focus();
   popup.codebox.on('changes', cm => {
     popup.classList.toggle('ready', !cm.isBlank());
+    cm.markClean();
   });
   // overwrite default extraKeys as those are inapplicable in popup context
   popup.codebox.options.extraKeys = {
@@ -1854,33 +1874,39 @@ function showKeyMapHelp() {
   }
 }
 
-function showHelp(title, body) {
+function showHelp(title = '', body) {
   const div = $('#help-popup');
   div.classList.remove('big');
-  $('.contents', div).textContent = '';
-  $('.contents', div).appendChild(typeof body === 'string' ? tHTML(body) : body);
+  const contents = $('.contents', div);
+  contents.textContent = '';
+  if (body) {
+    contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
+  }
   $('.title', div).textContent = title;
 
   if (getComputedStyle(div).display === 'none') {
-    document.addEventListener('keydown', closeHelp);
+    window.addEventListener('keydown', closeHelp, true);
     // avoid chaining on multiple showHelp() calls
     $('.dismiss', div).onclick = closeHelp;
   }
-
-  div.style.display = 'block';
+  // reset any inline styles
+  div.style = 'display: block';
   return div;
 
   function closeHelp(e) {
-    if (
-      !e ||
-      e.type === 'click' ||
-      ((e.keyCode || e.which) === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey)
-    ) {
+    if (!e || e.type === 'click' ||
+        (e.which === 27 && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey &&
+          !$('.CodeMirror-hints, #message-box') && !(document.activeElement instanceof HTMLInputElement))) {
+      if (e && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+        messageBox.confirm(t('confirmDiscardChanges')).then(ok => ok && closeHelp());
+        return;
+      }
       div.style.display = '';
-      const contents = $('.contents');
       contents.textContent = '';
       clearTimeout(contents.timer);
-      document.removeEventListener('keydown', closeHelp);
+      window.removeEventListener('keydown', closeHelp, true);
+      window.dispatchEvent(new Event('closeHelp'));
+      (editors.lastActive || editors[0]).focus();
     }
   }
 }
@@ -1909,46 +1935,20 @@ function showCodeMirrorPopup(title, html, options) {
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-function replaceStyle(request) {
-  const codeIsUpdated = request.codeIsUpdated !== false;
-  if (!isUsercss(request.style)) {
-    initWithSectionStyle(request);
-    return;
-  }
-  if (!codeIsUpdated) {
-    editor.replaceMeta(request.style);
-    return;
-  }
-
-  askDiscardChanges()
-    .then(result => {
-      if (result) {
-        editor.replaceStyle(request.style);
-      } else {
-        editor.setStyleDirty(request.style);
-      }
-    });
-
-  function askDiscardChanges() {
-    if (!editor.isTouched()) {
-      return Promise.resolve(true);
-    }
-    return messageBox.confirm(t('styleUpdateDiscardChanges'));
-  }
-}
-
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId === request.style.id && request.reason !== 'editSave' && request.reason !== 'config') {
+      if (styleId && styleId === request.style.id &&
+          request.reason !== 'editSave' &&
+          request.reason !== 'config') {
+        // code-less style from notifyAllTabs
         if ((request.style.sections[0] || {}).code === null) {
-          // the code-less style came from notifyAllTabs
-          onBackgroundReady().then(() => {
-            request.style = BG.cachedStyles.byId.get(request.style.id);
-            replaceStyle(request);
-          });
+          request.style = BG.cachedStyles.byId.get(request.style.id);
+        }
+        if (isUsercss(request.style)) {
+          editor.replaceStyle(request.style, request.codeIsUpdated);
         } else {
-          replaceStyle(request);
+          initWithSectionStyle(request);
         }
       }
       break;

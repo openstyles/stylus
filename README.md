@@ -12,7 +12,12 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Help
 
+[![Discord][chat-image]][chat-link]
+
 See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userstyles.org forum](https://forum.userstyles.org). For Stylus specific questions and suggestions please use [review section](http://add0n.com/stylus.html#reviews) of the FAQs page.
+
+[chat-image]: https://img.shields.io/discord/379521691774353408.svg
+[chat-link]: https://discordapp.com/widget?id=379521691774353408
 
 ## Contributing
 

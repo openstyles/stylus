@@ -1,3 +1,12 @@
+:root {
+  --header-width: 280px;
+  --checkbox-width: 24px;
+  --name-padding-left: 40px;
+  --name-padding-right: 40px;
+  --actions-width: 75px;
+  --onoffswitch-width: 60px;
+}
+
 body {
   margin: 0;
   font: 12px arial, sans-serif;
@@ -6,7 +15,7 @@ body {
   height: 100%;
 }
 
-a {
+a, .disabled a:hover {
   color: #000;
   transition: color .5s;
   text-decoration-skip: ink;
@@ -31,13 +40,14 @@ select {
 }
 
 #header {
-  width: 280px;
+  width: var(--header-width);
   height: 100vh;
   position: fixed;
   top: 0;
   padding: 15px;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 50px -18px black;
+  box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;
   z-index: 9;
@@ -55,13 +65,31 @@ select {
   text-decoration: none;
 }
 
+#add-style-label {
+  margin-right: .25em;
+  margin-bottom: .25em;
+}
+
+#newStyleAsUsercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
+  fill: #aaa;
+}
+
+.nobreak {
+  white-space: nowrap;
+}
+
+label.nobreak input {
+  vertical-align: middle;
+  margin: 0;
+}
+
 .firefox .chromium-only {
   display: none;
 }
 
 #installed {
   position: relative;
-  padding-left: 280px;
+  padding-left: var(--header-width);
   box-sizing: border-box;
   width: 100%;
 }
@@ -82,20 +110,22 @@ select {
   transition: fill .5s;
   width: 20px;
   height: 20px;
+  fill: #666;
 }
 
 .svg-icon:hover {
   fill: #000;
 }
 
-.svg-icon {
-  fill: #666;
-}
-
 .svg-icon.info {
   width: 14px;
   height: 16px;
   margin-left: .5ex;
+}
+
+.svg-icon.configure {
+  width: 16px;
+  height: 16px;
 }
 
 .homepage {
@@ -119,11 +149,6 @@ select {
 
 .style-name a, .style-edit-link {
   text-decoration: none;
-}
-
-.style-name-link:hover {
-  text-decoration: underline;
-  color: #000;
 }
 
 .applies-to {
@@ -163,21 +188,21 @@ select {
   margin-left: 1ex;
 }
 
-summary {
+.applies-to-extra-expander {
   font-weight: bold;
   cursor: pointer;
   outline: none;
 }
 
-.applies-to-extra summary {
+.applies-to-extra-expander {
   list-style-type: none; /* for FF, allegedly */
 }
 
-.applies-to-extra summary::-webkit-details-marker {
+.applies-to-extra-expander::-webkit-details-marker {
   display: none;
 }
 
-.disabled h2::after {
+.disabled h2::after, .entry.usercss .style-name-link::after {
   font-weight: normal;
   font-size: 11px;
   text-transform: lowercase;
@@ -187,8 +212,23 @@ summary {
   margin-left: 1ex;
 }
 
-.disabled {
-  opacity: 0.5;
+.entry.usercss .style-name-link::after {
+  content: "usercss";
+  background-color: hsla(180, 100%, 20%, 1);
+  color: white;
+}
+
+.disabled h2 .style-name-link,
+.disabled h2::after,
+.disabled .actions,
+.disabled .applies-to {
+  opacity: 0.6;
+  font-weight: normal;
+  transition: opacity .5s .1s;
+}
+
+.disabled:hover .actions {
+  opacity: 1;
 }
 
 .disabled .disable {
@@ -197,6 +237,30 @@ summary {
 
 .enabled .enable {
   display: none;
+}
+
+/* collapsibles */
+
+#header details:not([open]) h2 {
+  margin-bottom: -.25em;
+}
+
+#header summary {
+  align-items: center;
+  margin-left: -13px;
+  cursor: pointer;
+  outline: none;
+}
+
+#header summary h2 {
+  display: inline-block;
+  border-bottom: 1px dotted transparent;
+  margin-top: .2em;
+  margin-bottom: .4em;
+}
+
+#header summary h2:hover {
+  border-color: #bbb;
 }
 
 /* compact layout */
@@ -209,11 +273,6 @@ summary {
 
 .newUI .disabled {
   opacity: 1;
-}
-
-.newUI .disabled .style-name,
-.newUI .disabled .applies-to {
-  opacity: .5;
 }
 
 .newUI .entry {
@@ -234,15 +293,32 @@ summary {
 .newUI .checker {
   position: relative;
   top: 1px;
-  margin-right: 1ex;
+  margin: 0 1ex 0 0;
 }
 
 .newUI .style-name {
   font-size: 14px;
   font-family: sans-serif;
-  text-indent: -2em;
-  padding-left: 3em;
-  padding-right: 40px;
+  text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
+  padding-left: var(--name-padding-left);
+  padding-right: var(--name-padding-right);
+  position: relative;
+  cursor: pointer;
+}
+
+.newUI .entry .style-name:hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+  pointer-events: none;
+}
+
+.newUI .entry.enabled .style-name:hover .style-name-link {
+  color: hsla(180, 100%, 15%, 1);
 }
 
 .newUI .homepage .svg-icon {
@@ -252,7 +328,7 @@ summary {
 }
 
 .newUI .actions {
-  width: 75px;
+  width: var(--actions-width);
   height: 20px;
   white-space: nowrap;
 }
@@ -293,6 +369,11 @@ summary {
 .newUI .no-update.update-problem .check-update,
 .newUI .update-done .updated {
   display: inline;
+}
+
+.newUI .up-to-date svg,
+.newUI .updated svg {
+  cursor: auto;
 }
 
 .newUI .update-done .updated svg {
@@ -373,7 +454,7 @@ summary {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: calc(100vw - 280px - 60px - 25vw - 3rem);
+  max-width: calc(100vw - var(--header-width) - var(--actions-width) - var(--name-padding-left) - 25vw - var(--name-padding-right));
   box-sizing: border-box;
   padding-right: 1rem;
   line-height: 18px;
@@ -532,6 +613,9 @@ input[id^="manage.newUI"] {
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
 }
+.highlight-quick {
+  animation: highlight .5s;
+}
 
 @keyframes highlight {
   from {
@@ -559,6 +643,10 @@ fieldset > *:not(legend) {
   align-items: center;
 }
 
+fieldset > label:hover {
+  background-color: hsla(0, 0%, 50%, .1);
+}
+
 #filters {
   border: 1px solid transparent;
 }
@@ -577,8 +665,7 @@ fieldset > *:not(legend) {
   content: ": ";
 }
 
-#manage\.onlyEnabled\.invert,
-#manage\.onlyLocal\.invert {
+fieldset select {
   border: none;
   max-width: calc(100% - 2em);
   background-color: transparent;
@@ -694,7 +781,7 @@ fieldset > *:not(legend) {
 .config-dialog input,
 .config-dialog select,
 .config-dialog .onoffswitch {
-  width: 60px;
+  width: var(--onoffswitch-width);
   margin: 0;
   height: 2em;
   box-sizing: border-box;
@@ -703,7 +790,7 @@ fieldset > *:not(legend) {
 
 .config-dialog select {
   width: auto;
-  min-width: 60px;
+  min-width: var(--onoffswitch-width);
   max-width: 124px;
 }
 
@@ -723,6 +810,29 @@ fieldset > *:not(legend) {
 
 .config-dialog label > :last-child:not(.onoffswitch) > :not(:last-child) {
   margin-right: 4px;
+}
+
+.cm-colorview::before,
+.color-swatch {
+  width: var(--onoffswitch-width) !important;
+  height: 20px !important;
+}
+
+.cm-colorview::before {
+  margin: 1px !important;
+}
+
+.color-swatch {
+  position: absolute;
+  border: 1px solid gray;
+  margin-top: -22px;
+  cursor: pointer;
+}
+
+.colorpicker-popup {
+  z-index: 2147483647 !important;
+  border: none !important;
+  box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
 }
 
 @keyframes fadein {
@@ -826,7 +936,7 @@ fieldset > *:not(legend) {
   }
 
   .newUI .target {
-    max-width: calc(50vw - 60px);
+    max-width: calc(50vw - var(--actions-width));
   }
 }
 

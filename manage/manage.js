@@ -3,6 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
+/* global initCollapsibles */
 'use strict';
 
 let installed;
@@ -59,16 +60,6 @@ function initGlobalEvents() {
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
-  // focus search field on / key
-  document.onkeypress = event => {
-    if ((event.keyCode || event.which) === 47
-    && !event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey
-    && !event.target.matches('[type="text"], [type="search"]')) {
-      event.preventDefault();
-      $('#search').focus();
-    }
-  };
-
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
 
@@ -83,6 +74,9 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+
+  // the options block
+  initCollapsibles();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -185,7 +179,8 @@ function createStyleElement({style, name}) {
   entry.styleMeta = getStyleWithNoCode(style);
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
-    (style.updateUrl ? ' updatable' : '');
+    (style.updateUrl ? ' updatable' : '') +
+    (style.usercssData ? ' usercss' : '');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
@@ -193,7 +188,7 @@ function createStyleElement({style, name}) {
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
-  if (shouldShowConfig() && newUI.enabled) {
+  if (style.usercssData && Object.keys(style.usercssData.vars).length > 0 && newUI.enabled) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
@@ -202,10 +197,6 @@ function createStyleElement({style, name}) {
   createStyleTargetsElement({entry, style, postponeFavicons: name});
 
   return entry;
-
-  function shouldShowConfig() {
-    return style.usercssData && Object.keys(style.usercssData.vars).length > 0;
-  }
 }
 
 
@@ -277,31 +268,13 @@ Object.assign(handleEvent, {
 
   ENTRY_ROUTES: {
     '.checker, .enable, .disable': 'toggle',
-    '.style-name-link': 'edit',
+    '.style-name': 'edit',
     '.homepage': 'external',
     '.check-update': 'check',
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
     '.configure-usercss': 'config'
-  },
-
-  config(event, {styleMeta: style}) {
-    configDialog(style).then(vars => {
-      if (!vars) {
-        return;
-      }
-      const keys = Object.keys(vars).filter(k => vars[k].dirty);
-      if (!keys.length) {
-        return;
-      }
-      style.reason = 'config';
-      for (const key of keys) {
-        style.usercssData.vars[key].value = vars[key].value;
-      }
-      onBackgroundReady()
-        .then(() => BG.usercssHelper.save(style));
-    });
   },
 
   entryClicked(event) {
@@ -330,9 +303,9 @@ Object.assign(handleEvent, {
     const openWindow = left && shift && !ctrl;
     const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const url = event.target.closest('[href]').href;
+    const url = $('[href]', event.target.closest('.entry')).href;
     if (openWindow || openBackgroundTab || openForegroundTab) {
-      if (openWindow) {
+      if (chrome.windows && openWindow) {
         chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
       } else {
         openURL({url, active: openForegroundTab});
@@ -406,6 +379,10 @@ Object.assign(handleEvent, {
       }
     }
   },
+
+  config(event, {styleMeta}) {
+    configDialog(styleMeta);
+  },
 });
 
 
@@ -423,8 +400,8 @@ function handleUpdate(style, {reason, method} = {}) {
       oldEntry.remove();
     }
   }
-  if (reason === 'update' && entry.matches('.updatable')) {
-    handleUpdateInstalled(entry);
+  if (reason === 'update' || reason === 'install' && entry.matches('.updatable')) {
+    handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
   if (!entry.matches('.hidden') && reason !== 'import') {
@@ -546,10 +523,13 @@ function usePrefsDuringPageLoad() {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         // [naively] assuming each element of addedNodes is a childless element
-        const prefValue = node.id ? prefs.readOnlyValues[node.id] : undefined;
+        const key = node.dataset && node.dataset.pref || node.id;
+        const prefValue = key ? prefs.readOnlyValues[key] : undefined;
         if (prefValue !== undefined) {
           if (node.type === 'checkbox') {
             node.checked = prefValue;
+          } else if (node.localName === 'details') {
+            node.open = prefValue;
           } else {
             node.value = prefValue;
           }
@@ -580,10 +560,10 @@ function dieOnNullBackground() {
   if (!FIREFOX || BG) {
     return;
   }
-  chrome.runtime.sendMessage({method: 'healthCheck'}, health => {
+  sendMessage({method: 'healthCheck'}, health => {
     if (health && !chrome.extension.getBackgroundPage()) {
       onDOMready().then(() => {
-        chrome.runtime.sendMessage({method: 'getStyles'}, showStyles);
+        sendMessage({method: 'getStyles'}, showStyles);
         messageBox({
           title: 'Stylus',
           className: 'danger center',

@@ -3,6 +3,10 @@
 		"message": "Tutto",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Problemi",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "predefinito",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -18,6 +22,10 @@
 	"exportLabel": {
 		"message": "Esporta",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"installButton": {
+		"message": "Installa",
+		"description": "Label for install button"
 	},
 	"linterJSONError": {
 		"message": "Formato JSON non valido",
@@ -36,12 +44,16 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Inserisci un nome.",
+		"message": "Inserisci un nome",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
 		"message": "Cronologia",
 		"description": "Used in various places to show a history log of something"
+	},
+	"shortcutsNote": {
+		"message": "Definisci scorciatoie da tastiera",
+		"description": ""
 	},
 	"appliesDomainOption": {
 		"message": "URL nel dominio",
@@ -54,6 +66,10 @@
 	"optionsIconDark": {
 		"message": "Temi browser scuri",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Importazione da formato Mozilla fallita",
+		"description": "Label for the import error"
 	},
 	"optionsOpenManager": {
 		"message": "Organizza stili",
@@ -78,6 +94,10 @@
 	"search": {
 		"message": "Cerca",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"versionInvalidOlder": {
+		"message": "La versione dello stile è più vecchia di quella installata.",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "Si",
@@ -114,6 +134,10 @@
 	"confirmDelete": {
 		"message": "Elimina",
 		"description": ""
+	},
+	"confirmDefault": {
+		"message": "Utilizza predefinito",
+		"description": "'Set to default' button in a confirm dialog"
 	},
 	"confirmCancel": {
 		"message": "Annulla",
@@ -160,6 +184,10 @@
 		"message": "Aggiorna stili",
 		"description": ""
 	},
+	"manageText": {
+		"message": "<a href='https://userstyles.org'>Ottieni stili da userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Otteini aiuto</a>",
+		"description": "Help text on the manage page"
+	},
 	"manageOnlyLocal": {
 		"message": "Solo stili creati localmente",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -176,6 +204,10 @@
 		"message": "Disattiva",
 		"description": "Label for the button to disable a style"
 	},
+	"prefShowBadge": {
+		"message": "Stili attivi per il sito attuale",
+		"description": "Label for the checkbox controlling toolbar badge text."
+	},
 	"styleCancelEditLabel": {
 		"message": "Torna a gestione",
 		"description": "Label for cancel button for style editing"
@@ -187,6 +219,10 @@
 	"importLabel": {
 		"message": "Importa",
 		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
+	"shortcuts": {
+		"message": "Scorciatoie",
+		"description": "Go to shortcut configuration"
 	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Aggiornamento non riuscito: server non raggiungibile.",
@@ -216,6 +252,10 @@
 		"message": "Regexp non valida.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Licenza",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Opzioni",
 		"description": "Heading for options section on manage page."
@@ -236,6 +276,15 @@
 	"openStylesManager": {
 		"message": "Apri gestore stili",
 		"description": "Label for the style maanger opener in the browser action context menu."
+	},
+	"styleUpdate": {
+		"message": "Sei sicuro di voler aggiornare  '$stylename$'?",
+		"description": "Confirmation when updating a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			}
+		}
 	},
 	"dysfunctional": {
 		"message": "Stylus non può funzionare in finestre anonime perché Firefox disattiva la connessione diretta al contesto della pagina di background interna dell'estensione.",
@@ -266,6 +315,18 @@
 		"message": "URL che iniziano con",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
+	"popupBordersTooltip": {
+		"message": "Utile per temi scuri nelle nuove versioni di Chrome dato che non colora più i bordi laterali",
+		"description": ""
+	},
+	"updateCheckManualUpdateHint": {
+		"message": "Forzare un aggiornamento sovrascriverà tutte le modifiche locali",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"installUpdateFromLabel": {
+		"message": "Controlla aggiornamenti",
+		"description": "Label for the checkbox to save current URL for update check"
+	},
 	"sectionHelp": {
 		"message": "Le sezioni consentono di definire diverse parti di codice da applicare a diversi insiemi di URL dello stesso stile. Ad esempio, un unico stile potrebbe modificare la home page di un sito diversamente da come modificherebbe il resto del sito.",
 		"description": "Help text for sections"
@@ -289,6 +350,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Stile in formato Mozilla",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "Selezionatore colore per colori CSS",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "Scrivi stile per:",
@@ -327,6 +392,10 @@
 		"message": "Installa aggiornamento",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"optionsCheckUpdate": {
+		"message": "Controlla e installa gli aggiornamenti disponibili",
+		"description": ""
+	},
 	"filteredStyles": {
 		"message": "$numShown$ mostrati di $numTotal$ totali",
 		"description": "TL note - make this message short",
@@ -338,6 +407,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"importReportTitle": {
+		"message": "Importazione stili terminata",
+		"description": "Title of the report shown after importing styles"
 	},
 	"styleMozillaFormatHeading": {
 		"message": "Formato Mozilla",
@@ -354,6 +427,10 @@
 	"disableAllStyles": {
 		"message": "Disattiva tutti gli stili",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "Annulla in tutte le sezioni",
+		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
 		"message": "Aggiornamento completato.",
@@ -375,6 +452,21 @@
 		"message": "Stylus utilizza un servizio esterno https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "'$stylename$' è già installato. Vuoi sovrascriverlo?\nVersione: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Questo stile è stato editato localmente.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -390,6 +482,18 @@
 	"sectionCode": {
 		"message": "Codice",
 		"description": "Label for the code for a section"
+	},
+	"optionsAdvancedContextDelete": {
+		"message": "Aggiungi 'Elimina' al menu contestuale dell'editor",
+		"description": ""
+	},
+	"configureStyle": {
+		"message": "Configura",
+		"description": "Label for the button to configure userstyle"
+	},
+	"cm_smartIndent": {
+		"message": "Usa indentazione intelligente",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
 		"message": "Test RegExp",
@@ -407,17 +511,46 @@
 		"message": "Elimina",
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
+	"cm_autocompleteOnTyping": {
+		"message": "Completamento automatico durante digitazione",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$ non è un colore valido",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
 	"manageOnlyDisabled": {
 		"message": "Solo stili disattivati",
 		"description": "Checkbox to show only disabled styles"
+	},
+	"cm_matchHighlightSelection": {
+		"message": "Solo selezione",
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
 	},
 	"stylusUnavailableForURL": {
 		"message": "Stylus non funziona in pagine come questa.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Aggiungi bordi bianchi sui lati",
+		"description": ""
+	},
+	"manageOnlyUpdates": {
+		"message": "Solo con aggiornamenti o problemi",
+		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+	},
 	"addStyleTitle": {
 		"message": "Aggiunta di stili",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Link esterno",
+		"description": "Label for external links"
 	},
 	"importReplaceLabel": {
 		"message": "Sovrascrivi stile",
@@ -426,6 +559,14 @@
 	"optionsAdvanced": {
 		"message": "Avanzato",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Opacità",
+		"description": "Label of color's opacity"
+	},
+	"editorStylesButton": {
+		"message": "Cerca stili editor",
+		"description": "Find styles for the editor"
 	},
 	"optionsOpen": {
 		"message": "Apri",
@@ -455,9 +596,38 @@
 		"message": "Opzioni UI",
 		"description": "Go to Options UI"
 	},
+	"installUpdateFrom": {
+		"message": "Attualmente lo stile è aggiornato da $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
+	},
 	"optionsPopupWidth": {
 		"message": "Larghezza popup (in pixel)",
 		"description": ""
+	},
+	"installButtonReinstall": {
+		"message": "Reinstalla",
+		"description": "Label for reinstall button"
+	},
+	"appliesLineWidgetWarning": {
+		"message": "Non funziona con CSS minificato",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"undo": {
+		"message": "Annulla",
+		"description": "Button label"
+	},
+	"externalSupport": {
+		"message": "Supporto",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Salva",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"genericDisabledLabel": {
 		"message": "Disattivato",
@@ -471,6 +641,19 @@
 		"message": "Elimina",
 		"description": "Label for the button to delete a style"
 	},
+	"updateCheckManualUpdateForce": {
+		"message": "Installa aggiornamento (le modifiche locali verranno sovrascritte)",
+		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"styleInstallFailed": {
+		"message": "Installazione stile fallita!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
+	},
 	"addStyleLabel": {
 		"message": "Scrivi nuovo stile",
 		"description": "Label for the button to go to the add style page"
@@ -479,6 +662,10 @@
 		"message": "Per disattivare il controllo automatico degli aggiornamenti degli stili, imposta l'intervallo a 0",
 		"description": ""
 	},
+	"installButtonUpdate": {
+		"message": "Aggiorna",
+		"description": "Label for update button"
+	},
 	"manageOnlyEnabled": {
 		"message": "Solo stili attivati",
 		"description": "Checkbox to show only enabled styles"
@@ -486,6 +673,14 @@
 	"editStyleLabel": {
 		"message": "Modifica",
 		"description": "Label for the button to go to the edit style page"
+	},
+	"installButtonInstalled": {
+		"message": "Installato",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "Autore",
+		"description": "Label for the style author"
 	},
 	"cm_theme": {
 		"message": "Tema",
@@ -499,6 +694,10 @@
 		"message": "Seleziona un file o trascinalo in questa pagina.",
 		"description": "Message for backup"
 	},
+	"importReportUndone": {
+		"message": "gli stili sono stati ripristinati",
+		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+	},
 	"helpKeyMapCommand": {
 		"message": "Inserisci il nome di un comando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
@@ -506,5 +705,9 @@
 	"description": {
 		"message": "Modifica lo stile del Web con Stylus, un gestore di stili utente. Stylus consente di installare facilmente temi e skin per Google, Facebook, YouTube, Orkut e moltissimi altri siti.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Chiudi",
+		"description": "'Close' button in a confirm dialog"
 	}
 }

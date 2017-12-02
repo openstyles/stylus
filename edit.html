@@ -1,6 +1,7 @@
 <html id="stylus">
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style id="firefox-transitions-bug-suppressor">
       /* restrict to FF */
@@ -26,6 +27,7 @@
     <script src="edit/regexp-tester.js"></script>
     <script src="edit/applies-to-line-widget.js"></script>
     <script src="edit/source-editor.js"></script>
+    <script src="edit/colorpicker-helper.js"></script>
     <script src="edit/edit.js"></script>
 
     <script src="vendor/codemirror/lib/codemirror.js"></script>
@@ -36,7 +38,7 @@
     <link rel="stylesheet" href="vendor/codemirror/addon/search/matchesonscrollbar.css">
     <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
     <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
-    <script src="vendor-overwrites/codemirror/addon/search/match-highlighter.js"></script>
+    <script src="vendor/codemirror/addon/search/match-highlighter.js"></script>
     <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
     <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
     <script src="vendor/codemirror/addon/search/search.js"></script>
@@ -56,12 +58,11 @@
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
     <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
 
-    <script src="vendor/codemirror/addon/mode/loadmode.js"></script>
-
     <script src="vendor/codemirror/keymap/sublime.js"></script>
     <script src="vendor/codemirror/keymap/emacs.js"></script>
     <script src="vendor/codemirror/keymap/vim.js"></script>
 
+    <script src="/edit/match-highlighter-helper.js"></script>
     <script src="/edit/codemirror-default.js"></script>
     <link rel="stylesheet" href="/edit/codemirror-default.css">
     <link id="cm-theme" rel="stylesheet">
@@ -86,8 +87,7 @@
     </template>
     <template data-id="section">
       <div>
-        <label i18n-text="sectionCode"></label>
-        <textarea class="code"></textarea>
+        <label i18n-text="sectionCode" class="code-label"></label>
         <br>
         <div class="applies-to">
           <label i18n-text="appliesLabel">
@@ -143,7 +143,7 @@
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" i18n-placeholder="styleMissingName" spellcheck="false">
+          <input id="name" class="style-contributor" spellcheck="false">
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">
@@ -156,17 +156,17 @@
       </section>
       <section id="actions">
         <div>
-          <button id="save-button" title="Ctrl-S" i18n-text="styleSaveLabel"></button>
+          <button id="save-button" i18n-text="styleSaveLabel"></button>
           <button id="beautify" i18n-text="styleBeautify"></button>
           <a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
         </div>
-        <div>
+        <div id="mozilla-format-container">
           <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
           <button id="from-mozilla" i18n-text="importLabel"></button>
           <button id="to-mozilla" i18n-text="exportLabel"></button>
         </div>
       </section>
-      <details id="options">
+      <details id="options" data-pref="editor.options.expanded">
         <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
         <div class="option">
           <input id="editor.lineWrapping" type="checkbox">
@@ -190,6 +190,21 @@
           <input id="editor.autocompleteOnTyping" type="checkbox">
           <label for="editor.autocompleteOnTyping" i18n-text="cm_autocompleteOnTyping"></label>
         </div>
+        <div class="option">
+          <input id="editor.colorpicker" type="checkbox">
+          <label for="editor.colorpicker" i18n-text="cm_colorpicker"></label>
+          <span class="svg-inline-wrapper" i18n-title="shortcutsNote">
+            <svg id="colorpicker-settings" class="svg-icon settings">
+              <use xlink:href="#svg-icon-settings"/>
+            </svg>
+          </span>
+        </div>
+        <div class="option usercss-only">
+          <input id="editor.appliesToLineWidget" type="checkbox">
+          <label for="editor.appliesToLineWidget"
+                 i18n-text="appliesLineWidgetLabel"
+                 i18n-title="appliesLineWidgetWarning"></label>
+        </div>
         <div class="option aligned">
           <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
           <input id="editor.tabSize" type="number" min="0">
@@ -197,7 +212,9 @@
         <div class="option aligned">
           <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
           <select id="editor.keyMap"></select>
-          <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          <span class="svg-inline-wrapper">
+            <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </span>
         </div>
         <div class="option aligned">
           <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
@@ -218,14 +235,28 @@
             <option value="stylelint">Stylelint</option>
             <option value="" i18n-text="genericDisabledLabel"></option>
           </select>
-          <span class="linter-settings" i18n-title="linterConfigTooltip">
+          <span class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
             <svg id="linter-settings" class="svg-icon settings">
               <use xlink:href="#svg-icon-settings"/>
-            </svg>&nbsp;
+            </svg>
           </span>
         </div>
       </details>
-      <section id="lint"><h2 i18n-text="linterIssues">: <span id="issue-count"></span><svg id="lint-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2><div></div></section>
+      <details id="lint" class="hidden" data-pref="editor.lint.expanded">
+        <summary>
+          <h2 i18n-text="linterIssues">: <span id="issue-count"></span><!-- EAT SPACE
+          --><svg id="lint-help" class="svg-icon info intercepts-click">
+              <use xlink:href="#svg-icon-help"/>
+            </svg>
+          </h2>
+        </summary>
+        <div></div>
+      </details>
+      <div id="footer">
+        <a href="https://github.com/openstyles/stylus/wiki/Usercss"
+           i18n-text="externalUsercssDocument"
+           target="_blank"></a>
+      </div>
     </div>
     <section id="sections">
       <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
@@ -236,17 +267,17 @@
     </div>
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-      <symbol id="svg-icon-external-link" height="16" width="16" viewBox="0 0 8 8">
+      <symbol id="svg-icon-external-link" viewBox="0 0 8 8">
         <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
       </symbol>
-      <symbol id="svg-icon-help" height="16" width="14" viewBox="0 0 14 16" i18n-alt="helpAlt">
+      <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n-alt="helpAlt">
         <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
       </symbol>
-      <symbol id="svg-icon-close" height="16" width="12" viewBox="0 0 12 16">
+      <symbol id="svg-icon-close" viewBox="0 0 12 16">
         <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
       </symbol>
-      <symbol id="svg-icon-settings" height="12" width="12" viewBox="0 0 16 16">
-        <path d="M16 9.45V6.52l-1.8-.3c-.14-.5-.34-.95-.56-1.35L14.7 3.4l-2.07-2.1-1.5 1.03c-.43-.24-.9-.43-1.37-.56L9.46 0H6.54l-.3 1.8c-.5.13-.94.33-1.36.55L3.4 1.32 1.3 3.4l1.07 1.45c-.24.45-.44.92-.57 1.42L0 6.53v2.95l1.8.3c.14.52.33.95.57 1.37l-1.07 1.5 2.06 2.08 1.5-1.07c.44.24.9.45 1.4.57l.3 1.77H9.5l.32-1.8c.47-.13.95-.32 1.34-.56l1.5 1.06 2.07-2.05-1.03-1.5c.24-.45.44-.9.56-1.36L16 9.44v-.02zm-8 1.6C6.3 11.05 4.93 9.7 4.93 8S6.33 4.9 8 4.9s3.06 1.4 3.06 3.1S9.7 11.04 8 11.04z"/>
+      <symbol id="svg-icon-settings" viewBox="0 0 16 16">
+        <path d="M8,0C7.6,0,7.3,0,6.9,0.1v2.2C6.1,2.5,5.4,2.8,4.8,3.2L3.2,1.6c-0.6,0.4-1.1,1-1.6,1.6l1.6,1.6C2.8,5.4,2.5,6.1,2.3,6.9H0.1C0,7.3,0,7.6,0,8c0,0.4,0,0.7,0.1,1.1h2.2c0.1,0.8,0.4,1.5,0.9,2.1l-1.6,1.6c0.4,0.6,1,1.1,1.6,1.6l1.6-1.6c0.6,0.4,1.4,0.7,2.1,0.9v2.2C7.3,16,7.6,16,8,16c0.4,0,0.7,0,1.1-0.1v-2.2c0.8-0.1,1.5-0.4,2.1-0.9l1.6,1.6c0.6-0.4,1.1-1,1.6-1.6l-1.6-1.6c0.4-0.6,0.7-1.4,0.9-2.1h2.2C16,8.7,16,8.4,16,8c0-0.4,0-0.7-0.1-1.1h-2.2c-0.1-0.8-0.4-1.5-0.9-2.1l1.6-1.6c-0.4-0.6-1-1.1-1.6-1.6l-1.6,1.6c-0.6-0.4-1.4-0.7-2.1-0.9V0.1C8.7,0,8.4,0,8,0z M8,4.3c2.1,0,3.7,1.7,3.7,3.7c0,0,0,0,0,0c0,2.1-1.7,3.7-3.7,3.7c0,0,0,0,0,0c-2.1,0-3.7-1.7-3.7-3.7c0,0,0,0,0,0C4.3,5.9,5.9,4.3,8,4.3C8,4.3,8,4.3,8,4.3z"/>
       </symbol>
     </svg>
 

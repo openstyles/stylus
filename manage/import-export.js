@@ -288,8 +288,8 @@ function importFromString(jsonString) {
             if (tab.id === ownTab.id) {
               applyOnMessage(message);
             } else {
-              invokeOrPostpone(tab.id === activeTab.id,
-                chrome.tabs.sendMessage, tab.id, message, ignoreChromeError);
+              message.tabId = tab.id;
+              invokeOrPostpone(tab.id === activeTab.id, sendMessage, message, ignoreChromeError);
             }
             setTimeout(BG.updateIcon, 0, tab, styles);
             if (tab === lastTab) {

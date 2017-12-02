@@ -47,7 +47,7 @@ onDOMready().then(() => {
   }
 });
 
-if (!chrome.app) {
+if (!chrome.app && chrome.windows) {
   // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
     if (!BG && wnd.incognito) {
@@ -89,11 +89,14 @@ function onDOMready() {
 }
 
 
-function scrollElementIntoView(element) {
+function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   // align to the top/bottom of the visible area if wasn't visible
-  const bounds = element.getBoundingClientRect();
-  if (bounds.top < 0 || bounds.top > innerHeight - bounds.height) {
-    element.scrollIntoView(bounds.top < 0);
+  const {top, height} = element.getBoundingClientRect();
+  const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
+      top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
+    window.scrollBy(0, top - windowHeight / 2 + height);
   }
 }
 
@@ -165,7 +168,7 @@ function $element(opt) {
   const element = ns
     ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
     : document.createElement(tag || 'div');
-  const children = opt.appendChild instanceof Array ? opt.appendChild : [opt.appendChild];
+  const children = Array.isArray(opt.appendChild) ? opt.appendChild : [opt.appendChild];
   for (const child of children) {
     if (child) {
       element.appendChild(child instanceof Node ? child : document.createTextNode(child));
@@ -207,4 +210,36 @@ function makeLink(href = '', content) {
     opt.appendChild = content;
   }
   return $element(opt);
+}
+
+
+function initCollapsibles({bindClickOn = 'h2'} = {}) {
+  const prefMap = {};
+  const elements = $$('details[data-pref]');
+
+  for (const el of elements) {
+    const key = el.dataset.pref;
+    prefMap[key] = el;
+    el.open = prefs.get(key);
+    (bindClickOn && $(bindClickOn, el) || el).addEventListener('click', onClick);
+  }
+
+  prefs.subscribe(Object.keys(prefMap), (key, value) => {
+    const el = prefMap[key];
+    if (el.open !== value) {
+      el.open = value;
+    }
+  });
+
+  function onClick(event) {
+    if (event.target.closest('.intercepts-click')) {
+      event.preventDefault();
+    } else {
+      setTimeout(saveState, 0, event.target.closest('details'));
+    }
+  }
+
+  function saveState(el) {
+    prefs.set(el.dataset.pref, el.open);
+  }
 }

@@ -19,15 +19,21 @@ var prefs = new function Prefs() {
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
+    'manage.onlyUsercss': false,    // display only usercss styles
     'manage.onlyEnabled.invert': false, // display only disabled styles
     'manage.onlyLocal.invert': false,   // display only externally installed styles
-    'manage.newUI': true,           // use the new compact layout
+    'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
+    // UI element state: expanded/collapsed
+    'manage.options.expanded': true,
+    // the new compact layout doesn't look good on Android yet
+    'manage.newUI': !navigator.appVersion.includes('Android'),
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
 
     'editor.options': {},           // CodeMirror.defaults.*
     'editor.options.expanded': true, // UI element state: expanded/collapsed
+    'editor.lint.expanded': true,   // UI element state: expanded/collapsed
     'editor.lineWrapping': true,    // word wrap
     'editor.smartIndent': true,     // 'smart' indent
     'editor.indentWithTabs': false, // smart indent with tabs
@@ -55,6 +61,15 @@ var prefs = new function Prefs() {
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
+
+    // show CSS colors as clickable colored rectangles
+    'editor.colorpicker': true,
+    // #DEAD or #beef
+    'editor.colorpicker.hexUppercase': false,
+    // default hotkey
+    'editor.colorpicker.hotkey': '',
+    // last color
+    'editor.colorpicker.color': '',
 
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
@@ -136,9 +151,13 @@ var prefs = new function Prefs() {
         }
       }
       if (hasChanged) {
-        const listener = onChange.specific.get(key);
-        if (listener) {
-          listener(key, value);
+        const specific = onChange.specific.get(key);
+        if (typeof specific === 'function') {
+          specific(key, value);
+        } else if (specific instanceof Set) {
+          for (const listener of specific.values()) {
+            listener(key, value);
+          }
         }
         for (const listener of onChange.any.values()) {
           listener(key, value);
@@ -164,7 +183,14 @@ var prefs = new function Prefs() {
       // listener: function (key, value)
       if (keys) {
         for (const key of keys) {
-          onChange.specific.set(key, listener);
+          const existing = onChange.specific.get(key);
+          if (!existing) {
+            onChange.specific.set(key, listener);
+          } else if (existing instanceof Set) {
+            existing.add(listener);
+          } else {
+            onChange.specific.set(key, new Set([existing, listener]));
+          }
         }
       } else {
         onChange.any.add(listener);
@@ -275,7 +301,7 @@ var prefs = new function Prefs() {
 
   // Polyfill for Firefox < 53 https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
   function getSync() {
-    if ('sync' in chrome.storage) {
+    if ('sync' in chrome.storage && !chrome.runtime.id.includes('@temporary')) {
       return chrome.storage.sync;
     }
     const crappyStorage = {};
@@ -289,7 +315,9 @@ var prefs = new function Prefs() {
             crappyStorage[property] = source[property];
           }
         }
-        callback();
+        if (typeof callback === 'function') {
+          callback();
+        }
       }
     };
   }

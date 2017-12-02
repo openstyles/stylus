@@ -31,6 +31,14 @@
 		"message": "Ekspordi",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "Installi",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "Vigane @var märkeruut: väärtus peab olema 0 või 1",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "Vigane JSON-formaat",
 		"description": "Setting linter config with invalid JSON"
@@ -52,7 +60,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Sisesta nimi.",
+		"message": "Sisesta nimi",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"genericHistoryLabel": {
@@ -82,6 +90,10 @@
 	"optionsIconDark": {
 		"message": "Tumedad brauseriteemad",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Mozilla-vormingust importimine ebaõnnestus",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "Lisa stiilile",
@@ -118,6 +130,10 @@
 	"manageFaviconsGray": {
 		"message": "Tee halliks",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "Versioon on installitud stiilist vanem.",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "Jah",
@@ -170,6 +186,10 @@
 	"confirmDelete": {
 		"message": "Kustuta",
 		"description": ""
+	},
+	"confirmDefault": {
+		"message": "Kasuta vaikesätet",
+		"description": "'Set to default' button in a confirm dialog"
 	},
 	"confirmCancel": {
 		"message": "Tühista",
@@ -241,6 +261,10 @@
 			}
 		}
 	},
+	"parseUsercssError": {
+		"message": "Stylus ei suutnud usercss-i analüüsida:",
+		"description": "The error message to show when stylus failed to parse usercss"
+	},
 	"searchStyles": {
 		"message": "Otsi sisu",
 		"description": "Label for the search filter textbox on the Manage styles page"
@@ -252,6 +276,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Kontrolli uuesti, ma ei muutnud ühtegi stiili!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"liveReloadLabel": {
+		"message": "Reaalajas uuestilaadimine",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
@@ -325,6 +353,10 @@
 		"message": "Regulaaravaldis on sobimatu.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Litsents",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Valikud",
 		"description": "Heading for options section on manage page."
@@ -367,6 +399,10 @@
 		"message": "sobimatut vahele jäetud",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Kirjuta uus stiil usercss-ina",
+		"description": ""
+	},
 	"genericResetLabel": {
 		"message": "Lähtesta",
 		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -396,6 +432,10 @@
 		"message": "Kasuta /re/ süntaksit regulaaravaldise otsinguks",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "Kasulik tumedate teemade puhul Chrome'is, kuna see ei joonista enam külje piirjooni",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "Uuenduse sundimine kirjutab üle mistahes kohalikud muutused.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -407,6 +447,10 @@
 	"importReplaceTooltip": {
 		"message": "Tühista praeguse stiili sisu ja kirjuta see üle imporditud stiiliga",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "Kontrolli uuendusi",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "Topeltklõpsa, et maksimeerida/taastada kõrgus",
@@ -439,6 +483,10 @@
 	"styleToMozillaFormatTitle": {
 		"message": "Stiil Mozilla-vormingus",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+	},
+	"cm_colorpicker": {
+		"message": "CSS-värvide värvivalijad",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"writeStyleFor": {
 		"message": "Kirjuta stiil:",
@@ -541,6 +589,10 @@
 		"message": "Lülita kõik stiilid välja",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "Näita 'Rakendub' teavet",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "Seda stiili võib olla kohalikult muudetud.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -581,6 +633,21 @@
 		"message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "'$stylename$' on juba installitud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Seda stiili muudeti kohalikult.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -589,6 +656,10 @@
 		"message": "Vaata reeglite täielikku loendit",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "Stiili on redaktoriväliselt muudetud. Kas soovid stiili uuesti laadida?",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "Lähtesta valikud",
 		"description": ""
@@ -596,6 +667,10 @@
 	"sectionCode": {
 		"message": "Kood",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Usercss dokumentatsioon",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse",
@@ -609,6 +684,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "Seadista",
+		"description": "Label for the button to configure userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "said uuenduse nii metaandmetele kui koodile",
@@ -638,6 +717,23 @@
 		"message": "Automaattäide kirjutamisel",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "Vigane @select: väärtust pole loendis olemas",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$ ei ole sobiv värv",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "Tagasiside",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "Ainult keelatud stiilid",
 		"description": "Checkbox to show only disabled styles"
@@ -658,6 +754,10 @@
 		"message": "Stylus ei tööta sellistel lehtedel.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Lisa äärtesse valged piirjooned",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "Ainult uuenduste ja vigadega",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -665,6 +765,14 @@
 	"addStyleTitle": {
 		"message": "Lisa stiil",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Väline link",
+		"description": "Label for external links"
+	},
+	"externalHomepage": {
+		"message": "Koduleht",
+		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
 		"message": "Kirjuta stiil üle",
@@ -681,6 +789,10 @@
 	"optionsAdvanced": {
 		"message": "Täpsem",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Läbipaistmatus",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Lisa imporditud stiil praegusele stiilile",
@@ -734,9 +846,22 @@
 		"message": "Valikute liides",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Ava värvivalija",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Number tööriistaribaikoonil",
 		"description": ""
+	},
+	"installUpdateFrom": {
+		"message": "Praegu uuendatakse stiili aadressilt $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendIdentical": {
 		"message": "identset vahele jäetud",
@@ -746,6 +871,14 @@
 		"message": "Hüpikakna laius (pikslites)",
 		"description": ""
 	},
+	"cm_autoCloseBrackets": {
+		"message": "Automaatselt sulge sulud ja jutumärgid",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "Installi uuesti",
+		"description": "Label for reinstall button"
+	},
 	"linterInvalidConfigError": {
 		"message": "Ei salvestatud nende vigaste seadistuste tõttu:",
 		"description": "Invalid linter config will show a message followed by a list of invalid entries"
@@ -754,6 +887,10 @@
 		"message": "Ei",
 		"description": "'No' button in a confirm dialog"
 	},
+	"appliesLineWidgetWarning": {
+		"message": "Ei tööta minimeeritud CSS-iga",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "Võta tagasi",
 		"description": "Button label"
@@ -761,6 +898,14 @@
 	"cm_keyMap": {
 		"message": "Klahvimäärangud",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "Kasutajatugi",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Salvesta",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "Uus haldusliidese välimus",
@@ -790,6 +935,15 @@
 		"message": "Installi uuendus (kohalikud muutused kirjutatakse üle)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
+	"styleInstallFailed": {
+		"message": "Kasutajastiili installimine ebaõnnestus!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
+	},
 	"optionsAdvancedExposeIframes": {
 		"message": "Paljasta iframe-id HTML [stylus-iframe] kaudu",
 		"description": ""
@@ -801,6 +955,10 @@
 	"optionsUpdateIntervalNote": {
 		"message": "Et keelata automaatsed kasutajastiilide uuenduste kontrollid, sea intervalliks 0",
 		"description": ""
+	},
+	"installButtonUpdate": {
+		"message": "Uuenda",
+		"description": "Label for update button"
 	},
 	"backupButtons": {
 		"message": "Varunda",
@@ -814,6 +972,14 @@
 		"message": "Muuda",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Installitud",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "Autor",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "Teema",
 		"description": "Label for the style editor's CSS theme."
@@ -821,6 +987,10 @@
 	"popupOpenEditInWindow": {
 		"message": "Ava redaktor uues aknas",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "Viimast 'rakendub'-sisestust ei saa eemaldada",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "Vali fail või lohista see siia lehele.",
@@ -841,5 +1011,9 @@
 	"description": {
 		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Sulge",
+		"description": "'Close' button in a confirm dialog"
 	}
 }

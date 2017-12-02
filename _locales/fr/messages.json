@@ -20,7 +20,7 @@
 		"description": "Label for the button to enable a style"
 	},
 	"styleMissingName": {
-		"message": "Veuillez saisir un nom.",
+		"message": "Veuillez saisir un nom",
 		"description": "Error displayed when user saves without providing a name"
 	},
 	"appliesDomainOption": {

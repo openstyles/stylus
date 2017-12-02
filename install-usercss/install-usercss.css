@@ -4,10 +4,6 @@ body {
   background: white;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 a {
   color: #000;
   transition: color .5s;
@@ -19,9 +15,23 @@ a:hover {
 }
 
 img.icon,
-svg.icon {
+.svg-icon {
   height: 1.4em;
   vertical-align: middle;
+}
+
+.svg-icon {
+  margin-left: 2px;
+  fill: #000;
+  transition: fill .5s;
+}
+
+a:hover .svg-icon {
+  fill: #666;
+}
+
+input:disabled + span {
+  color: rgb(128, 128, 128);
 }
 
 .container {
@@ -30,16 +40,56 @@ svg.icon {
   align-items: stretch;
 }
 
-.header {
+.main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.header,
+.warnings {
   flex: 0 0 280px;
+  box-sizing: border-box;
   padding: 15px;
   border-right: 1px dashed #aaa;
   box-shadow: 0 0 50px -18px black;
   overflow-wrap: break-word;
-  overflow: auto;
+  overflow-y: auto;
+  z-index: 100;
 }
 
-.header > :first-child {
+.header.meta-init-error {
+  display: none;
+}
+
+.warnings {
+  display: none;
+  padding-bottom: 0;
+  flex-basis: auto;
+  background: #ffe2e2;
+  border-right: none;
+  border-bottom: 1px dashed #aaa;
+}
+
+.has-warnings .warnings {
+  display: initial;
+}
+
+.warning {
+  font-weight: bold;
+  font-size: 125%;
+  margin-bottom: 1em;
+}
+
+.warning pre {
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  margin: 1ex 0 0;
+  font-weight: normal;
+  font-size: 80%;
+}
+
+h1 {
   margin-top: 0;
 }
 
@@ -51,28 +101,87 @@ h1 small {
   content: " v";
 }
 
-.warning {
-  padding: 3px 6px;
-  border: 1px dashed black;
-
-  border-color: #ef6969;
-  background: #ffe2e2;
-}
-
-.header .warning {
-  margin: 3px 0;
-}
-
 .actions {
-  margin: 15px 0;
+  margin-bottom: 1em;
 }
 
 .actions label {
-  max-width: fit-content;
   max-width: -moz-fit-content;
+  max-width: fit-content;
   display: flex;
   align-items: center;
   margin: 0.5em 0;
+}
+
+.install {
+  font-family: Arial, "DejaVu Sans", Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  background: linear-gradient(#666, #555);
+  color: white;
+  border-radius: 4px;
+  padding: 4px 38px 4px 10px;
+  position: relative;
+  display: inline-block;
+  text-shadow: 1px 1px 1px #333;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-style: none;
+  margin-bottom: 1ex;
+  cursor: pointer;
+  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 hsl(0, 0%, 24%);
+}
+
+.install:before,
+.install:after {
+  content: "";
+  vertical-align: middle;
+  box-sizing: border-box;
+  border-radius: 0 4px 4px 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+}
+
+.install:before {
+  background-image: linear-gradient(hsl(176, 44%, 40%), hsl(176, 50%, 35%));
+  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 rgba(0, 0, 0, .3), inset -1px 0 0 0 hsl(0, 0%, 38%);
+  padding: 5px 8px;
+}
+
+.install:after {
+  background-image: url(../images/icon/16.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.install:hover {
+  filter: brightness(1.1);
+  color: #eee;
+  text-shadow: none;
+}
+
+.install.reinstall:after {
+  background-color: #333;
+  filter: grayscale(100%);
+}
+
+.install.update:before,
+.install.update:after {
+  filter: hue-rotate(-18deg) brightness(.7) contrast(2);
+}
+
+.install.installed,
+h2.installed {
+  display: none;
+}
+
+h2.installed.active {
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: 1ex;
+  margin-top: 0;
 }
 
 .actions label input {
@@ -92,30 +201,306 @@ h1 small {
   margin: 0 7.5px;
 }
 
-.code {
-  padding: 2em;
+li {
+  margin-left: -2em;
 }
 
 .main {
-  flex: 1 1 auto;
   overflow: hidden;
-  overflow-wrap: break-word;
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
 }
 
-.main > :first-child {
-  flex: 0 0 auto;
-}
-
-.main > :last-child {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.main .code,
 .main .CodeMirror {
-  height: 100%;
+  height: auto;
+  border: none;
+}
+
+/* spinner-related */
+
+.header {
+  position: relative;
+}
+
+.header:not(.meta-init) > *:not(.lds-spinner),
+.header.meta-init > .lds-spinner {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.header.meta-init > * {
+  opacity: 1;
+  transition: opacity .5s;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
+
+/* spinner: https://github.com/loadingio/css-spinner */
+
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lds-spinner {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 50px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  opacity: .2;
+  transition: opacity .5s;
+}
+.lds-spinner div {
+  left: 94px;
+  top: 23px;
+  position: absolute;
+  -webkit-animation: lds-spinner linear 1s infinite;
+  animation: lds-spinner linear 1s infinite;
+  background: currentColor;
+  width: 12px;
+  height: 34px;
+  border-radius: 20%;
+  -webkit-transform-origin: 6px 77px;
+  transform-origin: 6px 77px;
+}
+.lds-spinner div:nth-child(1) {
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-animation-delay: -0.916666666666667s;
+  animation-delay: -0.916666666666667s;
+}
+.lds-spinner div:nth-child(2) {
+  -webkit-transform: rotate(30deg);
+  transform: rotate(30deg);
+  -webkit-animation-delay: -0.833333333333333s;
+  animation-delay: -0.833333333333333s;
+}
+.lds-spinner div:nth-child(3) {
+  -webkit-transform: rotate(60deg);
+  transform: rotate(60deg);
+  -webkit-animation-delay: -0.75s;
+  animation-delay: -0.75s;
+}
+.lds-spinner div:nth-child(4) {
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+  -webkit-animation-delay: -0.666666666666667s;
+  animation-delay: -0.666666666666667s;
+}
+.lds-spinner div:nth-child(5) {
+  -webkit-transform: rotate(120deg);
+  transform: rotate(120deg);
+  -webkit-animation-delay: -0.583333333333333s;
+  animation-delay: -0.583333333333333s;
+}
+.lds-spinner div:nth-child(6) {
+  -webkit-transform: rotate(150deg);
+  transform: rotate(150deg);
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+.lds-spinner div:nth-child(7) {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  -webkit-animation-delay: -0.416666666666667s;
+  animation-delay: -0.416666666666667s;
+}
+.lds-spinner div:nth-child(8) {
+  -webkit-transform: rotate(210deg);
+  transform: rotate(210deg);
+  -webkit-animation-delay: -0.333333333333333s;
+  animation-delay: -0.333333333333333s;
+}
+.lds-spinner div:nth-child(9) {
+  -webkit-transform: rotate(240deg);
+  transform: rotate(240deg);
+  -webkit-animation-delay: -0.25s;
+  animation-delay: -0.25s;
+}
+.lds-spinner div:nth-child(10) {
+  -webkit-transform: rotate(270deg);
+  transform: rotate(270deg);
+  -webkit-animation-delay: -0.166666666666667s;
+  animation-delay: -0.166666666666667s;
+}
+.lds-spinner div:nth-child(11) {
+  -webkit-transform: rotate(300deg);
+  transform: rotate(300deg);
+  -webkit-animation-delay: -0.083333333333333s;
+  animation-delay: -0.083333333333333s;
+}
+.lds-spinner div:nth-child(12) {
+  -webkit-transform: rotate(330deg);
+  transform: rotate(330deg);
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+/* https://github.com/lukehaas/css-loaders */
+/*
+.spinner {
+  --color: currentColor;
+  --background-color: currentColor;
+  font-size: 10px;
+  margin: 50px auto;
+  text-indent: -9999em;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #ffffff;
+  background: -moz-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -webkit-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -o-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: -ms-linear-gradient(left, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  background: linear-gradient(to right, #ffffff 10%, rgba(255, 255, 255, 0) 42%);
+  position: relative;
+  -webkit-animation: load3 1.4s infinite linear;
+  animation: load3 1.4s infinite linear;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.spinner:before {
+  width: 50%;
+  height: 50%;
+  background: #ffffff;
+  border-radius: 100% 0 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+}
+
+.spinner:after {
+  background: #0dc5c1;
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  content: '';
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+*/
+
+@-webkit-keyframes load3 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load3 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+/************ reponsive layouts ************/
+
+@media (max-width:10in) {
+  .container {
+    flex-direction: column;
+  }
+  .header {
+    flex-basis: auto;
+    border-right: none;
+    border-bottom: 1px dashed #AAA;
+    max-height: 50%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .has-warnings .header {
+    min-height: 4em;
+    max-height: 20%;
+  }
+  .warnings {
+    max-height: 20%;
+  }
+  .warning:not(:last-child) {
+    border-bottom: 1px dashed #b57c7c;
+    padding-bottom: 1em;
+  }
+  .header,
+  .warning {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+  }
+  h1 {
+    -webkit-column-span: all;
+    column-span: all;
+    margin-bottom: .5em;
+  }
+  .actions {
+    display: flex;
+  }
+  .install {
+    margin-right: 1em;
+  }
+}
+
+@media (max-width:7in) {
+  .header,
+  .warning {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+  }
+}
+
+@media (max-width:4in) {
+  .header {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+  .header,
+  .warning {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+  }
+  .warning {
+    border: none;
+    padding-bottom: unset;
+  }
+}
+
+/* Retina-specific stuff here */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .install:after {
+    background-image: url(../images/icon/32.png);
+    background-size: 16px 16px;
+  }
 }
