@@ -45,3 +45,18 @@
   from { background-color: rgba(255, 255, 0, .4); } /* search color */
   to   { background-color: rgba(100, 255, 100, .4); } /* sarch + highlight */
 }
+
+.CodeMirror-activeline .applies-to:before {
+  background-color: hsla(214, 100%, 90%, 0.15);
+  content: "";
+  top: 1em;
+  left: 0;
+  right: 0;
+  bottom: 1em;
+  position: absolute;
+  pointer-events: none;
+}
+
+.CodeMirror-activeline .applies-to ul {
+  z-index: 2;
+}
