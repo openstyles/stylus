@@ -75,20 +75,33 @@ var initColorpicker = () => {
       spellcheck: false,
       value: prefs.get('editor.colorpicker.hotkey'),
       onkeydown(event) {
-        const key = CodeMirror.keyName(event);
-        // ignore: [Shift?] characters, modifiers-only, [Shift?] Esc, Enter, [Shift?] Tab
-        if (key === 'Enter' || key === 'Esc') {
-          $('#help-popup .dismiss').onclick();
-          return;
-        } else if (/^(Space|(Shift-)?(Esc|Tab|[!-~])|(Shift-?|Ctrl-?|Alt-?|Cmd-?)*)$/.test(key)) {
-          this.setCustomValidity('Not allowed');
-        } else {
-          this.setCustomValidity('');
-          prefs.set('editor.colorpicker.hotkey', key);
-        }
         event.preventDefault();
         event.stopPropagation();
+        const key = CodeMirror.keyName(event);
+        switch (key) {
+          case 'Enter':
+            if (this.checkValidity()) {
+              $('#help-popup .dismiss').onclick();
+            }
+            return;
+          case 'Esc':
+            $('#help-popup .dismiss').onclick();
+            return;
+          default:
+            // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
+            if (!key || new RegExp('^(' + [
+              '(Back)?Space',
+              '(Shift-)?.', // a single character
+              '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
+            ].join('|') + ')$', 'i').test(key)) {
+              this.value = key || this.value;
+              this.setCustomValidity('Not allowed');
+              return;
+            }
+        }
         this.value = key;
+        this.setCustomValidity('');
+        prefs.set('editor.colorpicker.hotkey', key);
       },
       oninput() {
         // fired on pressing "x" to clear the field
