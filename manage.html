@@ -13,7 +13,7 @@
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
-    @-moz-document url-prefix("") {
+    @supports (-moz-appearance:none) {
       /* increased specificity to override sane selectors in user styles */
       html#stylus.firefox #stylus-manage #header * {
         transition: none !important;
