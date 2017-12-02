@@ -12,7 +12,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 }
 
 $.remove = (selector, base = document) => {
-  const el = selector instanceof Node ? selector : $(selector, base);
+  const el = selector && typeof selector === 'string' ? $(selector, base) : selector;
   if (el) {
     el.remove();
   }
