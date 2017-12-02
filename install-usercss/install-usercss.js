@@ -112,7 +112,7 @@
 
     $('.header').classList.add('meta-init');
     $('.header').classList.remove('meta-init-error');
-    setTimeout(() => $('.lds-spinner') && $('.lds-spinner').remove(), 1000);
+    setTimeout(() => $.remove('.lds-spinner'), 1000);
 
     showError('');
     requestAnimationFrame(adjustCodeHeight);
@@ -195,8 +195,7 @@
   function install(style) {
     installed = style;
 
-    $$('.warning')
-      .forEach(el => el.remove());
+    $$.remove('.warning');
     $('button.install').disabled = true;
     $('button.install').classList.add('installed');
     $('h2.installed').classList.add('active');

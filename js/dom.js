@@ -11,6 +11,19 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   }
 }
 
+$.remove = (selector, base = document) => {
+  const el = selector instanceof Node ? selector : $(selector, base);
+  if (el) {
+    el.remove();
+  }
+};
+
+$$.remove = (selector, base = document) => {
+  for (const el of base.querySelectorAll(selector)) {
+    el.remove();
+  }
+};
+
 {
   // display a full text tooltip on buttons with ellipsis overflow and no inherent title
   const addTooltipsToEllipsized = () => {
@@ -41,10 +54,7 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
 }
 
 onDOMready().then(() => {
-  const el = $('#firefox-transitions-bug-suppressor');
-  if (el) {
-    el.remove();
-  }
+  $.remove('#firefox-transitions-bug-suppressor');
 });
 
 if (!chrome.app && chrome.windows) {

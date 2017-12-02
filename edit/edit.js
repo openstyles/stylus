@@ -289,9 +289,7 @@ function initCodeMirror() {
       }
     }
     if (index >= total) {
-      if (progress) {
-        progress.remove();
-      }
+      $.remove(progress);
       return;
     }
     if (!progress &&
@@ -1015,9 +1013,7 @@ function setupGlobalSearch() {
 
           const dlg = $('.CodeMirror-dialog', cm.getWrapperElement());
           if (!dlg || cmp === 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
-            if (dlg) {
-              dlg.remove();
-            }
+            $.remove(dlg);
             doReplace();
           }
         });
@@ -2061,7 +2057,7 @@ function setGlobalProgress(done, total) {
     setTimeout(() => {
       progressElement.title = progress + '%';
     });
-  } else if (progressElement) {
-    progressElement.remove();
+  } else {
+    $.remove(progressElement);
   }
 }
