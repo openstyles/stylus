@@ -185,9 +185,12 @@ function showUpdateHistory() {
 }
 
 
-function handleUpdateInstalled(entry) {
-  entry.classList.add('update-done');
+function handleUpdateInstalled(entry, reason) {
+  const isNew = reason === 'install';
+  const note = t(isNew ? 'installButtonInstalled' : 'updateCompleted');
+  entry.classList.add('update-done', ...(isNew ? ['install-done'] : []));
   entry.classList.remove('can-update', 'updatable');
-  $('.update-note', entry).textContent = t('updateCompleted');
+  $('.update-note', entry).textContent = note;
+  $('.updated', entry).title = note;
   renderUpdatesOnlyFilter();
 }

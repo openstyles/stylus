@@ -400,8 +400,8 @@ function handleUpdate(style, {reason, method} = {}) {
       oldEntry.remove();
     }
   }
-  if (reason === 'update' && entry.matches('.updatable')) {
-    handleUpdateInstalled(entry);
+  if (reason === 'update' || reason === 'install' && entry.matches('.updatable')) {
+    handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
   if (!entry.matches('.hidden') && reason !== 'import') {

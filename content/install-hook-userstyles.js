@@ -132,7 +132,8 @@
 
   function saveStyleCode(message, name, addProps) {
     return new Promise((resolve, reject) => {
-      const needsConfirmation = message === 'styleInstall' || !saveStyleCode.confirmed;
+      const isNew = message === 'styleInstall';
+      const needsConfirmation = isNew || !saveStyleCode.confirmed;
       if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
         reject();
         return;
@@ -148,10 +149,10 @@
         chrome.runtime.sendMessage(
           Object.assign(json, addProps, {
             method: 'saveStyle',
-            reason: 'update',
+            reason: isNew ? 'install' : 'update',
           }),
           style => {
-            if (message === 'styleUpdate' && style.updateUrl.includes('?')) {
+            if (!isNew && style.updateUrl.includes('?')) {
               enableUpdateButton(true);
             } else {
               sendEvent('styleInstalledChrome');

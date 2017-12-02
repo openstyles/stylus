@@ -371,6 +371,11 @@ label.nobreak input {
   display: inline;
 }
 
+.newUI .up-to-date svg,
+.newUI .updated svg {
+  cursor: auto;
+}
+
 .newUI .update-done .updated svg {
   top: -4px;
   position: relative;

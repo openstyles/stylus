@@ -395,7 +395,7 @@ function saveStyle(style) {
     .then(decide);
 
   function maybeCalcDigest() {
-    if (reason === 'update' || reason === 'update-digest') {
+    if (['install', 'update', 'update-digest'].includes(reason)) {
       return calcStyleDigest(style).then(digest => {
         style.originalDigest = digest;
       });
