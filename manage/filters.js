@@ -295,11 +295,7 @@ function reapplyFilter(container = installed) {
 }
 
 
-function showFiltersStats({immediately} = {}) {
-  if (!immediately) {
-    debounce(showFiltersStats, 100, {immediately: true});
-    return;
-  }
+function showFiltersStats() {
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
   const numTotal = BG.cachedStyles.list.length;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
@@ -309,6 +305,7 @@ function showFiltersStats({immediately} = {}) {
     filtersSelector.numShown = numShown;
     filtersSelector.numTotal = numTotal;
     $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
+    document.body.classList.toggle('all-styles-hidden-by-filters', !numShown && numTotal);
   }
 }
 

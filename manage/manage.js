@@ -91,6 +91,9 @@ function initGlobalEvents() {
     #update-all-no-updates[data-skipped-edited="true"]:after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
+    body.all-styles-hidden-by-filters:after {
+      content: "${t('filteredStylesAllHidden')}";
+    }
   `));
 }
 
