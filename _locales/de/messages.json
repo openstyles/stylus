@@ -16,7 +16,7 @@
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
-		"message": "Styles Exportieren",
+		"message": "Styles exportieren",
 		"description": ""
 	},
 	"manageOnlyUsercss": {
@@ -36,7 +36,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "Installieren",
+		"message": "Style installieren",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -46,6 +46,10 @@
 	"linterJSONError": {
 		"message": "Ungültiges JSON Format",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Klicke, um Tastenkürzel zu sehen",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Hintergrundfarbe",
@@ -204,7 +208,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
-		"message": "Styles Importieren",
+		"message": "Styles importieren",
 		"description": ""
 	},
 	"confirmStop": {
@@ -322,6 +326,10 @@
 		"message": "Zählung der aktiven Styles anzeigen ",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
+	"popupHotkeysInfo": {
+		"message": "<1>-<9>, <0>, auch auf NumPad - schaltet n-ten Style um (0 ist 10)\n<A>-<Z> schaltet ersten Style, dessen Name mit diesem Buchstaben beginnt\n<Shift> öffnet Editor statt umzuschalten\n<Numpad +> aktiviert die aufgeführten Styles\n<Numpad –> deaktiviert die aufgeführten Styles\n<Numpad *> und <`> (backtick) - schaltet anfänglich aktivierte Styles; trifft nicht auf Styles zu, die erst aktiviert werden, wenn das Popup noch geöffnet ist. Dadurch kann die Anfangseinstellung nach einem Test wiederhergestellt werden: Einfach alle deaktivieren, dann schalte z.B. <Numpad –> <Numpad *>\nMehr dazu im Wiki",
+		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+	},
 	"cm_lineWrapping": {
 		"message": "Automatischer Zeilenumbruch",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
@@ -413,7 +421,7 @@
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"optionsAdvancedNewStyleAsUsercss": {
-		"message": "Schreibe neuen Style als usercss",
+		"message": "Schreibe neuen Style als Usercss",
 		"description": ""
 	},
 	"genericResetLabel": {
@@ -525,6 +533,10 @@
 		"message": "Optionen",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "Der Style wurde aktualisiert oder gelöscht, nachdem der Einstellungsdialog gezeigt wurde. Folgende Variablen wurden nicht gespeichert, um Metadatenkorruption zu verhindern:",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Verwalten",
 		"description": "Link to open the manage page."
@@ -545,6 +557,10 @@
 	"installUpdate": {
 		"message": "Update installieren",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Der Wert kann nicht gespeichert werden. Versuche, die Textmenge zu reduzieren.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Alle verfügbaren Updates Installieren",
@@ -832,6 +848,10 @@
 		"message": "Nichts wurde geändert.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Änderungen verwerfen?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Aktionen",
 		"description": ""
@@ -886,7 +906,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "Neuinstallieren",
+		"message": "Style neu installieren",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -913,6 +933,10 @@
 	"undo": {
 		"message": "Rückgängig",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Ersetze das vorgegebene Template für neue Usercss styles mit dem vorliegenden Code?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Tastaturbelegung",
@@ -971,6 +995,10 @@
 		"message": "Ermögliche Iframes via HTML[stylus-iframe]",
 		"description": ""
 	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Gib @name im Code an",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
+	},
 	"addStyleLabel": {
 		"message": "Neuen Style erstellen",
 		"description": "Label for the button to go to the add style page"
@@ -980,7 +1008,7 @@
 		"description": ""
 	},
 	"installButtonUpdate": {
-		"message": "Aktualisieren",
+		"message": "Style updaten",
 		"description": "Label for update button"
 	},
 	"backupButtons": {
@@ -996,7 +1024,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "Installiert",
+		"message": "Style installiert",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
@@ -1034,5 +1062,9 @@
 	"confirmClose": {
 		"message": "Schließen",
 		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Ein leeres @name ersetzt das vorgegebene Template",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }

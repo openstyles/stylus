@@ -36,7 +36,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "Установить",
+		"message": "Установить стиль",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -46,6 +46,10 @@
 	"linterJSONError": {
 		"message": "Ошибка формата JSON",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Показать клавиатурные сочетания",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Цвет фона",
@@ -330,6 +334,10 @@
 		"message": "Число активных стилей",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
+	"popupHotkeysInfo": {
+		"message": "<1>-<9>, <0>, и цифровой блок - переключает стиль по номеру (0 это 10)\n<A>-<Z> переключает стиль начинающийся с нажатой буквы\n<Shift> открывает в редакторе вместо переключения\n<Numpad +> включает стили в списке\n<Numpad –> выключает стили в списке\n<Numpad *> и <`> (обратный апостроф) - переключает изначально включенные стили вне зависимости от последующего переключения других ранее не включенных стилей, так что можно потестировать и восстановить исходный список нажав <Numpad –> <Numpad *>\nПодробнее на вики.",
+		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+	},
 	"cm_lineWrapping": {
 		"message": "Перенос по словам",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
@@ -541,6 +549,10 @@
 		"message": "Настройки",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "Стиль был обновлен или удален после вызова окна настройки. Следующие настройки не были сохранены, чтобы не повредить метаданные стиля:",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Менеджер",
 		"description": "Link to open the manage page."
@@ -561,6 +573,10 @@
 	"installUpdate": {
 		"message": "Установить обновление",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Ошибка сохранения. Попробуйте уменьшить количество текста.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Найти и установить обновления стилей",
@@ -868,6 +884,10 @@
 		"message": "Ничего не изменилось.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Отказаться от изменений?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Другие действия",
 		"description": ""
@@ -922,7 +942,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "Переустановить",
+		"message": "Переустановить стиль",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -949,6 +969,10 @@
 	"undo": {
 		"message": "Отменить",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Заменить шаблон по умолчанию для нового стиля в формате Usercss  текущим кодом?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Раскладка",
@@ -1007,6 +1031,10 @@
 		"message": "Выявлять iframe путем добавления HTML[stylus-iframe]",
 		"description": ""
 	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Укажите имя после @name в коде",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
+	},
 	"addStyleLabel": {
 		"message": "Создать стиль",
 		"description": "Label for the button to go to the add style page"
@@ -1016,7 +1044,7 @@
 		"description": ""
 	},
 	"installButtonUpdate": {
-		"message": "Обновить",
+		"message": "Обновить стиль",
 		"description": "Label for update button"
 	},
 	"backupButtons": {
@@ -1032,7 +1060,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "Установлен",
+		"message": "Стиль установлен",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
@@ -1074,5 +1102,9 @@
 	"confirmClose": {
 		"message": "Закрыть",
 		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Пустой @name заменяет шаблон по умолчанию",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }
