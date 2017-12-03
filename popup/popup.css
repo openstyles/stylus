@@ -145,7 +145,13 @@ label {
 }
 
 #no-styles {
-  font-style: italic;
+  margin: 0 .75em;
+  font-weight: bold;
+  font-style: normal;
+}
+
+#no-styles:before {
+  content: none;
 }
 
 .checker {
