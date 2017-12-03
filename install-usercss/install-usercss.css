@@ -79,6 +79,7 @@ input:disabled + span {
   font-weight: bold;
   font-size: 125%;
   margin-bottom: 1em;
+  white-space: pre-wrap;
 }
 
 .warning pre {
