@@ -46,10 +46,11 @@ onDOMready().then(() => {
   // cm.state.search for last used 'find'
   let searchState;
 
+  // N.B. the event listener should be registered before setupLivePrefs()
+  $('#options').addEventListener('change', onOptionElementChanged);
   buildOptionsElements();
   setupLivePrefs();
   rerouteHotkeys(true);
-  $('#options').addEventListener('change', onOptionElementChanged);
 
   return;
 
@@ -192,9 +193,8 @@ onDOMready().then(() => {
   function onOptionElementChanged(event) {
     const el = event.target;
     let option = el.id.replace(/^editor\./, '');
-    //console.log('acmeEventListener heard %s on %s', event.type, el.id);
     if (!option) {
-      console.error('acmeEventListener: no "cm_option" %O', el);
+      console.error('no "cm_option"', el);
       return;
     }
     let value = el.type === 'checkbox' ? el.checked : el.value;
