@@ -220,8 +220,8 @@
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
     cm.refresh();
-    sendMessage({method: 'buildUsercss', sourceCode, checkDup: true})
-      .then(init)
+    BG.usercssHelper.build(BG.deepCopy({sourceCode, checkDup: true}))
+      .then(r => init(deepCopy(r)))
       .catch(err => {
         $('.header').classList.add('meta-init-error');
         showError(err);
@@ -229,10 +229,46 @@
   }
 
   function buildWarning(err) {
+    const contents = Array.isArray(err) ?
+      $element({tag: 'pre', textContent: err.join('\n')}) :
+      [err && err.message || err || 'Unknown error'];
+    if (Number.isInteger(err.index)) {
+      const pos = cm.posFromIndex(err.index);
+      contents[0] = `${pos.line + 1}:${pos.ch + 1} ` + contents[0];
+      contents.push($element({
+        tag: 'pre',
+        textContent: drawLinePointer(pos)
+      }));
+      setTimeout(() => {
+        cm.scrollIntoView({line: pos.line + 1, ch: pos.ch}, window.innerHeight / 4);
+        cm.setCursor(pos.line, pos.ch + 1);
+        cm.focus();
+      });
+    }
     return $element({className: 'warning', appendChild: [
       t('parseUsercssError'),
-      $element({tag: 'pre', textContent: String(err)})
+      '\n',
+      ...contents,
     ]});
+  }
+
+  function drawLinePointer(pos) {
+    const SIZE = 60;
+    const line = cm.getLine(pos.line);
+    const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
+    const pointer = ' '.repeat(pos.ch) + '^';
+    const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
+    const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
+    const leftPad = start !== 0 ? '...' : '';
+    const rightPad = end !== line.length ? '...' : '';
+    return (
+      leftPad +
+      line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
+      rightPad +
+      '\n' +
+      ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
+      pointer.slice(start, end)
+    );
   }
 
   function init({style, dup}) {
@@ -258,9 +294,10 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        sendMessage(Object.assign(style, {method: 'saveUsercss', reason: 'update'}))
-          .then(install)
-          .catch(err => messageBox.alert(t('styleInstallFailed', err))));
+        BG.usercssHelper.save(BG.deepCopy(Object.assign(style, {reason: 'update'})))
+          .then(r => install(deepCopy(r)))
+          .catch(err => messageBox.alert(t('styleInstallFailed', err)))
+      );
     };
 
     // set updateUrl
