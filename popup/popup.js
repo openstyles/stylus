@@ -105,11 +105,12 @@ function initPopup(url) {
       installed);
   }
 
+  const u = new URL(url);
   $('#find-styles-link').onclick = handleEvent.openURLandHide;
   $('#find-styles-link').href +=
-    url.startsWith(location.protocol) ?
-      '?search_terms=Stylus' :
-      'all/' + encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
+    url.startsWith(location.protocol) ? '?search_terms=Stylus' :
+    u.protocol === 'file:' ? 'file:' :
+    u.hostname.replace(/^www\.|(\.com?)?\.\w+$/g, '').split('.').pop();
 
   if (!url) {
     document.body.classList.add('blocked');
