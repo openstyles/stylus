@@ -387,7 +387,7 @@ function save() {
 
   saveStyleSafe({
     id: styleId,
-    name: name,
+    name: $('#name').value.trim(),
     enabled: $('#enabled').checked,
     reason: 'editSave',
     sections: getSectionsHashes()
