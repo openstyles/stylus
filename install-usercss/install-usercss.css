@@ -79,7 +79,6 @@ input:disabled + span {
   font-weight: bold;
   font-size: 125%;
   margin-bottom: 1em;
-  white-space: pre-wrap;
 }
 
 .warning pre {
@@ -240,6 +239,61 @@ li {
   user-select: auto;
 }
 
+/************ checkbox ************/
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  display: inline-flex;
+  transition: fill .25s;
+}
+
+input[type="checkbox"]:not(.slider) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  border: 1px solid hsl(0, 0%, 46%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 94%);
+  outline: none;
+  margin: 0;
+  transition: background-color .25s, border-color .25s;
+}
+
+input[type="checkbox"]:not(.slider):checked:hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+label {
+  padding-left: 16px;
+  position: relative;
+  transition: color .25s;
+}
 /* spinner: https://github.com/loadingio/css-spinner */
 
 @keyframes lds-spinner {

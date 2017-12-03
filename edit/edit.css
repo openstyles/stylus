@@ -27,6 +27,103 @@ body {
   display: none !important;
 }
 
+/************ checkbox & select************/
+select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  height: 22px;
+  background-color: transparent;
+  border: 1px solid hsl(0, 0%, 66%);
+  padding: 0 20px 0 6px;
+  transition: color .5s;
+}
+
+.firefox select {
+  padding: 0 20px 0 2px;
+}
+
+.select-resizer {
+  display: inline-flex!important;
+  cursor: default;
+  position: relative;
+}
+
+.svg-icon.select-arrow {
+  pointer-events: none;
+  cursor: default;
+  display: inline-flex;
+  height: 14px;
+  width: 14px;
+  fill: #000;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  transition: fill .5s;
+}
+
+#options > div[class="option"] {
+  margin-bottom: 4px;
+}
+
+#basic-info-enabled {
+  margin-top: 2px;
+}
+
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  display: inline-flex;
+  transition: fill .25s;
+}
+
+input[type="checkbox"]:not(.slider) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  border: 1px solid hsl(0, 0%, 46%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 94%);
+  outline: none;
+  margin: 0;
+  transition: background-color .25s, border-color .25s;
+}
+
+input[type="checkbox"]:not(.slider):checked:hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+label {
+  padding-left: 16px;
+  position: relative;
+  transition: color .25s;
+}
+
 /************ header ************/
 #header {
   width: 280px;
@@ -54,16 +151,17 @@ body {
   margin-left: 1.7rem;
 }
 .aligned {
-  display: table-row;
+  display: flex;
+  margin-bottom: 4px;
 }
-.aligned > *:not(.svg-inline-wrapper) {
-  display: table-cell;
-  margin-top: 0.1rem;
-  min-height: 1.4rem;
+#options .option:nth-last-of-type(5) {
+  margin-top: 10px;
 }
-input[type="checkbox"] {
-  margin-left: 0.1rem;
+.aligned > * {
+  display: inline-flex;
+  align-items: center;
 }
+
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
@@ -136,14 +234,21 @@ input:invalid {
   margin-left: -13px;
   cursor: pointer;
   outline: none;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
+
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
+  margin-top: .1em;
+  margin-bottom: .1em;
 }
-#header summary h2:hover {
+
+#header summary:hover h2 {
   border-color: #bbb;
 }
+
 #header summary svg {
   margin-top: -3px;
 }
@@ -159,8 +264,9 @@ input:invalid {
   text-align: left;
   padding-left: .25em;
 }
-#options .option.aligned > * {
-  padding-right: 0.25rem;
+#options .option.aligned > label {
+  padding: 0 0.25rem 0 0;
+  width: 60px;
 }
 .set-option-progress {
   position: absolute;
@@ -306,7 +412,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   align-items: center;
   margin-bottom: 0.35rem;
 }
-.applies-to li > *:not(button) {
+.applies-to li > *:not(button):not(.select-resizer) {
   flex: auto;
   min-height: 1.4rem;
   margin-left: 0.35rem;
@@ -331,7 +437,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .test-regexp {
   display: none;
 }
-.single-editor .test-regexp,
 .has-regexp .test-regexp {
   display: inline-block;
 }
@@ -385,12 +490,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-left: -20px;
   margin-top: -1px;
 }
-.regexp-report-note {
-  font-size: 90%;
-  margin: 1em 1em .5em;
-  color: #999;
-}
-
 /************ help popup ************/
 #help-popup {
   top: 3rem;
@@ -532,17 +631,23 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 
 /************ CSS beautifier ************/
 .beautify-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 180px;
+  padding-left: 6px;
   white-space: nowrap;
   font-family: monospace;
 }
-.beautify-options div {
-  float: left;
-}
-.beautify-options div[newline="true"] + div {
-  clear: left;
-}
 .beautify-options div[newline="true"] + div span[indent] {
   padding-left: 2rem;
+}
+.beautify-options > label {
+  margin: 6px 0;
+}
+
+.beautify-options + div {
+  padding-left: 6px;
 }
 .beautify-options:after {
   clear: both;
@@ -552,6 +657,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 .beautify-options span {
   font-weight: bold;
+  display: inline-flex;
 }
 .beautify-options select {
   border: none;
@@ -617,15 +723,11 @@ html:not(.usercss) .usercss-only,
   margin-top: 0.35rem;
 }
 
-.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .test-regexp {
+.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .applies-to-regexp-test {
   display: none;
 }
 
-.CodeMirror-linewidget li .add-applies-to {
-  visibility: visible;
-}
-
-.CodeMirror-linewidget .applies-to-everything {
+.CodeMirror-linewidget li.applies-to-everything {
   margin-top: 0.2rem;
 }
 
@@ -681,12 +783,6 @@ html:not(.usercss) .usercss-only,
   }
   #options h2 {
     margin: 0 0 .5em;
-  }
-  #options .aligned > *:not(.svg-inline-wrapper) {
-    margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
-    padding-right: 0.4rem;
-    vertical-align: baseline;
-    min-height: 1.4rem;
   }
   .option label {
     line-height: 1.25rem;

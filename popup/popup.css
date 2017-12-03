@@ -22,29 +22,9 @@ body > div:not(#installed) {
 .firefox .chromium-only {
   display: none;
 }
+/************ checkbox ************/
 
-/* there's a bug in FF 52 ESR so until we find a better workaround we won't style checkboxes in FF */
-html.moz-appearance-bug .svg-icon.checked {
-  display: none;
-}
-
-html.moz-appearance-bug input[type="checkbox"] {
-  position: absolute;
-  left: 8px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-}
-
-html.moz-appearance-bug #disableAll {
-  left: -1px;
-}
-
-html.moz-appearance-bug #disableAll-label {
-  padding-left: 16px !important;
-}
-
-html:not(.moz-appearance-bug) .svg-icon.checked {
+.svg-icon.checked {
   position: absolute;
   height: 8px;
   width: 8px;
@@ -53,12 +33,12 @@ html:not(.moz-appearance-bug) .svg-icon.checked {
   margin: 2px 0 0 2px;
 }
 
-html:not(.moz-appearance-bug) input[type="checkbox"]:checked + .svg-icon.checked {
+input[type="checkbox"]:checked + .svg-icon.checked {
   display: inline-flex;
   transition: fill .25s;
 }
 
-html:not(.moz-appearance-bug) input[type="checkbox"] {
+input[type="checkbox"] {
   -moz-appearance: none;
   -webkit-appearance: none;
   border: 1px solid hsl(0, 0%, 46%);
@@ -72,57 +52,57 @@ html:not(.moz-appearance-bug) input[type="checkbox"] {
   transition: background-color .25s, border-color .25s;
 }
 
-html:not(.moz-appearance-bug) input[type="checkbox"]:checked:hover,
-html:not(.moz-appearance-bug) .style-name:hover input[type="checkbox"]:checked {
+input[type="checkbox"]:checked:hover,
+.style-name:hover input[type="checkbox"]:checked {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
 
-html:not(.moz-appearance-bug) input[type="checkbox"]:hover,
-html:not(.moz-appearance-bug) .style-name:hover input[type="checkbox"],
-html:not(.moz-appearance-bug) .entry.disabled .style-name:hover input[type="checkbox"] {
+input[type="checkbox"]:hover,
+.style-name:hover input[type="checkbox"] {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
 
-html:not(.moz-appearance-bug) #installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
+#disable-all-wrapper input[type="checkbox"]:not(.slider),
+#disable-all-wrapper input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+#installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
   fill: hsl(0, 68%, 42%);
 }
 
-html:not(.moz-appearance-bug) #installed.disabled + .actions #disableAll:checked {
+#installed.disabled + .actions #disableAll:checked {
   border-color: hsl(0, 68%, 50%);
 }
 
-html:not(.moz-appearance-bug) #installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
+#installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
   fill: #fff;
 }
 
-html:not(.moz-appearance-bug) #disableAll:hover {
+#disableAll:hover {
   border-color: hsl(0, 68%, 50%);
   background-color: hsl(20, 70%, 75%);
 }
 
-html:not(.moz-appearance-bug) #disableAll:hover + .svg-icon + label {
+#disableAll-label:hover {
   color: hsl(0, 68%, 42%);
 }
 
-html:not(.moz-appearance-bug) #installed.disabled + .actions #disableAll:checked:hover {
+#installed.disabled + .actions #disableAll:checked:hover {
   border-color: hsl(0, 50%, 56%);
   background-color: hsl(0, 50%, 56%);
 }
 
-html:not(.moz-appearance-bug) .style-name .checker,
-html:not(.moz-appearance-bug) .style-name .svg-icon.checked {
+.style-name .checker,
+.style-name .svg-icon.checked {
   position: absolute;
   top: 7px;
   left: 9px;
-  pointer-events: none;
-}
-
-html:not(.moz-appearance-bug) #disable-all-wrapper .main-controls .svg-icon.checked {
-  position: absolute;
-  top: 0;
-  left: 0;
   pointer-events: none;
 }
 
@@ -140,18 +120,14 @@ label {
 }
 
 #disable-all-wrapper .main-controls label {
+  padding-left: 16px;
+  position: relative;
+  transition: color .25s;
   font-size: 12px;
-  padding-left: 4px;
 }
 
 #no-styles {
-  margin: 0 .75em;
-  font-weight: bold;
-  font-style: normal;
-}
-
-#no-styles:before {
-  content: none;
+  font-style: italic;
 }
 
 .checker {
@@ -220,6 +196,10 @@ body.blocked > DIV {
 
 html[style] .entry {
   padding: 0 16px 0 0;
+}
+
+#no-styles.entry {
+  padding: 0 14px;
 }
 
 html[style] .entry:nth-child(-n+10):before,

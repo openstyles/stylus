@@ -87,10 +87,17 @@ function beautify(event) {
       const value = options[optionName];
       return '<div newline="' + value.toString() + '">' +
         '<span' + (indent ? ' indent' : '') + '>' + label + '</span>' +
-        '<select data-option="' + optionName + '">' +
-          '<option' + (value ? '' : ' selected') + '>&nbsp;</option>' +
-          '<option' + (value ? ' selected' : '') + '>\\n</option>' +
-        '</select></div>';
+        '<div class="select-resizer">' +
+          '<select data-option="' + optionName + '">' +
+            '<option' + (value ? '' : ' selected') + '>&nbsp;</option>' +
+            '<option' + (value ? ' selected' : '') + '>\\n</option>' +
+          '</select>' +
+          '<svg class="svg-icon select-arrow" viewBox="0 0 1792 1792">' +
+            '<path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 ' +
+              '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>' +
+          '</svg>' +
+        '</div>' +
+      '</div>';
     }
   }
 }
