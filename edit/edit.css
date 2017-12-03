@@ -331,6 +331,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .test-regexp {
   display: none;
 }
+.single-editor .test-regexp,
 .has-regexp .test-regexp {
   display: inline-block;
 }
@@ -610,11 +611,15 @@ html:not(.usercss) .usercss-only,
   margin-top: 0.35rem;
 }
 
-.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .applies-to-regexp-test {
+.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .test-regexp {
   display: none;
 }
 
-.CodeMirror-linewidget li.applies-to-everything {
+.CodeMirror-linewidget li .add-applies-to {
+  visibility: visible;
+}
+
+.CodeMirror-linewidget .applies-to-everything {
   margin-top: 0.2rem;
 }
 

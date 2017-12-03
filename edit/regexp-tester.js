@@ -25,17 +25,17 @@ var regExpTester = (() => {
     }
   }
 
-  function isShowed() {
+  function isShown() {
     return Boolean($('.regexp-report'));
   }
 
-  function toggle(state = !isShowed()) {
-    if (state && !isShowed()) {
+  function toggle(state = !isShown()) {
+    if (state && !isShown()) {
       if (!isInit) {
         init();
       }
       showHelp('', $element({className: 'regexp-report'}));
-    } else if (!state && isShowed()) {
+    } else if (!state && isShown()) {
       if (isInit) {
         uninit();
       }
@@ -45,7 +45,7 @@ var regExpTester = (() => {
   }
 
   function update(newRegexps) {
-    if (!isShowed()) {
+    if (!isShown()) {
       if (isInit) {
         uninit();
       }
