@@ -104,6 +104,32 @@ label.nobreak input {
   border-top: none;
 }
 
+.newUI .entry:first-child > * {
+  position: relative;
+  padding-top: 20px;
+}
+
+.newUI .entry:first-child > :after {
+  font-weight: bold;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  height: 1.2rem;
+  position: absolute;
+  left: 0;
+  top: -1.1rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.entry:first-child .style-name:after {
+  text-indent: 1.2rem;
+}
+
+.entry:first-child .actions:after {
+  text-indent: -25px; /* adjust for svg negative margin */
+}
+
 .svg-icon {
   cursor: pointer;
   vertical-align: middle;
@@ -267,7 +293,7 @@ label.nobreak input {
 
 .newUI #installed {
   display: table;
-  margin-top: .75rem;
+  margin-top: 1.3rem;
   margin-bottom: .75rem;
 }
 
@@ -912,6 +938,7 @@ fieldset select {
 
   #installed {
     padding-left: 0;
+    margin-top: .75rem;
   }
 
   fieldset {

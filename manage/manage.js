@@ -91,6 +91,7 @@ function initGlobalEvents() {
     #update-all-no-updates[data-skipped-edited="true"]:after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
+    ${getHeaderText()}
   `}));
 }
 
@@ -509,6 +510,20 @@ function switchUI({styleOnly} = {}) {
     });
     return;
   }
+}
+
+
+function getHeaderText() {
+  return `
+    .newUI .entry:first-child .style-name:after {
+      content: "${t('headerTitleColumn')}"
+    }
+    .newUI .entry:first-child .actions:after {
+      content: "${t('headerActionsColumn')}"
+    }
+    .newUI .entry:first-child .applies-to:after {
+      content: "${t('headerAppliesToColumn')}"
+    }`;
 }
 
 
