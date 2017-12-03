@@ -74,12 +74,15 @@
 
     <template data-id="appliesTo">
       <li>
-        <select name="applies-type" class="applies-type style-contributor">
-          <option value="url" i18n-text="appliesUrlOption"></option>
-          <option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
-          <option value="domain" i18n-text="appliesDomainOption"></option>
-          <option value="regexp" i18n-text="appliesRegexpOption"></option>
-        </select>
+        <div class="select-resizer">
+          <select name="applies-type" class="applies-type style-contributor">
+            <option value="url" i18n-text="appliesUrlOption"></option>
+            <option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
+            <option value="domain" i18n-text="appliesDomainOption"></option>
+            <option value="regexp" i18n-text="appliesRegexpOption"></option>
+          </select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </div>
         <input name="applies-value" class="applies-value style-contributor" spellcheck="false">
         <button class="remove-applies-to" i18n-text="appliesRemove"></button>
         <button class="add-applies-to" i18n-text="appliesAdd"></button>
@@ -179,8 +182,10 @@
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">
-          <input type="checkbox" id="enabled" class="style-contributor">
-          <label for="enabled" id="enabled-label" i18n-text="styleEnabledLabel"></label><!--
+          <label id="enabled-label" i18n-text="styleEnabledLabel">
+            <input type="checkbox" id="enabled" class="style-contributor">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label><!--
           --><svg id="toggle-style-help" class="svg-icon info">
             <use xlink:href="#svg-icon-help"/>
           </svg>
@@ -201,30 +206,40 @@
       <details id="options" data-pref="editor.options.expanded">
         <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
         <div class="option">
-          <input id="editor.lineWrapping" type="checkbox">
-          <label id="lineWrapping-label" for="editor.lineWrapping" i18n-text="cm_lineWrapping"></label>
+          <label id="lineWrapping-label" i18n-text="cm_lineWrapping">
+            <input id="editor.lineWrapping" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option">
-          <input id="editor.smartIndent" type="checkbox">
-          <label id="smartIndent-label" for="editor.smartIndent" i18n-text="cm_smartIndent"></label>
+          <label id="smartIndent-label" i18n-text="cm_smartIndent">
+            <input id="editor.smartIndent" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option">
-          <input id="editor.indentWithTabs" type="checkbox">
-          <label id="indentWithTabs-label" for="editor.indentWithTabs" i18n-text="cm_indentWithTabs"></label>
+          <label id="indentWithTabs-label" i18n-text="cm_indentWithTabs">
+            <input id="editor.indentWithTabs" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option">
-          <input id="editor.autoCloseBrackets" type="checkbox">
-          <label for="editor.autoCloseBrackets"
-                 i18n-text="cm_autoCloseBrackets"
-                 i18n-title="cm_autoCloseBracketsTooltip"></label>
+          <label i18n-text="cm_autoCloseBrackets" i18n-title="cm_autoCloseBracketsTooltip">
+            <input id="editor.autoCloseBrackets" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option">
-          <input id="editor.autocompleteOnTyping" type="checkbox">
-          <label for="editor.autocompleteOnTyping" i18n-text="cm_autocompleteOnTyping"></label>
+          <label i18n-text="cm_autocompleteOnTyping">
+            <input id="editor.autocompleteOnTyping" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option">
-          <input id="editor.colorpicker" type="checkbox">
-          <label for="editor.colorpicker" i18n-text="cm_colorpicker"></label>
+          <label i18n-text="cm_colorpicker">
+            <input id="editor.colorpicker" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
           <span class="svg-inline-wrapper" i18n-title="shortcutsNote">
             <svg id="colorpicker-settings" class="svg-icon settings">
               <use xlink:href="#svg-icon-settings"/>
@@ -232,10 +247,10 @@
           </span>
         </div>
         <div class="option usercss-only">
-          <input id="editor.appliesToLineWidget" type="checkbox">
-          <label for="editor.appliesToLineWidget"
-                 i18n-text="appliesLineWidgetLabel"
-                 i18n-title="appliesLineWidgetWarning"></label>
+          <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
+            <input id="editor.appliesToLineWidget" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
         </div>
         <div class="option aligned">
           <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
@@ -243,30 +258,42 @@
         </div>
         <div class="option aligned">
           <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-          <select id="editor.keyMap"></select>
+          <div class="select-resizer">
+            <select id="editor.keyMap"></select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
           <span class="svg-inline-wrapper">
             <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </span>
         </div>
         <div class="option aligned">
           <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-          <select id="editor.theme"></select>
+          <div class="select-resizer">
+            <select id="editor.theme"></select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
         </div>
         <div class="option aligned">
           <label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
-          <select id="editor.matchHighlight">
-            <option i18n-text="cm_matchHighlightToken" value="token">
-            <option i18n-text="cm_matchHighlightSelection" value="selection">
-            <option i18n-text="genericDisabledLabel" value="">
-          </select>
+          <div class="select-resizer">
+            <select id="editor.matchHighlight">
+              <option i18n-text="cm_matchHighlightToken" value="token">
+              <option i18n-text="cm_matchHighlightSelection" value="selection">
+              <option i18n-text="genericDisabledLabel" value="">
+            </select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
         </div>
         <div class="option aligned">
           <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
-          <select id="editor.linter">
-            <option value="csslint" selected>CSSLint</option>
-            <option value="stylelint">Stylelint</option>
-            <option value="" i18n-text="genericDisabledLabel"></option>
-          </select>
+            <div class="select-resizer">
+              <select id="editor.linter">
+                <option value="csslint" selected>CSSLint</option>
+                <option value="stylelint">Stylelint</option>
+                <option value="" i18n-text="genericDisabledLabel"></option>
+              </select>
+              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+            </div>
           <span class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
             <svg id="linter-settings" class="svg-icon settings">
               <use xlink:href="#svg-icon-settings"/>
@@ -299,18 +326,31 @@
     </div>
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+
       <symbol id="svg-icon-external-link" viewBox="0 0 8 8">
         <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
       </symbol>
+
       <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n-alt="helpAlt">
         <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
       </symbol>
+
       <symbol id="svg-icon-close" viewBox="0 0 12 16">
         <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
       </symbol>
+
       <symbol id="svg-icon-settings" viewBox="0 0 16 16">
         <path d="M8,0C7.6,0,7.3,0,6.9,0.1v2.2C6.1,2.5,5.4,2.8,4.8,3.2L3.2,1.6c-0.6,0.4-1.1,1-1.6,1.6l1.6,1.6C2.8,5.4,2.5,6.1,2.3,6.9H0.1C0,7.3,0,7.6,0,8c0,0.4,0,0.7,0.1,1.1h2.2c0.1,0.8,0.4,1.5,0.9,2.1l-1.6,1.6c0.4,0.6,1,1.1,1.6,1.6l1.6-1.6c0.6,0.4,1.4,0.7,2.1,0.9v2.2C7.3,16,7.6,16,8,16c0.4,0,0.7,0,1.1-0.1v-2.2c0.8-0.1,1.5-0.4,2.1-0.9l1.6,1.6c0.6-0.4,1.1-1,1.6-1.6l-1.6-1.6c0.4-0.6,0.7-1.4,0.9-2.1h2.2C16,8.7,16,8.4,16,8c0-0.4,0-0.7-0.1-1.1h-2.2c-0.1-0.8-0.4-1.5-0.9-2.1l1.6-1.6c-0.4-0.6-1-1.1-1.6-1.6l-1.6,1.6c-0.6-0.4-1.4-0.7-2.1-0.9V0.1C8.7,0,8.4,0,8,0z M8,4.3c2.1,0,3.7,1.7,3.7,3.7c0,0,0,0,0,0c0,2.1-1.7,3.7-3.7,3.7c0,0,0,0,0,0c-2.1,0-3.7-1.7-3.7-3.7c0,0,0,0,0,0C4.3,5.9,5.9,4.3,8,4.3C8,4.3,8,4.3,8,4.3z"/>
       </symbol>
+
+      <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
+        <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
+      </symbol>
+
+      <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
+        <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
+      </symbol>
+
     </svg>
 
   </body>

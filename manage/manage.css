@@ -270,16 +270,17 @@ label.nobreak input {
   margin-left: -13px;
   cursor: pointer;
   outline: none;
+  margin-bottom: 8px;
 }
 
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
-  margin-top: .2em;
-  margin-bottom: .4em;
+  margin-top: .1em;
+  margin-bottom: .1em;
 }
 
-#header summary h2:hover {
+#header summary:hover h2 {
   border-color: #bbb;
 }
 
@@ -287,6 +288,7 @@ label.nobreak input {
 
 .newUI #installed {
   display: table;
+  table-layout: fixed;
   margin-top: .75rem;
   margin-bottom: .75rem;
 }
@@ -309,11 +311,167 @@ label.nobreak input {
   display: table-cell;
   vertical-align: middle;
 }
+/************ checkbox & select************/
 
 .newUI .checker {
+  margin: 0;
+}
+
+#newUIoptions > div {
+  margin: 4px 0;
+}
+
+.filter-selection {
   position: relative;
-  top: 1px;
-  margin: 0 1ex 0 0;
+}
+
+#header label {
+  padding-left: 16px;
+  position: relative;
+}
+
+#header .filter-selection label {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  width: 100%;
+  padding: 0 0 0 4px;
+}
+
+#header .filter-selection label .checkmate {
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+.firefox #header .filter-selection label .checkmate {
+  margin: 0;
+}
+
+.newUI #newUIoptions > label {
+  padding-left: 0;
+}
+
+.filter-selection select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  height: 18px;
+  outline: none;
+  background-color: transparent;
+  border: none;
+  max-width: 100%;
+  padding-right: 14px;
+  transition: color .5s
+}
+
+.select-resizer {
+  cursor: default;
+  border: none;
+  max-width: calc(100% - 2em);
+  position: absolute;
+  top: 0;
+  left: 20px;
+}
+
+.firefox .select-resizer {
+  left: 16px;
+}
+
+.svg-icon.select-arrow {
+  pointer-events: none;
+  cursor: default;
+  display: inline-flex;
+  margin-top: 2px;
+  height: 14px;
+  width: 14px;
+  fill: #000;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: fill .5s;
+}
+
+fieldset > label,
+fieldset > .filter-selection {
+  transition: background-color .25s;
+}
+
+fieldset > label:hover,
+fieldset > .filter-selection:hover {
+  background-color: hsla(0, 0%, 50%, .2);
+}
+
+.checkmate {
+  position: relative;
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+}
+
+.entry .checkmate {
+  vertical-align: middle;
+  margin: -2px 1ex 0 0;
+}
+
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
+}
+
+.newUI .entry .svg-icon.checked,
+.newUI .entry:hover .svg-icon.checked {
+  fill: #000;
+}
+
+.newUI .entry input[type="checkbox"]:not(.slider) {
+  pointer-events: all;
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  display: inline-flex;
+  transition: fill .25s;
+}
+
+input[type="checkbox"]:not(.slider) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  border: 1px solid hsl(0, 0%, 46%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsl(0, 0%, 94%);
+  outline: none;
+  margin: 0;
+  transition: background-color .25s, border-color .25s;
+}
+
+input[type="checkbox"]:not(.slider):checked:hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+label {
+  transition: color .25s;
 }
 
 .newUI .style-name {
@@ -658,13 +816,19 @@ fieldset {
   max-width: 250px;
 }
 
-fieldset > *:not(legend) {
+fieldset > input,
+fieldset > label {
   display: flex;
   align-items: center;
 }
 
-fieldset > label:hover {
-  background-color: hsla(0, 0%, 50%, .1);
+#header fieldset > label {
+  padding-left: 20px;
+}
+
+#header fieldset > label input[type="checkbox"]:not(.slider),
+#header fieldset > label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
+  left: 4px;
 }
 
 #filters {
@@ -683,12 +847,6 @@ fieldset > label:hover {
 
 #filters-stats::before {
   content: ": ";
-}
-
-fieldset select {
-  border: none;
-  max-width: calc(100% - 2em);
-  background-color: transparent;
 }
 
 #search {
