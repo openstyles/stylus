@@ -349,6 +349,10 @@
       }
     }
   },
+  "filteredStylesAllHidden": {
+    "message": "Currently applied filters match no styles",
+    "description": "Text shown when no styles match currently applied filter in the style manager"
+  },
   "findStylesForSite": {
     "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"

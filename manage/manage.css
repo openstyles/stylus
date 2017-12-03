@@ -15,6 +15,25 @@ body {
   height: 100%;
 }
 
+body.all-styles-hidden-by-filters:before,
+body.all-styles-hidden-by-filters:after {
+  position: absolute;
+  left: calc(3rem + var(--header-width));
+  color: hsla(180, 40%, 45%, .3);
+}
+
+body.all-styles-hidden-by-filters:before {
+  content: "\2190"; /* left arrow */
+  font-size: 3rem;
+  top: 3.5rem;
+}
+
+body.all-styles-hidden-by-filters:after {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 3rem;
+}
+
 a, .disabled a:hover {
   color: #000;
   transition: color .5s;
@@ -896,6 +915,17 @@ fieldset select {
 @media (max-width: 800px) {
   body {
     flex-direction: column;
+  }
+
+  body.all-styles-hidden-by-filters:before {
+    content: "\2191"; /* up arrow */
+    top: calc(50% + 2.75rem);
+    left: 2rem;
+  }
+
+  body.all-styles-hidden-by-filters:after {
+    top: calc(50% + 4rem);
+    left: 3.75rem;
   }
 
   #header {
