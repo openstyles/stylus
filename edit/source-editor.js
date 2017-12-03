@@ -275,21 +275,25 @@ function createSourceEditor(style) {
   }
 
   function nextPrevMozDocument(cm, dir) {
+    const MOZ_DOC = '@-moz-document';
     const cursor = cm.getCursor();
-    let line = cursor.line;
+    const usePrevLine = dir < 0 && cursor.ch <= MOZ_DOC.length;
+    let line = cursor.line + (usePrevLine ? -1 : 0);
+    let start = usePrevLine ? 1e9 : cursor.ch + (dir > 0 ? 1 : -MOZ_DOC.length);
     let found;
     if (dir > 0) {
-      cm.doc.iter(cursor.line + 1, cm.doc.size, ({text}) => ++line && goFind(text));
+      cm.doc.iter(cursor.line, cm.doc.size, goFind);
       if (!found && cursor.line > 0) {
-        line = -1;
-        cm.doc.iter(0, cursor.line, ({text}) => ++line && goFind(text));
+        line = 0;
+        cm.doc.iter(0, cursor.line + 1, goFind);
       }
     } else {
       let handle, parentLines;
       let passesRemain = line < cm.doc.size - 1 ? 2 : 1;
+      let stopAtLine = 0;
       while (passesRemain--) {
         let indexInParent = 0;
-        while (line--) {
+        while (line >= stopAtLine) {
           if (!indexInParent--) {
             handle = cm.getLineHandle(line);
             parentLines = handle.parent.lines;
@@ -297,21 +301,40 @@ function createSourceEditor(style) {
           } else {
             handle = parentLines[indexInParent];
           }
-          if (goFind(handle.text)) {
+          if (goFind(handle)) {
             return true;
           }
         }
-        line = cm.doc.size;
+        line = cm.doc.size - 1;
+        stopAtLine = cursor.line;
       }
     }
-    function goFind(text) {
-      const ch = text.indexOf('@-moz-document');
-      if (ch >= 0 && cm.getTokenTypeAt({line, ch}) === 'def') {
-        cm.scrollIntoView({line: line + 1, ch}, Math.min(50, cm.display.scroller.clientHeight / 4));
-        cm.setCursor(line, ch);
-        found = true;
-        return true;
+    function goFind({text}) {
+      // use the initial 'start' on cursor row...
+      let ch = start;
+      // ...and reset it for the rest
+      start = dir > 0 ? 0 : 1e9;
+      while (true) {
+        // indexOf is 1000x faster than toLowerCase().indexOf() so we're trying it first
+        ch = dir > 0 ? text.indexOf('@-', ch) : text.lastIndexOf('@-', ch);
+        if (ch < 0) {
+          line += dir;
+          return;
+        }
+        if (text.substr(ch, MOZ_DOC.length).toLowerCase() === MOZ_DOC &&
+            cm.getTokenTypeAt({line, ch: ch + 1}) === 'def') {
+          break;
+        }
+        ch += dir * 3;
       }
+      cm.setCursor(line, ch);
+      if (cm.cursorCoords().bottom > cm.display.scroller.clientHeight - 100) {
+        const margin = Math.min(100, cm.display.scroller.clientHeight / 4);
+        line += prefs.get('editor.appliesToLineWidget') ? 1 : 0;
+        cm.scrollIntoView({line, ch}, margin);
+      }
+      found = true;
+      return true;
     }
   }
 
