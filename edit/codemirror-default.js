@@ -11,7 +11,7 @@
   const defaults = {
     mode: 'css',
     lineNumbers: true,
-    lineWrapping: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: [
       'CodeMirror-linenumbers',
@@ -30,7 +30,8 @@
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'
-    }
+    },
+    maxHighlightLength: 100e3,
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));

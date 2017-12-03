@@ -131,7 +131,7 @@ window.addEventListener('showStyles:done', function _() {
       const height = 4 +
         container.firstElementChild.scrollHeight +
         container.lastElementChild.scrollHeight +
-        parseFloat(getComputedStyle(container.firstElementChild).paddingBottom) * 4;
+        parseFloat(getComputedStyle(container.lastElementChild).paddingBottom);
       if (height > document.body.clientHeight) {
         document.body.style.height = height + 'px';
       }

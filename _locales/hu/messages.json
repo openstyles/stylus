@@ -3,6 +3,10 @@
 		"message": "Minden",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"linterIssues": {
+		"message": "Problémák",
+		"description": "Label for the CSS linter issues block on the style edit page"
+	},
 	"defaultTheme": {
 		"message": "alapértelmezett",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
@@ -26,6 +30,14 @@
 	"exportLabel": {
 		"message": "Exportálás",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "Érvénytelen @var jelölődoboz: az értéknek 0-nak vagy 1-nek kell lennie",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
+	"linterJSONError": {
+		"message": "Érvénytelen JSON formátum",
+		"description": "Setting linter config with invalid JSON"
 	},
 	"optionsBadgeNormal": {
 		"message": "Háttérszín",
@@ -111,6 +123,10 @@
 		"message": "Szürke mód",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
+	"versionInvalidOlder": {
+		"message": "A verzió régebb a telepített stílusnál",
+		"description": "Displayed when the version of style is older than the installed one"
+	},
 	"confirmYes": {
 		"message": "Igen",
 		"description": "'Yes' button in a confirm dialog"
@@ -135,6 +151,10 @@
 		"message": "Engedélyezve",
 		"description": "Label for the enabled state of styles"
 	},
+	"linterConfigTooltip": {
+		"message": "Kattints ennek a linternek a beállításához",
+		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+	},
 	"styleToMozillaFormatHelp": {
 		"message": "A Mozilla formátumú kódot beküldheted a userstyles.org-ra és használhatod a klasszikus Stylish Firefoxkiegészítővel.",
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
@@ -150,6 +170,10 @@
 	"styleSaveLabel": {
 		"message": "Mentés",
 		"description": "Label for save button for style editing"
+	},
+	"genericSavedMessage": {
+		"message": "Mentve",
+		"description": "Used in various parts of the UI to indicate that something was saved"
 	},
 	"confirmDelete": {
 		"message": "Törlés",
@@ -215,6 +239,15 @@
 	"manageOnlyLocal": {
 		"message": "Csak helyileg létrehozott stílusok",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"linterIssuesHelp": {
+		"message": "$link$a következő hibákat találta:",
+		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
+		"placeholders": {
+			"link": {
+				"content": "$1"
+			}
+		}
 	},
 	"searchStyles": {
 		"message": "Tartalom keresése",
@@ -330,6 +363,10 @@
 			}
 		}
 	},
+	"dysfunctional": {
+		"message": "A Stylus nem működhet privát ablakokon belül, mert a Firefox nem enged közvetlen kapcsolatot a kiegészítő belső háttéroldal-kontextusával.",
+		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
+	},
 	"styleSectionsTitle": {
 		"message": "Szekciók",
 		"description": "Title for the style sections section"
@@ -337,6 +374,10 @@
 	"importReportLegendInvalid": {
 		"message": "kihagyott érvénytelen",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"genericResetLabel": {
+		"message": "VIsszaállítás",
+		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
 	},
 	"editStyleTitle": {
 		"message": "A(z) $stylename$ stílus szerkesztése",
@@ -362,6 +403,10 @@
 	"searchRegexp": {
 		"message": "Használd a /re/ szintaxist a regexp kereséshez",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
+	},
+	"popupBordersTooltip": {
+		"message": "Hasznos az új Chromehoz létrehozott sötét témákhoz, mert nem színezi át az oldalszegélyeket",
+		"description": ""
 	},
 	"updateCheckManualUpdateHint": {
 		"message": "Egy frissítés erőltetése minden helyi szerkesztést felül fog írni.",
@@ -484,6 +529,10 @@
 		"message": "Ez a stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, melyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, mely szerint egy teljes URL-illeszkedésre van szükség. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. Ez a stílus valószínűleg a Stylish Chrome-kiegészítőben lett létrehozva, amely helytelenül ellenőrzi a „regexp()” szabályokat az első verziótól fogva (ismert hiba).",
 		"description": ""
 	},
+	"linterCSSLintSettings": {
+		"message": "(Szabály megadása: 0 = letiltva; 1 = figyelmeztetés; 2 = hiba)",
+		"description": "CSSLint rule config values"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "@media, @supports behúzása",
 		"description": "CSS-beautifier option"
@@ -504,6 +553,10 @@
 		"message": "Az összes stílus kikapcsolása",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"appliesLineWidgetLabel": {
+		"message": "Információ megjelenítése arról, hogy mire van alkalmazva",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
+	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "Lehet, hogy ezt a stílust helyileg szerkesztették",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
@@ -520,6 +573,10 @@
 		"message": "A frissítés befejeződött.",
 		"description": "Text that displays when an update completed"
 	},
+	"dysfunctionalBackgroundConnection": {
+		"message": "Nem mőködhet megfelelően egy ebben a verzióban található ismert hiba miatt: chrome.extension.getBackgroundPage() eredménye nem érvényes",
+		"description": "Displayed in style manager when unable to connect to the background page"
+	},
 	"checkingForUpdate": {
 		"message": "Ellenőrzés...",
 		"description": "Text to display when checking a style for an update"
@@ -532,6 +589,10 @@
 		"message": "Megjelenítendő célok száma",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"popupManageTooltip": {
+		"message": "Shift-kattintás vagy jobb kattintás megnyitja a stíluskezelőt a jelenlegi oldalra érvényesülő stílusokkal",
+		"description": "Tooltip for the 'Manage' button in the popup."
+	},
 	"manageFaviconsHelp": {
 		"message": "A Stylus egy külső szolgáltatást használ (https://www.google.com/s2/favicons)",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -539,6 +600,10 @@
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Ez a stílus helyileg lett szerkesztve.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+	},
+	"linterRulesLink": {
+		"message": "Lista az összes stílusról",
+		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"optionsResetButton": {
 		"message": "Beállítások visszaállítása alapra",
@@ -551,6 +616,15 @@
 	"optionsAdvancedContextDelete": {
 		"message": "Delete hozzáadása a gyorsmenühöz",
 		"description": ""
+	},
+	"linterConfigPopupTitle": {
+		"message": "$linter$ szabály beállítása",
+		"description": "Stylelint or CSSLint popup header",
+		"placeholders": {
+			"linter": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "metainformáció és kód frissítve",
@@ -580,6 +654,19 @@
 		"message": "Automatikus kiegészítés gépeléskor",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"styleMetaErrorColor": {
+		"message": "A(z) $color$ nem valódi szín",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "Visszajelzés",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "Csak letiltott stílusok",
 		"description": "Checkbox to show only disabled styles"
@@ -608,9 +695,17 @@
 		"message": "Stílus hozzáadása",
 		"description": "Title of the page for adding styles"
 	},
+	"externalHomepage": {
+		"message": "Kezdőoldal",
+		"description": "Label for the external link to style's homepage"
+	},
 	"importReplaceLabel": {
 		"message": "Stílus felülírása",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "A fül a böngésző ablakától történő leválasztásával is engedélyezhető, és letiltható a fül egy másik ablakhoz való hozzácsatolásával.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
 	},
 	"dbError": {
 		"message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?",
@@ -684,6 +779,10 @@
 		"message": "Felugró ablak szélessége (pixelben)",
 		"description": ""
 	},
+	"linterInvalidConfigError": {
+		"message": "Nincs mentve ezek miatt az érvénytelen beállítások miatt:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
+	},
 	"confirmNo": {
 		"message": "Nem",
 		"description": "'No' button in a confirm dialog"
@@ -695,6 +794,10 @@
 	"cm_keyMap": {
 		"message": "Billentyűműveletek",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "Támogatás",
+		"description": "Label for the external link to style's support site"
 	},
 	"manageNewUI": {
 		"message": "Az új kezelési felületkiosztás",
@@ -724,6 +827,15 @@
 		"message": "Frissítés telepítése (a helyi módosítások felül lesznek írva)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
+	"styleInstallFailed": {
+		"message": "A stílus telepítése nem sikerült!\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
+	},
 	"optionsAdvancedExposeIframes": {
 		"message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül",
 		"description": ""
@@ -748,9 +860,17 @@
 		"message": "Szerkesztés",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Stílus telepítve",
+		"description": "Text displayed when the style is successfully installed"
+	},
 	"cm_theme": {
 		"message": "Téma",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"popupOpenEditInWindow": {
+		"message": "Szerkesztő megnyitása új ablakban",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
 	},
 	"backupMessage": {
 		"message": "Válassz ki egy fájlt vagy húzd erre az oldalra!",
@@ -763,6 +883,10 @@
 	"helpKeyMapCommand": {
 		"message": "Írj be egy parancsot",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+	},
+	"linterResetMessage": {
+		"message": "Egy véletlen visszaállítás visszavonásához nyomj Ctrl-Z-t (vagy Cmd-Z) a szövegdobozon belül)",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
 		"message": "Tervezd újra a webet a Stylus-szal, ami egy stíluskezelő. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz.",

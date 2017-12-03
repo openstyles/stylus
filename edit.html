@@ -5,7 +5,7 @@
 
     <style id="firefox-transitions-bug-suppressor">
       /* restrict to FF */
-      @-moz-document url-prefix("") {
+      @supports (-moz-appearance:none) {
         /* increased specificity to override sane selectors in user styles */
         html#stylus.firefox #stylus-edit #header *,
         html#stylus.firefox #stylus-edit #sections * {
@@ -28,6 +28,9 @@
     <script src="edit/applies-to-line-widget.js"></script>
     <script src="edit/source-editor.js"></script>
     <script src="edit/colorpicker-helper.js"></script>
+    <script src="edit/beautify.js"></script>
+    <script src="edit/sections.js"></script>
+    <script src="edit/show-keymap-help.js"></script>
     <script src="edit/edit.js"></script>
 
     <script src="vendor/codemirror/lib/codemirror.js"></script>
@@ -62,8 +65,10 @@
     <script src="vendor/codemirror/keymap/emacs.js"></script>
     <script src="vendor/codemirror/keymap/vim.js"></script>
 
-    <script src="/edit/match-highlighter-helper.js"></script>
-    <script src="/edit/codemirror-default.js"></script>
+    <script src="edit/match-highlighter-helper.js"></script>
+    <script src="edit/codemirror-editing-hooks.js"></script>
+    <script src="edit/codemirror-default.js"></script>
+
     <link rel="stylesheet" href="/edit/codemirror-default.css">
     <link id="cm-theme" rel="stylesheet">
 
@@ -80,11 +85,13 @@
         <button class="add-applies-to" i18n-text="appliesAdd"></button>
       </li>
     </template>
+
     <template data-id="appliesToEverything">
       <li class="applies-to-everything" i18n-text="appliesToEverything">
         <button class="add-applies-to" i18n-text="appliesSpecify"></button>
       </li>
     </template>
+
     <template data-id="section">
       <div>
         <label i18n-text="sectionCode" class="code-label"></label>
@@ -101,25 +108,30 @@
         <button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
       </div>
     </template>
+
     <template data-id="find">
       <span i18n-text="search">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
         <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
       </span>
     </template>
+
     <template data-id="replace">
       <span i18n-text="replace">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
         <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
       </span>
     </template>
+
     <template data-id="replaceAll">
       <span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
         <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
       </span>
     </template>
+
     <template data-id="replaceWith">
       <span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
       </span>
     </template>
+
     <template data-id="replaceConfirm">
       <span i18n-text="replace">?
         <button i18n-text="confirmYes"></button>
@@ -127,14 +139,34 @@
         <button i18n-text="confirmStop"></button>
       </span>
     </template>
+
     <template data-id="jumpToLine">
       <span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
     </template>
+
     <template data-id="regexpTestPartial">
       <a target="_blank" href="https://github.com/stylish-userstyles/stylish/wiki/Applying-styles-to-specific-sites#advanced-matching-with-regular-expressions"><svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></a>
     </template>
+
     <template data-id="resizeGrip">
       <div class="resize-grip" i18n-title="cm_resizeGripHint"></div>
+    </template>
+
+    <template data-id="keymapHelp">
+      <table class="keymap-list">
+        <thead>
+          <tr>
+            <th><input i18n-placeholder="helpKeyMapHotkey" type="search" class="can-close-on-esc"></th>
+            <th><input i18n-placeholder="helpKeyMapCommand" type="search" class="can-close-on-esc"></th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
     </template>
   </head>
 

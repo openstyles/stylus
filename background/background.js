@@ -147,9 +147,13 @@ if (chrome.contextMenus) {
       chrome.contextMenus.create(item, ignoreChromeError);
     }
   };
-  const toggleCheckmark = (id, checked) => {
-    chrome.contextMenus.update(id, {checked}, ignoreChromeError);
-  };
+
+  // circumvent the bug with disabling check marks in Chrome 62+
+  // TODO: replace 1e6 with the actual rev. number when/if the bug is fixed
+  const toggleCheckmark = CHROME >= 3172 && CHROME <= 1e6 ?
+    (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
+    ((id, checked) => chrome.contextMenus.update(id, {checked}, ignoreChromeError));
+
   const togglePresence = (id, checked) => {
     if (checked) {
       createContextMenus([id]);
@@ -157,6 +161,7 @@ if (chrome.contextMenus) {
       chrome.contextMenus.remove(id, ignoreChromeError);
     }
   };
+
   const keys = Object.keys(contextMenus);
   prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);

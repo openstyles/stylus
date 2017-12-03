@@ -36,7 +36,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "Zainstaluj",
+		"message": "Zainstaluj styl",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -46,6 +46,10 @@
 	"linterJSONError": {
 		"message": "Nieprawidłowy format JSON",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Kliknij, aby zobaczyć dostępne skróty klawiszowe",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Kolor tła",
@@ -326,6 +330,10 @@
 		"message": "Pokaż liczbę aktywnych stylów",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
+	"popupHotkeysInfo": {
+		"message": "<1>-<9>, <0>, również na klawiaturze numerycznej - przełącza n-ty styl (0 to 10)\n<A>-<Z> przełącza pierwszy styl z nazwą zaczynającą się na literę\n<Shift> otwiera edytor zamiast przełączać\n<Numpad +> włącza wymienione style\n<Numpad –> wyłącza wymienione style\n<Numpad *> oraz <`> (grawis) - przełącza początkowo włączone style; nie ma zastosowania do później włączonych stylów, podczas gdy okienko podręczne jest otwarte, więc możesz przywrócić początkowy wybór po przetestowaniu: po prostu wyłącz wszystkie, a następnie przełącz, np. <Numpad –> <Numpad *>\nWięcej informacji na wiki",
+		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+	},
 	"cm_lineWrapping": {
 		"message": "Zawijanie tekstu",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
@@ -537,6 +545,10 @@
 		"message": "Opcje",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "Styl został zaktualizowany lub usunięty po wyświetleniu okna dialogowego konfiguracji. Te zmienne nie zostały zapisane, aby uniknąć uszkodzenia metadanych stylu:",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Zarządzaj",
 		"description": "Link to open the manage page."
@@ -557,6 +569,10 @@
 	"installUpdate": {
 		"message": "Zainstaluj aktualizację",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Nie można zapisać wartości. Spróbuj zmniejszyć ilość tekstu.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Sprawdź i zainstaluj wszystkie dostępne aktualizacje",
@@ -868,6 +884,10 @@
 		"message": "Nic nie zostało zmienione.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Odrzucić zmiany?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Akcje",
 		"description": ""
@@ -922,7 +942,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "Przeinstaluj",
+		"message": "Przeinstaluj styl",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -949,6 +969,10 @@
 	"undo": {
 		"message": "Cofnij",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Zastąpić domyślny szablon dla nowych stylów Usercss aktualnym kodem?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Mapa klawiszy",
@@ -1007,6 +1031,10 @@
 		"message": "Odsłoń ramki pływające za pomocą HTML[stylus-iframe]",
 		"description": ""
 	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Określ @name w kodzie",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
+	},
 	"addStyleLabel": {
 		"message": "Napisz nowy styl",
 		"description": "Label for the button to go to the add style page"
@@ -1016,7 +1044,7 @@
 		"description": ""
 	},
 	"installButtonUpdate": {
-		"message": "Zaktualizuj",
+		"message": "Zaktualizuj styl",
 		"description": "Label for update button"
 	},
 	"backupButtons": {
@@ -1032,7 +1060,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "Zainstalowany",
+		"message": "Styl zainstalowano",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
@@ -1074,5 +1102,9 @@
 	"confirmClose": {
 		"message": "Zamknij",
 		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Puste @name zastępuje szablon domyślny",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }

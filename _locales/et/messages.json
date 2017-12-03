@@ -19,6 +19,10 @@
 		"message": "Ekspordi stiilid",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Ainult Usercss stiilid",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Automaatselt kontrolli ja installi kõik saadaolevad kasutajastiili uuendused (tundides)",
 		"description": ""
@@ -82,6 +86,10 @@
 	"styleNotAppliedRegexpProblemTooltip": {
 		"message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu",
 		"description": "Tooltip in the popup for styles that were not applied at all"
+	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Vaheta formaate: HEX -> RGB -> HSL.\nShift-klõps vastupidise suuna jaoks.\nSamuti klahvidega PgUp (PageUp), PgDn (PageDown).",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
 	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida.",
@@ -195,6 +203,10 @@
 		"message": "Tühista",
 		"description": ""
 	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "Automaatselt lisab sulgeva paarilise, kui kirjutad avava ühest järgnevast: ()[]{}''\"\"",
+		"description": "Label for the checkbox in the style editor."
+	},
 	"retrieveBckp": {
 		"message": "Impordi stiilid",
 		"description": ""
@@ -252,6 +264,15 @@
 		"message": "Ainult kohalikult loodud stiilid",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "Mittetoetatud eeltöötleja: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "$link$ leidis need vead:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -276,6 +297,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Kontrolli uuesti, ma ei muutnud ühtegi stiili!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"manageOnlyNonUsercss": {
+		"message": "Ainult mitte-Usercss stiilid",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
 	},
 	"liveReloadLabel": {
 		"message": "Reaalajas uuestilaadimine",
@@ -512,6 +537,10 @@
 		"message": "Valikud",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "Stiili uuendati või eemaldati pärast seadistusdialoogi kuvamist. Neid muutujaid ei salvestatud, et vältida stiili metaandmete korrumpeerumist:",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Halda",
 		"description": "Link to open the manage page."
@@ -532,6 +561,10 @@
 	"installUpdate": {
 		"message": "Installi uuendus",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Väärtust ei saa salvestada. Proovi teksti hulka vähendada.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
@@ -653,7 +686,7 @@
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"linterRulesLink": {
-		"message": "Vaata reeglite täielikku loendit",
+		"message": "Vaata reeglite täielikku loendit lehel",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"styleUpdateDiscardChanges": {
@@ -716,6 +749,15 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Automaattäide kirjutamisel",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLint ei toeta eelprotsessorit $preprocessorname$",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
 	},
 	"styleMetaErrorSelectValueMismatch": {
 		"message": "Vigane @select: väärtust pole loendis olemas",
@@ -826,6 +868,10 @@
 		"message": "Midagi ei muudetud.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Tühistada muudatused?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Tegevused",
 		"description": ""
@@ -867,6 +913,10 @@
 		"message": "identset vahele jäetud",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
+	"manageNewStyleAsUsercss": {
+		"message": "Usercss-ina",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+	},
 	"optionsPopupWidth": {
 		"message": "Hüpikakna laius (pikslites)",
 		"description": ""
@@ -887,6 +937,15 @@
 		"message": "Ei",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "$key$metaandmed puuduvad",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
 	"appliesLineWidgetWarning": {
 		"message": "Ei tööta minimeeritud CSS-iga",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
@@ -894,6 +953,10 @@
 	"undo": {
 		"message": "Võta tagasi",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Asendad vaikimisi malli uutes kasutajacss stiilides praeguse koodiga?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Klahvimäärangud",
@@ -927,6 +990,10 @@
 		"message": "Asenda tekstiga",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "Faili vaatamisel esines viga",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "Kustuta",
 		"description": "Label for the button to delete a style"
@@ -947,6 +1014,10 @@
 	"optionsAdvancedExposeIframes": {
 		"message": "Paljasta iframe-id HTML [stylus-iframe] kaudu",
 		"description": ""
+	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Kirjelda koodis @name",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
 	},
 	"addStyleLabel": {
 		"message": "Kirjuta uus stiil",
@@ -1015,5 +1086,9 @@
 	"confirmClose": {
 		"message": "Sulge",
 		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Tühi @name asendab vaikimisi malli",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }

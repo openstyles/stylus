@@ -17,6 +17,7 @@ if (!CHROME && !chrome.browserAction.openPopup) {
   FIREFOX = 50;
   browser.runtime.getBrowserInfo().then(info => {
     FIREFOX = parseFloat(info.version);
+    document.documentElement.classList.toggle('moz-appearance-bug', FIREFOX && FIREFOX < 54);
   });
 }
 
@@ -61,6 +62,7 @@ if (BG && !BG.getStyles && BG !== window) {
 }
 if (!BG || BG !== window) {
   document.documentElement.classList.toggle('firefox', FIREFOX);
+  document.documentElement.classList.toggle('moz-appearance-bug', FIREFOX && FIREFOX < 54);
   document.documentElement.classList.toggle('opera', OPERA);
   // TODO: remove once our manifest's minimum_chrome_version is 50+
   // Chrome 49 doesn't report own extension pages in webNavigation apparently
@@ -226,7 +228,7 @@ function openURL({url, index, openerTabId, currentWindow = true}) {
       }
       getActiveTab().then(tab => {
         const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
-        if (tab && tab.url === 'chrome://newtab/' && !chromeInIncognito) {
+        if (tab && (tab.url === 'chrome://newtab/' || tab.url === 'about:newtab') && !chromeInIncognito) {
           // update current NTP, except for chrome:// or chrome-extension:// in incognito
           chrome.tabs.update({url}, resolve);
         } else {

@@ -105,17 +105,19 @@ function initPopup(url) {
       installed);
   }
 
-  $('#open-search-link').onclick = handleEvent.openURLandHide;
-  $('#open-search-link').href +=
-    url.startsWith(location.protocol) ?
-      '?search_terms=Stylus' :
-      'all/' + encodeURIComponent(url.startsWith('file:') ? 'file:' : url);
-
   if (!url) {
     document.body.classList.add('blocked');
     document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
     return;
   }
+
+  const u = tryCatch(() => new URL(url));
+  $('#open-search-link').onclick = handleEvent.openURLandHide;
+  $('#open-search-link').href +=
+    !u ? '' :
+    u.protocol === 'file:' ? 'file:' :
+    u.protocol === location.protocol ? '?search_terms=Stylus' :
+    u.hostname.replace(/^www\.|(\.com?)?\.\w+$/g, '').split('.').pop();
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
     sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
@@ -348,7 +350,7 @@ Object.assign(handleEvent, {
   indicator(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     const info = template.regexpProblemExplanation.cloneNode(true);
-    $$('#' + info.id).forEach(el => el.remove());
+    $.remove('#' + info.id);
     $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
     $$('button', info).forEach(el => (el.onclick = handleEvent.closeExplanation));
     entry.appendChild(info);
@@ -420,14 +422,14 @@ function handleUpdate(style) {
   // Add an entry when a new style for the current url is installed
   if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
     document.body.classList.remove('blocked');
-    $$('.blocked-info, #no-styles').forEach(el => el.remove());
+    $$.remove('.blocked-info, #no-styles');
     createStyleElement({style});
   }
 }
 
 
 function handleDelete(id) {
-  $$(ENTRY_ID_PREFIX + id).forEach(el => el.remove());
+  $.remove(ENTRY_ID_PREFIX + id);
 }
 
 

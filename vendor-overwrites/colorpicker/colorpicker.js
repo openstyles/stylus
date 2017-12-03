@@ -197,6 +197,12 @@
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     opt.hideDelay = Math.max(0, opt.hideDelay) || 2000;
 
+    $root.classList.add(CSS_PREFIX + 'theme-' +
+      (opt.theme === 'dark' || opt.theme === 'light' ?
+        opt.theme :
+        guessTheme()));
+    document.body.appendChild($root);
+
     if (!isNaN(options.left) && !isNaN(options.top)) {
       $root.style = `
         display: block;
@@ -204,12 +210,6 @@
       `.replace(/;/g, '!important;');
       reposition();
     }
-
-    $root.classList.add(CSS_PREFIX + 'theme-' +
-      (opt.theme === 'dark' || opt.theme === 'light' ?
-        opt.theme :
-        guessTheme()));
-    document.body.appendChild($root);
 
     shown = true;
 

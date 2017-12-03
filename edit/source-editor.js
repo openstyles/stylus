@@ -1,6 +1,5 @@
-/* global CodeMirror dirtyReporter initLint beautify showKeyMapHelp */
+/* global CodeMirror dirtyReporter initLint */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global hotkeyRerouter setupAutocomplete */
 /* global editors linterConfig updateLinter regExpTester mozParser */
 /* global makeLink createAppliesToLineWidget messageBox */
 'use strict';
@@ -124,10 +123,7 @@ function createSourceEditor(style) {
 
   function initHooks() {
     $('#save-button').onclick = save;
-    $('#beautify').onclick = beautify;
-    $('#keyMap-help').onclick = showKeyMapHelp;
     $('#toggle-style-help').onclick = showToggleStyleHelp;
-    $('#cancel-button').onclick = goBackToManage;
 
     $('#enabled').onchange = function () {
       const value = this.checked;
@@ -140,12 +136,13 @@ function createSourceEditor(style) {
       updateLintReportIfEnabled(cm);
     });
 
-    cm.on('focus', () => hotkeyRerouter.setState(false));
-    cm.on('blur', () => hotkeyRerouter.setState(true));
+    cm.on('focus', () => cm.rerouteHotkeys(false));
+    cm.on('blur', () => cm.rerouteHotkeys(true));
 
-    //if (prefs.get('editor.autocompleteOnTyping')) {
-    //  setupAutocomplete(cm);
-    //}
+    CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
+    CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
+    CodeMirror.commands.toggleStyle = toggleStyle;
+    CodeMirror.commands.save = save;
   }
 
   function updateMeta() {
@@ -275,6 +272,70 @@ function createSourceEditor(style) {
   function isTouched() {
     // indicate that the editor had been touched by the user
     return dirty.isDirty() || hadBeenSaved;
+  }
+
+  function nextPrevMozDocument(cm, dir) {
+    const MOZ_DOC = '@-moz-document';
+    const cursor = cm.getCursor();
+    const usePrevLine = dir < 0 && cursor.ch <= MOZ_DOC.length;
+    let line = cursor.line + (usePrevLine ? -1 : 0);
+    let start = usePrevLine ? 1e9 : cursor.ch + (dir > 0 ? 1 : -MOZ_DOC.length);
+    let found;
+    if (dir > 0) {
+      cm.doc.iter(cursor.line, cm.doc.size, goFind);
+      if (!found && cursor.line > 0) {
+        line = 0;
+        cm.doc.iter(0, cursor.line + 1, goFind);
+      }
+    } else {
+      let handle, parentLines;
+      let passesRemain = line < cm.doc.size - 1 ? 2 : 1;
+      let stopAtLine = 0;
+      while (passesRemain--) {
+        let indexInParent = 0;
+        while (line >= stopAtLine) {
+          if (!indexInParent--) {
+            handle = cm.getLineHandle(line);
+            parentLines = handle.parent.lines;
+            indexInParent = parentLines.indexOf(handle);
+          } else {
+            handle = parentLines[indexInParent];
+          }
+          if (goFind(handle)) {
+            return true;
+          }
+        }
+        line = cm.doc.size - 1;
+        stopAtLine = cursor.line;
+      }
+    }
+    function goFind({text}) {
+      // use the initial 'start' on cursor row...
+      let ch = start;
+      // ...and reset it for the rest
+      start = dir > 0 ? 0 : 1e9;
+      while (true) {
+        // indexOf is 1000x faster than toLowerCase().indexOf() so we're trying it first
+        ch = dir > 0 ? text.indexOf('@-', ch) : text.lastIndexOf('@-', ch);
+        if (ch < 0) {
+          line += dir;
+          return;
+        }
+        if (text.substr(ch, MOZ_DOC.length).toLowerCase() === MOZ_DOC &&
+            cm.getTokenTypeAt({line, ch: ch + 1}) === 'def') {
+          break;
+        }
+        ch += dir * 3;
+      }
+      cm.setCursor(line, ch);
+      if (cm.cursorCoords().bottom > cm.display.scroller.clientHeight - 100) {
+        const margin = Math.min(100, cm.display.scroller.clientHeight / 4);
+        line += prefs.get('editor.appliesToLineWidget') ? 1 : 0;
+        cm.scrollIntoView({line, ch}, margin);
+      }
+      found = true;
+      return true;
+    }
   }
 
   return {
