@@ -353,6 +353,18 @@
     "message": "Search on userstyles.org",
     "description": "Text for a link that searches for styles for this current site on userstyles.org"
   },
+  "searchResultsHeader": {
+    "message": "Results for",
+    "description": "Text for label above search results"
+  },
+  "searchResultRating": {
+    "message": "Rating",
+    "description": "Text for label that shows the search result's rating"
+  },
+  "searchResultInstallCount": {
+    "message": "Installs",
+    "description": "Text for label that shows the number of times a search result was installed"
+  },
   "searchResultInstall": {
     "message": "Install",
     "description": "Text for a button that installs a search result"

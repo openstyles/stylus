@@ -10,7 +10,8 @@
 
 #searchResults.hidden,
 #searchResults-error.hidden,
-#find-styles.hidden {
+#find-styles.hidden,
+#open-search.hidden {
   display: none;
 }
 
@@ -60,6 +61,37 @@
 .searchResult > * {
   overflow-x: hidden;
   white-space: nowrap;
+}
+
+.searchResult-author {
+  display: none;
+}
+
+.searchResult-meta {
+  display: table;
+  width: 100%;
+}
+
+.searchResult-metaRating, .searchResult-metaInstallCount {
+  display: table-cell;
+}
+
+.searchResult-rating {
+  font-weight: 600;
+  padding: 1px 2px 1px 2px;
+  color: #fff;
+}
+.searchResult-rating.good {
+  background-color: darkgreen;
+}
+.searchResult-rating.okay {
+  background-color: darkorange;
+}
+.searchResult-rating.bad {
+  background-color: darkred;
+}
+.searchResult-rating.none {
+  background-color: #333;
 }
 
 .searchResult-install {

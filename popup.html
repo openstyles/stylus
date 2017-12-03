@@ -90,6 +90,16 @@
         By:
         <a class="searchResult-authorLink" target="_blank"></a>
       </div>
+      <div class="searchResult-meta">
+        <div class="searchResult-metaRating">
+          <span i18n-text="searchResultRating"></span>:
+          <span class="searchResult-rating"></span>
+        </div>
+        <div class="searchResult-metaInstallCounts">
+          <span i18n-text="searchResultInstallCount"></span>:
+          <span class="searchResult-installCount"></span>
+        </div>
+      </div>
       <div class="actions">
         <button class="searchResult-install" i18n-text="searchResultInstall" i18n-title="searchResultInstallTooltip"></button>
       </div>
@@ -133,7 +143,10 @@
       </div>
     </div>
     <div id="searchResults" class="hidden">
-      <h3>Search Results for <span id="searchResults-terms">-</span></h3>
+      <h3>
+        <span i18n-text="searchResultsHeader"></span>
+        <span id="searchResults-terms">...</span>
+      </h3>
       <div id="searchResultsNav">
         <button id="searchResultsNav-prev" title="Previous page" disabled>Prev</button>
         <label>
@@ -152,7 +165,7 @@
            i18n-text="findStylesForSite"></a>
       </div>
       <div id="searchResults-error" class="hidden"></div>
-      <div id="open-search">
+      <div id="open-search" class="hidden">
         <a id="open-search-link" href="https://userstyles.org/styles/browse/"
            i18n-text="openSearchWebsite"></a>
       </div>

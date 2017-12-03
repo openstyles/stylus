@@ -116,7 +116,7 @@ function SearchUserstyles() {
  */
 const SearchResults = (() => {
   const DISPLAYED_RESULTS_PER_PAGE = 3; // Number of results to display in popup.html
-  const DELAY_AFTER_FETCHING_STYLES = 500; // Millisecs to wait before fetching next batch of search results.
+  const DELAY_AFTER_FETCHING_STYLES = 0; // Millisecs to wait before fetching next batch of search results.
   const DELAY_BEFORE_SEARCHING_STYLES = 0; // Millisecs to wait before fetching .JSON for next search result.
   const searchAPI = SearchUserstyles();
   const unprocessedResults = []; // Search results not yet processed.
@@ -126,8 +126,6 @@ const SearchResults = (() => {
   let loading = false;
   let tabURL; // The active tab's URL.
   let currentDisplayedPage = 1; // Current page number in popup.html
-  let nonApplicableResults = 0; // Number of results that don't apply to the searched site (thx userstyles.org!)
-  let alreadyInstalledResults = 0; // Number of results that are already installed.
 
   return {load, next, prev};
 
@@ -169,6 +167,9 @@ const SearchResults = (() => {
     }
   }
 
+  /**
+   * @returns {Boolean} If we should process more results.
+   */
   function shouldLoadMore() {
     const result = (processedResults.length < currentDisplayedPage * DISPLAYED_RESULTS_PER_PAGE);
     console.log('shouldLoadMore:',
@@ -230,7 +231,7 @@ const SearchResults = (() => {
   }
 
   /**
-   * Loads search result for the (page number is currentPage).
+   * Initializes search results container, starts fetching results.
    * @param {Object} event The click event
    */
   function load(event) {
@@ -254,6 +255,7 @@ const SearchResults = (() => {
     }
 
     $('#find-styles').classList.add('hidden');
+    $('#open-search').classList.remove('hidden');
     $('#searchResults').classList.remove('hidden');
     $('#searchResults-error').classList.add('hidden');
 
@@ -281,6 +283,12 @@ const SearchResults = (() => {
     return true;
   }
 
+  /**
+   * Processes the next search result in `unprocessedResults` and adds to `processedResults`.
+   * Skips installed/non-applicable styles.
+   * Fetches more search results if unprocessedResults is empty.
+   * Recurses until shouldLoadMore() is false.
+   */
   function processNextResult() {
     if (!shouldLoadMore()) {
       console.log('[' + unprocessedResults.length + '] search results remain to be processed: STOPPED');
@@ -305,13 +313,11 @@ const SearchResults = (() => {
           // TODO: Include the style anyway with option to "Uninstall" (?)
           console.log('[' + unprocessedResults.length + '] style "' + nextResult.name +
                       '" already installed: CONTINUING');
-          alreadyInstalledResults += 1;
-          setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+          setTimeout(processNextResult, 0); // Keep processing
         } else if (nextResult.category !== 'site') {
           // Style is not for a website, skip it.
           console.log('[' + unprocessedResults.length + '] style "' + nextResult.name +
                       '" category is for "' + nextResult.category + '", not "site": CONTINUING');
-          nonApplicableResults += 1;
           setTimeout(processNextResult, 0); // Keep processing
         } else {
           // Style not installed, fetch full style to see if it applies to this site.
@@ -324,10 +330,7 @@ const SearchResults = (() => {
                 matchUrl: tabURL,
                 stopOnFirst: true
               });
-              if (applicableSections.length === 0) {
-                // Style is invalid (does not apply to this site).
-                nonApplicableResults += 1;
-              } else {
+              if (applicableSections.length > 0) {
                 // Style is valid (can apply to this site).
                 nextResult.json = userstyleJson; // Store Style JSON for easy installing later.
                 processedResults.push(nextResult);
@@ -335,8 +338,6 @@ const SearchResults = (() => {
               }
               console.log('[' + unprocessedResults.length + '] Processed "' + nextResult.name + '"',
                           'processedResults=' + processedResults.length,
-                          'skipped-installed=' + alreadyInstalledResults,
-                          'skipped-irrelevant=' + nonApplicableResults,
                           'CONTINUING @ sleep=' + DELAY_AFTER_FETCHING_STYLES);
               setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
             })
@@ -358,7 +359,7 @@ const SearchResults = (() => {
     return new Promise(function (resolve, reject) {
       getStylesSafe()
         .then(installedStyles => {
-          console.log('Seeing if searchResult(', userstyleSearchResult, ') is in matchingStyles');
+          console.log('Seeing if searchResult(', userstyleSearchResult.name, ') is in matchingStyles');
           const matchingStyles = installedStyles.filter(installedStyle => {
             // Compare installed name to search result name.
             let isMatch = installedStyle.name === userstyleSearchResult.name;
@@ -391,7 +392,7 @@ const SearchResults = (() => {
         }
       }
     */
-    console.log('createSearchResultNode(', userstyleSearchResult, ')');
+    console.log('createSearchResultNode(', userstyleSearchResult.name, ')');
 
     if (userstyleSearchResult.installed) {
       return;
@@ -406,8 +407,8 @@ const SearchResults = (() => {
     const searchResultName = userstyleSearchResult.name;
     const title = $('.searchResult-title', entry);
     Object.assign(title, {
-      textContent: searchResultName,
-      title: searchResultName,
+      textContent: searchResultName + ' (by ' + userstyleSearchResult.user.name + ')',
+      title: searchResultName + ' by: ' + userstyleSearchResult.user.name,
       href: 'https://userstyles.org' + userstyleSearchResult.url,
       onclick: handleEvent.openURLandHide
     });
@@ -424,7 +425,7 @@ const SearchResults = (() => {
     }
     Object.assign(screenshot, {
       src: screenshotUrl,
-      title: searchResultName
+      title: '"' + searchResultName + '" by ' + userstyleSearchResult.user.name
     });
 
     // TODO: Expand/collapse description
@@ -440,6 +441,32 @@ const SearchResults = (() => {
       title: userstyleSearchResult.user.name,
       href: 'https://userstyles.org/users/' + userstyleSearchResult.user.id,
       onclick: handleEvent.openURLandHide
+    });
+
+    const rating = $('.searchResult-rating', entry);
+    let ratingClass;
+    let ratingValue = userstyleSearchResult.rating;
+    if (ratingValue === null) {
+      ratingClass = 'none';
+      ratingValue = 'n/a';
+    } else if (ratingValue >= 2.5) {
+      ratingClass = 'good';
+      ratingValue = ratingValue.toFixed(1);
+    } else if (ratingValue >= 1.5) {
+      ratingClass = 'okay';
+      ratingValue = ratingValue.toFixed(1);
+    } else {
+      ratingClass = 'bad';
+      ratingValue = ratingValue.toFixed(1);
+    }
+    Object.assign(rating, {
+      textContent: ratingValue,
+      className: 'searchResult-rating ' + ratingClass
+    });
+
+    const installCount = $('.searchResult-installCount', entry);
+    Object.assign(installCount, {
+      textContent: userstyleSearchResult.total_install_count.toLocaleString()
     });
 
     // TODO: Total & Weekly Install Counts
