@@ -1,4 +1,4 @@
-/* global CodeMirror semverCompare makeLink closeCurrentTab */
+/* global CodeMirror semverCompare closeCurrentTab */
 /* global messageBox download chromeLocal */
 'use strict';
 
@@ -44,11 +44,8 @@
 
   setTimeout(() => {
     if (!installed) {
-      const div = $element({});
-      $('.header').appendChild($element({
-        className: 'lds-spinner',
-        appendChild: new Array(12).fill(div).map(e => e.cloneNode()),
-      }));
+      $('.header').appendChild($create('.lds-spinner',
+        new Array(12).fill($create('div')).map(e => e.cloneNode())));
     }
   }, 200);
 
@@ -101,8 +98,7 @@
 
     $('.applies-to').textContent = '';
     getAppliesTo(style).forEach(pattern =>
-      $('.applies-to').appendChild($element({tag: 'li', textContent: pattern}))
-    );
+      $('.applies-to').appendChild($create('li', pattern)));
 
     $('.external-link').textContent = '';
     const externalLink = makeExternalLink();
@@ -125,46 +121,35 @@
       const [, name, email, url] = match;
       const frag = document.createDocumentFragment();
       if (email) {
-        frag.appendChild(makeLink(`mailto:${email}`, name));
+        frag.appendChild($createLink(`mailto:${email}`, name));
       } else {
-        frag.appendChild($element({
-          tag: 'span',
-          textContent: name
-        }));
+        frag.appendChild($create('span', name));
       }
       if (url) {
-        frag.appendChild(makeLink(
-          url,
-          $element({
-            tag: 'svg#svg',
-            viewBox: '0 0 20 20',
-            class: 'svg-icon',
-            appendChild: $element({
-              tag: 'svg#path',
+        frag.appendChild($createLink(url,
+          $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
+            $create('SVG:path', {
               d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z'
-            })
-          })
+            }))
         ));
       }
       return frag;
     }
 
     function makeExternalLink() {
-      const urls = [];
-      if (data.homepageURL) {
-        urls.push([data.homepageURL, t('externalHomepage')]);
-      }
-      if (data.supportURL) {
-        urls.push([data.supportURL, t('externalSupport')]);
-      }
-      if (urls.length) {
-        return $element({appendChild: [
-          $element({tag: 'h3', textContent: t('externalLink')}),
-          $element({tag: 'ul', appendChild: urls.map(args =>
-            $element({tag: 'li', appendChild: makeLink(...args)})
-          )})
-        ]});
-      }
+      const urls = [
+        data.homepageURL && [data.homepageURL, t('externalHomepage')],
+        data.supportURL && [data.supportURL, t('externalSupport')],
+      ];
+      return (data.homepageURL || data.supportURL) && (
+        $create('div', [
+          $create('h3', t('externalLink')),
+          $create('ul', urls.map(args => args &&
+            $create('li',
+              $createLink(...args)
+            )
+          ))
+        ]));
     }
 
     function installButtonClass() {
@@ -230,26 +215,23 @@
 
   function buildWarning(err) {
     const contents = Array.isArray(err) ?
-      $element({tag: 'pre', textContent: err.join('\n')}) :
+      $create('pre', err.join('\n')) :
       [err && err.message || err || 'Unknown error'];
     if (Number.isInteger(err.index)) {
       const pos = cm.posFromIndex(err.index);
       contents[0] = `${pos.line + 1}:${pos.ch + 1} ` + contents[0];
-      contents.push($element({
-        tag: 'pre',
-        textContent: drawLinePointer(pos)
-      }));
+      contents.push($create('pre', drawLinePointer(pos)));
       setTimeout(() => {
         cm.scrollIntoView({line: pos.line + 1, ch: pos.ch}, window.innerHeight / 4);
         cm.setCursor(pos.line, pos.ch + 1);
         cm.focus();
       });
     }
-    return $element({className: 'warning', appendChild: [
+    return $create('.warning', [
       t('parseUsercssError'),
       '\n',
       ...contents,
-    ]});
+    ]);
   }
 
   function drawLinePointer(pos) {
@@ -281,7 +263,7 @@
     // update UI
     if (versionTest < 0) {
       $('.actions').parentNode.insertBefore(
-        $element({className: 'warning', textContent: t('versionInvalidOlder')}),
+        $create('.warning', t('versionInvalidOlder')),
         $('.actions')
       );
     }

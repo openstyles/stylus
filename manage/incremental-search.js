@@ -5,8 +5,7 @@ onDOMready().then(() => {
   let prevText, focusedLink, focusedEntry;
   let prevTime = performance.now();
   let focusedName = '';
-  const input = $element({
-    tag: 'textarea',
+  const input = $create('textarea', {
     spellcheck: false,
     oninput: incrementalSearch,
   });

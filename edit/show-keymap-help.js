@@ -64,7 +64,7 @@ function showKeyMapHelp() {
           if (index > offset) {
             cell.appendChild(document.createTextNode(text.substring(offset, index)));
           }
-          cell.appendChild($element({tag: 'mark', textContent: match}));
+          cell.appendChild($create('mark', match));
           offset = index + match.length;
         });
         if (offset + 1 !== text.length) {

@@ -25,53 +25,25 @@ function createAppliesToLineWidget(cm) {
 
     TPL = {
       container:
-        $element({className: 'applies-to', appendChild: [
-          $element({tag: 'label', appendChild: t('appliesLabel')}),
-          $element({tag: 'ul', className: 'applies-to-list'}),
-        ]}),
-      listItem: $element({
-        tag: 'li',
-        className: 'applies-to-item',
-        appendChild: [
-          $element({
-            tag: 'select',
-            className: 'applies-type',
-            appendChild: [
-              [t('appliesUrlOption'), 'url'],
-              [t('appliesUrlPrefixOption'), 'url-prefix'],
-              [t('appliesDomainOption'), 'domain'],
-              [t('appliesRegexpOption'), 'regexp']
-            ].map(([textContent, value]) => $element({
-              tag: 'option',
-              value,
-              textContent,
-            })),
-          }),
-          $element({
-            tag: 'input',
-            className: 'applies-value',
-          }),
-          $element({
-            tag: 'button',
-            className: 'test-regexp',
-            textContent: t('styleRegexpTestButton'),
-          }),
-          $element({
-            tag: 'button',
-            className: 'remove-applies-to',
-            textContent: t('appliesRemove'),
-          }),
-          $element({
-            tag: 'button',
-            className: 'add-applies-to',
-            textContent: t('appliesAdd'),
-          })
-        ]}),
-      appliesToEverything: $element({
-        tag: 'li',
-        className: 'applies-to-everything',
-        textContent: t('appliesToEverything'),
-      }),
+        $create('div.applies-to', [
+          $create('label', t('appliesLabel')),
+          $create('ul.applies-to-list'),
+        ]),
+      listItem:
+        $create('li.applies-to-item', [
+          $create('select.applies-type', [
+            $create('option', {value: 'url'}, t('appliesUrlOption')),
+            $create('option', {value: 'url-prefix'}, t('appliesUrlPrefixOption')),
+            $create('option', {value: 'domain'}, t('appliesDomainOption')),
+            $create('option', {value: 'regexp'}, t('appliesRegexpOption')),
+          ]),
+          $create('input.applies-value'),
+          $create('button.test-regexp', t('styleRegexpTestButton')),
+          $create('button.remove-applies-to', t('appliesRemove')),
+          $create('button.add-applies-to', t('appliesAdd')),
+        ]),
+      appliesToEverything:
+        $create('li.applies-to-everything', t('appliesToEverything')),
     };
 
     CLICK_ROUTE = {
@@ -164,7 +136,7 @@ function createAppliesToLineWidget(cm) {
       }
     };
 
-    styleVariables = $element({tag: 'style'});
+    styleVariables = $create('style');
     fromLine = 0;
     toLine = cm.doc.size;
 

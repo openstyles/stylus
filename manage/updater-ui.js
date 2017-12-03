@@ -174,10 +174,7 @@ function showUpdateHistory() {
   BG.chromeLocal.getValue('updateLog').then((lines = []) => {
     messageBox({
       title: t('updateCheckHistory'),
-      contents: $element({
-        className: 'update-history-log',
-        textContent: lines.join('\n'),
-      }),
+      contents: $create('.update-history-log', lines.join('\n')),
       buttons: [t('confirmOK')],
       onshow: () => ($('#message-box-contents').scrollTop = 1e9),
     });

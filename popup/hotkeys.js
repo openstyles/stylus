@@ -142,13 +142,13 @@ window.addEventListener('showStyles:done', function _() {
         line
           .split(/(<.*?>)/)
           .map(s => (!s.startsWith('<') ? s :
-            $element({tag: 'mark', textContent: s.slice(1, -1)})));
+            $create('mark', s.slice(1, -1))));
       const linesToElements = text =>
         text
           .trim()
           .split('\n')
           .map((line, i, array) =>
-            $element(i < array.length - 1 ? {
+            $create(i < array.length - 1 ? {
               tag: 'p',
               appendChild: keysToElements(line),
             } : {
@@ -159,9 +159,9 @@ window.addEventListener('showStyles:done', function _() {
             }));
       [
         linesToElements(t('popupHotkeysInfo')),
-        $element({tag: 'button', textContent: t('confirmOK')}),
+        $create('button', t('confirmOK')),
       ].forEach(child => {
-        container.appendChild($element({appendChild: child}));
+        container.appendChild($create('div', child));
       });
     }
   }

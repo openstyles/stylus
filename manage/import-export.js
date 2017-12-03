@@ -175,18 +175,16 @@ function importFromString(jsonString) {
         .map(kind => {
           const {ids, names, legend} = stats[kind];
           const listItemsWithId = (name, i) =>
-            $element({dataset: {id: ids[i]}, textContent: name});
+            $create('div', {dataset: {id: ids[i]}}, name);
           const listItems = name =>
-            $element({textContent: name});
+            $create('div', name);
           const block =
-            $element({tag: 'details', dataset: {id: kind}, appendChild: [
-              $element({tag: 'summary', appendChild:
-                $element({tag: 'b', textContent: names.length + ' ' + t(legend)})
-              }),
-              $element({tag: 'small', appendChild:
-                names.map(ids ? listItemsWithId : listItems)
-              }),
-            ]});
+            $create('details', {dataset: {id: kind}}, [
+              $create('summary',
+                $create('b', names.length + ' ' + t(legend))),
+              $create('small',
+                names.map(ids ? listItemsWithId : listItems)),
+            ]);
           return block;
         });
       scrollTo(0, 0);
@@ -308,8 +306,7 @@ $('#file-all-styles').onclick = () => {
     const text = JSON.stringify(styles, null, '\t');
     const blob = new Blob([text], {type: 'application/json'});
     const objectURL = URL.createObjectURL(blob);
-    let link = $element({
-      tag:'a',
+    let link = $create('a', {
       href: objectURL,
       type: 'application/json',
       download: generateFileName(),
@@ -319,8 +316,7 @@ $('#file-all-styles').onclick = () => {
       link.dispatchEvent(new MouseEvent('click'));
       setTimeout(() => URL.revokeObjectURL(objectURL));
     } else {
-      const iframe = document.body.appendChild($element({
-        tag: 'iframe',
+      const iframe = document.body.appendChild($create('iframe', {
         style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
       }));
       doTimeout()

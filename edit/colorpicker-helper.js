@@ -69,8 +69,7 @@ var initColorpicker = () => {
   }
 
   function configureColorpicker() {
-    const input = $element({
-      tag: 'input',
+    const input = $create('input', {
       type: 'search',
       spellcheck: false,
       value: prefs.get('editor.colorpicker.hotkey'),

@@ -457,22 +457,20 @@ function toMozillaFormat() {
 
 function fromMozillaFormat() {
   const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-    $element({appendChild: [
-      $element({
-        tag: 'button',
+    $create([
+      $create('button', {
         name: 'import-append',
         textContent: t('importAppendLabel'),
         title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
         onclick: doImport,
       }),
-      $element({
-        tag: 'button',
+      $create('button', {
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
         title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
       }),
-    ]}));
+    ]));
   const contents = $('.contents', popup);
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
@@ -522,10 +520,8 @@ function fromMozillaFormat() {
   }
 
   function showError(errors) {
-    showHelp(t('styleFromMozillaFormatError'), $element({
-      tag: 'pre',
-      textContent: Array.isArray(errors) ? errors.join('\n') : errors,
-    }));
+    showHelp(t('styleFromMozillaFormatError'),
+      $create('pre', Array.isArray(errors) ? errors.join('\n') : errors));
   }
 }
 
@@ -617,7 +613,7 @@ function showCodeMirrorPopup(title, html, options) {
 
 function setGlobalProgress(done, total) {
   const progressElement = $('#global-progress') ||
-    total && document.body.appendChild($element({id: 'global-progress'}));
+    total && document.body.appendChild($create('#global-progress'));
   if (total) {
     const progress = (done / Math.max(done, total) * 100).toFixed(1);
     progressElement.style.borderLeftWidth = progress + 'vw';
