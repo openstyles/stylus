@@ -385,6 +385,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-left: -20px;
   margin-top: -1px;
 }
+.regexp-report-note {
+  font-size: 90%;
+  margin: 1em 1em .5em;
+  color: #999;
+}
+
 /************ help popup ************/
 #help-popup {
   top: 3rem;

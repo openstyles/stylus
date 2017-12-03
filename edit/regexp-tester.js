@@ -165,9 +165,15 @@ var regExpTester = (() => {
           }
         }
       }
+      report.appendChild($element({
+        tag: 'p',
+        className: 'regexp-report-note',
+        appendChild: t('styleRegexpTestNote').split(/(\\+)/)
+          .map(s => s.startsWith('\\') ? $element({tag: 'code', textContent: s}) : s),
+      }));
       showHelp(t('styleRegexpTestTitle'), report);
 
-      $('.regexp-report').onclick = event => {
+      report.onclick = event => {
         const target = event.target.closest('a, .regexp-report div');
         if (target) {
           openURL({

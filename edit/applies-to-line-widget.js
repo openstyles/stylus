@@ -435,9 +435,13 @@ function createAppliesToLineWidget(cm) {
   }
 
   function changeItem(apply, part, newText) {
+    if (!apply) {
+      return;
+    }
     part = apply[part];
     const range = part.mark.find();
     part.mark.clear();
+    newText = newText.replace(/\\/g, '\\\\');
     cm.replaceRange(newText, range.from, range.to, 'appliesTo');
     part.mark = cm.markText(
       range.from,
@@ -467,12 +471,14 @@ function createAppliesToLineWidget(cm) {
   }
 
   function createApply(pos, typeText, valueText, isQuoted = false) {
+    typeText = typeText.toLowerCase();
     const start = pos;
     const typeStart = start;
     const typeEnd = typeStart + typeText.length;
     const valueStart = typeEnd + 1 + Number(isQuoted);
     const valueEnd = valueStart + valueText.length;
     const end = valueEnd + Number(isQuoted) + 1;
+    const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(valueText);
     return {
       start,
       type: {
@@ -481,7 +487,7 @@ function createAppliesToLineWidget(cm) {
         end: typeEnd,
       },
       value: {
-        text: valueText,
+        text: hasSingleEscapes ? valueText : valueText.replace(/\\\\/g, '\\'),
         start: valueStart,
         end: valueEnd,
       },

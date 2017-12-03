@@ -742,6 +742,10 @@
     "message": "Invalid regexps skipped",
     "description": "RegExp test report: label for the invalid expressions"
   },
+  "styleRegexpTestNote": {
+    "message": "Note: use a single \\ for escaping in the regexp input field, which will be automatically converted to \\\\ in the style code as per specification for quoted strings in CSS.",
+    "description": "RegExp test report: a note displayed at the bottom of the dialog"
+  },
   "styleRegexpPartialExplanation": {
     "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome which incorrectly checks 'regexp()' rules since the very first version (known bug)."
   },
