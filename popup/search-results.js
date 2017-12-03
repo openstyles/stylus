@@ -375,6 +375,7 @@ const SearchResults = (() => {
             setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
           })
           .catch(reason => {
+            console.log('processNextResult(', nextResult.id, ') => [ERROR]: ', reason);
             setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
           });
         }
