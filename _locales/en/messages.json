@@ -373,6 +373,14 @@
     "message": "Install this search result",
     "description": "Tooltip for a button that installs a search result"
   },
+  "searchResultCustomize": {
+    "message": "Customize",
+    "description": "Text for a button that customizes a search result before installing"
+  },
+  "searchResultCustomizeTooltip": {
+    "message": "Customize this style on userstyles.org",
+    "description": "Tooltip for a button that customizes a search result before installing"
+  },
   "findStylesForSite": {
     "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"

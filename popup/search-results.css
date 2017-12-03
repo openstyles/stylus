@@ -11,7 +11,8 @@
 #searchResults.hidden,
 #searchResults-error.hidden,
 #find-styles.hidden,
-#open-search.hidden {
+#open-search.hidden,
+.searchResult-customize.hidden {
   display: none;
 }
 
@@ -96,6 +97,9 @@
 
 .searchResult-install {
   width: 100%;
+}
+.searchResult-install.customize, .searchResult-customize {
+  width: 50%;
 }
 
 #searchResultsNav {
