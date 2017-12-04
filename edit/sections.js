@@ -390,11 +390,11 @@ function getSections() {
 
 function getSectionsHashes() {
   const sections = [];
-  getSections().forEach(div => {
+  for (const div of getSections()) {
     const meta = {urls: [], urlPrefixes: [], domains: [], regexps: []};
     for (const li of $('.applies-to-list', div).childNodes) {
       if (li.className === template.appliesToEverything.className) {
-        return;
+        break;
       }
       const type = $('[name=applies-type]', li).value;
       const value = $('[name=applies-value]', li).value;
@@ -404,11 +404,11 @@ function getSectionsHashes() {
     }
     const code = div.CodeMirror.getValue();
     if (/^\s*$/.test(code) && Object.keys(meta).length === 0) {
-      return;
+      continue;
     }
     meta.code = code;
     sections.push(meta);
-  });
+  }
   return sections;
 }
 
