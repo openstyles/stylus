@@ -11,13 +11,20 @@ function messageBox({
   initOwnListeners();
   bindGlobalListeners();
   createElement();
+  document.body.appendChild(messageBox.element);
   if (location.href.includes('popup.html')) {
+    messageBox.element.classList.add('stylus-popup');
+
+    // calculate size
+    messageBox.element.classList.add('calculate-size');
+    const {offsetWidth, offsetHeight} = messageBox.element.children[0];
+    messageBox.element.classList.remove('calculate-size');
+
     messageBox.bodyWidth = document.body.style.width;
     messageBox.bodyHeight = document.body.style.height;
-    document.body.style.width = '400px';
-    document.body.style.height = '600px';
+    document.body.style.width = `${offsetWidth / 0.9}px`;
+    document.body.style.height = `${offsetHeight / 0.9}px`;
   }
-  document.body.appendChild(messageBox.element);
   if (onshow) {
     onshow(messageBox.element);
   }
