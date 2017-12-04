@@ -14,12 +14,8 @@
           $('#find-styles-inline').checked = false;
 
           const searchResults = searchResultsController();
-          $('#searchResultsNav-prev').onclick = searchResults.prev;
-          $('#searchResultsNav-next').onclick = searchResults.next;
+          searchResults.init();
           searchResults.load();
-          document.body.classList.add('search-results-shown');
-
-          window.scrollTo(0, 0);
 
           // Avoid propagating click to anchor/href
           event.preventDefault();
@@ -43,13 +39,21 @@
     const unprocessedResults = []; // Search results not yet processed.
     const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
     const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
-                            'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
+                             'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
     let loading = false;
     let tabURL; // The active tab's URL.
     let category; // Category for the active tab's URL.
     let currentDisplayedPage = 1; // Current page number in popup.html
 
-    return {load, next, prev};
+    return {init, load, next, prev};
+
+    function init() {
+      $('#searchResultsNav-prev').onclick = prev;
+      $('#searchResultsNav-next').onclick = next;
+      document.body.classList.add('search-results-shown');
+      window.scrollTo(0, 0);
+      load();
+    }
 
     function render() {
       $('#searchResults-list').textContent = ''; // Clear search results
@@ -440,8 +444,11 @@ function searchUserstyles() {
       return 'STYLUS'; // Stylus page
     } else {
       // Website address, strip TLD & subdomain
-      const domainRegex = /^www\.|(\.com?)?\.\w+$/g;
-      return u.hostname.replace(domainRegex, '').split('.').pop();
+      let domain = u.hostname.replace(/^www\.|(\.com?)?\.\w+$/g, '').split('.').pop();
+      if (domain === 'userstyles') {
+        domain = 'userstyles.org';
+      }
+      return domain;
     }
   }
 

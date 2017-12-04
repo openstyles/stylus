@@ -1,16 +1,12 @@
 body.search-results-shown {
   overflow-y: auto;
   overflow-x: hidden;
+  padding-right: 20px;
 }
 
 #disable-all-wrapper {
   border-bottom: solid 1px #000;
   margin-bottom: 5px;
-}
-
-#searchResults,
-#find-styles {
-  display: block;
 }
 
 .hidden {
@@ -25,11 +21,6 @@ body.search-results-shown {
   margin-right: 20px;
 }
 
-#searchResults, #searchResults-list {
-  max-width: 200px;
-  overflow: hidden;
-}
-
 .searchResult {
   padding: 5px;
 }
@@ -37,17 +28,14 @@ body.search-results-shown {
   background-color: rgba(50, 150, 255, 0.5);
 }
 .searchResult.loading {
+  background-color: rgba(90, 90, 90, 0.5);
   opacity: 0.5;
 }
 
-.searchResult img {
-  display: block;
-  max-width: 180px;
-  max-height: 180px;
-}
-.searchResult-screenshot.no-screenshot {
-  width: 180px;
-  height: 40px;
+.searchResult-screenshot {
+  max-height: 120px;
+  width: 100%;
+  object-fit: cover;
 }
 
 .searchResult-title {
@@ -56,13 +44,9 @@ body.search-results-shown {
 }
 
 .searchResult-description {
-  overflow: hidden;
-  font-style: italic;
-}
-
-.searchResult > * {
-  overflow-x: hidden;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .searchResult-author {
@@ -76,6 +60,7 @@ body.search-results-shown {
 
 .searchResult-metaRating, .searchResult-metaInstallCount {
   display: table-cell;
+  text-align: center;
 }
 
 .searchResult-rating {
@@ -94,6 +79,10 @@ body.search-results-shown {
 }
 .searchResult-rating.none {
   background-color: #333;
+}
+
+.searchResult-installCount {
+  font-weight: 600;
 }
 
 .searchResult-install {
@@ -121,10 +110,4 @@ body.search-results-shown {
 
 #searchResultsNav button {
   text-align: center;
-}
-
-#searchResultsNav-prev[disabled],
-#searchResultsNav-next[disabled] {
-  cursor: not-allowed;
-  background-image: linear-gradient(rgba(90, 90, 90, 0.5), rgba(90, 90, 90, 0.5));
 }
