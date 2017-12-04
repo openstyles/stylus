@@ -312,7 +312,8 @@ function showFiltersStats({immediately} = {}) {
     filtersSelector.numShown = numShown;
     filtersSelector.numTotal = numTotal;
     $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
-    document.body.classList.toggle('all-styles-hidden-by-filters', !numShown && numTotal);
+    document.body.classList.toggle('all-styles-hidden-by-filters',
+      !numShown && numTotal && filtersSelector.hide);
   }
 }
 
