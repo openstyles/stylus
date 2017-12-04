@@ -13,6 +13,7 @@ function messageBox({
   createElement();
   document.body.appendChild(messageBox.element);
   if (location.href.includes('popup.html')) {
+    messageBox.isPopup = true;
     messageBox.element.classList.add('stylus-popup');
 
     // calculate size
@@ -20,10 +21,11 @@ function messageBox({
     const {offsetWidth, offsetHeight} = messageBox.element.children[0];
     messageBox.element.classList.remove('calculate-size');
 
-    messageBox.bodyWidth = document.body.style.width;
-    messageBox.bodyHeight = document.body.style.height;
-    document.body.style.width = `${offsetWidth / 0.9}px`;
-    document.body.style.height = `${offsetHeight / 0.9}px`;
+    const width = Math.min(offsetWidth / 0.9 + 2, 800);
+    const height = Math.min(offsetHeight / 0.9 + 2, 600);
+
+    document.body.style.minWidth = `${width}px`;
+    document.body.style.minHeight = `${height}px`;
   }
   if (onshow) {
     onshow(messageBox.element);
@@ -109,11 +111,9 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
-    if (messageBox.bodyWidth) {
-      document.body.style.width = messageBox.bodyWidth;
-      document.body.style.height = messageBox.bodyHeight;
-      messageBox.bodyWidth = null;
-      messageBox.bodyHeight = null;
+    if (messageBox.isPopup) {
+      document.body.style.minWidth = "";
+      document.body.style.minHeight = "";
     }
   }
 }
