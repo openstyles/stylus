@@ -23,10 +23,11 @@ var mozParser = (() => {
         const section = {code: '', start: {line, col}};
         // move last comment before @-moz-document inside the section
         if (!/\/\*[\s\n]*AGENT_SHEET[\s\n]*\*\//.test(lastCmt)) {
-          section.code = lastCmt + '\n';
-          const indent = outerText.match(/^\s*/)[0];
-          outerText = outerText.slice(0, -lastCmt.length);
-          outerText = indent + outerText.trim();
+          if (lastCmt) {
+            section.code = lastCmt + '\n';
+            outerText = outerText.slice(0, -lastCmt.length);
+          }
+          outerText = outerText.match(/^\s*/)[0] + outerText.trim();
         }
         if (outerText.trim()) {
           lastSection.code = outerText;
