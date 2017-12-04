@@ -8,12 +8,8 @@
   display: block;
 }
 
-#searchResults.hidden,
-#searchResults-error.hidden,
-#find-styles.hidden,
-#open-search.hidden,
-.searchResult-customize.hidden {
-  display: none;
+.hidden {
+  display: none !important;
 }
 
 #searchResults-error {

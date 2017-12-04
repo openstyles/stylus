@@ -111,14 +111,6 @@ function initPopup(url) {
     return;
   }
 
-  const u = tryCatch(() => new URL(url));
-  $('#open-search-link').onclick = handleEvent.openURLandHide;
-  $('#open-search-link').href +=
-    !u ? '' :
-    u.protocol === 'file:' ? 'file:' :
-    u.protocol === location.protocol ? '?search_terms=Stylus' :
-    u.hostname.replace(/^www\.|(\.com?)?\.\w+$/g, '').split('.').pop();
-
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
     sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
       if (pong) {

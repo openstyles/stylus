@@ -89,7 +89,7 @@
       <a class="searchResult-title" target="_blank"></a>
       <div class="searchResult-description"></div>
       <div class="searchResult-author">
-        By:
+        <label i18n-text="author"></label>
         <a class="searchResult-authorLink" target="_blank"></a>
       </div>
       <div class="searchResult-meta">
@@ -103,8 +103,10 @@
         </div>
       </div>
       <div class="actions">
-        <button class="searchResult-install" i18n-text="searchResultInstall" i18n-title="searchResultInstallTooltip"></button>
-        <button class="searchResult-customize hidden" i18n-text="searchResultCustomize" i18n-title="searchResultCustomizeTooltip"></button>
+        <button class="searchResult-install" i18n-text="installButton"></button>
+        <button class="searchResult-customize hidden"
+                i18n-text="searchResultCustomize"
+                i18n-title="searchResultCustomizeTooltip"></button>
       </div>
     </div>
   </template>
@@ -165,14 +167,13 @@
     <div class="left-gutter"></div>
     <div class="main-controls">
       <div id="find-styles">
-        <a id="find-styles-link" href="#"
-           i18n-text="findStylesForSite"></a>
+        <a id="find-styles-link" i18n-text="findStylesForSite"></a>
+        <span id="find-styles-inline-group">
+          <input id="find-styles-inline" class="checker" type="checkbox" />
+          <label for="find-styles-inline" i18n-text="findStylesForSiteInline"></label>
+        </span>
       </div>
       <div id="searchResults-error" class="hidden"></div>
-      <div id="open-search" class="hidden">
-        <a id="open-search-link" href="https://userstyles.org/styles/browse/"
-           i18n-text="openSearchWebsite"></a>
-      </div>
       <div id="write-style">
         <span id="write-style-for" i18n-text="writeStyleFor"></span>
       </div>

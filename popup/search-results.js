@@ -2,12 +2,25 @@
 'use strict';
 
 (() => {
-  onDOMready().then(() => {
-    const searchResults = searchResultsController();
-    $('#find-styles-link').onclick = searchResults.load;
-    $('#searchResultsNav-prev').onclick = searchResults.prev;
-    $('#searchResultsNav-next').onclick = searchResults.next;
-  });
+  Promise.all([getActiveTab(), onDOMready()])
+    .then(([tab]) => {
+      $('#find-styles-link').href = searchUserstyles().getSearchPageURL(tab.url);
+
+      $('#find-styles-link').onclick = event => {
+        // Only load search results inline if option is selected.
+        if ($('#find-styles-inline').checked) {
+          $('#find-styles-inline-group').classList.add('hidden');
+          $('#find-styles-inline').checked = false;
+          const searchResults = searchResultsController();
+          $('#searchResultsNav-prev').onclick = searchResults.prev;
+          $('#searchResultsNav-next').onclick = searchResults.next;
+          // Intercept event to avoid opening the search page.
+          return searchResults.load(event);
+        } else {
+          handleEvent.openURLandHide.call($('#find-styles-link'), event);
+        }
+      };
+    });
 
   /**
    * Represents the search results within the Stylus popup.
@@ -144,8 +157,6 @@
         return true;
       }
 
-      $('#find-styles').classList.add('hidden');
-      $('#open-search').classList.remove('hidden');
       $('#searchResults').classList.remove('hidden');
       $('#searchResults-error').classList.add('hidden');
 
@@ -398,7 +409,7 @@ function searchUserstyles() {
   let currentPage = 1;
   let exhausted = false;
 
-  return {BASE_URL, getCategory, isExhausted, search, fetchStyleJson, fetchStyle};
+  return {BASE_URL, getCategory, getSearchPageURL, isExhausted, search, fetchStyleJson, fetchStyle};
 
   /**
    * @returns {Boolean} If there are no more results to fetch from userstyles.org
@@ -407,38 +418,33 @@ function searchUserstyles() {
     return exhausted;
   }
 
+  function getSearchPageURL(url) {
+    const category = getCategory(url);
+    if (category === 'STYLUS') {
+      return BASE_URL + '/styles/browse/?search_terms=Stylus';
+    } else {
+      return BASE_URL + '/styles/browse/' + category;
+    }
+  }
+
   /**
    * Resolves the Userstyles.org "category" for a given URL.
    * @param {String} url The URL to a webpage.
    * @returns {Promise<String>} The category for a URL, or the hostname if category is not found.
    */
   function getCategory(url) {
-    let hostname = new URL(url).hostname;
-    // Strip "TLD" (including .com.TLD, .co.TLD, etc)
-    hostname = hostname.replace(/(\.com|\.co|\.org|\.net|\.gov)?\.[a-z0-9]+$/, '');
-    // Strip "subdomains"
-    hostname = hostname.split(/\./g).pop();
-    return hostname;
-    /*
-    // Resolve "category" using userstyles.org's /styles/browse/all/ endpoint:
-    return new Promise(resolve => {
-      const request = new XMLHttpRequest();
-      const browseURL = BASE_URL + '/styles/browse/all/' + encodeURIComponent(url);
-      request.open('HEAD', browseURL, true);
-      request.onreadystatechange = () => {
-        if (request.readyState === XMLHttpRequest.DONE) {
-          const responseURL = new URL(request.responseURL);
-          const searchCategory = responseURL.searchParams.get('category');
-          if (searchCategory !== null) {
-            resolve(searchCategory);
-          } else {
-            resolve(hostname);
-          }
-        }
-      };
-      request.send(null);
-    });
-    */
+    const u = tryCatch(() => new URL(url));
+    if (!u) {
+      return ''; // Invalid URL
+    } else if (u.protocol === 'file:') {
+      return 'file:'; // File page
+    } else if (u.protocol === location.protocol) {
+      return 'STYLUS'; // Stylus page
+    } else {
+      // Website address, strip TLD & subdomain
+      const domainRegex = /^www\.|(\.com?)?\.\w+$/g;
+      return u.hostname.replace(domainRegex, '').split('.').pop();
+    }
   }
 
   /**

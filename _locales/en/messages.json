@@ -369,21 +369,21 @@
     "message": "Install",
     "description": "Text for a button that installs a search result"
   },
-  "searchResultInstallTooltip": {
-    "message": "Install this search result",
-    "description": "Tooltip for a button that installs a search result"
-  },
   "searchResultCustomize": {
     "message": "Customize",
     "description": "Text for a button that customizes a search result before installing"
   },
   "searchResultCustomizeTooltip": {
-    "message": "Customize this style on userstyles.org",
-    "description": "Tooltip for a button that customizes a search result before installing"
+    "message": "Open this style on userstyles.org to customize via 'Advanced Style Settings'",
+    "description": "Tooltip for a button that opens style on userstyles.org for customizing"
   },
   "findStylesForSite": {
     "message": "Find more styles for this site",
     "description": "Text for a link that gets a list of styles for the current site"
+  },
+  "findStylesForSiteInline": {
+    "message": "Inline",
+    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
   },
   "helpAlt": {
     "message": "Help",
