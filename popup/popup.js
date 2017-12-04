@@ -1,3 +1,5 @@
+/* global configDialog */
+
 'use strict';
 
 let installed;
@@ -278,6 +280,7 @@ function createStyleElement({
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;
   $('.delete', entry).onclick = handleEvent.delete;
+  $('.configure', entry).onclick = handleEvent.configure;
 
   invokeOrPostpone(!postponeDetect, detectSloppyRegexps, {entry, style});
 
@@ -345,6 +348,11 @@ Object.assign(handleEvent, {
         });
       }
     }
+  },
+
+  configure(event) {
+    const id = handleEvent.getClickedStyleId(event);
+    getStylesSafe({id}).then(([style]) => style).then(configDialog);
   },
 
   indicator(event) {

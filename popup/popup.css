@@ -1,3 +1,12 @@
+:root {
+  --header-width: 280px;
+  --checkbox-width: 24px;
+  --name-padding-left: 40px;
+  --name-padding-right: 40px;
+  --actions-width: 75px;
+  --onoffswitch-width: 60px;
+}
+
 html, body {
   height: min-content;
 }
