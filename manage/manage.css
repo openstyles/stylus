@@ -94,6 +94,10 @@ select {
   fill: #aaa;
 }
 
+#usercss-wiki svg {
+  margin-top: -2px;
+}
+
 .nobreak {
   white-space: nowrap;
 }
@@ -288,7 +292,6 @@ label.nobreak input {
 
 .newUI #installed {
   display: table;
-  table-layout: fixed;
   margin-top: .75rem;
   margin-bottom: .75rem;
 }
@@ -352,15 +355,22 @@ label.nobreak input {
 }
 
 .filter-selection select {
-  -moz-appearance: none;
-  -webkit-appearance: none;
   height: 18px;
   outline: none;
-  background-color: transparent;
   border: none;
   max-width: 100%;
+  padding-left: 4px;
   padding-right: 14px;
-  transition: color .5s
+}
+
+.firefox .filter-selection select {
+  padding-left: 0;
+}
+
+.filter-selection .select-arrow {
+  margin-top: 2px;
+  top: 0;
+  right: 0;
 }
 
 .select-resizer {
@@ -369,25 +379,11 @@ label.nobreak input {
   max-width: calc(100% - 2em);
   position: absolute;
   top: 0;
-  left: 20px;
+  left: 16px;
 }
 
 .firefox .select-resizer {
   left: 16px;
-}
-
-.svg-icon.select-arrow {
-  pointer-events: none;
-  cursor: default;
-  display: inline-flex;
-  margin-top: 2px;
-  height: 14px;
-  width: 14px;
-  fill: #000;
-  position: absolute;
-  top: 0;
-  right: 0;
-  transition: fill .5s;
 }
 
 fieldset > label,
@@ -412,15 +408,6 @@ fieldset > .filter-selection:hover {
   margin: -2px 1ex 0 0;
 }
 
-.svg-icon.checked {
-  position: absolute;
-  height: 8px;
-  width: 8px;
-  display: none;
-  fill: #000;
-  margin: 2px 0 0 2px;
-}
-
 .newUI .entry .svg-icon.checked,
 .newUI .entry:hover .svg-icon.checked {
   fill: #000;
@@ -428,50 +415,6 @@ fieldset > .filter-selection:hover {
 
 .newUI .entry input[type="checkbox"]:not(.slider) {
   pointer-events: all;
-}
-
-input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  display: inline-flex;
-  transition: fill .25s;
-}
-
-input[type="checkbox"]:not(.slider) {
-  position: absolute;
-  left: 0;
-  top: 0;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  pointer-events: none;
-  border: 1px solid hsl(0, 0%, 46%);
-  height: 12px;
-  width: 12px;
-  display: inline-flex;
-  border-radius: 2px;
-  background-color: hsl(0, 0%, 94%);
-  outline: none;
-  margin: 0;
-  transition: background-color .25s, border-color .25s;
-}
-
-input[type="checkbox"]:not(.slider):checked:hover {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
-}
-
-input[type="checkbox"]:not(.slider):hover {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
-}
-
-input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-label {
-  transition: color .25s;
 }
 
 .newUI .style-name {
@@ -930,6 +873,10 @@ fieldset > label {
   align-items: center;
 }
 
+.config-dialog .select-resizer {
+  position: static;
+}
+
 .config-dialog label:first-child {
   padding-top: 0;
 }
@@ -966,10 +913,13 @@ fieldset > label {
   vertical-align: middle;
 }
 
+.config-dialog .select-resizer,
 .config-dialog select {
   width: auto;
   min-width: var(--onoffswitch-width);
   max-width: 124px;
+  left: auto;
+  position: relative;
 }
 
 .config-dialog .onoffswitch {
@@ -986,7 +936,7 @@ fieldset > label {
   flex-shrink: 0;
 }
 
-.config-dialog label > :last-child:not(.onoffswitch) > :not(:last-child) {
+.config-dialog label > :last-child:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
   margin-right: 4px;
 }
 
@@ -1159,14 +1109,5 @@ fieldset > label {
 
   .newUI .style-name {
     word-break: break-all;
-  }
-}
-
-@supports (-moz-appearance:none) {
-
-  /* fixes for Firefox quirks */
-
-  #newStyleAsUsercss-wrapper svg {
-    margin-top: -2px;
   }
 }

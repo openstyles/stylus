@@ -29,11 +29,15 @@ function beautify(event) {
       optionHtml('border: none;', 'newline_between_properties', true) +
       optionHtml('display: block;', 'newline_before_close_brace', true) +
       optionHtml('}', 'newline_between_rules') +
-      `<label style="display: block; clear: both;"><input data-option="indent_conditional" type="checkbox"
-        ${options.indent_conditional !== false ? 'checked' : ''}>` +
+      `<label style="display: block; clear: both;">
+        <input data-option="indent_conditional" type="checkbox"
+          ${options.indent_conditional !== false ? 'checked' : ''}>
+        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>` +
         t('styleBeautifyIndentConditional') + '</label>' +
       '</div>' +
       '<div><button role="undo"></button></div>');
+
+    $('#help-popup').className = 'wide';
 
     const undoButton = $('#help-popup button[role="undo"]');
     undoButton.textContent = t(scope.length === 1 ? 'undo' : 'undoGlobal');

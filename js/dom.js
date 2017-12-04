@@ -250,7 +250,9 @@ function $create(selector = 'div', properties, children) {
 
   if (ns) {
     for (const attr in opt) {
-      element.setAttributeNS(null, attr, opt[attr]);
+      const i = attr.indexOf(':') + 1;
+      const attrNS = i && `http://www.w3.org/1999/${attr.slice(0, i - 1)}`;
+      element.setAttributeNS(attrNS || null, attr, opt[attr]);
     }
   } else {
     Object.assign(element, opt);
