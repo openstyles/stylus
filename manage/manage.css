@@ -20,6 +20,7 @@ body.all-styles-hidden-by-filters:after {
   position: absolute;
   left: calc(3rem + var(--header-width));
   color: hsla(180, 40%, 45%, .3);
+  animation: fadein 3s;
 }
 
 body.all-styles-hidden-by-filters:before {
