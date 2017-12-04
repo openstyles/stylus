@@ -158,7 +158,7 @@ function reapplyFilter(container = installed) {
     filterContainer({hide: true});
   }
   if (!toHide.length) {
-    showFiltersStats({immediately: true});
+    showFiltersStats();
     return;
   }
   for (const entry of toHide) {
@@ -298,9 +298,9 @@ function reapplyFilter(container = installed) {
 }
 
 
-function showFiltersStats({immediately} = {}) {
-  if (!immediately || !BG.cachedStyles.list) {
-    debounce(showFiltersStats, 100, {immediately: true});
+function showFiltersStats() {
+  if (!BG.cachedStyles.list) {
+    debounce(showFiltersStats, 100);
     return;
   }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
