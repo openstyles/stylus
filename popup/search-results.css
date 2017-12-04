@@ -1,3 +1,8 @@
+body.search-results-shown {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 #disable-all-wrapper {
   border-bottom: solid 1px #000;
   margin-bottom: 5px;

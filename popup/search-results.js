@@ -9,14 +9,23 @@
       $('#find-styles-link').onclick = event => {
         // Only load search results inline if option is selected.
         if ($('#find-styles-inline').checked) {
+          // Hide 'inline' checkbox.
           $('#find-styles-inline-group').classList.add('hidden');
           $('#find-styles-inline').checked = false;
+
           const searchResults = searchResultsController();
           $('#searchResultsNav-prev').onclick = searchResults.prev;
           $('#searchResultsNav-next').onclick = searchResults.next;
-          // Intercept event to avoid opening the search page.
-          return searchResults.load(event);
+          searchResults.load();
+          document.body.classList.add('search-results-shown');
+
+          window.scrollTo(0, 0);
+
+          // Avoid propagating click to anchor/href
+          event.preventDefault();
+          return false;
         } else {
+          // Open anchor href in new tab.
           handleEvent.openURLandHide.call($('#find-styles-link'), event);
         }
       };
@@ -99,22 +108,18 @@
     }
 
     /** Increments currentDisplayedPage and loads results. */
-    function next(event) {
-      if (event) {
-        event.preventDefault();
-      }
+    function next() {
       currentDisplayedPage += 1;
       render();
+      window.scrollTo(0, 0);
       loadMoreIfNeeded();
     }
 
     /** Decrements currentPage and loads results. */
-    function prev(event) {
-      if (event) {
-        event.preventDefault();
-      }
+    function prev() {
       currentDisplayedPage = Math.max(1, currentDisplayedPage - 1);
       render();
+      window.scrollTo(0, 0);
     }
 
     /**
@@ -136,13 +141,8 @@
 
     /**
      * Initializes search results container, starts fetching results.
-     * @param {Object} event The click event
      */
-    function load(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
+    function load() {
       loading = true;
       render();
 
@@ -175,8 +175,6 @@
           })
           .catch(error);
       });
-      // Find styles for the current active tab
-      return true;
     }
 
     /**
