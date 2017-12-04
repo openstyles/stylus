@@ -260,6 +260,9 @@ function reapplyFilter(container = installed) {
         };
       }
     }
+    if (fullPass) {
+      showFiltersStats();
+    }
   }
 
   function findInsertionPoint(entry) {
@@ -297,7 +300,7 @@ function reapplyFilter(container = installed) {
 
 function showFiltersStats() {
   if (!BG.cachedStyles.list) {
-    debounce(showFiltersStats);
+    debounce(showFiltersStats, 100);
     return;
   }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
