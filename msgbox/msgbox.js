@@ -11,6 +11,12 @@ function messageBox({
   initOwnListeners();
   bindGlobalListeners();
   createElement();
+  if (location.href.includes('popup.html')) {
+    messageBox.bodyWidth = document.body.style.width;
+    messageBox.bodyHeight = document.body.style.height;
+    document.body.style.width = '400px';
+    document.body.style.height = '600px';
+  }
   document.body.appendChild(messageBox.element);
   if (onshow) {
     onshow(messageBox.element);
@@ -96,6 +102,12 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
+    if (messageBox.bodyWidth) {
+      document.body.style.width = messageBox.bodyWidth;
+      document.body.style.height = messageBox.bodyHeight;
+      messageBox.bodyWidth = null;
+      messageBox.bodyHeight = null;
+    }
   }
 }
 
