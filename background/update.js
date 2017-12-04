@@ -56,26 +56,26 @@ var updater = {
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    const maybeUpdate = style.usercssData ? maybeUpdateUsercss : maybeUpdateUSO;
-    return (ignoreDigest ? Promise.resolve() : calcStyleDigest(style))
-      .then(checkIfEdited)
-      .then(maybeUpdate)
-      .then(maybeValidate)
+    return Promise.resolve(style)
+      .then([calcStyleDigest][!ignoreDigest ? 0 : 'skip'])
+      .then([checkIfEdited][!ignoreDigest ? 0 : 'skip'])
+      .then([maybeUpdateUSO, maybeUpdateUsercss][style.usercssData ? 1 : 0])
       .then(maybeSave)
-      .then(saved => {
-        observer(updater.UPDATED, saved);
-        updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
-      })
-      .catch(err => {
-        observer(updater.SKIPPED, style, err);
-        err = err === 0 ? 'server unreachable' : err;
-        updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
-      });
+      .then(reportSuccess)
+      .catch(reportFailure);
+
+    function reportSuccess(saved) {
+      observer(updater.UPDATED, saved);
+      updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
+    }
+
+    function reportFailure(err) {
+      observer(updater.SKIPPED, style, err);
+      err = err === 0 ? 'server unreachable' : err;
+      updater.log(updater.SKIPPED + ` (${err}) #${style.id} ${style.name}`);
+    }
 
     function checkIfEdited(digest) {
-      if (ignoreDigest) {
-        return;
-      }
       if (style.originalDigest && style.originalDigest !== digest) {
         return Promise.reject(updater.EDITED);
       }
@@ -95,6 +95,7 @@ var updater = {
     }
 
     function maybeUpdateUsercss() {
+      // TODO: when sourceCode is > 100kB use http range request(s) for version check
       return download(style.updateUrl).then(text => {
         const json = usercss.buildMeta(text);
         const {usercssData: {version}} = style;
@@ -104,6 +105,8 @@ var updater = {
             // re-install is invalid in a soft upgrade
             if (!ignoreDigest) {
               return Promise.reject(updater.SAME_VERSION);
+            } else if (text === style.sourceCode) {
+              return Promise.reject(updater.SAME_CODE);
             }
             break;
           case 1:
@@ -114,38 +117,31 @@ var updater = {
       });
     }
 
-    function maybeValidate(json) {
-      if (json.usercssData) {
-        // usercss is already validated while building
-        return json;
-      }
-      if (!styleJSONseemsValid(json)) {
+    function maybeSave(json = {}) {
+      // usercss is already validated while building
+      if (!json.usercssData && !styleJSONseemsValid(json)) {
         return Promise.reject(updater.ERROR_JSON);
       }
-      return json;
-    }
-
-    function maybeSave(json) {
       json.id = style.id;
       json.updateDate = Date.now();
+      json.reason = 'update';
+      // keep current state
+      delete json.enabled;
+      // keep local name customizations
+      delete json.name;
+
       if (styleSectionsEqual(json, style)) {
-        // JSONs may have different order of items even if sections are effectively equal
-        // so we'll update the digest anyway
-        // always update digest even if (save === false)
+        // update digest even if save === false as there might be just a space added etc.
         saveStyle(Object.assign(json, {reason: 'update-digest'}));
         return Promise.reject(updater.SAME_CODE);
       } else if (!style.originalDigest && !ignoreDigest) {
         return Promise.reject(updater.MAYBE_EDITED);
       }
-      if (!save) {
-        return json;
-      }
-      json.reason = 'update';
-      if (json.usercssData) {
-        return usercssHelper.save(json);
-      }
-      json.name = null; // keep local name customizations
-      return saveStyle(json);
+
+      return !save ? json :
+        json.usercssData
+          ? usercssHelper.save(json)
+          : saveStyle(json);
     }
 
     function styleJSONseemsValid(json) {

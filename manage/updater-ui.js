@@ -122,9 +122,9 @@ function reportUpdateState(state, style, details) {
       const edited = details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED;
       entry.dataset.details = details;
       if (!details) {
-        details = t('updateCheckFailServerUnreachable');
+        details = t('updateCheckFailServerUnreachable') + '\n' + style.updateUrl;
       } else if (typeof details === 'number') {
-        details = t('updateCheckFailBadResponseCode', [details]);
+        details = t('updateCheckFailBadResponseCode', [details]) + '\n' + style.updateUrl;
       } else if (details === BG.updater.EDITED) {
         details = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       } else if (details === BG.updater.MAYBE_EDITED) {
