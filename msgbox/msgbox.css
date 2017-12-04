@@ -28,7 +28,7 @@
 }
 
 #message-box.fadeout {
-  animation: fadeout .5s ease-in-out;
+  animation: fadeout .25s ease-in-out;
 }
 
 #message-box.center {

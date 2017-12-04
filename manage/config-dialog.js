@@ -110,9 +110,12 @@ function configDialog(style) {
         case 'dropdown':
         case 'image':
           // TODO: a image picker input?
-          va.input = $create('select',
-            va.options.map(o =>
-              $create('option', {value: o.name}, o.label)));
+          va.input = $create('.select-resizer', [
+            $create('select', va.options.map(o =>
+              $create('option', {value: o.name}, o.label))),
+            $create('SVG:svg.svg-icon.select-arrow',
+              $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
+          ]);
           va.input.onchange = () => {
             va.dirty = true;
             va.value = va.input.value;

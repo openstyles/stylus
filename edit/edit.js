@@ -543,7 +543,7 @@ function showToggleStyleHelp() {
 
 function showHelp(title = '', body) {
   const div = $('#help-popup');
-  div.classList.remove('big');
+  div.className = '';
   const contents = $('.contents', div);
   contents.textContent = '';
   if (body) {
