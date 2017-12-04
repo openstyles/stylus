@@ -37,7 +37,7 @@ function createAppliesToLineWidget(cm) {
             $create('option', {value: 'domain'}, t('appliesDomainOption')),
             $create('option', {value: 'regexp'}, t('appliesRegexpOption')),
           ]),
-          $create('input.applies-value'),
+          $create('input.applies-value', {spellcheck: false}),
           $create('button.test-regexp', t('styleRegexpTestButton')),
           $create('button.remove-applies-to', t('appliesRemove')),
           $create('button.add-applies-to', t('appliesAdd')),
