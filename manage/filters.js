@@ -158,7 +158,7 @@ function reapplyFilter(container = installed) {
     filterContainer({hide: true});
   }
   if (!toHide.length) {
-    showFiltersStats();
+    showFiltersStats({immediately: true});
     return;
   }
   for (const entry of toHide) {
