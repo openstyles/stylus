@@ -261,7 +261,7 @@ function reapplyFilter(container = installed) {
       }
     }
     if (fullPass) {
-      showFiltersStats();
+      showFiltersStats({immediately: true});
     }
   }
 
@@ -298,9 +298,9 @@ function reapplyFilter(container = installed) {
 }
 
 
-function showFiltersStats() {
-  if (!BG.cachedStyles.list) {
-    debounce(showFiltersStats, 100);
+function showFiltersStats({immediately} = {}) {
+  if (!immediately || !BG.cachedStyles.list) {
+    debounce(showFiltersStats, 100, {immediately: true});
     return;
   }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
