@@ -21,8 +21,12 @@ function messageBox({
     const {offsetWidth, offsetHeight} = messageBox.element.children[0];
     messageBox.element.classList.remove('calculate-size');
 
-    const width = Math.min(offsetWidth / 0.9 + 2, 800);
-    const height = Math.min(offsetHeight / 0.9 + 2, 600);
+    // for colorpicker
+    const MIN_WIDTH = 350;
+    const MIN_HEIGHT = 219;
+
+    const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
+    const height = Math.max(Math.min(offsetHeight / 0.9 + 2, 600), MIN_HEIGHT);
 
     document.body.style.minWidth = `${width}px`;
     document.body.style.minHeight = `${height}px`;
