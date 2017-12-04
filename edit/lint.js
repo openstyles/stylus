@@ -366,11 +366,11 @@ function showLintHelp() {
     ? 'https://stylelint.io/user-guide/rules/'
     // some CSSLint rules do not have a url
     : 'https://github.com/CSSLint/csslint/issues/535';
-  let headerLink, template;
+  let headerLink, template, csslintRules;
   if (linter === 'csslint') {
     headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
     template = ruleID => {
-      const rule = linterConfig.allRuleIds.csslint.find(rule => rule.id === ruleID);
+      const rule = csslintRules.find(rule => rule.id === ruleID);
       return rule &&
         $create('li', [
           $create('b', $createLink(rule.url || baseUrl, rule.name)),
@@ -382,16 +382,20 @@ function showLintHelp() {
     headerLink = $createLink(baseUrl, 'stylelint');
     template = rule =>
       $create('li',
-        $createLink(baseUrl + rule, rule));
+        rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));
   }
   const header = t('linterIssuesHelp', '\x01').split('\x01');
   const activeRules = new Set($$('#lint td[role="severity"]').map(el => el.dataset.rule));
-  return showHelp(t('linterIssues'),
-    $create([
-      header[0], headerLink, header[1],
-      $create('ul.rules', [...activeRules.values()].map(template)),
-    ])
-  );
+  Promise.resolve(linter !== 'csslint' || linterConfig.invokeWorker({action: 'getAllRuleInfos'}))
+    .then(data => {
+      csslintRules = data;
+      showHelp(t('linterIssues'),
+        $create([
+          header[0], headerLink, header[1],
+          $create('ul.rules', [...activeRules.values()].map(template)),
+        ])
+      );
+    });
 }
 
 function showLinterErrorMessage(title, contents, popup) {
