@@ -296,6 +296,10 @@ function reapplyFilter(container = installed) {
 
 
 function showFiltersStats() {
+  if (!BG.cachedStyles.list) {
+    debounce(showFiltersStats);
+    return;
+  }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
   const numTotal = BG.cachedStyles.list.length;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
