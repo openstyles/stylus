@@ -23,7 +23,7 @@ body {
   color: #000;
 }
 
-body > div:not(#installed) {
+body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   margin-left: 9px;
   margin-right: 9px;
 }
