@@ -404,6 +404,12 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   margin-left: -20px;
   margin-top: -1px;
 }
+.regexp-report-note {
+  color: #999;
+  position: absolute;
+  margin: 0 0.5rem 0 0;
+  hyphens: auto;
+}
 /************ help popup ************/
 #help-popup {
   top: 3rem;
