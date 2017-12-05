@@ -29,13 +29,22 @@
   const originalAddOverlay = CodeMirror.prototype.addOverlay;
   const originalRemoveOverlay = CodeMirror.prototype.removeOverlay;
   const originalMatchesOnScrollbar = CodeMirror.prototype.showMatchesOnScrollbar;
+  const originalSetOption = CodeMirror.prototype.setOption;
   let originalGetOption;
 
   CodeMirror.prototype.addOverlay = addOverlay;
   CodeMirror.prototype.removeOverlay = removeOverlay;
   CodeMirror.prototype.showMatchesOnScrollbar = matchesOnScrollbar;
+  CodeMirror.prototype.setOption = setOption;
+
+  let enabled = Boolean(prefs.get('editor.matchHighlight'));
 
   return;
+
+  function setOption(option, value) {
+    enabled = option === 'highlightSelectionMatches' ? value : enabled;
+    return originalSetOption.apply(this, arguments);
+  }
 
   function shouldIntercept(overlay) {
     const hlState = this.state.matchHighlighter || {};
@@ -43,13 +52,13 @@
   }
 
   function addOverlay() {
-    return shouldIntercept.apply(this, arguments) &&
+    return enabled && shouldIntercept.apply(this, arguments) &&
       addOverlayForHighlighter.apply(this, arguments) ||
       originalAddOverlay.apply(this, arguments);
   }
 
   function removeOverlay() {
-    return shouldIntercept.apply(this, arguments) &&
+    return enabled && shouldIntercept.apply(this, arguments) &&
       removeOverlayForHighlighter.apply(this, arguments) ||
       originalRemoveOverlay.apply(this, arguments);
   }
@@ -181,6 +190,9 @@
   }
 
   function matchesOnScrollbar(query, ...args) {
+    if (!enabled) {
+      return originalMatchesOnScrollbar.call(this, query, ...args);
+    }
     const state = this.state.matchHighlighter;
     const helper = state.highlightHelper = state.highlightHelper || {};
     // rewrite the \btoken\b regexp so it matches .token and #token and --token
