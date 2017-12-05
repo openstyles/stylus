@@ -9,6 +9,8 @@ function configDialog(style) {
   const elements = [];
   const colorpicker = window.colorpicker();
 
+  document.addEventListener('mousedown', onMouseDown);
+
   buildConfigForm();
   renderValues();
 
@@ -29,6 +31,7 @@ function configDialog(style) {
       t('confirmCancel')
     ]
   }).then(({button, esc}) => {
+    document.removeEventListener('mousedown', onMouseDown);
     if (button !== 1) {
       colorpicker.hide();
     }
@@ -192,6 +195,12 @@ function configDialog(style) {
   function restoreEscInDialog() {
     if (!$('.colorpicker-popup') && messageBox.element) {
       window.addEventListener('keydown', messageBox.listeners.key, true);
+    }
+  }
+
+  function onMouseDown(e) {
+    if (!e.target.closest('.colorpicker-popup')) {
+      colorpicker.hide();
     }
   }
 }
