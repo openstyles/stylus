@@ -115,10 +115,8 @@ onDOMready().then(() => {
         if (option.type === 'checkbox') {
           option = (option.labels || [])[0] || option.nextElementSibling || option;
         }
-        progress = document.body.appendChild($element({
-          className: 'set-option-progress',
-          targetElement: option,
-        }));
+        progress = document.body.appendChild(
+          $create('.set-option-progress', {targetElement: option}));
       }
     }
     if (progress) {
@@ -222,12 +220,7 @@ onDOMready().then(() => {
           break;
         }
         // avoid flicker: wait for the second stylesheet to load, then apply the theme
-        document.head.appendChild($element({
-          tag: 'link',
-          id: 'cm-theme2',
-          rel: 'stylesheet',
-          href: url
-        }));
+        document.head.appendChild($create('link#cm-theme2', {rel: 'stylesheet', href: url}));
         setTimeout(() => {
           CodeMirror.setOption(option, value);
           themeLink.remove();
@@ -287,7 +280,7 @@ onDOMready().then(() => {
   function optionsFromArray(parent, options) {
     const fragment = document.createDocumentFragment();
     for (const opt of options) {
-      fragment.appendChild($element({tag: 'option', textContent: opt}));
+      fragment.appendChild($create('option', opt));
     }
     parent.appendChild(fragment);
   }
@@ -342,16 +335,16 @@ onDOMready().then(() => {
     customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
       searchState = activeCM.state.search;
-      if (editors.length === 1 || !searchState.query) {
-        return;
-      }
+      const searchOthers = editors.length > 1 && searchState.query;
       editors.forEach(cm => {
         if (cm !== activeCM) {
           cm.execCommand('clearSearch');
-          updateState(cm, searchState);
+          if (searchOthers) {
+            updateState(cm, searchState);
+          }
         }
       });
-      if (CodeMirror.cmpPos(searchState.posFrom, searchState.posTo) === 0) {
+      if (searchOthers && CodeMirror.cmpPos(searchState.posFrom, searchState.posTo) === 0) {
         findNext(activeCM);
       }
     });

@@ -386,6 +386,7 @@
     let restorationCounter = 0;
     let observing = false;
     let sorting = false;
+    let timer;
     // allow any types of elements between ours, except for the following:
     const ORDERED_TAGS = ['head', 'body', 'style', 'link'];
 
@@ -395,6 +396,10 @@
     function init() {
       docRootObserver = new MutationObserver(sortStyleElements);
       Object.assign(docRootObserver, {start, stop});
+      if (!chrome.app) {
+        // compensate for Firefox missing a step when loading the tab in background
+        setTimeout(sortStyleElements);
+      }
     }
     function start({sort = false} = {}) {
       if (sort && sortStyleMap()) {
@@ -453,8 +458,8 @@
       if (sorting) {
         sorting = false;
         docRootObserver.takeRecords();
-        setTimeout(start);
-        //docRootObserver.start();
+        clearTimeout(timer);
+        timer = setTimeout(start);
       }
     }
     function isMovable(el) {

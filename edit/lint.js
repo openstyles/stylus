@@ -1,7 +1,6 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global loadScript require CSSLint stylelint */
-/* global makeLink */
 'use strict';
 
 onDOMready().then(loadLinterAssets);
@@ -231,9 +230,7 @@ function updateLinter({immediately, linter = linterConfig.getName()} = {}) {
     cm.options.gutters = guttersOption;
     const el = $('.' + GUTTERS_CLASS, cm.display.gutters);
     if (linter && !el) {
-      cm.display.gutters.appendChild($element({
-        className: 'CodeMirror-gutter ' + GUTTERS_CLASS
-      }));
+      cm.display.gutters.appendChild($create('.CodeMirror-gutter ' + GUTTERS_CLASS));
     } else if (!linter && el) {
       el.remove();
     }
@@ -281,9 +278,8 @@ function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
     const newMarkers = lintState.stylusMarkers = new Map();
     const oldText = (lintState.body || {}).textContentCached || '';
     const activeLine = cm.getCursor().line;
-    const body = !(lintState.marked || {}).length ? {} : $element({
-      tag: 'tbody',
-      appendChild: lintState.marked.map(mark => {
+    const body = !(lintState.marked || {}).length ? {} :
+      $create('tbody', lintState.marked.map(mark => {
         const info = mark.__annotation;
         const {line, ch} = info.from;
         const isActiveLine = line === activeLine;
@@ -294,27 +290,15 @@ function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
           oldMarkers.delete(pos);
         }
         newMarkers.set(pos, message);
-        return $element({
-          tag: 'tr',
-          className: info.severity,
-          appendChild: [
-            $element({
-              tag: 'td',
-              attributes: {role: 'severity'},
-              dataset: {rule: info.rule},
-              appendChild: $element({
-                className: 'CodeMirror-lint-marker-' + info.severity,
-                textContent: info.severity,
-              }),
-            }),
-            $element({tag: 'td', attributes: {role: 'line'}, textContent: line + 1}),
-            $element({tag: 'td', attributes: {role: 'sep'}, textContent: ':'}),
-            $element({tag: 'td', attributes: {role: 'col'}, textContent: ch + 1}),
-            $element({tag: 'td', attributes: {role: 'message'}, textContent: message, title}),
-          ],
-        });
-      })
-    });
+        return $create(`tr.${info.severity}`, [
+          $create('td', {attributes: {role: 'severity'}, dataset: {rule: info.rule}},
+            $create('.CodeMirror-lint-marker-' + info.severity, info.severity)),
+          $create('td', {attributes: {role: 'line'}}, line + 1),
+          $create('td', {attributes: {role: 'sep'}}, ':'),
+          $create('td', {attributes: {role: 'col'}}, ch + 1),
+          $create('td', {attributes: {role: 'message'}, title}, message),
+        ]);
+      }));
     body.textContentCached = body.textContent || '';
     lintState.body = body.textContentCached && body;
     result.changed |= oldText !== body.textContentCached;
@@ -340,14 +324,10 @@ function renderLintReport(someBlockChanged) {
     if (!body) {
       return;
     }
-    const newBlock = $element({
-      tag: 'table',
-      appendChild: [
-        $element({tag: 'caption', textContent: label + ' ' + (index + 1)}),
-        body,
-      ],
-      cm,
-    });
+    const newBlock = $create('table', {cm}, [
+      $create('caption', label + ' ' + (index + 1)),
+      body,
+    ]);
     newContent.appendChild(newBlock);
     issueCount += newBlock.rows.length;
 
@@ -386,38 +366,36 @@ function showLintHelp() {
     ? 'https://stylelint.io/user-guide/rules/'
     // some CSSLint rules do not have a url
     : 'https://github.com/CSSLint/csslint/issues/535';
-  let headerLink, template;
+  let headerLink, template, csslintRules;
   if (linter === 'csslint') {
-    headerLink = makeLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
+    headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
     template = ruleID => {
-      const rule = linterConfig.allRuleIds.csslint.find(rule => rule.id === ruleID);
+      const rule = csslintRules.find(rule => rule.id === ruleID);
       return rule &&
-        $element({tag: 'li', appendChild: [
-          $element({tag: 'b', appendChild: makeLink(rule.url || baseUrl, rule.name)}),
-          $element({tag: 'br'}),
+        $create('li', [
+          $create('b', $createLink(rule.url || baseUrl, rule.name)),
+          $create('br'),
           rule.desc,
-        ]});
+        ]);
     };
   } else {
-    headerLink = makeLink(baseUrl, 'stylelint');
+    headerLink = $createLink(baseUrl, 'stylelint');
     template = rule =>
-      $element({
-        tag: 'li',
-        appendChild: makeLink(baseUrl + rule, rule),
-      });
+      $create('li',
+        rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));
   }
   const header = t('linterIssuesHelp', '\x01').split('\x01');
   const activeRules = new Set($$('#lint td[role="severity"]').map(el => el.dataset.rule));
-  return showHelp(t('linterIssues'),
-    $element({appendChild: [
-      header[0], headerLink, header[1],
-      $element({
-        tag: 'ul',
-        className: 'rules',
-        appendChild: [...activeRules.values()].map(template),
-      }),
-    ]})
-  );
+  Promise.resolve(linter !== 'csslint' || linterConfig.invokeWorker({action: 'getAllRuleInfos'}))
+    .then(data => {
+      csslintRules = data;
+      showHelp(t('linterIssues'),
+        $create([
+          header[0], headerLink, header[1],
+          $create('ul.rules', [...activeRules.values()].map(template)),
+        ])
+      );
+    });
 }
 
 function showLinterErrorMessage(title, contents, popup) {
@@ -465,41 +443,21 @@ function setupLinterPopup(config) {
   });
 
   function makeFooter() {
-    const makeButton = (className, onclick, text, options = {}) =>
-      $element(Object.assign(options, {
-        className,
-        onclick,
-        tag: 'button',
-        type: 'button',
-        textContent: t(text),
-      }));
-    return $element({
-      appendChild: [
-        $element({
-          tag: 'p',
-          appendChild: [
-            t('linterRulesLink') + ' ',
-            $element({
-              tag: 'a',
-              target: '_blank',
-              href: linter === 'stylelint'
-                ? 'https://stylelint.io/user-guide/rules/'
-                : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
-              textContent: linterTitle
-            }),
-            linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : ''
-          ]
-        }),
-        makeButton('save', save, 'styleSaveLabel', {title: 'Ctrl-Enter'}),
-        makeButton('cancel', cancel, 'confirmClose'),
-        makeButton('reset', reset, 'genericResetLabel', {title: t('linterResetMessage')}),
-        $element({
-          tag: 'span',
-          className: 'saved-message',
-          textContent: t('genericSavedMessage')
-        })
-      ]
-    });
+    return $create('div', [
+      $create('p', [
+        t('linterRulesLink') + ' ',
+        $createLink(
+          linter === 'stylelint'
+            ? 'https://stylelint.io/user-guide/rules/'
+            : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
+          linterTitle),
+        linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : '',
+      ]),
+      $create('button.save', {onclick: save, title: 'Ctrl-Enter'}, t('styleSaveLabel')),
+      $create('button.cancel', {onclick: cancel}, t('confirmClose')),
+      $create('button.reset', {onclick: reset, title: t('linterResetMessage')}, t('genericResetLabel')),
+      $create('span.saved-message', t('genericSavedMessage')),
+    ]);
   }
 
   function save(event) {
@@ -516,9 +474,7 @@ function setupLinterPopup(config) {
       if (invalid.length) {
         showLinterErrorMessage(linter, [
           t('linterInvalidConfigError'),
-          $element({tag: 'ul', appendChild: invalid.map(name =>
-            $element({tag: 'li', textContent: name})),
-          }),
+          $create('ul', invalid.map(name => $create('li', name))),
         ], popup);
         return;
       }

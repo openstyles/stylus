@@ -1,8 +1,9 @@
-/* global messageBox makeLink */
+/* global messageBox */
 'use strict';
 
 function configDialog(style) {
-  const varsHash = deepCopy(style.usercssData.vars) || {};
+  const data = style.usercssData;
+  const varsHash = deepCopy(data.vars) || {};
   const varNames = Object.keys(varsHash);
   const vars = varNames.map(name => varsHash[name]);
   const elements = [];
@@ -12,21 +13,12 @@ function configDialog(style) {
   renderValues();
 
   return messageBox({
-    title: `${style.name} v${style.usercssData.version}`,
+    title: `${style.name} v${data.version}`,
     className: 'config-dialog',
     contents: [
-      $element({
-        className: 'config-heading',
-        appendChild: style.usercssData.supportURL && makeLink({
-          className: 'external-support',
-          href: style.usercssData.supportURL,
-          textContent: t('externalFeedback')
-        })
-      }),
-      $element({
-        className: 'config-body',
-        appendChild: elements
-      })
+      $create('.config-heading', data.supportURL &&
+        $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
+      $create('.config-body', elements)
     ],
     buttons: [
       t('confirmSave'),
@@ -71,19 +63,17 @@ function configDialog(style) {
         continue;
       }
       invalid.push(['*' + va.name, ': ', ...error].map(e =>
-        e[0] === '*' && $element({tag: 'b', textContent: e.slice(1)}) || e));
+        e[0] === '*' && $create('b', e.slice(1)) || e));
       if (bgva) {
         styleVars[va.name].value = deepCopy(bgva);
       }
     }
     if (invalid.length) {
       messageBox.alert([
-        $element({textContent: t('usercssConfigIncomplete'), style: 'max-width: 34em'}),
-        $element({
-          tag: 'ol',
-          style: 'text-align: left',
-          appendChild: invalid.map(msg => $element({tag: 'li', appendChild: msg})),
-        }),
+        $create('div', {style: 'max-width: 34em'}, t('usercssConfigIncomplete')),
+        $create('ol', {style: 'text-align: left'},
+          invalid.map(msg =>
+            $create({tag: 'li', appendChild: msg}))),
       ]);
     }
     return numValid && BG.usercssHelper.save(style);
@@ -91,30 +81,28 @@ function configDialog(style) {
 
   function buildConfigForm() {
     for (const va of vars) {
-      let appendChild;
+      let children;
       switch (va.type) {
         case 'color':
-          appendChild = [$element({
-            className: 'cm-colorview',
-            appendChild: va.inputColor = $element({
-              va,
-              className: 'color-swatch',
-              onclick: showColorpicker,
-            })
-          })];
+          va.inputColor = $create('.color-swatch', {va, onclick: showColorpicker});
+          children = [
+            $create('.cm-colorview', [
+              va.inputColor,
+            ]),
+          ];
           break;
 
         case 'checkbox':
-          va.input = $element({tag: 'input', type: 'checkbox', className: 'slider'});
+          va.input = $create('input.slider', {type: 'checkbox'});
           va.input.onchange = () => {
             va.dirty = true;
             va.value = String(Number(va.input.checked));
           };
-          appendChild = [
-            $element({tag: 'span', className: 'onoffswitch', appendChild: [
+          children = [
+            $create('span.onoffswitch', [
               va.input,
-              $element({tag: 'span'})
-            ]})
+              $create('span'),
+            ])
           ];
           break;
 
@@ -122,36 +110,33 @@ function configDialog(style) {
         case 'dropdown':
         case 'image':
           // TODO: a image picker input?
-          va.input = $element({
-            tag: 'select',
-            appendChild: va.options.map(o => $element({
-              tag: 'option', value: o.name, textContent: o.label
-            }))
-          });
+          va.input = $create('.select-resizer', [
+            $create('select', va.options.map(o =>
+              $create('option', {value: o.name}, o.label))),
+            $create('SVG:svg.svg-icon.select-arrow',
+              $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
+          ]);
           va.input.onchange = () => {
             va.dirty = true;
             va.value = va.input.value;
           };
-          appendChild = [va.input];
+          children = [va.input];
           break;
 
         default:
-          va.input = $element({tag: 'input', type: 'text'});
+          va.input = $create('input', {type: 'text'});
           va.input.oninput = () => {
             va.dirty = true;
             va.value = va.input.value;
           };
-          appendChild = [va.input];
+          children = [va.input];
           break;
       }
-      elements.push($element({
-        tag: 'label',
-        className: `config-${va.type}`,
-        appendChild: [
-          $element({tag: 'span', appendChild: va.label}),
-          ...appendChild,
-        ],
-      }));
+      elements.push(
+        $create(`label.config-${va.type}`, [
+          $create('span', va.label),
+          ...children,
+        ]));
     }
   }
 

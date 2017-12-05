@@ -1,7 +1,7 @@
 /* global CodeMirror dirtyReporter initLint */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
 /* global editors linterConfig updateLinter regExpTester mozParser */
-/* global makeLink createAppliesToLineWidget messageBox */
+/* global createAppliesToLineWidget messageBox */
 'use strict';
 
 function createSourceEditor(style) {
@@ -12,9 +12,7 @@ function createSourceEditor(style) {
   $('#name').disabled = true;
   $('#mozilla-format-container').remove();
   $('#sections').textContent = '';
-  $('#sections').appendChild(
-    $element({className: 'single-editor'})
-  );
+  $('#sections').appendChild($create('.single-editor'));
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
@@ -236,15 +234,12 @@ function createSourceEditor(style) {
           return;
         }
         const contents = Array.isArray(err) ?
-          $element({tag: 'pre', textContent: err.join('\n')}) :
+          $create('pre', err.join('\n')) :
           [String(err)];
         if (Number.isInteger(err.index)) {
           const pos = cm.posFromIndex(err.index);
           contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-          contents.push($element({
-            tag: 'pre',
-            textContent: drawLinePointer(pos)
-          }));
+          contents.push($create('pre', drawLinePointer(pos)));
         }
         messageBox.alert(contents);
       });

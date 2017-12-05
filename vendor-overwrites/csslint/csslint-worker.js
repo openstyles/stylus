@@ -10994,6 +10994,11 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
       self.postMessage(CSSLint.getRules().map(rule => rule.id));
       return;
 
+    case 'getAllRuleInfos':
+      // the functions are non-tranferable
+      self.postMessage(CSSLint.getRules().map(rule => JSON.parse(JSON.stringify(rule))));
+      return;
+
     case 'run':
       Object.defineProperty(config, 'errors', {get: () => 0, set: () => 0});
       config['uso-vars'] = 1;

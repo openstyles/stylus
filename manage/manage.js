@@ -84,14 +84,17 @@ function initGlobalEvents() {
   switchUI({styleOnly: true});
 
   // translate CSS manually
-  document.head.appendChild($element({tag: 'style', textContent: `
+  document.head.appendChild($create('style', `
     .disabled h2::after {
       content: "${t('genericDisabledLabel')}";
     }
     #update-all-no-updates[data-skipped-edited="true"]:after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
-  `}));
+    body.all-styles-hidden-by-filters:after {
+      content: "${t('filteredStylesAllHidden')}";
+    }
+  `));
 }
 
 

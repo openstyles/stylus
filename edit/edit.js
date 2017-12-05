@@ -92,14 +92,36 @@ function preinit() {
   });
 
   // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
-  new MutationObserver((mutations, observer) => {
-    const themeElement = $('#cm-theme');
-    if (themeElement) {
-      themeElement.href = prefs.get('editor.theme') === 'default' ? ''
-        : 'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css';
-      observer.disconnect();
+  document.head.appendChild(
+    $create('link#cm-theme', {
+      rel: 'stylesheet',
+      href: prefs.get('editor.theme') === 'default' ? '' :
+        'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css'
+    }));
+
+  // forcefully break long labels in aligned options to prevent the entire block layout from breaking
+  onDOMready().then(() => new Promise(requestAnimationFrame)).then(() => {
+    const maxWidth2ndChild = $$('#options .aligned > :nth-child(2)')
+      .sort((a, b) => b.offsetWidth - a.offsetWidth)[0].offsetWidth;
+    const widthFor1stChild = $('#options').offsetWidth - maxWidth2ndChild;
+    if (widthFor1stChild > 50) {
+      for (const el of $$('#options .aligned > :nth-child(1)')) {
+        if (el.offsetWidth > widthFor1stChild) {
+          el.style.cssText = 'word-break: break-all; hyphens: auto;';
+        }
+      }
+    } else {
+      const width = $('#options').clientWidth;
+      document.head.appendChild($create('style', `
+        #options .aligned > nth-child(1) {
+          max-width: 70px;
+        }
+        #options .aligned > nth-child(2) {
+          max-width: ${width - 70}px;
+        }
+      `));
     }
-  }).observe(document, {subtree: true, childList: true});
+  });
 
   if (chrome.windows) {
     queryTabs({currentWindow: true}).then(tabs => {
@@ -387,7 +409,7 @@ function save() {
 
   saveStyleSafe({
     id: styleId,
-    name: name,
+    name: $('#name').value.trim(),
     enabled: $('#enabled').checked,
     reason: 'editSave',
     sections: getSectionsHashes()
@@ -457,22 +479,20 @@ function toMozillaFormat() {
 
 function fromMozillaFormat() {
   const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-    $element({appendChild: [
-      $element({
-        tag: 'button',
+    $create([
+      $create('button', {
         name: 'import-append',
         textContent: t('importAppendLabel'),
         title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
         onclick: doImport,
       }),
-      $element({
-        tag: 'button',
+      $create('button', {
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
         title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
       }),
-    ]}));
+    ]));
   const contents = $('.contents', popup);
   contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
   popup.codebox.focus();
@@ -522,10 +542,8 @@ function fromMozillaFormat() {
   }
 
   function showError(errors) {
-    showHelp(t('styleFromMozillaFormatError'), $element({
-      tag: 'pre',
-      textContent: Array.isArray(errors) ? errors.join('\n') : errors,
-    }));
+    showHelp(t('styleFromMozillaFormatError'),
+      $create('pre', Array.isArray(errors) ? errors.join('\n') : errors));
   }
 }
 
@@ -547,7 +565,7 @@ function showToggleStyleHelp() {
 
 function showHelp(title = '', body) {
   const div = $('#help-popup');
-  div.classList.remove('big');
+  div.className = '';
   const contents = $('.contents', div);
   contents.textContent = '';
   if (body) {
@@ -617,7 +635,7 @@ function showCodeMirrorPopup(title, html, options) {
 
 function setGlobalProgress(done, total) {
   const progressElement = $('#global-progress') ||
-    total && document.body.appendChild($element({id: 'global-progress'}));
+    total && document.body.appendChild($create('#global-progress'));
   if (total) {
     const progress = (done / Math.max(done, total) * 100).toFixed(1);
     progressElement.style.borderLeftWidth = progress + 'vw';

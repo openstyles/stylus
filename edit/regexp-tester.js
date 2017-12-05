@@ -25,17 +25,17 @@ var regExpTester = (() => {
     }
   }
 
-  function isShowed() {
+  function isShown() {
     return Boolean($('.regexp-report'));
   }
 
-  function toggle(state = !isShowed()) {
-    if (state && !isShowed()) {
+  function toggle(state = !isShown()) {
+    if (state && !isShown()) {
       if (!isInit) {
         init();
       }
-      showHelp('', $element({className: 'regexp-report'}));
-    } else if (!state && isShowed()) {
+      showHelp('', $create('.regexp-report'));
+    } else if (!state && isShown()) {
       if (isInit) {
         uninit();
       }
@@ -45,7 +45,7 @@ var regExpTester = (() => {
   }
 
   function update(newRegexps) {
-    if (!isShowed()) {
+    if (!isShown()) {
       if (isInit) {
         uninit();
       }
@@ -108,19 +108,19 @@ var regExpTester = (() => {
           const faviconUrl = url.startsWith(URLS.ownOrigin)
             ? OWN_ICON
             : GET_FAVICON_URL + new URL(url).hostname;
-          const icon = $element({tag: 'img', src: faviconUrl});
+          const icon = $create('img', {src: faviconUrl});
           if (match.text.length === url.length) {
-            full.push($element({appendChild: [
+            full.push($create('div', [
               icon,
               url,
-            ]}));
+            ]));
           } else {
-            partial.push($element({appendChild: [
+            partial.push($create('div', [
               icon,
               url.substr(0, match.pos),
-              $element({tag: 'mark', textContent: match.text}),
+              $create('mark', match.text),
               url.substr(match.pos + match.text.length),
-            ]}));
+            ]));
           }
         }
         if (full.length) {
@@ -131,33 +131,28 @@ var regExpTester = (() => {
         }
       }
       // render stats
-      const report = $element({className: 'regexp-report'});
-      const br = $element({tag: 'br'});
+      const report = $create('.regexp-report');
+      const br = $create('br');
       for (const type in stats) {
         // top level groups: full, partial, none, invalid
         const {label, data} = stats[type];
         if (!data.length) {
           continue;
         }
-        const block = report.appendChild($element({
-          tag: 'details',
-          open: true,
-          dataset: {type},
-          appendChild: $element({tag: 'summary', appendChild: label}),
-        }));
+        const block = report.appendChild(
+          $create('details', {open: true, dataset: {type}}, [
+            $create('summary', label),
+          ]));
         // 2nd level: regexp text
         for (const {text, urls} of data) {
           if (urls) {
             // type is partial or full
-            block.appendChild($element({
-              tag: 'details',
-              open: true,
-              appendChild: [
-                $element({tag: 'summary', textContent: text}),
+            block.appendChild(
+              $create('details', {open: true}, [
+                $create('summary', text),
                 // 3rd level: tab urls
                 ...urls,
-              ],
-            }));
+              ]));
           } else {
             // type is none or invalid
             block.appendChild(document.createTextNode(text));
@@ -165,9 +160,14 @@ var regExpTester = (() => {
           }
         }
       }
+      report.appendChild(
+        $create('p.regexp-report-note',
+          t('styleRegexpTestNote')
+            .split(/(\\+)/)
+            .map(s => (s.startsWith('\\') ? $create('code', s) : s))));
       showHelp(t('styleRegexpTestTitle'), report);
 
-      $('.regexp-report').onclick = event => {
+      report.onclick = event => {
         const target = event.target.closest('a, .regexp-report div');
         if (target) {
           openURL({

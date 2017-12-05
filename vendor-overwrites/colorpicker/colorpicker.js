@@ -929,7 +929,7 @@
       ((cm.display.renderedView || [])[0] || {}).text || cm.display.lineDiv;
     for (let el = start; el; el = el.parentElement) {
       const bgColor = getComputedStyle(el).backgroundColor;
-      const [r, g, b, a = 255] = bgColor.match(/\d+/g).map(Number);
+      const [r, g, b, a = 255] = (bgColor.match(/\d+/g) || []).map(Number);
       if (!a) {
         continue;
       }

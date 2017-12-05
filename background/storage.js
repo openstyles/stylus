@@ -238,6 +238,9 @@ function getStyles(options) {
     cachedStyles.byId.clear();
     for (const style of cachedStyles.list) {
       cachedStyles.byId.set(style.id, style);
+      if (!style.name) {
+        style.name = 'ID: ' + style.id;
+      }
     }
 
     cachedStyles.mutex.inProgress = false;

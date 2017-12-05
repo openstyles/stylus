@@ -36,7 +36,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "安裝",
+		"message": "安裝樣式",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -46,6 +46,10 @@
 	"linterJSONError": {
 		"message": "無效的 JSON 格式",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "點選以檢視可用的快捷鍵",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "背景顏色",
@@ -329,6 +333,10 @@
 	"menuShowBadge": {
 		"message": "顯示生效的樣式數目",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"popupHotkeysInfo": {
+		"message": "<1>-<9>、<0>，數字鍵盤也可以 — 切換第 N 個樣式（0 是切換到第 10 個）\n<A>-<Z> 切換以該字母為名稱第一個字的樣式\n<Shift> 開啟編輯器而非切換\n<Numpad +> 啟用列出的樣式\n<Numpad –> 停用列出的樣式\n<Numpad *> 與 <`> （倒引號）— 切換初始啟用的樣式；不要在彈出式視窗開啟時套用到後來啟用的樣式，這樣您就可以在測試完後復原初始選擇：僅停用全部，然後切換。<Numpad –> <Numpad *>\n更多資訊請見 wiki",
+		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
 	},
 	"cm_lineWrapping": {
 		"message": "自動換行",
@@ -934,7 +942,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "重新安裝",
+		"message": "重新安裝樣式",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -1036,7 +1044,7 @@
 		"description": ""
 	},
 	"installButtonUpdate": {
-		"message": "更新",
+		"message": "更新樣式",
 		"description": "Label for update button"
 	},
 	"backupButtons": {
@@ -1052,7 +1060,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "已安裝",
+		"message": "樣式已安裝",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {

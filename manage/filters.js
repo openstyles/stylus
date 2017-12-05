@@ -260,6 +260,9 @@ function reapplyFilter(container = installed) {
         };
       }
     }
+    if (fullPass) {
+      showFiltersStats({immediately: true});
+    }
   }
 
   function findInsertionPoint(entry) {
@@ -295,9 +298,9 @@ function reapplyFilter(container = installed) {
 }
 
 
-function showFiltersStats({immediately} = {}) {
-  if (!immediately) {
-    debounce(showFiltersStats, 100, {immediately: true});
+function showFiltersStats() {
+  if (!BG.cachedStyles.list) {
+    debounce(showFiltersStats, 100);
     return;
   }
   $('#filters').classList.toggle('active', filtersSelector.hide !== '');
@@ -309,6 +312,8 @@ function showFiltersStats({immediately} = {}) {
     filtersSelector.numShown = numShown;
     filtersSelector.numTotal = numTotal;
     $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
+    document.body.classList.toggle('all-styles-hidden-by-filters',
+      !numShown && numTotal && filtersSelector.hide);
   }
 }
 

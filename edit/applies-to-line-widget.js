@@ -1,79 +1,12 @@
-/* global regExpTester debounce messageBox CodeMirror */
+/* global regExpTester debounce messageBox CodeMirror template */
 'use strict';
 
-function templateCache(cache) {
-  function clone(id) {
-    if (typeof cache[id] === 'function') {
-      cache[id] = cache[id]();
-    }
-    return cache[id].cloneNode(true);
-  }
-  return {clone};
-}
-
 function createAppliesToLineWidget(cm) {
-  const APPLIES_TYPE = [
-    [t('appliesUrlOption'), 'url'],
-    [t('appliesUrlPrefixOption'), 'url-prefix'],
-    [t('appliesDomainOption'), 'domain'],
-    [t('appliesRegexpOption'), 'regexp']
-  ];
   const THROTTLE_DELAY = 400;
+  let TPL, EVENTS, CLICK_ROUTE;
   let widgets = [];
   let fromLine, toLine, styleVariables;
   let initialized = false;
-
-  const template = templateCache({
-    container: () =>
-      $element({className: 'applies-to', appendChild: [
-        $element({tag: 'label', appendChild: t('appliesLabel')}),
-        $element({
-          tag: 'ul',
-          className: 'applies-to-list'
-        })
-      ]}),
-    listItem: () =>
-      $element({tag: 'li', appendChild: [
-        $element({
-          tag: 'select',
-          className: 'applies-type',
-          appendChild: APPLIES_TYPE.map(([label, value]) => $element({
-            tag: 'option',
-            value: value,
-            textContent: label
-          }))
-        }),
-        $element({
-          tag: 'input',
-          className: 'applies-value'
-        }),
-        $element({
-          tag: 'button',
-          type: 'button',
-          className: 'applies-to-regexp-test',
-          textContent: t('styleRegexpTestButton')
-        }),
-        $element({
-          tag: 'button',
-          type: 'button',
-          className: 'applies-to-remove',
-          textContent: t('appliesRemove')
-        }),
-        $element({
-          tag: 'button',
-          type: 'button',
-          className: 'applies-to-add',
-          textContent: t('appliesAdd')
-        })
-      ]}),
-    appliesToEverything: () =>
-      $element({
-        tag: 'li',
-        className: 'applies-to-everything',
-        textContent: t('appliesToEverything')
-      })
-  });
-
   return {toggle};
 
   function toggle(newState = !initialized) {
@@ -90,7 +23,120 @@ function createAppliesToLineWidget(cm) {
   function init() {
     initialized = true;
 
-    styleVariables = $element({tag: 'style'});
+    TPL = {
+      container:
+        $create('div.applies-to', [
+          $create('label', t('appliesLabel')),
+          $create('ul.applies-to-list'),
+        ]),
+      listItem:
+        $create('li.applies-to-item', [
+          $create('select.applies-type', [
+            $create('option', {value: 'url'}, t('appliesUrlOption')),
+            $create('option', {value: 'url-prefix'}, t('appliesUrlPrefixOption')),
+            $create('option', {value: 'domain'}, t('appliesDomainOption')),
+            $create('option', {value: 'regexp'}, t('appliesRegexpOption')),
+          ]),
+          $create('input.applies-value', {spellcheck: false}),
+          $create('button.test-regexp', t('styleRegexpTestButton')),
+          $create('button.remove-applies-to', t('appliesRemove')),
+          $create('button.add-applies-to', t('appliesAdd')),
+        ]),
+      appliesToEverything:
+        $create('li.applies-to-everything', t('appliesToEverything')),
+    };
+
+    CLICK_ROUTE = {
+      '.test-regexp': (item, apply) => {
+        regExpTester.toggle();
+        regExpTester.update([apply.value.text]);
+      },
+
+      '.remove-applies-to': (item, apply) => {
+        const applies = item.closest('.applies-to').__applies;
+        const i = applies.indexOf(apply);
+        let repl;
+        let from;
+        let to;
+        if (applies.length < 2) {
+          messageBox({
+            contents: t('appliesRemoveError'),
+            buttons: [t('confirmClose')]
+          });
+          return;
+        }
+        if (i === 0) {
+          from = apply.mark.find().from;
+          to = applies[i + 1].mark.find().from;
+          repl = '';
+        } else if (i === applies.length - 1) {
+          from = applies[i - 1].mark.find().to;
+          to = apply.mark.find().to;
+          repl = '';
+        } else {
+          from = applies[i - 1].mark.find().to;
+          to = applies[i + 1].mark.find().from;
+          repl = ', ';
+        }
+        cm.replaceRange(repl, from, to, 'appliesTo');
+        clearApply(apply);
+        item.remove();
+        applies.splice(i, 1);
+      },
+
+      '.add-applies-to': (item, apply) => {
+        const applies = this.closest('.applies-to').__applies;
+        const i = applies.indexOf(apply);
+        const pos = apply.mark.find().to;
+        const text = `, ${apply.type.text}("")`;
+        cm.replaceRange(text, pos, pos, 'appliesTo');
+        const newApply = createApply(
+          cm.indexFromPos(pos) + 2,
+          apply.type.text,
+          '',
+          true
+        );
+        setupApplyMarkers(newApply);
+        applies.splice(i + 1, 0, newApply);
+        item.insertAdjacentElement('afterend', buildChildren(applies, newApply));
+      },
+    };
+
+    EVENTS = {
+      onchange({target}) {
+        const typeElement = target.closest('.applies-type');
+        if (typeElement) {
+          const item = target.closest('.applies-to-item');
+          const apply = item.__apply;
+          changeItem(apply, 'type', typeElement.value);
+          item.dataset.type = apply.type.text;
+        }
+      },
+      oninput({target}) {
+        if (target.matches('.applies-value')) {
+          const apply = target.closest('.applies-to-item').__apply;
+          debounce(changeItem, THROTTLE_DELAY, apply, 'value', target.value);
+        }
+      },
+      onfocus({target}) {
+        if (target.matches('.test-regexp')) {
+          const apply = target.closest('.applies-to-item').__apply;
+          updateRegexpTest(apply);
+        }
+      },
+      onclick({target}) {
+        for (const selector in CLICK_ROUTE) {
+          const routed = target.closest(selector);
+          if (routed) {
+            const item = routed.closest('.applies-to-item');
+            CLICK_ROUTE[selector].call(routed, item, item.__apply);
+            return;
+          }
+        }
+      }
+    };
+
+    styleVariables = $create('style');
     fromLine = 0;
     toLine = cm.doc.size;
 
@@ -175,7 +221,7 @@ function createAppliesToLineWidget(cm) {
         inOp = true;
         cm.startOperation();
       }
-      cm.operation(doUpdate);
+      doUpdate();
     }
     if (inOp) {
       cm.endOperation();
@@ -245,26 +291,29 @@ function createAppliesToLineWidget(cm) {
     let i = 0;
     let itemHeight;
     for (const section of findAppliesTo(start, end)) {
-      while (removed[i] && removed[i].line.lineNo() < section.pos.line) {
-        clearWidget(removed[i++]);
+      let removedWidget = removed[i];
+      while (removedWidget && removedWidget.line.lineNo() < section.pos.line) {
+        clearWidget(removed[i]);
+        removedWidget = removed[++i];
       }
       for (const a of section.applies) {
         setupApplyMarkers(a, lineIndexes);
       }
-      if (removed[i] && removed[i].line.lineNo() === section.pos.line) {
+      if (removedWidget && removedWidget.line.lineNo() === section.pos.line) {
         // reuse old widget
-        removed[i].section.applies.forEach(apply => {
+        removedWidget.section.applies.forEach(apply => {
           apply.type.mark.clear();
           apply.value.mark.clear();
         });
-        removed[i].section = section;
+        removedWidget.section = section;
         const newNode = buildElement(section);
-        if (removed[i].node.parentNode) {
-          removed[i].node.parentNode.replaceChild(newNode, removed[i].node);
+        const removedNode = removedWidget.node;
+        if (removedNode.parentNode) {
+          removedNode.parentNode.replaceChild(newNode, removedNode);
         }
-        removed[i].node = newNode;
-        removed[i].changed();
-        yield removed[i];
+        removedWidget.node = newNode;
+        removedWidget.changed();
+        yield removedWidget;
         i++;
         continue;
       }
@@ -337,138 +386,71 @@ function createAppliesToLineWidget(cm) {
   }
 
   function buildElement({applies}) {
-    const el = template.clone('container');
-    const appliesToList = $('.applies-to-list', el);
-    applies.map(makeLi)
-      .forEach(item => appliesToList.appendChild(item));
-    if (!appliesToList.childNodes.length) {
-      appliesToList.appendChild(template.clone('appliesToEverything'));
+    const container = TPL.container.cloneNode(true);
+    const list = $('.applies-to-list', container);
+    for (const apply of applies) {
+      list.appendChild(buildChildren(applies, apply));
     }
+    if (!list.children[0]) {
+      list.appendChild(TPL.appliesToEverything.cloneNode(true));
+    }
+    return Object.assign(container, EVENTS, {__applies: applies});
+  }
+
+  function buildChildren(applies, apply) {
+    const el = TPL.listItem.cloneNode(true);
+    el.dataset.type = apply.type.text;
+    el.__apply = apply;
+    $('.applies-type', el).value = apply.type.text;
+    $('.applies-value', el).value = apply.value.text;
     return el;
+  }
 
-    function makeLi(apply) {
-      const el = template.clone('listItem');
-      el.dataset.type = apply.type.text;
-      el.addEventListener('change', e => {
-        if (e.target.classList.contains('applies-type')) {
-          el.dataset.type = apply.type.text;
-        }
-      });
+  function changeItem(apply, part, newText) {
+    if (!apply) {
+      return;
+    }
+    part = apply[part];
+    const range = part.mark.find();
+    part.mark.clear();
+    newText = newText.replace(/\\/g, '\\\\');
+    cm.replaceRange(newText, range.from, range.to, 'appliesTo');
+    part.mark = cm.markText(
+      range.from,
+      cm.findPosH(range.from, newText.length, 'char'),
+      {clearWhenEmpty: false}
+    );
+    part.text = newText;
 
-      const typeInput = $('.applies-type', el);
-      typeInput.value = apply.type.text;
-      typeInput.onchange = function () {
-        applyChange(apply.type, this.value);
-      };
+    if (part === apply.type) {
+      const range = apply.mark.find();
+      apply.mark.clear();
+      apply.mark = cm.markText(
+        part.mark.find().from,
+        range.to,
+        {clearWhenEmpty: false}
+      );
+    }
 
-      const valueInput = $('.applies-value', el);
-      valueInput.value = apply.value.text;
-      valueInput.oninput = function () {
-        debounce(applyChange, THROTTLE_DELAY, apply.value, this.value);
-      };
-      valueInput.onfocus = updateRegexpTest;
+    updateRegexpTest(apply);
+  }
 
-      const regexpTestButton = $('.applies-to-regexp-test', el);
-      regexpTestButton.onclick = () => {
-        regExpTester.toggle();
-        regExpTester.update([apply.value.text]);
-      };
-
-      const removeButton = $('.applies-to-remove', el);
-      removeButton.onclick = function () {
-        const i = applies.indexOf(apply);
-        let repl;
-        let from;
-        let to;
-        if (applies.length < 2) {
-          messageBox({
-            contents: chrome.i18n.getMessage('appliesRemoveError'),
-            buttons: [t('confirmClose')]
-          });
-          return;
-        }
-        if (i === 0) {
-          from = apply.mark.find().from;
-          to = applies[i + 1].mark.find().from;
-          repl = '';
-        } else if (i === applies.length - 1) {
-          from = applies[i - 1].mark.find().to;
-          to = apply.mark.find().to;
-          repl = '';
-        } else {
-          from = applies[i - 1].mark.find().to;
-          to = applies[i + 1].mark.find().from;
-          repl = ', ';
-        }
-        cm.replaceRange(repl, from, to, 'appliesTo');
-        clearApply(apply);
-        this.closest('li').remove();
-        applies.splice(i, 1);
-      };
-
-      const addButton = $('.applies-to-add', el);
-      addButton.onclick = function () {
-        const i = applies.indexOf(apply);
-        const pos = apply.mark.find().to;
-        const text = `, ${apply.type.text}("")`;
-        cm.replaceRange(text, pos, pos, 'appliesTo');
-        const newApply = createApply(
-          cm.indexFromPos(pos) + 2,
-          apply.type.text,
-          '',
-          true
-        );
-        setupApplyMarkers(newApply);
-        applies.splice(i + 1, 0, newApply);
-        this.closest('li').insertAdjacentElement('afterend', makeLi(newApply));
-      };
-
-      return el;
-
-      function updateRegexpTest() {
-        if (apply.type.text === 'regexp') {
-          const re = apply.value.text.trim();
-          if (re) {
-            regExpTester.update([re]);
-          } else {
-            regExpTester.update([]);
-          }
-        }
-      }
-
-      function applyChange(input, newText) {
-        const range = input.mark.find();
-        input.mark.clear();
-        cm.replaceRange(newText, range.from, range.to, 'appliesTo');
-        input.mark = cm.markText(
-          range.from,
-          cm.findPosH(range.from, newText.length, 'char'),
-          {clearWhenEmpty: false}
-        );
-        input.text = newText;
-
-        if (input === apply.type) {
-          const range = apply.mark.find();
-          apply.mark.clear();
-          apply.mark = cm.markText(
-            input.mark.find().from,
-            range.to,
-            {clearWhenEmpty: false}
-          );
-        }
-
-        updateRegexpTest();
-      }
+  function updateRegexpTest(apply) {
+    if (apply.type.text === 'regexp') {
+      const rx = apply.value.text.trim();
+      regExpTester.update(rx ? [rx] : {});
     }
   }
 
   function createApply(pos, typeText, valueText, isQuoted = false) {
+    typeText = typeText.toLowerCase();
     const start = pos;
     const typeStart = start;
     const typeEnd = typeStart + typeText.length;
     const valueStart = typeEnd + 1 + Number(isQuoted);
     const valueEnd = valueStart + valueText.length;
     const end = valueEnd + Number(isQuoted) + 1;
+    const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(valueText);
     return {
       start,
       type: {
@@ -477,7 +459,7 @@ function createAppliesToLineWidget(cm) {
         end: typeEnd,
       },
       value: {
-        text: valueText,
+        text: hasSingleEscapes ? valueText : valueText.replace(/\\\\/g, '\\'),
         start: valueStart,
         end: valueEnd,
       },
@@ -487,8 +469,12 @@ function createAppliesToLineWidget(cm) {
 
   function *findAppliesTo(posStart, posEnd) {
     const text = cm.getValue();
-    const re = /^[\t ]*@-moz-document\s+/mg;
-    const applyRe = /(url|url-prefix|domain|regexp)\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)[\s,]*/iyg;
+    const re = /^[\t ]*@-moz-document[\s\n]+/gm;
+    const applyRe = new RegExp([
+      /(?:\/\*[^*]*\*\/[\s\n]*)*/,
+      /(url|url-prefix|domain|regexp)/,
+      /\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)\s*(,\s*)?/,
+    ].map(rx => rx.source).join(''), 'giy');
     let match;
     re.lastIndex = posStart;
     while ((match = re.exec(text))) {

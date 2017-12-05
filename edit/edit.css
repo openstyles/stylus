@@ -27,6 +27,20 @@ body {
   display: none !important;
 }
 
+/************ checkbox & select************/
+#options > div[class="option"] {
+  margin-bottom: 4px;
+}
+
+#basic-info-enabled {
+  margin-top: 2px;
+}
+
+label {
+  padding-left: 16px;
+  position: relative;
+}
+
 /************ header ************/
 #header {
   width: 280px;
@@ -61,9 +75,7 @@ body {
   margin-top: 0.1rem;
   min-height: 1.4rem;
 }
-input[type="checkbox"] {
-  margin-left: 0.1rem;
-}
+
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
@@ -136,14 +148,21 @@ input:invalid {
   margin-left: -13px;
   cursor: pointer;
   outline: none;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
+
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
+  margin-top: .1em;
+  margin-bottom: .1em;
 }
-#header summary h2:hover {
+
+#header summary:hover h2 {
   border-color: #bbb;
 }
+
 #header summary svg {
   margin-top: -3px;
 }
@@ -159,8 +178,9 @@ input:invalid {
   text-align: left;
   padding-left: .25em;
 }
-#options .option.aligned > * {
-  padding-right: 0.25rem;
+#options .option.aligned > label {
+  padding: .1rem .25rem 0 0;
+  vertical-align: middle;
 }
 .set-option-progress {
   position: absolute;
@@ -306,7 +326,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   align-items: center;
   margin-bottom: 0.35rem;
 }
-.applies-to li > *:not(button) {
+.applies-to li > *:not(button):not(.select-resizer) {
   flex: auto;
   min-height: 1.4rem;
   margin-left: 0.35rem;
@@ -396,9 +416,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   padding: 0.5rem;
   z-index: 99;
 }
+#help-popup.big,
+#help-popup.wide {
+  max-width: 100%;
+}
 #help-popup.big {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
-  max-width: 100%;
   left: calc(280px - 3rem);
 }
 #help-popup.big .CodeMirror {
@@ -526,10 +549,11 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 /************ CSS beautifier ************/
 .beautify-options {
   white-space: nowrap;
-  font-family: monospace;
 }
 .beautify-options div {
   float: left;
+  display: flex;
+  align-items: center;
 }
 .beautify-options div[newline="true"] + div {
   clear: left;
@@ -537,18 +561,30 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .beautify-options div[newline="true"] + div span[indent] {
   padding-left: 2rem;
 }
+.beautify-options > label {
+  top: 1em;
+  margin: 1ex 0;
+}
+.firefox .beautify-options > label input {
+  top: 1px;
+}
 .beautify-options:after {
   clear: both;
   display: block;
-  content: " ";
+  content: "";
   height: 1rem;
 }
 .beautify-options span {
   font-weight: bold;
+  font-family: monospace;
 }
 .beautify-options select {
   border: none;
-  background-color: rgba(0, 0, 0, 0.05);
+  background: linear-gradient(90deg, rgba(0, 0, 0, .05) 18px, rgba(0, 0, 0, .02) 24px);
+  font-family: monospace;
+  font-weight: bold;
+  padding-left: 4px;
+  margin-left: 4px;
 }
 
 /************ single editor **************/
@@ -670,12 +706,6 @@ html:not(.usercss) .usercss-only,
   }
   #options h2 {
     margin: 0 0 .5em;
-  }
-  #options .aligned > *:not(.svg-inline-wrapper) {
-    margin: 1px 0 0 0; /* workaround the flowing-padding column bug in webkit */
-    padding-right: 0.4rem;
-    vertical-align: baseline;
-    min-height: 1.4rem;
   }
   .option label {
     line-height: 1.25rem;

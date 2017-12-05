@@ -123,7 +123,8 @@
     const rx = query instanceof RegExp && query;
     const sel = this.getSelection();
     // current query differs from the selected text => remove the overlay
-    if (sel && (rx && !rx.test(sel) || sel.toLowerCase() !== query)) {
+    if (sel && rx && !rx.test(sel) || sel.toLowerCase() !== originalToken.toLowerCase()) {
+      helper.query = helper.originalToken = sel;
       return;
     }
     // if token under cursor has changed => remove the overlay
@@ -160,6 +161,8 @@
       // in case the original addon won't highlight anything we need to actually remove the overlays
       // by setting a timer that runs in the next event loop cycle and can be canceled in this cycle
       hookTimer: setTimeout(removeOverlayIfExpired, 0, this, state),
+      originalToken,
+      query,
     };
     // fool the original addon so it won't invoke state.matchesonscroll.clear()
     state.matchesonscroll = null;

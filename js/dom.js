@@ -73,8 +73,7 @@ if (!chrome.app && chrome.windows) {
     }
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
     for (const size of [38, 32, 19, 16]) {
-      document.head.appendChild($element({
-        tag: 'link',
+      document.head.appendChild($create('link', {
         rel: 'icon',
         href: `/images/icon/${iconset}${size}.png`,
         sizes: size + 'x' + size,
@@ -167,47 +166,103 @@ function $$(selector, base = document) {
 }
 
 
-function $element(opt) {
-  // tag:              string, default 'div', may include namespace like 'ns#tag'
-  // appendChild:      element/string or an array of elements/strings
-  // dataset:          object
-  // any DOM property: assigned as is
-  const [ns, tag] = opt.tag && opt.tag.includes('#')
-    ? opt.tag.split('#')
-    : [null, opt.tag];
+function $create(selector = 'div', properties, children) {
+/*
+  $create('tag#id.class.class', ?[children])
+  $create('tag#id.class.class', ?textContentOrChildNode)
+  $create('tag#id.class.class', {properties}, ?[children])
+  $create('tag#id.class.class', {properties}, ?textContentOrChildNode)
+           tag is 'div' by default, #id and .class are optional
+
+  $create([children])
+
+  $create({propertiesAndOptions})
+  $create({propertiesAndOptions}, ?[children])
+           tag:              string, default 'div'
+           appendChild:      element/string or an array of elements/strings
+           dataset:          object
+           any DOM property: assigned as is
+
+  tag may include namespace like 'ns:tag'
+*/
+  let ns, tag, opt;
+
+  if (typeof selector === 'string') {
+    if (Array.isArray(properties) ||
+        properties instanceof Node ||
+        typeof properties !== 'object') {
+      opt = {};
+      children = properties;
+    } else {
+      opt = properties || {};
+    }
+    const idStart = (selector.indexOf('#') + 1 || selector.length + 1) - 1;
+    const classStart = (selector.indexOf('.') + 1 || selector.length + 1) - 1;
+    const id = selector.slice(idStart + 1, classStart);
+    if (id) {
+      opt.id = id;
+    }
+    const cls = selector.slice(classStart + 1);
+    if (cls) {
+      opt[selector.includes(':') ? 'class' : 'className'] =
+        cls.includes('.') ? cls.replace(/\./g, ' ') : cls;
+    }
+    tag = selector.slice(0, Math.min(idStart, classStart));
+
+  } else if (Array.isArray(selector)) {
+    tag = 'div';
+    opt = {};
+    children = selector;
+
+  } else {
+    opt = selector;
+    tag = opt.tag;
+    delete opt.tag;
+    children = opt.appendChild || properties;
+    delete opt.appendChild;
+  }
+
+  if (tag && tag.includes(':')) {
+    ([ns, tag] = tag.split(':'));
+  }
+
   const element = ns
     ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
     : document.createElement(tag || 'div');
-  const children = Array.isArray(opt.appendChild) ? opt.appendChild : [opt.appendChild];
-  for (const child of children) {
+
+  for (const child of Array.isArray(children) ? children : [children]) {
     if (child) {
       element.appendChild(child instanceof Node ? child : document.createTextNode(child));
     }
   }
-  delete opt.appendChild;
-  delete opt.tag;
+
   if (opt.dataset) {
     Object.assign(element.dataset, opt.dataset);
     delete opt.dataset;
   }
+
   if (opt.attributes) {
     for (const attr in opt.attributes) {
       element.setAttribute(attr, opt.attributes[attr]);
     }
     delete opt.attributes;
   }
+
   if (ns) {
     for (const attr in opt) {
-      element.setAttributeNS(null, attr, opt[attr]);
+      const i = attr.indexOf(':') + 1;
+      const attrNS = i && `http://www.w3.org/1999/${attr.slice(0, i - 1)}`;
+      element.setAttributeNS(attrNS || null, attr, opt[attr]);
     }
   } else {
     Object.assign(element, opt);
   }
+
   return element;
 }
 
 
-function makeLink(href = '', content) {
+function $createLink(href = '', content) {
   const opt = {
     tag: 'a',
     target: '_blank',
@@ -217,9 +272,9 @@ function makeLink(href = '', content) {
     Object.assign(opt, href);
   } else {
     opt.href = href;
-    opt.appendChild = content;
   }
-  return $element(opt);
+  opt.appendChild = opt.appendChild || content;
+  return $create(opt);
 }
 
 

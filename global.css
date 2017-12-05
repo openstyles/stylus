@@ -1,0 +1,95 @@
+.svg-icon.checked {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  display: none;
+  fill: #000;
+  margin: 2px 0 0 2px;
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  display: inline-flex;
+  transition: fill .1s;
+}
+
+input[type="checkbox"]:not(.slider) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  border: 1px solid hsl(0, 0%, 46%);
+  height: 12px;
+  width: 12px;
+  display: inline-flex;
+  border-radius: 2px;
+  background-color: hsla(0, 0%, 0%, .1);
+  outline: none;
+  margin: 0;
+  transition: background-color .1s, border-color .1s;
+}
+
+input[type="checkbox"]:not(.slider):hover {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
+}
+
+input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+label {
+  transition: color .1s;
+}
+
+select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  height: 22px;
+  background-color: transparent;
+  border: 1px solid hsl(0, 0%, 66%);
+  padding: 0 20px 0 6px;
+  transition: color .5s;
+}
+
+.firefox select {
+  padding: 0 20px 0 2px;
+}
+
+.select-resizer {
+  display: inline-flex!important;
+  cursor: default;
+  position: relative;
+}
+
+.svg-icon.select-arrow {
+  pointer-events: none;
+  cursor: default;
+  display: inline-flex;
+  height: 14px;
+  width: 14px;
+  fill: #000;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  transition: fill .5s;
+}
+
+@supports (-moz-appearance: none) {
+  .moz-appearance-bug .svg-icon.checked {
+    display: none !important;
+  }
+
+  .moz-appearance-bug input[type="checkbox"] {
+    -moz-appearance: checkbox !important;
+  }
+
+  .moz-appearance-bug button {
+    padding-left: .75ex;
+    padding-right: .75ex;
+  }
+}

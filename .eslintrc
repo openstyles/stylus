@@ -55,7 +55,8 @@ globals:
   animateElement: false
   $: false
   $$: false
-  $element: false
+  $create: false
+  $createLink: false
   # prefs.js
   prefs: false
   setupLivePrefs: false
@@ -236,7 +237,7 @@ rules:
   one-var: [0]
   operator-assignment: [2, always]
   operator-linebreak: [2, after, overrides: {"?": ignore, ":": ignore, "&&": ignore, "||": ignore}]
-  padded-blocks: [2, never]
+  padded-blocks: [0]
   prefer-numeric-literals: [2]
   prefer-rest-params: [0]
   prefer-const: [1, {destructuring: any, ignoreReadBeforeAssign: true}]
