@@ -550,10 +550,7 @@
   }
 
   function onMouseUp(event) {
-    if (releaseMouse(event, ['saturation', 'hue', 'opacity']) &&
-        !event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
-      hide();
-    }
+    releaseMouse(event, ['saturation', 'hue', 'opacity']);
   }
 
   function onMouseMove(event) {
@@ -600,6 +597,12 @@
 
   function onCloseRequest(event) {
     if (event.detail !== PUBLIC_API) {
+      hide();
+    }
+  }
+
+  function onMouseDown(event) {
+    if (!event.target.closest('.colorpicker-popup')) {
       hide();
     }
   }
@@ -660,6 +663,7 @@
 
   function registerEvents() {
     window.addEventListener('keydown', onKeyDown, true);
+    window.addEventListener('mousedown', onMouseDown, true);
     window.addEventListener('close-colorpicker-popup', onCloseRequest, true);
     $root.addEventListener('mouseleave', snooze);
     $root.addEventListener('mouseenter', stopSnoozing);
@@ -681,6 +685,7 @@
 
   function unregisterEvents() {
     window.removeEventListener('keydown', onKeyDown, true);
+    window.removeEventListener('mousedown', onMouseDown, true);
     window.removeEventListener('close-colorpicker-popup', hide, true);
     $root.removeEventListener('mouseleave', snooze);
     $root.removeEventListener('mouseenter', stopSnoozing);
