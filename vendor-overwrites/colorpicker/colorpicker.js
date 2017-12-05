@@ -178,6 +178,8 @@
 
     HUE_COLORS.forEach(color => Object.assign(color, stringToColor(color.hex)));
 
+    $root.tabIndex = 0;
+
     initialized = true;
   }
 
@@ -552,7 +554,7 @@
   function onMouseUp(event) {
     if (releaseMouse(event, ['saturation', 'hue', 'opacity']) &&
         !event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
-      hide();
+      // hide();
     }
   }
 
@@ -602,6 +604,14 @@
     if (event.detail !== PUBLIC_API) {
       hide();
     }
+  }
+
+  function onClick(event) {
+    setTimeout(() => {
+      if (!document.activeElement.closest('.colorpicker-popup')) {
+        hide();
+      }
+    });
   }
 
   //endregion
@@ -661,6 +671,7 @@
   function registerEvents() {
     window.addEventListener('keydown', onKeyDown, true);
     window.addEventListener('close-colorpicker-popup', onCloseRequest, true);
+    window.addEventListener('click', onClick);
     $root.addEventListener('mouseleave', snooze);
     $root.addEventListener('mouseenter', stopSnoozing);
     $root.addEventListener('input', setFromInputs);
@@ -682,6 +693,7 @@
   function unregisterEvents() {
     window.removeEventListener('keydown', onKeyDown, true);
     window.removeEventListener('close-colorpicker-popup', hide, true);
+    window.removeEventListener('click', onClick);
     $root.removeEventListener('mouseleave', snooze);
     $root.removeEventListener('mouseenter', stopSnoozing);
     $root.removeEventListener('input', setFromInputs);
