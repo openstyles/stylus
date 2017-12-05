@@ -107,7 +107,7 @@ function preinit() {
     if (widthFor1stChild > 50) {
       for (const el of $$('#options .aligned > :nth-child(1)')) {
         if (el.offsetWidth > widthFor1stChild) {
-          el.style.wordBreak = 'break-all';
+          el.style.cssText = 'word-break: break-all; hyphens: auto;';
         }
       }
     } else {
