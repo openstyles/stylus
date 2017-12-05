@@ -116,8 +116,8 @@ function messageBox({
     messageBox.element = null;
     messageBox.resolve = null;
     if (messageBox.isPopup) {
-      document.body.style.minWidth = "";
-      document.body.style.minHeight = "";
+      document.body.style.minWidth = '';
+      document.body.style.minHeight = '';
     }
   }
 }

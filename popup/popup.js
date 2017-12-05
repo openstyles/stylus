@@ -1,4 +1,4 @@
-/* global configDialog */
+/* global configDialog hotkeys */
 
 'use strict';
 

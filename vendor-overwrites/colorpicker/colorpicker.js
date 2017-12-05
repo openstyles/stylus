@@ -606,7 +606,7 @@
     }
   }
 
-  function onClick(event) {
+  function onClick() {
     setTimeout(() => {
       if (!document.activeElement.closest('.colorpicker-popup')) {
         hide();
