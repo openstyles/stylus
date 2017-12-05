@@ -90,21 +90,16 @@ select {
   margin-bottom: .25em;
 }
 
+#newStyleAsUsercss-wrapper {
+  display: inline-flex;
+}
+
 #newStyleAsUsercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
   fill: #aaa;
 }
 
 #usercss-wiki svg {
-  margin-top: -2px;
-}
-
-.nobreak {
-  white-space: nowrap;
-}
-
-label.nobreak input {
-  vertical-align: sub;
-  margin: 0;
+  margin-top: -4px;
 }
 
 .firefox .chromium-only {
