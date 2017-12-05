@@ -42,6 +42,19 @@ input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
   pointer-events: none;
 }
 
+input[type="checkbox"]:not(.slider):disabled {
+  background-color: transparent;
+  border-color: hsl(0, 0%, 50%);
+}
+
+input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked {
+  fill: hsl(0, 0%, 50%);
+}
+
+input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
+  color: hsl(0, 0%, 50%);
+}
+
 label {
   transition: color .1s;
 }
@@ -50,6 +63,7 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: 22px;
+  color: currentColor;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
   padding: 0 20px 0 6px;
@@ -72,11 +86,15 @@ select {
   display: inline-flex;
   height: 14px;
   width: 14px;
-  fill: #000;
+  fill: currentColor;
   position: absolute;
   top: 4px;
   right: 4px;
   transition: fill .5s;
+}
+
+::-moz-focus-inner { 
+  border: 0; 
 }
 
 @supports (-moz-appearance: none) {
