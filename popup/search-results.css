@@ -112,7 +112,12 @@ body.search-results-shown {
   text-align: center;
 }
 
+#find-styles-inline-group input[type="checkbox"],
 #find-styles-inline-group .svg-icon.checked {
-  margin-top: 5px;
+  position: relative;
+}
+
+#find-styles-inline-group .svg-icon.checked {
   margin-left: -13px;
+  margin-right: 2px;
 }
