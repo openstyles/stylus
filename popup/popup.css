@@ -225,14 +225,15 @@ html[style] .entry:nth-child(10):before {
   content: "0";
 }
 
-.entry .style-edit-link {
-  margin-right: 2px;
+.entry .actions {
+  margin-left: -1px;
+  margin-right: -1px;
 }
 
-.entry .style-edit-link,
-.entry .delete {
+.entry .actions > * {
   display: inline-block;
-  padding: 0 1px 0;
+  padding: 0 1px;
+  margin: 0 1px;
 }
 
 .not-applied .checker,
@@ -340,8 +341,8 @@ body.blocked .actions > .main-controls {
 
 /* Never shown, but can be enabled with a style */
 
-.enable,
-.disable {
+.entry .actions > .enable,
+.entry .actions > .disable {
   display: none;
 }
 
