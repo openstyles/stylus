@@ -6,13 +6,22 @@ window.addEventListener('showStyles:done', function _() {
 
   let togglablesShown = true;
   let togglables = getTogglables();
+  let enabled = true;
 
   window.addEventListener('keydown', onKeyDown);
+  window.hotkeys = {
+    enable() {
+      enabled = true;
+    },
+    disable() {
+      enabled = false;
+    }
+  };
   initHotkeyInfo();
   return;
 
   function onKeyDown(event) {
-    if (event.ctrlKey || event.altKey || event.metaKey) {
+    if (event.ctrlKey || event.altKey || event.metaKey || !enabled) {
       return;
     }
     let entry;

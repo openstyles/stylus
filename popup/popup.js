@@ -362,9 +362,12 @@ Object.assign(handleEvent, {
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      getStylesSafe({id: styleId})
-        .then(([style]) => style)
-        .then(configDialog);
+      getStylesSafe({id: styleId}).then(([style]) => {
+        hotkeys.disable();
+        configDialog(style).then(() => {
+          hotkeys.enable();
+        });
+      });
     }
   },
 
