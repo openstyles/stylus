@@ -218,8 +218,11 @@
     setFromHexLettercaseElement();
   }
 
-  function hide() {
+  function hide({notify = true} = {}) {
     if (shown) {
+      if (notify) {
+        colorpickerCallback('');
+      }
       unregisterEvents();
       focusNoScroll(prevFocusedElement);
       $root.remove();
@@ -553,6 +556,12 @@
     releaseMouse(event, ['saturation', 'hue', 'opacity']);
   }
 
+  function onMouseDown(event) {
+    if (event.button === 0 && !event.target.closest('.colorpicker-popup')) {
+      hide();
+    }
+  }
+
   function onMouseMove(event) {
     if (event.button !== 0) {
       return;
@@ -589,7 +598,7 @@
           colorpickerCallback(e.which === 27 ? '' : undefined);
           e.preventDefault();
           e.stopPropagation();
-          hide();
+          hide({notify: false});
           break;
       }
     }
@@ -597,12 +606,6 @@
 
   function onCloseRequest(event) {
     if (event.detail !== PUBLIC_API) {
-      hide();
-    }
-  }
-
-  function onMouseDown(event) {
-    if (!event.target.closest('.colorpicker-popup')) {
       hide();
     }
   }
