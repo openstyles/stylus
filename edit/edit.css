@@ -331,11 +331,11 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   min-height: 1.4rem;
   margin-left: 0.35rem;
 }
-.applies-to li .add-applies-to {
+html:not(.usercss) .applies-to li .add-applies-to {
   visibility: hidden;
   text-align: left;
 }
-.applies-to li:last-child .add-applies-to {
+html:not(.usercss) .applies-to li:last-child .add-applies-to {
   visibility: visible
 }
 .applies-to li .add-applies-to:first-child {
@@ -646,8 +646,8 @@ html:not(.usercss) .usercss-only,
   margin-top: 0.35rem;
 }
 
-.CodeMirror-linewidget .applies-to li:not([data-type="regexp"]) .applies-to-regexp-test {
-  display: none;
+.CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
+  display: inline;
 }
 
 .CodeMirror-linewidget li.applies-to-everything {
