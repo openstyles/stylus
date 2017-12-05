@@ -940,6 +940,9 @@
       realColor.g = Math.round(g * q1 + realColor.g * q2);
       realColor.b = Math.round(b * q1 + realColor.b * q2);
       realColor.a = mixedA;
+      if (Math.abs(realColor.a - 1) < 1e-3) {
+        break;
+      }
     }
     // https://www.w3.org/TR/AERT#color-contrast
     const {r, g, b} = realColor;
