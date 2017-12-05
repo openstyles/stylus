@@ -79,6 +79,7 @@ select {
 
 #header h1 {
   margin-top: 0;
+  margin-bottom: .3em;
 }
 
 #header a[href^="edit"] {
@@ -259,9 +260,24 @@ select {
 }
 
 /* collapsibles */
+#header details:not(#filters),
+#add-style-wrapper {
+  padding-bottom: .7em;
+}
 
+#add-style-wrapper,
+#options :last-child,
+#backup :last-child {
+  margin-bottom: 0;
+}
+
+#header details:not([open]),
 #header details:not([open]) h2 {
-  margin-bottom: -.25em;
+  padding-bottom: 0;
+}
+
+#header details[open] summary {
+  padding-bottom: .5em;
 }
 
 #header summary {
@@ -269,7 +285,6 @@ select {
   margin-left: -13px;
   cursor: pointer;
   outline: none;
-  margin-bottom: 8px;
 }
 
 #header summary h2 {
@@ -321,6 +336,7 @@ select {
 
 .filter-selection {
   position: relative;
+  left: -9px;
 }
 
 #header label {
@@ -356,6 +372,7 @@ select {
   max-width: 100%;
   padding-left: 4px;
   padding-right: 14px;
+  margin-left: 4px;
 }
 
 .firefox .filter-selection select {
@@ -381,13 +398,13 @@ select {
   left: 16px;
 }
 
-fieldset > label,
-fieldset > .filter-selection {
+#filters label,
+#filters .filter-selection {
   transition: background-color .25s;
 }
 
-fieldset > label:hover,
-fieldset > .filter-selection:hover {
+#filters label:hover,
+#filters .filter-selection:hover {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
@@ -746,26 +763,18 @@ input[id^="manage.newUI"] {
   display: none !important;
 }
 
-fieldset {
-  border-width: 1px;
-  border-radius: 6px;
-  margin: 1em 0;
-  min-width: 0;
-  max-width: 250px;
-}
-
-fieldset > input,
-fieldset > label {
+#filters input,
+#filters label {
   display: flex;
   align-items: center;
 }
 
-#header fieldset > label {
+#filters label {
   padding-left: 20px;
 }
 
-#header fieldset > label input[type="checkbox"]:not(.slider),
-#header fieldset > label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
+#filters label input[type="checkbox"]:not(.slider),
+#filters label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
   left: 4px;
 }
 
@@ -773,23 +782,24 @@ fieldset > label {
   border: 1px solid transparent;
 }
 
-#filters.active {
+.active #filters-stats {
   background-color: darkcyan;
   border-color: darkcyan;
   color: white;
+  font-size: 0.7rem;
+  font-weight: normal;
+  padding: 2px 5px;
+  position: relative;
+  top: -2px;
 }
 
 #filters:not(.active) #filters-stats {
   display: none;
 }
 
-#filters-stats::before {
-  content: ": ";
-}
-
 #search {
   width: calc(100% - 4px);
-  margin: 0.25rem 4px 0;
+  margin: 0.25rem 0 0;
   border-radius: 0.25rem;
   padding-left: 0.25rem;
   border-width: 1px;
@@ -1005,8 +1015,7 @@ fieldset > label {
     margin-right: 1em;
   }
 
-  #backup p,
-  #header fieldset {
+  #backup p {
     margin: 0;
   }
 
@@ -1047,12 +1056,6 @@ fieldset > label {
     padding-left: 0;
   }
 
-  fieldset {
-    max-width: none;
-    margin-top: 0;
-    margin-right: 2em;
-  }
-
   #header h1,
   #header h2,
   #header h3,
@@ -1082,19 +1085,8 @@ fieldset > label {
 
   .newUI #header > *:not(h1),
   .newUI #newUIoptions,
-  #newUIoptions > *,
-  fieldset label {
+  #newUIoptions > * {
     display: inline;
-  }
-
-  fieldset {
-    border: none;
-    margin: 0;
-    padding: 0 0 1em;
-  }
-
-  fieldset legend {
-    display: none;
   }
 
   #header label {

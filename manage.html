@@ -164,11 +164,8 @@
 <div id="header">
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
 
-  <fieldset>
-
-    <legend id="filters">
-      <span i18n-text="manageFilters"></span><span id="filters-stats"></span>
-    </legend>
+  <details id="filters" data-pref="manage.filters.expanded">
+    <summary><h2 i18n-text="manageFilters">: <span id="filters-stats"></span></h2></summary>
 
     <div class="filter-selection">
       <label>
@@ -237,7 +234,7 @@
            data-filter=":not(.not-matching)"
            data-filter-hide=".not-matching">
 
-  </fieldset>
+  </details>
 
   <p class="nowrap">
     <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
@@ -254,7 +251,7 @@
     <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
   </p>
 
-  <p>
+  <p id="add-style-wrapper">
     <a href="edit.html">
       <button id="add-style-label" i18n-text="addStyleLabel"></button>
     </a>
@@ -316,14 +313,14 @@
 
   </details>
 
-  <div id="backup">
-    <h2 id="backup-title" i18n-text="backupButtons"></h2>
+  <details id="backup" data-pref="manage.backup.expanded">
+    <summary><h2 id="backup-title" i18n-text="backupButtons"></h2></summary>
     <span id="backup-message" i18n-text="backupMessage"></span>
     <p>
       <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
       <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
     </p>
-  </div>
+  </details>
 
   <p id="manage-text" i18n-html="manageText"></p>
 

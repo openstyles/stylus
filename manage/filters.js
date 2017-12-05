@@ -76,6 +76,14 @@ onDOMready().then(onBackgroundReady).then(() => {
     }
   });
 
+  // Adjust width after selects are visible
+  prefs.subscribe(['manage.filters.expanded'], () => {
+    const el = $('#filters');
+    if (el.open) {
+      $$('select', el).forEach(select => select.adjustWidth());
+    }
+  });
+
   filterOnChange({forceRefilter: true});
 });
 
