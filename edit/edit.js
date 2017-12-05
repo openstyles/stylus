@@ -99,6 +99,30 @@ function preinit() {
         'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css'
     }));
 
+  // forcefully break long labels in aligned options to prevent the entire block layout from breaking
+  onDOMready().then(() => new Promise(requestAnimationFrame)).then(() => {
+    const maxWidth2ndChild = $$('#options .aligned > :nth-child(2)')
+      .sort((a, b) => b.offsetWidth - a.offsetWidth)[0].offsetWidth;
+    const widthFor1stChild = $('#options').offsetWidth - maxWidth2ndChild;
+    if (widthFor1stChild > 50) {
+      for (const el of $$('#options .aligned > :nth-child(1)')) {
+        if (el.offsetWidth > widthFor1stChild) {
+          el.style.wordBreak = 'break-all';
+        }
+      }
+    } else {
+      const width = $('#options').clientWidth;
+      document.head.appendChild($create('style', `
+        #options .aligned > nth-child(1) {
+          max-width: 70px;
+        }
+        #options .aligned > nth-child(2) {
+          max-width: ${width - 70}px;
+        }
+      `));
+    }
+  });
+
   if (chrome.windows) {
     queryTabs({currentWindow: true}).then(tabs => {
       const windowId = tabs[0].windowId;
