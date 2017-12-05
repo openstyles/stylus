@@ -550,10 +550,7 @@
   }
 
   function onMouseUp(event) {
-    if (releaseMouse(event, ['saturation', 'hue', 'opacity']) &&
-        !event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
-      // hide();
-    }
+    releaseMouse(event, ['saturation', 'hue', 'opacity']);
   }
 
   function onMouseMove(event) {
