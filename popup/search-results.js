@@ -65,11 +65,7 @@
         createSearchResultNode(resultToDisplay);
       });
 
-      if (currentDisplayedPage <= 1 || loading) {
-        $('#searchResultsNav-prev').disabled = true;
-      } else {
-        $('#searchResultsNav-prev').disabled = false;
-      }
+      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1 || loading);
       $('#searchResultsNav-currentPage').textContent = currentDisplayedPage;
 
       let totalResultsCount = processedResults.length;
@@ -78,11 +74,7 @@
         totalResultsCount += DISPLAYED_RESULTS_PER_PAGE;
       }
       const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
-      if (currentDisplayedPage >= totalPageCount || loading) {
-        $('#searchResultsNav-next').disabled = true;
-      } else {
-        $('#searchResultsNav-next').disabled = false;
-      }
+      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
       $('#searchResultsNav-totalPages').textContent = totalPageCount;
 
       const navNode = $('#searchResultsNav');
