@@ -998,7 +998,6 @@ fieldset > label {
   }
 
   #header p,
-  #header fieldset div,
   #backup {
     display: inline-block;
   }
