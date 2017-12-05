@@ -388,7 +388,7 @@
     let sorting = false;
     let timer;
     // allow any types of elements between ours, except for the following:
-    const ORDERED_TAGS = ['head', 'body', 'style', 'link'];
+    const ORDERED_TAGS = ['head', 'body', 'frameset', 'style', 'link'];
 
     init();
     return;
@@ -396,10 +396,7 @@
     function init() {
       docRootObserver = new MutationObserver(sortStyleElements);
       Object.assign(docRootObserver, {start, stop});
-      if (!chrome.app) {
-        // compensate for Firefox missing a step when loading the tab in background
-        setTimeout(sortStyleElements);
-      }
+      setTimeout(sortStyleElements);
     }
     function start({sort = false} = {}) {
       if (sort && sortStyleMap()) {
@@ -434,26 +431,25 @@
       }
     }
     function sortStyleElements() {
-      let expected = document.body || document.head;
-      if (!expected || sorting) {
+      let prevExpected = document.body || document.head;
+      if (!prevExpected || sorting) {
         return;
       }
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;
         }
-        let prev = el.previousElementSibling;
-        while (prev !== expected) {
-          if (prev && isSkippable(prev)) {
-            expected = prev;
-            prev = prev.nextElementSibling;
-          } else if (!moveAfter(el, expected)) {
-            return;
-          } else {
+        while (true) {
+          const next = prevExpected.nextElementSibling;
+          if (next && isSkippable(next)) {
+            prevExpected = next;
+          } else if (moveAfter(el, prevExpected)) {
+            prevExpected = el;
             break;
+          } else {
+            return;
           }
         }
-        expected = el;
       }
       if (sorting) {
         sorting = false;
