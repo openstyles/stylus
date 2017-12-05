@@ -22,7 +22,7 @@ function messageBox({
     messageBox.element.classList.remove('calculate-size');
 
     // for colorpicker
-    const MIN_WIDTH = 310;
+    const MIN_WIDTH = 350;
     const MIN_HEIGHT = 250;
 
     const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
