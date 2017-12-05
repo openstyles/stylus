@@ -1,24 +1,33 @@
 /* global applyOnMessage installed */
 'use strict';
 
-window.addEventListener('showStyles:done', function _() {
-  window.removeEventListener('showStyles:done', _);
+// eslint-disable-next-line no-var
+var hotkeys = (() => {
+  let togglablesShown;
+  let togglables;
+  let enabled = false;
+  let ready = false;
 
-  let togglablesShown = true;
-  let togglables = getTogglables();
-  let enabled = true;
+  window.addEventListener('showStyles:done', function _() {
+    window.removeEventListener('showStyles:done', _);
+    togglablesShown = true;
+    togglables = getTogglables();
+    ready = true;
+    setState(true);
+    initHotkeyInfo();
+  });
 
-  window.addEventListener('keydown', onKeyDown);
-  window.hotkeys = {
-    enable() {
-      enabled = true;
-    },
-    disable() {
-      enabled = false;
+  return {setState};
+
+  function setState(newState = !enabled) {
+    if (!ready) {
+      throw new Error('hotkeys no ready');
     }
-  };
-  initHotkeyInfo();
-  return;
+    if (newState !== enabled) {
+      window[`${newState ? 'add' : 'remove'}EventListener`]('keydown', onKeyDown);
+      enabled = newState;
+    }
+  }
 
   function onKeyDown(event) {
     if (event.ctrlKey || event.altKey || event.metaKey || !enabled) {
@@ -174,4 +183,4 @@ window.addEventListener('showStyles:done', function _() {
       });
     }
   }
-});
+})();
