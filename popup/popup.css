@@ -597,10 +597,6 @@ body.blocked .actions > .main-controls {
   white-space: nowrap;
 }
 
-.colorpicker-popup {
-  width: 280px;
-}
-
 /******************************************/
 
 @keyframes lights-off {
