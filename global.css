@@ -110,4 +110,8 @@ select {
   ::-moz-focus-inner { 
     border: 0; 
   }
+
+  svg {
+    transform: scale(1); /* de-blur */
+  }
 }
