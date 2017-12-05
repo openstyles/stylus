@@ -378,7 +378,7 @@
     "description": "Tooltip for a button that opens style on userstyles.org for customizing"
   },
   "findStylesForSite": {
-    "message": "Find more styles for this site",
+    "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "findStylesForSiteInline": {

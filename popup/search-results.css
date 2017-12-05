@@ -111,3 +111,8 @@ body.search-results-shown {
 #searchResultsNav button {
   text-align: center;
 }
+
+#find-styles-inline-group .svg-icon.checked {
+  margin-top: 5px;
+  margin-left: -13px;
+}
