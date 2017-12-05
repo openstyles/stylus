@@ -335,16 +335,16 @@ onDOMready().then(() => {
     customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
       searchState = activeCM.state.search;
-      if (editors.length === 1 || !searchState.query) {
-        return;
-      }
+      const searchOthers = editors.length > 1 && searchState.query;
       editors.forEach(cm => {
         if (cm !== activeCM) {
           cm.execCommand('clearSearch');
-          updateState(cm, searchState);
+          if (searchOthers) {
+            updateState(cm, searchState);
+          }
         }
       });
-      if (CodeMirror.cmpPos(searchState.posFrom, searchState.posTo) === 0) {
+      if (searchOthers && CodeMirror.cmpPos(searchState.posFrom, searchState.posTo) === 0) {
         findNext(activeCM);
       }
     });
