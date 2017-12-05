@@ -41,6 +41,16 @@
   cursor: pointer;
 }
 
+.config-dialog .dirty:after {
+  content: "*";
+  position: absolute;
+  left: 6px;
+}
+
+.config-dialog .dirty {
+  font-style: italic;
+}
+
 .config-dialog input,
 .config-dialog select,
 .config-dialog .onoffswitch {

@@ -12,25 +12,6 @@ function messageBox({
   bindGlobalListeners();
   createElement();
   document.body.appendChild(messageBox.element);
-  if (location.href.includes('popup.html')) {
-    messageBox.isPopup = true;
-    messageBox.element.classList.add('stylus-popup');
-
-    // calculate size
-    messageBox.element.classList.add('calculate-size');
-    const {offsetWidth, offsetHeight} = messageBox.element.children[0];
-    messageBox.element.classList.remove('calculate-size');
-
-    // for colorpicker
-    const MIN_WIDTH = 350;
-    const MIN_HEIGHT = 250;
-
-    const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
-    const height = Math.max(Math.min(offsetHeight / 0.9 + 2, 600), MIN_HEIGHT);
-
-    document.body.style.minWidth = `${width}px`;
-    document.body.style.minHeight = `${height}px`;
-  }
   if (onshow) {
     onshow(messageBox.element);
   }
@@ -89,11 +70,11 @@ function messageBox({
           $create(`#${id}-contents`, tHTML(contents)),
           $create(`#${id}-buttons`,
             buttons.map((content, buttonIndex) => content &&
-              $create('button', {
+              $create('button', Object.assign({
                 buttonIndex,
-                textContent: content.textContent || content,
-                onclick: content.onclick || messageBox.listeners.button,
-              }))),
+                textContent: typeof content === 'object' ? '' : content,
+                onclick: messageBox.listeners.button,
+              }, typeof content === 'object' && content)))),
         ]),
       ]);
   }
@@ -115,10 +96,6 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
-    if (messageBox.isPopup) {
-      document.body.style.minWidth = '';
-      document.body.style.minHeight = '';
-    }
   }
 }
 

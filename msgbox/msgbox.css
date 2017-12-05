@@ -143,13 +143,6 @@
   top: auto;
   right: auto;
 }
-#message-box.calculate-size {
-  white-space: nowrap;
-}
-#message-box.calculate-size > div {
-  max-width: none;
-  max-height: none;
-}
 
 @keyframes fadein {
   from {
