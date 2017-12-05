@@ -40,8 +40,6 @@
     const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
     const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
                              'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
-    let loading = false;
-    let tabURL; // The active tab's URL.
     let category; // Category for the active tab's URL.
     let currentDisplayedPage = 1; // Current page number in popup.html
 
@@ -52,8 +50,27 @@
       $('#searchResultsNav-next').onclick = next;
       document.body.classList.add('search-results-shown');
       window.scrollTo(0, 0);
-      load();
     }
+
+    /**
+     * Adds spinner to node.
+     * @param {DOMNode} parentNode The parent node to append/remove the spinner to/from.
+     * @param {Boolean} isLoading If the element is loading or stopped loading.
+     */
+    function setLoading(parentNode, isLoading) {
+      if (isLoading) {
+        if ($('.lds-spinner', parentNode) === null) {
+          parentNode.appendChild(
+            $create(
+              '.lds-spinner',
+              new Array(12).fill($create('div')).map(e => e.cloneNode()))
+          );
+        }
+      } else {
+        $.remove('.lds-spinner', parentNode);
+      }
+    }
+
 
     function render() {
       $('#searchResults-list').textContent = ''; // Clear search results
@@ -65,7 +82,7 @@
         createSearchResultNode(resultToDisplay);
       });
 
-      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1 || loading);
+      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1);
       $('#searchResultsNav-currentPage').textContent = currentDisplayedPage;
 
       let totalResultsCount = processedResults.length;
@@ -74,15 +91,8 @@
         totalResultsCount += DISPLAYED_RESULTS_PER_PAGE;
       }
       const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
-      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
+      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount);
       $('#searchResultsNav-totalPages').textContent = totalPageCount;
-
-      const navNode = $('#searchResultsNav');
-      if (loading && !navNode.classList.contains('loading')) {
-        navNode.classList.add('loading');
-      } else {
-        navNode.classList.remove('loading');
-      }
     }
 
     /**
@@ -94,12 +104,9 @@
 
     function loadMoreIfNeeded() {
       if (shouldLoadMore()) {
-        loading = true;
-        render();
         setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
       } else {
-        loading = false;
-        render();
+        setLoading($('#searchResults'), false);
       }
     }
 
@@ -139,38 +146,33 @@
      * Initializes search results container, starts fetching results.
      */
     function load() {
-      loading = true;
-      render();
-
       if (unprocessedResults.length > 0) {
+        // Keep processing search results if there are any.
         processNextResult();
-        return true;
+      } else if (searchAPI.isExhausted()) {
+        // Stop if no more search results.
+        setLoading($('#searchResults'), false);
+      } else {
+        setLoading($('#searchResults'), true);
+        // Search for more results.
+        $('#searchResults').classList.remove('hidden');
+        $('#searchResults-error').classList.add('hidden');
+
+        // Discover current tab's URL & the "category" for the URL, then search.
+        getActiveTab().then(tab => {
+          category = searchAPI.getCategory(tab.url);
+          $('#searchResults-terms').textContent = category;
+          searchAPI.search(category)
+            .then(searchResults => {
+              if (searchResults.data.length === 0) {
+                throw 404;
+              }
+              unprocessedResults.push.apply(unprocessedResults, searchResults.data);
+              processNextResult();
+            })
+            .catch(error);
+        });
       }
-
-      if (searchAPI.isExhausted()) {
-        loading = false;
-        render();
-        return true;
-      }
-
-      $('#searchResults').classList.remove('hidden');
-      $('#searchResults-error').classList.add('hidden');
-
-      // Discover current tab's URL & the "category" for the URL, then search.
-      getActiveTab().then(tab => {
-        tabURL = tab.url;
-        category = searchAPI.getCategory(tabURL);
-        $('#searchResults-terms').textContent = category;
-        searchAPI.search(category)
-          .then(searchResults => {
-            if (searchResults.data.length === 0) {
-              throw 404;
-            }
-            unprocessedResults.push.apply(unprocessedResults, searchResults.data);
-            processNextResult();
-          })
-          .catch(error);
-      });
     }
 
     /**
@@ -181,12 +183,12 @@
      */
     function processNextResult() {
       if (!shouldLoadMore()) {
-        loading = false;
-        render();
+        setLoading($('#searchResults'), false);
         return;
       }
 
       if (unprocessedResults.length === 0) {
+        // No more results to process
         loadMoreIfNeeded();
         return;
       }
@@ -197,23 +199,21 @@
         .then(isInstalled => {
           if (isInstalled) {
             // Style already installed, skip it.
-            // TODO: Include the style anyway with option to "Uninstall" (?)
             setTimeout(processNextResult, 0); // Keep processing
           } else if (nextResult.category !== 'site') {
             // Style is not for a website, skip it.
             setTimeout(processNextResult, 0); // Keep processing
           } else {
             // Style not installed.
-            // 1: Fetch full style (.JSON) to see if it applies to this site.
-            // 2: Fetch full style info to see if it has customizations.
             Promise.all([
               searchAPI.fetchStyleJson(nextResult.id), // for "sections" (applicable URLs)
-              searchAPI.fetchStyle(nextResult.id)      // for "style_settings" (customizations)
-            ]).then(([userstyleJson, userstyleObject]) => {
+              searchAPI.fetchStyle(nextResult.id),     // for "style_settings" (customizations)
+              getActiveTab()                           // for comparing tab.url to sections.
+            ]).then(([userstyleJson, userstyleObject, tab]) => {
               // Extract applicable sections (i.e. styles that apply to the current site)
               const applicableSections = BG.getApplicableSections({
                 style: userstyleJson,
-                matchUrl: tabURL,
+                matchUrl: tab.url,
                 stopOnFirst: true
               });
               if (applicableSections.length > 0) {
@@ -310,11 +310,17 @@
         title: searchResultName
       });
 
-      // TODO: Expand/collapse description
       const description = $('.searchResult-description', entry);
       Object.assign(description, {
         textContent: userstyleSearchResult.description.replace(/<.*?>/g, ''),
-        title: userstyleSearchResult.description.replace(/<.*?>/g, '')
+      });
+      const descriptionExpand = $('.searchResult-description-info', entry);
+      Object.assign(descriptionExpand, {
+        onclick: e => {
+          descriptionExpand.classList.add('hidden');
+          description.classList.add('expanded');
+          description.innerHTML = userstyleSearchResult.description.replace(/<br\/?>\s*<br\/?>/, '<br/>');
+        }
       });
 
       const authorLink = $('.searchResult-authorLink', entry);
@@ -365,12 +371,13 @@
 
       /** Installs the current userstyleSearchResult into stylus. */
       function install() {
-        entry.classList.add('loading');
-
         const styleId = userstyleSearchResult.id;
         const url = searchAPI.BASE_URL + '/styles/chrome/' + styleId + '.json';
+        setLoading(entry, true);
         saveStyleSafe(userstyleSearchResult.json)
           .then(() => {
+            setLoading(entry, false);
+
             // Remove search result after installing
             let matchingIndex = -1;
             processedResults.forEach((processedResult, index) => {
@@ -381,9 +388,13 @@
             if (matchingIndex >= 0) {
               processedResults.splice(matchingIndex, 1);
             }
+            render();
+
+            // Load more results if needed.
             processNextResult();
           })
           .catch(reason => {
+            setLoading(entry, false);
             console.log('install:saveStyleSafe(', url, ') => [ERROR]: ', reason);
             alert('Error while downloading ' + url + '\nReason: ' + reason);
           });
