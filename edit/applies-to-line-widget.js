@@ -38,10 +38,7 @@ function createAppliesToLineWidget(cm) {
       $create('button.test-regexp', t('styleRegexpTestButton')));
 
     CLICK_ROUTE = {
-      '.test-regexp': (item, apply) => {
-        regExpTester.toggle();
-        regExpTester.update([unescapeDoubleslash(apply.value.text)]);
-      },
+      '.test-regexp': showRegExpTester,
 
       '.remove-applies-to': (item, apply) => {
         const applies = item.closest('.applies-to').__applies;
@@ -99,7 +96,7 @@ function createAppliesToLineWidget(cm) {
         if (typeElement) {
           const item = target.closest('.applies-to-item');
           const apply = item.__apply;
-          changeItem(apply, 'type', typeElement.value);
+          changeItem(item, apply, 'type', typeElement.value);
           item.dataset.type = apply.type.text;
         } else {
           return EVENTS.oninput.apply(this, arguments);
@@ -109,7 +106,7 @@ function createAppliesToLineWidget(cm) {
         if (target.matches('.applies-value')) {
           const item = target.closest('.applies-to-item');
           const apply = item.__apply;
-          changeItem(apply, 'value', target.value);
+          changeItem(item, apply, 'value', target.value);
         }
       },
       onclick({target}) {
@@ -479,7 +476,7 @@ function createAppliesToLineWidget(cm) {
     return el;
   }
 
-  function changeItem(apply, part, newText) {
+  function changeItem(itemElement, apply, part, newText) {
     if (!apply) {
       return;
     }
@@ -505,9 +502,8 @@ function createAppliesToLineWidget(cm) {
       );
     }
 
-    if (apply.type.text === 'regexp') {
-      const rx = apply.value.text.trim();
-      regExpTester.update(rx ? [unescapeDoubleslash(rx)] : {});
+    if (apply.type.text === 'regexp' && apply.value.text.trim()) {
+      showRegExpTester(itemElement);
     }
   }
 
@@ -577,5 +573,13 @@ function createAppliesToLineWidget(cm) {
   function unescapeDoubleslash(s) {
     const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(s);
     return hasSingleEscapes ? s : s.replace(/\\\\/g, '\\');
+  }
+
+  function showRegExpTester(item) {
+    regExpTester.toggle(true);
+    regExpTester.update(
+      item.closest('.applies-to').__applies
+        .filter(a => a.type.text === 'regexp')
+        .map(a => unescapeDoubleslash(a.value.text)));
   }
 }
