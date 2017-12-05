@@ -84,25 +84,28 @@ function configDialog(style) {
       let children;
       switch (va.type) {
         case 'color':
-          va.inputColor = $create('.color-swatch', {va, onclick: showColorpicker});
           children = [
             $create('.cm-colorview', [
-              va.inputColor,
+              va.inputColor = $create('.color-swatch', {
+                va,
+                onclick: showColorpicker
+              }),
             ]),
           ];
           break;
 
         case 'checkbox':
-          va.input = $create('input.slider', {type: 'checkbox'});
-          va.input.onchange = () => {
-            va.dirty = true;
-            va.value = String(Number(va.input.checked));
-          };
           children = [
             $create('span.onoffswitch', [
-              va.input,
+              va.input = $create('input.slider', {
+                type: 'checkbox',
+                onchange() {
+                  va.dirty = true;
+                  va.value = String(Number(va.input.checked));
+                },
+              }),
               $create('span'),
-            ])
+            ]),
           ];
           break;
 
@@ -110,26 +113,32 @@ function configDialog(style) {
         case 'dropdown':
         case 'image':
           // TODO: a image picker input?
-          va.input = $create('.select-resizer', [
-            $create('select', va.options.map(o =>
-              $create('option', {value: o.name}, o.label))),
-            $create('SVG:svg.svg-icon.select-arrow',
-              $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
-          ]);
-          va.input.onchange = () => {
-            va.dirty = true;
-            va.value = va.input.value;
-          };
-          children = [va.input];
+          children = [
+            $create('.select-resizer', [
+              va.input = $create('select', {
+                onchange() {
+                  va.dirty = true;
+                  va.value = this.value;
+                }
+              },
+              va.options.map(o =>
+                $create('option', {value: o.name}, o.label))),
+              $create('SVG:svg.svg-icon.select-arrow',
+                $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
+            ]),
+          ];
           break;
 
         default:
-          va.input = $create('input', {type: 'text'});
-          va.input.oninput = () => {
-            va.dirty = true;
-            va.value = va.input.value;
-          };
-          children = [va.input];
+          children = [
+            va.input = $create('input', {
+              type: 'text',
+              oninput() {
+                va.dirty = true;
+                va.value = va.input.value;
+              },
+            }),
+          ];
           break;
       }
       elements.push(
