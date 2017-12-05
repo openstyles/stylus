@@ -93,10 +93,6 @@ select {
   transition: fill .5s;
 }
 
-::-moz-focus-inner { 
-  border: 0; 
-}
-
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked {
     display: none !important;
@@ -109,5 +105,9 @@ select {
   .moz-appearance-bug button {
     padding-left: .75ex;
     padding-right: .75ex;
+  }
+
+  ::-moz-focus-inner { 
+    border: 0; 
   }
 }
