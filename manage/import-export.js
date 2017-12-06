@@ -34,7 +34,17 @@ function importFromFile({fileTypeFilter, file} = {}) {
         const fReader = new FileReader();
         fReader.onloadend = event => {
           fileInput.remove();
-          importFromString(event.target.result).then(numStyles => {
+          const text = event.target.result;
+          const maybeUsercss = !/^[\s\r\n]*\[/.test(text) &&
+            (text.includes('==UserStyle==') || /==UserStyle==/i.test(text));
+          (!maybeUsercss ?
+            importFromString(text) :
+            getOwnTab().then(tab => {
+              tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
+              return BG.usercssHelper.openInstallPage(tab, {direct: true})
+                .then(() => URL.revokeObjectURL(tab.url));
+            })
+          ).then(numStyles => {
             document.body.style.cursor = '';
             resolve(numStyles);
           });

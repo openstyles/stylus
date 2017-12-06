@@ -393,6 +393,7 @@ var usercss = (() => {
     };
 
     const style = {
+      reason: 'install',
       enabled: true,
       sourceCode,
       sections: [],
