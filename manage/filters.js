@@ -379,6 +379,7 @@ function searchStyles({immediately, container}) {
         urlMode ||
         isMatchingText(style.name) ||
         style.url && isMatchingText(style.url) ||
+        style.sourceCode && isMatchingText(style.sourceCode) ||
         isMatchingStyle(style)));
     }
     if (entry.classList.contains('not-matching') !== !isMatching) {
