@@ -445,12 +445,11 @@ function setupLinterPopup(config) {
   function makeFooter() {
     return $create('div', [
       $create('p', [
-        t('linterRulesLink') + ' ',
         $createLink(
           linter === 'stylelint'
             ? 'https://stylelint.io/user-guide/rules/'
             : 'https://github.com/CSSLint/csslint/wiki/Rules-by-ID',
-          linterTitle),
+          t('linterRulesLink')),
         linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : '',
       ]),
       $create('button.save', {onclick: save, title: 'Ctrl-Enter'}, t('styleSaveLabel')),
