@@ -76,6 +76,28 @@ onDOMready().then(onBackgroundReady).then(() => {
     }
   });
 
+  $('#reset-filters').onclick = event => {
+    event.preventDefault();
+    if (!filtersSelector.hide) {
+      return;
+    }
+    for (const el of $$('#filters [data-filter]')) {
+      let value;
+      if (el.type === 'checkbox' && el.checked) {
+        value = el.checked = false;
+      } else if (el.value) {
+        value = el.value = '';
+      }
+      if (value !== undefined) {
+        el.lastValue = value;
+        if (el.id in prefs.readOnlyValues) {
+          prefs.set(el.id, false);
+        }
+      }
+    }
+    filterOnChange({forceRefilter: true});
+  };
+
   // Adjust width after selects are visible
   prefs.subscribe(['manage.filters.expanded'], () => {
     const el = $('#filters');

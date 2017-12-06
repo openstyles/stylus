@@ -793,6 +793,25 @@ input[id^="manage.newUI"] {
   top: -2px;
 }
 
+#reset-filters {
+  position: absolute;
+  margin-top: 2px;
+  fill: hsla(180, 50%, 27%, .5);
+  width: 24px; /* widen the click area a bit */
+  height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+#reset-filters:hover {
+  fill: hsla(180, 50%, 27%, 1);
+}
+
+.firefox #reset-filters {
+  margin-top: 4px;
+}
+
+#filters:not(.active) #reset-filters,
 #filters:not(.active) #filters-stats {
   display: none;
 }
