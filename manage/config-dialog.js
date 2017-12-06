@@ -75,7 +75,7 @@ function configDialog(style) {
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
       if (prefs.get('config.autosave')) {
-        debounce(save, 100);
+        debounce(save);
       } else {
         target.closest('label').classList.toggle('dirty', va.dirty);
         updateButtons();
@@ -272,10 +272,10 @@ function configDialog(style) {
   }
 
   function adjustSizeForPopup(box) {
-    box.style = 'white-space: nowrap !important';
-    box.firstElementChild.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
-    const {offsetWidth, offsetHeight} = box.firstElementChild;
-    box.style = box.firstElementChild.style = '';
+    const contents = box.firstElementChild;
+    contents.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
+    let {offsetWidth: width, offsetHeight: height} = contents;
+    contents.style = '';
 
     const colorpicker = document.body.appendChild(
       $create('.colorpicker-popup', {style: 'display: none!important'}));
@@ -283,8 +283,8 @@ function configDialog(style) {
     const MIN_HEIGHT = 250;
     colorpicker.remove();
 
-    const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
-    const height = Math.max(Math.min(offsetHeight / 0.9 + 2, 600), MIN_HEIGHT);
+    width = Math.max(Math.min(width / 0.9 + 2, 800), MIN_WIDTH);
+    height = Math.max(Math.min(height / 0.9 + 2, 600), MIN_HEIGHT);
     document.body.style.setProperty('min-width', width + 'px', 'important');
     document.body.style.setProperty('min-height', height + 'px', 'important');
   }
