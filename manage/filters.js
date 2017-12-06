@@ -1,4 +1,4 @@
-/* global installed */
+/* global installed messageBox */
 'use strict';
 
 const filtersSelector = {
@@ -31,6 +31,25 @@ onDOMready().then(onBackgroundReady).then(() => {
   if (urlFilterParam) {
     $('#search').value = 'url:' + urlFilterParam;
   }
+  $('#search-help').onclick = () => {
+    messageBox({
+      className: 'help-text',
+      title: t('searchStyles'),
+      contents:
+        $create('ul',
+          t('searchStylesHelp').split('\n').map(line =>
+            $create('li', line.split(/(<.*?>)/).map((s, i, words) => {
+              if (s.startsWith('<')) {
+                const num = words.length;
+                const className = i === num - 2 && !words[num - 1] ? '.last' : '';
+                return $create('mark' + className, s.slice(1, -1));
+              } else {
+                return s;
+              }
+            })))),
+      buttons: [t('confirmOK')],
+    });
+  };
 
   $$('select[id$=".invert"]').forEach(el => {
     const slave = $('#' + el.id.replace('.invert', ''));
@@ -350,10 +369,11 @@ function showFiltersStats() {
 
 function searchStyles({immediately, container}) {
   const searchElement = $('#search');
-  const urlMode = /^\s*url:/i.test(searchElement.value);
+  const value = searchElement.value;
+  const urlMode = /^\s*url:/i.test(value);
   const query = urlMode
-    ? searchElement.value.replace(/^\s*url:/i, '').trim()
-    : searchElement.value.toLocaleLowerCase();
+    ? value.replace(/^\s*url:/i, '').trim()
+    : value.toLocaleLowerCase();
   const queryPrev = searchElement.lastValue || '';
   if (query === queryPrev && !immediately && !container) {
     return;
@@ -364,6 +384,12 @@ function searchStyles({immediately, container}) {
   }
   searchElement.lastValue = query;
 
+  const trimmed = query.trim();
+  const rx = trimmed.startsWith('/') && trimmed.indexOf('/', 1) > 0 &&
+    tryRegExp(...(value.match(/^\s*\/(.*?)\/([gimsuy]*)\s*$/) || []).slice(1));
+  const words = rx ? null :
+    trimmed.startsWith('"') && trimmed.endsWith('"') ? [value.trim().slice(1, -1)] :
+      query.split(/\s+/).filter(s => s.length > 2);
   const searchInVisible = !urlMode && queryPrev && query.includes(queryPrev);
   const entries = container && container.children || container ||
     (searchInVisible ? $$('.entry:not(.hidden)') : installed.children);
@@ -415,6 +441,17 @@ function searchStyles({immediately, container}) {
   }
 
   function isMatchingText(text) {
-    return text.toLocaleLowerCase().indexOf(query) >= 0;
+    if (rx) {
+      return rx.test(text);
+    }
+    for (let pass = 1; pass <= 2; pass++) {
+      for (const word of words) {
+        if (text.includes(word)) {
+          return true;
+        }
+      }
+      text = text.toLocaleLowerCase();
+    }
+    return false;
   }
 }

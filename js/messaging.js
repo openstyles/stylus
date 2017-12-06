@@ -286,9 +286,9 @@ function tryCatch(func, ...args) {
 }
 
 
-function tryRegExp(regexp) {
+function tryRegExp(regexp, flags) {
   try {
-    return new RegExp(regexp);
+    return new RegExp(regexp, flags);
   } catch (e) {}
 }
 

@@ -658,11 +658,24 @@ select {
   align-items: center;
   margin-bottom: auto;
   flex-wrap: wrap;
+  position: relative;
 }
 
 #newUIoptions input[type="number"] {
   width: 3em;
   margin-right: .5em;
+}
+
+#newUIoptions [data-toggle-on-click] {
+  transform: rotate(-90deg);
+  cursor: pointer;
+  right: -16px;
+  top: 0;
+  pointer-events: auto;
+}
+
+#newUIoptions [data-toggle-on-click][open] {
+  transform: none;
 }
 
 input[id^="manage.newUI"] {
@@ -763,7 +776,6 @@ input[id^="manage.newUI"] {
   display: none !important;
 }
 
-#filters input,
 #filters label {
   display: flex;
   align-items: center;
@@ -816,12 +828,46 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
+#search-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 #search {
-  width: calc(100% - 4px);
+  flex-grow: 1;
   margin: 0.25rem 0 0;
-  border-radius: 0.25rem;
   padding-left: 0.25rem;
   border-width: 1px;
+}
+
+#search-wrapper .info {
+  margin: 4px -5px 0 8px;
+}
+
+#message-box.help-text > div {
+  max-width: 26rem;
+}
+.help-text li:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+.help-text mark {
+  background-color: rgba(128, 128, 128, .15);
+  color: currentColor;
+  padding: 2px 6px;
+  font-weight: bold;
+  font-family: monospace;
+  border: 1px solid rgba(128, 128, 128, .25);
+  display: inline-block;
+  margin: 2px;
+}
+
+.help-text mark.last {
+  display: block;
+  width: -moz-min-content;
+  width: min-content;
+  white-space: nowrap;
 }
 
 #import ul {
