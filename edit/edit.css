@@ -126,6 +126,9 @@ h2 .svg-icon, label .svg-icon {
 .svg-icon.settings:hover {
   fill: #000;
 }
+#options span .svg-icon {
+  margin-top: -3px; /* inline info and config icons */
+}
 input:invalid {
   background-color: rgba(255, 0, 0, 0.1);
   color: darkred;
