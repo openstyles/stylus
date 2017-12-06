@@ -46,10 +46,22 @@ function configDialog(style) {
   }
 
   function onshow(box) {
+    $('button', box).insertAdjacentElement('afterend',
+      $create('label#config-autosave-wrapper', {
+        title: t('configOnChangeTooltip'),
+      }, [
+        $create('input', {id: 'config.autosave', type: 'checkbox'}),
+        $create('SVG:svg.svg-icon.checked',
+          $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+        t('configOnChange'),
+      ]));
+    setupLivePrefs(['config.autosave']);
+
     if (isPopup) {
       adjustSizeForPopup(box);
       box.style.animationDuration = '0s';
     }
+
     box.addEventListener('change', onchange);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
@@ -62,8 +74,12 @@ function configDialog(style) {
     const va = target.va;
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
-      target.closest('label').classList.toggle('dirty', va.dirty);
-      updateButtons();
+      if (prefs.get('config.autosave')) {
+        debounce(save, 100);
+      } else {
+        target.closest('label').classList.toggle('dirty', va.dirty);
+        updateButtons();
+      }
     }
   }
 
