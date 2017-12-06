@@ -48,6 +48,7 @@ function configDialog(style) {
   function onshow(box) {
     if (isPopup) {
       adjustSizeForPopup(box);
+      box.style.animationDuration = '0s';
     }
     box.addEventListener('change', onchange);
     buttons.save = $('[data-cmd="save"]', box);
