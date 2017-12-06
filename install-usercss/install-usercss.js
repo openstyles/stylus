@@ -283,24 +283,28 @@
     };
 
     // set updateUrl
-    const setUpdate = $('.set-update-url input[type=checkbox]');
-    const updateUrl = new URL(params.get('updateUrl'));
+    const checker = $('.set-update-url input[type=checkbox]');
+    // prefer the installation URL unless drag'n'dropped on the manage page
+    const installationUrl = (params.get('updateUrl') || '').replace(/^blob.+/, '');
+    const updateUrl = new URL(installationUrl || style.updateUrl || 'foo:bar');
     $('.set-update-url > span').textContent = t('installUpdateFromLabel');
     if (dup && dup.updateUrl === updateUrl.href) {
-      setUpdate.checked = true;
+      checker.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
-      setUpdate.disabled = true;
+      checker.disabled = true;
+    } else if (updateUrl.protocol === 'foo:') {
+      // drag'n'dropped on the manage page and the style doesn't have @updateURL
+      checker.disabled = true;
     } else if (updateUrl.protocol !== 'file:') {
-      setUpdate.checked = true;
+      checker.checked = true;
       style.updateUrl = updateUrl.href;
     }
-    setUpdate.onchange = e => {
-      if (e.target.checked) {
-        style.updateUrl = updateUrl.href;
-      } else {
-        delete style.updateUrl;
-      }
+    checker.onchange = () => {
+      style.updateUrl = checker.checked ? updateUrl.href : null;
     };
+    checker.onchange();
+    $('.set-update-url p').textContent = updateUrl.href.length < 300 ? updateUrl.href :
+      updateUrl.href.slice(0, 300) + '...';
 
     if (!port) {
       return;

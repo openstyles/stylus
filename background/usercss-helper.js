@@ -78,8 +78,8 @@ var usercssHelper = (() => {
     );
   }
 
-  function openInstallPage(tab, {url = tab.url, direct} = {}) {
-    if (direct) {
+  function openInstallPage(tab, {url = tab.url, direct, downloaded} = {}) {
+    if (direct && !downloaded) {
       prefetchCodeForInstallation(tab.id, url);
     }
     return wrapReject(openURL({

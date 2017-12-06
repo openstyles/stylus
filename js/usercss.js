@@ -3,25 +3,34 @@
 
 // eslint-disable-next-line no-var
 var usercss = (() => {
-  // true for global, false for private
-  const METAS = {
-    __proto__: null,
-    author: true,
-    advanced: false,
-    description: true,
-    homepageURL: false,
-    // icon: false,
-    license: false,
-    name: true,
-    namespace: false,
-    // noframes: false,
-    preprocessor: false,
-    supportURL: false,
-    'var': false,
-    version: false
-  };
-
+  // true = global
+  // false or 0 = private
+  // <string> = global key name
+  // <function> = (style, newValue)
+  const KNOWN_META = new Map([
+    ['author', true],
+    ['advanced', 0],
+    ['description', true],
+    ['homepageURL', 'url'],
+    ['icon', 0],
+    ['license', 0],
+    ['name', true],
+    ['namespace', 0],
+    //['noframes', 0],
+    ['preprocessor', 0],
+    ['supportURL', 0],
+    ['updateURL', (style, newValue) => {
+      // always preserve locally installed style's updateUrl
+      if (!/^file:/.test(style.updateUrl)) {
+        style.updateUrl = newValue;
+      }
+    }],
+    ['var', 0],
+    ['version', 0],
+  ]);
+  const MANDATORY_META = ['name', 'namespace', 'version'];
   const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image'];
+  const META_URLS = [...KNOWN_META.keys()].filter(k => k.endsWith('URL'));
 
   const BUILDER = {
     default: {
@@ -221,7 +230,7 @@ var usercss = (() => {
       }
     }
     state.usercssData.vars[result.name] = result;
-    validVar(result);
+    validateVar(result);
   }
 
   function createOption(label, value) {
@@ -407,28 +416,39 @@ var usercss = (() => {
     function doParse() {
       let match;
       while ((match = re.exec(text))) {
-        state.key = match[1];
-        if (!(state.key in METAS)) {
+        const key = state.key = match[1];
+        const route = KNOWN_META.get(key);
+        if (route === undefined) {
           continue;
         }
-        if (state.key === 'var' || state.key === 'advanced') {
-          if (state.key === 'advanced') {
+        if (key === 'var' || key === 'advanced') {
+          if (key === 'advanced') {
             state.maybeUSO = true;
           }
           parseVar(state);
         } else {
           parseStringToEnd(state);
-          usercssData[state.key] = state.value;
+          usercssData[key] = state.value;
         }
-        if (state.key === 'version') {
-          usercssData[state.key] = normalizeVersion(usercssData[state.key]);
-          validVersion(usercssData[state.key]);
+        let value = state.value;
+        if (key === 'version') {
+          value = usercssData[key] = normalizeVersion(value);
+          validateVersion(value);
         }
-        if (METAS[state.key]) {
-          style[state.key] = usercssData[state.key];
+        if (META_URLS.includes(key)) {
+          validateUrl(key, value);
         }
-        if (state.key === 'homepageURL' || state.key === 'supportURL') {
-          validUrl(usercssData[state.key]);
+        switch (typeof route) {
+          case 'function':
+            route(style, value);
+            break;
+          case 'string':
+            style[route] = value;
+            break;
+          default:
+            if (route) {
+              style[key] = value;
+            }
         }
       }
     }
@@ -446,12 +466,8 @@ var usercss = (() => {
     if (state.maybeUSO && !usercssData.preprocessor) {
       usercssData.preprocessor = 'uso';
     }
-    if (usercssData.homepageURL) {
-      style.url = usercssData.homepageURL;
-    }
 
-    validate(style);
-
+    validateStyle(style);
     return style;
   }
 
@@ -505,42 +521,32 @@ var usercss = (() => {
     return va[prop];
   }
 
-  function validate(style) {
-    const {usercssData: data} = style;
-    // mandatory fields
-    for (const prop of ['name', 'namespace', 'version']) {
+  function validateStyle({usercssData: data}) {
+    for (const prop of MANDATORY_META) {
       if (!data[prop]) {
         throw new Error(chrome.i18n.getMessage('styleMissingMeta', prop));
       }
     }
-    // validate version
-    validVersion(data.version);
-
-    // validate URLs
-    validUrl(data.homepageURL);
-    validUrl(data.supportURL);
-
-    // validate vars
-    for (const key of Object.keys(data.vars)) {
-      validVar(data.vars[key]);
-    }
+    validateVersion(data.version);
+    META_URLS.forEach(k => validateUrl(k, data[k]));
+    Object.keys(data.vars).forEach(k => validateVar(data.vars[k]));
   }
 
-  function validVersion(version) {
+  function validateVersion(version) {
     semverCompare(version, '0.0.0');
   }
 
-  function validUrl(url) {
+  function validateUrl(key, url) {
     if (!url) {
       return;
     }
     url = new URL(url);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      throw new Error(`${url.protocol} is not a valid protocol`);
+    if (!/^https?:/.test(url.protocol)) {
+      throw new Error(`${url.protocol} is not a valid protocol in ${key}`);
     }
   }
 
-  function validVar(va, value = 'default') {
+  function validateVar(va, value = 'default') {
     if (va.type === 'select' || va.type === 'dropdown') {
       if (va.options.every(o => o.name !== va[value])) {
         throw new Error(chrome.i18n.getMessage('styleMetaErrorSelectValueMismatch'));
@@ -560,7 +566,7 @@ var usercss = (() => {
       if (oldVars[key] && oldVars[key].value) {
         vars[key].value = oldVars[key].value;
         try {
-          validVar(vars[key], 'value');
+          validateVar(vars[key], 'value');
         } catch (e) {
           vars[key].value = null;
         }
