@@ -3181,6 +3181,17 @@ Parser.prototype = function() {
              * @private
              */
             _unexpectedToken: function(token) {
+                for (let i = tokenStream._ltIndex - 1; i >= 0; i--) {
+                    const {type, value} = tokenStream._lt[i];
+                    if (type === tokenStream._tokenData.S) {
+                        // NOP
+                    } else if (type === tokenStream._tokenData.COMMENT &&
+                            value[2] === '[' && value[3] === '[' && value.endsWith(']]*/')) {
+                        return;
+                    } else {
+                        break;
+                    }
+                }
                 throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
             },
 
@@ -7148,7 +7159,7 @@ TokenStreamBase.prototype = {
             if (tokenTypes.includes(tt)) {
                 return true;
             }
-        } while (tt === 4 && this.LA(0) !== 0);
+        } while (tt === this._tokenData.COMMENT && this.LA(0) !== 0);
 
         //no match found, put the token back
         this.unget();
@@ -10967,25 +10978,6 @@ CSSLint.addFormatter({
     }
 });
 
-if (!CSSLint.suppressUsoVarError) {
-  CSSLint.suppressUsoVarError = true;
-  parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
-  const isUsoVar = ({value}) => value.startsWith('/*[[') && value.endsWith(']]*/');
-  CSSLint.addRule({
-    id: 'uso-vars',
-    init(parser, reporter) {
-      parser.addListener('error', function ({message, line, col}) {
-        if (!isUsoVar(this._tokenStream._token)) {
-          const {_lt, _ltIndex: i} = this._tokenStream;
-          if (i < 2 || !_lt.slice(0, i - 1).reverse().some(isUsoVar)) {
-            reporter.error(message, line, col);
-          }
-        }
-      });
-    },
-  });
-}
-
 self.onmessage = ({data: {action = 'run', code, config}}) => {
   switch (action) {
 
@@ -11000,8 +10992,6 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
       return;
 
     case 'run':
-      Object.defineProperty(config, 'errors', {get: () => 0, set: () => 0});
-      config['uso-vars'] = 1;
       self.postMessage(CSSLint.verify(code, config).messages.map(m => {
         // the functions are non-tranferable and we need only an id
         m.rule = {id: m.rule.id};
