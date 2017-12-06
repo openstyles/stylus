@@ -39,8 +39,8 @@ body.search-results-shown {
 }
 
 .searchResult-title {
-  display: block;
-  font-weight: bold;
+  padding: 3px;
+  margin: 0;
 }
 
 .searchResult-description {
@@ -53,7 +53,7 @@ body.search-results-shown {
 
 .searchResult-description.expanded {
   width: 100%;
-  white-space: normal;
+  white-space: pre-wrap;
   overflow: auto;
   text-overflow: unset;
   display: block;

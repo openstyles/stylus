@@ -349,43 +349,23 @@
       }
     }
   },
-  "openSearchWebsite": {
-    "message": "Search on userstyles.org",
-    "description": "Text for a link that searches for styles for this current site on userstyles.org"
-  },
-  "searchResultsHeader": {
-    "message": "Results for",
-    "description": "Text for label above search results"
-  },
-  "searchResultRating": {
-    "message": "Rating",
-    "description": "Text for label that shows the search result's rating"
-  },
-  "searchResultInstallCount": {
-    "message": "Installs",
-    "description": "Text for label that shows the number of times a search result was installed"
-  },
-  "searchResultInstall": {
-    "message": "Install",
-    "description": "Text for a button that installs a search result"
-  },
-  "searchResultCustomize": {
-    "message": "Customize",
-    "description": "Text for a button that customizes a search result before installing"
-  },
-  "searchResultCustomizeTooltip": {
-    "message": "Open this style on userstyles.org to customize via 'Advanced Style Settings'",
-    "description": "Tooltip for a button that opens style on userstyles.org for customizing"
-  },
   "filteredStylesAllHidden": {
     "message": "Currently applied filters match no styles",
     "description": "Text shown when no styles match currently applied filter in the style manager"
   },
-  "findStylesForSite": {
+  "findStyles": {
     "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
   },
-  "findStylesForSiteInline": {
+  "findStylesInlineTooltip": {
+    "message": "Display search results inside this window.",
+    "description": "Text for a checkbox that displays search results within the Stylus popup."
+  },
+  "findStylesTooltip": {
+    "message": "Find more styles for this site",
+    "description": "Tooltip for a link that finds styles"
+  },
+  "findStylesInline": {
     "message": "Inline",
     "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
   },
@@ -661,6 +641,22 @@
     "message": "More Options",
     "description": "Subheading for options section on manage page."
   },
+  "paginationCurrent": {
+    "message": "Current page",
+    "description": "Tooltip for the current page index in search results"
+  },
+  "paginationNext": {
+    "message": "Next page",
+    "description": "Tooltip for the '->' (next page) button in search results"
+  },
+  "paginationPrevious": {
+    "message": "Previous page",
+    "description": "Tooltip for the '<-' button in search results"
+  },
+  "paginationTotal": {
+    "message": "Total pages",
+    "description": "Tooltip for the total page count in search results"
+  },
   "parseUsercssError": {
     "message": "Stylus failed to parse usercss:",
     "description": "The error message to show when stylus failed to parse usercss"
@@ -718,6 +714,26 @@
   "searchRegexp": {
     "message": "Use /re/ syntax for regexp search",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
+  },
+  "searchResultsHeader": {
+    "message": "Results for",
+    "description": "Text for label above search results"
+  },
+  "searchResultRating": {
+    "message": "Rating",
+    "description": "Text for label that shows the search result's rating"
+  },
+  "searchResultInstallCount": {
+    "message": "Installs",
+    "description": "Text for label that shows the number of times a search result was installed"
+  },
+  "searchResultCustomize": {
+    "message": "Customize",
+    "description": "Text for a button that opens style on userstyles.org for customizing"
+  },
+  "searchResultCustomizeTooltip": {
+    "message": "Open this style on userstyles.org to customize via 'Advanced Style Settings'",
+    "description": "Tooltip for a button that opens style on userstyles.org for customizing"
   },
   "searchStyles": {
     "message": "Search contents",

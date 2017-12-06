@@ -40,6 +40,7 @@
     const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
     const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
                              'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
+    let loading = false;
     let category; // Category for the active tab's URL.
     let currentDisplayedPage = 1; // Current page number in popup.html
 
@@ -53,24 +54,23 @@
     }
 
     /**
-     * Adds spinner to node.
-     * @param {DOMNode} parentNode The parent node to append/remove the spinner to/from.
-     * @param {Boolean} isLoading If the element is loading or stopped loading.
+     * Sets loading status of search results.
+     * @param {Boolean} isLoading If search results are idle (false) or still loading (true).
      */
-    function setLoading(parentNode, isLoading) {
-      if (isLoading) {
-        if ($('.lds-spinner', parentNode) === null) {
-          parentNode.appendChild(
+    function setLoading(isLoading) {
+      if (loading !== isLoading) {
+        loading = isLoading;
+        if (loading) {
+          $('#searchResults').appendChild(
             $create(
               '.lds-spinner',
               new Array(12).fill($create('div')).map(e => e.cloneNode()))
           );
+        } else {
+          $.remove('#searchResults > .lds-spinner');
         }
-      } else {
-        $.remove('.lds-spinner', parentNode);
       }
     }
-
 
     function render() {
       $('#searchResults-list').textContent = ''; // Clear search results
@@ -104,9 +104,10 @@
 
     function loadMoreIfNeeded() {
       if (shouldLoadMore()) {
+        setLoading(true);
         setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
       } else {
-        setLoading($('#searchResults'), false);
+        setLoading(false);
       }
     }
 
@@ -121,8 +122,8 @@
     /** Decrements currentPage and loads results. */
     function prev() {
       currentDisplayedPage = Math.max(1, currentDisplayedPage - 1);
-      render();
       window.scrollTo(0, 0);
+      render();
     }
 
     /**
@@ -151,9 +152,9 @@
         processNextResult();
       } else if (searchAPI.isExhausted()) {
         // Stop if no more search results.
-        setLoading($('#searchResults'), false);
+        setLoading(false);
       } else {
-        setLoading($('#searchResults'), true);
+        setLoading(true);
         // Search for more results.
         $('#searchResults').classList.remove('hidden');
         $('#searchResults-error').classList.add('hidden');
@@ -183,7 +184,7 @@
      */
     function processNextResult() {
       if (!shouldLoadMore()) {
-        setLoading($('#searchResults'), false);
+        setLoading(false);
         return;
       }
 
@@ -284,17 +285,16 @@
 
       const entry = template.searchResult.cloneNode(true);
       Object.assign(entry, {
-        id: 'searchResult-' + userstyleSearchResult.id
+        id: 'searchResult-' + userstyleSearchResult.id,
+        onclick: handleEvent.openURLandHide
       });
+      entry.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
       $('#searchResults-list').appendChild(entry);
 
       const searchResultName = userstyleSearchResult.name;
       const title = $('.searchResult-title', entry);
       Object.assign(title, {
-        textContent: searchResultName,
-        title: searchResultName,
-        href: searchAPI.BASE_URL + userstyleSearchResult.url,
-        onclick: handleEvent.openURLandHide
+        textContent: searchResultName
       });
 
       const screenshot = $('.searchResult-screenshot', entry);
@@ -312,14 +312,14 @@
 
       const description = $('.searchResult-description', entry);
       Object.assign(description, {
-        textContent: userstyleSearchResult.description.replace(/<.*?>/g, ''),
+        textContent: userstyleSearchResult.description.replace(/<.*?>/g, '').replace(/(\r\n?)\r\n?/g, '$1')
       });
       const descriptionExpand = $('.searchResult-description-info', entry);
       Object.assign(descriptionExpand, {
         onclick: e => {
+          e.stopPropagation();
           descriptionExpand.classList.add('hidden');
           description.classList.add('expanded');
-          description.innerHTML = userstyleSearchResult.description.replace(/<br\/?>\s*<br\/?>/, '<br/>');
         }
       });
 
@@ -370,14 +370,14 @@
       }
 
       /** Installs the current userstyleSearchResult into stylus. */
-      function install() {
+      function install(event) {
+        if (event) {
+          event.stopPropagation();
+        }
         const styleId = userstyleSearchResult.id;
         const url = searchAPI.BASE_URL + '/styles/chrome/' + styleId + '.json';
-        setLoading(entry, true);
         saveStyleSafe(userstyleSearchResult.json)
           .then(() => {
-            setLoading(entry, false);
-
             // Remove search result after installing
             let matchingIndex = -1;
             processedResults.forEach((processedResult, index) => {
@@ -394,7 +394,6 @@
             processNextResult();
           })
           .catch(reason => {
-            setLoading(entry, false);
             console.log('install:saveStyleSafe(', url, ') => [ERROR]: ', reason);
             alert('Error while downloading ' + url + '\nReason: ' + reason);
           });

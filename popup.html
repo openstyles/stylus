@@ -85,7 +85,7 @@
   <template data-id="searchResult">
     <div class="searchResult">
       <img class="searchResult-screenshot" />
-      <a class="searchResult-title" target="_blank"></a>
+      <h3 class="searchResult-title"></h3>
       <div class="searchResult-description-group">
         <div class="searchResult-description"></div>
         <div class="searchResult-description-info">
@@ -153,33 +153,35 @@
         </label>
       </div>
     </div>
+  </div>
+  <div class="actions">
     <div id="searchResults" class="hidden">
-      <h3>
+      <h2>
         <span i18n-text="searchResultsHeader"></span>
         <span id="searchResults-terms">...</span>
-      </h3>
+      </h2>
       <div id="searchResults-list"></div>
       <div id="searchResultsNav">
-        <button id="searchResultsNav-prev" title="Previous page" disabled>&#8592;</button>
+        <button id="searchResultsNav-prev" i18n-title="paginationPrevious" disabled>&#8592;</button>
         <label>
-          <span id="searchResultsNav-currentPage" title="Current page">-</span>
+          <span id="searchResultsNav-currentPage" i18n-title="paginationCurrent">-</span>
           /
-          <span id="searchResultsNav-totalPages" title="Total pages of search results">-</span>
+          <span id="searchResultsNav-totalPages" i18n-title="paginationTotal">-</span>
         </label>
-        <button id="searchResultsNav-next" title="Next page" disabled>&#8594;</button>
+        <button id="searchResultsNav-next" i18n-title="paginationNext" disabled>&#8594;</button>
       </div>
     </div>
     <div class="left-gutter"></div>
     <div class="main-controls">
       <div id="find-styles">
-        <a id="find-styles-link" i18n-text="findStylesForSite"></a>
+        <a id="find-styles-link" i18n-text="findStyles" i18n-title="findStylesTooltip"></a>
         <span id="find-styles-inline-group">
-          <label>
+          <label i18n-title="findStylesInlineTooltip">
             <input id="find-styles-inline" class="checker" type="checkbox" checked />
             <svg class="svg-icon checked" viewBox="0 0 1000 1000">
               <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
             </svg>
-            <span i18n-text="findStylesForSiteInline"></span>
+            <span i18n-text="findStylesInline"></span>
           </label>
         </span>
       </div>
