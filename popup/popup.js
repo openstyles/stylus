@@ -1,3 +1,5 @@
+/* global configDialog hotkeys */
+
 'use strict';
 
 let installed;
@@ -237,6 +239,7 @@ function createStyleElement({
   Object.assign(entry, {
     id: ENTRY_ID_PREFIX_RAW + style.id,
     styleId: style.id,
+    styleIsUsercss: Boolean(style.usercssData),
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
     onmousedown: handleEvent.maybeEdit,
   });
@@ -267,9 +270,18 @@ function createStyleElement({
     }
   });
 
+  const config = $('.configure', entry);
+  if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
+    config.href = style.url;
+    config.target = '_blank';
+  } else if (!style.usercssData || !Object.keys(style.usercssData.vars || {}).length) {
+    config.style.display = 'none';
+  }
+
   $('.enable', entry).onclick = handleEvent.toggle;
   $('.disable', entry).onclick = handleEvent.toggle;
   $('.delete', entry).onclick = handleEvent.delete;
+  $('.configure', entry).onclick = handleEvent.configure;
 
   invokeOrPostpone(!postponeDetect, detectSloppyRegexps, {entry, style});
 
@@ -336,6 +348,18 @@ Object.assign(handleEvent, {
           }
         });
       }
+    }
+  },
+
+  configure(event) {
+    const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
+    if (styleIsUsercss) {
+      getStylesSafe({id: styleId}).then(([style]) => {
+        hotkeys.setState(false);
+        configDialog(style).then(() => {
+          hotkeys.setState(true);
+        });
+      });
     }
   },
 

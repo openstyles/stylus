@@ -5,7 +5,7 @@ function createAppliesToLineWidget(cm) {
   const THROTTLE_DELAY = 400;
   let TPL, EVENTS, CLICK_ROUTE;
   let widgets = [];
-  let fromLine, toLine, styleVariables;
+  let fromLine, toLine, actualStyle;
   let initialized = false;
   return {toggle};
 
@@ -29,28 +29,16 @@ function createAppliesToLineWidget(cm) {
           $create('label', t('appliesLabel')),
           $create('ul.applies-to-list'),
         ]),
-      listItem:
-        $create('li.applies-to-item', [
-          $create('select.applies-type', [
-            $create('option', {value: 'url'}, t('appliesUrlOption')),
-            $create('option', {value: 'url-prefix'}, t('appliesUrlPrefixOption')),
-            $create('option', {value: 'domain'}, t('appliesDomainOption')),
-            $create('option', {value: 'regexp'}, t('appliesRegexpOption')),
-          ]),
-          $create('input.applies-value', {spellcheck: false}),
-          $create('button.test-regexp', t('styleRegexpTestButton')),
-          $create('button.remove-applies-to', t('appliesRemove')),
-          $create('button.add-applies-to', t('appliesAdd')),
-        ]),
+      listItem: template.appliesTo,
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
 
+    $('button', TPL.listItem).insertAdjacentElement('beforebegin',
+      $create('button.test-regexp', t('styleRegexpTestButton')));
+
     CLICK_ROUTE = {
-      '.test-regexp': (item, apply) => {
-        regExpTester.toggle();
-        regExpTester.update([apply.value.text]);
-      },
+      '.test-regexp': showRegExpTester,
 
       '.remove-applies-to': (item, apply) => {
         const applies = item.closest('.applies-to').__applies;
@@ -108,20 +96,17 @@ function createAppliesToLineWidget(cm) {
         if (typeElement) {
           const item = target.closest('.applies-to-item');
           const apply = item.__apply;
-          changeItem(apply, 'type', typeElement.value);
+          changeItem(item, apply, 'type', typeElement.value);
           item.dataset.type = apply.type.text;
+        } else {
+          return EVENTS.oninput.apply(this, arguments);
         }
       },
       oninput({target}) {
         if (target.matches('.applies-value')) {
-          const apply = target.closest('.applies-to-item').__apply;
-          debounce(changeItem, THROTTLE_DELAY, apply, 'value', target.value);
-        }
-      },
-      onfocus({target}) {
-        if (target.matches('.test-regexp')) {
-          const apply = target.closest('.applies-to-item').__apply;
-          updateRegexpTest(apply);
+          const item = target.closest('.applies-to-item');
+          const apply = item.__apply;
+          changeItem(item, apply, 'value', target.value);
         }
       },
       onclick({target}) {
@@ -136,15 +121,13 @@ function createAppliesToLineWidget(cm) {
       }
     };
 
-    styleVariables = $create('style');
+    actualStyle = $create('style');
     fromLine = 0;
     toLine = cm.doc.size;
 
     cm.on('change', onChange);
     cm.on('optionChange', onOptionChange);
 
-    // is it possible to avoid flickering?
-    window.addEventListener('load', updateWidgetStyle);
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
     updateWidgetStyle();
@@ -158,9 +141,8 @@ function createAppliesToLineWidget(cm) {
     widgets.length = 0;
     cm.off('change', onChange);
     cm.off('optionChange', onOptionChange);
-    window.removeEventListener('load', updateWidgetStyle);
     chrome.runtime.onMessage.removeListener(onRuntimeMessage);
-    styleVariables.remove();
+    actualStyle.remove();
   }
 
   function onChange(cm, event) {
@@ -229,24 +211,112 @@ function createAppliesToLineWidget(cm) {
   }
 
   function updateWidgetStyle() {
-    const gutterStyle = getComputedStyle(cm.getGutterElement());
-    const borderStyle = gutterStyle.borderRightWidth !== '0px' ?
-      `${gutterStyle.borderRightWidth} ${gutterStyle.borderRightStyle} ${gutterStyle.borderRightColor}` :
-      `1px solid ${gutterStyle.color}`;
-    const id = Date.now();
-    styleVariables.textContent = `
-      .single-editor {
-        --at-background-color-${id}: ${gutterStyle.backgroundColor};
-        --at-border-top-${id}: ${borderStyle};
-        --at-border-bottom-${id}: ${borderStyle};
-      }
+    const MIN_LUMA = .05;
+    const MIN_LUMA_DIFF = .4;
+    const color = {
+      wrapper: getRealColors(cm.display.wrapper),
+      gutter: getRealColors(cm.display.gutters, {
+        bg: 'backgroundColor',
+        border: 'borderRightColor',
+      }),
+      line: getRealColors('.CodeMirror-linenumber'),
+      comment: getRealColors('span.cm-comment'),
+    };
+    const hasBorder =
+      color.gutter.style.borderRightWidth !== '0px' &&
+      !/transparent|\b0\)/g.test(color.gutter.style.borderRightColor);
+    const diff = {
+      wrapper: Math.abs(color.gutter.bgLuma - color.wrapper.foreLuma),
+      border: hasBorder ? Math.abs(color.gutter.bgLuma - color.gutter.borderLuma) : 0,
+      line: Math.abs(color.gutter.bgLuma - color.line.foreLuma),
+    };
+    const preferLine = diff.line > diff.wrapper || diff.line > MIN_LUMA_DIFF;
+    const fore = preferLine ? color.line.fore : color.wrapper.fore;
+
+    const border = fore.replace(/[\d.]+(?=\))/, MIN_LUMA_DIFF / 2);
+    const borderStyleForced = `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
+
+    actualStyle.textContent = `
       .applies-to {
-        background-color: var(--at-background-color-${id});
-        border-top: var(--at-border-top-${id});
-        border-bottom: var(--at-border-bottom-${id});
+        background-color: ${color.gutter.bg};
+        border-top: ${borderStyleForced};
+        border-bottom: ${borderStyleForced};
+      }
+      .applies-to label {
+        color: ${fore};
+      }
+      .applies-to input,
+      .applies-to select {
+        background-color: rgba(255, 255, 255, ${
+          Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
+        });
+        border: ${borderStyleForced};
+        transition: none;
+        color: ${fore};
+      }
+      .applies-to .svg-icon.select-arrow {
+        fill: ${fore};
+        transition: none;
       }
     `;
-    document.documentElement.appendChild(styleVariables);
+    document.documentElement.appendChild(actualStyle);
+
+    function getRealColors(el, targets = {}) {
+      targets.fore = 'color';
+      const colors = {};
+      const done = {};
+      let numDone = 0;
+      let numTotal = 0;
+      for (const k in targets) {
+        colors[k] = {r: 255, g: 255, b: 255, a: 1};
+        numTotal++;
+      }
+      const isDummy = typeof el === 'string';
+      el = isDummy ? cm.display.lineDiv.appendChild($create(el, {style: 'display: none'})) : el;
+      for (let current = el; current; current = current && current.parentElement) {
+        const style = getComputedStyle(current);
+        for (const k in targets) {
+          if (!done[k]) {
+            done[k] = blend(colors[k], style[targets[k]]);
+            numDone += done[k] ? 1 : 0;
+            if (numDone === numTotal) {
+              current = null;
+              break;
+            }
+          }
+        }
+        colors.style = colors.style || style;
+      }
+      if (isDummy) {
+        el.remove();
+      }
+      for (const k in targets) {
+        const {r, g, b, a} = colors[k];
+        colors[k] = `rgba(${r}, ${g}, ${b}, ${a})`;
+        // https://www.w3.org/TR/AERT#color-contrast
+        colors[k + 'Luma'] = (r * .299 + g * .587 + b * .114) / 256;
+      }
+      return colors;
+    }
+
+    function blend(base, color) {
+      const [r, g, b, a = 255] = (color.match(/\d+/g) || []).map(Number);
+      if (a === 255) {
+        base.r = r;
+        base.g = g;
+        base.b = b;
+        base.a = 1;
+      } else if (a) {
+        const mixedA = 1 - (1 - a / 255) * (1 - base.a);
+        const q1 = a / 255 / mixedA;
+        const q2 = base.a * (1 - mixedA) / mixedA;
+        base.r = Math.round(r * q1 + base.r * q2);
+        base.g = Math.round(g * q1 + base.g * q2);
+        base.b = Math.round(b * q1 + base.b * q2);
+        base.a = mixedA;
+      }
+      return Math.abs(base.a - 1) < 1e-3;
+    }
   }
 
   function doUpdate() {
@@ -406,14 +476,14 @@ function createAppliesToLineWidget(cm) {
     return el;
   }
 
-  function changeItem(apply, part, newText) {
+  function changeItem(itemElement, apply, part, newText) {
     if (!apply) {
       return;
     }
     part = apply[part];
     const range = part.mark.find();
     part.mark.clear();
-    newText = newText.replace(/\\/g, '\\\\');
+    newText = unescapeDoubleslash(newText).replace(/\\/g, '\\\\');
     cm.replaceRange(newText, range.from, range.to, 'appliesTo');
     part.mark = cm.markText(
       range.from,
@@ -432,13 +502,8 @@ function createAppliesToLineWidget(cm) {
       );
     }
 
-    updateRegexpTest(apply);
-  }
-
-  function updateRegexpTest(apply) {
-    if (apply.type.text === 'regexp') {
-      const rx = apply.value.text.trim();
-      regExpTester.update(rx ? [rx] : {});
+    if (apply.type.text === 'regexp' && apply.value.text.trim()) {
+      showRegExpTester(itemElement);
     }
   }
 
@@ -450,7 +515,6 @@ function createAppliesToLineWidget(cm) {
     const valueStart = typeEnd + 1 + Number(isQuoted);
     const valueEnd = valueStart + valueText.length;
     const end = valueEnd + Number(isQuoted) + 1;
-    const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(valueText);
     return {
       start,
       type: {
@@ -459,7 +523,7 @@ function createAppliesToLineWidget(cm) {
         end: typeEnd,
       },
       value: {
-        text: hasSingleEscapes ? valueText : valueText.replace(/\\\\/g, '\\'),
+        text: unescapeDoubleslash(valueText),
         start: valueStart,
         end: valueEnd,
       },
@@ -504,5 +568,18 @@ function createAppliesToLineWidget(cm) {
   function unquote(s) {
     const first = s.charAt(0);
     return (first === '"' || first === "'") && s.endsWith(first) ? s.slice(1, -1) : s;
+  }
+
+  function unescapeDoubleslash(s) {
+    const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(s);
+    return hasSingleEscapes ? s : s.replace(/\\\\/g, '\\');
+  }
+
+  function showRegExpTester(item) {
+    regExpTester.toggle(true);
+    regExpTester.update(
+      item.closest('.applies-to').__applies
+        .filter(a => a.type.text === 'regexp')
+        .map(a => unescapeDoubleslash(a.value.text)));
   }
 }

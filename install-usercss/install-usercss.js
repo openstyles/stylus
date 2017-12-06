@@ -276,7 +276,7 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        BG.usercssHelper.save(BG.deepCopy(Object.assign(style, {reason: 'update'})))
+        BG.usercssHelper.save(BG.deepCopy(Object.assign(style, dup && {reason: 'update'})))
           .then(r => install(deepCopy(r)))
           .catch(err => messageBox.alert(t('styleInstallFailed', err)))
       );

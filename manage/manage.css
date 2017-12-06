@@ -79,6 +79,7 @@ select {
 
 #header h1 {
   margin-top: 0;
+  margin-bottom: .3em;
 }
 
 #header a[href^="edit"] {
@@ -90,25 +91,16 @@ select {
   margin-bottom: .25em;
 }
 
-#newStyleAsUsercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
+#add-style-as-usercss-wrapper {
+  display: inline-flex;
+}
+
+#add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
   fill: #aaa;
 }
 
 #usercss-wiki svg {
-  margin-top: -2px;
-}
-
-.nobreak {
-  white-space: nowrap;
-}
-
-label.nobreak input {
-  vertical-align: sub;
-  margin: 0;
-}
-
-.firefox .chromium-only {
-  display: none;
+  margin-top: -4px;
 }
 
 #installed {
@@ -264,9 +256,24 @@ label.nobreak input {
 }
 
 /* collapsibles */
+#header details:not(#filters),
+#add-style-wrapper {
+  padding-bottom: .7em;
+}
 
+#add-style-wrapper,
+#options :last-child,
+#backup :last-child {
+  margin-bottom: 0;
+}
+
+#header details:not([open]),
 #header details:not([open]) h2 {
-  margin-bottom: -.25em;
+  padding-bottom: 0;
+}
+
+#header details[open] summary {
+  padding-bottom: .5em;
 }
 
 #header summary {
@@ -274,7 +281,6 @@ label.nobreak input {
   margin-left: -13px;
   cursor: pointer;
   outline: none;
-  margin-bottom: 8px;
 }
 
 #header summary h2 {
@@ -326,6 +332,7 @@ label.nobreak input {
 
 .filter-selection {
   position: relative;
+  left: -9px;
 }
 
 #header label {
@@ -346,10 +353,6 @@ label.nobreak input {
   margin-top: -2px;
 }
 
-.firefox #header .filter-selection label .checkmate {
-  margin: 0;
-}
-
 .newUI #newUIoptions > label {
   padding-left: 0;
 }
@@ -361,10 +364,7 @@ label.nobreak input {
   max-width: 100%;
   padding-left: 4px;
   padding-right: 14px;
-}
-
-.firefox .filter-selection select {
-  padding-left: 0;
+  margin-left: 4px;
 }
 
 .filter-selection .select-arrow {
@@ -382,17 +382,13 @@ label.nobreak input {
   left: 16px;
 }
 
-.firefox .select-resizer {
-  left: 16px;
-}
-
-fieldset > label,
-fieldset > .filter-selection {
+#filters label,
+#filters .filter-selection {
   transition: background-color .25s;
 }
 
-fieldset > label:hover,
-fieldset > .filter-selection:hover {
+#filters label:hover,
+#filters .filter-selection:hover {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
@@ -646,11 +642,24 @@ fieldset > .filter-selection:hover {
   align-items: center;
   margin-bottom: auto;
   flex-wrap: wrap;
+  position: relative;
 }
 
 #newUIoptions input[type="number"] {
   width: 3em;
   margin-right: .5em;
+}
+
+#newUIoptions [data-toggle-on-click] {
+  transform: rotate(-90deg);
+  cursor: pointer;
+  right: -16px;
+  top: 0;
+  pointer-events: auto;
+}
+
+#newUIoptions [data-toggle-on-click][open] {
+  transform: none;
 }
 
 input[id^="manage.newUI"] {
@@ -751,26 +760,14 @@ input[id^="manage.newUI"] {
   display: none !important;
 }
 
-fieldset {
-  border-width: 1px;
-  border-radius: 6px;
-  margin: 1em 0;
-  min-width: 0;
-  max-width: 250px;
-}
-
-fieldset > input,
-fieldset > label {
+#filters label {
   display: flex;
   align-items: center;
-}
-
-#header fieldset > label {
   padding-left: 20px;
 }
 
-#header fieldset > label input[type="checkbox"]:not(.slider),
-#header fieldset > label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
+#filters label input[type="checkbox"]:not(.slider),
+#filters label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
   left: 4px;
 }
 
@@ -778,26 +775,80 @@ fieldset > label {
   border: 1px solid transparent;
 }
 
-#filters.active {
+#filters summary h2 {
+  margin-left: -4px;
+}
+
+.active #filters-stats {
   background-color: darkcyan;
   border-color: darkcyan;
   color: white;
+  font-size: 0.7rem;
+  font-weight: normal;
+  padding: 2px 5px;
+  position: relative;
+  top: -2px;
 }
 
-#filters:not(.active) #filters-stats {
+#reset-filters {
+  position: absolute;
+  margin-top: 2px;
+  fill: hsla(180, 50%, 27%, .5);
+  width: 24px; /* widen the click area a bit */
+  height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+#reset-filters:hover {
+  fill: hsla(180, 50%, 27%, 1);
+}
+
+#filters summary:not(.active) #reset-filters,
+#filters summary:not(.active) #filters-stats {
   display: none;
 }
 
-#filters-stats::before {
-  content: ": ";
+#search-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 #search {
-  width: calc(100% - 4px);
-  margin: 0.25rem 4px 0;
-  border-radius: 0.25rem;
+  flex-grow: 1;
+  margin: 0.25rem 0 0;
   padding-left: 0.25rem;
   border-width: 1px;
+}
+
+#search-wrapper .info {
+  margin: 4px -5px 0 8px;
+}
+
+#message-box.help-text > div {
+  max-width: 26rem;
+}
+.help-text li:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+.help-text mark {
+  background-color: rgba(128, 128, 128, .15);
+  color: currentColor;
+  padding: 2px 6px;
+  font-weight: bold;
+  font-family: monospace;
+  border: 1px solid rgba(128, 128, 128, .25);
+  display: inline-block;
+  margin: 2px;
+}
+
+.help-text mark.last {
+  display: block;
+  width: -moz-min-content;
+  width: min-content;
+  white-space: nowrap;
 }
 
 #import ul {
@@ -860,109 +911,6 @@ fieldset > label {
   text-overflow: ellipsis;
 }
 
-/* config dialog */
-.config-dialog .config-heading {
-  float: right;
-  margin: -1.25rem 0 0 0;
-  font-size: 0.9em;
-}
-
-.config-dialog label {
-  display: flex;
-  padding: .75em 0;
-  align-items: center;
-}
-
-.config-dialog .select-resizer {
-  position: static;
-}
-
-.config-dialog label:first-child {
-  padding-top: 0;
-}
-
-.config-dialog label:last-child {
-  padding-bottom: 0;
-}
-
-.config-dialog label:not(:first-child) {
-  border-top: 1px dotted #ccc;
-}
-
-.config-dialog label > :first-child {
-  margin-right: 8px;
-  flex-grow: 1;
-}
-
-.config-dialog label:not([disabled]) > :first-child {
-  cursor: default;
-}
-
-.config-dialog label:not([disabled]):hover > :first-child {
-  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
-  cursor: pointer;
-}
-
-.config-dialog input,
-.config-dialog select,
-.config-dialog .onoffswitch {
-  width: var(--onoffswitch-width);
-  margin: 0;
-  height: 2em;
-  box-sizing: border-box;
-  vertical-align: middle;
-}
-
-.config-dialog .select-resizer,
-.config-dialog select {
-  width: auto;
-  min-width: var(--onoffswitch-width);
-  max-width: 124px;
-  left: auto;
-  position: relative;
-}
-
-.config-dialog .onoffswitch {
-  height: auto;
-  margin: calc((2em - 12px) / 2) 0;
-}
-
-.config-dialog input[type="text"] {
-  padding-left: 0.25em;
-}
-
-.config-dialog label > :last-child {
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-.config-dialog label > :last-child:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
-  margin-right: 4px;
-}
-
-.cm-colorview::before,
-.color-swatch {
-  width: var(--onoffswitch-width) !important;
-  height: 20px !important;
-}
-
-.cm-colorview::before {
-  margin: 1px !important;
-}
-
-.color-swatch {
-  position: absolute;
-  border: 1px solid gray;
-  margin-top: -22px;
-  cursor: pointer;
-}
-
-.colorpicker-popup {
-  z-index: 2147483647 !important;
-  border: none !important;
-  box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
-}
-
 @keyframes fadein {
   from {
     opacity: 0;
@@ -998,7 +946,6 @@ fieldset > label {
   }
 
   #header p,
-  #header fieldset div,
   #backup {
     display: inline-block;
   }
@@ -1011,8 +958,7 @@ fieldset > label {
     margin-right: 1em;
   }
 
-  #backup p,
-  #header fieldset {
+  #backup p {
     margin: 0;
   }
 
@@ -1053,12 +999,6 @@ fieldset > label {
     padding-left: 0;
   }
 
-  fieldset {
-    max-width: none;
-    margin-top: 0;
-    margin-right: 2em;
-  }
-
   #header h1,
   #header h2,
   #header h3,
@@ -1088,19 +1028,8 @@ fieldset > label {
 
   .newUI #header > *:not(h1),
   .newUI #newUIoptions,
-  #newUIoptions > *,
-  fieldset label {
+  #newUIoptions > * {
     display: inline;
-  }
-
-  fieldset {
-    border: none;
-    margin: 0;
-    padding: 0 0 1em;
-  }
-
-  fieldset legend {
-    display: none;
   }
 
   #header label {
@@ -1109,5 +1038,31 @@ fieldset > label {
 
   .newUI .style-name {
     word-break: break-all;
+  }
+}
+
+@supports (-moz-appearance: none) {
+  .chromium-only {
+    display: none;
+  }
+
+  #header .filter-selection label .checkmate {
+    margin: 0;
+  }
+
+  .filter-selection select {
+    padding-left: 0;
+  }
+
+  .select-resizer {
+    left: 16px;
+  }
+
+  #reset-filters {
+    margin-top: 4px;
+  }
+
+  #filters summary h2 {
+    margin-left: -2px;
   }
 }

@@ -66,7 +66,15 @@ function initGlobalEvents() {
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
     const target = $(el.getAttribute('data-toggle-on-click'));
-    el.onclick = () => target.classList.toggle('hidden');
+    el.onclick = event => {
+      event.preventDefault();
+      target.classList.toggle('hidden');
+      if (target.classList.contains('hidden')) {
+        el.removeAttribute('open');
+      } else {
+        el.setAttribute('open', '');
+      }
+    };
   });
 
   // triggered automatically by setupLivePrefs() below

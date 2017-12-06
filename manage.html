@@ -6,6 +6,7 @@
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="manage/manage.css">
+  <link rel="stylesheet" href="manage/config-dialog.css">
   <link rel="stylesheet" href="msgbox/msgbox.css">
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
@@ -164,11 +165,15 @@
 <div id="header">
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
 
-  <fieldset>
-
-    <legend id="filters">
-      <span i18n-text="manageFilters"></span><span id="filters-stats"></span>
-    </legend>
+  <details id="filters" data-pref="manage.filters.expanded">
+    <summary>
+      <h2 i18n-text="manageFilters">: <span id="filters-stats"></span></h2>
+      <svg id="reset-filters" class="svg-icon" viewBox="0 0 20 20">
+        <title i18n-text="genericResetLabel"></title>
+        <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+                         5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+      </svg>
+    </summary>
 
     <div class="filter-selection">
       <label>
@@ -232,12 +237,14 @@
       <span i18n-text="manageOnlyUpdates"></span>
     </label>
 
-    <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
-           i18n-title="searchStylesTooltip"
-           data-filter=":not(.not-matching)"
-           data-filter-hide=".not-matching">
+    <div id="search-wrapper">
+      <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+             data-filter=":not(.not-matching)"
+             data-filter-hide=".not-matching">
+      <svg id="search-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+    </div>
 
-  </fieldset>
+  </details>
 
   <p class="nowrap">
     <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
@@ -254,11 +261,11 @@
     <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
   </p>
 
-  <p>
+  <p id="add-style-wrapper">
     <a href="edit.html">
       <button id="add-style-label" i18n-text="addStyleLabel"></button>
     </a>
-    <label id="newStyleAsUsercss-wrapper" class="nobreak">
+    <label id="add-style-as-usercss-wrapper">
       <input type="checkbox" id="newStyleAsUsercss">
       <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
       <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
@@ -287,10 +294,11 @@
         <label for="manage.newUI.favicons" i18n-text="manageFavicons">
           <input id="manage.newUI.favicons" type="checkbox">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          <svg class="svg-icon select-arrow" data-toggle-on-click="#faviconsHelp">
+            <title i18n-text="optionsSubheading"></title>
+            <use xlink:href="#svg-icon-select-arrow"/>
+          </svg>
         </label>
-        <svg class="svg-icon info" viewBox="0 0 14 16" i18n-alt="helpAlt" data-toggle-on-click="#faviconsHelp">
-          <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
-        </svg>
         <div id="faviconsHelp" class="hidden" i18n-text="manageFaviconsHelp">
           <div>
             <label for="manage.newUI.faviconsGray" i18n-text="manageFaviconsGray">
@@ -316,14 +324,14 @@
 
   </details>
 
-  <div id="backup">
-    <h2 id="backup-title" i18n-text="backupButtons"></h2>
+  <details id="backup" data-pref="manage.backup.expanded">
+    <summary><h2 id="backup-title" i18n-text="backupButtons"></h2></summary>
     <span id="backup-message" i18n-text="backupMessage"></span>
     <p>
       <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
       <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
     </p>
-  </div>
+  </details>
 
   <p id="manage-text" i18n-html="manageText"></p>
 
@@ -342,6 +350,11 @@
 
   <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
     <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
+  </symbol>
+
+  <symbol id="svg-icon-help" viewBox="0 0 14 16">
+    <title i18n-text="helpAlt"></title>
+    <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
   </symbol>
 </svg>
 

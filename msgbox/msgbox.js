@@ -70,11 +70,11 @@ function messageBox({
           $create(`#${id}-contents`, tHTML(contents)),
           $create(`#${id}-buttons`,
             buttons.map((content, buttonIndex) => content &&
-              $create('button', {
+              $create('button', Object.assign({
                 buttonIndex,
-                textContent: content.textContent || content,
-                onclick: content.onclick || messageBox.listeners.button,
-              }))),
+                textContent: typeof content === 'object' ? '' : content,
+                onclick: messageBox.listeners.button,
+              }, typeof content === 'object' && content)))),
         ]),
       ]);
   }

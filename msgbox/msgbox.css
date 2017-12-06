@@ -132,6 +132,18 @@
   margin: 0 .375rem;
 }
 
+/* popup */
+#message-box.stylus-popup {
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+}
+#message-box.stylus-popup > div {
+  max-width: 90vw;
+  top: auto;
+  right: auto;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;

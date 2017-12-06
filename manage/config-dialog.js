@@ -6,35 +6,79 @@ function configDialog(style) {
   const varsHash = deepCopy(data.vars) || {};
   const varNames = Object.keys(varsHash);
   const vars = varNames.map(name => varsHash[name]);
+  let varsInitial = getInitialValues(varsHash);
+
   const elements = [];
   const colorpicker = window.colorpicker();
+  const isPopup = location.href.includes('popup.html');
+  const buttons = {};
 
   buildConfigForm();
   renderValues();
 
   return messageBox({
     title: `${style.name} v${data.version}`,
-    className: 'config-dialog',
+    className: 'config-dialog' + (isPopup ? ' stylus-popup' : ''),
     contents: [
       $create('.config-heading', data.supportURL &&
         $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
       $create('.config-body', elements)
     ],
     buttons: [
-      t('confirmSave'),
-      {
-        textContent: t('confirmDefault'),
-        onclick: useDefault
-      },
-      t('confirmCancel')
-    ]
-  }).then(({button, esc}) => {
-    if (button !== 1) {
-      colorpicker.hide();
+      {textContent: t('confirmSave'), dataset: {cmd: 'save'}, disabled: true, onclick: save},
+      {textContent: t('confirmDefault'), dataset: {cmd: 'default'}, onclick: useDefault},
+      {textContent: t('confirmClose'), dataset: {cmd: 'close'}},
+    ],
+    onshow,
+  }).then(() => {
+    document.body.style.minWidth = '';
+    document.body.style.minHeight = '';
+    colorpicker.hide();
+  });
+
+  function getInitialValues(source) {
+    const data = {};
+    for (const name of varNames) {
+      const va = source[name];
+      data[name] = isDefault(va) ? va.default : va.value;
     }
-    if (button > 0 || esc || !vars.length || !vars.some(va => va.dirty)) {
+    return data;
+  }
+
+  function onshow(box) {
+    if (isPopup) {
+      adjustSizeForPopup(box);
+      box.style.animationDuration = '0s';
+    }
+    box.addEventListener('change', onchange);
+    buttons.save = $('[data-cmd="save"]', box);
+    buttons.default = $('[data-cmd="default"]', box);
+    buttons.close = $('[data-cmd="close"]', box);
+    updateButtons();
+  }
+
+  function onchange({target}) {
+    // invoked after element's own onchange so 'va' contains the updated value
+    const va = target.va;
+    if (va) {
+      va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
+      target.closest('label').classList.toggle('dirty', va.dirty);
+      updateButtons();
+    }
+  }
+
+  function updateButtons() {
+    const someDirty = vars.some(va => va.dirty);
+    buttons.save.disabled = !someDirty;
+    buttons.default.disabled = vars.every(isDefault);
+    buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
+  }
+
+  function save() {
+    if (!vars.length || !vars.some(va => va.dirty)) {
       return;
     }
+    style.enabled = true;
     style.reason = 'config';
     const styleVars = style.usercssData.vars;
     const bgStyle = BG.cachedStyles.byId.get(style.id);
@@ -52,7 +96,7 @@ function configDialog(style) {
         error = ['type ', '*' + va.type, ' != ', '*' + bgva.type];
       } else
       if ((va.type === 'select' || va.type === 'dropdown') &&
-          va.value !== null && va.value !== undefined &&
+          !isDefault(va) &&
           bgva.options.every(o => o.name !== va.value)) {
         error = `'${va.value}' not in the updated '${va.type}' list`;
       } else if (!va.dirty) {
@@ -76,33 +120,52 @@ function configDialog(style) {
             $create({tag: 'li', appendChild: msg}))),
       ]);
     }
-    return numValid && BG.usercssHelper.save(style);
-  });
+    return numValid && BG.usercssHelper.save(style).then(saved => {
+      varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
+      vars.forEach(va => onchange({target: va.input}));
+      updateButtons();
+    });
+  }
+
+  function useDefault() {
+    for (const va of vars) {
+      va.value = null;
+      onchange({target: va.input});
+    }
+    renderValues();
+  }
+
+  function isDefault(va) {
+    return va.value === null || va.value === undefined || va.value === va.default;
+  }
 
   function buildConfigForm() {
     for (const va of vars) {
       let children;
       switch (va.type) {
         case 'color':
-          va.inputColor = $create('.color-swatch', {va, onclick: showColorpicker});
           children = [
             $create('.cm-colorview', [
-              va.inputColor,
+              va.input = $create('.color-swatch', {
+                va,
+                onclick: showColorpicker
+              }),
             ]),
           ];
           break;
 
         case 'checkbox':
-          va.input = $create('input.slider', {type: 'checkbox'});
-          va.input.onchange = () => {
-            va.dirty = true;
-            va.value = String(Number(va.input.checked));
-          };
           children = [
             $create('span.onoffswitch', [
-              va.input,
+              va.input = $create('input.slider', {
+                va,
+                type: 'checkbox',
+                onchange() {
+                  va.value = va.input.checked ? '1' : '0';
+                },
+              }),
               $create('span'),
-            ])
+            ]),
           ];
           break;
 
@@ -110,26 +173,33 @@ function configDialog(style) {
         case 'dropdown':
         case 'image':
           // TODO: a image picker input?
-          va.input = $create('.select-resizer', [
-            $create('select', va.options.map(o =>
-              $create('option', {value: o.name}, o.label))),
-            $create('SVG:svg.svg-icon.select-arrow',
-              $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
-          ]);
-          va.input.onchange = () => {
-            va.dirty = true;
-            va.value = va.input.value;
-          };
-          children = [va.input];
+          children = [
+            $create('.select-resizer', [
+              va.input = $create('select', {
+                va,
+                onchange() {
+                  va.value = this.value;
+                }
+              },
+              va.options.map(o =>
+                $create('option', {value: o.name}, o.label))),
+              $create('SVG:svg.svg-icon.select-arrow',
+                $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
+            ]),
+          ];
           break;
 
         default:
-          va.input = $create('input', {type: 'text'});
-          va.input.oninput = () => {
-            va.dirty = true;
-            va.value = va.input.value;
-          };
-          children = [va.input];
+          children = [
+            va.input = $create('input', {
+              va,
+              type: 'text',
+              oninput() {
+                va.value = this.value;
+                this.dispatchEvent(new Event('change', {bubbles: true}));
+              },
+            }),
+          ];
           break;
       }
       elements.push(
@@ -142,10 +212,9 @@ function configDialog(style) {
 
   function renderValues() {
     for (const va of vars) {
-      const useDefault = va.value === null || va.value === undefined;
-      const value = useDefault ? va.default : va.value;
+      const value = isDefault(va) ? va.default : va.value;
       if (va.type === 'color') {
-        va.inputColor.style.backgroundColor = value;
+        va.input.style.backgroundColor = value;
         if (colorpicker.options.va === va) {
           colorpicker.setColor(value);
         }
@@ -155,15 +224,6 @@ function configDialog(style) {
         va.input.value = value;
       }
     }
-  }
-
-  function useDefault() {
-    for (const va of vars) {
-      const hasValue = va.value !== null && va.value !== undefined;
-      va.dirty = hasValue && va.value !== va.default;
-      va.value = null;
-    }
-    renderValues();
   }
 
   function showColorpicker() {
@@ -182,9 +242,9 @@ function configDialog(style) {
 
   function onColorChanged(newColor) {
     if (newColor) {
-      this.va.dirty = true;
       this.va.value = newColor;
-      this.va.inputColor.style.backgroundColor = newColor;
+      this.va.input.style.backgroundColor = newColor;
+      this.va.input.dispatchEvent(new Event('change', {bubbles: true}));
     }
     debounce(restoreEscInDialog);
   }
@@ -193,5 +253,23 @@ function configDialog(style) {
     if (!$('.colorpicker-popup') && messageBox.element) {
       window.addEventListener('keydown', messageBox.listeners.key, true);
     }
+  }
+
+  function adjustSizeForPopup(box) {
+    box.style = 'white-space: nowrap !important';
+    box.firstElementChild.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
+    const {offsetWidth, offsetHeight} = box.firstElementChild;
+    box.style = box.firstElementChild.style = '';
+
+    const colorpicker = document.body.appendChild(
+      $create('.colorpicker-popup', {style: 'display: none!important'}));
+    const MIN_WIDTH = parseFloat(getComputedStyle(colorpicker).width) || 350;
+    const MIN_HEIGHT = 250;
+    colorpicker.remove();
+
+    const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
+    const height = Math.max(Math.min(offsetHeight / 0.9 + 2, 600), MIN_HEIGHT);
+    document.body.style.setProperty('min-width', width + 'px', 'important');
+    document.body.style.setProperty('min-height', height + 'px', 'important');
   }
 }

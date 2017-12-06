@@ -739,9 +739,9 @@
     "message": "Search contents",
     "description": "Label for the search filter textbox on the Manage styles page"
   },
-  "searchStylesTooltip": {
-    "message": "To show styles for a URL, prefix it with 'url:'\nFor example, url:https://github.com/openstyles/stylus",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesHelp": {
+    "message": "</> key focuses the search field.\nPlain text: search within the name, code, homepage URL and sites it is applied to. Words with less than 3 letters are ignored.\nMatching URL: prefix the search with <url:>, e.g. <url:https://github.com/openstyles/stylus>\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/simguy>\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">",
+    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
   "sectionAdd": {
     "message": "Add another section",

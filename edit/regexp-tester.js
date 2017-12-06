@@ -160,12 +160,14 @@ var regExpTester = (() => {
           }
         }
       }
-      report.appendChild(
-        $create('p.regexp-report-note',
-          t('styleRegexpTestNote')
-            .split(/(\\+)/)
-            .map(s => (s.startsWith('\\') ? $create('code', s) : s))));
       showHelp(t('styleRegexpTestTitle'), report);
+
+      const note = $create('p.regexp-report-note',
+        t('styleRegexpTestNote')
+          .split(/(\\+)/)
+          .map(s => (s.startsWith('\\') ? $create('code', s) : s)));
+      report.appendChild(note);
+      report.style.paddingBottom = note.offsetHeight + 'px';
 
       report.onclick = event => {
         const target = event.target.closest('a, .regexp-report div');

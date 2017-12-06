@@ -218,8 +218,11 @@
     setFromHexLettercaseElement();
   }
 
-  function hide() {
+  function hide({notify = true} = {}) {
     if (shown) {
+      if (notify) {
+        colorpickerCallback('');
+      }
       unregisterEvents();
       focusNoScroll(prevFocusedElement);
       $root.remove();
@@ -550,8 +553,11 @@
   }
 
   function onMouseUp(event) {
-    if (releaseMouse(event, ['saturation', 'hue', 'opacity']) &&
-        !event.target.closest('.codemirror-colorview, .colorpicker-popup, .CodeMirror')) {
+    releaseMouse(event, ['saturation', 'hue', 'opacity']);
+  }
+
+  function onMouseDown(event) {
+    if (event.button === 0 && !event.target.closest('.colorpicker-popup')) {
       hide();
     }
   }
@@ -592,7 +598,7 @@
           colorpickerCallback(e.which === 27 ? '' : undefined);
           e.preventDefault();
           e.stopPropagation();
-          hide();
+          hide({notify: false});
           break;
       }
     }
@@ -660,6 +666,7 @@
 
   function registerEvents() {
     window.addEventListener('keydown', onKeyDown, true);
+    window.addEventListener('mousedown', onMouseDown, true);
     window.addEventListener('close-colorpicker-popup', onCloseRequest, true);
     $root.addEventListener('mouseleave', snooze);
     $root.addEventListener('mouseenter', stopSnoozing);
@@ -681,6 +688,7 @@
 
   function unregisterEvents() {
     window.removeEventListener('keydown', onKeyDown, true);
+    window.removeEventListener('mousedown', onMouseDown, true);
     window.removeEventListener('close-colorpicker-popup', hide, true);
     $root.removeEventListener('mouseleave', snooze);
     $root.removeEventListener('mouseenter', stopSnoozing);
@@ -940,6 +948,9 @@
       realColor.g = Math.round(g * q1 + realColor.g * q2);
       realColor.b = Math.round(b * q1 + realColor.b * q2);
       realColor.a = mixedA;
+      if (Math.abs(realColor.a - 1) < 1e-3) {
+        break;
+      }
     }
     // https://www.w3.org/TR/AERT#color-contrast
     const {r, g, b} = realColor;
