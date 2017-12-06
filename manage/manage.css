@@ -392,6 +392,13 @@ select {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
+#only-updates {
+  position: relative;
+  left: -5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
 .checkmate {
   position: relative;
   height: 12px;
