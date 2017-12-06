@@ -60,13 +60,18 @@
     function setLoading(isLoading) {
       if (loading !== isLoading) {
         loading = isLoading;
-        if (loading) {
+
+        render(); // Refresh elements that depend on `loading` state.
+
+        if (isLoading) {
+          // Show spinner
           $('#searchResults').appendChild(
             $create(
               '.lds-spinner',
               new Array(12).fill($create('div')).map(e => e.cloneNode()))
           );
         } else {
+          // Hide spinner
           $.remove('#searchResults > .lds-spinner');
         }
       }
@@ -82,7 +87,7 @@
         createSearchResultNode(resultToDisplay);
       });
 
-      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1);
+      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1 || loading);
       $('#searchResultsNav-currentPage').textContent = currentDisplayedPage;
 
       let totalResultsCount = processedResults.length;
@@ -91,7 +96,7 @@
         totalResultsCount += DISPLAYED_RESULTS_PER_PAGE;
       }
       const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
-      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount);
+      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
       $('#searchResultsNav-totalPages').textContent = totalPageCount;
     }
 
