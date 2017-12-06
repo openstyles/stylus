@@ -103,10 +103,6 @@ select {
   margin-top: -4px;
 }
 
-.firefox .chromium-only {
-  display: none;
-}
-
 #installed {
   position: relative;
   padding-left: var(--header-width);
@@ -357,10 +353,6 @@ select {
   margin-top: -2px;
 }
 
-.firefox #header .filter-selection label .checkmate {
-  margin: 0;
-}
-
 .newUI #newUIoptions > label {
   padding-left: 0;
 }
@@ -375,10 +367,6 @@ select {
   margin-left: 4px;
 }
 
-.firefox .filter-selection select {
-  padding-left: 0;
-}
-
 .filter-selection .select-arrow {
   margin-top: 2px;
   top: 0;
@@ -391,10 +379,6 @@ select {
   max-width: calc(100% - 2em);
   position: absolute;
   top: 0;
-  left: 16px;
-}
-
-.firefox .select-resizer {
   left: 16px;
 }
 
@@ -779,9 +763,6 @@ input[id^="manage.newUI"] {
 #filters label {
   display: flex;
   align-items: center;
-}
-
-#filters label {
   padding-left: 20px;
 }
 
@@ -792,6 +773,10 @@ input[id^="manage.newUI"] {
 
 #filters {
   border: 1px solid transparent;
+}
+
+#filters summary h2 {
+  margin-left: -4px;
 }
 
 .active #filters-stats {
@@ -817,10 +802,6 @@ input[id^="manage.newUI"] {
 
 #reset-filters:hover {
   fill: hsla(180, 50%, 27%, 1);
-}
-
-.firefox #reset-filters {
-  margin-top: 4px;
 }
 
 #filters summary:not(.active) #reset-filters,
@@ -1057,5 +1038,31 @@ input[id^="manage.newUI"] {
 
   .newUI .style-name {
     word-break: break-all;
+  }
+}
+
+@supports (-moz-appearance: none) {
+  .chromium-only {
+    display: none;
+  }
+
+  #header .filter-selection label .checkmate {
+    margin: 0;
+  }
+
+  .filter-selection select {
+    padding-left: 0;
+  }
+
+  .select-resizer {
+    left: 16px;
+  }
+
+  #reset-filters {
+    margin-top: 4px;
+  }
+
+  #filters summary h2 {
+    margin-left: -2px;
   }
 }
