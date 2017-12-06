@@ -811,8 +811,8 @@ input[id^="manage.newUI"] {
   margin-top: 4px;
 }
 
-#filters:not(.active) #reset-filters,
-#filters:not(.active) #filters-stats {
+#filters summary:not(.active) #reset-filters,
+#filters summary:not(.active) #filters-stats {
   display: none;
 }
 
