@@ -91,11 +91,11 @@ select {
   margin-bottom: .25em;
 }
 
-#newStyleAsUsercss-wrapper {
+#add-style-as-usercss-wrapper {
   display: inline-flex;
 }
 
-#newStyleAsUsercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
+#add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
   fill: #aaa;
 }
 
