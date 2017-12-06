@@ -75,9 +75,9 @@ onDOMready().then(() => {
         event.target.matches('[type="text"], [type="search"]')) {
       return;
     }
-    const k = event.which;
+    const {which: k, key} = event;
     // focus search field on "/" key
-    if (k === 191 && !event.shiftKey) {
+    if (key === '/' || !key && k === 191 && !event.shiftKey) {
       event.preventDefault();
       $('#search').focus();
       return;
