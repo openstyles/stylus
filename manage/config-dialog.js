@@ -54,6 +54,7 @@ function configDialog(style) {
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);
+    updateButtons();
   }
 
   function onchange({target}) {
