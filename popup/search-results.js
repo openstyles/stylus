@@ -364,9 +364,12 @@
         // Style has customizations
         installButton.classList.add('customize');
         const customizeButton = $('.searchResult-customize', entry);
+        customizeButton.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
         customizeButton.classList.remove('hidden');
-        customizeButton.href = searchAPI.BASE_URL + userstyleSearchResult.url;
-        customizeButton.onclick = handleEvent.openURLandHide;
+        customizeButton.onclick = event => {
+          event.stopPropagation();
+          handleEvent.openURLandHide.call(customizeButton, event);
+        };
       }
 
       /** Installs the current userstyleSearchResult into stylus. */
