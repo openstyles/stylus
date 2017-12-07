@@ -24,19 +24,43 @@ body.search-results-shown {
 .search-result {
   padding: 5px;
 }
-.search-result:hover {
-  background-color: rgba(50, 150, 255, 0.5);
-}
 
 .search-result-screenshot {
-  max-height: 120px;
+  height: 140px;
   width: 100%;
   object-fit: cover;
 }
 
 .search-result-title {
   padding: 3px;
-  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.search-result-info {
+  position: relative;
+}
+
+.search-result-overlay {
+  width: 100%;
+  height: 140px;
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  transition: opacity linear 0.2s;
+}
+.search-result-info:hover .search-result-overlay {
+  opacity: 1;
+}
+
+.search-result-overlay > .actions {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.search-result-overlay > :not(.actions) {
+  margin: 0 10px 0 10px;
 }
 
 .search-result-author-link {
@@ -53,8 +77,10 @@ body.search-results-shown {
 
 .search-result-description.expanded {
   width: 100%;
+  max-height: 100%;
   white-space: pre-wrap;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   text-overflow: unset;
   display: block;
 }

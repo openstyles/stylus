@@ -292,13 +292,14 @@
         id: 'search-result-' + userstyleSearchResult.id,
         onclick: handleEvent.openURLandHide
       });
-      entry.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
       $('#search-results-list').appendChild(entry);
 
       const searchResultName = userstyleSearchResult.name;
       const title = $('.search-result-title', entry);
       Object.assign(title, {
-        textContent: searchResultName
+        textContent: searchResultName,
+        onclick: handleEvent.openURLandHide,
+        href: searchAPI.BASE_URL + userstyleSearchResult.url
       });
 
       const screenshot = $('.search-result-screenshot', entry);
@@ -313,6 +314,8 @@
         src: screenshotUrl,
         title: searchResultName
       });
+
+      $('.search-result-overlay', entry).onclick = install;
 
       const description = $('.search-result-description', entry);
       Object.assign(description, {
@@ -332,7 +335,10 @@
         textContent: userstyleSearchResult.user.name,
         title: userstyleSearchResult.user.name,
         href: searchAPI.BASE_URL + '/users/' + userstyleSearchResult.user.id,
-        onclick: handleEvent.openURLandHide
+        onclick: event => {
+          event.stopPropagation();
+          handleEvent.openURLandHide.call(authorLink, event);
+        }
       });
 
       const rating = $('.search-result-rating', entry);
