@@ -1,3 +1,39 @@
+button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  user-select: none;
+  padding: 2px 7px;
+  border: 1px solid hsl(0, 0%, 62%);
+  font: 400 13.3333px Arial;
+  color: #000;
+  background-color: hsl(0, 0%, 100%);
+  background: url(../images/button.png)repeat-x;
+  background-size: 100% 100%;
+  transition: background-color .25s, border-color .25s;
+}
+
+button:hover {
+  background-color: hsl(0, 0%, 95%);
+  border-color: hsl(0, 0%, 52%);
+}
+
+/* For some odd reason these hovers appear lighter than all other button hovers in every browser */
+#message-box-buttons button:hover {
+  background-color: hsl(0, 0%, 90%);
+  border-color: hsl(0, 0%, 50%);
+}
+
+input:not([type]) {
+  background: #fff;
+  color: #000;
+  height: 22px;
+  min-height: 22px!important;
+  line-height: 22px;
+  padding: 0 3px;
+  font: 400 13.3333px Arial;
+  border: 1px solid hsl(0, 0%, 66%);
+} 
+
 .svg-icon.checked {
   position: absolute;
   height: 8px;
@@ -13,11 +49,11 @@ input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
 }
 
 input[type="checkbox"]:not(.slider) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
   position: absolute;
   left: 0;
   top: 0;
-  -moz-appearance: none;
-  -webkit-appearance: none;
   pointer-events: none;
   border: 1px solid hsl(0, 0%, 46%);
   height: 12px;
@@ -63,15 +99,11 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: 22px;
-  color: currentColor;
+  color: #000;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
   padding: 0 20px 0 6px;
   transition: color .5s;
-}
-
-.firefox select {
-  padding: 0 20px 0 2px;
 }
 
 .select-resizer {
@@ -86,7 +118,7 @@ select {
   display: inline-flex;
   height: 14px;
   width: 14px;
-  fill: currentColor;
+  fill: #000;
   position: absolute;
   top: 4px;
   right: 4px;
@@ -102,11 +134,58 @@ select {
     -moz-appearance: checkbox !important;
   }
 
-  ::-moz-focus-inner {
-    border: 0; 
+  .firefox select {
+    padding: 0 20px 0 2px;
   }
 
-  svg {
-    transform: scale(1); /* de-blur */
+/* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
+  .firefox.non-windows input[type=number] {
+    -moz-appearance: textfield;
+    background: #fff;
+    color: #000;
+    border: 1px solid hsl(0, 0%, 66%);
+  }
+
+  .firefox.non-windows input[type="number"]:hover,
+  .firefox.non-windows input[type="number"]:focus {
+    -moz-appearance: number-input;
+  }
+
+  .firefox.non-windows fieldset {
+    border-color: hsl(0, 0%, 66%);
+  }
+
+/* Fixes stable, beta, and nightly. First rule alone works for Linux. */
+/* All these tweaks aren't just a custom button thing, vertical text alignment of default buttons in FF is also a joke. */
+  .firefox button:not(.install) {
+    line-height: 13px;
+    padding: 3px 7px;
+  }
+
+  .firefox:not(.non-windows) #stylus-popup button:not(.install),
+  .firefox:not(.non-windows) #backup button:not(.install),
+  .firefox:not(.non-windows) #check-all-updates:not(.install),
+  .firefox:not(.non-windows) #stylus-edit #actions > div:first-child button:not(.install),
+  .firefox:not(.non-windows) button.remove-applies-to:not(.install),
+  .firefox:not(.non-windows) button.remove-applies-to + button.add-applies-to:not(.install),
+  .firefox:not(.non-windows) .beautify-options + div button:not(.install) {
+    padding: 2px 7px 4px;
+  }
+
+/* Fixes ESR. Linux not included since i didn't test it. Gotta draw the line somewhere. */
+  .firefox.moz-appearance-bug:not(.non-windows) button:not(.install) {
+    line-height: 13px;
+    padding: 2px 4px;
+  }
+
+  .firefox.moz-appearance-bug:not(.non-windows) #stylus-popup button:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) #backup button:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) #check-all-updates:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) #stylus-edit #actions > div:first-child button:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) button.remove-applies-to:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) button.remove-applies-to + button.add-applies-to:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) .beautify-options + div button:not(.install),
+  .firefox.moz-appearance-bug:not(.non-windows) #message-box-buttons button:not(.install) {
+    padding: 1px 4px 3px;
   }
 }
