@@ -1,7 +1,6 @@
 body.search-results-shown {
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
-  padding-right: 20px;
 }
 
 #disable-all-wrapper {
