@@ -722,10 +722,6 @@
     "message": "Use /re/ syntax for regexp search",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
   },
-  "searchResultsHeader": {
-    "message": "Results for",
-    "description": "Text for label above search results"
-  },
   "searchResultRating": {
     "message": "Rating",
     "description": "Text for label that shows the search result's rating"

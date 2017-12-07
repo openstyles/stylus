@@ -167,7 +167,6 @@
         // Discover current tab's URL & the "category" for the URL, then search.
         getActiveTab().then(tab => {
           category = searchAPI.getCategory(tab.url);
-          $('#search-results-terms').textContent = category;
           searchAPI.search(category)
             .then(searchResults => {
               if (searchResults.data.length === 0) {
@@ -328,7 +327,7 @@
         }
       });
 
-      const authorLink = $('.search-result-authorLink', entry);
+      const authorLink = $('.search-result-author-link', entry);
       Object.assign(authorLink, {
         textContent: userstyleSearchResult.user.name,
         title: userstyleSearchResult.user.name,

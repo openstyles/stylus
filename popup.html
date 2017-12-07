@@ -85,8 +85,8 @@
 
   <template data-id="searchResult">
     <div class="search-result">
-      <img class="search-result-screenshot" />
       <h3 class="search-result-title"></h3>
+      <img class="search-result-screenshot" />
       <div class="search-result-description-group">
         <div class="search-result-description"></div>
         <div class="search-result-description-info">
@@ -96,11 +96,11 @@
         </div>
       </div>
       <div class="search-result-author">
-        <label i18n-text="author"></label>
-        <a class="search-result-authorLink" target="_blank"></a>
+        <label i18n-text="author"></label>:
+        <a class="search-result-author-link" target="_blank"></a>
       </div>
       <div class="search-result-meta">
-        <div class="search-result-metaRating">
+        <div class="search-result-meta-rating">
           <span i18n-text="searchResultRating"></span>:
           <span class="search-result-rating"></span>
         </div>
@@ -170,10 +170,6 @@
   </div>
   <div class="actions">
     <div id="search-results" class="hidden">
-      <h2>
-        <span i18n-text="searchResultsHeader"></span>
-        <span id="search-results-terms">...</span>
-      </h2>
       <div id="search-results-list"></div>
       <div id="search-results-nav">
         <button id="search-results-nav-prev" i18n-title="paginationPrevious" disabled>&#8592;</button>

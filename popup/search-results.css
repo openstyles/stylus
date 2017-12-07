@@ -39,6 +39,10 @@ body.search-results-shown {
   margin: 0;
 }
 
+.search-result-author-link {
+  margin-left: 3px;
+}
+
 .search-result-description {
   width: 90%;
   white-space: nowrap;
@@ -60,10 +64,6 @@ body.search-results-shown {
   cursor: pointer;
   width: 16px;
   height: 14px;
-}
-
-.search-result-author {
-  display: none;
 }
 
 .search-result-meta {
