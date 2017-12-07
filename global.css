@@ -135,6 +135,7 @@ select {
   }
   
   .firefox select {
+    font-size: 13px;
     padding: 0 20px 0 2px;
     line-height: 22px!important;
   }
@@ -163,7 +164,7 @@ select {
     padding: 3px 7px;
   }
 
-  .firefox.moz-appearance-bug button:not(.install){
+  .firefox.moz-appearance-bug button:not(.install) {
     padding: 2px 4px;
   }
 }
