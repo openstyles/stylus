@@ -283,9 +283,6 @@
           style_settings: [...]
         }
       */
-      if (userstyleSearchResult.installed) {
-        return;
-      }
 
       const entry = template.searchResult.cloneNode(true);
       Object.assign(entry, {
@@ -315,7 +312,7 @@
         title: searchResultName
       });
 
-      $('.search-result-overlay', entry).onclick = install;
+      const searchResultOverlay = $('.search-result-overlay', entry);
 
       const description = $('.search-result-description', entry);
       Object.assign(description, {
@@ -367,12 +364,17 @@
         textContent: userstyleSearchResult.total_install_count.toLocaleString()
       });
 
+      const uninstallButton = $('.search-result-uninstall', entry);
+      uninstallButton.onclick = uninstall;
+
       const installButton = $('.search-result-install', entry);
       installButton.onclick = install;
 
       if (userstyleSearchResult.style_settings.length > 0) {
         // Style has customizations
         installButton.classList.add('customize');
+        uninstallButton.classList.add('customize');
+
         const customizeButton = $('.search-result-customize', entry);
         customizeButton.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
         customizeButton.classList.remove('hidden');
@@ -382,7 +384,25 @@
         };
       }
 
-      /** Installs the current userstyleSearchResult into stylus. */
+      if (userstyleSearchResult.installed) {
+        searchResultOverlay.onclick = uninstall;
+        installButton.classList.add('hidden');
+        uninstallButton.classList.remove('hidden');
+      } else {
+        searchResultOverlay.onclick = install;
+      }
+
+      /** Uninstalls the current userstyleSearchResult from Stylus. */
+      function uninstall(event) {
+        event.stopPropagation();
+        deleteStyleSafe({id: userstyleSearchResult.installedStyleId})
+          .then(() => {
+            userstyleSearchResult.installed = false;
+            render();
+          });
+      }
+
+      /** Installs the current userstyleSearchResult into Stylus. */
       function install(event) {
         if (event) {
           event.stopPropagation();
@@ -390,21 +410,11 @@
         const styleId = userstyleSearchResult.id;
         const url = searchAPI.BASE_URL + '/styles/chrome/' + styleId + '.json';
         saveStyleSafe(userstyleSearchResult.json)
-          .then(() => {
-            // Remove search result after installing
-            let matchingIndex = -1;
-            processedResults.forEach((processedResult, index) => {
-              if (processedResult.id === userstyleSearchResult.id) {
-                matchingIndex = index;
-              }
-            });
-            if (matchingIndex >= 0) {
-              processedResults.splice(matchingIndex, 1);
-            }
-            render();
-
-            // Load more results if needed.
-            processNextResult();
+          .then(savedStyle => {
+            // Success: Store installed styleId, mark as installed.
+            userstyleSearchResult.installed = true;
+            userstyleSearchResult.installedStyleId = savedStyle.id;
+            render(); // Hides install button, shows uninstall button.
           })
           .catch(reason => {
             console.log('install:saveStyleSafe(', url, ') => [ERROR]: ', reason);

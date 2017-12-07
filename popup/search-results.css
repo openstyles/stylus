@@ -128,10 +128,12 @@ body.search-results-shown {
   font-weight: 600;
 }
 
-.search-result-install {
+.search-result-install, .search-result-uninstall {
   width: 100%;
 }
-.search-result-install.customize, .search-result-customize {
+.search-result-install.customize,
+.search-result-uninstall.customize,
+.search-result-customize {
   width: 50%;
 }
 
