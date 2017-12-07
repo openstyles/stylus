@@ -54,7 +54,6 @@ input[type="checkbox"]:not(.slider) {
   position: absolute;
   left: 0;
   top: 0;
-  pointer-events: none;
   border: 1px solid hsl(0, 0%, 46%);
   height: 12px;
   width: 12px;
@@ -99,6 +98,7 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: 22px;
+  font: 400 13.3333px Arial;
   color: #000;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
@@ -133,9 +133,14 @@ select {
   .moz-appearance-bug input[type="checkbox"] {
     -moz-appearance: checkbox !important;
   }
-
+  
   .firefox select {
     padding: 0 20px 0 2px;
+    line-height: 22px!important;
+  }
+
+  svg {
+    transform: scale(1); /* de-blur */
   }
 
 /* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
@@ -150,42 +155,15 @@ select {
   .firefox.non-windows input[type="number"]:focus {
     -moz-appearance: number-input;
   }
-
-  .firefox.non-windows fieldset {
-    border-color: hsl(0, 0%, 66%);
-  }
-
-/* Fixes stable, beta, and nightly. First rule alone works for Linux. */
-/* All these tweaks aren't just a custom button thing, vertical text alignment of default buttons in FF is also a joke. */
+  
+/* Firefox cannot handle fractions in font-size */
   .firefox button:not(.install) {
+    font-size: 13px;
     line-height: 13px;
     padding: 3px 7px;
   }
 
-  .firefox:not(.non-windows) #stylus-popup button:not(.install),
-  .firefox:not(.non-windows) #backup button:not(.install),
-  .firefox:not(.non-windows) #check-all-updates:not(.install),
-  .firefox:not(.non-windows) #stylus-edit #actions > div:first-child button:not(.install),
-  .firefox:not(.non-windows) button.remove-applies-to:not(.install),
-  .firefox:not(.non-windows) button.remove-applies-to + button.add-applies-to:not(.install),
-  .firefox:not(.non-windows) .beautify-options + div button:not(.install) {
-    padding: 2px 7px 4px;
-  }
-
-/* Fixes ESR. Linux not included since i didn't test it. Gotta draw the line somewhere. */
-  .firefox.moz-appearance-bug:not(.non-windows) button:not(.install) {
-    line-height: 13px;
+  .firefox.moz-appearance-bug button:not(.install){
     padding: 2px 4px;
-  }
-
-  .firefox.moz-appearance-bug:not(.non-windows) #stylus-popup button:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) #backup button:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) #check-all-updates:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) #stylus-edit #actions > div:first-child button:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) button.remove-applies-to:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) button.remove-applies-to + button.add-applies-to:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) .beautify-options + div button:not(.install),
-  .firefox.moz-appearance-bug:not(.non-windows) #message-box-buttons button:not(.install) {
-    padding: 1px 4px 3px;
   }
 }
