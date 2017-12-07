@@ -56,3 +56,7 @@
   position: absolute;
   pointer-events: none;
 }
+
+.CodeMirror-activeline .applies-to ul {
+  z-index: 2;
+}
