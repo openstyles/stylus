@@ -459,7 +459,11 @@
       if (sorting) {
         sorting = false;
         docRootObserver.takeRecords();
-        start();
+        if (!restorationLimitExceeded()) {
+          start();
+        } else {
+          setTimeout(start, 1000);
+        }
       }
     }
     function isMovable(el) {
@@ -474,9 +478,6 @@
     }
     function moveAfter(el, expected) {
       if (!sorting) {
-        if (restorationLimitExceeded()) {
-          return false;
-        }
         sorting = true;
         docRootObserver.stop();
       }
@@ -493,11 +494,7 @@
         restorationCounter = 0;
       }
       lastRestorationTime = t;
-      if (++restorationCounter > 10) {
-        sorting = false;
-        setTimeout(start, 1000);
-        return true;
-      }
+      return ++restorationCounter > 2;
     }
   }
 })();
