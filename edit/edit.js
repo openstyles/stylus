@@ -26,47 +26,23 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-preinit();
 window.onbeforeunload = beforeUnload;
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
+preinit();
+
 Promise.all([
-  initStyleData().then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-    // we set "usercss" class on <html> when <body> is empty
-    // so there'll be no flickering of the elements that depend on it
-    if (isUsercss(style)) {
-      document.documentElement.classList.add('usercss');
-    }
-    // strip URL parameters when invoked for a non-existent id
-    if (!styleId) {
-      history.replaceState({}, document.title, location.pathname);
-    }
-    return style;
-  }),
+  initStyleData(),
   onDOMready(),
-  onBackgroundReady(),
 ])
 .then(([style]) => Promise.all([
   style,
   initColorpicker(),
   initCollapsibles(),
   initHooksCommon(),
+  dispatchEvent(new Event('init:allDone')),
 ]))
-.then(([style]) => {
-  const usercss = isUsercss(style);
-  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
-  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
-  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
-  $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
-  if (usercss) {
-    editor = createSourceEditor(style);
-  } else {
-    initWithSectionStyle({style});
-    document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
-  }
-});
+.then(createEditor);
 
 function preinit() {
   // make querySelectorAll enumeration code readable
@@ -178,6 +154,20 @@ function preinit() {
   });
 }
 
+function createEditor([style]) {
+  const usercss = isUsercss(style);
+  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
+  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+  $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
+  if (usercss) {
+    editor = createSourceEditor(style);
+  } else {
+    initWithSectionStyle({style});
+    document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
+  }
+}
+
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
@@ -258,9 +248,20 @@ function initStyleData() {
       )
     ],
   });
-  return !id ?
-    Promise.resolve(createEmptyStyle()) :
-    getStylesSafe({id}).then(([style]) => style || createEmptyStyle());
+  return getStylesSafe({id: id || -1})
+    .then(([style = createEmptyStyle()]) => {
+      styleId = sessionStorage.justEditedStyleId = style.id;
+      // we set "usercss" class on <html> when <body> is empty
+      // so there'll be no flickering of the elements that depend on it
+      if (isUsercss(style)) {
+        document.documentElement.classList.add('usercss');
+      }
+      // strip URL parameters when invoked for a non-existent id
+      if (!styleId) {
+        history.replaceState({}, document.title, location.pathname);
+      }
+      return style;
+    });
 }
 
 function initHooks() {
