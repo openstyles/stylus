@@ -11008,19 +11008,19 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
       self.postMessage(CSSLint.getRules().map(rule => JSON.parse(JSON.stringify(rule))));
       return;
 
-    case 'run':
-      self.postMessage(CSSLint.verify(code, config).messages.map(m => {
-        // the functions are non-tranferable and we need only an id
-        m.rule = {id: m.rule.id};
-        return m;
-      }).filter(m => !m.message.includes('/*[[') && !m.message.includes(']]*/')));
+    case 'run': {
+      const results = CSSLint.verify(code, config).messages
+        .filter(m => !m.message.includes('/*[[') && !m.message.includes(']]*/'))
+        .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
+      self.postMessage(results);
       return;
-
+    }
     case 'parse':
       if (!self.mozParser) {
         self.importScripts('/js/moz-parser.js');
       }
       mozParser.parse(code)
-        .then(sections => self.postMessage(sections));
+        .then(sections => self.postMessage(sections))
+        .catch(info => self.postMessage({__ERROR__: info}));
   }
 };

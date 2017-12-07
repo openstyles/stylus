@@ -579,7 +579,7 @@ var usercss = (() => {
       worker.instance = new Worker('/vendor-overwrites/csslint/csslint-worker.js');
       worker.queue = [];
       worker.instance.onmessage = ({data}) => {
-        worker.queue.shift().resolve(data);
+        worker.queue.shift().resolve(data.__ERROR__ ? Promise.reject(data.__ERROR__) : data);
         if (worker.queue.length) {
           worker.instance.postMessage(worker.queue[0].message);
         }

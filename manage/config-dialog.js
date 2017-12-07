@@ -30,11 +30,7 @@ function configDialog(style) {
       {textContent: t('confirmClose'), dataset: {cmd: 'close'}},
     ],
     onshow,
-  }).then(() => {
-    document.body.style.minWidth = '';
-    document.body.style.minHeight = '';
-    colorpicker.hide();
-  });
+  }).then(onhide);
 
   function getInitialValues(source) {
     const data = {};
@@ -67,6 +63,12 @@ function configDialog(style) {
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);
     updateButtons();
+  }
+
+  function onhide() {
+    document.body.style.minWidth = '';
+    document.body.style.minHeight = '';
+    colorpicker.hide();
   }
 
   function onchange({target}) {
@@ -129,6 +131,7 @@ function configDialog(style) {
       }
     }
     if (invalid.length) {
+      onhide();
       messageBox.alert([
         $create('div', {style: 'max-width: 34em'}, t('usercssConfigIncomplete')),
         $create('ol', {style: 'text-align: left'},
@@ -136,11 +139,16 @@ function configDialog(style) {
             $create({tag: 'li', appendChild: msg}))),
       ]);
     }
-    return numValid && BG.usercssHelper.save(style).then(saved => {
-      varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
-      vars.forEach(va => onchange({target: va.input}));
-      updateButtons();
-    });
+    if (!numValid) {
+      return;
+    }
+    return BG.usercssHelper.save(style)
+      .then(saved => {
+        varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
+        vars.forEach(va => onchange({target: va.input}));
+        updateButtons();
+      })
+      .catch(errors => onhide() + messageBox.alert(Array.isArray(errors) ? errors.join('\n') : errors));
   }
 
   function useDefault() {
