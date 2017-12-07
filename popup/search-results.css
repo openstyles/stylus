@@ -21,6 +21,11 @@ body.search-results-shown {
   margin-right: 20px;
 }
 
+#search-results-list {
+  position: relative;
+  min-height: 200px; /* Size of lds-spinner */
+}
+
 .search-result {
   padding: 5px;
 }
@@ -60,7 +65,7 @@ body.search-results-shown {
 }
 
 .search-result-overlay > :not(.actions) {
-  margin: 0 10px 0 10px;
+  margin: 5px 10px 5px 10px;
 }
 
 .search-result-author-link {
@@ -136,6 +141,7 @@ body.search-results-shown {
   text-align: center;
   word-break: keep-all;
   opacity: 1.0;
+  margin-bottom: 10px;
 }
 
 #search-results-nav label {
@@ -184,7 +190,7 @@ body.search-results-shown {
   position: absolute;
   width: 200px;
   height: 200px;
-  top: 50px;
+  top: 100px;
   left: 0;
   right: 0;
   margin: auto;
