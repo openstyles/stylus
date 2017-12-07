@@ -84,34 +84,34 @@
   </template>
 
   <template data-id="searchResult">
-    <div class="searchResult">
-      <img class="searchResult-screenshot" />
-      <h3 class="searchResult-title"></h3>
-      <div class="searchResult-description-group">
-        <div class="searchResult-description"></div>
-        <div class="searchResult-description-info">
+    <div class="search-result">
+      <img class="search-result-screenshot" />
+      <h3 class="search-result-title"></h3>
+      <div class="search-result-description-group">
+        <div class="search-result-description"></div>
+        <div class="search-result-description-info">
           <svg class="svg-icon info" viewBox="0 0 14 16">
             <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
           </svg>
         </div>
       </div>
-      <div class="searchResult-author">
+      <div class="search-result-author">
         <label i18n-text="author"></label>
-        <a class="searchResult-authorLink" target="_blank"></a>
+        <a class="search-result-authorLink" target="_blank"></a>
       </div>
-      <div class="searchResult-meta">
-        <div class="searchResult-metaRating">
+      <div class="search-result-meta">
+        <div class="search-result-metaRating">
           <span i18n-text="searchResultRating"></span>:
-          <span class="searchResult-rating"></span>
+          <span class="search-result-rating"></span>
         </div>
-        <div class="searchResult-metaInstallCounts">
+        <div class="search-result-meta-install-count">
           <span i18n-text="searchResultInstallCount"></span>:
-          <span class="searchResult-installCount"></span>
+          <span class="search-result-install-count"></span>
         </div>
       </div>
       <div class="actions">
-        <button class="searchResult-install" i18n-text="installButton"></button>
-        <button class="searchResult-customize hidden"
+        <button class="search-result-install" i18n-text="installButton"></button>
+        <button class="search-result-customize hidden"
                 i18n-text="searchResultCustomize"
                 i18n-title="searchResultCustomizeTooltip"></button>
       </div>
@@ -169,20 +169,20 @@
     </div>
   </div>
   <div class="actions">
-    <div id="searchResults" class="hidden">
+    <div id="search-results" class="hidden">
       <h2>
         <span i18n-text="searchResultsHeader"></span>
-        <span id="searchResults-terms">...</span>
+        <span id="search-results-terms">...</span>
       </h2>
-      <div id="searchResults-list"></div>
-      <div id="searchResultsNav">
-        <button id="searchResultsNav-prev" i18n-title="paginationPrevious" disabled>&#8592;</button>
+      <div id="search-results-list"></div>
+      <div id="search-results-nav">
+        <button id="search-results-nav-prev" i18n-title="paginationPrevious" disabled>&#8592;</button>
         <label>
-          <span id="searchResultsNav-currentPage" i18n-title="paginationCurrent">-</span>
+          <span id="search-results-nav-current-page" i18n-title="paginationCurrent">-</span>
           /
-          <span id="searchResultsNav-totalPages" i18n-title="paginationTotal">-</span>
+          <span id="search-results-nav-total-pages" i18n-title="paginationTotal">-</span>
         </label>
-        <button id="searchResultsNav-next" i18n-title="paginationNext" disabled>&#8594;</button>
+        <button id="search-results-nav-next" i18n-title="paginationNext" disabled>&#8594;</button>
       </div>
     </div>
     <div class="left-gutter"></div>
@@ -199,7 +199,7 @@
           </label>
         </span>
       </div>
-      <div id="searchResults-error" class="hidden"></div>
+      <div id="search-results-error" class="hidden"></div>
       <div id="write-style">
         <span id="write-style-for" i18n-text="writeStyleFor"></span>
       </div>

@@ -13,7 +13,7 @@ body.search-results-shown {
   display: none !important;
 }
 
-#searchResults-error {
+#search-results-error {
   background-color: rgba(255, 0, 0, 0.4);
   font-weight: bold;
   padding: 5px;
@@ -21,29 +21,25 @@ body.search-results-shown {
   margin-right: 20px;
 }
 
-.searchResult {
+.search-result {
   padding: 5px;
 }
-.searchResult:hover {
+.search-result:hover {
   background-color: rgba(50, 150, 255, 0.5);
 }
-.searchResult.loading {
-  background-color: rgba(90, 90, 90, 0.5);
-  opacity: 0.5;
-}
 
-.searchResult-screenshot {
+.search-result-screenshot {
   max-height: 120px;
   width: 100%;
   object-fit: cover;
 }
 
-.searchResult-title {
+.search-result-title {
   padding: 3px;
   margin: 0;
 }
 
-.searchResult-description {
+.search-result-description {
   width: 90%;
   white-space: nowrap;
   overflow: hidden;
@@ -51,7 +47,7 @@ body.search-results-shown {
   display: inline-block;
 }
 
-.searchResult-description.expanded {
+.search-result-description.expanded {
   width: 100%;
   white-space: pre-wrap;
   overflow: auto;
@@ -59,73 +55,70 @@ body.search-results-shown {
   display: block;
 }
 
-.searchResult-description-info {
+.search-result-description-info {
   display: inline-block;
   cursor: pointer;
   width: 16px;
   height: 14px;
 }
 
-.searchResult-author {
+.search-result-author {
   display: none;
 }
 
-.searchResult-meta {
+.search-result-meta {
   display: table;
   width: 100%;
 }
 
-.searchResult-metaRating, .searchResult-metaInstallCount {
+.search-result-meta-rating, .search-result-meta-install-count {
   display: table-cell;
   text-align: center;
 }
 
-.searchResult-rating {
+.search-result-rating {
   font-weight: 600;
   padding: 1px 2px 1px 2px;
   color: #fff;
 }
-.searchResult-rating.good {
+.search-result-rating.good {
   background-color: darkgreen;
 }
-.searchResult-rating.okay {
+.search-result-rating.okay {
   background-color: darkorange;
 }
-.searchResult-rating.bad {
+.search-result-rating.bad {
   background-color: darkred;
 }
-.searchResult-rating.none {
+.search-result-rating.none {
   background-color: #333;
 }
 
-.searchResult-installCount {
+.search-result-install-count {
   font-weight: 600;
 }
 
-.searchResult-install {
+.search-result-install {
   width: 100%;
 }
-.searchResult-install.customize, .searchResult-customize {
+.search-result-install.customize, .search-result-customize {
   width: 50%;
 }
 
-#searchResultsNav {
+#search-results-nav {
   flex-direction: row;
   text-align: center;
   word-break: keep-all;
   opacity: 1.0;
 }
-#searchResultsNav.loading {
-  opacity: 0.5;
-}
 
-#searchResultsNav label {
+#search-results-nav label {
   width: 40px;
   display: inline-block;
   word-break: keep-all;
 }
 
-#searchResultsNav button {
+#search-results-nav button {
   text-align: center;
 }
 

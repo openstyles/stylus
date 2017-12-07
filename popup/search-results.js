@@ -47,8 +47,8 @@
     return {init, load, next, prev};
 
     function init() {
-      $('#searchResultsNav-prev').onclick = prev;
-      $('#searchResultsNav-next').onclick = next;
+      $('#search-results-nav-prev').onclick = prev;
+      $('#search-results-nav-next').onclick = next;
       document.body.classList.add('search-results-shown');
       window.scrollTo(0, 0);
     }
@@ -65,20 +65,20 @@
 
         if (isLoading) {
           // Show spinner
-          $('#searchResults').appendChild(
+          $('#search-results').appendChild(
             $create(
               '.lds-spinner',
               new Array(12).fill($create('div')).map(e => e.cloneNode()))
           );
         } else {
           // Hide spinner
-          $.remove('#searchResults > .lds-spinner');
+          $.remove('#search-results > .lds-spinner');
         }
       }
     }
 
     function render() {
-      $('#searchResults-list').textContent = ''; // Clear search results
+      $('#search-results-list').textContent = ''; // Clear search results
 
       const startIndex = (currentDisplayedPage - 1) * DISPLAYED_RESULTS_PER_PAGE;
       const endIndex = currentDisplayedPage * DISPLAYED_RESULTS_PER_PAGE;
@@ -87,8 +87,8 @@
         createSearchResultNode(resultToDisplay);
       });
 
-      $('#searchResultsNav-prev').disabled = (currentDisplayedPage <= 1 || loading);
-      $('#searchResultsNav-currentPage').textContent = currentDisplayedPage;
+      $('#search-results-nav-prev').disabled = (currentDisplayedPage <= 1 || loading);
+      $('#search-results-nav-current-page').textContent = currentDisplayedPage;
 
       let totalResultsCount = processedResults.length;
       if (unprocessedResults.length > 0) {
@@ -96,8 +96,8 @@
         totalResultsCount += DISPLAYED_RESULTS_PER_PAGE;
       }
       const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
-      $('#searchResultsNav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
-      $('#searchResultsNav-totalPages').textContent = totalPageCount;
+      $('#search-results-nav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
+      $('#search-results-nav-total-pages').textContent = totalPageCount;
     }
 
     /**
@@ -143,9 +143,9 @@
       } else {
         message = 'Error loading search results: ' + reason;
       }
-      $('#searchResults').classList.add('hidden');
-      $('#searchResults-error').textContent = message;
-      $('#searchResults-error').classList.remove('hidden');
+      $('#search-results').classList.add('hidden');
+      $('#search-results-error').textContent = message;
+      $('#search-results-error').classList.remove('hidden');
     }
 
     /**
@@ -161,13 +161,13 @@
       } else {
         setLoading(true);
         // Search for more results.
-        $('#searchResults').classList.remove('hidden');
-        $('#searchResults-error').classList.add('hidden');
+        $('#search-results').classList.remove('hidden');
+        $('#search-results-error').classList.add('hidden');
 
         // Discover current tab's URL & the "category" for the URL, then search.
         getActiveTab().then(tab => {
           category = searchAPI.getCategory(tab.url);
-          $('#searchResults-terms').textContent = category;
+          $('#search-results-terms').textContent = category;
           searchAPI.search(category)
             .then(searchResults => {
               if (searchResults.data.length === 0) {
@@ -290,19 +290,19 @@
 
       const entry = template.searchResult.cloneNode(true);
       Object.assign(entry, {
-        id: 'searchResult-' + userstyleSearchResult.id,
+        id: 'search-result-' + userstyleSearchResult.id,
         onclick: handleEvent.openURLandHide
       });
       entry.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
-      $('#searchResults-list').appendChild(entry);
+      $('#search-results-list').appendChild(entry);
 
       const searchResultName = userstyleSearchResult.name;
-      const title = $('.searchResult-title', entry);
+      const title = $('.search-result-title', entry);
       Object.assign(title, {
         textContent: searchResultName
       });
 
-      const screenshot = $('.searchResult-screenshot', entry);
+      const screenshot = $('.search-result-screenshot', entry);
       let screenshotUrl = userstyleSearchResult.screenshot_url;
       if (screenshotUrl === null) {
         screenshotUrl = BLANK_PIXEL_DATA;
@@ -315,11 +315,11 @@
         title: searchResultName
       });
 
-      const description = $('.searchResult-description', entry);
+      const description = $('.search-result-description', entry);
       Object.assign(description, {
         textContent: userstyleSearchResult.description.replace(/<.*?>/g, '').replace(/(\r\n?)\r\n?/g, '$1')
       });
-      const descriptionExpand = $('.searchResult-description-info', entry);
+      const descriptionExpand = $('.search-result-description-info', entry);
       Object.assign(descriptionExpand, {
         onclick: e => {
           e.stopPropagation();
@@ -328,7 +328,7 @@
         }
       });
 
-      const authorLink = $('.searchResult-authorLink', entry);
+      const authorLink = $('.search-result-authorLink', entry);
       Object.assign(authorLink, {
         textContent: userstyleSearchResult.user.name,
         title: userstyleSearchResult.user.name,
@@ -336,7 +336,7 @@
         onclick: handleEvent.openURLandHide
       });
 
-      const rating = $('.searchResult-rating', entry);
+      const rating = $('.search-result-rating', entry);
       let ratingClass;
       let ratingValue = userstyleSearchResult.rating;
       if (ratingValue === null) {
@@ -354,21 +354,21 @@
       }
       Object.assign(rating, {
         textContent: ratingValue,
-        className: 'searchResult-rating ' + ratingClass
+        className: 'search-result-rating ' + ratingClass
       });
 
-      const installCount = $('.searchResult-installCount', entry);
+      const installCount = $('.search-result-install-count', entry);
       Object.assign(installCount, {
         textContent: userstyleSearchResult.total_install_count.toLocaleString()
       });
 
-      const installButton = $('.searchResult-install', entry);
+      const installButton = $('.search-result-install', entry);
       installButton.onclick = install;
 
       if (userstyleSearchResult.style_settings.length > 0) {
         // Style has customizations
         installButton.classList.add('customize');
-        const customizeButton = $('.searchResult-customize', entry);
+        const customizeButton = $('.search-result-customize', entry);
         customizeButton.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
         customizeButton.classList.remove('hidden');
         customizeButton.onclick = event => {
