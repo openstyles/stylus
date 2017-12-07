@@ -386,7 +386,6 @@
     let restorationCounter = 0;
     let observing = false;
     let sorting = false;
-    let timer;
     // allow any types of elements between ours, except for the following:
     const ORDERED_TAGS = ['head', 'body', 'frameset', 'style', 'link'];
 
@@ -431,8 +430,11 @@
       }
     }
     function sortStyleElements() {
-      let prevExpected = document.body || document.head;
-      if (!prevExpected || sorting) {
+      let prevExpected = document.documentElement.lastElementChild;
+      while (prevExpected && isSkippable(prevExpected, true)) {
+        prevExpected = prevExpected.previousElementSibling;
+      }
+      if (!prevExpected) {
         return;
       }
       for (const el of styleElements.values()) {
@@ -443,7 +445,10 @@
           const next = prevExpected.nextElementSibling;
           if (next && isSkippable(next)) {
             prevExpected = next;
-          } else if (moveAfter(el, prevExpected)) {
+          } else if (
+              next === el ||
+              next === el.previousElementSibling ||
+              moveAfter(el, next || prevExpected)) {
             prevExpected = el;
             break;
           } else {
@@ -454,17 +459,16 @@
       if (sorting) {
         sorting = false;
         docRootObserver.takeRecords();
-        clearTimeout(timer);
-        timer = setTimeout(start);
+        start();
       }
     }
     function isMovable(el) {
       return el.parentNode || !disabledElements.has(getStyleId(el));
     }
-    function isSkippable(el) {
+    function isSkippable(el, skipOwnStyles) {
       return !ORDERED_TAGS.includes(el.localName) ||
         el.id.startsWith(ID_PREFIX) &&
-        el.id.endsWith('-ghost') &&
+        (skipOwnStyles || el.id.endsWith('-ghost')) &&
         el.localName === 'style' &&
         el.className === 'stylus';
     }
