@@ -5,7 +5,9 @@ global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
 */
 'use strict';
 
-onDOMready().then(() => {
+addEventListener('init:allDone', function _() {
+  removeEventListener('init:allDone', _);
+
   CodeMirror.defaults.lint = linterConfig.getForCodeMirror();
 
   const COMMANDS = {
