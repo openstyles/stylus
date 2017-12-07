@@ -282,6 +282,7 @@ function createStyleElement({
   if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
     config.href = style.url;
     config.target = '_blank';
+    config.title = t('configureStyleOnHomepage');
     $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
   } else if (!style.usercssData || !Object.keys(style.usercssData.vars || {}).length) {
     config.style.display = 'none';
