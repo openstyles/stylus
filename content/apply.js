@@ -493,9 +493,9 @@
         restorationCounter = 0;
       }
       lastRestorationTime = t;
-      if (++restorationCounter > 100) {
-        console.error('Stylus stopped restoring userstyle elements after 100 failed attempts.\n' +
-          'Please report on https://github.com/openstyles/stylus/issues');
+      if (++restorationCounter > 10) {
+        sorting = false;
+        setTimeout(start, 1000);
         return true;
       }
     }
