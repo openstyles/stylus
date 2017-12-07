@@ -140,11 +140,6 @@ input:invalid {
 #enabled-label {
   vertical-align: middle;
 }
-/* actions */
-#actions > * {
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-}
 /* collapsibles */
 #header summary {
   align-items: center;
@@ -169,6 +164,11 @@ input:invalid {
 #header summary svg {
   margin-top: -3px;
 }
+
+#actions {
+  margin-bottom: .5rem;
+}
+
 #options:not([open]) + #lint h2 {
   margin-top: 0;
 }
@@ -192,7 +192,8 @@ input:invalid {
   opacity: .15;
 }
 /* footer */
-#footer {
+.usercss #footer {
+  display: block;
   margin-top: 1em;
   margin-bottom: .5em;
 }
@@ -507,7 +508,8 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 /************ lint ************/
 #lint {
   overflow-y: auto;
-  overflow-x: hidden;}
+  overflow-x: hidden;
+  }
 #lint > summary {
   /* workaround for overflow:auto to show the toggle triangle */
   position: absolute;
@@ -664,7 +666,7 @@ html:not(.usercss) .usercss-only,
 }
 
 /************ reponsive layouts ************/
-@media(max-width:737px) {
+@media(max-width: 850px) {
   #header {
     width: auto;
     height: auto;
@@ -673,9 +675,11 @@ html:not(.usercss) .usercss-only,
     border-bottom: 1px dashed #AAA;
     min-height: var(--header-narrow-min-height);
     max-height: 50vh;
+    flex-wrap: wrap;
+    flex-direction: row;
   }
   #header section:not(:last-child) {
-    margin-bottom: 0.4rem;
+    margin-bottom: .5rem;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;
@@ -687,6 +691,8 @@ html:not(.usercss) .usercss-only,
   #basic-info {
     display: flex;
     align-items: baseline;
+    flex: 1;
+    margin-right: 2em;
   }
   #basic-info > * {
     flex: auto;
@@ -703,15 +709,35 @@ html:not(.usercss) .usercss-only,
     flex-grow: 99;
   }
   #actions {
-    margin-top: 1rem;
+    margin-top: 0;
+    white-space: nowrap;
   }
   #actions > * {
     display: inline-block;
   }
   #options {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+    width: 100%;
+  }
+  #options:not([open]),
+  #lint:not([open]) {
+    column-count: 1;
+    overflow: initial;
+  }
+  #options:not([open]) + #lint:not([open]) {
+    margin-top: -1em;
+  }
+  #lint {
+    overflow: initial;
+  }
+  #lint summary {
+    position: static;
+    margin-bottom:  0;
+  }
+  #options summary {
+    margin-top: -.25em;
   }
   #options h2 {
     margin: 0 0 .5em;
@@ -729,16 +755,19 @@ html:not(.usercss) .usercss-only,
     top: 0.2rem;
   }
   #options:not([open]) ~ #lint {
-    margin-top: -1ex;
+    margin-top: -1em;
   }
   #lint > div {
-    max-height: 20vh;
+    margin-top: 0;
   }
   #lint table {
     width: 100%;
   }
   #lint td[role="message"] {
     max-width: none;
+  }
+  #lint:not([open]) + #footer {
+    margin: .25em 0 -1em .25em;
   }
   #sections {
     padding-left: 0;
@@ -748,9 +777,6 @@ html:not(.usercss) .usercss-only,
   }
   #sections > *:not(h2) {
     padding-left: 0.4rem;
-  }
-  .applies-type {
-    width: 30%;
   }
   .usercss .CodeMirror-scroll {
     max-height: calc(100vh - var(--header-narrow-min-height));
@@ -763,13 +789,29 @@ html:not(.usercss) .usercss-only,
     left: 3rem;
   }
 }
-@media(max-width:500px) {
+
+@media (max-width: 720px) {
+  #options {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+  }
+}
+
+@media (max-width: 450px) {
   #options {
     -webkit-column-count: 1;
     -moz-column-count: 1;
     column-count: 1;
   }
-  #options #tabSize-label {
-    position: static;
+  #actions {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}
+
+@supports (-moz-appearance: none) {
+  #header button {
+    padding: 0 3px 2px;
   }
 }
