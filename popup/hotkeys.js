@@ -34,23 +34,24 @@ var hotkeys = (() => {
       return;
     }
     let entry;
-    const k = event.which;
-    if (k >= 48 && k <= 57 || k >= 96 && k <= 105) {
+    const {which: k, key} = event;
+    if (key ? key >= '0' && key <= '9' : k >= 48 && k <= 57 || k >= 96 && k <= 105) {
       // 0-9, numpad 0-9
-      entry = installed.children[k === 48 || k === 96 ? 9 : k - (k > 96 ? 97 : 49)];
-    } else if (k >= 65 && k <= 90) {
-      // a-z
-      const letter = new RegExp('^\\x' + k.toString(16), 'i');
-      entry = [...installed.children].find(entry => letter.test(entry.textContent));
-    } else if (k === 192 || k === 106) {
+      const i = key === '0' ? 9 : key ? Number(key) - 1 : k === 48 || k === 96 ? 9 : k - (k > 96 ? 97 : 49);
+      entry = installed.children[i];
+    } else if (key ? key === '`' || key === '*' && !event.shiftKey : k === 192 || k === 106) {
       // backtick ` and numpad *
       invertTogglables();
-    } else if (k === 109) {
+    } else if (key ? key === '-' : k === 109) {
       // numpad -
       toggleState(installed.children, 'enabled', false);
-    } else if (k === 107) {
+    } else if (key ? key === '+' : k === 107) {
       // numpad +
       toggleState(installed.children, 'disabled', true);
+    } else if (key ? key.length === 1 : k >= 65 && k <= 90) {
+      // any single character
+      const letter = new RegExp(key ? '^' + key : '^\\x' + k.toString(16), 'i');
+      entry = [...installed.children].find(entry => letter.test(entry.textContent));
     }
     if (!entry) {
       return;

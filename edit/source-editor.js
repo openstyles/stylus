@@ -129,6 +129,8 @@ function createSourceEditor(style) {
       style.enabled = value;
     };
 
+    $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
+
     cm.on('changes', () => {
       dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
       updateLintReportIfEnabled(cm);
@@ -331,6 +333,20 @@ function createSourceEditor(style) {
       found = true;
       return true;
     }
+  }
+
+  function headerOnScroll({deltaY, deltaMode, shiftKey}) {
+    if (deltaY < 0 && this.scrollTop ||
+        deltaY > 0 && this.scrollTop + this.clientHeight < this.scrollHeight) {
+      return;
+    }
+    cm.display.scroller.scrollTop +=
+      // WheelEvent.DOM_DELTA_LINE
+      deltaMode === 1 ? deltaY * cm.display.cachedTextHeight :
+      // WheelEvent.DOM_DELTA_PAGE
+      deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
+      // WheelEvent.DOM_DELTA_PIXEL
+      deltaY;
   }
 
   return {

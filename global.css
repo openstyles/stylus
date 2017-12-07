@@ -102,12 +102,7 @@ select {
     -moz-appearance: checkbox !important;
   }
 
-  .moz-appearance-bug button {
-    padding-left: .75ex;
-    padding-right: .75ex;
-  }
-
-  ::-moz-focus-inner { 
+  ::-moz-focus-inner {
     border: 0; 
   }
 

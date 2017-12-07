@@ -61,8 +61,13 @@ if (BG && !BG.getStyles && BG !== window) {
   BG = null;
 }
 if (!BG || BG !== window) {
-  document.documentElement.classList.toggle('firefox', FIREFOX);
-  document.documentElement.classList.toggle('opera', OPERA);
+  if (FIREFOX) {
+    document.documentElement.classList.add('firefox');
+  } else if (OPERA) {
+    document.documentElement.classList.add('opera');
+  } else if (chrome.app && navigator.userAgent.includes('Vivaldi')) {
+    document.documentElement.classList.add('vivaldi');
+  }
   // TODO: remove once our manifest's minimum_chrome_version is 50+
   // Chrome 49 doesn't report own extension pages in webNavigation apparently
   if (CHROME && CHROME < 2661) {

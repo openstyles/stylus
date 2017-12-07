@@ -139,7 +139,7 @@ select {
   margin-left: .5ex;
 }
 
-.svg-icon.configure {
+.svg-icon.config {
   width: 16px;
   height: 16px;
 }
@@ -390,6 +390,13 @@ select {
 #filters label:hover,
 #filters .filter-selection:hover {
   background-color: hsla(0, 0%, 50%, .2);
+}
+
+#only-updates {
+  position: relative;
+  left: -5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .checkmate {

@@ -108,7 +108,7 @@ function reportUpdateState(state, style, details) {
       entry.classList.add('can-update');
       entry.updatedCode = style;
       $('.update-note', entry).textContent = '';
-      $('#onlyUpdates').classList.remove('hidden');
+      $('#only-updates').classList.remove('hidden');
       break;
     case BG.updater.SKIPPED: {
       if (entry.classList.contains('can-update')) {
@@ -151,12 +151,12 @@ function reportUpdateState(state, style, details) {
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
   const mightUpdate = numUpdatable > 0 || $('.update-problem');
-  const checkbox = $('#onlyUpdates input');
+  const checkbox = $('#only-updates input');
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  $('#onlyUpdates').classList.toggle('hidden', !show);
-  checkbox.checked = check;
+  $('#only-updates').classList.toggle('hidden', !show);
+  checkbox.checked = check && show;
   checkbox.dispatchEvent(new Event('change'));
 
   const btnApply = $('#apply-all-updates');

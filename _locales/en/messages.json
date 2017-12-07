@@ -183,6 +183,13 @@
     "message": "Open color picker",
     "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
   },
+  "configOnChange": {
+    "message": "on change",
+    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+  },
+  "configOnChangeTooltip": {
+    "message": "Autosave and apply changes automatically"
+  },
   "dysfunctional": {
     "message": "Stylus cannot function in private windows because Firefox disallows direct connection to the internal background page context of the extension.",
     "description": "Displayed in Firefox when its settings make Stylus dysfunctional"

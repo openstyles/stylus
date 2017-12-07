@@ -193,6 +193,17 @@ h2.installed.active {
   min-width: 0;
 }
 
+.set-update-url {
+  flex-wrap: wrap;
+}
+
+.set-update-url p {
+  word-break: break-all;
+  opacity: .5;
+  width: 100%;
+  margin: .25em 0 .25em;
+}
+
 .external {
   text-align: center;
 }

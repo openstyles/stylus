@@ -2627,9 +2627,12 @@ Parser.prototype = function() {
 
                         if (value === null) {
                             break;
-                        } else {
-                            values.push(value);
                         }
+                        const last = values[values.length - 1];
+                        if (last && last.line === value.line && last.col === value.col && last.text === value.text) {
+                            break;
+                        }
+                        values.push(value);
                     } while (true);
                 }
 
@@ -2728,6 +2731,13 @@ Parser.prototype = function() {
                                 value = this._ie_function();
                             } else {
                                 value = this._function();
+                            }
+                        }
+
+                        if (value === null) {
+                            const usoVar = this._isUsoVar();
+                            if (usoVar) {
+                                ([line, col, value] = usoVar);
                             }
                         }
 
@@ -3173,6 +3183,21 @@ Parser.prototype = function() {
             },
 
 
+            _isUsoVar() {
+                const tokenStream = this._tokenStream;
+                for (let i = tokenStream._ltIndex - 1; i >= 0; i--) {
+                    const {type, value, startLine, startCol} = tokenStream._lt[i];
+                    if (type === tokenStream._tokenData.S) {
+                        // NOP
+                    } else if (type === tokenStream._tokenData.COMMENT &&
+                            value[2] === '[' && value[3] === '[' && value.endsWith(']]*/')) {
+                        return [startLine, startCol, value];
+                    } else {
+                        return false;
+                    }
+                }
+            },
+
             /**
              * Throws an error when an unexpected token is found.
              * @param {Object} token The token that was found.
@@ -3181,17 +3206,6 @@ Parser.prototype = function() {
              * @private
              */
             _unexpectedToken: function(token) {
-                for (let i = tokenStream._ltIndex - 1; i >= 0; i--) {
-                    const {type, value} = tokenStream._lt[i];
-                    if (type === tokenStream._tokenData.S) {
-                        // NOP
-                    } else if (type === tokenStream._tokenData.COMMENT &&
-                            value[2] === '[' && value[3] === '[' && value.endsWith(']]*/')) {
-                        return;
-                    } else {
-                        break;
-                    }
-                }
                 throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
             },
 
@@ -7186,7 +7200,8 @@ TokenStreamBase.prototype = {
 
         if (!this.match(tokenTypes)) {
             token = this.LT(1);
-            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
+            const info = this._tokenData[tokenTypes[0]];
+            throw new SyntaxError("Expected " + (info.text || info.name) +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
@@ -10978,6 +10993,8 @@ CSSLint.addFormatter({
     }
 });
 
+parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
+
 self.onmessage = ({data: {action = 'run', code, config}}) => {
   switch (action) {
 
@@ -10991,19 +11008,19 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
       self.postMessage(CSSLint.getRules().map(rule => JSON.parse(JSON.stringify(rule))));
       return;
 
-    case 'run':
-      self.postMessage(CSSLint.verify(code, config).messages.map(m => {
-        // the functions are non-tranferable and we need only an id
-        m.rule = {id: m.rule.id};
-        return m;
-      }));
+    case 'run': {
+      const results = CSSLint.verify(code, config).messages
+        .filter(m => !m.message.includes('/*[[') && !m.message.includes(']]*/'))
+        .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
+      self.postMessage(results);
       return;
-
+    }
     case 'parse':
       if (!self.mozParser) {
         self.importScripts('/js/moz-parser.js');
       }
       mozParser.parse(code)
-        .then(sections => self.postMessage(sections));
+        .then(sections => self.postMessage(sections))
+        .catch(info => self.postMessage({__ERROR__: info}));
   }
 };

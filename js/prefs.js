@@ -11,6 +11,9 @@ var prefs = new function Prefs() {
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'newStyleAsUsercss': false,     // create new style in usercss format
 
+    // checkbox in style config dialog
+    'config.autosave': true,
+
     'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
     'popup.enabledFirst': true,     // display enabled styles before disabled styles

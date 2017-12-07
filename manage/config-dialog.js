@@ -30,11 +30,7 @@ function configDialog(style) {
       {textContent: t('confirmClose'), dataset: {cmd: 'close'}},
     ],
     onshow,
-  }).then(() => {
-    document.body.style.minWidth = '';
-    document.body.style.minHeight = '';
-    colorpicker.hide();
-  });
+  }).then(onhide);
 
   function getInitialValues(source) {
     const data = {};
@@ -46,10 +42,22 @@ function configDialog(style) {
   }
 
   function onshow(box) {
+    $('button', box).insertAdjacentElement('afterend',
+      $create('label#config-autosave-wrapper', {
+        title: t('configOnChangeTooltip'),
+      }, [
+        $create('input', {id: 'config.autosave', type: 'checkbox'}),
+        $create('SVG:svg.svg-icon.checked',
+          $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+        t('configOnChange'),
+      ]));
+    setupLivePrefs(['config.autosave']);
+
     if (isPopup) {
       adjustSizeForPopup(box);
       box.style.animationDuration = '0s';
     }
+
     box.addEventListener('change', onchange);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
@@ -57,13 +65,23 @@ function configDialog(style) {
     updateButtons();
   }
 
+  function onhide() {
+    document.body.style.minWidth = '';
+    document.body.style.minHeight = '';
+    colorpicker.hide();
+  }
+
   function onchange({target}) {
     // invoked after element's own onchange so 'va' contains the updated value
     const va = target.va;
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
-      target.closest('label').classList.toggle('dirty', va.dirty);
-      updateButtons();
+      if (prefs.get('config.autosave')) {
+        debounce(save);
+      } else {
+        target.closest('label').classList.toggle('dirty', va.dirty);
+        updateButtons();
+      }
     }
   }
 
@@ -113,6 +131,7 @@ function configDialog(style) {
       }
     }
     if (invalid.length) {
+      onhide();
       messageBox.alert([
         $create('div', {style: 'max-width: 34em'}, t('usercssConfigIncomplete')),
         $create('ol', {style: 'text-align: left'},
@@ -120,11 +139,16 @@ function configDialog(style) {
             $create({tag: 'li', appendChild: msg}))),
       ]);
     }
-    return numValid && BG.usercssHelper.save(style).then(saved => {
-      varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
-      vars.forEach(va => onchange({target: va.input}));
-      updateButtons();
-    });
+    if (!numValid) {
+      return;
+    }
+    return BG.usercssHelper.save(style)
+      .then(saved => {
+        varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
+        vars.forEach(va => onchange({target: va.input}));
+        updateButtons();
+      })
+      .catch(errors => onhide() + messageBox.alert(Array.isArray(errors) ? errors.join('\n') : errors));
   }
 
   function useDefault() {
@@ -256,10 +280,10 @@ function configDialog(style) {
   }
 
   function adjustSizeForPopup(box) {
-    box.style = 'white-space: nowrap !important';
-    box.firstElementChild.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
-    const {offsetWidth, offsetHeight} = box.firstElementChild;
-    box.style = box.firstElementChild.style = '';
+    const contents = box.firstElementChild;
+    contents.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
+    let {offsetWidth: width, offsetHeight: height} = contents;
+    contents.style = '';
 
     const colorpicker = document.body.appendChild(
       $create('.colorpicker-popup', {style: 'display: none!important'}));
@@ -267,8 +291,8 @@ function configDialog(style) {
     const MIN_HEIGHT = 250;
     colorpicker.remove();
 
-    const width = Math.max(Math.min(offsetWidth / 0.9 + 2, 800), MIN_WIDTH);
-    const height = Math.max(Math.min(offsetHeight / 0.9 + 2, 600), MIN_HEIGHT);
+    width = Math.max(Math.min(width / 0.9 + 2, 800), MIN_WIDTH);
+    height = Math.max(Math.min(height / 0.9 + 2, 600), MIN_HEIGHT);
     document.body.style.setProperty('min-width', width + 'px', 'important');
     document.body.style.setProperty('min-height', height + 'px', 'important');
   }
