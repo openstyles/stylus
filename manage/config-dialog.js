@@ -2,6 +2,7 @@
 'use strict';
 
 function configDialog(style) {
+  const AUTOSAVE_DELAY = 500;
   const data = style.usercssData;
   const varsHash = deepCopy(data.vars) || {};
   const varNames = Object.keys(varsHash);
@@ -77,7 +78,7 @@ function configDialog(style) {
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
       if (prefs.get('config.autosave')) {
-        debounce(save);
+        debounce(save, 0, {anyChangeIsDirty: true});
       } else {
         target.closest('label').classList.toggle('dirty', va.dirty);
         updateButtons();
@@ -92,8 +93,9 @@ function configDialog(style) {
     buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
   }
 
-  function save() {
-    if (!vars.length || !vars.some(va => va.dirty)) {
+  function save({anyChangeIsDirty = false} = {}) {
+    if (!vars.length ||
+        !vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
     style.enabled = true;
@@ -117,10 +119,11 @@ function configDialog(style) {
           !isDefault(va) &&
           bgva.options.every(o => o.name !== va.value)) {
         error = `'${va.value}' not in the updated '${va.type}' list`;
-      } else if (!va.dirty) {
+      } else if (!va.dirty && (!anyChangeIsDirty || va.value === va.savedValue)) {
         continue;
       } else {
         styleVars[va.name].value = va.value;
+        va.savedValue = va.value;
         numValid++;
         continue;
       }
@@ -147,8 +150,13 @@ function configDialog(style) {
         varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
         vars.forEach(va => onchange({target: va.input}));
         updateButtons();
+        $.remove('.config-error');
       })
-      .catch(errors => onhide() + messageBox.alert(Array.isArray(errors) ? errors.join('\n') : errors));
+      .catch(errors => {
+        const el = $('.config-error', messageBox.element) ||
+          $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
+        el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors;
+      });
   }
 
   function useDefault() {
@@ -184,9 +192,7 @@ function configDialog(style) {
               va.input = $create('input.slider', {
                 va,
                 type: 'checkbox',
-                onchange() {
-                  va.value = va.input.checked ? '1' : '0';
-                },
+                onchange: updateVarOnChange,
               }),
               $create('span'),
             ]),
@@ -201,9 +207,7 @@ function configDialog(style) {
             $create('.select-resizer', [
               va.input = $create('select', {
                 va,
-                onchange() {
-                  va.value = this.value;
-                }
+                onchange: updateVarOnChange,
               },
               va.options.map(o =>
                 $create('option', {value: o.name}, o.label))),
@@ -218,10 +222,8 @@ function configDialog(style) {
             va.input = $create('input', {
               va,
               type: 'text',
-              oninput() {
-                va.value = this.value;
-                this.dispatchEvent(new Event('change', {bubbles: true}));
-              },
+              onchange: updateVarOnChange,
+              oninput: updateVarOnInput,
             }),
           ];
           break;
@@ -231,6 +233,18 @@ function configDialog(style) {
           $create('span', va.label),
           ...children,
         ]));
+    }
+  }
+
+  function updateVarOnChange() {
+    this.va.value = this.value;
+  }
+
+  function updateVarOnInput(event, debounced = false) {
+    if (debounced) {
+      event.target.dispatchEvent(new Event('change', {bubbles: true}));
+    } else {
+      debounce(updateVarOnInput, AUTOSAVE_DELAY, event, true);
     }
   }
 
@@ -287,13 +301,18 @@ function configDialog(style) {
 
     const colorpicker = document.body.appendChild(
       $create('.colorpicker-popup', {style: 'display: none!important'}));
+    const PADDING = 50;
     const MIN_WIDTH = parseFloat(getComputedStyle(colorpicker).width) || 350;
-    const MIN_HEIGHT = 250;
+    const MIN_HEIGHT = 250 + PADDING;
     colorpicker.remove();
 
-    width = Math.max(Math.min(width / 0.9 + 2, 800), MIN_WIDTH);
-    height = Math.max(Math.min(height / 0.9 + 2, 600), MIN_HEIGHT);
+    width = constrain(MIN_WIDTH, 800, width + PADDING);
+    height = constrain(MIN_HEIGHT, 600, height + PADDING);
     document.body.style.setProperty('min-width', width + 'px', 'important');
     document.body.style.setProperty('min-height', height + 'px', 'important');
+  }
+
+  function constrain(min, max, value) {
+    return value < min ? min : value > max ? max : value;
   }
 }

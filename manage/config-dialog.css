@@ -102,6 +102,29 @@
   display: inline-flex;
 }
 
+#message-box-buttons {
+  position: relative;
+}
+
+.config-error {
+  position: absolute;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  bottom: -1rem;
+  padding: 0 .75rem;
+  line-height: 24px;
+  height: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0.5px 0.5px 6px #400;
+  animation: fadein .5s;
+}
+
 .cm-colorview::before,
 .color-swatch {
   width: var(--onoffswitch-width) !important;
@@ -123,4 +146,13 @@
   z-index: 2147483647 !important;
   border: none !important;
   box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
