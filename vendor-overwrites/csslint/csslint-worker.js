@@ -7175,7 +7175,8 @@ TokenStreamBase.prototype = {
 
         if (!this.match(tokenTypes)) {
             token = this.LT(1);
-            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
+            const info = this._tokenData[tokenTypes[0]];
+            throw new SyntaxError("Expected " + (info.text || info.name) +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
