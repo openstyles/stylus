@@ -63,11 +63,9 @@ if (BG && !BG.getStyles && BG !== window) {
 if (!BG || BG !== window) {
   if (FIREFOX) {
     document.documentElement.classList.add('firefox');
-  }
-  if (OPERA) {
+  } else if (OPERA) {
     document.documentElement.classList.add('opera');
-  }
-  if (chrome.app && navigator.userAgent.includes('Vivaldi')) {
+  } else if (chrome.app && navigator.userAgent.includes('Vivaldi')) {
     document.documentElement.classList.add('vivaldi');
   }
   // TODO: remove once our manifest's minimum_chrome_version is 50+
