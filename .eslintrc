@@ -48,6 +48,7 @@ globals:
   tHTML: false
   tNodeList: false
   tDocLoader: false
+  tWordBreak: false
   # dom.js
   onDOMready: false
   scrollElementIntoView: false

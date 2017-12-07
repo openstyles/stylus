@@ -179,7 +179,7 @@ function createStyleElement({style, name}) {
   }
   const parts = createStyleElement.parts;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = style.name;
+  parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
 

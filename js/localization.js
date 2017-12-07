@@ -48,26 +48,14 @@ function tHTML(html, tag) {
 
 function tNodeList(nodes) {
   const PREFIX = 'i18n-';
+
   for (let n = nodes.length; --n >= 0;) {
     const node = nodes[n];
-    // skip non-ELEMENT_NODE
-    if (node.nodeType !== 1) {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
       continue;
     }
     if (node.localName === 'template') {
-      const elements = node.content.querySelectorAll('*');
-      tNodeList(elements);
-      template[node.dataset.id] = elements[0];
-      // compress inter-tag whitespace to reduce number of DOM nodes by 25%
-      const walker = document.createTreeWalker(elements[0], NodeFilter.SHOW_TEXT);
-      const toRemove = [];
-      while (walker.nextNode()) {
-        const textNode = walker.currentNode;
-        if (!textNode.nodeValue.trim()) {
-          toRemove.push(textNode);
-        }
-      }
-      toRemove.forEach(el => el.remove());
+      createTemplate(node);
       continue;
     }
     for (let a = node.attributes.length; --a >= 0;) {
@@ -78,25 +66,70 @@ function tNodeList(nodes) {
       }
       const type = name.substr(PREFIX.length);
       const value = t(attr.value);
+      let toInsert, before;
       switch (type) {
+        case 'word-break':
+          // we already know that: hasWordBreak
+          break;
         case 'text':
-          node.insertBefore(document.createTextNode(value), node.firstChild);
-          break;
+          before = node.firstChild;
+          // fallthrough to text-append
         case 'text-append':
-          node.appendChild(document.createTextNode(value));
+          toInsert = createText(value);
           break;
-        case 'html':
-          // localized strings only allow having text nodes and links
-          node.textContent = '';
-          [...tHTML(value, 'div').childNodes]
-            .filter(a => a.nodeType === a.TEXT_NODE || a.tagName === 'A')
-            .forEach(n => node.appendChild(n));
+        case 'html': {
+          toInsert = createHtml(value);
           break;
+        }
         default:
           node.setAttribute(type, value);
       }
+      tDocLoader.pause();
+      if (toInsert) {
+        node.insertBefore(toInsert, before || null);
+      }
       node.removeAttribute(name);
     }
+  }
+
+  function createTemplate(node) {
+    const elements = node.content.querySelectorAll('*');
+    tNodeList(elements);
+    template[node.dataset.id] = elements[0];
+    // compress inter-tag whitespace to reduce number of DOM nodes by 25%
+    const walker = document.createTreeWalker(elements[0], NodeFilter.SHOW_TEXT);
+    const toRemove = [];
+    while (walker.nextNode()) {
+      const textNode = walker.currentNode;
+      if (!textNode.nodeValue.trim()) {
+        toRemove.push(textNode);
+      }
+    }
+    tDocLoader.pause();
+    toRemove.forEach(el => el.remove());
+  }
+
+  function createText(str) {
+    return document.createTextNode(tWordBreak(str));
+  }
+
+  function createHtml(value) {
+    // <a href=foo>bar</a> are the only recognizable HTML elements
+    const rx = /(?:<a\s([^>]*)>([^<]*)<\/a>)?([^<]*)/gi;
+    const bin = document.createDocumentFragment();
+    for (let m; (m = rx.exec(value)) && m[0];) {
+      const [, linkParams, linkText, nextText] = m;
+      if (linkText) {
+        const href = /\bhref\s*=\s*(\S+)/.exec(linkParams);
+        const a = bin.appendChild(document.createElement('a'));
+        a.href = href && href[1].replace(/^(["'])(.*)\1$/, '$2') || '';
+        a.appendChild(createText(linkText));
+      }
+      if (nextText) {
+        bin.appendChild(createText(nextText));
+      }
+    }
+    return bin;
   }
 }
 
@@ -115,33 +148,50 @@ function tDocLoader() {
     t.cache = {browserUIlanguage: UIlang};
     localStorage.L10N = JSON.stringify(t.cache);
   }
-
   const cacheLength = Object.keys(t.cache).length;
 
-  // localize HEAD
-  tNodeList(document.getElementsByTagName('*'));
+  Object.assign(tDocLoader, {
+    observer: new MutationObserver(process),
+    start() {
+      if (!tDocLoader.observing) {
+        tDocLoader.observing = true;
+        tDocLoader.observer.observe(document, {subtree: true, childList: true});
+      }
+    },
+    stop() {
+      tDocLoader.pause();
+      document.removeEventListener('DOMContentLoaded', onLoad);
+    },
+    pause() {
+      if (tDocLoader.observing) {
+        tDocLoader.observing = false;
+        tDocLoader.observer.disconnect();
+      }
+    },
+  });
 
-  // localize BODY
-  const process = mutations => {
+  tNodeList(document.getElementsByTagName('*'));
+  tDocLoader.start();
+  document.addEventListener('DOMContentLoaded', onLoad);
+
+  function process(mutations) {
     for (const mutation of mutations) {
       tNodeList(mutation.addedNodes);
     }
-  };
-  const observer = new MutationObserver(process);
-  const onLoad = () => {
+    tDocLoader.start();
+  }
+
+  function onLoad() {
     tDocLoader.stop();
-    process(observer.takeRecords());
+    process(tDocLoader.observer.takeRecords());
     if (cacheLength !== Object.keys(t.cache).length) {
       localStorage.L10N = JSON.stringify(t.cache);
     }
-  };
-  tDocLoader.start = () => {
-    observer.observe(document, {subtree: true, childList: true});
-  };
-  tDocLoader.stop = () => {
-    observer.disconnect();
-    document.removeEventListener('DOMContentLoaded', onLoad);
-  };
-  tDocLoader.start();
-  document.addEventListener('DOMContentLoaded', onLoad);
+  }
+}
+
+
+function tWordBreak(text) {
+  // adds soft hyphens every 10 characters to ensure the long words break before breaking the layout
+  return text.length <= 10 ? text : text.replace(/[\d\w\u0080-\uFFFF]{10}|((?!\s)\W){10}/g, '$&\u00AD');
 }
