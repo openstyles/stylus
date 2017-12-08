@@ -915,7 +915,7 @@
       el.focus({preventScroll: true});
       el = null;
       if (window.scrollY !== y || window.scrollX !== x) {
-        window.scrollTo(x, y);
+        setTimeout(window.scrollTo, 0, x, y);
       }
     }
   }
