@@ -27,9 +27,31 @@ body {
   max-width: 800px;
 }
 
+.firefox button {
+  -moz-appearance: none;
+  user-select: none;
+  padding: 3px 7px;
+  border: 1px solid hsl(0, 0%, 62%);
+  font: 400 13px Arial;
+  line-height: 13px;
+  color: #000;
+  background-color: hsl(0, 0%, 100%);
+  background: url(../images/button.png)repeat-x;
+  background-size: 100% 100%;
+  transition: background-color .25s, border-color .25s;
+}
+
+.firefox button:hover {
+  background-color: hsl(0, 0%, 95%);
+  border-color: hsl(0, 0%, 52%);
+}
+
+.firefox.moz-appearance-bug button:not(.install) {
+  padding: 2px 4px;
+}
+
 :-webkit-any(button,input[type="button"],input[type="submit"]) {
   -webkit-appearance: none;
-  -moz-appearance: none;
   user-select: none;
   padding: 3px 7px;
   border: 1px solid hsl(0, 0%, 62%);
