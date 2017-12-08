@@ -17,6 +17,8 @@ var hotkeys = (() => {
     initHotkeyInfo();
   });
 
+  window.addEventListener('resize', adjustInfoPosition);
+
   return {setState};
 
   function setState(newState = !enabled) {
@@ -138,11 +140,15 @@ var hotkeys = (() => {
       delete container.dataset.active;
       document.body.style.height = '';
       container.title = title;
+      window.addEventListener('resize', adjustInfoPosition);
     }
 
     function open() {
+      window.removeEventListener('resize', adjustInfoPosition);
+      debounce.unregister(adjustInfoPosition);
       title = container.title;
       container.title = '';
+      container.style = '';
       container.dataset.active = true;
       if (!container.firstElementChild) {
         buildElement();
@@ -183,5 +189,20 @@ var hotkeys = (() => {
         container.appendChild($create('div', child));
       });
     }
+  }
+
+  function adjustInfoPosition(debounced) {
+    const container = $('#hotkey-info');
+    if (debounced !== true) {
+      debounce(adjustInfoPosition, 100, true);
+      return;
+    }
+    const style = container.style;
+    if (installed.scrollHeight > installed.clientHeight) {
+      const entryRight = installed.firstElementChild.getBoundingClientRect().right;
+      style.setProperty('right', window.innerWidth - entryRight + 'px', 'important');
+    }
+    const installedBottom = installed.getBoundingClientRect().bottom + window.scrollY;
+    style.setProperty('bottom', window.innerHeight - installedBottom + 'px', 'important');
   }
 })();
