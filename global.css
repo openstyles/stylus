@@ -158,12 +158,17 @@ input[type="radio"]:checked:after {
 }
 
 @supports (-moz-appearance: none) {
-  .moz-appearance-bug .svg-icon.checked {
+  .moz-appearance-bug .svg-icon.checked,
+  .moz-appearance-bug input[type="radio"]:after {
     display: none !important;
   }
 
   .moz-appearance-bug input[type="checkbox"] {
     -moz-appearance: checkbox !important;
+  }
+
+  .moz-appearance-bug input[type="radio"] {
+    -moz-appearance: radio !important;
   }
   
   .firefox select {
