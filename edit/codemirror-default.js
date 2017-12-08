@@ -25,12 +25,12 @@
     styleActiveLine: true,
     theme: 'default',
     keyMap: prefs.get('editor.keyMap'),
-    extraKeys: {
+    extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'
-    },
+    }),
     maxHighlightLength: 100e3,
   };
 

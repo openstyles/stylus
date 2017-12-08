@@ -51,6 +51,7 @@ globals:
   tWordBreak: false
   # dom.js
   onDOMready: false
+  onDOMscriptReady: false
   scrollElementIntoView: false
   enforceInputRange: false
   animateElement: false

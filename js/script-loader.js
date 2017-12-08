@@ -44,3 +44,60 @@ var loadScript = (() => {
     return Promise.all(files.map(f => (typeof f === 'string' ? inject(f) : f)));
   };
 })();
+
+
+(() => {
+  let subscribers, observer;
+  // natively declared <script> elements in html can't have onload= attribute
+  // due to the default extension CSP that forbids inline code (and we don't want to relax it),
+  // so we're using MutationObserver to add onload event listener to the script element to be loaded
+  window.onDOMscriptReady = (src, timeout = 1000) => {
+    if (!subscribers) {
+      subscribers = new Map();
+      observer = new MutationObserver(observe);
+      observer.observe(document.head, {childList: true});
+    }
+    return new Promise((resolve, reject) => {
+      const listeners = subscribers.get(src);
+      if (listeners) {
+        listeners.push(resolve);
+      } else {
+        subscribers.set(src, [resolve]);
+      }
+      // no need to clear the timer since a resolved Promise won't reject anymore
+      setTimeout(reject, timeout);
+    });
+  };
+
+  return;
+
+  function observe(mutations) {
+    for (const {addedNodes} of mutations) {
+      for (const n of addedNodes) {
+        if (n.src && getSubscribersForSrc(n.src)) {
+          n.addEventListener('load', notifySubscribers);
+        }
+      }
+    }
+  }
+
+  function getSubscribersForSrc(src) {
+    for (const [subscribedSrc, listeners] of subscribers.entries()) {
+      if (src.endsWith(subscribedSrc)) {
+        return {subscribedSrc, listeners};
+      }
+    }
+  }
+
+  function notifySubscribers(event) {
+    this.removeEventListener('load', notifySubscribers);
+    const {subscribedSrc, listeners = []} = getSubscribersForSrc(this.src) || {};
+    listeners.forEach(fn => fn(event));
+    subscribers.delete(subscribedSrc);
+    if (!subscribers.size) {
+      observer.disconnect();
+      observer = null;
+      subscribers = null;
+    }
+  }
+})();

@@ -3,7 +3,6 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
-/* global initCollapsibles */
 'use strict';
 
 let installed;
@@ -82,9 +81,6 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
-
-  // the options block
-  initCollapsibles();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));

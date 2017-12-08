@@ -3,8 +3,6 @@ global CodeMirror parserlib loadScript
 global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter
 global mozParser createSourceEditor
 global closeCurrentTab regExpTester messageBox
-global initColorpicker
-global initCollapsibles
 global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
@@ -17,8 +15,6 @@ let dirty = {};
 // array of all CodeMirror instances
 const editors = [];
 let saveSizeOnClose;
-// use browser history back when 'back to manage' is clicked
-let useHistoryBack;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -35,14 +31,25 @@ Promise.all([
   initStyleData(),
   onDOMready(),
 ])
-.then(([style]) => Promise.all([
-  style,
-  initColorpicker(),
-  initCollapsibles(),
-  initHooksCommon(),
-  dispatchEvent(new Event('init:allDone')),
-]))
-.then(createEditor);
+.then(([style]) => {
+  setupLivePrefs();
+
+  const usercss = isUsercss(style);
+  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
+  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+
+  $('#beautify').onclick = beautify;
+  $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
+  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+
+  if (usercss) {
+    editor = createSourceEditor(style);
+  } else {
+    initWithSectionStyle({style});
+    document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
+  }
+});
 
 function preinit() {
   // make querySelectorAll enumeration code readable
@@ -103,7 +110,18 @@ function preinit() {
 
   getOwnTab().then(tab => {
     const ownTabId = tab.id;
-    useHistoryBack = sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href;
+
+    // use browser history back when 'back to manage' is clicked
+    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+      onDOMready().then(() => {
+        $('#cancel-button').onclick = event => {
+          event.stopPropagation();
+          event.preventDefault();
+          history.back();
+        };
+      });
+    }
+    // no windows on android
     if (!chrome.windows) {
       return;
     }
@@ -128,20 +146,6 @@ function preinit() {
       });
     });
   });
-}
-
-function createEditor([style]) {
-  const usercss = isUsercss(style);
-  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
-  $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
-  $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
-  $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
-  if (usercss) {
-    editor = createSourceEditor(style);
-  } else {
-    initWithSectionStyle({style});
-    document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
-  }
 }
 
 function onRuntimeMessage(request) {
@@ -270,40 +274,6 @@ function initHooks() {
 }
 
 // common for usercss and classic
-function initHooksCommon() {
-  $('#cancel-button').addEventListener('click', goBackToManage);
-  $('#beautify').addEventListener('click', beautify);
-
-  prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
-  showKeyInSaveButtonTooltip();
-
-  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-
-  function goBackToManage(event) {
-    if (useHistoryBack) {
-      event.stopPropagation();
-      event.preventDefault();
-      history.back();
-    }
-  }
-  function showKeyInSaveButtonTooltip(prefName, value) {
-    $('#save-button').title = findKeyForCommand('save', value);
-  }
-  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
-    const map = CodeMirror.keyMap[mapName];
-    let key = Object.keys(map).find(k => map[k] === command);
-    if (key) {
-      return key;
-    }
-    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
-      key = ft && findKeyForCommand(command, ft);
-      if (key) {
-        return key;
-      }
-    }
-    return '';
-  }
-}
 
 function onChange(event) {
   const node = event.target;
