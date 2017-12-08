@@ -105,7 +105,11 @@
   },
   "configureStyle": {
     "message": "Configure",
-    "description": "Label for the button to configure userstyle"
+    "description": "Label for the button to configure usercss userstyle"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Configure on homepage",
+    "description": "Label for the button to configure userstyles.org userstyle"
   },
   "checkForUpdate": {
     "message": "Check for update",

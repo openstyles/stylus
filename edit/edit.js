@@ -3,8 +3,6 @@ global CodeMirror parserlib loadScript
 global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter
 global mozParser createSourceEditor
 global closeCurrentTab regExpTester messageBox
-global initColorpicker
-global initCollapsibles
 global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
@@ -17,8 +15,6 @@ let dirty = {};
 // array of all CodeMirror instances
 const editors = [];
 let saveSizeOnClose;
-// use browser history back when 'back to manage' is clicked
-let useHistoryBack;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -26,40 +22,27 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-preinit();
 window.onbeforeunload = beforeUnload;
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
+preinit();
+
 Promise.all([
-  initStyleData().then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-    // we set "usercss" class on <html> when <body> is empty
-    // so there'll be no flickering of the elements that depend on it
-    if (isUsercss(style)) {
-      document.documentElement.classList.add('usercss');
-    }
-    // strip URL parameters when invoked for a non-existent id
-    if (!styleId) {
-      history.replaceState({}, document.title, location.pathname);
-    }
-    return style;
-  }),
+  initStyleData(),
   onDOMready(),
-  onBackgroundReady(),
 ])
-.then(([style]) => Promise.all([
-  style,
-  initColorpicker(),
-  initCollapsibles(),
-  initHooksCommon(),
-]))
 .then(([style]) => {
+  setupLivePrefs();
+
   const usercss = isUsercss(style);
   $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
   $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
   $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+
+  $('#beautify').onclick = beautify;
   $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
+  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+
   if (usercss) {
     editor = createSourceEditor(style);
   } else {
@@ -99,30 +82,6 @@ function preinit() {
         'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css'
     }));
 
-  // forcefully break long labels in aligned options to prevent the entire block layout from breaking
-  onDOMready().then(() => new Promise(requestAnimationFrame)).then(() => {
-    const maxWidth2ndChild = $$('#options .aligned > :nth-child(2)')
-      .sort((a, b) => b.offsetWidth - a.offsetWidth)[0].offsetWidth;
-    const widthFor1stChild = $('#options').offsetWidth - maxWidth2ndChild;
-    if (widthFor1stChild > 50) {
-      for (const el of $$('#options .aligned > :nth-child(1)')) {
-        if (el.offsetWidth > widthFor1stChild) {
-          el.style.cssText = 'word-break: break-all; hyphens: auto;';
-        }
-      }
-    } else {
-      const width = $('#options').clientWidth;
-      document.head.appendChild($create('style', `
-        #options .aligned > nth-child(1) {
-          max-width: 70px;
-        }
-        #options .aligned > nth-child(2) {
-          max-width: ${width - 70}px;
-        }
-      `));
-    }
-  });
-
   if (chrome.windows) {
     queryTabs({currentWindow: true}).then(tabs => {
       const windowId = tabs[0].windowId;
@@ -151,7 +110,18 @@ function preinit() {
 
   getOwnTab().then(tab => {
     const ownTabId = tab.id;
-    useHistoryBack = sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href;
+
+    // use browser history back when 'back to manage' is clicked
+    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+      onDOMready().then(() => {
+        $('#cancel-button').onclick = event => {
+          event.stopPropagation();
+          event.preventDefault();
+          history.back();
+        };
+      });
+    }
+    // no windows on android
     if (!chrome.windows) {
       return;
     }
@@ -258,9 +228,20 @@ function initStyleData() {
       )
     ],
   });
-  return !id ?
-    Promise.resolve(createEmptyStyle()) :
-    getStylesSafe({id}).then(([style]) => style || createEmptyStyle());
+  return getStylesSafe({id: id || -1})
+    .then(([style = createEmptyStyle()]) => {
+      styleId = sessionStorage.justEditedStyleId = style.id;
+      // we set "usercss" class on <html> when <body> is empty
+      // so there'll be no flickering of the elements that depend on it
+      if (isUsercss(style)) {
+        document.documentElement.classList.add('usercss');
+      }
+      // strip URL parameters when invoked for a non-existent id
+      if (!styleId) {
+        history.replaceState({}, document.title, location.pathname);
+      }
+      return style;
+    });
 }
 
 function initHooks() {
@@ -293,40 +274,6 @@ function initHooks() {
 }
 
 // common for usercss and classic
-function initHooksCommon() {
-  $('#cancel-button').addEventListener('click', goBackToManage);
-  $('#beautify').addEventListener('click', beautify);
-
-  prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
-  showKeyInSaveButtonTooltip();
-
-  window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-
-  function goBackToManage(event) {
-    if (useHistoryBack) {
-      event.stopPropagation();
-      event.preventDefault();
-      history.back();
-    }
-  }
-  function showKeyInSaveButtonTooltip(prefName, value) {
-    $('#save-button').title = findKeyForCommand('save', value);
-  }
-  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
-    const map = CodeMirror.keyMap[mapName];
-    let key = Object.keys(map).find(k => map[k] === command);
-    if (key) {
-      return key;
-    }
-    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
-      key = ft && findKeyForCommand(command, ft);
-      if (key) {
-        return key;
-      }
-    }
-    return '';
-  }
-}
 
 function onChange(event) {
   const node = event.target;

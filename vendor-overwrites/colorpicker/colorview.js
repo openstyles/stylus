@@ -59,6 +59,8 @@
     if (!mx || mx.token !== colorizeToken) {
       CodeMirror.extendMode('css', {token: colorizeToken});
       CodeMirror.extendMode('stylus', {token: colorizeToken});
+      CodeMirror.modeExtensions.css.registerColorviewHooks = registerHooks;
+      CodeMirror.modeExtensions.css.unregisterColorviewHooks = unregisterHooks;
     }
   }
 
@@ -498,11 +500,12 @@
       cm.state.colorpicker.destroy();
     }
     if (value) {
+      registerHooks();
       cm.state.colorpicker = new ColorMarker(cm, value);
     }
   });
 
   // initial runMode is performed by CodeMirror before setting our option
-  // so we register the hooks right away - not a problem as our js is loaded on demand
+  // so we register the hooks right away (the cost of always loading colorview is ~1ms for >200ms)
   registerHooks();
 })();

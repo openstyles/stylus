@@ -55,6 +55,7 @@ $$.remove = (selector, base = document) => {
 
 onDOMready().then(() => {
   $.remove('#firefox-transitions-bug-suppressor');
+  initCollapsibles();
 });
 
 if (!chrome.app && chrome.windows) {
@@ -278,9 +279,13 @@ function $createLink(href = '', content) {
 }
 
 
+// makes <details> with [data-pref] save/restore their state
 function initCollapsibles({bindClickOn = 'h2'} = {}) {
   const prefMap = {};
   const elements = $$('details[data-pref]');
+  if (!elements.length) {
+    return;
+  }
 
   for (const el of elements) {
     const key = el.dataset.pref;

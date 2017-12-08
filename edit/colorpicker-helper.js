@@ -1,34 +1,23 @@
 /* global CodeMirror loadScript editors showHelp */
 'use strict';
 
-// eslint-disable-next-line no-var
-var initColorpicker = () => {
+onDOMscriptReady('/colorview.js').then(() => {
   initOverlayHooks();
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
-  const scripts = [
-    '/vendor-overwrites/colorpicker/colorpicker.css',
-    '/vendor-overwrites/colorpicker/colorpicker.js',
-    '/vendor-overwrites/colorpicker/colorview.js',
-  ];
   prefs.subscribe(['editor.colorpicker.hotkey'], registerHotkey);
-  prefs.subscribe(['editor.colorpicker'], colorpickerOnDemand);
-  return prefs.get('editor.colorpicker') && colorpickerOnDemand(null, true);
-
-  function colorpickerOnDemand(id, enabled) {
-    return loadScript(enabled && scripts)
-      .then(() => setColorpickerOption(id, enabled));
-  }
+  prefs.subscribe(['editor.colorpicker'], setColorpickerOption);
+  setColorpickerOption(null, prefs.get('editor.colorpicker'));
 
   function setColorpickerOption(id, enabled) {
     const defaults = CodeMirror.defaults;
     const keyName = prefs.get('editor.colorpicker.hotkey');
-    delete defaults.extraKeys[keyName];
     defaults.colorpicker = enabled;
     if (enabled) {
       if (keyName) {
         CodeMirror.commands.colorpicker = invokeColorpicker;
+        defaults.extraKeys = defaults.extraKeys || {};
         defaults.extraKeys[keyName] = 'colorpicker';
       }
       defaults.colorpicker = {
@@ -45,6 +34,11 @@ var initColorpicker = () => {
           },
         },
       };
+    } else {
+      CodeMirror.modeExtensions.css.unregisterColorviewHooks();
+      if (defaults.extraKeys) {
+        delete defaults.extraKeys[keyName];
+      }
     }
     // on page load runs before CodeMirror.setOption is defined
     editors.forEach(cm => cm.setOption('colorpicker', defaults.colorpicker));
@@ -162,4 +156,4 @@ var initColorpicker = () => {
       return style;
     }
   }
-};
+});

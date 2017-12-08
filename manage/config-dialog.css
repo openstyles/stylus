@@ -1,14 +1,13 @@
-#stylus-popup #message-box-contents {
-  padding: .25rem .75rem;
+#stylus-manage .config-dialog #message-box-contents {
+  padding: 2em 16px;
+}
+
+#stylus-popup .config-dialog #message-box-contents {
+  padding: 8px 16px;
 }
 
 #stylus-popup .config-body label {
   padding: .5em 0;
-}
-
-#stylus-popup .config-body label > :first-child {
-  max-width: 140px;
-  min-width: 140px;
 }
 
 .config-heading {
@@ -21,9 +20,10 @@
   display: flex;
   padding: .75em 0;
   align-items: center;
+  margin-right: -16px; /* for .config-reset-icon */
 }
 
-.config-dialog .select-resizer {
+.config-body .select-resizer {
   position: static;
 }
 
@@ -39,23 +39,14 @@
   border-top: 1px dotted #ccc;
 }
 
-.config-body label > :first-child {
-  margin-right: 8px;
-  flex-grow: 1;
+.config-body .dirty {
+  font-style: italic;
 }
 
-.config-body label:not([disabled]) > :first-child {
-  cursor: default;
-}
-
-.config-dialog .dirty:after {
+.config-body .dirty:after {
   content: "*";
   position: absolute;
   left: 6px;
-}
-
-.config-dialog .dirty {
-  font-style: italic;
 }
 
 .config-body input,
@@ -81,25 +72,75 @@
 .config-body .onoffswitch {
   height: auto;
   margin: calc((2em - 12px) / 2) 0;
+  flex-grow: 0;
 }
 
 .config-body input[type="text"] {
   padding-left: 0.25em;
 }
 
-.config-body label > :last-child {
+.config-name {
+  flex-grow: 1;
+  margin-right: 1em;
+}
+
+.config-value {
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
-.config-body label > :last-child:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
+.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
   margin-right: 4px;
+}
+
+.config-body label:not(.nondefault) .config-reset-icon {
+  visibility: hidden;
+}
+
+.svg-icon.config-reset-icon {
+  /*position: absolute;*/
+  pointer-events: all !important;
+  cursor: pointer;
+  /*right: -7px;*/
+  fill: #aaa;
+  width: 16px;
+  height: 16px;
+  padding: 0 1px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.svg-icon.config-reset-icon:hover {
+  fill: #666;
 }
 
 #config-autosave-wrapper {
   position: relative;
   padding: 0 0 0 16px;
   display: inline-flex;
+}
+
+#message-box-buttons {
+  position: relative;
+}
+
+.config-error {
+  position: absolute;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  bottom: -1rem;
+  padding: 0 .75rem;
+  line-height: 24px;
+  height: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0.5px 0.5px 6px #400;
+  animation: fadein .5s;
 }
 
 .cm-colorview::before,
@@ -123,4 +164,13 @@
   z-index: 2147483647 !important;
   border: none !important;
   box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

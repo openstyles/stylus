@@ -77,6 +77,6 @@
   "default_locale": "en",
   "options_ui": {
     "page": "options.html",
-    "chrome_style": true
+    "chrome_style": false
   }
 }

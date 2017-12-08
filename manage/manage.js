@@ -3,7 +3,6 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
-/* global initCollapsibles */
 'use strict';
 
 let installed;
@@ -82,9 +81,6 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
-
-  // the options block
-  initCollapsibles();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -179,7 +175,7 @@ function createStyleElement({style, name}) {
   }
   const parts = createStyleElement.parts;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = style.name;
+  parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
 

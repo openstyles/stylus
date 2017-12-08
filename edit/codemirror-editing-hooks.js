@@ -5,7 +5,8 @@ global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
 */
 'use strict';
 
-onDOMready().then(() => {
+onDOMscriptReady('/codemirror.js').then(() => {
+
   CodeMirror.defaults.lint = linterConfig.getForCodeMirror();
 
   const COMMANDS = {
@@ -46,11 +47,16 @@ onDOMready().then(() => {
   // cm.state.search for last used 'find'
   let searchState;
 
-  // N.B. the event listener should be registered before setupLivePrefs()
-  $('#options').addEventListener('change', onOptionElementChanged);
-  buildOptionsElements();
-  setupLivePrefs();
-  rerouteHotkeys(true);
+  onDOMready().then(() => {
+    prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
+    showKeyInSaveButtonTooltip();
+
+    // N.B. the event listener should be registered before setupLivePrefs()
+    $('#options').addEventListener('change', onOptionElementChanged);
+    buildOptionsElements();
+
+    rerouteHotkeys(true);
+  });
 
   return;
 
@@ -676,5 +682,24 @@ onDOMready().then(() => {
         });
       });
     });
+  }
+
+  function showKeyInSaveButtonTooltip(prefName, value) {
+    $('#save-button').title = findKeyForCommand('save', value);
+  }
+
+  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
+    const map = CodeMirror.keyMap[mapName];
+    let key = Object.keys(map).find(k => map[k] === command);
+    if (key) {
+      return key;
+    }
+    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
+      key = ft && findKeyForCommand(command, ft);
+      if (key) {
+        return key;
+      }
+    }
+    return '';
   }
 });
