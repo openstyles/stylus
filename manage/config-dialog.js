@@ -26,11 +26,20 @@ function configDialog(style) {
         $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
       $create('.config-body', elements)
     ],
-    buttons: [
-      {textContent: t('confirmSave'), dataset: {cmd: 'save'}, disabled: true, onclick: save},
-      {textContent: t('confirmDefault'), dataset: {cmd: 'default'}, onclick: useDefault},
-      {textContent: t('confirmClose'), dataset: {cmd: 'close'}},
-    ],
+    buttons: [{
+      textContent: t('confirmSave'),
+      dataset: {cmd: 'save'},
+      disabled: true,
+      onclick: save,
+    }, {
+      textContent: t('genericResetLabel'),
+      title: t('optionsReset'),
+      dataset: {cmd: 'default'},
+      onclick: useDefault,
+    }, {
+      textContent: t('confirmClose'),
+      dataset: {cmd: 'close'},
+    }],
     onshow,
   }).then(onhide);
 
