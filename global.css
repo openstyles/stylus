@@ -125,6 +125,38 @@ select {
   transition: fill .5s;
 }
 
+input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  background: hsl(0, 0%, 88%);
+  border-radius: 50%;
+  border: 1px solid hsl(0, 0%, 60%);
+  cursor: default;
+  height: 13px;
+  width: 13px;
+  position: relative;
+}
+
+input[type="radio"]:after {
+  content: '';
+  background-color: transparent;
+  transform: scale(0);
+  transform-origin: 50% 50%;
+  transition: background-color .5s, transform .5s;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+  left: 2px;
+  top: 2px;
+  position: absolute;
+}
+
+input[type="radio"]:checked:after {
+  background-color: hsl(0, 0%, 30%);
+  transform: scale(1);
+}
+
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked {
     display: none !important;
@@ -145,7 +177,7 @@ select {
   }
 
 /* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
-  .firefox.non-windows input[type=number] {
+  .firefox.non-windows input[type="number"] {
     -moz-appearance: textfield;
     background: #fff;
     color: #000;
@@ -156,6 +188,16 @@ select {
   .firefox.non-windows input[type="number"]:focus {
     -moz-appearance: number-input;
   }
+
+  .firefox.non-windows input[type="color"] {
+    background: #fff;
+    border: 1px solid hsl(0, 0%, 66%);
+    padding: 4px;
+  }
+
+  .firefox.non-windows .style-name {
+    font-family: Arial, sans-serif;
+  }  
   
 /* Firefox cannot handle fractions in font-size */
   .firefox button:not(.install) {
