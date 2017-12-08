@@ -12,13 +12,13 @@ button {
   transition: background-color .25s, border-color .25s;
 }
 
-button:hover {
+button:not(:disabled):hover {
   background-color: hsl(0, 0%, 95%);
   border-color: hsl(0, 0%, 52%);
 }
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
-#message-box-buttons button:hover {
+#message-box-buttons button:not(:disabled):hover {
   background-color: hsl(0, 0%, 90%);
   border-color: hsl(0, 0%, 50%);
 }
@@ -65,7 +65,7 @@ input[type="checkbox"]:not(.slider) {
   transition: background-color .1s, border-color .1s;
 }
 
-input[type="checkbox"]:not(.slider):hover {
+input[type="checkbox"]:not(.slider):not(:disabled):hover {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
@@ -157,6 +157,14 @@ input[type="radio"]:checked:after {
   transform: scale(1);
 }
 
+/* restore disabled state dimming */
+button:disabled,
+select:disabled,
+option:disabled,
+select[disabled] > option {
+  color: graytext;
+}
+
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
   .moz-appearance-bug input[type="radio"]:after {
@@ -189,7 +197,7 @@ input[type="radio"]:checked:after {
     border: 1px solid hsl(0, 0%, 66%);
   }
 
-  .firefox.non-windows input[type="number"]:hover,
+  .firefox.non-windows input[type="number"]:not(:disabled):hover,
   .firefox.non-windows input[type="number"]:focus {
     -moz-appearance: number-input;
   }

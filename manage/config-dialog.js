@@ -16,6 +16,7 @@ function configDialog(style) {
 
   buildConfigForm();
   renderValues();
+  vars.forEach(renderValueState);
 
   return messageBox({
     title: `${style.name} v${data.version}`,
