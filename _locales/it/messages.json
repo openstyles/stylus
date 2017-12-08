@@ -420,10 +420,6 @@
 		"message": "Rimuovi sezione",
 		"description": "Label for the button to remove a section"
 	},
-	"searchStylesTooltip": {
-		"message": "Per mostrare gli stili per un URL, inserisci il prefisso 'url:'\nAd esempio, url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
 	"disableAllStyles": {
 		"message": "Disattiva tutti gli stili",
 		"description": "Label for the checkbox that turns all enabled styles off."
@@ -489,7 +485,7 @@
 	},
 	"configureStyle": {
 		"message": "Configura",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"cm_smartIndent": {
 		"message": "Usa indentazione intelligente",

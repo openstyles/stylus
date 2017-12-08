@@ -20,7 +20,7 @@
 		"description": ""
 	},
 	"manageOnlyUsercss": {
-		"message": "Nur Usercss styles",
+		"message": "Nur Usercss Styles",
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
@@ -131,6 +131,10 @@
 		"message": "Ziehe die Backup Datei zum importieren an irgendeinen Ort auf dieser Seite.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Beachte: Nutze einzelne \\ (Backslashes) zum Escapen im RegExp Feld. Diese werden automatisch im Stylecode zu doppelten \\\\ konvertiert, um der CSS Spezifikation zu entsprechen.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Hilfe",
 		"description": "Alternate text for help buttons"
@@ -166,6 +170,10 @@
 	"styleEnabledLabel": {
 		"message": "Aktiviert",
 		"description": "Label for the enabled state of styles"
+	},
+	"configOnChange": {
+		"message": "bei Änderung",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
 	},
 	"linterConfigTooltip": {
 		"message": "Klicken, um diesen Linter zu konfigurieren",
@@ -299,7 +307,7 @@
 		"description": "Label for the button to apply all detected updates"
 	},
 	"manageOnlyNonUsercss": {
-		"message": "Keine Usercss styles",
+		"message": "Keine Usercss Styles",
 		"description": "Checkbox to show only non-Usercss (standard) styles"
 	},
 	"liveReloadLabel": {
@@ -509,6 +517,10 @@
 		"message": "Farbwähler für CSS-Farben",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "Aktuell angewandte Filter treffen auf keinen Style zu",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Style erstellen für:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -605,10 +617,6 @@
 	"sectionRemove": {
 		"message": "Bereich entfernen",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "Um Styles nur für eine URL zu zeigen, stelle ein \"url:\" voran.\nBeispiel: url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Alle Styles deaktivieren",
@@ -708,7 +716,7 @@
 	},
 	"configureStyle": {
 		"message": "Konfigurieren",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "Aktualisierte Meta Infos und Codes",
@@ -725,6 +733,10 @@
 	"appliesHelp": {
 		"message": "Lege mit den Einstellungen von \"Gilt für\" fest, für welche URLs der Code in diesem Bereich gelten soll.",
 		"description": "Help text for 'applies to' section"
+	},
+	"searchStylesHelp": {
+		"message": "Die </>-Taste fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nURL suchen: Stelle <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"editStyleHeading": {
 		"message": "Style bearbeiten",
@@ -852,6 +864,10 @@
 		"message": "Änderungen verwerfen?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"configOnChangeTooltip": {
+		"message": "Änderungen automatisch speichern und übernehmen",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "Aktionen",
 		"description": ""
@@ -929,6 +945,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "Funktioniert nicht mit minified CSS",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Auf Homepage konfigurieren",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Rückgängig",

@@ -19,6 +19,10 @@
 		"message": "Stílusok exportálása",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Csak Usercss stílusok",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Az összes stílus elérhető frissítéseinek automatikus ellenőrzése és telepítése (órában)",
 		"description": ""
@@ -31,6 +35,10 @@
 		"message": "Exportálás",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "Stílus telepítése",
+		"description": "Label for install button"
+	},
 	"styleMetaErrorCheckbox": {
 		"message": "Érvénytelen @var jelölődoboz: az értéknek 0-nak vagy 1-nek kell lennie",
 		"description": "Error displayed when the value of @var checkbox is invalid"
@@ -38,6 +46,10 @@
 	"linterJSONError": {
 		"message": "Érvénytelen JSON formátum",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Kattints az elérhető gyorsbillentyűk megtekintéséhez",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Háttérszín",
@@ -79,6 +91,10 @@
 		"message": "A stílus nem lett alkalmazva a „regexp()” helytelen használata miatt",
 		"description": "Tooltip in the popup for styles that were not applied at all"
 	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Formátumváltás: HEX -> RGB -> HSL.\nShift-kattintás megfordítja az irányt.\nA PgUp (PageUp) és PgDn (PageDown) billentyűkkel is lehet váltani.",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
+	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Egyes „regexp()” szabályokat nem lehetett lefordítani.",
 		"description": ""
@@ -86,6 +102,10 @@
 	"optionsIconDark": {
 		"message": "Sötét böngészőtémák",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Nem sikerült importálni Mozilla formátumból",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "Hozzáadás stílushoz",
@@ -179,9 +199,17 @@
 		"message": "Törlés",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "Alapértelmezés használata",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "Mégsem",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "Automatikusan legyen hozzáadva záró jelpár a következők gépelésekor: ()[]{}''\"\"",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "Stílusok importálása",
@@ -240,6 +268,15 @@
 		"message": "Csak helyileg létrehozott stílusok",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "Nem támogatott @preprocessor: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "$link$a következő hibákat találta:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -248,6 +285,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"parseUsercssError": {
+		"message": "A Stylus nem tudta elemezni a usercss-t",
+		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
 		"message": "Tartalom keresése",
@@ -260,6 +301,14 @@
 	"checkAllUpdatesForce": {
 		"message": "Ellenőrizd újra, nem módosítottam egy stílust sem!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"manageOnlyNonUsercss": {
+		"message": "Csak nem Usercss stílusok",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
+	"liveReloadLabel": {
+		"message": "Valós idejű újratöltés",
+		"description": "The label of live-reload feature"
 	},
 	"unreachableFileHint": {
 		"message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon.",
@@ -333,6 +382,10 @@
 		"message": "Érvénytelen regexp.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Licenc",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Beállítások",
 		"description": "Heading for options section on manage page."
@@ -374,6 +427,10 @@
 	"importReportLegendInvalid": {
 		"message": "kihagyott érvénytelen",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Új stílus írása usercss-ként",
+		"description": ""
 	},
 	"genericResetLabel": {
 		"message": "VIsszaállítás",
@@ -420,6 +477,10 @@
 		"message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"installUpdateFromLabel": {
+		"message": "Frissítések keresése",
+		"description": "Label for the checkbox to save current URL for update check"
+	},
 	"cm_resizeGripHint": {
 		"message": "Kattints duplán a magasság maximalizálásához/visszaállításához",
 		"description": "Tooltip for the resize grip in style editor"
@@ -452,6 +513,10 @@
 		"message": "Mozilla formátumú stílus",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
+	"cm_colorpicker": {
+		"message": "Színválasztó CSS színekhez",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
+	},
 	"writeStyleFor": {
 		"message": "Stílus írása a következőhöz:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -476,6 +541,10 @@
 		"message": "Beállítások",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "A stílust frissítették vagy törölték, miután a beállítóablak megjelent. Ezek a változók nem kerültek mentésre, nehogy megsérüljön a stílus metaadata:",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Kezelés",
 		"description": "Link to open the manage page."
@@ -496,6 +565,10 @@
 	"installUpdate": {
 		"message": "Frissítés telepítése",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Az értéket nem lehet menteni. Próbáld meg csökkenteni a szövegmennyiséget!",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Az összes frissítés ellenőrzése és telepítése",
@@ -545,10 +618,6 @@
 		"message": "Szekció eltávolítása",
 		"description": "Label for the button to remove a section"
 	},
-	"searchStylesTooltip": {
-		"message": "A URL alapján történő szűréshez írd előre, hogy „url:”\nPéldául: url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
 	"disableAllStyles": {
 		"message": "Az összes stílus kikapcsolása",
 		"description": "Label for the checkbox that turns all enabled styles off."
@@ -597,6 +666,21 @@
 		"message": "A Stylus egy külső szolgáltatást használ (https://www.google.com/s2/favicons)",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "„$stylename$” már telepítve van. Felülírod?\nVerzió: $oldVersion$ -> $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Ez a stílus helyileg lett szerkesztve.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -605,6 +689,10 @@
 		"message": "Lista az összes stílusról",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "A stílus módosítva lett a szerkesztőn kívül. Szeretnéd újratölteni?",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "Beállítások visszaállítása alapra",
 		"description": ""
@@ -612,6 +700,10 @@
 	"sectionCode": {
 		"message": "Kód",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Usercss dokumentáció",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "Delete hozzáadása a gyorsmenühöz",
@@ -625,6 +717,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "Konfigurálás",
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "metainformáció és kód frissítve",
@@ -653,6 +749,19 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Automatikus kiegészítés gépeléskor",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"linterCSSLintIncompatible": {
+		"message": "A CSSLint nem támogatja a(z) $preprocessorname$ nevű előfeldolgozót",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "Érvénytelen @select: az érték nem létezik a listában",
+		"description": "Error displayed when the value of @select is invalid"
 	},
 	"styleMetaErrorColor": {
 		"message": "A(z) $color$ nem valódi szín",
@@ -687,6 +796,10 @@
 		"message": "A Stylus nem működik az ilyen oldalakon.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Fehér szegélyek használata két oldalt",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "Csak frissíthetőek vagy problémásak",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -694,6 +807,10 @@
 	"addStyleTitle": {
 		"message": "Stílus hozzáadása",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Külső hivatkozás",
+		"description": "Label for external links"
 	},
 	"externalHomepage": {
 		"message": "Kezdőoldal",
@@ -714,6 +831,10 @@
 	"optionsAdvanced": {
 		"message": "Haladó",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Átlátszatlanság",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
@@ -747,6 +868,10 @@
 		"message": "Semmi sem változott.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Elveted a változásokat?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Műveletek",
 		"description": ""
@@ -767,17 +892,42 @@
 		"message": "A beállítások felülete",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Színválasztó megnyitása",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Jelvény az eszköztárikonon",
 		"description": ""
+	},
+	"installUpdateFrom": {
+		"message": "A stílus most a következő helyről frissül: $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendIdentical": {
 		"message": "kihagyott egyezések",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
+	"manageNewStyleAsUsercss": {
+		"message": "Usercss-ként",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+	},
 	"optionsPopupWidth": {
 		"message": "Felugró ablak szélessége (pixelben)",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "Zárójelek és idézőjelek automatikus bezárása",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "Stílus újratelepítése",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "Nincs mentve ezek miatt az érvénytelen beállítások miatt:",
@@ -787,9 +937,26 @@
 		"message": "Nem",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "Hiányzó metaadat: @$key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "Nem működik minimalizált CSS-szel",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "VIsszavonás",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Le legyen cserélve az alapértelmezett sablon az új Usercss stílusokhoz a jelenlegi kóddal?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Billentyűműveletek",
@@ -798,6 +965,10 @@
 	"externalSupport": {
 		"message": "Támogatás",
 		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Mentés",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "Az új kezelési felületkiosztás",
@@ -818,6 +989,10 @@
 	"replaceWith": {
 		"message": "Csere a következővel",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+	},
+	"liveReloadError": {
+		"message": "Hiba történt a fájl figyelése közben",
+		"description": "The label of live-reload error"
 	},
 	"deleteStyleLabel": {
 		"message": "Törlés",
@@ -840,6 +1015,10 @@
 		"message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül",
 		"description": ""
 	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Adj meg egy @name-et a kódban",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
+	},
 	"addStyleLabel": {
 		"message": "Új stílus írása",
 		"description": "Label for the button to go to the add style page"
@@ -847,6 +1026,10 @@
 	"optionsUpdateIntervalNote": {
 		"message": "Az automatikus stílusfrissítések ellenőrzésének letiltásához állítsd 0-ra",
 		"description": ""
+	},
+	"installButtonUpdate": {
+		"message": "Stílus frissítése",
+		"description": "Label for update button"
 	},
 	"backupButtons": {
 		"message": "Biztonsági mentés",
@@ -864,6 +1047,10 @@
 		"message": "Stílus telepítve",
 		"description": "Text displayed when the style is successfully installed"
 	},
+	"author": {
+		"message": "Szerző",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "Téma",
 		"description": "Label for the style editor's CSS theme."
@@ -871,6 +1058,10 @@
 	"popupOpenEditInWindow": {
 		"message": "Szerkesztő megnyitása új ablakban",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "Nem lehet eltávolítani az utolsó alkalmazási szabályt",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "Válassz ki egy fájlt vagy húzd erre az oldalra!",
@@ -889,7 +1080,15 @@
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
-		"message": "Tervezd újra a webet a Stylus-szal, ami egy stíluskezelő. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz.",
+		"message": "Tervezd újra a webet a Stylus stíluskezelővel. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Bezárás",
+		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Az üres @name lecseréli az alapértelmezett sablont",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }

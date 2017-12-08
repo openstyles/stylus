@@ -131,6 +131,10 @@
 		"message": "將您的備份檔拖曳到此頁面的任何地方以匯入。",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "注意：使用單個 \\ 來在正規表達式的輸入欄位中逃脫，其將會根據在 CSS 中的引用字串的規定，自動在樣式代碼中轉換為 \\\\。",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "幫助",
 		"description": "Alternate text for help buttons"
@@ -174,6 +178,10 @@
 	"styleEnabledLabel": {
 		"message": "已啟用",
 		"description": "Label for the enabled state of styles"
+	},
+	"configOnChange": {
+		"message": "正在變更",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
 	},
 	"linterConfigTooltip": {
 		"message": "點選以設定此 linter",
@@ -525,6 +533,10 @@
 		"message": "用於 CSS 色彩的顏色挑選器",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "目前套用的過濾器未符合樣式",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "編寫樣式給：",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -625,10 +637,6 @@
 	"sectionRemove": {
 		"message": "移除樣式段",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "要顯示 URL 的樣式，以 'url:' 做為其前綴：\n舉例來說，url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "禁用所有樣式",
@@ -732,7 +740,7 @@
 	},
 	"configureStyle": {
 		"message": "設定",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "後設資訊與程式碼均已更新",
@@ -749,6 +757,10 @@
 	"appliesHelp": {
 		"message": "使用「適用於」控件來限制這個樣式段適用的網址。",
 		"description": "Help text for 'applies to' section"
+	},
+	"searchStylesHelp": {
+		"message": "</> 鍵聚焦於搜尋欄。\n純文字搜尋名字、程式碼、首頁 URL 與其套用到的頁面。少於三個字母的單字會被忽略。\n符合的 URL：以 <url:> 為前綴來搜尋，例如：<url:https://github.com/openstyles/stylus>\n正規表達式：包含斜線與旗標，例如 </body.*?\\ba\\b/simguy>\n精確的單字：以雙引號包住要搜尋的文字，例如 <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"editStyleHeading": {
 		"message": "編輯樣式",
@@ -888,6 +900,10 @@
 		"message": "放棄變更？",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"configOnChangeTooltip": {
+		"message": "自動儲存與套用變更",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "動作",
 		"description": ""
@@ -965,6 +981,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "無法與最小化的 CSS 一起運作",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "在首頁上設定",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "撤銷",

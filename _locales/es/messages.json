@@ -131,6 +131,10 @@
 		"message": "Suelte su fichero de copia de seguridad en cualquier lugar de esta página para importarlo.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Nota: Use una única \\ como caracter de escape en el campo de entrada de la expresión regular (regexp), que se convertirá automátiascamente a \\\\ en el código del estilo igual que por especificación para cadenas entrecomilladas en CSS.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Ayuda",
 		"description": "Alternate text for help buttons"
@@ -525,6 +529,10 @@
 		"message": "Selectores de color para colores CSS",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "Los filtros actualmente aplicados no coinciden con estilo alguno",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Escribir estilo para:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -625,10 +633,6 @@
 	"sectionRemove": {
 		"message": "Eliminar sección",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "Para mostrar estilos para una URL, precédala con 'url:'\nPor ejemplo, url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Desactivar todos los estilos",
@@ -732,7 +736,7 @@
 	},
 	"configureStyle": {
 		"message": "Configurar",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "actualizarón tanto meta información como código",
@@ -749,6 +753,10 @@
 	"appliesHelp": {
 		"message": "Utilice los controles 'Se aplica a' para limitar a qué URLs se aplica el código de esta sección.",
 		"description": "Help text for 'applies to' section"
+	},
+	"searchStylesHelp": {
+		"message": "La tecla </> pone el foco en el campo de búsqueda.\nTexto simple: Busque por nombre, código, URL de la página principal, y sitios a los que se apllica. Las palabras con menos de 3 letras son ignoradas.\nURL coincidente: Prefije la búsqueda con <url:>, ej. <url:https://github.com/openstyles/stylus>\nExpresiones regulares: Incluya barras e indicadores, ej.. </body.*?\\ba\\b/simguy>\nPalabras exactas: Ponga la consulta entre comillas dobles, ej.. <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"editStyleHeading": {
 		"message": "Editar estilo",

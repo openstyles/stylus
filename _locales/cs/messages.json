@@ -19,6 +19,10 @@
 		"message": "Exportovat styly",
 		"description": ""
 	},
+	"manageOnlyUsercss": {
+		"message": "Pouze Usercss styly",
+		"description": "Checkbox to show only Usercss styles"
+	},
 	"optionsUpdateInterval": {
 		"message": "Automaticky vyhledávat a instalovat aktualizace stylů (interval je v hodinách)",
 		"description": ""
@@ -31,9 +35,21 @@
 		"message": "Exportovat",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
+	"installButton": {
+		"message": "Instalovat styl",
+		"description": "Label for install button"
+	},
+	"styleMetaErrorCheckbox": {
+		"message": "Neplatný @var checkbox: hodnota musí být 0 nebo 1",
+		"description": "Error displayed when the value of @var checkbox is invalid"
+	},
 	"linterJSONError": {
 		"message": "Neplatný JSON formát",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Kliknutím zobrazíte dostupné klávesové zkratky",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Barva pozadí",
@@ -75,6 +91,10 @@
 		"message": "Styl nebyl použit kvůli nesprávnému použití „regexp()“",
 		"description": "Tooltip in the popup for styles that were not applied at all"
 	},
+	"colorpickerSwitchFormatTooltip": {
+		"message": "Přepínání formátů: HEX → RGB → HSL\nShift + klik pro obrácené pořadí.\nLze použít i klávesy PgUp (PageUp), PgDn (PageDown).",
+		"description": "Tooltip for the switch button in the color picker popup in the style editor."
+	},
 	"styleRegexpInvalidExplanation": {
 		"message": "Některá „regexp()“ pravidla nelze vůbec sestavit.",
 		"description": ""
@@ -82,6 +102,10 @@
 	"optionsIconDark": {
 		"message": "Tmavé vzhledy",
 		"description": ""
+	},
+	"styleFromMozillaFormatError": {
+		"message": "Import z Mozilla formátu se nezdařil",
+		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
 		"message": "Připojit ke stylu",
@@ -107,6 +131,10 @@
 		"message": "Pro import upusťte soubor zálohy kdekoliv na této stránce.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Poznámka: Používejte jen jedno zpětné lomítko „\\“ ve vstupním regexp poli – v editoru bude automaticky převedeno na „\\\\“, v souladu s normou citovaných řetězců v CSS.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Nápověda",
 		"description": "Alternate text for help buttons"
@@ -118,6 +146,10 @@
 	"manageFaviconsGray": {
 		"message": "Zešednutí",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+	},
+	"versionInvalidOlder": {
+		"message": "Tato verze je starší než verze nainstalovaného stylu.",
+		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
 		"message": "Ano",
@@ -171,9 +203,17 @@
 		"message": "Smazat",
 		"description": ""
 	},
+	"confirmDefault": {
+		"message": "Použít výchozí",
+		"description": "'Set to default' button in a confirm dialog"
+	},
 	"confirmCancel": {
 		"message": "Storno",
 		"description": ""
+	},
+	"cm_autoCloseBracketsTooltip": {
+		"message": "Automaticky přidat uzavírací párový znak po napsání otevíracího znaku ()[]{}''\"\"",
+		"description": "Label for the checkbox in the style editor."
 	},
 	"retrieveBckp": {
 		"message": "Importovat styly",
@@ -232,6 +272,15 @@
 		"message": "Pouze lokální styly",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
 	},
+	"styleMetaErrorPreprocessor": {
+		"message": "Nepodporovaný @preprocessor: $preprocessor$",
+		"description": "Error displayed when the value of @preprocessor is not supported",
+		"placeholders": {
+			"preprocessor": {
+				"content": "$1"
+			}
+		}
+	},
 	"linterIssuesHelp": {
 		"message": "Problémy nalezené aplikací $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -240,6 +289,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"parseUsercssError": {
+		"message": "Usercss nelze zpracovat:",
+		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
 		"message": "Prohledat obsah",
@@ -252,6 +305,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Vynutit aktualizaci (neprovedeny žádné změny stylů)",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"manageOnlyNonUsercss": {
+		"message": "Pouze non-Usercss styly",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus může přistupovat k file:// URL pouze při povolení odpovídající možnosti pro rozšíření Stylus ve správci chrome://extensions.",
@@ -325,6 +382,10 @@
 		"message": "Tento regulérní výraz je neplatný.",
 		"description": "Validation message for a bad regexp in a style"
 	},
+	"license": {
+		"message": "Licence",
+		"description": "Label for the license"
+	},
 	"optionsHeading": {
 		"message": "Možnosti",
 		"description": "Heading for options section on manage page."
@@ -367,6 +428,10 @@
 		"message": "neplatné přeskočeny",
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Napsat nový styl jako usercss",
+		"description": ""
+	},
 	"genericResetLabel": {
 		"message": "Resetovat",
 		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -396,6 +461,10 @@
 		"message": "Použijte /re/ syntaxi pro vyhledávání s regulérními výrazy",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
+	"popupBordersTooltip": {
+		"message": "Užitečné pro tmavé motivy v novém Chromu, který již nevykresluje obrysové čáry",
+		"description": ""
+	},
 	"updateCheckManualUpdateHint": {
 		"message": "Vynucení aktualizace přepíše všechny lokální úpravy.",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
@@ -407,6 +476,10 @@
 	"importReplaceTooltip": {
 		"message": "Zahodit obsah současného stylu a přepsat ho importovaným stylem",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"installUpdateFromLabel": {
+		"message": "Vyhledat aktualizace",
+		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
 		"message": "Dvojklikem maximalizujete/obnovíte výšku",
@@ -440,6 +513,14 @@
 		"message": "Styl v Mozilla formátu",
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
+	"cm_colorpicker": {
+		"message": "Paleta pro CSS barvy",
+		"description": "Label for the checkbox controlling colorpicker option for the style editor."
+	},
+	"filteredStylesAllHidden": {
+		"message": "Použitému filtru nevyhovují žádné styly",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Napsat nový styl pro:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -464,6 +545,10 @@
 		"message": "Možnosti",
 		"description": "Go to Options UI"
 	},
+	"usercssConfigIncomplete": {
+		"message": "Styl byl aktualizován nebo smazán po zobrazení dialogu konfigurace. Tyto proměnné nebyly uloženy aby se předešlo poškození metadat stylu.",
+		"description": ""
+	},
 	"openManage": {
 		"message": "Spravovat",
 		"description": "Link to open the manage page."
@@ -484,6 +569,10 @@
 	"installUpdate": {
 		"message": "Nainstalovat aktualizaci",
 		"description": "Label for the button to install an update for a single style"
+	},
+	"syncStorageErrorSaving": {
+		"message": "Hodnotu nelze uložit. Zkuste text zkrátit.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"optionsCheckUpdate": {
 		"message": "Vyhledávat a instalovat všechny aktualizace",
@@ -533,13 +622,13 @@
 		"message": "Odstranit sekci",
 		"description": "Label for the button to remove a section"
 	},
-	"searchStylesTooltip": {
-		"message": "Pro zobrazení stylů pro konkrétní URL adresu použijte předponu „url:“\nPříklad: url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
 	"disableAllStyles": {
 		"message": "Vypnout všechny styly",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"appliesLineWidgetLabel": {
+		"message": "Zobrazit část „platí pro“",
+		"description": "Label for the checkbox to display applies-to information in the single editor"
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
 		"message": "Tento styl mohl být upraven lokálně.",
@@ -581,6 +670,21 @@
 		"message": "Stylus používá externí službu https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"styleInstallOverwrite": {
+		"message": "Styl „$stylename$“ je již nainstalován. Přepsat?\nVerze: $oldVersion$ → $newVersion$",
+		"description": "Confirmation when re-installing a style",
+		"placeholders": {
+			"stylename": {
+				"content": "$1"
+			},
+			"newVersion": {
+				"content": "$3"
+			},
+			"oldVersion": {
+				"content": "$2"
+			}
+		}
+	},
 	"updateCheckSkippedLocallyEdited": {
 		"message": "Tento styl byl upraven lokálně.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
@@ -589,6 +693,10 @@
 		"message": "Zobrazit celý seznam pravidel",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
+	"styleUpdateDiscardChanges": {
+		"message": "Styl byl změněn mimo editor. Chcete styl znovu načíst?",
+		"description": "Confirmation to update the style in the editor"
+	},
 	"optionsResetButton": {
 		"message": "Obnovit nastavení",
 		"description": ""
@@ -596,6 +704,10 @@
 	"sectionCode": {
 		"message": "Kód",
 		"description": "Label for the code for a section"
+	},
+	"externalUsercssDocument": {
+		"message": "Dokumentace pro Usercss",
+		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
 		"message": "Přidat tlačítko Smazat do kontextové nabídky v editoru",
@@ -609,6 +721,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"configureStyle": {
+		"message": "Konfigurovat",
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "meta informace a kód aktualizován",
@@ -638,6 +754,32 @@
 		"message": "Automatické dokončování během psaní",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"linterCSSLintIncompatible": {
+		"message": "CSSLint nepodporuje předprocesor $preprocessorname$",
+		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
+		"placeholders": {
+			"preprocessorname": {
+				"content": "$1"
+			}
+		}
+	},
+	"styleMetaErrorSelectValueMismatch": {
+		"message": "Neplatný @select: hodnota v seznamu neexistuje",
+		"description": "Error displayed when the value of @select is invalid"
+	},
+	"styleMetaErrorColor": {
+		"message": "$color$je neplatná barva",
+		"description": "Error displayed when the value of @var color is invalid",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"externalFeedback": {
+		"message": "Zpětná vazba",
+		"description": "Label for the external link to send feedback for the style"
+	},
 	"manageOnlyDisabled": {
 		"message": "Pouze vypnuté styly",
 		"description": "Checkbox to show only disabled styles"
@@ -662,6 +804,10 @@
 		"message": "Stylus nepracuje se stránkami jako je tato.",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
+	"popupBorders": {
+		"message": "Přidat postranní bílé okraje",
+		"description": ""
+	},
 	"manageOnlyUpdates": {
 		"message": "Pouze s aktualizacemi nebo chybami",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
@@ -669,6 +815,14 @@
 	"addStyleTitle": {
 		"message": "Přidat styl",
 		"description": "Title of the page for adding styles"
+	},
+	"externalLink": {
+		"message": "Externí odkaz",
+		"description": "Label for external links"
+	},
+	"externalHomepage": {
+		"message": "Domovská stránka",
+		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
 		"message": "Přepsat styl",
@@ -685,6 +839,10 @@
 	"optionsAdvanced": {
 		"message": "Pokročilé",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Neprůhlednost",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Připojit importovaný styl k současnému stylu",
@@ -718,6 +876,10 @@
 		"message": "Žádné změny.",
 		"description": "Message in the report shown after importing styles"
 	},
+	"confirmDiscardChanges": {
+		"message": "Zahodit změny?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
 	"optionsActions": {
 		"message": "Akce",
 		"description": ""
@@ -738,17 +900,42 @@
 		"message": "Možnosti rozhraní",
 		"description": "Go to Options UI"
 	},
+	"colorpickerTooltip": {
+		"message": "Otevřít paletu barev",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",
 		"description": ""
+	},
+	"installUpdateFrom": {
+		"message": "Styl je aktuálně aktualizován z $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendIdentical": {
 		"message": "identické přeskočeny",
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
+	"manageNewStyleAsUsercss": {
+		"message": "jako Usercss",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+	},
 	"optionsPopupWidth": {
 		"message": "Šířka vyskakovacího okna [px]",
 		"description": ""
+	},
+	"cm_autoCloseBrackets": {
+		"message": "Automaticky uzavírat závorky a uvozovky",
+		"description": "Label for the checkbox in the style editor."
+	},
+	"installButtonReinstall": {
+		"message": "Reinstalovat styl",
+		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
 		"message": "Neuloženo z důvodu těchto neplatných nastavení:",
@@ -758,13 +945,38 @@
 		"message": "Ne",
 		"description": "'No' button in a confirm dialog"
 	},
+	"styleMissingMeta": {
+		"message": "Chybějící metadata @$key$",
+		"description": "Error displayed when a mandatory metadata is missing",
+		"placeholders": {
+			"key": {
+				"content": "$1"
+			}
+		}
+	},
+	"appliesLineWidgetWarning": {
+		"message": "Nefunguje s minimalizovaným CSS",
+		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
 	"undo": {
 		"message": "Zpět",
 		"description": "Button label"
 	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Nahradit výchozí šablonu pro nové Usercss styly aktuálním kódem?",
+		"description": ""
+	},
 	"cm_keyMap": {
 		"message": "Přiřazení kláves",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
+	},
+	"externalSupport": {
+		"message": "Podpora",
+		"description": "Label for the external link to style's support site"
+	},
+	"confirmSave": {
+		"message": "Uložit",
+		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
 		"message": "Nové rozložení správy rozhraní",
@@ -794,9 +1006,22 @@
 		"message": "Instalovat aktualizaci (lokální změny budou přepsány)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
+	"styleInstallFailed": {
+		"message": "Styl nelze nainstalovat.\n$error$",
+		"description": "Warning when installation failed",
+		"placeholders": {
+			"error": {
+				"content": "$1"
+			}
+		}
+	},
 	"optionsAdvancedExposeIframes": {
 		"message": "Obnažit iframe prvky pomocí HTML[stylus-iframe]",
 		"description": ""
+	},
+	"usercssEditorNamePlaceholder": {
+		"message": "Definujte @name v kódu",
+		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
 	},
 	"addStyleLabel": {
 		"message": "Napsat nový styl",
@@ -805,6 +1030,10 @@
 	"optionsUpdateIntervalNote": {
 		"message": "Pro vypnutí automatického vyhledávání aktualizací stylů nastavte interval na nulu.",
 		"description": ""
+	},
+	"installButtonUpdate": {
+		"message": "Aktualizovat styl",
+		"description": "Label for update button"
 	},
 	"backupButtons": {
 		"message": "Zálohovat",
@@ -818,6 +1047,14 @@
 		"message": "Upravit",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Styl instalován",
+		"description": "Text displayed when the style is successfully installed"
+	},
+	"author": {
+		"message": "Autor",
+		"description": "Label for the style author"
+	},
 	"cm_theme": {
 		"message": "Schéma",
 		"description": "Label for the style editor's CSS theme."
@@ -825,6 +1062,10 @@
 	"popupOpenEditInWindow": {
 		"message": "Otevírat editor v novém okně",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
+	"appliesRemoveError": {
+		"message": "Poslední záznam „platí pro“ nelze odebrat.",
+		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
 		"message": "Vyberte soubor nebo ho přetáhněte na tuto stránku.",
@@ -845,5 +1086,13 @@
 	"description": {
 		"message": "Změňte vzhled webů pomocí správce uživatelských stylů. Stylus umožňuje snadnou instalaci vzhledů a modifikací pro spoustu webů.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Zavřít",
+		"description": "'Close' button in a confirm dialog"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "Prázdné @name nahrazuje výchozí šablonu",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }
