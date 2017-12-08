@@ -192,12 +192,11 @@ var hotkeys = (() => {
   }
 
   function adjustInfoPosition(debounced) {
-    const container = $('#hotkey-info');
     if (debounced !== true) {
       debounce(adjustInfoPosition, 100, true);
       return;
     }
-    const style = container.style;
+    const style = $('#hotkey-info').style;
     if (installed.scrollHeight > installed.clientHeight) {
       const entryRight = installed.firstElementChild.getBoundingClientRect().right;
       style.setProperty('right', window.innerWidth - entryRight + 'px', 'important');
