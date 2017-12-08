@@ -72,15 +72,17 @@ function configDialog(style) {
     colorpicker.hide();
   }
 
-  function onchange({target}) {
+  function onchange({target, justSaved = false}) {
     // invoked after element's own onchange so 'va' contains the updated value
     const va = target.va;
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
-      if (prefs.get('config.autosave')) {
+      if (prefs.get('config.autosave') && !justSaved) {
         debounce(save, 0, {anyChangeIsDirty: true});
-      } else {
-        target.closest('label').classList.toggle('dirty', va.dirty);
+        return;
+      }
+      renderValueState(va);
+      if (!justSaved) {
         updateButtons();
       }
     }
@@ -148,7 +150,8 @@ function configDialog(style) {
     return BG.usercssHelper.save(style)
       .then(saved => {
         varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
-        vars.forEach(va => onchange({target: va.input}));
+        vars.forEach(va => onchange({target: va.input, justSaved: true}));
+        renderValues();
         updateButtons();
         $.remove('.config-error');
       })
@@ -172,12 +175,19 @@ function configDialog(style) {
   }
 
   function buildConfigForm() {
+    let resetter = $create('SVG:svg.svg-icon.config-reset-icon', {viewBox: '0 0 20 20'}, [
+      $create('SVG:title', t('genericResetLabel')),
+      $create('SVG:polygon', {
+        points: '16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 ' +
+                '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
+      }),
+    ]);
     for (const va of vars) {
       let children;
       switch (va.type) {
         case 'color':
           children = [
-            $create('.cm-colorview', [
+            $create('.cm-colorview.config-value', [
               va.input = $create('.color-swatch', {
                 va,
                 onclick: showColorpicker
@@ -188,7 +198,7 @@ function configDialog(style) {
 
         case 'checkbox':
           children = [
-            $create('span.onoffswitch', [
+            $create('span.onoffswitch.config-value', [
               va.input = $create('input.slider', {
                 va,
                 type: 'checkbox',
@@ -204,7 +214,7 @@ function configDialog(style) {
         case 'image':
           // TODO: a image picker input?
           children = [
-            $create('.select-resizer', [
+            $create('.select-resizer.config-value', [
               va.input = $create('select', {
                 va,
                 onchange: updateVarOnChange,
@@ -219,7 +229,7 @@ function configDialog(style) {
 
         default:
           children = [
-            va.input = $create('input', {
+            va.input = $create('input.config-value', {
               va,
               type: 'text',
               onchange: updateVarOnChange,
@@ -228,10 +238,16 @@ function configDialog(style) {
           ];
           break;
       }
+
+      resetter = resetter.cloneNode(true);
+      resetter.va = va;
+      resetter.onclick = resetOnClick;
+
       elements.push(
         $create(`label.config-${va.type}`, [
-          $create('span', va.label),
+          $create('span.config-name', tWordBreak(va.label)),
           ...children,
+          resetter,
         ]));
     }
   }
@@ -248,8 +264,8 @@ function configDialog(style) {
     }
   }
 
-  function renderValues() {
-    for (const va of vars) {
+  function renderValues(varsToRender = vars) {
+    for (const va of varsToRender) {
       const value = isDefault(va) ? va.default : va.value;
       if (va.type === 'color') {
         va.input.style.backgroundColor = value;
@@ -261,7 +277,23 @@ function configDialog(style) {
       } else {
         va.input.value = value;
       }
+      if (!prefs.get('config.autosave')) {
+        renderValueState(va);
+      }
     }
+  }
+
+  function renderValueState(va) {
+    const el = va.input.closest('label');
+    el.classList.toggle('dirty', Boolean(va.dirty));
+    el.classList.toggle('nondefault', !isDefault(va));
+  }
+
+  function resetOnClick(event) {
+    event.preventDefault();
+    this.va.value = null;
+    renderValues([this.va]);
+    onchange({target: this.va.input});
   }
 
   function showColorpicker() {
