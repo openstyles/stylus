@@ -84,23 +84,28 @@ select {
 
 #header a[href^="edit"] {
   text-decoration: none;
+  margin-right: 8px;
 }
 
-#add-style-label {
-  margin-right: .25em;
-  margin-bottom: .25em;
+#add-style-wrapper {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1.5em;
 }
 
 #add-style-as-usercss-wrapper {
   display: inline-flex;
+  margin-top: 3px;
 }
 
 #add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
   fill: #aaa;
 }
 
-#usercss-wiki svg {
-  margin-top: -4px;
+#add-style-as-usercss-wrapper #usercss-wiki {
+  position: absolute;
+  right: -20px;
+  top: -3px;
 }
 
 #installed {
@@ -256,8 +261,7 @@ select {
 }
 
 /* collapsibles */
-#header details:not(#filters),
-#add-style-wrapper {
+#header details:not(#filters) {
   padding-bottom: .7em;
 }
 
@@ -825,8 +829,14 @@ input[id^="manage.newUI"] {
 #search {
   flex-grow: 1;
   margin: 0.25rem 0 0;
-  padding-left: 0.25rem;
-  border-width: 1px;
+  background: #fff;
+  height: 20px;
+  box-sizing: border-box;
+  padding: 3px 3px 3px 4px;
+  font: 400 12px Arial;
+  color: #000;
+  border: 1px solid hsl(0, 0%, 66%);
+  border-radius: 0.25rem;
 }
 
 #search-wrapper .info {

@@ -576,9 +576,6 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   top: 1em;
   margin: 1ex 0;
 }
-.firefox .beautify-options > label input {
-  top: 1px;
-}
 .beautify-options:after {
   clear: both;
   display: block;
@@ -807,11 +804,5 @@ html:not(.usercss) .usercss-only,
   #actions {
     flex-wrap: wrap;
     white-space: normal;
-  }
-}
-
-@supports (-moz-appearance: none) {
-  #header button {
-    padding: 0 3px 2px;
   }
 }
