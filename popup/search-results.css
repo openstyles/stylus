@@ -22,11 +22,21 @@ body.search-results-shown {
 
 #search-results-list {
   position: relative;
-  min-height: 200px; /* Size of lds-spinner */
+  min-height: 200px;
 }
 
-.search-result {
+.search-result, .search-result-empty {
+  min-height: 170px;
   padding: 5px;
+}
+
+.search-result-empty {
+  position: relative;
+}
+.search-result-empty .lds-spinner {
+  top: 0;
+  width: 150px;
+  height: 150px;
 }
 
 .search-result-screenshot {
@@ -44,22 +54,35 @@ body.search-results-shown {
 .search-result-info {
   position: relative;
 }
-
-.search-result-overlay {
-  width: 100%;
-  height: 85px;
-  position: absolute;
-  top: 55px;
+.search-result-info > div {
   opacity: 0;
-  background-color: rgba(255, 255, 255, 0.6);
+  position: absolute;
+  width: 100%;
   transition: opacity linear 0.2s;
   overflow: hidden;
+  text-align: center;
 }
-.search-result-info:hover .search-result-overlay {
+.search-result-info:hover > div {
   opacity: 1;
 }
 
-.search-result-overlay > .actions {
+.search-result-overlay {
+  height: 55px;
+  top: 85px;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.search-result-info > .actions {
+  top: 30px;
+}
+.search-result-info > .actions > button {
+  background-color: #fff;
+}
+.search-result-info > .actions > button:hover {
+  background-color: #ccc;
+}
+
+.search-result-overlay > * {
   text-align: center;
 }
 
@@ -131,7 +154,8 @@ body.search-results-shown {
 .search-result-install,
 .search-result-customize,
 .search-result-uninstall {
-  width: 50%;
+  width: 40%;
+  margin: 3px;
 }
 
 #search-results-nav {

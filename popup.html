@@ -88,14 +88,14 @@
       <a class="search-result-title"></a>
       <div class="search-result-info">
         <img class="search-result-screenshot" />
+        <div class="actions">
+          <button class="search-result-install" i18n-text="installButton"></button>
+          <button class="search-result-uninstall hidden" i18n-text="deleteStyleLabel"></button>
+          <button class="search-result-customize hidden"
+                  i18n-text="searchResultCustomize"
+                  i18n-title="searchResultCustomizeTooltip"></button>
+        </div>
         <div class="search-result-overlay">
-          <div class="actions">
-            <button class="search-result-install" i18n-text="installButton"></button>
-            <button class="search-result-uninstall hidden" i18n-text="deleteStyleLabel"></button>
-            <button class="search-result-customize hidden"
-                    i18n-text="searchResultCustomize"
-                    i18n-title="searchResultCustomizeTooltip"></button>
-          </div>
           <div class="search-result-author">
             <label i18n-text="author"></label>:
             <a class="search-result-author-link" target="_blank"></a>
@@ -121,6 +121,10 @@
         </div>
       </div>
     </div>
+  </template>
+
+  <template data-id="emptySearchResult">
+    <div class="search-result-empty"></div>
   </template>
 
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">

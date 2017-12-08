@@ -32,7 +32,7 @@
    * @returns {Object} Includes load(), next(), and prev() methods to alter the search results.
    */
   function searchResultsController() {
-    const DISPLAYED_RESULTS_PER_PAGE = 3; // Number of results to display in popup.html
+    const DISPLAYED_RESULTS_PER_PAGE = 10; // Number of results to display in popup.html
     const DELAY_AFTER_FETCHING_STYLES = 0; // Millisecs to wait before fetching next batch of search results.
     const DELAY_BEFORE_SEARCHING_STYLES = 0; // Millisecs to wait before fetching .JSON for next search result.
     const searchAPI = searchUserstyles();
@@ -98,6 +98,14 @@
       const totalPageCount = Math.ceil(Math.max(1, totalResultsCount / DISPLAYED_RESULTS_PER_PAGE));
       $('#search-results-nav-next').disabled = (currentDisplayedPage >= totalPageCount || loading);
       $('#search-results-nav-total-pages').textContent = totalPageCount;
+
+      // Fill in remaining search results with blank results + spinners
+      const maxResults = currentDisplayedPage < totalPageCount
+        ? DISPLAYED_RESULTS_PER_PAGE
+        : displayedResults.length + unprocessedResults.length;
+      for (let i = displayedResults.length; i < maxResults; i++) {
+        createLoadingSearchResultNode();
+      }
     }
 
     /**
@@ -109,10 +117,7 @@
 
     function loadMoreIfNeeded() {
       if (shouldLoadMore()) {
-        setLoading(true);
         setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
-      } else {
-        setLoading(false);
       }
     }
 
@@ -157,7 +162,10 @@
         processNextResult();
       } else if (searchAPI.isExhausted()) {
         // Stop if no more search results.
-        setLoading(false);
+        if (processedResults.length === 0) {
+          // No results
+          error(404);
+        }
       } else {
         setLoading(true);
         // Search for more results.
@@ -169,6 +177,7 @@
           category = searchAPI.getCategory(tab.url);
           searchAPI.search(category)
             .then(searchResults => {
+              setLoading(false);
               if (searchResults.data.length === 0) {
                 throw 404;
               }
@@ -188,7 +197,6 @@
      */
     function processNextResult() {
       if (!shouldLoadMore()) {
-        setLoading(false);
         return;
       }
 
@@ -265,6 +273,16 @@
       });
     }
 
+    function createLoadingSearchResultNode() {
+      const entry = template.emptySearchResult.cloneNode(true);
+      entry.appendChild(
+        $create(
+          '.lds-spinner',
+          new Array(12).fill($create('div')).map(e => e.cloneNode()))
+      );
+      $('#search-results-list').appendChild(entry);
+    }
+
     /**
      * Constructs and adds the given search result to the popup's Search Results container.
      * @param {Object} userstyleSearchResult The SearchResult object from userstyles.org
@@ -308,8 +326,7 @@
         screenshotUrl = searchAPI.BASE_URL + '/style_screenshot_thumbnails/' + screenshotUrl;
       }
       Object.assign(screenshot, {
-        src: screenshotUrl,
-        title: searchResultName
+        src: screenshotUrl
       });
 
       const searchResultOverlay = $('.search-result-overlay', entry);
