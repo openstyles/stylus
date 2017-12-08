@@ -385,10 +385,12 @@
       }
 
       if (userstyleSearchResult.installed) {
+        screenshot.onclick = uninstall;
         searchResultOverlay.onclick = uninstall;
         installButton.classList.add('hidden');
         uninstallButton.classList.remove('hidden');
       } else {
+        screenshot.onclick = install;
         searchResultOverlay.onclick = install;
       }
 
