@@ -156,11 +156,11 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   function nextEditor(cm) {
-    nextPrevEditor(cm, 1);
+    return nextPrevEditor(cm, 1);
   }
 
   function prevEditor(cm) {
-    nextPrevEditor(cm, -1);
+    return nextPrevEditor(cm, -1);
   }
 
   function nextPrevEditor(cm, direction) {

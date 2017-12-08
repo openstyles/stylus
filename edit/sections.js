@@ -331,7 +331,7 @@ function nextPrevEditorOnKeydown(cm, event) {
       }
       event.preventDefault();
       event.stopPropagation();
-      cm = CodeMirror.commands.prevEditor.call(cm);
+      cm = CodeMirror.commands.prevEditor(cm);
       cm.setCursor(cm.doc.size - 1, key === 37 ? 1e20 : ch);
       break;
     case 39:
@@ -347,7 +347,7 @@ function nextPrevEditorOnKeydown(cm, event) {
       }
       event.preventDefault();
       event.stopPropagation();
-      cm = CodeMirror.commands.nextEditor.call(cm);
+      cm = CodeMirror.commands.nextEditor(cm);
       cm.setCursor(0, 0);
       break;
   }
