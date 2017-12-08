@@ -46,7 +46,7 @@ body {
   border-color: hsl(0, 0%, 52%);
 }
 
-.firefox.moz-appearance-bug button:not(.install) {
+.firefox.moz-appearance-bug button {
   padding: 2px 4px;
 }
 
