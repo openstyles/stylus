@@ -734,14 +734,6 @@
     "message": "Installs",
     "description": "Text for label that shows the number of times a search result was installed"
   },
-  "searchResultCustomize": {
-    "message": "Customize",
-    "description": "Text for a button that opens style on userstyles.org for customizing"
-  },
-  "searchResultCustomizeTooltip": {
-    "message": "Open this style on userstyles.org to customize via 'Advanced Style Settings'",
-    "description": "Tooltip for a button that opens style on userstyles.org for customizing"
-  },
   "searchStyles": {
     "message": "Search contents",
     "description": "Label for the search filter textbox on the Manage styles page"
