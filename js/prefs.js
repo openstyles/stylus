@@ -201,6 +201,24 @@ var prefs = new function Prefs() {
         onChange.any.add(listener);
       }
     },
+
+    unsubscribe(keys, listener) {
+      if (keys) {
+        for (const key of keys) {
+          const existing = onChange.specific.get(key);
+          if (existing instanceof Set) {
+            existing.delete(listener);
+            if (!existing.size) {
+              onChange.specific.delete(key);
+            }
+          } else if (existing) {
+            onChange.specific.delete(key);
+          }
+        }
+      } else {
+        onChange.all.remove(listener);
+      }
+    },
   });
 
   // Unlike sync, HTML5 localStorage is ready at browser startup
@@ -394,6 +412,10 @@ function setupLivePrefs(
     element = $('#' + id),
     force,
   }) {
+    if (!element) {
+      prefs.unsubscribe(IDs, updateElement);
+      return;
+    }
     const prop = checkedProps[id];
     if (force || element[prop] !== value) {
       element[prop] = value;
