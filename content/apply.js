@@ -202,6 +202,17 @@
       requestStyles();
       return;
     }
+
+    if (!document.documentElement) {
+      new MutationObserver((mutations, observer) => {
+        if (document.documentElement) {
+          observer.disconnect();
+          applyStyles(styles);
+        }
+      }).observe(document, {childList: true});
+      return;
+    }
+
     if ('disableAll' in styles) {
       doDisableAll(styles.disableAll);
       delete styles.disableAll;
