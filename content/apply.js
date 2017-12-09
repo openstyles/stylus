@@ -55,7 +55,6 @@
     }
   }
 
-
   function applyOnMessage(request, sender, sendResponse) {
     if (request.styles === 'DIY') {
       // Do-It-Yourself tells our built-in pages to fetch the styles directly
@@ -125,7 +124,6 @@
     }
   }
 
-
   function doDisableAll(disable = disableAll) {
     if (!disable === !disableAll) {
       return;
@@ -139,7 +137,6 @@
     });
   }
 
-
   function doExposeIframes(state = exposeIframes) {
     if (state === exposeIframes || window === parent) {
       return;
@@ -152,7 +149,6 @@
       document.documentElement.removeAttribute('stylus-iframe');
     }
   }
-
 
   function applyStyleState({id, enabled}) {
     const inCache = disabledElements.get(id) || styleElements.get(id);
@@ -174,7 +170,6 @@
     }
   }
 
-
   function removeStyle({id, retire = false}) {
     const el = document.getElementById(ID_PREFIX + id);
     if (el) {
@@ -194,7 +189,6 @@
     disabledElements.delete(id);
     retiredStyleTimers.delete(id);
   }
-
 
   function applyStyles(styles) {
     if (!styles) {
@@ -232,21 +226,8 @@
     }
 
     if (styles.needTransitionPatch) {
-      // CSS transition bug workaround: since we insert styles asynchronously,
-      // the browsers, especially Firefox, may apply all transitions on page load
+      applyTransitionPatch();
       delete styles.needTransitionPatch;
-      const className = chrome.runtime.id + '-transition-bug-fix';
-      const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
-      document.documentElement.classList.add(className);
-      applySections(0, `
-        ${docId}.${className}:root * {
-          transition: none !important;
-        }
-      `);
-      setTimeout(() => {
-        removeStyle({id: 0});
-        document.documentElement.classList.remove(className);
-      });
     }
 
     if (gotNewStyles) {
@@ -269,7 +250,6 @@
       });
     }
   }
-
 
   function applySections(styleId, code) {
     const id = ID_PREFIX + styleId;
@@ -299,7 +279,6 @@
     return el;
   }
 
-
   function addStyleElement(newElement) {
     if (!ROOT) {
       return;
@@ -323,7 +302,6 @@
     });
   }
 
-
   function replaceAll(newStyles) {
     if ('disableAll' in newStyles &&
         disableAll === newStyles.disableAll &&
@@ -346,11 +324,26 @@
       oldStyles.forEach(el => el.remove()));
   }
 
+  function applyTransitionPatch() {
+    // CSS transition bug workaround: since we insert styles asynchronously,
+    // the browsers, especially Firefox, may apply all transitions on page load
+    const className = chrome.runtime.id + '-transition-bug-fix';
+    const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
+    document.documentElement.classList.add(className);
+    applySections(0, `
+        ${docId}.${className}:root * {
+          transition: none !important;
+        }
+      `);
+    setTimeout(() => {
+      removeStyle({id: 0});
+      document.documentElement.classList.remove(className);
+    });
+  }
 
   function getStyleId(el) {
     return parseInt(el.id.substr(ID_PREFIX.length));
   }
-
 
   function countStylesInHash(styleHash) {
     let num = 0;
@@ -369,7 +362,6 @@
     [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.takeRecords() && ob.disconnect());
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
   }
-
 
   function initDocRewriteObserver() {
     // detect documentElement being rewritten from inside the script
@@ -410,7 +402,6 @@
       styleElements = new Map(imported);
     }
   }
-
 
   function initDocRootObserver() {
     let lastRestorationTime = 0;
