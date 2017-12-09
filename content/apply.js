@@ -165,9 +165,7 @@
     } else {
       if (inDoc) {
         disabledElements.set(id, inDoc);
-        docRootObserver.stop();
-        inDoc.remove();
-        docRootObserver.start();
+        docRootObserver.evade(() => inDoc.remove());
       }
     }
   }
@@ -185,7 +183,7 @@
         // in case something went wrong and new style was never applied
         retiredStyleTimers.set(deadID, setTimeout(removeStyle, 1000, {id: deadID}));
       } else {
-        el.remove();
+        docRootObserver.evade(() => el.remove());
       }
     }
     styleElements.delete(ID_PREFIX + id);
@@ -302,12 +300,12 @@
     if (next === newElement.nextElementSibling) {
       return;
     }
-    docRootObserver.stop();
-    ROOT.insertBefore(newElement, next || null);
-    if (disableAll) {
-      newElement.disabled = true;
-    }
-    docRootObserver.start();
+    docRootObserver.evade(() => {
+      ROOT.insertBefore(newElement, next || null);
+      if (disableAll) {
+        newElement.disabled = true;
+      }
+    });
   }
 
 
@@ -394,7 +392,7 @@
 
     function init() {
       docRootObserver = new MutationObserver(sortStyleElements);
-      Object.assign(docRootObserver, {start, stop});
+      Object.assign(docRootObserver, {start, stop, evade});
       setTimeout(sortStyleElements);
     }
     function start({sort = false} = {}) {
@@ -408,8 +406,19 @@
     }
     function stop() {
       if (observing) {
+        docRootObserver.takeRecords();
         docRootObserver.disconnect();
         observing = false;
+      }
+    }
+    function evade(fn) {
+      const wasObserving = observing;
+      if (observing) {
+        stop();
+      }
+      fn();
+      if (wasObserving) {
+        start();
       }
     }
     function sortStyleMap() {
@@ -494,7 +503,7 @@
         restorationCounter = 0;
       }
       lastRestorationTime = t;
-      return ++restorationCounter > 2;
+      return ++restorationCounter > 5;
     }
   }
 })();
