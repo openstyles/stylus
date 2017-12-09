@@ -562,7 +562,7 @@ function showCodeMirrorPopup(title, html, options) {
   const popup = showHelp(title, html);
   popup.classList.add('big');
 
-  const cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
+  let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
     mode: 'css',
     lineNumbers: true,
     lineWrapping: true,
@@ -577,6 +577,10 @@ function showCodeMirrorPopup(title, html, options) {
   cm.focus();
   cm.on('focus', () => cm.rerouteHotkeys(false));
   cm.on('blur', () => cm.rerouteHotkeys(true));
+  window.addEventListener('closeHelp', function _() {
+    window.removeEventListener('closeHelp', _);
+    cm = popup.codebox = null;
+  });
   return popup;
 }
 

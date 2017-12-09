@@ -419,7 +419,7 @@ function setupLinterPopup(config) {
   });
   $('.contents', popup).appendChild(makeFooter());
 
-  const cm = popup.codebox;
+  let cm = popup.codebox;
   cm.focus();
   cm.setValue(config);
   cm.clearHistory();
@@ -431,6 +431,7 @@ function setupLinterPopup(config) {
   window.addEventListener('closeHelp', function _() {
     window.removeEventListener('closeHelp', _);
     cm.rerouteHotkeys(true);
+    cm = null;
   });
 
   loadScript([
