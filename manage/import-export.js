@@ -291,7 +291,8 @@ function importFromString(jsonString) {
   function refreshTab(tab, ownTab, resolve) {
     const tabId = tab.id;
     chrome.webNavigation.getAllFrames({tabId}, frames => {
-      (frames || []).forEach(({frameId}) =>
+      frames = frames && frames[0] ? frames : [{frameId: 0}];
+      frames.forEach(({frameId}) =>
         getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
           const message = {method: 'styleReplaceAll', tabId, frameId, styles};
           if (tab.id === ownTab.id) {

@@ -118,7 +118,8 @@ var hotkeys = (() => {
 
   function refreshTab(tab) {
     const tabId = tab.id;
-    chrome.webNavigation.getAllFrames({tabId}, frames => !frames && ignoreChromeError() ||
+    chrome.webNavigation.getAllFrames({tabId}, frames => {
+      frames = frames && frames[0] ? frames : [{frameId: 0}];
       frames.forEach(({frameId}) =>
         getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
           const message = {method: 'styleReplaceAll', tabId, frameId, styles};
@@ -126,7 +127,9 @@ var hotkeys = (() => {
           if (frameId === 0) {
             setTimeout(BG.updateIcon, 0, tab, styles);
           }
-        })));
+        }));
+      ignoreChromeError();
+    });
   }
 
   function initHotkeyInfo() {
