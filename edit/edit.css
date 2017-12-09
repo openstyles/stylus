@@ -76,6 +76,19 @@ label {
   min-height: 1.4rem;
 }
 
+.svg-inline-wrapper {
+  outline: none;
+  text-decoration: none;
+}
+
+.svg-inline-wrapper svg {
+  border-bottom: 1px dashed transparent;
+}
+
+.svg-inline-wrapper:focus svg {
+  border-bottom-color: #AAA;
+}
+
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;

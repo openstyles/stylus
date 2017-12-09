@@ -191,6 +191,9 @@ function createStyleElement({style, name}) {
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
+  } else {
+    $('.homepage', entry).removeAttribute('href');
+    $('.homepage', entry).classList.add('disabled');
   }
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
@@ -334,10 +337,12 @@ Object.assign(handleEvent, {
   },
 
   check(event, entry) {
+    event.preventDefault();
     checkUpdate(entry);
   },
 
   update(event, entry) {
+    event.preventDefault();
     const request = Object.assign(entry.updatedCode, {
       id: entry.styleId,
       reason: 'update',
@@ -353,6 +358,7 @@ Object.assign(handleEvent, {
   },
 
   delete(event, entry) {
+    event.preventDefault();
     const id = entry.styleId;
     const {name} = BG.cachedStyles.byId.get(id) || {};
     animateElement(entry);
@@ -362,8 +368,8 @@ Object.assign(handleEvent, {
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })
-    .then(({button, enter}) => {
-      if (button === 0 || enter) {
+    .then(({button}) => {
+      if (button === 0) {
         deleteStyleSafe({id});
       }
     });
@@ -374,7 +380,8 @@ Object.assign(handleEvent, {
     event.preventDefault();
   },
 
-  expandTargets() {
+  expandTargets(event) {
+    event.preventDefault();
     this.closest('.applies-to').classList.toggle('expanded');
   },
 

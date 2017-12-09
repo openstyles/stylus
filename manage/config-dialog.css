@@ -93,13 +93,18 @@
   margin-right: 4px;
 }
 
-.config-body label:not(.nondefault) .config-reset-icon {
-  visibility: hidden;
+.config-reset-icon {
+  width: 16px;
+  display: inline-block;
 }
 
-.svg-icon.config-reset-icon {
+.config-body label:not(.nondefault) .config-reset-icon a {
+  display: none;
+}
+
+.config-reset-icon .svg-icon {
   /*position: absolute;*/
-  pointer-events: all !important;
+  pointer-events: none;
   cursor: pointer;
   /*right: -7px;*/
   fill: #aaa;
@@ -110,7 +115,7 @@
   flex-shrink: 0;
 }
 
-.svg-icon.config-reset-icon:hover {
+.config-reset-icon:hover .svg-icon {
   fill: #666;
 }
 
@@ -155,9 +160,11 @@
 
 .color-swatch {
   position: absolute;
+  top: 0;
+  left: 0;
   border: 1px solid gray;
-  margin-top: -22px;
   cursor: pointer;
+  opacity: 1;
 }
 
 .colorpicker-popup {

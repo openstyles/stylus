@@ -170,7 +170,8 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 }
 
 
-function showUpdateHistory() {
+function showUpdateHistory(event) {
+  event.preventDefault();
   const log = $create('.update-history-log');
   let logText, scroller, toggler;
   let deleted = false;
@@ -185,6 +186,8 @@ function showUpdateHistory() {
       ],
       onshow: logText && (() => {
         scroller = $('#message-box-contents');
+        scroller.setAttribute('tabindex', 0);
+        scroller.focus();
         scrollToBottom();
         $('#message-box-buttons button').insertAdjacentElement('afterend',
           // TODO: add a global class for our labels
@@ -198,6 +201,7 @@ function showUpdateHistory() {
           ]));
         toggler.onchange();
       }),
+      blockScroll: true
     });
   });
   function scrollToBottom() {

@@ -159,7 +159,7 @@ select {
 }
 
 .homepage .svg-icon {
-  margin-top: -4px;
+  margin-top: 0;
   margin-left: .5ex;
 }
 
@@ -374,6 +374,10 @@ select {
   right: 0;
 }
 
+#newUIoptions a > .svg-icon.select-arrow {
+  position: static;
+}
+
 .select-resizer {
   cursor: default;
   border: none;
@@ -446,10 +450,11 @@ select {
   color: hsla(180, 100%, 15%, 1);
 }
 
-.newUI .homepage .svg-icon {
-  position: absolute;
-  margin-top: 0;
-  margin-left: -28px;
+/* align delete button if no homepage link */
+.newUI a.homepage.disabled {
+  /* margin-left: 0.5ex + 20px svg width + margin-right: 8px */
+  width: calc(0.5ex + 28px);
+  display: inline-block;
 }
 
 .newUI .actions {
@@ -464,6 +469,25 @@ select {
 
 .newUI .actions .svg-icon {
     margin-right: 8px;
+}
+
+.newUI .style-name-link:focus,
+.newUI .actions a:focus,
+.newUI a.expander {
+  outline: none;
+  text-decoration: none;
+}
+
+.newUI .style-name-link,
+.newUI .actions a svg,
+.newUI a.expander {
+  border-bottom: 1px dashed transparent;
+}
+
+.newUI .style-name-link:focus,
+.newUI .actions a:focus svg,
+.newUI a.expander:focus {
+  border-bottom: 1px dashed #AAA;
 }
 
 .newUI .updater-icons > * {
@@ -658,7 +682,8 @@ select {
   margin-right: .5em;
 }
 
-#newUIoptions [data-toggle-on-click] {
+#newUIoptions [data-toggle-on-click],
+#newUIoptions a[data-toggle-on-click] svg {
   transform: rotate(-90deg);
   cursor: pointer;
   right: -16px;
@@ -666,7 +691,8 @@ select {
   pointer-events: auto;
 }
 
-#newUIoptions [data-toggle-on-click][open] {
+#newUIoptions [data-toggle-on-click][open],
+#newUIoptions a[data-toggle-on-click][open] svg {
   transform: none;
 }
 
@@ -687,12 +713,12 @@ input[id^="manage.newUI"] {
 }
 
 /* Default, no update buttons */
-.update,
-.check-update {
+.updater-icons .update,
+.updater-icons .check-update {
   display: none;
 }
 
-/* Check update button for things that can*/
+/* Check update button for things that can */
 .updatable .check-update {
   display: inline;
 }
@@ -836,8 +862,8 @@ input[id^="manage.newUI"] {
   border-radius: 0.25rem;
 }
 
-#search-wrapper .info {
-  margin: 4px -5px 0 8px;
+#search-wrapper #search-help {
+  margin: 4px 0 0 8px;
 }
 
 #message-box.help-text > div {

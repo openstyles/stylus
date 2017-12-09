@@ -31,7 +31,8 @@ onDOMready().then(onBackgroundReady).then(() => {
   if (urlFilterParam) {
     $('#search').value = 'url:' + urlFilterParam;
   }
-  $('#search-help').onclick = () => {
+  $('#search-help').onclick = event => {
+    event.preventDefault();
     messageBox({
       className: 'help-text',
       title: t('searchStyles'),
