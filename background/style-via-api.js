@@ -2,7 +2,8 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var styleViaAPI = !CHROME && (() => {
+var styleViaAPI = !CHROME &&
+(() => {
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -14,7 +15,7 @@ var styleViaAPI = !CHROME && (() => {
   };
   const NOP = Promise.resolve(new Error('NOP'));
   const PONG = Promise.resolve(true);
-  const onError = () => {};
+  const onError = () => NOP;
 
   /* <tabId>: Object
        <frameId>: Object
@@ -34,98 +35,65 @@ var styleViaAPI = !CHROME && (() => {
     cache,
   };
 
+  //////////////////// public
+
   function process(request, sender) {
     const action = ACTIONS[request.action || request.method];
-    if (!action) {
-      return NOP;
-    }
-    const {frameId, tab: {id: tabId}} = sender;
-    if (isNaN(frameId)) {
-      const frameIds = Object.keys(allFrameUrls.get(tabId) || {});
-      if (frameIds.length > 1) {
-        return Promise.all(
-          frameIds.map(frameId =>
-            process(request, Object.assign({}, sender, {frameId: Number(frameId)}))));
-      }
-      sender.frameId = 0;
-    }
-    return action(request, sender)
-      .catch(onError)
-      .then(maybeToggleObserver);
+    return !action ? NOP :
+      isNaN(sender.frameId) && maybeProcessAllFrames(request, sender) ||
+      (action(request, sender) || NOP)
+        .catch(onError)
+        .then(maybeToggleObserver);
   }
 
-  function styleApply({
-    id = null,
-    ignoreUrlCheck,
-  }, {
-    tab,
-    frameId,
-    url = getFrameUrl(tab.id, frameId),
-  }) {
-    if (prefs.get('disableAll')) {
-      return NOP;
+  function getFrameUrl(tabId, frameId = 0) {
+    const frameUrls = allFrameUrls.get(tabId);
+    return frameUrls && frameUrls[frameId] || '';
+  }
+
+  function setFrameUrl(tabId, frameId, url) {
+    const frameUrls = allFrameUrls.get(tabId);
+    if (frameUrls) {
+      frameUrls[frameId] = url;
+    } else {
+      allFrameUrls.set(tabId, {[frameId]: url});
     }
+  }
+
+  //////////////////// actions
+
+  function styleApply({id = null, styles, ignoreUrlCheck}, sender) {
+    if (prefs.get('disableAll')) {
+      return;
+    }
+    const {tab, frameId, url = getFrameUrl(tab.id, frameId)} = sender;
     const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
-      return NOP;
+      return;
     }
-    return getStyles({id, matchUrl: url, enabled: true, asHash: true}).then(styles => {
-      const tasks = [];
-      for (const styleId in styles) {
-        if (isNaN(parseInt(styleId))) {
-          continue;
-        }
-        // shallow-extract code from the sections array in order to reuse references
-        // in other places whereas the combined string gets garbage-collected
-        const styleSections = styles[styleId].map(section => section.code);
-        const code = styleSections.join('\n');
-        if (!code) {
-          delete frameStyles[styleId];
-          continue;
-        }
-        if (code === (frameStyles[styleId] || []).join('\n')) {
-          continue;
-        }
-        frameStyles[styleId] = styleSections;
-        tasks.push(
-          browser.tabs.insertCSS(tab.id, {
-            code,
-            frameId,
-            runAt: 'document_start',
-            matchAboutBlank: true,
-          }).catch(onError));
+    const apply = styles => {
+      const newFrameStyles = buildNewFrameStyles(styles, frameStyles);
+      if (newFrameStyles) {
+        tabFrames[frameId] = newFrameStyles;
+        cache.set(tab.id, tabFrames);
+        return replaceCSS(tab.id, frameId, frameStyles, newFrameStyles);
       }
-      Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
-      tabFrames[frameId] = frameStyles;
-      cache.set(tab.id, tabFrames);
-      return Promise.all(tasks);
-    });
+    };
+    return styles ? apply(styles) || NOP :
+      getStyles({id, matchUrl: url, enabled: true, asHash: true}).then(apply);
   }
 
   function styleDeleted({id}, {tab, frameId}) {
     const {frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
-    const code = styleSections.join('\n');
-    if (code && !duplicateCodeExists({frameStyles, id, code})) {
-      return removeCSS(tab.id, frameId, code).then(() => {
-        delete frameStyles[id];
-      });
-    } else {
-      return NOP;
+    if (styleSections.length) {
+      const oldFrameStyles = Object.assign({}, frameStyles);
+      delete frameStyles[id];
+      return replaceCSS(tab.id, frameId, oldFrameStyles, frameStyles);
     }
   }
 
   function styleUpdated({style}, sender) {
-    if (!style.enabled) {
-      return styleDeleted(style, sender);
-    }
-    const {tab, frameId} = sender;
-    const {frameStyles, styleSections} = getCachedData(tab.id, frameId, style.id);
-    const code = styleSections.join('\n');
-    return styleApply(style, sender).then(code && (() => {
-      if (!duplicateCodeExists({frameStyles, code, id: null})) {
-        return removeCSS(tab.id, frameId, code);
-      }
-    }));
+    return (style.enabled ? styleApply : styleDeleted)(style, sender);
   }
 
   function styleAdded({style}, sender) {
@@ -133,31 +101,13 @@ var styleViaAPI = !CHROME && (() => {
   }
 
   function styleReplaceAll(request, sender) {
-    const {tab, frameId} = sender;
-    const oldStylesCode = getFrameStylesJoined(sender);
-    return styleApply({ignoreUrlCheck: true}, sender).then(() => {
-      const newStylesCode = getFrameStylesJoined(sender);
-      const tasks = oldStylesCode
-        .filter(code => !newStylesCode.includes(code))
-        .map(code => removeCSS(tab.id, frameId, code));
-      return Promise.all(tasks);
-    });
+    request.ignoreUrlCheck = true;
+    return styleApply(request, sender);
   }
 
   function prefChanged({prefs}, sender) {
     if ('disableAll' in prefs) {
-      if (!prefs.disableAll) {
-        return styleApply({}, sender);
-      }
-      const {tab, frameId} = sender;
-      const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
-      if (isEmpty(frameStyles)) {
-        return NOP;
-      }
-      delete tabFrames[frameId];
-      const tasks = Object.keys(frameStyles)
-        .map(id => removeCSS(tab.id, frameId, frameStyles[id].join('\n')));
-      return Promise.all(tasks);
+      disableAll(prefs.disableAll, sender);
     } else {
       return NOP;
     }
@@ -167,7 +117,20 @@ var styleViaAPI = !CHROME && (() => {
     return PONG;
   }
 
-  /* utilities */
+  //////////////////// action helpers
+
+  function disableAll(state, sender) {
+    if (state) {
+      const {tab, frameId} = sender;
+      const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
+      delete tabFrames[frameId];
+      return removeCSS(tab.id, frameId, frameStyles);
+    } else {
+      return styleApply({ignoreUrlCheck: true}, sender);
+    }
+  }
+
+  //////////////////// observer
 
   function maybeToggleObserver(passthru) {
     let method;
@@ -208,6 +171,87 @@ var styleViaAPI = !CHROME && (() => {
     onTabRemoved(removedTabId);
   }
 
+  //////////////////// browser API
+
+  function replaceCSS(tabId, frameId, oldStyles, newStyles) {
+    return insertCSS(tabId, frameId, newStyles).then(() =>
+      removeCSS(tabId, frameId, oldStyles));
+  }
+
+  function insertCSS(tabId, frameId, frameStyles) {
+    const code = getFrameCode(frameStyles);
+    return code && browser.tabs.insertCSS(tabId, {
+      // we cache a shallow copy of code from the sections array in order to reuse references
+      // in other places whereas the combined string gets garbage-collected
+      code,
+      frameId,
+      runAt: 'document_start',
+      matchAboutBlank: true,
+    }).catch(onError);
+  }
+
+  function removeCSS(tabId, frameId, frameStyles) {
+    const code = getFrameCode(frameStyles);
+    return code && browser.tabs.removeCSS(tabId, {
+      code,
+      frameId,
+      matchAboutBlank: true
+    }).catch(onError);
+  }
+
+  //////////////////// utilities
+
+  function maybeProcessAllFrames(request, sender) {
+    const {tab} = sender;
+    const frameIds = Object.keys(allFrameUrls.get(tab.id) || {});
+    if (frameIds.length <= 1) {
+      sender.frameId = 0;
+      return false;
+    } else {
+      return Promise.all(
+        frameIds.map(frameId =>
+          process(request, {tab, sender: {frameId: Number(frameId)}})));
+    }
+  }
+
+  function buildNewFrameStyles(styles, oldStyles, url) {
+    let allSame = true;
+    let newStyles = {};
+    for (const sections of getSortedById(styles)) {
+      const cachedSections = oldStyles[sections.id] || [];
+      const newSections = [];
+      let i = 0;
+      allSame &= sections.length === cachedSections.length;
+      for (const {code} of sections) {
+        allSame = allSame ? code === cachedSections[i] : allSame;
+        newSections[i++] = code;
+      }
+      newStyles[sections.id] = newSections;
+    }
+    if (!allSame) {
+      newStyles = Object.assign({}, oldStyles, newStyles);
+      defineProperty(newStyles, 'url', url);
+      return newStyles;
+    }
+  }
+
+  function getSortedById(styleHash) {
+    const styles = [];
+    let needsSorting = false;
+    let prevKey = -1;
+    for (let k in styleHash) {
+      k = parseInt(k);
+      if (!isNaN(k)) {
+        const sections = styleHash[k];
+        styles.push(sections);
+        Object.defineProperty(sections, 'id', {value: k});
+        needsSorting |= k < prevKey;
+        prevKey = k;
+      }
+    }
+    return needsSorting ? styles.sort((a, b) => a.id - b.id) : styles;
+  }
+
   function getCachedData(tabId, frameId, styleId) {
     const tabFrames = cache.get(tabId) || {};
     const frameStyles = tabFrames[frameId] || {};
@@ -215,48 +259,12 @@ var styleViaAPI = !CHROME && (() => {
     return {tabFrames, frameStyles, styleSections};
   }
 
-  function getFrameUrl(tabId, frameId = 0) {
-    const frameUrls = allFrameUrls.get(tabId);
-    return frameUrls && frameUrls[frameId] || '';
+  function getFrameCode(frameStyles) {
+    return [].concat(...getSortedById(frameStyles)).join('\n');
   }
 
-  function setFrameUrl(tabId, frameId, url) {
-    const frameUrls = allFrameUrls.get(tabId);
-    if (frameUrls) {
-      frameUrls[frameId] = url;
-    } else {
-      allFrameUrls.set(tabId, {[frameId]: url});
-    }
-  }
-
-  function getFrameStylesJoined({
-    tab,
-    frameId,
-    frameStyles = getCachedData(tab.id, frameId).frameStyles,
-  }) {
-    return Object.keys(frameStyles).map(id => frameStyles[id].join('\n'));
-  }
-
-  function duplicateCodeExists({
-    tab,
-    frameId,
-    frameStyles = getCachedData(tab.id, frameId).frameStyles,
-    frameStylesCode = {},
-    id,
-    code = frameStylesCode[id] || frameStyles[id].join('\n'),
-  }) {
-    id = String(id);
-    for (const styleId in frameStyles) {
-      if (id !== styleId &&
-          code === (frameStylesCode[styleId] || frameStyles[styleId].join('\n'))) {
-        return true;
-      }
-    }
-  }
-
-  function removeCSS(tabId, frameId, code) {
-    return browser.tabs.removeCSS(tabId, {frameId, code, matchAboutBlank: true})
-      .catch(onError);
+  function defineProperty(obj, name, value) {
+    return Object.defineProperty(obj, name, {value, configurable: true});
   }
 
   function isEmpty(obj) {
