@@ -2,6 +2,10 @@
 'use strict';
 
 (() => {
+  if (typeof window.applyOnMessage === 'function') {
+    // some weird bug in new Chrome: the content script gets injected multiple times
+    return;
+  }
   var ID_PREFIX = 'stylus-';
   var ROOT = document.documentElement;
   var isOwnPage = location.protocol.endsWith('-extension:');
@@ -310,6 +314,14 @@
 
 
   function replaceAll(newStyles) {
+    if ('disableAll' in newStyles &&
+        disableAll === newStyles.disableAll &&
+        [...styleElements.values()].every(el =>
+          el.disabled === disableAll &&
+          el.parentNode === ROOT &&
+          el.textContent === (newStyles[getStyleId(el)] || []).map(({code}) => code).join('\n'))) {
+      return;
+    }
     const oldStyles = Array.prototype.slice.call(
       document.querySelectorAll(`style.stylus[id^="${ID_PREFIX}"]`));
     oldStyles.forEach(el => (el.id += '-ghost'));
@@ -318,7 +330,8 @@
     [...retiredStyleTimers.values()].forEach(clearTimeout);
     retiredStyleTimers.clear();
     applyStyles(newStyles);
-    oldStyles.forEach(el => el.remove());
+    docRootObserver.evade(() =>
+      oldStyles.forEach(el => el.remove()));
   }
 
 
@@ -439,6 +452,9 @@
       }
     }
     function sortStyleElements() {
+      if (!observing) {
+        return;
+      }
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
