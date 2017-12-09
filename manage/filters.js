@@ -369,13 +369,12 @@ function showFiltersStats() {
 
 function searchStyles({immediately, container}) {
   const searchElement = $('#search');
-  const value = searchElement.value;
+  const value = searchElement.value.trim();
   const urlMode = /^\s*url:/i.test(value);
   const query = urlMode
-    ? value.replace(/^\s*url:/i, '').trim()
+    ? value.replace(/^\s*url:/i, '')
     : value.toLocaleLowerCase();
-  const queryPrev = searchElement.lastValue || '';
-  if (query === queryPrev && !immediately && !container) {
+  if (query === searchElement.lastValue && !immediately && !container) {
     return;
   }
   if (!immediately) {
@@ -384,20 +383,20 @@ function searchStyles({immediately, container}) {
   }
   searchElement.lastValue = query;
 
-  const trimmed = query.trim();
-  const rx = trimmed.startsWith('/') && trimmed.indexOf('/', 1) > 0 &&
+  const rx = query.startsWith('/') && query.indexOf('/', 1) > 0 &&
     tryRegExp(...(value.match(/^\s*\/(.*?)\/([gimsuy]*)\s*$/) || []).slice(1));
   const words = rx ? null :
-    trimmed.startsWith('"') && trimmed.endsWith('"') ? [value.trim().slice(1, -1)] :
-      query.split(/\s+/).filter(s => s.length > 2);
-  const searchInVisible = !urlMode && queryPrev && query.includes(queryPrev);
-  const entries = container && container.children || container ||
-    (searchInVisible ? $$('.entry:not(.hidden)') : installed.children);
+    query.startsWith('"') && query.endsWith('"') ? [value.trim().slice(1, -1)] :
+      query.split(/\s+/).filter(s => s.length > 1);
+  if (!words.length) {
+    words.push(query);
+  }
+  const entries = container && container.children || container || installed.children;
   const siteStyleIds = urlMode &&
     new Set(BG.filterStyles({matchUrl: query}).map(style => style.id));
   let needsRefilter = false;
   for (const entry of entries) {
-    let isMatching = !query;
+    let isMatching = !query || !words.length;
     if (!isMatching) {
       const style = urlMode ? siteStyleIds.has(entry.styleId) :
         BG.cachedStyles.byId.get(entry.styleId) || {};
@@ -445,10 +444,8 @@ function searchStyles({immediately, container}) {
       return rx.test(text);
     }
     for (let pass = 1; pass <= 2; pass++) {
-      for (const word of words) {
-        if (text.includes(word)) {
-          return true;
-        }
+      if (words.every(word => text.includes(word))) {
+        return true;
       }
       text = text.toLocaleLowerCase();
     }
