@@ -1,3 +1,13 @@
+html:not([data-whatinput="keyboard"]) button,
+html:not([data-whatinput="keyboard"]) input[type="checkbox"],
+html:not([data-whatinput="keyboard"]) input[type="radio"],
+html:not([data-whatinput="keyboard"]) #header summary,
+html:not([data-whatinput="keyboard"]) .applies-to-extra-expander,
+html:not([data-whatinput="keyboard"]) .regexp-report summary,
+html:not([data-whatinput="keyboard"]) .regexp-report div {
+  outline: none;
+}
+
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -15,6 +25,13 @@ button {
 button:not(:disabled):hover {
   background-color: hsl(0, 0%, 95%);
   border-color: hsl(0, 0%, 52%);
+}
+
+button:active {
+  background-color: hsl(0, 0%, 95%);
+  border-color: hsl(0, 0%, 52%);
+  background: url(../images/button-active.png)repeat-x;
+  background-size: 100% 100%;
 }
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
@@ -60,12 +77,11 @@ input[type="checkbox"]:not(.slider) {
   display: inline-flex;
   border-radius: 2px;
   background-color: hsla(0, 0%, 0%, .1);
-  outline: none;
   margin: 0;
   transition: background-color .1s, border-color .1s;
 }
 
-input[type="checkbox"]:not(.slider):not(:disabled):hover {
+input[type="checkbox"]:not(.slider):hover {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
@@ -128,7 +144,6 @@ select {
 input[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
-  outline: none;
   background: hsl(0, 0%, 88%);
   border-radius: 50%;
   border: 1px solid hsl(0, 0%, 60%);
@@ -172,6 +187,7 @@ select[disabled] > option {
 
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
+  .moz-appearance-bug .onoffswitch input,
   .moz-appearance-bug input[type="radio"]:after {
     display: none !important;
   }

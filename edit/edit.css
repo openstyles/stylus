@@ -145,7 +145,6 @@ input:invalid {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
-  outline: none;
   margin-top: 8px;
   margin-bottom: 8px;
 }
@@ -360,7 +359,6 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 }
 .regexp-report summary, .regexp-report div {
   cursor: pointer;
-  outline: none;
 }
 .regexp-report mark {
   background-color: rgba(255, 255, 0, .5);
@@ -376,7 +374,6 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   font-weight: bold;
   margin-left: -1rem;
   margin-bottom: .5rem;
-  outline: none;
   cursor: default;
   overflow-wrap: break-word;
 }

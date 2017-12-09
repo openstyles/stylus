@@ -212,7 +212,6 @@ select {
 .applies-to-extra-expander {
   font-weight: bold;
   cursor: pointer;
-  outline: none;
 }
 
 .applies-to-extra-expander {
@@ -284,7 +283,6 @@ select {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
-  outline: none;
 }
 
 #header summary h2 {
@@ -363,7 +361,6 @@ select {
 
 .filter-selection select {
   height: 18px;
-  outline: none;
   border: none;
   max-width: 100%;
   padding-left: 4px;

@@ -9,7 +9,21 @@
 }
 
 .onoffswitch input {
-  display: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  pointer-events: none;
+  position: absolute;
+  top: -8px;
+  bottom: -10px;
+  left: -10px;
+  width: calc(100% + 12px);
+}
+
+#message-box .onoffswitch input {
+  top: -6px;
+  left: -6px;
+  bottom: 0;
+  height: calc(100% + 12px);
 }
 
 .onoffswitch span {
