@@ -263,7 +263,7 @@ function configDialog(style) {
   }
 
   function updateVarOnChange() {
-    this.va.value = this.value;
+    this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
   }
 
   function updateVarOnInput(event, debounced = false) {
