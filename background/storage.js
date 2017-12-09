@@ -255,9 +255,9 @@ function getStyles(options) {
 
 function filterStyles({
   enabled = null,
-  url = null,
   id = null,
   matchUrl = null,
+  md5Url = null,
   asHash = null,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
@@ -267,9 +267,9 @@ function filterStyles({
 
   if (
     enabled === null &&
-    url === null &&
     id === null &&
     matchUrl === null &&
+    md5Url === null &&
     asHash !== true
   ) {
     return cachedStyles.list;
@@ -284,8 +284,7 @@ function filterStyles({
     exposeIframes: prefs.get('exposeIframes'),
   };
 
-  // add \t after url to prevent collisions (not sure it can actually happen though)
-  const cacheKey = ' ' + enabled + url + '\t' + id + matchUrl + '\t' + asHash + strictRegexp;
+  const cacheKey = [enabled, id, matchUrl, md5Url, asHash, strictRegexp].join('\t');
   const cached = cachedStyles.filters.get(cacheKey);
   if (cached) {
     cached.hits++;
@@ -297,9 +296,9 @@ function filterStyles({
 
   return filterStylesInternal({
     enabled,
-    url,
     id,
     matchUrl,
+    md5Url,
     asHash,
     strictRegexp,
     blankHash,
@@ -312,9 +311,9 @@ function filterStylesInternal({
   // js engines don't like big functions (V8 often deoptimized the original filterStyles)
   // it also makes sense to extract the less frequently executed code
   enabled,
-  url,
   id,
   matchUrl,
+  md5Url,
   asHash,
   strictRegexp,
   blankHash,
@@ -343,7 +342,7 @@ function filterStylesInternal({
   let style;
   for (let i = 0; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled === enabled)
-    && (url === null || style.url === url)
+    && (md5Url === null || style.md5Url === md5Url)
     && (id === null || style.id === id)) {
       const sections = needSections &&
         getApplicableSections({

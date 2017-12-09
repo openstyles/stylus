@@ -51,21 +51,21 @@ var loadScript = (() => {
   // natively declared <script> elements in html can't have onload= attribute
   // due to the default extension CSP that forbids inline code (and we don't want to relax it),
   // so we're using MutationObserver to add onload event listener to the script element to be loaded
-  window.onDOMscriptReady = (src, timeout = 1000) => {
+  window.onDOMscriptReady = (srcSuffix, timeout = 1000) => {
     if (!subscribers) {
       subscribers = new Map();
       observer = new MutationObserver(observe);
       observer.observe(document.head, {childList: true});
     }
     return new Promise((resolve, reject) => {
-      const listeners = subscribers.get(src);
+      const listeners = subscribers.get(srcSuffix);
       if (listeners) {
         listeners.push(resolve);
       } else {
-        subscribers.set(src, [resolve]);
+        subscribers.set(srcSuffix, [resolve]);
       }
-      // no need to clear the timer since a resolved Promise won't reject anymore
-      setTimeout(reject, timeout);
+      // a resolved Promise won't reject anymore
+      setTimeout(() => emptyAfterCleanup(srcSuffix) + reject(), timeout);
     });
   };
 
@@ -82,22 +82,33 @@ var loadScript = (() => {
   }
 
   function getSubscribersForSrc(src) {
-    for (const [subscribedSrc, listeners] of subscribers.entries()) {
-      if (src.endsWith(subscribedSrc)) {
-        return {subscribedSrc, listeners};
+    for (const [suffix, listeners] of subscribers.entries()) {
+      if (src.endsWith(suffix)) {
+        return {suffix, listeners};
       }
     }
   }
 
   function notifySubscribers(event) {
     this.removeEventListener('load', notifySubscribers);
-    const {subscribedSrc, listeners = []} = getSubscribersForSrc(this.src) || {};
-    listeners.forEach(fn => fn(event));
-    subscribers.delete(subscribedSrc);
+    for (let data; (data = getSubscribersForSrc(this.src));) {
+      data.listeners.forEach(fn => fn(event));
+      if (emptyAfterCleanup(data.suffix)) {
+        return;
+      }
+    }
+  }
+
+  function emptyAfterCleanup(suffix) {
+    if (!subscribers) {
+      return true;
+    }
+    subscribers.delete(suffix);
     if (!subscribers.size) {
       observer.disconnect();
       observer = null;
       subscribers = null;
+      return true;
     }
   }
 })();

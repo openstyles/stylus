@@ -138,6 +138,10 @@ input[type="color"] {
   display: block;
 }
 
+.iconset input[type="radio"] {
+  margin: 2px 4px 0 0;
+}
+
 #actions {
   justify-content: space-around;
   align-items: stretch;

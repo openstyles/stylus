@@ -131,6 +131,10 @@
 		"message": "Перетащите файл с резервной копией стилей в любое место этой страницы, чтобы импортировать его.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Полезная информация: используйте одиночный \\ в строке ввода regexp, т.к. он автомачески преобразуется в двойной \\\\ в тексте стиля согласно спецификации CSS для строк в кавычках.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Справка",
 		"description": "Alternate text for help buttons"
@@ -164,7 +168,7 @@
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
-		"message": "Форматировать",
+		"message": "Причесать",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleRegexpProblemTooltip": {
@@ -174,6 +178,10 @@
 	"styleEnabledLabel": {
 		"message": "Включено",
 		"description": "Label for the enabled state of styles"
+	},
+	"configOnChange": {
+		"message": "сразу",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
 	},
 	"linterConfigTooltip": {
 		"message": "Настроить проверку CSS",
@@ -343,7 +351,7 @@
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
 	"styleCancelEditLabel": {
-		"message": "Завершить",
+		"message": "Все стили",
 		"description": "Label for cancel button for style editing"
 	},
 	"styleChangesNotSaved": {
@@ -525,6 +533,10 @@
 		"message": "Раскрашивать цвета в CSS",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "Примененные фильтры не соответствуют ни одному стилю",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Создать стиль для:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -603,7 +615,7 @@
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
 	"cm_matchHighlight": {
-		"message": "Подсвечивать",
+		"message": "Подсветка",
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
 	},
 	"styleRegexpPartialExplanation": {
@@ -625,10 +637,6 @@
 	"sectionRemove": {
 		"message": "Удалить раздел",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "Префикс url: покажет стили для сайта.\nНапример, url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Выключить все стили",
@@ -732,7 +740,7 @@
 	},
 	"configureStyle": {
 		"message": "Настроить",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "обновлены мета-данные и код",
@@ -749,6 +757,10 @@
 	"appliesHelp": {
 		"message": "Чтобы указать, к каким URL относится код в этом разделе, воспользуйтесь параметром \"Применить к\".",
 		"description": "Help text for 'applies to' section"
+	},
+	"searchStylesHelp": {
+		"message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед адресом, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"editStyleHeading": {
 		"message": "Изменение стиля",
@@ -888,6 +900,10 @@
 		"message": "Отказаться от изменений?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"configOnChangeTooltip": {
+		"message": "Сохранять и применять изменения автоматически",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "Другие действия",
 		"description": ""
@@ -965,6 +981,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "Не работает с минифицированным CSS",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Настроить на домашней странице",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Отменить",

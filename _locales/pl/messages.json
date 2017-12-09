@@ -131,6 +131,10 @@
 		"message": "Upuść twój plik kopii zapasowej gdziekolwiek na tej stronie, aby zaimportować.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Uwaga: w polu wejściowym regexp użyj pojedynczego \\ jako znaku ucieczki, który zgodnie ze specyfikacją dla cudzysłowów w CSS zostanie automatycznie zamieniony na \\\\ w kodzie stylu.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Pomoc",
 		"description": "Alternate text for help buttons"
@@ -170,6 +174,10 @@
 	"styleEnabledLabel": {
 		"message": "Włączony",
 		"description": "Label for the enabled state of styles"
+	},
+	"configOnChange": {
+		"message": "przy zmianie",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
 	},
 	"linterConfigTooltip": {
 		"message": "Kliknij, aby skonfigurować ten linter",
@@ -521,6 +529,10 @@
 		"message": "Próbniki kolorów CSS",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "Aktualnie stosowane filtry nie pasują do żadnego stylu",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Napisz styl dla:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -621,10 +633,6 @@
 	"sectionRemove": {
 		"message": "Usuń sekcję",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "Aby zobaczyć style dla adresu URL, dodaj prefiks 'url:'\nNa przykład url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Wyłącz wszystkie style",
@@ -728,7 +736,7 @@
 	},
 	"configureStyle": {
 		"message": "Skonfiguruj",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "zaktualizowano meta info i kod",
@@ -745,6 +753,10 @@
 	"appliesHelp": {
 		"message": "Użyj przycisków \"Dotyczy\", aby ograniczyć adresy URL, których dotyczy kod w tej sekcji.",
 		"description": "Help text for 'applies to' section"
+	},
+	"searchStylesHelp": {
+		"message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nPasujący adres URL:  szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"editStyleHeading": {
 		"message": "Edytuj styl",
@@ -888,6 +900,10 @@
 		"message": "Odrzucić zmiany?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"configOnChangeTooltip": {
+		"message": "Autozapisuj i stosuj zmiany automatycznie",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "Akcje",
 		"description": ""
@@ -965,6 +981,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "Nie działa ze zminifikowanym CSS",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Skonfiguruj na stronie głównej",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Cofnij",

@@ -36,7 +36,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "Installi",
+		"message": "Installi stiil",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -46,6 +46,10 @@
 	"linterJSONError": {
 		"message": "Vigane JSON-formaat",
 		"description": "Setting linter config with invalid JSON"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Kiirklahvide nägemiseks klõpsa",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Taustavärv",
@@ -513,6 +517,10 @@
 		"message": "CSS-värvide värvivalijad",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
+	"filteredStylesAllHidden": {
+		"message": "Hetkel rakendatud filtritele ei vasta ükski stiil",
+		"description": "Text shown when no styles match currently applied filter in the style manager"
+	},
 	"writeStyleFor": {
 		"message": "Kirjuta stiil:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
@@ -613,10 +621,6 @@
 	"sectionRemove": {
 		"message": "Eemalda jaotis",
 		"description": "Label for the button to remove a section"
-	},
-	"searchStylesTooltip": {
-		"message": "Et näidata stiile teatud URL-i jaoks, lisa selle ette 'url:'\nNäiteks url:https://github.com/openstyles/stylus",
-		"description": "Label for the search filter textbox on the Manage styles page"
 	},
 	"disableAllStyles": {
 		"message": "Lülita kõik stiilid välja",
@@ -720,7 +724,7 @@
 	},
 	"configureStyle": {
 		"message": "Seadista",
-		"description": "Label for the button to configure userstyle"
+		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
 		"message": "said uuenduse nii metaandmetele kui koodile",
@@ -751,7 +755,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"linterCSSLintIncompatible": {
-		"message": "CSSLint ei toeta eelprotsessorit $preprocessorname$",
+		"message": "CSSLint ei toeta eeltöötlejat $preprocessorname$",
 		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
 		"placeholders": {
 			"preprocessorname": {
@@ -926,7 +930,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "Installi uuesti",
+		"message": "Installi stiil uuesti",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -938,7 +942,7 @@
 		"description": "'No' button in a confirm dialog"
 	},
 	"styleMissingMeta": {
-		"message": "$key$metaandmed puuduvad",
+		"message": "@$key$ metaandmed puuduvad",
 		"description": "Error displayed when a mandatory metadata is missing",
 		"placeholders": {
 			"key": {
@@ -1028,7 +1032,7 @@
 		"description": ""
 	},
 	"installButtonUpdate": {
-		"message": "Uuenda",
+		"message": "Uuenda stiil",
 		"description": "Label for update button"
 	},
 	"backupButtons": {
@@ -1044,7 +1048,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "Installitud",
+		"message": "Stiil installitud",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
