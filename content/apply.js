@@ -456,7 +456,7 @@
             prevExpected = next;
           } else if (
               next === el ||
-              next === el.previousElementSibling ||
+              next === el.previousElementSibling && next ||
               moveAfter(el, next || prevExpected)) {
             prevExpected = el;
             break;
