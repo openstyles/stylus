@@ -111,18 +111,22 @@ var hotkeys = (() => {
   function refreshAllTabs() {
     getStylesSafe({matchUrl: location.href, enabled: true, asHash: true})
       .then(styles => applyOnMessage({method: 'styleReplaceAll', styles}));
-    queryTabs().then(tabs => {
-      for (const tab of tabs) {
-        // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-        if (!FIREFOX || tab.width) {
-          getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
-            const message = {method: 'styleReplaceAll', styles, tabId: tab.id};
-            invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
+    queryTabs().then(tabs =>
+      tabs.forEach(tab => (!FIREFOX || tab.width) &&
+        refreshTab(tab)));
+  }
+
+  function refreshTab(tab) {
+    const tabId = tab.id;
+    chrome.webNavigation.getAllFrames({tabId}, frames => !frames && ignoreChromeError() ||
+      frames.forEach(({frameId}) =>
+        getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+          const message = {method: 'styleReplaceAll', tabId, frameId, styles};
+          invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
+          if (frameId === 0) {
             setTimeout(BG.updateIcon, 0, tab, styles);
-          });
-        }
-      }
-    });
+          }
+        })));
   }
 
   function initHotkeyInfo() {

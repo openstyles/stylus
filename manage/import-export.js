@@ -276,37 +276,38 @@ function importFromString(jsonString) {
   }
 
   function refreshAllTabs() {
-    return Promise.all([
-      getActiveTab(),
-      getOwnTab(),
-    ]).then(([activeTab, ownTab]) => new Promise(resolve => {
-      // list all tabs including chrome-extension:// which can be ours
+    return getOwnTab().then(ownTab => new Promise(resolve => {
       queryTabs().then(tabs => {
-        const lastTab = tabs[tabs.length - 1];
-        for (const tab of tabs) {
-          // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-          if (FIREFOX && !tab.width) {
-            if (tab === lastTab) {
-              resolve();
-            }
-            continue;
-          }
-          getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
-            const message = {method: 'styleReplaceAll', styles};
-            if (tab.id === ownTab.id) {
-              applyOnMessage(message);
-            } else {
-              message.tabId = tab.id;
-              invokeOrPostpone(tab.id === activeTab.id, sendMessage, message, ignoreChromeError);
-            }
-            setTimeout(BG.updateIcon, 0, tab, styles);
-            if (tab === lastTab) {
-              resolve();
-            }
-          });
+        tabs = !FIREFOX ? tabs : tabs.filter(tab => tab.width);
+        tabs.forEach((tab, i) =>
+          refreshTab(tab, ownTab, (i === tabs.length - 1) && resolve));
+        if (!tabs.length) {
+          resolve();
         }
       });
     }));
+  }
+
+  function refreshTab(tab, ownTab, resolve) {
+    const tabId = tab.id;
+    chrome.webNavigation.getAllFrames({tabId}, frames => {
+      (frames || []).forEach(({frameId}) =>
+        getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+          const message = {method: 'styleReplaceAll', tabId, frameId, styles};
+          if (tab.id === ownTab.id) {
+            applyOnMessage(message);
+          } else {
+            invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
+          }
+          if (frameId === 0) {
+            setTimeout(BG.updateIcon, 0, tab, styles);
+          }
+        }));
+      if (resolve) {
+        resolve();
+      }
+      ignoreChromeError();
+    });
   }
 }
 
