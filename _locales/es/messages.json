@@ -179,6 +179,10 @@
 		"message": "Activado",
 		"description": "Label for the enabled state of styles"
 	},
+	"configOnChange": {
+		"message": "al cambiar",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+	},
 	"linterConfigTooltip": {
 		"message": "Pulse para configurar este deshilvanador (linter)",
 		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
@@ -892,6 +896,10 @@
 		"message": "¿Descartar los cambios?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"configOnChangeTooltip": {
+		"message": "Guardar y aplicar los cambios automáticamente",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "Acciones",
 		"description": ""
@@ -965,6 +973,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "No funciona con CSS minificado",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Configurar en la página principal",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Deshacer",
