@@ -489,8 +489,12 @@ function fromMozillaFormat() {
   }
 
   function showError(errors) {
-    showHelp(t('styleFromMozillaFormatError'),
-      $create('pre', Array.isArray(errors) ? errors.join('\n') : errors));
+    messageBox({
+      className: 'center danger',
+      title: t('styleFromMozillaFormatError'),
+      contents: $create('pre', Array.isArray(errors) ? errors.join('\n') : errors),
+      buttons: [t('confirmClose')],
+    });
   }
 }
 
