@@ -66,7 +66,7 @@ var updater = {
 
     function reportSuccess(saved) {
       observer(updater.UPDATED, saved);
-      updater.log(updater.UPDATED + ` #${saved.id} ${saved.name}`);
+      updater.log(updater.UPDATED + ` #${style.id} ${style.name}`);
     }
 
     function reportFailure(err) {
