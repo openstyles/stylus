@@ -463,7 +463,7 @@ function fromMozillaFormat() {
       })
       .then(sectionDivs => {
         sectionDivs.forEach(div => updateLintReportIfEnabled(div.CodeMirror, 1));
-        $('.dismiss', popup).onclick();
+        $('.dismiss').dispatchEvent(new Event('click'));
       })
       .catch(showError)
       .then(() => lockPageUI(false));
@@ -483,9 +483,11 @@ function fromMozillaFormat() {
 
   function lockPageUI(locked) {
     document.documentElement.style.pointerEvents = locked ? 'none' : '';
-    popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
-    popup.codebox.options.readOnly = locked;
-    popup.codebox.display.wrapper.style.opacity = locked ? '.5' : '';
+    if (popup.codebox) {
+      popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
+      popup.codebox.options.readOnly = locked;
+      popup.codebox.display.wrapper.style.opacity = locked ? '.5' : '';
+    }
   }
 
   function showError(errors) {
