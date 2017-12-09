@@ -75,12 +75,14 @@ function preinit() {
   });
 
   // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
-  document.head.appendChild(
-    $create('link#cm-theme', {
-      rel: 'stylesheet',
-      href: prefs.get('editor.theme') === 'default' ? '' :
-        'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css'
-    }));
+  new MutationObserver((mutations, observer) => {
+    const themeElement = $('#cm-theme');
+    if (themeElement) {
+      themeElement.href = prefs.get('editor.theme') === 'default' ? ''
+        : 'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css';
+      observer.disconnect();
+    }
+  }).observe(document, {subtree: true, childList: true});
 
   if (chrome.windows) {
     queryTabs({currentWindow: true}).then(tabs => {
