@@ -26,7 +26,7 @@
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
       chrome.runtime.sendMessage({
         method: 'getStyles',
-        url: getMeta('stylish-id-url') || location.href
+        md5Url: getMeta('stylish-md5-url') || location.href
       }, checkUpdatability);
     }
   }).observe(document.documentElement, {childList: true});
@@ -121,7 +121,7 @@
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({
         method: 'getStyles',
-        url: getMeta('stylish-id-url') || location.href,
+        md5Url: getMeta('stylish-md5-url') || location.href,
       }, ([style]) => {
         saveStyleCode('styleUpdate', style.name, {id: style.id})
           .then(resolve, reject);
