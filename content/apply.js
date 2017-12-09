@@ -316,6 +316,7 @@
   function replaceAll(newStyles) {
     if ('disableAll' in newStyles &&
         disableAll === newStyles.disableAll &&
+        styleElements.size === countStylesInHash(newStyles) &&
         [...styleElements.values()].every(el =>
           el.disabled === disableAll &&
           el.parentNode === ROOT &&
@@ -339,6 +340,14 @@
     return parseInt(el.id.substr(ID_PREFIX.length));
   }
 
+
+  function countStylesInHash(styleHash) {
+    let num = 0;
+    for (const k in styleHash) {
+      num += !isNaN(parseInt(k)) ? 1 : 0;
+    }
+    return num;
+  }
 
   function orphanCheck() {
     if (chrome.i18n && chrome.i18n.getUILanguage()) {
