@@ -26,6 +26,7 @@ body.search-results-shown {
 }
 
 .search-result, .search-result-empty {
+  position: relative;
   min-height: 170px;
   padding: 5px;
 }
@@ -33,7 +34,9 @@ body.search-results-shown {
 .search-result-empty {
   position: relative;
 }
-.search-result-empty .lds-spinner {
+
+.search-result .lds-spinner, .search-result-empty .lds-spinner {
+  opacity: 1;
   top: 0;
   width: 150px;
   height: 150px;

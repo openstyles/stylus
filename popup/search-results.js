@@ -218,33 +218,19 @@
             setTimeout(processNextResult, 0); // Keep processing
           } else {
             // Style not installed.
-            Promise.all([
-              searchAPI.fetchStyleJson(nextResult.id), // for "sections" (applicable URLs)
-              searchAPI.fetchStyle(nextResult.id),     // for "style_settings" (customizations)
-              getActiveTab()                           // for comparing tab.url to sections.
-            ]).then(([userstyleJson, userstyleObject, tab]) => {
-              // Extract applicable sections (i.e. styles that apply to the current site)
-              const applicableSections = BG.getApplicableSections({
-                style: userstyleJson,
-                matchUrl: tab.url,
-                stopOnFirst: true
-              });
-              if (applicableSections.length > 0) {
-                // Style is valid (can apply to this site).
-                nextResult.json = userstyleJson; // Store Style JSON for easy installing later.
-
+            searchAPI.fetchStyle(nextResult.id) // for "style_settings" (customizations)
+              .then(userstyleObject => {
                 // Store style settings for detecting customization later.
                 nextResult.style_settings = userstyleObject.style_settings;
 
                 processedResults.push(nextResult);
                 render();
-              }
-              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
-            })
-            .catch(reason => {
-              console.log('processNextResult(', nextResult.id, ') => [ERROR]: ', reason);
-              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
-            });
+                setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+              })
+              .catch(reason => {
+                console.log('processNextResult(', nextResult.id, ') => [ERROR]: ', reason);
+                setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
+              });
           }
         });
     }
@@ -426,23 +412,43 @@
         if (event) {
           event.stopPropagation();
         }
-        const styleId = userstyleSearchResult.id;
-        const url = searchAPI.BASE_URL + '/styles/chrome/' + styleId + '.json';
-        saveStyleSafe(userstyleSearchResult.json)
-          .then(savedStyle => {
-            // Success: Store installed styleId, mark as installed.
-            userstyleSearchResult.installed = true;
-            userstyleSearchResult.installedStyleId = savedStyle.id;
-            render(); // Hides install button, shows uninstall button.
+
+        // Spinner while installing
+        entry.appendChild(
+          $create(
+            '.lds-spinner',
+            new Array(12).fill($create('div')).map(e => e.cloneNode()))
+        );
+        installButton.disabled = true;
+
+        // Fetch .JSON style
+        searchAPI.fetchStyleJson(userstyleSearchResult)
+          .then(userstyleJson => {
+            // Install style
+            saveStyleSafe(userstyleJson)
+              .then(savedStyle => {
+                // Success: Store installed styleId, mark as installed.
+                userstyleSearchResult.installed = true;
+                userstyleSearchResult.installedStyleId = savedStyle.id;
+                render(); // Hides install button, shows uninstall button.
+
+                $.remove('.lds-spinner', entry);
+                installButton.disabled = false;
+              });
           })
           .catch(reason => {
-            console.log('install:saveStyleSafe(', url, ') => [ERROR]: ', reason);
-            alert('Error while downloading ' + url + '\nReason: ' + reason);
+            const usoId = userstyleSearchResult.id;
+            console.log('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
+            alert('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
+
+            $.remove('.lds-spinner', entry);
+            installButton.disabled = false;
           });
         return true;
       }
-    }
-  }
+
+    } // End of createSearchResultNode
+  } // End of searchResultsController
 })();
 
 /**
@@ -498,16 +504,24 @@ function searchUserstyles() {
 
   /**
    * Fetches the JSON style object from userstyles.org (containing code, sections, updateUrl, etc).
-   * This is fetched from the /styles/chrome/ID.json endpoint.
-   * @param {number} userstylesId The internal "ID" for a style on userstyles.org
-   * @returns {Promise<Object>} The response as a JSON object.
+   * Stores (caches) the JSON within the given usoSearchResult, to avoid unnecessary network usage.
+   * Style JSON is fetched from the /styles/chrome/{id}.json endpoint.
+   * @param {Object} usoSearchResult A search result object from userstyles.org
+   * @returns {Promise<Object>} Promises the response as a JSON object.
    */
-  function fetchStyleJson(userstylesId) {
+  function fetchStyleJson(usoSearchResult) {
     return new Promise((resolve, reject) => {
-      const jsonUrl = BASE_URL + '/styles/chrome/' + userstylesId + '.json';
+      if (usoSearchResult.json) {
+        // JSON already downloaded & stored.
+        resolve(usoSearchResult.json);
+      }
+
+      const jsonUrl = BASE_URL + '/styles/chrome/' + usoSearchResult.id + '.json';
       download(jsonUrl)
         .then(responseText => {
-          resolve(tryJSONparse(responseText));
+          // Store JSON within the search result, so we don't have to download again.
+          usoSearchResult.json = tryJSONparse(responseText);
+          resolve(usoSearchResult.json);
         })
         .catch(reject);
     });
