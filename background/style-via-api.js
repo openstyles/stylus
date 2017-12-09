@@ -9,7 +9,7 @@ var styleViaAPI = !CHROME &&
     styleDeleted,
     styleUpdated,
     styleAdded,
-    styleReplaceAll,
+    styleReplaceAll: styleApply,
     prefChanged,
     ping,
   };
@@ -17,15 +17,11 @@ var styleViaAPI = !CHROME &&
   const PONG = Promise.resolve(true);
   const onError = () => NOP;
 
-  /* <tabId>: Object
-       <frameId>: Object
-         url: String, non-enumerable
-         <styleId>: Array of strings
-           section code */
   const cache = new Map();
   const allFrameUrls = new Map();
 
-  let observingTabs = false;
+  chrome.tabs.onRemoved.addListener(onTabRemoved);
+  chrome.tabs.onReplaced.addListener(onTabReplaced);
 
   return {
     process,
@@ -35,15 +31,23 @@ var styleViaAPI = !CHROME &&
     cache,
   };
 
-  //////////////////// public
+  //region public methods
 
   function process(request, sender) {
+    console.log(request.action || request.method, request.prefs || request.styles || request.style, sender.tab, sender.frameId);
     const action = ACTIONS[request.action || request.method];
-    return !action ? NOP :
-      isNaN(sender.frameId) && maybeProcessAllFrames(request, sender) ||
-      (action(request, sender) || NOP)
-        .catch(onError)
-        .then(maybeToggleObserver);
+    if (!action) {
+      return NOP;
+    }
+    const {tab} = sender;
+    if (!isNaN(sender.frameId)) {
+      const result = action(request, sender);
+      return result ? result.catch(onError) : NOP;
+    }
+    return browser.webNavigation.getAllFrames({tabId: tab.id}).then(frames =>
+      Promise.all((frames || []).map(({frameId}) =>
+        (action(request, {tab, frameId}) || NOP).catch(onError)))
+    ).catch(onError);
   }
 
   function getFrameUrl(tabId, frameId = 0) {
@@ -60,35 +64,33 @@ var styleViaAPI = !CHROME &&
     }
   }
 
-  //////////////////// actions
+  //endregion
+  //region actions
 
-  function styleApply({id = null, styles, ignoreUrlCheck}, sender) {
-    if (prefs.get('disableAll')) {
+  function styleApply({styles, disableAll}, sender) {
+    if (disableAll) {
       return;
     }
-    const {tab, frameId, url = getFrameUrl(tab.id, frameId)} = sender;
-    const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
-    if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
-      return;
+    const {tab: {id: tabId}, frameId, url} = sender;
+    if (!styles || styles === 'DIY') {
+      return requestStyles({matchUrl: url || getFrameUrl(tabId, frameId)}, sender);
     }
-    const apply = styles => {
-      const newFrameStyles = buildNewFrameStyles(styles, frameStyles);
-      if (newFrameStyles) {
-        tabFrames[frameId] = newFrameStyles;
-        cache.set(tab.id, tabFrames);
-        return replaceCSS(tab.id, frameId, frameStyles, newFrameStyles);
-      }
-    };
-    return styles ? apply(styles) || NOP :
-      getStyles({id, matchUrl: url, enabled: true, asHash: true}).then(apply);
+    const {tabFrames, frameStyles} = getCachedData(tabId, frameId);
+    const newSorted = getSortedById(styles);
+    if (!sameArrays(frameStyles, newSorted, sameArrays)) {
+      tabFrames[frameId] = newSorted;
+      cache.set(tabId, tabFrames);
+      return replaceCSS(tabId, frameId, frameStyles, newSorted);
+    }
   }
 
   function styleDeleted({id}, {tab, frameId}) {
-    const {frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
-    if (styleSections.length) {
-      const oldFrameStyles = Object.assign({}, frameStyles);
-      delete frameStyles[id];
-      return replaceCSS(tab.id, frameId, oldFrameStyles, frameStyles);
+    const {frameStyles} = getCachedData(tab.id, frameId);
+    const index = frameStyles.findIndex(item => item.id === id);
+    if (index >= 0) {
+      const oldStyles = frameStyles.slice();
+      frameStyles.splice(index, 1);
+      return replaceCSS(tab.id, frameId, oldStyles, frameStyles);
     }
   }
 
@@ -96,20 +98,13 @@ var styleViaAPI = !CHROME &&
     return (style.enabled ? styleApply : styleDeleted)(style, sender);
   }
 
-  function styleAdded({style}, sender) {
-    return style.enabled ? styleApply(style, sender) : NOP;
-  }
-
-  function styleReplaceAll(request, sender) {
-    request.ignoreUrlCheck = true;
-    return styleApply(request, sender);
+  function styleAdded({style: {enabled}}, sender) {
+    return enabled && styleApply({}, sender);
   }
 
   function prefChanged({prefs}, sender) {
     if ('disableAll' in prefs) {
       disableAll(prefs.disableAll, sender);
-    } else {
-      return NOP;
     }
   }
 
@@ -117,7 +112,8 @@ var styleViaAPI = !CHROME &&
     return PONG;
   }
 
-  //////////////////// action helpers
+  //endregion
+  //region action helpers
 
   function disableAll(state, sender) {
     if (state) {
@@ -126,113 +122,60 @@ var styleViaAPI = !CHROME &&
       delete tabFrames[frameId];
       return removeCSS(tab.id, frameId, frameStyles);
     } else {
-      return styleApply({ignoreUrlCheck: true}, sender);
+      return styleApply({}, sender);
     }
   }
 
-  //////////////////// observer
-
-  function maybeToggleObserver(passthru) {
-    let method;
-    if (!observingTabs && cache.size) {
-      method = 'addListener';
-    } else if (observingTabs && !cache.size) {
-      method = 'removeListener';
-    } else {
-      return passthru;
-    }
-    observingTabs = !observingTabs;
-    chrome.webNavigation.onCommitted[method](onNavigationCommitted);
-    chrome.tabs.onRemoved[method](onTabRemoved);
-    chrome.tabs.onReplaced[method](onTabReplaced);
-    return passthru;
-  }
-
-  function onNavigationCommitted({tabId, frameId}) {
-    if (frameId === 0) {
-      onTabRemoved(tabId);
-      return;
-    }
-    const tabFrames = cache.get(tabId);
-    if (tabFrames && frameId in tabFrames) {
-      delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
-        onTabRemoved(tabId);
-      }
-    }
-  }
+  //endregion
+  //region observer
 
   function onTabRemoved(tabId) {
     cache.delete(tabId);
-    maybeToggleObserver();
   }
 
   function onTabReplaced(addedTabId, removedTabId) {
-    onTabRemoved(removedTabId);
+    cache.delete(removedTabId);
   }
 
-  //////////////////// browser API
+  //endregion
+  //region browser API
 
   function replaceCSS(tabId, frameId, oldStyles, newStyles) {
+    console.log.apply(null, arguments);
     return insertCSS(tabId, frameId, newStyles).then(() =>
       removeCSS(tabId, frameId, oldStyles));
   }
 
   function insertCSS(tabId, frameId, frameStyles) {
     const code = getFrameCode(frameStyles);
-    return code && browser.tabs.insertCSS(tabId, {
-      // we cache a shallow copy of code from the sections array in order to reuse references
-      // in other places whereas the combined string gets garbage-collected
-      code,
-      frameId,
-      runAt: 'document_start',
-      matchAboutBlank: true,
-    }).catch(onError);
+    return !code ? NOP :
+      browser.tabs.insertCSS(tabId, {
+        code,
+        frameId,
+        runAt: 'document_start',
+        matchAboutBlank: true,
+      }).catch(onError);
   }
 
   function removeCSS(tabId, frameId, frameStyles) {
     const code = getFrameCode(frameStyles);
-    return code && browser.tabs.removeCSS(tabId, {
-      code,
-      frameId,
-      matchAboutBlank: true
-    }).catch(onError);
+    return !code ? NOP :
+      browser.tabs.removeCSS(tabId, {
+        code,
+        frameId,
+        matchAboutBlank: true
+      }).catch(onError);
   }
 
-  //////////////////// utilities
+  //endregion
+  //region utilities
 
-  function maybeProcessAllFrames(request, sender) {
-    const {tab} = sender;
-    const frameIds = Object.keys(allFrameUrls.get(tab.id) || {});
-    if (frameIds.length <= 1) {
-      sender.frameId = 0;
-      return false;
-    } else {
-      return Promise.all(
-        frameIds.map(frameId =>
-          process(request, {tab, sender: {frameId: Number(frameId)}})));
-    }
-  }
-
-  function buildNewFrameStyles(styles, oldStyles, url) {
-    let allSame = true;
-    let newStyles = {};
-    for (const sections of getSortedById(styles)) {
-      const cachedSections = oldStyles[sections.id] || [];
-      const newSections = [];
-      let i = 0;
-      allSame &= sections.length === cachedSections.length;
-      for (const {code} of sections) {
-        allSame = allSame ? code === cachedSections[i] : allSame;
-        newSections[i++] = code;
-      }
-      newStyles[sections.id] = newSections;
-    }
-    if (!allSame) {
-      newStyles = Object.assign({}, oldStyles, newStyles);
-      defineProperty(newStyles, 'url', url);
-      return newStyles;
-    }
+  function requestStyles(options, sender) {
+    options.matchUrl = options.matchUrl || sender.url;
+    options.enabled = true;
+    options.asHash = true;
+    return getStyles(options).then(styles =>
+      styleApply({styles}, sender));
   }
 
   function getSortedById(styleHash) {
@@ -242,9 +185,9 @@ var styleViaAPI = !CHROME &&
     for (let k in styleHash) {
       k = parseInt(k);
       if (!isNaN(k)) {
-        const sections = styleHash[k];
+        const sections = styleHash[k].map(({code}) => code);
         styles.push(sections);
-        Object.defineProperty(sections, 'id', {value: k});
+        defineProperty(sections, 'id', k);
         needsSorting |= k < prevKey;
         prevKey = k;
       }
@@ -254,23 +197,24 @@ var styleViaAPI = !CHROME &&
 
   function getCachedData(tabId, frameId, styleId) {
     const tabFrames = cache.get(tabId) || {};
-    const frameStyles = tabFrames[frameId] || {};
-    const styleSections = styleId && frameStyles[styleId] || [];
+    const frameStyles = tabFrames[frameId] || [];
+    const styleSections = styleId && frameStyles.find(s => s.id === styleId) || [];
     return {tabFrames, frameStyles, styleSections};
   }
 
   function getFrameCode(frameStyles) {
-    return [].concat(...getSortedById(frameStyles)).join('\n');
+    // we cache a shallow copy of code from the sections array in order to reuse references
+    // in other places whereas the combined string gets garbage-collected
+    return typeof frameStyles === 'string' ? frameStyles : [].concat(...frameStyles).join('\n');
   }
 
   function defineProperty(obj, name, value) {
     return Object.defineProperty(obj, name, {value, configurable: true});
   }
 
-  function isEmpty(obj) {
-    for (const k in obj) {
-      return false;
-    }
-    return true;
+  function sameArrays(a, b, fn) {
+    return a.length === b.length && a.every((el, i) => fn ? fn(el, b[i]) : el === b[i]);
   }
+
+  //endregion
 })();

@@ -193,18 +193,37 @@ window.addEventListener('storageReady', function _() {
 
   updateIcon({id: undefined}, {});
 
+  if (FIREFOX) {
+    queryTabs().then(tabs =>
+      tabs.forEach(tab => {
+        if (!tab.width) {
+          // skip lazy-loaded tabs (width = 0) that seem to start loading on message
+          return;
+        }
+        const tabId = tab.id;
+        const frameUrls = {0: tab.url};
+        styleViaAPI.allFrameUrls.set(tabId, frameUrls);
+        chrome.webNavigation.getAllFrames({tabId}, frames => frames &&
+          frames.forEach(({frameId, parentFrameId, url}) => {
+            if (frameId) {
+              frameUrls[frameId] = url === 'about:blank' ? frameUrls[parentFrameId] : url;
+            }
+          }));
+      }));
+    return;
+  }
+
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
-  if (!FIREFOX) {
-    contentScripts.push({
-      js: ['content/apply.js'],
-      matches: ['<all_urls>'],
-      run_at: 'document_start',
-      match_about_blank: true,
-      all_frames: true
-    });
-  }
+  contentScripts.push({
+    js: ['content/apply.js'],
+    matches: ['<all_urls>'],
+    run_at: 'document_start',
+    match_about_blank: true,
+    all_frames: true
+  });
+
   // expand * as .*?
   const wildcardAsRegExp = (s, flags) => new RegExp(
       s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
@@ -236,23 +255,9 @@ window.addEventListener('storageReady', function _() {
   };
 
   queryTabs().then(tabs =>
-    tabs.forEach(tab => {
-      if (FIREFOX) {
-        const tabId = tab.id;
-        const frameUrls = {'0': tab.url};
-        styleViaAPI.allFrameUrls.set(tabId, frameUrls);
-        chrome.webNavigation.getAllFrames({tabId}, frames => frames &&
-          frames.forEach(({frameId, parentFrameId, url}) => {
-            if (frameId) {
-              frameUrls[frameId] = url === 'about:blank' ? frameUrls[parentFrameId] : url;
-            }
-          }));
-      } else if (tab.width) {
-        // skip lazy-loaded aka unloaded tabs that seem to start loading on message
-        contentScripts.forEach(cs =>
-          setTimeout(pingCS, 0, cs, tab));
-      }
-    }));
+    tabs.forEach(tab => tab.width &&
+      contentScripts.forEach(cs =>
+        setTimeout(pingCS, 0, cs, tab))));
 });
 
 // *************************************************************************
@@ -304,22 +309,27 @@ function webNavigationListenerChrome(method, data) {
 
 function webNavigationListenerFF(method, data) {
   const {tabId, frameId, url} = data;
-  if (url !== 'about:blank' || !frameId) {
+  //console.log(method, data);
+  if (frameId === 0 || url !== 'about:blank') {
+    if ((!method || method === 'styleApply') &&
+        styleViaAPI.getFrameUrl(tabId, frameId) !== url) {
+      styleViaAPI.cache.delete(tabId);
+    }
     styleViaAPI.setFrameUrl(tabId, frameId, url);
     webNavigationListener(method, data);
     return;
   }
-  const frames = styleViaAPI.allFrameUrls.get(tabId);
-  if (Object.keys(frames).length === 1) {
-    frames[frameId] = frames['0'];
-    webNavigationListener(method, data);
-    return;
-  }
-  chrome.webNavigation.getFrame({tabId, frameId}, info => {
-    const hasParent = !chrome.runtime.lastError && info.parentFrameId >= 0;
-    frames[frameId] = hasParent ? frames[info.parentFrameId] : url;
-    webNavigationListener(method, data);
-  });
+  //const frames = styleViaAPI.allFrameUrls.get(tabId);
+  //if (Object.keys(frames).length === 1) {
+  //  frames[frameId] = frames['0'];
+  //  webNavigationListener(method, data);
+  //  return;
+  //}
+  //chrome.webNavigation.getFrame({tabId, frameId}, info => {
+  //  const hasParent = !chrome.runtime.lastError && info.parentFrameId >= 0;
+  //  frames[frameId] = hasParent ? frames[info.parentFrameId] : url;
+  //  webNavigationListener(method, data);
+  //});
 }
 
 
