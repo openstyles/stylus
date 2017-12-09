@@ -171,14 +171,72 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 
 
 function showUpdateHistory() {
+  const log = $create('.update-history-log');
+  let logText, scroller, toggler;
+  let deleted = false;
   BG.chromeLocal.getValue('updateLog').then((lines = []) => {
+    logText = lines.join('\n');
     messageBox({
       title: t('updateCheckHistory'),
-      contents: $create('.update-history-log', lines.join('\n')),
-      buttons: [t('confirmOK')],
-      onshow: () => ($('#message-box-contents').scrollTop = 1e9),
+      contents: log,
+      buttons: [
+        t('confirmOK'),
+        logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
+      ],
+      onshow: logText && (() => {
+        scroller = $('#message-box-contents');
+        scrollToBottom();
+        $('#message-box-buttons button').insertAdjacentElement('afterend',
+          // TODO: add a global class for our labels
+          // TODO: add a <template> or a common function to create such controls
+          $create('label', {style: 'position: relative; padding-left: 16px;'}, [
+            toggler =
+            $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
+            $create('SVG:svg.svg-icon.checked',
+              $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+            t('manageOnlyUpdates'),
+          ]));
+        toggler.onchange();
+      }),
     });
   });
+  function scrollToBottom() {
+    scroller.scrollTop = 1e9;
+  }
+  function calcScrollRatio() {
+    return (scroller.scrollTop + scroller.clientHeight) / scroller.scrollHeight;
+  }
+  function toggleSkipped() {
+    if (deleted) {
+      return;
+    }
+    const scrollRatio = calcScrollRatio();
+    const rxRemoveNOP = this.checked && new RegExp([
+      '^[^#]*(',
+      Object.keys(BG.updater)
+        .filter(k => k.startsWith('SAME_'))
+        .map(k => stringAsRegExp(BG.updater[k]))
+        .map(rx => rx.source)
+        .join('|'),
+      ').*\r?\n',
+    ].join(''), 'gm');
+    log.textContent = !this.checked ? logText : logText.replace(rxRemoveNOP, '');
+    if (Math.abs(scrollRatio - calcScrollRatio()) > .1) {
+      scroller.scrollTop = scrollRatio * scroller.scrollHeight - scroller.clientHeight;
+    }
+  }
+  function deleteHistory() {
+    if (deleted) {
+      BG.chromeLocal.setValue('updateLog', logText.split('\n'));
+      setTimeout(scrollToBottom);
+    } else {
+      BG.chromeLocal.remove('updateLog');
+      log.textContent = '';
+    }
+    deleted = !deleted;
+    toggler.onchange();
+    this.textContent = t(deleted ? 'undo' : 'confirmDelete');
+  }
 }
 
 
