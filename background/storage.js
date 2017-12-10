@@ -195,17 +195,11 @@ function dbExecChromeStorage(method, data) {
     case 'getAll':
       return chromeLocal.get(null).then(storage => {
         const styles = [];
-        const leftovers = [];
         for (const key in storage) {
           if (key.startsWith(STYLE_KEY_PREFIX) &&
               Number(key.substr(STYLE_KEY_PREFIX.length))) {
             styles.push(storage[key]);
-          } else if (key.startsWith('tempUsercssCode')) {
-            leftovers.push(key);
           }
-        }
-        if (leftovers.length) {
-          chromeLocal.remove(leftovers);
         }
         return {target: {result: styles}};
       });

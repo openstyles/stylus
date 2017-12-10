@@ -3,6 +3,33 @@
 
 // eslint-disable-next-line no-var
 var usercssHelper = (() => {
+
+  const TEMP_CODE_PREFIX = 'tempUsercssCode';
+  const TEMP_CODE_CLEANUP_DELAY = 60e3;
+  let tempCodeLastWriteDate = 0;
+  if (FIREFOX) {
+    // the temp code is created on direct installation of usercss URLs in FF
+    // and can be left behind in case the install page didn't open in time before
+    // the extension was updated/reloaded/disabled or the browser was closed
+    setTimeout(function poll() {
+      if (Date.now() - tempCodeLastWriteDate < TEMP_CODE_CLEANUP_DELAY) {
+        setTimeout(poll, TEMP_CODE_CLEANUP_DELAY);
+        return;
+      }
+      chrome.storage.local.get(null, storage => {
+        const leftovers = [];
+        for (const key in storage) {
+          if (key.startsWith(TEMP_CODE_PREFIX)) {
+            leftovers.push(key);
+          }
+        }
+        if (leftovers.length) {
+          chrome.storage.local.remove(leftovers);
+        }
+      });
+    }, TEMP_CODE_CLEANUP_DELAY);
+  }
+
   function buildMeta(style) {
     if (style.usercssData) {
       return Promise.resolve(style);
@@ -93,13 +120,14 @@ var usercssHelper = (() => {
   }
 
   function prefetchCodeForInstallation(tabId, url) {
-    const key = 'tempUsercssCode' + tabId;
+    const key = TEMP_CODE_PREFIX + tabId;
+    tempCodeLastWriteDate = Date.now();
     Promise.all([
       download(url),
       chromeLocal.setValue(key, {loading: true}),
     ]).then(([code]) => {
       chromeLocal.setValue(key, code);
-      setTimeout(() => chromeLocal.remove(key), 60e3);
+      setTimeout(() => chromeLocal.remove(key), TEMP_CODE_CLEANUP_DELAY);
     });
   }
 
