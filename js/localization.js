@@ -193,5 +193,6 @@ function tDocLoader() {
 
 function tWordBreak(text) {
   // adds soft hyphens every 10 characters to ensure the long words break before breaking the layout
-  return text.length <= 10 ? text : text.replace(/[\d\w\u0080-\uFFFF]{10}|((?!\s)\W){10}/g, '$&\u00AD');
+  return text.length <= 10 ? text :
+    text.replace(/[\d\w\u007B-\uFFFF]{10}|[\d\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10}/g, '$&\u00AD');
 }
