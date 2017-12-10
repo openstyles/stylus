@@ -164,7 +164,7 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return BG.usercssHelper.save(style)
+    return BG.usercssHelper.save(BG.deepCopy(style))
       .then(saved => {
         varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
         vars.forEach(va => onchange({target: va.input, justSaved: true}));
