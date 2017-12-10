@@ -427,7 +427,7 @@ Object.assign(handleEvent, {
       .then(activeTab => openURL({
         url: this.href || this.dataset.href,
         index: activeTab.index + 1,
-        active: false,
+        active: msg ? false : undefined,
       }))
       .then(msg && (
         function poll(tab, t0 = performance.now()) {
