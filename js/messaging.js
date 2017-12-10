@@ -213,7 +213,7 @@ function getTabRealURL(tab) {
 
 // opens a tab or activates the already opened one,
 // reuses the New Tab page if it's focused now
-function openURL({url, index, openerTabId, currentWindow = true}) {
+function openURL({url, index, active, currentWindow = true}) {
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
@@ -237,7 +237,7 @@ function openURL({url, index, openerTabId, currentWindow = true}) {
           chrome.tabs.update({url}, resolve);
         } else {
           // create a new tab
-          const options = {url, index};
+          const options = {url, index, active};
           // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
           if (tab && (!FIREFOX || FIREFOX >= 57 && chrome.windows) && !chromeInIncognito) {
             options.openerTabId = tab.id;

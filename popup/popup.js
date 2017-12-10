@@ -277,6 +277,7 @@ function createStyleElement({
     config.href = style.url;
     config.target = '_blank';
     config.title = t('configureStyleOnHomepage');
+    config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
     $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
   } else if (!style.usercssData || !Object.keys(style.usercssData.vars || {}).length) {
     config.style.display = 'none';
@@ -364,6 +365,8 @@ Object.assign(handleEvent, {
           hotkeys.setState(true);
         });
       });
+    } else {
+      handleEvent.openURLandHide.call(this, event);
     }
   },
 
@@ -418,7 +421,22 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
-    openURL({url: this.href || this.dataset.href})
+    const el = this;
+    const msg = tryJSONparse(el.dataset.sendMessage);
+    getActiveTab()
+      .then(activeTab => openURL({
+        url: this.href || this.dataset.href,
+        index: activeTab.index + 1,
+        active: false,
+      }))
+      .then(msg && (
+        function poll(tab, t0 = performance.now()) {
+          msg.tabId = tab.id;
+          return sendMessage(msg)
+            .catch(ignoreChromeError)
+            .then(handled => handled || performance.now() - t0 < 200 && poll(tab))
+            .then(() => chrome.tabs.update(tab.id, {active: true}));
+        }))
       .then(window.close);
   },
 

@@ -13,9 +13,15 @@
       document.addEventListener('stylish' + type + browser, onClick)));
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    // orphaned content script check
-    if (msg.method === 'ping') {
-      sendResponse(true);
+    switch (msg.method) {
+      case 'ping':
+        // orphaned content script check
+        sendResponse(true);
+        break;
+      case 'openSettings':
+        openSettings();
+        sendResponse(true);
+        break;
     }
   });
 
@@ -257,6 +263,26 @@
         resolve();
       });
     });
+  }
+
+
+  function openSettings(countdown = 10e3) {
+    const button = document.querySelector('.advanced_button') ||
+      document.evaluate('//*[not(*) and contains(., "Advanced Style Settings")]',
+        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (button) {
+      button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+      setTimeout(function pollArea(countdown = 2000) {
+        const area = document.getElementById('advancedsettings_area');
+        if (area || countdown < 0) {
+          (area || button).scrollIntoView({behavior: 'smooth', block: area ? 'end' : 'center'});
+        } else {
+          setTimeout(pollArea, 100, countdown - 100);
+        }
+      }, 500);
+    } else if (countdown > 0) {
+      setTimeout(openSettings, 100, countdown - 100);
+    }
   }
 
 

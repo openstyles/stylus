@@ -366,6 +366,7 @@ window.addEventListener('showStyles:done', function _() {
 
         const customizeButton = $('.search-result-customize', entry);
         customizeButton.dataset.href = searchAPI.BASE_URL + result.url;
+        customizeButton.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
         customizeButton.classList.remove('hidden');
         customizeButton.onclick = function (event) {
           event.stopPropagation();
