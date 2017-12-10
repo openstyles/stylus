@@ -30,58 +30,50 @@ var cachedStyles = {
 };
 
 // eslint-disable-next-line no-var
-var chromeLocal = {
-  get(options) {
-    return new Promise(resolve => {
-      chrome.storage.local.get(options, data => resolve(data));
-    });
-  },
-  set(data) {
-    return new Promise(resolve => {
-      chrome.storage.local.set(data, () => resolve(data));
-    });
-  },
-  remove(keyOrKeys) {
-    return new Promise(resolve => {
-      chrome.storage.local.remove(keyOrKeys, resolve);
-    });
-  },
-  getValue(key) {
-    return chromeLocal.get(key).then(data => data[key]);
-  },
-  setValue(key, value) {
-    return chromeLocal.set({[key]: value});
-  },
-};
-
-// eslint-disable-next-line no-var
-var chromeSync = {
-  get(options) {
-    return new Promise(resolve => {
-      chrome.storage.sync.get(options, resolve);
-    });
-  },
-  set(data) {
-    return new Promise(resolve => {
-      chrome.storage.sync.set(data, () => resolve(data));
-    });
-  },
-  getLZValue(key) {
-    return chromeSync.getLZValues([key]).then(data => data[key]);
-  },
-  getLZValues(keys) {
-    return chromeSync.get(keys).then((data = {}) => {
-      for (const key of keys) {
-        const value = data[key];
-        data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
-      }
-      return data;
-    });
-  },
-  setLZValue(key, value) {
-    return chromeSync.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
-  }
-};
+var [chromeLocal, chromeSync] = [
+  chrome.storage.local,
+  chrome.storage.sync,
+].map(storage => {
+  const wrapper = {
+    get(options) {
+      return new Promise(resolve => {
+        storage.get(options, data => resolve(data));
+      });
+    },
+    set(data) {
+      return new Promise(resolve => {
+        storage.set(data, () => resolve(data));
+      });
+    },
+    remove(keyOrKeys) {
+      return new Promise(resolve => {
+        storage.remove(keyOrKeys, resolve);
+      });
+    },
+    getValue(key) {
+      return wrapper.get(key).then(data => data[key]);
+    },
+    setValue(key, value) {
+      return wrapper.set({[key]: value});
+    },
+    getLZValue(key) {
+      return wrapper.getLZValues([key]).then(data => data[key]);
+    },
+    getLZValues(keys) {
+      return wrapper.get(keys).then((data = {}) => {
+        for (const key of keys) {
+          const value = data[key];
+          data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
+        }
+        return data;
+      });
+    },
+    setLZValue(key, value) {
+      return wrapper.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
+    }
+  };
+  return wrapper;
+});
 
 // eslint-disable-next-line no-var
 var dbExec = dbExecIndexedDB;
