@@ -1,4 +1,4 @@
-/* global LZString */
+/* global LZStringUnsafe */
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -63,13 +63,13 @@ var [chromeLocal, chromeSync] = [
       return wrapper.get(keys).then((data = {}) => {
         for (const key of keys) {
           const value = data[key];
-          data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
+          data[key] = value && tryJSONparse(LZStringUnsafe.decompressFromUTF16(value));
         }
         return data;
       });
     },
     setLZValue(key, value) {
-      return wrapper.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
+      return wrapper.set({[key]: LZStringUnsafe.compressToUTF16(JSON.stringify(value))});
     }
   };
   return wrapper;
