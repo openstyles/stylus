@@ -1,7 +1,3 @@
-.hidden {
-  display: none !important;
-}
-
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -167,6 +163,11 @@ select:disabled,
 option:disabled,
 select[disabled] > option {
   color: graytext;
+}
+
+/* global stuff we use everywhere */
+.hidden {
+  display: none !important;
 }
 
 @supports (-moz-appearance: none) {
