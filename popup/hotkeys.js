@@ -204,12 +204,18 @@ var hotkeys = (() => {
       return;
     }
     const style = $('#hotkey-info').style;
+    const scroller = document.scrollingElement;
     if (installed.scrollHeight > installed.clientHeight ||
-        document.scrollingElement.scrollHeight > document.scrollingElement.innerHeight) {
+        scroller.scrollHeight > scroller.innerHeight) {
       const entryRight = installed.firstElementChild.getBoundingClientRect().right;
-      style.setProperty('right', window.innerWidth - entryRight + 'px', 'important');
+      const right = window.innerWidth - entryRight;
+      if (parseFloat(style.right) !== right) {
+        style.setProperty('right', right + 'px', 'important');
+      }
     }
-    const installedBottom = installed.getBoundingClientRect().bottom + window.scrollY;
-    style.setProperty('bottom', window.innerHeight - installedBottom + 'px', 'important');
+    const bottom = installed.getBoundingClientRect().bottom + window.scrollY;
+    if (parseFloat(style.height) !== bottom) {
+      style.setProperty('height', bottom + 'px', 'important');
+    }
   }
 })();
