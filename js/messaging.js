@@ -417,6 +417,7 @@ function deleteStyleSafe({id, notify = true} = {}) {
 function download(url, {
   method = url.includes('?') ? 'POST' : 'GET',
   body = url.includes('?') ? url.slice(url.indexOf('?')) : null,
+  responseType = 'text',
   requiredStatusCode = 200,
   timeout = 10e3,
   headers = {
@@ -444,12 +445,13 @@ function download(url, {
       if (event.type !== 'error' && (
           xhr.status === requiredStatusCode || !requiredStatusCode ||
           url.protocol === 'file:')) {
-        resolve(xhr.responseText);
+        resolve(xhr.response);
       } else {
         reject(xhr.status);
       }
     };
     xhr.onerror = xhr.onloadend;
+    xhr.responseType = responseType;
     xhr.open(method, url.href, true);
     for (const key in headers) {
       xhr.setRequestHeader(key, headers[key]);
