@@ -204,7 +204,8 @@ var hotkeys = (() => {
       return;
     }
     const style = $('#hotkey-info').style;
-    if (installed.scrollHeight > installed.clientHeight) {
+    if (installed.scrollHeight > installed.clientHeight ||
+        document.scrollingElement.scrollHeight > document.scrollingElement.innerHeight) {
       const entryRight = installed.firstElementChild.getBoundingClientRect().right;
       style.setProperty('right', window.innerWidth - entryRight + 'px', 'important');
     }
