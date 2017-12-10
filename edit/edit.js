@@ -583,10 +583,14 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap')
   }, options));
   cm.focus();
-  cm.on('focus', () => cm.rerouteHotkeys(false));
-  cm.on('blur', () => cm.rerouteHotkeys(true));
+  const rerouteOn = () => cm.rerouteHotkeys(false);
+  const rerouteOff = () => cm.rerouteHotkeys(true);
+  cm.on('focus', rerouteOn);
+  cm.on('blur', rerouteOff);
   window.addEventListener('closeHelp', function _() {
     window.removeEventListener('closeHelp', _);
+    cm.off('focus', rerouteOn);
+    cm.off('blur', rerouteOff);
     cm = popup.codebox = null;
   });
   return popup;
