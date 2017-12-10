@@ -210,7 +210,7 @@ window.addEventListener('showStyles:done', function _() {
             if (searchResults.data.length === 0) {
               throw 404;
             }
-            unprocessedResults.push.apply(unprocessedResults, searchResults.data);
+            unprocessedResults.push(unprocessedResults, ...searchResults.data);
             processNextResult();
           })
           .catch(error);
@@ -288,8 +288,9 @@ window.addEventListener('showStyles:done', function _() {
         id: ENTRY_ID_PREFIX + result.id,
       });
 
+      const displayedName = result.name.length < 300 ? result.name : result.name.slice(0, 300) + '...';
       Object.assign($('.search-result-title', entry), {
-        textContent: result.name,
+        textContent: tWordBreak(displayedName),
         onclick: handleEvent.openURLandHide,
         href: searchAPI.BASE_URL + result.url
       });
@@ -305,7 +306,7 @@ window.addEventListener('showStyles:done', function _() {
       screenshot.src = screenshotUrl;
 
       const description = result.description
-        .replace(/<.*?>/g, '')
+        .replace(/<[^>]*>/g, '')
         .replace(/[\r\n]{3,}/g, '\n\n');
       Object.assign($('.search-result-description', entry), {
         textContent: description,
@@ -435,6 +436,8 @@ window.addEventListener('showStyles:done', function _() {
  */
 function searchUserstyles() {
   const BASE_URL = 'https://userstyles.org';
+  const CACHE_PREFIX = 'usoSearchCache';
+  const CACHE_DURATION = 1 * 3600e3;
   let totalPages;
   let currentPage = 1;
   let exhausted = false;
@@ -511,18 +514,17 @@ function searchUserstyles() {
    * @returns {Promise<Object>} An object containing info about the style, e.g. name, author, etc.
    */
   function fetchStyle(userstylesId) {
-    return new Promise((resolve, reject) => {
-      download(BASE_URL + '/api/v1/styles/' + userstylesId, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': '*/*'
-        },
-        body: null
-      }).then(responseText => {
-        resolve(tryJSONparse(responseText));
-      }).catch(reject);
-    });
+    return readCache(userstylesId)
+      .then(json => json ||
+        download(BASE_URL + '/api/v1/styles/' + userstylesId, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': '*/*'
+          },
+          responseType: 'json',
+          body: null
+        }).then(writeCache));
   }
 
   /**
@@ -532,34 +534,83 @@ function searchUserstyles() {
    * @return {Object} Response object from userstyles.org
    */
   function search(category) {
-    return new Promise((resolve, reject) => {
-      if (totalPages !== undefined && currentPage > totalPages) {
-        resolve({'data':[]});
-      }
+    if (totalPages !== undefined && currentPage > totalPages) {
+      return Promise.resolve({'data':[]});
+    }
 
-      const searchURL = BASE_URL +
-        '/api/v1/styles/subcategory' +
-        '?search=' + encodeURIComponent(category) +
-        '&page=' + currentPage +
-        '&country=NA';
+    const searchURL = BASE_URL +
+      '/api/v1/styles/subcategory' +
+      '?search=' + encodeURIComponent(category) +
+      '&page=' + currentPage +
+      '&country=NA';
 
-      download(searchURL, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': '*/*'
-        },
-        body: null
-      }).then(responseText => {
-        const responseJson = tryJSONparse(responseText);
-        currentPage = responseJson.current_page + 1;
-        totalPages = responseJson.total_pages;
+    const cacheKey = category + '/' + currentPage;
+
+    return readCache(cacheKey)
+      .then(json => json ||
+        download(searchURL, {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': '*/*'
+          },
+          responseType: 'json',
+          body: null
+        }).then(json => {
+          json.id = cacheKey;
+          writeCache(json);
+          return json;
+        }))
+      .then(json => {
+        currentPage = json.current_page + 1;
+        totalPages = json.total_pages;
         exhausted = (currentPage > totalPages);
-        resolve(responseJson);
+        return json;
       }).catch(reason => {
         exhausted = true;
-        reject(reason);
+        return Promise.reject(reason);
       });
+  }
+
+  function readCache(id) {
+    return BG.chromeLocal.getLZValue(CACHE_PREFIX + id).then(data => {
+      if (!data || Date.now() - data.cacheWriteDate < CACHE_DURATION) {
+        return data;
+      }
+      BG.chromeLocal.remove(CACHE_PREFIX + id);
     });
+  }
+
+  function writeCache(data) {
+    debounce(cleanupCache, 10e3);
+    data.cacheWriteDate = Date.now();
+    return BG.chromeLocal.setLZValue(CACHE_PREFIX + data.id, data)
+      .then(() => data);
+  }
+
+  function cleanupCache() {
+    new Promise(resolve =>
+      chrome.storage.local.getBytesInUse &&
+      chrome.storage.local.getBytesInUse(null, resolve) ||
+      1e9
+    )
+    .then(size => size > 1e6 || Promise.reject())
+    .then(() => BG.chromeLocal.getValue(CACHE_PREFIX + 'Cleanup'))
+    .then((lastCleanup = 0) =>
+      Date.now() - lastCleanup > CACHE_DURATION &&
+      chrome.storage.local.get(null, storage => {
+        const expired = [];
+        for (const key in storage) {
+          if (key.startsWith(CACHE_PREFIX) &&
+              Date.now() - storage[key].cacheWriteDate > CACHE_DURATION) {
+            expired.push(key);
+          }
+        }
+        if (expired.length) {
+          chrome.storage.local.remove(expired);
+        }
+        BG.chromeLocal.setValue(CACHE_PREFIX + 'Cleanup', Date.now());
+      }))
+    .catch(ignoreChromeError);
   }
 }
