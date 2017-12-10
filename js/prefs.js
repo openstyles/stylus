@@ -19,6 +19,7 @@ var prefs = new function Prefs() {
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
     'popup.borders': false,         // add white borders on the sides
+    'popup.findStylesInline': true, // use the inline style search
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally

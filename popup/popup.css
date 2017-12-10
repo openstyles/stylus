@@ -104,6 +104,11 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   font-style: italic;
 }
 
+#find-styles-link {
+  cursor: pointer;
+  margin-right: .5em;
+}
+
 .checker {
   display: inline;
 }

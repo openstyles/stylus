@@ -1,3 +1,7 @@
+.hidden {
+  display: none !important;
+}
+
 button {
   -webkit-appearance: none;
   -moz-appearance: none;

@@ -1,31 +1,30 @@
-/* global handleEvent tryJSONparse getStylesSafe BG */
+/* global tabURL handleEvent */
 'use strict';
 
-(() => {
-  Promise.all([getActiveTab(), onDOMready()])
-    .then(([tab]) => {
-      $('#find-styles-link').href = searchUserstyles().getSearchPageURL(tab.url);
+window.addEventListener('showStyles:done', function _() {
+  window.removeEventListener('showStyles:done', _);
 
-      $('#find-styles-link').onclick = event => {
-        // Only load search results inline if option is selected.
-        if ($('#find-styles-inline').checked) {
-          // Hide 'inline' checkbox.
-          $('#find-styles-inline-group').classList.add('hidden');
-          $('#find-styles-inline').checked = false;
+  if (!tabURL) {
+    return;
+  }
 
-          const searchResults = searchResultsController();
-          searchResults.init();
-          searchResults.load();
+  Object.assign($('#find-styles-link'), {
+    href: searchUserstyles().getSearchPageURL(tabURL),
+    onclick(event) {
+      if (!prefs.get('popup.findStylesInline')) {
+        handleEvent.openURLandHide.call(this, event);
+        return;
+      }
 
-          // Avoid propagating click to anchor/href
-          event.preventDefault();
-          return false;
-        } else {
-          // Open anchor href in new tab.
-          handleEvent.openURLandHide.call($('#find-styles-link'), event);
-        }
-      };
-    });
+      $('#find-styles-inline-group').classList.add('hidden');
+
+      const searchResults = searchResultsController();
+      searchResults.init();
+      searchResults.load();
+
+      event.preventDefault();
+    },
+  });
 
   /**
    * Represents the search results within the Stylus popup.
@@ -40,6 +39,10 @@
     const processedResults = []; // Search results that are not installed and apply ot the page (includes 'json' field with full style).
     const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
                              'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
+    const UPDATE_URL = 'https://update.userstyles.org/%.md5';
+    const ENTRY_ID_PREFIX = 'search-result-';
+
+    let scrollToFirstResult = true;
     let loading = false;
     let category; // Category for the active tab's URL.
     let currentDisplayedPage = 1; // Current page number in popup.html
@@ -50,7 +53,14 @@
       $('#search-results-nav-prev').onclick = prev;
       $('#search-results-nav-next').onclick = next;
       document.body.classList.add('search-results-shown');
-      window.scrollTo(0, 0);
+      addEventListener('styleDeleted', ({detail}) => {
+        const entries = [...$('#search-results-list').children];
+        const entry = entries.find(el => el._result.installedStyleId === detail.id);
+        if (entry) {
+          entry._result.installed = false;
+          renderActionButtons(entry);
+        }
+      });
     }
 
     /**
@@ -64,28 +74,41 @@
         render(); // Refresh elements that depend on `loading` state.
 
         if (isLoading) {
-          // Show spinner
-          $('#search-results').appendChild(
-            $create(
-              '.lds-spinner',
-              new Array(12).fill($create('div')).map(e => e.cloneNode()))
-          );
+          showSpinner('#search-results');
         } else {
-          // Hide spinner
           $.remove('#search-results > .lds-spinner');
         }
       }
     }
 
-    function render() {
-      $('#search-results-list').textContent = ''; // Clear search results
+    function showSpinner(parent) {
+      parent = parent instanceof Node ? parent : $(parent);
+      parent.appendChild($create('.lds-spinner',
+        new Array(12).fill($create('div')).map(e => e.cloneNode())));
+    }
 
-      const startIndex = (currentDisplayedPage - 1) * DISPLAYED_RESULTS_PER_PAGE;
+    function render() {
+      let startIndex = (currentDisplayedPage - 1) * DISPLAYED_RESULTS_PER_PAGE;
       const endIndex = currentDisplayedPage * DISPLAYED_RESULTS_PER_PAGE;
+
+      const list = $('#search-results-list');
+
+      // keep rendered elements with ids in the range of interest
+      for (let i = 0; i < DISPLAYED_RESULTS_PER_PAGE;) {
+        const el = list.children[i];
+        if (!el) {
+          break;
+        }
+        if (el.id === 'search-result-' + (processedResults[startIndex] || {}).id) {
+          startIndex++;
+          i++;
+        } else {
+          el.remove();
+        }
+      }
+
       const displayedResults = processedResults.slice(startIndex, endIndex);
-      displayedResults.forEach(resultToDisplay => {
-        createSearchResultNode(resultToDisplay);
-      });
+      displayedResults.forEach(createSearchResultNode);
 
       $('#search-results-nav-prev').disabled = (currentDisplayedPage <= 1 || loading);
       $('#search-results-nav-current-page').textContent = currentDisplayedPage;
@@ -103,8 +126,15 @@
       const maxResults = currentDisplayedPage < totalPageCount
         ? DISPLAYED_RESULTS_PER_PAGE
         : displayedResults.length + unprocessedResults.length;
-      for (let i = displayedResults.length; i < maxResults; i++) {
-        createLoadingSearchResultNode();
+      for (let i = list.children.length; i < maxResults; i++) {
+        const entry = template.emptySearchResult.cloneNode(true);
+        list.appendChild(entry);
+        showSpinner(entry);
+      }
+
+      if (scrollToFirstResult && list.children[0]) {
+        scrollToFirstResult = false;
+        list.children[0].scrollIntoView({behavior: 'smooth', block: 'start'});
       }
     }
 
@@ -124,15 +154,15 @@
     /** Increments currentDisplayedPage and loads results. */
     function next() {
       currentDisplayedPage += 1;
+      scrollToFirstResult = true;
       render();
-      window.scrollTo(0, 0);
       loadMoreIfNeeded();
     }
 
     /** Decrements currentPage and loads results. */
     function prev() {
       currentDisplayedPage = Math.max(1, currentDisplayedPage - 1);
-      window.scrollTo(0, 0);
+      scrollToFirstResult = true;
       render();
     }
 
@@ -172,20 +202,18 @@
         $('#search-results').classList.remove('hidden');
         $('#search-results-error').classList.add('hidden');
 
-        // Discover current tab's URL & the "category" for the URL, then search.
-        getActiveTab().then(tab => {
-          category = searchAPI.getCategory(tab.url);
-          searchAPI.search(category)
-            .then(searchResults => {
-              setLoading(false);
-              if (searchResults.data.length === 0) {
-                throw 404;
-              }
-              unprocessedResults.push.apply(unprocessedResults, searchResults.data);
-              processNextResult();
-            })
-            .catch(error);
-        });
+        // Discover "category" for the URL, then search.
+        category = searchAPI.getCategory(tabURL);
+        searchAPI.search(category)
+          .then(searchResults => {
+            setLoading(false);
+            if (searchResults.data.length === 0) {
+              throw 404;
+            }
+            unprocessedResults.push.apply(unprocessedResults, searchResults.data);
+            processNextResult();
+          })
+          .catch(error);
       }
     }
 
@@ -208,72 +236,38 @@
 
       // Process the next result in the queue.
       const nextResult = unprocessedResults.shift();
-      isStyleInstalled(nextResult)
-        .then(isInstalled => {
-          if (isInstalled) {
-            // Style already installed, skip it.
-            setTimeout(processNextResult, 0); // Keep processing
-          } else if (nextResult.category !== 'site') {
-            // Style is not for a website, skip it.
-            setTimeout(processNextResult, 0); // Keep processing
-          } else {
-            // Style not installed.
-            searchAPI.fetchStyle(nextResult.id) // for "style_settings" (customizations)
-              .then(userstyleObject => {
-                // Store style settings for detecting customization later.
-                nextResult.style_settings = userstyleObject.style_settings;
-
-                processedResults.push(nextResult);
-                render();
-                setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
-              })
-              .catch(reason => {
-                console.log('processNextResult(', nextResult.id, ') => [ERROR]: ', reason);
-                setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES); // Keep processing
-              });
+      getStylesSafe({md5Url: UPDATE_URL.replace('%', nextResult.id)})
+        .then(([installedStyle]) => {
+          if (installedStyle) {
+            setTimeout(processNextResult);
+            return;
           }
+          if (nextResult.category !== 'site') {
+            setTimeout(processNextResult);
+            return;
+          }
+          // Style not installed.
+          // Get "style_settings" (customizations)
+          searchAPI.fetchStyle(nextResult.id)
+            .then(userstyleObject => {
+              // Store style settings for detecting customization later.
+              nextResult.style_settings = userstyleObject.style_settings;
+              processedResults.push(nextResult);
+              render();
+              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES);
+            })
+            .catch(reason => {
+              console.log('processNextResult(', nextResult.id, ') => [ERROR]: ', reason);
+              setTimeout(processNextResult, DELAY_AFTER_FETCHING_STYLES);
+            });
         });
     }
 
     /**
-     * Promises if the given searchResult matches an already-installed style.
-     * @param {Object} userstyleSearchResult Search result object from userstyles.org
-     * @returns {Promise<boolean>} Resolves if the style is installed.
-     */
-    function isStyleInstalled(userstyleSearchResult) {
-      return new Promise(function (resolve, reject) {
-        getStylesSafe()
-          .then(installedStyles => {
-            const matchingStyles = installedStyles.filter(installedStyle => {
-              // Compare installed name to search result name.
-              let isMatch = installedStyle.name === userstyleSearchResult.name;
-              // Compare if search result ID (userstyles ID) is mentioned in the installed updateUrl.
-              if (installedStyle.updateUrl) {
-                isMatch &= installedStyle.updateUrl.includes('/' + userstyleSearchResult.id + '.json');
-              }
-              return isMatch;
-            });
-            resolve(matchingStyles.length > 0);
-          })
-          .catch(reject);
-      });
-    }
-
-    function createLoadingSearchResultNode() {
-      const entry = template.emptySearchResult.cloneNode(true);
-      entry.appendChild(
-        $create(
-          '.lds-spinner',
-          new Array(12).fill($create('div')).map(e => e.cloneNode()))
-      );
-      $('#search-results-list').appendChild(entry);
-    }
-
-    /**
      * Constructs and adds the given search result to the popup's Search Results container.
-     * @param {Object} userstyleSearchResult The SearchResult object from userstyles.org
+     * @param {Object} result The SearchResult object from userstyles.org
      */
-    function createSearchResultNode(userstyleSearchResult) {
+    function createSearchResultNode(result) {
       /*
         userstyleSearchResult format: {
           id: 100835,
@@ -290,60 +284,46 @@
 
       const entry = template.searchResult.cloneNode(true);
       Object.assign(entry, {
-        id: 'search-result-' + userstyleSearchResult.id,
-        onclick: handleEvent.openURLandHide
+        _result: result,
+        id: ENTRY_ID_PREFIX + result.id,
       });
-      $('#search-results-list').appendChild(entry);
 
-      const searchResultName = userstyleSearchResult.name;
-      const title = $('.search-result-title', entry);
-      Object.assign(title, {
-        textContent: searchResultName,
+      Object.assign($('.search-result-title', entry), {
+        textContent: result.name,
         onclick: handleEvent.openURLandHide,
-        href: searchAPI.BASE_URL + userstyleSearchResult.url
+        href: searchAPI.BASE_URL + result.url
       });
 
       const screenshot = $('.search-result-screenshot', entry);
-      let screenshotUrl = userstyleSearchResult.screenshot_url;
+      let screenshotUrl = result.screenshot_url;
       if (screenshotUrl === null) {
         screenshotUrl = BLANK_PIXEL_DATA;
         screenshot.classList.add('no-screenshot');
       } else if (RegExp(/^[0-9]*_after.(jpe?g|png|gif)$/i).test(screenshotUrl)) {
         screenshotUrl = searchAPI.BASE_URL + '/style_screenshot_thumbnails/' + screenshotUrl;
       }
-      Object.assign(screenshot, {
-        src: screenshotUrl
+      screenshot.src = screenshotUrl;
+
+      const description = result.description
+        .replace(/<.*?>/g, '')
+        .replace(/[\r\n]{3,}/g, '\n\n');
+      Object.assign($('.search-result-description', entry), {
+        textContent: description,
+        title: description,
       });
 
-      const searchResultOverlay = $('.search-result-overlay', entry);
-
-      const description = $('.search-result-description', entry);
-      Object.assign(description, {
-        textContent: userstyleSearchResult.description.replace(/<.*?>/g, '').replace(/(\r\n?)\r\n?/g, '$1')
-      });
-      const descriptionExpand = $('.search-result-description-info', entry);
-      Object.assign(descriptionExpand, {
-        onclick: e => {
-          e.stopPropagation();
-          descriptionExpand.classList.add('hidden');
-          description.classList.add('expanded');
-        }
-      });
-
-      const authorLink = $('.search-result-author-link', entry);
-      Object.assign(authorLink, {
-        textContent: userstyleSearchResult.user.name,
-        title: userstyleSearchResult.user.name,
-        href: searchAPI.BASE_URL + '/users/' + userstyleSearchResult.user.id,
-        onclick: event => {
+      Object.assign($('.search-result-author-link', entry), {
+        textContent: result.user.name,
+        title: result.user.name,
+        href: searchAPI.BASE_URL + '/users/' + result.user.id,
+        onclick(event) {
           event.stopPropagation();
-          handleEvent.openURLandHide.call(authorLink, event);
+          handleEvent.openURLandHide.call(this, event);
         }
       });
 
-      const rating = $('.search-result-rating', entry);
       let ratingClass;
-      let ratingValue = userstyleSearchResult.rating;
+      let ratingValue = result.rating;
       if (ratingValue === null) {
         ratingClass = 'none';
         ratingValue = 'n/a';
@@ -357,99 +337,96 @@
         ratingClass = 'bad';
         ratingValue = ratingValue.toFixed(1);
       }
-      Object.assign(rating, {
+      Object.assign($('.search-result-rating', entry), {
         textContent: ratingValue,
         className: 'search-result-rating ' + ratingClass
       });
 
-      const installCount = $('.search-result-install-count', entry);
-      Object.assign(installCount, {
-        textContent: userstyleSearchResult.total_install_count.toLocaleString()
+      Object.assign($('.search-result-install-count', entry), {
+        textContent: result.total_install_count.toLocaleString()
       });
+      renderActionButtons(entry);
 
+      $('#search-results-list').appendChild(entry);
+      return entry;
+    }
+
+    function renderActionButtons(entry) {
       const uninstallButton = $('.search-result-uninstall', entry);
-      uninstallButton.onclick = uninstall;
+      uninstallButton.onclick = onUninstallClicked;
 
       const installButton = $('.search-result-install', entry);
-      installButton.onclick = install;
+      installButton.onclick = onInstallClicked;
 
-      if (userstyleSearchResult.style_settings.length > 0) {
+      const result = entry._result;
+      if (result.style_settings.length > 0) {
         // Style has customizations
         installButton.classList.add('customize');
         uninstallButton.classList.add('customize');
 
         const customizeButton = $('.search-result-customize', entry);
-        customizeButton.dataset.href = searchAPI.BASE_URL + userstyleSearchResult.url;
+        customizeButton.dataset.href = searchAPI.BASE_URL + result.url;
         customizeButton.classList.remove('hidden');
-        customizeButton.onclick = event => {
+        customizeButton.onclick = function (event) {
           event.stopPropagation();
-          handleEvent.openURLandHide.call(customizeButton, event);
+          handleEvent.openURLandHide.call(this, event);
         };
       }
 
-      if (userstyleSearchResult.installed) {
-        screenshot.onclick = uninstall;
-        searchResultOverlay.onclick = uninstall;
-        installButton.classList.add('hidden');
-        uninstallButton.classList.remove('hidden');
-      } else {
-        screenshot.onclick = install;
-        searchResultOverlay.onclick = install;
-      }
+      installButton.classList.toggle('hidden', Boolean(result.installed));
+      uninstallButton.classList.toggle('hidden', !result.installed);
+    }
 
-      /** Uninstalls the current userstyleSearchResult from Stylus. */
-      function uninstall(event) {
-        event.stopPropagation();
-        deleteStyleSafe({id: userstyleSearchResult.installedStyleId})
-          .then(() => {
-            userstyleSearchResult.installed = false;
-            render();
-          });
-      }
+    function onUninstallClicked(event) {
+      event.stopPropagation();
+      const entry = this.closest('.search-result');
+      const result = entry._result;
+      deleteStyleSafe({id: result.installedStyleId})
+        .then(() => {
+          entry._result.installed = false;
+          renderActionButtons(entry);
+        });
+    }
 
-      /** Installs the current userstyleSearchResult into Stylus. */
-      function install(event) {
-        if (event) {
-          event.stopPropagation();
-        }
+    /** Installs the current userstyleSearchResult into Stylus. */
+    function onInstallClicked(event) {
+      event.stopPropagation();
 
-        // Spinner while installing
-        entry.appendChild(
-          $create(
-            '.lds-spinner',
-            new Array(12).fill($create('div')).map(e => e.cloneNode()))
-        );
-        installButton.disabled = true;
+      const entry = this.closest('.search-result');
+      const result = entry._result;
+      const installButton = $('.search-result-install', entry);
 
-        // Fetch .JSON style
-        searchAPI.fetchStyleJson(userstyleSearchResult)
-          .then(userstyleJson => {
-            // Install style
-            saveStyleSafe(userstyleJson)
-              .then(savedStyle => {
-                // Success: Store installed styleId, mark as installed.
-                userstyleSearchResult.installed = true;
-                userstyleSearchResult.installedStyleId = savedStyle.id;
-                render(); // Hides install button, shows uninstall button.
+      showSpinner(entry);
+      installButton.disabled = true;
 
-                $.remove('.lds-spinner', entry);
-                installButton.disabled = false;
-              });
-          })
-          .catch(reason => {
-            const usoId = userstyleSearchResult.id;
-            console.log('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
-            alert('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
+      // Fetch .JSON style
+      searchAPI.fetchStyleJson(result)
+        .then(userstyleJson => {
+          // Install style
+          saveStyleSafe(userstyleJson)
+            .then(savedStyle => {
+              // Success: Store installed styleId, mark as installed.
+              result.installed = true;
+              result.installedStyleId = savedStyle.id;
+              renderActionButtons(entry);
 
-            $.remove('.lds-spinner', entry);
-            installButton.disabled = false;
-          });
-        return true;
-      }
+              $.remove('.lds-spinner', entry);
+              installButton.disabled = false;
+            });
+        })
+        .catch(reason => {
+          const usoId = result.id;
+          console.log('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
+          alert('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
 
-    } // End of createSearchResultNode
+          $.remove('.lds-spinner', entry);
+          installButton.disabled = false;
+        });
+      return true;
+    }
+
   } // End of searchResultsController
-})();
+});
 
 /**
  * Library for interacting with userstyles.org

@@ -3,13 +3,8 @@ body.search-results-shown {
   overflow-x: hidden;
 }
 
-#disable-all-wrapper {
-  border-bottom: solid 1px #000;
-  margin-bottom: 5px;
-}
-
-.hidden {
-  display: none !important;
+#search-results {
+  position: relative;
 }
 
 #search-results-error {
@@ -27,19 +22,23 @@ body.search-results-shown {
 
 .search-result, .search-result-empty {
   position: relative;
-  min-height: 170px;
-  padding: 5px;
+  padding: .75rem;
+  min-height: 160px;
 }
 
-.search-result-empty {
-  position: relative;
+.search-result {
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, .5);
+  border-radius: 3px;
+  border: 1px solid transparent;
+  margin-bottom: 1rem;
+}
+
+.search-result:hover {
+  border-color: #888;
 }
 
 .search-result .lds-spinner, .search-result-empty .lds-spinner {
-  opacity: 1;
-  top: 0;
-  width: 150px;
-  height: 150px;
+  transform: scale(.75);
 }
 
 .search-result-screenshot {
@@ -49,87 +48,103 @@ body.search-results-shown {
 }
 
 .search-result-title {
-  padding: 3px;
   font-size: 1.2em;
   font-weight: 600;
+  margin-bottom: .5em;
+  display: block;
+  color: #666;
+}
+
+.search-result:hover .search-result-title {
+  color: initial;
 }
 
 .search-result-info {
   position: relative;
 }
+
 .search-result-info > div {
   opacity: 0;
   position: absolute;
   width: 100%;
-  transition: opacity linear 0.2s;
-  overflow: hidden;
-  text-align: center;
+  transition: opacity .2s;
 }
-.search-result-info:hover > div {
+
+.search-result:hover .search-result-info > div {
   opacity: 1;
 }
 
 .search-result-overlay {
-  height: 55px;
-  top: 85px;
-  background-color: rgba(255, 255, 255, 0.6);
+  bottom: 0;
 }
 
 .search-result-info > .actions {
-  top: 30px;
+  bottom: 70px;
+  text-align: center;
 }
+
 .search-result-info > .actions > button {
   background-color: #fff;
+  box-shadow: 2px 2px 20px #000;
+  white-space: nowrap;
 }
+
 .search-result-info > .actions > button:hover {
   background-color: #ccc;
 }
 
 .search-result-overlay > * {
-  text-align: center;
+  display: flex;
+  padding: .25rem .5rem;
 }
 
-.search-result-overlay > * {
-  margin: 2px 10px 0px 10px;
+.search-result-author {
+  max-width: 50%;
 }
 
 .search-result-author-link {
-  margin-left: 3px;
-}
-
-.search-result-description {
-  width: 90%;
+  color: inherit;
+  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: inline-block;
-}
-
-.search-result-description.expanded {
-  width: 100%;
-  max-height: 100%;
-  white-space: pre-wrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  text-overflow: unset;
   display: block;
 }
 
-.search-result-description-info {
-  display: inline-block;
-  cursor: pointer;
-  width: 16px;
-  height: 14px;
+.search-result-author-link:hover {
+  color: #fff;
+}
+
+.search-result-description-group {
+  background-color: rgba(255, 255, 255, 0.8);
+  align-items: center;
+  padding-right: .25rem;
+}
+
+.search-result-description {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-result-meta {
-  display: table;
-  width: 100%;
+  background-color: hsla(180, 27%, 37%, 0.85);
+  color: hsl(180, 27%, 80%);
+  justify-content: space-between;
 }
 
-.search-result-meta-rating, .search-result-meta-install-count {
-  display: table-cell;
+.search-result-meta > * > :first-child {
+  display: block;
+  opacity: .75;
+}
+
+.search-result-meta-rating {
   text-align: center;
+}
+
+.search-result-meta-install-count {
+  text-align: right;
 }
 
 .search-result-rating {
@@ -137,26 +152,27 @@ body.search-results-shown {
   padding: 1px 2px 1px 2px;
   color: #fff;
 }
+
 .search-result-rating.good {
   background-color: darkgreen;
 }
+
 .search-result-rating.okay {
   background-color: darkorange;
 }
+
 .search-result-rating.bad {
   background-color: darkred;
 }
+
 .search-result-rating.none {
-  background-color: #333;
 }
 
 .search-result-install-count {
   font-weight: 600;
 }
 
-.search-result-install,
-.search-result-customize,
-.search-result-uninstall {
+.search-result-install, .search-result-customize, .search-result-uninstall {
   width: 40%;
   margin: 3px;
 }
@@ -185,7 +201,6 @@ body.search-results-shown {
 }
 
 /* spinner: https://github.com/loadingio/css-spinner */
-
 .lds-spinner {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -193,117 +208,95 @@ body.search-results-shown {
   user-select: none;
   pointer-events: none;
   opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 200px; /* don't change! use "transform: scale(.75)" */
+  height: 200px; /* don't change! use "transform: scale(.75)" */
+  margin: auto;
+  animation: fadein 1s;
 }
 
 @keyframes lds-spinner {
   0% {
-    opacity: 1;
+    opacity: .5;
   }
+
   100% {
     opacity: 0;
   }
 }
-@-webkit-keyframes lds-spinner {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.lds-spinner {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  top: 100px;
-  left: 0;
-  right: 0;
-  margin: auto;
-  opacity: .2;
-  transition: opacity .5s;
-}
+
 .lds-spinner div {
   left: 94px;
   top: 23px;
   position: absolute;
-  -webkit-animation: lds-spinner linear 1s infinite;
   animation: lds-spinner linear 1s infinite;
+  animation-direction: reverse;
   background: currentColor;
   width: 12px;
   height: 34px;
   border-radius: 20%;
-  -webkit-transform-origin: 6px 77px;
   transform-origin: 6px 77px;
 }
+
 .lds-spinner div:nth-child(1) {
-  -webkit-transform: rotate(0deg);
   transform: rotate(0deg);
-  -webkit-animation-delay: -0.916666666666667s;
   animation-delay: -0.916666666666667s;
 }
+
 .lds-spinner div:nth-child(2) {
-  -webkit-transform: rotate(30deg);
   transform: rotate(30deg);
-  -webkit-animation-delay: -0.833333333333333s;
   animation-delay: -0.833333333333333s;
 }
+
 .lds-spinner div:nth-child(3) {
-  -webkit-transform: rotate(60deg);
   transform: rotate(60deg);
-  -webkit-animation-delay: -0.75s;
   animation-delay: -0.75s;
 }
+
 .lds-spinner div:nth-child(4) {
-  -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
-  -webkit-animation-delay: -0.666666666666667s;
   animation-delay: -0.666666666666667s;
 }
+
 .lds-spinner div:nth-child(5) {
-  -webkit-transform: rotate(120deg);
   transform: rotate(120deg);
-  -webkit-animation-delay: -0.583333333333333s;
   animation-delay: -0.583333333333333s;
 }
+
 .lds-spinner div:nth-child(6) {
-  -webkit-transform: rotate(150deg);
   transform: rotate(150deg);
-  -webkit-animation-delay: -0.5s;
   animation-delay: -0.5s;
 }
+
 .lds-spinner div:nth-child(7) {
-  -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
-  -webkit-animation-delay: -0.416666666666667s;
   animation-delay: -0.416666666666667s;
 }
+
 .lds-spinner div:nth-child(8) {
-  -webkit-transform: rotate(210deg);
   transform: rotate(210deg);
-  -webkit-animation-delay: -0.333333333333333s;
   animation-delay: -0.333333333333333s;
 }
+
 .lds-spinner div:nth-child(9) {
-  -webkit-transform: rotate(240deg);
   transform: rotate(240deg);
-  -webkit-animation-delay: -0.25s;
   animation-delay: -0.25s;
 }
+
 .lds-spinner div:nth-child(10) {
-  -webkit-transform: rotate(270deg);
   transform: rotate(270deg);
-  -webkit-animation-delay: -0.166666666666667s;
   animation-delay: -0.166666666666667s;
 }
+
 .lds-spinner div:nth-child(11) {
-  -webkit-transform: rotate(300deg);
   transform: rotate(300deg);
-  -webkit-animation-delay: -0.083333333333333s;
   animation-delay: -0.083333333333333s;
 }
+
 .lds-spinner div:nth-child(12) {
-  -webkit-transform: rotate(330deg);
   transform: rotate(330deg);
-  -webkit-animation-delay: 0s;
   animation-delay: 0s;
 }

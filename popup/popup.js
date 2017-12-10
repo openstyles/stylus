@@ -53,6 +53,7 @@ function onRuntimeMessage(msg) {
       }
       break;
   }
+  dispatchEvent(new CustomEvent(msg.method, {detail: msg}));
 }
 
 
@@ -195,6 +196,7 @@ function showStyles(styles) {
   if (!styles.length) {
     installed.textContent = '';
     installed.appendChild(template.noStyles.cloneNode(true));
+    window.dispatchEvent(new Event('showStyles:done'));
     return;
   }
 
