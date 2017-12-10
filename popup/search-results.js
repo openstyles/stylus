@@ -134,7 +134,9 @@ window.addEventListener('showStyles:done', function _() {
 
       if (scrollToFirstResult && list.children[0]) {
         scrollToFirstResult = false;
-        list.children[0].scrollIntoView({behavior: 'smooth', block: 'start'});
+        if (!FIREFOX || FIREFOX >= 55) {
+          list.children[0].scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
       }
     }
 
