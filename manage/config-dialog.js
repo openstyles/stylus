@@ -3,6 +3,8 @@
 
 function configDialog(style) {
   const AUTOSAVE_DELAY = 500;
+  let saving = false;
+
   const data = style.usercssData;
   const varsHash = deepCopy(data.vars) || {};
   const varNames = Object.keys(varsHash);
@@ -88,7 +90,7 @@ function configDialog(style) {
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
       if (prefs.get('config.autosave') && !justSaved) {
-        debounce(save, 0, {anyChangeIsDirty: true});
+        debounce(save, 100, {anyChangeIsDirty: true});
         return;
       }
       renderValueState(va);
@@ -106,6 +108,10 @@ function configDialog(style) {
   }
 
   function save({anyChangeIsDirty = false} = {}) {
+    if (saving) {
+      debounce(save, 0, ...arguments);
+      return;
+    }
     if (!vars.length ||
         !vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
@@ -157,6 +163,7 @@ function configDialog(style) {
     if (!numValid) {
       return;
     }
+    saving = true;
     return BG.usercssHelper.save(style)
       .then(saved => {
         varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
@@ -169,6 +176,9 @@ function configDialog(style) {
         const el = $('.config-error', messageBox.element) ||
           $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
         el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors;
+      })
+      .then(() => {
+        saving = false;
       });
   }
 
