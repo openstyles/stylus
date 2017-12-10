@@ -406,6 +406,11 @@ window.addEventListener('showStyles:done', function _() {
       // Fetch .JSON style
       searchAPI.fetchStyleJson(result)
         .then(userstyleJson => {
+          userstyleJson.reason = 'install';
+          if (result.style_settings.length) {
+            // this will make the popup show a config-on-homepage icon
+            userstyleJson.updateUrl += '?';
+          }
           // Install style
           saveStyleSafe(userstyleJson)
             .then(savedStyle => {
