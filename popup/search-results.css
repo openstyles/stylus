@@ -48,12 +48,15 @@ body.search-results-shown {
 }
 
 .search-result-title {
-  font-size: 1.2em;
-  font-weight: 600;
   margin-bottom: .5em;
   display: block;
   color: #666;
   overflow-wrap: break-word;
+}
+
+.search-result-title span {
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .search-result:hover .search-result-title {

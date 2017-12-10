@@ -290,12 +290,13 @@ window.addEventListener('showStyles:done', function _() {
         id: ENTRY_ID_PREFIX + result.id,
       });
 
-      const displayedName = result.name.length < 300 ? result.name : result.name.slice(0, 300) + '...';
       Object.assign($('.search-result-title', entry), {
-        textContent: tWordBreak(displayedName),
         onclick: handleEvent.openURLandHide,
         href: searchAPI.BASE_URL + result.url
       });
+
+      const displayedName = result.name.length < 300 ? result.name : result.name.slice(0, 300) + '...';
+      $('.search-result-title span', entry).textContent = tWordBreak(displayedName);
 
       const screenshot = $('.search-result-screenshot', entry);
       let screenshotUrl = result.screenshot_url;
