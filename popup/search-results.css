@@ -41,13 +41,14 @@ body.search-results-shown {
   background-color: #fff;
 }
 
-.search-result .lds-spinner,
-.search-result-empty .lds-spinner {
+.search-result .lds-spinner {
   transform: scale(.5);
+  filter: invert(1) drop-shadow(1px 1px 3px #000);
 }
 
 .search-result-empty .lds-spinner {
-  opacity: .2;
+  transform: scale(.5);
+  filter: opacity(.2);
 }
 
 .search-result-fadein {
@@ -255,7 +256,6 @@ body.search-results-shown {
   margin: auto;
   animation: lds-spinner 1s reverse;
   animation-fill-mode: both;
-  filter: invert(1) drop-shadow(1px 1px 3px #000);
 }
 
 @keyframes lds-spinner {
