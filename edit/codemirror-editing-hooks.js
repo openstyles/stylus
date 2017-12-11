@@ -48,16 +48,22 @@ onDOMscriptReady('/codemirror.js').then(() => {
   // cm.state.search for last used 'find'
   let searchState;
 
-  onDOMready().then(() => {
+  new MutationObserver((mutations, observer) => {
+    if (!$('#sections')) {
+      return;
+    }
+    observer.disconnect();
+
     prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
     showKeyInSaveButtonTooltip();
 
     // N.B. the event listener should be registered before setupLivePrefs()
     $('#options').addEventListener('change', onOptionElementChanged);
     buildOptionsElements();
+    setupLivePrefs();
 
     rerouteHotkeys(true);
-  });
+  }).observe(document, {childList: true, subtree: true});
 
   return;
 

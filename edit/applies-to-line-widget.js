@@ -130,7 +130,7 @@ function createAppliesToLineWidget(cm) {
 
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-    updateWidgetStyle();
+    requestAnimationFrame(updateWidgetStyle);
     update();
   }
 

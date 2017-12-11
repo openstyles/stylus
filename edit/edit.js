@@ -32,8 +32,6 @@ Promise.all([
   onDOMready(),
 ])
 .then(([style]) => {
-  setupLivePrefs();
-
   const usercss = isUsercss(style);
   $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
   $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
