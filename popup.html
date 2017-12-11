@@ -118,6 +118,18 @@
     </div>
   </template>
 
+  <template data-id="searchNav">
+    <div>
+      <button data-role="prev" i18n-title="paginationPrevious" disabled>◄</button>
+      <label>
+        <span data-role="page" i18n-title="paginationCurrent">-</span>
+        /
+        <span data-role="total" i18n-title="paginationTotal">-</span>
+      </label>
+      <button data-role="next" i18n-title="paginationNext" disabled>►</button>
+    </div>
+  </template>
+
   <template data-id="emptySearchResult">
     <div class="search-result-empty"></div>
   </template>
@@ -182,7 +194,6 @@
           </label>
         </span>
       </div>
-      <div id="search-results-error" class="hidden"></div>
       <div id="write-style">
         <span id="write-style-for" i18n-text="writeStyleFor"></span>
       </div>
@@ -200,16 +211,10 @@
   </div>
 
   <div id="search-results" class="hidden">
+    <div id="search-results-nav-top"></div>
+    <div id="search-results-error" class="hidden"></div>
     <div id="search-results-list"></div>
-    <div id="search-results-nav">
-      <button id="search-results-nav-prev" i18n-title="paginationPrevious" disabled>&#8592;</button>
-      <label>
-        <span id="search-results-nav-current-page" i18n-title="paginationCurrent">-</span>
-        /
-        <span id="search-results-nav-total-pages" i18n-title="paginationTotal">-</span>
-      </label>
-      <button id="search-results-nav-next" i18n-title="paginationNext" disabled>&#8594;</button>
-    </div>
+    <div id="search-results-nav-bottom"></div>
   </div>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">

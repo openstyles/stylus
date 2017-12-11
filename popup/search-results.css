@@ -12,7 +12,7 @@ body.search-results-shown {
   font-weight: bold;
   padding: 5px;
   text-align: center;
-  margin-right: 20px;
+  margin: -.5rem 0 1rem;
 }
 
 #search-results-list {
@@ -20,7 +20,8 @@ body.search-results-shown {
   min-height: 200px;
 }
 
-.search-result, .search-result-empty {
+.search-result,
+.search-result-empty {
   position: relative;
   padding: .75rem;
   min-height: 160px;
@@ -39,6 +40,11 @@ body.search-results-shown {
 
 .search-result .lds-spinner, .search-result-empty .lds-spinner {
   transform: scale(.75);
+}
+
+.search-result-fadein {
+  animation: fadein 1s;
+  animation-fill-mode: both;
 }
 
 .search-result-screenshot {
@@ -182,22 +188,26 @@ body.search-results-shown {
   margin: 3px;
 }
 
-#search-results-nav {
+#search-results-nav-top,
+#search-results-nav-bottom {
   flex-direction: row;
   text-align: center;
   word-break: keep-all;
-  opacity: 1.0;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 }
 
-#search-results-nav label {
-  width: 40px;
-  display: inline-block;
-  word-break: keep-all;
+#search-results-nav-top button,
+#search-results-nav-bottom button {
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  padding: .25rem 1rem;
+  margin: 0 .5rem;
 }
 
-#search-results-nav button {
-  text-align: center;
+#search-results-nav-top button:hover,
+#search-results-nav-bottom button:hover {
+  text-shadow: 0 0 2px currentColor;
 }
 
 #find-styles-inline-group label {
@@ -212,7 +222,6 @@ body.search-results-shown {
   -ms-user-select: none;
   user-select: none;
   pointer-events: none;
-  opacity: 0;
   position: absolute;
   top: 0;
   left: 0;
@@ -220,12 +229,13 @@ body.search-results-shown {
   width: 200px; /* don't change! use "transform: scale(.75)" */
   height: 200px; /* don't change! use "transform: scale(.75)" */
   margin: auto;
-  animation: fadein 1s;
+  animation: lds-spinner 1s reverse;
+  animation-fill-mode: both;
 }
 
 @keyframes lds-spinner {
   0% {
-    opacity: .5;
+    opacity: .25;
   }
 
   100% {
