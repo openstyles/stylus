@@ -39,7 +39,6 @@ window.addEventListener('showStyles:done', function _() {
   const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
                            'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
 
-  // TODO: add -
   const CACHE_SIZE = 1e6;
   const CACHE_PREFIX = 'usoSearchCache/';
   const CACHE_DURATION = 24 * 3600e3;
@@ -87,7 +86,6 @@ window.addEventListener('showStyles:done', function _() {
   return;
 
   function init() {
-    document.body.style.setProperty('transition', 'background-color 1s', 'important');
     setTimeout(() => document.body.classList.add(BODY_CLASS));
 
     $('#find-styles-inline-group').classList.add('hidden');
@@ -573,27 +571,20 @@ window.addEventListener('showStyles:done', function _() {
 
   /**
    * Fetches the JSON style object from userstyles.org (containing code, sections, updateUrl, etc).
-   * Stores (caches) the JSON within the given usoSearchResult, to avoid unnecessary network usage.
+   * Stores (caches) the JSON within the given result, to avoid unnecessary network usage.
    * Style JSON is fetched from the /styles/chrome/{id}.json endpoint.
-   * @param {Object} usoSearchResult A search result object from userstyles.org
+   * @param {Object} result A search result object from userstyles.org
    * @returns {Promise<Object>} Promises the response as a JSON object.
    */
-  function fetchStyleJson(usoSearchResult) {
-    return new Promise((resolve, reject) => {
-      if (usoSearchResult.json) {
-        // JSON already downloaded & stored.
-        resolve(usoSearchResult.json);
-      }
-
-      const jsonUrl = BASE_URL + '/styles/chrome/' + usoSearchResult.id + '.json';
-      download(jsonUrl)
-        .then(responseText => {
-          // Store JSON within the search result, so we don't have to download again.
-          usoSearchResult.json = tryJSONparse(responseText);
-          resolve(usoSearchResult.json);
-        })
-        .catch(reject);
-    });
+  function fetchStyleJson(result) {
+    return Promise.resolve(
+      result.json ||
+      download(BASE_URL + '/styles/chrome/' + result.id + '.json', {
+        responseType: 'json',
+      }).then(json => {
+        result.json = json;
+        return json;
+      }));
   }
 
   /**
