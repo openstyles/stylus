@@ -257,7 +257,7 @@ function importFromString(jsonString) {
         animateElement(styleElement);
       }
     };
-    for (const block of $$('details')) {
+    for (const block of $$('#message-box details')) {
       if (block.dataset.id !== 'invalid') {
         block.style.cursor = 'pointer';
         block.onclick = highlightElement;
