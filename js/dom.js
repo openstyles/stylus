@@ -36,7 +36,8 @@ $$.remove = (selector, base = document) => {
       const padding = btn.offsetWidth - btn.clientWidth;
       const displayedWidth = btn.getBoundingClientRect().width - padding;
       if (btn.scrollWidth > displayedWidth) {
-        btn.title = btn.textContent;
+        const text = btn.textContent;
+        btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
         btn.titleIsForEllipsis = true;
       } else if (btn.title) {
         btn.title = '';
