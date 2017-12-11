@@ -202,6 +202,10 @@
     "message": "Cannot function properly because of a known bug in this version of Firefox: chrome.extension.getBackgroundPage() doesn't return a valid result",
     "description": "Displayed in style manager when unable to connect to the background page"
   },
+  "genericErrorOccurred": {
+    "message": "An error occured:",
+    "description": "Used in various places to indicate some error occured. The error message is shown on the next line."
+  },
   "genericDisabledLabel": {
     "message": "Disabled",
     "description": "Used in various lists/options to indicate that something is disabled"
@@ -726,13 +730,25 @@
     "message": "Use /re/ syntax for regexp search",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
   },
+  "searchResultWeeklyCount": {
+    "message": "Weekly installs",
+    "description": "Text for label that shows the number of times a search result was installed during last week"
+  },
+  "searchResultInstallCount": {
+    "message": "Total installs",
+    "description": "Text for label that shows the number of times a search result was installed"
+  },
+  "searchResultNoneFound": {
+    "message": "No styles found for this site.",
+    "description": "Error text in the popup when inline search didn't find any site-specific styles"
+  },
   "searchResultRating": {
     "message": "Rating",
     "description": "Text for label that shows the search result's rating"
   },
-  "searchResultInstallCount": {
-    "message": "Installs",
-    "description": "Text for label that shows the number of times a search result was installed"
+  "searchResultUpdated": {
+    "message": "Updated",
+    "description": "Text for label that shows the search result's last update date"
   },
   "searchStyles": {
     "message": "Search contents",

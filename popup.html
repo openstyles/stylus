@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html id="stylus">
 
 <head>
@@ -88,53 +89,49 @@
       <a class="search-result-title"><span></span></a>
       <div class="search-result-info">
         <img class="search-result-screenshot" i18n-title="installButton">
-        <div class="actions">
-          <button class="search-result-install" i18n-text="installButton" hidden></button>
+        <div class="search-result-actions">
+          <button class="search-result-install hidden" i18n-text="installButton"></button>
           <button class="search-result-uninstall hidden" i18n-text="deleteStyleLabel"></button>
           <button class="search-result-customize hidden"
                   i18n-text="configureStyle"
                   i18n-title="configureStyleOnHomepage"></button>
         </div>
-        <div class="search-result-overlay">
-          <div class="search-result-meta">
-            <div class="search-result-author">
-              <span i18n-text="author"></span>
-              <a class="search-result-author-link" target="_blank" i18n-title="author"></a>
-            </div>
-            <div class="search-result-meta-rating">
-              <span i18n-text="searchResultRating"></span>
-              <span class="search-result-rating" i18n-title="searchResultRating"></span>
-            </div>
-            <div class="search-result-meta-updated">
-              <span></span>
-              <time class="search-result-updated"></time>
-            </div>
-            <div class="search-result-meta-weekly-count">
-              <span i18n-text="searchResultInstallCount"></span>
-              <span class="search-result-weekly-count" i18n-title="searchResultInstallCount"></span>
-            </div>
-            <div class="search-result-meta-install-count">
-              <span i18n-text="searchResultInstallCount"></span>
-              <span class="search-result-install-count" i18n-title="searchResultInstallCount"></span>
-            </div>
+        <dl class="search-result-meta">
+          <div data-type="author">
+            <dt i18n-text="author"></dt>
+            <dd><a target="_blank" i18n-title="author"></a></dd>
           </div>
-          <div class="search-result-description-group">
-            <div class="search-result-description"></div>
+          <div data-type="rating">
+            <dt i18n-text="searchResultRating"></dt>
+            <dd i18n-title="searchResultRating"></dd>
           </div>
-        </div>
+          <div data-type="updated">
+            <dt i18n-text="searchResultUpdated"></dt>
+            <dd i18n-title="searchResultUpdated"><time></time></dd>
+          </div>
+          <div data-type="weekly">
+            <dt i18n-text="searchResultWeeklyCount"></dt>
+            <dd i18n-title="searchResultWeeklyCount"></dd>
+          </div>
+          <div data-type="total">
+            <dt i18n-text="searchResultInstallCount"></dt>
+            <dd i18n-title="searchResultInstallCount"></dd>
+          </div>
+        </dl>
+        <div class="search-result-description"></div>
       </div>
     </div>
   </template>
 
   <template data-id="searchNav">
     <div>
-      <button data-role="prev" i18n-title="paginationPrevious" disabled>◄</button>
+      <button data-type="prev" i18n-title="paginationPrevious" disabled>◄</button>
       <label>
-        <span data-role="page" i18n-title="paginationCurrent">-</span>
+        <span data-type="page" i18n-title="paginationCurrent">-</span>
         /
-        <span data-role="total" i18n-title="paginationTotal">-</span>
+        <span data-type="total" i18n-title="paginationTotal">-</span>
       </label>
-      <button data-role="next" i18n-title="paginationNext" disabled>►</button>
+      <button data-type="next" i18n-title="paginationNext" disabled>►</button>
     </div>
   </template>
 
@@ -219,10 +216,10 @@
   </div>
 
   <div id="search-results" class="hidden">
-    <div id="search-results-nav-top"></div>
+    <div class="search-results-nav" data-type="top"></div>
     <div id="search-results-error" class="hidden"></div>
     <div id="search-results-list"></div>
-    <div id="search-results-nav-bottom"></div>
+    <div class="search-results-nav" data-type="bottom"></div>
   </div>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">

@@ -98,13 +98,13 @@ window.addEventListener('showStyles:done', function _() {
     dom.nav = {};
     const navOnClick = {prev, next};
     for (const place of ['top', 'bottom']) {
-      const nav = $('#search-results-nav-' + place);
+      const nav = $(`.search-results-nav[data-type="${place}"]`);
       nav.appendChild(template.searchNav.cloneNode(true));
       dom.nav[place] = nav;
-      for (const child of $$('[data-role]', nav)) {
-        const role = child.dataset.role;
-        child.onclick = navOnClick[role];
-        nav['_' + role] = child;
+      for (const child of $$('[data-type]', nav)) {
+        const type = child.dataset.type;
+        child.onclick = navOnClick[type];
+        nav['_' + type] = child;
       }
     }
 
@@ -179,14 +179,10 @@ window.addEventListener('showStyles:done', function _() {
    * @param {string} message  Message to display to user.
    */
   function error(reason) {
-    let message;
-    if (reason === 404) {
-      // TODO: i18n message
-      message = 'No results found';
-    } else {
-      message = 'Error loading search results: ' + reason;
-    }
-    dom.error.textContent = message;
+    dom.error.textContent =
+      reason === 404 ?
+        t('searchResultNoneFound') :
+        t('genericErrorOccurred') + '\n' + reason;
     dom.error.classList.remove('hidden');
   }
 
@@ -320,13 +316,17 @@ window.addEventListener('showStyles:done', function _() {
         showSpinner(entry);
       }
       plantAt++;
+      if (!processedResults.length) {
+        break;
+      }
     }
 
     while (dom.list.children.length > maxResults) {
       dom.list.lastElementChild.remove();
     }
 
-    if (scrollToFirstResult && dom.list.children[0]) {
+    if (scrollToFirstResult &&
+        dom.container.getBoundingClientRect().bottom > window.innerHeight * 2) {
       scrollToFirstResult = false;
       if (!FIREFOX || FIREFOX >= 55) {
         setTimeout(() => {
@@ -386,22 +386,19 @@ window.addEventListener('showStyles:done', function _() {
     }
 
     const description = result.description
-      .replace(/<[^>]*>/g, '')
-      .replace(/([^.]\.)(\s)/g, '$1\n$2')
-      .replace(/[\r\n]{3,}/g, '\n\n');
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/([^.][.。?!]|[\s,].{50,70})\s+/g, '$1\n')
+      .replace(/([\r\n]\s*){3,}/g, '\n\n');
     Object.assign($('.search-result-description', entry), {
       textContent: description,
       title: description,
     });
 
-    Object.assign($('.search-result-author-link', entry), {
+    Object.assign($('[data-type="author"] a', entry), {
       textContent: result.user.name,
       title: result.user.name,
       href: BASE_URL + '/users/' + result.user.id,
-      onclick(event) {
-        event.stopPropagation();
-        handleEvent.openURLandHide.call(this, event);
-      }
+      onclick: handleEvent.openURLandHide,
     });
 
     let ratingClass;
@@ -419,11 +416,10 @@ window.addEventListener('showStyles:done', function _() {
       ratingClass = 'bad';
       ratingValue = ratingValue.toFixed(1);
     }
-    Object.assign($('.search-result-rating', entry), {
-      textContent: ratingValue,
-      className: 'search-result-rating ' + ratingClass
-    });
-    Object.assign($('.search-result-meta-updated', entry), {
+    $('[data-type="rating"]', entry).dataset.class = ratingClass;
+    $('[data-type="rating"] dd', entry).textContent = ratingValue;
+
+    Object.assign($('[data-type="updated"] time', entry), {
       dateTime: result.updated,
       textContent: tryCatch(lang => {
         const date = new Date(result.updated);
@@ -434,15 +430,24 @@ window.addEventListener('showStyles:done', function _() {
         });
       }, [UI_LANG, 'en']) || '',
     });
-    Object.assign($('.search-result-weekly-count', entry), {
-      textContent: result.weekly_install_count.toLocaleString()
-    });
-    Object.assign($('.search-result-install-count', entry), {
-      textContent: result.total_install_count.toLocaleString()
-    });
+
+
+    $('[data-type="weekly"] dd', entry).textContent = formatNumber(result.weekly_install_count);
+    $('[data-type="total"] dd', entry).textContent = formatNumber(result.total_install_count);
 
     renderActionButtons(entry);
     return entry;
+  }
+
+  function formatNumber(num) {
+    return (
+      num > 1e9 ? (num / 1e9).toFixed(1) + 'B' :
+      num > 10e6 ? (num / 1e6).toFixed(0) + 'M' :
+      num > 1e6 ? (num / 1e6).toFixed(1) + 'M' :
+      num > 10e3 ? (num / 1e3).toFixed(0) + 'k' :
+      num > 1e3 ? (num / 1e3).toFixed(1) + 'k' :
+      num
+    );
   }
 
   function renderActionButtons(entry) {
@@ -724,14 +729,4 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   //endregion
-
-  function objectPick(obj, keys) {
-    const result = {};
-    for (const k in obj) {
-      if (keys.includes(k)) {
-        result[k] = obj[k];
-      }
-    }
-    return result;
-  }
 });
