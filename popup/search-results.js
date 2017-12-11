@@ -182,6 +182,11 @@ window.addEventListener('showStyles:done', function _() {
         t('searchResultNoneFound') :
         t('genericErrorOccurred') + '\n' + reason;
     dom.error.classList.remove('hidden');
+    dom.container.classList.toggle('hidden', !processedResults.length);
+    document.body.classList.toggle('search-results-shown', processedResults.length > 0);
+    if (dom.error.getBoundingClientRect().bottom > window.innerHeight) {
+      dom.error.scrollIntoView();
+    }
   }
 
   /**
@@ -449,9 +454,19 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function renderActionButtons(entry) {
+    const result = entry._result;
+
+    if (result.installed && !('installed' in entry.dataset)) {
+      entry.dataset.installed = '';
+      $('.search-result-status', entry).textContent = t('installButtonInstalled');
+    } else if (!result.installed && 'installed' in entry.dataset) {
+      delete entry.dataset.installed;
+      $('.search-result-status', entry).textContent = '';
+    }
+
     const screenshot = $('.search-result-screenshot', entry);
-    screenshot.onclick = entry._result.installed ? onUninstallClicked : onInstallClicked;
-    screenshot.title = entry._result.installed ? t('deleteStyleLabel') : t('installButton');
+    screenshot.onclick = result.installed ? onUninstallClicked : onInstallClicked;
+    screenshot.title = result.installed ? t('deleteStyleLabel') : t('installButton');
 
     const uninstallButton = $('.search-result-uninstall', entry);
     uninstallButton.onclick = onUninstallClicked;
@@ -459,7 +474,6 @@ window.addEventListener('showStyles:done', function _() {
     const installButton = $('.search-result-install', entry);
     installButton.onclick = onInstallClicked;
 
-    const result = entry._result;
     if ((result.style_settings || []).length > 0) {
       // Style has customizations
       installButton.classList.add('customize');
