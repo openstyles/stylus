@@ -238,18 +238,16 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function loadMoreIfNeeded(event) {
-    let prefetchPages = 0;
+    let pageToPrefetch = displayedPage;
     if (event instanceof Event) {
-      const scroller = document.scrollingElement;
-      if (scroller.scrollTop > scroller.scrollHeight / 2 &&
-          (loadMoreIfNeeded.prefetchedPage || 0) <= displayedPage) {
-        prefetchPages = 1;
-        loadMoreIfNeeded.prefetchedPage = displayedPage + 1;
+      if ((loadMoreIfNeeded.prefetchedPage || 0) <= pageToPrefetch &&
+          document.scrollingElement.scrollTop > document.scrollingElement.scrollHeight / 2) {
+        loadMoreIfNeeded.prefetchedPage = ++pageToPrefetch;
       } else {
         return;
       }
     }
-    if (processedResults.length < (displayedPage + prefetchPages) * DISPLAY_PER_PAGE) {
+    if (processedResults.length < pageToPrefetch * DISPLAY_PER_PAGE) {
       setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
     }
   }

@@ -202,9 +202,9 @@
     "message": "Cannot function properly because of a known bug in this version of Firefox: chrome.extension.getBackgroundPage() doesn't return a valid result",
     "description": "Displayed in style manager when unable to connect to the background page"
   },
-  "genericErrorOccurred": {
-    "message": "An error occured:",
-    "description": "Used in various places to indicate some error occured. The error message is shown on the next line."
+  "genericError": {
+    "message": "Error",
+    "description": "Used in various places to indicate some error occurred."
   },
   "genericDisabledLabel": {
     "message": "Disabled",
