@@ -368,21 +368,21 @@
     "message": "Currently applied filters match no styles",
     "description": "Text shown when no styles match currently applied filter in the style manager"
   },
+  "findStylesForSite": {
+    "message": "Find more styles for this site",
+    "description": "Text for a link that gets a list of styles for the current site"
+  },
   "findStyles": {
     "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
   },
-  "findStylesInlineTooltip": {
-    "message": "Display search results inside this window.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
-  },
-  "findStylesTooltip": {
-    "message": "Find more styles for this site",
-    "description": "Tooltip for a link that finds styles"
-  },
   "findStylesInline": {
     "message": "Inline",
     "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+  },
+  "findStylesInlineTooltip": {
+    "message": "Display search results inside this window.",
+    "description": "Text for a checkbox that displays search results within the Stylus popup."
   },
   "helpAlt": {
     "message": "Help",
