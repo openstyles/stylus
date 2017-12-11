@@ -27,6 +27,7 @@
     keyMap: prefs.get('editor.keyMap'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
+      'Esc': 'defocusEditor',
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'

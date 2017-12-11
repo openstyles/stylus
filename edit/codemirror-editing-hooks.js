@@ -13,6 +13,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     save,
     toggleStyle,
     jumpToLine,
+    defocusEditor,
     nextEditor, prevEditor,
     find, findNext, findPrev, replace, replaceAll,
   };
@@ -153,6 +154,10 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function getSection() {
     return this.display.wrapper.parentNode;
+  }
+
+  function defocusEditor(cm) {
+    cm.display.input.blur();
   }
 
   function nextEditor(cm) {
