@@ -43,8 +43,11 @@ function createSourceEditor(style) {
     initHooks();
     initAppliesToLineWidget();
 
-    // focus must be the last action, otherwise the style is duplicated on saving
-    cm.focus();
+    setTimeout(() => {
+      if ((document.activeElement || {}).localName !== 'input') {
+        cm.focus();
+      }
+    });
   });
 
   function initAppliesToLineWidget() {

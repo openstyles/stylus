@@ -65,7 +65,11 @@ function addSections(sections, onAdded = () => {}) {
     const isPageLocked = document.documentElement.style.pointerEvents;
     if (divs[0] && (isPageLocked ? divs.length === sections.length : index === 0)) {
       makeSectionVisible(divs[0].CodeMirror);
-      divs[0].CodeMirror.focus();
+      setTimeout(() => {
+        if ((document.activeElement || {}).localName !== 'input') {
+          divs[0].CodeMirror.focus();
+        }
+      });
     }
   }
 }
