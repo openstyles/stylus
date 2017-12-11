@@ -91,6 +91,8 @@ window.addEventListener('showStyles:done', function _() {
     $('#find-styles-inline-group').classList.add('hidden');
 
     dom.container = $('#search-results');
+    dom.container.dataset.empty = '';
+
     dom.error = $('#search-results-error');
 
     dom.nav = {};
@@ -107,6 +109,8 @@ window.addEventListener('showStyles:done', function _() {
     }
 
     dom.list = $('#search-results-list');
+
+    addEventListener('scroll', loadMoreIfNeeded, {passive: true});
 
     addEventListener('styleDeleted', ({detail}) => {
       const entries = [...dom.list.children];
@@ -233,8 +237,19 @@ window.addEventListener('showStyles:done', function _() {
       .catch(error);
   }
 
-  function loadMoreIfNeeded() {
-    if (processedResults.length < (displayedPage + 1) * DISPLAY_PER_PAGE) {
+  function loadMoreIfNeeded(event) {
+    let prefetchPages = 0;
+    if (event instanceof Event) {
+      const scroller = document.scrollingElement;
+      if (scroller.scrollTop > scroller.scrollHeight / 2 &&
+          (loadMoreIfNeeded.prefetchedPage || 0) <= displayedPage) {
+        prefetchPages = 1;
+        loadMoreIfNeeded.prefetchedPage = displayedPage + 1;
+      } else {
+        return;
+      }
+    }
+    if (processedResults.length < (displayedPage + prefetchPages) * DISPLAY_PER_PAGE) {
       setTimeout(load, DELAY_BEFORE_SEARCHING_STYLES);
     }
   }
@@ -328,14 +343,19 @@ window.addEventListener('showStyles:done', function _() {
       dom.list.lastElementChild.remove();
     }
 
-    if (scrollToFirstResult &&
-        dom.container.getBoundingClientRect().bottom > window.innerHeight * 2) {
+    if (processedResults.length && 'empty' in dom.container.dataset) {
+      delete dom.container.dataset.empty;
+    }
+
+    if (scrollToFirstResult && (!FIREFOX || FIREFOX >= 55)) {
+      debounce(doScrollToFirstResult);
+    }
+  }
+
+  function doScrollToFirstResult() {
+    if (dom.container.scrollHeight > window.innerHeight * 2) {
       scrollToFirstResult = false;
-      if (!FIREFOX || FIREFOX >= 55) {
-        setTimeout(() => {
-          dom.container.scrollIntoView({behavior: 'smooth', block: 'start'});
-        });
-      }
+      dom.container.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   }
 
