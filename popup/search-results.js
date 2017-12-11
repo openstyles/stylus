@@ -16,6 +16,8 @@ window.addEventListener('showStyles:done', function _() {
   const BASE_URL = 'https://userstyles.org';
   const UPDATE_URL = 'https://update.userstyles.org/%.md5';
 
+  const UI_LANG = chrome.i18n.getUILanguage();
+
   // normal category is just one word like 'github' or 'google'
   // but for some sites we need a fallback
   //   key: category.tld
@@ -72,22 +74,23 @@ window.addEventListener('showStyles:done', function _() {
         handleEvent.openURLandHide.call(this, event);
         return;
       }
+      event.preventDefault();
 
-      $('#find-styles-inline-group').classList.add('hidden');
       this.textContent = this.title;
       this.title = '';
 
       init();
       load();
-
-      event.preventDefault();
     },
   });
 
   return;
 
   function init() {
-    document.body.classList.add(BODY_CLASS);
+    document.body.style.setProperty('transition', 'background-color 1s', 'important');
+    setTimeout(() => document.body.classList.add(BODY_CLASS));
+
+    $('#find-styles-inline-group').classList.add('hidden');
 
     dom.container = $('#search-results');
     dom.error = $('#search-results-error');
@@ -116,11 +119,12 @@ window.addEventListener('showStyles:done', function _() {
       }
     });
 
-    addEventListener('styleAdded', ({detail: {style: {md5Url}}}) => {
+    addEventListener('styleAdded', ({detail: {style: {id, md5Url}}}) => {
       const usoId = md5Url && md5Url.match(/\d+|$/)[0];
       const entry = usoId && $('#' + RESULT_ID_PREFIX + usoId);
       if (entry) {
         entry._result.installed = true;
+        entry._result.installedStyleId = id;
         renderActionButtons(entry);
       }
     });
@@ -383,6 +387,7 @@ window.addEventListener('showStyles:done', function _() {
 
     const description = result.description
       .replace(/<[^>]*>/g, '')
+      .replace(/([^.]\.)(\s)/g, '$1\n$2')
       .replace(/[\r\n]{3,}/g, '\n\n');
     Object.assign($('.search-result-description', entry), {
       textContent: description,
@@ -403,7 +408,7 @@ window.addEventListener('showStyles:done', function _() {
     let ratingValue = result.rating;
     if (ratingValue === null) {
       ratingClass = 'none';
-      ratingValue = 'n/a';
+      ratingValue = '';
     } else if (ratingValue >= 2.5) {
       ratingClass = 'good';
       ratingValue = ratingValue.toFixed(1);
@@ -418,7 +423,20 @@ window.addEventListener('showStyles:done', function _() {
       textContent: ratingValue,
       className: 'search-result-rating ' + ratingClass
     });
-
+    Object.assign($('.search-result-meta-updated', entry), {
+      dateTime: result.updated,
+      textContent: tryCatch(lang => {
+        const date = new Date(result.updated);
+        return date.toLocaleDateString(lang, {
+          day: '2-digit',
+          month: 'short',
+          year: date.getYear() === new Date().getYear() ? undefined : '2-digit',
+        });
+      }, [UI_LANG, 'en']) || '',
+    });
+    Object.assign($('.search-result-weekly-count', entry), {
+      textContent: result.weekly_install_count.toLocaleString()
+    });
     Object.assign($('.search-result-install-count', entry), {
       textContent: result.total_install_count.toLocaleString()
     });
@@ -428,6 +446,10 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function renderActionButtons(entry) {
+    const screenshot = $('.search-result-screenshot', entry);
+    screenshot.onclick = entry._result.installed ? onUninstallClicked : onInstallClicked;
+    screenshot.title = entry._result.installed ? t('deleteStyleLabel') : t('installButton');
+
     const uninstallButton = $('.search-result-uninstall', entry);
     uninstallButton.onclick = onUninstallClicked;
 
@@ -450,19 +472,14 @@ window.addEventListener('showStyles:done', function _() {
       };
     }
 
-    installButton.classList.toggle('hidden', Boolean(result.installed));
+    //installButton.classList.toggle('hidden', Boolean(result.installed));
     uninstallButton.classList.toggle('hidden', !result.installed);
   }
 
   function onUninstallClicked(event) {
     event.stopPropagation();
     const entry = this.closest('.search-result');
-    const result = entry._result;
-    deleteStyleSafe({id: result.installedStyleId})
-      .then(() => {
-        entry._result.installed = false;
-        renderActionButtons(entry);
-      });
+    deleteStyleSafe({id: entry._result.installedStyleId});
   }
 
   /** Installs the current userstyleSearchResult into Stylus. */
@@ -475,6 +492,7 @@ window.addEventListener('showStyles:done', function _() {
 
     showSpinner(entry);
     installButton.disabled = true;
+    entry.style.setProperty('pointer-events', 'none', 'important');
 
     // Fetch settings to see if we should display "configure" button
     Promise.all([
@@ -488,11 +506,6 @@ window.addEventListener('showStyles:done', function _() {
       style.reason = 'install';
       return saveStyleSafe(style);
     })
-    .then(savedStyle => {
-      result.installed = true;
-      result.installedStyleId = savedStyle.id;
-      renderActionButtons(entry);
-    })
     .catch(reason => {
       const usoId = result.id;
       console.debug('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
@@ -501,6 +514,7 @@ window.addEventListener('showStyles:done', function _() {
     .then(() => {
       $.remove('.lds-spinner', entry);
       installButton.disabled = false;
+      entry.style.pointerEvents = '';
     });
 
     function fetchStyleSettings(result) {

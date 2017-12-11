@@ -1,6 +1,7 @@
 body.search-results-shown {
   overflow-y: scroll;
   overflow-x: hidden;
+  background-color: #aaa;
 }
 
 #search-results {
@@ -23,23 +24,30 @@ body.search-results-shown {
 .search-result,
 .search-result-empty {
   position: relative;
-  padding: .75rem;
+  padding: 8px 8px 24px;
   min-height: 160px;
 }
 
 .search-result {
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, .5);
-  border-radius: 3px;
-  border: 1px solid transparent;
-  margin-bottom: 1rem;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, .75);
+  border-radius: 4px;
+  border: 1px solid #555;
+  margin-bottom: 24px;
+  background-color: #eee;
 }
 
 .search-result:hover {
-  border-color: #888;
+  border-color: #000;
+  background-color: #fff;
 }
 
-.search-result .lds-spinner, .search-result-empty .lds-spinner {
-  transform: scale(.75);
+.search-result .lds-spinner,
+.search-result-empty .lds-spinner {
+  transform: scale(.5);
+}
+
+.search-result-empty .lds-spinner {
+  opacity: .2;
 }
 
 .search-result-fadein {
@@ -51,6 +59,7 @@ body.search-results-shown {
   height: 140px;
   width: 100%;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .search-result-title {
@@ -74,23 +83,25 @@ body.search-results-shown {
 }
 
 .search-result-info > div {
-  opacity: 0;
+  /* opacity: 0; */
   position: absolute;
   width: 100%;
   transition: opacity .25s ease-in-out;
 }
 
-.search-result:hover .search-result-info > div {
+.search-result:hover .actions {
   opacity: 1;
 }
 
 .search-result-overlay {
-  bottom: 0;
+  bottom: -24px;
 }
 
 .search-result-info > .actions {
-  bottom: 70px;
+  bottom: 15px;
   text-align: center;
+  z-index: 10;
+  opacity: 0;
 }
 
 .search-result-info > .actions > button {
@@ -105,11 +116,10 @@ body.search-results-shown {
 
 .search-result-overlay > * {
   display: flex;
-  padding: .25rem .5rem;
 }
 
 .search-result-author {
-  max-width: 50%;
+  max-width: 20%;
 }
 
 .search-result-author-link {
@@ -121,15 +131,12 @@ body.search-results-shown {
   display: block;
 }
 
-.search-result-author-link:hover {
-  color: #fff;
-}
-
 .search-result-description-group {
-  color: white;
-  background-color: hsla(180, 20%, 20%, 0.85);
   align-items: center;
-  padding-right: .25rem;
+  padding: 0;
+  font-size: 90%;
+  line-height: 24px;
+  min-height: 5px;
 }
 
 .search-result-description {
@@ -140,13 +147,17 @@ body.search-results-shown {
 }
 
 .search-result-meta {
-  background-color: hsla(180, 27%, 37%, 0.85);
-  color: hsl(180, 27%, 80%);
+  background-color: hsla(0, 0%, 93%, 0.76);
   justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.search-result:hover .search-result-meta {
+  background-color: hsla(0, 0%, 100%, 0.76);
 }
 
 .search-result-meta > * > :first-child {
-  display: block;
+  display: none;
   opacity: .75;
 }
 
@@ -161,19 +172,18 @@ body.search-results-shown {
 .search-result-rating {
   font-weight: 600;
   padding: 1px 2px 1px 2px;
-  color: #fff;
 }
 
 .search-result-rating.good {
-  background-color: darkgreen;
+  color: darkgreen;
 }
 
 .search-result-rating.okay {
-  background-color: darkorange;
+  color: chocolate;
 }
 
 .search-result-rating.bad {
-  background-color: darkred;
+  color: darkred;
 }
 
 .search-result-rating.none {
@@ -184,7 +194,6 @@ body.search-results-shown {
 }
 
 .search-result-install, .search-result-customize, .search-result-uninstall {
-  width: 40%;
   margin: 3px;
 }
 
@@ -193,7 +202,16 @@ body.search-results-shown {
   flex-direction: row;
   text-align: center;
   word-break: keep-all;
-  margin-bottom: 1rem;
+}
+
+#search-results-nav-top {
+  padding-top: 4px;
+  margin-bottom: 8px;
+}
+
+#search-results-nav-bottom {
+  margin-top: -14px;
+  margin-bottom: 16px;
 }
 
 #search-results-nav-top button,
@@ -203,11 +221,17 @@ body.search-results-shown {
   border: none;
   padding: .25rem 1rem;
   margin: 0 .5rem;
+  color: #eee;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+  font-size: 250%;
+  line-height: 24px;
+  vertical-align: middle;
+  cursor: pointer;
 }
 
 #search-results-nav-top button:hover,
 #search-results-nav-bottom button:hover {
-  text-shadow: 0 0 2px currentColor;
+  text-shadow: 0 1px 3px #000;
 }
 
 #find-styles-inline-group label {
@@ -231,11 +255,12 @@ body.search-results-shown {
   margin: auto;
   animation: lds-spinner 1s reverse;
   animation-fill-mode: both;
+  filter: invert(1) drop-shadow(1px 1px 3px #000);
 }
 
 @keyframes lds-spinner {
   0% {
-    opacity: .25;
+    opacity: 1;
   }
 
   100% {

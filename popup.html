@@ -87,9 +87,9 @@
     <div class="search-result">
       <a class="search-result-title"><span></span></a>
       <div class="search-result-info">
-        <img class="search-result-screenshot">
+        <img class="search-result-screenshot" i18n-title="installButton">
         <div class="actions">
-          <button class="search-result-install" i18n-text="installButton"></button>
+          <button class="search-result-install" i18n-text="installButton" hidden></button>
           <button class="search-result-uninstall hidden" i18n-text="deleteStyleLabel"></button>
           <button class="search-result-customize hidden"
                   i18n-text="configureStyle"
@@ -99,15 +99,23 @@
           <div class="search-result-meta">
             <div class="search-result-author">
               <span i18n-text="author"></span>
-              <a class="search-result-author-link" target="_blank"></a>
+              <a class="search-result-author-link" target="_blank" i18n-title="author"></a>
             </div>
             <div class="search-result-meta-rating">
               <span i18n-text="searchResultRating"></span>
-              <span class="search-result-rating"></span>
+              <span class="search-result-rating" i18n-title="searchResultRating"></span>
+            </div>
+            <div class="search-result-meta-updated">
+              <span></span>
+              <time class="search-result-updated"></time>
+            </div>
+            <div class="search-result-meta-weekly-count">
+              <span i18n-text="searchResultInstallCount"></span>
+              <span class="search-result-weekly-count" i18n-title="searchResultInstallCount"></span>
             </div>
             <div class="search-result-meta-install-count">
               <span i18n-text="searchResultInstallCount"></span>
-              <span class="search-result-install-count"></span>
+              <span class="search-result-install-count" i18n-title="searchResultInstallCount"></span>
             </div>
           </div>
           <div class="search-result-description-group">
