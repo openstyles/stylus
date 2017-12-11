@@ -1,4 +1,4 @@
-/* global LZStringUnsafe */
+/* global LZString */
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -28,6 +28,8 @@ var cachedStyles = {
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
+
+window.LZString = window.LZString || window.LZStringUnsafe;
 
 // eslint-disable-next-line no-var
 var [chromeLocal, chromeSync] = [
@@ -63,13 +65,13 @@ var [chromeLocal, chromeSync] = [
       return wrapper.get(keys).then((data = {}) => {
         for (const key of keys) {
           const value = data[key];
-          data[key] = value && tryJSONparse(LZStringUnsafe.decompressFromUTF16(value));
+          data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
         }
         return data;
       });
     },
     setLZValue(key, value) {
-      return wrapper.set({[key]: LZStringUnsafe.compressToUTF16(JSON.stringify(value))});
+      return wrapper.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
     }
   };
   return wrapper;
