@@ -338,6 +338,10 @@
 		"message": "Favicons 要套用到的欄位",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"paginationCurrent": {
+		"message": "目前頁面",
+		"description": "Tooltip for the current page index in search results"
+	},
 	"menuShowBadge": {
 		"message": "顯示生效的樣式數目",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
@@ -590,6 +594,10 @@
 		"message": "無法儲存值。嘗試減少文字量。",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "嵌入",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "檢查並安裝所有可用的更新",
 		"description": ""
@@ -662,6 +670,10 @@
 		"message": "更新完成。",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "總頁面",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "由於此版本的 Firefox 中有已知的臭蟲，所以無法正常運作：chrome.extension.getBackgroundPage() 並未傳回有效的結果",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -677,6 +689,10 @@
 	"manageMaxTargets": {
 		"message": "已套用項目的數量",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"searchResultRating": {
+		"message": "評價",
+		"description": "Text for label that shows the search result's rating"
 	},
 	"popupManageTooltip": {
 		"message": "Shift + 點選或右鍵 + 點選以在管理員中開啟目前頁面可用的樣式",
@@ -716,6 +732,10 @@
 	"optionsResetButton": {
 		"message": "重設選項",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "下一頁",
+		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"sectionCode": {
 		"message": "代碼",
@@ -761,6 +781,10 @@
 	"searchStylesHelp": {
 		"message": "</> 鍵聚焦於搜尋欄。\n純文字搜尋名字、程式碼、首頁 URL 與其套用到的頁面。少於三個字母的單字會被忽略。\n符合的 URL：以 <url:> 為前綴來搜尋，例如：<url:https://github.com/openstyles/stylus>\n正規表達式：包含斜線與旗標，例如 </body.*?\\ba\\b/simguy>\n精確的單字：以雙引號包住要搜尋的文字，例如 <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "尋找樣式",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "編輯樣式",
@@ -932,6 +956,10 @@
 		"message": "在工具列圖示上的徽章",
 		"description": ""
 	},
+	"paginationPrevious": {
+		"message": "上一頁",
+		"description": "Tooltip for the '<-' button in search results"
+	},
 	"installUpdateFrom": {
 		"message": "目前從 $url$ 更新樣式",
 		"description": "Label to describe where the style gets update",
@@ -1090,6 +1118,10 @@
 	"cm_theme": {
 		"message": "主題",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "在此視窗中顯示搜尋結果。",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "在新視窗開啟編輯器",

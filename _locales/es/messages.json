@@ -338,6 +338,10 @@
 		"message": "Favicons en la columna se-aplica-a",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"paginationCurrent": {
+		"message": "Página actual",
+		"description": "Tooltip for the current page index in search results"
+	},
 	"menuShowBadge": {
 		"message": "Mostrar número de estilos activos",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
@@ -590,6 +594,10 @@
 		"message": "El valor no se puede guardar. Trate de reducir la longitud del texto.",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "Dentro",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Buscar e instalar todas las actualizaciones disponibles",
 		"description": ""
@@ -662,6 +670,10 @@
 		"message": "Actualización completada.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Páginas totales",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "No puede funcionar adecuadamente a causa de un fallo conocido en esta versión de Firefox: chrome.extension.getBackgroundPage() no devuelve un resultado válido.",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -677,6 +689,10 @@
 	"manageMaxTargets": {
 		"message": "Número de elementos se-aplica-a",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"searchResultRating": {
+		"message": "Valoración",
+		"description": "Text for label that shows the search result's rating"
 	},
 	"popupManageTooltip": {
 		"message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual.",
@@ -716,6 +732,10 @@
 	"optionsResetButton": {
 		"message": "Restablecer opciones",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Página siguiente",
+		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"sectionCode": {
 		"message": "Código",
@@ -761,6 +781,10 @@
 	"searchStylesHelp": {
 		"message": "La tecla </> pone el foco en el campo de búsqueda.\nTexto simple: Busque por nombre, código, URL de la página principal, y sitios a los que se apllica. Las palabras con menos de 3 letras son ignoradas.\nURL coincidente: Prefije la búsqueda con <url:>, ej. <url:https://github.com/openstyles/stylus>\nExpresiones regulares: Incluya barras e indicadores, ej.. </body.*?\\ba\\b/simguy>\nPalabras exactas: Ponga la consulta entre comillas dobles, ej.. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "Buscar estilos",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Editar estilo",
@@ -928,6 +952,10 @@
 		"message": "Distintivo en el icono de barra de herramientas",
 		"description": ""
 	},
+	"paginationPrevious": {
+		"message": "Página anterior",
+		"description": "Tooltip for the '<-' button in search results"
+	},
 	"installUpdateFrom": {
 		"message": "Actualmente el estilo se actualiza desde $url$",
 		"description": "Label to describe where the style gets update",
@@ -1082,6 +1110,10 @@
 	"cm_theme": {
 		"message": "Temas",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "Muestra los resultados de búsqueda dentro de esta ventana.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "Abrir editor en una nueva ventana",

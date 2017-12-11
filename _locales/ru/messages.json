@@ -338,6 +338,10 @@
 		"message": "Пиктограммы для целевых сайтов",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"paginationCurrent": {
+		"message": "Текущая страница",
+		"description": "Tooltip for the current page index in search results"
+	},
 	"menuShowBadge": {
 		"message": "Число активных стилей",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
@@ -369,6 +373,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Ошибка обновления: сервер недоступен.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Ошибка",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Фильтры",
@@ -590,6 +598,10 @@
 		"message": "Ошибка сохранения. Попробуйте уменьшить количество текста.",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "и показать здесь",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Найти и установить обновления стилей",
 		"description": ""
@@ -625,6 +637,10 @@
 	"linterCSSLintSettings": {
 		"message": "(значения: 0 = выключить, 1 = предупреждение; 2 = ошибка)",
 		"description": "CSSLint rule config values"
+	},
+	"searchResultNoneFound": {
+		"message": "Стилей для сайта не найдено.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
 	},
 	"styleBeautifyIndentConditional": {
 		"message": "Отступ внутри @media, @supports",
@@ -662,6 +678,10 @@
 		"message": "Обновление завершено.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Всего страниц",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Функционирование невозможно из-за известной ошибки в вашей версии браузера: chrome.extension.getBackgroundPage() возвращает нулевое значение",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -677,6 +697,10 @@
 	"manageMaxTargets": {
 		"message": "Кол-во целевых сайтов/выражений",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"searchResultRating": {
+		"message": "Рейтинг",
+		"description": "Text for label that shows the search result's rating"
 	},
 	"popupManageTooltip": {
 		"message": "Shift-клик или правый клик откроет менеджер с стилями только для этого сайта.",
@@ -716,6 +740,14 @@
 	"optionsResetButton": {
 		"message": "Сброс настроек",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Следующая страница",
+		"description": "Tooltip for the '->' (next page) button in search results"
+	},
+	"searchResultInstallCount": {
+		"message": "Всего загрузок",
+		"description": "Text for label that shows the number of times a search result was installed"
 	},
 	"sectionCode": {
 		"message": "Код",
@@ -761,6 +793,10 @@
 	"searchStylesHelp": {
 		"message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед адресом, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "Найти стили",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Изменение стиля",
@@ -888,6 +924,10 @@
 		"message": "Только сторонние стили",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Загрузок за неделю",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Заменить все",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -899,6 +939,10 @@
 	"confirmDiscardChanges": {
 		"message": "Отказаться от изменений?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Обновлен",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "Сохранять и применять изменения автоматически",
@@ -931,6 +975,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Бейдж на пиктограмме в тулбаре",
 		"description": ""
+	},
+	"paginationPrevious": {
+		"message": "Предыдущая страница",
+		"description": "Tooltip for the '<-' button in search results"
 	},
 	"installUpdateFrom": {
 		"message": "Источник обновления стиля: $url$",
@@ -1090,6 +1138,10 @@
 	"cm_theme": {
 		"message": "Тема",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "Показывать найденные стили в этом окне.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "Открывать редактор в новом окне",

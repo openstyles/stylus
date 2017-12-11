@@ -327,12 +327,16 @@
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "Liczba aktywnych stylów dla bieżącej strony",
+		"message": "Liczba aktywnych stylów dla bieżącej witryny",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
 		"message": "Ikony ulubionych w kolumnie dotyczących",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationCurrent": {
+		"message": "Bieżąca strona",
+		"description": "Tooltip for the current page index in search results"
 	},
 	"menuShowBadge": {
 		"message": "Pokaż liczbę aktywnych stylów",
@@ -506,7 +510,7 @@
 		"description": "Help text for sections"
 	},
 	"noStylesForSite": {
-		"message": "Nie ma zainstalownych stylów dla tej strony.",
+		"message": "Nie ma zainstalownych stylów dla tej witryny.",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
 	"appliesDisplayTruncatedSuffix": {
@@ -586,6 +590,10 @@
 		"message": "Nie można zapisać wartości. Spróbuj zmniejszyć ilość tekstu.",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "Wstawka",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Sprawdź i zainstaluj wszystkie dostępne aktualizacje",
 		"description": ""
@@ -658,6 +666,10 @@
 		"message": "Aktualizacja zakończona.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Wszystkie strony",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Nie działa prawidłowo ze względu na znany błąd w tej wersji Firefoksa: chrome.extension.getBackgroundPage() nie zwraca prawidłowego wyniku",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -674,8 +686,12 @@
 		"message": "Liczba dotyczących elementów ",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"searchResultRating": {
+		"message": "Ocena",
+		"description": "Text for label that shows the search result's rating"
+	},
 	"popupManageTooltip": {
-		"message": "Shift + kliknięcie lub kliknięcie prawym przyciskiem otwiera menedżera ze stylami obowiązującymi dla bieżącej strony",
+		"message": "Shift + kliknięcie lub kliknięcie prawym przyciskiem otwiera menedżera ze stylami obowiązującymi dla bieżącej witryny",
 		"description": "Tooltip for the 'Manage' button in the popup."
 	},
 	"manageFaviconsHelp": {
@@ -712,6 +728,10 @@
 	"optionsResetButton": {
 		"message": "Resetuj opcje",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Następna strona",
+		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"sectionCode": {
 		"message": "Kod",
@@ -757,6 +777,10 @@
 	"searchStylesHelp": {
 		"message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nPasujący adres URL:  szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "Znajdź style",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Edytuj styl",
@@ -932,6 +956,10 @@
 		"message": "Emblemat na ikonie paska narzędzi",
 		"description": ""
 	},
+	"paginationPrevious": {
+		"message": "Poprzednia strona",
+		"description": "Tooltip for the '<-' button in search results"
+	},
 	"installUpdateFrom": {
 		"message": "Obecnie styl jest aktualizowany z $url$",
 		"description": "Label to describe where the style gets update",
@@ -1091,6 +1119,10 @@
 		"message": "Motyw",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"findStylesInlineTooltip": {
+		"message": "Wyświetlaj wyniki wyszukiwania w tym oknie.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
+	},
 	"popupOpenEditInWindow": {
 		"message": "Otwórz edytor w nowym oknie",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1116,7 +1148,7 @@
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
-		"message": "Przeprojektuj sieć za pomocą Stylusa – menedżera stylów użytkownika. Stylus umożliwia łatwe instalowanie motywów i skórek dla wielu popularnych stron.",
+		"message": "Przeprojektuj sieć za pomocą Stylusa – menedżera stylów użytkownika. Stylus umożliwia łatwe instalowanie motywów i skórek dla wielu popularnych witryn.",
 		"description": "Extension description"
 	},
 	"confirmClose": {

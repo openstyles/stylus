@@ -112,7 +112,7 @@
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"optionsOpenManager": {
-		"message": "スタイルを管理",
+		"message": "スタイル管理",
 		"description": ""
 	},
 	"updateAllCheckSucceededNoUpdate": {
@@ -265,7 +265,7 @@
 		"description": ""
 	},
 	"optionsCheck": {
-		"message": "スタイルを更新",
+		"message": "スタイル更新",
 		"description": ""
 	},
 	"manageText": {
@@ -333,6 +333,10 @@
 	"manageFavicons": {
 		"message": "適用先欄のファビコン",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationCurrent": {
+		"message": "現在のページ",
+		"description": "Tooltip for the current page index in search results"
 	},
 	"menuShowBadge": {
 		"message": "アクティブなスタイルの数を表示する",
@@ -586,6 +590,10 @@
 		"message": "値を保存できません。テキストの量を減らしてください。",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "インライン",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "使用可能なすべての更新を確認してインストールする",
 		"description": ""
@@ -654,6 +662,10 @@
 		"message": "更新が完了しました。",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "合計ページ",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "このバージョンのFirefoxの次の既知のバグのために正常に機能しません : chrome.extension.getBackgroundPage() が正しい結果を返しません",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -669,6 +681,10 @@
 	"manageMaxTargets": {
 		"message": "適用先欄の表示件数",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"searchResultRating": {
+		"message": "評価",
+		"description": "Text for label that shows the search result's rating"
 	},
 	"popupManageTooltip": {
 		"message": "シフトを押しながらクリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます",
@@ -708,6 +724,10 @@
 	"optionsResetButton": {
 		"message": "オプションをリセット",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "次ページ",
+		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"sectionCode": {
 		"message": "コード",
@@ -751,8 +771,12 @@
 		"description": "Help text for 'applies to' section"
 	},
 	"searchStylesHelp": {
-		"message": "</> キーで検索欄に移動します。\n文字列検索: 名前、コード、適用欄のURL/サイト名を検索します。3文字より短い単語は無視されます。\nURL検索: <url:> を前に付けて検索します。例.  <url:https://github.com/openstyles/stylus>\n正規表現検索: スラッシュとフラグを含めて検索します。例. </body.*?\\ba\\b/simguy>\n正確な文字列検索: 文字列をダブルクォートで囲んで検索します。例. <\".header ~ div\">",
+		"message": "</> キーで検索欄に移動します。\n[文字列検索] : 名前、コード、適用先欄のURL/サイト名を検索します。3文字より短い単語は無視されます。\n[URL検索] : <url:> を前に付けて検索します。例.  <url:https://github.com/openstyles/stylus>\n[正規表現検索] : スラッシュとフラグを含めて検索します。例. </body.*?\\ba\\b/simguy>\n[正確な文字列検索] : 文字列をダブルクォートで囲んで検索します。例. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "スタイルを検索",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "スタイルを編集",
@@ -920,6 +944,10 @@
 		"message": "ツールバーアイコンのバッジ",
 		"description": ""
 	},
+	"paginationPrevious": {
+		"message": "前ページ",
+		"description": "Tooltip for the '<-' button in search results"
+	},
 	"installUpdateFrom": {
 		"message": "現在、このスタイルは「$url$」から更新されます",
 		"description": "Label to describe where the style gets update",
@@ -1044,7 +1072,7 @@
 		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
 	},
 	"addStyleLabel": {
-		"message": "新しいスタイルを作成",
+		"message": "新スタイルを作成",
 		"description": "Label for the button to go to the add style page"
 	},
 	"optionsUpdateIntervalNote": {
@@ -1078,6 +1106,10 @@
 	"cm_theme": {
 		"message": "テーマ",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "検索結果をこのウィンドウに表示",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "新しいウィンドウでエディタを開く",
