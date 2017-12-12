@@ -625,7 +625,8 @@ window.addEventListener('showStyles:done', function _() {
    * @returns {Promise<Object>} An object containing info about the style, e.g. name, author, etc.
    */
   function fetchStyle(userstylesId) {
-    return readCache(userstylesId).then(json => json ||
+    return readCache(userstylesId).then(json =>
+      json ||
       download(BASE_URL + '/api/v1/styles/' + userstylesId, {
         method: 'GET',
         headers: {
@@ -634,13 +635,7 @@ window.addEventListener('showStyles:done', function _() {
         },
         responseType: 'json',
         body: null
-      }).then(json => {
-        for (const prop of CACHE_EXCEPT_PROPS) {
-          delete json[prop];
-        }
-        writeCache(json);
-        return json;
-      }));
+      }).then(writeCache));
   }
 
   /**
@@ -667,7 +662,8 @@ window.addEventListener('showStyles:done', function _() {
     const cacheKey = category + '/' + searchCurrentPage;
 
     return readCache(cacheKey)
-      .then(json => json ||
+      .then(json =>
+        json ||
         download(searchURL, {
           method: 'GET',
           headers: {
@@ -676,11 +672,7 @@ window.addEventListener('showStyles:done', function _() {
           },
           responseType: 'json',
           body: null
-        }).then(json => {
-          json.id = cacheKey;
-          writeCache(json);
-          return json;
-        }))
+        }).then(writeCache))
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
@@ -707,8 +699,13 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function writeCache(data, debounced) {
+    data.id = data.id || category + '/' + data.current_page;
+    for (const prop of CACHE_EXCEPT_PROPS) {
+      delete data[prop];
+    }
     if (!debounced) {
-      debounce(writeCache, 100, data, true);
+      // using plain setTimeout because debounce() replaces previous parameters
+      setTimeout(writeCache, 100, data, true);
       return data;
     } else {
       debounce(cleanupCache, CACHE_CLEANUP_THROTTLE);
