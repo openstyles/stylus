@@ -101,7 +101,8 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #no-styles {
-  font-style: italic;
+  padding: 4px 9px 6px;
+  font-weight: bold;
 }
 
 #find-styles-link {

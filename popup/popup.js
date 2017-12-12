@@ -468,6 +468,9 @@ function handleUpdate(style) {
 
 function handleDelete(id) {
   $.remove(ENTRY_ID_PREFIX + id);
+  if (!installed.firstElementChild) {
+    installed.appendChild(template.noStyles.cloneNode(true));
+  }
 }
 
 
