@@ -226,9 +226,9 @@ body.search-results-shown {
 #search-results .search-results-nav button {
   background: none;
   border: none;
-  padding: .25rem 1rem;
+  padding: 0 1rem;
   margin: 0 .5rem;
-  font-size: 200%;
+  font-size: 150%;
   line-height: 24px;
   vertical-align: middle;
   cursor: pointer;

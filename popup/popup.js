@@ -194,7 +194,6 @@ function showStyles(styles) {
     return;
   }
   if (!styles.length) {
-    installed.textContent = '';
     installed.appendChild(template.noStyles.cloneNode(true));
     window.dispatchEvent(new Event('showStyles:done'));
     return;
@@ -345,12 +344,7 @@ Object.assign(handleEvent, {
       });
       if (ok) {
         deleteStyleSafe({id}).then(() => {
-          // don't wait for the async notifyAllTabs as we check the children right away
           handleDelete(id);
-          // update view with 'No styles installed for this site' message
-          if (!installed.children.length) {
-            showStyles([]);
-          }
         });
       }
     }
@@ -468,7 +462,7 @@ function handleUpdate(style) {
 
 function handleDelete(id) {
   $.remove(ENTRY_ID_PREFIX + id);
-  if (!installed.firstElementChild) {
+  if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
 }
