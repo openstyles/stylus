@@ -1087,10 +1087,7 @@
     "message": "Popup width (in pixels)"
   },
   "optionsUpdateInterval": {
-    "message": "Automatically check for and install all available userstyle updates (in hrs)"
-  },
-  "optionsUpdateIntervalNote": {
-    "message": "To disable the automatic userstyle update checks, set interval to 0"
+    "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
   },
   "optionsUpdateImportNote": {
     "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
