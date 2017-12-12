@@ -105,11 +105,11 @@
       </div>
     </div>
 
-    <div class="block">
+    <div class="block" id="updates">
       <h1 i18n-text="optionsCustomizeUpdate"></h1>
       <div class="items">
-        <label>
-          <span i18n-text="optionsUpdateInterval"><sup>1</sup></span>
+        <label i18n-title="optionsUpdateImportNote">
+          <span i18n-text="optionsUpdateInterval"> <span data-cmd="note">*</span></span>
           <input type="number" min="0" id="updateInterval">
         </label>
       </div>
@@ -128,7 +128,8 @@
       </div>
       <div class="items">
         <label>
-          <span i18n-text="optionsAdvancedExposeIframes"> <sup>2</sup></span>
+          <span i18n-text="optionsAdvancedExposeIframes"
+                i18n-title="optionsAdvancedExposeIframesNote"> <span data-cmd="note">*</span></span>
           <span class="onoffswitch">
             <input type="checkbox" id="exposeIframes" class="slider">
             <span></span>
@@ -155,16 +156,6 @@
       </div>
       <button data-cmd="open-keyboard" class="chromium-only" i18n-text="shortcuts" i18n-title="shortcutsNote"></button>
     </div>
-  </div>
-
-  <div id="notes">
-    <ol>
-      <li>
-        <p i18n-text="optionsUpdateIntervalNote"></p>
-        <p i18n-text="optionsUpdateImportNote"></p>
-      </li>
-      <li i18n-text="optionsAdvancedExposeIframesNote"></li>
-    </ol>
   </div>
 
   <script src="options/options.js"></script>

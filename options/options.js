@@ -3,6 +3,7 @@
 setupLivePrefs();
 setupRadioButtons();
 enforceInputRange($('#popupWidth'));
+setTimeout(splitLongTooltips);
 
 if (!FIREFOX && !OPERA) {
   const block = $('#advanced');
@@ -42,6 +43,14 @@ document.onclick = e => {
         .filter(input => input.id in prefs.readOnlyValues)
         .forEach(input => prefs.reset(input.id));
       break;
+
+    case 'note': {
+      const tooltip = (target.closest('[title]') || {}).title;
+      if (tooltip && 'ontouchstart' in document) {
+        e.preventDefault();
+        target.parentNode.replaceChild($create('.expanded-note', tooltip), target);
+      }
+    }
   }
 };
 
@@ -94,4 +103,20 @@ function setupRadioButtons() {
   prefs.subscribe(Object.keys(sets), (key, value) => {
     sets[key][value].checked = true;
   });
+}
+
+function splitLongTooltips() {
+  for (const el of $$('[title]')) {
+    if (el.title.length < 50) {
+      continue;
+    }
+    const newTitle = el.title
+      .split('\n')
+      .map(s => s.replace(/([^.][.。?!]|.{50,60},)\s+/g, '$1\n'))
+      .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
+      .join('\n');
+    if (newTitle !== el.title) {
+      el.title = newTitle;
+    }
+  }
 }
