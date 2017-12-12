@@ -62,7 +62,8 @@ onDOMscriptReady('/colorview.js').then(() => {
     cm.state.colorpicker.openPopup(prefs.get('editor.colorpicker.color'));
   }
 
-  function configureColorpicker() {
+  function configureColorpicker(event) {
+    event.preventDefault();
     const input = $create('input', {
       type: 'search',
       spellcheck: false,

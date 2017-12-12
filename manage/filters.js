@@ -353,7 +353,9 @@ function showFiltersStats() {
     debounce(showFiltersStats, 100);
     return;
   }
-  $('#filters summary').classList.toggle('active', filtersSelector.hide !== '');
+  const active = filtersSelector.hide !== '';
+  $('#filters summary').classList.toggle('active', active);
+  $('#reset-filters').disabled = !active;
   const numTotal = BG.cachedStyles.list.length;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = Math.min(numTotal - numHidden, installed.children.length);

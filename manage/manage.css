@@ -145,12 +145,11 @@ select {
 }
 
 .svg-icon.config {
-  width: 16px;
-  height: 16px;
+  transform: scale(.8);
 }
 
 .homepage {
-  margin-left: 0.1em;
+  margin-left: 0.25em;
   margin-right: 0.1em;
 }
 
@@ -160,7 +159,6 @@ select {
 
 .homepage .svg-icon {
   margin-top: 0;
-  margin-left: .5ex;
 }
 
 .style-name {
@@ -190,6 +188,7 @@ select {
 
 .actions > * {
   margin-bottom: .25rem;
+  display: inline-block;
 }
 
 .actions > *:not(:last-child) {
@@ -450,11 +449,9 @@ select {
   color: hsla(180, 100%, 15%, 1);
 }
 
-/* align delete button if no homepage link */
-.newUI a.homepage.disabled {
-  /* margin-left: 0.5ex + 20px svg width + margin-right: 8px */
-  width: calc(0.5ex + 28px);
-  display: inline-block;
+.newUI .homepage:not([href=""]) {
+  position: absolute;
+  margin-left: -28px;
 }
 
 .newUI .actions {
@@ -464,30 +461,9 @@ select {
 }
 
 .newUI .actions > * {
-  margin: 0;
-}
-
-.newUI .actions .svg-icon {
-    margin-right: 8px;
-}
-
-.newUI .style-name-link:focus,
-.newUI .actions a:focus,
-.newUI a.expander {
-  outline: none;
-  text-decoration: none;
-}
-
-.newUI .style-name-link,
-.newUI .actions a svg,
-.newUI a.expander {
-  border-bottom: 1px dashed transparent;
-}
-
-.newUI .style-name-link:focus,
-.newUI .actions a:focus svg,
-.newUI a.expander:focus {
-  border-bottom: 1px dashed #AAA;
+  margin: 0 8px 0 0;
+  width: 20px;
+  height: 20px;
 }
 
 .newUI .updater-icons > * {
@@ -509,7 +485,7 @@ select {
 
 .newUI .checking-update .check-update {
   opacity: 0;
-  display: inline;
+  display: inline-block;
   pointer-events: none;
 }
 
@@ -517,7 +493,7 @@ select {
 .newUI .no-update:not(.update-problem):not(.update-done) .up-to-date,
 .newUI .no-update.update-problem .check-update,
 .newUI .update-done .updated {
-  display: inline;
+  display: inline-block;
 }
 
 .newUI .up-to-date svg,
@@ -623,7 +599,7 @@ select {
 }
 
 .newUI .has-favicons .applies-to .expander {
-  padding-left: 20px;
+  margin-left: 20px;
 }
 
 .newUI .target:hover {
@@ -682,8 +658,7 @@ select {
   margin-right: .5em;
 }
 
-#newUIoptions [data-toggle-on-click],
-#newUIoptions a[data-toggle-on-click] svg {
+#newUIoptions [data-toggle-on-click] svg {
   transform: rotate(-90deg);
   cursor: pointer;
   right: -16px;
@@ -691,8 +666,7 @@ select {
   pointer-events: auto;
 }
 
-#newUIoptions [data-toggle-on-click][open],
-#newUIoptions a[data-toggle-on-click][open] svg {
+#newUIoptions [data-toggle-on-click][open] svg {
   transform: none;
 }
 
@@ -720,7 +694,7 @@ input[id^="manage.newUI"] {
 
 /* Check update button for things that can */
 .updatable .check-update {
-  display: inline;
+  display: inline-block;
 }
 
 /* Update check in progress */
@@ -730,7 +704,7 @@ input[id^="manage.newUI"] {
 
 /* Updates available */
 .can-update .update {
-  display: inline;
+  display: inline-block;
 }
 
 .can-update[data-details$="locally edited"] button.update:after {
@@ -827,6 +801,10 @@ input[id^="manage.newUI"] {
 #reset-filters {
   position: absolute;
   margin-top: 2px;
+  display: inline-block;
+}
+
+#reset-filters svg {
   fill: hsla(180, 50%, 27%, .5);
   width: 24px; /* widen the click area a bit */
   height: 20px;
@@ -834,7 +812,7 @@ input[id^="manage.newUI"] {
   box-sizing: border-box;
 }
 
-#reset-filters:hover {
+#reset-filters:hover svg {
   fill: hsla(180, 50%, 27%, 1);
 }
 
@@ -862,7 +840,7 @@ input[id^="manage.newUI"] {
   border-radius: 0.25rem;
 }
 
-#search-wrapper #search-help {
+#search-help {
   margin: 4px 0 0 8px;
 }
 

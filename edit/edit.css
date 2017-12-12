@@ -76,19 +76,6 @@ label {
   min-height: 1.4rem;
 }
 
-.svg-inline-wrapper {
-  outline: none;
-  text-decoration: none;
-}
-
-.svg-inline-wrapper svg {
-  border-bottom: 1px dashed transparent;
-}
-
-.svg-inline-wrapper:focus svg {
-  border-bottom-color: #AAA;
-}
-
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
@@ -106,21 +93,19 @@ label {
 #url:not([href^="http"]) {
   display: none;
 }
-#save-button {
-  opacity: .5;
-  pointer-events: none;
-}
-.dirty #save-button {
-  opacity: 1;
-  pointer-events: all;
-}
 .svg-icon {
   cursor: pointer;
   vertical-align: middle;
   transition: fill .5s;
   width: 16px;
   height: 16px;
-  margin-left: 0.2rem;
+}
+.svg-inline-wrapper {
+  margin-left: .2rem;
+  display: inline-block;
+}
+.aligned .svg-inline-wrapper {
+  margin-left: .25rem;
 }
 h2 .svg-icon, label .svg-icon {
   margin-top: -1px;
@@ -617,6 +602,11 @@ html:not(.usercss) .usercss-only,
 .usercss #mozilla-format-container,
 .usercss #sections > h2 {
   display: none !important; /* hide during page init */
+}
+
+.usercss #name {
+  background-color: #eee;
+  color: #888;
 }
 
 #sections .single-editor {

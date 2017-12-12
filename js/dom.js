@@ -57,6 +57,7 @@ $$.remove = (selector, base = document) => {
 onDOMready().then(() => {
   $.remove('#firefox-transitions-bug-suppressor');
   initCollapsibles();
+  focusAccessibility();
 });
 
 if (!chrome.app && chrome.windows) {
@@ -312,5 +313,48 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
 
   function saveState(el) {
     prefs.set(el.dataset.pref, el.open);
+  }
+}
+
+
+function focusAccessibility() {
+  // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
+  // Since we don't want full layout recalc, we modify only the closest focusable element,
+  // which we try to find in DOM for this many parentElement jumps:
+  const focusables = focusAccessibility.ELEMENTS =
+    ['a', 'button', 'input', 'label', 'select', 'summary'];
+  const GIVE_UP_DEPTH = 4;
+  addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
+  addEventListener('keydown', keepOutlineOnTab, {passive: true});
+
+  function suppressOutlineOnClick({target}) {
+    for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
+      if (focusables.includes(el.localName)) {
+        if (el.dataset.focusedViaClick === undefined) {
+          el.dataset.focusedViaClick = '';
+        }
+        return;
+      }
+    }
+  }
+
+  function keepOutlineOnTab(event) {
+    if (event.which === 9) {
+      setTimeout(keepOutlineOnTab, 0, true);
+      return;
+    } else if (event !== true) {
+      return;
+    }
+    let el = document.activeElement;
+    if (!el || !focusables.includes(el.localName)) {
+      return;
+    }
+    if (el.dataset.focusedViaClick !== undefined) {
+      delete el.dataset.focusedViaClick;
+    }
+    el = el.closest('[data-focused-via-click]');
+    if (el) {
+      delete el.dataset.focusedViaClick;
+    }
   }
 }

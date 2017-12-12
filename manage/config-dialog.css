@@ -93,20 +93,12 @@
   margin-right: 4px;
 }
 
-.config-reset-icon {
-  width: 16px;
-  display: inline-block;
-}
-
-.config-body label:not(.nondefault) .config-reset-icon a {
-  display: none;
+.config-body label:not(.nondefault) .config-reset-icon {
+  visibility: hidden;
 }
 
 .config-reset-icon .svg-icon {
-  /*position: absolute;*/
-  pointer-events: none;
   cursor: pointer;
-  /*right: -7px;*/
   fill: #aaa;
   width: 16px;
   height: 16px;

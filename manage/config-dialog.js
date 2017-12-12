@@ -30,13 +30,13 @@ function configDialog(style) {
     ],
     buttons: [{
       textContent: t('confirmSave'),
-      dataset: {cmd: 'save', allowEnter: true},
+      dataset: {cmd: 'save'},
       disabled: true,
       onclick: save,
     }, {
       textContent: t('genericResetLabel'),
       title: t('optionsReset'),
-      dataset: {cmd: 'default', allowEnter: true},
+      dataset: {cmd: 'default'},
       onclick: useDefault,
     }, {
       textContent: t('confirmClose'),
@@ -78,13 +78,7 @@ function configDialog(style) {
     updateButtons();
   }
 
-  function onhide({button, enter}) {
-    if (enter) {
-      switch (button) {
-        case 0: save(); break;
-        case 1: useDefault(); break;
-      }
-    }
+  function onhide() {
     document.body.style.minWidth = '';
     document.body.style.minHeight = '';
     colorpicker.hide();
@@ -201,8 +195,8 @@ function configDialog(style) {
   }
 
   function buildConfigForm() {
-    let resetter = $create('span.config-reset-icon', [
-      $create('a', {href:'#', dataset: {allowEnter: true}}, [
+    let resetter =
+      $create('a.config-reset-icon', {href: '#'}, [
         $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'}, [
           $create('SVG:title', t('genericResetLabel')),
           $create('SVG:polygon', {
@@ -210,8 +204,7 @@ function configDialog(style) {
                     '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
           })
         ])
-      ])
-    ]);
+      ]);
     for (const va of vars) {
       let children;
       switch (va.type) {
@@ -221,7 +214,6 @@ function configDialog(style) {
               va.input = $create('a.color-swatch', {
                 va,
                 href: '#',
-                dataset: {allowEnter: true},
                 onclick: showColorpicker
               }),
             ]),
@@ -272,8 +264,8 @@ function configDialog(style) {
       }
 
       resetter = resetter.cloneNode(true);
-      $('a', resetter).va = va;
-      $('a', resetter).onclick = resetOnClick;
+      resetter.va = va;
+      resetter.onclick = resetOnClick;
 
       elements.push(
         $create(`label.config-${va.type}`, [
@@ -281,6 +273,8 @@ function configDialog(style) {
           ...children,
           resetter,
         ]));
+
+      va.savedValue = va.value;
     }
   }
 
@@ -319,22 +313,18 @@ function configDialog(style) {
     const el = va.input.closest('label');
     el.classList.toggle('dirty', Boolean(va.dirty));
     el.classList.toggle('nondefault', !isDefault(va));
+    $('.config-reset-icon', el).disabled = isDefault(va);
   }
 
   function resetOnClick(event) {
-    if (
-      event.type === 'click' ||
-      (event.keyCode || event.which) === 13
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.va.value = null;
-      renderValues([this.va]);
-      onchange({target: this.va.input});
-    }
+    event.preventDefault();
+    this.va.value = null;
+    renderValues([this.va]);
+    onchange({target: this.va.input});
   }
 
-  function showColorpicker() {
+  function showColorpicker(event) {
+    event.preventDefault();
     window.removeEventListener('keydown', messageBox.listeners.key, true);
     const box = $('#message-box-contents');
     colorpicker.show({

@@ -1,13 +1,3 @@
-html:not([data-whatinput="keyboard"]) button,
-html:not([data-whatinput="keyboard"]) input[type="checkbox"],
-html:not([data-whatinput="keyboard"]) input[type="radio"],
-html:not([data-whatinput="keyboard"]) #header summary,
-html:not([data-whatinput="keyboard"]) .applies-to-extra-expander,
-html:not([data-whatinput="keyboard"]) .regexp-report summary,
-html:not([data-whatinput="keyboard"]) .regexp-report div {
-  outline: none;
-}
-
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -17,7 +7,8 @@ button {
   font: 400 13.3333px Arial;
   color: #000;
   background-color: hsl(0, 0%, 100%);
-  background: url(../images/button.png)repeat-x;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
+  background-repeat: repeat-x;
   background-size: 100% 100%;
   transition: background-color .25s, border-color .25s;
 }
@@ -30,7 +21,8 @@ button:not(:disabled):hover {
 button:active {
   background-color: hsl(0, 0%, 95%);
   border-color: hsl(0, 0%, 52%);
-  background: url(../images/button-active.png)repeat-x;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
+  background-repeat: repeat-x;
   background-size: 100% 100%;
 }
 
@@ -183,6 +175,11 @@ select[disabled] > option {
 /* global stuff we use everywhere */
 .hidden {
   display: none !important;
+}
+
+[data-focused-via-click] :focus,
+[data-focused-via-click]:focus {
+  outline: none;
 }
 
 @supports (-moz-appearance: none) {

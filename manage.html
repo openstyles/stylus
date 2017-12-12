@@ -166,11 +166,13 @@
   <details id="filters" data-pref="manage.filters.expanded">
     <summary>
       <h2 i18n-text="manageFilters">: <span id="filters-stats"></span></h2>
-      <svg id="reset-filters" class="svg-icon" viewBox="0 0 20 20">
-        <title i18n-text="genericResetLabel"></title>
-        <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-                         5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
-      </svg>
+      <a id="reset-filters" href="#">
+        <svg class="svg-icon" viewBox="0 0 20 20">
+          <title i18n-text="genericResetLabel"></title>
+          <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+                           5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+        </svg>
+      </a>
     </summary>
 
     <div class="filter-selection">
@@ -341,7 +343,6 @@
 
 <div id="installed"></div>
 
-<script src="vendor/focus/what-input.min.js"></script>
 <script src="manage/import-export.js"></script>
 <script src="msgbox/msgbox.js"></script>
 <script src="manage/incremental-search.js" async></script>

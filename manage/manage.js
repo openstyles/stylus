@@ -191,9 +191,6 @@ function createStyleElement({style, name}) {
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
-  } else {
-    $('.homepage', entry).removeAttribute('href');
-    $('.homepage', entry).classList.add('disabled');
   }
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
@@ -395,6 +392,7 @@ Object.assign(handleEvent, {
   },
 
   config(event, {styleMeta}) {
+    event.preventDefault()
     configDialog(styleMeta);
   },
 });

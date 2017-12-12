@@ -1,3 +1,4 @@
+/* global focusAccessibility */
 'use strict';
 
 function messageBox({
@@ -8,20 +9,18 @@ function messageBox({
   onshow,         // function(messageboxElement) invoked after the messagebox is shown
   blockScroll,    // boolean, blocks the page scroll
 }) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
-  messageBox.originalFocus = document.activeElement;
   initOwnListeners();
   bindGlobalListeners();
   createElement();
   document.body.appendChild(messageBox.element);
-  if (onshow) {
+
+  messageBox.originalFocus = document.activeElement;
+  moveFocus(1);
+
+  if (typeof onshow === 'function') {
     onshow(messageBox.element);
   }
-  messageBox.element.focus();
-  const firstEl = $('a, button, input, select', messageBox.element);
-  if (firstEl) {
-    firstEl.focus();
-  }
-  messageBox.lastEl = firstEl || messageBox.element;
+
   return new Promise(_resolve => {
     messageBox.resolve = _resolve;
   });
@@ -35,28 +34,30 @@ function messageBox({
         resolveWith({button: this.buttonIndex});
       },
       key(event) {
-        const keyCode = event.keyCode || event.which;
-        if (event.target.closest('#message-box, .colorpicker-popup')) {
-          messageBox.lastEl = event.target;
-        }
-        if (keyCode === 13 && event.target.dataset.allowEnter) {
-          // usercss item resets needs to activate
+        const {which, shiftKey, ctrlKey, altKey, metaKey, target} = event;
+        if (shiftKey && which !== 9 || ctrlKey || altKey || metaKey) {
           return;
         }
-        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-        && (keyCode === 13 || keyCode === 27)) {
-          event.preventDefault();
-          event.stopPropagation();
-          resolveWith(keyCode === 13 ? {enter: true, button: event.target.buttonIndex} : {esc: true});
+        switch (which) {
+          case 13:
+            for (let el = target; el; el = el.parentElement) {
+              if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+                return;
+              }
+            }
+            break;
+          case 27:
+            event.preventDefault();
+            event.stopPropagation();
+            break;
+          case 9:
+            moveFocus(shiftKey ? -1 : 1);
+            event.preventDefault();
+            return;
+          default:
+            return;
         }
-      },
-      keyup(event) {
-        const keyCode = event.keyCode || event.which;
-        if (keyCode === 9 && !event.target.closest('#message-box, .colorpicker-popup')) {
-          event.preventDefault();
-          event.stopPropagation();
-          messageBox.lastEl.focus();
-        }
+        resolveWith(which === 13 ? {enter: true} : {esc: true});
       },
       scroll() {
         scrollTo(blockScroll.x, blockScroll.y);
@@ -71,7 +72,9 @@ function messageBox({
       className: 'fadeout',
       onComplete: removeSelf,
     });
-    messageBox.originalFocus.focus();
+    if (messageBox.element.contains(document.activeElement)) {
+      messageBox.originalFocus.focus();
+    }
   }
 
   function createElement() {
@@ -107,12 +110,10 @@ function messageBox({
       window.addEventListener('scroll', messageBox.listeners.scroll);
     }
     window.addEventListener('keydown', messageBox.listeners.key, true);
-    window.addEventListener('keyup', messageBox.listeners.keyup, true);
   }
 
   function unbindGlobalListeners() {
     window.removeEventListener('keydown', messageBox.listeners.key, true);
-    window.removeEventListener('keyup', messageBox.listeners.keyup, true);
     window.removeEventListener('scroll', messageBox.listeners.scroll);
   }
 
@@ -120,6 +121,21 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
+  }
+
+  function moveFocus(dir) {
+    const elements = [...messageBox.element.getElementsByTagName('*')];
+    const activeIndex = elements.indexOf(document.activeElement);
+    const num = elements.length;
+    for (let i = 1; i < num; i++) {
+      const elementIndex = (activeIndex + i * dir + num) % num;
+      // we don't use positive tabindex so we stop at any valid value
+      const el = elements[elementIndex];
+      if (!el.disabled && el.tabIndex >= 0) {
+        el.focus();
+        return;
+      }
+    }
   }
 }
 

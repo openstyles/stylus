@@ -13,12 +13,9 @@ if (!FIREFOX && !OPERA) {
     }
   };
   block.classList.add('collapsible', 'collapsed');
-  block.onclick = event => toggleAdvanced(event);
-  block.onkeydown = event => {
-    if ((event.keyCode || event.which) === 13) {
-      toggleAdvanced(event);
-    }
-  };
+  block.onclick = toggleAdvanced;
+  block.onkeydown = event => event.which === 13 && toggleAdvanced(event);
+  $('h1', block).tabIndex = 0;
 }
 
 // actions

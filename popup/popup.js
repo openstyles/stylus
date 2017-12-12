@@ -326,6 +326,7 @@ Object.assign(handleEvent, {
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = (BG.cachedStyles.byId.get(id) || {}).name;
+    $('[data-cmd="ok"]', box).focus();
     $('[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {

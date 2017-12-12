@@ -180,15 +180,17 @@ function showUpdateHistory(event) {
     messageBox({
       title: t('updateCheckHistory'),
       contents: log,
+      blockScroll: true,
       buttons: [
         t('confirmOK'),
         logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
       ],
       onshow: logText && (() => {
         scroller = $('#message-box-contents');
-        scroller.setAttribute('tabindex', 0);
-        scroller.focus();
+        scroller.tabIndex = 0;
+        setTimeout(() => scroller.focus());
         scrollToBottom();
+
         $('#message-box-buttons button').insertAdjacentElement('afterend',
           // TODO: add a global class for our labels
           // TODO: add a <template> or a common function to create such controls
@@ -199,9 +201,9 @@ function showUpdateHistory(event) {
               $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
             t('manageOnlyUpdates'),
           ]));
+
         toggler.onchange();
       }),
-      blockScroll: true
     });
   });
   function scrollToBottom() {
