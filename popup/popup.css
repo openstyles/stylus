@@ -9,6 +9,7 @@
 
 html, body {
   height: min-content;
+  max-height: 600px;
 }
 
 body {
@@ -144,6 +145,7 @@ body.blocked > DIV {
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
+  position: relative;
 }
 
 #installed.disabled .style-name {
@@ -555,7 +557,9 @@ body.blocked .actions > .main-controls {
 }
 
 #hotkey-info[data-active] {
+  position: fixed;
   left: 6ex;
+  bottom: unset;
   width: auto;
   cursor: auto;
   display: flex;

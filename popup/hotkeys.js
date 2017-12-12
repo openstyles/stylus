@@ -160,10 +160,9 @@ var hotkeys = (() => {
       if (!container.firstElementChild) {
         buildElement();
       }
-      const height = 4 +
+      const height = 3 +
         container.firstElementChild.scrollHeight +
-        container.lastElementChild.scrollHeight +
-        parseFloat(getComputedStyle(container.lastElementChild).paddingBottom);
+        container.lastElementChild.scrollHeight;
       if (height > document.body.clientHeight) {
         document.body.style.height = height + 'px';
       }
@@ -202,20 +201,6 @@ var hotkeys = (() => {
     if (debounced !== true) {
       debounce(adjustInfoPosition, 100, true);
       return;
-    }
-    const style = $('#hotkey-info').style;
-    const scroller = document.scrollingElement;
-    if (installed.scrollHeight > installed.clientHeight ||
-        scroller.scrollHeight > scroller.innerHeight) {
-      const entryRight = installed.firstElementChild.getBoundingClientRect().right;
-      const right = window.innerWidth - entryRight;
-      if (parseFloat(style.right) !== right) {
-        style.setProperty('right', right + 'px', 'important');
-      }
-    }
-    const bottom = installed.getBoundingClientRect().bottom + window.scrollY;
-    if (parseFloat(style.height) !== bottom) {
-      style.setProperty('height', bottom + 'px', 'important');
     }
   }
 })();
