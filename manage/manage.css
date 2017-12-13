@@ -411,6 +411,15 @@ select {
   margin: -2px 1ex 0 0;
 }
 
+#manage-text {
+  display: flex;
+}
+
+#manage-text > :not(:last-child):after {
+  content: "|";
+  margin: 0 .5em;
+}
+
 .newUI .entry .svg-icon.checked,
 .newUI .entry:hover .svg-icon.checked {
   fill: #000;

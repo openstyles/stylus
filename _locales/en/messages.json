@@ -493,6 +493,18 @@
     "message": "License",
     "description": "Label for the license"
   },
+  "linkGetStyles": {
+    "message": "Get styles",
+    "description": "Help link text on the manage page e.g. https://userstyles.org"
+  },
+  "linkGetHelp": {
+    "message": "Get help",
+    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+  },
+  "linkStylusWiki": {
+    "message": "Wiki",
+    "description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
+  },
   "linterConfigPopupTitle": {
     "message": "Set $linter$ rules configuration",
     "description": "Stylelint or CSSLint popup header",
@@ -619,10 +631,6 @@
   "manageMaxTargets": {
     "message": "Number of applies-to items",
     "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
-  },
-  "manageText": {
-    "message": "<a href='https://userstyles.org'>Get styles on userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Get help</a>",
-    "description": "Help text on the manage page"
   },
   "manageTitle": {
     "message": "Stylus",
