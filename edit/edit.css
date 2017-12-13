@@ -377,7 +377,7 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 .has-regexp .test-regexp {
   display: inline-block;
 }
-.regexp-report summary, .regexp-report div {
+.regexp-report summary {
   cursor: pointer;
 }
 .regexp-report mark {
@@ -414,11 +414,17 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   position: absolute;
   margin-top: -1px;
 }
-.regexp-report details div:hover {
+.regexp-report details a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+.regexp-report details a:hover {
   text-decoration: underline;
   text-decoration-skip: ink;
 }
-.regexp-report details div img {
+.regexp-report details a img {
   width: 16px;
   max-height: 16px;
   position: absolute;

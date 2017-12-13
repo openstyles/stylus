@@ -516,23 +516,16 @@ function showToggleStyleHelp(event) {
 function showHelp(title = '', body) {
   const div = $('#help-popup');
   div.className = '';
+
   const contents = $('.contents', div);
   contents.textContent = '';
   if (body) {
     contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
   }
+
   $('.title', div).textContent = title;
 
-  if (getComputedStyle(div).display === 'none') {
-    window.addEventListener('keydown', closeHelp, true);
-    // avoid chaining on multiple showHelp() calls
-    $('.dismiss', div).onclick = closeHelp;
-  }
-  // reset any inline styles
-  div.style = 'display: block';
-  return div;
-
-  function closeHelp(event) {
+  showHelp.close = showHelp.close || (event => {
     const canClose =
       !event ||
       event.type === 'click' ||
@@ -549,16 +542,32 @@ function showHelp(title = '', body) {
       return;
     }
     if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
-      messageBox.confirm(t('confirmDiscardChanges')).then(ok => ok && closeHelp());
+      setTimeout(() => {
+        messageBox.confirm(t('confirmDiscardChanges'))
+          .then(ok => ok && showHelp.close());
+      });
       return;
+    }
+    if (div.contains(document.activeElement) && showHelp.originalFocus) {
+      showHelp.originalFocus.focus();
     }
     div.style.display = '';
     contents.textContent = '';
     clearTimeout(contents.timer);
-    window.removeEventListener('keydown', closeHelp, true);
+    window.removeEventListener('keydown', showHelp.close, true);
     window.dispatchEvent(new Event('closeHelp'));
-    (editors.lastActive || editors[0]).focus();
+  });
+
+  if (getComputedStyle(div).display === 'none') {
+    window.addEventListener('keydown', showHelp.close, true);
+    $('.dismiss', div).onclick = showHelp.close;
   }
+
+  // reset any inline styles
+  div.style = 'display: block';
+
+  showHelp.originalFocus = document.activeElement;
+  return div;
 }
 
 function showCodeMirrorPopup(title, html, options) {

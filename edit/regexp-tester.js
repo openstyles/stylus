@@ -110,12 +110,12 @@ var regExpTester = (() => {
             : GET_FAVICON_URL + new URL(url).hostname;
           const icon = $create('img', {src: faviconUrl});
           if (match.text.length === url.length) {
-            full.push($create('div', [
+            full.push($create('a', {href: '#'}, [
               icon,
               url,
             ]));
           } else {
-            partial.push($create('div', [
+            partial.push($create('a', {href: '#'}, [
               icon,
               url.substr(0, match.pos),
               $create('mark', match.text),
@@ -161,25 +161,32 @@ var regExpTester = (() => {
         }
       }
       showHelp(t('styleRegexpTestTitle'), report);
+      report.onclick = onClick;
 
       const note = $create('p.regexp-report-note',
         t('styleRegexpTestNote')
           .split(/(\\+)/)
           .map(s => (s.startsWith('\\') ? $create('code', s) : s)));
       report.appendChild(note);
-      report.style.paddingBottom = note.offsetHeight + 'px';
-
-      report.onclick = event => {
-        const target = event.target.closest('a, .regexp-report div');
-        if (target) {
-          openURL({
-            url: target.href || target.textContent,
-            currentWindow: null,
-          });
-          event.preventDefault();
-        }
-      };
+      adjustNote(report, note);
     });
+
+    function onClick(event) {
+      const a = event.target.closest('a');
+      if (a) {
+        event.preventDefault();
+        openURL({
+          url: a.href && a.getAttribute('href') !== '#' && a.href || a.textContent,
+          currentWindow: null,
+        });
+      } else if (event.target.closest('details')) {
+        setTimeout(adjustNote);
+      }
+    }
+
+    function adjustNote(report, note) {
+      report.style.paddingBottom = note.offsetHeight + 'px';
+    }
   }
 
   return {toggle, update};
