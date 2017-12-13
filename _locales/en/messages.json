@@ -678,6 +678,9 @@
   },
   "paginationTotal": {
     "message": "Total pages",
+  },
+  "paginationEstimated": {
+    "message": "Estimated number of pages",
     "description": "Tooltip for the total page count in search results"
   },
   "parseUsercssError": {
