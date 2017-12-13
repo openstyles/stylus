@@ -111,6 +111,7 @@ window.addEventListener('showStyles:done', function _() {
     dom.list = $('#search-results-list');
 
     addEventListener('scroll', loadMoreIfNeeded, {passive: true});
+
     if (FIREFOX) {
       let lastScrollbarWidth;
       addEventListener('resize', () => {
@@ -125,22 +126,22 @@ window.addEventListener('showStyles:done', function _() {
       });
     }
 
-    addEventListener('styleDeleted', ({detail}) => {
-      const entries = [...dom.list.children];
-      const entry = entries.find(el => el._result.installedStyleId === detail.id);
-      if (entry) {
-        entry._result.installed = false;
-        renderActionButtons(entry);
+    addEventListener('styleDeleted', ({detail: {id}}) => {
+      const result = processedResults.find(r => r.installedStyleId === id);
+      if (result) {
+        result.installed = false;
+        result.installedStyleId = -1;
+        renderActionButtons($('#' + RESULT_ID_PREFIX + result.id));
       }
     });
 
     addEventListener('styleAdded', ({detail: {style: {id, md5Url}}}) => {
-      const usoId = md5Url && md5Url.match(/\d+|$/)[0];
-      const entry = usoId && $('#' + RESULT_ID_PREFIX + usoId);
-      if (entry) {
-        entry._result.installed = true;
-        entry._result.installedStyleId = id;
-        renderActionButtons(entry);
+      const usoId = parseInt(md5Url && md5Url.match(/\d+|$/)[0]);
+      const result = usoId && processedResults.find(r => r.id === usoId);
+      if (result) {
+        result.installed = true;
+        result.installedStyleId = id;
+        renderActionButtons($('#' + RESULT_ID_PREFIX + usoId));
       }
     });
   }
@@ -488,6 +489,9 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function renderActionButtons(entry) {
+    if (!entry) {
+      return;
+    }
     const result = entry._result;
 
     if (result.installed && !('installed' in entry.dataset)) {
