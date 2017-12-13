@@ -149,7 +149,8 @@ var linterConfig = {
   },
 
   // this is an event listener so it can't refer to self via 'this'
-  openOnClick() {
+  openOnClick(event) {
+    event.preventDefault();
     setupLinterPopup(linterConfig.stringify());
   },
 

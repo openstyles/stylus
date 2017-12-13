@@ -170,7 +170,8 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 }
 
 
-function showUpdateHistory() {
+function showUpdateHistory(event) {
+  event.preventDefault();
   const log = $create('.update-history-log');
   let logText, scroller, toggler;
   let deleted = false;
@@ -179,13 +180,17 @@ function showUpdateHistory() {
     messageBox({
       title: t('updateCheckHistory'),
       contents: log,
+      blockScroll: true,
       buttons: [
         t('confirmOK'),
         logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
       ],
       onshow: logText && (() => {
         scroller = $('#message-box-contents');
+        scroller.tabIndex = 0;
+        setTimeout(() => scroller.focus());
         scrollToBottom();
+
         $('#message-box-buttons button').insertAdjacentElement('afterend',
           // TODO: add a global class for our labels
           // TODO: add a <template> or a common function to create such controls
@@ -196,6 +201,7 @@ function showUpdateHistory() {
               $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
             t('manageOnlyUpdates'),
           ]));
+
         toggler.onchange();
       }),
     });

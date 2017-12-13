@@ -195,21 +195,25 @@ function configDialog(style) {
   }
 
   function buildConfigForm() {
-    let resetter = $create('SVG:svg.svg-icon.config-reset-icon', {viewBox: '0 0 20 20'}, [
-      $create('SVG:title', t('genericResetLabel')),
-      $create('SVG:polygon', {
-        points: '16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 ' +
-                '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
-      }),
-    ]);
+    let resetter =
+      $create('a.config-reset-icon', {href: '#'}, [
+        $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'}, [
+          $create('SVG:title', t('genericResetLabel')),
+          $create('SVG:polygon', {
+            points: '16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 ' +
+                    '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
+          })
+        ])
+      ]);
     for (const va of vars) {
       let children;
       switch (va.type) {
         case 'color':
           children = [
             $create('.cm-colorview.config-value', [
-              va.input = $create('.color-swatch', {
+              va.input = $create('a.color-swatch', {
                 va,
+                href: '#',
                 onclick: showColorpicker
               }),
             ]),
@@ -269,6 +273,8 @@ function configDialog(style) {
           ...children,
           resetter,
         ]));
+
+      va.savedValue = va.value;
     }
   }
 
@@ -307,6 +313,7 @@ function configDialog(style) {
     const el = va.input.closest('label');
     el.classList.toggle('dirty', Boolean(va.dirty));
     el.classList.toggle('nondefault', !isDefault(va));
+    $('.config-reset-icon', el).disabled = isDefault(va);
   }
 
   function resetOnClick(event) {
@@ -316,7 +323,8 @@ function configDialog(style) {
     onchange({target: this.va.input});
   }
 
-  function showColorpicker() {
+  function showColorpicker(event) {
+    event.preventDefault();
     window.removeEventListener('keydown', messageBox.listeners.key, true);
     const box = $('#message-box-contents');
     colorpicker.show({

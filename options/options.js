@@ -7,12 +7,15 @@ setTimeout(splitLongTooltips);
 
 if (!FIREFOX && !OPERA) {
   const block = $('#advanced');
-  block.classList.add('collapsible', 'collapsed');
-  block.onclick = event => {
+  const toggleAdvanced = event => {
     if (block.classList.contains('collapsed') || event.target.closest('h1')) {
       block.classList.toggle('collapsed');
     }
   };
+  block.classList.add('collapsible', 'collapsed');
+  block.onclick = toggleAdvanced;
+  block.onkeydown = event => event.which === 13 && toggleAdvanced(event);
+  $('h1', block).tabIndex = 0;
 }
 
 // actions

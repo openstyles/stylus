@@ -97,11 +97,8 @@
   visibility: hidden;
 }
 
-.svg-icon.config-reset-icon {
-  /*position: absolute;*/
-  pointer-events: all !important;
+.config-reset-icon .svg-icon {
   cursor: pointer;
-  /*right: -7px;*/
   fill: #aaa;
   width: 16px;
   height: 16px;
@@ -110,7 +107,7 @@
   flex-shrink: 0;
 }
 
-.svg-icon.config-reset-icon:hover {
+.config-reset-icon:hover .svg-icon {
   fill: #666;
 }
 
@@ -155,9 +152,11 @@
 
 .color-swatch {
   position: absolute;
+  top: 0;
+  left: 0;
   border: 1px solid gray;
-  margin-top: -22px;
   cursor: pointer;
+  opacity: 1;
 }
 
 .colorpicker-popup {

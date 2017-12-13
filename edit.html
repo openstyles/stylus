@@ -107,7 +107,9 @@
         <br>
         <div class="applies-to">
           <label i18n-text="appliesLabel">
-            <svg class="svg-icon info applies-to-help"><use xlink:href="#svg-icon-help"/></svg>
+            <a href="#" class="svg-inline-wrapper applies-to-help">
+              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
           </label>
           <ul class="applies-to-list"></ul>
         </div>
@@ -191,20 +193,24 @@
           <label id="enabled-label" i18n-text="styleEnabledLabel">
             <input type="checkbox" id="enabled" class="style-contributor">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          </label><!--
-          --><svg id="toggle-style-help" class="svg-icon info">
-            <use xlink:href="#svg-icon-help"/>
-          </svg>
+          </label>
+          <a href="#" id="toggle-style-help" class="svg-inline-wrapper">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
         </div>
       </section>
       <section id="actions">
         <div>
           <button id="save-button" i18n-text="styleSaveLabel"></button>
           <button id="beautify" i18n-text="styleBeautify"></button>
-          <a href="manage.html"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
+          <a href="manage.html" tabindex="-1"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
         </div>
         <div id="mozilla-format-container">
-          <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading"><svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
+          <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading">
+            <a class="svg-inline-wrapper" href="#">
+              <svg id="to-mozilla-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
+          </h2>
           <button id="from-mozilla" i18n-text="importLabel"></button>
           <button id="to-mozilla" i18n-text="exportLabel"></button>
         </div>
@@ -246,11 +252,9 @@
             <input id="editor.colorpicker" type="checkbox">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
-          <span class="svg-inline-wrapper" i18n-title="shortcutsNote">
-            <svg id="colorpicker-settings" class="svg-icon settings">
-              <use xlink:href="#svg-icon-settings"/>
-            </svg>
-          </span>
+          <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote">
+            <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
+          </a>
         </div>
         <div class="option usercss-only">
           <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
@@ -268,9 +272,9 @@
             <select id="editor.keyMap"></select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
-          <span class="svg-inline-wrapper">
-            <svg id="keyMap-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </span>
+          <a id="keyMap-help" href="#" class="svg-inline-wrapper">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
         </div>
         <div class="option aligned">
           <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
@@ -300,19 +304,17 @@
               </select>
               <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
             </div>
-          <span class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
-            <svg id="linter-settings" class="svg-icon settings">
-              <use xlink:href="#svg-icon-settings"/>
-            </svg>
-          </span>
+          <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
+            <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
+          </a>
         </div>
       </details>
       <details id="lint" class="hidden" data-pref="editor.lint.expanded">
         <summary>
-          <h2 i18n-text="linterIssues">: <span id="issue-count"></span><!-- EAT SPACE
-          --><svg id="lint-help" class="svg-icon info intercepts-click">
-              <use xlink:href="#svg-icon-help"/>
-            </svg>
+          <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
+            <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click">
+              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
           </h2>
         </summary>
         <div></div>
@@ -324,7 +326,11 @@
       </div>
     </div>
     <section id="sections">
-      <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span><svg id="sections-help" class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg></h2>
+      <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span>
+        <a id="sections-help" href="#" class="svg-inline-wrapper">
+          <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+        </a>
+      </h2>
     </section>
     <div id="help-popup">
       <div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>

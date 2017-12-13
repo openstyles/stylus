@@ -7,6 +7,7 @@ onDOMready().then(() => {
   let focusedName = '';
   const input = $create('textarea', {
     spellcheck: false,
+    attributes: {tabindex: -1},
     oninput: incrementalSearch,
   });
   replaceInlineStyle({

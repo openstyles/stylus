@@ -273,8 +273,6 @@ function initHooks() {
   }
 }
 
-// common for usercss and classic
-
 function onChange(event) {
   const node = event.target;
   if ('savedValue' in node) {
@@ -317,12 +315,6 @@ function setCleanItem(node, isClean) {
 function isCleanGlobal() {
   const clean = Object.keys(dirty).length === 0;
   setDirtyClass(document.body, !clean);
-    // let saveBtn = $('#save-button')
-    // if (clean){
-    //     //saveBtn.removeAttribute('disabled');
-    // }else{
-    //     //saveBtn.setAttribute('disabled', true);
-    // }
   return clean;
 }
 
@@ -406,6 +398,7 @@ function updateTitle() {
   const clean = isCleanGlobal();
   const title = styleId === null ? t('addStyleTitle') : t('editStyleTitle', [name]);
   document.title = clean ? title : DIRTY_TITLE.replace('$', title);
+  $('#save-button').disabled = clean;
 }
 
 function updateLintReportIfEnabled(...args) {
@@ -500,19 +493,23 @@ function fromMozillaFormat() {
   }
 }
 
-function showSectionHelp() {
+function showSectionHelp(event) {
+  event.preventDefault();
   showHelp(t('styleSectionsTitle'), t('sectionHelp'));
 }
 
-function showAppliesToHelp() {
+function showAppliesToHelp(event) {
+  event.preventDefault();
   showHelp(t('appliesLabel'), t('appliesHelp'));
 }
 
-function showToMozillaHelp() {
+function showToMozillaHelp(event) {
+  event.preventDefault();
   showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
 }
 
-function showToggleStyleHelp() {
+function showToggleStyleHelp(event) {
+  event.preventDefault();
   showHelp(t('helpAlt'), t('styleEnabledToggleHint'));
 }
 

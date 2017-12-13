@@ -1,3 +1,4 @@
+/* global focusAccessibility */
 'use strict';
 
 function messageBox({
@@ -12,10 +13,14 @@ function messageBox({
   bindGlobalListeners();
   createElement();
   document.body.appendChild(messageBox.element);
-  if (onshow) {
+
+  messageBox.originalFocus = document.activeElement;
+  moveFocus(1);
+
+  if (typeof onshow === 'function') {
     onshow(messageBox.element);
   }
-  messageBox.element.focus();
+
   return new Promise(_resolve => {
     messageBox.resolve = _resolve;
   });
@@ -29,13 +34,30 @@ function messageBox({
         resolveWith({button: this.buttonIndex});
       },
       key(event) {
-        const keyCode = event.keyCode || event.which;
-        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-        && (keyCode === 13 || keyCode === 27)) {
-          event.preventDefault();
-          event.stopPropagation();
-          resolveWith(keyCode === 13 ? {enter: true} : {esc: true});
+        const {which, shiftKey, ctrlKey, altKey, metaKey, target} = event;
+        if (shiftKey && which !== 9 || ctrlKey || altKey || metaKey) {
+          return;
         }
+        switch (which) {
+          case 13:
+            for (let el = target; el; el = el.parentElement) {
+              if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+                return;
+              }
+            }
+            break;
+          case 27:
+            event.preventDefault();
+            event.stopPropagation();
+            break;
+          case 9:
+            moveFocus(shiftKey ? -1 : 1);
+            event.preventDefault();
+            return;
+          default:
+            return;
+        }
+        resolveWith(which === 13 ? {enter: true} : {esc: true});
       },
       scroll() {
         scrollTo(blockScroll.x, blockScroll.y);
@@ -50,6 +72,9 @@ function messageBox({
       className: 'fadeout',
       onComplete: removeSelf,
     });
+    if (messageBox.element.contains(document.activeElement)) {
+      messageBox.originalFocus.focus();
+    }
   }
 
   function createElement() {
@@ -96,6 +121,21 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
+  }
+
+  function moveFocus(dir) {
+    const elements = [...messageBox.element.getElementsByTagName('*')];
+    const activeIndex = elements.indexOf(document.activeElement);
+    const num = elements.length;
+    for (let i = 1; i < num; i++) {
+      const elementIndex = (activeIndex + i * dir + num) % num;
+      // we don't use positive tabindex so we stop at any valid value
+      const el = elements[elementIndex];
+      if (!el.disabled && el.tabIndex >= 0) {
+        el.focus();
+        return;
+      }
+    }
   }
 }
 
