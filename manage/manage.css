@@ -373,10 +373,6 @@ select {
   right: 0;
 }
 
-#newUIoptions a > .svg-icon.select-arrow {
-  position: static;
-}
-
 .select-resizer {
   cursor: default;
   border: none;
@@ -461,7 +457,7 @@ select {
 }
 
 .newUI .actions > * {
-  margin: 0 8px 0 0;
+  margin: 0 6px 0 0;
   width: 20px;
   height: 20px;
 }
@@ -592,6 +588,7 @@ select {
   line-height: .5ex;
   vertical-align: super;
   letter-spacing: .1ex;
+  text-decoration: none;
 }
 
 .newUI .applies-to:not(.has-more) .expander {
@@ -658,12 +655,18 @@ select {
   margin-right: .5em;
 }
 
+#newUIoptions [data-toggle-on-click="#faviconsHelp"] {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 #newUIoptions [data-toggle-on-click] svg {
   transform: rotate(-90deg);
-  cursor: pointer;
-  right: -16px;
-  top: 0;
-  pointer-events: auto;
+  position:  static;
 }
 
 #newUIoptions [data-toggle-on-click][open] svg {
@@ -841,7 +844,7 @@ input[id^="manage.newUI"] {
 }
 
 #search-help {
-  margin: 4px 0 0 8px;
+  margin: 4px -5px 0 5px;
 }
 
 #message-box.help-text > div {
