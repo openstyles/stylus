@@ -112,9 +112,11 @@ window.addEventListener('showStyles:done', function _() {
 
     addEventListener('scroll', loadMoreIfNeeded, {passive: true});
     if (FIREFOX) {
+      let lastScrollbarWidth;
       addEventListener('resize', () => {
         const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
-        if (scrollbarWidth !== parseFloat(document.body.style.paddingRight)) {
+        if (lastScrollbarWidth !== scrollbarWidth) {
+          lastScrollbarWidth = scrollbarWidth;
           dom.marginLeft = dom.marginLeft || parseFloat(getComputedStyle(dom.container).marginLeft);
           const shift = dom.container.getBoundingClientRect().left - dom.marginLeft;
           document.body.style.setProperty('padding',
