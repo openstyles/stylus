@@ -534,7 +534,9 @@ window.addEventListener('showStyles:done', function _() {
   function onUninstallClicked(event) {
     event.stopPropagation();
     const entry = this.closest('.search-result');
-    deleteStyleSafe({id: entry._result.installedStyleId});
+    saveScrollPosition(entry);
+    deleteStyleSafe({id: entry._result.installedStyleId})
+      .then(restoreScrollPosition);
   }
 
   /** Installs the current userstyleSearchResult into Stylus. */
@@ -546,6 +548,7 @@ window.addEventListener('showStyles:done', function _() {
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
+    saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
 
@@ -570,6 +573,7 @@ window.addEventListener('showStyles:done', function _() {
       $.remove('.lds-spinner', entry);
       installButton.disabled = false;
       entry.style.pointerEvents = '';
+      restoreScrollPosition();
     });
 
     function fetchStyleSettings(result) {
@@ -579,6 +583,21 @@ window.addEventListener('showStyles:done', function _() {
           return result.style_settings;
         });
     }
+  }
+
+  function saveScrollPosition(entry) {
+    dom.scrollPosition = entry.getBoundingClientRect().top;
+    dom.scrollPositionElement = entry;
+  }
+
+  function restoreScrollPosition() {
+    const t0 = performance.now();
+    new MutationObserver((mutations, observer) => {
+      if (performance.now() - t0 < 1000) {
+        window.scrollBy(0, dom.scrollPositionElement.getBoundingClientRect().top - dom.scrollPosition);
+      }
+      observer.disconnect();
+    }).observe(document.body, {childList: true, subtree: true, attributes: true});
   }
 
   //endregion
