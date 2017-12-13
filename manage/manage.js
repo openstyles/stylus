@@ -131,7 +131,7 @@ function showStyles(styles = []) {
       requestAnimationFrame(renderStyles);
       return;
     }
-    if ('scrollY' in (history.state || {})) {
+    if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
     if (newUI.enabled && newUI.favicons) {
