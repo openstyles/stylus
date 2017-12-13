@@ -677,7 +677,7 @@
     "description": "Tooltip for the '<-' button in search results"
   },
   "paginationTotal": {
-    "message": "Total pages",
+    "message": "Total pages"
   },
   "paginationEstimated": {
     "message": "Estimated number of pages",
