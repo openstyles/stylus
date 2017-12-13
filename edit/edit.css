@@ -32,6 +32,15 @@ body {
   margin-bottom: 4px;
 }
 
+#options > div.option:nth-last-of-type(7) {
+  margin-bottom: 12px;
+}
+
+#options > div.option:nth-last-of-type(7) + .usercss-only {
+  margin-top: -8px;
+  margin-bottom: 12px;
+}
+
 #basic-info-enabled {
   margin-top: 2px;
 }
@@ -103,12 +112,25 @@ label {
 .svg-inline-wrapper {
   margin-left: .2rem;
   display: inline-block;
+  vertical-align: middle;
+}
+#mozilla-format-heading .svg-inline-wrapper {
+  margin-left: 0;
+}
+#basic-info-enabled .svg-inline-wrapper {
+  margin-left: .1rem;
+}
+#colorpicker-settings.svg-inline-wrapper {
+  margin: -2px 0 0 .1rem;
+}
+.svg-inline-wrapper.applies-to-help {
+  margin: -2px 0 0 .25rem;
 }
 .aligned .svg-inline-wrapper {
-  margin-left: .25rem;
+  margin: -2px 0 0 .3rem;
 }
-h2 .svg-icon, label .svg-icon {
-  margin-top: -1px;
+#sections-help {
+  margin-left: -1px;
 }
 .svg-icon.info {
   width: 14px;
