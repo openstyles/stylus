@@ -111,6 +111,17 @@ window.addEventListener('showStyles:done', function _() {
     dom.list = $('#search-results-list');
 
     addEventListener('scroll', loadMoreIfNeeded, {passive: true});
+    if (FIREFOX) {
+      addEventListener('resize', () => {
+        const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
+        if (scrollbarWidth !== parseFloat(document.body.style.paddingRight)) {
+          dom.marginLeft = dom.marginLeft || parseFloat(getComputedStyle(dom.container).marginLeft);
+          const shift = dom.container.getBoundingClientRect().left - dom.marginLeft;
+          document.body.style.setProperty('padding',
+            `0 ${scrollbarWidth - shift}px 0 ${shift}px`, 'important');
+        }
+      });
+    }
 
     addEventListener('styleDeleted', ({detail}) => {
       const entries = [...dom.list.children];
