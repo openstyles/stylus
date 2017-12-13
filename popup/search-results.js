@@ -214,18 +214,21 @@ window.addEventListener('showStyles:done', function _() {
     search({category})
       .then(function process(results) {
         const data = results.data.filter(sameCategory);
+
         pass++;
         if (pass === 1 && !data.length) {
           category = getCategory({keepTLD: true});
           return search({category, restart: true}).then(process);
         }
+
         const numIrrelevant = results.data.length - data.length;
         totalResults = results.current_page === 1 ? results.total_entries : totalResults;
         totalResults = Math.max(0, totalResults - numIrrelevant);
         totalPages = Math.ceil(totalResults / DISPLAY_PER_PAGE);
 
+        setLoading(false);
+
         if (data.length) {
-          setLoading(false);
           unprocessedResults.push(...data);
           processNextResult();
         } else if (numIrrelevant) {
