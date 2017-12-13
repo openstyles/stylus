@@ -36,6 +36,10 @@ window.addEventListener('showStyles:done', function _() {
   // Millisecs to wait before fetching .JSON for next search result.
   const DELAY_BEFORE_SEARCHING_STYLES = 0;
 
+  // update USO style install counter
+  // if the style isn't uninstalled in the popup
+  const PINGBACK_DELAY = 60e3;
+
   const BLANK_PIXEL_DATA = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA' +
                            'C1HAwCAAAAC0lEQVR42mOcXQ8AAbsBHLLDr5MAAAAASUVORK5CYII=';
 
@@ -131,6 +135,7 @@ window.addEventListener('showStyles:done', function _() {
       if (result) {
         result.installed = false;
         result.installedStyleId = -1;
+        BG.clearTimeout(result.pingbackTimer);
         renderActionButtons($('#' + RESULT_ID_PREFIX + result.id));
       }
     });
@@ -558,6 +563,7 @@ window.addEventListener('showStyles:done', function _() {
       fetchStyleSettings(result),
     ])
     .then(([style, settings]) => {
+      pingback(result);
       // show a 'config-on-homepage' icon in the popup
       style.updateUrl += settings.length ? '?' : '';
       // show a 'style installed' tooltip in the manager
@@ -583,6 +589,11 @@ window.addEventListener('showStyles:done', function _() {
           return result.style_settings;
         });
     }
+  }
+
+  function pingback(result) {
+    result.pingbackTimer = BG.setTimeout(BG.download, PINGBACK_DELAY,
+      BASE_URL + '/styles/install/' + result.id + '?source=stylish-ch');
   }
 
   function saveScrollPosition(entry) {
