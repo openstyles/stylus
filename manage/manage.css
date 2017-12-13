@@ -844,7 +844,7 @@ input[id^="manage.newUI"] {
 }
 
 #search-help {
-  margin: 4px -5px 0 5px;
+  margin: 4px -5px 0 2px;
 }
 
 #message-box.help-text > div {
