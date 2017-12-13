@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Автоматически проверять и устанавливать обновления стилей (интервал в часах)",
+		"message": "Интервал обновления стилей, в часах (укажите 0 для выключения)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -272,10 +272,6 @@
 		"message": "Обновить стили",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Скачать стили с userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Справка</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Только локально созданные стили",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -321,6 +317,10 @@
 	"liveReloadLabel": {
 		"message": "Автозагрузка изменений",
 		"description": "The label of live-reload feature"
+	},
+	"linkGetStyles": {
+		"message": "Скачать стили",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Доступ к адресам file:// возможен только если включить соответствующую опцию для Stylus на странице chrome://extensions.",
@@ -790,6 +790,10 @@
 		"message": "Чтобы указать, к каким URL относится код в этом разделе, воспользуйтесь параметром \"Применить к\".",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Помощь",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"searchStylesHelp": {
 		"message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед адресом, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
@@ -1107,10 +1111,6 @@
 		"message": "Создать стиль",
 		"description": "Label for the button to go to the add style page"
 	},
-	"optionsUpdateIntervalNote": {
-		"message": "Для отключения автоматического обновления стилей введите 0 (ноль)",
-		"description": ""
-	},
 	"installButtonUpdate": {
 		"message": "Обновить стиль",
 		"description": "Label for update button"
@@ -1166,6 +1166,10 @@
 	"linterResetMessage": {
 		"message": "Для отмены случайного сброса нажмите Ctrl-Z (или Cmd-Z) в окне ввода",
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
+	},
+	"linkStylusWiki": {
+		"message": "Инфо",
+		"description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
 	},
 	"description": {
 		"message": "Настраивайте стили веб-сайтов с помощью менеджера стилей Stylus. Он позволяет легко установить темы и изменить внешний вид сайтов Google, Facebook, YouTube, Orkut и множества других веб-страниц.",

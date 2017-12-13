@@ -20,7 +20,7 @@
 		"description": ""
 	},
 	"optionsUpdateInterval": {
-		"message": "Verificar automaticamente e instalar todos as atualizações para estilos do utilizador [userstyles] disponíveis (em horas)",
+		"message": "Verificar automaticamente e instalar todos as atualizações para estilos do utilizador [userstyles] disponíveis (em horas), para desativar, estabelce a 0",
 		"description": ""
 	},
 	"exportLabel": {
@@ -196,10 +196,6 @@
 		"message": "Atualizar estilos",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Obter estilos em userstyles.org</a>|<a href='http://add0n.com/stylus.html'>Obter ajuda</a>",
-		"description": "Help text on the manage page"
-	},
 	"searchStyles": {
 		"message": "Pesquisar conteúdos",
 		"description": "Label for the search filter textbox on the Manage styles page"
@@ -207,6 +203,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Verifica outra vez, eu não editei nenhum estilo!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"linkGetStyles": {
+		"message": "Obter estilos",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "O Stylus pode acessar URLs file:// apenas se ativares a checkbox correspondente para a extensão Stylus na página chrome://extensions",
@@ -484,6 +484,10 @@
 		"message": "Usa os controlos \"Aplica-se a\" para limitar a que URLs o código nesta seção se aplica.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Obter ajuda",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Editar estil",
 		"description": "Title of the page for editing styles"
@@ -623,10 +627,6 @@
 	"addStyleLabel": {
 		"message": "Escrever um novo estilo",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Para desativar a verificação automática de atualizações de estilos do utilizador [userstyle], estabelce o intervalo a 0",
-		"description": ""
 	},
 	"backupButtons": {
 		"message": "Cópia de segurança",

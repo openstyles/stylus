@@ -216,10 +216,6 @@
 		"message": "升级样式",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>从 userstyles.org 获取样式</a> | <a href='http://add0n.com/stylus.html'>帮助</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "只显示在本地创建的样式",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -569,6 +565,10 @@
 		"message": "使用“应用对象”控件来限制此部分中的代码所应用到的网址。",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "帮助",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "修改样式",
 		"description": "Title of the page for editing styles"
@@ -728,10 +728,6 @@
 	"addStyleLabel": {
 		"message": "编写新样式",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "设置为 0 则关闭样式自动更新检查",
-		"description": ""
 	},
 	"backupButtons": {
 		"message": "备份",

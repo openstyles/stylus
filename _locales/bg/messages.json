@@ -20,7 +20,7 @@
 		"description": ""
 	},
 	"optionsUpdateInterval": {
-		"message": "Автоматична проверка и инсталиране на всички налични обновления (в часове)",
+		"message": "Автоматична проверка и инсталиране на всички налични обновления (в часове), за да изключите, задайте 0",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -216,10 +216,6 @@
 		"message": "Обновяване на стиловете",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Вземете стилове от userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помощ</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Само местно създадените стилове",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -244,6 +240,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Повторна проверка",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"linkGetStyles": {
+		"message": "Вземете стилове",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Разширението ще има достъп до адреси от типа file:// само ако включите съответната отметка на страницата chrome://extensions.",
@@ -573,6 +573,10 @@
 		"message": "Използвайте 'Приложимо за', за да ограничите адресите, за които се отнася кода в отдела.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Помощ",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Редактиране на стила",
 		"description": "Title of the page for editing styles"
@@ -732,10 +736,6 @@
 	"addStyleLabel": {
 		"message": "Писане на нов стил",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "За да изключите автоматичните обновления, задайте интервала на 0",
-		"description": ""
 	},
 	"backupButtons": {
 		"message": "Резервни копия",

@@ -16,7 +16,7 @@
 		"description": ""
 	},
 	"optionsUpdateInterval": {
-		"message": "Controlla e installa automaticamente tutti gli aggiornamenti stili disponibili (in ore)",
+		"message": "Controlla e installa automaticamente tutti gli aggiornamenti stili disponibili (in ore), per disattivare, imposta a 0",
 		"description": ""
 	},
 	"exportLabel": {
@@ -184,10 +184,6 @@
 		"message": "Aggiorna stili",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Ottieni stili da userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Otteini aiuto</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Solo stili creati localmente",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -199,6 +195,10 @@
 	"checkAllUpdatesForce": {
 		"message": "Controlla di nuovo, non ho modificato nessuno stile!",
 		"description": "Label for the button to apply all detected updates"
+	},
+	"linkGetStyles": {
+		"message": "Ottieni stili",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"disableStyleLabel": {
 		"message": "Disattiva",
@@ -499,6 +499,10 @@
 		"message": "Utilizza i controlli \"Applica a\" per limitare gli URL a cui viene applicato il codice in questa sezione.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Otteini aiuto",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Modifica di stili",
 		"description": "Title of the page for editing styles"
@@ -653,10 +657,6 @@
 	"addStyleLabel": {
 		"message": "Scrivi nuovo stile",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Per disattivare il controllo automatico degli aggiornamenti degli stili, imposta l'intervallo a 0",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "Aggiorna",

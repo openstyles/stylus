@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Automaatselt kontrolli ja installi kõik saadaolevad kasutajastiili uuendused (tundides)",
+		"message": "Automaatselt kontrolli ja installi kõik saadaolevad kasutajastiili uuendused (tundides), sea 0 et keelata",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -259,10 +259,6 @@
 	"optionsCheck": {
 		"message": "Uuenda stiile",
 		"description": ""
-	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Hangi stiile saidilt userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Hangi abi</a>",
-		"description": "Help text on the manage page"
 	},
 	"manageOnlyLocal": {
 		"message": "Ainult kohalikult loodud stiilid",
@@ -742,6 +738,10 @@
 		"message": "Kasuta \"rakendub\" valikuid, et piirata, mis URLidele selles jaotises olev kood rakendub.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Hangi abi",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Muuda stiili",
 		"description": "Title of the page for editing styles"
@@ -1026,10 +1026,6 @@
 	"addStyleLabel": {
 		"message": "Kirjuta uus stiil",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Et keelata automaatsed kasutajastiilide uuenduste kontrollid, sea intervalliks 0",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "Uuenda stiil",

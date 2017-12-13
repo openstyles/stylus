@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Buscar e instalar automáticamente todas las actualizaciones disponibles de estilos de usuario (en horas)",
+		"message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -272,10 +272,6 @@
 		"message": "Actualizar estilos",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Obtener estilos en userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Obtener ayuda</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Sólo estilos creados localmente",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -321,6 +317,10 @@
 	"liveReloadLabel": {
 		"message": "Recargar sobre la marcha",
 		"description": "The label of live-reload feature"
+	},
+	"linkGetStyles": {
+		"message": "Obtener estilos",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus puede acceder a URL file:// solo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
@@ -634,6 +634,10 @@
 		"message": "(Establezca la regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)",
 		"description": "CSSLint rule config values"
 	},
+	"searchResultNoneFound": {
+		"message": "No se encontraron estilos para este sitio.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Sangrar @media, @supports",
 		"description": "CSS-beautifier option"
@@ -737,6 +741,10 @@
 		"message": "Página siguiente",
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
+	"searchResultInstallCount": {
+		"message": "Instalaciones totales",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "Código",
 		"description": "Label for the code for a section"
@@ -777,6 +785,10 @@
 	"appliesHelp": {
 		"message": "Utilice los controles 'Se aplica a' para limitar a qué URLs se aplica el código de esta sección.",
 		"description": "Help text for 'applies to' section"
+	},
+	"linkGetHelp": {
+		"message": "Obtener ayuda",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
 		"message": "La tecla </> pone el foco en el campo de búsqueda.\nTexto simple: Busque por nombre, código, URL de la página principal, y sitios a los que se apllica. Las palabras con menos de 3 letras son ignoradas.\nURL coincidente: Prefije la búsqueda con <url:>, ej. <url:https://github.com/openstyles/stylus>\nExpresiones regulares: Incluya barras e indicadores, ej.. </body.*?\\ba\\b/simguy>\nPalabras exactas: Ponga la consulta entre comillas dobles, ej.. <\".header ~ div\">",
@@ -908,6 +920,10 @@
 		"message": "Sólo estilos externos",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Instalaciones semanales",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Reemplazar todo",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -919,6 +935,10 @@
 	"confirmDiscardChanges": {
 		"message": "¿Descartar los cambios?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Actualizado",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "Guardar y aplicar los cambios automáticamente",
@@ -1078,10 +1098,6 @@
 	"addStyleLabel": {
 		"message": "Escribir un estilo nuevo",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Para desactivar las búsquedas automáticas de actualizaciones, establezca el intervalo a 0",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "Actualizar estilo",

@@ -112,10 +112,6 @@
 			}
 		}
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Преузмите стилове са userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Помоћ</a>",
-		"description": "Help text on the manage page"
-	},
 	"linterIssuesHelp": {
 		"message": "Проблем пронађен од стране $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -128,6 +124,10 @@
 	"searchStyles": {
 		"message": "Претражи садржај",
 		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"linkGetStyles": {
+		"message": "Преузмите стилове",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"disableStyleLabel": {
 		"message": "Онемогући",
@@ -320,6 +320,10 @@
 	"appliesHelp": {
 		"message": "Употреба 'Примењује се на' одређује опсег УРЛ адреса на које се код у овом одељку примењује.",
 		"description": "Help text for 'applies to' section"
+	},
+	"linkGetHelp": {
+		"message": "Помоћ",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"editStyleHeading": {
 		"message": "Уреди стил",

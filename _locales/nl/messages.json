@@ -112,10 +112,6 @@
 			}
 		}
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Verkrijg stijlen op userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Verkrijg hulp</a>",
-		"description": "Help text on the manage page"
-	},
 	"linterIssuesHelp": {
 		"message": "De door stylelint gevonden problemen, $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -128,6 +124,10 @@
 	"searchStyles": {
 		"message": "Inhoud doorzoeken",
 		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"linkGetStyles": {
+		"message": "Verkrijg stijlen",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"disableStyleLabel": {
 		"message": "Uitschakelen",
@@ -312,6 +312,10 @@
 	"appliesHelp": {
 		"message": "Gebruik de 'Toepasbaar op'-functies om de URL's te limiteren in de sectie.",
 		"description": "Help text for 'applies to' section"
+	},
+	"linkGetHelp": {
+		"message": "Verkrijg hulp",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"editStyleHeading": {
 		"message": "Stijl bewerken",

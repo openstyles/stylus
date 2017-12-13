@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Az összes stílus elérhető frissítéseinek automatikus ellenőrzése és telepítése (órában)",
+		"message": "Az összes stílus elérhető frissítéseinek automatikus ellenőrzése és telepítése (órában), az letiltásához állítsd 0-ra",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -268,10 +268,6 @@
 		"message": "Stílusok frissítése",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Szerezz be stílusokat a userstyles.org-on</a> | <a href='http://add0n.com/stylus.html'>Kérj segítséget</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Csak helyileg létrehozott stílusok",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -318,6 +314,10 @@
 		"message": "Valós idejű újratöltés",
 		"description": "The label of live-reload feature"
 	},
+	"linkGetStyles": {
+		"message": "Szerezz be stílusokat",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
+	},
 	"unreachableFileHint": {
 		"message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon.",
 		"description": "Note in the toolbar popup for file:// URLs"
@@ -333,6 +333,10 @@
 	"manageFavicons": {
 		"message": "Faviconok az alkalmazási oszlopban",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationCurrent": {
+		"message": "Jelenlegi oldal",
+		"description": "Tooltip for the current page index in search results"
 	},
 	"menuShowBadge": {
 		"message": "Aktív stílusok számlálójának mutatása",
@@ -365,6 +369,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Sikertelen frissítés: nem érhető el a szerver.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Hiba",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Szűrők",
@@ -586,6 +594,10 @@
 		"message": "Az értéket nem lehet menteni. Próbáld meg csökkenteni a szövegmennyiséget!",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "Helyben",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Az összes frissítés ellenőrzése és telepítése",
 		"description": ""
@@ -621,6 +633,10 @@
 	"linterCSSLintSettings": {
 		"message": "(Szabály megadása: 0 = letiltva; 1 = figyelmeztetés; 2 = hiba)",
 		"description": "CSSLint rule config values"
+	},
+	"searchResultNoneFound": {
+		"message": "Nem találhatók stílusok ehhez az oldalhoz.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
 	},
 	"styleBeautifyIndentConditional": {
 		"message": "@media, @supports behúzása",
@@ -658,6 +674,10 @@
 		"message": "A frissítés befejeződött.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Összes oldal",
+		"description": "Tooltip for the total page count in search results"
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Nem mőködhet megfelelően egy ebben a verzióban található ismert hiba miatt: chrome.extension.getBackgroundPage() eredménye nem érvényes",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -673,6 +693,10 @@
 	"manageMaxTargets": {
 		"message": "Megjelenítendő célok száma",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"searchResultRating": {
+		"message": "Értékelés",
+		"description": "Text for label that shows the search result's rating"
 	},
 	"popupManageTooltip": {
 		"message": "Shift-kattintás vagy jobb kattintás megnyitja a stíluskezelőt a jelenlegi oldalra érvényesülő stílusokkal",
@@ -712,6 +736,14 @@
 	"optionsResetButton": {
 		"message": "Beállítások visszaállítása alapra",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Következő oldal",
+		"description": "Tooltip for the '->' (next page) button in search results"
+	},
+	"searchResultInstallCount": {
+		"message": "Összes telepítés",
+		"description": "Text for label that shows the number of times a search result was installed"
 	},
 	"sectionCode": {
 		"message": "Kód",
@@ -754,9 +786,17 @@
 		"message": "Használd az \"A következőre érvényesül\" részt, hogy korlátozd, milyen URL-ekre vonatkozzon az itt lévő kód!",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Kérj segítséget",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"searchStylesHelp": {
 		"message": "A </> billentyűvel a keresési mezőre ugrasz.\nSima szöveg: keresés a névben, kódban, honlap URL-ben és érvényes oldalakban. A 3 betűnél kevesebb szavak figyelmen kívül vannak hagyva.\nIlleszkedő URL: kezdd a keresést „<url:>”-lel, pl. <url:https://github.com/openstyles/stylus>\nReguláris kifejezések: ide tartoznak a per-jelek és a flagek, pl. </body.*?\\ba\\b/simguy>\nPontos szavak: írj idézőjeleket a keresési kifejezés köré, pl. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+	},
+	"findStyles": {
+		"message": "Stílusok keresése",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Stílus szerkesztése",
@@ -880,6 +920,10 @@
 		"message": "Csak külső stílusok",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Heti telepítések",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Az összes cseréje",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -891,6 +935,10 @@
 	"confirmDiscardChanges": {
 		"message": "Elveted a változásokat?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Frissítve",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "Automatikus mentés és alkalmazás",
@@ -923,6 +971,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Jelvény az eszköztárikonon",
 		"description": ""
+	},
+	"paginationPrevious": {
+		"message": "Előző oldal",
+		"description": "Tooltip for the '<-' button in search results"
 	},
 	"installUpdateFrom": {
 		"message": "A stílus most a következő helyről frissül: $url$",
@@ -1051,10 +1103,6 @@
 		"message": "Új stílus írása",
 		"description": "Label for the button to go to the add style page"
 	},
-	"optionsUpdateIntervalNote": {
-		"message": "Az automatikus stílusfrissítések ellenőrzésének letiltásához állítsd 0-ra",
-		"description": ""
-	},
 	"installButtonUpdate": {
 		"message": "Stílus frissítése",
 		"description": "Label for update button"
@@ -1082,6 +1130,10 @@
 	"cm_theme": {
 		"message": "Téma",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "Keresési eredmények megjelenítése ebben az ablakban.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "Szerkesztő megnyitása új ablakban",

@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "利用可能なすべてのユーザースタイルの更新を自動的にチェックしてインストールします（時間単位）",
+		"message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -268,10 +268,6 @@
 		"message": "スタイル更新",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>userstyles.orgでスタイルを取得</a> | <a href='http://add0n.com/stylus.html'>ヘルプ</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "ローカル作成スタイルのみ",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -318,6 +314,10 @@
 		"message": "自動リロード",
 		"description": "The label of live-reload feature"
 	},
+	"linkGetStyles": {
+		"message": "スタイルを取得",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
+	},
 	"unreachableFileHint": {
 		"message": "chrome://extensions ページでStylus拡張機能の当該チェックボックスを有効にした場合にのみ、Stylusは file:// URLにアクセスできます。",
 		"description": "Note in the toolbar popup for file:// URLs"
@@ -343,11 +343,11 @@
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
 	"popupHotkeysInfo": {
-		"message": "<1>-<9>, <0>, または数字パッドキーにより N番目のスタイルの有効/無効を切り替えます（0は10番目になります）\n<A>-<Z> はその文字で始まる先頭のスタイルを切り替えます\n<Shift> を併用すると、切り替えではなくエディタを開きます\n<Numpad +> はリストのスタイルをすべて有効にします\n<Numpad –> はリストのスタイルをすべて無効にします\n<Numpad *> と <`>（バッククォート）は初期状態が有効なスタイルのみを切り替えます。すなわち、ポップアップ上で後から有効にしたスタイルは切り替えません。例えば、テスト後に初期の選択に戻すには、全解除してから切り替えてください（すなわち<Numpad –> <Numpad *>の順に押してください）\n詳細は wiki を参照ください",
+		"message": "<1>-<9>, <0>, または数字パッドキーにより N番目のスタイルの有効/無効を切り替えます（0は10番目になります）\n<A>-<Z> はその文字で始まる先頭のスタイルを切り替えます\n<Shift> を併用すると、切り替えではなくエディタを開きます\n<Numpad +> はリストのスタイルをすべて有効にします\n<Numpad –> はリストのスタイルをすべて無効にします\n<Numpad *> と <`>（バッククォート）は初期状態が有効なスタイルのみを切り替えます。すなわち ポップアップ上で後から有効にしたスタイルは切り替えません。例えば、テスト後に初期の選択に戻すには、全解除してから切り替えてください（すなわち <Numpad –> <Numpad *> の順に押してください）\n詳細は wiki を参照ください",
 		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
 	},
 	"cm_lineWrapping": {
-		"message": "ワードラップ",
+		"message": "ワードラップを有効にする",
 		"description": "Label for the checkbox controlling word wrap option for the style editor."
 	},
 	"styleCancelEditLabel": {
@@ -369,6 +369,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "更新に失敗しました: サーバーに到達できません。",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "エラー",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "フィルター",
@@ -530,7 +534,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"cm_colorpicker": {
-		"message": "CSSの色選択ツール",
+		"message": "CSSの色選択ツールを使用する",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"filteredStylesAllHidden": {
@@ -591,7 +595,7 @@
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
 	"findStylesInline": {
-		"message": "インライン",
+		"message": "結果を下に表示",
 		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
 	},
 	"optionsCheckUpdate": {
@@ -625,6 +629,10 @@
 	"linterCSSLintSettings": {
 		"message": "（次のようにルールを設定してください : 0=無効, 1=警告, 2=エラー）",
 		"description": "CSSLint rule config values"
+	},
+	"searchResultNoneFound": {
+		"message": "該当するスタイルはありません。",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
 	},
 	"styleBeautifyIndentConditional": {
 		"message": "@media, @supports をインデント",
@@ -663,7 +671,7 @@
 		"description": "Text that displays when an update completed"
 	},
 	"paginationTotal": {
-		"message": "合計ページ",
+		"message": "総ページ数",
 		"description": "Tooltip for the total page count in search results"
 	},
 	"dysfunctionalBackgroundConnection": {
@@ -729,6 +737,10 @@
 		"message": "次ページ",
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
+	"searchResultInstallCount": {
+		"message": "総インストール数",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "コード",
 		"description": "Label for the code for a section"
@@ -770,6 +782,10 @@
 		"message": "「適用先」を使用すると、このセクションのコードが適用される URL を制限することができます。",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "ヘルプ",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"searchStylesHelp": {
 		"message": "</> キーで検索欄に移動します。\n[文字列検索] : 名前、コード、適用先欄のURL/サイト名を検索します。3文字より短い単語は無視されます。\n[URL検索] : <url:> を前に付けて検索します。例.  <url:https://github.com/openstyles/stylus>\n[正規表現検索] : スラッシュとフラグを含めて検索します。例. </body.*?\\ba\\b/simguy>\n[正確な文字列検索] : 文字列をダブルクォートで囲んで検索します。例. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
@@ -787,7 +803,7 @@
 		"description": "Label for the context menu item in the editor to delete selected text"
 	},
 	"cm_autocompleteOnTyping": {
-		"message": "入力の自動補完",
+		"message": "入力の自動補完を有効にする",
 		"description": "Label for the checkbox in the style editor."
 	},
 	"linterCSSLintIncompatible": {
@@ -841,7 +857,7 @@
 		"description": ""
 	},
 	"manageOnlyUpdates": {
-		"message": "更新または問題があるスタイルのみ",
+		"message": "更新もしくは問題があるスタイルのみ",
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
@@ -900,6 +916,10 @@
 		"message": "外部取得スタイルのみ",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "週間インストール数",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "すべて置換",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -911,6 +931,10 @@
 	"confirmDiscardChanges": {
 		"message": "変更を破棄しますか?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "更新日",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "自動保存して変更を自動的に適用します",
@@ -1075,10 +1099,6 @@
 		"message": "新スタイルを作成",
 		"description": "Label for the button to go to the add style page"
 	},
-	"optionsUpdateIntervalNote": {
-		"message": "ユーザースタイルの自動更新チェックを無効にするには、間隔を0に設定します。",
-		"description": ""
-	},
 	"installButtonUpdate": {
 		"message": "更新",
 		"description": "Label for update button"
@@ -1120,7 +1140,7 @@
 		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
-		"message": "ファイルを選択するか、このページにドラッグ＆ドロップします。",
+		"message": "ファイルを選択するか、このページにドラッグ＆ドロップしてください。",
 		"description": "Message for backup"
 	},
 	"importReportUndone": {

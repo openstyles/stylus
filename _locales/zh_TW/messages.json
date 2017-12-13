@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "自動檢查並安裝可用的使用者樣式更新（以小時計）",
+		"message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -272,10 +272,6 @@
 		"message": "更新樣式",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>在 userstyles.org 上取得樣式</a> | <a href='http://add0n.com/stylus.html'>取得協助</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "僅本機建立的樣式",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -321,6 +317,10 @@
 	"liveReloadLabel": {
 		"message": "即時重新整理",
 		"description": "The label of live-reload feature"
+	},
+	"linkGetStyles": {
+		"message": "取得樣式",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus 僅在您於 chrome://extensions 啟用了 Stylus 擴充套件中對應的勾選框時才能存取 file:// 的 URL。",
@@ -373,6 +373,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "更新失敗: 無法訪問伺服器。",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "錯誤",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "過濾器",
@@ -634,6 +638,10 @@
 		"message": "（設定規則為：0 = 停用；1 = 警告；2 = 錯誤）",
 		"description": "CSSLint rule config values"
 	},
+	"searchResultNoneFound": {
+		"message": "找不到此頁面相關的樣式",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "縮排 @media, @supports",
 		"description": "CSS-beautifier option"
@@ -737,6 +745,10 @@
 		"message": "下一頁",
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
+	"searchResultInstallCount": {
+		"message": "總安裝",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "代碼",
 		"description": "Label for the code for a section"
@@ -777,6 +789,10 @@
 	"appliesHelp": {
 		"message": "使用「適用於」控件來限制這個樣式段適用的網址。",
 		"description": "Help text for 'applies to' section"
+	},
+	"linkGetHelp": {
+		"message": "取得協助",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
 		"message": "</> 鍵聚焦於搜尋欄。\n純文字搜尋名字、程式碼、首頁 URL 與其套用到的頁面。少於三個字母的單字會被忽略。\n符合的 URL：以 <url:> 為前綴來搜尋，例如：<url:https://github.com/openstyles/stylus>\n正規表達式：包含斜線與旗標，例如 </body.*?\\ba\\b/simguy>\n精確的單字：以雙引號包住要搜尋的文字，例如 <\".header ~ div\">",
@@ -912,6 +928,10 @@
 		"message": "僅外部樣式",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "每週安裝",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "替換所有",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -923,6 +943,10 @@
 	"confirmDiscardChanges": {
 		"message": "放棄變更？",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "已更新",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "自動儲存與套用變更",
@@ -1086,10 +1110,6 @@
 	"addStyleLabel": {
 		"message": "編寫新樣式",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "要停用自動化使用者樣式更新檢查，設定間隔為 0",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "更新樣式",

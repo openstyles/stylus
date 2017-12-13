@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Automaticky vyhledávat a instalovat aktualizace stylů (interval je v hodinách)",
+		"message": "Automaticky vyhledávat a instalovat aktualizace stylů (interval je v hodinách), pro vypnutí nastavte na nulu",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -264,10 +264,6 @@
 		"message": "Aktualizovat styly",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Získat styly na userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Nápověda</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Pouze lokální styly",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -309,6 +305,10 @@
 	"manageOnlyNonUsercss": {
 		"message": "Pouze non-Usercss styly",
 		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
+	"linkGetStyles": {
+		"message": "Získat styly",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus může přistupovat k file:// URL pouze při povolení odpovídající možnosti pro rozšíření Stylus ve správci chrome://extensions.",
@@ -742,6 +742,10 @@
 		"message": "Nastavte „Platí pro“, pokud chcete omezit působnost kódu v této sekci na určité URL adresy.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Nápověda",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Upravit styl",
 		"description": "Title of the page for editing styles"
@@ -1026,10 +1030,6 @@
 	"addStyleLabel": {
 		"message": "Napsat nový styl",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Pro vypnutí automatického vyhledávání aktualizací stylů nastavte interval na nulu.",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "Aktualizovat styl",

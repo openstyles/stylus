@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Automatycznie sprawdzaj i zainstaluj wszystkie dostępne aktualizacje stylów użytkownika (w godzinach)",
+		"message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -268,10 +268,6 @@
 		"message": "Aktualizuj style",
 		"description": ""
 	},
-	"manageText": {
-		"message": "<a href='https://userstyles.org'>Pobierz style z userstyles.org</a> | <a href='http://add0n.com/stylus.html'>Uzyskaj pomoc</a>",
-		"description": "Help text on the manage page"
-	},
 	"manageOnlyLocal": {
 		"message": "Tylko style stworzone lokalnie",
 		"description": "Checkbox to show only locally created styles i.e. non-updatable"
@@ -317,6 +313,10 @@
 	"liveReloadLabel": {
 		"message": "Przeładuj na żywo",
 		"description": "The label of live-reload feature"
+	},
+	"linkGetStyles": {
+		"message": "Pobierz style",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
 		"message": "Stylus może uzyskać dostęp do adresów URL file:// tylko po włączeniu odpowiedniego pola wyboru rozszerzenia Stylus na stronie chrome://extensions.",
@@ -369,6 +369,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Aktualizacja się nie powiodła: serwer nieosiągalny.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Błąd",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Filtry",
@@ -630,6 +634,10 @@
 		"message": "(Ustaw regułę jako: 0 = wyłączone; 1 = ostrzeżenie; 2 = błąd)",
 		"description": "CSSLint rule config values"
 	},
+	"searchResultNoneFound": {
+		"message": "Nie znaleziono stylów dla tej witryny.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Wcięcie @media, @supports",
 		"description": "CSS-beautifier option"
@@ -733,6 +741,10 @@
 		"message": "Następna strona",
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
+	"searchResultInstallCount": {
+		"message": "Całkowita liczba instalacji",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "Kod",
 		"description": "Label for the code for a section"
@@ -773,6 +785,10 @@
 	"appliesHelp": {
 		"message": "Użyj przycisków \"Dotyczy\", aby ograniczyć adresy URL, których dotyczy kod w tej sekcji.",
 		"description": "Help text for 'applies to' section"
+	},
+	"linkGetHelp": {
+		"message": "Uzyskaj pomoc",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
 		"message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nPasujący adres URL:  szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
@@ -912,6 +928,10 @@
 		"message": "Tylko zewnętrzne style",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Tygodniowa liczba instalacji",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Zamień wszystkie",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -923,6 +943,10 @@
 	"confirmDiscardChanges": {
 		"message": "Odrzucić zmiany?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Zaktualizowano",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"configOnChangeTooltip": {
 		"message": "Autozapisuj i stosuj zmiany automatycznie",
@@ -1086,10 +1110,6 @@
 	"addStyleLabel": {
 		"message": "Napisz nowy styl",
 		"description": "Label for the button to go to the add style page"
-	},
-	"optionsUpdateIntervalNote": {
-		"message": "Aby wyłączyć automatyczne sprawdzanie aktualizacji stylów użytkownika, ustaw interwał na 0",
-		"description": ""
 	},
 	"installButtonUpdate": {
 		"message": "Zaktualizuj styl",
