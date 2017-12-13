@@ -125,10 +125,16 @@ var updater = {
       json.id = style.id;
       json.updateDate = Date.now();
       json.reason = 'update';
+
       // keep current state
       delete json.enabled;
+
       // keep local name customizations
-      delete json.name;
+      if (style.originalName !== style.name && style.name !== json.name) {
+        delete json.name;
+      } else {
+        json.originalName = json.name;
+      }
 
       if (styleSectionsEqual(json, style)) {
         // update digest even if save === false as there might be just a space added etc.
