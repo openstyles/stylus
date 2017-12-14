@@ -307,7 +307,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function updateState(cm, newState) {
     if (!newState) {
-      if (cm.state.search) {
+      const query = (cm.state.search || {}).query;
+      if (query !== null && query !== undefined) {
         return cm.state.search;
       }
       if (!searchState) {
@@ -343,23 +344,26 @@ onDOMscriptReady('/codemirror.js').then(() => {
     return cm;
   }
 
+  function propagateSearchState(cm) {
+    if ((cm.state.search || {}).clearSearch) {
+      cm.execCommand('clearSearch');
+    }
+    updateState(cm);
+  }
+
   function find(activeCM) {
     activeCM = focusClosestCM(activeCM);
     customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
       searchState = activeCM.state.search;
-      const searchOthers = editors.length > 1 && searchState.query;
-      editors.forEach(cm => {
-        if (cm !== activeCM) {
-          cm.execCommand('clearSearch');
-          if (searchOthers) {
-            updateState(cm, searchState);
-          }
-        }
-      });
-      if (searchOthers && CodeMirror.cmpPos(searchState.posFrom, searchState.posTo) === 0) {
-        findNext(activeCM);
+      if (!searchState.query ||
+          editors.length === 1 ||
+          CodeMirror.cmpPos(searchState.posFrom, searchState.posTo)) {
+        return;
       }
+      editors.forEach(cm => ((cm.state.search || {}).clearSearch = cm !== activeCM));
+      editors.forEach((cm, i) => setTimeout(propagateSearchState, i + 100, cm));
+      findNext(activeCM);
     });
     ORIGINAL_COMMAND.find(activeCM);
   }
@@ -372,67 +376,73 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
     let pos = activeCM.getCursor(reverse ? 'from' : 'to');
     // clear the selection, don't move the cursor
-    activeCM.setSelection(activeCM.getCursor());
+    if (activeCM.somethingSelected()) {
+      activeCM.setSelection(activeCM.getCursor());
+    }
 
-    const rxQuery = typeof state.query === 'object'
-      ? state.query : stringAsRegExp(state.query, shouldIgnoreCase(state.query) ? 'i' : '');
+    const icase = shouldIgnoreCase(state.query);
+    const query = searchState.query;
+    const rxQuery = typeof query === 'object'
+      ? query : stringAsRegExp(query, icase ? 'i' : '');
 
-    if (
-      document.activeElement &&
-      document.activeElement.name === 'applies-value' &&
-      searchAppliesTo(activeCM)
-    ) {
+    const total = editors.length;
+    if ((!reverse || total === 1 ||
+        (document.activeElement || {}).name === 'applies-value') &&
+        findAppliesTo(activeCM, reverse, rxQuery)) {
       return;
     }
     let cm = activeCM;
-    for (let i = 0; i < editors.length; i++) {
-      state = updateState(cm);
-      if (!cm.hasFocus()) {
-        pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
-      }
-      const searchCursor = cm.getSearchCursor(state.query, pos, shouldIgnoreCase(state.query));
+    const startIndex = editors.indexOf(cm);
+    for (let i = 1; i < total; i++) {
+      cm = editors[(startIndex + i * (reverse ? -1 : 1) + total) % total];
+      pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
+      const searchCursor = cm.getSearchCursor(query, pos, icase);
       if (searchCursor.find(reverse)) {
-        if (editors.length > 1) {
+        if (total > 1) {
           makeSectionVisible(cm);
           cm.focus();
         }
+        if ((cm.state.search || {}).clearSearch) {
+          cm.execCommand('clearSearch');
+        }
+        state = updateState(cm);
         // speedup the original findNext
         state.posFrom = reverse ? searchCursor.to() : searchCursor.from();
-        state.posTo = CodeMirror.Pos(state.posFrom.line, state.posFrom.ch);
-        ORIGINAL_COMMAND[reverse ? 'findPrev' : 'findNext'](cm);
+        state.posTo = Object.assign({}, state.posFrom);
+        setTimeout(ORIGINAL_COMMAND[reverse ? 'findPrev' : 'findNext'], 0, cm);
         return;
-      } else if (!reverse && searchAppliesTo(cm)) {
+      } else if (!reverse && findAppliesTo(cm, reverse, rxQuery)) {
         return;
       }
-      cm = editors[(editors.indexOf(cm) + (reverse ? -1 + editors.length : 1)) % editors.length];
-      if (reverse && searchAppliesTo(cm)) {
+      cm = editors[(startIndex + (i + 1) * (reverse ? -1 : 1) + total) % total];
+      if (reverse && findAppliesTo(cm, reverse, rxQuery)) {
         return;
       }
     }
     // nothing found so far, so call the original search with wrap-around
     ORIGINAL_COMMAND[reverse ? 'findPrev' : 'findNext'](activeCM);
+  }
 
-    function searchAppliesTo(cm) {
-      let inputs = $$('.applies-value', cm.getSection());
-      if (reverse) {
-        inputs = inputs.reverse();
-      }
-      inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
-      return inputs.some(input => {
-        const match = rxQuery.exec(input.value);
-        if (match) {
-          input.focus();
-          const end = match.index + match[0].length;
-          // scroll selected part into view in long inputs,
-          // works only outside of current event handlers chain, hence timeout=0
-          setTimeout(() => {
-            input.setSelectionRange(end, end);
-            input.setSelectionRange(match.index, end);
-          }, 0);
-          return true;
-        }
-      });
+  function findAppliesTo(cm, reverse, rxQuery) {
+    let inputs = $$('.applies-value', cm.getSection());
+    if (reverse) {
+      inputs = inputs.reverse();
     }
+    inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
+    return inputs.some(input => {
+      const match = rxQuery.exec(input.value);
+      if (match) {
+        input.focus();
+        const end = match.index + match[0].length;
+        // scroll selected part into view in long inputs,
+        // works only outside of current event handlers chain, hence timeout=0
+        setTimeout(() => {
+          input.setSelectionRange(end, end);
+          input.setSelectionRange(match.index, end);
+        }, 0);
+        return true;
+      }
+    });
   }
 
   function findPrev(cm) {
