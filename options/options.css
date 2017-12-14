@@ -142,7 +142,7 @@ input[type="color"] {
   align-items: stretch;
   padding: 1em;
   white-space: nowrap;
-  background-color: hsl(0, 0%, 94%);
+  background-color: rgba(0, 0, 0, .05);
   margin: 0;
 }
 
