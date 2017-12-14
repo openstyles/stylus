@@ -51,14 +51,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     setupLivePrefs();
 
     rerouteHotkeys(true);
-
-    for (const name of ['find', 'findNext', 'findPrev', 'replace']) {
-      ORIGINAL_COMMAND[name] = CodeMirror.commands[name];
-    }
-    for (const name of ['openDialog', 'openConfirm']) {
-      ORIGINAL_METHOD[name] = CodeMirror.prototype[name];
-    }
-    Object.assign(CodeMirror.commands, COMMANDS);
+    setupFindHooks();
   }).observe(document, {childList: true, subtree: true});
 
   return;
@@ -300,6 +293,19 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   /////////////////////
 
+  function setupFindHooks() {
+    for (const name of ['find', 'findNext', 'findPrev', 'replace']) {
+      ORIGINAL_COMMAND[name] = CodeMirror.commands[name];
+    }
+    for (const name of ['openDialog', 'openConfirm']) {
+      ORIGINAL_METHOD[name] = CodeMirror.prototype[name];
+    }
+    Object.assign(CodeMirror.commands, COMMANDS);
+    chrome.storage.local.get('editSearchText', data => {
+      searchState = {query: data.editSearchText || null};
+    });
+  }
+
   function shouldIgnoreCase(query) {
     // treat all-lowercase non-regexp queries as case-insensitive
     return typeof query === 'string' && query === query.toLowerCase();
@@ -307,11 +313,10 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function updateState(cm, newState) {
     if (!newState) {
-      const query = (cm.state.search || {}).query;
-      if (query !== null && query !== undefined) {
+      if ((cm.state.search || {}).overlay) {
         return cm.state.search;
       }
-      if (!searchState) {
+      if (!searchState.overlay) {
         return null;
       }
       newState = searchState;
@@ -353,9 +358,16 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function find(activeCM) {
     activeCM = focusClosestCM(activeCM);
+    const state = activeCM.state;
+    if (searchState.query && !(state.search || {}).lastQuery) {
+      (state.search = state.search || {}).query = searchState.query;
+    }
     customizeOpenDialog(activeCM, template.find, function (query) {
       this(query);
-      searchState = activeCM.state.search;
+      searchState = state.search;
+      if (searchState.query) {
+        chrome.storage.local.set({editSearchText: searchState.query});
+      }
       if (!searchState.query ||
           editors.length === 1 ||
           CodeMirror.cmpPos(searchState.posFrom, searchState.posTo)) {
@@ -370,7 +382,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function findNext(activeCM, reverse) {
     let state = updateState(activeCM);
-    if (!state || !state.query) {
+    if (!state || !state.overlay) {
       find(activeCM);
       return;
     }
