@@ -184,11 +184,6 @@ html[style] .entry {
   padding: 0 14px;
 }
 
-html[style] .entry:nth-child(-n+10):before,
-html[style] .entry:nth-child(10):before {
-  right: 7px;
-}
-
 .entry .actions {
   display: inline-flex;
 }
@@ -220,7 +215,7 @@ html[style] .entry:nth-child(10):before {
 }
 
 .entry:nth-child(-n+10):before,
-.entry:nth-child(10):before {
+.entry:nth-child(11):before {
   counter-increment: style-number;
   content: counter(style-number);
   position: absolute;
@@ -229,8 +224,14 @@ html[style] .entry:nth-child(10):before {
   color: #aaa;
 }
 
-.entry:nth-child(10):before {
+.entry:nth-child(11):before {
   content: "0";
+}
+
+html[style*="border"] .entry:nth-child(-n+10):before,
+html[style*="border"] .entry:nth-child(11):before {
+  /* the "show side borders" option adds 2px */
+  right: 7px;
 }
 
 .entry .actions {

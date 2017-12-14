@@ -3,6 +3,7 @@
 
 // eslint-disable-next-line no-var
 var hotkeys = (() => {
+  const entries = document.getElementsByClassName('entry');
   let togglablesShown;
   let togglables;
   let enabled = false;
@@ -36,41 +37,46 @@ var hotkeys = (() => {
       return;
     }
     let entry;
-    const {which: k, key} = event;
-    if (key ? key >= '0' && key <= '9' : k >= 48 && k <= 57 || k >= 96 && k <= 105) {
-      // 0-9, numpad 0-9
-      const i = key === '0' ? 9 : key ? Number(key) - 1 : k === 48 || k === 96 ? 9 : k - (k > 96 ? 97 : 49);
-      entry = installed.children[i];
-    } else if (key ? key === '`' || key === '*' && !event.shiftKey : k === 192 || k === 106) {
-      // backtick ` and numpad *
+    const {which: k, key, code} = event;
+
+    if (code.startsWith('Digit') || code.startsWith('Numpad') && code.length === 7) {
+      entry = entries[(Number(code.slice(-1)) || 10) - 1];
+
+    } else if (
+        code === 'Backquote' || code === 'NumpadMultiply' ||
+        key && (key === '`' || key === '*') ||
+        k === 192 || k === 106) {
       invertTogglables();
-    } else if (key ? key === '-' : k === 109) {
-      // numpad -
-      toggleState(installed.children, 'enabled', false);
-    } else if (key ? key === '+' : k === 107) {
-      // numpad +
-      toggleState(installed.children, 'disabled', true);
-    } else if (key ? key.length === 1 : k >= 65 && k <= 90) {
-      // any single character
+
+    } else if (
+        code === 'NumpadSubtract' ||
+        key && key === '-' ||
+        k === 109) {
+      toggleState(entries, 'enabled', false);
+
+    } else if (
+        code === 'NumpadAdd' ||
+        key && key === '+' ||
+        k === 107) {
+      toggleState(entries, 'disabled', true);
+
+    } else if (
+    // any single character
+        key && key.length === 1 ||
+        k >= 65 && k <= 90) {
       const letter = new RegExp(key ? '^' + key : '^\\x' + k.toString(16), 'i');
-      entry = [...installed.children].find(entry => letter.test(entry.textContent));
+      entry = [...entries].find(entry => letter.test(entry.textContent));
     }
     if (!entry) {
       return;
     }
     const target = $(event.shiftKey ? '.style-edit-link' : '.checker', entry);
-    target.dispatchEvent(new MouseEvent('click'));
+    target.dispatchEvent(new MouseEvent('click', {cancelable: true}));
   }
 
   function getTogglables() {
-    const all = [...installed.children];
-    const enabled = [];
-    for (const entry of all) {
-      if (entry.classList.contains('enabled')) {
-        enabled.push(entry.id);
-      }
-    }
-    return enabled.length ? enabled : all.map(entry => entry.id);
+    const enabledOrAll = $('.entry.enabled') ? $$('.entry.enabled') : [...entries];
+    return enabledOrAll.map(entry => entry.id);
   }
 
   function countEnabledTogglables() {
