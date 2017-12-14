@@ -22,24 +22,12 @@ onDOMscriptReady('/codemirror.js').then(() => {
     ...Object.keys(COMMANDS),
     'colorpicker',
   ]);
-
-  const ORIGINAL_COMMAND = {
-    find: CodeMirror.commands.find,
-    findNext: CodeMirror.commands.findNext,
-    findPrev: CodeMirror.commands.findPrev,
-    replace: CodeMirror.commands.replace
-  };
-  const ORIGINAL_METHOD = {
-    openDialog: CodeMirror.prototype.openDialog,
-    openConfirm: CodeMirror.prototype.openConfirm,
-  };
-
+  const ORIGINAL_COMMAND = {};
+  const ORIGINAL_METHOD = {};
   Object.assign(CodeMirror, {
     getOption,
     setOption,
   });
-  Object.assign(CodeMirror.commands,
-    COMMANDS);
   Object.assign(CodeMirror.prototype, {
     getSection,
     rerouteHotkeys,
@@ -63,6 +51,14 @@ onDOMscriptReady('/codemirror.js').then(() => {
     setupLivePrefs();
 
     rerouteHotkeys(true);
+
+    for (const name of ['find', 'findNext', 'findPrev', 'replace']) {
+      ORIGINAL_COMMAND[name] = CodeMirror.commands[name];
+    }
+    for (const name of ['openDialog', 'openConfirm']) {
+      ORIGINAL_METHOD[name] = CodeMirror.prototype[name];
+    }
+    Object.assign(CodeMirror.commands, COMMANDS);
   }).observe(document, {childList: true, subtree: true});
 
   return;
