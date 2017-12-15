@@ -219,7 +219,7 @@ rules:
   no-unreachable: [2]
   no-unsafe-finally: [2]
   no-unsafe-negation: [2]
-  no-unused-expressions: [1]
+  no-unused-expressions: [1, {allowShortCircuit: true, allowTernary: true}]
   no-unused-labels: [0]
   no-unused-vars: [1, {args: after-used, vars: local, argsIgnorePattern: ^_}]
   no-use-before-define: [2, nofunc]
