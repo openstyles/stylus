@@ -105,7 +105,10 @@ var prefs = new function Prefs() {
   // coalesce multiple pref changes in broadcast
   let broadcastPrefs = {};
 
-  Object.defineProperty(this, 'readOnlyValues', {value: {}});
+  Object.defineProperties(this, {
+    defaults: {value: deepCopy(defaults)},
+    readOnlyValues: {value: {}},
+  });
 
   Object.assign(Prefs.prototype, {
 
