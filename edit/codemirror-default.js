@@ -67,12 +67,15 @@
   }
 
   if (navigator.appVersion.includes('Windows')) {
-    // 'pcDefault' keymap on Windows should have F3/Shift-F3
+    // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
     if (!extraKeysCommands.findNext) {
       CodeMirror.keyMap.pcDefault['F3'] = 'findNext';
     }
     if (!extraKeysCommands.findPrev) {
       CodeMirror.keyMap.pcDefault['Shift-F3'] = 'findPrev';
+    }
+    if (!extraKeysCommands.replace) {
+      CodeMirror.keyMap.pcDefault['Ctrl-R'] = 'replace';
     }
 
     // try to remap non-interceptable Ctrl-(Shift-)N/T/W hotkeys
