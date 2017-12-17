@@ -146,7 +146,7 @@
     }
     const sel = this.getSelection();
     // current query differs from the selected text => remove the overlay
-    if (sel && rx && !rx.test(sel) || sel.toLowerCase() !== originalToken.toLowerCase()) {
+    if (sel && sel.toLowerCase() !== originalToken.toLowerCase()) {
       helper.query = helper.originalToken = sel;
       return;
     }
@@ -158,14 +158,8 @@
       const end = ch + queryLen;
       const string = this.getLine(line);
       const area = string.slice(start, end);
-      let startInArea;
-      if (rx) {
-        const m = area.match(rx);
-        startInArea = !m ? NaN : m.index + m[1].length;
-      } else {
-        const i = area.indexOf(query);
-        startInArea = i < 0 ? NaN : i;
-      }
+      const i = area.indexOf(query);
+      const startInArea = i < 0 ? NaN : i;
       if (isNaN(startInArea) || start + startInArea > ch ||
           state.options.showToken.test(string[start + startInArea - 1] || '') ||
           state.options.showToken.test(string[start + startInArea + queryLen] || '')) {
