@@ -322,7 +322,7 @@ function focusAccessibility() {
   // Since we don't want full layout recalc, we modify only the closest focusable element,
   // which we try to find in DOM for this many parentElement jumps:
   const focusables = focusAccessibility.ELEMENTS =
-    ['a', 'button', 'input', 'label', 'select', 'summary'];
+    ['a', 'button', 'input', 'textarea', 'label', 'select', 'summary'];
   const GIVE_UP_DEPTH = 4;
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
