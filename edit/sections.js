@@ -428,6 +428,7 @@ function removeAppliesTo(event) {
 function removeSection(event) {
   const section = getSectionForChild(event.target);
   const cm = section.CodeMirror;
+  setCleanItem($('#sections'), false);
   removeAreaAndSetDirty(section);
   editors.splice(editors.indexOf(cm), 1);
   renderLintReport();
