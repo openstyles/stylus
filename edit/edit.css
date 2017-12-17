@@ -492,8 +492,7 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 }
 
 .keymap-list {
-  font-size: 85%;
-  line-height: 1.0;
+  font-size: 12px;
   border-spacing: 0;
   word-break: break-all;
 }
