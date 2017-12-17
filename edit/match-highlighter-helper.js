@@ -25,6 +25,7 @@
   */
 
   const HL_APPROVED = 'cm-matchhighlight-approved';
+  const SEARCH_MATCH_TOKEN_NAME = 'searching';
 
   const originalAddOverlay = CodeMirror.prototype.addOverlay;
   const originalRemoveOverlay = CodeMirror.prototype.removeOverlay;
@@ -112,6 +113,20 @@
     if (style !== 'matchhighlight') {
       return style;
     }
+
+    const tokens = stream.lineOracle.baseTokens;
+    const tokenIndex = tokens.indexOf(stream.pos, 1);
+    if (tokenIndex > 0) {
+      const tokenStart = tokenIndex > 2 ? tokens[tokenIndex - 2] : 0;
+      const token = tokenStart === stream.start && tokens[tokenIndex + 1];
+      const index = token && token.indexOf(SEARCH_MATCH_TOKEN_NAME);
+      if (token && index >= 0 &&
+          (token[index - 1] || ' ') === ' ' &&
+          (token[index + SEARCH_MATCH_TOKEN_NAME.length] || ' ') === ' ') {
+        return;
+      }
+    }
+
     const num = ++this.highlightHelper.occurrences;
     if (num === 1) {
       stream.lineOracle.doc.cm.display.wrapper.classList.remove(HL_APPROVED);
@@ -129,7 +144,6 @@
     if (!query || !originalToken) {
       return;
     }
-    const rx = query instanceof RegExp && query;
     const sel = this.getSelection();
     // current query differs from the selected text => remove the overlay
     if (sel && rx && !rx.test(sel) || sel.toLowerCase() !== originalToken.toLowerCase()) {
