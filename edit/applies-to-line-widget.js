@@ -1,4 +1,4 @@
-/* global regExpTester debounce messageBox CodeMirror template */
+/* global regExpTester debounce messageBox CodeMirror template colorMimicry */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
@@ -214,13 +214,13 @@ function createAppliesToLineWidget(cm) {
     const MIN_LUMA = .05;
     const MIN_LUMA_DIFF = .4;
     const color = {
-      wrapper: getRealColors(cm.display.wrapper),
-      gutter: getRealColors(cm.display.gutters, {
+      wrapper: colorMimicry.get(cm.display.wrapper),
+      gutter: colorMimicry.get(cm.display.gutters, {
         bg: 'backgroundColor',
         border: 'borderRightColor',
       }),
-      line: getRealColors('.CodeMirror-linenumber'),
-      comment: getRealColors('span.cm-comment'),
+      line: colorMimicry.get('.CodeMirror-linenumber', null, cm.display.lineDiv),
+      comment: colorMimicry.get('span.cm-comment', null, cm.display.lineDiv),
     };
     const hasBorder =
       color.gutter.style.borderRightWidth !== '0px' &&
@@ -258,65 +258,11 @@ function createAppliesToLineWidget(cm) {
         fill: ${fore};
         transition: none;
       }
+      .applies-to button {
+        color: ${fore};
+      }
     `;
     document.documentElement.appendChild(actualStyle);
-
-    function getRealColors(el, targets = {}) {
-      targets.fore = 'color';
-      const colors = {};
-      const done = {};
-      let numDone = 0;
-      let numTotal = 0;
-      for (const k in targets) {
-        colors[k] = {r: 255, g: 255, b: 255, a: 1};
-        numTotal++;
-      }
-      const isDummy = typeof el === 'string';
-      el = isDummy ? cm.display.lineDiv.appendChild($create(el, {style: 'display: none'})) : el;
-      for (let current = el; current; current = current && current.parentElement) {
-        const style = getComputedStyle(current);
-        for (const k in targets) {
-          if (!done[k]) {
-            done[k] = blend(colors[k], style[targets[k]]);
-            numDone += done[k] ? 1 : 0;
-            if (numDone === numTotal) {
-              current = null;
-              break;
-            }
-          }
-        }
-        colors.style = colors.style || style;
-      }
-      if (isDummy) {
-        el.remove();
-      }
-      for (const k in targets) {
-        const {r, g, b, a} = colors[k];
-        colors[k] = `rgba(${r}, ${g}, ${b}, ${a})`;
-        // https://www.w3.org/TR/AERT#color-contrast
-        colors[k + 'Luma'] = (r * .299 + g * .587 + b * .114) / 256;
-      }
-      return colors;
-    }
-
-    function blend(base, color) {
-      const [r, g, b, a = 255] = (color.match(/\d+/g) || []).map(Number);
-      if (a === 255) {
-        base.r = r;
-        base.g = g;
-        base.b = b;
-        base.a = 1;
-      } else if (a) {
-        const mixedA = 1 - (1 - a / 255) * (1 - base.a);
-        const q1 = a / 255 / mixedA;
-        const q2 = base.a * (1 - mixedA) / mixedA;
-        base.r = Math.round(r * q1 + base.r * q2);
-        base.g = Math.round(g * q1 + base.g * q2);
-        base.b = Math.round(b * q1 + base.b * q2);
-        base.a = mixedA;
-      }
-      return Math.abs(base.a - 1) < 1e-3;
-    }
   }
 
   function doUpdate() {
