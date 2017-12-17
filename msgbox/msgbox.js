@@ -40,10 +40,8 @@ function messageBox({
         }
         switch (which) {
           case 13:
-            for (let el = target; el; el = el.parentElement) {
-              if (focusAccessibility.ELEMENTS.includes(el.localName)) {
-                return;
-              }
+            if (target.closest(focusAccessibility.ELEMENTS.join(','))) {
+              return;
             }
             break;
           case 27:
