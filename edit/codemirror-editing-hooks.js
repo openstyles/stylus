@@ -47,7 +47,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
     // N.B. the event listener should be registered before setupLivePrefs()
     $('#options').addEventListener('change', onOptionElementChanged);
-    buildOptionsElements();
+    buildThemeElement();
+    buildKeymapElement();
     setupLivePrefs();
 
     rerouteHotkeys(true);
@@ -264,31 +265,60 @@ onDOMscriptReady('/codemirror.js').then(() => {
     CodeMirror.setOption(option, value);
   }
 
-  function buildOptionsElements() {
-    // no need to escape the period in the id
-    const themeControl = $('#editor.theme');
+  function buildThemeElement() {
+    const themeElement = $('#editor.theme');
     const themeList = localStorage.codeMirrorThemes;
+
+    const optionsFromArray = (options) => {
+      const fragment = document.createDocumentFragment();
+      options.forEach(opt => fragment.appendChild($create('option', opt)));
+      themeElement.appendChild(fragment);
+    };
+
     if (themeList) {
-      optionsFromArray(themeControl, themeList.split(/\s+/));
+      optionsFromArray(themeList.split(/\s+/));
     } else {
       // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
       const theme = prefs.get('editor.theme');
-      optionsFromArray(themeControl, [theme === 'default' ? t('defaultTheme') : theme]);
+      optionsFromArray([theme === 'default' ? t('defaultTheme') : theme]);
       getCodeMirrorThemes().then(() => {
         const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
-        optionsFromArray(themeControl, themes);
-        themeControl.selectedIndex = Math.max(0, themes.indexOf(theme));
+        optionsFromArray(themes);
+        themeElement.selectedIndex = Math.max(0, themes.indexOf(theme));
       });
     }
-    optionsFromArray($('#editor.keyMap'), Object.keys(CodeMirror.keyMap).sort());
   }
 
-  function optionsFromArray(parent, options) {
+  function buildKeymapElement() {
+    // move 'pc' or 'mac' prefix to the end of the displayed label
+    const maps = Object.keys(CodeMirror.keyMap)
+      .map(name => ({
+        value: name,
+        name: name.replace(/^(pc|mac)(.+)/, (s, arch, baseName) =>
+          baseName.toLowerCase() + '-' + (arch === 'mac' ? 'Mac' : 'PC')),
+      }))
+      .sort((a, b) => a.name < b.name && -1 || a.name > b.name && 1);
+
     const fragment = document.createDocumentFragment();
-    for (const opt of options) {
-      fragment.appendChild($create('option', opt));
-    }
-    parent.appendChild(fragment);
+    let bin = fragment;
+    let groupName;
+    // group suffixed maps in <optgroup>
+    maps.forEach(({value, name}, i) => {
+      groupName = !name.includes('-') ? name : groupName;
+      const groupWithNext = maps[i + 1] && maps[i + 1].name.startsWith(groupName);
+      if (groupWithNext) {
+        if (bin === fragment) {
+          bin = fragment.appendChild($create('optgroup', {label: name.split('-')[0]}));
+        }
+      }
+      const el = bin.appendChild($create('option', {value}, name));
+      if (value === prefs.defaults['editor.keyMap']) {
+        el.dataset.default = '';
+        el.title = t('defaultTheme');
+      }
+      !groupWithNext && (bin = fragment);
+    });
+    $('#editor.keyMap').appendChild(fragment);
   }
 
   /////////////////////
