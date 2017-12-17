@@ -3,8 +3,14 @@
 
 (() => {
   const OWN_TOKEN_NAME = 'colorview';
-  const OWN_DOM_CLASS = 'cm-' + OWN_TOKEN_NAME;
+  const OWN_TOKEN_CLASS = 'cm-' + OWN_TOKEN_NAME;
   const OWN_BACKGROUND_CLASS = 'codemirror-colorview-background';
+
+  const DISABLED_TOKEN_NAME = 'colorview-disabled';
+  const DISABLED_NEXT_TOKEN_NAME = 'colorview-next-disabled';
+  const DISABLED_TOKEN_CLASS = 'cm-' + DISABLED_TOKEN_NAME;
+  const DISABLED_NEXT_TOKEN_CLASS = 'cm-' + DISABLED_NEXT_TOKEN_NAME;
+
   const HOOKED_TOKEN = new Map([
     ['atom', colorizeAtom],
     ['keyword', colorizeKeyword],
@@ -152,44 +158,53 @@
       }
       let lineCacheAlive = false;
       let elementIndex = 0;
-      let elements;
+      let elements, el, token;
+
       for (let i = 1; i < styles.length; i += 2) {
-        const token = styles[i + 1];
+        if (token && token.includes(DISABLED_NEXT_TOKEN_NAME)) {
+          token = styles[i + 1];
+          elementIndex++;
+          i += 2;
+          continue;
+        }
+        token = styles[i + 1];
         if (!token || !token.includes(OWN_TOKEN_NAME)) {
           continue;
         }
+        if (token.includes(DISABLED_TOKEN_NAME)) {
+          elementIndex++;
+          continue;
+        }
+
         const start = styles[i - 2] || 0;
         const data = lineCache.get(start);
         if (!data) {
           continue;
         }
-        elements = elements || text.getElementsByClassName(OWN_DOM_CLASS);
-        const el = elements[elementIndex++];
-        while (true) {
-          const nextStyle = styles[i + 3];
-          const nextStart = styles[i];
-          if (nextStyle && nextStyle.includes(OWN_TOKEN_NAME) &&
-              nextStart > start && nextStart <= start + data.color.length) {
-            elementIndex++;
-            i += 2;
-          } else {
-            break;
-          }
-        }
-        if (el.colorpickerData && el.colorpickerData.color === data.color) {
+        lineCacheAlive = true;
+
+        !elements && (elements = text.getElementsByClassName(OWN_TOKEN_CLASS));
+        do {
+          el = elements[elementIndex];
+          elementIndex += el && el.classList.contains(DISABLED_NEXT_TOKEN_CLASS) ? 2 : 1;
+        } while (el && el.classList.contains(DISABLED_TOKEN_CLASS));
+
+        if (!el || (el.colorpickerData || {}).color === data.color) {
           continue;
         }
+
+        //////// yay we finally found something to render
         el.colorpickerData = Object.assign({line, ch: start}, data);
         let bg = el.firstElementChild;
         if (!bg) {
           bg = document.createElement('div');
           bg.className = OWN_BACKGROUND_CLASS;
           bg.title = options.tooltip;
-          el.appendChild(bg);
         }
         bg.style.setProperty('background-color', data.color, 'important');
-        lineCacheAlive = true;
+        !bg.parentNode && el.appendChild(bg);
       }
+
       if (lineCacheAlive) {
         lineCache.set('lastAccessTime', performance.now());
       }
