@@ -319,6 +319,7 @@ function isCleanGlobal() {
 }
 
 function setCleanGlobal() {
+  setCleanItem($('#sections'), true);
   $$('#header, #sections > div').forEach(setCleanSection);
   // forget the dirty applies-to ids from a deleted section after the style was saved
   dirty = {};
@@ -326,13 +327,8 @@ function setCleanGlobal() {
 
 function setCleanSection(section) {
   $$('.style-contributor', section).forEach(node => setCleanItem(node, true));
-
-  // #header section has no codemirror
-  const cm = section.CodeMirror;
-  if (cm) {
-    section.savedValue = cm.changeGeneration();
-    updateTitle();
-  }
+  setCleanItem(section, true);
+  updateTitle();
 }
 
 function toggleStyle() {
