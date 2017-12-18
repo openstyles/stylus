@@ -197,10 +197,10 @@
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     opt.hideDelay = Math.max(0, opt.hideDelay) || 2000;
 
-    $root.classList.add(CSS_PREFIX + 'theme-' +
-      (opt.theme === 'dark' || opt.theme === 'light' ?
-        opt.theme :
-        guessTheme()));
+    $root.className = $root.className.replace(new RegExp(CSS_PREFIX + 'theme-\\S+\\s*'), '') +
+      ' ' + CSS_PREFIX + 'theme-' +
+      (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme :
+        guessTheme());
     document.body.appendChild($root);
 
     if (!isNaN(options.left) && !isNaN(options.top)) {
