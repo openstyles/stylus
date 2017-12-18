@@ -222,7 +222,7 @@ onDOMready().then(() => {
     const radiateFrom = foundInCode ? index : editors.indexOf(cmStart);
     setupOverlay(radiateArray(editors, radiateFrom));
     enableReplaceButtons(foundInCode);
-    debounce(showTally, 0, found && !state.numFound ? 1 : undefined);
+    debounce(showTally, 0, foundInCode && !state.numFound ? 1 : undefined);
   }
 
 
