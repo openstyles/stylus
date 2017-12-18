@@ -146,6 +146,8 @@ function createSourceEditor(style) {
     CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
     CodeMirror.commands.toggleStyle = toggleStyle;
     CodeMirror.commands.save = save;
+
+    CodeMirror.closestVisible = () => cm;
   }
 
   function updateMeta() {
