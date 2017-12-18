@@ -1,3 +1,4 @@
+/* global cloneInto */
 'use strict';
 
 (() => {
@@ -93,7 +94,7 @@
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
-      detail = cloneInto(detail, document); // eslint-disable-line no-undef
+      detail = cloneInto(detail, document);
     }
     onDOMready().then(() => {
       document.dispatchEvent(new CustomEvent(type, detail));

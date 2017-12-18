@@ -51,9 +51,7 @@ var usercss = (() => {
         return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
             const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
-
-            // eslint-disable-next-line no-undef
-            stylus(varDef + source).render((err, output) => {
+            window.stylus(varDef + source).render((err, output) => {
               if (err) {
                 reject(err);
               } else {
