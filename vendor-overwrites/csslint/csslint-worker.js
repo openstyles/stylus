@@ -1119,8 +1119,15 @@ Parser.prototype = function() {
                         });
                     }
 
+                    var error;
+
                     while (true) {
                         if (!this._ruleset()) {
+                            var token = tokenStream.LT(1);
+                            if (token.type === tokenStream._tokenData.MEDIA_SYM) {
+                                this._media();
+                                error = new SyntaxError("@media not allowed here.", token.startLine, token.startCol);
+                            }
                             break;
                         }
                     }
@@ -1133,6 +1140,9 @@ Parser.prototype = function() {
                         line:   line,
                         col:    col
                     });
+                    if (error) {
+                        throw error;
+                    }
                 }
             },
 
