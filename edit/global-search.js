@@ -14,10 +14,10 @@ onDOMready().then(() => {
   const SCROLL_REVEAL_MIN_PX = 50;
 
   const DIALOG_SELECTOR = '#search-replace-dialog';
+  const DIALOG_STYLE_SELECTOR = '#search-replace-dialog-style';
   const TARGET_CLASS = 'search-target-editor';
   const MATCH_CLASS = 'search-target-match';
   const MATCH_TOKEN_NAME = 'searching';
-  const OWN_STYLE_SELECTOR = '#global-search-style';
   const APPLIES_VALUE_CLASS = 'applies-value';
 
   const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
@@ -557,8 +557,8 @@ onDOMready().then(() => {
       icon: colorMimicry.get($$('svg.info')[1], {fill: 'fill'}),
     };
     document.documentElement.appendChild(
-      $(OWN_STYLE_SELECTOR) ||
-      $create('style' + OWN_STYLE_SELECTOR)
+      $(DIALOG_STYLE_SELECTOR) ||
+      $create('style' + DIALOG_STYLE_SELECTOR)
     ).textContent = `
       #search-replace-dialog { 
         background-color: ${colors.body.bg};
