@@ -15,26 +15,22 @@ onDOMscriptReady('/codemirror.js').then(() => {
     jumpToLine,
     defocusEditor,
     nextEditor, prevEditor,
-    find, findNext, findPrev, replace, replaceAll,
   };
   // reroute handling to nearest editor when keypress resolves to one of these commands
   const REROUTED = new Set([
     ...Object.keys(COMMANDS),
+    'find', 'findNext', 'findPrev', 'replace', 'replaceAll',
     'colorpicker',
   ]);
-  const ORIGINAL_COMMAND = {};
-  const ORIGINAL_METHOD = {};
   Object.assign(CodeMirror, {
     getOption,
     setOption,
+    closestVisible,
   });
   Object.assign(CodeMirror.prototype, {
     getSection,
     rerouteHotkeys,
   });
-
-  // cm.state.search for last used 'find'
-  let searchState;
 
   new MutationObserver((mutations, observer) => {
     if (!$('#sections')) {
@@ -42,8 +38,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
     observer.disconnect();
 
-    prefs.subscribe(['editor.keyMap'], showKeyInSaveButtonTooltip);
-    showKeyInSaveButtonTooltip();
+    prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
+    addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
+    showHotkeyInTooltip();
 
     // N.B. the event listener should be registered before setupLivePrefs()
     $('#options').addEventListener('change', onOptionElementChanged);
@@ -51,8 +48,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     buildKeymapElement();
     setupLivePrefs();
 
+    Object.assign(CodeMirror.commands, COMMANDS);
     rerouteHotkeys(true);
-    setupFindHooks();
   }).observe(document, {childList: true, subtree: true});
 
   return;
@@ -269,7 +266,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     const themeElement = $('#editor.theme');
     const themeList = localStorage.codeMirrorThemes;
 
-    const optionsFromArray = (options) => {
+    const optionsFromArray = options => {
       const fragment = document.createDocumentFragment();
       options.forEach(opt => fragment.appendChild($create('option', opt)));
       themeElement.appendChild(fragment);
@@ -316,255 +313,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
         el.dataset.default = '';
         el.title = t('defaultTheme');
       }
-      !groupWithNext && (bin = fragment);
+      if (!groupWithNext) bin = fragment;
     });
     $('#editor.keyMap').appendChild(fragment);
-  }
-
-  /////////////////////
-
-  function setupFindHooks() {
-    for (const name of ['find', 'findNext', 'findPrev', 'replace']) {
-      ORIGINAL_COMMAND[name] = CodeMirror.commands[name];
-    }
-    for (const name of ['openDialog', 'openConfirm']) {
-      ORIGINAL_METHOD[name] = CodeMirror.prototype[name];
-    }
-    Object.assign(CodeMirror.commands, COMMANDS);
-    chrome.storage.local.get('editSearchText', data => {
-      searchState = {query: data.editSearchText || null};
-    });
-  }
-
-  function shouldIgnoreCase(query) {
-    // treat all-lowercase non-regexp queries as case-insensitive
-    return typeof query === 'string' && query === query.toLowerCase();
-  }
-
-  function updateState(cm, newState) {
-    if (!newState) {
-      if ((cm.state.search || {}).overlay) {
-        return cm.state.search;
-      }
-      if (!searchState.overlay) {
-        return null;
-      }
-      newState = searchState;
-    }
-    cm.state.search = {
-      query: newState.query,
-      overlay: newState.overlay,
-      annotate: cm.showMatchesOnScrollbar(newState.query, shouldIgnoreCase(newState.query))
-    };
-    cm.addOverlay(newState.overlay);
-    return cm.state.search;
-  }
-
-  // overrides the original openDialog with a clone of the provided template
-  function customizeOpenDialog(cm, template, callback) {
-    cm.openDialog = (tmpl, cb, opt) => {
-      // invoke 'callback' and bind 'this' to the original callback
-      ORIGINAL_METHOD.openDialog.call(cm, template.cloneNode(true), callback.bind(cb), opt);
-    };
-    setTimeout(() => (cm.openDialog = ORIGINAL_METHOD.openDialog));
-    refocusMinidialog(cm);
-  }
-
-  function focusClosestCM(activeCM) {
-    editors.lastActive = activeCM;
-    const cm = getEditorInSight();
-    if (cm !== activeCM) {
-      cm.focus();
-    }
-    return cm;
-  }
-
-  function propagateSearchState(cm) {
-    if ((cm.state.search || {}).clearSearch) {
-      cm.execCommand('clearSearch');
-    }
-    updateState(cm);
-  }
-
-  function find(activeCM) {
-    activeCM = focusClosestCM(activeCM);
-    const state = activeCM.state;
-    if (searchState.query && !(state.search || {}).lastQuery) {
-      (state.search = state.search || {}).query = searchState.query;
-    }
-    customizeOpenDialog(activeCM, template.find, function (query) {
-      this(query);
-      searchState = state.search;
-      if (searchState.query) {
-        chrome.storage.local.set({editSearchText: searchState.query});
-      }
-      if (!searchState.query ||
-          editors.length === 1 ||
-          CodeMirror.cmpPos(searchState.posFrom, searchState.posTo)) {
-        return;
-      }
-      editors.forEach(cm => ((cm.state.search || {}).clearSearch = cm !== activeCM));
-      editors.forEach((cm, i) => setTimeout(propagateSearchState, i + 100, cm));
-      findNext(activeCM);
-    });
-    ORIGINAL_COMMAND.find(activeCM);
-  }
-
-  function findNext(activeCM, reverse) {
-    let state = updateState(activeCM);
-    if (!state || !state.overlay) {
-      find(activeCM);
-      return;
-    }
-    let pos = activeCM.getCursor(reverse ? 'from' : 'to');
-    // clear the selection, don't move the cursor
-    if (activeCM.somethingSelected()) {
-      activeCM.setSelection(activeCM.getCursor());
-    }
-
-    const icase = shouldIgnoreCase(state.query);
-    const query = searchState.query;
-    const rxQuery = typeof query === 'object'
-      ? query : stringAsRegExp(query, icase ? 'i' : '');
-
-    const total = editors.length;
-    if ((!reverse || total === 1 ||
-        (document.activeElement || {}).name === 'applies-value') &&
-        findAppliesTo(activeCM, reverse, rxQuery)) {
-      return;
-    }
-    let cm = activeCM;
-    const startIndex = editors.indexOf(cm);
-    for (let i = 1; i < total; i++) {
-      cm = editors[(startIndex + i * (reverse ? -1 : 1) + total) % total];
-      pos = reverse ? CodeMirror.Pos(cm.lastLine()) : CodeMirror.Pos(0, 0);
-      const searchCursor = cm.getSearchCursor(query, pos, icase);
-      if (searchCursor.find(reverse)) {
-        if (total > 1) {
-          makeSectionVisible(cm);
-          cm.focus();
-        }
-        if ((cm.state.search || {}).clearSearch) {
-          cm.execCommand('clearSearch');
-        }
-        state = updateState(cm);
-        // speedup the original findNext
-        state.posFrom = reverse ? searchCursor.to() : searchCursor.from();
-        state.posTo = Object.assign({}, state.posFrom);
-        setTimeout(ORIGINAL_COMMAND[reverse ? 'findPrev' : 'findNext'], 0, cm);
-        return;
-      } else if (!reverse && findAppliesTo(cm, reverse, rxQuery)) {
-        return;
-      }
-      cm = editors[(startIndex + (i + 1) * (reverse ? -1 : 1) + total) % total];
-      if (reverse && findAppliesTo(cm, reverse, rxQuery)) {
-        return;
-      }
-    }
-    // nothing found so far, so call the original search with wrap-around
-    ORIGINAL_COMMAND[reverse ? 'findPrev' : 'findNext'](activeCM);
-  }
-
-  function findAppliesTo(cm, reverse, rxQuery) {
-    let inputs = $$('.applies-value', cm.getSection());
-    if (reverse) {
-      inputs = inputs.reverse();
-    }
-    inputs.splice(0, inputs.indexOf(document.activeElement) + 1);
-    return inputs.some(input => {
-      const match = rxQuery.exec(input.value);
-      if (match) {
-        input.focus();
-        const end = match.index + match[0].length;
-        // scroll selected part into view in long inputs,
-        // works only outside of current event handlers chain, hence timeout=0
-        setTimeout(() => {
-          input.setSelectionRange(end, end);
-          input.setSelectionRange(match.index, end);
-        }, 0);
-        return true;
-      }
-    });
-  }
-
-  function findPrev(cm) {
-    findNext(cm, true);
-  }
-
-  function replace(activeCM, all) {
-    let queue;
-    let query;
-    let replacement;
-    activeCM = focusClosestCM(activeCM);
-    customizeOpenDialog(activeCM, template[all ? 'replaceAll' : 'replace'], function (txt) {
-      query = txt;
-      customizeOpenDialog(activeCM, template.replaceWith, txt => {
-        replacement = txt;
-        queue = editors.rotate(-editors.indexOf(activeCM));
-        if (all) {
-          editors.forEach(doReplace);
-        } else {
-          doReplace();
-        }
-      });
-      this(query);
-    });
-    ORIGINAL_COMMAND.replace(activeCM, all);
-
-    function doReplace() {
-      const cm = queue.shift();
-      if (!cm) {
-        if (!all) {
-          editors.lastActive.focus();
-        }
-        return;
-      }
-      // hide the first two dialogs (replace, replaceWith)
-      cm.openDialog = (tmpl, callback) => {
-        cm.openDialog = (tmpl, callback) => {
-          cm.openDialog = ORIGINAL_METHOD.openDialog;
-          if (all) {
-            callback(replacement);
-          } else {
-            doConfirm(cm);
-            callback(replacement);
-            if (!$('.CodeMirror-dialog', cm.getWrapperElement())) {
-              // no dialog == nothing found in the current CM, move to the next
-              doReplace();
-            }
-          }
-        };
-        callback(query);
-      };
-      ORIGINAL_COMMAND.replace(cm, all);
-    }
-    function doConfirm(cm) {
-      let wrapAround = false;
-      const origPos = cm.getCursor();
-      cm.openConfirm = function overrideConfirm(tmpl, callbacks, opt) {
-        const ovrCallbacks = callbacks.map(callback => () => {
-          makeSectionVisible(cm);
-          cm.openConfirm = overrideConfirm;
-          setTimeout(() => (cm.openConfirm = ORIGINAL_METHOD.openConfirm));
-
-          const pos = cm.getCursor();
-          callback();
-          const cmp = CodeMirror.cmpPos(cm.getCursor(), pos);
-          wrapAround |= cmp <= 0;
-
-          const dlg = $('.CodeMirror-dialog', cm.getWrapperElement());
-          if (!dlg || cmp === 0 || wrapAround && CodeMirror.cmpPos(cm.getCursor(), origPos) >= 0) {
-            $.remove(dlg);
-            doReplace();
-          }
-        });
-        ORIGINAL_METHOD.openConfirm.call(cm, template.replaceConfirm.cloneNode(true), ovrCallbacks, opt);
-      };
-    }
-  }
-
-  function replaceAll(cm) {
-    replace(cm, true);
   }
 
   ////////////////////////////////////////////////
@@ -586,7 +337,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
     const rerouteCommand = name => {
       if (REROUTED.has(name)) {
-        CodeMirror.commands[name](getEditorInSight(event.target));
+        CodeMirror.commands[name](closestVisible(event.target));
         return true;
       }
     };
@@ -599,13 +350,22 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   ////////////////////////////////////////////////
 
-  function getEditorInSight(nearbyElement) {
-    // priority: 1. associated CM for applies-to element 2. last active if visible 3. first visible
-    let cm;
-    if (nearbyElement && nearbyElement.className.indexOf('applies-') >= 0) {
-      cm = getSectionForChild(nearbyElement).CodeMirror;
-    } else {
-      cm = editors.lastActive;
+  // priority:
+  // 1. associated CM for applies-to element
+  // 2. last active if visible
+  // 3. first visible
+  function closestVisible(nearbyElement) {
+    const cm =
+      nearbyElement instanceof CodeMirror ? nearbyElement :
+      nearbyElement instanceof Node && (getSectionForChild(nearbyElement) || {}).CodeMirror ||
+      editors.lastActive;
+    if (nearbyElement instanceof Node && cm) {
+      const {left, top} = nearbyElement.getBoundingClientRect();
+      const bounds = cm.display.wrapper.getBoundingClientRect();
+      if (top >= 0 && top >= bounds.top &&
+          left >= 0 && left >= bounds.left) {
+        return cm;
+      }
     }
     // closest editor should have at least 2 lines visible
     const lineHeight = editors[0].defaultTextHeight();
@@ -621,6 +381,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
         return distances[index];
       }
       const section = (cm || editors[index]).getSection();
+      if (!section) {
+        return 1e9;
+      }
       const top = allSectionsContainerTop + section.offsetTop;
       if (top < scrollY + lineHeight) {
         return Math.max(0, scrollY - top - lineHeight);
@@ -743,12 +506,23 @@ onDOMscriptReady('/codemirror.js').then(() => {
     });
   }
 
-  function showKeyInSaveButtonTooltip(prefName, value) {
-    $('#save-button').title = findKeyForCommand('save', value);
+  function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
+    const extraKeys = CodeMirror.defaults.extraKeys;
+    for (const el of $$('[data-hotkey-tooltip]')) {
+      if (el._hotkeyTooltipKeyMap !== mapName) {
+        el._hotkeyTooltipKeyMap = mapName;
+        const title = el._hotkeyTooltipTitle = el._hotkeyTooltipTitle || el.title;
+        const cmd = el.dataset.hotkeyTooltip;
+        const key = findKeyForCommand(cmd, mapName) ||
+          extraKeys && findKeyForCommand(cmd, extraKeys);
+        const newTitle = title + (title && key ? '\n' : '') + (key || '');
+        if (el.title !== newTitle) el.title = newTitle;
+      }
+    }
   }
 
-  function findKeyForCommand(command, mapName = CodeMirror.defaults.keyMap) {
-    const map = CodeMirror.keyMap[mapName];
+  function findKeyForCommand(command, map) {
+    if (typeof map === 'string') map = CodeMirror.keyMap[map];
     let key = Object.keys(map).find(k => map[k] === command);
     if (key) {
       return key;

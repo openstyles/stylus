@@ -214,6 +214,14 @@
     "message": "History",
     "description": "Used in various places to show a history log of something"
   },
+  "genericNext": {
+    "message": "Next",
+    "description": "Used in various places to select/perform the next step/action"
+  },
+  "genericPrevious": {
+    "message": "Previous",
+    "description": "Used in various places to select/perform the previous step/action"
+  },
   "genericResetLabel": {
     "message": "Reset",
     "description": "Used in various parts of UI to indicate that something may be reset to its original state"
@@ -736,6 +744,18 @@
   "search": {
     "message": "Search",
     "description": "Label before the search input field in the editor shown on Ctrl-F"
+  },
+  "searchCaseSensitive": {
+    "message": "Case-sensitive",
+    "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
+  },
+  "searchNumberOfResults": {
+    "message": "Number of matches",
+    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchNumberOfResults2": {
+    "message": "Number of matches in code and applies-to values",
+    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
   },
   "searchRegexp": {
     "message": "Use /re/ syntax for regexp search",
