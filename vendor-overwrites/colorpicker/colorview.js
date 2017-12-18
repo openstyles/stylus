@@ -183,7 +183,7 @@
         }
         lineCacheAlive = true;
 
-        !elements && (elements = text.getElementsByClassName(OWN_TOKEN_CLASS));
+        if (!elements) elements = text.getElementsByClassName(OWN_TOKEN_CLASS);
         do {
           el = elements[elementIndex];
           elementIndex += el && el.classList.contains(DISABLED_NEXT_TOKEN_CLASS) ? 2 : 1;
@@ -202,7 +202,7 @@
           bg.title = options.tooltip;
         }
         bg.style.setProperty('background-color', data.color, 'important');
-        !bg.parentNode && el.appendChild(bg);
+        if (!bg.parentNode) el.appendChild(bg);
       }
 
       if (lineCacheAlive) {
@@ -450,6 +450,7 @@
     }
 
     openPopup(color) {
+      // eslint-disable-next-line prefer-const
       let {line, ch} = this.cm.getCursor();
       const lineText = this.cm.getLine(line);
       const lineTextLC = lineText.toLowerCase();

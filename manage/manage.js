@@ -392,7 +392,7 @@ Object.assign(handleEvent, {
   },
 
   config(event, {styleMeta}) {
-    event.preventDefault()
+    event.preventDefault();
     configDialog(styleMeta);
   },
 });

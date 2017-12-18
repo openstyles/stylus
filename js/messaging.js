@@ -159,7 +159,7 @@ function sendMessage(msg, callback) {
       fn(...args, r => {
         const err = r && r.__ERROR__;
         (err ? reject : resolve)(err || r);
-        chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
+        ignoreChromeError();
       });
     });
   }
@@ -268,7 +268,8 @@ function stringAsRegExp(s, flags) {
 
 
 function ignoreChromeError() {
-  chrome.runtime.lastError; // eslint-disable-line no-unused-expressions
+  // eslint-disable-next-line no-unused-expressions
+  chrome.runtime.lastError;
 }
 
 
