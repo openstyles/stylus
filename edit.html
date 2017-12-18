@@ -3,8 +3,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="edit/edit.css">
+    <link href="global.css" rel="stylesheet">
+    <link href="edit/edit.css" rel="stylesheet">
 
     <style id="firefox-transitions-bug-suppressor">
       /* restrict to FF */
@@ -36,31 +36,33 @@
     <script src="edit/codemirror-editing-hooks.js"></script>
     <script src="edit/edit.js"></script>
 
+    <link  href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
     <script src="vendor/codemirror/lib/codemirror.js"></script>
-    <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.css">
+
     <script src="vendor/codemirror/mode/css/css.js"></script>
 
-    <link rel="stylesheet" href="vendor/codemirror/addon/dialog/dialog.css">
-    <link rel="stylesheet" href="vendor/codemirror/addon/search/matchesonscrollbar.css">
-    <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
-    <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
-    <script src="vendor/codemirror/addon/search/match-highlighter.js"></script>
+    <link  href="vendor/codemirror/addon/dialog/dialog.css" rel="stylesheet">
     <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
+
+    <link  href="vendor/codemirror/addon/search/matchesonscrollbar.css" rel="stylesheet">
+    <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
+    <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
+    <script src="vendor/codemirror/addon/search/match-highlighter.js"></script>
     <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
-    <script src="vendor/codemirror/addon/search/search.js"></script>
+
     <script src="vendor/codemirror/addon/comment/comment.js"></script>
     <script src="vendor/codemirror/addon/selection/active-line.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
 
-    <link rel="stylesheet" href="vendor/codemirror/addon/fold/foldgutter.css" />
+    <link  href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet" />
     <script src="vendor/codemirror/addon/fold/foldcode.js"></script>
     <script src="vendor/codemirror/addon/fold/foldgutter.js"></script>
     <script src="vendor/codemirror/addon/fold/brace-fold.js"></script>
     <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
 
-    <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
+    <link  href="vendor/codemirror/addon/lint/lint.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="vendor/codemirror/addon/lint/lint.css" />
-    <link rel="stylesheet" href="vendor/codemirror/addon/hint/show-hint.css" />
+    <link  href="vendor/codemirror/addon/hint/show-hint.css" rel="stylesheet" />
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
     <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
 
@@ -68,14 +70,18 @@
     <script src="vendor/codemirror/keymap/emacs.js"></script>
     <script src="vendor/codemirror/keymap/vim.js"></script>
 
-    <link href="/vendor-overwrites/colorpicker/colorpicker.css" rel="stylesheet">
-    <script src="/vendor-overwrites/colorpicker/colorpicker.js"></script>
-    <script src="/vendor-overwrites/colorpicker/colorview.js"></script>
+    <link  href="vendor-overwrites/colorpicker/colorpicker.css" rel="stylesheet">
+    <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
+    <script src="vendor-overwrites/colorpicker/colorview.js"></script>
+
+    <link  href="edit/global-search.css" rel="stylesheet">
+    <script src="edit/global-search.js"></script>
 
     <script src="edit/match-highlighter-helper.js"></script>
+
+    <link  href="edit/codemirror-default.css" rel="stylesheet">
     <script src="edit/codemirror-default.js"></script>
 
-    <link rel="stylesheet" href="/edit/codemirror-default.css">
     <link id="cm-theme" rel="stylesheet">
 
     <template data-id="appliesTo">
@@ -120,35 +126,75 @@
       </div>
     </template>
 
+    <template data-id="searchReplaceDialog">
+      <div id="search-replace-dialog">
+        <div data-type="main">
+          <div data-type="content"></div>
+          <div data-type="actions">
+            <a data-action="case" i18n-title="searchCaseSensitive" href="#">Aa</a>
+            <a data-action="prev" i18n-title="genericPrevious" href="#" data-hotkey-tooltip="findPrev">
+              <svg class="svg-icon" style="transform: rotate(180deg)"><use xlink:href="#svg-icon-v"/></svg>
+            </a>
+            <a data-action="next" i18n-title="genericNext" href="#" data-hotkey-tooltip="findNext">
+              <svg class="svg-icon"><use xlink:href="#svg-icon-v"/></svg>
+            </a>
+            <a data-action="close" i18n-title="confirmClose" href="#" data-hotkey-tooltip="defocusEditor">
+              <svg class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
+            </a>
+          </div>
+        </div>
+        <div data-type="status">
+          <div class="CodeMirror-search-hint" i18n-text="searchRegexp"></div>
+          <div data-type="tally" i18n-title="searchNumberOfResults"></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-id="clearSearch">
+      <div data-type="hover" i18n-title="confirmDelete">
+        <svg data-action="clear" class="svg-icon"><use xlink:href="#svg-icon-close"></use></svg>
+      </div>
+    </template>
+
     <template data-id="find">
-      <span i18n-text="search">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-      </span>
+      <div data-type="content">
+        <div data-type="input-wrapper">
+          <textarea class="CodeMirror-search-field" rows="1" spellcheck="false" required
+                    i18n-placeholder="search"></textarea>
+        </div>
+      </div>
     </template>
 
     <template data-id="replace">
-      <span i18n-text="replace">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-      </span>
-    </template>
-
-    <template data-id="replaceAll">
-      <span i18n-text="replaceAll">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-        <span class="CodeMirror-search-hint">(<span i18n-text="searchRegexp"></span>)</span>
-      </span>
-    </template>
-
-    <template data-id="replaceWith">
-      <span i18n-text="replaceWith">: <input type="text" class="CodeMirror-search-field" spellcheck="false">
-      </span>
-    </template>
-
-    <template data-id="replaceConfirm">
-      <span i18n-text="replace">?
-        <button i18n-text="confirmYes"></button>
-        <button i18n-text="confirmNo"></button>
-        <button i18n-text="confirmStop"></button>
-      </span>
+      <div data-type="content">
+        <div data-type="input-wrapper">
+          <textarea data-type="replace-from"
+                    i18n-placeholder="replace"
+                    class="CodeMirror-search-field" rows="1" required
+                    spellcheck="false"></textarea>
+        </div>
+        <div data-type="input-wrapper">
+          <textarea data-type="replace-to"
+                    i18n-placeholder="replaceWith"
+                    class="CodeMirror-search-field" rows="1" required
+                    spellcheck="false"></textarea>
+        </div>
+        <button data-action="replace" i18n-text="replace" disabled>
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
+          </svg>
+        </button>
+        <button data-action="replaceAll" i18n-text="replaceAll" disabled>
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
+          </svg>
+        </button>
+        <button data-action="undo" i18n-text="undo" disabled>
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M11.3,5.5H8.7V1.4L1.9,6.5l6.8,5.1V7.5h2.6c1.8,0,3.2,1.4,3.2,3.2s-1.4,3.2-3.2,3.2H7.8v2h3.5c2.9,0,5.2-2.3,5.2-5.2S14.2,5.5,11.3,5.5z"/>
+          </svg>
+        </button>
+      </div>
     </template>
 
     <template data-id="jumpToLine">
@@ -201,7 +247,7 @@
       </section>
       <section id="actions">
         <div>
-          <button id="save-button" i18n-text="styleSaveLabel"></button>
+          <button id="save-button" i18n-text="styleSaveLabel" data-hotkey-tooltip="save"></button>
           <button id="beautify" i18n-text="styleBeautify"></button>
           <a href="manage.html" tabindex="-1"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
         </div>
@@ -349,6 +395,10 @@
 
       <symbol id="svg-icon-close" viewBox="0 0 12 16">
         <path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"></path>
+      </symbol>
+
+      <symbol id="svg-icon-v" viewBox="0 0 16 16">
+        <path d="M8,11.5L2.8,6.3l1.5-1.5L8,8.6l3.7-3.7l1.5,1.5L8,11.5z"/>
       </symbol>
 
       <symbol id="svg-icon-settings" viewBox="0 0 16 16">
