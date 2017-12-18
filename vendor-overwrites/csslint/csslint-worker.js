@@ -2696,7 +2696,7 @@ Parser.prototype = function() {
 
                 //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
-                        Tokens.ANGLE, Tokens.TIME,
+                        Tokens.ANGLE, Tokens.TIME, Tokens.DIMENSION,
                         Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])) {
 
                     value = tokenStream.token().value;
@@ -3519,7 +3519,7 @@ var Properties = module.exports = {
     "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
     "column-count"                  : "<integer> | auto",                      //https://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
-    "column-gap"                    : "normal | <length> | <percentage>",
+    "column-gap"                    : "<column-gap>",
     "column-rule"                   : "<border-width> || <border-style> || <color>",
     "column-rule-color"             : "<color>",
     "column-rule-style"             : "<border-style>",
@@ -3559,21 +3559,21 @@ var Properties = module.exports = {
     "filter"                        : "<filter-function-list> | none",
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
-    "flex"                          : "<flex>",
+    "flex"                          : "<flex-shorthand>",
     "flex-basis"                    : "<width>",
     "flex-direction"                : "row | row-reverse | column | column-reverse",
     "flex-flow"                     : "<flex-direction> || <flex-wrap>",
     "flex-grow"                     : "<number>",
     "flex-shrink"                   : "<number>",
     "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
-    "-webkit-flex"                  : "<flex>",
+    "-webkit-flex"                  : "<flex-shorthand>",
     "-webkit-flex-basis"            : "<width>",
     "-webkit-flex-direction"        : "row | row-reverse | column | column-reverse",
     "-webkit-flex-flow"             : "<flex-direction> || <flex-wrap>",
     "-webkit-flex-grow"             : "<number>",
     "-webkit-flex-shrink"           : "<number>",
     "-webkit-flex-wrap"             : "nowrap | wrap | wrap-reverse",
-    "-ms-flex"                      : "<flex>",
+    "-ms-flex"                      : "<flex-shorthand>",
     "-ms-flex-align"                : "start | end | center | stretch | baseline",
     "-ms-flex-direction"            : "row | row-reverse | column | column-reverse",
     "-ms-flex-order"                : "<number>",
@@ -3601,36 +3601,28 @@ var Properties = module.exports = {
     "font-weight"                   : "<font-weight>",
 
     //G
-    "gap"                           : "[ <length> | normal ]{1,2}",
+    "gap"                           : "<row-gap> <column-gap>?",
     "glyph-orientation-horizontal"  : "<glyph-angle>",
     "glyph-orientation-vertical"    : "auto | <glyph-angle>",
     "grid"                          : "<grid-template> | <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>? | [ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>",
     "grid-area"                     : "<grid-line> [ / <grid-line> ]{0,3}",
-    "grid-auto-columns"             : "<track-size>+",
+    "grid-auto-columns"             : "<grid-auto-columns>",
     "grid-auto-flow"                : "[ row | column ] || dense",
-    "grid-auto-position"            : 1,
-    "grid-auto-rows"                : "<track-size>+",
-    "grid-cell-stacking"            : "columns | rows | layer",
+    "grid-auto-rows"                : "<grid-auto-rows>",
     "grid-column"                   : "<grid-line> [ / <grid-line> ]?",
-    "grid-columns"                  : 1,
-    "grid-column-align"             : "start | end | center | stretch",
-    "grid-column-sizing"            : 1,
     "grid-column-start"             : "<grid-line>",
     "grid-column-end"               : "<grid-line>",
-    "grid-column-span"              : "<integer>",
-    "grid-flow"                     : "none | rows | columns",
-    "grid-layer"                    : "<integer>",
     "grid-row"                      : "<grid-line> [ / <grid-line> ]?",
-    "grid-rows"                     : 1,
-    "grid-row-align"                : "start | end | center | stretch",
     "grid-row-start"                : "<grid-line>",
     "grid-row-end"                  : "<grid-line>",
-    "grid-row-span"                 : "<integer>",
-    "grid-row-sizing"               : 1,
     "grid-template"                 : "none | [ <grid-template-rows> / <grid-template-columns> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?",
     "grid-template-areas"           : "none | <string>+",
-    "grid-template-columns"         : "none | <track-list> | <auto-track-list>",
-    "grid-template-rows"            : "none | <track-list> | <auto-track-list>",
+    "grid-template-columns"         : "<grid-template-columns>",
+    "grid-template-rows"            : "<grid-template-rows>",
+    //G - deprecated aliases
+    "grid-row-gap"                  : "<row-gap>",
+    "grid-column-gap"               : "<column-gap>",
+    "grid-gap"                      : "<row-gap> <column-gap>?",
 
     //H
     "hanging-punctuation"           : 1,
@@ -3766,7 +3758,7 @@ var Properties = module.exports = {
     "right"                         : "<margin-width>",
     "rotation"                      : 1,
     "rotation-point"                : 1,
-    "row-gap"                       : "normal | <length> | <percentage>",
+    "row-gap"                       : "<row-gap>",
     "ruby-align"                    : 1,
     "ruby-overhang"                 : 1,
     "ruby-position"                 : 1,
@@ -4140,6 +4132,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
             case "vw":
             case "vmax":
             case "vmin":
+            case "fr":
                 this.type = "length";
                 break;
 
@@ -6191,6 +6184,10 @@ copy(ValidationTypes, {
             "drop-shadow() | grayscale() | hue-rotate() | invert() | " +
             "opacity() | saturate() | sepia()",
 
+        "<flex>": function(part) {
+            return part.type === "function" || part.type === "grid" && part.value >= 0;
+        },
+
         "<flex-basis>": "<width>",
 
         "<flex-direction>": "row | row-reverse | column | column-reverse",
@@ -6243,6 +6240,10 @@ copy(ValidationTypes, {
             return part.type === "identifier" || part.wasIdent;
         },
 
+        "<ident-not-span>": function(part) {
+            return (part.type === "identifier" || part.wasIdent) && !/^span$/i.test(part.value);
+        },
+
         "<ident-not-generic-family>": function(part) {
             return this["<ident>"](part) && !this["<generic-family>"](part);
         },
@@ -6281,6 +6282,10 @@ copy(ValidationTypes, {
         "<nonnegative-number-or-percentage>": function(part) {
             return (this["<number>"](part) || this["<percentage>"](part)) &&
                 (String(part) === "0" || part.type === "function" || (part.value) >= 0);
+        },
+
+        "<positive-integer>": function(part) {
+            return this["<number>"](part) && (part.type === "function" || part.value > 0);
         },
 
         "<number>": function(part) {
@@ -6392,7 +6397,7 @@ copy(ValidationTypes, {
         "<filter-function-list>": "[ <filter-function> | <uri> ]+",
 
         // https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
-        "<flex>":
+        "<flex-shorthand>":
             "none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]",
 
         "<font-family>": "[ <generic-family> | <family-name> ]#",
@@ -6442,6 +6447,28 @@ copy(ValidationTypes, {
             // <east-asian-width-values>
             "[ full-width | proportional-width ] || " +
             "ruby",
+
+        "<grid-auto-columns>":        "<track-size>+",
+        "<grid-auto-rows>":           "<track-size>+",
+        "<grid-template>":            "none | [ <grid-template-rows> / <grid-template-columns> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?",
+        "<grid-template-columns>":    "none | <track-list> | <auto-track-list>",
+        "<grid-template-rows>":       "<grid-template-columns>",
+        "<grid-line>":                "auto | <ident-not-span> | [ <integer> && <ident-not-span>? ] | [ span && [ <integer> || <ident-not-span> ] ]",
+        "<auto-repeat>":              "repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+        "<auto-track-list>":          "[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> [ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?",
+        "<explicit-track-list>":      "[ <line-names>? <track-size> ]+ <line-names>?",
+        "<fixed-breadth>":            "<length-percentage>",
+        "<fixed-repeat>":             "repeat( [ <positive-integer> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+        "<fixed-size>":               "<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )",
+        "<inflexible-breadth>":       "<length-percentage> | min-content | max-content | auto",
+        "<length-percentage>":        "<length> | <percentage>",
+        "<line-names>":               "[ <ident-not-span>* ]",
+        "<track-breadth>":            "<length-percentage> | <flex> | min-content | max-content | auto",
+        "<track-list>":               "[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?",
+        "<track-repeat>":             "repeat( [ <positive-integer> ] , [ <line-names>? <track-size> ]+ <line-names>? )",
+        "<track-size>":               "<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | fit-content( <length-percentage> )",
+        "<column-gap>":               "normal | <length> | <percentage>",
+        "<row-gap>":                  "<column-gap>",
 
         "<justify-content>":
             "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
