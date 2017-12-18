@@ -22,16 +22,6 @@ onDOMready().then(() => {
 
   const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 
-  const NARROW_WIDTH = [...document.styleSheets]
-    .filter(({href}) => href && href.endsWith('global-search.css'))
-    .map(sheet =>
-      [...sheet.cssRules]
-        .filter(r => r.media && r.conditionText.includes('max-width'))
-        .map(r => r.conditionText.match(/\d+/) | 0)
-        .sort((a, b) => a - b)
-        .pop())
-    .pop() || 800;
-
   const state = {
     // used for case-sensitive matching directly
     find: '',
@@ -188,10 +178,12 @@ onDOMready().then(() => {
       state.replaceValue = state.replace.replace(/(\\r)?\\n/g, '\n').replace(/\\t/g, '\t');
       state.replaceHasRefs = /\$[$&`'\d]/.test(state.replaceValue);
     }
+    const cmFocused = document.activeElement && document.activeElement.closest('.CodeMirror');
     state.activeAppliesTo = $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
     state.cmStart = CodeMirror.closestVisible(
-      document.activeElement && document.activeElement.closest('.CodeMirror') && document.activeElement ||
-      state.activeAppliesTo || state.cm);
+      cmFocused && document.activeElement ||
+      state.activeAppliesTo ||
+      state.cm);
   }
 
 
@@ -208,21 +200,19 @@ onDOMready().then(() => {
       return;
     }
     initState();
-    if (!state.find) {
-      clearMarker();
-      makeTargetVisible(null);
-      setupOverlay(editors.slice());
-      showTally(0, 0);
-      return;
-    }
     const {cmStart} = state;
-    const {index, found, foundInCode} = doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
+    const {index, found, foundInCode} = state.find && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
     if (!foundInCode) clearMarker();
     if (!found) makeTargetVisible(null);
     const radiateFrom = foundInCode ? index : editors.indexOf(cmStart);
     setupOverlay(radiateArray(editors, radiateFrom));
     enableReplaceButtons(foundInCode);
-    debounce(showTally, 0, foundInCode && !state.numFound ? 1 : undefined);
+    if (state.find) {
+      const firstSuccessfulSearch = foundInCode && !state.numFound;
+      debounce(showTally, 0, firstSuccessfulSearch ? 1 : undefined);
+    } else {
+      showTally(0, 0);
+    }
   }
 
 
@@ -326,7 +316,7 @@ onDOMready().then(() => {
 
     if (cursor) {
       state.undoHistory.push([cm]);
-      state.undo.disabled = false;
+      enableUndoButton(true);
     }
   }
 
@@ -338,7 +328,7 @@ onDOMready().then(() => {
     if (found.length) {
       state.lastFind = null;
       state.undoHistory.push(found);
-      state.undo.disabled = false;
+      enableUndoButton(true);
       doSearch({canAdvance: false});
     }
   }
@@ -388,8 +378,8 @@ onDOMready().then(() => {
         undoneSome = true;
       }
     }
-    state.undo.disabled = !state.undoHistory.length;
-    (state.undo.disabled ? state.input : state.undo).focus();
+    enableUndoButton(state.undoHistory.length);
+    (state.undoHistory.length ? state.undo : state.input).focus();
     if (undoneSome) {
       state.lastFind = null;
       restoreWindowScrollPos();
@@ -463,7 +453,6 @@ onDOMready().then(() => {
         cmState.annotateTimer = 0;
       }
       if (hasMatches) {
-        if (cmState.annotateTimer) clearTimeout(cmState.annotateTimer);
         cmState.annotateTimer = setTimeout(annotateScrollbar, ANNOTATE_SCROLLBAR_DELAY,
           cm, query, state.icase);
       }
@@ -481,11 +470,10 @@ onDOMready().then(() => {
     const match = this.query.exec(stream.string);
     if (match && match.index === stream.pos) {
       this.numFound++;
-      //state.numFound++;
       const t = performance.now();
       if (t - this.tallyShownTime > 10) {
-        debounce(showTally);
         this.tallyShownTime = t;
+        debounce(showTally);
       }
       stream.pos += match[0].length || 1;
       return MATCH_TOKEN_NAME;
@@ -573,6 +561,7 @@ onDOMready().then(() => {
       #search-replace-dialog [data-action="case"] {
         color: ${colors.icon.fill};
       }
+      #search-replace-dialog[data-type="replace"] button:hover svg,
       #search-replace-dialog svg:hover {
         fill: inherit;
       }
@@ -587,20 +576,11 @@ onDOMready().then(() => {
     document.body.appendChild(dialog);
     dispatchEvent(new Event('showHotkeyInTooltip'));
 
-    measureInput(state.input);
     adjustTextareaSize(state.input);
     if (type === 'replace') {
-      measureInput(state.input2);
       adjustTextareaSize(state.input2);
       enableReplaceButtons(state.find !== '');
-
-      addEventListener('resize', toggleReplaceButtonTooltips, {passive: true});
-      toggleReplaceButtonTooltips(true);
-
-      state.undo = $('[data-action="undo"]');
-      state.undo.disabled = !state.undoHistory.length;
-    } else {
-      removeEventListener('resize', toggleReplaceButtonTooltips, {passive: true});
+      enableUndoButton(state.undoHistory.length);
     }
 
     return dialog;
@@ -620,20 +600,11 @@ onDOMready().then(() => {
   }
 
 
-  function measureInput(input) {
-    const style = getComputedStyle(input);
-    input._padding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-    input._maxWidth = parseFloat(style.maxWidth);
-    input._rowHeight = input.clientHeight - input._padding;
-  }
-
-
   function destroyDialog({restoreFocus = false} = {}) {
     state.input = null;
     $.remove(DIALOG_SELECTOR);
     debounce.unregister(doSearch);
     makeTargetVisible(null);
-    removeEventListener('resize', toggleReplaceButtonTooltips, {passive: true});
     if (restoreFocus) setTimeout(focusNoScroll, 0, state.originalFocus);
   }
 
@@ -675,20 +646,10 @@ onDOMready().then(() => {
     }
   }
 
-
-  function toggleReplaceButtonTooltips(debounced) {
-    if (debounced !== true) {
-      debounce(toggleReplaceButtonTooltips, 0, true);
-    } else {
-      const addTitle = window.innerWidth <= NARROW_WIDTH;
-      for (const el of state.dialog.getElementsByTagName('button')) {
-        if (addTitle && !el.title) {
-          el.title = el.textContent;
-        } else if (!addTitle && el.title) {
-          el.title = '';
-        } else {
-          break;
-        }
+  function enableUndoButton(enabled) {
+    if (state.dialog && state.dialog.dataset.type === 'replace') {
+      for (const el of $$('[data-action="undo"]', state.dialog)) {
+        el.disabled = !enabled;
       }
     }
   }

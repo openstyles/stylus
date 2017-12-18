@@ -179,17 +179,26 @@
                     class="CodeMirror-search-field" rows="1" required
                     spellcheck="false"></textarea>
         </div>
-        <button data-action="replace" i18n-text="replace" disabled>
+        <button data-action="replace" i18n-text="replace" disabled></button>
+        <button data-action="replaceAll" i18n-text="replaceAll" disabled></button>
+        <button data-action="undo" i18n-text="undo" disabled></button>
+        <!--
+        Using a separate set of buttons because
+        1. FF can display tooltips only when specified on the <button>, ignores the nested <title> in <svg>
+        2. the icon doesn't fill the entire button area so tooltips aren't shown when the edges are hovered
+        -->
+        <button class="hidden" data-action="replace" i18n-title="replace" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
           </svg>
         </button>
-        <button data-action="replaceAll" i18n-text="replaceAll" disabled>
+        <button class="hidden" data-action="replaceAll" i18n-title="replaceAll" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
-            <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
+            <polygon points="15.8,1.8 8.8,8.8 5.2,5.3 3.5,6.9 8.8,12.2 17.5,3.4 "/>
+            <polygon points="15.8,7.8 8.8,14.8 5.2,11.3 3.5,12.9 8.8,18.2 17.5,9.4 "/>
           </svg>
         </button>
-        <button data-action="undo" i18n-text="undo" disabled>
+        <button class="hidden" data-action="undo" i18n-title="undo" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
             <path d="M11.3,5.5H8.7V1.4L1.9,6.5l6.8,5.1V7.5h2.6c1.8,0,3.2,1.4,3.2,3.2s-1.4,3.2-3.2,3.2H7.8v2h3.5c2.9,0,5.2-2.3,5.2-5.2S14.2,5.5,11.3,5.5z"/>
           </svg>

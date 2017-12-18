@@ -209,10 +209,15 @@
     right: 0;
     max-width: none;
   }
-  #search-replace-dialog[data-type="replace"] button {
+  #search-replace-dialog[data-type="replace"] button:not(.hidden) {
+    display: none !important;
+  }
+  #search-replace-dialog[data-type="replace"] button.hidden {
+    display: block !important;
     font-size: 0;
     width: 24px;
     text-align: center;
+    cursor: pointer;
   }
   #search-replace-dialog[data-type="replace"] button svg {
     display: inline;
@@ -221,12 +226,5 @@
     min-width: 50px;
     max-width: calc(50vw - 120px);
     width: auto;
-  }
-  #search-replace-dialog[data-type="replace"] button[data-action="replaceAll"] svg {
-    top: -3px;
-    position: relative;
-    /* unprefixed since Chrome 53 */
-    -webkit-filter: drop-shadow(0 5px 0 currentColor);
-    filter: drop-shadow(0 5px 0 currentColor);
   }
 }
