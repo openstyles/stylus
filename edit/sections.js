@@ -455,6 +455,9 @@ function removeAreaAndSetDirty(area) {
 }
 
 function makeSectionVisible(cm) {
+  if (editors.length === 1) {
+    return;
+  }
   const section = cm.getSection();
   const bounds = section.getBoundingClientRect();
   if (
