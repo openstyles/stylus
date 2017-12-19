@@ -130,8 +130,7 @@ body.search-results-shown {
   opacity: 1;
 }
 
-#search-results .search-result-actions button {
-  background-color: #fff;
+.search-result-actions button {
   box-shadow: 2px 2px 20px #000;
   white-space: nowrap;
   margin: 3px;
