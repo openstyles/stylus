@@ -28,14 +28,15 @@ $$.remove = (selector, base = document) => {
   // display a full text tooltip on buttons with ellipsis overflow and no inherent title
   const addTooltipsToEllipsized = () => {
     for (const btn of document.getElementsByTagName('button')) {
-      if (btn.title && !btn.titleIsForEllipsis ||
-          btn.clientWidth === btn.preresizeClientWidth) {
+      if (btn.title && !btn.titleIsForEllipsis) {
         continue;
       }
-      btn.preresizeClientWidth = btn.clientWidth;
-      const padding = btn.offsetWidth - btn.clientWidth;
-      const displayedWidth = btn.getBoundingClientRect().width - padding;
-      if (btn.scrollWidth > displayedWidth) {
+      const width = btn.offsetWidth;
+      if (!width || btn.preresizeClientWidth === width) {
+        continue;
+      }
+      btn.preresizeClientWidth = width;
+      if (btn.scrollWidth > width) {
         const text = btn.textContent;
         btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
         btn.titleIsForEllipsis = true;
