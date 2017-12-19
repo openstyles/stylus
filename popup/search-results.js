@@ -200,15 +200,12 @@ window.addEventListener('showStyles:done', function _() {
    * @param {string} message  Message to display to user.
    */
   function error(reason) {
-    dom.error.textContent =
-      reason === 404 ?
-        t('searchResultNoneFound') :
-        t('genericErrorOccurred') + '\n' + reason;
+    dom.error.textContent = reason === 404 ? t('searchResultNoneFound') : reason;
     dom.error.classList.remove('hidden');
     dom.container.classList.toggle('hidden', !processedResults.length);
     document.body.classList.toggle('search-results-shown', processedResults.length > 0);
-    if (dom.error.getBoundingClientRect().bottom > window.innerHeight) {
-      dom.error.scrollIntoView();
+    if (dom.error.getBoundingClientRect().bottom < 0) {
+      dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   }
 
@@ -573,7 +570,7 @@ window.addEventListener('showStyles:done', function _() {
     .catch(reason => {
       const usoId = result.id;
       console.debug('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
-      alert('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
+      error('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
     })
     .then(() => {
       $.remove('.lds-spinner', entry);
