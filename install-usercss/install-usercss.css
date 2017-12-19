@@ -427,6 +427,7 @@ label {
   }
   .actions {
     display: flex;
+    align-items: flex-start;
   }
   .install {
     margin-right: 1em;
