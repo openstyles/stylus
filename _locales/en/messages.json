@@ -103,6 +103,10 @@
   "updateCheckHistory": {
     "message": "History of update checks"
   },
+  "clickToUninstall": {
+    "message": "Click to uninstall",
+    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+  },
   "configureStyle": {
     "message": "Configure",
     "description": "Label for the button to configure usercss userstyle"

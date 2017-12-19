@@ -498,7 +498,7 @@ window.addEventListener('showStyles:done', function _() {
 
     if (result.installed && !('installed' in entry.dataset)) {
       entry.dataset.installed = '';
-      $('.search-result-status', entry).textContent = t('installButtonInstalled');
+      $('.search-result-status', entry).textContent = t('clickToUninstall');
     } else if (!result.installed && 'installed' in entry.dataset) {
       delete entry.dataset.installed;
       $('.search-result-status', entry).textContent = '';
@@ -506,7 +506,7 @@ window.addEventListener('showStyles:done', function _() {
 
     const screenshot = $('.search-result-screenshot', entry);
     screenshot.onclick = result.installed ? onUninstallClicked : onInstallClicked;
-    screenshot.title = result.installed ? t('deleteStyleLabel') : t('installButton');
+    screenshot.title = result.installed ? '' : t('installButton');
 
     const uninstallButton = $('.search-result-uninstall', entry);
     uninstallButton.onclick = onUninstallClicked;
@@ -528,9 +528,6 @@ window.addEventListener('showStyles:done', function _() {
         handleEvent.openURLandHide.call(this, event);
       };
     }
-
-    //installButton.classList.toggle('hidden', Boolean(result.installed));
-    uninstallButton.classList.toggle('hidden', !result.installed);
   }
 
   function onUninstallClicked(event) {
