@@ -281,6 +281,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "Liczba dopasowań w kodzie oraz dotyczących wartości",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "Te problemy zostały znalezione przez $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -493,6 +497,10 @@
 		"message": "Przełącz styl",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "Liczba dopasowań",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "Odrzuć zawartość bieżącego stylu i nadpisz go przy użyciu importowanego stylu",
 		"description": "Label for the button to import and overwrite current style"
@@ -676,7 +684,7 @@
 	},
 	"paginationTotal": {
 		"message": "Wszystkie strony",
-		"description": "Tooltip for the total page count in search results"
+		"description": ""
 	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Nie działa prawidłowo ze względu na znany błąd w tej wersji Firefoksa: chrome.extension.getBackgroundPage() nie zwraca prawidłowego wyniku",
@@ -705,6 +713,10 @@
 	"manageFaviconsHelp": {
 		"message": "Stylus korzysta z usługi zewnętrznej https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "Szacowana liczba stron",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "'$stylename$' jest już zainstalowany. Zastąpić?\nWersja: $oldVersion$ -> $newVersion$",
@@ -836,6 +848,10 @@
 		"message": "Informacje zwrotne",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "Wstecz",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "Tylko wyłączone style",
 		"description": "Checkbox to show only disabled styles"
@@ -883,6 +899,10 @@
 	"importReplaceLabel": {
 		"message": "Nadpisz styl",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"genericNext": {
+		"message": "Dalej",
+		"description": "Used in various places to select/perform the next step/action"
 	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "Także włączone przez odłączenie karty edytora od okna przeglądarki,\nwyłączone przez dołączenie pojedynczej karty edytora do innego okna.",
@@ -1029,6 +1049,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "Rozróżnianie wielkości liter",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "Nie działa ze zminifikowanym CSS",

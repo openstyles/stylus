@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Automaticky vyhledávat a instalovat aktualizace stylů (interval je v hodinách), pro vypnutí nastavte na nulu",
+		"message": "Interval automatické aktualizace stylů v hodinách (0 = vypnuto)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -174,6 +174,10 @@
 	"styleEnabledLabel": {
 		"message": "Povolen",
 		"description": "Label for the enabled state of styles"
+	},
+	"configOnChange": {
+		"message": "při změně",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
 	},
 	"linterConfigTooltip": {
 		"message": "Upravit nastavení tohoto linteru",
@@ -326,6 +330,10 @@
 		"message": "Favicony v části „Platí pro“ ",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
+	"paginationCurrent": {
+		"message": "Aktuální stránka",
+		"description": "Tooltip for the current page index in search results"
+	},
 	"menuShowBadge": {
 		"message": "Zobrazit počet aktivních stylů",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
@@ -353,6 +361,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Aktualizace se nezdařila: server je nedosažitelný.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Chyba",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Filtry",
@@ -574,6 +586,10 @@
 		"message": "Hodnotu nelze uložit. Zkuste text zkrátit.",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "Zobrazit zde",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Vyhledávat a instalovat všechny aktualizace",
 		"description": ""
@@ -609,6 +625,10 @@
 	"linterCSSLintSettings": {
 		"message": "(Nastavení pravidel: 0 = vypnuto; 1 = upozornění; 2 = chyba)",
 		"description": "CSSLint rule config values"
+	},
+	"searchResultNoneFound": {
+		"message": "Nenalezeny žádné styly pro tento web.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
 	},
 	"styleBeautifyIndentConditional": {
 		"message": "Odsadit @media, @supports",
@@ -646,6 +666,10 @@
 		"message": "Aktalizace dokončena.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Celkový počet stránek",
+		"description": ""
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Známá chyba v této verzi Firefoxu znemožňuje práci rozšíření. Chyba: chrome.extension.getBackgroundPage() nevrací platný výsledek",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -662,6 +686,10 @@
 		"message": "Počet položek v části „Platí pro“",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"searchResultRating": {
+		"message": "Hodnocení",
+		"description": "Text for label that shows the search result's rating"
+	},
 	"popupManageTooltip": {
 		"message": "Shift + kliknutím nebo pravým kliknutím otevřít správce se styly použitými na této stránce",
 		"description": "Tooltip for the 'Manage' button in the popup."
@@ -669,6 +697,10 @@
 	"manageFaviconsHelp": {
 		"message": "Stylus používá externí službu https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "Odhadovaný počet stránek",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "Styl „$stylename$“ je již nainstalován. Přepsat?\nVerze: $oldVersion$ → $newVersion$",
@@ -700,6 +732,14 @@
 	"optionsResetButton": {
 		"message": "Obnovit nastavení",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Další stránka",
+		"description": "Tooltip for the '->' (next page) button in search results"
+	},
+	"searchResultInstallCount": {
+		"message": "Celkový počet instalací",
+		"description": "Text for label that shows the number of times a search result was installed"
 	},
 	"sectionCode": {
 		"message": "Kód",
@@ -745,6 +785,10 @@
 	"linkGetHelp": {
 		"message": "Nápověda",
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
+	"findStyles": {
+		"message": "Najít styly",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Upravit styl",
@@ -872,6 +916,10 @@
 		"message": "Pouze externí styly",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Týdenní počet instalací",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Nahradit vše",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -883,6 +931,14 @@
 	"confirmDiscardChanges": {
 		"message": "Zahodit změny?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Aktualizováno",
+		"description": "Text for label that shows the search result's last update date"
+	},
+	"configOnChangeTooltip": {
+		"message": "Automaticky uložit a použít změny",
+		"description": ""
 	},
 	"optionsActions": {
 		"message": "Akce",
@@ -911,6 +967,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",
 		"description": ""
+	},
+	"paginationPrevious": {
+		"message": "Předchozí stránka",
+		"description": "Tooltip for the '<-' button in search results"
 	},
 	"installUpdateFrom": {
 		"message": "Styl je aktuálně aktualizován z $url$",
@@ -1002,6 +1062,10 @@
 		"message": "Nahradit s",
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
+	"liveReloadError": {
+		"message": "Při sledování souboru došlo k chybě",
+		"description": "The label of live-reload error"
+	},
 	"deleteStyleLabel": {
 		"message": "Smazat",
 		"description": "Label for the button to delete a style"
@@ -1058,6 +1122,10 @@
 	"cm_theme": {
 		"message": "Schéma",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "Zobrazit výsledky vyhledávání v tomto okně.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "Otevírat editor v novém okně",

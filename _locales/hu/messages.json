@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Az összes stílus elérhető frissítéseinek automatikus ellenőrzése és telepítése (órában), az letiltásához állítsd 0-ra",
+		"message": "Stílus automatikus frissítési intervalluma órában megadva (álltsd 0-ra a kikapcsoláshoz)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -281,6 +281,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "Illeszkedések száma a kódban és célértékek",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "$link$a következő hibákat találta:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -493,6 +497,10 @@
 		"message": "Stílus be-/kikapcsolása",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "Illeszkedések száma",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal",
 		"description": "Label for the button to import and overwrite current style"
@@ -676,7 +684,7 @@
 	},
 	"paginationTotal": {
 		"message": "Összes oldal",
-		"description": "Tooltip for the total page count in search results"
+		"description": ""
 	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Nem mőködhet megfelelően egy ebben a verzióban található ismert hiba miatt: chrome.extension.getBackgroundPage() eredménye nem érvényes",
@@ -705,6 +713,10 @@
 	"manageFaviconsHelp": {
 		"message": "A Stylus egy külső szolgáltatást használ (https://www.google.com/s2/favicons)",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "Becsült oldalak száma",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "„$stylename$” már telepítve van. Felülírod?\nVerzió: $oldVersion$ -> $newVersion$",
@@ -836,6 +848,10 @@
 		"message": "Visszajelzés",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "Előző",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "Csak letiltott stílusok",
 		"description": "Checkbox to show only disabled styles"
@@ -879,6 +895,10 @@
 	"importReplaceLabel": {
 		"message": "Stílus felülírása",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"genericNext": {
+		"message": "Következő",
+		"description": "Used in various places to select/perform the next step/action"
 	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "A fül a böngésző ablakától történő leválasztásával is engedélyezhető, és letiltható a fül egy másik ablakhoz való hozzácsatolásával.",
@@ -1021,6 +1041,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "Kis- és nagybetű megkülönböztetése",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "Nem működik minimalizált CSS-szel",

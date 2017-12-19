@@ -285,6 +285,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "Количество совпадений в коде и целевых сайтах",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "Проблемы, найденные правилами $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -497,6 +501,10 @@
 		"message": "Включить/выключить стиль",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "Количество совпадений",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "Удалить содержимое редактируемого стиля и заменить его на импортируемый стиль",
 		"description": "Label for the button to import and overwrite current style"
@@ -680,7 +688,7 @@
 	},
 	"paginationTotal": {
 		"message": "Всего страниц",
-		"description": "Tooltip for the total page count in search results"
+		"description": ""
 	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Функционирование невозможно из-за известной ошибки в вашей версии браузера: chrome.extension.getBackgroundPage() возвращает нулевое значение",
@@ -709,6 +717,10 @@
 	"manageFaviconsHelp": {
 		"message": "Используется сторонний сервис https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "Предположительное количество страниц",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "'$stylename$' уже установлен. Обновить?\nВерсии: $oldVersion$ -> $newVersion$",
@@ -840,6 +852,10 @@
 		"message": "Отзывы",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "Предыдущий",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "Только неактивные стили",
 		"description": "Checkbox to show only disabled styles"
@@ -883,6 +899,10 @@
 	"importReplaceLabel": {
 		"message": "Заменить стиль",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"genericNext": {
+		"message": "Следующий",
+		"description": "Used in various places to select/perform the next step/action"
 	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "Также включается вытаскиванием вкладки из окна браузера\nи выключается перетаскиванием вкладки в другое окно браузера.",
@@ -1029,6 +1049,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "Учитывать регистр букв",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "Не работает с минифицированным CSS",

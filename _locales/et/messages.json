@@ -24,7 +24,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"optionsUpdateInterval": {
-		"message": "Automaatselt kontrolli ja installi kõik saadaolevad kasutajastiili uuendused (tundides), sea 0 et keelata",
+		"message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)",
 		"description": ""
 	},
 	"styleEnabledToggleHint": {
@@ -171,6 +171,10 @@
 		"message": "Lubatud",
 		"description": "Label for the enabled state of styles"
 	},
+	"configOnChange": {
+		"message": "muutmisel",
+		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+	},
 	"linterConfigTooltip": {
 		"message": "Selle linteri seadistamiseks klõpsa",
 		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
@@ -306,6 +310,10 @@
 		"message": "Reaalajas uuestilaadimine",
 		"description": "The label of live-reload feature"
 	},
+	"linkGetStyles": {
+		"message": "Hangi stiile",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
+	},
 	"unreachableFileHint": {
 		"message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
 		"description": "Note in the toolbar popup for file:// URLs"
@@ -321,6 +329,10 @@
 	"manageFavicons": {
 		"message": "Lehe ikoonid rakendub-tulbas",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationCurrent": {
+		"message": "Praegune leht",
+		"description": "Tooltip for the current page index in search results"
 	},
 	"menuShowBadge": {
 		"message": "Kuva aktiivsete stiilide hulka",
@@ -349,6 +361,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Uuendamine ebaõnnestus: server on kättesaamatu.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Viga",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Filtrid",
@@ -606,6 +622,10 @@
 		"message": "(Määra reegel kui: 0 = keelatud; 1 = hoiatus; 2 = viga)",
 		"description": "CSSLint rule config values"
 	},
+	"searchResultNoneFound": {
+		"message": "Sellele saidile ei leitud stiile.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
+	},
 	"styleBeautifyIndentConditional": {
 		"message": "Taanda @media, @supports",
 		"description": "CSS-beautifier option"
@@ -642,6 +662,10 @@
 		"message": "Uuendus teostatud.",
 		"description": "Text that displays when an update completed"
 	},
+	"paginationTotal": {
+		"message": "Lehti kokku",
+		"description": ""
+	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "Ei saa korralikult töötada, sest selles Firefoxi versioonis on tuntud viga: chrome.extension.getBackgroundPage() ei tagasta kehtivat tulemit",
 		"description": "Displayed in style manager when unable to connect to the background page"
@@ -658,6 +682,10 @@
 		"message": "Rakendub-üksuste arv",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
+	"searchResultRating": {
+		"message": "Hinnang",
+		"description": "Text for label that shows the search result's rating"
+	},
 	"popupManageTooltip": {
 		"message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega",
 		"description": "Tooltip for the 'Manage' button in the popup."
@@ -665,6 +693,10 @@
 	"manageFaviconsHelp": {
 		"message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "Hinnanguline lehtede arv",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "'$stylename$' on juba installitud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
@@ -696,6 +728,10 @@
 	"optionsResetButton": {
 		"message": "Lähtesta valikud",
 		"description": ""
+	},
+	"paginationNext": {
+		"message": "Järgmine leht",
+		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"sectionCode": {
 		"message": "Kood",
@@ -741,6 +777,10 @@
 	"linkGetHelp": {
 		"message": "Hangi abi",
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
+	"findStyles": {
+		"message": "Leia stiile",
+		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"editStyleHeading": {
 		"message": "Muuda stiili",
@@ -876,6 +916,14 @@
 		"message": "Tühistada muudatused?",
 		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
+	"searchResultUpdated": {
+		"message": "Uuendatud",
+		"description": "Text for label that shows the search result's last update date"
+	},
+	"configOnChangeTooltip": {
+		"message": "Automaatselt salvesta ja rakenda muudatused",
+		"description": ""
+	},
 	"optionsActions": {
 		"message": "Tegevused",
 		"description": ""
@@ -903,6 +951,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Number tööriistaribaikoonil",
 		"description": ""
+	},
+	"paginationPrevious": {
+		"message": "Eelmine leht",
+		"description": "Tooltip for the '<-' button in search results"
 	},
 	"installUpdateFrom": {
 		"message": "Praegu uuendatakse stiili aadressilt $url$",
@@ -1055,6 +1107,10 @@
 		"message": "Teema",
 		"description": "Label for the style editor's CSS theme."
 	},
+	"findStylesInlineTooltip": {
+		"message": "Näita otsingu tulemusi selles aknas.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
+	},
 	"popupOpenEditInWindow": {
 		"message": "Ava redaktor uues aknas",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1078,6 +1134,10 @@
 	"linterResetMessage": {
 		"message": "Kogemata tehtud lähtestamiste tagasi võtmiseks vajuta tekstikastis Ctrl-Z (või Cmd-Z)",
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
+	},
+	"linkStylusWiki": {
+		"message": "Viki",
+		"description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
 	},
 	"description": {
 		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",

@@ -680,7 +680,7 @@
 	},
 	"paginationTotal": {
 		"message": "總頁面",
-		"description": "Tooltip for the total page count in search results"
+		"description": ""
 	},
 	"dysfunctionalBackgroundConnection": {
 		"message": "由於此版本的 Firefox 中有已知的臭蟲，所以無法正常運作：chrome.extension.getBackgroundPage() 並未傳回有效的結果",
@@ -709,6 +709,10 @@
 	"manageFaviconsHelp": {
 		"message": "Stylus 使用外部服務 https://www.google.com/s2/favicons",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+	},
+	"paginationEstimated": {
+		"message": "估計頁數",
+		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
 		"message": "「$stylename$」已安裝。要覆寫嗎？\n版本：$oldVersion$→$newVersion$",
