@@ -112,6 +112,15 @@
   Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
     'isolate': true,
   });
+  Object.assign(CodeMirror.mimeModes['text/css'].colorKeywords, {
+    'darkgrey': true,
+    'darkslategrey': true,
+    'dimgrey': true,
+    'grey': true,
+    'lightgrey': true,
+    'lightslategrey': true,
+    'slategrey': true,
+  });
 
   const MODE = {
     stylus: 'stylus',
