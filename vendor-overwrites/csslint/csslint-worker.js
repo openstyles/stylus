@@ -173,6 +173,7 @@ var Colors = module.exports = {
     plum            :"#dda0dd",
     powderblue      :"#b0e0e6",
     purple          :"#800080",
+    rebeccapurple   :"#663399",
     red             :"#ff0000",
     rosybrown       :"#bc8f8f",
     royalblue       :"#4169e1",
@@ -4120,7 +4121,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
     var temp;
 
     //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)) {  //dimension
+    if (/^([+\-]?[\d.]+(?:e\d+)?)([a-z]+)$/i.test(text)) {  //dimension
         this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2;
@@ -4176,62 +4177,87 @@ function PropertyValuePart(text, line, col, optionalHint) {
 
         }
 
-    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)) {  //percentage
+    //percentage
+    } else if (text.endsWith('%') && /^([+\-]?[\d.]+(?:e\d+)?)%$/i.test(text)) {
         this.type = "percentage";
         this.value = +RegExp.$1;
-    } else if (/^([+\-]?\d+)$/i.test(text)) {  //integer
+    //integer
+    } else if (/^([+\-]?\d+(?:e\d+)?)$/i.test(text)) {
         this.type = "integer";
         this.value = +RegExp.$1;
-    } else if (/^([+\-]?[\d\.]+)$/i.test(text)) {  //number
+    //number
+    } else if (/^([+\-]?[\d.]+(?:e\d+)?)$/i.test(text)) {
         this.type = "number";
         this.value = +RegExp.$1;
 
-    } else if (/^#([a-f0-9]{3,6})/i.test(text)) {  //hexcolor
+    //hexcolor
+    } else if (text[0] === '#' && /^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}(?:[a-f\d]{2})?)?)?)\b/i.test(text)) {
         this.type = "color";
         temp = RegExp.$1;
-        if (temp.length === 3) {
-            this.red    = parseInt(temp.charAt(0)+temp.charAt(0), 16);
-            this.green  = parseInt(temp.charAt(1)+temp.charAt(1), 16);
-            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2), 16);
+        if (temp.length <= 4) {
+            this.red    = parseInt(temp[0] + temp[0], 16);
+            this.green  = parseInt(temp[1] + temp[1], 16);
+            this.blue   = parseInt(temp[2] + temp[2], 16);
+            if (temp.length === 4) {
+                this.alpha = parseInt(temp[3]+temp[3], 16);
+            }
         } else {
-            this.red    = parseInt(temp.substring(0, 2), 16);
-            this.green  = parseInt(temp.substring(2, 4), 16);
-            this.blue   = parseInt(temp.substring(4, 6), 16);
+            this.red    = parseInt(temp.substr(0, 2), 16);
+            this.green  = parseInt(temp.substr(2, 2), 16);
+            this.blue   = parseInt(temp.substr(4, 2), 16);
+            if (temp.length === 8) {
+                this.alpha = parseInt(temp.substr(6, 2), 16);
+            }
         }
-    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)) { //rgb() color with absolute numbers
-        this.type   = "color";
-        this.red    = +RegExp.$1;
-        this.green  = +RegExp.$2;
-        this.blue   = +RegExp.$3;
-    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { //rgb() color with percentages
-        this.type   = "color";
-        this.red    = +RegExp.$1 * 255 / 100;
-        this.green  = +RegExp.$2 * 255 / 100;
-        this.blue   = +RegExp.$3 * 255 / 100;
-    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with absolute numbers
-        this.type   = "color";
-        this.red    = +RegExp.$1;
-        this.green  = +RegExp.$2;
-        this.blue   = +RegExp.$3;
-        this.alpha  = +RegExp.$4;
-    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with percentages
-        this.type   = "color";
-        this.red    = +RegExp.$1 * 255 / 100;
-        this.green  = +RegExp.$2 * 255 / 100;
-        this.blue   = +RegExp.$3 * 255 / 100;
-        this.alpha  = +RegExp.$4;
-    } else if (/hsla?\(\s*(-?\d+|-?\d*\.\d+)(%|deg|g?rad|turn|)\s*,\s*(-?\d+|-?\d*\.\d+)%\s*,\s*(-?\d+|-?\d*\.\d+)%(?:\s*,\s*(-?\d+|-?\d*\.\d+))?\s*\)/i.test(text)) { //hsla() color
-        this.type   = "color";
-        this.hue    = +RegExp.$1;
-        this.hueUnit    = +RegExp.$2;
-        this.saturation = +RegExp.$3 / 100;
-        this.lightness  = +RegExp.$4 / 100;
-        this.alpha  = +RegExp.$4;
+    } else if (/^rgba?\(\s*(.*?)\s*\)/i.test(text)) {
+        const str = RegExp.$1;
+        const commaSep = str.includes(',');
+        let [r, s1, g, s2, b, s3 = '', a] = commaSep ? str.split(/(\s*,\s*)/) : str.split(/(\s+(?:\/\s*)?|\s*\/\s*)/);
+        if (r && g && b &&
+            (commaSep || !s1.trim() && !s2.trim()) &&
+            (!s3.trim() && !a || s3.trim() === (commaSep ? ',' : '/') && a)
+        ) {
+            a = !a ? undefined : !a.endsWith('%') ? +a : +a.slice(0, -1) / 100 * 255;
+            if ((a === undefined || !isNaN(a)) && (
+                r.endsWith('%') && !isNaN(r = +r.slice(0, -1)) &&
+                g.endsWith('%') && !isNaN(g = +g.slice(0, -1)) &&
+                b.endsWith('%') && !isNaN(b = +b.slice(0, -1)) ||
+                !isNaN(r = +r) && !isNaN(g = +g) && !isNaN(b = +b)
+            )) {
+                this.type = 'color';
+                this.red = r;
+                this.green = g;
+                this.blue = b;
+                if (a !== undefined) this.alpha = a;
+            }
+        }
+    } else if (/hsla?\(\s*(.*?)\s*\)/i.test(text)) {
+        const str = RegExp.$1;
+        const commaSep = str.includes(',');
+        let [h, s1, s, s2, l, s3 = '', a] = commaSep ? str.split(/(\s*,\s*)/) : str.split(/(\s+(?:\/\s*)?|\s*\/\s*)/);
+        if (h && s && l &&
+            (commaSep || !s1.trim() && !s2.trim()) &&
+            (!s3.trim() && !a || s3.trim() === (commaSep ? ',' : '/') && a)
+        ) {
+            a = !a ? undefined : !a.endsWith('%') ? +a : +a.slice(0, -1) / 100 * 255;
+            if ((a === undefined || !isNaN(a)) && (
+                s.endsWith('%') && !isNaN(s = +s.slice(0, -1)) &&
+                l.endsWith('%') && !isNaN(l = +l.slice(0, -1)) &&
+                /^([-+e\d.]+)(|deg|grad|rad|turn)$/.test(h) && !isNaN(h = +RegExp.$1)
+            )) {
+                this.type = 'color';
+                this.hue = h;
+                this.hueUnit = RegExp.$2;
+                this.saturation = s;
+                this.lightness = l;
+                if (a !== undefined) this.alpha = a;
+            }
+        }
     } else if (/^url\(("([^\\"]|\\.)*")\)/i.test(text)) { //URI
         // generated by TokenStream.readURI, so always double-quoted.
         this.type   = "uri";
         this.uri    = PropertyValuePart.parseString(RegExp.$1);
-    } else if (/^([^\(]+)\(/i.test(text)) {
+    } else if (/^([^(]+)\(/i.test(text)) {
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
@@ -5490,6 +5516,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var reader  = this._reader,
             number  = first,
             hasDot  = (first === "."),
+            hasExp,
             c       = reader.peek();
 
 
@@ -5500,6 +5527,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 if (hasDot) {
                     break;
                 } else {
+                    hasDot = true;
+                    number += reader.read();
+                }
+            } else if (c === 'e' || c === 'E') {
+                if (hasExp) {
+                    break;
+                } else {
+                    hasExp = true;
                     hasDot = true;
                     number += reader.read();
                 }
