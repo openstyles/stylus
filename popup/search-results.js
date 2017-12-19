@@ -117,17 +117,15 @@ window.addEventListener('showStyles:done', function _() {
     addEventListener('scroll', loadMoreIfNeeded, {passive: true});
 
     if (FIREFOX) {
-      let lastScrollbarWidth;
+      let lastShift;
       addEventListener('resize', () => {
         const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
-        if (lastScrollbarWidth !== scrollbarWidth) {
-          lastScrollbarWidth = scrollbarWidth;
-          dom.marginLeft = dom.marginLeft || parseFloat(getComputedStyle(dom.container).marginLeft);
-          const shift = dom.container.getBoundingClientRect().left - dom.marginLeft;
-          document.body.style.setProperty('padding',
-            `0 ${scrollbarWidth - shift}px 0 ${shift}px`, 'important');
-        }
-      });
+        const shift = document.body.getBoundingClientRect().left;
+        if (!scrollbarWidth || shift === lastShift) return;
+        lastShift = shift;
+        document.body.style.setProperty('padding',
+          `0 ${scrollbarWidth + shift}px 0 ${-shift}px`, 'important');
+      }, {passive: true});
     }
 
     addEventListener('styleDeleted', ({detail: {id}}) => {
