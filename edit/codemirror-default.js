@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript editor */
+/* global CodeMirror prefs loadScript editor editors */
 
 'use strict';
 
@@ -27,7 +27,6 @@
     keyMap: prefs.get('editor.keyMap'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
-      'Esc': 'defocusEditor',
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor'
@@ -40,6 +39,19 @@
   CodeMirror.commands.blockComment = cm => {
     cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
   };
+
+  // Ctrl-Pause defocuses/focuses the editor
+  addEventListener('keydown', event => {
+    if (event.code === 'Pause' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+      event.preventDefault();
+      const cm = window.editors && (editors.lastActive || editors[0]) || ($('.CodeMirror') || {}).CodeMirror;
+      if (cm && cm.hasFocus()) {
+        setTimeout(() => cm.display.input.blur());
+      } else if (cm) {
+        cm.focus();
+      }
+    }
+  }, true);
 
   // 'basic' keymap only has basic keys by design, so we skip it
 
