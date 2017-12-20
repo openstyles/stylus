@@ -182,8 +182,9 @@ function tDocLoader() {
   }
 
   function onLoad() {
-    tDocLoader.stop();
+    document.removeEventListener('DOMContentLoaded', onLoad);
     process(tDocLoader.observer.takeRecords());
+    tDocLoader.stop();
     if (cacheLength !== Object.keys(t.cache).length) {
       localStorage.L10N = JSON.stringify(t.cache);
     }
