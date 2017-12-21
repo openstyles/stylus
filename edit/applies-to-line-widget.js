@@ -179,8 +179,11 @@ function createAppliesToLineWidget(cm) {
     fromLine = Math.max(fromLine || 0, cm.display.viewFrom);
     toLine = Math.min(toLine === null ? cm.doc.size : toLine, cm.display.viewTo || toLine);
     const visible = {fromLine, toLine};
+    const {curOp} = cm;
     if (fromLine >= cm.display.viewFrom && toLine <= (cm.display.viewTo || toLine)) {
-      cm.operation(doUpdate);
+      if (!curOp) cm.startOperation();
+      doUpdate();
+      if (!curOp) cm.endOperation();
     }
     if (changed.fromLine !== visible.fromLine || changed.toLine !== visible.toLine) {
       setTimeout(updateInvisible, 0, changed, visible);

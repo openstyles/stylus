@@ -2,7 +2,6 @@
 'use strict';
 
 onDOMscriptReady('/colorview.js').then(() => {
-  initOverlayHooks();
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
@@ -23,7 +22,7 @@ onDOMscriptReady('/colorview.js').then(() => {
       defaults.colorpicker = {
         forceUpdate: editors.length > 0,
         tooltip: t('colorpickerTooltip'),
-        popupOptions: {
+        popup: {
           tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
           hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
           hideDelay: 5000,
@@ -35,7 +34,6 @@ onDOMscriptReady('/colorview.js').then(() => {
         },
       };
     } else {
-      CodeMirror.modeExtensions.css.unregisterColorviewHooks();
       if (defaults.extraKeys) {
         delete defaults.extraKeys[keyName];
       }
@@ -113,48 +111,5 @@ onDOMscriptReady('/colorview.js').then(() => {
       popup.style.right = 'auto';
     }
     input.focus();
-  }
-
-  function initOverlayHooks() {
-    const COLORVIEW_DISABLED_SUFFIX = ' colorview-disabled';
-    const COLORVIEW_NEXT_DISABLED_SUFFIX = ' colorview-next-disabled';
-    const originalAddOverlay = CodeMirror.prototype.addOverlay;
-    CodeMirror.prototype.addOverlay = addOverlayHook;
-
-    function addOverlayHook(overlay) {
-      if (overlay.token !== tokenHook && (
-          overlay === (this.state.matchHighlighter || {}).overlay ||
-          overlay === (this.state.search || {}).overlay)) {
-        overlay.colopickerHelper = {token: overlay.token};
-        overlay.token = tokenHook;
-      }
-      originalAddOverlay.apply(this, arguments);
-    }
-
-    function tokenHook(stream) {
-      const style = this.colopickerHelper.token.apply(this, arguments);
-      if (!style) {
-        return style;
-      }
-      const {start, pos, lineOracle: {baseTokens}} = stream;
-      if (!baseTokens) {
-        return style;
-      }
-      for (let prev = 0, i = 1; i < baseTokens.length; i += 2) {
-        const end = baseTokens[i];
-        if (prev <= start && start <= end) {
-          const base = baseTokens[i + 1];
-          if (base && base.includes('colorview')) {
-            return style +
-              (start > prev ? COLORVIEW_DISABLED_SUFFIX : '') +
-              (pos < end ? COLORVIEW_NEXT_DISABLED_SUFFIX : '');
-          }
-        } else if (end > pos) {
-          break;
-        }
-        prev = end;
-      }
-      return style;
-    }
   }
 });

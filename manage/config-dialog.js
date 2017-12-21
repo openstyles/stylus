@@ -210,7 +210,7 @@ function configDialog(style) {
       switch (va.type) {
         case 'color':
           children = [
-            $create('.cm-colorview.config-value', [
+            $create('.colorview-swatch.config-value', [
               va.input = $create('a.color-swatch', {
                 va,
                 href: '#',

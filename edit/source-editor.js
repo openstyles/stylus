@@ -29,20 +29,15 @@ function createSourceEditor(style) {
     style = deepCopy(style);
   }
 
-  const cm = CodeMirror($('.single-editor'));
+  const cm = CodeMirror($('.single-editor'), {value: style.sourceCode});
   editors.push(cm);
+  savedGeneration = cm.changeGeneration();
+
+  cm.operation(initAppliesToLineWidget);
   updateMeta().then(() => {
     initLint();
     initLinterSwitch();
-
-    cm.setValue(style.sourceCode);
-    cm.clearHistory();
-    cm.markClean();
-    savedGeneration = cm.changeGeneration();
-
     initHooks();
-    initAppliesToLineWidget();
-
     setTimeout(() => {
       if ((document.activeElement || {}).localName !== 'input') {
         cm.focus();
