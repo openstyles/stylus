@@ -2823,7 +2823,7 @@ Parser.prototype = function() {
 
                     //END: Horrible Hack
 
-                    tokenStream.match(Tokens.RPAREN);
+                    tokenStream.mustMatch(Tokens.RPAREN);
                     functionText += ")";
                     this._readWhitespace();
                 }
