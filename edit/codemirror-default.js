@@ -167,20 +167,23 @@
   });
 
   function selectTokenOnDoubleclick(cm, pos) {
+    let {ch} = pos;
     const {line} = pos;
     const text = cm.getLine(line);
-    const type = cm.getTokenTypeAt(pos);
+    const type = cm.getTokenTypeAt(pos) ||
+      cm.getTokenTypeAt({line, ch: ch += 1}) ||
+      cm.getTokenTypeAt({line, ch: ch -= 2});
     const isCss = type && !/^(comment|string)/.test(type);
     const isNumber = type === 'number';
 
-    let wordChars = isNumber ? /[-+\w.]/uy : isCss ? /[-#\w!]/uy : /[#\w]/uy;
-    let {ch} = pos;
+    let wordChars = isNumber ? /[-+\w.]/uy : isCss ? /[-\w]/uy : /\w/uy;
     let i = ch;
     while (i >= 0) {
-      wordChars.lastIndex = i--;
+      wordChars.lastIndex = i;
       if (!wordChars.test(text)) break;
+      i--;
     }
-    i += !i ? 0 : isCss && /^qualifier/.test(type) && text[i + 1] === '.' ? 1 : 2;
+    i += !i && wordChars.test(text[i]) || /[.!#]/.test(text[i]) ? 0 : 1;
 
     let j;
     if (isNumber) {
