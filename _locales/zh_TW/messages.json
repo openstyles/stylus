@@ -285,6 +285,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "在程式碼與套用到的值的符合數量",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "這些問題被 $link$ 找到了：",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -497,6 +501,10 @@
 		"message": "切換樣式",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "符合數量",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "棄用當前樣式內容并用導入樣式覆蓋",
 		"description": "Label for the button to import and overwrite current style"
@@ -605,6 +613,10 @@
 	"optionsCheckUpdate": {
 		"message": "檢查並安裝所有可用的更新",
 		"description": ""
+	},
+	"clickToUninstall": {
+		"message": "點選以解除安裝",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
 	},
 	"filteredStyles": {
 		"message": "$numShown$ 個已顯示，總共 $numTotal$ 個",
@@ -844,6 +856,10 @@
 		"message": "回饋",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "上一步",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "僅已停用的樣式",
 		"description": "Checkbox to show only disabled styles"
@@ -891,6 +907,10 @@
 	"importReplaceLabel": {
 		"message": "覆蓋樣式",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"genericNext": {
+		"message": "下一步",
+		"description": "Used in various places to select/perform the next step/action"
 	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "也透過從瀏覽器視窗分離編輯器分頁來啟用，\n並透過將單獨的編輯器分頁附加到其他視窗中來停用。",
@@ -1033,6 +1053,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "區分大小寫",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "無法與最小化的 CSS 一起運作",

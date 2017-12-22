@@ -614,6 +614,10 @@
 		"message": "Найти и установить обновления стилей",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "Нажмите, чтобы удалить стиль",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "найдено $numShown$ из $numTotal$всего",
 		"description": "TL note - make this message short",
@@ -629,6 +633,10 @@
 	"importReportTitle": {
 		"message": "Импорт стилей завершен",
 		"description": "Title of the report shown after importing styles"
+	},
+	"unreachableAMOHint": {
+		"message": "Чтобы разрешить доступ, перейдите на адрес <about:config>, нажмите правой кнопкой в списке, потом «Создать», потом «Логическое», вставьте текст <privacy.resistFingerprinting.block_mozAddonManager> и нажмите OK, <true>, OK, перезагрузите страницу <addons.mozilla.org>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
 	},
 	"styleMozillaFormatHeading": {
 		"message": "Формат Mozilla",
@@ -825,6 +833,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Подсказки при наборе кода",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Браузер запрещает доступ к сайту",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint не поддерживает препроцессор $preprocessorname$",
@@ -1085,6 +1097,10 @@
 	"manageNewUI": {
 		"message": "Новый интерфейс",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Только Firefox 59 и новее можно настроить так, чтобы разрешиь веб-расширениям добавлять стили на этом защищенном сайте.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "Откат импорта завершен",

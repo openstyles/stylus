@@ -598,6 +598,10 @@
 		"message": "Alle verfügbaren Updates Installieren",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "Klicken zum Deinstallieren",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "$numShown$ von $numTotal$ gesamt",
 		"description": "TL note - make this message short",

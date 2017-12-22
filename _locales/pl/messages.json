@@ -610,6 +610,10 @@
 		"message": "Sprawdź i zainstaluj wszystkie dostępne aktualizacje",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "Kliknij, aby odinstalować",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "Pokazano $numShown$ z sumy $numTotal$",
 		"description": "TL note - make this message short",

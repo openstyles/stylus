@@ -610,6 +610,10 @@
 		"message": "使用可能なすべての更新を確認してインストールする",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "クリックでアンインストール",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "$numTotal$ 件中の $numShown$ 件を表示",
 		"description": "TL note - make this message short",
