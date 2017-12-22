@@ -32,6 +32,7 @@
       'Alt-PageUp': 'prevEditor'
     }),
     maxHighlightLength: 100e3,
+    configureMouse: (cm, repeat) => repeat === 'double' ? {unit: selectTokenOnDoubleclick} : {},
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
@@ -164,6 +165,46 @@
     });
     return isBlank;
   });
+
+  function selectTokenOnDoubleclick(cm, pos) {
+    const {line} = pos;
+    const text = cm.getLine(line);
+    const type = cm.getTokenTypeAt(pos);
+    const isCss = type && !/^(comment|string)/.test(type);
+    const isNumber = type === 'number';
+
+    let wordChars = isNumber ? /[\w.]/uy : isCss ? /[-#\w!]/uy : /[#\w]/uy;
+    let {ch} = pos;
+    let i = ch;
+    while (i >= 0) {
+      wordChars.lastIndex = i--;
+      if (!wordChars.test(text)) break;
+    }
+    i += !i ? 0 : i < 0 || isCss && /^qualifier/.test(type) && text[i + 1] === '.' ? 1 : 2;
+
+    let j;
+    if (isNumber) {
+      const numChars = /[+-]?[\d.]+(e\d+)?|$/uyi;
+      numChars.lastIndex = i;
+      j = i + numChars.exec(text)[0].length;
+      if (j >= ch) {
+        return {
+          from: {line, ch: i},
+          to: {line, ch: j},
+        };
+      }
+      i = j;
+      ch = i;
+    }
+    wordChars = isCss ? /[-\w]*/uy : /\w*/uy;
+    wordChars.lastIndex = ch;
+    j = ch + wordChars.exec(text)[0].length;
+
+    return {
+      from: {line, ch: i},
+      to: {line, ch: j},
+    };
+  }
 })();
 
 // eslint-disable-next-line no-unused-expressions
