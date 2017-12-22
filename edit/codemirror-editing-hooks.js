@@ -13,7 +13,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
     save,
     toggleStyle,
     jumpToLine,
-    defocusEditor,
     nextEditor, prevEditor,
   };
   // reroute handling to nearest editor when keypress resolves to one of these commands
@@ -147,10 +146,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function getSection() {
     return this.display.wrapper.parentNode;
-  }
-
-  function defocusEditor(cm) {
-    cm.display.input.blur();
   }
 
   function nextEditor(cm) {
@@ -513,7 +508,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
         el._hotkeyTooltipKeyMap = mapName;
         const title = el._hotkeyTooltipTitle = el._hotkeyTooltipTitle || el.title;
         const cmd = el.dataset.hotkeyTooltip;
-        const key = findKeyForCommand(cmd, mapName) ||
+        const key = cmd[0] === '=' ? cmd.slice(1) :
+          findKeyForCommand(cmd, mapName) ||
           extraKeys && findKeyForCommand(cmd, extraKeys);
         const newTitle = title + (title && key ? '\n' : '') + (key || '');
         if (el.title !== newTitle) el.title = newTitle;
