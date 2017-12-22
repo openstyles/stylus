@@ -356,6 +356,10 @@ const NAMED_COLORS = new Map([
       ' ' + CSS_PREFIX + 'theme-' +
       (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme :
         guessTheme());
+    $root.style = `
+      display: block !important;
+      position: fixed !important;
+    `;
 
     document.body.appendChild($root);
     shown = true;
@@ -365,10 +369,6 @@ const NAMED_COLORS = new Map([
     setFromHexLettercaseElement();
 
     if (!isNaN(options.left) && !isNaN(options.top)) {
-      $root.style = `
-        display: block;
-        position: fixed;
-      `.replace(/;/g, '!important;');
       reposition();
     }
   }
