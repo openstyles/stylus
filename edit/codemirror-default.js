@@ -173,14 +173,14 @@
     const isCss = type && !/^(comment|string)/.test(type);
     const isNumber = type === 'number';
 
-    let wordChars = isNumber ? /[\w.]/uy : isCss ? /[-#\w!]/uy : /[#\w]/uy;
+    let wordChars = isNumber ? /[-+\w.]/uy : isCss ? /[-#\w!]/uy : /[#\w]/uy;
     let {ch} = pos;
     let i = ch;
     while (i >= 0) {
       wordChars.lastIndex = i--;
       if (!wordChars.test(text)) break;
     }
-    i += !i ? 0 : i < 0 || isCss && /^qualifier/.test(type) && text[i + 1] === '.' ? 1 : 2;
+    i += !i ? 0 : isCss && /^qualifier/.test(type) && text[i + 1] === '.' ? 1 : 2;
 
     let j;
     if (isNumber) {
