@@ -45,7 +45,7 @@ const URLS = {
   chromeProtectsNTP: CHROME >= 3161,
 
   supported: url => (
-    url.startsWith('http') && !url.startsWith(URLS.browserWebStore) ||
+    url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
     url.startsWith('ftp') ||
     url.startsWith('file') ||
     url.startsWith(URLS.ownOrigin) ||

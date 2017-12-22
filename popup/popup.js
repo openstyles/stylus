@@ -122,17 +122,24 @@ function initPopup(url) {
       ignoreChromeError();
       // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
       // so we'll wait a bit to handle popup being invoked right after switching
-      if (
-        retryCountdown > 0 && (
+      if (retryCountdown > 0 && (
           tab.status !== 'complete' ||
-          FIREFOX && tab.url === 'about:blank'
-        )
-      ) {
+          FIREFOX && tab.url === 'about:blank')) {
         setTimeout(ping, 100, tab, --retryCountdown);
-      } else {
-        document.body.classList.add('unreachable');
-        document.body.insertBefore(template.unreachableInfo, document.body.firstChild);
+        return;
       }
+      const info = template.unreachableInfo;
+      if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
+        $('label', info).textContent = t('unreachableAMO');
+        $('p', info).insertAdjacentElement('afterend',
+          $create('p',
+            t(FIREFOX < 59 ? 'unreachableAMOHintOldFF' : 'unreachableAMOHint')
+              .split(/(<.*?>)/)
+              .map(s => s[0] === '<' ? $create('b', s.slice(1, -1)) : s)));
+        $('p', info).remove();
+      }
+      document.body.classList.add('unreachable');
+      document.body.insertBefore(info, document.body.firstChild);
     });
   });
 

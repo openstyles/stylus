@@ -1031,6 +1031,18 @@
     "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "unreachableAMO": {
+    "message": "Firefox forbids access to the site.",
+    "description": "Note in the popup displayed when opened on addons.mozilla.org"
+  },
+  "unreachableAMOHint": {
+    "message": "To allow access open <about:config>, right-click the list, click 'New', then 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> and click OK, <true>, OK, reload the <addons.mozilla.org> page.",
+    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+  },
+  "unreachableAMOHintOldFF": {
+    "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on CSP-protected sites such as this one.",
+    "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+  },
   "updateCheckFailBadResponseCode": {
     "message": "Update failed: server responded with code $code$.",
     "description": "Text that displays when an update check failed because the response code indicates an error",
