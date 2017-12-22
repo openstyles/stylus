@@ -73,7 +73,8 @@ onDOMready().then(() => {
 
   function maybeRefocus(event) {
     if (event.altKey || event.ctrlKey || event.metaKey ||
-        event.target.matches('[type="text"], [type="search"]')) {
+        event.target.matches('[type="text"], [type="search"], [type="number"]') ||
+        $('#message-box')) {
       return;
     }
     const {which: k, key} = event;
