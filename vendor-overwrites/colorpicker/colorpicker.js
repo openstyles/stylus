@@ -356,7 +356,13 @@ const NAMED_COLORS = new Map([
       ' ' + CSS_PREFIX + 'theme-' +
       (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme :
         guessTheme());
+
     document.body.appendChild($root);
+    shown = true;
+
+    registerEvents();
+    setFromColor(opt.color);
+    setFromHexLettercaseElement();
 
     if (!isNaN(options.left) && !isNaN(options.top)) {
       $root.style = `
@@ -365,12 +371,6 @@ const NAMED_COLORS = new Map([
       `.replace(/;/g, '!important;');
       reposition();
     }
-
-    shown = true;
-
-    registerEvents();
-    setFromColor(opt.color);
-    setFromHexLettercaseElement();
   }
 
   function hide({notify = true} = {}) {
@@ -1048,32 +1048,14 @@ const NAMED_COLORS = new Map([
   function reposition() {
     const width = $root.offsetWidth;
     const height = $root.offsetHeight;
-
-    // set left position for color picker
-    let elementScreenLeft = options.left - document.scrollingElement.scrollLeft;
-    const bodyWidth = document.scrollingElement.scrollWidth;
-    if (width + elementScreenLeft > bodyWidth) {
-      elementScreenLeft -= (width + elementScreenLeft) - bodyWidth;
-    }
-    if (elementScreenLeft < 0) {
-      elementScreenLeft = 0;
-    }
-
-    // set top position for color picker
-    let elementScreenTop = options.top - document.scrollingElement.scrollTop;
-    if (height + elementScreenTop > window.innerHeight) {
-      elementScreenTop = window.innerHeight - height;
-    }
-    if (elementScreenTop < options.top) {
-      elementScreenTop = options.top - height - 20;
-    }
-    if (elementScreenTop < 0) {
-      elementScreenTop = 0;
-    }
-
-    // set position
-    $root.style.left = elementScreenLeft + 'px';
-    $root.style.top = elementScreenTop + 'px';
+    const maxTop = window.innerHeight - height;
+    const maxTopUnobscured = options.top <= maxTop ? maxTop : options.top - height - 20;
+    const maxRight = window.innerWidth - width;
+    const maxRightUnobscured = options.left <= maxRight ? maxRight : options.left - width;
+    const left = constrain(0, maxRightUnobscured, options.left);
+    const top = constrain(0, maxTopUnobscured, options.top);
+    $root.style.setProperty('left', left + 'px', 'important');
+    $root.style.setProperty('top', top + 'px', 'important');
   }
 
   function fade({fadingStage = 1} = {}) {
