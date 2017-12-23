@@ -153,8 +153,8 @@ function manageSort(event) {
 function updateSort() {
   const renderBin = document.createDocumentFragment();
   const entries = sortStyles({parser: 'entry'});
+  const isDiffSort = [...installed.children].find((entry, index) => entry.id !== entries[index].id);
   let index = 0;
-  moveEntries();
   function moveEntries() {
     const t0 = performance.now();
     let moved = 0;
@@ -169,7 +169,10 @@ function updateSort() {
       return;
     }
   }
-  installed.appendChild(renderBin);
+  if (isDiffSort !== undefined) {
+    moveEntries();
+    installed.appendChild(renderBin);
+  }
   updateStripes();
 }
 
