@@ -81,6 +81,7 @@ function addSortOptions() {
   const option = $create('option');
   const optgroup = $create('optgroup');
   const meta = {
+    desc: ' ⇩',
     enabled: t('genericEnabledLabel'),
     disabled: t('genericDisabledLabel'),
     dateNew: ` (${t('sortDateNewestFirst')})`,
