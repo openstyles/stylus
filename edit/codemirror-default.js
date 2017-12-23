@@ -186,7 +186,7 @@
     const isNumber = type === 'number';
     const isSpace = atSpace(ch);
     let wordChars =
-      isNumber ? /[-+\w.]/uy :
+      isNumber ? /[-+\w.%]/uy :
       isCss ? /[-\w@]/uy :
       isSpace ? /\s/uy :
       atWord(ch) ? /\w/uy : /[^\w\s]/uy;
