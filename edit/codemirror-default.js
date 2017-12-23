@@ -168,44 +168,52 @@
 
   function selectTokenOnDoubleclick(cm, pos) {
     let {ch} = pos;
-    const {line} = pos;
-    const text = cm.getLine(line);
-    const type = cm.getTokenTypeAt(pos) ||
-      cm.getTokenTypeAt({line, ch: ch += 1}) ||
-      cm.getTokenTypeAt({line, ch: ch -= 2});
+    const {line, sticky} = pos;
+    const {text, styles} = cm.getLineHandle(line);
+
+    const execAt = (rx, i) => (rx.lastIndex = i) && null || rx.exec(text);
+    const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
+    const atWord = ch => at(/\w/uy, ch);
+    const atSpace = ch => at(/\s/uy, ch);
+
+    const atTokenEnd = styles.indexOf(ch, 1);
+    ch += atTokenEnd < 0 ? 0 : sticky === 'before' && atWord(ch - 1) ? 0 : atSpace(ch + 1) ? 0 : 1;
+    ch = Math.min(text.length, ch);
+    const type = cm.getTokenTypeAt({line, ch: ch + (sticky === 'after' ? 1 : 0)});
+    if (atTokenEnd > 0) ch--;
+
     const isCss = type && !/^(comment|string)/.test(type);
     const isNumber = type === 'number';
+    const isSpace = atSpace(ch);
+    let wordChars =
+      isNumber ? /[-+\w.]/uy :
+      isCss ? /[-\w@]/uy :
+      isSpace ? /\s/uy :
+      atWord(ch) ? /\w/uy : /[^\w\s]/uy;
 
-    let wordChars = isNumber ? /[-+\w.]/uy : isCss ? /[-\w]/uy : /\w/uy;
-    let i = ch;
-    while (i >= 0) {
-      wordChars.lastIndex = i;
-      if (!wordChars.test(text)) break;
-      i--;
-    }
-    i += !i && wordChars.test(text[i]) || /[.!#]/.test(text[i]) ? 0 : 1;
+    let a = ch;
+    while (a && at(wordChars, a)) a--;
+    a += !a && at(wordChars, a) || isCss && at(/[.!#@]/uy, a) ? 0 : at(wordChars, a + 1);
 
-    let j;
+    let b, found;
+
     if (isNumber) {
-      const numChars = /[+-]?[\d.]+(e\d+)?|$/uyi;
-      numChars.lastIndex = i;
-      j = i + numChars.exec(text)[0].length;
-      if (j >= ch) {
-        return {
-          from: {line, ch: i},
-          to: {line, ch: j},
-        };
+      b = a + execAt(/[+-]?[\d.]+(e\d+)?|$/uyi, a)[0].length;
+      found = b >= ch;
+      if (!found) {
+        a = b;
+        ch = a;
       }
-      i = j;
-      ch = i;
     }
-    wordChars = isCss ? /[-\w]*/uy : /\w*/uy;
-    wordChars.lastIndex = ch;
-    j = ch + wordChars.exec(text)[0].length;
+
+    if (!found) {
+      wordChars = isCss ? /[-\w]*/uy : new RegExp(wordChars.source + '*', 'uy');
+      b = ch + execAt(wordChars, ch)[0].length;
+    }
 
     return {
-      from: {line, ch: i},
-      to: {line, ch: j},
+      from: {line, ch: a},
+      to: {line, ch: b},
     };
   }
 })();
