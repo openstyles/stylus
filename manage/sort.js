@@ -11,18 +11,15 @@ const tagData = {
   title: {
     text: t('genericTitle'),
     parse: {
-      style: style => style.name.toLowerCase(),
-      entry: entry => {
-        const el = $('.style-name-link', entry);
-        return el ? el.textContent.trim().toLowerCase() : '';
-      }
+      style: ({name}) => name,
+      entry: entry => entry.styleNameLowerCase,
     },
     sorter: sorterType.alpha
   },
   usercss: {
     text: 'Usercss',
     parse: {
-      style: style => (style.usercssData ? 0 : 1),
+      style: ({style}) => (style.usercssData ? 0 : 1),
       entry: entry => (entry.classList.contains('usercss') ? 0 : 1)
     },
     sorter: sorterType.number
@@ -30,7 +27,7 @@ const tagData = {
   disabled: {
     text: '', // added as either "enabled" or "disabled" by the addSortOptions function
     parse: {
-      style: style => (style.enabled ? 1 : 0),
+      style: ({style}) => (style.enabled ? 1 : 0),
       entry: entry => (entry.classList.contains('enabled') ? 1 : 0)
     },
     sorter: sorterType.number
@@ -38,7 +35,7 @@ const tagData = {
   dateInstalled: {
     text: t('dateInstalled'),
     parse: {
-      style: style => style.installDate,
+      style: ({style}) => style.installDate,
       entry: entry => entry.dataset.installdate
     },
     sorter: sorterType.number
@@ -46,7 +43,7 @@ const tagData = {
   dateUpdated: {
     text: t('dateUpdated'),
     parse: {
-      style: style => style.updateDate,
+      style: ({style}) => style.updateDate,
       entry: entry => entry.dataset.updatedate
     },
     sorter: sorterType.number

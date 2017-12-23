@@ -108,8 +108,14 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = sortStyles({styles, parser: 'style'})
-    .map((style, index) => ({name: style.name.toLocaleLowerCase(), style, index}));
+  const sorted = sortStyles({
+    styles: styles.map((style, index) => ({
+      style,
+      index,
+      name: style.name.toLocaleLowerCase(),
+    })),
+    parser: 'style',
+  });
   let index = 0;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
