@@ -281,6 +281,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "Počet shod v kódu a hodnotách „platí pro“",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "Problémy nalezené aplikací $link$:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -309,6 +313,10 @@
 	"manageOnlyNonUsercss": {
 		"message": "Pouze non-Usercss styly",
 		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
+	"liveReloadLabel": {
+		"message": "Živá aktualizace",
+		"description": "The label of live-reload feature"
 	},
 	"linkGetStyles": {
 		"message": "Získat styly",
@@ -485,6 +493,10 @@
 		"message": "Přepnout styl",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "Počet shod",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "Zahodit obsah současného stylu a přepsat ho importovaným stylem",
 		"description": "Label for the button to import and overwrite current style"
@@ -594,6 +606,10 @@
 		"message": "Vyhledávat a instalovat všechny aktualizace",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "Klepnutím odinstalovat",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "zobrazeno $numShown$ z $numTotal$",
 		"description": "TL note - make this message short",
@@ -609,6 +625,10 @@
 	"importReportTitle": {
 		"message": "Import stylů dokončen",
 		"description": "Title of the report shown after importing styles"
+	},
+	"unreachableAMOHint": {
+		"message": "Povolení přístupu: přejděte na <about:config>, pravým myšidlem zvolte „Nový“, dále „Boolean“, zadejte kód <privacy.resistFingerprinting.block_mozAddonManager> a potvrďte, <true>, OK, načtěte stránku <addons.mozilla.org>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
 	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla formát",
@@ -802,6 +822,10 @@
 		"message": "Automatické dokončování během psaní",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"unreachableAMO": {
+		"message": "Firefox znemožňuje přístup ke stránce.",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
+	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint nepodporuje předprocesor $preprocessorname$",
 		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
@@ -827,6 +851,10 @@
 	"externalFeedback": {
 		"message": "Zpětná vazba",
 		"description": "Label for the external link to send feedback for the style"
+	},
+	"genericPrevious": {
+		"message": "Předchozí",
+		"description": "Used in various places to select/perform the previous step/action"
 	},
 	"manageOnlyDisabled": {
 		"message": "Pouze vypnuté styly",
@@ -875,6 +903,10 @@
 	"importReplaceLabel": {
 		"message": "Přepsat styl",
 		"description": "Label for the button to import and overwrite current style"
+	},
+	"genericNext": {
+		"message": "Další",
+		"description": "Used in various places to select/perform the next step/action"
 	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "K povolení dojde také při odepnutí listu editoru z okna prohlížeče,\na k vypnutí při připnutí samotného listu editoru do dalšího okna.",
@@ -1018,9 +1050,17 @@
 			}
 		}
 	},
+	"searchCaseSensitive": {
+		"message": "Rozeznávat VELKÁ a malá písmena",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
+	},
 	"appliesLineWidgetWarning": {
 		"message": "Nefunguje s minimalizovaným CSS",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Konfigurovat na stránce stylu",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Zpět",
@@ -1045,6 +1085,10 @@
 	"manageNewUI": {
 		"message": "Nové rozložení správy rozhraní",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné CSP (Content Security Policy) – jako je tato.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "Import byl přerušen",

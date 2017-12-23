@@ -630,6 +630,10 @@
 		"message": "Se completó la importación de estilos",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "Para permitir el acceso abra <about:config>, haga clic secundario en la lista, pulse 'Nuevo', luego 'Booleano', pegue <privacy.resistFingerprinting.block_mozAddonManager> y pulse Aceptar, <true>, Aceptar, y recargue la página <addons.mozilla.org>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Formato Mozilla",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
@@ -825,6 +829,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Autocompletar al escribir",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox prohibe el acceso al sitio",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint no soporta el 'preprocessor' $preprocessorname$",
@@ -1077,6 +1085,10 @@
 	"manageNewUI": {
 		"message": "Nuevo diseño de interfaz de gestión",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Sólo Firefox 59 y posteriores se pueden configurar para permitir que WebExtensions añada elementos de estilo en sitios protegidos-por-CSP (política de seguridad de contenidos) como este.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "La importación ha sido revertida",

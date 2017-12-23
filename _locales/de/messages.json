@@ -618,6 +618,10 @@
 		"message": "Importieren der Styles abgeschlossen.",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "Um den Zugriff zu erlauben, öffne <about:config>, rechtsklicke in die Liste, klicke \"Neu\", dann \"Boolean\", füge <privacy.resistFingerprinting.block_mozAddonManager> ein und klicke OK, <true>, OK, lade <addons.mozilla.org> neu.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"cm_matchHighlight": {
 		"message": "Hervorheben",
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
@@ -805,6 +809,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Autovervollständigen bei Eingabe",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox verbietet den Zugriff auf diese Seite.",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint unterstützt $preprocessorname$ nicht",
@@ -1053,6 +1061,10 @@
 	"manageNewUI": {
 		"message": "Neues Verwaltungs Design-Layout.",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Nur in Firefox 59 und neuer ist es möglich, WebExtenstions den Zugriff auf CSP-geschützte Seiten wie dieser zu erlauben.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "Importierung wurde rückgängig gemacht.",

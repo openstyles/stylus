@@ -630,6 +630,10 @@
 		"message": "Ukończono importowanie stylów",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "Aby umożliwić dostęp, otwórz <about:config>, kliknij listę prawym przyciskiem myszy, kliknij 'Dodaj ustawienie typu', następnie 'Wartość logiczna (Boolean)', wklej <privacy.resistFingerprinting.block_mozAddonManager> i kliknij OK, <true>, OK, przeładuj stronę <addons.mozilla.org>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Format Mozilla",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
@@ -825,6 +829,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Autouzupełnianie podczas pisania",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox zabrania dostępu do witryny.",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint nie obsługuje preprocesora $preprocessorname$",
@@ -1089,6 +1097,10 @@
 	"manageNewUI": {
 		"message": "Nowy układ interfejsu zarządzania",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Tylko Firefox 59 i nowsze wersje mogą zostać skonfigurowane, aby umożliwić rozszerzeniom WebExtension dodawanie elementów stylu na stronach chronionych przez CSP takich jak ta.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "Importowanie zostało cofnięte",

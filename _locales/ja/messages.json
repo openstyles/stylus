@@ -630,6 +630,10 @@
 		"message": "スタイルのインポートが終了しました",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "アクセスを許可するには、<about:config> を開き、リストを右クリックして「新規作成」－「真偽値」をクリックし、<privacy.resistFingerprinting.block_mozAddonManager> を貼り付けてOKをクリックし、<true> を選択してOKをクリックし、その後、<addons.mozilla.org> ページをリロードしてください。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"cm_matchHighlight": {
 		"message": "ハイライト",
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
@@ -821,6 +825,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "入力の自動補完を有効にする",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefoxはこのサイトへのアクセスを禁止しています。",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLintは「$preprocessorname$」プリプロセッサをサポートしていません",
@@ -1077,6 +1085,10 @@
 	"manageNewUI": {
 		"message": "新しい管理UIレイアウト",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Firefox 59 以降のみが、「WebExtensionがこのようなCSPプロテクトされたサイトにスタイル要素を追加すること」を許可する設定を行えます。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "インポートが取り消されました",
