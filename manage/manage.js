@@ -215,9 +215,10 @@ function createStyleElement({style, name}) {
 
 
 function debounceEntryTitle(event) {
-  if (event.target.nodeName === 'A' && event.target.classList.contains('style-name-link')) {
-    if (event.type === 'mouseover' && !event.target.title) {
-      debounce(addEntryTitle, 50, event.target);
+  if (event.target.nodeName === 'H2' && event.target.classList.contains('style-name')) {
+    const link = $('.style-name-link', event.target);
+    if (event.type === 'mouseover' && !link.title) {
+      debounce(addEntryTitle, 50, link);
     } else if (debounce.timers.size) {
       debounce.unregister(addEntryTitle);
     }
