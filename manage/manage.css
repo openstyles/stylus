@@ -264,9 +264,12 @@ select {
 }
 
 #add-style-wrapper,
-#options :last-child,
 #backup :last-child {
   margin-bottom: 0;
+}
+
+#options p:last-of-type {
+  margin-top: 0;
 }
 
 #header details:not([open]),
@@ -311,7 +314,7 @@ select {
   display: table-row;
 }
 
-.newUI .entry:nth-child(2n) {
+.newUI .entry.odd {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
@@ -320,14 +323,20 @@ select {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
+  contain: content;
 }
+
+.newUI .entry .actions {
+  contain: layout;
+}
+
 /************ checkbox & select************/
 
 .newUI .checker {
   margin: 0;
 }
 
-#newUIoptions > div {
+#newUIoptions > div, #newUIoptions > label {
   margin: 4px 0;
 }
 
@@ -454,9 +463,18 @@ select {
   color: hsla(180, 100%, 15%, 1);
 }
 
-.newUI .homepage:not([href=""]) {
-  position: absolute;
-  margin-left: -28px;
+.newUI .style-name:after {
+  text-indent: 1.2rem;
+}
+
+.newUI .actions:after {
+  text-indent: -25px;
+}
+
+.newUI .actions .homepage[href=""] {
+  display: inline-block;
+  visibility: hidden;
+  height: 0;
 }
 
 .newUI .actions {
@@ -833,13 +851,23 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
-#search-wrapper {
+#search-wrapper, #sort-wrapper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-#search {
+#sort-wrapper {
+  margin-top: .25em;
+}
+
+#sort-wrapper .sorter-selection {
+  position: relative;
+  width: calc(100% - 15px);
+}
+
+#search, #manage\.newUI\.sort {
+  max-width: 100%;
   flex-grow: 1;
   margin: 0.25rem 0 0;
   background: #fff;
@@ -849,11 +877,24 @@ input[id^="manage.newUI"] {
   font: 400 12px Arial;
   color: #000;
   border: 1px solid hsl(0, 0%, 66%);
-  border-radius: 0.25rem;
 }
 
-#search-help {
+#manage\.newUI\.sort {
+  padding-right: 18px;
+  width: 100%;
+}
+
+.firefox #manage\.newUI\.sort {
+  padding: 0;
+}
+
+#search-help, #sorter-help {
   margin: 4px -5px 0 2px;
+}
+
+#sort-wrapper .select-arrow {
+  top: 7px;
+  right: 4px;
 }
 
 #message-box.help-text > div {
@@ -941,6 +982,21 @@ input[id^="manage.newUI"] {
   text-overflow: ellipsis;
 }
 
+/* sort font */
+@font-face {
+  font-family: 'sorticon';
+  src: url('data:application/x-font-ttf;base64,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') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  unicode-range: U+21E9;
+}
+
+#manage\.newUI\.sort {
+  font-family: 'sorticon', Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
@@ -1026,6 +1082,7 @@ input[id^="manage.newUI"] {
   }
 
   #installed {
+    margin-top: 0;
     padding-left: 0;
   }
 

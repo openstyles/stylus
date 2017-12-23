@@ -3,6 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
+/* global sorter */
 'use strict';
 
 let installed;
@@ -58,6 +59,9 @@ function initGlobalEvents() {
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
+  // show date installed & last update on hover
+  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
+  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
@@ -81,6 +85,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+  sorter.init();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -103,10 +108,17 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = styles
-    .map(style => ({name: style.name.toLocaleLowerCase(), style}))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name === b.name ? 0 : 1));
+  const sorted = sorter.sort({
+    styles: styles.map(style => ({
+      style,
+      name: style.name.toLocaleLowerCase() + '\n' + style.name,
+    })),
+  }).map((info, index) => {
+    info.index = index;
+    return info;
+  });
   let index = 0;
+  installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
@@ -149,7 +161,7 @@ function showStyles(styles = []) {
 }
 
 
-function createStyleElement({style, name}) {
+function createStyleElement({style, name, index}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -188,6 +200,7 @@ function createStyleElement({style, name}) {
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
     (style.usercssData ? ' usercss' : '');
+  if (index !== undefined) entry.classList.add(index % 2 ? 'odd' : 'even');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
@@ -395,6 +408,27 @@ Object.assign(handleEvent, {
     event.preventDefault();
     configDialog(styleMeta);
   },
+
+  lazyAddEntryTitle({type, target}) {
+    const cell = target.closest('h2.style-name');
+    if (cell) {
+      const link = $('.style-name-link', cell);
+      if (type === 'mouseover' && !link.title) {
+        debounce(handleEvent.addEntryTitle, 50, link);
+      } else {
+        debounce.unregister(handleEvent.addEntryTitle);
+      }
+    }
+  },
+
+  addEntryTitle(link) {
+    const entry = link.closest('.entry');
+    link.title = [
+      {prop: 'installDate', name: 'dateInstalled'},
+      {prop: 'updateDate', name: 'dateUpdated'},
+    ].map(({prop, name}) =>
+      t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
+  }
 });
 
 
@@ -416,6 +450,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
+  sorter.update();
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);

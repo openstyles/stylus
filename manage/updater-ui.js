@@ -1,6 +1,6 @@
 /* global messageBox */
 /* global ENTRY_ID_PREFIX, newUI */
-/* global filtersSelector, filterAndAppend */
+/* global filtersSelector, filterAndAppend, sorter */
 'use strict';
 
 onDOMready().then(() => {
@@ -144,6 +144,7 @@ function reportUpdateState(state, style, details) {
   }
   if (filtersSelector.hide) {
     filterAndAppend({entry});
+    sorter.update();
   }
 }
 
