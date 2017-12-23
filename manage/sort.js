@@ -135,19 +135,17 @@ function sortStyles({styles, parser}) {
 function manageSort(event) {
   event.preventDefault();
   prefs.set('manage.newUI.sort', this.value);
-  updateSort();
+  debounce(updateSort);
 }
 
 function updateSort() {
-  debounce(() => {
-    const renderBin = document.createDocumentFragment();
-    const entries = sortStyles({parser: 'entry'});
-    for (const entry of entries) {
-      renderBin.appendChild(entry);
-    }
-    installed.appendChild(renderBin);
-    updateStripes();
-  });
+  const renderBin = document.createDocumentFragment();
+  const entries = sortStyles({parser: 'entry'});
+  for (const entry of entries) {
+    renderBin.appendChild(entry);
+  }
+  installed.appendChild(renderBin);
+  updateStripes();
 }
 
 function showSortHelp(event) {

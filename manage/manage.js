@@ -451,7 +451,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
-  updateSort();
+  debounce(updateSort);
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);
