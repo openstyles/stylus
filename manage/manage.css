@@ -423,34 +423,6 @@ select {
   margin: 0 .5em;
 }
 
-#sort-wrapper {
-  margin: 5px 0;
-}
-
-#sort-wrapper .sorter-selection {
-  position: relative;
-  display: block;
-  left: 0;
-  margin-bottom: 4px;
-  max-width: calc(100% - 18px);
-}
-
-#sort-select {
-  color: inherit;
-  max-width: 100%;
-}
-
-#sort-wrapper .select-arrow {
-  top: 3px;
-  right: 3px;
-}
-
-#sorter-help {
-  position: absolute;
-  right: -22px;
-  top: 3px;
-}
-
 .newUI .entry .svg-icon.checked,
 .newUI .entry:hover .svg-icon.checked {
   fill: #000;
@@ -864,13 +836,23 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
-#search-wrapper {
+#search-wrapper, #sort-wrapper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-#search {
+#sort-wrapper {
+  margin-top: .25em;
+}
+
+#sort-wrapper .sorter-selection {
+  position: relative;
+  max-width: calc(100% - 15px);
+}
+
+#search, #sort-select {
+  max-width: 100%;
   flex-grow: 1;
   margin: 0.25rem 0 0;
   background: #fff;
@@ -880,11 +862,19 @@ input[id^="manage.newUI"] {
   font: 400 12px Arial;
   color: #000;
   border: 1px solid hsl(0, 0%, 66%);
-  border-radius: 0.25rem;
 }
 
-#search-help {
+#sort-select {
+  padding-right: 18px;
+}
+
+#search-help, #sorter-help {
   margin: 4px -5px 0 2px;
+}
+
+#sort-wrapper .select-arrow {
+  top: 7px;
+  right: 4px;
 }
 
 #message-box.help-text > div {
