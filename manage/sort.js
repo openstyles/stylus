@@ -53,8 +53,8 @@ const tagData = {
 // Adding (assumed) most commonly used ('title,asc' should always be first)
 // whitespace before & after the comma is ignored
 const sortSelectOptions = [
+  '{groupAsc}',
   'title,asc',
-  'title,desc',
   'dateInstalled,desc, title,asc',
   'dateInstalled,asc, title,asc',
   'dateUpdated,desc, title,asc',
@@ -64,6 +64,8 @@ const sortSelectOptions = [
   'disabled,asc, title,asc',
   'disabled,desc, title,asc',
   'disabled,desc, usercss,asc, title,asc',
+  '{groupDesc}',
+  'title,desc',
   'usercss,asc, title,desc',
   'usercss,desc, title,desc',
   'disabled,desc, title,desc',
@@ -73,21 +75,32 @@ const sortSelectOptions = [
 const sortByRegex = /\s*,\s*/;
 
 function addSortOptions() {
+  let container;
   const select = $('#sort-select');
   const renderBin = document.createDocumentFragment();
   const option = $create('option');
+  const optgroup = $create('optgroup');
   const meta = {
     enabled: t('genericEnabledLabel'),
     disabled: t('genericDisabledLabel'),
-    asc: ` (${t('sortAscending')})`,
-    desc: ` (${t('sortDescending')})`,
     dateNew: ` (${t('sortDateNewestFirst')})`,
     dateOld: ` (${t('sortDateOldestFirst')})`,
     labelFirst: ` (${t('sortLabelFirst')})`,
-    labelLast: ` (${t('sortLabelLast')})`
+    labelLast: ` (${t('sortLabelLast')})`,
+    groupAsc: t('sortLabelTitleAsc'),
+    groupDesc: t('sortLabelTitleDesc')
   };
+  const optgroupRegex = /\{\w+\}/;
   sortSelectOptions.forEach(sort => {
     const opt = option.cloneNode();
+    if (optgroupRegex.test(sort)) {
+      if (container) {
+        renderBin.appendChild(container);
+      }
+      container = optgroup.cloneNode();
+      container.label = meta[sort.substring(1, sort.length - 1)];
+      return;
+    }
     let lastTag = '';
     opt.textContent = sort.split(sortByRegex).reduce((acc, val) => {
       if (tagData[val]) {
@@ -100,8 +113,9 @@ function addSortOptions() {
       return acc + (meta[val] || '');
     }, '');
     opt.value = sort;
-    renderBin.appendChild(opt);
+    container.appendChild(opt);
   });
+  renderBin.appendChild(container);
   select.appendChild(renderBin);
   select.value = prefs.get('manage.newUI.sort');
 }

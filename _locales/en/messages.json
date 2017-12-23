@@ -840,14 +840,6 @@
     "message": "Select a sort to apply to the installed styles",
     "description": "Title on the sort select to indicate it is used for sorting entries"
   },
-  "sortAscending": {
-    "message": "ascending",
-    "description": "Text added to indicate that a sort is in the ascending (A to Z) direction"
-  },
-  "sortDescending": {
-    "message": "descending",
-    "description": "Text added to indicate that a sort is in the descending (Z to A) direction"
-  },
   "sortDateNewestFirst": {
     "message": "newest first",
     "description": "Text added to indicate that sorting a date would add the newest entries at the top"
@@ -864,12 +856,20 @@
     "message": "last",
     "description": "Text added to indicate that entry with a disabled or usercss label will be sorted last (at the bottom)"
   },
+  "sortLabelTitleAsc": {
+    "message": "Title Ascending",
+    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Title Descending",
+    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+  },
   "sortStylesHelpTitle": {
     "message": "Sort contents",
     "description": "Label for the sort info popup on the Manage styles page"
   },
   "sortStylesHelp": {
-    "message": "Choose the type of sort to apply to the installed entries from within the sort dropdown. The default setting applies an ascending sort (A to Z) to the entry titles. Sorts that include a \"(descending)\" label will apply a descending sort (Z to A) to the title.\nThere are other presets that will allow sorting the entries by multiple criteria. Think of this like sorting a table with multiple columns and each category in a select (between the plus signs) represents a column, or group.\nFor example, if the setting is \"Enabled (first) + Title (ascending)\", the entries would sort so that all the enabled entries are sorted to the top of the list and the entry titles are then applied to both enabled tags and the disabled tags separately.",
+    "message": "Choose the type of sort to apply to the installed entries from within the sort dropdown. The default setting applies an ascending sort (A to Z) to the entry titles. Sorts that include a \"(descending)\" label will apply a descending sort (Z to A) to the title.\nThere are other presets that will allow sorting the entries by multiple criteria. Think of this like sorting a table with multiple columns and each category in a select (between the plus signs) represents a column, or group.\nFor example, if the setting is \"Enabled (first) + Title\", the entries would sort so that all the enabled entries are sorted to the top of the list and the entry titles are then applied to both enabled tags and the disabled tags separately.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
   },
   "styleBadRegexp": {
