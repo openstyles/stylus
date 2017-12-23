@@ -92,7 +92,6 @@ function addSortOptions() {
   };
   const optgroupRegex = /\{\w+\}/;
   sortSelectOptions.forEach(sort => {
-    const opt = option.cloneNode();
     if (optgroupRegex.test(sort)) {
       if (container) {
         renderBin.appendChild(container);
@@ -102,6 +101,7 @@ function addSortOptions() {
       return;
     }
     let lastTag = '';
+    const opt = option.cloneNode();
     opt.textContent = sort.split(sortByRegex).reduce((acc, val) => {
       if (tagData[val]) {
         lastTag = val;
@@ -152,8 +152,21 @@ function manageSort(event) {
 function updateSort() {
   const renderBin = document.createDocumentFragment();
   const entries = sortStyles({parser: 'entry'});
-  for (const entry of entries) {
-    renderBin.appendChild(entry);
+  let index = 0;
+  moveEntries();
+  function moveEntries() {
+    const t0 = performance.now();
+    let moved = 0;
+    while (
+      index < entries.length &&
+      (++moved < 10 || performance.now() - t0 < 10)
+    ) {
+      renderBin.appendChild(entries[index++]);
+    }
+    if (index < entries.length) {
+      requestAnimationFrame(moveEntries);
+      return;
+    }
   }
   installed.appendChild(renderBin);
   updateStripes();
