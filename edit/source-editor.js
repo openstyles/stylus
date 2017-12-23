@@ -214,25 +214,22 @@ function createSourceEditor(style) {
     if (!dirty.isDirty()) {
       return;
     }
+    const code = cm.getValue();
     return onBackgroundReady()
       .then(() => BG.usercssHelper.save({
         reason: 'editSave',
         id: style.id,
         enabled: style.enabled,
-        sourceCode: cm.getValue(),
+        sourceCode: code,
       }))
       .then(replaceStyle)
       .then(() => cm.setOption('mode', cm.doc.mode))
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-            BG.chromeSync.setLZValue('usercssTemplate', style.sourceCode)
+            BG.chromeSync.setLZValue('usercssTemplate', code)
               .then(() => BG.chromeSync.getLZValue('usercssTemplate'))
-              .then(saved => {
-                if (saved !== style.sourceCode) {
-                  messageBox.alert(t('syncStorageErrorSaving'));
-                }
-              }));
+              .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
           return;
         }
         const contents = Array.isArray(err) ?
