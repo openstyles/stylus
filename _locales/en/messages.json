@@ -840,6 +840,10 @@
     "message": "Select a sort to apply to the installed styles",
     "description": "Title on the sort select to indicate it is used for sorting entries"
   },
+  "sortAscending": {
+    "message": "ascending",
+    "description": "Text added to indicate that a sort is in the ascending (A to Z) direction"
+  },
   "sortDescending": {
     "message": "descending",
     "description": "Text added to indicate that a sort is in the descending (Z to A) direction"

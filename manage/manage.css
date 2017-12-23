@@ -264,9 +264,12 @@ select {
 }
 
 #add-style-wrapper,
-#options :last-child,
 #backup :last-child {
   margin-bottom: 0;
+}
+
+#options p:last-of-type {
+  margin-top: 0;
 }
 
 #header details:not([open]),
@@ -327,11 +330,11 @@ select {
   margin: 0;
 }
 
-#newUIoptions > div {
+#newUIoptions > div, #newUIoptions > label {
   margin: 4px 0;
 }
 
-.filter-selection, .sorter-selection {
+.filter-selection {
   position: relative;
   left: -9px;
 }
@@ -358,7 +361,7 @@ select {
   padding-left: 0;
 }
 
-.filter-selection select, .sorter-selection select {
+.filter-selection select {
   height: 18px;
   border: none;
   max-width: 100%;
@@ -367,8 +370,7 @@ select {
   margin-left: 4px;
 }
 
-.filter-selection .select-arrow,
-.sorter-selection .select-arrow {
+.filter-selection .select-arrow {
   margin-top: 2px;
   top: 0;
   right: 0;
@@ -389,8 +391,7 @@ select {
 }
 
 #filters label:hover,
-#filters .filter-selection:hover,
-#options .sorter-selection:hover {
+#filters .filter-selection:hover {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
@@ -422,22 +423,32 @@ select {
   margin: 0 .5em;
 }
 
-#options .sorter-selection {
+#sort-wrapper {
+  margin: 5px 0;
+}
+
+#sort-wrapper .sorter-selection {
+  position: relative;
   display: block;
   left: 0;
   margin-bottom: 4px;
-  max-width: calc(100% - 2em);
+  max-width: calc(100% - 18px);
 }
 
-.sorter-selection select {
-  margin-left: 0;
-  padding-left: 0;
+#sort-select {
   color: inherit;
+  max-width: 100%;
 }
 
-.sorter-selection .select-arrow {
+#sort-wrapper .select-arrow {
+  top: 3px;
+  right: 3px;
+}
+
+#sorter-help {
   position: absolute;
-  right: 0;
+  right: -22px;
+  top: 3px;
 }
 
 .newUI .entry .svg-icon.checked,
@@ -853,7 +864,7 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
-#search-wrapper, #sort-wrapper {
+#search-wrapper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -1101,7 +1112,7 @@ input[id^="manage.newUI"] {
     margin: 0;
   }
 
-  .filter-selection select, .sorter-selection select {
+  .filter-selection select {
     padding-left: 0;
   }
 

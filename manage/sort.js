@@ -76,12 +76,13 @@ const sortSelectOptions = [
 const sortByRegex = /\s*,\s*/;
 
 function addSortOptions() {
-  const select = $('#options .sorter-selection select');
+  const select = $('#sort-select');
   const renderBin = document.createDocumentFragment();
   const option = $create('option');
   const meta = {
     enabled: t('genericEnabledLabel'),
     disabled: t('genericDisabledLabel'),
+    asc: ` (${t('sortAscending')})`,
     desc: ` (${t('sortDescending')})`,
     dateNew: ` (${t('sortDateNewestFirst')})`,
     dateOld: ` (${t('sortDateOldestFirst')})`,
@@ -163,7 +164,7 @@ function showSortHelp(event) {
 }
 
 function sortInit() {
-  $('#options select').addEventListener('change', manageSort);
+  $('#sort-select').addEventListener('change', manageSort);
   $('#sorter-help').onclick = showSortHelp;
   addSortOptions();
 }
