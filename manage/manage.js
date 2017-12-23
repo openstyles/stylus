@@ -109,7 +109,7 @@ function initGlobalEvents() {
 
 function showStyles(styles = []) {
   const sorted = sortStyles({styles, parser: 'style'})
-    .map(style => ({name: style.name.toLocaleLowerCase(), style}));
+    .map((style, index) => ({name: style.name.toLocaleLowerCase(), style, index}));
   let index = 0;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
@@ -154,7 +154,7 @@ function showStyles(styles = []) {
 }
 
 
-function createStyleElement({style, name}) {
+function createStyleElement({style, name, index}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -195,6 +195,7 @@ function createStyleElement({style, name}) {
     (style.usercssData ? ' usercss' : '');
   entry.dataset.installdate = style.installDate || t('genericUnknown');
   entry.dataset.updatedate = style.updateDate || style.installDate || t('genericUnknown');
+  if (index !== undefined) entry.classList.add(index % 2 ? 'odd' : 'even');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
