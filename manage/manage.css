@@ -311,7 +311,7 @@ select {
   display: table-row;
 }
 
-.newUI .entry:nth-child(2n) {
+.newUI .entry.odd {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
@@ -331,7 +331,7 @@ select {
   margin: 4px 0;
 }
 
-.filter-selection {
+.filter-selection, .sorter-selection {
   position: relative;
   left: -9px;
 }
@@ -358,7 +358,7 @@ select {
   padding-left: 0;
 }
 
-.filter-selection select {
+.filter-selection select, .sorter-selection select {
   height: 18px;
   border: none;
   max-width: 100%;
@@ -367,7 +367,8 @@ select {
   margin-left: 4px;
 }
 
-.filter-selection .select-arrow {
+.filter-selection .select-arrow,
+.sorter-selection .select-arrow {
   margin-top: 2px;
   top: 0;
   right: 0;
@@ -388,7 +389,8 @@ select {
 }
 
 #filters label:hover,
-#filters .filter-selection:hover {
+#filters .filter-selection:hover,
+#options .sorter-selection:hover {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
@@ -418,6 +420,24 @@ select {
 #manage-text > :not(:last-child):after {
   content: "|";
   margin: 0 .5em;
+}
+
+#options .sorter-selection {
+  display: block;
+  left: 0;
+  margin-bottom: 4px;
+  max-width: calc(100% - 2em);
+}
+
+.sorter-selection select {
+  margin-left: 0;
+  padding-left: 0;
+  color: inherit;
+}
+
+.sorter-selection .select-arrow {
+  position: absolute;
+  right: 0;
 }
 
 .newUI .entry .svg-icon.checked,
@@ -833,7 +853,7 @@ input[id^="manage.newUI"] {
   display: none;
 }
 
-#search-wrapper {
+#search-wrapper, #sort-wrapper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -1026,6 +1046,7 @@ input[id^="manage.newUI"] {
   }
 
   #installed {
+    margin-top: 0;
     padding-left: 0;
   }
 
@@ -1080,7 +1101,7 @@ input[id^="manage.newUI"] {
     margin: 0;
   }
 
-  .filter-selection select {
+  .filter-selection select, .sorter-selection select {
     padding-left: 0;
   }
 

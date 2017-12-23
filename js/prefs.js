@@ -36,6 +36,7 @@ var prefs = new function Prefs() {
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
+    'manage.newUI.sort': 'title,asc', // current applied sort
 
     'editor.options': {},           // CodeMirror.defaults.*
     'editor.options.expanded': true, // UI element state: expanded/collapsed

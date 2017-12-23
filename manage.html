@@ -155,6 +155,7 @@
   <script src="manage/object-diff.js"></script>
   <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
   <script src="manage/config-dialog.js"></script>
+  <script src="manage/sort.js"></script>
   <script src="manage/manage.js"></script>
 </head>
 
@@ -245,7 +246,6 @@
         <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
       </a>
     </div>
-
   </details>
 
   <p class="nowrap">
@@ -284,6 +284,16 @@
   <details id="options" data-pref="manage.options.expanded">
 
     <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
+
+    <div id="sort-wrapper" i18n-title="sortLabel">
+      <div class="sorter-selection">
+        <select id="sort-select"></select>
+        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      </div>
+      <a href="#" id="sorter-help">
+        <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+      </a>
+    </div>
 
     <label>
       <input id="manage.newUI" type="checkbox">
@@ -344,7 +354,6 @@
   </p>
 
 </div>
-
 <div id="installed"></div>
 
 <script src="manage/import-export.js"></script>

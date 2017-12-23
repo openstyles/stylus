@@ -3,6 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
+/* global sortInit, sortStyles, updateSort */
 'use strict';
 
 let installed;
@@ -58,6 +59,9 @@ function initGlobalEvents() {
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
+  // show date installed & last update on hover
+  installed.addEventListener('mouseover', debounceEntryTitle);
+  installed.addEventListener('mouseout', debounceEntryTitle);
 
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
@@ -81,6 +85,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+  sortInit();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -103,10 +108,10 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = styles
-    .map(style => ({name: style.name.toLocaleLowerCase(), style}))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name === b.name ? 0 : 1));
+  const sorted = sortStyles({styles, parser: 'style'})
+    .map(style => ({name: style.name.toLocaleLowerCase(), style}));
   let index = 0;
+  installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
@@ -188,6 +193,8 @@ function createStyleElement({style, name}) {
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
     (style.usercssData ? ' usercss' : '');
+  entry.dataset.installdate = style.installDate || t('genericUnknown');
+  entry.dataset.updatedate = style.updateDate || style.installDate || t('genericUnknown');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
@@ -204,6 +211,32 @@ function createStyleElement({style, name}) {
   createStyleTargetsElement({entry, style, postponeFavicons: name});
 
   return entry;
+}
+
+
+function debounceEntryTitle(event) {
+  if (event.target.nodeName === 'A' && event.target.classList.contains('style-name-link')) {
+    if (event.type === 'mouseover' && !event.target.title) {
+      debounce(addEntryTitle, 50, event.target);
+    } else if (debounce.timers.size) {
+      debounce.unregister(addEntryTitle);
+    }
+  }
+}
+
+// Add entry install & updated date to  process locales
+function addEntryTitle(link) {
+  const unknown = t('genericUnknown');
+  const entry = link.closest('.entry');
+  // eslint-disable-next-line no-inner-declarations
+  function checkValidDate(date) {
+    const check = formatDate(date);
+    return (date === unknown || check === 'Invalid Date') ? unknown : check;
+  }
+  if (entry) {
+    link.title = `${t('dateInstalled')}: ${checkValidDate(entry.dataset.installdate)}\n` +
+      `${t('dateUpdated')}: ${checkValidDate(entry.dataset.updatedate)}`;
+  }
 }
 
 
@@ -416,6 +449,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
+  updateSort();
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);
@@ -521,6 +555,18 @@ function switchUI({styleOnly} = {}) {
     });
     return;
   }
+}
+
+
+function updateStripes() {
+  let index = 0;
+  [...installed.children].forEach(entry => {
+    const list = entry.classList;
+    if (!list.contains('hidden')) {
+      list.add(index % 2 ? 'odd' : 'even');
+      list.remove(index++ % 2 ? 'even' : 'odd');
+    }
+  });
 }
 
 

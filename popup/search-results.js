@@ -16,8 +16,6 @@ window.addEventListener('showStyles:done', function _() {
   const BASE_URL = 'https://userstyles.org';
   const UPDATE_URL = 'https://update.userstyles.org/%.md5';
 
-  const UI_LANG = chrome.i18n.getUILanguage();
-
   // normal category is just one word like 'github' or 'google'
   // but for some sites we need a fallback
   //   key: category.tld
@@ -459,16 +457,8 @@ window.addEventListener('showStyles:done', function _() {
 
     Object.assign($('[data-type="updated"] time', entry), {
       dateTime: result.updated,
-      textContent: tryCatch(lang => {
-        const date = new Date(result.updated);
-        return date.toLocaleDateString(lang, {
-          day: '2-digit',
-          month: 'short',
-          year: date.getYear() === new Date().getYear() ? undefined : '2-digit',
-        });
-      }, [UI_LANG, 'en']) || '',
+      textContent: formatDate(result.updated)
     });
-
 
     $('[data-type="weekly"] dd', entry).textContent = formatNumber(result.weekly_install_count);
     $('[data-type="total"] dd', entry).textContent = formatNumber(result.total_install_count);
