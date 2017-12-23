@@ -230,7 +230,8 @@ function initStyleData() {
   });
   return getStylesSafe({id: id || -1})
     .then(([style = createEmptyStyle()]) => {
-      styleId = sessionStorage.justEditedStyleId = style.id;
+      styleId = style.id;
+      if (styleId) sessionStorage.justEditedStyleId = styleId;
       // we set "usercss" class on <html> when <body> is empty
       // so there'll be no flickering of the elements that depend on it
       if (isUsercss(style)) {
