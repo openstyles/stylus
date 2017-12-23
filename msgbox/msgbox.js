@@ -123,7 +123,7 @@ function messageBox({
 
   function moveFocus(dir) {
     const elements = [...messageBox.element.getElementsByTagName('*')];
-    const activeIndex = elements.indexOf(document.activeElement);
+    const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
     const num = elements.length;
     for (let i = 1; i < num; i++) {
       const elementIndex = (activeIndex + i * dir + num) % num;
