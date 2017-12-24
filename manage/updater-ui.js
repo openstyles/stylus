@@ -144,7 +144,7 @@ function reportUpdateState(state, style, details) {
   }
   if (filtersSelector.hide) {
     filterAndAppend({entry});
-    debounce(sorter().updateSort);
+    sorter().updateSort();
   }
 }
 

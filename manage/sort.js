@@ -144,35 +144,24 @@ const sorter = (() => {
   }
 
   function updateSort() {
-    const renderBin = document.createDocumentFragment();
-    const entries = sortStyles({parser: 'entry'});
-    const isDiffSort = [...installed.children].find((entry, index) => entry.id !== entries[index].id);
-    let index = 0;
-    function moveEntries() {
-      const t0 = performance.now();
-      let moved = 0;
-      while (
-        index < entries.length &&
-        (++moved < 10 || performance.now() - t0 < 10)
-      ) {
-        renderBin.appendChild(entries[index++]);
+    getStylesSafe().then(styles => {
+      const renderBin = document.createDocumentFragment();
+      const entries = sortStyles(styles);
+      const current = [...installed.children];
+      const isDiffSort = entries.length !== current.length ||
+        current.find((entry, index) => entry.id !== entries[index].id);
+      if (isDiffSort) {
+        entries.forEach(entry => renderBin.appendChild(entry));
+        installed.appendChild(renderBin);
+        updateStripes();
       }
-      if (index < entries.length) {
-        requestAnimationFrame(moveEntries);
-        return;
-      }
-    }
-    if (isDiffSort !== undefined) {
-      moveEntries();
-      installed.appendChild(renderBin);
-      updateStripes();
-    }
+    });
   }
 
   function manageSort(event) {
     event.preventDefault();
     prefs.set('manage.newUI.sort', this.value);
-    debounce(updateSort);
+    updateSort();
   }
 
   function showSortHelp(event) {

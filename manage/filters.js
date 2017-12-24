@@ -156,7 +156,7 @@ function filterOnChange({target: el, forceRefilter}) {
   if (installed) {
     reapplyFilter();
   }
-  debounce(sorter().updateSort);
+  sorter().updateSort();
 }
 
 
