@@ -144,18 +144,23 @@ const sorter = (() => {
   }
 
   function updateSort() {
-    getStylesSafe().then(styles => {
-      const renderBin = document.createDocumentFragment();
-      const entries = sortStyles(styles);
-      const current = [...installed.children];
-      const isDiffSort = entries.length !== current.length ||
-        current.find((entry, index) => entry.id !== entries[index].id);
-      if (isDiffSort) {
-        entries.forEach(entry => renderBin.appendChild(entry));
-        installed.appendChild(renderBin);
-        updateStripes();
-      }
+    if (!installed) return;
+    const current = [...installed.children];
+    const sorted = sortStyles({
+      styles: current.map(entry => ({
+        entry,
+        name: entry.styleNameLowerCase,
+        style: BG.cachedStyles.byId.get(entry.styleId),
+      }))
     });
+    const isDiffSort = sorted.length !== current.length ||
+      current.find((entry, index) => entry !== sorted[index].entry);
+    if (isDiffSort) {
+      const renderBin = document.createDocumentFragment();
+      sorted.forEach(({entry}) => renderBin.appendChild(entry));
+      installed.appendChild(renderBin);
+      updateStripes();
+    }
   }
 
   function manageSort(event) {
