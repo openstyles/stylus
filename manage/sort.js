@@ -194,7 +194,7 @@ const sorter = (() => {
       const list = entry.classList;
       if (!list.contains('hidden')) {
         list.add(index % 2 ? 'odd' : 'even');
-        list.remove(index++ % 2 ? 'even' : 'odd', 'no-update');
+        list.remove(index++ % 2 ? 'even' : 'odd');
       }
     });
   }
