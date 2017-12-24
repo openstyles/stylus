@@ -65,9 +65,7 @@
       const textHeight = cm.display.cachedTextHeight;
       const height = cm.display.lastWrapHeight;
       if (!height || !textHeight) return;
-      const numLines = Math.ceil(height / textHeight);
-      if (numLines >= maxRenderChunkSize) return;
-      maxRenderChunkSize = numLines;
+      maxRenderChunkSize = Math.max(20, Math.ceil(height / textHeight));
       cm.off('update', CM_EVENTS.update);
     },
     mousedown(cm, event) {
