@@ -172,8 +172,8 @@ function updateSort() {
   if (isDiffSort !== undefined) {
     moveEntries();
     installed.appendChild(renderBin);
+    updateStripes();
   }
-  updateStripes();
 }
 
 function showSortHelp(event) {
