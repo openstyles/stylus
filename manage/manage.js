@@ -109,12 +109,14 @@ function initGlobalEvents() {
 
 function showStyles(styles = []) {
   const sorted = sortStyles({
-    styles: styles.map((style, index) => ({
+    parser: 'style',
+    styles: styles.map(style => ({
       style,
-      index,
       name: style.name.toLocaleLowerCase(),
     })),
-    parser: 'style',
+  }).map((info, index) => {
+    info.index = index;
+    return info;
   });
   let index = 0;
   installed.dataset.total = styles.length;
