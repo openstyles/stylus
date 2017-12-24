@@ -2,7 +2,7 @@
 /* global messageBox */
 'use strict';
 
-var sorter = (() => {
+const sorter = (() => {
 
   const sorterType = {
     alpha: (a, b) => (a < b ? -1 : a === b ? 0 : 1),
