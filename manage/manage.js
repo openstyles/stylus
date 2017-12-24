@@ -135,7 +135,7 @@ function showStyles(styles = []) {
     while (
       index < sorted.length &&
       // eslint-disable-next-line no-unmodified-loop-condition
-      (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)
+      (shouldRenderAll || ++rendered < 20 || performance.now() - t0 < 10)
     ) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
