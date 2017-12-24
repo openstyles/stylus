@@ -3,7 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
-/* global sortInit, sortStyles, updateSort */
+/* global sorter */
 'use strict';
 
 let installed;
@@ -85,7 +85,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
-  sortInit();
+  sorter().sortInit();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -108,7 +108,7 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = sortStyles({
+  const sorted = sorter().sortStyles({
     parser: 'style',
     styles: styles.map(style => ({
       style,
@@ -459,7 +459,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
-  debounce(updateSort);
+  debounce(sorter().updateSort);
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);
@@ -565,18 +565,6 @@ function switchUI({styleOnly} = {}) {
     });
     return;
   }
-}
-
-
-function updateStripes() {
-  let index = 0;
-  [...installed.children].forEach(entry => {
-    const list = entry.classList;
-    if (!list.contains('hidden')) {
-      list.add(index % 2 ? 'odd' : 'even');
-      list.remove(index++ % 2 ? 'even' : 'odd');
-    }
-  });
 }
 
 

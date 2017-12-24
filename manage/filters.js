@@ -1,5 +1,5 @@
 /* global installed messageBox */
-/* global updateSort */
+/* global sorter */
 'use strict';
 
 const filtersSelector = {
@@ -156,7 +156,7 @@ function filterOnChange({target: el, forceRefilter}) {
   if (installed) {
     reapplyFilter();
   }
-  debounce(updateSort);
+  debounce(sorter().updateSort);
 }
 
 
