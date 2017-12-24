@@ -85,7 +85,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
-  sorter().sortInit();
+  sorter().init();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -108,7 +108,7 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = sorter().sortStyles({
+  const sorted = sorter().sort({
     parser: 'style',
     styles: styles.map(style => ({
       style,
@@ -459,7 +459,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
-  sorter().updateSort();
+  sorter().update();
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);

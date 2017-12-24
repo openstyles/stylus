@@ -155,7 +155,7 @@ function filterOnChange({target: el, forceRefilter}) {
   });
   if (installed) {
     reapplyFilter();
-    sorter().updateSort();
+    sorter().update();
   }
 }
 

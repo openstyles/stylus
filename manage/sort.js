@@ -27,7 +27,7 @@ const sorter = (() => {
       sorter: sorterType.number
     },
     disabled: {
-      text: '', // added as either "enabled" or "disabled" by the addSortOptions function
+      text: '', // added as either "enabled" or "disabled" by the addOptions function
       parse: {
         style: ({style}) => (style.enabled ? 1 : 0),
         entry: entry => (entry.classList.contains('enabled') ? 1 : 0)
@@ -54,7 +54,7 @@ const sorter = (() => {
 
   // Adding (assumed) most commonly used ('title,asc' should always be first)
   // whitespace before & after the comma is ignored
-  const sortSelectOptions = [
+  const selectOptions = [
     '{groupAsc}',
     'title,asc',
     'dateInstalled,desc, title,asc',
@@ -74,9 +74,9 @@ const sorter = (() => {
     'disabled,desc, usercss,asc, title,desc'
   ];
 
-  const sortByRegex = /\s*,\s*/;
+  const splitRegex = /\s*,\s*/;
 
-  function addSortOptions() {
+  function addOptions() {
     let container;
     const select = $('#sort-select');
     const renderBin = document.createDocumentFragment();
@@ -92,7 +92,7 @@ const sorter = (() => {
       groupDesc: t('sortLabelTitleDesc')
     };
     const optgroupRegex = /\{\w+\}/;
-    sortSelectOptions.forEach(sort => {
+    selectOptions.forEach(sort => {
       if (optgroupRegex.test(sort)) {
         if (container) {
           renderBin.appendChild(container);
@@ -103,7 +103,7 @@ const sorter = (() => {
       }
       let lastTag = '';
       const opt = option.cloneNode();
-      opt.textContent = sort.split(sortByRegex).reduce((acc, val) => {
+      opt.textContent = sort.split(splitRegex).reduce((acc, val) => {
         if (tagData[val]) {
           lastTag = val;
           return acc + (acc !== '' ? ' + ' : '') + tagData[val].text;
@@ -120,14 +120,14 @@ const sorter = (() => {
     select.value = prefs.get('manage.newUI.sort');
   }
 
-  function sortStyles({styles, parser}) {
+  function sort({styles, parser}) {
     if (!styles) {
       styles = [...installed.children];
       parser = 'entry';
     } else {
       parser = 'style';
     }
-    const sortBy = prefs.get('manage.newUI.sort').split(sortByRegex); // 'title,asc'
+    const sortBy = prefs.get('manage.newUI.sort').split(splitRegex); // 'title,asc'
     const len = sortBy.length;
     return styles.sort((a, b) => {
       let types, direction;
@@ -143,10 +143,10 @@ const sorter = (() => {
     });
   }
 
-  function updateSort() {
+  function update() {
     if (!installed) return;
     const current = [...installed.children];
-    const sorted = sortStyles({
+    const sorted = sort({
       styles: current.map(entry => ({
         entry,
         name: entry.styleNameLowerCase,
@@ -163,13 +163,13 @@ const sorter = (() => {
     }
   }
 
-  function manageSort(event) {
+  function manageChange(event) {
     event.preventDefault();
     prefs.set('manage.newUI.sort', this.value);
-    updateSort();
+    update();
   }
 
-  function showSortHelp(event) {
+  function showHelp(event) {
     event.preventDefault();
     messageBox({
       className: 'help-text',
@@ -182,10 +182,10 @@ const sorter = (() => {
     });
   }
 
-  function sortInit() {
-    $('#sort-select').addEventListener('change', manageSort);
-    $('#sorter-help').onclick = showSortHelp;
-    addSortOptions();
+  function init() {
+    $('#sort-select').addEventListener('change', manageChange);
+    $('#sorter-help').onclick = showHelp;
+    addOptions();
   }
 
   function updateStripes() {
@@ -199,5 +199,5 @@ const sorter = (() => {
     });
   }
 
-  return {sortInit, updateSort, sortStyles, updateStripes};
+  return {init, update, sort, updateStripes};
 });
