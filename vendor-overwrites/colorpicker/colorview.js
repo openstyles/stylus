@@ -10,7 +10,7 @@
 
   const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
-  const RXS_NUM = /\s*(\d+\.?\d*|\d*\.\d+)(?:e\d+)?/.source;
+  const RXS_NUM = /\s*(\d+\.?\d*|\d*\.\d+)(?:e[+-]?\d+)?/.source;
   const RX_COLOR = {
     hex: /#(?:[a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)\b/iy,
 
