@@ -962,6 +962,27 @@ input[id^="manage.newUI"] {
   text-overflow: ellipsis;
 }
 
+/* sort font */
+@font-face {
+  font-family: 'sorticon';
+  src: url('sort.ttf?t4i57s') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  unicode-range: U+EA4D;
+}
+
+#sort-select {
+  font-family: 'sorticon', arial;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
