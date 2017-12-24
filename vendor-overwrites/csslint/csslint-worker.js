@@ -3809,6 +3809,7 @@ var Properties = module.exports = {
     "text-decoration"               : "<text-decoration-line> || <text-decoration-style> || <text-decoration-color>",
     "text-decoration-color"         : "<text-decoration-color>",
     "text-decoration-line"          : "<text-decoration-line>",
+    "text-decoration-skip"          : "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]",
     "text-decoration-style"         : "<text-decoration-style>",
     "text-emphasis"                 : 1,
     "text-height"                   : 1,
