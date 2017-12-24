@@ -832,8 +832,6 @@ const NAMED_COLORS = new Map([
     window.addEventListener('keydown', onKeyDown, true);
     window.addEventListener('mousedown', onMouseDown, true);
     window.addEventListener('close-colorpicker-popup', onCloseRequest, true);
-    $root.addEventListener('mouseleave', snooze);
-    $root.addEventListener('mouseenter', stopSnoozing);
     $root.addEventListener('input', setFromInputs);
     $root.addEventListener('keydown', setFromKeyboard);
     $formatChangeButton.addEventListener('click', setFromFormatElement);
@@ -847,7 +845,11 @@ const NAMED_COLORS = new Map([
     $hexLettercase.false.addEventListener('click', onHexLettercaseClicked);
 
     stopSnoozing();
-    timerFadeColorPicker = setTimeout(fade, options.hideDelay / 2);
+    if (!options.isShortCut) {
+      $root.addEventListener('mouseleave', snooze);
+      $root.addEventListener('mouseenter', stopSnoozing);
+      timerFadeColorPicker = setTimeout(fade, options.hideDelay / 2);
+    }
   }
 
   function unregisterEvents() {

@@ -496,7 +496,6 @@
       cm: state.cm,
       color: data.color,
       prevColor: data.color || '',
-      isShortCut: false,
       callback: popupOnChange,
     }));
   }
