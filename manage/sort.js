@@ -83,7 +83,7 @@ const sorter = (() => {
     const option = $create('option');
     const optgroup = $create('optgroup');
     const meta = {
-      desc: ' \uea4d',
+      desc: ' \u21E9',
       enabled: t('genericEnabledLabel'),
       disabled: t('genericDisabledLabel'),
       dateNew: ` (${t('sortDateNewestFirst')})`,
