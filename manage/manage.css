@@ -673,13 +673,13 @@ select {
   top: -1px;
 }
 
-#newUIoptions [data-toggle-on-click] svg {
-  transform: rotate(-90deg);
+#newUIoptions [data-toggle-on-click] > svg {
   position:  static;
 }
 
-#newUIoptions [data-toggle-on-click][open] svg {
-  transform: none;
+#newUIoptions [data-toggle-on-click]:not([open]) > svg {
+  /* note: without ">" FF52 also transforms the nested svg inside <use> */
+  transform: rotate(-90deg);
 }
 
 input[id^="manage.newUI"] {
