@@ -117,6 +117,14 @@
   overflow-wrap: break-word;
 }
 
+#message-box-contents p:first-child {
+  margin-top: 0;
+}
+
+#message-box-contents p:last-child {
+  margin-bottom: 0;
+}
+
 #message-box-buttons {
   padding: .75rem .375rem;
   background-color: #f0f0f0;

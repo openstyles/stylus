@@ -197,3 +197,14 @@ function tWordBreak(text) {
   return text.length <= 10 ? text :
     text.replace(/([\d\w\u007B-\uFFFF]{10}|[\d\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\b|\s)/g, '$&\u00AD');
 }
+
+function formatDate(date) {
+  return tryCatch(lang => {
+    const newDate = new Date(parseInt(date));
+    return newDate.toLocaleDateString(lang, {
+      day: '2-digit',
+      month: 'short',
+      year: newDate.getYear() === new Date().getYear() ? undefined : '2-digit',
+    });
+  }, [chrome.i18n.getUILanguage(), 'en']) || '';
+}

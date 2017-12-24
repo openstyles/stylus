@@ -41,7 +41,7 @@ input:not([type]) {
   padding: 0 3px;
   font: 400 13.3333px Arial;
   border: 1px solid hsl(0, 0%, 66%);
-} 
+}
 
 .svg-icon.checked {
   position: absolute;
@@ -115,7 +115,7 @@ select {
 }
 
 .select-resizer {
-  display: inline-flex!important;
+  display: inline-flex !important;
   cursor: default;
   position: relative;
 }
@@ -196,7 +196,7 @@ select[disabled] > option {
   .moz-appearance-bug input[type="radio"] {
     -moz-appearance: radio !important;
   }
-  
+
   .firefox select {
     font-size: 13px;
     padding: 0 20px 0 2px;
@@ -228,8 +228,8 @@ select[disabled] > option {
 
   .firefox.non-windows .style-name {
     font-family: Arial, sans-serif;
-  }  
-  
+  }
+
 /* Firefox cannot handle fractions in font-size */
   .firefox button:not(.install) {
     font-size: 13px;

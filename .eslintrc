@@ -49,6 +49,7 @@ globals:
   tNodeList: false
   tDocLoader: false
   tWordBreak: false
+  formatDate: false
   # dom.js
   onDOMready: false
   onDOMscriptReady: false

@@ -3,6 +3,7 @@
 /* global checkUpdate, handleUpdateInstalled */
 /* global objectDiff */
 /* global configDialog */
+/* global sorter */
 'use strict';
 
 let installed;
@@ -58,6 +59,9 @@ function initGlobalEvents() {
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
   $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
+  // show date installed & last update on hover
+  installed.addEventListener('mouseover', debounceEntryTitle);
+  installed.addEventListener('mouseout', debounceEntryTitle);
 
   // remember scroll position on normal history navigation
   window.onbeforeunload = rememberScrollPosition;
@@ -81,6 +85,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+  sorter().init();
 
   $$('[id^="manage.newUI"]')
     .forEach(el => (el.oninput = (el.onchange = switchUI)));
@@ -103,10 +108,18 @@ function initGlobalEvents() {
 
 
 function showStyles(styles = []) {
-  const sorted = styles
-    .map(style => ({name: style.name.toLocaleLowerCase(), style}))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name === b.name ? 0 : 1));
+  const sorted = sorter().sort({
+    parser: 'style',
+    styles: styles.map(style => ({
+      style,
+      name: style.name.toLocaleLowerCase(),
+    })),
+  }).map((info, index) => {
+    info.index = index;
+    return info;
+  });
   let index = 0;
+  installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
@@ -122,20 +135,20 @@ function showStyles(styles = []) {
     while (
       index < sorted.length &&
       // eslint-disable-next-line no-unmodified-loop-condition
-      (shouldRenderAll || ++rendered < 10 || performance.now() - t0 < 10)
+      (shouldRenderAll || ++rendered < 20 || performance.now() - t0 < 10)
     ) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
+    if (newUI.enabled && newUI.favicons) {
+      debounce(handleEvent.loadFavicons);
+    }
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
       return;
     }
     if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
-    }
-    if (newUI.enabled && newUI.favicons) {
-      debounce(handleEvent.loadFavicons, 16);
     }
     if (sessionStorage.justEditedStyleId) {
       const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
@@ -149,7 +162,7 @@ function showStyles(styles = []) {
 }
 
 
-function createStyleElement({style, name}) {
+function createStyleElement({style, name, index}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -188,6 +201,9 @@ function createStyleElement({style, name}) {
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
     (style.usercssData ? ' usercss' : '');
+  entry.dataset.installdate = style.installDate || t('genericUnknown');
+  entry.dataset.updatedate = style.updateDate || style.installDate || t('genericUnknown');
+  if (index !== undefined) entry.classList.add(index % 2 ? 'odd' : 'even');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
@@ -199,15 +215,40 @@ function createStyleElement({style, name}) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
-  // name being supplied signifies we're invoked by showStyles()
-  // which debounces its main loop thus loading the postponed favicons
-  createStyleTargetsElement({entry, style, postponeFavicons: name});
+  createStyleTargetsElement({entry, style});
 
   return entry;
 }
 
 
-function createStyleTargetsElement({entry, style, postponeFavicons}) {
+function debounceEntryTitle(event) {
+  if (event.target.nodeName === 'H2' && event.target.classList.contains('style-name')) {
+    const link = $('.style-name-link', event.target);
+    if (event.type === 'mouseover' && !link.title) {
+      debounce(addEntryTitle, 50, link);
+    } else if (debounce.timers.size) {
+      debounce.unregister(addEntryTitle);
+    }
+  }
+}
+
+// Add entry install & updated date to  process locales
+function addEntryTitle(link) {
+  const unknown = t('genericUnknown');
+  const entry = link.closest('.entry');
+  // eslint-disable-next-line no-inner-declarations
+  function checkValidDate(date) {
+    const check = formatDate(date);
+    return (date === unknown || check === 'Invalid Date') ? unknown : check;
+  }
+  if (entry) {
+    link.title = `${t('dateInstalled')}: ${checkValidDate(entry.dataset.installdate)}\n` +
+      `${t('dateUpdated')}: ${checkValidDate(entry.dataset.updatedate)}`;
+  }
+}
+
+
+function createStyleTargetsElement({entry, style}) {
   const parts = createStyleElement.parts;
   const targets = parts.targets.cloneNode(true);
   let container = targets;
@@ -256,9 +297,6 @@ function createStyleTargetsElement({entry, style, postponeFavicons}) {
   if (newUI.enabled) {
     if (numTargets > newUI.targets) {
       $('.applies-to', entry).classList.add('has-more');
-    }
-    if (numIcons && !postponeFavicons) {
-      debounce(handleEvent.loadFavicons);
     }
   }
   const entryTargets = $('.targets', entry);
@@ -382,12 +420,33 @@ Object.assign(handleEvent, {
     this.closest('.applies-to').classList.toggle('expanded');
   },
 
-  loadFavicons(container = document.body) {
-    for (const img of $$('img', container)) {
-      if (img.dataset.src) {
-        img.src = img.dataset.src;
-        delete img.dataset.src;
+  loadFavicons({all = false} = {}) {
+    if (!installed.firstElementChild) return;
+    let favicons = [];
+    if (all) {
+      favicons = $$('img[data-src]', installed);
+    } else {
+      const {left, top} = installed.firstElementChild.getBoundingClientRect();
+      const x = Math.max(0, left);
+      const y = Math.max(0, top);
+      const first = document.elementFromPoint(x, y);
+      const lastOffset = first.offsetTop + window.innerHeight;
+      const numTargets = prefs.get('manage.newUI.targets');
+      let entry = first && first.closest('.entry') || installed.children[0];
+      while (entry && entry.offsetTop <= lastOffset) {
+        favicons.push(...$$('img', entry).slice(0, numTargets).filter(img => img.dataset.src));
+        entry = entry.nextElementSibling;
       }
+    }
+    let i = 0;
+    for (const img of favicons) {
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      // loading too many icons at once will block the page while the new layout is recalculated
+      if (++i > 100) break;
+    }
+    if ($('img[data-src]', installed)) {
+      debounce(handleEvent.loadFavicons, 1, {all: true});
     }
   },
 
@@ -416,6 +475,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
+  sorter().update();
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     scrollElementIntoView(entry);
@@ -514,7 +574,7 @@ function switchUI({styleOnly} = {}) {
       for (const style of styles) {
         const entry = $(ENTRY_ID_PREFIX + style.id);
         if (entry) {
-          createStyleTargetsElement({entry, style, postponeFavicons: true});
+          createStyleTargetsElement({entry, style});
         }
       }
       debounce(handleEvent.loadFavicons);

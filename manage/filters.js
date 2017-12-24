@@ -1,4 +1,5 @@
 /* global installed messageBox */
+/* global sorter */
 'use strict';
 
 const filtersSelector = {
@@ -154,6 +155,7 @@ function filterOnChange({target: el, forceRefilter}) {
   });
   if (installed) {
     reapplyFilter();
+    sorter().update();
   }
 }
 
@@ -190,17 +192,12 @@ function reapplyFilter(container = installed) {
     filterContainer({hide: false});
   }
   // filtering needed or a single-element job from handleUpdate()
-  const entries = installed.children;
-  const numEntries = entries.length;
-  let numVisible = numEntries - $$('.entry.hidden').length;
   for (const entry of toUnhide.children || toUnhide) {
-    const next = findInsertionPoint(entry);
-    if (entry.nextElementSibling !== next) {
-      installed.insertBefore(entry, next);
+    if (!entry.parentNode) {
+      installed.appendChild(entry);
     }
     if (entry.classList.contains('hidden')) {
       entry.classList.remove('hidden');
-      numVisible++;
     }
   }
   // B: hide
@@ -218,18 +215,10 @@ function reapplyFilter(container = installed) {
   // 1. add all hidden entries to the end
   // 2. add the visible entries before the first hidden entry
   if (container instanceof DocumentFragment) {
-    for (const entry of toHide) {
-      installed.appendChild(entry);
-    }
-    installed.insertBefore(container, $('.entry.hidden'));
+    installed.appendChild(container);
     showFiltersStats();
     return;
   }
-  // normal filtering of the page or a single-element job from handleUpdate()
-  // we need to keep the visible entries together at the start
-  // first pass only moves one hidden entry in hidden groups with odd number of items
-  shuffle(false);
-  setTimeout(shuffle, 0, true);
   // single-element job from handleEvent(): add the last wraith
   if (toHide.length === 1 && toHide[0].parentElement !== installed) {
     installed.appendChild(toHide[0]);
@@ -255,95 +244,6 @@ function reapplyFilter(container = installed) {
     } else {
       toUnhide = $$(selector, container);
     }
-  }
-
-  function shuffle(fullPass) {
-    if (fullPass && !document.body.classList.contains('update-in-progress')) {
-      $('#check-all-updates').disabled = !$('.updatable:not(.can-update)');
-    }
-    // 1. skip the visible group on top
-    let firstHidden = $('#installed > .hidden');
-    let entry = firstHidden;
-    let i = [...entries].indexOf(entry);
-    let horizon = entries[numVisible];
-    const skipGroup = state => {
-      const start = i;
-      const first = entry;
-      while (entry && entry.classList.contains('hidden') === state) {
-        entry = entry.nextElementSibling;
-        i++;
-      }
-      return {first, start, len: i - start};
-    };
-    let prevGroup = i ? {first: entries[0], start: 0, len: i} : skipGroup(true);
-    // eslint-disable-next-line no-unmodified-loop-condition
-    while (entry) {
-      // 2a. find the next hidden group's start and end
-      // 2b. find the next visible group's start and end
-      const isHidden = entry.classList.contains('hidden');
-      const group = skipGroup(isHidden);
-      const hidden = isHidden ? group : prevGroup;
-      const visible = isHidden ? prevGroup : group;
-      // 3. move the shortest group; repeat 2-3
-      if (hidden.len < visible.len && (fullPass || hidden.len % 2)) {
-        // 3a. move hidden under the horizon
-        for (let j = 0; j < (fullPass ? hidden.len : 1); j++) {
-          const entry = entries[hidden.start];
-          installed.insertBefore(entry, horizon);
-          horizon = entry;
-          i--;
-        }
-        prevGroup = isHidden ? skipGroup(false) : group;
-        firstHidden = entry;
-      } else if (isHidden || !fullPass) {
-        prevGroup = group;
-      } else {
-        // 3b. move visible above the horizon
-        for (let j = 0; j < visible.len; j++) {
-          const entry = entries[visible.start + j];
-          installed.insertBefore(entry, firstHidden);
-        }
-        prevGroup = {
-          first: firstHidden,
-          start: hidden.start + visible.len,
-          len: hidden.len + skipGroup(true).len,
-        };
-      }
-    }
-    if (fullPass) {
-      showFiltersStats({immediately: true});
-    }
-  }
-
-  function findInsertionPoint(entry) {
-    const nameLLC = entry.styleNameLowerCase;
-    let a = 0;
-    let b = Math.min(numEntries, numVisible) - 1;
-    if (b < 0) {
-      return entries[numVisible];
-    }
-    if (entries[0].styleNameLowerCase > nameLLC) {
-      return entries[0];
-    }
-    if (entries[b].styleNameLowerCase <= nameLLC) {
-      return entries[numVisible];
-    }
-    // bisect
-    while (a < b - 1) {
-      const c = (a + b) / 2 | 0;
-      if (nameLLC < entries[c].styleNameLowerCase) {
-        b = c;
-      } else {
-        a = c;
-      }
-    }
-    if (entries[a].styleNameLowerCase > nameLLC) {
-      return entries[a];
-    }
-    while (a <= b && entries[a].styleNameLowerCase < nameLLC) {
-      a++;
-    }
-    return entries[entries[a].styleNameLowerCase <= nameLLC ? a + 1 : a];
   }
 }
 
