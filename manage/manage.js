@@ -140,15 +140,15 @@ function showStyles(styles = []) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
+    if (newUI.enabled && newUI.favicons) {
+      debounce(handleEvent.loadFavicons);
+    }
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
       return;
     }
     if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
-    }
-    if (newUI.enabled && newUI.favicons) {
-      debounce(handleEvent.loadFavicons, 16);
     }
     if (sessionStorage.justEditedStyleId) {
       const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
@@ -215,9 +215,7 @@ function createStyleElement({style, name, index}) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
-  // name being supplied signifies we're invoked by showStyles()
-  // which debounces its main loop thus loading the postponed favicons
-  createStyleTargetsElement({entry, style, postponeFavicons: name});
+  createStyleTargetsElement({entry, style});
 
   return entry;
 }
@@ -250,7 +248,7 @@ function addEntryTitle(link) {
 }
 
 
-function createStyleTargetsElement({entry, style, postponeFavicons}) {
+function createStyleTargetsElement({entry, style}) {
   const parts = createStyleElement.parts;
   const targets = parts.targets.cloneNode(true);
   let container = targets;
@@ -299,9 +297,6 @@ function createStyleTargetsElement({entry, style, postponeFavicons}) {
   if (newUI.enabled) {
     if (numTargets > newUI.targets) {
       $('.applies-to', entry).classList.add('has-more');
-    }
-    if (numIcons && !postponeFavicons) {
-      debounce(handleEvent.loadFavicons);
     }
   }
   const entryTargets = $('.targets', entry);
@@ -425,12 +420,33 @@ Object.assign(handleEvent, {
     this.closest('.applies-to').classList.toggle('expanded');
   },
 
-  loadFavicons(container = document.body) {
-    for (const img of $$('img', container)) {
-      if (img.dataset.src) {
-        img.src = img.dataset.src;
-        delete img.dataset.src;
+  loadFavicons({all = false} = {}) {
+    if (!installed.firstElementChild) return;
+    let favicons = [];
+    if (all) {
+      favicons = $$('img[data-src]', installed);
+    } else {
+      const {left, top} = installed.firstElementChild.getBoundingClientRect();
+      const x = Math.max(0, left);
+      const y = Math.max(0, top);
+      const first = document.elementFromPoint(x, y);
+      const lastOffset = first.offsetTop + window.innerHeight;
+      const numTargets = prefs.get('manage.newUI.targets');
+      let entry = first && first.closest('.entry') || installed.children[0];
+      while (entry && entry.offsetTop <= lastOffset) {
+        favicons.push(...$$('img', entry).slice(0, numTargets).filter(img => img.dataset.src));
+        entry = entry.nextElementSibling;
       }
+    }
+    let i = 0;
+    for (const img of favicons) {
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      // loading too many icons at once will block the page while the new layout is recalculated
+      if (++i > 100) break;
+    }
+    if ($('img[data-src]', installed)) {
+      debounce(handleEvent.loadFavicons, 1, {all: true});
     }
   },
 
@@ -558,7 +574,7 @@ function switchUI({styleOnly} = {}) {
       for (const style of styles) {
         const entry = $(ENTRY_ID_PREFIX + style.id);
         if (entry) {
-          createStyleTargetsElement({entry, style, postponeFavicons: true});
+          createStyleTargetsElement({entry, style});
         }
       }
       debounce(handleEvent.loadFavicons);
