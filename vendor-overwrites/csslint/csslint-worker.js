@@ -5514,39 +5514,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return whitespace;
     },
     readNumber: function(first) {
-        var reader  = this._reader,
-            number  = first,
-            hasDot  = (first === "."),
-            hasExp,
-            c       = reader.peek();
-
-
-        while (c) {
-            if (isDigit(c)) {
-                number += reader.read();
-            } else if (c === ".") {
-                if (hasDot) {
-                    break;
-                } else {
-                    hasDot = true;
-                    number += reader.read();
-                }
-            } else if (c === 'e' || c === 'E') {
-                if (hasExp) {
-                    break;
-                } else {
-                    hasExp = true;
-                    hasDot = true;
-                    number += reader.read();
-                }
-            } else {
-                break;
-            }
-
-            c = reader.peek();
-        }
-
-        return number;
+        const tail = this._reader.readMatch(
+            first === "." ? /^\d+(e[+-]?\d+)?/ :
+                /^(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/);
+        return first + (tail || '');
     },
 
     // returns null w/o resetting reader if string is invalid.
