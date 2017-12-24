@@ -88,8 +88,6 @@ var sorter = (() => {
       disabled: t('genericDisabledLabel'),
       dateNew: ` (${t('sortDateNewestFirst')})`,
       dateOld: ` (${t('sortDateOldestFirst')})`,
-      labelFirst: ` (${t('sortLabelFirst')})`,
-      labelLast: ` (${t('sortLabelLast')})`,
       groupAsc: t('sortLabelTitleAsc'),
       groupDesc: t('sortLabelTitleDesc')
     };
@@ -111,8 +109,7 @@ var sorter = (() => {
           return acc + (acc !== '' ? ' + ' : '') + tagData[val].text;
         }
         if (lastTag.indexOf('date') > -1) return acc + meta[val === 'desc' ? 'dateNew' : 'dateOld'];
-        if (lastTag === 'disabled') return acc + meta[val === 'desc' ? 'enabled' : 'disabled'] + meta['labelFirst'];
-        if (lastTag !== 'title') return acc + meta[val === 'desc' ? 'labelLast' : 'labelFirst'];
+        if (lastTag === 'disabled') return acc + meta[val === 'desc' ? 'enabled' : 'disabled'];
         return acc + (meta[val] || '');
       }, '');
       opt.value = sort;

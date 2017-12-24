@@ -848,7 +848,7 @@ input[id^="manage.newUI"] {
 
 #sort-wrapper .sorter-selection {
   position: relative;
-  max-width: calc(100% - 15px);
+  width: calc(100% - 15px);
 }
 
 #search, #sort-select {
@@ -866,6 +866,7 @@ input[id^="manage.newUI"] {
 
 #sort-select {
   padding-right: 18px;
+  width: 100%;
 }
 
 #search-help, #sorter-help {
@@ -972,13 +973,7 @@ input[id^="manage.newUI"] {
 }
 
 #sort-select {
-  font-family: 'sorticon', arial;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+  font-family: 'sorticon', Arial;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

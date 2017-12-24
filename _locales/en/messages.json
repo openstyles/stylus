@@ -848,14 +848,6 @@
     "message": "oldest first",
     "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
   },
-  "sortLabelFirst": {
-    "message": "first",
-    "description": "Text added to indicate that entry with a disabled or usercss label will be sorted first (at the top)"
-  },
-  "sortLabelLast": {
-    "message": "last",
-    "description": "Text added to indicate that entry with a disabled or usercss label will be sorted last (at the bottom)"
-  },
   "sortLabelTitleAsc": {
     "message": "Title Ascending",
     "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
