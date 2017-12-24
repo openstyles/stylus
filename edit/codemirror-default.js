@@ -29,7 +29,10 @@
       // independent of current keyMap
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
-      'Alt-PageUp': 'prevEditor'
+      'Alt-PageUp': 'prevEditor',
+      // show the hotkey in keymap info popup by adding a dummy command
+      // TODO: implement as a normal command when CodeMirror is fixed
+      'Ctrl-Pause': 'toggleEditorFocus',
     }),
     maxHighlightLength: 100e3,
     configureMouse: (cm, repeat) => repeat === 'double' ? {unit: selectTokenOnDoubleclick} : {},
