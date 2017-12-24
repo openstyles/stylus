@@ -10,6 +10,7 @@ function createSourceEditor(style) {
   let savedGeneration = 0;
 
   $('#name').disabled = true;
+  $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
