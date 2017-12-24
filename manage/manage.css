@@ -324,8 +324,13 @@ select {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
+  contain: contents;
+}
+
+.newUI .entry .actions {
   contain: layout;
 }
+
 /************ checkbox & select************/
 
 .newUI .checker {
