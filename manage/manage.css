@@ -324,7 +324,7 @@ select {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
-  contain: content;
+  contain: layout;
 }
 /************ checkbox & select************/
 
@@ -459,9 +459,18 @@ select {
   color: hsla(180, 100%, 15%, 1);
 }
 
-.newUI .homepage:not([href=""]) {
-  position: absolute;
-  margin-left: -28px;
+.newUI .style-name:after {
+  text-indent: 1.2rem;
+}
+
+.newUI .actions:after {
+  text-indent: -25px;
+}
+
+.newUI .actions .homepage[href=""] {
+  display: inline-block;
+  visibility: hidden;
+  height: 0;
 }
 
 .newUI .actions {
