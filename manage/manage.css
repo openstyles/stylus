@@ -869,6 +869,10 @@ input[id^="manage.newUI"] {
   width: 100%;
 }
 
+.firefox #sort-select {
+  padding-top: 0;
+}
+
 #search-help, #sorter-help {
   margin: 4px -5px 0 2px;
 }
