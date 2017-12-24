@@ -870,7 +870,7 @@ input[id^="manage.newUI"] {
 }
 
 .firefox #sort-select {
-  padding-top: 0;
+  padding: 0;
 }
 
 #search-help, #sorter-help {
