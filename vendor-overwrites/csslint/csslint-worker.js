@@ -2665,7 +2665,9 @@ Parser.prototype = function() {
                 const value = [];
 
                 const endings = [];
-                let end = /[;!}]/;
+                // a custom property value may end before these characters
+                // that belong to the parent declaration, not to the custom property
+                let end = /[;!})]/;
 
                 readValue:
                 while (!reader.eof()) {
@@ -2684,7 +2686,7 @@ Parser.prototype = function() {
                         case "'":
                             reader.reset();
                             value.pop();
-                            value.push(reader.readString());
+                            value.push(this._tokenStream.readString());
                             continue;
                         case '{':
                             endings.push(end);
@@ -2712,7 +2714,7 @@ Parser.prototype = function() {
                             }
                             end = endings.pop();
                             if (end) continue;
-                            if (c === '}') {
+                            if (c === '}' || c === ')') {
                                 // unget parent }
                                 reader.reset();
                                 value.pop();
