@@ -250,7 +250,6 @@ function createStyleTargetsElement({entry, style}) {
           }
           if (favicon) {
             element.appendChild(document.createElement('img')).dataset.src = favicon;
-            numIcons++;
           }
         }
         element.appendChild(
