@@ -261,7 +261,8 @@ function initHooks() {
   $('#save-button').addEventListener('click', save, false);
   $('#sections-help').addEventListener('click', showSectionHelp, false);
 
-  initLint();
+  // TODO: investigate why FF needs this delay
+  debounce(initLint, FIREFOX ? 100 : 0);
 
   if (!FIREFOX) {
     $$([
