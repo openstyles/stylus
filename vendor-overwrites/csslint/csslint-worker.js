@@ -2546,9 +2546,14 @@ Parser.prototype = function() {
                 if (property !== null) {
 
                     tokenStream.mustMatch(Tokens.COLON);
-                    this._readWhitespace();
 
-                    expr = this._expr();
+                    // whitespace is a part of custom property value
+                    if (property.text.startsWith("--")) {
+                        expr = this._customProperty();
+                    } else {
+                        this._readWhitespace();
+                        expr = this._expr();
+                    }
 
                     //if there's no parts for the value, it's an error
                     if (!expr || expr.length === 0) {
@@ -2653,6 +2658,73 @@ Parser.prototype = function() {
                 }*/
 
                 return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
+            },
+
+            _customProperty: function() {
+                const reader = this._tokenStream._reader;
+                const value = [];
+
+                const endings = [];
+                let end = /[;!}]/;
+
+                readValue:
+                while (!reader.eof()) {
+                    const chunk = reader.readMatch(/([^;!'"{}()[\]/]|\/(?!\*))+/y);
+                    if (chunk) value.push(chunk);
+
+                    reader.mark();
+                    let c = reader.read();
+                    value.push(c);
+
+                    switch (c) {
+                        case '/':
+                            value.push(reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y));
+                            continue;
+                        case '"':
+                        case "'":
+                            reader.reset();
+                            value.pop();
+                            value.push(reader.readString());
+                            continue;
+                        case '{':
+                            endings.push(end);
+                            end = '}';
+                            continue;
+                        case '(':
+                            endings.push(end);
+                            end = ')';
+                            continue;
+                        case '[':
+                            endings.push(end);
+                            end = ']';
+                            continue;
+                        case ';':
+                        case '!':
+                            if (endings.length) continue;
+                            reader.reset();
+                            // fallthrough
+                        case '}':
+                        case ')':
+                        case ']':
+                            if (end instanceof RegExp ? !end.test(c) : c !== end) {
+                                reader.reset();
+                                return null;
+                            }
+                            end = endings.pop();
+                            if (end) continue;
+                            if (c === '}') {
+                                // unget parent }
+                                reader.reset();
+                                value.pop();
+                            }
+                            break readValue;
+                    }
+                }
+                if (!value[0]) return null;
+                const {startCol: col, startLine: line} = this._tokenStream._token;
+                return new PropertyValue([
+                    new PropertyValuePart(value.join(''), line, col),
+                ], line, col);
             },
 
             _term: function(inFunction) {
@@ -6915,6 +6987,14 @@ StringReader.prototype = {
      * @method readMatch
      */
     readMatch: function(matcher) {
+
+        if (matcher.sticky) {
+            matcher.lastIndex = this._cursor;
+            if (matcher.test(this._input)) {
+                return this.readCount(RegExp.lastMatch.length);
+            }
+            return null;
+        }
 
         var source = this._input.substring(this._cursor),
             value = null;
