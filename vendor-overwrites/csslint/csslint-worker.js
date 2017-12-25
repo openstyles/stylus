@@ -363,7 +363,7 @@ Matcher.parse = function(str) {
     seq = function() {
         // seq = mod ( " " mod)*
         var m = [ mod() ];
-        while (reader.readMatch(/^ (?![&|\]])/) !== null) {
+        while (reader.readMatch(/\s(?![&|\]])/y) !== null) {
             m.push(mod());
         }
         return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
@@ -379,11 +379,11 @@ Matcher.parse = function(str) {
             return m.plus();
         } else if (reader.readMatch("#") !== null) {
             return m.hash();
-        } else if (reader.readMatch(/^\{\s*/) !== null) {
-            var min = eat(/^\d+/);
-            eat(/^\s*,\s*/);
-            var max = eat(/^\d+/);
-            eat(/^\s*\}/);
+        } else if (reader.readMatch(/\{\s*/y) !== null) {
+            var min = eat(/\d+/y);
+            eat(/\s*,\s*/y);
+            var max = eat(/\d+/y);
+            eat(/\s*\}/y);
             return m.braces(+min, +max);
         }
         return m;
@@ -395,7 +395,7 @@ Matcher.parse = function(str) {
             eat(" ]");
             return m;
         }
-        return Matcher.fromType(eat(/^[^ ?*+#{]+/));
+        return Matcher.fromType(eat(/[^ ?*+#{]+/y));
     };
     result = expr();
     if (!reader.eof()) {
@@ -2956,7 +2956,7 @@ Parser.prototype = function() {
             _hexcolor: function() {
                 /*
                  * There is a constraint on the color that it must
-                 * have either 3 or 6 hex-digits (i.e., [0-9a-fA-F])
+                 * have either 3,4 or 6,8 hex-digits (i.e., [0-9a-fA-F])
                  * after the "#"; e.g., "#000" is OK, but "#abcd" is not.
                  *
                  * hexcolor
@@ -2969,12 +2969,11 @@ Parser.prototype = function() {
                     color;
 
                 if (tokenStream.match(Tokens.HASH)) {
-
-                    //need to do some validation here
-
                     token = tokenStream.token();
                     color = token.value;
-                    if (!/#[a-f0-9]{3,6}/i.test(color)) {
+                    const len = color.length;
+                    if (len !== 4 && len !== 5 && len !== 7 && len !== 9 ||
+                            !/^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)$/i.test(color)) {
                         throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
                     }
                     this._readWhitespace();
@@ -4191,10 +4190,13 @@ function PropertyValuePart(text, line, col, optionalHint) {
 
     //figure out what type of data it is
 
-    var temp;
+    let temp;
+    const num = parseFloat(text);
+    const isNum = !isNaN(num);
+    const func = text.slice(0, Math.max(0, text.indexOf('('))).toLowerCase();
 
     //it is a measurement?
-    if (/^([+\-]?[\d.]+(?:e\d+)?)([a-z]+)$/i.test(text)) {  //dimension
+    if (isNum && /^([+-]?[\d.]+(?:e[+-]?\d+)?)([a-z]+)$/i.test(text)) {  //dimension
         this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2;
@@ -4251,20 +4253,17 @@ function PropertyValuePart(text, line, col, optionalHint) {
         }
 
     //percentage
-    } else if (text.endsWith('%') && /^([+\-]?[\d.]+(?:e\d+)?)%$/i.test(text)) {
+    } else if (isNum && text.endsWith('%') && !isNaN(Number(text.slice(0, -1)))) {
         this.type = "percentage";
-        this.value = +RegExp.$1;
-    //integer
-    } else if (/^([+\-]?\d+(?:e\d+)?)$/i.test(text)) {
-        this.type = "integer";
-        this.value = +RegExp.$1;
-    //number
-    } else if (/^([+\-]?[\d.]+(?:e\d+)?)$/i.test(text)) {
-        this.type = "number";
-        this.value = +RegExp.$1;
+        this.value = num;
+
+    //integer or number
+    } else if (isNum && !isNaN(Number(text))) {
+        this.type =  text.includes('.') ? "number" : "integer";
+        this.value = num;
 
     //hexcolor
-    } else if (text[0] === '#' && /^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}(?:[a-f\d]{2})?)?)?)\b/i.test(text)) {
+    } else if (text[0] === '#' && /^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)\b/i.test(text)) {
         this.type = "color";
         temp = RegExp.$1;
         if (temp.length <= 4) {
@@ -4282,7 +4281,8 @@ function PropertyValuePart(text, line, col, optionalHint) {
                 this.alpha = parseInt(temp.substr(6, 2), 16);
             }
         }
-    } else if (/^rgba?\(\s*(.*?)\s*\)/i.test(text)) {
+
+    } else if ((func === 'rgb' || func === 'rgba') && /^rgba?\(\s*(.*?)\s*\)/i.test(text)) {
         const str = RegExp.$1;
         const commaSep = str.includes(',');
         let [r, s1, g, s2, b, s3 = '', a] = commaSep ? str.split(/(\s*,\s*)/) : str.split(/(\s+(?:\/\s*)?|\s*\/\s*)/);
@@ -4304,7 +4304,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
                 if (a !== undefined) this.alpha = a;
             }
         }
-    } else if (/hsla?\(\s*(.*?)\s*\)/i.test(text)) {
+    } else if ((func === 'hsl' || func === 'hsla') && /hsla?\(\s*(.*?)\s*\)/i.test(text)) {
         const str = RegExp.$1;
         const commaSep = str.includes(',');
         let [h, s1, s, s2, l, s3 = '', a] = commaSep ? str.split(/(\s*,\s*)/) : str.split(/(\s+(?:\/\s*)?|\s*\/\s*)/);
@@ -4326,29 +4326,36 @@ function PropertyValuePart(text, line, col, optionalHint) {
                 if (a !== undefined) this.alpha = a;
             }
         }
-    } else if (/^url\(("([^\\"]|\\.)*")\)/i.test(text)) { //URI
+
+    } else if (func === 'url' && /^url\(("([^\\"]|\\.)*")\)/i.test(text)) { //URI
         // generated by TokenStream.readURI, so always double-quoted.
         this.type   = "uri";
         this.uri    = PropertyValuePart.parseString(RegExp.$1);
-    } else if (/^([^(]+)\(/i.test(text)) {
+
+    } else if (func && /^([^(]+)\(/i.test(text)) {
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
-    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {    //double-quoted string
+
+    } else if (text[0] === '"' && /^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {    //double-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {    //single-quoted string
+
+    } else if (text[0] === "'" && /^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {    //single-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (Colors[text.toLowerCase()]) {  //named color
+
+    } else if (!isNum && !func && Colors[text.toLowerCase()]) {  //named color
         this.type   = "color";
         temp        = Colors[text.toLowerCase()].substring(1);
         this.red    = parseInt(temp.substring(0, 2), 16);
         this.green  = parseInt(temp.substring(2, 4), 16);
         this.blue   = parseInt(temp.substring(4, 6), 16);
+
     } else if (/^[,\/]$/.test(text)) {
         this.type   = "operator";
         this.value  = text;
+
     } else if (/^-?[a-z_\u00A0-\uFFFF][a-z0-9\-_\u00A0-\uFFFF]*$/i.test(text)) {
         this.type   = "identifier";
         this.value  = text;
@@ -4737,31 +4744,36 @@ var h = /^[0-9a-fA-F]$/,
 
 
 function isHexDigit(c) {
-    return c !== null && h.test(c);
+    return c !== null && (c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F');
 }
 
 function isDigit(c) {
-    return c !== null && /\d/.test(c);
+    return c !== null && c >= '0' && c <= '9';
 }
 
 function isWhitespace(c) {
-    return c !== null && whitespace.test(c);
+    return c !== null && (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r');
 }
 
 function isNewLine(c) {
-    return c !== null && nl.test(c);
+    return c !== null && (c === '\n' || c === '\r\n' || c === '\r' || c === '\f');
 }
 
 function isNameStart(c) {
-    return c !== null && /[a-z_\u00A0-\uFFFF\\]/i.test(c);
+    return c !== null && (
+        c >= 'a' && c <= 'z' ||
+        c >= 'A' && c <= 'Z' ||
+        c === '_' ||
+        c === '\\' ||
+        c >= '\u00A0' && c <= '\uFFFF');
 }
 
 function isNameChar(c) {
-    return c !== null && (isNameStart(c) || /[0-9\-\\]/.test(c));
+    return c !== null && (c === '-' || c >= '0' && c <= '9' || isNameStart(c));
 }
 
 function isIdentStart(c) {
-    return c !== null && (isNameStart(c) || /\-\\/.test(c));
+    return c !== null && (c === '-' || isNameStart(c));
 }
 
 function mix(receiver, supplier) {
@@ -5587,8 +5599,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
     readNumber: function(first) {
         const tail = this._reader.readMatch(
-            first === "." ? /^\d+(e[+-]?\d+)?/ :
-                /^(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/);
+            first === "." ? /\d+(e[+-]?\d+)?/y :
+                /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/y);
         return first + (tail || '');
     },
 
@@ -5736,28 +5748,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     readComment: function(first) {
-        var reader  = this._reader,
-            comment = first || "",
-            c       = reader.read();
-
-        if (c === "*") {
-            while (c) {
-                comment += c;
-
-                //look for end of comment
-                if (comment.length > 2 && c === "*" && reader.peek() === "/") {
-                    comment += reader.read();
-                    break;
-                }
-
-                c = reader.read();
-            }
-
-            return comment;
-        } else {
-            return "";
-        }
-
+        return first +
+            this._reader.readCount(first ? 1 : 2) +
+            this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y);
     }
 });
 
@@ -6962,15 +6955,15 @@ StringReader.prototype = {
      */
     readWhile: function(filter) {
 
-        var buffer = "",
+        var buffer = [],
             c = this.peek();
 
         while (c !== null && filter(c)) {
-            buffer += this.read();
+            buffer.push(this.read());
             c = this.peek();
         }
 
-        return buffer;
+        return buffer.join('');
 
     },
 
@@ -6996,21 +6989,17 @@ StringReader.prototype = {
             return null;
         }
 
-        var source = this._input.substring(this._cursor),
-            value = null;
-
-        // if it's a string, just do a straight match
         if (typeof matcher === "string") {
-            if (source.slice(0, matcher.length) === matcher) {
-                value = this.readCount(matcher.length);
+            if (this._input.substr(this._cursor, matcher.length) === matcher) {
+                return this.readCount(matcher.length);
             }
         } else if (matcher instanceof RegExp) {
-            if (matcher.test(source)) {
-                value = this.readCount(RegExp.lastMatch.length);
+            if (matcher.test(this._input.substr(this._cursor))) {
+                return this.readCount(RegExp.lastMatch.length);
             }
         }
 
-        return value;
+        return null;
     },
 
 
@@ -7022,13 +7011,16 @@ StringReader.prototype = {
      * @method readCount
      */
     readCount: function(count) {
-        var buffer = "";
-
-        while (count--) {
-            buffer += this.read();
+        const len = this._input.length;
+        if (this._cursor >= len) return null;
+        const text = this._input.substr(this._cursor, count);
+        this._cursor = Math.min(this._cursor + count, len);
+        let prev = -1;
+        for (let i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) {
+            this._line++;
         }
-
-        return buffer;
+        this._col = prev < 0 ? this._col + count : count - prev;
+        return text;
     }
 
 };
