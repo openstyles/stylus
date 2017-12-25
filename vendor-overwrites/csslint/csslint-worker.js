@@ -4817,14 +4817,26 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var c,
             reader = this._reader,
             token   = null,
-            startLine   = reader.getLine(),
-            startCol    = reader.getCol();
+            startLine   = reader._line,
+            startCol    = reader._col;
 
         c = reader.read();
 
 
         while (c) {
             switch (c) {
+
+                /*
+                 * Potential tokens:
+                 * - S
+                 */
+                case ' ':
+                case '\n':
+                case '\r':
+                case '\t':
+                case '\f':
+                    token = this.whitespaceToken(c, startLine, startCol);
+                    break;
 
                 /*
                  * Potential tokens:
@@ -4999,14 +5011,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                      */
                     if (isDigit(c)) {
                         token = this.numberToken(c, startLine, startCol);
-                    } else
-
-                    /*
-                     * Potential tokens:
-                     * - S
-                     */
-                    if (isWhitespace(c)) {
-                        token = this.whitespaceToken(c, startLine, startCol);
                     } else
 
                     /*
@@ -5362,27 +5366,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method notToken
      */
     notOrAnyToken: function(first, startLine, startCol) {
-        var reader      = this._reader,
-            text        = first;
-
-        reader.mark();
-        text += reader.readCount(4);
-
-        if (text.toLowerCase() === ":not(") {
-            return this.createToken(Tokens.NOT, text, startLine, startCol);
+        var reader      = this._reader;
+        var func = reader.readMatch(/not\(|(-(moz|webkit)-)?any\(/iy);
+        if (func) {
+            return this.createToken(func[1] === 'n' || func[1] === 'N' ? Tokens.NOT : Tokens.ANY,
+                first + func, startLine, startCol);
         }
-        if (text.toLowerCase() === ":any(") {
-            return this.createToken(Tokens.ANY, text, startLine, startCol);
-        }
-        text += reader.readCount(5);
-        if (text.toLowerCase() === ":-moz-any(") {
-            return this.createToken(Tokens.ANY, text, startLine, startCol);
-        }
-        text += reader.readCount(3);
-        if (text.toLowerCase() === ":-webkit-any(") {
-            return this.createToken(Tokens.ANY, text, startLine, startCol);
-        }
-        reader.reset();
         return this.charToken(first, startLine, startCol);
     },
 
@@ -5587,18 +5576,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     readWhitespace: function() {
-        var reader  = this._reader,
-            whitespace = "",
-            c       = reader.peek();
-
-        while (isWhitespace(c)) {
-            reader.read();
-            whitespace += c;
-            c = reader.peek();
-        }
-
-        return whitespace;
+        return this._reader.readMatch(/\s*/);
     },
+
     readNumber: function(first) {
         const tail = this._reader.readMatch(
             first === "." ? /\d+(e[+-]?\d+)?/y :
@@ -5685,25 +5665,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
     readName: function(first) {
         var reader  = this._reader,
-            ident   = first || "",
-            c;
+            ident   = [first || ''];
 
-        for (c = reader.peek(); c; c = reader.peek()) {
-            if (c === "\\") {
-                if (/^[^\r\n\f]$/.test(reader.peek(2))) {
-                    ident += this.readEscape(reader.read(), true);
-                } else {
-                    // Bad escape sequence.
-                    break;
-                }
-            } else if (isNameChar(c)) {
-                ident += reader.read();
+        do {
+            var chunk = reader.readMatch(/[-_\da-zA-Z\u00A0-\uFFFF]*/y);
+            ident.push(chunk)
+            reader.mark();
+            var c = reader.read();
+            if (c === "\\" && /^[^\r\n\f]$/.test(reader.peek())) {
+                ident.push(this.readEscape(c, true));
             } else {
+                reader.reset();
                 break;
             }
-        }
+        } while (true);
 
-        return ident;
+        return ident.length > 2 ? ident.join('') : ident.length > 1 ? ident[0] + ident[1] : ident[0];
     },
 
     readEscape: function(first, unescape) {
@@ -6715,10 +6692,10 @@ EventTarget.prototype = {
             throw new Error("Event object missing 'type' property.");
         }
 
-        if (this._listeners[event.type]) {
-
+        var listeners = this._listeners[event.type];
+        if (listeners) {
             //create a copy of the array and use that so listeners can't chane
-            var listeners = this._listeners[event.type].concat();
+            listeners = listeners.slice();
             for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
@@ -7280,15 +7257,10 @@ TokenStreamBase.prototype = {
      * @method match
      */
     match: function(tokenTypes, channel) {
-
-        //always convert to an array, makes things easier
-        if (!(tokenTypes instanceof Array)) {
-            tokenTypes = [tokenTypes];
-        }
-
+        var isArray = Array.isArray(tokenTypes);
         do {
             var tt = this.get(channel);
-            if (tokenTypes.includes(tt)) {
+            if (isArray ? tokenTypes.includes(tt) : tt === tokenTypes) {
                 return true;
             }
         } while (tt === this._tokenData.COMMENT && this.LA(0) !== 0);
@@ -7308,17 +7280,9 @@ TokenStreamBase.prototype = {
      * @method mustMatch
      */
     mustMatch: function(tokenTypes) {
-
-        var token;
-
-        //always convert to an array, makes things easier
-        if (!(tokenTypes instanceof Array)) {
-            tokenTypes = [tokenTypes];
-        }
-
         if (!this.match(tokenTypes)) {
-            token = this.LT(1);
-            const info = this._tokenData[tokenTypes[0]];
+            var token = this.LT(1);
+            const info = this._tokenData[Array.isArray(tokenTypes) ? tokenTypes[0] : tokenTypes];
             throw new SyntaxError("Expected " + (info.text || info.name) +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
