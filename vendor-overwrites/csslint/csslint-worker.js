@@ -3820,8 +3820,8 @@ var Properties = module.exports = {
     "pause"                         : 1,
     "pause-after"                   : 1,
     "pause-before"                  : 1,
-    "perspective"                   : 1,
-    "perspective-origin"            : 1,
+    "perspective"                   : "none | <length>",
+    "perspective-origin"            : "<position>",
     "phonemes"                      : 1,
     "pitch"                         : 1,
     "pitch-range"                   : 1,
@@ -3845,6 +3845,7 @@ var Properties = module.exports = {
     "rest-before"                   : 1,
     "richness"                      : 1,
     "right"                         : "<margin-width>",
+    "rotate"                        : "none | <number>{3}? <angle>",
     "rotation"                      : 1,
     "rotation-point"                : 1,
     "row-gap"                       : "<row-gap>",
@@ -3854,6 +3855,7 @@ var Properties = module.exports = {
     "ruby-span"                     : 1,
 
     //S
+    "scale"                         : "none | <number>{1,3}",
     "shape-rendering"               : "auto | optimizeSpeed | crispEdges | geometricPrecision",
     "size"                          : 1,
     "speak"                         : "normal | none | spell-out",
@@ -3905,12 +3907,13 @@ var Properties = module.exports = {
     "transform"                     : "none | <transform-function>+",
     "transform-box"                 : "border-box | fill-box | view-box",
     "transform-origin"              : "<transform-origin>",
-    "transform-style"               : 1,
+    "transform-style"               : "auto | flat | preserve-3d",
     "transition"                    : 1,
     "transition-delay"              : 1,
     "transition-duration"           : 1,
     "transition-property"           : 1,
     "transition-timing-function"    : 1,
+    "translate"                     : "none | <length-percentage> [ <length-percentage> <length>? ]?",
 
     //U
     "unicode-range"                  : "<unicode-range>#",
@@ -6583,13 +6586,9 @@ copy(ValidationTypes, {
         "<position>":
             // Because our `alt` combinator is ordered, we need to test these
             // in order from longest possible match to shortest.
-            "[ center | [ left | right ] [ <percentage> | <length> ]? ] && " +
-            "[ center | [ top | bottom ] [ <percentage> | <length> ]? ]" +
-            " | " +
-            "[ left | center | right | <percentage> | <length> ] " +
-            "[ top | center | bottom | <percentage> | <length> ]" +
-            " | " +
-            "[ left | center | right | top | bottom | <percentage> | <length> ]",
+            "[ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ] | " +
+            "[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]? | " +
+            "[ left | center | right ] || [ top | center | bottom ]",
 
         "<repeat-style>":
             "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}",
