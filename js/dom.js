@@ -46,7 +46,7 @@ $$.remove = (selector, base = document) => {
     }
   };
   // enqueue after DOMContentLoaded/load events
-  setTimeout(addTooltipsToEllipsized);
+  setTimeout(addTooltipsToEllipsized, 500);
   // throttle on continuous resizing
   let timer;
   window.addEventListener('resize', () => {
