@@ -3861,11 +3861,11 @@ var Properties = module.exports = {
     "transform-box"                 : "border-box | fill-box | view-box",
     "transform-origin"              : "<transform-origin>",
     "transform-style"               : "auto | flat | preserve-3d",
-    "transition"                    : 1,
-    "transition-delay"              : 1,
-    "transition-duration"           : 1,
-    "transition-property"           : 1,
-    "transition-timing-function"    : 1,
+    "transition"                    : "<transition>#",
+    "transition-delay"              : "<time>#",
+    "transition-duration"           : "<time>#",
+    "transition-property"           : "none | [ all | <ident> ]#",
+    "transition-timing-function"    : "<single-timing-function>#",
     "translate"                     : "none | <length-percentage> [ <length-percentage> <length>? ]?",
 
     //U
@@ -6197,6 +6197,16 @@ copy(ValidationTypes, {
             "min-content | -moz-min-content | -webkit-min-content | " +
             "fit-content | -moz-fit-content | -webkit-fit-content",
 
+        "<cubic-bezier>": function(part) {
+            return part.type === 'function' &&
+                /^cubic-bezier$/i.test(part.name) &&
+                part.expr && part.expr.parts.length === 7 &&
+                part.expr.parts.every((p, i) => i % 2 ? p.text === ',' : this['<number>'](p));
+        },
+
+        "<cubic-bezier-timing-function>":
+            "ease | ease-in | ease-out | ease-in-out | <cubic-bezier>",
+
         "<feature-tag-value>": function(part) {
             return part.type === "function" && /^[A-Z0-9]{4}$/i.test(part);
         },
@@ -6240,6 +6250,13 @@ copy(ValidationTypes, {
         "<font-weight>":
             "normal | bold | bolder | lighter | " +
             "100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900",
+
+        "<frames-timing-function>": function({type, name, expr}) {
+            return type === 'function' &&
+                /^frames$/i.test(name) &&
+                expr.parts.length === 1 &&
+                this['<integer>'](expr.parts[0]);
+        },
 
         "<generic-family>":
             "serif | sans-serif | cursive | fantasy | monospace",
@@ -6344,6 +6361,19 @@ copy(ValidationTypes, {
             return this["<ident>"](part) &&
                 /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
                 !/^(none|unset|initial|inherit)$/i.test(part);
+        },
+
+        "<step-timing-function>": "step-start | step-end | <steps>",
+
+        "<steps>": function({type, name, expr}) {
+            return type === 'function' &&
+                /^steps$/i.test(name) &&
+                expr.parts.length &&
+                this['<integer>'](expr.parts[0]) && (expr.parts.length === 1 ||
+                    expr.parts.length === 3 &&
+                    expr.parts[1].text === ',' &&
+                    /^(start|end)$/i.test(expr.parts[2])
+                );
         },
 
         "<string>": function(part) {
@@ -6551,6 +6581,9 @@ copy(ValidationTypes, {
         Matcher.many([true /* length is required */],
                      Matcher.cast("<length>").braces(2, 4), "inset", "<color>"),
 
+        "<single-timing-function>":
+            "linear | <cubic-bezier-timing-function> | <step-timing-function> | <frames-timing-function>",
+
         "<text-decoration-color>":
            "<color>",
 
@@ -6564,6 +6597,9 @@ copy(ValidationTypes, {
             "[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] <length>? | " +
             "[ left | center | right | top | bottom | <length-percentage> ] | " +
             "[ [ center | left | right ] && [ center | top | bottom ] ] <length>?",
+
+        "<transition>":
+            "[ none | [ all | <ident> ]# ] || <time> || <single-timing-function> || <time>",
 
         "<will-change>":
             "auto | <animateable-feature>#",
