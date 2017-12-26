@@ -19,13 +19,29 @@
 		"message": "Eksportuj style",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Sortuj zawartość",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Tylko style Usercss",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "Wybierz rodzaj sortowania, który zostanie zastosowany do zainstalowanych wpisów z listy sortowania. Ustawienie domyślne stosuje sortowanie rosnące (od A do Z) do tytułów wpisów. Sortowania w grupie \"Tytuł malejąco\" zastosują sortowanie malejące (od Z do A) do tytułu.\nIstnieją inne ustawienia, które umożliwiają sortowanie wpisów według wielu kryteriów. Pomyśl o tym jako o sortowaniu tabeli z wieloma kolumnami, a każda kategoria w zaznaczeniu (między znakami plus) reprezentuje kolumnę lub grupę.\nNa przykład, jeśli ustawienie ma wartość \"Włączone (pierwsze) + tytuł\", wpisy zostaną uporządkowane, tak aby wszystkie włączone pozycje zostały posortowane na początek listy, a następnie do każdego z nich zostanie dodane oddzielnie sortowanie tytułu rosnąco (od A do Z) włączonych i wyłączonych wpisów.",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "Tytuł rosnąco",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "najpierw najstarsze",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Naciśnij Alt-Enter, aby przełączyć stan włączenia lub wyłączenia i zapisać styl",
@@ -142,6 +158,10 @@
 	"search": {
 		"message": "Szukaj",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Włączone",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "Wyszarzone",
@@ -325,6 +345,10 @@
 	"unreachableFileHint": {
 		"message": "Stylus może uzyskać dostęp do adresów URL file:// tylko po włączeniu odpowiedniego pola wyboru rozszerzenia Stylus na stronie chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Wybierz sortowanie do zastosowania w zainstalowanych stylach",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Wyłącz",
@@ -569,6 +593,10 @@
 		"message": "Dotyczy",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Tytuł malejąco",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Opcje",
 		"description": "Go to Options UI"
@@ -686,6 +714,10 @@
 		"message": "Ikona paska narzędzi",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Tytuł",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Aktualizacja zakończona.",
 		"description": "Text that displays when an update completed"
@@ -713,6 +745,10 @@
 	"searchResultRating": {
 		"message": "Ocena",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Nieznane",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift + kliknięcie lub kliknięcie prawym przyciskiem otwiera menedżera ze stylami obowiązującymi dla bieżącej witryny",
@@ -924,6 +960,10 @@
 		"message": "Podczas używania bazy danych Stylus wystąpił błąd. Czy chcesz odwiedzić stronę internetową z możliwymi rozwiązaniami?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Data zainstalowania",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Zaawansowane",
 		"description": ""
@@ -955,6 +995,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Nieprawidłowe regexpy pominięto",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Data aktualizacji",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Tylko zewnętrzne style",
@@ -1011,6 +1055,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Emblemat na ikonie paska narzędzi",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "najpierw najnowsze",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Poprzednia strona",

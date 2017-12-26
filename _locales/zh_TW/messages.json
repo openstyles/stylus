@@ -634,6 +634,10 @@
 		"message": "匯入樣式已完成",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "要允許存取，開啟 <about:config>，在清單上點選右鍵，點選「新增」，然後再點選「布林」，貼上 <privacy.resistFingerprinting.block_mozAddonManager> 並點選確定→<true>→確定，然後重新整理 <addons.mozilla.org> 頁面。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
@@ -829,6 +833,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "在輸入時自動完成",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox 禁止存取頁面。",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint 不支援 $preprocessorname$ 預處理器",
@@ -1089,6 +1097,10 @@
 	"manageNewUI": {
 		"message": "新的管理介面佈局",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "僅 Firefox 59 或更新版本才能讓您設定允許 WebExtensions 在如同這個一樣的有 CSP 保護的頁面上新增樣式元素。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "匯入已被復原",

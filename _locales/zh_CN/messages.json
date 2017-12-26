@@ -497,6 +497,10 @@
 		"message": "切换样式",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "已找到",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "放弃当前样式的内容，使用已导入样式覆盖它",
 		"description": "Label for the button to import and overwrite current style"
@@ -605,6 +609,10 @@
 	"optionsCheckUpdate": {
 		"message": "检查所有样式更新",
 		"description": ""
+	},
+	"clickToUninstall": {
+		"message": "点击卸载",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
 	},
 	"filteredStyles": {
 		"message": "已显示 $numShown$ 个，总共 $numTotal$ 个",
@@ -844,6 +852,10 @@
 		"message": "反馈",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "后退",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "只显示未启用的样式",
 		"description": "Checkbox to show only disabled styles"
@@ -892,6 +904,10 @@
 		"message": "覆盖样式",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"genericNext": {
+		"message": "继续",
+		"description": "Used in various places to select/perform the next step/action"
+	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "可以通过从浏览器窗口中分离编辑器分页来启用，\n也可以通过单独的编辑器分页附加到其他窗口中来禁用。",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -927,6 +943,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "忽略无效的正则表达式",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "更新日期",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "只显示外部安装的样式",
@@ -1033,6 +1053,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "大小写敏感",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "无法与压缩过的CSS一起运作",

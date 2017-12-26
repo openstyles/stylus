@@ -19,13 +19,29 @@
 		"message": "Экспорт стилей",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Сортировка",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Только Usercss стили",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "Эта настройка позволяет выбрать порядок сортировки списка стилей. По умолчанию названия выводятся в алфавитном порядке. Можно выбрать обратный порядок.\nТакже можно выбрать составной критерий сортировки – отдельные критерии разделены знаком \"+\" и ведут себя примерно как колонки в таблице.\nНапример, при выборе «Активные + Имя» все активные стили будут сгруппированы вверху списка, неактивные внизу, а внутри каждой группы строки будут отсортированы по имени.",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "Название в алфавитном порядке",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Интервал обновления стилей, в часах (укажите 0 для выключения)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "старые сверху",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Нажмите Alt-Enter чтобы включить/выключить стиль и сохранить его.",
@@ -146,6 +162,10 @@
 	"search": {
 		"message": "Искать",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Активные",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "Обесцвечивать",
@@ -329,6 +349,10 @@
 	"unreachableFileHint": {
 		"message": "Доступ к адресам file:// возможен только если включить соответствующую опцию для Stylus на странице chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Порядок сортировки списка стилей",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Отключить",
@@ -573,6 +597,10 @@
 		"message": "Применить к:",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Название в обратном порядке",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Настройки",
 		"description": "Go to Options UI"
@@ -690,6 +718,10 @@
 		"message": "Значок в панели",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Имя",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Обновление завершено.",
 		"description": "Text that displays when an update completed"
@@ -717,6 +749,10 @@
 	"searchResultRating": {
 		"message": "Рейтинг",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Неизвестно",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift-клик или правый клик откроет менеджер с стилями только для этого сайта.",
@@ -924,6 +960,10 @@
 		"message": "Возникла ошибка доступа к базе данных Stylus. Хотите перейти на страницу с возможными способами решения?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Дата установки",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Другое",
 		"description": ""
@@ -955,6 +995,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Пропущены некомпилируемые регулярки",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Дата обновления",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Только сторонние стили",
@@ -1011,6 +1055,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Бейдж на пиктограмме в тулбаре",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "новые сверху",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Предыдущая страница",

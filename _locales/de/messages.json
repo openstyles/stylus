@@ -19,13 +19,29 @@
 		"message": "Styles exportieren",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Inhalte sortieren",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Nur Usercss Styles",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "Wähle die anzuwendende Sortierart aus dem Dropdown-Menü aus. Die Standardeinstellung sortiert aufsteigend nach Name des Styles (A bis Z). Innerhalb der \"Name absteigend\"-Gruppe wird von Z bis A sortiert.\nEs gibt andere Voreinstellungen, die es erlauben, Einträge nach mehreren Kriterien zu sortieren. Stelle es dir vor wie bei einer Tabellensortierung mit mehreren Spalten. Jede Kategorie (vor bzw. nach Pluszeichen) stellt dabei eine Spalte dar.\nIst die Einstellung beispielsweise \"Aktiviert (zuerst) + Name\", dann werden die Einträge so sortiert, dass alle aktivierten Styles zuerst stehen (von A bis Z) und dann alle deaktivierten Styles (wieder von A beginnend bis Z).",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "Name aufsteigend",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Userstyle Updateintervall in Stunden (0 zum Deaktivieren)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "älteste zuerst",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Drücke Alt-Enter, um den Style zu aktivieren / deaktivieren und gleichzeitig zu speichern.",
@@ -142,6 +158,10 @@
 	"search": {
 		"message": "Suche",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Aktiviert",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "Ausgegraut",
@@ -321,6 +341,10 @@
 	"unreachableFileHint": {
 		"message": "Stylus kann nur auf das file:// Protokoll in der URL zugreifen, wenn dies in den Einstellungen der Erweiterung unter chrome://extensions festgelegt wurde.",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Wähle eine Sortierreihenfolge für die installierten Styles",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Deaktivieren",
@@ -557,6 +581,10 @@
 		"message": "Gilt für",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Name absteigend",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Optionen",
 		"description": "Go to Options UI"
@@ -670,6 +698,10 @@
 		"message": "Symbolleisten-Icon",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Name",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Aktualisierung abgeschlossen.",
 		"description": "Text that displays when an update completed"
@@ -697,6 +729,10 @@
 	"searchResultRating": {
 		"message": "Bewertung",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Unbekannt",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift+Klick oder Rechtsklick öffnet den Stylemanager mit Filter für Styles der aktuellen Seite",
@@ -892,6 +928,10 @@
 		"message": "Ein Fehler ist beim Verwenden der Stylus-Datenbank aufgetreten. Willst Du eine Webseite mit möglichen Lösungen besuchen?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Installationsdatum",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Erweitert",
 		"description": ""
@@ -919,6 +959,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Ungültige Reguläre Ausdrücke übersprungen",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Updatedatum",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Nur externe Styles",
@@ -975,6 +1019,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Badge auf dem Toolbar-Icon",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "neueste zuerst",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Vorherige Seite",

@@ -19,13 +19,29 @@
 		"message": "スタイルをエクスポート",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "コンテンツの並べ替え",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Usercssスタイルのみ",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "インストール済みの項目の並べ替え方法を、ドロップダウンリストで選択してください。デフォルト設定は、タイトルの昇順（AからZへ）になります。「タイトル降順」を選択すると、タイトルの降順（ZからAへ）に並べ替えます。\n複数の基準で項目の並べ替えを行う他の設定もあります。これは、複数の列を持つ表の並べ替えと考えられ、（プラス記号の間の）選択された各種別は、列またはグループを表します。\n例えば、「有効（先頭）＋タイトル」という設定の場合、すべての有効な項目がリストの先頭に並べられ、次にタイトル昇順（AからZへ）で有効／無効な項目がそれぞれ並べられます。",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "タイトル昇順",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "古い順",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Alt-Enterを押すと、有効/無効の状態を切り替え、スタイルを保存します",
@@ -142,6 +158,10 @@
 	"search": {
 		"message": "検索",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "有効",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "グレー表示",
@@ -325,6 +345,10 @@
 	"unreachableFileHint": {
 		"message": "chrome://extensions ページでStylus拡張機能の当該チェックボックスを有効にした場合にのみ、Stylusは file:// URLにアクセスできます。",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "インストール済みスタイルの並べ替え",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "無効化",
@@ -569,6 +593,10 @@
 		"message": "適用先",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "タイトル降順",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "オプション",
 		"description": "Go to Options UI"
@@ -682,6 +710,10 @@
 		"message": "ツールバーアイコン",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "タイトル",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "更新が完了しました。",
 		"description": "Text that displays when an update completed"
@@ -709,6 +741,10 @@
 	"searchResultRating": {
 		"message": "評価",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "不明",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "シフトを押しながらクリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます",
@@ -916,6 +952,10 @@
 		"message": "Stylusのデータベース使用中にエラーが発生しました。考えられる解決策を記載したWebページを開きますか？",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "インストール日",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "上級者向け",
 		"description": ""
@@ -943,6 +983,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "無効な正規表現がスキップされました",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "更新日",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "外部取得スタイルのみ",
@@ -999,6 +1043,10 @@
 	"optionsCustomizeBadge": {
 		"message": "ツールバーアイコンのバッジ",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "新しい順",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "前ページ",
