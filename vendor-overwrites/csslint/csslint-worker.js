@@ -3463,15 +3463,15 @@ var Properties = module.exports = {
     "all"                           : "initial | inherit | unset",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
     "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
-    "animation"                     : 1,
+    "animation"                     : "[ <time> || <single-timing-function> || <time> || [ infinite | <number> ] || <single-animation-direction> || <single-animation-fill-mode> || [ running | paused ] || [ none | <ident> | <string> ] ]#",
     "animation-delay"               : "<time>#",
     "animation-direction"           : "<single-animation-direction>#",
     "animation-duration"            : "<time>#",
-    "animation-fill-mode"           : "[ none | forwards | backwards | both ]#",
+    "animation-fill-mode"           : "<single-animation-fill-mode>#",
     "animation-iteration-count"     : "[ <number> | infinite ]#",
     "animation-name"                : "[ none | <single-animation-name> ]#",
     "animation-play-state"          : "[ running | paused ]#",
-    "animation-timing-function"     : 1,
+    "animation-timing-function"     : "<single-timing-function>#",
 
     "appearance"                    : "none | auto",
     "-moz-appearance"               : "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
@@ -3483,7 +3483,7 @@ var Properties = module.exports = {
 
     //B
     "backface-visibility"           : "visible | hidden",
-    "background"                    : 1,
+    "background"                    : "[ <bg-layer> , ]* [ <color> || <bg-layer> ]",
     "background-attachment"         : "<attachment>#",
     "background-blend-mode"         : "<blend-mode>",
     "background-clip"               : "<box>#",
@@ -3510,12 +3510,12 @@ var Properties = module.exports = {
     "border-bottom-width"           : "<border-width>",
     "border-collapse"               : "collapse | separate",
     "border-color"                  : "<color>{1,4}",
-    "border-image"                  : 1,
-    "border-image-outset"           : "[ <length> | <number> ]{1,4}",
-    "border-image-repeat"           : "[ stretch | repeat | round | space ]{1,2}",
+    "border-image"                  : "[ none | <image> ] || <border-image-slice> [ / <border-image-width> | / <border-image-width>? / <border-image-outset> ]? || <border-image-repeat>",
+    "border-image-outset"           : "<border-image-outset>",
+    "border-image-repeat"           : "<border-image-repeat>",
     "border-image-slice"            : "<border-image-slice>",
     "border-image-source"           : "<image> | none",
-    "border-image-width"            : "[ <length> | <percentage> | <number> | auto ]{1,4}",
+    "border-image-width"            : "<border-image-width>",
     "border-left"                   : "<border-width> || <border-style> || <color>",
     "border-left-color"             : "<color>",
     "border-left-style"             : "<border-style>",
@@ -3562,6 +3562,7 @@ var Properties = module.exports = {
     "break-inside"                  : "auto | avoid | avoid-page | avoid-column",
 
     //C
+    "caret-color"                   : "auto | <color>",
     "caption-side"                  : "top | bottom",
     "clear"                         : "none | right | left | both",
     "clip"                          : "<shape> | auto",
@@ -3589,7 +3590,7 @@ var Properties = module.exports = {
     "cue"                           : "cue-after | cue-before",
     "cue-after"                     : 1,
     "cue-before"                    : 1,
-    "cursor"                        : 1,
+    "cursor"                        : "[ <uri> [ <number> <number> ]? , ]* [ auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | grab | grabbing | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out ]",
 
     //D
     "direction"                     : "ltr | rtl",
@@ -3850,9 +3851,9 @@ var Properties = module.exports = {
     "text-indent"                   : "<length> | <percentage>",
     "text-justify"                  : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
     "text-outline"                  : 1,
-    "text-overflow"                 : 1,
+    "text-overflow"                 : "clip | ellipsis",
     "text-rendering"                : "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
-    "text-shadow"                   : 1,
+    "text-shadow"                   : "none | [ [ <color> && <length>{2,3} ] | <length>{2,3} ]#",
     "text-transform"                : "capitalize | uppercase | lowercase | none",
     "text-wrap"                     : "normal | none | avoid",
     "top"                           : "<margin-width>",
@@ -6357,6 +6358,9 @@ copy(ValidationTypes, {
         "<single-animation-direction>":
             "normal | reverse | alternate | alternate-reverse",
 
+        "<single-animation-fill-mode>":
+            "none | forwards | backwards | both",
+
         "<single-animation-name>": function(part) {
             return this["<ident>"](part) &&
                 /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
@@ -6442,11 +6446,18 @@ copy(ValidationTypes, {
 
         "<baseline-position>": "[ first | last ]? baseline",
 
-        "<bg-position>": "<position>#",
+        "<bg-layer>": "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box> || <box>",
+
+        "<bg-position>":
+            "[ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] | " +
+            "[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | " +
+            "[ left | center | right | top | bottom | <length-percentage> ]",
 
         "<bg-size>":
             "[ <length> | <percentage> | auto ]{1,2} | cover | contain",
 
+        "<border-image-outset>": "[ <length> | <number> ]{1,4}",
+        "<border-image-repeat>": "[ stretch | repeat | round | space ]{1,2}",
         "<border-image-slice>":
         // [<number> | <percentage>]{1,4} && fill?
         // *but* fill can appear between any of the numbers
@@ -6456,7 +6467,7 @@ copy(ValidationTypes, {
                      Matcher.cast("<nonnegative-number-or-percentage>"),
                      Matcher.cast("<nonnegative-number-or-percentage>"),
                      "fill"),
-
+        "<border-image-width>": "[ <length> | <percentage> | <number> | auto ]{1,4}",
         "<border-radius>":
             "<nonnegative-length-or-percentage>{1,4} " +
             "[ / <nonnegative-length-or-percentage>{1,4} ]?",
