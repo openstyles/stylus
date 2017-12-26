@@ -118,6 +118,7 @@ function showStyles(styles = []) {
     return info;
   });
   let index = 0;
+  let firstRun = true;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
@@ -139,12 +140,14 @@ function showStyles(styles = []) {
       renderBin.appendChild(createStyleElement(sorted[index++]));
     }
     filterAndAppend({container: renderBin});
-    if (newUI.enabled && newUI.favicons) {
-      debounce(handleEvent.loadFavicons);
-    }
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
+      if (firstRun) setTimeout(recreateStyleTargets, 0, {styles, iconsOnly: true});
+      firstRun = false;
       return;
+    }
+    if (newUI.enabled && newUI.favicons) {
+      setTimeout(recreateStyleTargets, 0, {iconsOnly: true});
     }
     if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
@@ -154,7 +157,7 @@ function showStyles(styles = []) {
       delete sessionStorage.justEditedStyleId;
       if (entry) {
         animateElement(entry);
-        scrollElementIntoView(entry);
+        requestAnimationFrame(() => scrollElementIntoView(entry));
       }
     }
   }
@@ -218,9 +221,10 @@ function createStyleElement({style, name, index}) {
 }
 
 
-function createStyleTargetsElement({entry, style}) {
+function createStyleTargetsElement({entry, style, iconsOnly}) {
   const parts = createStyleElement.parts;
-  const targets = parts.targets.cloneNode(true);
+  const entryTargets = $('.targets', entry);
+  const targets = iconsOnly ? entryTargets : parts.targets.cloneNode(true);
   let container = targets;
   let numTargets = 0;
   const displayed = new Set();
@@ -231,14 +235,14 @@ function createStyleTargetsElement({entry, style}) {
           continue;
         }
         displayed.add(targetValue);
-        const element = template.appliesToTarget.cloneNode(true);
+        const element = iconsOnly ? targets.children[numTargets] : template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets === 10) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 1) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
-        } else if (newUI.favicons) {
+        } else if (newUI.favicons && entry.parentElement) {
           let favicon = '';
           if (type === 'domains') {
             favicon = GET_FAVICON_URL + targetValue;
@@ -249,15 +253,24 @@ function createStyleTargetsElement({entry, style}) {
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
           if (favicon) {
-            element.appendChild(document.createElement('img')).dataset.src = favicon;
+            const img = element.children[0];
+            if (!img || img.localName !== 'img') {
+              element.insertAdjacentElement('afterbegin', document.createElement('img'))
+                .dataset.src = favicon;
+            } else if ((img.dataset.src || img.src) !== favicon) {
+              img.src = '';
+              img.dataset.src = favicon;
+            }
           }
         }
-        element.appendChild(
-          document.createTextNode(
-            (parts.decorations[type + 'Before'] || '') +
-            targetValue +
-            (parts.decorations[type + 'After'] || '')));
-        container.appendChild(element);
+        if (!iconsOnly) {
+          element.appendChild(
+            document.createTextNode(
+              (parts.decorations[type + 'Before'] || '') +
+              targetValue +
+              (parts.decorations[type + 'After'] || '')));
+          container.appendChild(element);
+        }
         numTargets++;
       }
     }
@@ -267,13 +280,29 @@ function createStyleTargetsElement({entry, style}) {
       $('.applies-to', entry).classList.add('has-more');
     }
   }
-  const entryTargets = $('.targets', entry);
   if (numTargets) {
-    entryTargets.parentElement.replaceChild(targets, entryTargets);
+    if (!iconsOnly) entryTargets.parentElement.replaceChild(targets, entryTargets);
   } else {
     entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
+}
+
+
+function recreateStyleTargets({styles, iconsOnly = false} = {}) {
+  Promise.resolve(styles || getStylesSafe()).then(styles => {
+    for (const style of styles) {
+      const entry = $(ENTRY_ID_PREFIX + style.id);
+      if (entry) {
+        createStyleTargetsElement({
+          entry,
+          style,
+          iconsOnly,
+        });
+      }
+    }
+    debounce(handleEvent.loadFavicons);
+  });
 }
 
 
@@ -559,15 +588,7 @@ function switchUI({styleOnly} = {}) {
     return;
   }
   if (missingFavicons) {
-    getStylesSafe().then(styles => {
-      for (const style of styles) {
-        const entry = $(ENTRY_ID_PREFIX + style.id);
-        if (entry) {
-          createStyleTargetsElement({entry, style});
-        }
-      }
-      debounce(handleEvent.loadFavicons);
-    });
+    recreateStyleTargets();
     return;
   }
 }
