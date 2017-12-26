@@ -21,7 +21,7 @@ const newUI = {
   },
 };
 newUI.renderClass();
-usePrefsDuringPageLoad();
+requestAnimationFrame(usePrefsDuringPageLoad);
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
@@ -600,40 +600,21 @@ function rememberScrollPosition() {
 
 
 function usePrefsDuringPageLoad() {
-  const observer = new MutationObserver(mutations => {
-    const adjustedNodes = [];
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        // [naively] assuming each element of addedNodes is a childless element
-        const key = node.dataset && node.dataset.pref || node.id;
-        const prefValue = key ? prefs.readOnlyValues[key] : undefined;
-        if (prefValue !== undefined) {
-          if (node.type === 'checkbox') {
-            node.checked = prefValue;
-          } else if (node.localName === 'details') {
-            node.open = prefValue;
-          } else {
-            node.value = prefValue;
-          }
-          if (node.adjustWidth) {
-            adjustedNodes.push(node);
-          }
-        }
-      }
+  for (const id of Object.getOwnPropertyNames(prefs.readOnlyValues)) {
+    const value = prefs.readOnlyValues[id];
+    if (value !== true) continue;
+    const el = document.getElementById(id) ||
+      id.includes('expanded') && $(`details[data-pref="${id}"]`);
+    if (!el) continue;
+    if (el.type === 'checkbox') {
+      el.checked = value;
+    } else if (el.localName === 'details') {
+      el.open = value;
+    } else {
+      el.value = value;
     }
-    if (adjustedNodes.length) {
-      observer.disconnect();
-      for (const node of adjustedNodes) {
-        node.adjustWidth();
-      }
-      startObserver();
-    }
-  });
-  function startObserver() {
-    observer.observe(document, {subtree: true, childList: true});
   }
-  startObserver();
-  onDOMready().then(() => observer.disconnect());
+  $$('#header select').forEach(el => el.adjustWidth());
 }
 
 
