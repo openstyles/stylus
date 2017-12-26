@@ -3902,8 +3902,9 @@ var Properties = module.exports = {
     "top"                           : "<margin-width>",
     "-ms-touch-action"              : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
     "touch-action"                  : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
-    "transform"                     : 1,
-    "transform-origin"              : 1,
+    "transform"                     : "none | <transform-function>+",
+    "transform-box"                 : "border-box | fill-box | view-box",
+    "transform-origin"              : "<transform-origin>",
     "transform-style"               : 1,
     "transition"                    : 1,
     "transition-delay"              : 1,
@@ -6328,6 +6329,8 @@ copy(ValidationTypes, {
             }
         },
 
+        "<length-percentage>": "<length> | <percentage>",
+
         "<line>": function(part) {
             return part.type === "integer";
         },
@@ -6393,6 +6396,32 @@ copy(ValidationTypes, {
 
         "<time>": function(part) {
             return part.type === "time";
+        },
+
+        "<transform-function>": function(part) {
+            const name = part.name.toLowerCase();
+            const parts = part.expr && part.expr.parts;
+            const len = parts && parts.length;
+            if (!len) return false;
+            const p0 = parts[0];
+            return (
+                name === 'matrix' ? len % 2 && len <= 11 &&
+                    parts.every((p, i) => i % 2 ? p.text === ',' : this['<number>'](p)) :
+                name === 'translate' ? len % 2 && len <= 3 &&
+                    parts.every((p, i) => i % 2 ? p.text === ',' : this['<length-percentage>'](p)) :
+                name === 'translatex' ? len === 1 && this['<length-percentage>'](p0) :
+                name === 'translatey' ? len === 1 && this['<length-percentage>'](p0) :
+                name === 'scale' ? len % 2 && len <= 3 &&
+                    parts.every((p, i) => i % 2 ? p.text === ',' : this['<number>'](p)) :
+                name === 'scalex' ? len === 1 && this['<number>'](p0) :
+                name === 'scaley' ? len === 1 && this['<number>'](p0) :
+                name === 'rotate' ? len === 1 && p0.text === '0' || this['<angle>'](p0) :
+                name === 'skew' ? len % 2 && len <= 3 &&
+                    parts.every((p, i) => i % 2 ? p.text === ',' : p.text === '0' || this['<angle>'](p)) :
+                name === 'skewx' ? len === 1 && p0.text === '0' || this['<angle>'](p0) :
+                name === 'skewy' ? len === 1 && p0.text === '0' || this['<angle>'](p0) :
+                false
+            );
         },
 
         "<unicode-range>": function(part) {
@@ -6527,7 +6556,6 @@ copy(ValidationTypes, {
         "<fixed-repeat>":             "repeat( [ <positive-integer> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
         "<fixed-size>":               "<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )",
         "<inflexible-breadth>":       "<length-percentage> | min-content | max-content | auto",
-        "<length-percentage>":        "<length> | <percentage>",
         "<line-names>":               "[ <ident-not-span>* ]",
         "<track-breadth>":            "<length-percentage> | <flex> | min-content | max-content | auto",
         "<track-list>":               "[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?",
@@ -6579,6 +6607,11 @@ copy(ValidationTypes, {
 
         "<text-decoration-style>":
             "solid | double | dotted | dashed | wavy",
+
+        "<transform-origin>":
+            "[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] <length>? | " +
+            "[ left | center | right | top | bottom | <length-percentage> ] | " +
+            "[ [ center | left | right ] && [ center | top | bottom ] ] <length>?",
 
         "<will-change>":
             "auto | <animateable-feature>#",
