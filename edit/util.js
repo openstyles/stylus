@@ -93,3 +93,26 @@ function dirtyReporter() {
 
   return wrap({add, remove, modify, clear, isDirty, onChange, has});
 }
+
+
+function sectionsToMozFormat(style) {
+  const propertyToCss = {
+    urls:        'url',
+    urlPrefixes: 'url-prefix',
+    domains:     'domain',
+    regexps:     'regexp',
+  };
+  return style.sections.map(section => {
+    let cssMds = [];
+    for (const i in propertyToCss) {
+      if (section[i]) {
+        cssMds = cssMds.concat(section[i].map(v =>
+          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
+        ));
+      }
+    }
+    return cssMds.length ?
+      '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' :
+      section.code;
+  }).join('\n\n');
+}

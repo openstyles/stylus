@@ -1,6 +1,6 @@
 /* global CodeMirror dirtyReporter initLint */
 /* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global editors linterConfig updateLinter regExpTester mozParser */
+/* global editors linterConfig updateLinter regExpTester sectionsToMozFormat */
 /* global createAppliesToLineWidget messageBox */
 'use strict';
 
@@ -100,10 +100,10 @@ function createSourceEditor(style) {
 
   function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) + '/* Insert code here... */';
-    let section = mozParser.format(style);
+    let section = sectionsToMozFormat(style);
     if (!section.includes('@-moz-document')) {
       style.sections[0].domains = ['example.com'];
-      section = mozParser.format(style);
+      section = sectionsToMozFormat(style);
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==

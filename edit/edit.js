@@ -1,11 +1,12 @@
 /*
 global CodeMirror parserlib loadScript
 global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter
-global mozParser createSourceEditor
+global createSourceEditor
 global closeCurrentTab regExpTester messageBox
 global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
+global sectionsToMozFormat
 */
 'use strict';
 
@@ -415,7 +416,7 @@ function showMozillaFormat() {
 }
 
 function toMozillaFormat() {
-  return mozParser.format({sections: getSectionsHashes()});
+  return sectionsToMozFormat({sections: getSectionsHashes()});
 }
 
 function fromMozillaFormat() {
@@ -450,8 +451,24 @@ function fromMozillaFormat() {
   function doImport({replaceOldStyle = false}) {
     lockPageUI(true);
     new Promise(setTimeout)
-      .then(() => mozParser.parse(popup.codebox.getValue().trim()))
-      .then(sections => {
+      .then(() => {
+        const worker = linterConfig.worker.csslint;
+        if (!worker.instance) worker.instance = new Worker(worker.path);
+      })
+      .then(() => linterConfig.invokeWorker({
+        linter: 'csslint',
+        action: 'parse',
+        code: popup.codebox.getValue().trim(),
+      }))
+      .then(({sections, errors}) => {
+        // shouldn't happen but just in case
+        if (!sections.length && errors.length) {
+          return Promise.reject(errors);
+        }
+        // show the errors in case linting is disabled or stylelint misses what csslint has found
+        if (errors.length && prefs.get('editor.linter') !== 'csslint') {
+          showError(errors);
+        }
         removeOldSections(replaceOldStyle);
         return addSections(sections, div => setCleanItem(div, false));
       })

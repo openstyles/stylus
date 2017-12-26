@@ -1,4 +1,4 @@
-/* global loadScript mozParser semverCompare colorConverter styleCodeEmpty */
+/* global loadScript semverCompare colorConverter styleCodeEmpty */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -485,11 +485,17 @@ var usercss = (() => {
 
     const sVars = simpleVars(vars);
 
-    return Promise.resolve(builder.preprocess && builder.preprocess(sourceCode, sVars) || sourceCode)
+    return (
+      Promise.resolve(
+        builder.preprocess && builder.preprocess(sourceCode, sVars) ||
+        sourceCode)
       .then(mozStyle => invokeWorker({action: 'parse', code: mozStyle}))
-      .then(sections => (style.sections = sections))
-      .then(() => builder.postprocess && builder.postprocess(style.sections, sVars))
-      .then(() => style);
+      .then(({sections, errors}) => sections.length && sections || Promise.reject(errors))
+      .then(sections => {
+        style.sections = sections;
+        if (builder.postprocess) builder.postprocess(style.sections, sVars);
+        return style;
+      }));
   }
 
   function simpleVars(vars) {
@@ -568,7 +574,7 @@ var usercss = (() => {
 
   function invokeWorker(message) {
     if (!worker.queue) {
-      worker.instance = new Worker('/vendor-overwrites/csslint/csslint-worker.js');
+      worker.instance = new Worker('/vendor-overwrites/csslint/csslint-loader.js');
       worker.queue = [];
       worker.instance.onmessage = ({data}) => {
         worker.queue.shift().resolve(data.__ERROR__ ? Promise.reject(data.__ERROR__) : data);

@@ -57,9 +57,9 @@ var prefs = new function Prefs() {
       end_with_newline: false,
       indent_conditional: true,
     },
-    'editor.lintDelay': 500,        // lint gutter marker update delay, ms
+    'editor.lintDelay': 300,        // lint gutter marker update delay, ms
     'editor.linter': 'csslint',     // 'csslint' or 'stylelint' or ''
-    'editor.lintReportDelay': 4500, // lint report update delay, ms
+    'editor.lintReportDelay': 500,  // lint report update delay, ms
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected
                                       // '' (empty string) = disabled
@@ -234,6 +234,7 @@ var prefs = new function Prefs() {
     // Unlike chrome.storage or messaging, HTML5 localStorage is synchronous and always ready,
     // so we'll mirror the prefs to avoid using the wrong defaults during the startup phase
     const importFromLocalStorage = () => {
+      forgetOutdatedDefaults(localStorage);
       for (const key in defaults) {
         const defaultValue = defaults[key];
         let value = localStorage[key];
@@ -323,11 +324,18 @@ var prefs = new function Prefs() {
   }
 
   function importFromSync(synced = {}) {
+    forgetOutdatedDefaults(synced);
     for (const key in defaults) {
       if (key in synced) {
         this.set(key, synced[key], {sync: false});
       }
     }
+  }
+
+  function forgetOutdatedDefaults(storage) {
+    // our linter runs as a worker so we can reduce the delay and forget the old default values
+    if (Number(storage['editor.lintDelay']) === 500) delete storage['editor.lintDelay'];
+    if (Number(storage['editor.lintReportDelay']) === 4500) delete storage['editor.lintReportDelay'];
   }
 
   function defineReadonlyProperty(obj, key, value) {
