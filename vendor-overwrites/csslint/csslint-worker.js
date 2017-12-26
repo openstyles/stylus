@@ -1755,6 +1755,7 @@ Parser.prototype = function() {
                     this._readWhitespace();
                 } else {
                     value = this._function();
+                    value = value && value.text;
                 }
 
                 return value;
@@ -2816,6 +2817,10 @@ Parser.prototype = function() {
                                 value = this._ie_function();
                             } else {
                                 value = this._function();
+                                if (value) {
+                                    part = new PropertyValuePart(unary !== null ? unary + value.text : value.text, line, col);
+                                    part.expr = value.expr;
+                                }
                             }
                         }
 
@@ -2847,7 +2852,7 @@ Parser.prototype = function() {
 
             },
 
-            _function: function() {
+            _function() {
 
                 /*
                  * function
@@ -2856,40 +2861,40 @@ Parser.prototype = function() {
                  */
 
                 var tokenStream = this._tokenStream,
-                    functionText = null,
+                    functionText = [],
                     expr        = null,
                     lt;
 
                 if (tokenStream.match(Tokens.FUNCTION)) {
-                    functionText = tokenStream.token().value;
+                    functionText.push(tokenStream.token().value);
                     this._readWhitespace();
                     expr = this._expr(true);
-                    functionText += expr;
+                    functionText.push(String(expr));
 
                     //START: Horrible hack in case it's an IE filter
                     if (this.options.ieFilters && tokenStream.peek() === Tokens.EQUALS) {
                         do {
 
                             if (this._readWhitespace()) {
-                                functionText += tokenStream.token().value;
+                                functionText.push(tokenStream.token().value);
                             }
 
                             //might be second time in the loop
                             if (tokenStream.LA(0) === Tokens.COMMA) {
-                                functionText += tokenStream.token().value;
+                                functionText.push(tokenStream.token().value);
                             }
 
                             tokenStream.match(Tokens.IDENT);
-                            functionText += tokenStream.token().value;
+                            functionText.push(tokenStream.token().value);
 
                             tokenStream.match(Tokens.EQUALS);
-                            functionText += tokenStream.token().value;
+                            functionText.push(tokenStream.token().value);
 
-                            //functionText += this._term();
+                            //functionText.push(this._term());
                             lt = tokenStream.peek();
                             while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN && lt !== Tokens.EOF) {
                                 tokenStream.get();
-                                functionText += tokenStream.token().value;
+                                functionText.push(tokenStream.token().value);
                                 lt = tokenStream.peek();
                             }
                         } while (tokenStream.match([Tokens.COMMA, Tokens.S]));
@@ -2898,11 +2903,11 @@ Parser.prototype = function() {
                     //END: Horrible Hack
 
                     tokenStream.mustMatch(Tokens.RPAREN);
-                    functionText += ")";
+                    functionText.push(")");
                     this._readWhitespace();
                 }
 
-                return functionText;
+                return !functionText[0] ? null : {expr, text: functionText.join('')};
             },
 
             _ie_function: function() {
