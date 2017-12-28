@@ -333,10 +333,12 @@ function createSourceEditor(style) {
     }
   }
 
-  function headerOnScroll({deltaY, deltaMode, shiftKey}) {
-    if (deltaY < 0 && this.scrollTop ||
-        deltaY > 0 && this.scrollTop + this.clientHeight < this.scrollHeight) {
-      return;
+  function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
+    while ((target = target.parentElement)) {
+      if (deltaY < 0 && target.scrollTop ||
+          deltaY > 0 && target.scrollTop + target.clientHeight < target.scrollHeight) {
+        return;
+      }
     }
     cm.display.scroller.scrollTop +=
       // WheelEvent.DOM_DELTA_LINE
