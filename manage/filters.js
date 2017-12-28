@@ -293,7 +293,7 @@ function searchStyles({immediately, container}) {
   const words = rx ? null :
     query.startsWith('"') && query.endsWith('"') ? [value.trim().slice(1, -1)] :
       query.split(/\s+/).filter(s => s.length > 1);
-  if (!words.length) {
+  if (words && !words.length) {
     words.push(query);
   }
   const entries = container && container.children || container || installed.children;
@@ -301,7 +301,7 @@ function searchStyles({immediately, container}) {
     new Set(BG.filterStyles({matchUrl: query}).map(style => style.id));
   let needsRefilter = false;
   for (const entry of entries) {
-    let isMatching = !query || !words.length;
+    let isMatching = !query || words && !words.length;
     if (!isMatching) {
       const style = urlMode ? siteStyleIds.has(entry.styleId) :
         BG.cachedStyles.byId.get(entry.styleId) || {};
