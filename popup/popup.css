@@ -5,6 +5,7 @@
   --name-padding-right: 40px;
   --actions-width: 75px;
   --onoffswitch-width: 60px;
+  --outer-padding: 9px;
 }
 
 html, body {
@@ -25,8 +26,8 @@ body {
 }
 
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
-  margin-left: 9px;
-  margin-right: 9px;
+  margin-left: var(--outer-padding);
+  margin-right: var(--outer-padding);
 }
 
 .firefox .chromium-only {
@@ -81,7 +82,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 #installed .style-name .svg-icon.checked {
   position: absolute;
   top: 7px;
-  left: 9px;
+  left: var(--outer-padding);
   pointer-events: none;
 }
 
@@ -102,7 +103,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #no-styles {
-  padding: 4px 9px 6px;
+  padding: 4px var(--outer-padding) 6px;
   font-weight: bold;
 }
 
@@ -435,19 +436,23 @@ body.blocked .actions > .main-controls {
 #popup-options {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  padding: 1.2em 1px;
+  padding: var(--outer-padding) 1px;
 }
 
 #popup-options button {
-  width: 32%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 2px 4px;
+  margin-right: 4px;
+  /* several languages have labels of wildly different lengths so we try to maintain the proportion */
+  flex: 1 1 auto;
+  min-width: 4em;
 }
 
-.firefox #popup-options button {
-  width: 49%;
+.firefox #popup-options button:nth-last-child(2),
+#popup-options button:last-child {
+  margin-right: 0;
 }
 
 /* confirm */
@@ -532,7 +537,7 @@ body.blocked .actions > .main-controls {
 }
 
 .blocked-info p {
-  padding: 1px 0 9px;
+  padding: 1px 0 var(--outer-padding);
   display: block;
   font-size: 90%;
   margin: 0;
