@@ -883,7 +883,7 @@ input[id^="manage.newUI"] {
 }
 
 #manage\.newUI\.sort {
-  padding-right: 18px;
+  padding: 0 18px 0 4px;
   width: 100%;
 }
 
