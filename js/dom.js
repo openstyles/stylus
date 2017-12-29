@@ -84,10 +84,10 @@ if (!chrome.app && chrome.windows) {
       }));
     }
   });
-  // set hyphenation language
-  document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
 }
 
+// set language for CSS :lang and [FF-only] hyphenation
+document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
 
 function onDOMready() {
   if (document.readyState !== 'loading') {
