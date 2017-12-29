@@ -182,6 +182,19 @@ select[disabled] > option {
   outline: none;
 }
 
+/* use a readable font for Japanese/Chinese */
+
+.actions:lang(ja) *,
+#header:lang(ja) * {
+  font-family: 'Meiryo UI', system-ui, 'MS Gothic', Arial, sans-serif;
+  font-weight: normal;
+}
+
+.actions:lang(zh) *,
+#header:lang(zh) * {
+  font-family: 'MingLiU', system-ui, Arial, sans-serif;
+}
+
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
   .moz-appearance-bug .onoffswitch input,

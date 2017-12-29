@@ -424,6 +424,7 @@ select {
 
 #manage-text {
   display: flex;
+  align-items: baseline;
 }
 
 #manage-text > :not(:last-child):after {
@@ -913,7 +914,7 @@ input[id^="manage.newUI"] {
   color: currentColor;
   padding: 2px 6px;
   font-weight: bold;
-  font-family: monospace;
+  font-family: Consolas, monospace;
   border: 1px solid rgba(128, 128, 128, .25);
   display: inline-block;
   margin: 2px;
