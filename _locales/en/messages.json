@@ -165,7 +165,7 @@
   },
   "cm_matchHighlightToken": {
     "message": "Token under cursor",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
   },
   "cm_resizeGripHint": {
     "message": "Double-click to maximize/restore the height",
