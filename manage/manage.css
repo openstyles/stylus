@@ -90,22 +90,34 @@ select {
 #add-style-wrapper {
   display: flex;
   align-items: center;
-  padding-bottom: 1.5em;
+  padding-bottom: 1.25em;
+  white-space: nowrap;
+  flex-wrap: wrap;
+}
+
+#add-style-wrapper > * {
+  /* in case the children are wrapped */
+  margin-bottom: .25em;
 }
 
 #add-style-as-usercss-wrapper {
-  display: inline-flex;
-  margin-top: 3px;
+  display: flex;
+  align-items: center;
 }
 
 #add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
   fill: #aaa;
 }
 
-#add-style-as-usercss-wrapper #usercss-wiki {
-  position: absolute;
-  right: -20px;
-  top: -3px;
+#add-style-as-usercss-wrapper input {
+  bottom: 0;
+  margin: auto;
+}
+
+#add-style-as-usercss-wrapper input + svg {
+  bottom: 0;
+  margin: auto;
+  left: 2px;
 }
 
 #installed {
