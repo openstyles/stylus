@@ -141,6 +141,16 @@ function tDocLoader() {
       return JSON.parse(localStorage.L10N);
     } catch (e) {}
   })() || {};
+  t.RX_WORD_BREAK = new RegExp([
+    '(',
+    /[\d\w\u007B-\uFFFF]{10}/,
+    '|',
+    /[\d\w\u007B-\uFFFF]{5,10}[!-/]/,
+    '|',
+    /((?!\s)\W){10}/,
+    ')',
+    /(?!\b|\s|$)/,
+  ].map(rx => rx.source || rx).join(''), 'g');
 
   // reset L10N cache on UI language change
   const UIlang = chrome.i18n.getUILanguage();
@@ -195,8 +205,9 @@ function tDocLoader() {
 function tWordBreak(text) {
   // adds soft hyphens every 10 characters to ensure the long words break before breaking the layout
   return text.length <= 10 ? text :
-    text.replace(/([\d\w\u007B-\uFFFF]{10}|[\d\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\b|\s)/g, '$&\u00AD');
+    text.replace(t.RX_WORD_BREAK, '$&\u00AD');
 }
+
 
 function formatDate(date) {
   return !date ? '' : tryCatch(() => {
