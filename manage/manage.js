@@ -186,6 +186,8 @@ function createStyleElement({style, name, index}) {
         regexpsBefore: '/',
         regexpsAfter: '/',
       },
+      oldCheckUpdate: !newUI.enabled && $('.check-update', entry),
+      oldUpdate: !newUI.enabled && $('.update', entry),
     };
   }
   const parts = createStyleElement.parts;
@@ -193,6 +195,10 @@ function createStyleElement({style, name, index}) {
   parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
+  if (!newUI.enabled) {
+    parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
+    parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
+  }
 
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
