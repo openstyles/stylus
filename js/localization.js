@@ -200,7 +200,7 @@ function tWordBreak(text) {
 
 function formatDate(date) {
   return !date ? '' : tryCatch(() => {
-    const newDate = new Date(parseInt(date));
+    const newDate = new Date(Number(date) || date);
     const string = newDate.toLocaleDateString([t.cache.browserUIlanguage, 'en'], {
       day: '2-digit',
       month: 'short',
