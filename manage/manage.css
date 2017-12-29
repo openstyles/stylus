@@ -229,6 +229,7 @@ select {
   padding: 2px 5px 3px;
   border-radius: 4px;
   margin-left: 1ex;
+  white-space: nowrap;
 }
 
 .entry.usercss .style-name-link::after {
