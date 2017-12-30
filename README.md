@@ -20,7 +20,7 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 ## Screenshots
 
 ![Style manager](https://user-images.githubusercontent.com/1310400/34453460-214eaa5c-ed67-11e7-843b-d8960b71db6e.png)
-![Style editor](https://user-images.githubusercontent.com/1310400/34453465-21d82d72-ed67-11e7-8581-cff6b5dbb547.png)
+![Style editor](https://user-images.githubusercontent.com/1310400/34453648-a78bf1a8-ed6a-11e7-9afe-9651a85321aa.png)
 ![Popup config for usercss](https://user-images.githubusercontent.com/1310400/34453462-218a589a-ed67-11e7-9040-7d0469eeadc3.png)
 ![Popup inline search](https://user-images.githubusercontent.com/1310400/34453463-21a44368-ed67-11e7-93b2-e1c8f5aac868.png)
 ![Style manager config for usercss](https://user-images.githubusercontent.com/1310400/34453464-21bdaf9c-ed67-11e7-8517-62d2f02e1918.png)
