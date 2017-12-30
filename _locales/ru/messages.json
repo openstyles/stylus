@@ -184,7 +184,7 @@
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
-		"message": "Установленные стили",
+		"message": "Менеджер стилей",
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
@@ -507,7 +507,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "Элемент под курсором",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "Используйте нотацию /re/ для поиска регулярными выражениями",
@@ -1078,7 +1078,7 @@
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"manageNewStyleAsUsercss": {
-		"message": "в формате Usercss",
+		"message": "в виде Usercss",
 		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
 	},
 	"optionsPopupWidth": {

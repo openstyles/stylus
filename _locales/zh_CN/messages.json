@@ -12,20 +12,36 @@
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"styleRegexpTestTitle": {
-		"message": "列出当前正则表达式匹配的网页标签（点击网址 URL 可跳转到该页）",
+		"message": "列出当前正则表达式匹配的网页标签（点击网址 URL 可跳转到该页面）",
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
 		"message": "导出所有样式",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "排序内容",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
-		"message": "只显示 Usercss 样式",
+		"message": "只显示仅 Usercss 样式",
 		"description": "Checkbox to show only Usercss styles"
+	},
+	"sortStylesHelp": {
+		"message": "从下拉菜单中选择要应用于所有已安装项目的排序类型，默认使用标题升序排序 （A - Z）。·「标题降序」则会应用降序排序 （Z - A）。\n还有很多其他排序方式，可以通过多个条件对已安装项目进行排序。你也可以想象，在对一个多列的表格进行排序，并且选择可能带有（+）号的一组条件或单个条件进行排序。\n例如，若设置为 \"启用（优先）+ 标题\"，将会把所有已启用的项目都排列在顶部，然后再以标题升序排列 （A - Z）的顺序应用到以启用和未启用的项目。",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "标题升序",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
 	},
 	"optionsUpdateInterval": {
 		"message": "每隔 N 小时，检查所有样式更新（0 为关闭检查）",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "最旧的优先",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "按 Alt + Enter 切换启用/禁用状态并保存样式",
@@ -147,6 +163,10 @@
 		"message": "搜索",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
+	"genericEnabledLabel": {
+		"message": "启用",
+		"description": "Used in various lists/options to indicate that something is enabled"
+	},
 	"manageFaviconsGray": {
 		"message": "灰色图标",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -176,7 +196,7 @@
 		"description": "Tooltip in the popup for styles that were applied only partially"
 	},
 	"styleEnabledLabel": {
-		"message": "已启用",
+		"message": "启用",
 		"description": "Label for the enabled state of styles"
 	},
 	"configOnChange": {
@@ -285,6 +305,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "在代码和应用中匹配的数量",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "$link$ 在已启用的这些规则中找到问题：",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -295,7 +319,7 @@
 		}
 	},
 	"parseUsercssError": {
-		"message": "Stylus 未能成功解析 usercss:",
+		"message": "Stylus 未能成功解析 Usercss:",
 		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
@@ -325,6 +349,10 @@
 	"unreachableFileHint": {
 		"message": "如果需要改变 file:// 协议的样式，则需要在 chrome://extensions 页面中的 Stylus 扩展选项里面，打开 允许访问文件网址 的权限",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "选择对已安装的样式应用的排序规则",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "禁用",
@@ -415,7 +443,7 @@
 		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
-		"message": "适用于：$applies$",
+		"message": "应用于：$applies$",
 		"description": "Text on the manage screen to describe what the style applies to",
 		"placeholders": {
 			"applies": {
@@ -453,7 +481,7 @@
 		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
 	},
 	"optionsAdvancedNewStyleAsUsercss": {
-		"message": "为新样式添加 usercss",
+		"message": "为新样式添加 Usercss",
 		"description": ""
 	},
 	"genericResetLabel": {
@@ -479,7 +507,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "光标所在的位置",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "使用 /re/ 语法进行正则表达式搜索",
@@ -510,7 +538,7 @@
 		"description": "Label for the checkbox to save current URL for update check"
 	},
 	"cm_resizeGripHint": {
-		"message": "双击以最大化/恢复高度",
+		"message": "双击以最大化或恢复高度",
 		"description": "Tooltip for the resize grip in style editor"
 	},
 	"popupStylesFirst": {
@@ -542,7 +570,7 @@
 		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"cm_colorpicker": {
-		"message": "用于 CSS 的颜色选择器",
+		"message": "CSS 颜色选择器",
 		"description": "Label for the checkbox controlling colorpicker option for the style editor."
 	},
 	"filteredStylesAllHidden": {
@@ -566,8 +594,12 @@
 		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
-		"message": "适用于：",
+		"message": "应用于：",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"sortLabelTitleDesc": {
+		"message": "标题降序",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
 	},
 	"openOptionsPopup": {
 		"message": "设置用户界面",
@@ -630,6 +662,10 @@
 		"message": "样式导入完成",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "若要允许存取，打开 <about:config>，在列表上单击右键，点击新增，然后再点击 'Boolean'，粘贴 <privacy.resistFingerprinting.block_mozAddonManager> 并点击确定 -> <true> -> 确定，然后重新刷新 <addons.mozilla.org> 页面。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla 格式",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
@@ -667,7 +703,7 @@
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
 	"appliesLineWidgetLabel": {
-		"message": "显示适用对象的信息",
+		"message": "显示应用对象的信息",
 		"description": "Label for the checkbox to display applies-to information in the single editor"
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
@@ -681,6 +717,10 @@
 	"optionsCustomizeIcon": {
 		"message": "切换图标",
 		"description": ""
+	},
+	"genericTitle": {
+		"message": "标题",
+		"description": "Used in various parts of the UI to indicate the title of something"
 	},
 	"updateCompleted": {
 		"message": "更新已完成。",
@@ -703,19 +743,23 @@
 		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
-		"message": "已应用的数量",
+		"message": "显示应用的规则列表数量",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"searchResultRating": {
 		"message": "评价",
 		"description": "Text for label that shows the search result's rating"
 	},
+	"genericUnknown": {
+		"message": "未知",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+	},
 	"popupManageTooltip": {
 		"message": "Shift + 左键单击 或 右键单击 以打开管理界面中当前页面适用的样式",
 		"description": "Tooltip for the 'Manage' button in the popup."
 	},
 	"manageFaviconsHelp": {
-		"message": "Stylus 使用了 https://www.google.com/s2/favicons?domain=http://add0n.com/stylus.html 方式获取图标",
+		"message": "Stylus 使用外部服务 https://www.google.com/s2/favicons 来获取图标",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"paginationEstimated": {
@@ -758,7 +802,7 @@
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"searchResultInstallCount": {
-		"message": "已被安装次数",
+		"message": "总共被安装次数",
 		"description": "Text for label that shows the number of times a search result was installed"
 	},
 	"sectionCode": {
@@ -774,7 +818,7 @@
 		"description": ""
 	},
 	"linterConfigPopupTitle": {
-		"message": "设置 $linter$ 规则配置",
+		"message": "设置 $linter$ 规则",
 		"description": "Stylelint or CSSLint popup header",
 		"placeholders": {
 			"linter": {
@@ -791,7 +835,7 @@
 		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
 	},
 	"cm_smartIndent": {
-		"message": "启用智能缩进",
+		"message": "智能缩进",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
@@ -799,7 +843,7 @@
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
-		"message": "使用“应用对象”控件来限制此部分中的代码所应用到的网址。",
+		"message": "使用“应用于”控件来限制此部分中的代码所应用到的网址。",
 		"description": "Help text for 'applies to' section"
 	},
 	"linkGetHelp": {
@@ -825,6 +869,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "输入时自动完成",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox 禁止访问该站点。",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint 不支持 $preprocessorname$ 预处理器",
@@ -916,6 +964,10 @@
 		"message": "应用Stylus数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "安装日期",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "高级设置",
 		"description": ""
@@ -1004,6 +1056,10 @@
 		"message": "样式计数器",
 		"description": ""
 	},
+	"sortDateNewestFirst": {
+		"message": "最新的优先",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
+	},
 	"paginationPrevious": {
 		"message": "上一页",
 		"description": "Tooltip for the '<-' button in search results"
@@ -1022,11 +1078,11 @@
 		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
 	},
 	"manageNewStyleAsUsercss": {
-		"message": "作为 Usercss",
+		"message": "作为 Usercss 样式",
 		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
 	},
 	"optionsPopupWidth": {
-		"message": "Stylus 管理框宽度 / px",
+		"message": "Stylus 样式管理弹出框宽度 / px",
 		"description": ""
 	},
 	"cm_autoCloseBrackets": {
@@ -1087,8 +1143,12 @@
 		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
-		"message": "启用新的样式管理界面",
+		"message": "新的样式管理界面",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "仅 Firefox 59 或更新的版本才能让你设置 WebExtensions 在例如这样一个有 CSP 保护的页面上新增样式。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "样式导入被取消",
@@ -1099,7 +1159,7 @@
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "启用带智能缩进的标签页",
+		"message": "带智能缩进的标签页",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {

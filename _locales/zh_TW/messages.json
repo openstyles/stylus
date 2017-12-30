@@ -19,13 +19,29 @@
 		"message": "匯出樣式",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "排序內容",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "僅 Usercss 樣式",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "從下拉選單中選取要套用於已安裝項目的排序類型。預設使用標題遞增排序（A 到 Z）。「標題遞減」則會套用遞減排序（Z 到 A）。\n還有其他的排序方式。您可以想像對一個多欄的表格進行排序，並且每次選取（加號之間）都代表了一欄或一組。\n舉例來說，若設定為「啟用（第一）+標題」，將會把所有已啟用的項目都排列在頂部，然後再以標題遞增（A 到 Z）的順序來分別套用到已啟用與已停用的項目。",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "標題遞增",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "最舊的優先",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "按下 Alt + Enter 以切換啟用／停用狀態並儲存樣式",
@@ -146,6 +162,10 @@
 	"search": {
 		"message": "搜索",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "已啟用",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "灰階淡出",
@@ -330,6 +350,10 @@
 		"message": "Stylus 僅在您於 chrome://extensions 啟用了 Stylus 擴充套件中對應的勾選框時才能存取 file:// 的 URL。",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
+	"sortLabel": {
+		"message": "選取適用於已安裝樣式的排序方式",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
+	},
 	"disableStyleLabel": {
 		"message": "禁用",
 		"description": "Label for the button to disable a style"
@@ -483,7 +507,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "在游標下的 Token",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "使用/re/句法正則表達式搜索",
@@ -572,6 +596,10 @@
 	"appliesLabel": {
 		"message": "適用於",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"sortLabelTitleDesc": {
+		"message": "標題遞減",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
 	},
 	"openOptionsPopup": {
 		"message": "選項",
@@ -690,6 +718,10 @@
 		"message": "工具列圖示",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "標題",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "更新完成。",
 		"description": "Text that displays when an update completed"
@@ -717,6 +749,10 @@
 	"searchResultRating": {
 		"message": "評價",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "未知",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift + 點選或右鍵 + 點選以在管理員中開啟目前頁面可用的樣式",
@@ -928,6 +964,10 @@
 		"message": "使用 Stylus 資料庫時出現錯誤。你想訪問可能包含解決辦法的網頁嗎？",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "安裝日期",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "進階",
 		"description": ""
@@ -955,6 +995,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "已跳過無效的正規表達式",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "更新日期",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "僅外部樣式",
@@ -1011,6 +1055,10 @@
 	"optionsCustomizeBadge": {
 		"message": "在工具列圖示上的徽章",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "最新的優先",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "上一頁",

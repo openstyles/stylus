@@ -19,13 +19,29 @@
 		"message": "Exportar estilos",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Ordenar contenidos",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Sólo estilos Usercss",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "Escoja el tipo de orden a aplicar a las entradas instaladas desde el menú desplegable de ordenación. La configuración predeterminada aplica un orden ascendente (A a Z) a los títulos de las entradas. Las ordenaciones del grupo \"Título descendentemente\" aplicarán un orden descendente (Z a A) al título.\nHay otros preajustes que permitirán ordenar las entradas según múltiples criterios. Piense en esto como en ordenar una tabla con múltiples columnas, y en cada categoría en una selección (entre los signos más) representa una columna o grupo.\nPor ejemplo, si la configuración es \"Habilitados (primero) + Título\", las entradas se ordenarían de forma que las entradas habilitadas quedarían en la parte superior de la lista, luego se aplica un orden ascendente (A a Z) de títulos de las entradas tanto para las entradas habilitadas como las deshabilitadas de forma separada.",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"sortLabelTitleAsc": {
+		"message": "Título ascendentemente",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "el más antiguo primero",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Pulse Alt-Intro para accionar el estado habilitado/deshabilitado y guardar el estilo",
@@ -146,6 +162,10 @@
 	"search": {
 		"message": "Buscar",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Habilitado",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "Atenuado",
@@ -330,6 +350,10 @@
 		"message": "Stylus puede acceder a URL file:// solo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
+	"sortLabel": {
+		"message": "Seleccione un orden a aplicar a los estilos instalados",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
+	},
 	"disableStyleLabel": {
 		"message": "Desactivar",
 		"description": "Label for the button to disable a style"
@@ -479,7 +503,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "Resaltado de palabra señalada",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "Use la sintaxis /re/ para búsquedas con expresiones regulares",
@@ -568,6 +592,10 @@
 	"appliesLabel": {
 		"message": "Se aplica a",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"sortLabelTitleDesc": {
+		"message": "Título descendentemente",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
 	},
 	"openOptionsPopup": {
 		"message": "Opciones",
@@ -686,6 +714,10 @@
 		"message": "Icono de barra de herramientas",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Título",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Actualización completada.",
 		"description": "Text that displays when an update completed"
@@ -713,6 +745,10 @@
 	"searchResultRating": {
 		"message": "Valoración",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Desconocido",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual.",
@@ -920,6 +956,10 @@
 		"message": "Ocurrió un error con la base de datos de Stylus. ¿Desea visitar una página web con posibles soluciones?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Fecha de instalación",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Avanzadas",
 		"description": ""
@@ -947,6 +987,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Expresiones regulares no válidas omitidas",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Fecha de actualización",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Sólo estilos externos",
@@ -1003,6 +1047,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Distintivo en el icono de barra de herramientas",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "los más nuevos primero",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Página anterior",

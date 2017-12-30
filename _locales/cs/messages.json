@@ -475,7 +475,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "Stopa pod kurzorem",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "Použijte /re/ syntaxi pro vyhledávání s regulérními výrazy",

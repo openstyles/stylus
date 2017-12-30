@@ -28,7 +28,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"sortStylesHelp": {
-		"message": "インストール済みの項目の並べ替え方法を、ドロップダウンリストで選択してください。デフォルト設定は、タイトルの昇順（AからZへ）になります。「タイトル降順」を選択すると、タイトルの降順（ZからAへ）に並べ替えます。\n複数の基準で項目の並べ替えを行う他の設定もあります。これは、複数の列を持つ表の並べ替えと考えられ、（プラス記号の間の）選択された各種別は、列またはグループを表します。\n例えば、「有効（先頭）＋タイトル」という設定の場合、すべての有効な項目がリストの先頭に並べられ、次にタイトル昇順（AからZへ）で有効／無効な項目がそれぞれ並べられます。",
+		"message": "インストール済みの項目の並べ替え方法を、ドロップダウンリストで選択してください。デフォルト設定は、タイトルの昇順（AからZへ）になっています。「タイトル降順」を選択すると、タイトルの降順（ZからAへ）に並べ替えます。\n他に、複数の基準で項目の並べ替えを行う設定もあります。これは、複数の列を持つ表の並べ替えと考えられ、（プラス記号を挟んで）選択された各カテゴリーは、対応する列またはグループを表します。\n例えば、「有効（1番目）＋タイトル」という設定の場合、すべての有効な項目がリストの先頭に並べられ、次にタイトルの昇順（AからZへ）で有効／無効な項目がそれぞれ並べられます。",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
 	},
 	"sortLabelTitleAsc": {
@@ -355,7 +355,7 @@
 		"description": "Label for the button to disable a style"
 	},
 	"prefShowBadge": {
-		"message": "現在のサイトでアクティブなスタイルの数を表示",
+		"message": "現在のサイトで有効なスタイルの数を表示",
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
@@ -503,7 +503,7 @@
 	},
 	"cm_matchHighlightToken": {
 		"message": "カーソル下の単語",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of of the word/token under cursor even if nothing is selected"
+		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
 		"message": "正規表現検索には /re/ を使用してください",
