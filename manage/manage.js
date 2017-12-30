@@ -256,7 +256,7 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
             favicon = OWN_ICON;
           } else if (type === 'regexps') {
             favicon = targetValue.match(/\w+[\\.(]+(com|org|co|net|im|io)\b/g);
-            favicon = favicon ? GET_FAVICON_URL + favicon.pop().replace(/[\\(]/g, '') : '';
+            favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(/[\\(]/g, '') : '';
           } else {
             favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
