@@ -1,14 +1,30 @@
 Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExtension
 
+## Highlights
+
+* In addition to the userstyles.org site, styles with customizable parameters can also be installed from .user.css or .user.styl URLs (see [Usercss format wiki](https://github.com/openstyles/stylus/wiki/Usercss)).
+* Site styles can be discovered and previewed in the popup using inline search with screenshot thumbnails.
+* A backup feature which is compatible with other userstyles managers.
+* Configurable automatic update function for installed styles.
+* Customizable UI, optional layouts, and tweaks.
+* Two different optional code validators with user-configurable rules: CSSLint and Stylelint.
+  * Both validators use Web Worker API to run in a separate background thread inside the editor tab without blocking your interaction with the code.
+  * CSSLint is heavily modified compared to the effectively frozen original one and supports various CSS3 features as well as CSS4 Color and CSS Grid syntax.
+
 ## Releases
 
-1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)
-2. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/)
-3. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/)
+1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) (or [beta](https://chrome.google.com/webstore/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo))
+2. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/) (or [beta](https://addons.mozilla.org/en-US/firefox/addon/styl-us/versions/beta))
+3. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/)
 
-## Screen shot
+## Screenshots
 
-![screen shot](https://cloud.githubusercontent.com/assets/11704051/24002324/aefd19fe-0a75-11e7-8160-d8731d2a6d03.png)
+![Style manager](https://user-images.githubusercontent.com/1310400/34453460-214eaa5c-ed67-11e7-843b-d8960b71db6e.png)
+![Style editor](https://user-images.githubusercontent.com/1310400/34453648-a78bf1a8-ed6a-11e7-9afe-9651a85321aa.png)
+![Popup config for usercss](https://user-images.githubusercontent.com/1310400/34453462-218a589a-ed67-11e7-9040-7d0469eeadc3.png)
+![Popup inline search](https://user-images.githubusercontent.com/1310400/34453463-21a44368-ed67-11e7-93b2-e1c8f5aac868.png)
+![Style manager config for usercss](https://user-images.githubusercontent.com/1310400/34453464-21bdaf9c-ed67-11e7-8517-62d2f02e1918.png)
+![Options](https://user-images.githubusercontent.com/1310400/34453461-216aee4c-ed67-11e7-92db-ea21c1da5826.png)
 
 ## Help
 
