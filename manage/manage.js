@@ -252,9 +252,12 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           let favicon = '';
           if (type === 'domains') {
             favicon = GET_FAVICON_URL + targetValue;
-          } else if (targetValue.startsWith('chrome-extension:')) {
+          } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
             favicon = OWN_ICON;
-          } else if (type !== 'regexps') {
+          } else if (type === 'regexps') {
+            favicon = targetValue.match(/\w+[\\.(]+(com|org|co|net|im|io)\b/g);
+            favicon = favicon ? GET_FAVICON_URL + favicon.pop().replace(/[\\(]/g, '') : '';
+          } else {
             favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
