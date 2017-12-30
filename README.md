@@ -4,12 +4,12 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 * In addition to the userstyles.org site, styles with customizable parameters can also be installed from .user.css or .user.styl URLs (see [Usercss format wiki](https://github.com/openstyles/stylus/wiki/Usercss)).
 * Site styles can be discovered and previewed in the popup using inline search with screenshot thumbnails.
-* A backup feature is compatible with other userstyles managers.
+* A backup feature which is compatible with other userstyles managers.
 * Configurable automatic update function for installed styles.
-* Customizable UI, optional layouts and options.
-* Two different optional code validators with user configurable rules: CSSLint and Stylelint.
+* Customizable UI, optional layouts, and tweaks.
+* Two different optional code validators with user-configurable rules: CSSLint and Stylelint.
   * Both validators use Web Worker API to run in a separate background thread inside the editor tab without blocking your interaction with the code.
-  * CSSLint is heavily modified compared to the effectively frozen original one and supports various CSS3 features as well as CSS4 Color and Grid syntax.
+  * CSSLint is heavily modified compared to the effectively frozen original one and supports various CSS3 features as well as CSS4 Color and CSS Grid syntax.
 
 ## Releases
 
