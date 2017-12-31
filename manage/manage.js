@@ -288,46 +288,46 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
         });
       }
     }
-    debounce(getFaviconImgSrc);
+    if (newUI.favicons) {
+      debounce(getFaviconImgSrc);
+    }
   });
 }
 
 
 function getFaviconImgSrc() {
-  if (newUI.favicons) {
-    const targets = $$('.target', installed);
-    const regexpRemoveNegativeLookAhead = /(\?!([^)]+\)))/g;
-    const regexpMatchRegExp = /\w+[\\.(]+(com|org|co|net|im|io)\b/g;
-    const regexpReplaceExtraCharacters = /[\\(]/g;
-    const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
-    for (const target of targets) {
-      const type = target.dataset.type;
-      const targetValue = target.textContent;
-      let favicon = '';
-      if (type === 'domains') {
-        favicon = GET_FAVICON_URL + targetValue;
-      } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
-        favicon = OWN_ICON;
-      } else if (type === 'regexps') {
-        favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
-        favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(regexpReplaceExtraCharacters, '') : '';
-      } else {
-        favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
-        favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
-      }
-      if (favicon) {
-        const img = target.children[0];
-        if (!img || img.localName !== 'img') {
-          target.insertAdjacentElement('afterbegin', document.createElement('img'))
-            .dataset.src = favicon;
-        } else if ((img.dataset.src || img.src) !== favicon) {
-          img.src = '';
-          img.dataset.src = favicon;
-        }
+  const targets = $$('.target', installed);
+  const regexpRemoveNegativeLookAhead = /(\?!([^)]+\)))/g;
+  const regexpMatchRegExp = /\w+[\\.(]+(com|org|co|net|im|io)\b/g;
+  const regexpReplaceExtraCharacters = /[\\(]/g;
+  const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
+  for (const target of targets) {
+    const type = target.dataset.type;
+    const targetValue = target.textContent;
+    let favicon = '';
+    if (type === 'domains') {
+      favicon = GET_FAVICON_URL + targetValue;
+    } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
+      favicon = OWN_ICON;
+    } else if (type === 'regexps') {
+      favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
+      favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(regexpReplaceExtraCharacters, '') : '';
+    } else {
+      favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
+      favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+    }
+    if (favicon) {
+      const img = target.children[0];
+      if (!img || img.localName !== 'img') {
+        target.insertAdjacentElement('afterbegin', document.createElement('img'))
+          .dataset.src = favicon;
+      } else if ((img.dataset.src || img.src) !== favicon) {
+        img.src = '';
+        img.dataset.src = favicon;
       }
     }
-    handleEvent.loadFavicons();
   }
+  handleEvent.loadFavicons();
 }
 
 
