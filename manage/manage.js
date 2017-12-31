@@ -307,7 +307,7 @@ function getFaviconImgSrc() {
     let favicon = '';
     if (type === 'domains') {
       favicon = GET_FAVICON_URL + targetValue;
-    } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
+    } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
     } else if (type === 'regexps') {
       favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
