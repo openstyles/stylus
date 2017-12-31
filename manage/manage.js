@@ -231,6 +231,10 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
   const parts = createStyleElement.parts;
   const entryTargets = $('.targets', entry);
   const targets = iconsOnly ? entryTargets : parts.targets.cloneNode(true);
+  const regexpRemoveNegativeLookAhead = /(\?!([^)]+\)))/g;
+  const regexpMatchRegExp = /\w+[\\.(]+(com|org|co|net|im|io)\b/g;
+  const regexpReplaceExtraCharacters = /[\\(]/g;
+  const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
   let container = targets;
   let numTargets = 0;
   const displayed = new Set();
@@ -255,10 +259,10 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
             favicon = OWN_ICON;
           } else if (type === 'regexps') {
-            favicon = targetValue.match(/\w+[\\.(]+(com|org|co|net|im|io)\b/g);
-            favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(/[\\(]/g, '') : '';
+            favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
+            favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(regexpReplaceExtraCharacters, '') : '';
           } else {
-            favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
+            favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
             favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
           }
           if (favicon) {
