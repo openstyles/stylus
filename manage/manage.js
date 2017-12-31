@@ -231,10 +231,6 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
   const parts = createStyleElement.parts;
   const entryTargets = $('.targets', entry);
   const targets = iconsOnly ? entryTargets : parts.targets.cloneNode(true);
-  const regexpRemoveNegativeLookAhead = /(\?!([^)]+\)))/g;
-  const regexpMatchRegExp = /\w+[\\.(]+(com|org|co|net|im|io)\b/g;
-  const regexpReplaceExtraCharacters = /[\\(]/g;
-  const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
   let container = targets;
   let numTargets = 0;
   const displayed = new Set();
@@ -252,31 +248,9 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           } else if (numTargets > 1) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
-        } else if (newUI.favicons && entry.parentElement) {
-          let favicon = '';
-          if (type === 'domains') {
-            favicon = GET_FAVICON_URL + targetValue;
-          } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
-            favicon = OWN_ICON;
-          } else if (type === 'regexps') {
-            favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
-            favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(regexpReplaceExtraCharacters, '') : '';
-          } else {
-            favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
-            favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
-          }
-          if (favicon) {
-            const img = element.children[0];
-            if (!img || img.localName !== 'img') {
-              element.insertAdjacentElement('afterbegin', document.createElement('img'))
-                .dataset.src = favicon;
-            } else if ((img.dataset.src || img.src) !== favicon) {
-              img.src = '';
-              img.dataset.src = favicon;
-            }
-          }
         }
         if (!iconsOnly) {
+          element.dataset.type = type;
           element.appendChild(
             document.createTextNode(
               (parts.decorations[type + 'Before'] || '') +
@@ -314,8 +288,46 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
         });
       }
     }
-    debounce(handleEvent.loadFavicons);
+    debounce(getFaviconImgSrc);
   });
+}
+
+
+function getFaviconImgSrc() {
+  if (newUI.favicons) {
+    const targets = $$('.target', installed);
+    const regexpRemoveNegativeLookAhead = /(\?!([^)]+\)))/g;
+    const regexpMatchRegExp = /\w+[\\.(]+(com|org|co|net|im|io)\b/g;
+    const regexpReplaceExtraCharacters = /[\\(]/g;
+    const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
+    for (const target of targets) {
+      const type = target.dataset.type;
+      const targetValue = target.textContent;
+      let favicon = '';
+      if (type === 'domains') {
+        favicon = GET_FAVICON_URL + targetValue;
+      } else if (targetValue.startsWith('chrome-extension:') || targetValue.startsWith('moz-extension:')) {
+        favicon = OWN_ICON;
+      } else if (type === 'regexps') {
+        favicon = targetValue.replace(regexpRemoveNegativeLookAhead, '').match(regexpMatchRegExp);
+        favicon = favicon ? GET_FAVICON_URL + favicon.shift().replace(regexpReplaceExtraCharacters, '') : '';
+      } else {
+        favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
+        favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+      }
+      if (favicon) {
+        const img = target.children[0];
+        if (!img || img.localName !== 'img') {
+          target.insertAdjacentElement('afterbegin', document.createElement('img'))
+            .dataset.src = favicon;
+        } else if ((img.dataset.src || img.src) !== favicon) {
+          img.src = '';
+          img.dataset.src = favicon;
+        }
+      }
+    }
+    handleEvent.loadFavicons();
+  }
 }
 
 
