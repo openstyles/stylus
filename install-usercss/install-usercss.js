@@ -9,6 +9,7 @@
   let installed = false;
 
   const tabId = Number(params.get('tabId'));
+  let tabUrl;
   let port;
 
   if (params.has('direct')) {
@@ -35,7 +36,7 @@
           break;
       }
     });
-    port.onDisconnect.addListener(closeCurrentTab);
+    port.onDisconnect.addListener(onPortDisconnected);
   }
 
   const cm = CodeMirror($('.main'), {readOnly: true});
@@ -48,6 +49,12 @@
         new Array(12).fill($create('div')).map(e => e.cloneNode())));
     }
   }, 200);
+
+  getTab(tabId).then(tab => (tabUrl = tab.url));
+  chrome.tabs.onUpdated.addListener((id, {url}) =>
+    id === tabId &&
+    url && url !== tabUrl &&
+    closeCurrentTab());
 
   function liveReloadUpdate(sourceCode) {
     liveReloadPending = liveReloadPending.then(() => {
@@ -389,6 +396,16 @@
       download(params.get('updateUrl'))
         .then(initSourceCode)
         .catch(err => messageBox.alert(t('styleInstallFailed', String(err))));
+    });
+  }
+
+  function onPortDisconnected() {
+    chrome.tabs.get(tabId, tab => {
+      if (chrome.runtime.lastError) {
+        closeCurrentTab();
+      } else if (tab.url === tabUrl) {
+        location.reload();
+      }
     });
   }
 })();

@@ -116,6 +116,7 @@ var usercssHelper = (() => {
         (direct ? '&direct=yes' : ''),
       index: tab.index + 1,
       openerTabId: tab.id,
+      currentWindow: null,
     }));
   }
 

@@ -210,43 +210,63 @@ function getTabRealURL(tab) {
   });
 }
 
+/**
+ * Opens a tab or activates an existing one,
+ * reuses the New Tab page or about:blank if it's focused now
+ * @param {Object} params - or just a string e.g. openURL('foo')
+ * @param {string} params.url - if relative, it's auto-expanded to the full extension URL
+ * @param {number} [params.index] - move the tab to this index in the tab strip, -1 = last
+ * @param {Boolean} [params.active=tue] - true to activate the tab, false to open in background
+ * @param {?Boolean} [params.currentWindow=true] - pass null to check all windows
+ * @returns {Promise}
+ */
+function openURL({
+  url = arguments[0],
+  index,
+  active,
+  currentWindow = true,
+}) {
+  url = url.includes('://') ? url : chrome.runtime.getURL(url);
+  // [some] chromium forks don't handle their fake branded protocols
+  url = url.replace(/^(opera|vivaldi)/, 'chrome');
+  // FF doesn't handle moz-extension:// URLs (bug)
+  // FF decodes %2F in encoded parameters (bug)
+  // API doesn't handle the hash-fragment part
+  const urlQuery = url.startsWith('moz-extension') ? undefined :
+    FIREFOX && url.includes('%2F') ?
+      url.replace(/%2F.*/, '*').replace(/#.*/, '') :
+      url.replace(/#.*/, '');
+  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
 
-// opens a tab or activates the already opened one,
-// reuses the New Tab page if it's focused now
-function openURL({url, index, active, currentWindow = true}) {
-  if (!url.includes('://')) {
-    url = chrome.runtime.getURL(url);
+  function maybeSwitch(tabs = []) {
+    const urlFF = FIREFOX && url.replace(/%2F/g, '/');
+    const tab = tabs.find(tab => tab.url === url || tab.url === urlFF);
+    if (!tab) {
+      return getActiveTab().then(maybeReplace);
+    }
+    if (index !== undefined && tab.index !== index) {
+      chrome.tabs.move(tab.id, {index});
+    }
+    return activateTab(tab);
   }
-  return new Promise(resolve => {
-    // [some] chromium forks don't handle their fake branded protocols
-    url = url.replace(/^(opera|vivaldi)/, 'chrome');
-    // FF doesn't handle moz-extension:// URLs (bug)
-    // API doesn't handle the hash-fragment part
-    const urlQuery = url.startsWith('moz-extension') ? undefined : url.replace(/#.*/, '');
-    queryTabs({url: urlQuery, currentWindow}).then(tabs => {
-      for (const tab of tabs) {
-        if (tab.url === url) {
-          activateTab(tab).then(resolve);
-          return;
-        }
-      }
-      getActiveTab().then(tab => {
-        const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
-        if (tab && (tab.url === 'chrome://newtab/' || tab.url === 'about:newtab') && !chromeInIncognito) {
-          // update current NTP, except for chrome:// or chrome-extension:// in incognito
-          chrome.tabs.update({url}, resolve);
-        } else {
-          // create a new tab
-          const options = {url, index, active};
-          // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
-          if (tab && (!FIREFOX || FIREFOX >= 57 && chrome.windows) && !chromeInIncognito) {
-            options.openerTabId = tab.id;
-          }
-          chrome.tabs.create(options, resolve);
-        }
-      });
-    });
-  });
+
+  // update current NTP or about:blank
+  // except when 'url' is chrome:// or chrome-extension:// in incognito
+  function maybeReplace(tab) {
+    const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
+    const emptyTab = tab && (tab.url === 'chrome://newtab/' || tab.url === 'about:newtab');
+    if (emptyTab && !chromeInIncognito) {
+      return new Promise(resolve =>
+        chrome.tabs.update({url}, resolve));
+    }
+    const options = {url, index, active};
+    // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
+    if (tab && (!FIREFOX || FIREFOX >= 57 && chrome.windows) && !chromeInIncognito) {
+      options.openerTabId = tab.id;
+    }
+    return new Promise(resolve =>
+      chrome.tabs.create(options, resolve));
+  }
 }
 
 
