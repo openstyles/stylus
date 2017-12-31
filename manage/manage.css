@@ -366,6 +366,7 @@ select {
 
 #header .filter-selection label {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   height: 18px;
   width: 100%;
