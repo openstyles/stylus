@@ -533,6 +533,7 @@ function showHelp(title = '', body) {
         !$('.CodeMirror-hints, #message-box') &&
         (
           !document.activeElement ||
+          !document.activeElement.closest('#search-replace-dialog') &&
           document.activeElement.matches(':not(input), .can-close-on-esc')
         )
       );

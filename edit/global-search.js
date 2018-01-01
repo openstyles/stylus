@@ -204,6 +204,8 @@ onDOMready().then(() => {
       cmFocused && document.activeElement ||
       state.activeAppliesTo ||
       state.cm);
+    const cmExtra = $('body > :not(#sections) .CodeMirror');
+    state.editors = cmExtra ? [cmExtra.CodeMirror] : editors;
   }
 
 
@@ -224,8 +226,8 @@ onDOMready().then(() => {
     const {index, found, foundInCode} = state.find && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
     if (!foundInCode) clearMarker();
     if (!found) makeTargetVisible(null);
-    const radiateFrom = foundInCode ? index : editors.indexOf(cmStart);
-    setupOverlay(radiateArray(editors, radiateFrom));
+    const radiateFrom = foundInCode ? index : state.editors.indexOf(cmStart);
+    setupOverlay(radiateArray(state.editors, radiateFrom));
     enableReplaceButtons(foundInCode);
     if (state.find) {
       const firstSuccessfulSearch = foundInCode && !state.numFound;
@@ -242,8 +244,8 @@ onDOMready().then(() => {
     const BOF = {line: 0, ch: 0};
     const EOF = getEOF(cmStart);
 
-    const start = editors.indexOf(cmStart);
-    const total = editors.length;
+    const start = state.editors.indexOf(cmStart);
+    const total = state.editors.length;
     let i = 0;
     let wrapAround = 0;
     let pos, index, cm;
@@ -262,7 +264,7 @@ onDOMready().then(() => {
 
     for (; i < total + wrapAround; i++) {
       index = (start + i * (reverse ? -1 : 1) + total) % total;
-      cm = editors[index];
+      cm = state.editors[index];
       if (i) {
         pos = !reverse ? BOF : {line: cm.doc.size, ch: 0};
       }
@@ -271,7 +273,7 @@ onDOMready().then(() => {
         makeMatchVisible(cm, cursor);
         return {found: true, foundInCode: true, index};
       }
-      const cmForNextApplies = !reverse ? cm : editors[index ? index - 1 : total - 1];
+      const cmForNextApplies = !reverse ? cm : state.editors[index ? index - 1 : total - 1];
       if (inApplies && doSearchInApplies(cmForNextApplies)) {
         return {found: true};
       }
@@ -345,8 +347,8 @@ onDOMready().then(() => {
   function doReplaceAll() {
     initState({initReplace: true});
     clearMarker();
-    const generations = new Map(editors.map(cm => [cm, cm.changeGeneration()]));
-    const found = editors.filter(cm => doReplaceInEditor({cm, all: true}));
+    const generations = new Map(state.editors.map(cm => [cm, cm.changeGeneration()]));
+    const found = state.editors.filter(cm => doReplaceInEditor({cm, all: true}));
     if (found.length) {
       state.lastFind = null;
       state.undoHistory.push(found.map(cm => [cm, generations.get(cm)]));
@@ -719,6 +721,7 @@ onDOMready().then(() => {
 
 
   function getNextEditor(cm, step = 1) {
+    const editors = state.editors;
     return editors[(editors.indexOf(cm) + step + editors.length) % editors.length];
   }
 
@@ -790,7 +793,7 @@ onDOMready().then(() => {
   function showTally(num, numApplies) {
     if (num === undefined) {
       num = 0;
-      for (const cm of editors) {
+      for (const cm of state.editors) {
         const {annotate, overlay} = getStateSafe(cm);
         num +=
           ((annotate || {}).matches || []).length ||
