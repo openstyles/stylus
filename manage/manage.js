@@ -248,28 +248,9 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           } else if (numTargets > 1) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
-        } else if (newUI.favicons && entry.parentElement) {
-          let favicon = '';
-          if (type === 'domains') {
-            favicon = GET_FAVICON_URL + targetValue;
-          } else if (targetValue.startsWith('chrome-extension:')) {
-            favicon = OWN_ICON;
-          } else if (type !== 'regexps') {
-            favicon = targetValue.includes('://') && targetValue.match(/^.*?:\/\/([^/]+)/);
-            favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
-          }
-          if (favicon) {
-            const img = element.children[0];
-            if (!img || img.localName !== 'img') {
-              element.insertAdjacentElement('afterbegin', document.createElement('img'))
-                .dataset.src = favicon;
-            } else if ((img.dataset.src || img.src) !== favicon) {
-              img.src = '';
-              img.dataset.src = favicon;
-            }
-          }
         }
         if (!iconsOnly) {
+          element.dataset.type = type;
           element.appendChild(
             document.createTextNode(
               (parts.decorations[type + 'Before'] || '') +
@@ -307,8 +288,50 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
         });
       }
     }
-    debounce(handleEvent.loadFavicons);
+    if (newUI.favicons) {
+      debounce(getFaviconImgSrc);
+    }
   });
+}
+
+function getFaviconImgSrc() {
+  const targets = $$('.target', installed);
+  const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
+  // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
+  const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
+  const domainExt = 'com,org,co,net,im,io,edu,gov,biz,info,de,cn,uk,nl,eu,ru'.split(',');
+  const regexpMatchRegExp = new RegExp(`[\\w-]+[\\.(]+(${domainExt.join('|')})\\b`, 'g');
+  const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
+  for (const target of targets) {
+    const type = target.dataset.type;
+    const targetValue = target.textContent;
+    let favicon = '';
+    if (type === 'domains') {
+      favicon = GET_FAVICON_URL + targetValue;
+    } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
+      favicon = OWN_ICON;
+    } else if (type === 'regexps') {
+      favicon = targetValue
+        .replace(regexpRemoveNegativeLookAhead, '')
+        .replace(regexpReplaceExtraCharacters, '')
+        .match(regexpMatchRegExp);
+      favicon = favicon ? GET_FAVICON_URL + favicon.shift() : '';
+    } else {
+      favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
+      favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+    }
+    if (favicon) {
+      const img = target.children[0];
+      if (!img || img.localName !== 'img') {
+        target.insertAdjacentElement('afterbegin', document.createElement('img'))
+          .dataset.src = favicon;
+      } else if ((img.dataset.src || img.src) !== favicon) {
+        img.src = '';
+        img.dataset.src = favicon;
+      }
+    }
+  }
+  handleEvent.loadFavicons();
 }
 
 
