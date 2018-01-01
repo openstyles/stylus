@@ -139,6 +139,10 @@
 		"message": "Otsi",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
+	"genericEnabledLabel": {
+		"message": "Lubatud",
+		"description": "Used in various lists/options to indicate that something is enabled"
+	},
 	"manageFaviconsGray": {
 		"message": "Tee halliks",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -590,6 +594,10 @@
 		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
 		"description": ""
 	},
+	"clickToUninstall": {
+		"message": "Eemaldamiseks klõpsa",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+	},
 	"filteredStyles": {
 		"message": "$numShown$/$numTotal$ kuvatud",
 		"description": "TL note - make this message short",
@@ -686,6 +694,10 @@
 		"message": "Hinnang",
 		"description": "Text for label that shows the search result's rating"
 	},
+	"genericUnknown": {
+		"message": "Tundmatu",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+	},
 	"popupManageTooltip": {
 		"message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega",
 		"description": "Tooltip for the 'Manage' button in the popup."
@@ -718,7 +730,7 @@
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"linterRulesLink": {
-		"message": "Vaata reeglite täielikku loendit lehel",
+		"message": "Vaata reeglite täielikku loendit",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"styleUpdateDiscardChanges": {
@@ -820,6 +832,10 @@
 		"message": "Tagasiside",
 		"description": "Label for the external link to send feedback for the style"
 	},
+	"genericPrevious": {
+		"message": "Eelmine",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "Ainult keelatud stiilid",
 		"description": "Checkbox to show only disabled styles"
@@ -864,6 +880,10 @@
 		"message": "Kirjuta stiil üle",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"genericNext": {
+		"message": "Järgmine",
+		"description": "Used in various places to select/perform the next step/action"
+	},
 	"popupOpenEditInWindowTooltip": {
 		"message": "Lubatakse ka redaktori kaardi veebilehitseja aknast eraldamisel,\nja keelatakse üksiku redaktori kaardi haakimisel teise aknasse.",
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -871,6 +891,10 @@
 	"dbError": {
 		"message": "Stylus'i andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"dateInstalled": {
+		"message": "Installimise kuupäev",
+		"description": "Option text for the user to sort the style by install date"
 	},
 	"optionsAdvanced": {
 		"message": "Täpsem",
@@ -899,6 +923,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Sobimatud regulaaravaldised vahele jäetud",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Uuendamise kuupäev",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Ainult välised stiilid",
@@ -1001,6 +1029,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"searchCaseSensitive": {
+		"message": "Tõstutundlik",
+		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
 	},
 	"appliesLineWidgetWarning": {
 		"message": "Ei tööta minimeeritud CSS-iga",
