@@ -47,7 +47,6 @@ onDOMready().then(() => {
     tally: null,
     originalFocus: null,
 
-    undo: null,
     undoHistory: [],
 
     searchInApplies: !document.documentElement.classList.contains('usercss'),
@@ -59,11 +58,19 @@ onDOMready().then(() => {
   const ACTIONS = {
     key: {
       'Enter': event => {
-        if (event.target.closest(focusAccessibility.ELEMENTS.join(','))) {
-          return false;
+        switch (document.activeElement) {
+          case state.input:
+            if (state.dialog.dataset.type === 'find') {
+              doSearch({canAdvance: false});
+              destroyDialog();
+              return;
+            }
+            // fallthrough
+          case state.input2:
+            doReplace();
+            return;
         }
-        destroyDialog();
-        doSearch({canAdvance: false});
+        return !event.target.closest(focusAccessibility.ELEMENTS.join(','));
       },
       'Esc': () => {
         destroyDialog({restoreFocus: true});
@@ -109,6 +116,19 @@ onDOMready().then(() => {
       if (action && action.call(el, event) !== false) {
         event.preventDefault();
       }
+    },
+    onfocusout() {
+      if (!state.dialog.contains(document.activeElement)) {
+        state.dialog.addEventListener('focusin', EVENTS.onfocusin);
+        state.dialog.removeEventListener('focusout', EVENTS.onfocusout);
+      }
+    },
+    onfocusin() {
+      state.dialog.addEventListener('focusout', EVENTS.onfocusout);
+      state.dialog.removeEventListener('focusin', EVENTS.onfocusin);
+      trimUndoHistory();
+      enableUndoButton(state.undoHistory.length);
+      if (state.find) doSearch({canAdvance: false});
     }
   };
 
@@ -298,6 +318,7 @@ onDOMready().then(() => {
   function doReplace() {
     initState({initReplace: true});
     const cm = state.cmStart;
+    const generation = cm.changeGeneration();
     const pos = getContinuationPos({cm, reverse: true});
     const cursor = doReplaceInEditor({cm, pos});
     if (!cursor) {
@@ -315,7 +336,7 @@ onDOMready().then(() => {
     if (cm.curOp) cm.endOperation();
 
     if (cursor) {
-      state.undoHistory.push([cm]);
+      state.undoHistory.push([[cm, generation]]);
       enableUndoButton(true);
     }
   }
@@ -324,10 +345,11 @@ onDOMready().then(() => {
   function doReplaceAll() {
     initState({initReplace: true});
     clearMarker();
+    const generations = new Map(editors.map(cm => [cm, cm.changeGeneration()]));
     const found = editors.filter(cm => doReplaceInEditor({cm, all: true}));
     if (found.length) {
       state.lastFind = null;
-      state.undoHistory.push(found);
+      state.undoHistory.push(found.map(cm => [cm, generations.get(cm)]));
       enableUndoButton(true);
       doSearch({canAdvance: false});
     }
@@ -368,8 +390,8 @@ onDOMready().then(() => {
   function doUndo() {
     let undoneSome;
     saveWindowScrollPos();
-    for (const cm of state.undoHistory.pop() || []) {
-      if (document.body.contains(cm.display.wrapper) && !cm.isClean()) {
+    for (const [cm, generation] of state.undoHistory.pop() || []) {
+      if (document.body.contains(cm.display.wrapper) && !cm.isClean(generation)) {
         cm.undo();
         cm.getAllMarks().forEach(marker =>
           marker !== state.marker &&
@@ -379,7 +401,11 @@ onDOMready().then(() => {
       }
     }
     enableUndoButton(state.undoHistory.length);
-    (state.undoHistory.length ? state.undo : state.input).focus();
+    if (state.undoHistory.length) {
+      focusUndoButton();
+    } else {
+      state.input.focus();
+    }
     if (undoneSome) {
       state.lastFind = null;
       restoreWindowScrollPos();
@@ -529,6 +555,7 @@ onDOMready().then(() => {
 
     const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
     Object.assign(dialog, DIALOG_PROPS.dialog);
+    dialog.addEventListener('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
 
     const content = $('[data-type="content"]', dialog);
@@ -646,10 +673,21 @@ onDOMready().then(() => {
     }
   }
 
+
   function enableUndoButton(enabled) {
     if (state.dialog && state.dialog.dataset.type === 'replace') {
       for (const el of $$('[data-action="undo"]', state.dialog)) {
         el.disabled = !enabled;
+      }
+    }
+  }
+
+
+  function focusUndoButton() {
+    for (const btn of $$('[data-action="undo"]', state.dialog)) {
+      if (getComputedStyle(btn).display !== 'none') {
+        btn.focus();
+        break;
       }
     }
   }
@@ -783,6 +821,20 @@ onDOMready().then(() => {
       state.tally.textContent = newText;
       const newTitle = t('searchNumberOfResults' + (numApplies ? '2' : ''));
       if (state.tally.title !== newTitle) state.tally.title = newTitle;
+    }
+  }
+
+
+  function trimUndoHistory() {
+    const history = state.undoHistory;
+    for (let last; (last = history[history.length - 1]);) {
+      const undoables = last.filter(([cm, generation]) =>
+        document.body.contains(cm.display.wrapper) && !cm.isClean(generation));
+      if (undoables.length) {
+        history[history.length - 1] = undoables;
+        break;
+      }
+      history.length--;
     }
   }
 
