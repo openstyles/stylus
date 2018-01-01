@@ -102,10 +102,24 @@ function checkUpdate(entry, {single = true} = {}) {
 
 function reportUpdateState(state, style, details) {
   const entry = $(ENTRY_ID_PREFIX + style.id);
-  entry.classList.remove('checking-update');
+  const newClasses = new Map([
+    /*
+     When a style is updated/installed, handleUpdateInstalled() clears "updatable"
+     and sets "update-done" class (optionally "install-done").
+     If you don't close the manager and the style is changed remotely,
+     checking for updates would find an update so we need to ensure the entry is "updatable"
+     */
+    ['updatable', true],
+    // falsy = remove
+    ['checking-update', 0],
+    ['update-done', 0],
+    ['install-done', 0],
+    ['no-update', 0],
+    ['update-problem', 0],
+  ]);
   switch (state) {
     case BG.updater.UPDATED:
-      entry.classList.add('can-update');
+      newClasses.set('can-update', true);
       entry.updatedCode = style;
       $('.update-note', entry).textContent = '';
       $('#only-updates').classList.remove('hidden');
@@ -131,8 +145,8 @@ function reportUpdateState(state, style, details) {
         details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
       }
       const message = same ? t('updateCheckSucceededNoUpdate') : details;
-      entry.classList.add('no-update');
-      entry.classList.toggle('update-problem', !same);
+      newClasses.set('no-update', true);
+      newClasses.set('update-problem', !same);
       $('.update-note', entry).textContent = message;
       $('.check-update', entry).title = newUI.enabled ? message : '';
       $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
@@ -142,6 +156,16 @@ function reportUpdateState(state, style, details) {
       }
     }
   }
+
+  // construct a new className:
+  // 1. add all truthy newClasses
+  // 2. remove falsy newClasses
+  // 3. keep existing classes otherwise
+  const classes = new Map([...entry.classList.values()].map(cls => [cls, true]));
+  [...newClasses.entries()].forEach(([cls, newState]) => classes.set(cls, newState));
+  const className = [...classes.entries()].filter(([, state]) => state).map(([cls]) => cls).join(' ');
+  if (className !== entry.className) entry.className = className;
+
   if (filtersSelector.hide) {
     filterAndAppend({entry});
     sorter.update();
