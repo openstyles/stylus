@@ -48,8 +48,8 @@
       asHash: true,
     }, options);
     // On own pages we request the styles directly to minimize delay and flicker
-    if (typeof getStylesSafe === 'function') {
-      getStylesSafe(request).then(callback);
+    if (typeof API === 'function') {
+      API.getStyles(request).then(callback);
     } else {
       chrome.runtime.sendMessage(request, callback);
     }

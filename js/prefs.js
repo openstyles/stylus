@@ -148,17 +148,13 @@ var prefs = new function Prefs() {
       values[key] = value;
       defineReadonlyProperty(this.readOnlyValues, key, value);
       const hasChanged = !equal(value, oldValue);
-      if (!fromBroadcast) {
-        if (BG && BG !== window) {
-          BG.prefs.set(key, BG.deepCopy(value), {broadcast, sync});
-        } else {
-          localStorage[key] = typeof defaults[key] === 'object'
-            ? JSON.stringify(value)
-            : value;
-          if (broadcast && hasChanged) {
-            this.broadcast(key, value, {sync});
-          }
-        }
+      if (!fromBroadcast || FIREFOX_NO_DOM_STORAGE) {
+        localStorage[key] = typeof defaults[key] === 'object'
+          ? JSON.stringify(value)
+          : value;
+      }
+      if (!fromBroadcast && broadcast && hasChanged) {
+        this.broadcast(key, value, {sync});
       }
       if (hasChanged) {
         const specific = onChange.specific.get(key);
@@ -174,8 +170,6 @@ var prefs = new function Prefs() {
         }
       }
     },
-
-    remove: key => this.set(key, undefined),
 
     reset: key => this.set(key, deepCopy(defaults[key])),
 
@@ -226,62 +220,63 @@ var prefs = new function Prefs() {
     },
   });
 
-  // Unlike sync, HTML5 localStorage is ready at browser startup
-  // so we'll mirror the prefs to avoid using the wrong defaults
-  // during the startup phase
-  for (const key in defaults) {
-    const defaultValue = defaults[key];
-    let value = localStorage[key];
-    if (typeof value === 'string') {
-      switch (typeof defaultValue) {
-        case 'boolean':
-          value = value.toLowerCase() === 'true';
-          break;
-        case 'number':
-          value |= 0;
-          break;
-        case 'object':
-          value = tryJSONparse(value) || defaultValue;
-          break;
-      }
-    } else if (FIREFOX_NO_DOM_STORAGE && BG) {
-      value = BG.localStorage[key];
-      value = value === undefined ? defaultValue : value;
-    } else {
-      value = defaultValue;
-    }
-    if (BG === window) {
-      // when in bg page, .set() will write to localStorage
-      this.set(key, value, {broadcast: false, sync: false});
-    } else {
-      values[key] = value;
-      defineReadonlyProperty(this.readOnlyValues, key, value);
-    }
-  }
-
-  if (!BG || BG === window) {
-    affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
-
-    const importFromSync = (synced = {}) => {
+  {
+    const importFromBG = () =>
+      API.getPrefs().then(prefs => {
+        const props = {};
+        for (const id in prefs) {
+          const value = prefs[id];
+          values[id] = value;
+          props[id] = {value: deepCopy(value)};
+        }
+        Object.defineProperties(this.readOnlyValues, props);
+      });
+    // Unlike chrome.storage or messaging, HTML5 localStorage is synchronous and always ready,
+    // so we'll mirror the prefs to avoid using the wrong defaults during the startup phase
+    const importFromLocalStorage = () => {
       for (const key in defaults) {
-        if (key in synced) {
-          this.set(key, synced[key], {sync: false});
-        }
-      }
-    };
-
-    getSync().get('settings', ({settings} = {}) => importFromSync(settings));
-
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === 'sync' && 'settings' in changes) {
-        const synced = changes.settings.newValue;
-        if (synced) {
-          importFromSync(synced);
+        const defaultValue = defaults[key];
+        let value = localStorage[key];
+        if (typeof value === 'string') {
+          switch (typeof defaultValue) {
+            case 'boolean':
+              value = value.toLowerCase() === 'true';
+              break;
+            case 'number':
+              value |= 0;
+              break;
+            case 'object':
+              value = tryJSONparse(value) || defaultValue;
+              break;
+          }
+        } else if (FIREFOX_NO_DOM_STORAGE && BG) {
+          value = BG.localStorage[key];
+          value = value === undefined ? defaultValue : value;
+          localStorage[key] = value;
         } else {
-          // user manually deleted our settings, we'll recreate them
-          getSync().set({'settings': values});
+          value = defaultValue;
+        }
+        if (BG === window) {
+          // when in bg page, .set() will write to localStorage
+          this.set(key, value, {broadcast: false, sync: false});
+        } else {
+          values[key] = value;
+          defineReadonlyProperty(this.readOnlyValues, key, value);
         }
       }
+      return Promise.resolve();
+    };
+    (FIREFOX_NO_DOM_STORAGE && !BG ? importFromBG() : importFromLocalStorage()).then(() => {
+      if (BG && BG !== window) return;
+      if (BG === window) {
+        affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
+        getSync().get('settings', data => importFromSync.call(this, data.settings));
+      }
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'sync' && 'settings' in changes) {
+          importFromSync.call(this, changes.settings.newValue);
+        }
+      });
     });
   }
 
@@ -348,6 +343,14 @@ var prefs = new function Prefs() {
         }
       }
     };
+  }
+
+  function importFromSync(synced = {}) {
+    for (const key in defaults) {
+      if (key in synced) {
+        this.set(key, synced[key], {sync: false});
+      }
+    }
   }
 
   function defineReadonlyProperty(obj, key, value) {

@@ -129,7 +129,7 @@ const sorter = (() => {
       styles: current.map(entry => ({
         entry,
         name: entry.styleNameLowerCase + '\n' + entry.styleMeta.name,
-        style: BG.cachedStyles.byId.get(entry.styleId),
+        style: entry.styleMeta,
       }))
     });
     if (current.some((entry, index) => entry !== sorted[index].entry)) {

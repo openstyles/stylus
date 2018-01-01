@@ -200,7 +200,7 @@
     if (!liveReload && !prefs.get('openEditInWindow')) {
       chrome.tabs.update({url: '/edit.html?id=' + style.id});
     } else {
-      BG.openEditor(style.id);
+      API.openEditor({id: style.id});
       if (!liveReload) {
         closeCurrentTab();
       }
@@ -212,8 +212,8 @@
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
     cm.refresh();
-    BG.usercssHelper.build(BG.deepCopy({sourceCode, checkDup: true}))
-      .then(r => init(deepCopy(r)))
+    API.buildUsercss({sourceCode, checkDup: true})
+      .then(r => init(r instanceof Object ? r : deepCopy(r)))
       .catch(err => {
         $('.header').classList.add('meta-init-error');
         showError(err);
@@ -222,7 +222,7 @@
 
   function buildWarning(err) {
     const contents = Array.isArray(err) ?
-      $create('pre', err.join('\n')) :
+      [$create('pre', err.join('\n'))] :
       [err && err.message || err || 'Unknown error'];
     if (Number.isInteger(err.index)) {
       const pos = cm.posFromIndex(err.index);
@@ -283,8 +283,8 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        BG.usercssHelper.save(BG.deepCopy(Object.assign(style, dup && {reason: 'update'})))
-          .then(r => install(deepCopy(r)))
+        API.saveUsercss(Object.assign(style, dup && {reason: 'update'}))
+          .then(r => install(r instanceof Object ? r : deepCopy(r)))
           .catch(err => messageBox.alert(t('styleInstallFailed', err)))
       );
     };

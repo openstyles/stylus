@@ -62,23 +62,26 @@ function checkUpdates() {
   let checked = 0;
   let updated = 0;
   const maxWidth = $('#update-progress').parentElement.clientWidth;
-  BG.updater.checkAllStyles({observer});
 
-  function observer(state, value) {
-    switch (state) {
-      case BG.updater.COUNT:
-        total = value;
-        document.body.classList.add('update-in-progress');
-        break;
-      case BG.updater.UPDATED:
-        updated++;
-        // fallthrough
-      case BG.updater.SKIPPED:
-        checked++;
-        break;
-      case BG.updater.DONE:
-        document.body.classList.remove('update-in-progress');
-        return;
+  chrome.runtime.onConnect.addListener(function onConnect(port) {
+    if (port.name !== 'updater') return;
+    port.onMessage.addListener(observer);
+    chrome.runtime.onConnect.removeListener(onConnect);
+  });
+
+  API.updateCheckAll({observe: true});
+
+  function observer(info) {
+    if ('count' in info) {
+      total = info.count;
+      document.body.classList.add('update-in-progress');
+    } else if (info.updated) {
+      updated++;
+      checked++;
+    } else if (info.error) {
+      checked++;
+    } else if (info.done) {
+      document.body.classList.remove('update-in-progress');
     }
     $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
     $('#updates-installed').dataset.value = updated || '';

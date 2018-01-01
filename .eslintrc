@@ -13,9 +13,11 @@ globals:
   KEEP_CHANNEL_OPEN: false
   CHROME: false
   FIREFOX: false
+  VIVALDI: false
   OPERA: false
   URLS: false
   BG: false
+  API: false
   notifyAllTabs: false
   sendMessage: false
   queryTabs: false
@@ -33,10 +35,6 @@ globals:
   tryJSONparse: false
   debounce: false
   deepCopy: false
-  onBackgroundReady: false
-  deleteStyleSafe: false
-  getStylesSafe: false
-  saveStyleSafe: false
   sessionStorageHash: false
   download: false
   invokeOrPostpone: false
@@ -63,6 +61,10 @@ globals:
   # prefs.js
   prefs: false
   setupLivePrefs: false
+  # storage-util.js
+  chromeLocal: false
+  chromeSync: false
+  LZString: false
 
 rules:
   accessor-pairs: [2]

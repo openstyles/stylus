@@ -101,11 +101,15 @@ var hotkeys = (() => {
       entry = typeof entry === 'string' ? $('#' + entry) : entry;
       if (!match && $('.checker', entry).checked !== enable || entry.classList.contains(match)) {
         results.push(entry.id);
-        task = task.then(() => saveStyleSafe({
+        task = task.then(() => API.saveStyle({
           id: entry.styleId,
           enabled: enable,
           notify: false,
-        }));
+        })).then(() => {
+          entry.classList.toggle('enabled', enable);
+          entry.classList.toggle('disabled', !enable);
+          $('.checker', entry).checked = enable;
+        });
       }
     }
     if (results.length) {
@@ -115,7 +119,7 @@ var hotkeys = (() => {
   }
 
   function refreshAllTabs() {
-    getStylesSafe({matchUrl: location.href, enabled: true, asHash: true})
+    API.getStyles({matchUrl: location.href, enabled: true, asHash: true})
       .then(styles => applyOnMessage({method: 'styleReplaceAll', styles}));
     queryTabs().then(tabs =>
       tabs.forEach(tab => (!FIREFOX || tab.width) &&
@@ -127,11 +131,11 @@ var hotkeys = (() => {
     chrome.webNavigation.getAllFrames({tabId}, frames => {
       frames = frames && frames[0] ? frames : [{frameId: 0}];
       frames.forEach(({frameId}) =>
-        getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+        API.getStyles({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
           const message = {method: 'styleReplaceAll', tabId, frameId, styles};
           invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
           if (frameId === 0) {
-            setTimeout(BG.updateIcon, 0, tab, styles);
+            setTimeout(API.updateIcon, 0, {tab, styles});
           }
         }));
       ignoreChromeError();

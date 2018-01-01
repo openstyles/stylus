@@ -106,7 +106,7 @@ function createSourceEditor(style) {
     `.replace(/^\s+/gm, '');
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
-    BG.chromeSync.getLZValue('usercssTemplate').then(code => {
+    chromeSync.getLZValue('usercssTemplate').then(code => {
       style.sourceCode = code || DEFAULT_CODE;
       cm.startOperation();
       cm.setValue(style.sourceCode);
@@ -216,8 +216,8 @@ function createSourceEditor(style) {
       return;
     }
     const code = cm.getValue();
-    return onBackgroundReady()
-      .then(() => BG.usercssHelper.save({
+    return (
+      API.saveUsercss({
         reason: 'editSave',
         id: style.id,
         enabled: style.enabled,
@@ -228,8 +228,8 @@ function createSourceEditor(style) {
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-            BG.chromeSync.setLZValue('usercssTemplate', code)
-              .then(() => BG.chromeSync.getLZValue('usercssTemplate'))
+            chromeSync.setLZValue('usercssTemplate', code)
+              .then(() => chromeSync.getLZValue('usercssTemplate'))
               .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
           return;
         }

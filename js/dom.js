@@ -64,7 +64,8 @@ onDOMready().then(() => {
 if (!chrome.app && chrome.windows) {
   // die if unable to access BG directly
   chrome.windows.getCurrent(wnd => {
-    if (!BG && wnd.incognito) {
+    if (!BG && wnd.incognito &&
+        !location.pathname.includes('popup.html')) {
       // private windows can't get bg page
       location.href = '/msgbox/dysfunctional.html';
       throw 0;

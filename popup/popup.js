@@ -15,16 +15,15 @@ getActiveTab().then(tab =>
   FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
   ? getTabRealURLFirefox(tab)
   : getTabRealURL(tab)
-).then(url => {
-  tabURL = URLS.supported(url) ? url : '';
-  Promise.all([
-    tabURL && getStylesSafe({matchUrl: tabURL}),
-    onDOMready().then(() => {
-      initPopup(tabURL);
-    }),
-  ]).then(([styles]) => {
-    showStyles(styles);
-  });
+).then(url => Promise.all([
+  (tabURL = URLS.supported(url) ? url : '') &&
+  API.getStyles({
+    matchUrl: tabURL,
+    omitCode: !BG,
+  }),
+  onDOMready().then(initPopup),
+])).then(([styles]) => {
+  showStyles(styles);
 });
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
@@ -33,9 +32,7 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
-      // notifyAllTabs sets msg.style's code to null so we have to get the actual style
-      // because we analyze its code in detectSloppyRegexps
-      handleUpdate(BG.cachedStyles.byId.get(msg.style.id));
+      handleUpdate(msg.style);
       break;
     case 'styleDeleted':
       handleDelete(msg.id);
@@ -76,7 +73,7 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
 }
 
 
-function initPopup(url) {
+function initPopup() {
   installed = $('#installed');
 
   setPopupWidth();
@@ -108,7 +105,7 @@ function initPopup(url) {
       installed);
   }
 
-  if (!url) {
+  if (!tabURL) {
     document.body.classList.add('blocked');
     document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
     return;
@@ -153,10 +150,10 @@ function initPopup(url) {
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
   Object.assign(urlLink, {
-    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
-    title: `url-prefix("${url}")`,
+    href: 'edit.html?url-prefix=' + encodeURIComponent(tabURL),
+    title: `url-prefix("${tabURL}")`,
     textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? new URL(url).pathname.slice(1)
+      ? new URL(tabURL).pathname.slice(1)
       // this&nbsp;URL
       : t('writeStyleForURL').replace(/ /g, '\u00a0'),
     onclick: handleEvent.openLink,
@@ -170,7 +167,7 @@ function initPopup(url) {
   matchTargets.appendChild(urlLink);
 
   // For domain
-  const domains = BG.getDomains(url);
+  const domains = getDomains(tabURL);
   for (const domain of domains) {
     const numParts = domain.length - domain.replace(/\./g, '').length + 1;
     // Don't include TLD
@@ -193,6 +190,19 @@ function initPopup(url) {
     matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
   }
   writeStyle.appendChild(matchWrapper);
+
+  function getDomains(url) {
+    let d = /.*?:\/*([^/:]+)|$/.exec(url)[1];
+    if (!d || url.startsWith('file:')) {
+      return [];
+    }
+    const domains = [d];
+    while (d.indexOf('.') !== -1) {
+      d = d.substring(d.indexOf('.') + 1);
+      domains.push(d);
+    }
+    return domains;
+  }
 }
 
 
@@ -213,34 +223,30 @@ function showStyles(styles) {
       : a.name.localeCompare(b.name)
   ));
 
-  let postponeDetect = false;
-  const t0 = performance.now();
   const container = document.createDocumentFragment();
-  for (const style of styles) {
-    createStyleElement({style, container, postponeDetect});
-    postponeDetect = postponeDetect || performance.now() - t0 > 100;
-  }
+  styles.forEach(style => createStyleElement({style, container}));
   installed.appendChild(container);
+  setTimeout(detectSloppyRegexps, 100, styles);
 
-  getStylesSafe({matchUrl: tabURL, strictRegexp: false})
-    .then(unscreenedStyles => {
-      for (const unscreened of unscreenedStyles) {
-        if (!styles.includes(unscreened)) {
-          postponeDetect = postponeDetect || performance.now() - t0 > 100;
-          createStyleElement({
-            style: Object.assign({appliedSections: [], postponeDetect}, unscreened),
-          });
-        }
+  API.getStyles({
+    matchUrl: tabURL,
+    strictRegexp: false,
+    omitCode: true,
+  }).then(unscreenedStyles => {
+    for (const style of unscreenedStyles) {
+      if (!styles.find(({id}) => id === style.id)) {
+        createStyleElement({style, check: true});
       }
-      window.dispatchEvent(new Event('showStyles:done'));
-    });
+    }
+    window.dispatchEvent(new Event('showStyles:done'));
+  });
 }
 
 
 function createStyleElement({
   style,
+  check = false,
   container = installed,
-  postponeDetect,
 }) {
   const entry = template.style.cloneNode(true);
   entry.setAttribute('style-id', style.id);
@@ -294,7 +300,7 @@ function createStyleElement({
   $('.delete', entry).onclick = handleEvent.delete;
   $('.configure', entry).onclick = handleEvent.configure;
 
-  invokeOrPostpone(!postponeDetect, detectSloppyRegexps, {entry, style});
+  if (check) detectSloppyRegexps([style]);
 
   const oldElement = $(ENTRY_ID_PREFIX + style.id);
   if (oldElement) {
@@ -316,23 +322,24 @@ Object.assign(handleEvent, {
   },
 
   name(event) {
-    this.checkbox.click();
+    this.checkbox.dispatchEvent(new MouseEvent('click'));
     event.preventDefault();
   },
 
   toggle(event) {
-    saveStyleSafe({
+    API.saveStyle({
       id: handleEvent.getClickedStyleId(event),
-      enabled: this.type === 'checkbox' ? this.checked : this.matches('.enable'),
+      enabled: this.matches('.enable') || this.checked,
     });
   },
 
   delete(event) {
-    const id = handleEvent.getClickedStyleId(event);
+    const entry = handleEvent.getClickedStyleElement(event);
+    const id = entry.styleId;
     const box = $('#confirm');
     box.dataset.display = true;
     box.style.cssText = '';
-    $('b', box).textContent = (BG.cachedStyles.byId.get(id) || {}).name;
+    $('b', box).textContent = $('.style-name', entry).textContent;
     $('[data-cmd="ok"]', box).focus();
     $('[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
@@ -350,18 +357,14 @@ Object.assign(handleEvent, {
         className: 'lights-on',
         onComplete: () => (box.dataset.display = false),
       });
-      if (ok) {
-        deleteStyleSafe({id}).then(() => {
-          handleDelete(id);
-        });
-      }
+      if (ok) API.deleteStyle({id});
     }
   },
 
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      getStylesSafe({id: styleId}).then(([style]) => {
+      API.getStyles({id: styleId}).then(([style]) => {
         hotkeys.setState(false);
         configDialog(deepCopy(style)).then(() => {
           hotkeys.setState(true);
@@ -456,15 +459,22 @@ Object.assign(handleEvent, {
 
 function handleUpdate(style) {
   if ($(ENTRY_ID_PREFIX + style.id)) {
-    createStyleElement({style});
+    createStyleElement({style, check: true});
     return;
   }
+  if (!tabURL) return;
   // Add an entry when a new style for the current url is installed
-  if (tabURL && BG.getApplicableSections({style, matchUrl: tabURL, stopOnFirst: true}).length) {
-    document.body.classList.remove('blocked');
-    $$.remove('.blocked-info, #no-styles');
-    createStyleElement({style});
-  }
+  API.getStyles({
+    matchUrl: tabURL,
+    stopOnFirst: true,
+    omitCode: true,
+  }).then(([style]) => {
+    if (style) {
+      document.body.classList.remove('blocked');
+      $$.remove('.blocked-info, #no-styles');
+      createStyleElement({style, check: true});
+    }
+  });
 }
 
 
@@ -476,58 +486,28 @@ function handleDelete(id) {
 }
 
 
-/*
-  According to CSS4 @document specification the entire URL must match.
-  Stylish-for-Chrome implemented it incorrectly since the very beginning.
-  We'll detect styles that abuse the bug by finding the sections that
-  would have been applied by Stylish but not by us as we follow the spec.
-  Additionally we'll check for invalid regexps.
-*/
-function detectSloppyRegexps({entry, style}) {
-  // make sure all regexps are compiled
-  const rxCache = BG.cachedStyles.regexps;
-  let hasRegExp = false;
-  for (const section of style.sections) {
-    for (const regexp of section.regexps) {
-      hasRegExp = true;
-      for (let pass = 1; pass <= 2; pass++) {
-        const cacheKey = pass === 1 ? regexp : BG.SLOPPY_REGEXP_PREFIX + regexp;
-        if (!rxCache.has(cacheKey)) {
-          // according to CSS4 @document specification the entire URL must match
-          const anchored = pass === 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
-          // create in the bg context to avoid leaking of "dead objects"
-          const rx = BG.tryRegExp(anchored);
-          rxCache.set(cacheKey, rx || false);
-        }
+function detectSloppyRegexps(styles) {
+  API.detectSloppyRegexps({
+    matchUrl: tabURL,
+    ids: styles.map(({id}) => id),
+  }).then(results => {
+    for (const {id, applied, skipped, hasInvalidRegexps} of results) {
+      const entry = $(ENTRY_ID_PREFIX + id);
+      if (!entry) continue;
+      if (!applied) {
+        entry.classList.add('not-applied');
+        $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
+      }
+      if (skipped || hasInvalidRegexps) {
+        entry.classList.toggle('regexp-partial', Boolean(skipped));
+        entry.classList.toggle('regexp-invalid', Boolean(hasInvalidRegexps));
+        const indicator = template.regexpProblemIndicator.cloneNode(true);
+        indicator.appendChild(document.createTextNode(entry.skipped || '!'));
+        indicator.onclick = handleEvent.indicator;
+        $('.main-controls', entry).appendChild(indicator);
       }
     }
-  }
-  if (!hasRegExp) {
-    return;
-  }
-  const {
-    appliedSections =
-      BG.getApplicableSections({style, matchUrl: tabURL}),
-    wannabeSections =
-      BG.getApplicableSections({style, matchUrl: tabURL, strictRegexp: false}),
-  } = style;
-
-  entry.hasInvalidRegexps = wannabeSections.some(section =>
-    section.regexps.some(rx => !rxCache.has(rx)));
-  entry.sectionsSkipped = wannabeSections.length - appliedSections.length;
-
-  if (!appliedSections.length) {
-    entry.classList.add('not-applied');
-    $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
-  }
-  if (entry.sectionsSkipped || entry.hasInvalidRegexps) {
-    entry.classList.toggle('regexp-partial', entry.sectionsSkipped);
-    entry.classList.toggle('regexp-invalid', entry.hasInvalidRegexps);
-    const indicator = template.regexpProblemIndicator.cloneNode(true);
-    indicator.appendChild(document.createTextNode(entry.sectionsSkipped || '!'));
-    indicator.onclick = handleEvent.indicator;
-    $('.main-controls', entry).appendChild(indicator);
-  }
+  });
 }
 
 

@@ -1,9 +1,11 @@
-/* global messageBox, getStyleWithNoCode, retranslateCSS */
-/* global filtersSelector, filterAndAppend */
-/* global checkUpdate, handleUpdateInstalled */
-/* global objectDiff */
-/* global configDialog */
-/* global sorter */
+/*
+global messageBox getStyleWithNoCode retranslateCSS
+global filtersSelector filterAndAppend urlFilterParam
+global checkUpdate handleUpdateInstalled
+global objectDiff
+global configDialog
+global sorter
+*/
 'use strict';
 
 let installed;
@@ -30,13 +32,12 @@ const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const handleEvent = {};
 
 Promise.all([
-  getStylesSafe(),
+  API.getStyles({omitCode: !BG}),
+  urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
   onDOMready().then(initGlobalEvents),
-]).then(([styles]) => {
-  showStyles(styles);
+]).then(args => {
+  showStyles(...args);
 });
-
-dieOnNullBackground();
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
@@ -107,7 +108,7 @@ function initGlobalEvents() {
 }
 
 
-function showStyles(styles = []) {
+function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
     styles: styles.map(style => ({
       style,
@@ -137,7 +138,13 @@ function showStyles(styles = []) {
       // eslint-disable-next-line no-unmodified-loop-condition
       (shouldRenderAll || ++rendered < 20 || performance.now() - t0 < 10)
     ) {
-      renderBin.appendChild(createStyleElement(sorted[index++]));
+      const info = sorted[index++];
+      const entry = createStyleElement(info);
+      if (matchUrlIds && !matchUrlIds.includes(info.style.id)) {
+        entry.classList.add('not-matching');
+        rendered--;
+      }
+      renderBin.appendChild(entry);
     }
     filterAndAppend({container: renderBin});
     if (index < sorted.length) {
@@ -277,7 +284,7 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
 
 
 function recreateStyleTargets({styles, iconsOnly = false} = {}) {
-  Promise.resolve(styles || getStylesSafe()).then(styles => {
+  Promise.resolve(styles || API.getStyles()).then(styles => {
     for (const style of styles) {
       const entry = $(ENTRY_ID_PREFIX + style.id);
       if (entry) {
@@ -391,7 +398,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    saveStyleSafe({
+    API.saveStyle({
       id: entry.styleId,
       enabled: this.matches('.enable') || this.checked,
     });
@@ -399,39 +406,30 @@ Object.assign(handleEvent, {
 
   check(event, entry) {
     event.preventDefault();
-    checkUpdate(entry);
+    checkUpdate(entry, {single: true});
   },
 
   update(event, entry) {
     event.preventDefault();
-    const request = Object.assign(entry.updatedCode, {
-      id: entry.styleId,
-      reason: 'update',
-    });
-    if (entry.updatedCode.usercssData) {
-      onBackgroundReady()
-        .then(() => BG.usercssHelper.save(request));
-    } else {
-      // update everything but name
-      request.name = null;
-      saveStyleSafe(request);
-    }
+    const json = entry.updatedCode;
+    json.id = entry.styleId;
+    json.reason = 'update';
+    API[json.usercssData ? 'saveUsercss' : 'saveStyle'](json);
   },
 
   delete(event, entry) {
     event.preventDefault();
     const id = entry.styleId;
-    const {name} = BG.cachedStyles.byId.get(id) || {};
     animateElement(entry);
     messageBox({
       title: t('deleteStyleConfirm'),
-      contents: name,
+      contents: entry.styleMeta.name,
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })
     .then(({button}) => {
       if (button === 0) {
-        deleteStyleSafe({id});
+        API.deleteStyle({id});
       }
     });
   },
@@ -525,7 +523,7 @@ function handleUpdate(style, {reason, method} = {}) {
   sorter.update();
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
-    scrollElementIntoView(entry);
+    requestAnimationFrame(() => scrollElementIntoView(entry));
   }
 
   function handleToggledOrCodeOnly() {
@@ -606,7 +604,7 @@ function switchUI({styleOnly} = {}) {
   const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
   if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
     installed.textContent = '';
-    getStylesSafe().then(showStyles);
+    API.getStyles().then(showStyles);
     return;
   }
   if (changed.targets) {
@@ -644,29 +642,4 @@ function usePrefsDuringPageLoad() {
     }
   }
   $$('#header select').forEach(el => el.adjustWidth());
-}
-
-
-// TODO: remove when these bugs are fixed in FF
-function dieOnNullBackground() {
-  if (!FIREFOX || BG) {
-    return;
-  }
-  sendMessage({method: 'healthCheck'}, health => {
-    if (health && !chrome.extension.getBackgroundPage()) {
-      onDOMready().then(() => {
-        sendMessage({method: 'getStyles'}, showStyles);
-        messageBox({
-          title: 'Stylus',
-          className: 'danger center',
-          contents: t('dysfunctionalBackgroundConnection'),
-          onshow: () => {
-            $('#message-box-close-icon').remove();
-            window.removeEventListener('keydown', messageBox.listeners.key, true);
-          }
-        });
-        document.documentElement.style.pointerEvents = 'none';
-      });
-    }
-  });
 }

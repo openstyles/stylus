@@ -8,7 +8,7 @@ global showAppliesToHelp beautify regExpTester setGlobalProgress setCleanSection
 */
 'use strict';
 
-function initWithSectionStyle({style, codeIsUpdated}) {
+function initWithSectionStyle(style, codeIsUpdated) {
   $('#name').value = style.name || '';
   $('#enabled').checked = style.enabled !== false;
   $('#url').href = style.url || '';

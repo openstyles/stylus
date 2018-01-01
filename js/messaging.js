@@ -1,14 +1,18 @@
-/* global BG: true, onRuntimeMessage, applyOnMessage, handleUpdate, handleDelete */
-/* global FIREFOX: true */
+/*
+global BG: true
+global FIREFOX: true
+global onRuntimeMessage applyOnMessage
+*/
 'use strict';
 
 // keep message channel open for sendResponse in chrome.runtime.onMessage listener
 const KEEP_CHANNEL_OPEN = true;
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
-const OPERA = CHROME && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
+const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
+const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
 const ANDROID = !chrome.windows;
-let FIREFOX = !CHROME && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
 if (!CHROME && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
@@ -65,13 +69,14 @@ if (!BG || BG !== window) {
     document.documentElement.classList.add('firefox');
   } else if (OPERA) {
     document.documentElement.classList.add('opera');
-  } else if (chrome.app && navigator.userAgent.includes('Vivaldi')) {
-    document.documentElement.classList.add('vivaldi');
+  } else {
+    if (VIVALDI) document.documentElement.classList.add('vivaldi');
   }
   // TODO: remove once our manifest's minimum_chrome_version is 50+
   // Chrome 49 doesn't report own extension pages in webNavigation apparently
   if (CHROME && CHROME < 2661) {
-    getActiveTab().then(BG.updateIcon);
+    getActiveTab().then(tab =>
+      window.API.updateIcon({tab}));
   }
 }
 
@@ -81,6 +86,60 @@ if (FIREFOX_NO_DOM_STORAGE) {
   Object.defineProperty(window, 'localStorage', {value: {}});
   Object.defineProperty(window, 'sessionStorage', {value: {}});
 }
+
+// eslint-disable-next-line no-var
+var API = (() => {
+  return new Proxy(() => {}, {
+    get: (target, name) =>
+      name === 'remoteCall' ?
+        remoteCall :
+        arg => invokeBG(name, arg),
+  });
+
+  function remoteCall(name, arg, remoteWindow) {
+    let thing = window[name] || window.API_METHODS[name];
+    if (typeof thing === 'function') {
+      thing = thing(arg);
+    }
+    if (!thing || typeof thing !== 'object') {
+      return thing;
+    } else if (thing instanceof Promise) {
+      return thing.then(product => remoteWindow.deepCopy(product));
+    } else {
+      return remoteWindow.deepCopy(thing);
+    }
+  }
+
+  function invokeBG(name, arg = {}) {
+    if (BG && (name in BG || name in BG.API_METHODS)) {
+      const call = BG !== window ?
+        BG.API.remoteCall(name, BG.deepCopy(arg), window) :
+        remoteCall(name, arg, BG);
+      return Promise.resolve(call);
+    }
+    if (BG && BG.getStyles) {
+      throw new Error('Bad API method', name, arg);
+    }
+    if (FIREFOX) {
+      arg.method = name;
+      return sendMessage(arg);
+    }
+    return onBackgroundReady().then(() => invokeBG(name, arg));
+  }
+
+  function onBackgroundReady() {
+    return BG && BG.getStyles ? Promise.resolve() : new Promise(function ping(resolve) {
+      sendMessage({method: 'healthCheck'}, health => {
+        if (health !== undefined) {
+          BG = chrome.extension.getBackgroundPage();
+          resolve();
+        } else {
+          setTimeout(ping, 0, resolve);
+        }
+      });
+    });
+  }
+})();
 
 
 function notifyAllTabs(msg) {
@@ -99,6 +158,12 @@ function notifyAllTabs(msg) {
   const affectsIcon = affectsAll || msg.affects.icon;
   const affectsPopup = affectsAll || msg.affects.popup;
   const affectsSelf = affectsPopup || msg.prefs;
+  // notify background page and all open popups
+  if (affectsSelf) {
+    msg.tabId = undefined;
+    sendMessage(msg, ignoreChromeError);
+  }
+  // notify tabs
   if (affectsTabs || affectsIcon) {
     const notifyTab = tab => {
       // own pages will be notified via runtime.sendMessage later
@@ -109,8 +174,9 @@ function notifyAllTabs(msg) {
         msg.tabId = tab.id;
         sendMessage(msg, ignoreChromeError);
       }
-      if (affectsIcon && BG) {
-        BG.updateIcon(tab);
+      if (affectsIcon) {
+        // eslint-disable-next-line no-use-before-define
+        debounce(API.updateIcon, 0, {tab});
       }
     };
     // list all tabs including chrome-extension:// which can be ours
@@ -131,11 +197,6 @@ function notifyAllTabs(msg) {
   // notify apply.js on own pages
   if (typeof applyOnMessage !== 'undefined') {
     applyOnMessage(originalMessage);
-  }
-  // notify background page and all open popups
-  if (affectsSelf) {
-    msg.tabId = undefined;
-    sendMessage(msg, ignoreChromeError);
   }
 }
 
@@ -294,10 +355,9 @@ function ignoreChromeError() {
 
 
 function getStyleWithNoCode(style) {
-  const stripped = Object.assign({}, style, {sections: []});
-  for (const section of style.sections) {
-    stripped.sections.push(Object.assign({}, section, {code: null}));
-  }
+  const stripped = deepCopy(style);
+  for (const section of stripped.sections) section.code = null;
+  stripped.sourceCode = null;
   return stripped;
 }
 
@@ -343,31 +403,23 @@ const debounce = Object.assign((fn, delay, ...args) => {
 
 
 function deepCopy(obj) {
-  return obj !== null && obj !== undefined && typeof obj === 'object'
-    ? deepMerge(typeof obj.slice === 'function' ? [] : {}, obj)
-    : obj;
-}
-
-
-function deepMerge(target, ...args) {
-  const isArray = typeof target.slice === 'function';
-  for (const obj of args) {
-    if (isArray && obj !== null && obj !== undefined) {
-      for (const element of obj) {
-        target.push(deepCopy(element));
-      }
-      continue;
+  if (!obj || typeof obj !== 'object') return obj;
+  // N.B. a copy should be an explicitly  literal
+  if (Array.isArray(obj)) {
+    const copy = [];
+    for (const v of obj) {
+      copy.push(!v || typeof v !== 'object' ? v : deepCopy(v));
     }
-    for (const k in obj) {
-      const value = obj[k];
-      if (k in target && typeof value === 'object' && value !== null) {
-        deepMerge(target[k], value);
-      } else {
-        target[k] = deepCopy(value);
-      }
-    }
+    return copy;
   }
-  return target;
+  const copy = {};
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
+  for (const k in obj) {
+    if (!hasOwnProperty.call(obj, k)) continue;
+    const v = obj[k];
+    copy[k] = !v || typeof v !== 'object' ? v : deepCopy(v);
+  }
+  return copy;
 }
 
 
@@ -387,51 +439,6 @@ function sessionStorageHash(name) {
       sessionStorage[this.name] = JSON.stringify(this.value);
     }
   };
-}
-
-
-function onBackgroundReady() {
-  return BG && BG.getStyles ? Promise.resolve() : new Promise(function ping(resolve) {
-    sendMessage({method: 'healthCheck'}, health => {
-      if (health !== undefined) {
-        BG = chrome.extension.getBackgroundPage();
-        resolve();
-      } else {
-        setTimeout(ping, 0, resolve);
-      }
-    });
-  });
-}
-
-
-// in case Chrome haven't yet loaded the bg page and displays our page like edit/manage
-function getStylesSafe(options) {
-  return onBackgroundReady()
-    .then(() => BG.getStyles(options));
-}
-
-
-function saveStyleSafe(style) {
-  return onBackgroundReady()
-    .then(() => BG.saveStyle(BG.deepCopy(style)))
-    .then(savedStyle => {
-      if (style.notify === false) {
-        handleUpdate(savedStyle, style);
-      }
-      return savedStyle;
-    });
-}
-
-
-function deleteStyleSafe({id, notify = true} = {}) {
-  return onBackgroundReady()
-    .then(() => BG.deleteStyle({id, notify}))
-    .then(() => {
-      if (!notify) {
-        handleDelete(id);
-      }
-      return id;
-    });
 }
 
 
@@ -489,7 +496,7 @@ function invokeOrPostpone(isInvoke, fn, ...args) {
 }
 
 
-function openEditor(id) {
+function openEditor({id}) {
   let url = '/edit.html';
   if (id) {
     url += `?id=${id}`;

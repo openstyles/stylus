@@ -107,7 +107,7 @@ function configDialog(style) {
     buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
   }
 
-  function save({anyChangeIsDirty = false} = {}) {
+  function save({anyChangeIsDirty = false} = {}, bgStyle) {
     if (saving) {
       debounce(save, 0, ...arguments);
       return;
@@ -116,11 +116,18 @@ function configDialog(style) {
         !vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
+    if (!bgStyle) {
+      API.getStyles({id: style.id, omitCode: !BG})
+        .then(([bgStyle]) => save({anyChangeIsDirty}, bgStyle || {}));
+      return;
+    }
+    style = style.sections ? Object.assign({}, style) : style;
     style.enabled = true;
     style.reason = 'config';
+    style.sourceCode = null;
+    style.sections = null;
     const styleVars = style.usercssData.vars;
-    const bgStyle = BG.cachedStyles.byId.get(style.id);
-    const bgVars = bgStyle && (bgStyle.usercssData || {}).vars || {};
+    const bgVars = (bgStyle.usercssData || {}).vars || {};
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {
@@ -164,9 +171,9 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return BG.usercssHelper.save(BG.deepCopy(style))
+    return API.saveUsercss(style)
       .then(saved => {
-        varsInitial = getInitialValues(deepCopy(saved.usercssData.vars));
+        varsInitial = getInitialValues(saved.usercssData.vars);
         vars.forEach(va => onchange({target: va.input, justSaved: true}));
         renderValues();
         updateButtons();

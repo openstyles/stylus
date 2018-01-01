@@ -29,7 +29,7 @@ HTMLSelectElement.prototype.adjustWidth = function () {
   parent.replaceChild(this, singleSelect);
 };
 
-onDOMready().then(onBackgroundReady).then(() => {
+onDOMready().then(() => {
   $('#search').oninput = searchStyles;
   if (urlFilterParam) {
     $('#search').value = 'url:' + urlFilterParam;
@@ -169,14 +169,17 @@ function filterAndAppend({entry, container}) {
     if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
       entry.classList.add('hidden');
     }
-  } else if ($('#search').value.trim()) {
-    searchStyles({immediately: true, container});
   }
   reapplyFilter(container);
 }
 
 
-function reapplyFilter(container = installed) {
+function reapplyFilter(container = installed, alreadySearched) {
+  if (!alreadySearched && $('#search').value.trim()) {
+    searchStyles({immediately: true, container})
+      .then(() => reapplyFilter(container, true));
+    return;
+  }
   // A: show
   let toHide = [];
   let toUnhide = [];
@@ -189,9 +192,6 @@ function reapplyFilter(container = installed) {
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
     return;
-  } else if (toUnhide.length && $('#search').value.trim()) {
-    searchStyles({immediately: true, container: toUnhide});
-    filterContainer({hide: false});
   }
   // filtering needed or a single-element job from handleUpdate()
   for (const entry of toUnhide.children || toUnhide) {
@@ -251,16 +251,12 @@ function reapplyFilter(container = installed) {
 
 
 function showFiltersStats() {
-  if (!BG.cachedStyles.list) {
-    debounce(showFiltersStats, 100);
-    return;
-  }
   const active = filtersSelector.hide !== '';
   $('#filters summary').classList.toggle('active', active);
   $('#reset-filters').disabled = !active;
-  const numTotal = BG.cachedStyles.list.length;
+  const numTotal = installed.children.length;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
-  const numShown = Math.min(numTotal - numHidden, installed.children.length);
+  const numShown = numTotal - numHidden;
   if (filtersSelector.numShown !== numShown ||
       filtersSelector.numTotal !== numTotal) {
     filtersSelector.numShown = numShown;
@@ -273,87 +269,34 @@ function showFiltersStats() {
 
 
 function searchStyles({immediately, container}) {
-  const searchElement = $('#search');
-  const value = searchElement.value.trim();
-  const urlMode = /^\s*url:/i.test(value);
-  const query = urlMode
-    ? value.replace(/^\s*url:/i, '')
-    : value.toLocaleLowerCase();
-  if (query === searchElement.lastValue && !immediately && !container) {
+  const el = $('#search');
+  const query = el.value.trim();
+  if (query === el.lastValue && !immediately && !container) {
     return;
   }
   if (!immediately) {
     debounce(searchStyles, 150, {immediately: true});
     return;
   }
-  searchElement.lastValue = query;
+  el.lastValue = query;
 
-  const rx = query.startsWith('/') && query.indexOf('/', 1) > 0 &&
-    tryRegExp(...(value.match(/^\s*\/(.*?)\/([gimsuy]*)\s*$/) || []).slice(1));
-  const words = rx ? null :
-    query.startsWith('"') && query.endsWith('"') ? [value.trim().slice(1, -1)] :
-      query.split(/\s+/).filter(s => s.length > 1);
-  if (words && !words.length) {
-    words.push(query);
-  }
   const entries = container && container.children || container || installed.children;
-  const siteStyleIds = urlMode &&
-    new Set(BG.filterStyles({matchUrl: query}).map(style => style.id));
-  let needsRefilter = false;
-  for (const entry of entries) {
-    let isMatching = !query || words && !words.length;
-    if (!isMatching) {
-      const style = urlMode ? siteStyleIds.has(entry.styleId) :
-        BG.cachedStyles.byId.get(entry.styleId) || {};
-      isMatching = Boolean(style && (
-        urlMode ||
-        isMatchingText(style.name) ||
-        style.url && isMatchingText(style.url) ||
-        style.sourceCode && isMatchingText(style.sourceCode) ||
-        isMatchingStyle(style)));
-    }
-    if (entry.classList.contains('not-matching') !== !isMatching) {
-      entry.classList.toggle('not-matching', !isMatching);
-      needsRefilter = true;
-    }
-  }
-  if (needsRefilter && !container) {
-    filterOnChange({forceRefilter: true});
-  }
-  return;
-
-  function isMatchingStyle(style) {
-    for (const section of style.sections) {
-      for (const prop in section) {
-        const value = section[prop];
-        switch (typeof value) {
-          case 'string':
-            if (isMatchingText(value)) {
-              return true;
-            }
-            break;
-          case 'object':
-            for (const str of value) {
-              if (isMatchingText(str)) {
-                return true;
-              }
-            }
-            break;
-        }
+  return API.searchDB({
+    query,
+    ids: [...entries].map(el => el.styleId),
+  }).then(ids => {
+    ids = new Set(ids);
+    let needsRefilter = false;
+    for (const entry of entries) {
+      const isMatching = ids.has(entry.styleId);
+      if (entry.classList.contains('not-matching') !== !isMatching) {
+        entry.classList.toggle('not-matching', !isMatching);
+        needsRefilter = true;
       }
     }
-  }
-
-  function isMatchingText(text) {
-    if (rx) {
-      return rx.test(text);
+    if (needsRefilter && !container) {
+      filterOnChange({forceRefilter: true});
     }
-    for (let pass = 1; pass <= 2; pass++) {
-      if (words.every(word => text.includes(word))) {
-        return true;
-      }
-      text = text.toLocaleLowerCase();
-    }
-    return false;
-  }
+    return container;
+  });
 }

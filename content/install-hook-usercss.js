@@ -97,7 +97,7 @@ function initUsercssInstall() {
     });
   });
   chrome.runtime.sendMessage({
-    method: 'openUsercssInstallPage',
+    method: 'installUsercss',
     url: location.href,
   }, r => r && r.__ERROR__ && alert(r.__ERROR__));
 }

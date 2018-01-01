@@ -1,8 +1,37 @@
-/* global dbExec, getStyles, saveStyle */
-/* global handleCssTransitionBug */
-/* global usercssHelper openEditor */
-/* global styleViaAPI */
+/*
+ global dbExec getStyles saveStyle deleteStyle
+ global handleCssTransitionBug detectSloppyRegexps
+ global openEditor
+ global styleViaAPI
+ global loadScript
+ global updater
+ */
 'use strict';
+
+// eslint-disable-next-line no-var
+var API_METHODS = {
+
+  getStyles,
+  saveStyle,
+  deleteStyle,
+
+  download:    msg => download(msg.url),
+  getPrefs:    () => prefs.getAll(),
+  healthCheck: () => dbExec().then(() => true),
+
+  detectSloppyRegexps,
+  openEditor,
+  updateIcon,
+
+  closeTab: (msg, sender, respond) => {
+    chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
+      if (chrome.runtime.lastError && msg.tabId !== sender.tab.id) {
+        respond(new Error(chrome.runtime.lastError.message));
+      }
+    });
+    return KEEP_CHANNEL_OPEN;
+  },
+};
 
 // eslint-disable-next-line no-var
 var browserCommands, contextMenus;
@@ -55,9 +84,17 @@ if (!chrome.browserAction ||
   window.updateIcon = () => {};
 }
 
+const tabIcons = new Map();
+chrome.tabs.onRemoved.addListener(tabId => tabIcons.delete(tabId));
+chrome.tabs.onReplaced.addListener((added, removed) => tabIcons.delete(removed));
+
 // *************************************************************************
 // set the default icon displayed after a tab is created until webNavigation kicks in
-prefs.subscribe(['iconset'], () => updateIcon({id: undefined}, {}));
+prefs.subscribe(['iconset'], () =>
+  updateIcon({
+    tab: {id: undefined},
+    styles: {},
+  }));
 
 // *************************************************************************
 {
@@ -160,7 +197,10 @@ if (chrome.contextMenus) {
 window.addEventListener('storageReady', function _() {
   window.removeEventListener('storageReady', _);
 
-  updateIcon({id: undefined}, {});
+  updateIcon({
+    tab: {id: undefined},
+    styles: {},
+  });
 
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
@@ -223,7 +263,8 @@ function webNavigationListener(method, {url, tabId, frameId}) {
     }
     // main page frame id is 0
     if (frameId === 0) {
-      updateIcon({id: tabId, url}, styles);
+      tabIcons.delete(tabId);
+      updateIcon({tab: {id: tabId, url}, styles});
     }
   });
 }
@@ -256,13 +297,13 @@ function webNavUsercssInstallerFF(data) {
     getTab(tabId),
   ]).then(([pong, tab]) => {
     if (pong !== true && tab.url !== 'about:blank') {
-      usercssHelper.openInstallPage(tab, {direct: true});
+      API_METHODS.installUsercss({direct: true}, {tab});
     }
   });
 }
 
 
-function updateIcon(tab, styles) {
+function updateIcon({tab, styles}) {
   if (tab.id < 0) {
     return;
   }
@@ -277,38 +318,44 @@ function updateIcon(tab, styles) {
     .then(url => getStyles({matchUrl: url, enabled: true, asHash: true}))
     .then(stylesReceived);
 
+  function countStyles(styles) {
+    if (Array.isArray(styles)) return styles.length;
+    return Object.keys(styles).reduce((sum, id) => sum + !isNaN(Number(id)), 0);
+  }
+
   function stylesReceived(styles) {
-    let numStyles = styles.length;
-    if (numStyles === undefined) {
-      // for 'styles' asHash:true fake the length by counting numeric ids manually
-      numStyles = 0;
-      for (const id of Object.keys(styles)) {
-        numStyles += id.match(/^\d+$/) ? 1 : 0;
-      }
-    }
+    const numStyles = countStyles(styles);
     const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
     const postfix = disableAll ? 'x' : numStyles === 0 ? 'w' : '';
     const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
     const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
     const path = 'images/icon/' + iconset;
-    chrome.browserAction.setIcon({
-      tabId: tab.id,
-      path: {
+    const tabIcon = tabIcons.get(tab.id) || {};
+    if (tabIcon.iconType !== iconset + postfix) {
+      tabIcons.set(tab.id, tabIcon);
+      tabIcon.iconType = iconset + postfix;
+      const paths = {};
+      if (FIREFOX || CHROME >= 2883 && !VIVALDI) {
         // Material Design 2016 new size is 16px
-        16: `${path}16${postfix}.png`,
-        32: `${path}32${postfix}.png`,
+        paths['16'] = `${path}16${postfix}.png`;
+        paths['32'] = `${path}32${postfix}.png`;
+      } else {
         // Chromium forks or non-chromium browsers may still use the traditional 19px
-        19: `${path}19${postfix}.png`,
-        38: `${path}38${postfix}.png`,
-        // TODO: add Edge preferred sizes: 20, 25, 30, 40
-      },
-    }, () => {
-      if (chrome.runtime.lastError || tab.id === undefined) {
-        return;
+        paths['19'] = `${path}19${postfix}.png`;
+        paths['38'] = `${path}38${postfix}.png`;
       }
-      // Vivaldi bug workaround: setBadgeText must follow setBadgeBackgroundColor
+      chrome.browserAction.setIcon({tabId: tab.id, path: paths}, ignoreChromeError);
+    }
+    if (tab.id === undefined) return;
+    let defaultIcon = tabIcons.get(undefined);
+    if (!defaultIcon) tabIcons.set(undefined, (defaultIcon = {}));
+    if (defaultIcon.color !== color) {
+      defaultIcon.color = color;
       chrome.browserAction.setBadgeBackgroundColor({color});
+    }
+    if (tabIcon.text !== text) {
+      tabIcon.text = text;
       setTimeout(() => {
         getTab(tab.id).then(realTab => {
           // skip pre-rendered tabs
@@ -317,67 +364,31 @@ function updateIcon(tab, styles) {
           }
         });
       });
-    });
+    }
   }
 }
 
 
-function onRuntimeMessage(request, sender, sendResponseInternal) {
-  const sendResponse = data => {
-    // wrap Error object instance as {__ERROR__: message} - will be unwrapped in sendMessage
-    if (data instanceof Error) {
-      data = {__ERROR__: data.message};
-    }
-    // prevent browser exception bug on sending a response to a closed tab
-    tryCatch(sendResponseInternal, data);
-  };
-  switch (request.method) {
-    case 'getStyles':
-      getStyles(request).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
+function onRuntimeMessage(msg, sender, sendResponse) {
+  const fn = API_METHODS[msg.method];
+  if (!fn) return;
 
-    case 'saveStyle':
-      saveStyle(request).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
+  // wrap 'Error' object instance as {__ERROR__: message},
+  // which will be unwrapped by sendMessage,
+  // and prevent exceptions on sending to a closed tab
+  const respond = data =>
+    tryCatch(sendResponse,
+      data instanceof Error ? {__ERROR__: data.message} : data);
 
-    case 'saveUsercss':
-      usercssHelper.save(request, true).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
-
-    case 'buildUsercss':
-      usercssHelper.build(request, true).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
-
-    case 'healthCheck':
-      dbExec()
-        .then(() => sendResponse(true))
-        .catch(() => sendResponse(false));
-      return KEEP_CHANNEL_OPEN;
-
-    case 'styleViaAPI':
-      styleViaAPI(request, sender);
-      return;
-
-    case 'download':
-      download(request.url)
-        .then(sendResponse)
-        .catch(() => sendResponse(null));
-      return KEEP_CHANNEL_OPEN;
-
-    case 'openUsercssInstallPage':
-      usercssHelper.openInstallPage(sender.tab, request).then(sendResponse);
-      return KEEP_CHANNEL_OPEN;
-
-    case 'closeTab':
-      chrome.tabs.remove(request.tabId || sender.tab.id, () => {
-        if (chrome.runtime.lastError && request.tabId !== sender.tab.id) {
-          sendResponse(new Error(chrome.runtime.lastError.message));
-        }
-      });
-      return KEEP_CHANNEL_OPEN;
-
-    case 'openEditor':
-      openEditor(request.id);
-      return;
+  const result = fn(msg, sender, respond);
+  if (result instanceof Promise) {
+    result
+      .catch(e => ({__ERROR__: e instanceof Error ? e.message : e}))
+      .then(respond);
+    return KEEP_CHANNEL_OPEN;
+  } else if (result === KEEP_CHANNEL_OPEN) {
+    return KEEP_CHANNEL_OPEN;
+  } else if (result !== undefined) {
+    respond(result);
   }
 }

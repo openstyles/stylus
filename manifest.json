@@ -21,17 +21,18 @@
   "background": {
     "scripts": [
       "js/messaging.js",
-      "vendor/lz-string/lz-string-unsafe.js",
-      "js/color-parser.js",
-      "js/usercss.js",
+      "js/storage-util.js",
       "background/storage.js",
-      "background/usercss-helper.js",
       "js/prefs.js",
       "js/script-loader.js",
+      "js/color-parser.js",
+      "js/usercss.js",
       "background/background.js",
-      "vendor/node-semver/semver.js",
+      "background/usercss-helper.js",
       "background/style-via-api.js",
-      "background/update.js"
+      "background/search-db.js",
+      "background/update.js",
+      "vendor/node-semver/semver.js"
     ]
   },
   "commands": {

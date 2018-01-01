@@ -1,8 +1,11 @@
-/* global usercss saveStyle getStyles chromeLocal */
+/* global API_METHODS usercss saveStyle getStyles chromeLocal cachedStyles */
 'use strict';
 
-// eslint-disable-next-line no-var
-var usercssHelper = (() => {
+(() => {
+
+  API_METHODS.saveUsercss = save;
+  API_METHODS.buildUsercss = build;
+  API_METHODS.installUsercss = install;
 
   const TEMP_CODE_PREFIX = 'tempUsercssCode';
   const TEMP_CODE_CLEANUP_DELAY = 60e3;
@@ -48,30 +51,24 @@ var usercssHelper = (() => {
     return usercss.buildCode(style);
   }
 
-  function wrapReject(pending) {
-    return pending
-      .catch(err => new Error(Array.isArray(err) ? err.join('\n') : err.message || String(err)));
-  }
-
   // Parse the source and find the duplication
-  function build({sourceCode, checkDup = false}, noReject) {
-    const pending = buildMeta({sourceCode})
+  function build({sourceCode, checkDup = false}) {
+    return buildMeta({sourceCode})
       .then(style => Promise.all([
         buildCode(style),
         checkDup && findDup(style)
       ]))
       .then(([style, dup]) => ({style, dup}));
-
-    return noReject ? wrapReject(pending) : pending;
   }
 
-  function save(style, noReject) {
-    const pending = buildMeta(style)
+  function save(style) {
+    if (!style.sourceCode) {
+      style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
+    }
+    return buildMeta(style)
       .then(assignVars)
       .then(buildCode)
       .then(saveStyle);
-
-    return noReject ? wrapReject(pending) : pending;
 
     function assignVars(style) {
       if (style.reason === 'config' && style.id) {
@@ -105,11 +102,12 @@ var usercssHelper = (() => {
     );
   }
 
-  function openInstallPage(tab, {url = tab.url, direct, downloaded} = {}) {
+  function install({url, direct, downloaded}, {tab}) {
+    url = url || tab.url;
     if (direct && !downloaded) {
       prefetchCodeForInstallation(tab.id, url);
     }
-    return wrapReject(openURL({
+    return openURL({
       url: '/install-usercss.html' +
         '?updateUrl=' + encodeURIComponent(url) +
         '&tabId=' + tab.id +
@@ -117,7 +115,7 @@ var usercssHelper = (() => {
       index: tab.index + 1,
       openerTabId: tab.id,
       currentWindow: null,
-    }));
+    });
   }
 
   function prefetchCodeForInstallation(tabId, url) {
@@ -131,6 +129,4 @@ var usercssHelper = (() => {
       setTimeout(() => chromeLocal.remove(key), TEMP_CODE_CLEANUP_DELAY);
     });
   }
-
-  return {build, save, findDup, openInstallPage};
 })();

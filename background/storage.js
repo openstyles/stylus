@@ -1,4 +1,4 @@
-/* global LZString */
+/* global getStyleWithNoCode */
 'use strict';
 
 const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
@@ -28,54 +28,6 @@ var cachedStyles = {
     onDone: [],          // to getStyles() are queued and resolved when the first one finishes
   },
 };
-
-window.LZString = window.LZString || window.LZStringUnsafe;
-
-// eslint-disable-next-line no-var
-var [chromeLocal, chromeSync] = [
-  chrome.storage.local,
-  chrome.storage.sync,
-].map(storage => {
-  const wrapper = {
-    get(options) {
-      return new Promise(resolve => {
-        storage.get(options, data => resolve(data));
-      });
-    },
-    set(data) {
-      return new Promise(resolve => {
-        storage.set(data, () => resolve(data));
-      });
-    },
-    remove(keyOrKeys) {
-      return new Promise(resolve => {
-        storage.remove(keyOrKeys, resolve);
-      });
-    },
-    getValue(key) {
-      return wrapper.get(key).then(data => data[key]);
-    },
-    setValue(key, value) {
-      return wrapper.set({[key]: value});
-    },
-    getLZValue(key) {
-      return wrapper.getLZValues([key]).then(data => data[key]);
-    },
-    getLZValues(keys) {
-      return wrapper.get(keys).then((data = {}) => {
-        for (const key of keys) {
-          const value = data[key];
-          data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
-        }
-        return data;
-      });
-    },
-    setLZValue(key, value) {
-      return wrapper.set({[key]: LZString.compressToUTF16(JSON.stringify(value))});
-    }
-  };
-  return wrapper;
-});
 
 // eslint-disable-next-line no-var
 var dbExec = dbExecIndexedDB;
@@ -247,6 +199,7 @@ function filterStyles({
   matchUrl = null,
   md5Url = null,
   asHash = null,
+  omitCode,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
   enabled = enabled === null || typeof enabled === 'boolean' ? enabled :
@@ -274,24 +227,34 @@ function filterStyles({
 
   const cacheKey = [enabled, id, matchUrl, md5Url, asHash, strictRegexp].join('\t');
   const cached = cachedStyles.filters.get(cacheKey);
+  let styles;
   if (cached) {
     cached.hits++;
     cached.lastHit = Date.now();
-    return asHash
+    styles = asHash
       ? Object.assign(blankHash, cached.styles)
-      : cached.styles;
+      : cached.styles.slice();
+  } else {
+    styles = filterStylesInternal({
+      enabled,
+      id,
+      matchUrl,
+      md5Url,
+      asHash,
+      strictRegexp,
+      blankHash,
+      cacheKey,
+    });
   }
-
-  return filterStylesInternal({
-    enabled,
-    id,
-    matchUrl,
-    md5Url,
-    asHash,
-    strictRegexp,
-    blankHash,
-    cacheKey,
-  });
+  if (!omitCode) return styles;
+  if (!asHash) return styles.map(getStyleWithNoCode);
+  for (const id in styles) {
+    const style = styles[id];
+    if (style && style.sections) {
+      styles[id] = getStyleWithNoCode(style);
+    }
+  }
+  return styles;
 }
 
 
@@ -427,6 +390,7 @@ function saveStyle(style) {
         md5Url: null,
         url: null,
         originalMd5: null,
+        installDate: Date.now(),
       }, style);
       return write(style);
     }
@@ -796,4 +760,48 @@ function handleCssTransitionBug({tabId, frameId, url, styles}) {
   function quickCheckAround(code, pos = code.indexOf('transition')) {
     return RX_CSS_TRANSITION_DETECTOR.test(code.substr(Math.max(0, pos - 10), 50));
   }
+}
+
+
+/*
+  According to CSS4 @document specification the entire URL must match.
+  Stylish-for-Chrome implemented it incorrectly since the very beginning.
+  We'll detect styles that abuse the bug by finding the sections that
+  would have been applied by Stylish but not by us as we follow the spec.
+  Additionally we'll check for invalid regexps.
+*/
+function detectSloppyRegexps({matchUrl, ids}) {
+  const results = [];
+  for (const id of ids) {
+    const style = cachedStyles.byId.get(id);
+    if (!style) continue;
+    // make sure all regexps are compiled
+    const rxCache = cachedStyles.regexps;
+    let hasRegExp = false;
+    for (const section of style.sections) {
+      for (const regexp of section.regexps) {
+        hasRegExp = true;
+        for (let pass = 1; pass <= 2; pass++) {
+          const cacheKey = pass === 1 ? regexp : SLOPPY_REGEXP_PREFIX + regexp;
+          if (!rxCache.has(cacheKey)) {
+            // according to CSS4 @document specification the entire URL must match
+            const anchored = pass === 1 ? '^(?:' + regexp + ')$' : '^' + regexp + '$';
+            // create in the bg context to avoid leaking of "dead objects"
+            const rx = tryRegExp(anchored);
+            rxCache.set(cacheKey, rx || false);
+          }
+        }
+      }
+    }
+    if (!hasRegExp) continue;
+    const applied = getApplicableSections({style, matchUrl});
+    const wannabe = getApplicableSections({style, matchUrl, strictRegexp: false});
+    results.push({
+      id,
+      applied,
+      skipped: wannabe.length - applied.length,
+      hasInvalidRegexps: wannabe.some(({regexps}) => regexps.some(rx => !rxCache.has(rx))),
+    });
+  }
+  return results;
 }

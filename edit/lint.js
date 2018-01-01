@@ -121,12 +121,12 @@ var linterConfig = {
     config = this.fallbackToDefaults(config);
     const linter = linterConfig.getName();
     this[linter] = config;
-    BG.chromeSync.setLZValue(this.storageName[linter], config);
+    chromeSync.setLZValue(this.storageName[linter], config);
     return config;
   },
 
   loadAll() {
-    return BG.chromeSync.getLZValues([
+    return chromeSync.getLZValues([
       'editorCSSLintConfig',
       'editorStylelintConfig',
     ]).then(data => {
@@ -167,10 +167,8 @@ var linterConfig = {
   },
 
   init() {
-    if (!linterConfig.init.pending) {
-      linterConfig.init.pending = linterConfig.loadAll();
-    }
-    return linterConfig.init.pending;
+    if (!this.init.pending) this.init.pending = this.loadAll();
+    return this.init.pending;
   }
 };
 

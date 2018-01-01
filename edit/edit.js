@@ -44,7 +44,7 @@ Promise.all([
   if (usercss) {
     editor = createSourceEditor(style);
   } else {
-    initWithSectionStyle({style});
+    initWithSectionStyle(style);
     document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
   }
 });
@@ -155,14 +155,17 @@ function onRuntimeMessage(request) {
           request.reason !== 'editSave' &&
           request.reason !== 'config') {
         // code-less style from notifyAllTabs
-        if ((request.style.sections[0] || {}).code === null) {
-          request.style = BG.cachedStyles.byId.get(request.style.id);
-        }
-        if (isUsercss(request.style)) {
-          editor.replaceStyle(request.style, request.codeIsUpdated);
-        } else {
-          initWithSectionStyle(request);
-        }
+        const {sections, id} = request.style;
+        ((sections[0] || {}).code === null
+          ? API.getStyles({id})
+          : Promise.resolve([request.style])
+        ).then(([style]) => {
+          if (isUsercss(style)) {
+            editor.replaceStyle(style, request.codeIsUpdated);
+          } else {
+            initWithSectionStyle(style, request.codeIsUpdated);
+          }
+        });
       }
       break;
     case 'styleDeleted':
@@ -228,7 +231,7 @@ function initStyleData() {
       )
     ],
   });
-  return getStylesSafe({id: id || -1})
+  return API.getStyles({id: id || -1})
     .then(([style = createEmptyStyle()]) => {
       styleId = style.id;
       if (styleId) sessionStorage.justEditedStyleId = styleId;
@@ -344,7 +347,7 @@ function save() {
     return;
   }
 
-  saveStyleSafe({
+  API.saveStyle({
     id: styleId,
     name: $('#name').value.trim(),
     enabled: $('#enabled').checked,

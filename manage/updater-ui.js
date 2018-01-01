@@ -29,41 +29,51 @@ function applyUpdateAll() {
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
-  $('#check-all-updates').disabled = true;
-  $('#check-all-updates-force').classList.add('hidden');
-  $('#apply-all-updates').classList.add('hidden');
-  $('#update-all-no-updates').classList.add('hidden');
+  const btnCheck = $('#check-all-updates');
+  const btnCheckForce = $('#check-all-updates-force');
+  const btnApply = $('#apply-all-updates');
+  const noUpdates = $('#update-all-no-updates');
+  btnCheck.disabled = true;
+  btnCheckForce.classList.add('hidden');
+  btnApply.classList.add('hidden');
+  noUpdates.classList.add('hidden');
 
   const ignoreDigest = this && this.id === 'check-all-updates-force';
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
-    .map(el => checkUpdate(el, {single: false}));
+    .map(checkUpdate);
 
   let total = 0;
   let checked = 0;
   let skippedEdited = 0;
   let updated = 0;
 
-  BG.updater.checkAllStyles({observer, save: false, ignoreDigest}).then(done);
+  chrome.runtime.onConnect.addListener(function onConnect(port) {
+    if (port.name !== 'updater') return;
+    port.onMessage.addListener(observer);
+    chrome.runtime.onConnect.removeListener(onConnect);
+  });
 
-  function observer(state, value, details) {
-    switch (state) {
-      case BG.updater.COUNT:
-        total = value;
-        break;
-      case BG.updater.UPDATED:
-        if (++updated === 1) {
-          $('#apply-all-updates').disabled = true;
-          $('#apply-all-updates').classList.remove('hidden');
-        }
-        $('#apply-all-updates').dataset.value = updated;
-        // fallthrough
-      case BG.updater.SKIPPED:
-        checked++;
-        if (details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED) {
-          skippedEdited++;
-        }
-        reportUpdateState(state, value, details);
-        break;
+  API.updateCheckAll({
+    save: false,
+    observe: true,
+    ignoreDigest,
+  }).then(done);
+
+  function observer(info) {
+    if ('count' in info) {
+      total = info.count;
+    }
+    if (info.updated) {
+      if (++updated === 1) {
+        btnApply.disabled = true;
+        btnApply.classList.remove('hidden');
+      }
+      btnApply.dataset.value = updated;
+    }
+    if (info.updated || info.error) {
+      checked++;
+      skippedEdited += [info.STATES.EDITED, info.STATES.MAYBE_EDITED].includes(info.error);
+      reportUpdateState(info);
     }
     const progress = $('#update-progress');
     const maxWidth = progress.parentElement.clientWidth;
@@ -72,35 +82,34 @@ function checkUpdateAll() {
 
   function done() {
     document.body.classList.remove('update-in-progress');
-    $('#check-all-updates').disabled = total === 0;
-    $('#apply-all-updates').disabled = false;
+    btnCheck.disabled = total === 0;
+    btnApply.disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
-      $('#update-all-no-updates').dataset.skippedEdited = skippedEdited > 0;
-      $('#update-all-no-updates').classList.remove('hidden');
-      $('#check-all-updates-force').classList.toggle('hidden', skippedEdited === 0);
+      noUpdates.dataset.skippedEdited = skippedEdited > 0;
+      noUpdates.classList.remove('hidden');
+      btnCheckForce.classList.toggle('hidden', skippedEdited === 0);
     }
   }
 }
 
 
-function checkUpdate(entry, {single = true} = {}) {
+function checkUpdate(entry, {single} = {}) {
   $('.update-note', entry).textContent = t('checkingForUpdate');
   $('.check-update', entry).title = '';
   if (single) {
-    BG.updater.checkStyle({
+    API.updateCheck({
       save: false,
+      id: entry.styleId,
       ignoreDigest: entry.classList.contains('update-problem'),
-      style: BG.cachedStyles.byId.get(entry.styleId),
-      observer: reportUpdateState,
-    });
+    }).then(reportUpdateState);
   }
   entry.classList.remove('checking-update', 'no-update', 'update-problem');
   entry.classList.add('checking-update');
 }
 
 
-function reportUpdateState(state, style, details) {
+function reportUpdateState({updated, style, error, STATES}) {
   const entry = $(ENTRY_ID_PREFIX + style.id);
   const newClasses = new Map([
     /*
@@ -117,43 +126,37 @@ function reportUpdateState(state, style, details) {
     ['no-update', 0],
     ['update-problem', 0],
   ]);
-  switch (state) {
-    case BG.updater.UPDATED:
-      newClasses.set('can-update', true);
-      entry.updatedCode = style;
-      $('.update-note', entry).textContent = '';
-      $('#only-updates').classList.remove('hidden');
-      break;
-    case BG.updater.SKIPPED: {
-      if (entry.classList.contains('can-update')) {
-        break;
-      }
-      const same = (
-        details === BG.updater.SAME_MD5 ||
-        details === BG.updater.SAME_CODE ||
-        details === BG.updater.SAME_VERSION
-      );
-      const edited = details === BG.updater.EDITED || details === BG.updater.MAYBE_EDITED;
-      entry.dataset.details = details;
-      if (!details) {
-        details = t('updateCheckFailServerUnreachable') + '\n' + style.updateUrl;
-      } else if (typeof details === 'number') {
-        details = t('updateCheckFailBadResponseCode', [details]) + '\n' + style.updateUrl;
-      } else if (details === BG.updater.EDITED) {
-        details = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
-      } else if (details === BG.updater.MAYBE_EDITED) {
-        details = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
-      }
-      const message = same ? t('updateCheckSucceededNoUpdate') : details;
-      newClasses.set('no-update', true);
-      newClasses.set('update-problem', !same);
-      $('.update-note', entry).textContent = message;
-      $('.check-update', entry).title = newUI.enabled ? message : '';
-      $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
-      if (!document.body.classList.contains('update-in-progress')) {
-        // this is a single update job so we can decide whether to hide the filter
-        renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
-      }
+  if (updated) {
+    newClasses.set('can-update', true);
+    entry.updatedCode = style;
+    $('.update-note', entry).textContent = '';
+    $('#only-updates').classList.remove('hidden');
+  } else if (!entry.classList.contains('can-update')) {
+    const same = (
+      error === STATES.SAME_MD5 ||
+      error === STATES.SAME_CODE ||
+      error === STATES.SAME_VERSION
+    );
+    const edited = error === STATES.EDITED || error === STATES.MAYBE_EDITED;
+    entry.dataset.error = error;
+    if (!error) {
+      error = t('updateCheckFailServerUnreachable') + '\n' + style.updateUrl;
+    } else if (typeof error === 'number') {
+      error = t('updateCheckFailBadResponseCode', [error]) + '\n' + style.updateUrl;
+    } else if (error === STATES.EDITED) {
+      error = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
+    } else if (error === STATES.MAYBE_EDITED) {
+      error = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
+    }
+    const message = same ? t('updateCheckSucceededNoUpdate') : error;
+    newClasses.set('no-update', true);
+    newClasses.set('update-problem', !same);
+    $('.update-note', entry).textContent = message;
+    $('.check-update', entry).title = newUI.enabled ? message : '';
+    $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
+    if (!document.body.classList.contains('update-in-progress')) {
+      // this is a single update job so we can decide whether to hide the filter
+      renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
     }
   }
 
@@ -162,9 +165,16 @@ function reportUpdateState(state, style, details) {
   // 2. remove falsy newClasses
   // 3. keep existing classes otherwise
   const classes = new Map([...entry.classList.values()].map(cls => [cls, true]));
-  [...newClasses.entries()].forEach(([cls, newState]) => classes.set(cls, newState));
-  const className = [...classes.entries()].filter(([, state]) => state).map(([cls]) => cls).join(' ');
-  if (className !== entry.className) entry.className = className;
+  for (const [cls, newState] of newClasses.entries()) {
+    classes.set(cls, newState);
+  }
+  const className = [...classes.entries()]
+    .map(([cls, state]) => state && cls)
+    .filter(Boolean)
+    .join(' ');
+  if (className !== entry.className) {
+    entry.className = className;
+  }
 
   if (filtersSelector.hide) {
     filterAndAppend({entry});
@@ -200,7 +210,10 @@ function showUpdateHistory(event) {
   const log = $create('.update-history-log');
   let logText, scroller, toggler;
   let deleted = false;
-  BG.chromeLocal.getValue('updateLog').then((lines = []) => {
+  Promise.all([
+    chromeLocal.getValue('updateLog'),
+    API.getUpdaterStates(),
+  ]).then(([lines = [], states]) => {
     logText = lines.join('\n');
     messageBox({
       title: t('updateCheckHistory'),
@@ -227,6 +240,13 @@ function showUpdateHistory(event) {
             t('manageOnlyUpdates'),
           ]));
 
+        toggler.rxRemoveNOP = new RegExp(
+          '^[^#]*(' +
+          Object.keys(states)
+            .filter(k => k.startsWith('SAME_'))
+            .map(k => states[k])
+            .join('|') +
+          ').*\r?\n', 'gm');
         toggler.onchange();
       }),
     });
@@ -242,26 +262,17 @@ function showUpdateHistory(event) {
       return;
     }
     const scrollRatio = calcScrollRatio();
-    const rxRemoveNOP = this.checked && new RegExp([
-      '^[^#]*(',
-      Object.keys(BG.updater)
-        .filter(k => k.startsWith('SAME_'))
-        .map(k => stringAsRegExp(BG.updater[k]))
-        .map(rx => rx.source)
-        .join('|'),
-      ').*\r?\n',
-    ].join(''), 'gm');
-    log.textContent = !this.checked ? logText : logText.replace(rxRemoveNOP, '');
+    log.textContent = !this.checked ? logText : logText.replace(this.rxRemoveNOP, '');
     if (Math.abs(scrollRatio - calcScrollRatio()) > .1) {
       scroller.scrollTop = scrollRatio * scroller.scrollHeight - scroller.clientHeight;
     }
   }
   function deleteHistory() {
     if (deleted) {
-      BG.chromeLocal.setValue('updateLog', logText.split('\n'));
+      chromeLocal.setValue('updateLog', logText.split('\n'));
       setTimeout(scrollToBottom);
     } else {
-      BG.chromeLocal.remove('updateLog');
+      chromeLocal.remove('updateLog');
       log.textContent = '';
     }
     deleted = !deleted;

@@ -131,7 +131,7 @@ window.addEventListener('showStyles:done', function _() {
       if (result) {
         result.installed = false;
         result.installedStyleId = -1;
-        BG.clearTimeout(result.pingbackTimer);
+        (BG || window).clearTimeout(result.pingbackTimer);
         renderActionButtons($('#' + RESULT_ID_PREFIX + result.id));
       }
     });
@@ -280,7 +280,7 @@ window.addEventListener('showStyles:done', function _() {
       return;
     }
     const md5Url = UPDATE_URL.replace('%', result.id);
-    getStylesSafe({md5Url}).then(([installedStyle]) => {
+    API.getStyles({md5Url}).then(([installedStyle]) => {
       if (installedStyle) {
         totalResults = Math.max(0, totalResults - 1);
       } else {
@@ -522,7 +522,7 @@ window.addEventListener('showStyles:done', function _() {
     event.stopPropagation();
     const entry = this.closest('.search-result');
     saveScrollPosition(entry);
-    deleteStyleSafe({id: entry._result.installedStyleId})
+    API.deleteStyle({id: entry._result.installedStyleId})
       .then(restoreScrollPosition);
   }
 
@@ -550,11 +550,11 @@ window.addEventListener('showStyles:done', function _() {
       style.updateUrl += settings.length ? '?' : '';
       // show a 'style installed' tooltip in the manager
       style.reason = 'install';
-      return saveStyleSafe(style);
+      return API.saveStyle(style);
     })
     .catch(reason => {
       const usoId = result.id;
-      console.debug('install:saveStyleSafe(usoID:', usoId, ') => [ERROR]: ', reason);
+      console.debug('install:saveStyle(usoID:', usoId, ') => [ERROR]: ', reason);
       error('Error while downloading usoID:' + usoId + '\nReason: ' + reason);
     })
     .then(() => {
@@ -574,7 +574,8 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function pingback(result) {
-    result.pingbackTimer = BG.setTimeout(BG.download, PINGBACK_DELAY,
+    const wnd = BG || window;
+    result.pingbackTimer = wnd.setTimeout(wnd.download, PINGBACK_DELAY,
       BASE_URL + '/styles/install/' + result.id + '?source=stylish-ch');
   }
 
@@ -721,9 +722,10 @@ window.addEventListener('showStyles:done', function _() {
 
   function readCache(id) {
     const key = CACHE_PREFIX + id;
-    return BG.chromeLocal.getValue(key).then(item => {
+    return chromeLocal.getValue(key).then(item => {
       if (!cacheItemExpired(item)) {
-        return tryJSONparse(BG.LZString.decompressFromUTF16(item.payload));
+        return chromeLocal.loadLZStringScript().then(() =>
+          tryJSONparse(LZString.decompressFromUTF16(item.payload)));
       } else if (item) {
         chrome.storage.local.remove(key);
       }
@@ -741,10 +743,11 @@ window.addEventListener('showStyles:done', function _() {
       return data;
     } else {
       debounce(cleanupCache, CACHE_CLEANUP_THROTTLE);
-      return BG.chromeLocal.setValue(CACHE_PREFIX + data.id, {
-        payload: BG.LZString.compressToUTF16(JSON.stringify(data)),
-        date: Date.now(),
-      }).then(() => data);
+      return chromeLocal.loadLZStringScript().then(() =>
+        chromeLocal.setValue(CACHE_PREFIX + data.id, {
+          payload: LZString.compressToUTF16(JSON.stringify(data)),
+          date: Date.now(),
+        })).then(() => data);
     }
   }
 

@@ -198,7 +198,14 @@
       if (url.startsWith('#')) {
         resolve(document.getElementById(url.slice(1)).textContent);
       } else {
-        chrome.runtime.sendMessage({method: 'download', url}, resolve);
+        chrome.runtime.sendMessage({method: 'download', url}, result => {
+          const error = result && result.__ERROR__;
+          if (error) {
+            alert('Error' + (error ? '\n' + error : ''));
+          } else {
+            resolve(result);
+          }
+        });
       }
     });
   }

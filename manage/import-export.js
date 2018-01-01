@@ -1,4 +1,4 @@
-/* global messageBox, handleUpdate, applyOnMessage */
+/* global messageBox handleUpdate applyOnMessage styleSectionsEqual */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -41,7 +41,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
             importFromString(text) :
             getOwnTab().then(tab => {
               tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-              return BG.usercssHelper.openInstallPage(tab, {direct: true})
+              return API.installUsercss({direct: true}, {tab})
                 .then(() => URL.revokeObjectURL(tab.url));
             })
           ).then(numStyles => {
@@ -56,17 +56,17 @@ function importFromFile({fileTypeFilter, file} = {}) {
 }
 
 
-function importFromString(jsonString) {
-  if (!BG) {
-    onBackgroundReady().then(() => importFromString(jsonString));
+function importFromString(jsonString, oldStyles) {
+  if (!oldStyles) {
+    API.getStyles().then(styles => importFromString(jsonString, styles));
     return;
   }
-  // create objects in background context
-  const json = BG.tryJSONparse(jsonString) || [];
+  const json = tryJSONparse(jsonString) || [];
   if (typeof json.slice !== 'function') {
     json.length = 0;
   }
-  const oldStyles = json.length && BG.deepCopy(BG.cachedStyles.list || []);
+  const oldStylesById = new Map(
+    oldStyles.map(style => [style.id, style]));
   const oldStylesByName = json.length && new Map(
     oldStyles.map(style => [style.name.trim(), style]));
 
@@ -94,7 +94,7 @@ function importFromString(jsonString) {
       const info = analyze(item);
       if (info) {
         // using saveStyle directly since json was parsed in background page context
-        return BG.saveStyle(Object.assign(item, SAVE_OPTIONS))
+        return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
           .then(style => account({style, info, resolve}));
       }
     }
@@ -110,7 +110,7 @@ function importFromString(jsonString) {
       return;
     }
     item.name = item.name.trim();
-    const byId = BG.cachedStyles.byId.get(item.id);
+    const byId = oldStylesById.get(item.id);
     const byName = oldStylesByName.get(item.name);
     oldStylesByName.delete(item.name);
     let oldStyle;
@@ -129,7 +129,7 @@ function importFromString(jsonString) {
     const metaEqual = oldStyleKeys &&
       oldStyleKeys.length === Object.keys(item).length &&
       oldStyleKeys.every(k => k === 'sections' || oldStyle[k] === item[k]);
-    const codeEqual = oldStyle && BG.styleSectionsEqual(oldStyle, item);
+    const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
     if (metaEqual && codeEqual) {
       stats.unchanged.names.push(oldStyle.name);
       stats.unchanged.ids.push(oldStyle.id);
@@ -237,10 +237,10 @@ function importFromString(jsonString) {
         return;
       }
       const id = newIds[index++];
-      deleteStyleSafe({id, notify: false}).then(id => {
+      API.deleteStyle({id, notify: false}).then(id => {
         const oldStyle = oldStylesById.get(id);
         if (oldStyle) {
-          saveStyleSafe(Object.assign(oldStyle, SAVE_OPTIONS))
+          API.saveStyle(Object.assign(oldStyle, SAVE_OPTIONS))
             .then(undoNextId);
         } else {
           undoNextId();
@@ -293,7 +293,7 @@ function importFromString(jsonString) {
     chrome.webNavigation.getAllFrames({tabId}, frames => {
       frames = frames && frames[0] ? frames : [{frameId: 0}];
       frames.forEach(({frameId}) =>
-        getStylesSafe({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
+        API.getStyles({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
           const message = {method: 'styleReplaceAll', tabId, frameId, styles};
           if (tab.id === ownTab.id) {
             applyOnMessage(message);
@@ -301,7 +301,7 @@ function importFromString(jsonString) {
             invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
           }
           if (frameId === 0) {
-            setTimeout(BG.updateIcon, 0, tab, styles);
+            setTimeout(API.updateIcon, 0, tab, styles);
           }
         }));
       if (resolve) {
@@ -314,7 +314,7 @@ function importFromString(jsonString) {
 
 
 $('#file-all-styles').onclick = () => {
-  getStylesSafe().then(styles => {
+  API.getStyles().then(styles => {
     const text = JSON.stringify(styles, null, '\t');
     const blob = new Blob([text], {type: 'application/json'});
     const objectURL = URL.createObjectURL(blob);
