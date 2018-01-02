@@ -464,10 +464,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylusはプライベートウィンドウでは機能しません。これは、Firefoxが拡張機能の内部のバックグラウンドページに直接接続することを禁止しているためです。",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "セクション",
 		"description": "Title for the style sections section"
@@ -721,10 +717,6 @@
 	"paginationTotal": {
 		"message": "総ページ数",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "このバージョンのFirefoxの次の既知のバグのために正常に機能しません: chrome.extension.getBackgroundPage() が正しい結果を返しません",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "チェック中...",

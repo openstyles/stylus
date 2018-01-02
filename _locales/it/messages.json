@@ -286,10 +286,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus non può funzionare in finestre anonime perché Firefox disattiva la connessione diretta al contesto della pagina di background interna dell'estensione.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Sezioni",
 		"description": "Title for the style sections section"
@@ -431,10 +427,6 @@
 	"updateCompleted": {
 		"message": "Aggiornamento completato.",
 		"description": "Text that displays when an update completed"
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Non può funzionare correttamente a causa di un bug conosciuto in questa versione di Firefox: chrome.extension.getBackgroundPage() non restituisce un risultato valido",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Verifica in corso...",

@@ -452,10 +452,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus funktioniert in privaten Fenstern nicht, weil Firefox hier Direktverbindungen zur internen Hintergrundseite der Erweiterung nicht zulässt.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Bereiche",
 		"description": "Title for the style sections section"
@@ -709,10 +705,6 @@
 	"paginationTotal": {
 		"message": "Gesamtzahl der Seiten",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Funktioniert nicht richtig aufgrund eines bekannten Bugs in dieser Version von Firefox: chrome.extension.getBackgroundPage() gibt keinen gültigen Wert zurück",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Suche nach Updates...",

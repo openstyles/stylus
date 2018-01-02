@@ -440,10 +440,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "A Stylus nem működhet privát ablakokon belül, mert a Firefox nem enged közvetlen kapcsolatot a kiegészítő belső háttéroldal-kontextusával.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Szekciók",
 		"description": "Title for the style sections section"
@@ -689,10 +685,6 @@
 	"paginationTotal": {
 		"message": "Összes oldal",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Nem mőködhet megfelelően egy ebben a verzióban található ismert hiba miatt: chrome.extension.getBackgroundPage() eredménye nem érvényes",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Ellenőrzés...",

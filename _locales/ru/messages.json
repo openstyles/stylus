@@ -468,10 +468,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Стилус не работает в приватном окне, т.к. браузер Firefox не разрешает прямое соединение с внутренним контекстом фоновой страницы расширения.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Разделы",
 		"description": "Title for the style sections section"
@@ -729,10 +725,6 @@
 	"paginationTotal": {
 		"message": "Всего страниц",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Функционирование невозможно из-за известной ошибки в вашей версии браузера: chrome.extension.getBackgroundPage() возвращает нулевое значение",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Проверка…",

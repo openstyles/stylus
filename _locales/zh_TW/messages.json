@@ -468,10 +468,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus 無法在隱私視窗中運作，因為 Firefox 不允許直接連線到附加元件的內部背景頁面內容。",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "樣式段",
 		"description": "Title for the style sections section"
@@ -729,10 +725,6 @@
 	"paginationTotal": {
 		"message": "總頁面",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "由於此版本的 Firefox 中有已知的臭蟲，所以無法正常運作：chrome.extension.getBackgroundPage() 並未傳回有效的結果",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "檢查中…",

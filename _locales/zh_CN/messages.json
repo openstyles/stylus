@@ -468,10 +468,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus 无法在隐私窗口下运行，因为 Firefox 不允许直接连接到拓展的内部背景页面上下文",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "部分",
 		"description": "Title for the style sections section"
@@ -729,10 +725,6 @@
 	"paginationTotal": {
 		"message": "总页面",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "由于此版本的 Firefox 有已知的 BUG，所以 chrome.extension.getBackgroundPage() 并不会返回一个有效的结果",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "正在检查更新...",

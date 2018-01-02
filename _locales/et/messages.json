@@ -432,10 +432,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus ei saa privaatsetes akendes töötada, sest Firefox ei luba otseühendust laienduse sisemisele taustalehe kontekstile.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Jaotised",
 		"description": "Title for the style sections section"
@@ -673,10 +669,6 @@
 	"paginationTotal": {
 		"message": "Lehti kokku",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Ei saa korralikult töötada, sest selles Firefoxi versioonis on tuntud viga: chrome.extension.getBackgroundPage() ei tagasta kehtivat tulemit",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Kontrollin...",

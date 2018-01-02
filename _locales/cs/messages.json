@@ -436,10 +436,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus nemůže fungovat v soukromém okně, protože Firefox znemožňuje přímou komunikaci s interní kontextovou stránkou rozšíření na pozadí.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Sekce",
 		"description": "Title for the style sections section"
@@ -689,10 +685,6 @@
 	"paginationTotal": {
 		"message": "Celkový počet stránek",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Známá chyba v této verzi Firefoxu znemožňuje práci rozšíření. Chyba: chrome.extension.getBackgroundPage() nevrací platný výsledek",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Kontrola…",

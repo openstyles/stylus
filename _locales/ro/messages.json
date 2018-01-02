@@ -424,10 +424,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus nu poate funcționa în window-uri private deoarece Firefox nu permite o conexiune directă la conținutul paginii.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Secțiuni",
 		"description": "Title for the style sections section"
@@ -673,10 +669,6 @@
 	"paginationTotal": {
 		"message": "Număr total de pagini",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Funționarea nu este posibilă din cauza unui bug cunoscut în Firefox : chrome.extension.getBackgroundPage() nu returnează o valoare validă",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Verficare...",

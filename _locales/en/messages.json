@@ -198,14 +198,6 @@
   "configOnChangeTooltip": {
     "message": "Autosave and apply changes automatically"
   },
-  "dysfunctional": {
-    "message": "Stylus cannot function in private windows because Firefox disallows direct connection to the internal background page context of the extension.",
-    "description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-  },
-  "dysfunctionalBackgroundConnection": {
-    "message": "Cannot function properly because of a known bug in this version of Firefox: chrome.extension.getBackgroundPage() doesn't return a valid result",
-    "description": "Displayed in style manager when unable to connect to the background page"
-  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."

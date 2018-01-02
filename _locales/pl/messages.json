@@ -464,10 +464,6 @@
 			}
 		}
 	},
-	"dysfunctional": {
-		"message": "Stylus nie może działać w oknach prywatnych, ponieważ Firefox zakazuje bezpośredniego połączenia z kontekstem wewnętrznej strony tła rozszerzenia.",
-		"description": "Displayed in Firefox when its settings make Stylus dysfunctional"
-	},
 	"styleSectionsTitle": {
 		"message": "Sekcje",
 		"description": "Title for the style sections section"
@@ -725,10 +721,6 @@
 	"paginationTotal": {
 		"message": "Wszystkie strony",
 		"description": ""
-	},
-	"dysfunctionalBackgroundConnection": {
-		"message": "Nie działa prawidłowo ze względu na znany błąd w tej wersji Firefoksa: chrome.extension.getBackgroundPage() nie zwraca prawidłowego wyniku",
-		"description": "Displayed in style manager when unable to connect to the background page"
 	},
 	"checkingForUpdate": {
 		"message": "Sprawdzanie...",
