@@ -102,7 +102,8 @@
     );
   }
 
-  function install({url, direct, downloaded}, {tab}) {
+  function install({url, direct, downloaded, tab}, sender) {
+    tab = tab !== undefined ? tab : sender.tab;
     url = url || tab.url;
     if (direct && !downloaded) {
       prefetchCodeForInstallation(tab.id, url);

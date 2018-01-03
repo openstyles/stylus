@@ -112,34 +112,8 @@ var hotkeys = (() => {
         });
       }
     }
-    if (results.length) {
-      task.then(refreshAllTabs);
-    }
+    if (results.length) task.then(API.refreshAllTabs);
     return results;
-  }
-
-  function refreshAllTabs() {
-    API.getStyles({matchUrl: location.href, enabled: true, asHash: true})
-      .then(styles => applyOnMessage({method: 'styleReplaceAll', styles}));
-    queryTabs().then(tabs =>
-      tabs.forEach(tab => (!FIREFOX || tab.width) &&
-        refreshTab(tab)));
-  }
-
-  function refreshTab(tab) {
-    const tabId = tab.id;
-    chrome.webNavigation.getAllFrames({tabId}, frames => {
-      frames = frames && frames[0] ? frames : [{frameId: 0}];
-      frames.forEach(({frameId}) =>
-        API.getStyles({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
-          const message = {method: 'styleReplaceAll', tabId, frameId, styles};
-          invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
-          if (frameId === 0) {
-            setTimeout(API.updateIcon, 0, {tab, styles});
-          }
-        }));
-      ignoreChromeError();
-    });
   }
 
   function initHotkeyInfo() {

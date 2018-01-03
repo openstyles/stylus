@@ -1,4 +1,4 @@
-/* global messageBox handleUpdate applyOnMessage styleSectionsEqual */
+/* global messageBox handleUpdate handleDelete applyOnMessage styleSectionsEqual */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -41,7 +41,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
             importFromString(text) :
             getOwnTab().then(tab => {
               tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-              return API.installUsercss({direct: true}, {tab})
+              return API.installUsercss({direct: true, tab})
                 .then(() => URL.revokeObjectURL(tab.url));
             })
           ).then(numStyles => {
@@ -58,8 +58,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 function importFromString(jsonString, oldStyles) {
   if (!oldStyles) {
-    API.getStyles().then(styles => importFromString(jsonString, styles));
-    return;
+    return API.getStyles().then(styles => importFromString(jsonString, styles));
   }
   const json = tryJSONparse(jsonString) || [];
   if (typeof json.slice !== 'function') {
@@ -104,8 +103,11 @@ function importFromString(jsonString, oldStyles) {
   }
 
   function analyze(item) {
-    if (!item || !item.name || !item.name.trim() || typeof item !== 'object'
-    || (item.sections && typeof item.sections.slice !== 'function')) {
+    if (typeof item !== 'object' ||
+        !item ||
+        !item.name ||
+        !item.name.trim() ||
+        (item.sections && !Array.isArray(item.sections))) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }
@@ -179,7 +181,7 @@ function importFromString(jsonString, oldStyles) {
       stats.metaOnly.names.length +
       stats.codeOnly.names.length +
       stats.added.names.length;
-    Promise.resolve(numChanged && refreshAllTabs()).then(() => {
+    Promise.resolve(numChanged && API.refreshAllTabs()).then(() => {
       const report = Object.keys(stats)
         .filter(kind => stats[kind].names.length)
         .map(kind => {
@@ -213,40 +215,34 @@ function importFromString(jsonString, oldStyles) {
   }
 
   function undo() {
-    const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
     const newIds = [
       ...stats.metaAndCode.ids,
       ...stats.metaOnly.ids,
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
-    let resolve;
-    index = 0;
-    return new Promise(resolve_ => {
-      resolve = resolve_;
-      undoNextId();
-    }).then(refreshAllTabs)
+    let tasks = Promise.resolve();
+    let tasksUI = Promise.resolve();
+    for (const id of newIds) {
+      tasks = tasks.then(() => API.deleteStyle({id, notify: false}));
+      tasksUI = tasksUI.then(() => handleDelete(id));
+      const oldStyle = oldStylesById.get(id);
+      if (oldStyle) {
+        Object.assign(oldStyle, SAVE_OPTIONS);
+        tasks = tasks.then(() => API.saveStyle(oldStyle));
+        tasksUI = tasksUI.then(() => handleUpdate(oldStyle, {reason: 'import'}));
+      }
+    }
+    // taskUI is superfast and updates style list only in this page,
+    // which should account for 99.99999999% of cases, supposedly
+    return tasks
+      .then(tasksUI)
+      .then(API.refreshAllTabs)
       .then(() => messageBox({
         title: t('importReportUndoneTitle'),
         contents: newIds.length + ' ' + t('importReportUndone'),
         buttons: [t('confirmOK')],
       }));
-    function undoNextId() {
-      if (index === newIds.length) {
-        resolve();
-        return;
-      }
-      const id = newIds[index++];
-      API.deleteStyle({id, notify: false}).then(id => {
-        const oldStyle = oldStylesById.get(id);
-        if (oldStyle) {
-          API.saveStyle(Object.assign(oldStyle, SAVE_OPTIONS))
-            .then(undoNextId);
-        } else {
-          undoNextId();
-        }
-      });
-    }
   }
 
   function bindClick() {
@@ -273,42 +269,6 @@ function importFromString(jsonString, oldStyles) {
     return newStyle.name !== oldStyle.name
       ? oldStyle.name + ' —> ' + newStyle.name
       : oldStyle.name;
-  }
-
-  function refreshAllTabs() {
-    return getOwnTab().then(ownTab => new Promise(resolve => {
-      queryTabs().then(tabs => {
-        tabs = !FIREFOX ? tabs : tabs.filter(tab => tab.width);
-        tabs.forEach((tab, i) =>
-          refreshTab(tab, ownTab, (i === tabs.length - 1) && resolve));
-        if (!tabs.length) {
-          resolve();
-        }
-      });
-    }));
-  }
-
-  function refreshTab(tab, ownTab, resolve) {
-    const tabId = tab.id;
-    chrome.webNavigation.getAllFrames({tabId}, frames => {
-      frames = frames && frames[0] ? frames : [{frameId: 0}];
-      frames.forEach(({frameId}) =>
-        API.getStyles({matchUrl: tab.url, enabled: true, asHash: true}).then(styles => {
-          const message = {method: 'styleReplaceAll', tabId, frameId, styles};
-          if (tab.id === ownTab.id) {
-            applyOnMessage(message);
-          } else {
-            invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
-          }
-          if (frameId === 0) {
-            setTimeout(API.updateIcon, 0, tab, styles);
-          }
-        }));
-      if (resolve) {
-        resolve();
-      }
-      ignoreChromeError();
-    });
   }
 }
 
