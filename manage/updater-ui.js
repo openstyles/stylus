@@ -70,9 +70,9 @@ function checkUpdateAll() {
       }
       btnApply.dataset.value = updated;
     }
-    if (info.updated || info.error) {
+    if (info.updated || 'error' in info) {
       checked++;
-      skippedEdited += [info.STATES.EDITED, info.STATES.MAYBE_EDITED].includes(info.error);
+      skippedEdited += !info.updated && [info.STATES.EDITED, info.STATES.MAYBE_EDITED].includes(info.error);
       reportUpdateState(info);
     }
     const progress = $('#update-progress');
