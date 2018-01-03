@@ -333,30 +333,31 @@ function updateIcon({tab, styles}) {
     const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
     const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-    const path = 'images/icon/' + iconset;
-    const tabIcon = tabIcons.get(tab.id) || {};
+
+    let tabIcon = tabIcons.get(tab.id);
+    if (!tabIcon) tabIcons.set(tab.id, (tabIcon = {}));
+
     if (tabIcon.iconType !== iconset + postfix) {
-      tabIcons.set(tab.id, tabIcon);
       tabIcon.iconType = iconset + postfix;
-      const paths = {};
-      if (FIREFOX || CHROME >= 2883 && !VIVALDI) {
-        // Material Design 2016 new size is 16px
-        paths['16'] = `${path}16${postfix}.png`;
-        paths['32'] = `${path}32${postfix}.png`;
-      } else {
-        // Chromium forks or non-chromium browsers may still use the traditional 19px
-        paths['19'] = `${path}19${postfix}.png`;
-        paths['38'] = `${path}38${postfix}.png`;
-      }
-      chrome.browserAction.setIcon({tabId: tab.id, path: paths}, ignoreChromeError);
+      const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+      Promise.all(sizes.map(size => {
+        const src = `/images/icon/${iconset}${size}${postfix}.png`;
+        return tabIcons.get(src) || loadIcon(src);
+      })).then(data => {
+        const imageData = {};
+        sizes.forEach((size, i) => (imageData[size] = data[i]));
+        chrome.browserAction.setIcon({tabId: tab.id, imageData}, ignoreChromeError);
+      });
     }
     if (tab.id === undefined) return;
+
     let defaultIcon = tabIcons.get(undefined);
     if (!defaultIcon) tabIcons.set(undefined, (defaultIcon = {}));
     if (defaultIcon.color !== color) {
       defaultIcon.color = color;
       chrome.browserAction.setBadgeBackgroundColor({color});
     }
+
     if (tabIcon.text !== text) {
       tabIcon.text = text;
       setTimeout(() => {
@@ -368,6 +369,23 @@ function updateIcon({tab, styles}) {
         });
       });
     }
+  }
+
+  function loadIcon(src, resolve) {
+    if (!resolve) return new Promise(resolve => loadIcon(src, resolve));
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      const w = canvas.width = img.width;
+      const h = canvas.height = img.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h);
+      tabIcons.set(src, data);
+      resolve(data);
+    };
   }
 }
 
