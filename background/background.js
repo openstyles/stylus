@@ -202,6 +202,9 @@ window.addEventListener('storageReady', function _() {
     styles: {},
   });
 
+  // Firefox injects content script automatically
+  if (FIREFOX) return;
+
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
@@ -238,7 +241,7 @@ window.addEventListener('storageReady', function _() {
   queryTabs().then(tabs =>
     tabs.forEach(tab => {
       // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-      if (!FIREFOX || tab.width) {
+      if (tab.width) {
         contentScripts.forEach(cs =>
           setTimeout(pingCS, 0, cs, tab));
       }
