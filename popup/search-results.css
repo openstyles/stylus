@@ -26,7 +26,7 @@ body.search-results-shown {
   font-weight: bold;
   padding: 5px;
   text-align: center;
-  margin: -.5rem 0 9px;
+  margin: 0 0 var(--outer-padding);
 }
 
 #search-results-list {
