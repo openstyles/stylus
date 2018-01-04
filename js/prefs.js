@@ -270,7 +270,7 @@ var prefs = new function Prefs() {
       if (BG && BG !== window) return;
       if (BG === window) {
         affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
-        getSync().get('settings', data => importFromSync.call(this, data.settings));
+        chromeSync.getValue('settings', settings => importFromSync.call(this, settings));
       }
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area === 'sync' && 'settings' in changes) {
@@ -319,30 +319,7 @@ var prefs = new function Prefs() {
   }
 
   function doSyncSet() {
-    getSync().set({'settings': values});
-  }
-
-  // Polyfill for Firefox < 53 https://bugzilla.mozilla.org/show_bug.cgi?id=1220494
-  function getSync() {
-    if ('sync' in chrome.storage && !chrome.runtime.id.includes('@temporary')) {
-      return chrome.storage.sync;
-    }
-    const crappyStorage = {};
-    return {
-      get(key, callback) {
-        callback(crappyStorage[key] || {});
-      },
-      set(source, callback) {
-        for (const property in source) {
-          if (source.hasOwnProperty(property)) {
-            crappyStorage[property] = source[property];
-          }
-        }
-        if (typeof callback === 'function') {
-          callback();
-        }
-      }
-    };
+    chromeSync.setValue('settings', values);
   }
 
   function importFromSync(synced = {}) {

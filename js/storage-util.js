@@ -1,99 +1,85 @@
-/* global LZString loadScript */
+/* global loadScript */
 'use strict';
 
 // eslint-disable-next-line no-var
-var [chromeLocal, chromeSync] = [
-  chrome.storage.local,
-  chrome.storage.sync,
-].map(storage => {
-  const wrapper = {
-    get(options) {
-      return new Promise(resolve => {
-        storage.get(options, data => resolve(data));
-      });
-    },
-    set(data) {
-      return new Promise(resolve => {
-        storage.set(data, () => resolve(data));
-      });
-    },
-    remove(keyOrKeys) {
-      return new Promise(resolve => {
-        storage.remove(keyOrKeys, resolve);
-      });
-    },
-    getValue(key) {
-      return wrapper.get(key).then(data => data[key]);
-    },
-    setValue(key, value) {
-      return wrapper.set({[key]: value});
-    },
-    loadLZStringScript() {
-      return Promise.resolve(
-        window.LZString ||
-        loadScript('/vendor/lz-string/lz-string-unsafe.js').then(() => {
-          window.LZString = window.LZStringUnsafe;
-        }));
-    },
-    getLZValue(key) {
-      return wrapper.getLZValues([key]).then(data => data[key]);
-    },
-    getLZValues(keys) {
-      return Promise.all([
-        wrapper.get(keys),
-        wrapper.loadLZStringScript(),
-      ]).then(([data = {}]) => {
-        for (const key of keys) {
-          const value = data[key];
-          data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
-        }
-        return data;
-      });
-    },
-    setLZValue(key, value) {
-      return wrapper.loadLZStringScript().then(() =>
-        wrapper.set({
-          [key]: LZString.compressToUTF16(JSON.stringify(value)),
-        }));
-    }
-  };
-  return wrapper;
-});
-
-
-function styleSectionsEqual({sections: a}, {sections: b}) {
-  if (!a || !b) {
-    return undefined;
+var [chromeLocal, chromeSync] = (() => {
+  const native = 'sync' in chrome.storage &&
+                 !chrome.runtime.id.includes('@temporary');
+  if (!native && BG !== window) {
+    setupOnChangeRelay();
   }
-  if (a.length !== b.length) {
-    return false;
-  }
-  // order of sections should be identical to account for the case of multiple
-  // sections matching the same URL because the order of rules is part of cascading
-  return a.every((sectionA, index) => propertiesEqual(sectionA, b[index]));
+  return [
+    createWrapper('local'),
+    createWrapper('sync'),
+  ];
 
-  function propertiesEqual(secA, secB) {
-    for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
-      if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
-        return false;
+  function createWrapper(name) {
+    if (!native) createDummyStorage(name);
+    const storage = chrome.storage[name];
+    const wrapper = {
+      get: data => new Promise(resolve => storage.get(data, resolve)),
+      set: data => new Promise(resolve => storage.set(data, () => resolve(data))),
+      remove: data => new Promise(resolve => storage.remove(data, resolve)),
+
+      getValue: key => wrapper.get(key).then(data => data[key]),
+      setValue: (key, value) => wrapper.set({[key]: value}),
+
+      getLZValue: key => wrapper.getLZValues([key]).then(data => data[key]),
+      getLZValues: keys =>
+        Promise.all([
+          wrapper.get(keys),
+          loadLZStringScript(),
+        ]).then(([data = {}, LZString]) => {
+          for (const key of keys) {
+            const value = data[key];
+            data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
+          }
+          return data;
+        }),
+      setLZValue: (key, value) =>
+        loadLZStringScript().then(LZString =>
+          wrapper.set({
+            [key]: LZString.compressToUTF16(JSON.stringify(value)),
+          })),
+
+      loadLZStringScript,
+    };
+    return wrapper;
+  }
+
+  function createDummyStorage(name) {
+    chrome.storage[name] = {
+      get: (data, cb) => API.dummyStorageGet({data, name}).then(cb),
+      set: (data, cb) => API.dummyStorageSet({data, name}).then(cb),
+      remove: (data, cb) => API.dummyStorageRemove({data, name}).then(cb),
+    };
+  }
+
+  function loadLZStringScript() {
+    return window.LZString ?
+      Promise.resolve(window.LZString) :
+      loadScript('/vendor/lz-string/lz-string-unsafe.js').then(() =>
+        (window.LZString = window.LZString || window.LZStringUnsafe));
+  }
+
+  function setupOnChangeRelay() {
+    const listeners = new Set();
+    const onMessage = msg => {
+      if (!msg.dummyStorageChanges) return;
+      for (const fn of listeners.values()) {
+        fn(msg.dummyStorageChanges, msg.dummyStorageName);
       }
-    }
-    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
+    };
+    Object.assign(chrome.storage.onChanged, {
+      addListener(fn) {
+        if (!listeners.size) chrome.runtime.onMessage.addListener(onMessage);
+        listeners.add(fn);
+      },
+      hasListener: fn => listeners.has(fn),
+      removeListener(fn) {
+        listeners.delete(fn);
+        if (!listeners.size) chrome.runtime.onMessage.removeListener(onMessage);
+      }
+    });
   }
-
-  function equalOrEmpty(a, b, telltale, comparator) {
-    const typeA = a && typeof a[telltale] === 'function';
-    const typeB = b && typeof b[telltale] === 'function';
-    return (
-      (a === null || a === undefined || (typeA && !a.length)) &&
-      (b === null || b === undefined || (typeB && !b.length))
-    ) || typeA && typeB && a.length === b.length && comparator(a, b);
-  }
-
-  function arrayMirrors(array1, array2) {
-    return (
-      array1.every(el => array2.includes(el)) &&
-      array2.every(el => array1.includes(el))
-    );
-  }
-}
+})();

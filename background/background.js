@@ -8,8 +8,7 @@
  */
 'use strict';
 
-// eslint-disable-next-line no-var
-var API_METHODS = {
+window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   getStyles,
   saveStyle,
@@ -32,7 +31,7 @@ var API_METHODS = {
     });
     return KEEP_CHANNEL_OPEN;
   },
-};
+});
 
 // eslint-disable-next-line no-var
 var browserCommands, contextMenus;

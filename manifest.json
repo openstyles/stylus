@@ -23,6 +23,7 @@
       "js/messaging.js",
       "js/storage-util.js",
       "js/sections-equal.js",
+      "background/storage-dummy.js",
       "background/storage.js",
       "js/prefs.js",
       "js/script-loader.js",
