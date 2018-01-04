@@ -210,11 +210,16 @@ function createStyleElement({style, name, index}) {
     parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
   }
 
+  // clear the code to free up some memory
+  // (note, style is already a deep copy)
+  style.sourceCode = null;
+  style.sections.forEach(section => (section.code = null));
+
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
   entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
-  entry.styleMeta = getStyleWithNoCode(style);
+  entry.styleMeta = style;
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
