@@ -720,6 +720,10 @@ select {
   transform: rotate(-90deg);
 }
 
+html:not(.newUI) #newUIoptions + * {
+  margin-top: .5em;
+}
+
 input[id^="manage.newUI"] {
   margin-left: 0;
 }
