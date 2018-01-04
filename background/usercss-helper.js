@@ -62,7 +62,8 @@
   }
 
   function save(style) {
-    if (!style.sourceCode) {
+    // restore if stripped by getStyleWithNoCode
+    if (typeof style.sourceCode !== 'string') {
       style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
     }
     return buildMeta(style)
