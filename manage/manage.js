@@ -346,7 +346,7 @@ Object.assign(handleEvent, {
 
   ENTRY_ROUTES: {
     '.checker, .enable, .disable': 'toggle',
-    '.style-name': 'edit',
+    '.style-name': 'name',
     '.homepage': 'external',
     '.check-update': 'check',
     '.update': 'update',
@@ -366,6 +366,10 @@ Object.assign(handleEvent, {
         }
       }
     }
+  },
+
+  name(event) {
+    if (newUI.enabled) handleEvent.edit(event);
   },
 
   edit(event) {
