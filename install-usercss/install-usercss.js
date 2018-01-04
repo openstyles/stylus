@@ -188,6 +188,7 @@
     $$.remove('.warning');
     $('button.install').disabled = true;
     $('button.install').classList.add('installed');
+    $('#live-reload-install-hint').classList.toggle('hidden', !liveReload);
     $('h2.installed').classList.add('active');
     $('.set-update-url input[type=checkbox]').disabled = true;
     $('.set-update-url').title = style.updateUrl ?
