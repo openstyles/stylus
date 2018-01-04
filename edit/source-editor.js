@@ -101,9 +101,7 @@ function createSourceEditor(style) {
       @description    A new userstyle
       @author         Me
       ==/UserStyle== */
-      
-      ${section}
-    `.replace(/^\s+/gm, '');
+    `.replace(/^\s+/gm, '') + '\n\n' + section;
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
     chromeSync.getLZValue('usercssTemplate').then(code => {
