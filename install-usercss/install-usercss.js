@@ -40,7 +40,10 @@
     port.onDisconnect.addListener(onPortDisconnected);
   }
 
-  const cm = CodeMirror($('.main'), {readOnly: true});
+  const cm = CodeMirror($('.main'), {
+    readOnly: true,
+    colorpicker: true,
+  });
   let liveReloadPending = Promise.resolve();
   window.addEventListener('resize', adjustCodeHeight);
 
