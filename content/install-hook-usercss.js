@@ -1,7 +1,64 @@
 'use strict';
 
-function createSourceLoader() {
-  let source;
+(() => {
+  // some weird bug in new Chrome: the content script gets injected multiple times
+  if (typeof window.initUsercssInstall === 'function') return;
+  if (!/text\/(css|plain)/.test(document.contentType) ||
+      !/==userstyle==/i.test(document.body.textContent)) {
+    return;
+  }
+  window.initUsercssInstall = () => {};
+
+  orphanCheck();
+
+  const DELAY = 500;
+  const url = location.href;
+  let sourceCode, port, timer;
+
+  chrome.runtime.onConnect.addListener(onConnected);
+  chrome.runtime.sendMessage({method: 'installUsercss', url}, r =>
+    r && r.__ERROR__ && alert(r.__ERROR__));
+
+  function onConnected(newPort) {
+    port = newPort;
+    port.onDisconnect.addListener(stop);
+    port.onMessage.addListener(onMessage);
+  }
+
+  function onMessage(msg, port) {
+    switch (msg.method) {
+      case 'getSourceCode':
+        fetchText(url)
+          .then(text => {
+            sourceCode = sourceCode || text;
+            port.postMessage({
+              method: msg.method + 'Response',
+              sourceCode,
+            });
+          })
+          .catch(err => port.postMessage({
+            method: msg.method + 'Response',
+            error: err.message || String(err),
+          }));
+        break;
+
+      case 'liveReloadStart':
+        start();
+        break;
+
+      case 'liveReloadStop':
+        stop();
+        break;
+
+      case 'closeTab':
+        if (history.length > 1) {
+          history.back();
+        } else {
+          chrome.runtime.sendMessage({method: 'closeTab'});
+        }
+        break;
+    }
+  }
 
   function fetchText(url) {
     return new Promise((resolve, reject) => {
@@ -14,104 +71,40 @@ function createSourceLoader() {
     });
   }
 
-  function load() {
-    return fetchText(location.href).then(newSource => {
-      source = newSource;
-      return source;
-    });
+  function start() {
+    timer = timer || setTimeout(check, DELAY);
   }
 
-  function watch(cb) {
-    let timer;
-    const DELAY = 1000;
-
-    function start() {
-      if (timer) {
-        return;
-      }
-      timer = setTimeout(check, DELAY);
-    }
-
-    function stop() {
-      clearTimeout(timer);
-      timer = null;
-    }
-
-    function check() {
-      fetchText(location.href)
-        .then(newSource => {
-          if (source !== newSource) {
-            source = newSource;
-            return cb(source);
-          }
-        })
-        .catch(error => {
-          console.log(chrome.i18n.getMessage('liveReloadError', error));
-        })
-        .then(() => {
-          timer = setTimeout(check, DELAY);
-        });
-    }
-
-    return {start, stop};
+  function stop() {
+    clearTimeout(timer);
+    timer = null;
   }
 
-  return {load, watch, source: () => source};
-}
-
-function initUsercssInstall() {
-  const sourceLoader = createSourceLoader();
-  const pendingSource = sourceLoader.load();
-  let watcher;
-
-  chrome.runtime.onConnect.addListener(port => {
-    port.onMessage.addListener(msg => {
-      switch (msg.method) {
-        case 'getSourceCode':
-          pendingSource
-            .then(sourceCode => port.postMessage({method: msg.method + 'Response', sourceCode}))
-            .catch(err => port.postMessage({method: msg.method + 'Response', error: err.message || String(err)}));
-          break;
-
-        case 'liveReloadStart':
-          if (!watcher) {
-            watcher = sourceLoader.watch(sourceCode => {
-              port.postMessage({method: 'sourceCodeChanged', sourceCode});
-            });
-          }
-          watcher.start();
-          break;
-
-        case 'liveReloadStop':
-          watcher.stop();
-          break;
-
-        case 'closeTab':
-          if (history.length > 1) {
-            history.back();
-          } else {
-            chrome.runtime.sendMessage({method: 'closeTab'});
-          }
-          break;
-      }
-    });
-  });
-  chrome.runtime.sendMessage({
-    method: 'installUsercss',
-    url: location.href,
-  }, r => r && r.__ERROR__ && alert(r.__ERROR__));
-}
-
-function isUsercss() {
-  if (!/text\/(css|plain)/.test(document.contentType)) {
-    return false;
+  function check() {
+    fetchText(url)
+      .then(text => {
+        if (sourceCode === text) return;
+        sourceCode = text;
+        port.postMessage({method: 'sourceCodeChanged', sourceCode});
+      })
+      .catch(error => {
+        console.log(chrome.i18n.getMessage('liveReloadError', error));
+      })
+      .then(() => {
+        timer = null;
+        start();
+      });
   }
-  if (!/==userstyle==/i.test(document.body.textContent)) {
-    return false;
-  }
-  return true;
-}
 
-if (isUsercss()) {
-  initUsercssInstall();
-}
+  function orphanCheck() {
+    const eventName = chrome.runtime.id + '-install-hook-usercss';
+    const orphanCheckRequest = () => {
+      if (chrome.i18n && chrome.i18n.getUILanguage()) return true;
+      // In Chrome content script is orphaned on an extension update/reload
+      // so we need to detach event listeners
+      removeEventListener(eventName, orphanCheckRequest, true);
+    };
+    dispatchEvent(new Event(eventName));
+    addEventListener(eventName, orphanCheckRequest, true);
+  }
+})();

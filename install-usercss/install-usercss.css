@@ -156,10 +156,16 @@ h1 small {
   background-position: center center;
 }
 
-.install:hover {
+.install:hover:not(:disabled) {
   filter: brightness(1.1);
   color: #eee;
   text-shadow: none;
+}
+
+.install:disabled {
+  opacity: .25;
+  color: white;
+  cursor: auto;
 }
 
 .install.reinstall:after {

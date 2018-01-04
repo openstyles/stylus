@@ -5,50 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Loading...</title>
-  <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="/install-usercss/install-usercss.css">
-  <script src="/js/messaging.js"></script>
-  <script src="/js/prefs.js"></script>
-  <script src="/js/dom.js"></script>
-  <script src="/js/localization.js"></script>
-  <script src="/content/apply.js"></script>
-  <script src="/vendor/node-semver/semver.js"></script>
+
+  <link href="global.css" rel="stylesheet">
+  <link href="install-usercss/install-usercss.css" rel="stylesheet">
+
+  <script src="js/messaging.js"></script>
+  <script src="js/prefs.js"></script>
+  <script src="js/dom.js"></script>
+  <script src="js/localization.js"></script>
   <script src="js/script-loader.js"></script>
+  <script src="content/apply.js"></script>
+  <script src="vendor/node-semver/semver.js"></script>
 
-  <script src="/msgbox/msgbox.js"></script>
-  <link rel="stylesheet" href="/msgbox/msgbox.css">
+  <link href="msgbox/msgbox.css" rel="stylesheet">
+  <script src="msgbox/msgbox.js"></script>
 
-  <script src="/vendor/codemirror/lib/codemirror.js"></script>
-  <script src="/vendor/codemirror/keymap/sublime.js"></script>
-  <script src="/vendor/codemirror/keymap/emacs.js"></script>
-  <script src="/vendor/codemirror/keymap/vim.js"></script>
+  <link href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
+  <script src="vendor/codemirror/lib/codemirror.js"></script>
+  <script src="vendor/codemirror/keymap/sublime.js"></script>
+  <script src="vendor/codemirror/keymap/emacs.js"></script>
+  <script src="vendor/codemirror/keymap/vim.js"></script>
 
-  <link rel="stylesheet" href="/vendor/codemirror/lib/codemirror.css">
-  <script src="/vendor/codemirror/mode/css/css.js"></script>
-  <link rel="stylesheet" href="/vendor/codemirror/addon/dialog/dialog.css">
-  <link rel="stylesheet" href="/vendor/codemirror/addon/search/matchesonscrollbar.css">
-  <script src="/vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
-  <script src="/vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
-  <script src="/vendor/codemirror/addon/search/match-highlighter.js"></script>
-  <script src="/vendor/codemirror/addon/dialog/dialog.js"></script>
-  <script src="/vendor/codemirror/addon/search/searchcursor.js"></script>
-  <script src="/vendor/codemirror/addon/search/search.js"></script>
-  <script src="/vendor/codemirror/addon/comment/comment.js"></script>
-  <script src="/vendor/codemirror/addon/selection/active-line.js"></script>
-  <link rel="stylesheet" href="/vendor/codemirror/addon/fold/foldgutter.css" />
-  <script src="/vendor/codemirror/addon/fold/foldcode.js"></script>
-  <script src="/vendor/codemirror/addon/fold/foldgutter.js"></script>
-  <script src="/vendor/codemirror/addon/fold/brace-fold.js"></script>
-  <script src="/vendor/codemirror/addon/fold/comment-fold.js"></script>
-  <script src="/vendor/codemirror/addon/edit/matchbrackets.js"></script>
-  <link rel="stylesheet" href="/vendor/codemirror/addon/lint/lint.css" />
-  <link rel="stylesheet" href="/vendor/codemirror/addon/hint/show-hint.css" />
-  <script src="/vendor/codemirror/addon/hint/show-hint.js"></script>
-  <script src="/vendor/codemirror/addon/hint/css-hint.js"></script>
+  <script src="vendor/codemirror/mode/css/css.js"></script>
+  <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
 
-  <script src="/edit/match-highlighter-helper.js"></script>
-  <script src="/edit/codemirror-default.js"></script>
-  <link rel="stylesheet" href="/edit/codemirror-default.css">
+  <link href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet" />
+  <script src="vendor/codemirror/addon/fold/foldcode.js"></script>
+  <script src="vendor/codemirror/addon/fold/foldgutter.js"></script>
+  <script src="vendor/codemirror/addon/fold/brace-fold.js"></script>
+
+  <script src="edit/codemirror-default.js"></script>
+  <link rel="stylesheet" href="edit/codemirror-default.css">
 </head>
 <body id="stylus-install-usercss">
   <div class="container">
@@ -60,6 +47,7 @@
       <div class="actions">
         <h2 class="installed" i18n-text="installButtonInstalled"></h2>
         <button class="install" i18n-text="installButton"></button>
+        <p id="live-reload-install-hint" i18n-text="liveReloadInstallHint" class="hidden"></p>
         <label class="set-update-url">
           <input type="checkbox">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
@@ -91,7 +79,7 @@
     </div>
   </div>
 
-  <script src="/install-usercss/install-usercss.js"></script>
+  <script src="install-usercss/install-usercss.js"></script>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
     <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">

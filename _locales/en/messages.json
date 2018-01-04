@@ -588,6 +588,10 @@
     "message": "Live reload",
     "description": "The label of live-reload feature"
   },
+  "liveReloadInstallHint": {
+    "message": "Live reload is enabled so the installed style will be auto-updated on external changes while both this tab and the source file tab are open.",
+    "description": "The label of live-reload feature"
+  },
   "liveReloadError": {
     "message": "An error occurred while watching the file",
     "description": "The label of live-reload error"

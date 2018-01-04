@@ -6,7 +6,8 @@
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   let liveReload = false;
-  let installed = false;
+  let installed = null;
+  let installedDup = null;
 
   const tabId = Number(params.get('tabId'));
   let tabUrl;
@@ -65,7 +66,7 @@
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
       return sendMessage({
-        id: installed.id,
+        id: (installed || installedDup).id,
         method: 'saveUsercss',
         reason: 'update',
         sourceCode
@@ -74,19 +75,27 @@
     });
   }
 
-  function updateMeta(style, dup) {
+  function updateMeta(style, dup = installedDup) {
+    installedDup = dup;
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
 
-    // update editor
     cm.setPreprocessor(data.preprocessor);
 
-    // update metas
-    document.title = `${installButtonLabel()} ${data.name}`;
+    const installButtonLabel = t(
+      installed ? 'installButtonInstalled' :
+      !dup ? 'installButton' :
+      versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall'
+    );
+    document.title = `${installButtonLabel} ${data.name}`;
 
-    $('.install').textContent = installButtonLabel();
-    $('.install').classList.add(installButtonClass());
+    $('.install').textContent = installButtonLabel;
+    $('.install').classList.add(
+      installed ? 'installed' :
+      !dup ? 'install' :
+      versionTest > 0 ? 'update' :
+      'reinstall');
     $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
     $('.meta-name').textContent = data.name;
     $('.meta-version').textContent = data.version;
@@ -158,20 +167,6 @@
           ))
         ]));
     }
-
-    function installButtonClass() {
-      return installed ? 'installed' :
-        !dup ? 'install' :
-        versionTest > 0 ? 'update' : 'reinstall';
-    }
-
-    function installButtonLabel() {
-      return t(
-        installed ? 'installButtonInstalled' :
-        !dup ? 'installButton' :
-        versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall'
-      );
-    }
   }
 
   function showError(err) {
@@ -213,7 +208,7 @@
     cm.setValue(sourceCode);
     cm.refresh();
     API.buildUsercss({sourceCode, checkDup: true})
-      .then(r => init(r instanceof Object ? r : deepCopy(r)))
+      .then(init)
       .catch(err => {
         $('.header').classList.add('meta-init-error');
         showError(err);
@@ -324,9 +319,11 @@
     } else {
       setLiveReload.addEventListener('change', () => {
         liveReload = setLiveReload.checked;
-        if (installed) {
+        if (installed || installedDup) {
           const method = 'liveReload' + (liveReload ? 'Start' : 'Stop');
           port.postMessage({method});
+          $('.install').disabled = liveReload;
+          $('#live-reload-install-hint').classList.toggle('hidden', !liveReload);
         }
       });
       window.addEventListener('installed', () => {
