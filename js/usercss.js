@@ -359,7 +359,6 @@ var usercss = (() => {
   }
 
   function parseStringToEnd(state) {
-    rewindToEOL(state);
     const EOL = posOrEnd(state.text, '\n', state.re.lastIndex);
     const match = state.text.slice(state.re.lastIndex, EOL);
     state.value = unquote(match.trim());
@@ -388,10 +387,6 @@ var usercss = (() => {
     return pos < 0 ? haystack.length : pos;
   }
 
-  function rewindToEOL({re, text}) {
-    re.lastIndex -= text[re.lastIndex - 1] === '\n' ? 1 : 0;
-  }
-
   function buildMeta(sourceCode) {
     sourceCode = sourceCode.replace(/\r\n?/g, '\n');
 
@@ -408,7 +403,7 @@ var usercss = (() => {
     };
 
     const {text, index: metaIndex} = getMetaSource(sourceCode);
-    const re = /@(\w+)\s+/mg;
+    const re = /@(\w+)[ \t\xA0]*/mg;
     const state = {style, re, text, usercssData};
 
     function doParse() {
@@ -455,9 +450,7 @@ var usercss = (() => {
       doParse();
     } catch (e) {
       // grab additional info
-      let pos = state.re.lastIndex;
-      while (pos && /[\s\n]/.test(state.text[--pos])) { /**/ }
-      e.index = metaIndex + pos;
+      e.index = metaIndex;
       throw e;
     }
 
