@@ -46,7 +46,7 @@ function createSourceLoader() {
           }
         })
         .catch(error => {
-          console.log(t('liveReloadError', error));
+          console.log(chrome.i18n.getMessage('liveReloadError', error));
         })
         .then(() => {
           timer = setTimeout(check, DELAY);
