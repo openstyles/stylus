@@ -193,16 +193,19 @@ function createStyleElement({style, name, index}) {
         regexpsBefore: '/',
         regexpsAfter: '/',
       },
+      oldConfigure: !newUI.enabled && $('.configure-usercss', entry),
       oldCheckUpdate: !newUI.enabled && $('.check-update', entry),
       oldUpdate: !newUI.enabled && $('.update', entry),
     };
   }
   const parts = createStyleElement.parts;
+  const configurable = style.usercssData && Object.keys(style.usercssData.vars).length > 0;
   parts.checker.checked = style.enabled;
   parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
   if (!newUI.enabled) {
+    parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
     parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
   }
@@ -224,7 +227,7 @@ function createStyleElement({style, name, index}) {
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
-  if (style.usercssData && Object.keys(style.usercssData.vars).length > 0 && newUI.enabled) {
+  if (configurable && newUI.enabled) {
     $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
