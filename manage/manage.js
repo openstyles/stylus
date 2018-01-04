@@ -295,7 +295,7 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
         });
       }
     }
-    if (newUI.favicons) {
+    if (newUI.enabled && newUI.favicons) {
       debounce(getFaviconImgSrc);
     }
   });
