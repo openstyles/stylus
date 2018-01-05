@@ -5,13 +5,12 @@
 'use strict';
 
 function createSourceEditor(style) {
-  // a flag for isTouched()
-  let hadBeenSaved = false;
-  let savedGeneration = 0;
-
   $('#name').disabled = true;
   $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
+  $('#save-button').onclick = save;
+  $('#toggle-style-help').onclick = showToggleStyleHelp;
+  $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
 
@@ -25,15 +24,52 @@ function createSourceEditor(style) {
   // normalize style
   if (!style.id) setupNewStyle(style);
 
-  const cm = CodeMirror($('.single-editor'), {value: style.sourceCode});
+  const cm = CodeMirror($('.single-editor'), {
+    value: style.sourceCode,
+  });
+  let savedGeneration = cm.changeGeneration();
+
   editors.push(cm);
-  savedGeneration = cm.changeGeneration();
+
+  $('#enabled').onchange = function () {
+    const value = this.checked;
+    dirty.modify('enabled', style.enabled, value);
+    style.enabled = value;
+  };
+
+  cm.on('changes', () => {
+    dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
+    updateLintReportIfEnabled(cm);
+  });
+
+  cm.on('focus', () => cm.rerouteHotkeys(false));
+  cm.on('blur', () => cm.rerouteHotkeys(true));
+
+  CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
+  CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
+  CodeMirror.commands.toggleStyle = toggleStyle;
+  CodeMirror.commands.save = save;
+  CodeMirror.closestVisible = () => cm;
 
   cm.operation(initAppliesToLineWidget);
+
   updateMeta().then(() => {
+
     initLint();
-    initLinterSwitch();
-    initHooks();
+
+    let prevMode = NaN;
+    cm.on('optionChange', (cm, option) => {
+      if (option !== 'mode') return;
+      const mode = getModeName();
+      if (mode === prevMode) return;
+      prevMode = mode;
+      updateLinter();
+      updateLinterSwitch();
+    });
+
+    $('#editor.linter').addEventListener('change', updateLinterSwitch);
+    updateLinterSwitch();
+
     setTimeout(() => {
       if ((document.activeElement || {}).localName !== 'input') {
         cm.focus();
@@ -48,35 +84,17 @@ function createSourceEditor(style) {
     prefs.subscribe([PREF_NAME], (key, value) => widget.toggle(value));
   }
 
-  function initLinterSwitch() {
-    const linterEl = $('#editor.linter');
-    let prevMode = NaN;
-    cm.on('optionChange', (cm, option) => {
-      if (option !== 'mode') {
-        return;
-      }
-      const mode = cm.doc.mode;
-      if (mode === prevMode || mode && mode.name === prevMode) {
-        return;
-      }
-      prevMode = mode;
-      updateLinter();
-      update();
-    });
-    linterEl.addEventListener('change', update);
-    update();
-
-    function update() {
-      linterEl.value = linterConfig.getName();
-
-      const cssLintOption = linterEl.querySelector('[value="csslint"]');
-      if (cm.getOption('mode') !== 'css') {
-        cssLintOption.disabled = true;
-        cssLintOption.title = t('linterCSSLintIncompatible', cm.getOption('mode'));
-      } else {
-        cssLintOption.disabled = false;
-        cssLintOption.title = '';
-      }
+  function updateLinterSwitch() {
+    const el = $('#editor.linter');
+    el.value = linterConfig.getName();
+    const cssLintOption = $('[value="csslint"]', el);
+    const mode = getModeName();
+    if (mode !== 'css') {
+      cssLintOption.disabled = true;
+      cssLintOption.title = t('linterCSSLintIncompatible', mode);
+    } else {
+      cssLintOption.disabled = false;
+      cssLintOption.title = '';
     }
   }
 
@@ -87,7 +105,6 @@ function createSourceEditor(style) {
       style.sections[0].domains = ['example.com'];
       section = mozParser.format(style);
     }
-
     const DEFAULT_CODE = `
       /* ==UserStyle==
       @name           ${t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}
@@ -97,8 +114,10 @@ function createSourceEditor(style) {
       @author         Me
       ==/UserStyle== */
     `.replace(/^\s+/gm, '') + '\n\n' + section;
+
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
+
     chromeSync.getLZValue('usercssTemplate').then(code => {
       style.sourceCode = code || DEFAULT_CODE;
       cm.startOperation();
@@ -111,43 +130,12 @@ function createSourceEditor(style) {
     });
   }
 
-  function initHooks() {
-    $('#save-button').onclick = save;
-    $('#toggle-style-help').onclick = showToggleStyleHelp;
-
-    $('#enabled').onchange = function () {
-      const value = this.checked;
-      dirty.modify('enabled', style.enabled, value);
-      style.enabled = value;
-    };
-
-    $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
-
-    cm.on('changes', () => {
-      dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-      updateLintReportIfEnabled(cm);
-    });
-
-    cm.on('focus', () => cm.rerouteHotkeys(false));
-    cm.on('blur', () => cm.rerouteHotkeys(true));
-
-    CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
-    CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
-    CodeMirror.commands.toggleStyle = toggleStyle;
-    CodeMirror.commands.save = save;
-
-    CodeMirror.closestVisible = () => cm;
-  }
-
   function updateMeta() {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    const {usercssData: {preprocessor} = {}} = style;
-    // beautify only works with regular CSS
-    $('#beautify').disabled = cm.getOption('mode') !== 'css';
     updateTitle();
-    return cm.setPreprocessor(preprocessor);
+    return cm.setPreprocessor(style.usercssData.preprocessor);
   }
 
   function updateTitle() {
@@ -160,7 +148,6 @@ function createSourceEditor(style) {
 
   function replaceStyle(newStyle, codeIsUpdated) {
     const sameCode = newStyle.sourceCode === cm.getValue();
-    hadBeenSaved = sameCode;
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       dirty.clear('sourceGeneration');
@@ -172,9 +159,7 @@ function createSourceEditor(style) {
     }
 
     Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
-      if (!ok) {
-        return;
-      }
+      if (!ok) return;
       updateEnvironment();
       if (!sameCode) {
         const cursor = cm.getCursor();
@@ -200,14 +185,11 @@ function createSourceEditor(style) {
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
     updateMeta();
-    // save when toggle enable state?
     save();
   }
 
   function save() {
-    if (!dirty.isDirty()) {
-      return;
-    }
+    if (!dirty.isDirty()) return;
     const code = cm.getValue();
     return (
       API.saveUsercss({
@@ -235,30 +217,25 @@ function createSourceEditor(style) {
         }
         messageBox.alert(contents);
       });
-
-    function drawLinePointer(pos) {
-      const SIZE = 60;
-      const line = cm.getLine(pos.line);
-      const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
-      const pointer = ' '.repeat(pos.ch) + '^';
-      const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
-      const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
-      const leftPad = start !== 0 ? '...' : '';
-      const rightPad = end !== line.length ? '...' : '';
-      return (
-        leftPad +
-        line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
-        rightPad +
-        '\n' +
-        ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
-        pointer.slice(start, end)
-      );
-    }
   }
 
-  function isTouched() {
-    // indicate that the editor had been touched by the user
-    return dirty.isDirty() || hadBeenSaved;
+  function drawLinePointer(pos) {
+    const SIZE = 60;
+    const line = cm.getLine(pos.line);
+    const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
+    const pointer = ' '.repeat(pos.ch) + '^';
+    const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
+    const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
+    const leftPad = start !== 0 ? '...' : '';
+    const rightPad = end !== line.length ? '...' : '';
+    return (
+      leftPad +
+      line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
+      rightPad +
+      '\n' +
+      ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
+      pointer.slice(start, end)
+    );
   }
 
   function nextPrevMozDocument(cm, dir) {
@@ -341,12 +318,14 @@ function createSourceEditor(style) {
       deltaY;
   }
 
+  function getModeName() {
+    const mode = cm.doc.mode;
+    return mode && mode.name || mode;
+  }
+
   return {
     replaceStyle,
-    save,
-    toggleStyle,
     isDirty: dirty.isDirty,
     getStyle: () => style,
-    isTouched
   };
 }
