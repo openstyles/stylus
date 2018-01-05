@@ -407,7 +407,7 @@
                 }
 
                 print.text(eatComment());
-                print.newLine();
+                if (peek() !== ';') print.newLine();
             } else if (ch === '/' && peek() === '/') { // single line comment
                 if (!isAfterNewline && last_top_ch !== '{') {
                     print.trim();
