@@ -366,7 +366,7 @@ Object.assign(handleEvent, {
     if (styleIsUsercss) {
       API.getStyles({id: styleId}).then(([style]) => {
         hotkeys.setState(false);
-        configDialog(deepCopy(style)).then(() => {
+        configDialog(style).then(() => {
           hotkeys.setState(true);
         });
       });

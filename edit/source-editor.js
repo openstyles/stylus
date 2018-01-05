@@ -23,12 +23,7 @@ function createSourceEditor(style) {
   });
 
   // normalize style
-  if (!style.id) {
-    setupNewStyle(style);
-  } else {
-    // style might be an object reference to background page
-    style = deepCopy(style);
-  }
+  if (!style.id) setupNewStyle(style);
 
   const cm = CodeMirror($('.single-editor'), {value: style.sourceCode});
   editors.push(cm);
@@ -195,7 +190,7 @@ function createSourceEditor(style) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
       sessionStorage.justEditedStyleId = newStyle.id;
-      style = deepCopy(newStyle);
+      style = newStyle;
       updateMeta();
     }
   }
@@ -222,7 +217,6 @@ function createSourceEditor(style) {
         sourceCode: code,
       }))
       .then(replaceStyle)
-      .then(() => cm.setOption('mode', cm.doc.mode))
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&

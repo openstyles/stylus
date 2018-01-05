@@ -283,7 +283,7 @@
         ]))
       ).then(ok => ok &&
         API.saveUsercss(Object.assign(style, dup && {reason: 'update'}))
-          .then(r => install(r instanceof Object ? r : deepCopy(r)))
+          .then(install)
           .catch(err => messageBox.alert(t('styleInstallFailed', err)))
       );
     };
