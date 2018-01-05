@@ -93,6 +93,7 @@ var styleViaAPI = !CHROME && (() => {
             frameId,
             runAt: 'document_start',
             matchAboutBlank: true,
+            cssOrigin: 'user',
           }).catch(onError));
       }
       Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
