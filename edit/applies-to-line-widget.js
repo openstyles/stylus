@@ -73,7 +73,7 @@ function createAppliesToLineWidget(cm) {
       },
 
       '.add-applies-to': (item, apply) => {
-        const applies = this.closest('.applies-to').__applies;
+        const applies = item.closest('.applies-to').__applies;
         const i = applies.indexOf(apply);
         const pos = apply.mark.find().to;
         const text = `, ${apply.type.text}("")`;
