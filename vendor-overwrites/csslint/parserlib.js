@@ -272,16 +272,8 @@ self.parserlib = (() => {
 
     // D
     'direction': 'ltr | rtl',
-    'display':   'inline | block | list-item | inline-block | table | inline-table | ' +
-                 'table-row-group | table-header-group | table-footer-group | table-row | ' +
-                 'table-column-group | table-column | table-cell | table-caption | grid | ' +
-                 'inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ' +
-                 'ruby-text-container | contents | none | -moz-box | -moz-inline-block | ' +
-                 '-moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | ' +
-                 '-moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | ' +
-                 '-moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | ' +
-                 '-ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | ' +
-                 '-webkit-inline-flex',
+    'display': '[ <display-outside> || <display-inside> ] | ' +
+               '<display-listitem> | <display-internal> | <display-box> | <display-legacy>',
 
     'dominant-baseline':          'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
                                   'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
@@ -660,6 +652,14 @@ self.parserlib = (() => {
 
       '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | cubic-bezier()',
 
+      '<display-box>':      'contents | none',
+      '<display-inside>':   'flow | flow-root | table | flex | grid | ruby',
+      '<display-internal>': 'table-row-group | table-header-group | table-footer-group | table-row | ' +
+                            'table-cell | table-column-group | table-column | table-caption | ' +
+                            'ruby-base | ruby-text | ruby-base-container | ruby-text-container',
+      '<display-legacy>':   'inline-block | inline-table | inline-flex | inline-grid',
+      '<display-outside>':  'block | inline | run-in',
+
       '<feature-tag-value>': part => part.type === 'function' && /^[A-Z0-9]{4}$/i.test(part),
 
       // custom() isn't actually in the spec
@@ -884,6 +884,8 @@ self.parserlib = (() => {
       '<dasharray>': Matcher =>
          Matcher.cast('<nonnegative-length-or-percentage>')
            .braces(1, Infinity, '#', Matcher.cast(',').question()),
+
+      '<display-listitem>': 'list-item && <display-outside>? && [ flow | flow-root ]?',
 
       '<explicit-track-list>'  : '[ <line-names>? <track-size> ]+ <line-names>?',
 
