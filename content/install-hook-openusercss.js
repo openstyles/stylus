@@ -2,15 +2,25 @@
 
 (() => {
   const manifest = chrome.runtime.getManifest();
+  const allowedOrigins = [
+    'https://openusercss.org',
+    'https://openusercss.com'
+  ];
 
   // Tell the page that we exist and that it should send the handshake
-  window.postMessage({
-    'type': 'ouc-begin-handshake'
-  }, '*');
+  allowedOrigins.forEach(origin => {
+    window.postMessage({
+      'type': 'ouc-begin-handshake'
+    }, origin);
+  });
 
   // Wait for the handshake
   window.addEventListener('message', event => {
-    if (event.data && event.data.type === 'ouc-handshake-question') {
+    if (
+      event.data
+      && event.data.type === 'ouc-handshake-question'
+      && allowedOrigins.includes(event.origin)
+    ) {
       // This is a representation of features that Stylus is capable of
       const implementedFeatures = [
         'install-usercss',
@@ -44,15 +54,16 @@
 
       // We send the handshake response, which includes the key we got, plus some
       // additional metadata
-      window.postMessage({
-        'type':      'ouc-handshake-response',
-        'key':       event.data.key,
-        'extension': {
-          'name':         manifest.name,
-          'version':      manifest.version,
-          'capabilities': reportedFeatures
-        }
-      }, '*');
+      allowedOrigins.forEach(origin => {
+        window.postMessage({
+          'type':      'ouc-handshake-response',
+          'key':       event.data.key,
+          'extension': {
+            'name':         manifest.name,
+            'capabilities': reportedFeatures
+          }
+        }, origin);
+      });
     }
   });
 })();
