@@ -135,7 +135,7 @@ function createSourceEditor(style) {
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     updateTitle();
-    return cm.setPreprocessor(style.usercssData.preprocessor);
+    return cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
   function updateTitle() {
