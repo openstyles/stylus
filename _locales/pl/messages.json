@@ -968,6 +968,10 @@
 		"message": "Dołącz importowany styl do bieżącego stylu",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "Przeładowanie na żywo jest włączone, więc zainstalowany styl zostanie automatycznie zaktualizowany w przypadku zmian zewnętrznych, gdy ta karta i karta pliku źródłowego są otwarte.",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "Znajdź style edytora",
 		"description": "Find styles for the editor"

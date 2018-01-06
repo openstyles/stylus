@@ -968,6 +968,10 @@
 		"message": "Добавить импортируемый стиль к редактируемому",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "Включена автозагрузка изменений – установленный стиль будет обновляться автоматически пока открыта эта вкладка и вкладка исходного файла.",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "Сменить тему Стилус",
 		"description": "Find styles for the editor"

@@ -19,13 +19,25 @@
 		"message": "Ekspordi stiilid",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Järjesta sisu",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Ainult Usercss stiilid",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortLabelTitleAsc": {
+		"message": "Pealkiri tõusvas järjestuses",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "vanemad eespool",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"styleEnabledToggleHint": {
 		"message": "Vajuta Alt-Enter, et lülitada ümber lubatud/keelatud olek ja salvestada stiil",
@@ -281,6 +293,10 @@
 			}
 		}
 	},
+	"searchNumberOfResults2": {
+		"message": "Vasteid koodis ja rakendub-üksuste väärtustes",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"linterIssuesHelp": {
 		"message": "$link$ leidis need vead:",
 		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
@@ -321,6 +337,10 @@
 	"unreachableFileHint": {
 		"message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Vali, milline järjestus installitud stiilidele rakendada",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Keela",
@@ -485,6 +505,10 @@
 		"message": "Luba/keela stiil",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
+	"searchNumberOfResults": {
+		"message": "Vastete arv",
+		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+	},
 	"importReplaceTooltip": {
 		"message": "Tühista praeguse stiili sisu ja kirjuta see üle imporditud stiiliga",
 		"description": "Label for the button to import and overwrite current style"
@@ -552,6 +576,10 @@
 	"appliesLabel": {
 		"message": "Rakendub saitidele",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"sortLabelTitleDesc": {
+		"message": "Pealkiri laskuvas järjestuses",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
 	},
 	"openOptionsPopup": {
 		"message": "Valikud",
@@ -662,6 +690,10 @@
 		"message": "Tööriistaribaikoon",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Pealkiri",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Uuendus teostatud.",
 		"description": "Text that displays when an update completed"
@@ -737,6 +769,10 @@
 		"message": "Järgmine leht",
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
+	"searchResultInstallCount": {
+		"message": "Installimisi kokku",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "Kood",
 		"description": "Label for the code for a section"
@@ -797,6 +833,10 @@
 	"cm_autocompleteOnTyping": {
 		"message": "Automaattäide kirjutamisel",
 		"description": "Label for the checkbox in the style editor."
+	},
+	"unreachableAMO": {
+		"message": "Firefox keelab ligipääsu sellele saidile.",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
 		"message": "CSSLint ei toeta eeltöötlejat $preprocessorname$",
@@ -900,6 +940,10 @@
 		"message": "Lisa imporditud stiil praegusele stiilile",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "Reaalajas uuestilaadimine on lubatud, seega installitud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "Leia redaktori stiile",
 		"description": "Find styles for the editor"
@@ -923,6 +967,10 @@
 	"manageOnlyExternal": {
 		"message": "Ainult välised stiilid",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
+	},
+	"searchResultWeeklyCount": {
+		"message": "Installimisi nädalas",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
 	},
 	"replaceAll": {
 		"message": "Asenda kõik",
@@ -971,6 +1019,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Number tööriistaribaikoonil",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "uuemad eespool",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Eelmine leht",
@@ -1029,6 +1081,10 @@
 	"appliesLineWidgetWarning": {
 		"message": "Ei tööta minimeeritud CSS-iga",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
+	},
+	"configureStyleOnHomepage": {
+		"message": "Seadista kodulehel",
+		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
 		"message": "Võta tagasi",

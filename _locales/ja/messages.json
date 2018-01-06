@@ -960,6 +960,10 @@
 		"message": "インポートされたスタイルを現在のスタイルに追加する",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "自動リロードが有効になっているため、このタブとソースファイルのタブの両方が開いている間に、外部変更によってインストール済みスタイルが自動更新されることがあります。",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "エディタのスタイルを見つける",
 		"description": "Find styles for the editor"

@@ -972,6 +972,10 @@
 		"message": "追加導入的樣式到當前樣式",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "即時重新整理已啟用，以便在這個分頁與來源檔案分頁都開啟時自動於有外部變更時自動更新已安裝樣式。",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "找到編輯器樣式",
 		"description": "Find styles for the editor"

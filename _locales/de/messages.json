@@ -936,6 +936,10 @@
 		"message": "Füge den importierten Style an den aktuellen",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "Echtzeitaktualisierung ist aktiviert, sodass die Darstellung des jeweiligen Styles automatisch aktualisiert wird, wenn externe Änderungen erfolgen.",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
 		"message": "Editor Styles finden",
 		"description": "Find styles for the editor"

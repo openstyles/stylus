@@ -28,7 +28,7 @@
 		"description": "Checkbox to show only Usercss styles"
 	},
 	"sortStylesHelp": {
-		"message": "从下拉菜单中选择要应用于所有已安装项目的排序类型，默认使用标题升序排序 （A - Z）。·「标题降序」则会应用降序排序 （Z - A）。\n还有很多其他排序方式，可以通过多个条件对已安装项目进行排序。你也可以想象，在对一个多列的表格进行排序，并且选择可能带有（+）号的一组条件或单个条件进行排序。\n例如，若设置为 \"启用（优先）+ 标题\"，将会把所有已启用的项目都排列在顶部，然后再以标题升序排列 （A - Z）的顺序应用到以启用和未启用的项目。",
+		"message": "从下拉菜单中选择要应用于所有已安装项目的排序类型，默认使用标题升序排序 （A - Z）。「标题降序」则会应用降序排序 （Z - A）。\n还有很多其他排序方式，可以通过多个条件对已安装项目进行排序。你也可以想象，在对一个多列的表格进行排序，并且选择可能带有（+）号的一组条件或单个条件进行排序。\n例如，若设置为 \"启用（优先）+ 标题\"，将会把所有已启用的项目都排列在顶部，然后再以标题升序排列 （A - Z）的顺序应用到以启用和未启用的项目。",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
 	},
 	"sortLabelTitleAsc": {
@@ -164,7 +164,7 @@
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"genericEnabledLabel": {
-		"message": "启用",
+		"message": "已启用",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
