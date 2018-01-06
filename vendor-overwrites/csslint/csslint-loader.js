@@ -4,13 +4,16 @@
 self.importScripts('./parserlib.js');
 parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
 
-self.onmessage = ({data: {action = 'run', code, config}}) => {
+self.onmessage = ({data}) => {
+
+  const {action = 'run'} = data;
 
   if (action === 'parse') {
     if (!self.parseMozFormat) self.importScripts('/js/moz-parser.js');
-    self.postMessage(parseMozFormat(code));
+    self.postMessage(parseMozFormat(data));
     return;
   }
+
   if (!self.CSSLint) self.importScripts('./csslint.js');
 
   switch (action) {
@@ -25,6 +28,7 @@ self.onmessage = ({data: {action = 'run', code, config}}) => {
       return;
 
     case 'run': {
+      const {code, config} = data;
       const results = CSSLint.verify(code, config).messages
         //.filter(m => !m.message.includes('/*[[') && !m.message.includes(']]*/'))
         .map(m => Object.assign(m, {rule: {id: m.rule.id}}));

@@ -1467,10 +1467,15 @@ self.parserlib = (() => {
      */
     function start(newParser) {
       parser = newParser;
-      if (!parser) return;
+      if (!parser) {
+        data.clear();
+        stack.length = 0;
+        generationBase = performance.now();
+        return;
+      }
       if (firstRun) firstRun = false;
       stream = parser._tokenStream;
-      generation = generationBase = performance.now();
+      generation = performance.now();
       trim();
     }
 

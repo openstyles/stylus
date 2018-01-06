@@ -489,7 +489,11 @@ var usercss = (() => {
       Promise.resolve(
         builder.preprocess && builder.preprocess(sourceCode, sVars) ||
         sourceCode)
-      .then(mozStyle => invokeWorker({action: 'parse', code: mozStyle}))
+      .then(mozStyle => invokeWorker({
+        action: 'parse',
+        styleId: style.id,
+        code: mozStyle,
+      }))
       .then(({sections, errors}) => sections.length && sections || Promise.reject(errors))
       .then(sections => {
         style.sections = sections;

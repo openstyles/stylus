@@ -1,7 +1,15 @@
 /* global parserlib */
 'use strict';
 
-function parseMozFormat(mozStyle) {
+/**
+ * Extracts @-moz-document blocks into sections and the code between them into global sections.
+ * Puts the global comments into the following section to minimize the amount of global sections.
+ * Doesn't move the comment with ==UserStyle== inside.
+ * @param {string} code
+ * @param {number} styleId - used to preserve parserCache on subsequent runs over the same style
+ * @returns {{sections: Array, errors: Array}}
+ */
+function parseMozFormat({code, styleId}) {
   const CssToProperty = {
     'url':        'urls',
     'url-prefix': 'urlPrefixes',
@@ -12,6 +20,7 @@ function parseMozFormat(mozStyle) {
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
+  const mozStyle = code;
 
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
@@ -62,7 +71,10 @@ function parseMozFormat(mozStyle) {
     errors.push(`${e.line}:${e.col} ${e.message.replace(/ at line \d.+$/, '')}`);
   });
 
-  parser.parse(mozStyle);
+  parser.parse(mozStyle, {
+    reuseCache: !parseMozFormat.styleId || styleId === parseMozFormat.styleId,
+  });
+  parseMozFormat.styleId = styleId;
   return {sections, errors};
 
   function doAddSection(section) {
