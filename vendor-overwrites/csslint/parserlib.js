@@ -799,7 +799,8 @@ self.parserlib = (() => {
 
       '<transform-function>': 'matrix() | translate() | translateX() | translateY() | ' +
                               'scale() | scaleX() | scaleY() | ' +
-                              'rotate() | skew() | skewX() | skewY()',
+                              'rotate() | skew() | skewX() | skewY() | ' +
+                              'matrix3d() | translate3d() | translateZ() | scale3d() | scaleZ() | rotate3d()',
 
       '<unicode-range>': part => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(part),
 
@@ -1049,6 +1050,13 @@ self.parserlib = (() => {
       'skew':       '[ <angle> | <zero> ] [ , [ <angle> | <zero> ] ]?',
       'skewX':      '[ <angle> | <zero> ]',
       'skewY':      '[ <angle> | <zero> ]',
+
+      'matrix3d':    '<number>#{16}',
+      'translate3d': '<length-percentage>#{2} , <length>',
+      'translateZ':  '<length>',
+      'scale3d':     '<number>#{3}',
+      'scaleZ':      '<number>',
+      'rotate3d':    '<number>#{3} , [ <angle> | <zero> ]',
     },
 
     functionsMayBeEmpty: new Set([
