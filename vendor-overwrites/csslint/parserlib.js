@@ -361,7 +361,7 @@ self.parserlib = (() => {
 
     // H
     'hanging-punctuation': 1,
-    'height':              '<margin-width> | <content-sizing>',
+    'height':              'auto | <width-height>',
     'hyphenate-after':     '<integer> | auto',
     'hyphenate-before':    '<integer> | auto',
     'hyphenate-character': '<string> | auto',
@@ -422,12 +422,10 @@ self.parserlib = (() => {
     'marquee-speed':      1,
     'marquee-style':      1,
     'mask':               1,
-    'max-height':         '<length> | <percentage> | <content-sizing> | none',
-    'max-width':          '<length> | <percentage> | <content-sizing> | none',
-    'min-height':         '<length> | <percentage> | <content-sizing> | contain-floats | ' +
-                          '-moz-contain-floats | -webkit-contain-floats',
-    'min-width':          '<length> | <percentage> | <content-sizing> | contain-floats | ' +
-                          '-moz-contain-floats | -webkit-contain-floats',
+    'max-height':         'none | <width-height>',
+    'max-width':          'none | <width-height>',
+    'min-height':         'auto | <width-height>',
+    'min-width':          'auto | <width-height>',
     'mix-blend-mode':     '<blend-mode>',
     'move-to':            1,
 
@@ -592,7 +590,7 @@ self.parserlib = (() => {
                             ' -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap',
     'white-space-collapse': 1,
     'widows':               '<integer>',
-    'width':                '<length> | <percentage> | <content-sizing> | auto',
+    'width':                'auto | <width-height>',
     'will-change':          '<will-change>',
     'word-break':           'normal | keep-all | break-all',
     'word-spacing':         '<length> | normal',
@@ -645,10 +643,8 @@ self.parserlib = (() => {
       '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
       '<content-position>': 'center | start | end | flex-start | flex-end',
 
-      // https://www.w3.org/TR/css3-sizing/#width-height-keywords
-      '<content-sizing>': 'fill-available | -moz-available | -webkit-fill-available | max-content | ' +
-                          '-moz-max-content | -webkit-max-content | min-content | -moz-min-content | ' +
-                          '-webkit-min-content | fit-content | -moz-fit-content | -webkit-fit-content',
+      '<width-height>': '<length-percentage> | min-content | max-content | fit-content() | ' +
+                        '-moz-available | -webkit-fill-available',
 
       '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | cubic-bezier()',
 
@@ -1004,6 +1000,8 @@ self.parserlib = (() => {
     functions: {
       'attr': '<ident> [ string | color | url | integer | number | length | angle | time | frequency | <unit> ]? ' +
               '[ , <attr-fallback> ]?',
+
+      'fit-content': '<length-percentage>',
 
       'rgb':  '<rgb-color>',
       'rgba': '<rgb-color>',
