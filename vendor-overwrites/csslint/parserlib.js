@@ -273,7 +273,9 @@ self.parserlib = (() => {
     // D
     'direction': 'ltr | rtl',
     'display': '[ <display-outside> || <display-inside> ] | ' +
-               '<display-listitem> | <display-internal> | <display-box> | <display-legacy>',
+               '<display-listitem> | <display-internal> | <display-box> | <display-legacy> | ' +
+               // deprecated and nonstandard
+               '-webkit-box | -webkit-inline-box | -ms-flexbox',
 
     'dominant-baseline':          'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
                                   'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
@@ -701,7 +703,9 @@ self.parserlib = (() => {
 
       // any identifier
       '<ident>': part => part.type === 'identifier' || part.wasIdent,
-      '<ident-not-span>': part => (part.type === 'identifier' || part.wasIdent) && !/^span$/i.test(part.value),
+      '<ident-for-grid>': part =>
+        (part.type === 'identifier' || part.wasIdent) &&
+        !/^(span|auto|initial|inherit|unset|default)$/i.test(part.value),
       '<ident-not-generic-family>': function (part) {
         return this['<ident>'](part) && !this['<generic-family>'](part);
       },
@@ -724,6 +728,16 @@ self.parserlib = (() => {
       '<line>': part => part.type === 'integer',
 
       '<line-height>': '<number> | <length> | <percentage> | normal',
+
+      '<line-names>': function (part) {
+        // eslint-disable-next-line no-use-before-define
+        return part.tokenType === Tokens.LBRACKET &&
+          part.text.endsWith(']') && (
+            !part.expr ||
+            !part.expr.parts.length ||
+            part.expr.parts.every(this['<ident-for-grid>'], this)
+          );
+      },
 
       '<margin-width>': '<length> | <percentage> | auto',
 
@@ -928,8 +942,8 @@ self.parserlib = (() => {
       '<grid-auto-columns>': '<track-size>+',
       '<grid-auto-rows>': '<track-size>+',
 
-      '<grid-line>': 'auto | <ident-not-span> | [ <integer> && <ident-not-span>? ] | ' +
-                     '[ span && [ <integer> || <ident-not-span> ] ]',
+      '<grid-line>': 'auto | [ <integer> && <ident-for-grid>? ] | <ident-for-grid> | ' +
+                     '[ span && [ <integer> || <ident-for-grid> ] ]',
 
       '<grid-template>': 'none | [ <grid-template-rows> / <grid-template-columns> ] | ' +
                          '[ <line-names>? <string> <track-size>? <line-names>? ]+ ' +
@@ -942,8 +956,6 @@ self.parserlib = (() => {
 
       '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
                         '[ <self-position> | left | right ]',
-
-      '<line-names>': '<ident-not-span>*',
 
       '<paint>': 'none | child | child() | <color> | ' +
                  '<uri> [ none | currentColor | <color> ]? | ' +
@@ -1435,6 +1447,1907 @@ self.parserlib = (() => {
   }
 
   //endregion
+  //region StringReader
+
+  class StringReader {
+
+    constructor(text) {
+      this._input = text.replace(/\r\n?/g, '\n');
+      this._line = 1;
+      this._col = 1;
+      this._cursor = 0;
+    }
+
+    eof() {
+      return this._cursor >= this._input.length;
+    }
+
+    peek(count = 1) {
+      return this._input[this._cursor + count - 1] || null;
+    }
+
+    read() {
+      const c = this._input[this._cursor];
+      if (!c) return null;
+      if (c === '\n') {
+        this._line++;
+        this._col = 1;
+      } else {
+        this._col++;
+      }
+      this._cursor++;
+      return c;
+    }
+
+    mark() {
+      this._bookmark = {
+        cursor: this._cursor,
+        line: this._line,
+        col: this._col,
+      };
+    }
+
+    reset() {
+      if (this._bookmark) {
+        this._cursor = this._bookmark.cursor;
+        this._line = this._bookmark.line;
+        this._col = this._bookmark.col;
+        delete this._bookmark;
+      }
+    }
+
+    /**
+     * Reads up to and including the given string.
+     * @param {String} pattern The string to read.
+     * @return {String} The string when it is found.
+     * @throws Error when the string pattern is not found.
+     */
+    readTo(pattern) {
+      const i = this._input.indexOf(pattern, this._cursor);
+      if (i < 0) throw new Error(`Expected ${pattern}' at line ${this._line}, col ${this._col}.`);
+      return this.readCount(i - this._cursor + pattern.length);
+    }
+
+    /**
+     * Reads characters that match either text or a regular expression and returns those characters.
+     * If a match is found, the row and column are adjusted.
+     * @param {String|RegExp} matcher
+     * @return {String} string or null if there was no match.
+     */
+    readMatch(matcher) {
+      if (matcher.sticky) {
+        matcher.lastIndex = this._cursor;
+        return matcher.test(this._input) ?
+          this.readCount(RegExp.lastMatch.length) :
+          null;
+      }
+      if (typeof matcher === 'string') {
+        if (this._input[this._cursor] === matcher[0] &&
+            this._input.substr(this._cursor, matcher.length) === matcher) {
+          return this.readCount(matcher.length);
+        }
+      } else if (matcher instanceof RegExp) {
+        if (matcher.test(this._input.substr(this._cursor))) {
+          return this.readCount(RegExp.lastMatch.length);
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Reads a given number of characters. If the end of the input is reached,
+     * it reads only the remaining characters and does not throw an error.
+     * @param {int} count The number of characters to read.
+     * @return {String} string or null if already at EOF
+     */
+    readCount(count) {
+      const len = this._input.length;
+      if (this._cursor >= len) return null;
+      if (!count) return '';
+
+      const text = this._input.substr(this._cursor, count);
+      this._cursor = Math.min(this._cursor + count, len);
+
+      let prev = -1;
+      for (let i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) this._line++;
+      this._col = prev < 0 ? this._col + count : count - prev;
+
+      return text;
+    }
+  }
+
+  //endregion
+  //region Matcher
+
+  /**
+   * Reuses a Matcher for a ValidationTypes definition string instead of reparsing it.
+   * @type {Map<string, Matcher>}
+   */
+  const cachedMatcher = new Map();
+
+  /**
+   * This class implements a combinator library for matcher functions.
+   * https://developer.mozilla.org/docs/Web/CSS/Value_definition_syntax#Component_value_combinators
+   */
+  class Matcher {
+
+    constructor(matchFunc, toString) {
+      this.matchFunc = matchFunc;
+      this.toString = typeof toString === 'function' ? toString : () => toString;
+    }
+
+    static parse(str) {
+      let m = cachedMatcher.get(str);
+      if (m) return m;
+      m = Matcher.doParse(str);
+      cachedMatcher.set(str, m);
+      return m;
+    }
+
+    /** Simple recursive-descent grammar to build matchers from strings. */
+    static doParse(str) {
+      const reader = new StringReader(str);
+      function eat(matcher) {
+        const result = reader.readMatch(matcher);
+        if (result === null) {
+          throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
+        }
+        return result;
+      }
+      function expr() {
+        // expr = oror (" | " oror)*
+        const m = [oror()];
+        while (reader.readMatch(' | ')) {
+          m.push(oror());
+        }
+        return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
+      }
+      function oror() {
+        // oror = andand ( " || " andand)*
+        const m = [andand()];
+        while (reader.readMatch(' || ')) {
+          m.push(andand());
+        }
+        return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
+      }
+      function andand() {
+        // andand = seq ( " && " seq)*
+        const m = [seq()];
+        while (reader.readMatch(' && ')) {
+          m.push(seq());
+        }
+        return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
+      }
+      function seq() {
+        // seq = mod ( " " mod)*
+        const m = [mod()];
+        while (reader.readMatch(/\s(?![&|\]])/y)) {
+          m.push(mod());
+        }
+        return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
+      }
+      function mod() {
+        // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
+        const m = term();
+        reader.mark();
+        let hash;
+        switch (reader.read()) {
+          case '?': return m.question();
+          case '*': return m.star();
+          case '+': return m.plus();
+          case '#':
+            if (reader.peek() !== '{') return m.hash();
+            reader.read();
+            hash = '#';
+            // fallthrough
+          case '{': {
+            const min = eat(/\s*\d+\s*/y).trim();
+            const c = eat(/[,}]/y);
+            const max = c === ',' ? eat(/\s*\d+\s*}/y).slice(0, -1).trim() : min;
+            return m.braces(Number(min), Number(max), hash, hash && Matcher.cast(','));
+          }
+          default:
+            reader.reset();
+        }
+        return m;
+      }
+      function term() {
+        // term = <nt> | literal | "[ " expression " ]"
+        if (reader.readMatch('[ ')) {
+          const m = expr();
+          eat(' ]');
+          return m;
+        }
+        return Matcher.fromType(eat(/[^\s?*+#{]+/y));
+      }
+      const result = expr();
+      if (!reader.eof()) {
+        throw new Error(`Internal error. Expected end of string ${reader._line}:${reader._col}.`);
+      }
+      return result;
+    }
+
+    static cast(m) {
+      return m instanceof Matcher ? m : Matcher.parse(m);
+    }
+
+    // Matcher for a single type.
+    static fromType(type) {
+      let m = cachedMatcher.get(type);
+      if (m) return m;
+      m = new Matcher(expr => expr.hasNext() && ValidationTypes.isType(expr, type), type);
+      cachedMatcher.set(type, m);
+      return m;
+    }
+
+    // Matcher for one or more juxtaposed words, which all must occur, in the given order.
+    static seq(...args) {
+      const ms = args.map(Matcher.cast);
+      if (ms.length === 1) return ms[0];
+      return new Matcher(
+        expression => ms.every(m => m.match(expression)),
+        prec => {
+          const p = Matcher.prec.SEQ;
+          const s = ms.map(m => m.toString(p)).join(' ');
+          return prec > p ? `[ ${s} ]` : s;
+        });
+    }
+
+    // Matcher for one or more alternatives, where exactly one must occur.
+    static alt(...args) {
+      const ms = args.map(Matcher.cast);
+      if (ms.length === 1) return ms[0];
+      return new Matcher(
+        expression => ms.some(m => m.match(expression)),
+        prec => {
+          const p = Matcher.prec.ALT;
+          const s = ms.map(m => m.toString(p)).join(' | ');
+          return prec > p ? `[ ${s} ]` : s;
+        });
+    }
+
+    /**
+     * Matcher for two or more options: double bar (||) and double ampersand (&&) operators,
+     * as well as variants of && where some of the alternatives are optional.
+     * This will backtrack through even successful matches to try to
+     * maximize the number of items matched.
+     */
+    static many(required, ...args) {
+      const ms = [];
+      for (const arg of args) {
+        if (arg.expand) {
+          ms.push(...ValidationTypes.complex[arg.expand].options);
+        } else {
+          ms.push(Matcher.cast(arg));
+        }
+      }
+
+      if (required === true) required = new Array(ms.length).fill(true);
+
+      const result = new Matcher(expression => {
+        const seen = [];
+        let max = 0;
+        let pass = 0;
+        // If couldn't get a complete match, retrace our steps to make the
+        // match with the maximum # of required elements.
+        if (!tryMatch(0)) {
+          pass++;
+          tryMatch(0);
+        }
+        if (required === false) {
+          return max > 0;
+        }
+        // Use finer-grained specification of which matchers are required.
+        for (let i = 0; i < ms.length; i++) {
+          if (required[i] && !seen[i]) {
+            return false;
+          }
+        }
+        return true;
+
+        function tryMatch(matchCount) {
+          for (let i = 0; i < ms.length; i++) {
+            if (seen[i]) continue;
+            expression.mark();
+            if (!ms[i].match(expression)) {
+              expression.drop();
+              continue;
+            }
+            seen[i] = true;
+            // Increase matchCount if this was a required element
+            // (or if all the elements are optional)
+            if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
+              expression.drop();
+              return true;
+            }
+            // Backtrack: try *not* matching using this rule, and
+            // let's see if it leads to a better overall match.
+            expression.restore();
+            seen[i] = false;
+          }
+          if (pass === 0) {
+            max = Math.max(matchCount, max);
+            return matchCount === ms.length;
+          } else {
+            return matchCount === max;
+          }
+        }
+
+      }, prec => {
+        const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
+        const s = ms.map((m, i) => {
+          if (required !== false && !required[i]) {
+            return m.toString(Matcher.prec.MOD) + '?';
+          }
+          return m.toString(p);
+        }).join(required === false ? ' || ' : ' && ');
+        return prec > p ? `[ ${s} ]` : s;
+      });
+
+      result.options = ms;
+      return result;
+    }
+
+    // Matcher for two or more options in any order, all mandatory.
+    static andand(...args) {
+      return Matcher.many(true, ...args);
+    }
+
+    // Matcher for two or more options in any order, at least one must be present.
+    static oror(...args) {
+      return Matcher.many(false, ...args);
+    }
+
+    match(expression) {
+      expression.mark();
+      const result = this.matchFunc(expression);
+      if (result) {
+        expression.drop();
+      } else {
+        expression.restore();
+      }
+      return result;
+    }
+
+    // Basic combinators
+
+    then(m) {
+      return Matcher.seq(this, m);
+    }
+
+    or(m) {
+      return Matcher.alt(this, m);
+    }
+
+    andand(m) {
+      return Matcher.many(true, this, m);
+    }
+
+    oror(m) {
+      return Matcher.many(false, this, m);
+    }
+
+    // Component value multipliers
+    star() {
+      return this.braces(0, Infinity, '*');
+    }
+
+    plus() {
+      return this.braces(1, Infinity, '+');
+    }
+
+    question() {
+      return this.braces(0, 1, '?');
+    }
+
+    hash() {
+      return this.braces(1, Infinity, '#', Matcher.cast(','));
+    }
+
+    braces(min, max, marker, optSep) {
+      optSep = optSep && optSep.then(this);
+      if (!marker || marker === '#') {
+        marker = (marker || '') + '{' + min + (min === max ? '' : ',' + max) + '}';
+      }
+
+      const matchNext = !optSep
+        ? expression => this.match(expression)
+        : (expression, i) => (!i ? this : optSep).match(expression);
+
+      const matchFunc = expression => {
+        let i = 0;
+        while (i < max && matchNext(expression, i)) i++;
+        return i >= min;
+      };
+
+      return new Matcher(matchFunc, () => this.toString(Matcher.prec.MOD) + marker);
+    }
+  }
+
+  // Precedence table of combinators.
+  Matcher.prec = {
+    MOD: 5,
+    SEQ: 4,
+    ANDAND: 3,
+    OROR: 2,
+    ALT: 1,
+  };
+
+  //endregion
+  //region EventTarget
+
+  class EventTarget {
+
+    constructor() {
+      this._listeners = new Map();
+    }
+
+    addListener(type, fn) {
+      let listeners = this._listeners.get(type);
+      if (!listeners) this._listeners.set(type, (listeners = new Set()));
+      listeners.add(fn);
+    }
+
+    fire(event) {
+      if (typeof event === 'string') {
+        event = {type: event};
+      }
+      if (typeof event.target !== 'undefined') {
+        event.target = this;
+      }
+
+      if (typeof event.type === 'undefined') {
+        throw new Error("Event object missing 'type' property.");
+      }
+
+      const listeners = this._listeners.get(event.type);
+      if (!listeners) return;
+      for (const fn of listeners.values()) {
+        fn.call(this, event);
+      }
+    }
+
+    removeListener(type, fn) {
+      const listeners = this._listeners.get(type);
+      if (listeners) listeners.delete(fn);
+    }
+  }
+
+  //endregion
+  //region SyntaxUnit
+
+  class SyntaxUnit {
+
+    constructor(text, pos, type) {
+      this.col = pos.col || pos.startCol;
+      this.line = pos.line || pos.startLine;
+      this.offset = pos.offset;
+      this.text = text;
+      this.type = type;
+    }
+
+    valueOf() {
+      return this.text;
+    }
+
+    toString() {
+      return this.text;
+    }
+
+    static fromToken(token) {
+      return new SyntaxUnit(token.value, token);
+    }
+  }
+
+  //endregion
+  //region SyntaxError
+
+  class SyntaxError extends Error {
+    constructor(message, pos) {
+      super();
+      this.name = this.constructor.name;
+      this.col = pos.col || pos.startCol;
+      this.line = pos.line || pos.startLine;
+      this.message = message;
+    }
+  }
+
+  //endregion
+  //region ValidationError
+
+  class ValidationError extends Error {
+    constructor(message, pos) {
+      super();
+      this.col = pos.col || pos.startCol;
+      this.line = pos.line || pos.startLine;
+      this.message = message;
+    }
+  }
+
+  //endregion
+  //region MediaQuery
+
+  // individual media query
+  class MediaQuery extends SyntaxUnit {
+    /**
+     * @param {String} modifier The modifier "not" or "only" (or null).
+     * @param {String} mediaType The type of media (i.e., "print").
+     * @param {Array} features Array of selectors parts making up this selector.
+     */
+    constructor(modifier, mediaType, features, pos) {
+      const text = (modifier ? modifier + ' ' : '') +
+                   (mediaType ? mediaType : '') +
+                   (mediaType && features.length > 0 ? ' and ' : '') +
+                   features.join(' and ');
+      super(text, pos, TYPES.MEDIA_QUERY_TYPE);
+      this.modifier = modifier;
+      this.mediaType = mediaType;
+      this.features = features;
+    }
+  }
+
+  //endregion
+  //region MediaFeature
+
+  // e.g. max-width:500.
+  class MediaFeature extends SyntaxUnit {
+    constructor(name, value) {
+      const text = '(' + name + (value !== null ? ':' + value : '') + ')';
+      super(text, name, TYPES.MEDIA_FEATURE_TYPE);
+
+      this.name = name;
+      this.value = value;
+    }
+  }
+
+  //endregion
+  //region Selector
+
+  /**
+   * An entire single selector, including all parts but not
+   * including multiple selectors (those separated by commas).
+   */
+  class Selector extends SyntaxUnit {
+    /**
+     * @param {SelectorPart[]} parts
+     */
+    constructor(parts, pos) {
+      super(parts.join(' '), pos, TYPES.SELECTOR_TYPE);
+      this.parts = parts;
+      // eslint-disable-next-line no-use-before-define
+      this.specificity = Specificity.calculate(this);
+    }
+  }
+
+  //endregion
+  //region SelectorPart
+
+  /**
+   * A single part of a selector string i.e. element name and modifiers.
+   * Does not include combinators such as spaces, +, >, etc.
+   */
+  class SelectorPart extends SyntaxUnit {
+    /**
+     * @param {String} elementName or null if there's none
+     * @param {SelectorSubPart[]} modifiers - may be empty
+     */
+    constructor(elementName, modifiers, text, pos) {
+      super(text, pos, TYPES.SELECTOR_PART_TYPE);
+      this.elementName = elementName;
+      this.modifiers = modifiers;
+    }
+  }
+
+  //endregion
+  //region SelectorSubPart
+
+  /**
+   * Selector modifier string
+   */
+  class SelectorSubPart extends SyntaxUnit {
+    /**
+     * @param {string} type - elementName id class attribute pseudo any not
+     */
+    constructor(text, type, pos) {
+      super(text, pos, TYPES.SELECTOR_SUB_PART_TYPE);
+      this.type = type;
+      // Some subparts have arguments
+      this.args = [];
+    }
+  }
+
+  //endregion
+  //region Combinator
+
+  /**
+   * A selector combinator (whitespace, +, >).
+   */
+  class Combinator extends SyntaxUnit {
+
+    constructor(token) {
+      const {value} = token;
+      super(value, token, TYPES.COMBINATOR_TYPE);
+      this.type =
+        value === '>' ? 'child' :
+        value === '+' ? 'adjacent-sibling' :
+        value === '~' ? 'sibling' :
+        !value.trim() ? 'descendant' :
+          'unknown';
+    }
+  }
+
+  //endregion
+  //region Specificity
+
+  /**
+   * A selector specificity.
+   */
+  class Specificity {
+    /**
+     * @param {int} a Should be 1 for inline styles, zero for stylesheet styles
+     * @param {int} b Number of ID selectors
+     * @param {int} c Number of classes and pseudo classes
+     * @param {int} d Number of element names and pseudo elements
+     */
+    constructor(a, b, c, d) {
+      this.a = a;
+      this.b = b;
+      this.c = c;
+      this.d = d;
+      this.constructor = Specificity;
+    }
+
+    /**
+     * @param {Specificity} other The other specificity to compare to.
+     * @return {int} -1 if the other specificity is larger, 1 if smaller, 0 if equal.
+     */
+    compare(other) {
+      const comps = ['a', 'b', 'c', 'd'];
+      for (let i = 0, len = comps.length; i < len; i++) {
+        if (this[comps[i]] < other[comps[i]]) {
+          return -1;
+        } else if (this[comps[i]] > other[comps[i]]) {
+          return 1;
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * @return {int} The numeric value for the specificity.
+     */
+    valueOf() {
+      return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
+    }
+
+    /**
+     * @return {String} The string representation of specificity.
+     */
+    toString() {
+      return this.a + ',' + this.b + ',' + this.c + ',' + this.d;
+    }
+
+    /**
+     * Calculates the specificity of the given selector.
+     * @param {Selector} The selector to calculate specificity for.
+     * @return {Specificity} The specificity of the selector.
+     */
+    static calculate(selector) {
+      let b = 0;
+      let c = 0;
+      let d = 0;
+      selector.parts.forEach(updateValues);
+      return new Specificity(0, b, c, d);
+
+      function updateValues(part) {
+        if (!(part instanceof SelectorPart)) return;
+        const elementName = part.elementName ? part.elementName.text : '';
+        if (elementName && !elementName.endsWith('*')) {
+          d++;
+        }
+        for (const modifier of part.modifiers) {
+          switch (modifier.type) {
+            case 'class':
+            case 'attribute':
+              c++;
+              break;
+
+            case 'id':
+              b++;
+              break;
+
+            case 'pseudo':
+              if (isPseudoElement(modifier.text)) {
+                d++;
+              } else {
+                c++;
+              }
+              break;
+
+            case 'not':
+              modifier.args.forEach(updateValues);
+          }
+        }
+      }
+    }
+  }
+
+  //endregion
+  //region PropertyName
+
+  class PropertyName extends SyntaxUnit {
+
+    constructor(text, hack, pos) {
+      super(text, pos, TYPES.PROPERTY_NAME_TYPE);
+      // type of IE hack applied ("*", "_", or null).
+      this.hack = hack;
+    }
+
+    toString() {
+      return (this.hack || '') + this.text;
+    }
+  }
+
+  //endregion
+  //region PropertyValue
+
+  /**
+   * A single value between ":" and ";", that is if there are multiple values
+   * separated by commas, this type represents just one of the values.
+   */
+  class PropertyValue extends SyntaxUnit {
+    /**
+     * @param {PropertyValuePart[]} parts An array of value parts making up this value.
+     */
+    constructor(parts, pos) {
+      super(parts.join(' '), pos, TYPES.PROPERTY_VALUE_TYPE);
+      this.parts = parts;
+    }
+  }
+
+  //endregion
+  //region PropertyValuePart
+
+  const tokenConverter = new Map([
+    ...(fn => [
+      Tokens.LENGTH,
+      Tokens.ANGLE,
+      Tokens.TIME,
+      Tokens.FREQ,
+      Tokens.DIMENSION,
+      Tokens.PERCENTAGE,
+      Tokens.NUMBER,
+    ].map(tt => [tt, fn]))((self, {number, units, unitsType}) => {
+      self.value = number;
+      self.units = units;
+      self.type = unitsType === 'number' && !self.text.includes('.') ? 'integer' : unitsType;
+    }),
+
+    [Tokens.HASH, (self, {value}) => {
+
+      self.type = 'color';
+      if (value.length <= 5) {
+        let n = parseInt(value.slice(1), 16);
+        if (value.length === 5) {
+          self.alpha = (n & 15) << 4 + (n & 15);
+          n >>= 4;
+        }
+        self.red = (n >> 8 & 15) << 4 + (n >> 8 & 15);
+        self.green = (n >> 4 & 15) << 4 + (n >> 4 & 15);
+        self.blue = (n & 15) << 4 + (n & 15);
+      } else {
+        const n = parseInt(value.substr(1, 6), 16);
+        self.red = n >> 16;
+        self.green = (n >> 8) & 255;
+        self.blue = n & 255;
+        if (value.length === 9) {
+          self.alpha = parseInt(value.substr(7, 2), 16);
+        }
+      }
+
+    }],
+    [Tokens.FUNCTION, (self, {name, expr}) => {
+
+      self.name = name;
+      self.expr = expr;
+      const parts = expr && expr.parts;
+      switch (parts && lower(name)) {
+        case 'rgb':
+        case 'rgba': {
+          const [r, g, b, a] = parts.map(p => !/[,/]/.test(p)).map(parseFloat);
+          const pct = parts[0].tokenType === Tokens.PERCENTAGE ? 2.55 : 1;
+          self.type = 'color';
+          self.red = r * pct;
+          self.green = g * pct;
+          self.blue = b * pct;
+          if (!isNaN(a)) self.alpha = a * (/%/.test(parts[parts.length - 1]) ? 2.55 / 100 : 1);
+          return;
+        }
+        case 'hsl':
+        case 'hsla': {
+          const [h, s, l, a] = parts.map(p => !/[,/]/.test(p)).map(parseFloat);
+          self.type = 'color';
+          self.hue = h;
+          self.hueUnit = parts[0].units;
+          self.saturation = s;
+          self.lightness = l;
+          if (!isNaN(a)) self.alpha = a * (/%/.test(parts[parts.length - 1]) ? 2.55 / 100 : 1);
+          return;
+        }
+        default:
+          self.type = 'function';
+      }
+
+    }],
+    [Tokens.URI, (self, {name, uri}) => {
+
+      self.type = 'uri';
+      self.name = name;
+      self.uri = uri;
+
+    }],
+    [Tokens.STRING, self => {
+
+      self.type = 'string';
+      self.value = parseString(self.text);
+
+    }],
+    [Tokens.IDENT, self => {
+
+      const text = self.text;
+      let namedColor;
+      if (!text.includes('-') && (namedColor = Colors[lower(text)])) {
+        tokenConverter.get(Tokens.HASH)(self, {value: namedColor});
+      } else {
+        self.type = 'identifier';
+        self.value = text;
+      }
+
+    }],
+    [Tokens.CUSTOM_PROP, self => {
+
+      self.type = 'custom-property';
+      self.value = self.text;
+
+    }],
+  ]);
+
+  /**
+   * A single part of a value
+   * e.g. '1px solid rgb(1, 2, 3)' has 3 parts
+   */
+  class PropertyValuePart extends SyntaxUnit {
+
+    constructor(token) {
+      const {value, type} = token;
+      super(value, token, TYPES.PROPERTY_VALUE_PART_TYPE);
+
+      this.type = 'unknown';
+      this.tokenType = type;
+      if (token.expr) this.expr = token.expr;
+      // There can be ambiguity with escape sequences in identifiers, as
+      // well as with "color" parts which are also "identifiers", so record
+      // an explicit hint when the token generating this PropertyValuePart
+      // was an identifier.
+      this.wasIdent = type === Tokens.IDENT;
+
+      const cvt = tokenConverter.get(type);
+      if (cvt && cvt(this, token) !== false) return;
+
+      if (value === ',' || value === '/') {
+        this.type = 'operator';
+        this.value = value;
+        return;
+      }
+    }
+  }
+
+  //endregion
+  //region PropertyValueIterator
+
+  // A utility class that allows for easy iteration over the various parts of a property value.
+  class PropertyValueIterator {
+    /**
+     * @param {PropertyValue} value
+     */
+    constructor(value) {
+      this._i = 0;
+      this._parts = value.parts;
+      this._marks = [];
+      this.value = value;
+    }
+
+    hasNext() {
+      return this._i < this._parts.length;
+    }
+
+    peek(count) {
+      return this._parts[this._i + (count || 0)] || null;
+    }
+
+    next() {
+      return this._i < this._parts.length ? this._parts[this._i++] : null;
+    }
+
+    previous() {
+      return this._i > 0 ? this._parts[--this._i] : null;
+    }
+
+    mark() {
+      this._marks.push(this._i);
+    }
+
+    restore() {
+      if (this._marks.length) {
+        this._i = this._marks.pop();
+      }
+    }
+
+    drop() {
+      this._marks.pop();
+    }
+  }
+
+  //endregion
+  //region ValidationTypes - methods
+
+  Object.assign(ValidationTypes, {
+
+    isLiteral(part, literals) {
+      const args = literals.includes(' | ') ? literals.split(' | ') : [literals];
+      const {text} = part;
+      let textLo;
+
+      for (const arg of args) {
+
+        if (arg[0] === '<') {
+          const simple = this.simple[arg];
+          if (simple && simple.call(this.simple, part)) {
+            return true;
+          }
+          continue;
+        }
+
+        if (arg.endsWith('()')) {
+          if (!part.name || part.name.length !== arg.length - 2) continue;
+          const name = arg.slice(0, -2);
+          if (part.name === name ||
+              lower(arg).startsWith((textLo = textLo || lower(text)).slice(0, name.length))) {
+            // empty function parameter means the initial value is used
+            if (!part.expr) return this.functionsMayBeEmpty.has(name);
+            const fn = this.functions[name];
+            if (!fn) return true;
+            const expression = new PropertyValueIterator(part.expr);
+            if (fn.match(expression) && !expression.hasNext()) {
+              return true;
+            }
+            const {text} = expression.value;
+            throw new ValidationError(`Expected '${this.explode(String(fn))}' but found '${text}'.`,
+              expression.value);
+          }
+          continue;
+        }
+
+        let argLo;
+        if (text === arg ||
+            (textLo = textLo || lower(text)) === (argLo = argLo || lower(arg)) ||
+            text[0] === '-' && (
+              textLo.startsWith('-webkit-') ||
+              textLo.startsWith('-moz-') ||
+              textLo.startsWith('-ms-') ||
+              textLo.startsWith('-o-')
+            ) && textLo.slice(textLo.indexOf('-', 1) + 1) === argLo) {
+          return true;
+        }
+
+      }
+      return false;
+    },
+
+    describe(type) {
+      const complex = this.complex[type];
+      const text = complex instanceof Matcher ? complex.toString(0) : type;
+      return this.explode(text);
+    },
+
+    explode(text) {
+      if (!text.includes('<')) return text;
+      return text
+        .replace(' | <var>', '')
+        .replace(/(<.*?>)([{#?]?)/g,
+          (_, rule, mod) => {
+            const ref = this.simple[rule] || this.complex[rule];
+            if (!ref || !ref.originalText) return rule + mod;
+            return ((mod ? '[' : '') + this.explode(ref.originalText) + (mod ? ']' : '')) + mod;
+          });
+    },
+
+    isType(expression, type) {
+      const part = expression.peek();
+      let result;
+
+      if (this.simple['<var>'](part)) {
+        result = true;
+
+      } else if (type.charAt(0) !== '<') {
+        result = this.isLiteral(part, type);
+
+      } else if (this.simple[type]) {
+        result = this.simple[type](part);
+
+      } else {
+        return this.complex[type] instanceof Matcher ?
+          this.complex[type].match(expression) :
+          this.complex[type](expression);
+      }
+
+      if (result) expression.next();
+      return result;
+    },
+  });
+
+  {
+    let action = rule => part => ValidationTypes.isLiteral(part, rule);
+    ['simple', 'complex', 'functions'].forEach(name => {
+      const set = ValidationTypes[name];
+      for (const id in set) {
+        const rule = set[id];
+        if (typeof rule === 'string') {
+          set[id] = Object.defineProperty(action(rule), 'originalText', {value: rule});
+        } else if (/^Matcher\s/.test(rule)) {
+          set[id] = rule(Matcher);
+        }
+      }
+      action = rule => Matcher.parse(rule);
+    });
+  }
+
+  //endregion
+  //region Validation
+
+  const validationCache = new Map();
+
+  function validateProperty(property, value) {
+    // All properties accept some CSS-wide values.
+    // https://drafts.csswg.org/css-values-3/#common-keywords
+    if (/^(inherit|initial|unset)$/i.test(value.parts[0])) {
+      if (value.parts.length > 1) {
+        throwEndExpected(value.parts[1], true);
+      }
+      return;
+    }
+
+    const prop = lower(property);
+    let known = validationCache.get(prop);
+    if (known && known.has(value.text)) return;
+
+    const spec = Properties[prop] || /^-(webkit|moz|ms|o)-(.+)/i.test(prop) && Properties[RegExp.$2];
+
+    if (typeof spec === 'number') return;
+    if (!spec && prop.startsWith('-')) return;
+    if (!spec) throw new ValidationError(`Unknown property '${property}'.`, property);
+
+    // Property-specific validation.
+    const expression = new PropertyValueIterator(value);
+    const result = Matcher.parse(spec).match(expression);
+
+    const hasNext = expression.hasNext();
+    if (result) {
+      if (hasNext) throwEndExpected(expression.next());
+
+    } else {
+      if (hasNext && expression._i) {
+        throwEndExpected(expression.peek());
+      } else {
+        const {text} = expression.value;
+        throw new ValidationError(`Expected '${ValidationTypes.describe(spec)}' but found '${text}'.`,
+          expression.value);
+      }
+    }
+
+    if (!known) validationCache.set(prop, (known = new Set()));
+    known.add(value.text);
+
+    function throwEndExpected(token, force) {
+      if (force || token.name !== 'var' || token.type !== 'function') {
+        throw new ValidationError(`Expected end of value but found '${token.text}'.`, token);
+      }
+    }
+  }
+
+  //endregion
+  //region TokenStreamBase
+
+  /**
+   * lookup table size for TokenStreamBase
+   */
+  const LT_SIZE = 5;
+
+  /**
+   * Generic TokenStream providing base functionality.
+   */
+  class TokenStreamBase {
+
+    constructor(input) {
+      this._reader = new StringReader(input ? input.toString() : '');
+      // Token object for the last consumed token.
+      this._token = null;
+      // Lookahead token buffer.
+      this._lt = [];
+      this._ltIndex = 0;
+      this._ltIndexCache = [];
+    }
+
+    /**
+     * Consumes the next token if that matches any of the given token type(s).
+     * @param {int|int[]} tokenTypes
+     * @return {Boolean}
+     */
+    match(tokenTypes) {
+      const isArray = Array.isArray(tokenTypes);
+      let tt;
+      do {
+        tt = this.get();
+        if (isArray ? tokenTypes.includes(tt) : tt === tokenTypes) {
+          return true;
+        }
+      } while (tt === Tokens.COMMENT && this.LA(0) !== 0);
+
+      // no match found, put the token back
+      this.unget();
+      return false;
+    }
+
+    /**
+     * Consumes the next token if that matches the given token type(s).
+     * Otherwise an error is thrown.
+     * @param {int|int[]} tokenTypes
+     * @throws {SyntaxError}
+     */
+    mustMatch(tokenTypes) {
+      if (!this.match(tokenTypes)) {
+        const {startLine: line, startCol: col, offset} = this.LT(1);
+        const info = Tokens[Array.isArray(tokenTypes) ? tokenTypes[0] : tokenTypes];
+        throw new SyntaxError(`Expected ${info.text || info.name} at line ${line}, col ${col}.`, {line, col, offset});
+      }
+    }
+
+    /**
+     * Keeps reading until one of the specified token types is found or EOF.
+     * @param {int|int[]} tokenTypes
+     */
+    advance(tokenTypes) {
+      while (this.LA(0) !== 0 && !this.match(tokenTypes)) {
+        this.get();
+      }
+      return this.LA(0);
+    }
+
+    /**
+     * Consumes the next token from the token stream.
+     * @return {int} The token type
+     */
+    get() {
+      const cache = this._ltIndexCache;
+      const lt = this._lt;
+      let i = 0;
+
+      // check the lookahead buffer first
+      let len = lt.length;
+      let ltIndex = this._ltIndex;
+      if (len && ltIndex >= 0 && ltIndex < len) {
+        i++;
+        this._token = lt[ltIndex];
+        this._ltIndex = ++ltIndex;
+        if (ltIndex <= len) {
+          cache.push(i);
+          return this._token.type;
+        }
+      }
+
+      const token = this._getToken();
+      const type = token.type;
+      const isHidden = Tokens[type].hide;
+
+      if (type > -1 && !isHidden) {
+        // save for later
+        this._token = token;
+        lt.push(token);
+
+        // save space that will be moved (must be done before array is truncated)
+        cache.push(++len - ltIndex + i);
+
+        if (len > LT_SIZE) lt.shift();
+        if (cache.length > LT_SIZE) cache.shift();
+
+        // update lookahead index
+        this._ltIndex = lt.length;
+      }
+
+      // Skip to the next token if the token type is marked as hidden.
+      return isHidden ? this.get() : type;
+    }
+
+    /**
+     * Looks ahead a certain number of tokens and returns the token type at that position.
+     * @param {int} index The index of the token type to retrieve.
+     *         0 for the current token, 1 for the next, -1 for the previous, etc.
+     * @return {int} The token type
+     * @throws if you lookahead past EOF, past the size of the lookahead buffer,
+     *         or back past the first token in the lookahead buffer.
+     */
+    LA(index) {
+      if (!index) return this._token.type;
+
+      if (index > 0) {
+        if (index > LT_SIZE) throw new Error('Too much lookahead.');
+        let total = index;
+        let tt;
+        while (total && total--) tt = this.get();
+        while (total++ < index) this.unget();
+        return tt;
+      }
+
+      if (index < 0) {
+        const token = this._lt[this._ltIndex + index];
+        if (!token) throw new Error('Too much lookbehind.');
+        return token.type;
+      }
+    }
+
+    /**
+     * Looks ahead a certain number of tokens and returns the token at that position.
+     * @param {int} index The index of the token type to retrieve.
+     *         0 for the current token, 1 for the next, -1 for the previous, etc.
+     * @return {Object} The token
+     * @throws if you lookahead past EOF, past the size of the lookahead buffer,
+     *         or back past the first token in the lookahead buffer.
+     */
+    LT(index) {
+      // lookahead first to prime the token buffer
+      this.LA(index);
+      // now find the token, subtract one because _ltIndex is already at the next index
+      return this._lt[this._ltIndex + index - 1];
+    }
+
+    // Returns the token type for the next token in the stream without consuming it.
+    peek() {
+      return this.LA(1);
+    }
+
+    // Restores the last consumed token to the token stream.
+    unget() {
+      const cache = this._ltIndexCache;
+      if (cache.length) {
+        this._ltIndex -= cache.pop();
+        this._token = this._lt[this._ltIndex - 1];
+      } else {
+        throw new Error('Too much lookahead.');
+      }
+    }
+  }
+
+  //endregion
+  //region TokenStream
+
+  class TokenStream extends TokenStreamBase {
+
+    /**
+     * @param {Number|Number[]} tokenTypes
+     * @param {Boolean} [skipCruftBefore=true] - skip comments/uso-vars/whitespace before matching
+     * @returns {Object} token
+     */
+    mustMatch(tokenTypes, skipCruftBefore = true) {
+      if (skipCruftBefore && tokenTypes !== Tokens.S) {
+        this.skipComment(true);
+      }
+      super.mustMatch(tokenTypes);
+      return this._token;
+    }
+
+    /**
+     * @param {Boolean} [skipWS] - skip whitespace too
+     */
+    skipComment(skipWS) {
+      const tt = (this._lt[this._ltIndex] || this.LT(1)).type;
+      if (tt === Tokens.USO_VAR ||
+          tt === Tokens.COMMENT ||
+          skipWS && tt === Tokens.S) {
+        while (this.match([Tokens.USO_VAR, Tokens.S])) { /*NOP*/ }
+      }
+    }
+
+    /**
+     * @returns {Object} token
+     */
+    _getToken() {
+      const reader = this._reader;
+      const pos = {
+        line: reader._line,
+        col: reader._col,
+        offset: reader._cursor,
+      };
+      const c = reader.read();
+      switch (c) {
+
+        /*
+         * Potential tokens:
+         * - S
+         */
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\f':
+          return this.whitespaceToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - COMMENT
+         * - SLASH
+         * - CHAR
+         */
+        case '/':
+          return reader.peek() === '*' ?
+            this.commentToken(c, pos) :
+            this.charToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - DASHMATCH
+         * - INCLUDES
+         * - PREFIXMATCH
+         * - SUFFIXMATCH
+         * - SUBSTRINGMATCH
+         * - CHAR
+         */
+        case '|':
+        case '~':
+        case '^':
+        case '$':
+        case '*':
+          return reader.peek() === '=' ?
+            this.comparisonToken(c, pos) :
+            this.charToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - STRING
+         * - INVALID
+         */
+        case '"':
+        case "'":
+          return this.stringToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - HASH
+         * - CHAR
+         */
+        case '#':
+          return isNameChar(reader.peek()) ?
+            this.hashToken(c, pos) :
+            this.charToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - DOT
+         * - NUMBER
+         * - DIMENSION
+         * - PERCENTAGE
+         */
+        case '.':
+          return isDigit(reader.peek()) ?
+            this.numberToken(c, pos) :
+            this.charToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - CDC
+         * - MINUS
+         * - NUMBER
+         * - DIMENSION
+         * - PERCENTAGE
+         */
+        case '-': {
+          const next = reader.peek();
+          // could be closing HTML-style comment or CSS variable
+          return (
+            next === '-' ?
+              /\w/.test(reader.peek(2)) ?
+                this.identOrFunctionToken(c, pos) :
+                this.htmlCommentEndToken(c, pos) :
+            next === '.' && isDigit(reader.peek(2)) ||
+            isDigit(next) ?
+              this.numberToken(c, pos) :
+            isNameStart(next) ?
+              this.identOrFunctionToken(c, pos) :
+              this.charToken(c, pos)
+          );
+        }
+        /*
+         * Potential tokens:
+         * - PLUS
+         * - NUMBER
+         * - DIMENSION
+         * - PERCENTAGE
+         */
+        case '+': {
+          const next = reader.peek();
+          return (
+            next === '.' && isDigit(reader.peek(2)) ||
+            isDigit(next) ?
+              this.numberToken(c, pos) :
+              this.charToken(c, pos)
+          );
+        }
+        /*
+         * Potential tokens:
+         * - IMPORTANT_SYM
+         * - CHAR
+         */
+        case '!':
+          return this.importantToken(c, pos);
+
+        /*
+         * Any at-keyword or CHAR
+         */
+        case '@':
+          return this.atRuleToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - ANY
+         * - NOT
+         * - CHAR
+         */
+        case ':':
+          return this.notOrAnyToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - CDO
+         * - CHAR
+         */
+        case '<':
+          return this.htmlCommentStartToken(c, pos);
+
+        /*
+         * Potential tokens:
+         * - IDENT
+         * - CHAR
+         */
+        case '\\':
+          return /[^\r\n\f]/.test(reader.peek()) ?
+            this.identOrFunctionToken(this.readEscape(c), pos) :
+            this.charToken(c, pos);
+
+        // EOF
+        case null:
+          return this.createToken(Tokens.EOF, null, pos);
+
+        /*
+         * Potential tokens:
+         * - UNICODE_RANGE
+         * - URL
+         * - CHAR
+         */
+        case 'U':
+        case 'u':
+          if (reader.peek() === '+') {
+            return this.unicodeRangeToken(c, pos);
+          }
+          // fallthrough
+      }
+
+      /*
+       * Potential tokens:
+       * - NUMBER
+       * - DIMENSION
+       * - LENGTH
+       * - FREQ
+       * - TIME
+       * - EMS
+       * - EXS
+       * - ANGLE
+       */
+      if (isDigit(c)) {
+        return this.numberToken(c, pos);
+      }
+
+      /*
+       * Potential tokens:
+       * - IDENT
+       * - CHAR
+       * - PLUS
+       */
+      return isIdentStart(c) ?
+        this.identOrFunctionToken(c, pos) :
+        this.charToken(c, pos);
+    }
+
+    /**
+     * Produces a token based on available data and the current
+     * reader position information. This method is called by other
+     * private methods to create tokens and is never called directly.
+     */
+    createToken(type, value, pos, opts) {
+      const token = {
+        value,
+        type,
+        startLine: pos.line,
+        startCol: pos.col,
+        offset: pos.offset,
+      };
+      if (opts && opts.endChar) token.endChar = opts.endChar;
+      return token;
+    }
+
+    /**
+     * Produces a token for any at-rule. If the at-rule is unknown, then
+     * the token is for a single "@" character.
+     * @param {String} first The first character for the token.
+     */
+    atRuleToken(first, pos) {
+      this._reader.mark();
+      const ident = this.readName();
+      let rule = first + ident;
+      let tt = Tokens.type(lower(rule));
+      // if it's not valid, use the first character only and reset the reader
+      if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
+        if (rule.length > 1) {
+          tt = Tokens.UNKNOWN_SYM;
+        } else {
+          tt = Tokens.CHAR;
+          rule = first;
+          this._reader.reset();
+        }
+      }
+      return this.createToken(tt, rule, pos);
+    }
+
+    // DOT, PIPE, PLUS, etc. (name for this character in 'Tokens')
+    // CHAR
+    charToken(c, pos) {
+      const tt = Tokens.type(c);
+      if (tt === -1) {
+        return this.createToken(Tokens.CHAR, c, pos, {});
+      } else {
+        return this.createToken(tt, c, pos, {endChar: Tokens[tt].endChar});
+      }
+    }
+
+    // COMMENT
+    // USO_VAR
+    commentToken(first, pos) {
+      const comment = this.readComment(first);
+      const isUsoVar = comment.startsWith('/*[[') && comment.endsWith(']]*/');
+      return this.createToken(isUsoVar ? Tokens.USO_VAR : Tokens.COMMENT, comment, pos);
+    }
+
+    // DASHMATCH
+    // INCLUDES
+    // PREFIXMATCH
+    // SUFFIXMATCH
+    // SUBSTRINGMATCH
+    // CHAR
+    comparisonToken(c, pos) {
+      const comparison = c + this._reader.read();
+      const tt = Tokens.type(comparison) || Tokens.CHAR;
+      return this.createToken(tt, comparison, pos);
+    }
+
+    // HASH
+    hashToken(first, pos) {
+      return this.createToken(Tokens.HASH, this.readName(first), pos);
+    }
+
+    // CDO
+    // CHAR
+    htmlCommentStartToken(first, pos) {
+      return this._reader.readMatch('!--') ?
+        this.createToken(Tokens.CDO, '<!--', pos) :
+        this.charToken(first, pos);
+    }
+
+    // CDC
+    // CHAR
+    htmlCommentEndToken(first, pos) {
+      return this._reader.readMatch('->') ?
+        this.createToken(Tokens.CDC, '-->', pos) :
+        this.charToken(first, pos);
+    }
+
+    // IDENT
+    // URI
+    // FUNCTION
+    // CUSTOM_PROP
+    identOrFunctionToken(first, pos) {
+      const reader = this._reader;
+      const name = this.readName(first);
+      const next = reader.peek();
+      // might be a URI or function
+      if (next === '(') {
+        reader.read();
+        if (['url', 'url-prefix', 'domain'].includes(lower(name))) {
+          reader.mark();
+          const uri = this.readURI(name + '(');
+          if (uri) {
+            const token = this.createToken(Tokens.URI, uri.text, pos);
+            token.name = name;
+            token.uri = uri.value;
+            return token;
+          }
+          reader.reset();
+        }
+        return this.createToken(Tokens.FUNCTION, name + '(', pos);
+      }
+      // might be an IE-specific function with progid:
+      if (next === ':' && lower(name) === 'progid') {
+        return this.createToken(Tokens.IE_FUNCTION, name + reader.readTo('('), pos);
+      }
+      const type = name.startsWith('--') ? Tokens.CUSTOM_PROP : Tokens.IDENT;
+      return this.createToken(type, name, pos);
+    }
+
+    // IMPORTANT_SYM
+    // CHAR
+    importantToken(first, pos) {
+      const reader = this._reader;
+      let text = first;
+      reader.mark();
+      for (let pass = 1; pass++ <= 2;) {
+        const important = reader.readMatch(/\s*important\b/iy);
+        if (important) {
+          return this.createToken(Tokens.IMPORTANT_SYM, text + important, pos);
+        }
+        const comment = reader.readMatch('/*');
+        if (!comment) break;
+        text += comment + this.readComment(comment);
+      }
+      reader.reset();
+      return this.charToken(first, pos);
+    }
+
+    // NOT
+    // ANY
+    // CHAR
+    notOrAnyToken(first, pos) {
+      const reader = this._reader;
+      const func = reader.readMatch(/not\(|(-(moz|webkit)-)?any\(/iy);
+      if (func) {
+        const type = func.startsWith('n') || func.startsWith('N') ? Tokens.NOT : Tokens.ANY;
+        return this.createToken(type, first + func, pos);
+      }
+      return this.charToken(first, pos);
+    }
+
+    // NUMBER
+    // EMS
+    // EXS
+    // LENGTH
+    // ANGLE
+    // TIME
+    // FREQ
+    // DIMENSION
+    // PERCENTAGE
+    numberToken(first, pos) {
+      const reader = this._reader;
+      const value = this.readNumber(first);
+      let tt = Tokens.NUMBER;
+      let units, type;
+
+      const c = reader.peek();
+      if (isIdentStart(c)) {
+        units = this.readName(reader.read());
+        type = UNITS[lower(units)];
+        tt = type && Tokens[type.toUpperCase()] ||
+             type === 'frequency' && Tokens.FREQ ||
+             Tokens.DIMENSION;
+      } else if (c === '%') {
+        units = reader.read();
+        type = 'percentage';
+        tt = Tokens.PERCENTAGE;
+      } else {
+        type = 'number';
+      }
+
+      const token = this.createToken(tt, units ? value + units : value, pos);
+      token.number = parseFloat(value);
+      if (units) token.units = units;
+      if (type) token.unitsType = type;
+      return token;
+    }
+
+    // STRING
+    // INVALID - in case the string isn't closed
+    stringToken(first, pos) {
+      const delim = first;
+      const string = first ? [first] : [];
+      const reader = this._reader;
+      let tt = Tokens.STRING;
+      let c = reader.read();
+      let i;
+
+      while (c) {
+        string.push(c);
+
+        if (c === '\\') {
+          c = reader.read();
+          if (c === null) {
+            break; // premature EOF after backslash
+          } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
+            // single-character escape
+            string.push(c);
+          } else {
+            // read up to six hex digits
+            for (i = 0; isHexDigit(c) && i < 6; i++) {
+              string.push(c);
+              c = reader.read();
+            }
+            // swallow trailing newline or space
+            if (c === '\r' && reader.peek() === '\n') {
+              string.push(c);
+              c = reader.read();
+            }
+            if (isWhitespace(c)) {
+              string.push(c);
+            } else {
+              // This character is null or not part of the escape;
+              // jump back to the top to process it.
+              continue;
+            }
+          }
+        } else if (c === delim) {
+          break; // delimiter found.
+        } else if (isNewLine(reader.peek())) {
+          // newline without an escapement: it's an invalid string
+          tt = Tokens.INVALID;
+          break;
+        }
+        c = reader.read();
+      }
+
+      // the string was never closed
+      if (!c) tt = Tokens.INVALID;
+
+      return this.createToken(tt, string.join(''), pos);
+    }
+
+    // UNICODE_RANGE
+    // CHAR
+    unicodeRangeToken(first, pos) {
+      const reader = this._reader;
+      if (reader.peek() !== '+') {
+        return this.createToken(Tokens.CHAR, first, pos);
+      }
+      reader.mark();
+      reader.read();
+      let value = first + '+';
+      let chunk = this.readUnicodeRangePart(true);
+      if (!chunk) {
+        reader.reset();
+        return this.createToken(Tokens.CHAR, value, pos);
+      }
+      value += chunk;
+      // if there's a ? in the first part, there can't be a second part
+      if (!value.includes('?') && reader.peek() === '-') {
+        reader.mark();
+        reader.read();
+        chunk = this.readUnicodeRangePart(false);
+        if (!chunk) {
+          reader.reset();
+        } else {
+          value += '-' + chunk;
+        }
+      }
+      return this.createToken(Tokens.UNICODE_RANGE, value, pos);
+    }
+
+    // S
+    whitespaceToken(first, pos) {
+      return this.createToken(Tokens.S, first + this.readWhitespace(), pos);
+    }
+
+    //-------------------------------------------------------------------------
+    // Methods to read values from the string stream
+    //-------------------------------------------------------------------------
+
+    readUnicodeRangePart(allowQuestionMark) {
+      const reader = this._reader;
+      let part = reader.readMatch(/[0-9a-f]{1,6}/iy);
+      if (allowQuestionMark &&
+          part.length < 6 &&
+          reader.peek() === '?') {
+        part += reader.readMatch(new RegExp(`\\?{1,${6 - part.length}}`, 'y'));
+      }
+      return part;
+    }
+
+    readWhitespace() {
+      return this._reader.readMatch(/\s+/y) || '';
+    }
+
+    readNumber(first) {
+      const tail = this._reader.readMatch(
+        first === '.' ?
+          /\d+(e[+-]?\d+)?/iy :
+        isDigit(first) ?
+          /\d*\.?\d*(e[+-]?\d+)?/iy :
+          /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy);
+      return first + (tail || '');
+    }
+
+    // returns null w/o resetting reader if string is invalid.
+    readString() {
+      const token = this.stringToken(this._reader.read(), 0, 0);
+      return token.type !== Tokens.INVALID ? token.value : null;
+    }
+
+    // returns null w/o resetting reader if URI is invalid.
+    readURI(first) {
+      const reader = this._reader;
+      const uri = first;
+      let value = '';
+
+      this.readWhitespace();
+
+      if (/['"]/.test(reader.peek())) {
+        value = this.readString();
+        if (value === null) return null;
+        value = parseString(value);
+      } else {
+        value = this.readUnquotedURL();
+      }
+
+      this.readWhitespace();
+      if (reader.peek() !== ')') return null;
+
+      // Ensure argument to URL is always double-quoted
+      // (This simplifies later processing in PropertyValuePart.)
+      return {value, text: uri + serializeString(value) + reader.read()};
+    }
+
+    readUnquotedURL(first) {
+      return this.readChunksWithEscape(first, /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu);
+    }
+
+    readName(first) {
+      return this.readChunksWithEscape(first, /[-_\da-zA-Z\u00A0-\uFFFF]+/yu);
+    }
+
+    readEscape() {
+      const cp = this._reader.readMatch(/[0-9a-f]{1,6}\b\s*/iyu);
+      return cp ? String.fromCodePoint(parseInt(cp, 16)) : this._reader.read();
+    }
+
+    readChunksWithEscape(first, rx) {
+      const reader = this._reader;
+      const url = first ? [first] : [];
+      while (true) {
+        const chunk = reader.readMatch(rx);
+        if (chunk) url.push(chunk);
+        if (reader.peek() === '\\' && /^[^\r\n\f]$/.test(reader.peek(2))) {
+          url.push(this.readEscape(reader.read()));
+        } else {
+          break;
+        }
+      }
+      return (
+        url.length > 2 ? url.join('') :
+        url.length > 1 ? url[0] + url[1] :
+        url[0] || ''
+      );
+    }
+
+    readComment(first) {
+      return first +
+             this._reader.readCount(2 - first.length) +
+             this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/yu);
+    }
+  }
+
+  //endregion
   //region parserCache
 
   /**
@@ -1764,2150 +3677,14 @@ self.parserlib = (() => {
   })();
 
   //endregion
-  //region EventTarget
-
-  class EventTarget {
-
-    constructor() {
-      this._listeners = new Map();
-    }
-
-    addListener(type, fn) {
-      let listeners = this._listeners.get(type);
-      if (!listeners) this._listeners.set(type, (listeners = new Set()));
-      listeners.add(fn);
-    }
-
-    fire(event) {
-      if (typeof event === 'string') {
-        event = {type: event};
-      }
-      if (typeof event.target !== 'undefined') {
-        event.target = this;
-      }
-
-      if (typeof event.type === 'undefined') {
-        throw new Error("Event object missing 'type' property.");
-      }
-
-      const listeners = this._listeners.get(event.type);
-      if (!listeners) return;
-      for (const fn of listeners.values()) {
-        fn.call(this, event);
-      }
-    }
-
-    removeListener(type, fn) {
-      const listeners = this._listeners.get(type);
-      if (listeners) listeners.delete(fn);
-    }
-  }
-
-  //endregion
-  //region SyntaxUnit
-
-  class SyntaxUnit {
-
-    constructor(text, pos, type) {
-      this.col = pos.col || pos.startCol;
-      this.line = pos.line || pos.startLine;
-      this.offset = pos.offset;
-      this.text = text;
-      this.type = type;
-    }
-
-    valueOf() {
-      return this.text;
-    }
-
-    toString() {
-      return this.text;
-    }
-
-    static fromToken(token) {
-      return new SyntaxUnit(token.value, token);
-    }
-  }
-
-  //endregion
-  //region PropertyName
-
-  class PropertyName extends SyntaxUnit {
-
-    constructor(text, hack, pos) {
-      super(text, pos, TYPES.PROPERTY_NAME_TYPE);
-      /**
-       * The type of IE hack applied ("*", "_", or null).
-       * @type String
-       * @property hack
-       */
-      this.hack = hack;
-    }
-
-    toString() {
-      return (this.hack || '') + this.text;
-    }
-  }
-
-  //endregion
-  //region PropertyValue
-
-  class PropertyValue extends SyntaxUnit {
-    /**
-     * Represents a single part of a CSS property value, meaning that it represents
-     * just everything single part between ":" and ";". If there are multiple values
-     * separated by commas, this type represents just one of the values.
-     * @param {String[]} parts An array of value parts making up this value.
-     */
-    constructor(parts, pos) {
-      super(parts.join(' '), pos, TYPES.PROPERTY_VALUE_TYPE);
-      this.parts = parts;
-    }
-  }
-
-  //endregion
-  //region PropertyValuePart
-
-  const tokenConverter = new Map();
-
-  class PropertyValuePart extends SyntaxUnit {
-    /**
-     * Represents a single part of a CSS property value, meaning that it represents
-     * just one part of the data between ":" and ";".
-     */
-    constructor(token) {
-      const {value, type} = token;
-      super(value, token, TYPES.PROPERTY_VALUE_PART_TYPE);
-
-      this.type = 'unknown';
-      this.tokenType = type;
-      // There can be ambiguity with escape sequences in identifiers, as
-      // well as with "color" parts which are also "identifiers", so record
-      // an explicit hint when the token generating this PropertyValuePart
-      // was an identifier.
-      this.wasIdent = type === Tokens.IDENT;
-
-      const cvt = tokenConverter.get(type);
-      if (cvt && cvt(this, token) !== false) return;
-
-      if (value === ',' || value === '/') {
-        this.type = 'operator';
-        this.value = value;
-        return;
-      }
-    }
-
-    static parseString(str) {
-      const replacer = (match, esc) => {
-        if (isNewLine(esc)) return '';
-        const m = /^[0-9a-f]{1,6}/i.exec(esc);
-        return m ? String.fromCodePoint(parseInt(m[0], 16)) : esc;
-      };
-      // Strip surrounding single/double quotes
-      str = str.slice(1, -1);
-      return str.replace(/\\(\r\n|[^\r0-9a-f]|[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)/ig, replacer);
-    }
-
-    static serializeString(value) {
-      const replacer = c => {
-        if (c === '"') return '\\' + c;
-        // We only escape non-surrogate chars, so using charCodeAt is harmless here.
-        const cp = String.codePointAt ? c.codePointAt(0) : c.charCodeAt(0);
-        return '\\' + cp.toString(16) + ' ';
-      };
-      return '"' + value.replace(/["\r\n\f]/g, replacer) + '"';
-    }
-  }
-
-  [
-    ...(fn => [
-      Tokens.LENGTH,
-      Tokens.ANGLE,
-      Tokens.TIME,
-      Tokens.FREQ,
-      Tokens.DIMENSION,
-      Tokens.PERCENTAGE,
-      Tokens.NUMBER,
-    ].map(tt => [tt, fn]))((self, {number, units, unitsType}) => {
-      self.value = number;
-      self.units = units;
-      self.type = unitsType === 'number' && !self.text.includes('.') ? 'integer' : unitsType;
-    }),
-
-    [Tokens.HASH, (self, {value}) => {
-
-      self.type = 'color';
-      if (value.length <= 5) {
-        let n = parseInt(value.slice(1), 16);
-        if (value.length === 5) {
-          self.alpha = (n & 15) << 4 + (n & 15);
-          n >>= 4;
-        }
-        self.red = (n >> 8 & 15) << 4 + (n >> 8 & 15);
-        self.green = (n >> 4 & 15) << 4 + (n >> 4 & 15);
-        self.blue = (n & 15) << 4 + (n & 15);
-      } else {
-        const n = parseInt(value.substr(1, 6), 16);
-        self.red = n >> 16;
-        self.green = (n >> 8) & 255;
-        self.blue = n & 255;
-        if (value.length === 9) {
-          self.alpha = parseInt(value.substr(7, 2), 16);
-        }
-      }
-
-    }],
-    [Tokens.FUNCTION, (self, {name, expr}) => {
-
-      self.name = name;
-      self.expr = expr;
-      const parts = expr && expr.parts;
-      switch (parts && lower(name)) {
-        case 'rgb':
-        case 'rgba': {
-          const [r, g, b, a] = parts.map(p => !/[,/]/.test(p)).map(parseFloat);
-          const pct = parts[0].tokenType === Tokens.PERCENTAGE ? 2.55 : 1;
-          self.type = 'color';
-          self.red = r * pct;
-          self.green = g * pct;
-          self.blue = b * pct;
-          if (!isNaN(a)) self.alpha = a * (/%/.test(parts[parts.length - 1]) ? 2.55 / 100 : 1);
-          return;
-        }
-        case 'hsl':
-        case 'hsla': {
-          const [h, s, l, a] = parts.map(p => !/[,/]/.test(p)).map(parseFloat);
-          self.type = 'color';
-          self.hue = h;
-          self.hueUnit = parts[0].units;
-          self.saturation = s;
-          self.lightness = l;
-          if (!isNaN(a)) self.alpha = a * (/%/.test(parts[parts.length - 1]) ? 2.55 / 100 : 1);
-          return;
-        }
-        default:
-          self.type = 'function';
-      }
-
-    }],
-    [Tokens.URI, (self, {name, uri}) => {
-
-      self.type = 'uri';
-      self.name = name;
-      self.uri = uri;
-
-    }],
-    [Tokens.STRING, self => {
-
-      const text = self.text;
-      if (text[0] === '"' &&
-          /^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {
-        self.type = 'string';
-        self.value = PropertyValuePart.parseString(text);
-        return;
-      }
-      if (text[0] === "'" &&
-          /^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {
-        self.type = 'string';
-        self.value = PropertyValuePart.parseString(text);
-      }
-
-    }],
-    [Tokens.IDENT, self => {
-
-      const text = self.text;
-      let namedColor;
-      if (!text.includes('-') && (namedColor = Colors[lower(text)])) {
-        tokenConverter.get(Tokens.HASH)(self, {value: namedColor});
-      } else {
-        self.type = 'identifier';
-        self.value = text;
-      }
-
-    }],
-    [Tokens.CUSTOM_PROP, self => {
-
-      self.type = 'custom-property';
-      self.value = self.text;
-
-    }],
-  ].forEach(([tt, fn]) => tokenConverter.set(tt, fn));
-
-  //endregion
-  //region SelectorPart
-
-  class SelectorPart extends SyntaxUnit {
-    /**
-     * Represents a single part of a selector string, meaning a single set of
-     * element name and modifiers. This does not include combinators such as
-     * spaces, +, >, etc.
-     * @param {String} elementName The element name in the selector or null
-     *      if there is no element name.
-     * @param {Array} modifiers Array of individual modifiers for the element.
-     *      The parts that come after the element name, such as class names, IDs, pseudo classes/elements, etc.
-     *      May be empty if there are none.
-     */
-    constructor(elementName, modifiers, text, pos) {
-      super(text, pos, TYPES.SELECTOR_PART_TYPE);
-      this.elementName = elementName;
-      this.modifiers = modifiers;
-    }
-  }
-
-  //endregion
-  //region Specificity
-
-  class Specificity {
-    /**
-     * Represents a selector's specificity.
-     * @namespace parserlib.css
-     * @class Specificity
-     * @constructor
-     * @param {int} a Should be 1 for inline styles, zero for stylesheet styles
-     * @param {int} b Number of ID selectors
-     * @param {int} c Number of classes and pseudo classes
-     * @param {int} d Number of element names and pseudo elements
-     */
-    constructor(a, b, c, d) {
-      this.a = a;
-      this.b = b;
-      this.c = c;
-      this.d = d;
-      this.constructor = Specificity;
-    }
-
-    /**
-     * Compare this specificity to another.
-     * @param {Specificity} other The other specificity to compare to.
-     * @return {int} -1 if the other specificity is larger, 1 if smaller, 0 if equal.
-     * @method compare
-     */
-    compare(other) {
-      const comps = ['a', 'b', 'c', 'd'];
-
-      for (let i = 0, len = comps.length; i < len; i++) {
-        if (this[comps[i]] < other[comps[i]]) {
-          return -1;
-        } else if (this[comps[i]] > other[comps[i]]) {
-          return 1;
-        }
-      }
-
-      return 0;
-    }
-
-    /**
-     * Creates a numeric value for the specificity.
-     * @return {int} The numeric value for the specificity.
-     * @method valueOf
-     */
-    valueOf() {
-      return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
-    }
-
-    /**
-     * Returns a string representation for specificity.
-     * @return {String} The string representation of specificity.
-     * @method toString
-     */
-    toString() {
-      return this.a + ',' + this.b + ',' + this.c + ',' + this.d;
-    }
-
-    /**
-     * Calculates the specificity of the given selector.
-     * @param {parserlib.css.Selector} The selector to calculate specificity for.
-     * @return {parserlib.css.Specificity} The specificity of the selector.
-     * @static
-     * @method calculate
-     */
-    static calculate(selector) {
-
-      let i, len, part;
-      let b = 0;
-      let c = 0;
-      let d = 0;
-
-      function updateValues(part) {
-
-        let i, j, len, num, modifier;
-        const elementName = part.elementName ? part.elementName.text : '';
-
-        if (elementName && elementName.charAt(elementName.length - 1) !== '*') {
-          d++;
-        }
-
-        for (i = 0, len = part.modifiers.length; i < len; i++) {
-          modifier = part.modifiers[i];
-          switch (modifier.type) {
-            case 'class':
-            case 'attribute':
-              c++;
-              break;
-
-            case 'id':
-              b++;
-              break;
-
-            case 'pseudo':
-              if (isPseudoElement(modifier.text)) {
-                d++;
-              } else {
-                c++;
-              }
-              break;
-
-            case 'not':
-              for (j = 0, num = modifier.args.length; j < num; j++) {
-                updateValues(modifier.args[j]);
-              }
-          }
-        }
-      }
-
-      for (i = 0, len = selector.parts.length; i < len; i++) {
-        part = selector.parts[i];
-
-        if (part instanceof SelectorPart) {
-          updateValues(part);
-        }
-      }
-
-      return new Specificity(0, b, c, d);
-    }
-  }
-
-  //endregion
-  //region SelectorSubPart
-
-  class SelectorSubPart extends SyntaxUnit {
-    /**
-     * Represents a selector modifier string, meaning a class name, element name,
-     * element ID, pseudo rule, etc.
-     */
-    constructor(text, type, pos) {
-      super(text, pos, TYPES.SELECTOR_SUB_PART_TYPE);
-      this.type = type;
-      // Some subparts have arguments
-      this.args = [];
-    }
-  }
-
-  //endregion
-  //region Selector
-
-  class Selector extends SyntaxUnit {
-    /**
-     * Represents an entire single selector, including all parts but not
-     * including multiple selectors (those separated by commas).
-     * @param {Array} parts Array of selectors parts making up this selector.
-     */
-    constructor(parts, pos) {
-      super(parts.join(' '), pos, TYPES.SELECTOR_TYPE);
-      this.parts = parts;
-      this.specificity = Specificity.calculate(this);
-    }
-  }
-
-  //endregion
-  //region SyntaxError
-
-  class SyntaxError extends Error {
-    constructor(message, pos) {
-      super();
-      this.name = this.constructor.name;
-      this.col = pos.col || pos.startCol;
-      this.line = pos.line || pos.startLine;
-      this.message = message;
-    }
-  }
-
-  //endregion
-  //region ValidationError
-
-  class ValidationError extends Error {
-    constructor(message, pos) {
-      super();
-      this.col = pos.col || pos.startCol;
-      this.line = pos.line || pos.startLine;
-      this.message = message;
-    }
-  }
-
-  //endregion
-  //region Combinator
-
-  class Combinator extends SyntaxUnit {
-    /**
-     * Represents a selector combinator (whitespace, +, >).
-     */
-    constructor(token) {
-      const {value} = token;
-      super(value, token, TYPES.COMBINATOR_TYPE);
-      this.type =
-        value === '>' ? 'child' :
-        value === '+' ? 'adjacent-sibling' :
-        value === '~' ? 'sibling' :
-        !value.trim() ? 'descendant' :
-          'unknown';
-    }
-  }
-
-  //endregion
-  //region StringReader
-
-  class StringReader {
-
-    constructor(text) {
-      this._input = text.replace(/\r\n?/g, '\n');
-      this._line = 1;
-      this._col = 1;
-      this._cursor = 0;
-    }
-
-    eof() {
-      return this._cursor >= this._input.length;
-    }
-
-    peek(count = 1) {
-      return this._input[this._cursor + count - 1] || null;
-    }
-
-    read() {
-      const c = this._input[this._cursor];
-      if (!c) return null;
-      if (c === '\n') {
-        this._line++;
-        this._col = 1;
-      } else {
-        this._col++;
-      }
-      this._cursor++;
-      return c;
-    }
-
-    mark() {
-      this._bookmark = {
-        cursor: this._cursor,
-        line: this._line,
-        col: this._col,
-      };
-    }
-
-    reset() {
-      if (this._bookmark) {
-        this._cursor = this._bookmark.cursor;
-        this._line = this._bookmark.line;
-        this._col = this._bookmark.col;
-        delete this._bookmark;
-      }
-    }
-
-    /**
-     * Reads up to and including the given string.
-     * @param {String} pattern The string to read.
-     * @return {String} The string when it is found.
-     * @throws Error when the string pattern is not found.
-     */
-    readTo(pattern) {
-      const i = this._input.indexOf(pattern, this._cursor);
-      if (i < 0) throw new Error(`Expected ${pattern}' at line ${this._line}, col ${this._col}.`);
-      return this.readCount(i - this._cursor + pattern.length);
-    }
-
-    /**
-     * Reads characters that match either text or a regular expression and
-     * returns those characters. If a match is found, the row and column
-     * are adjusted; if no match is found, the reader's state is unchanged.
-     * reading or false to stop.
-     * @param {String|RegExp} matcher If a string, then the literal string
-     *      value is searched for. If a regular expression, then any string
-     *      matching the pattern is search for.
-     * @return {String} The string made up of all characters that matched or
-     *      null if there was no match.
-     */
-    readMatch(matcher) {
-      if (matcher.sticky) {
-        matcher.lastIndex = this._cursor;
-        return matcher.test(this._input) ?
-          this.readCount(RegExp.lastMatch.length) :
-          null;
-      }
-      if (typeof matcher === 'string') {
-        if (this._input[this._cursor] === matcher[0] &&
-            this._input.substr(this._cursor, matcher.length) === matcher) {
-          return this.readCount(matcher.length);
-        }
-      } else if (matcher instanceof RegExp) {
-        if (matcher.test(this._input.substr(this._cursor))) {
-          return this.readCount(RegExp.lastMatch.length);
-        }
-      }
-      return null;
-    }
-
-    /**
-     * Reads a given number of characters. If the end of the input is reached,
-     * it reads only the remaining characters and does not throw an error.
-     * @param {int} count The number of characters to read.
-     * @return {String} The string made up the read characters.
-     */
-    readCount(count) {
-      const len = this._input.length;
-      if (this._cursor >= len) return null;
-      if (!count) return '';
-
-      const text = this._input.substr(this._cursor, count);
-      this._cursor = Math.min(this._cursor + count, len);
-
-      let prev = -1;
-      for (let i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) this._line++;
-      this._col = prev < 0 ? this._col + count : count - prev;
-
-      return text;
-    }
-  }
-
-  //endregion
-  //region Matcher
-
-  const cachedMatcher = new Map();
-
-  class Matcher {
-    /**
-     * This class implements a combinator library for matcher functions.
-     * The combinators are described at:
-     * https://developer.mozilla.org/en-US/docs/Web/CSS/Value_definition_syntax#Component_value_combinators
-     */
-    constructor(matchFunc, toString) {
-      this.matchFunc = matchFunc;
-      this.toString = typeof toString === 'function' ? toString : () => toString;
-    }
-
-    static parse(str) {
-      let m = cachedMatcher.get(str);
-      if (m) return m;
-      m = Matcher.doParse(str);
-      cachedMatcher.set(str, m);
-      return m;
-    }
-
-    /** Simple recursive-descent grammar to build matchers from strings. */
-    static doParse(str) {
-      const reader = new StringReader(str);
-      function eat(matcher) {
-        const result = reader.readMatch(matcher);
-        if (result === null) {
-          throw new SyntaxError('Expected ' + matcher, reader._line, reader._col);
-        }
-        return result;
-      }
-      function expr() {
-        // expr = oror (" | " oror)*
-        const m = [oror()];
-        while (reader.readMatch(' | ')) {
-          m.push(oror());
-        }
-        return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
-      }
-      function oror() {
-        // oror = andand ( " || " andand)*
-        const m = [andand()];
-        while (reader.readMatch(' || ')) {
-          m.push(andand());
-        }
-        return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
-      }
-      function andand() {
-        // andand = seq ( " && " seq)*
-        const m = [seq()];
-        while (reader.readMatch(' && ')) {
-          m.push(seq());
-        }
-        return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
-      }
-      function seq() {
-        // seq = mod ( " " mod)*
-        const m = [mod()];
-        while (reader.readMatch(/\s(?![&|\]])/y)) {
-          m.push(mod());
-        }
-        return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
-      }
-      function mod() {
-        // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
-        const m = term();
-        reader.mark();
-        let hash;
-        switch (reader.read()) {
-          case '?': return m.question();
-          case '*': return m.star();
-          case '+': return m.plus();
-          case '#':
-            if (reader.peek() !== '{') return m.hash();
-            reader.read();
-            hash = '#';
-            // fallthrough
-          case '{': {
-            const min = eat(/\s*\d+\s*/y).trim();
-            const c = eat(/[,}]/y);
-            const max = c === ',' ? eat(/\s*\d+\s*}/y).slice(0, -1).trim() : min;
-            return m.braces(Number(min), Number(max), hash, hash && Matcher.cast(','));
-          }
-          default:
-            reader.reset();
-        }
-        return m;
-      }
-      function term() {
-        // term = <nt> | literal | "[ " expression " ]"
-        if (reader.readMatch('[ ')) {
-          const m = expr();
-          eat(' ]');
-          return m;
-        }
-        return Matcher.fromType(eat(/[^\s?*+#{]+/y));
-      }
-      const result = expr();
-      if (!reader.eof()) {
-        throw new SyntaxError('Expected end of string', reader._line, reader._col);
-      }
-      return result;
-    }
-
-    static cast(m) {
-      return m instanceof Matcher ? m : Matcher.parse(m);
-    }
-
-    // Matcher for a single type.
-    static fromType(type) {
-      let m = cachedMatcher.get(type);
-      if (m) return m;
-      m = new Matcher(expr => expr.hasNext() && ValidationTypes.isType(expr, type), type);
-      cachedMatcher.set(type, m);
-      return m;
-    }
-
-    // Matcher for one or more juxtaposed words, which all must occur, in the given order.
-    static seq(...args) {
-      const ms = args.map(Matcher.cast);
-      if (ms.length === 1) return ms[0];
-      return new Matcher(
-        expression => ms.every(m => m.match(expression)),
-        prec => {
-          const p = Matcher.prec.SEQ;
-          const s = ms.map(m => m.toString(p)).join(' ');
-          return prec > p ? `[ ${s} ]` : s;
-        });
-    }
-
-    // Matcher for one or more alternatives, where exactly one must occur.
-    static alt(...args) {
-      const ms = args.map(Matcher.cast);
-      if (ms.length === 1) return ms[0];
-      return new Matcher(
-        expression => ms.some(m => m.match(expression)),
-        prec => {
-          const p = Matcher.prec.ALT;
-          const s = ms.map(m => m.toString(p)).join(' | ');
-          return prec > p ? `[ ${s} ]` : s;
-        });
-    }
-
-    /**
-     * Matcher for two or more options: double bar (||) and double ampersand (&&) operators,
-     * as well as variants of && where some of the alternatives are optional.
-     * This will backtrack through even successful matches to try to
-     * maximize the number of items matched.
-     */
-    static many(required, ...args) {
-      const ms = [];
-      for (const arg of args) {
-        if (arg.expand) {
-          ms.push(...ValidationTypes.complex[arg.expand].options);
-        } else {
-          ms.push(Matcher.cast(arg));
-        }
-      }
-
-      if (required === true) required = new Array(ms.length).fill(true);
-
-      const result = new Matcher(expression => {
-        const seen = [];
-        let max = 0;
-        let pass = 0;
-        // If couldn't get a complete match, retrace our steps to make the
-        // match with the maximum # of required elements.
-        if (!tryMatch(0)) {
-          pass++;
-          tryMatch(0);
-        }
-        if (required === false) {
-          return max > 0;
-        }
-        // Use finer-grained specification of which matchers are required.
-        for (let i = 0; i < ms.length; i++) {
-          if (required[i] && !seen[i]) {
-            return false;
-          }
-        }
-        return true;
-
-        function tryMatch(matchCount) {
-          for (let i = 0; i < ms.length; i++) {
-            if (seen[i]) continue;
-            expression.mark();
-            if (!ms[i].match(expression)) {
-              expression.drop();
-              continue;
-            }
-            seen[i] = true;
-            // Increase matchCount if this was a required element
-            // (or if all the elements are optional)
-            if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
-              expression.drop();
-              return true;
-            }
-            // Backtrack: try *not* matching using this rule, and
-            // let's see if it leads to a better overall match.
-            expression.restore();
-            seen[i] = false;
-          }
-          if (pass === 0) {
-            max = Math.max(matchCount, max);
-            return matchCount === ms.length;
-          } else {
-            return matchCount === max;
-          }
-        }
-
-      }, prec => {
-        const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
-        const s = ms.map((m, i) => {
-          if (required !== false && !required[i]) {
-            return m.toString(Matcher.prec.MOD) + '?';
-          }
-          return m.toString(p);
-        }).join(required === false ? ' || ' : ' && ');
-        return prec > p ? `[ ${s} ]` : s;
-      });
-
-      result.options = ms;
-      return result;
-    }
-
-    /**
-     * Create a matcher for two or more options, where all options are
-     * mandatory but they may appear in any order.
-     */
-    static andand(...args) {
-      return Matcher.many(true, ...args);
-    }
-
-    /**
-     * Create a matcher for two or more options, where options are
-     * optional and may appear in any order, but at least one must be
-     * present.
-     */
-    static oror(...args) {
-      return Matcher.many(false, ...args);
-    }
-
-    match(expression) {
-      // Save/restore marks to ensure that failed matches always restore
-      // the original location in the expression.
-      expression.mark();
-
-      const result = this.matchFunc(expression);
-      if (result) expression.drop();
-      else expression.restore();
-
-      return result;
-    }
-
-    // This returns a standalone function to do the matching.
-    func() {
-      return (...args) => this.match(...args);
-    }
-
-    // Basic combinators
-
-    then(m) {
-      return Matcher.seq(this, m);
-    }
-
-    or(m) {
-      return Matcher.alt(this, m);
-    }
-
-    andand(m) {
-      return Matcher.many(true, this, m);
-    }
-
-    oror(m) {
-      return Matcher.many(false, this, m);
-    }
-
-    // Component value multipliers
-    star() {
-      return this.braces(0, Infinity, '*');
-    }
-
-    plus() {
-      return this.braces(1, Infinity, '+');
-    }
-
-    question() {
-      return this.braces(0, 1, '?');
-    }
-
-    hash() {
-      return this.braces(1, Infinity, '#', Matcher.cast(','));
-    }
-
-    braces(min, max, marker, optSep) {
-      optSep = optSep && optSep.then(this);
-      marker = marker || '{' + min + (min === max ? '' : ',' + max) + '}';
-
-      const matchNext = !optSep
-        ? expression => this.match(expression)
-        : (expression, i) => (!i ? this : optSep).match(expression);
-
-      const matchFunc = expression => {
-        let i = 0;
-        while (i < max && matchNext(expression, i)) i++;
-        return i >= min;
-      };
-
-      return new Matcher(matchFunc, () => this.toString(Matcher.prec.MOD) + marker);
-    }
-  }
-
-  // Precedence table of combinators.
-  Matcher.prec = {
-    MOD: 5,
-    SEQ: 4,
-    ANDAND: 3,
-    OROR: 2,
-    ALT: 1,
-  };
-
-  //endregion
-  //region MediaFeature
-
-  class MediaFeature extends SyntaxUnit {
-    /**
-     * Represents a media feature, such as max-width:500.
-     * @param {SyntaxUnit} name The name of the feature.
-     * @param {SyntaxUnit} value The value of the feature or null if none.
-     */
-    constructor(name, value) {
-      const text = '(' + name + (value !== null ? ':' + value : '') + ')';
-      super(text, name, TYPES.MEDIA_FEATURE_TYPE);
-
-      this.name = name;
-      this.value = value;
-    }
-  }
-
-  //endregion
-  //region MediaQuery
-
-  class MediaQuery extends SyntaxUnit {
-    /**
-     * Represents an individual media query.
-     * @param {String} modifier The modifier "not" or "only" (or null).
-     * @param {String} mediaType The type of media (i.e., "print").
-     * @param {Array} parts Array of selectors parts making up this selector.
-     */
-    constructor(modifier, mediaType, features, pos) {
-      const text = (modifier ? modifier + ' ' : '') +
-                   (mediaType ? mediaType : '') +
-                   (mediaType && features.length > 0 ? ' and ' : '') +
-                   features.join(' and ');
-      super(text, pos, TYPES.MEDIA_QUERY_TYPE);
-      this.modifier = modifier;
-      this.mediaType = mediaType;
-      this.features = features;
-    }
-  }
-
-  //endregion
-  //region PropertyValueIterator
-
-  class PropertyValueIterator {
-    /**
-     * A utility class that allows for easy iteration over the various parts of a
-     * property value.
-     * @param {parserlib.css.PropertyValue} value The property value to iterate over.
-     */
-    constructor(value) {
-      this._i = 0;
-      this._parts = value.parts;
-      this._marks = [];
-      this.value = value;
-    }
-
-    hasNext() {
-      return this._i < this._parts.length;
-    }
-
-    peek(count) {
-      return this._parts[this._i + (count || 0)] || null;
-    }
-
-    next() {
-      return this._i < this._parts.length ? this._parts[this._i++] : null;
-    }
-
-    previous() {
-      return this._i > 0 ? this._parts[--this._i] : null;
-    }
-
-    mark() {
-      this._marks.push(this._i);
-    }
-
-    restore() {
-      if (this._marks.length) {
-        this._i = this._marks.pop();
-      }
-    }
-
-    drop() {
-      this._marks.pop();
-    }
-  }
-
-  //endregion
-  //region TokenStreamBase
-
-  // lookup table size for TokenStreamBase
-  const LT_SIZE = 5;
-
-  class TokenStreamBase {
-    /**
-     * Generic TokenStream providing base functionality.
-     */
-    constructor(input) {
-      this._reader = new StringReader(input ? input.toString() : '');
-      // Token object for the last consumed token.
-      this._token = null;
-      // Lookahead token buffer.
-      this._lt = [];
-      this._ltIndex = 0;
-      this._ltIndexCache = [];
-    }
-
-    /**
-     * Determines if the next token matches the given token type.
-     * If so, that token is consumed; if not, the token is placed
-     * back onto the token stream. You can pass in any number of
-     * token types and this will return true if any of the token
-     * types is found.
-     * @param {int|int[]} tokenTypes Either a single token type or an array of
-     *      token types that the next token might be. If an array is passed,
-     *      it's assumed that the token can be any of these.
-     * @return {Boolean} True if the token type matches, false if not.
-     */
-    match(tokenTypes) {
-      const isArray = Array.isArray(tokenTypes);
-      let tt;
-      do {
-        tt = this.get();
-        if (isArray ? tokenTypes.includes(tt) : tt === tokenTypes) {
-          return true;
-        }
-      } while (tt === Tokens.COMMENT && this.LA(0) !== 0);
-
-      // no match found, put the token back
-      this.unget();
-      return false;
-    }
-
-    /**
-     * Determines if the next token matches the given token type.
-     * If so, that token is consumed; if not, an error is thrown.
-     * @param {int|int[]} tokenTypes Either a single token type or an array of
-     *      token types that the next token should be. If an array is passed,
-     *      it's assumed that the token must be one of these.
-     * @return {void}
-     */
-    mustMatch(tokenTypes) {
-      if (!this.match(tokenTypes)) {
-        const {startLine: line, startCol: col, offset} = this.LT(1);
-        const info = Tokens[Array.isArray(tokenTypes) ? tokenTypes[0] : tokenTypes];
-        throw new SyntaxError(`Expected ${info.text || info.name} at line ${line}, col ${col}.`, {line, col, offset});
-      }
-    }
-
-    /**
-     * Keeps reading from the token stream until either one of the specified
-     * token types is found or until the end of the input is reached.
-     * @param {int|int[]} tokenTypes Either a single token type or an array of
-     *      token types that the next token should be. If an array is passed,
-     *      it's assumed that the token must be one of these.
-     * @return {void}
-     */
-    advance(tokenTypes) {
-      while (this.LA(0) !== 0 && !this.match(tokenTypes)) {
-        this.get();
-      }
-      return this.LA(0);
-    }
-
-    /**
-     * Consumes the next token from the token stream.
-     * @return {int} The token type of the token that was just consumed.
-     */
-    get() {
-      const cache = this._ltIndexCache;
-      const lt = this._lt;
-      let i = 0;
-
-      // check the lookahead buffer first
-      let len = lt.length;
-      let ltIndex = this._ltIndex;
-      if (len && ltIndex >= 0 && ltIndex < len) {
-        i++;
-        this._token = lt[ltIndex];
-        this._ltIndex = ++ltIndex;
-        if (ltIndex <= len) {
-          cache.push(i);
-          return this._token.type;
-        }
-      }
-
-      const token = this._getToken();
-      const type = token.type;
-      const isHidden = Tokens[type].hide;
-
-      if (type > -1 && !isHidden) {
-        // save for later
-        this._token = token;
-        lt.push(token);
-
-        // save space that will be moved (must be done before array is truncated)
-        cache.push(++len - ltIndex + i);
-
-        if (len > LT_SIZE) lt.shift();
-        if (cache.length > LT_SIZE) cache.shift();
-
-        // update lookahead index
-        this._ltIndex = lt.length;
-      }
-
-      // Skip to the next token if the token type is marked as hidden.
-      return isHidden ? this.get() : type;
-    }
-
-    /**
-     * Looks ahead a certain number of tokens and returns the token type at
-     * that position. This will throw an error if you lookahead past the
-     * end of input, past the size of the lookahead buffer, or back past
-     * the first token in the lookahead buffer.
-     * @param {int} The index of the token type to retrieve. 0 for the
-     *      current token, 1 for the next, -1 for the previous, etc.
-     * @return {int} The token type of the token in the given position.
-     */
-    LA(index) {
-      if (!index) return this._token.type;
-
-      if (index > 0) {
-        if (index > LT_SIZE) throw new Error('Too much lookahead.');
-        let total = index;
-        let tt;
-        while (total && total--) tt = this.get();
-        while (total++ < index) this.unget();
-        return tt;
-      }
-
-      if (index < 0) {
-        const token = this._lt[this._ltIndex + index];
-        if (!token) throw new Error('Too much lookbehind.');
-        return token.type;
-      }
-    }
-
-    /**
-     * Looks ahead a certain number of tokens and returns the token at
-     * that position. This will throw an error if you lookahead past the
-     * end of input, past the size of the lookahead buffer, or back past
-     * the first token in the lookahead buffer.
-     * @param {int} The index of the token type to retrieve. 0 for the
-     *      current token, 1 for the next, -1 for the previous, etc.
-     * @return {Object} The token of the token in the given position.
-     */
-    LT(index) {
-      // lookahead first to prime the token buffer
-      this.LA(index);
-      // now find the token, subtract one because _ltIndex is already at the next index
-      return this._lt[this._ltIndex + index - 1];
-    }
-
-    /**
-     * Returns the token type for the next token in the stream without
-     * consuming it.
-     * @return {int} The token type of the next token in the stream.
-     */
-    peek() {
-      return this.LA(1);
-    }
-
-    /**
-     * Returns the last consumed token to the token stream.
-     */
-    unget() {
-      if (this._ltIndexCache.length) {
-        this._ltIndex -= this._ltIndexCache.pop();
-        this._token = this._lt[this._ltIndex - 1];
-      } else {
-        throw new Error('Too much lookahead.');
-      }
-    }
-  }
-
-  //endregion
-  //region TokenStream
-
-  class TokenStream extends TokenStreamBase {
-
-    mustMatch(tokenTypes) {
-      this._skipUsoVar();
-      super.mustMatch(tokenTypes);
-    }
-
-    _skipUsoVar() {
-      const lt1 = this._lt[this._ltIndex] || this.LT(1);
-      if (lt1.type !== Tokens.USO_VAR) return;
-      while (this.match([Tokens.USO_VAR, Tokens.S])) { /*NOP*/ }
-    }
-
-    /**
-     * A token stream that produces CSS tokens.
-     */
-    _getToken() {
-      const reader = this._reader;
-      const pos = {
-        line: reader._line,
-        col: reader._col,
-        offset: reader._cursor,
-      };
-      const c = reader.read();
-      switch (c) {
-
-        case null:
-          return this.createToken(Tokens.EOF, null, pos);
-
-        /*
-         * Potential tokens:
-         * - S
-         */
-        case ' ':
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\f':
-          return this.whitespaceToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - COMMENT
-         * - SLASH
-         * - CHAR
-         */
-        case '/':
-          return reader.peek() === '*' ?
-            this.commentToken(c, pos) :
-            this.charToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - DASHMATCH
-         * - INCLUDES
-         * - PREFIXMATCH
-         * - SUFFIXMATCH
-         * - SUBSTRINGMATCH
-         * - CHAR
-         */
-        case '|':
-        case '~':
-        case '^':
-        case '$':
-        case '*':
-          return reader.peek() === '=' ?
-            this.comparisonToken(c, pos) :
-            this.charToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - STRING
-         * - INVALID
-         */
-        case '"':
-        case "'":
-          return this.stringToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - HASH
-         * - CHAR
-         */
-        case '#':
-          return isNameChar(reader.peek()) ?
-            this.hashToken(c, pos) :
-            this.charToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - DOT
-         * - NUMBER
-         * - DIMENSION
-         * - PERCENTAGE
-         */
-        case '.':
-          return isDigit(reader.peek()) ?
-            this.numberToken(c, pos) :
-            this.charToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - CDC
-         * - MINUS
-         * - NUMBER
-         * - DIMENSION
-         * - PERCENTAGE
-         */
-        case '-':
-          // could be closing HTML-style comment or CSS variable
-          return (
-            reader.peek() === '-' ? (
-              /\w/.test(reader.peek(2)) ?
-                this.identOrFunctionToken(c, pos) :
-                this.htmlCommentEndToken(c, pos)
-            ) : (
-            isNameStart(reader.peek()) ?
-              this.identOrFunctionToken(c, pos) :
-              this.charToken(c, pos)
-            )
-          );
-
-        /*
-         * Potential tokens:
-         * - IMPORTANT_SYM
-         * - CHAR
-         */
-        case '!':
-          return this.importantToken(c, pos);
-
-        /*
-         * Any at-keyword or CHAR
-         */
-        case '@':
-          return this.atRuleToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - ANY
-         * - NOT
-         * - CHAR
-         */
-        case ':':
-          return this.notOrAnyToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - CDO
-         * - CHAR
-         */
-        case '<':
-          return this.htmlCommentStartToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - IDENT
-         * - CHAR
-         */
-        case '\\':
-          return /[^\r\n\f]/.test(reader.peek()) ?
-            this.identOrFunctionToken(this.readEscape(c), pos) :
-            this.charToken(c, pos);
-
-        /*
-         * Potential tokens:
-         * - UNICODE_RANGE
-         * - URL
-         * - CHAR
-         */
-        case 'U':
-        case 'u':
-          if (reader.peek() === '+') {
-            return this.unicodeRangeToken(c, pos);
-          }
-          // fallthrough
-      }
-
-      /*
-       * Potential tokens:
-       * - NUMBER
-       * - DIMENSION
-       * - LENGTH
-       * - FREQ
-       * - TIME
-       * - EMS
-       * - EXS
-       * - ANGLE
-       */
-      if (isDigit(c)) {
-        return this.numberToken(c, pos);
-      }
-
-      /*
-       * Potential tokens:
-       * - IDENT
-       * - CHAR
-       * - PLUS
-       */
-      return isIdentStart(c) ?
-        this.identOrFunctionToken(c, pos) :
-        this.charToken(c, pos);
-    }
-
-    /**
-     * Produces a token based on available data and the current
-     * reader position information. This method is called by other
-     * private methods to create tokens and is never called directly.
-     */
-    createToken(type, value, pos, opts) {
-      const token = {
-        value,
-        type,
-        startLine: pos.line,
-        startCol: pos.col,
-        offset: pos.offset,
-      };
-      if (opts && opts.endChar) token.endChar = opts.endChar;
-      return token;
-    }
-
-    /**
-     * Produces a token for any at-rule. If the at-rule is unknown, then
-     * the token is for a single "@" character.
-     * @param {String} first The first character for the token.
-     */
-    atRuleToken(first, pos) {
-      const reader = this._reader;
-      let rule = first;
-      let tt = Tokens.CHAR;
-
-      /*
-       * First, mark where we are. There are only four @ rules,
-       * so anything else is really just an invalid token.
-       * Basically, if this doesn't match one of the known @
-       * rules, just return '@' as an unknown token and allow
-       * parsing to continue after that point.
-       */
-      reader.mark();
-
-      // try to find the at-keyword
-      const ident = this.readName();
-      rule = first + ident;
-      tt = Tokens.type(lower(rule));
-
-      // if it's not valid, use the first character only and reset the reader
-      if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
-        if (rule.length > 1) {
-          tt = Tokens.UNKNOWN_SYM;
-        } else {
-          tt = Tokens.CHAR;
-          rule = first;
-          reader.reset();
-        }
-      }
-
-      return this.createToken(tt, rule, pos);
-    }
-
-    /**
-     * Produces a character token based on the given character
-     * and location in the stream. If there's a special (non-standard)
-     * token name, this is used; otherwise CHAR is used.
-     * @param {String} c The character for the token.
-     */
-    charToken(c, pos) {
-      let tt = Tokens.type(c);
-      const opts = {};
-
-      if (tt === -1) {
-        tt = Tokens.CHAR;
-      } else {
-        opts.endChar = Tokens[tt].endChar;
-      }
-
-      return this.createToken(tt, c, pos, opts);
-    }
-
-    /**
-     * Produces a character token based on the given character
-     * and location in the stream. If there's a special (non-standard)
-     * token name, this is used; otherwise CHAR is used.
-     * @param {String} first The first character for the token.
-     */
-    commentToken(first, pos) {
-      const comment = this.readComment(first);
-      const isUsoVar = comment.startsWith('/*[[') && comment.endsWith(']]*/');
-      return this.createToken(isUsoVar ? Tokens.USO_VAR : Tokens.COMMENT, comment, pos);
-    }
-
-    /**
-     * Produces a comparison token based on the given character
-     * and location in the stream. The next character must be
-     * read and is already known to be an equals sign.
-     * @param {String} c The character for the token.
-     */
-    comparisonToken(c, pos) {
-      const reader = this._reader;
-      const comparison = c + reader.read();
-      const tt = Tokens.type(comparison) || Tokens.CHAR;
-      return this.createToken(tt, comparison, pos);
-    }
-
-    /**
-     * Produces a hash token based on the specified information. The
-     * first character provided is the pound sign (#) and then this
-     * method reads a name afterward.
-     * @param {String} first The first character (#) in the hash name.
-     */
-    hashToken(first, pos) {
-      const name = this.readName(first);
-      return this.createToken(Tokens.HASH, name, pos);
-    }
-
-    /**
-     * Produces a CDO or CHAR token based on the specified information. The
-     * first character is provided and the rest is read by the function to determine
-     * the correct token to create.
-     * @param {String} first The first character in the token.
-     */
-    htmlCommentStartToken(first, pos) {
-      const reader = this._reader;
-      let text = first;
-
-      reader.mark();
-      text += reader.readCount(3);
-
-      if (text === '<!--') {
-        return this.createToken(Tokens.CDO, text, pos);
-      } else {
-        reader.reset();
-        return this.charToken(first, pos);
-      }
-    }
-
-    /**
-     * Produces a CDC or CHAR token based on the specified information. The
-     * first character is provided and the rest is read by the function to determine
-     * the correct token to create.
-     * @param {String} first The first character in the token.
-     */
-    htmlCommentEndToken(first, pos) {
-      const reader = this._reader;
-      let text = first;
-
-      reader.mark();
-      text += reader.readCount(2);
-
-      if (text === '-->') {
-        return this.createToken(Tokens.CDC, text, pos);
-      } else {
-        reader.reset();
-        return this.charToken(first, pos);
-      }
-    }
-
-    /**
-     * Produces an IDENT or FUNCTION token based on the specified information. The
-     * first character is provided and the rest is read by the function to determine
-     * the correct token to create.
-     * @param {String} first The first character in the identifier.
-     */
-    identOrFunctionToken(first, pos) {
-      const reader = this._reader;
-      const uriFns = ['url', 'url-prefix', 'domain'];
-
-      const name = this.readName(first);
-
-      switch (reader.peek()) {
-
-        // might be a URI or function
-        case '(':
-          reader.read();
-          if (uriFns.includes(lower(name))) {
-            reader.mark();
-            const uri = this.readURI(name + '(');
-            if (uri) {
-              const token = this.createToken(Tokens.URI, uri.text, pos);
-              token.name = name;
-              token.uri = uri.value;
-              return token;
-            }
-            reader.reset();
-          }
-          return this.createToken(Tokens.FUNCTION, name + '(', pos);
-
-        // might be an IE function
-        case ':':
-          // IE-specific functions always being with progid:
-          if (lower(name) === 'progid') {
-            return this.createToken(Tokens.IE_FUNCTION, name + reader.readTo('('), pos);
-          }
-      }
-
-      const type = name.startsWith('--') ? Tokens.CUSTOM_PROP : Tokens.IDENT;
-      return this.createToken(type, name, pos);
-    }
-
-    /**
-     * Produces an IMPORTANT_SYM or CHAR token based on the specified information. The
-     * first character is provided and the rest is read by the function to determine
-     * the correct token to create.
-     * @param {String} first The first character in the token.
-     */
-    importantToken(first, pos) {
-      const reader = this._reader;
-      let text = first;
-
-      reader.mark();
-
-      for (let pass = 1; pass++ <= 2;) {
-        const important = reader.readMatch(/\s*important\b/iy);
-        if (important) {
-          return this.createToken(Tokens.IMPORTANT_SYM, text + important, pos);
-        }
-        const comment = reader.readMatch('/*');
-        if (!comment) break;
-        text += comment + this.readComment(comment);
-      }
-
-      reader.reset();
-
-      return this.charToken(first, pos);
-    }
-
-    /**
-     * Produces a NOT or ANY or CHAR token based on the specified information. The
-     * first character is provided and the rest is read by the function to determine
-     * the correct token to create.
-     * @param {String} first The first character in the token.
-     */
-    notOrAnyToken(first, pos) {
-      const reader = this._reader;
-      const func = reader.readMatch(/not\(|(-(moz|webkit)-)?any\(/iy);
-      if (func) {
-        const type = /^n/i.test(func) ? Tokens.NOT : Tokens.ANY;
-        return this.createToken(type, first + func, pos);
-      }
-      return this.charToken(first, pos);
-    }
-
-    /**
-     * Produces a number token based on the given character
-     * and location in the stream. This may return a token of
-     * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
-     * or PERCENTAGE.
-     * @param {String} first The first character for the token.
-     */
-    numberToken(first, pos) {
-      const reader = this._reader;
-      const value = this.readNumber(first);
-      let tt = Tokens.NUMBER;
-      let units, type;
-
-      const c = reader.peek();
-      if (isIdentStart(c)) {
-        units = this.readName(reader.read());
-        type = UNITS[lower(units)];
-        tt = type && Tokens[type.toUpperCase()] ||
-             type === 'frequency' && Tokens.FREQ ||
-             Tokens.DIMENSION;
-      } else if (c === '%') {
-        units = reader.read();
-        type = 'percentage';
-        tt = Tokens.PERCENTAGE;
-      } else {
-        type = 'number';
-      }
-
-      const token = this.createToken(tt, units ? value + units : value, pos);
-      token.number = parseFloat(value);
-      if (units) token.units = units;
-      if (type) token.unitsType = type;
-      return token;
-    }
-
-    /**
-     * Produces a string token based on the given character
-     * and location in the stream. Since strings may be indicated
-     * by single or double quotes, a failure to match starting
-     * and ending quotes results in an INVALID token being generated.
-     * The first character in the string is passed in and then
-     * the rest are read up to and including the final quotation mark.
-     * @param {String} first The first character in the string.
-     */
-    stringToken(first, pos) {
-      const delim = first;
-      let string = first;
-      const reader = this._reader;
-      let tt = Tokens.STRING;
-      let c = reader.read();
-      let i;
-
-      while (c) {
-        string += c;
-
-        if (c === '\\') {
-          c = reader.read();
-          if (c === null) {
-            break; // premature EOF after backslash
-          } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
-            // single-character escape
-            string += c;
-          } else {
-            // read up to six hex digits
-            for (i = 0; isHexDigit(c) && i < 6; i++) {
-              string += c;
-              c = reader.read();
-            }
-            // swallow trailing newline or space
-            if (c === '\r' && reader.peek() === '\n') {
-              string += c;
-              c = reader.read();
-            }
-            if (isWhitespace(c)) {
-              string += c;
-            } else {
-              // This character is null or not part of the escape;
-              // jump back to the top to process it.
-              continue;
-            }
-          }
-        } else if (c === delim) {
-          break; // delimiter found.
-        } else if (isNewLine(reader.peek())) {
-          // newline without an escapement: it's an invalid string
-          tt = Tokens.INVALID;
-          break;
-        }
-        c = reader.read();
-      }
-
-      // if c is null, that means we're out of input and the string was never closed
-      if (c === null) {
-        tt = Tokens.INVALID;
-      }
-
-      return this.createToken(tt, string, pos);
-    }
-
-    unicodeRangeToken(first, pos) {
-      const reader = this._reader;
-
-      if (reader.peek() !== '+') {
-        return this.createToken(Tokens.CHAR, first, pos);
-      }
-
-      reader.mark();
-      reader.read();
-      let value = first + '+';
-
-      let chunk = this.readUnicodeRangePart(true);
-      if (!chunk) {
-        reader.reset();
-        return this.createToken(Tokens.CHAR, value, pos);
-      }
-
-      value += chunk;
-
-      // if there's a ? in the first part, there can't be a second part
-      if (!value.includes('?') && reader.peek() === '-') {
-        reader.mark();
-        reader.read();
-        chunk = this.readUnicodeRangePart(false);
-        if (!chunk) {
-          reader.reset();
-        } else {
-          value += '-' + chunk;
-        }
-      }
-
-      return this.createToken(Tokens.UNICODE_RANGE, value, pos);
-    }
-
-    /**
-     * Produces a S token based on the specified information. Since whitespace
-     * may have multiple characters, this consumes all whitespace characters
-     * into a single token.
-     * @param {String} first The first character in the token.
-     */
-    whitespaceToken(first, pos) {
-      const value = first + this.readWhitespace();
-      return this.createToken(Tokens.S, value, pos);
-    }
-
-    //-------------------------------------------------------------------------
-    // Methods to read values from the string stream
-    //-------------------------------------------------------------------------
-
-    readUnicodeRangePart(allowQuestionMark) {
-      const reader = this._reader;
-      let part = reader.readMatch(/[0-9a-f]{1,6}/iy);
-      if (allowQuestionMark &&
-          part.length < 6 &&
-          reader.peek() === '?') {
-        part += reader.readMatch(new RegExp(`\\?{1,${6 - part.length}}`, 'y'));
-      }
-      return part;
-    }
-
-    readWhitespace() {
-      return this._reader.readMatch(/\s+/y) || '';
-    }
-
-    readNumber(first) {
-      const tail = this._reader.readMatch(
-        first === '.' ?
-          /\d+(e[+-]?\d+)?/iy :
-        isDigit(first) ?
-          /\d*\.?\d*(e[+-]?\d+)?/iy :
-          /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy);
-      return first + (tail || '');
-    }
-
-    // returns null w/o resetting reader if string is invalid.
-    readString() {
-      const token = this.stringToken(this._reader.read(), 0, 0);
-      return token.type !== Tokens.INVALID ? token.value : null;
-    }
-
-    // returns null w/o resetting reader if URI is invalid.
-    readURI(first) {
-      const reader = this._reader;
-
-      const uri = first;
-      let value = '';
-
-      this.readWhitespace();
-
-      if (/['"]/.test(reader.peek())) {
-        value = this.readString();
-        if (value === null) return null;
-        value = PropertyValuePart.parseString(value);
-      } else {
-        value = this.readUnquotedURL();
-      }
-
-      this.readWhitespace();
-      if (reader.peek() !== ')') return null;
-
-      // Ensure argument to URL is always double-quoted
-      // (This simplifies later processing in PropertyValuePart.)
-      return {value, text: uri + PropertyValuePart.serializeString(value) + reader.read()};
-    }
-
-    // This method never fails, although it may return an empty string.
-    readUnquotedURL(first) {
-      const reader = this._reader;
-      let url = first || '';
-      let c;
-
-      for (c = reader.peek(); c; c = reader.peek()) {
-        // Note that the grammar at
-        // https://www.w3.org/TR/CSS2/grammar.html#scanner
-        // incorrectly includes the backslash character in the
-        // `url` production, although it is correctly omitted in
-        // the `baduri1` production.
-        if (/^[\u00A0-\uFFFF]$/.test(c) || /^[-!#$%&*-[\]-~]$/.test(c)) {
-          url += c;
-          reader.read();
-        } else if (c === '\\') {
-          if (/^[^\r\n\f]$/.test(reader.peek(2))) {
-            url += this.readEscape(reader.read());
-          } else {
-            break; // bad escape sequence.
-          }
-        } else {
-          break; // bad character
-        }
-      }
-
-      return url;
-    }
-
-    readName(first) {
-      const reader = this._reader;
-      const ident = [first || ''];
-
-      do {
-        const chunk = reader.readMatch(/[-_\da-zA-Z\u00A0-\uFFFF]*/y);
-        ident.push(chunk);
-        reader.mark();
-        const c = reader.read();
-        if (c === '\\' && /^[^\r\n\f]$/.test(reader.peek())) {
-          ident.push(this.readEscape(c));
-        } else {
-          reader.reset();
-          break;
-        }
-      } while (true);
-
-      return ident.length > 2 ? ident.join('') : ident.length > 1 ? ident[0] + ident[1] : ident[0];
-    }
-
-    readEscape() {
-      const cp = this._reader.readMatch(/[0-9a-f]{1,6}\b\s*/iy);
-      return cp ? String.fromCodePoint(parseInt(cp, 16)) : this._reader.read();
-    }
-
-    readComment(first) {
-      return first +
-             this._reader.readCount(2 - first.length) +
-             this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y);
-    }
-  }
-
-  //-----------------------------------------------------------------------------
-  // Helper functions
-  //-----------------------------------------------------------------------------
-
-  function isHexDigit(c) {
-    return c !== null && (
-      c >= '0' && c <= '9' ||
-      c >= 'a' && c <= 'f' ||
-      c >= 'A' && c <= 'F');
-  }
-
-  function isDigit(c) {
-    return c !== null && c >= '0' && c <= '9';
-  }
-
-  function isWhitespace(c) {
-    return c !== null && (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r');
-  }
-
-  function isNewLine(c) {
-    return c !== null && (c === '\n' || c === '\r\n' || c === '\r' || c === '\f');
-  }
-
-  function isNameStart(c) {
-    return c !== null && (
-      c >= 'a' && c <= 'z' ||
-      c >= 'A' && c <= 'Z' ||
-      c === '_' || c === '\\' ||
-      c >= '\u00A0' && c <= '\uFFFF');
-  }
-
-  function isNameChar(c) {
-    return c !== null && (c === '-' || c >= '0' && c <= '9' || isNameStart(c));
-  }
-
-  function isIdentStart(c) {
-    return c !== null && (c === '-' || isNameStart(c));
-  }
-
-  function isPseudoElement(pseudo) {
-    if (pseudo.startsWith('::')) return true;
-    switch (lower(pseudo)) {
-      case ':first-letter':
-      case ':first-line':
-      case ':before':
-      case ':after':
-        return true;
-    }
-  }
-
-  //endregion
-  //region ValidationTypes - methods
-
-  Object.assign(ValidationTypes, {
-
-    isLiteral(part, literals) {
-      const args = literals.includes(' | ') ? literals.split(' | ') : [literals];
-      const {text} = part;
-      let textLo;
-
-      for (const arg of args) {
-
-        if (arg[0] === '<') {
-          const simple = this.simple[arg];
-          if (simple && simple.call(this.simple, part)) {
-            return true;
-          }
-          continue;
-        }
-
-        if (arg.endsWith('()')) {
-          if (!part.name || part.name.length !== arg.length - 2) continue;
-          const name = arg.slice(0, -2);
-          if (part.name === name ||
-              lower(arg).startsWith((textLo = textLo || lower(text)).slice(0, name.length))) {
-            // empty function parameter means the initial value is used
-            if (!part.expr) return this.functionsMayBeEmpty.has(name);
-            const fn = this.functions[name];
-            if (!fn) return true;
-            const expression = new PropertyValueIterator(part.expr);
-            if (fn.match(expression) && !expression.hasNext()) {
-              return true;
-            }
-            const {text} = expression.value;
-            throw new ValidationError(`Expected '${this.explode(String(fn))}' but found '${text}'.`,
-              expression.value);
-          }
-          continue;
-        }
-
-        let argLo;
-        if (text === arg ||
-            (textLo = textLo || lower(text)) === (argLo = argLo || lower(arg)) ||
-            text[0] === '-' && (
-              textLo.startsWith('-webkit-') ||
-              textLo.startsWith('-moz-') ||
-              textLo.startsWith('-ms-') ||
-              textLo.startsWith('-o-')
-            ) && textLo.slice(textLo.indexOf('-', 1) + 1) === argLo) {
-          return true;
-        }
-
-      }
-      return false;
-    },
-
-    describe(type) {
-      const complex = this.complex[type];
-      const text = complex instanceof Matcher ? complex.toString(0) : type;
-      return this.explode(text);
-    },
-
-    explode(text) {
-      if (!text.includes('<')) return text;
-      return text
-        .replace(' | <var>', '')
-        .replace(/(<.*?>)([{#?]?)/g,
-          (_, rule, mod) => {
-            const ref = this.simple[rule] || this.complex[rule];
-            if (!ref || !ref.originalText) return rule + mod;
-            return ((mod ? '[' : '') + this.explode(ref.originalText) + (mod ? ']' : '')) + mod;
-          });
-    },
-
-    /**
-     * Determines if the next part(s) of the given expression
-     * are of a given type.
-     */
-    isType(expression, type) {
-      const part = expression.peek();
-      let result;
-
-      if (this.simple['<var>'](part)) {
-        result = true;
-
-      } else if (type.charAt(0) !== '<') {
-        result = this.isLiteral(part, type);
-
-      } else if (this.simple[type]) {
-        result = this.simple[type](part);
-
-      } else {
-        return this.complex[type] instanceof Matcher ?
-          this.complex[type].match(expression) :
-          this.complex[type](expression);
-      }
-
-      if (result) expression.next();
-      return result;
-    },
-  });
-
-  {
-    let action = rule => part => ValidationTypes.isLiteral(part, rule);
-    ['simple', 'complex', 'functions'].forEach(name => {
-      const set = ValidationTypes[name];
-      for (const id in set) {
-        const rule = set[id];
-        if (typeof rule === 'string') {
-          set[id] = Object.defineProperty(action(rule), 'originalText', {value: rule});
-        } else if (/^Matcher\s/.test(rule)) {
-          set[id] = rule(Matcher);
-        }
-      }
-      action = rule => Matcher.parse(rule);
-    });
-  }
-
-  //endregion
-  //region Validation
-
-  const validationCache = new Map();
-
-  function validateProperty(property, value) {
-    // All properties accept some CSS-wide values.
-    // https://drafts.csswg.org/css-values-3/#common-keywords
-    if (/^(inherit|initial|unset)$/i.test(value.parts[0])) {
-      if (value.parts.length > 1) {
-        throwEndExpected(value.parts[1], true);
-      }
-      return;
-    }
-
-    const prop = lower(property);
-    let known = validationCache.get(prop);
-    if (known && known.has(value.text)) return;
-
-    const spec = Properties[prop] || /^-(webkit|moz|ms|o)-(.+)/i.test(prop) && Properties[RegExp.$2];
-
-    if (typeof spec === 'number') return;
-    if (!spec && prop.startsWith('-')) return;
-    if (!spec) throw new ValidationError(`Unknown property '${property}'.`, property);
-
-    // Property-specific validation.
-    const expression = new PropertyValueIterator(value);
-    const result = Matcher.parse(spec).match(expression);
-
-    const hasNext = expression.hasNext();
-    if (result) {
-      if (hasNext) throwEndExpected(expression.next());
-
-    } else {
-      if (hasNext && expression._i) {
-        throwEndExpected(expression.peek());
-      } else {
-        const {text} = expression.value;
-        throw new ValidationError(`Expected '${ValidationTypes.describe(spec)}' but found '${text}'.`,
-          expression.value);
-      }
-    }
-
-    if (!known) validationCache.set(prop, (known = new Set()));
-    known.add(value.text);
-
-    function throwEndExpected(token, force) {
-      if (force || token.name !== 'var' || token.type !== 'function') {
-        throw new ValidationError(`Expected end of value but found '${token.text}'.`, token);
-      }
-    }
-  }
-
-  //endregion
   //region Parser
 
   class Parser extends EventTarget {
     /**
-     * A CSS3 parser.
-     * @param {Object} options (Optional) Various options for the parser:
-     *      starHack (true|false) to allow IE6 star hack as valid,
-     *      underscoreHack (true|false) to interpret leading underscores
-     *      as IE6-7 targeting for known properties, ieFilters (true|false)
-     *      to indicate that IE < 8 filters should be accepted and not throw
-     *      syntax errors.
+     * @param {Object} [options]
+     * @param {Boolean} [options.starHack] - allows IE6 star hack
+     * @param {Boolean} [options.underscoreHack] - interprets leading underscores as IE6-7 for known properties
+     * @param {Boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing syntax errors
      */
     constructor(options) {
       super();
@@ -3915,6 +3692,10 @@ self.parserlib = (() => {
       this._tokenStream = null;
     }
 
+    /**
+     * @param {String|{type: string, ...}} event
+     * @param {Token|SyntaxUnit} [token=this._tokenStream._token] - sets the position
+     */
     fire(event, token = this._tokenStream._token) {
       if (typeof event === 'string') {
         event = {type: event};
@@ -3927,24 +3708,15 @@ self.parserlib = (() => {
         if (event.col === undefined) event.col = token.startCol || token.col;
       }
       if (token !== false) parserCache.addEvent(event);
-      return super.fire(event);
+      super.fire(event);
     }
-    /*
-     * stylesheet
-     *  : [ CHARSET_SYM S* STRING S* ';' ]?
-     *    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
-     *    [ namespace [S|CDO|CDC]* ]*
-     *    [ [ ruleset | media | page | font_face | keyframes_rule | supports_rule ] [S|CDO|CDC]* ]*
-     *  ;
-     */
+
     _stylesheet() {
       const stream = this._tokenStream;
-      let tt;
 
       this.fire('startstylesheet');
 
       this._charset();
-
       this._skipCruft();
 
       while (stream.peek() === Tokens.IMPORT_SYM) {
@@ -3957,97 +3729,61 @@ self.parserlib = (() => {
         this._skipCruft();
       }
 
-      while ((tt = stream.peek()) > Tokens.EOF) {
+      const ACTIONS = new Map([
+        [Tokens.MEDIA_SYM, this._media],
+        [Tokens.DOCUMENT_SYM, this._document],
+        [Tokens.SUPPORTS_SYM, this._supports],
+        [Tokens.PAGE_SYM, this._page],
+        [Tokens.FONT_FACE_SYM, this._fontFace],
+        [Tokens.KEYFRAMES_SYM, this._keyframes],
+        [Tokens.VIEWPORT_SYM, this._viewport],
+        [Tokens.S, this._ws],
+        [Tokens.UNKNOWN_SYM, () => {
+          stream.get();
+          const lt0 = stream.LT(0);
+          if (this.options.strict) {
+            throw new SyntaxError('Unknown @ rule.', lt0);
+          }
+
+          this.fire({
+            type: 'error',
+            error: null,
+            message: 'Unknown @ rule: ' + lt0.value + '.',
+          }, lt0);
+
+          // skip {} block
+          let count = 0;
+          do {
+            const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
+            count += brace === Tokens.LBRACE ? 1 : -1;
+          } while (count > 0 && !stream._reader.eof());
+          if (count < 0) stream.unget();
+        }],
+      ]);
+
+      const MISPLACED = new Map([
+        [Tokens.CHARSET_SYM, this._charset],
+        [Tokens.IMPORT_SYM, this._import],
+        [Tokens.NAMESPACE_SYM, this._namespace],
+      ]);
+
+      for (let tt; (tt = stream.peek()) > Tokens.EOF; this._skipCruft()) {
         try {
-          switch (tt) {
-
-            case Tokens.MEDIA_SYM:
-              this._media();
-              this._skipCruft();
-              continue;
-
-            case Tokens.PAGE_SYM:
-              this._page();
-              this._skipCruft();
-              continue;
-
-            case Tokens.FONT_FACE_SYM:
-              this._fontFace();
-              this._skipCruft();
-              continue;
-
-            case Tokens.KEYFRAMES_SYM:
-              this._keyframes();
-              this._skipCruft();
-              continue;
-
-            case Tokens.VIEWPORT_SYM:
-              this._viewport();
-              this._skipCruft();
-              continue;
-
-            case Tokens.DOCUMENT_SYM:
-              this._document();
-              this._skipCruft();
-              continue;
-
-            case Tokens.SUPPORTS_SYM:
-              this._supports();
-              this._skipCruft();
-              continue;
-
-            case Tokens.UNKNOWN_SYM: {
-              stream.get();
-              const lt0 = stream.LT(0);
-              if (this.options.strict) {
-                throw new SyntaxError('Unknown @ rule.', lt0);
-              }
-
-              this.fire({
-                type:    'error',
-                error:   null,
-                message: 'Unknown @ rule: ' + lt0.value + '.',
-              }, lt0);
-
-              // skip {} block
-              let count = 0;
-              do {
-                const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
-                count += brace === Tokens.LBRACE ? 1 : -1;
-              } while (count > 0 && !stream._reader.eof());
-              if (count < 0) stream.unget();
-              continue;
-            }
-            case Tokens.S:
-              this._ws();
-              continue;
-
-            default: {
-              if (this._ruleset()) continue;
-
-              let token;
-              // error handling for known issues
-              switch (tt) {
-                case Tokens.CHARSET_SYM:
-                  token = stream.LT(1);
-                  this._charset(false);
-                  throw new SyntaxError('@charset not allowed here.', token);
-
-                case Tokens.IMPORT_SYM:
-                  token = stream.LT(1);
-                  this._import(false);
-                  throw new SyntaxError('@import not allowed here.', token);
-
-                case Tokens.NAMESPACE_SYM:
-                  token = stream.LT(1);
-                  this._namespace(false);
-                  throw new SyntaxError('@namespace not allowed here.', token);
-
-                default:
-                  stream.get();
-                  this._unexpectedToken(stream._token);
-              }
-            }
+          let action = ACTIONS.get(tt);
+          if (action) {
+            action.call(this);
+            continue;
+          }
+          action = MISPLACED.get(tt);
+          if (action) {
+            const token = stream.LT(1);
+            action.call(this, false);
+            throw new SyntaxError(Tokens[tt].text + ' not allowed here.', token);
+          }
+          if (this._ruleset()) continue;
+          if (stream.peek() !== Tokens.EOF) {
+            stream.get();
+            this._unexpectedToken(stream._token);
           }
         } catch (ex) {
           if (ex instanceof SyntaxError && !this.options.strict) {
@@ -4058,27 +3794,16 @@ self.parserlib = (() => {
         }
       }
 
-      if (stream.peek() !== Tokens.EOF) {
-        this._unexpectedToken(stream._token);
-      }
-
       this.fire('endstylesheet');
     }
 
-    _charset(emit) {
+    _charset(emit = true) {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.CHARSET_SYM)) return;
-
       const start = stream._token;
-      this._ws();
-
-      stream.mustMatch(Tokens.STRING);
-      const charset = stream._token.value;
-      this._ws();
-
+      const charset = stream.mustMatch(Tokens.STRING).value;
       stream.mustMatch(Tokens.SEMICOLON);
-
-      if (emit !== false) {
+      if (emit) {
         this.fire({
           type: 'charset',
           charset,
@@ -4086,122 +3811,77 @@ self.parserlib = (() => {
       }
     }
 
-    _import(emit) {
-      /*
-       * import
-       *   : IMPORT_SYM S*
-       *    [STRING|URI] S* media_query_list? ';' S*
-       */
+    _import(emit = true) {
       const stream = this._tokenStream;
-
-      stream.mustMatch(Tokens.IMPORT_SYM);
-      const start = stream._token;
-
-      this._ws();
+      const start = stream.mustMatch(Tokens.IMPORT_SYM);
       stream.mustMatch([Tokens.STRING, Tokens.URI]);
       const uri = stream._token.value.replace(/^(?:url\()?["']?([^"']+?)["']?\)?$/, '$1');
-
       this._ws();
       const mediaList = this._mediaQueryList();
-
-      // must end with a semicolon
       stream.mustMatch(Tokens.SEMICOLON);
-      this._ws();
-
-      if (emit !== false) {
+      if (emit) {
         this.fire({
           type: 'import',
           media: mediaList,
           uri,
         }, start);
       }
-
+      this._ws();
     }
 
-    /*
-     * namespace
-     *   : NAMESPACE_SYM S* [namespace_prefix S*]? [STRING|URI] S* ';' S*
-     */
-    _namespace(emit) {
+    _namespace(emit = true) {
       const stream = this._tokenStream;
-      let prefix;
-
-      // read import symbol
-      stream.mustMatch(Tokens.NAMESPACE_SYM);
-      const start = stream._token;
+      const start = stream.mustMatch(Tokens.NAMESPACE_SYM);
+      let prefix = null;
       this._ws();
-
-      // it's a namespace prefix - no _namespace_prefix() method because it's just an IDENT
       if (stream.match(Tokens.IDENT)) {
         prefix = stream._token.value;
         this._ws();
       }
-
       stream.mustMatch([Tokens.STRING, Tokens.URI]);
       const uri = stream._token.value.replace(/(?:url\()?["']([^"']+)["']\)?/, '$1');
-
-      this._ws();
-
       stream.mustMatch(Tokens.SEMICOLON);
-      this._ws();
-
-      if (emit !== false) {
+      if (emit) {
         this.fire({
           type: 'namespace',
           prefix,
           uri,
         }, start);
       }
+      this._ws();
     }
 
-    /*
-     * supports_rule
-     *  : SUPPORTS_SYM S* supports_condition S* group_rule_body
-     *  ;
-     */
-    _supports(emit) {
+    _supports(emit = true) {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.SUPPORTS_SYM)) return;
 
       const start = stream._token;
       this._ws();
-
       this._supportsCondition();
-      this._ws();
-
       stream.mustMatch(Tokens.LBRACE);
+      if (emit) this.fire('startsupports', start);
       this._ws();
 
-      if (emit !== false) {
-        this.fire('startsupports', start);
-      }
-
-      while (this._ruleset()) { /*NOP*/ }
-
-      let error;
-      const token = stream.LT(1);
-      if (token.type === Tokens.MEDIA_SYM) {
-        this._media();
-        error = new SyntaxError('@media not allowed here.', token);
+      for (;; stream.skipComment()) {
+        switch (stream.peek()) {
+          case Tokens.MEDIA_SYM:
+            this._media();
+            continue;
+          case Tokens.SUPPORTS_SYM:
+            this._supports();
+            continue;
+          case Tokens.DOCUMENT_SYM:
+            this._document();
+            continue;
+        }
+        if (!this._ruleset()) break;
       }
 
       stream.mustMatch(Tokens.RBRACE);
-
-      if (emit !== false) {
-        this.fire('endsupports');
-      }
-
+      if (emit) this.fire('endsupports');
       this._ws();
-
-      if (error) throw error;
     }
 
-    /*
-     * supports_condition
-     *  : supports_negation | supports_conjunction | supports_disjunction |
-     *    supports_condition_in_parens
-     *  ;
-     */
     _supportsCondition() {
       const stream = this._tokenStream;
       if (stream.match(Tokens.IDENT)) {
@@ -4227,12 +3907,6 @@ self.parserlib = (() => {
       }
     }
 
-    /*
-     * supports_condition_in_parens
-     *  : ( '(' S* supports_condition S* ')' ) | supports_declaration_condition |
-     *    general_enclosed
-     *  ;
-     */
     _supportsConditionInParens() {
       const stream = this._tokenStream;
       if (stream.match(Tokens.LPAREN)) {
@@ -4244,7 +3918,6 @@ self.parserlib = (() => {
           if (ident === 'not') {
             this._ws();
             this._supportsCondition();
-            this._ws();
             stream.mustMatch(Tokens.RPAREN);
           } else {
             stream.unget();
@@ -4252,7 +3925,6 @@ self.parserlib = (() => {
           }
         } else {
           this._supportsCondition();
-          this._ws();
           stream.mustMatch(Tokens.RPAREN);
         }
       } else {
@@ -4260,13 +3932,8 @@ self.parserlib = (() => {
       }
     }
 
-    /*
-     * supports_declaration_condition
-     *  : '(' S* declaration ')'
-     *  ;
-     */
-    _supportsDeclarationCondition(requireStartParen) {
-      if (requireStartParen !== false) {
+    _supportsDeclarationCondition(requireStartParen = true) {
+      if (requireStartParen) {
         this._tokenStream.mustMatch(Tokens.LPAREN);
       }
       this._ws();
@@ -4274,55 +3941,39 @@ self.parserlib = (() => {
       this._tokenStream.mustMatch(Tokens.RPAREN);
     }
 
-    /*
-     * media
-     *   : MEDIA_SYM S* media_query_list S* '{' S* ruleset* '}' S*
-     *   ;
-     */
     _media() {
       const stream = this._tokenStream;
-
-      stream.mustMatch(Tokens.MEDIA_SYM);
-      const start = stream._token;
-
+      const start = stream.mustMatch(Tokens.MEDIA_SYM);
       this._ws();
       const mediaList = this._mediaQueryList();
 
       stream.mustMatch(Tokens.LBRACE);
-      this._ws();
-
       this.fire({
         type: 'startmedia',
         media: mediaList,
       }, start);
+      this._ws();
 
       const actions = new Map([
+        [Tokens.MEDIA_SYM, this._media],
+        [Tokens.DOCUMENT_SYM, this._document],
+        [Tokens.SUPPORTS_SYM, this._supports],
         [Tokens.PAGE_SYM, this._page],
         [Tokens.FONT_FACE_SYM, this._fontFace],
         [Tokens.VIEWPORT_SYM, this._viewport],
-        [Tokens.DOCUMENT_SYM, this._document],
-        [Tokens.SUPPORTS_SYM, this._supports],
-        [Tokens.MEDIA_SYM, this._media],
       ]);
       let action;
       do action = actions.get(stream.peek());
       while (action ? action.call(this) || true : this._ruleset());
 
       stream.mustMatch(Tokens.RBRACE);
-
       this.fire({
         type: 'endmedia',
         media: mediaList,
       });
-
       this._ws();
     }
 
-    /*
-     * media_query_list
-     *   : S* [media_query [ ',' S* media_query ]* ]?
-     *   ;
-     */
     _mediaQueryList() {
       const stream = this._tokenStream;
       const mediaList = [];
@@ -4340,14 +3991,6 @@ self.parserlib = (() => {
       return mediaList;
     }
 
-    /*
-     * Note: "expression" in the grammar maps to the _media_expression method.
-     *
-     * media_query
-     *   : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
-     *   | expression [ AND S* expression ]*
-     *   ;
-     */
     _mediaQuery() {
       const stream = this._tokenStream;
       let type = null;
@@ -4370,7 +4013,7 @@ self.parserlib = (() => {
       this._ws();
 
       if (stream.peek() === Tokens.IDENT) {
-        type = this._mediaType();
+        type = this._mediaFeature();
         if (token === null) {
           token = stream._token;
         }
@@ -4395,27 +4038,6 @@ self.parserlib = (() => {
       return new MediaQuery(ident, type, expressions, token);
     }
 
-    /*
-     * media_type
-     *   : IDENT
-     *   ;
-     */
-    _mediaType() {
-      return this._mediaFeature();
-    }
-
-    /**
-     * Note: in CSS3 Media Queries, this is called "expression".
-     * Renamed here to avoid conflict with CSS3 Selectors
-     * definition of "expression". Also note that "expr" in the
-     * grammar now maps to "expression" from CSS3 selectors.
-     * @method _media_expression
-     * @private
-     *
-     * expression
-     *  : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
-     *  ;
-     */
     _mediaExpression() {
       const stream = this._tokenStream;
       let feature = null;
@@ -4439,23 +4061,11 @@ self.parserlib = (() => {
       return new MediaFeature(feature, expression ? new SyntaxUnit(expression, token) : null);
     }
 
-    /*
-     * media_feature
-     *   : IDENT
-     *   ;
-     */
     _mediaFeature() {
-      this._ws();
       this._tokenStream.mustMatch(Tokens.IDENT);
       return SyntaxUnit.fromToken(this._tokenStream._token);
     }
 
-    /*
-     * page:
-     *    PAGE_SYM S* IDENT? pseudo_page? S*
-     *    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
-     *    ;
-     */
     _page() {
       const stream = this._tokenStream;
       let identifier = null;
@@ -4498,11 +4108,6 @@ self.parserlib = (() => {
       });
     }
 
-    /*
-     * margin :
-     *    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
-     *    ;
-     */
     _margin() {
       const margin = this._marginSym();
       if (!margin) return false;
@@ -4522,26 +4127,6 @@ self.parserlib = (() => {
       return true;
     }
 
-    /*
-     * margin_sym :
-     *    TOPLEFTCORNER_SYM |
-     *    TOPLEFT_SYM |
-     *    TOPCENTER_SYM |
-     *    TOPRIGHT_SYM |
-     *    TOPRIGHTCORNER_SYM |
-     *    BOTTOMLEFTCORNER_SYM |
-     *    BOTTOMLEFT_SYM |
-     *    BOTTOMCENTER_SYM |
-     *    BOTTOMRIGHT_SYM |
-     *    BOTTOMRIGHTCORNER_SYM |
-     *    LEFTTOP_SYM |
-     *    LEFTMIDDLE_SYM |
-     *    LEFTBOTTOM_SYM |
-     *    RIGHTTOP_SYM |
-     *    RIGHTMIDDLE_SYM |
-     *    RIGHTBOTTOM_SYM
-     *    ;
-     */
     _marginSym() {
       if (this._tokenStream.match([
         Tokens.TOPLEFTCORNER_SYM,
@@ -4567,25 +4152,14 @@ self.parserlib = (() => {
       }
     }
 
-    /*
-     * pseudo_page
-     *   : ':' IDENT
-     *   ;
-     */
     _pseudoPage() {
       const stream = this._tokenStream;
-      stream.mustMatch(Tokens.COLON);
-      stream.mustMatch(Tokens.IDENT);
+      stream.mustMatch(Tokens.COLON, false);
+      stream.mustMatch(Tokens.IDENT, false);
       // TODO: CSS3 Paged Media says only "left", "center", and "right" are allowed
       return stream._token.value;
     }
 
-    /*
-     * font_face
-     *   : FONT_FACE_SYM S*
-     *     '{' S* declaration [ ';' S* declaration ]* '}' S*
-     *   ;
-     */
     _fontFace() {
       const stream = this._tokenStream;
       stream.mustMatch(Tokens.FONT_FACE_SYM);
@@ -4598,12 +4172,6 @@ self.parserlib = (() => {
       this.fire('endfontface');
     }
 
-    /*
-     * viewport
-     *   : VIEWPORT_SYM S*
-     *     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
-     *   ;
-     */
     _viewport() {
       const stream = this._tokenStream;
       stream.mustMatch(Tokens.VIEWPORT_SYM);
@@ -4616,20 +4184,12 @@ self.parserlib = (() => {
       this.fire('endviewport');
     }
 
-    /*
-     * document
-     *   : DOCUMENT_SYM S*
-     *     _document_function [ ',' S* _document_function ]* S*
-     *     '{' S* ruleset* '}'
-     *   ;
-     */
     _document() {
       const stream = this._tokenStream;
       const functions = [];
       let prefix = '';
 
-      stream.mustMatch(Tokens.DOCUMENT_SYM);
-      const start = stream._token;
+      const start = stream.mustMatch(Tokens.DOCUMENT_SYM);
       if (/^@-([^-]+)-/.test(start.value)) {
         prefix = RegExp.$1;
       }
@@ -4639,7 +4199,6 @@ self.parserlib = (() => {
         functions.push(this._documentFunction());
       } while (stream.match(Tokens.COMMA));
 
-      this._ws();
       stream.mustMatch(Tokens.LBRACE);
 
       this.fire({
@@ -4651,12 +4210,12 @@ self.parserlib = (() => {
       this._ws();
 
       const actions = new Map([
+        [Tokens.MEDIA_SYM, this._media],
+        [Tokens.DOCUMENT_SYM, this._document],
+        [Tokens.SUPPORTS_SYM, this._supports],
         [Tokens.PAGE_SYM, this._page],
         [Tokens.FONT_FACE_SYM, this._fontFace],
         [Tokens.VIEWPORT_SYM, this._viewport],
-        [Tokens.DOCUMENT_SYM, this._document],
-        [Tokens.SUPPORTS_SYM, this._supports],
-        [Tokens.MEDIA_SYM, this._media],
         [Tokens.KEYFRAMES_SYM, this._keyframes],
       ]);
       let action;
@@ -4674,11 +4233,6 @@ self.parserlib = (() => {
       this._ws();
     }
 
-    /*
-     * document_function
-     *   : function | URI S*
-     *   ;
-     */
     _documentFunction() {
       const stream = this._tokenStream;
       return stream.match(Tokens.URI) ?
@@ -4686,13 +4240,6 @@ self.parserlib = (() => {
         this._function();
     }
 
-    /*
-     * operator (outside function)
-     *  : '/' S* | ',' S* | /( empty )/
-     * operator (inside function)
-     *  : '/' S* | '+' S* | '*' S* | '-' S* /( empty )/
-     *  ;
-     */
     _operator(inFunction) {
       if (this._tokenStream.match([
         Tokens.SLASH,
@@ -4710,11 +4257,6 @@ self.parserlib = (() => {
       return null;
     }
 
-    /*
-     * combinator
-     *  : PLUS S* | GREATER S* | TILDE S* | S+
-     *  ;
-     */
     _combinator() {
       if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE])) {
         const value = new Combinator(this._tokenStream._token);
@@ -4724,22 +4266,6 @@ self.parserlib = (() => {
       return null;
     }
 
-    /*
-     * unary_operator
-     *  : '-' | '+'
-     *  ;
-     */
-    _unaryOperator() {
-      return this._tokenStream.match([Tokens.MINUS, Tokens.PLUS]) ?
-        this._tokenStream._token.value :
-        null;
-    }
-
-    /*
-     * property
-     *   : IDENT S*
-     *   ;
-     */
     _property() {
       const stream = this._tokenStream;
       let value = null;
@@ -4771,15 +4297,11 @@ self.parserlib = (() => {
       return value;
     }
 
-    /*
-     * ruleset
-     *   : selectors_group
-     *     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
-     *   ;
-     */
     _ruleset() {
+      const stream = this._tokenStream;
+      let braceOpened;
       try {
-        this._tokenStream._skipUsoVar();
+        stream.skipComment();
 
         if (parserCache.findBlock()) return true;
         parserCache.startBlock();
@@ -4798,6 +4320,7 @@ self.parserlib = (() => {
         }, selectors[0]);
 
         this._readDeclarations({stopAfterBrace: true});
+        braceOpened = true;
 
         this.fire({
           type: 'endrule',
@@ -4815,28 +4338,23 @@ self.parserlib = (() => {
         this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
         // if there's a right brace, the rule is finished so don't do anything
         // otherwise, rethrow the error because it wasn't handled properly
-        if (this._tokenStream.advance([Tokens.RBRACE]) !== Tokens.RBRACE) throw ex;
+        if (braceOpened && stream.advance([Tokens.RBRACE]) !== Tokens.RBRACE) throw ex;
         // If even a single selector fails to parse, the entire ruleset should be thrown away,
         // so we let the parser continue with the next one
         return true;
       }
     }
 
-    /*
-     * selectors_group
-     *   : selector [ COMMA S* selector ]*
-     *   ;
-     */
     _selectorsGroup() {
       const selectors = [];
       let selector, comma;
 
       while ((selector = this._selector())) {
         selectors.push(selector);
-        this._ws();
+        this._ws(true);
         comma = this._tokenStream.match(Tokens.COMMA);
         if (!comma) break;
-        this._ws();
+        this._ws(true);
       }
 
       if (comma) this._unexpectedToken(this._tokenStream.LT(1));
@@ -4844,11 +4362,6 @@ self.parserlib = (() => {
       return selectors.length ? selectors : null;
     }
 
-    /*
-     * selector
-     *   : simple_selector_sequence [ combinator simple_selector_sequence ]*
-     *   ;
-     */
     _selector() {
       const stream = this._tokenStream;
       const selector = [];
@@ -4874,7 +4387,7 @@ self.parserlib = (() => {
           break;
         }
 
-        if (!this._ws()) break;
+        if (!this._ws(true)) break;
 
         // make a fallback whitespace combinator
         const ws = new Combinator(stream._token);
@@ -4894,13 +4407,6 @@ self.parserlib = (() => {
       return new Selector(selector, selector[0]);
     }
 
-    /*
-     * simple_selector_sequence
-     *   : [ type_selector | universal ]
-     *     [ HASH | class | attrib | pseudo | any | negation ]*
-     *   | [ HASH | class | attrib | pseudo | any | negation ]+
-     *   ;
-     */
     _simpleSelectorSequence() {
       const stream = this._tokenStream;
       const start = stream._lt[stream._ltIndex] || stream.LT(1);
@@ -4932,11 +4438,6 @@ self.parserlib = (() => {
       return text && new SelectorPart(elementName, modifiers, text, start);
     }
 
-    /*
-     * type_selector
-     *   : [ namespace_prefix ]? element_name
-     *   ;
-     */
     _typeSelector(ns) {
       const stream = this._tokenStream;
       const nsSupplied = ns !== undefined;
@@ -4962,34 +4463,19 @@ self.parserlib = (() => {
       return new SelectorSubPart(stream._token.value, 'id', stream._token);
     }
 
-    /*
-     * class
-     *   : '.' IDENT
-     *   ;
-     */
     _class() {
       if (!this._tokenStream.match(Tokens.DOT)) return null;
-      this._tokenStream.mustMatch(Tokens.IDENT);
+      this._tokenStream.mustMatch(Tokens.IDENT, false);
       const {value, startLine: line, startCol: col, offset} = this._tokenStream._token;
       return new SelectorSubPart('.' + value, 'class', {line, col: col - 1, offset});
     }
 
-    /*
-     * element_name
-     *   : IDENT
-     *   ;
-     */
     _elementName() {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.IDENT)) return null;
       return new SelectorSubPart(stream._token.value, 'elementName', stream._token);
     }
 
-    /*
-     * namespace_prefix
-     *   : [ IDENT | '*' ]? '|'
-     *   ;
-     */
     _namespacePrefix() {
       const stream = this._tokenStream;
       const lt = stream._lt;
@@ -5002,31 +4488,14 @@ self.parserlib = (() => {
       if (stream.match([Tokens.IDENT, Tokens.STAR])) {
         value += stream._token.value;
       }
-      stream.mustMatch(Tokens.PIPE);
+      stream.mustMatch(Tokens.PIPE, false);
       return value + '|';
     }
 
-    /*
-     * universal
-     *   : [ namespace_prefix ]? '*'
-     *   ;
-     */
     _universal(ns = this._namespacePrefix()) {
       return ((ns || '') + (this._tokenStream.match(Tokens.STAR) ? '*' : '')) || null;
     }
 
-    /*
-     * attrib
-     *   : '[' S* [ namespace_prefix ]? IDENT S*
-     *         [ [ PREFIXMATCH |
-     *             SUFFIXMATCH |
-     *             SUBSTRINGMATCH |
-     *             '=' |
-     *             INCLUDES |
-     *             DASHMATCH ] S* [ IDENT | STRING ] S*
-     *         ]? ']'
-     *   ;
-     */
     _attrib() {
       const stream = this._tokenStream;
 
@@ -5038,7 +4507,7 @@ self.parserlib = (() => {
         this._ws() +
         (this._namespacePrefix() || '');
 
-      stream.mustMatch(Tokens.IDENT);
+      stream.mustMatch(Tokens.IDENT, false);
       value +=
         stream._token.value +
         this._ws();
@@ -5073,11 +4542,6 @@ self.parserlib = (() => {
       return new SelectorSubPart(value + ']', 'attribute', token);
     }
 
-    /*
-     * pseudo
-     *   : ':' ':'? [ IDENT | functional_pseudo ]
-     *   ;
-     */
     _pseudo() {
       const stream = this._tokenStream;
       let pseudo = null;
@@ -5116,11 +4580,6 @@ self.parserlib = (() => {
         {startLine, startCol});
     }
 
-    /*
-     * expression
-     *   : [ [ PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ] S* ]+
-     *   ;
-     */
     _expression({list = false} = {}) {
       const stream = this._tokenStream;
       let value = '';
@@ -5147,11 +4606,6 @@ self.parserlib = (() => {
       return value.length ? value : null;
     }
 
-    /*
-     * any
-     *   : ANY S* any_arg S* ')'
-     *   ;
-     */
     _any() {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.ANY)) return null;
@@ -5170,11 +4624,6 @@ self.parserlib = (() => {
       return subpart;
     }
 
-    /*
-     * negation
-     *   : NOT S* negation_arg S* ')'
-     *   ;
-     */
     _negation() {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.NOT)) return null;
@@ -5193,12 +4642,6 @@ self.parserlib = (() => {
       return subpart;
     }
 
-    /*
-     * CSS3 allows only a single simple selector!
-     * negation_arg
-     *   : type_selector | universal | HASH | class | attrib | pseudo
-     *   ;
-     */
     _negationArg() {
       const stream = this._tokenStream;
       const start = stream.LT(1);
@@ -5219,12 +4662,6 @@ self.parserlib = (() => {
         new SelectorPart(null, [arg], arg.toString(), start);
     }
 
-    /*
-     * declaration
-     *   : property ':' S* expr prio?
-     *   | /( empty )/
-     *   ;
-     */
     _declaration(consumeSemicolon) {
       const stream = this._tokenStream;
 
@@ -5285,24 +4722,12 @@ self.parserlib = (() => {
       return true;
     }
 
-    /*
-     * prio
-     *   : IMPORTANT_SYM S*
-     *   ;
-     */
     _prio() {
-      const stream = this._tokenStream;
-      const result = stream.match(Tokens.IMPORTANT_SYM);
-
+      const result = this._tokenStream.match(Tokens.IMPORTANT_SYM);
       this._ws();
       return result;
     }
 
-    /*
-     * expr
-     *   : term [ operator term ]*
-     *   ;
-     */
     _expr(inFunction) {
       const stream = this._tokenStream;
       const values = [];
@@ -5410,18 +4835,9 @@ self.parserlib = (() => {
       return new PropertyValue([new PropertyValuePart(token)], token);
     }
 
-    /*
-     * term
-     *   : unary_operator?
-     *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | ANGLE S* |
-     *       TIME S* | FREQ S* | function | ie_function ]
-     *   | STRING S* | IDENT S* | URI S* | UNICODERANGE S* | hexcolor
-     *   ;
-     */
     _term(inFunction) {
       const stream = this._tokenStream;
-
-      const unary = this._unaryOperator() && stream._token;
+      const unary = stream.match([Tokens.MINUS, Tokens.PLUS]) && stream._token;
 
       const finalize = (token, value) => {
         if (!token) return null;
@@ -5442,11 +4858,15 @@ self.parserlib = (() => {
       }
 
       // see if it's a simple block
-      if (inFunction && stream.match([Tokens.LPAREN, Tokens.LBRACE, Tokens.LBRACKET])) {
+      if (stream.match([
+        Tokens.LPAREN,
+        Tokens.LBRACKET,
+        inFunction && Tokens.LBRACE,
+      ])) {
         const token = stream._token;
-        const value = token.value + this._expr(inFunction).text + token.endChar;
+        token.expr = this._expr(inFunction);
         stream.mustMatch(Tokens.type(token.endChar));
-        return finalize(token, value);
+        return finalize(token, token.value + token.expr.text + token.endChar);
       }
 
       return finalize(
@@ -5467,14 +4887,9 @@ self.parserlib = (() => {
           Tokens.USO_VAR,
         ]) && stream._token ||
         this._hexcolor() ||
-        this._function({asText: unary}));
+        this._function({asText: Boolean(unary)}));
     }
 
-    /*
-     * function
-     *   : FUNCTION S* expr ')' S*
-     *   ;
-     */
     _function({asText} = {}) {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.FUNCTION)) return null;
@@ -5533,11 +4948,6 @@ self.parserlib = (() => {
       return text.join('');
     }
 
-    /* (My own extension)
-     * ie_function
-     *   : IE_FUNCTION S* IDENT '=' term [S* ','? IDENT '=' term]+ ')' S*
-     *   ;
-     */
     _ieFunction() {
       const stream = this._tokenStream;
       let functionText = null;
@@ -5581,15 +4991,6 @@ self.parserlib = (() => {
       return functionText;
     }
 
-    /*
-     * There is a constraint on the color that it must
-     * have either 3,4 or 6,8 hex-digits (i.e., [0-9a-fA-F])
-     * after the "#"; e.g., "#000" is OK, but "#abcd" is not.
-     *
-     * hexcolor
-     *   : HASH S*
-     *   ;
-     */
     _hexcolor() {
       const stream = this._tokenStream;
 
@@ -5615,25 +5016,15 @@ self.parserlib = (() => {
     // Animations methods
     //-----------------------------------------------------------------
 
-    /*
-     * keyframes:
-     *   : KEYFRAMES_SYM S* keyframe_name S* '{' S* keyframe_rule* '}' {
-     *   ;
-     */
     _keyframes() {
       const stream = this._tokenStream;
-      let prefix = '';
-
-      stream.mustMatch(Tokens.KEYFRAMES_SYM);
-      const token = stream._token;
-      if (/^@-([^-]+)-/.test(token.value)) prefix = RegExp.$1;
+      const token = stream.mustMatch(Tokens.KEYFRAMES_SYM);
+      const prefix = /^@-([^-]+)-/.test(token.value) ? RegExp.$1 : '';
 
       this._ws();
       const name = this._keyframeName();
 
-      this._ws();
       stream.mustMatch(Tokens.LBRACE);
-
       this.fire({
         type: 'startkeyframes',
         name,
@@ -5649,34 +5040,20 @@ self.parserlib = (() => {
       }
 
       stream.mustMatch(Tokens.RBRACE);
-
       this.fire({
         type: 'endkeyframes',
         name,
         prefix,
       });
-
       this._ws();
     }
 
-    /*
-     * keyframe_name:
-     *   : IDENT
-     *   | STRING
-     *   ;
-     */
     _keyframeName() {
       const stream = this._tokenStream;
       stream.mustMatch([Tokens.IDENT, Tokens.STRING]);
       return SyntaxUnit.fromToken(stream._token);
     }
 
-    /*
-     * keyframe_rule:
-     *   : key_list S*
-     *     '{' S* declaration [ ';' S* declaration ]* '}' S*
-     *   ;
-     */
     _keyframeRule() {
       const keyList = this._keyList();
 
@@ -5693,11 +5070,6 @@ self.parserlib = (() => {
       });
     }
 
-    /*
-     * key_list:
-     *   : key [ S* ',' S* key]*
-     *   ;
-     */
     _keyList() {
       const stream = this._tokenStream;
       const keyList = [];
@@ -5716,14 +5088,6 @@ self.parserlib = (() => {
       return keyList;
     }
 
-    /*
-     * There is a restriction that IDENT can be only "from" or "to".
-     *
-     * key
-     *   : PERCENTAGE
-     *   | IDENT
-     *   ;
-     */
     _key() {
       const stream = this._tokenStream;
       let token;
@@ -5748,10 +5112,6 @@ self.parserlib = (() => {
     // Helper methods
     //-----------------------------------------------------------------
 
-    /**
-     * Not part of CSS grammar, but useful for skipping over
-     * combination of white space and HTML-style comments.
-     */
     _skipCruft() {
       while (this._tokenStream.match([
         Tokens.S,
@@ -5761,21 +5121,10 @@ self.parserlib = (() => {
     }
 
     /**
-     * Not part of CSS grammar, but this pattern occurs frequently
-     * in the official CSS grammar. Split out here to eliminate
-     * duplicate code.
-     * @param {Boolean} checkStart Indicates if the rule should check
-     *      for the left brace at the beginning.
-     * @param {Boolean} readMargins Indicates if the rule should check
-     *      for margin patterns.
-     *
-     * Reads the pattern
-     * S* '{' S* declaration [ ';' S* declaration ]* '}' S*
-     * or
-     * S* '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
-     * Note that this is how it is described in CSS3 Paged Media, but is actually incorrect.
-     * A semicolon is only necessary following a declaration if there's another declaration
-     * or margin afterwards.
+     * @param {Object} [params]
+     * @param {Boolean} [params.checkStart=true] - check for the left brace at the beginning.
+     * @param {Boolean} [params.readMargins=false] - check for margin patterns.
+     * @param {Boolean} [params.stopAfterBrace=false] - stop after the final } without consuming whitespace
      */
     _readDeclarations({
       checkStart = true,
@@ -5783,11 +5132,7 @@ self.parserlib = (() => {
       stopAfterBrace = false
     } = {}) {
       const stream = this._tokenStream;
-
-      if (checkStart) {
-        this._ws();
-        stream.mustMatch(Tokens.LBRACE);
-      }
+      if (checkStart) stream.mustMatch(Tokens.LBRACE);
 
       try {
         while (stream.peek() !== Tokens.RBRACE) {
@@ -5800,7 +5145,6 @@ self.parserlib = (() => {
         return;
 
       } catch (ex) {
-
         // if not a syntax error, rethrow it
         if (!(ex instanceof SyntaxError) || this.options.strict) throw ex;
 
@@ -5821,34 +5165,21 @@ self.parserlib = (() => {
       }
     }
 
-    /**
-     * In some cases, you can end up with two white space tokens in a
-     * row. Instead of making a change in every function that looks for
-     * white space, this function is used to match as much white space
-     * as necessary.
-     * @return {String} The white space if found, empty string if not.
-     */
-    _ws() {
+    _ws(skipUsoVar) {
       let ws = '';
       const stream = this._tokenStream;
-      while (stream.match(Tokens.S)) {
+      const tokens = skipUsoVar ? [Tokens.S, Tokens.USO_VAR] : Tokens.S;
+      while (stream.match(tokens)) {
         ws += stream._token.value;
       }
       return ws;
     }
 
-    /**
-     * Throws an error when an unexpected token is found.
-     * @param {Object} token The token that was found.
-     */
     _unexpectedToken(token) {
       const {value, startLine: line, startCol: col} = token;
       throw new SyntaxError(`Unexpected token '${value}' at line ${line}, col ${col}.`, token);
     }
 
-    /**
-     * Helper method used for parsing subparts of a style sheet.
-     */
     _verifyEnd() {
       if (this._tokenStream.LA(1) !== Tokens.EOF) {
         this._unexpectedToken(this._tokenStream.LT(1));
@@ -5866,7 +5197,6 @@ self.parserlib = (() => {
     }
 
     parseStyleSheet(input) {
-      // just passthrough
       return this.parse(input);
     }
 
@@ -5880,7 +5210,7 @@ self.parserlib = (() => {
 
     /**
      * Parses a property value (everything after the semicolon).
-     * @return {parserlib.css.PropertyValue} The property value.
+     * @return {PropertyValue} The property value.
      * @throws parserlib.util.SyntaxError If an unexpected token is found.
      */
     parsePropertyValue(input) {
@@ -5939,6 +5269,76 @@ self.parserlib = (() => {
   Object.assign(Parser, TYPES);
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
+
+  //endregion
+  //region Helper functions
+
+  function isHexDigit(c) {
+    return c !== null && (
+      c >= '0' && c <= '9' ||
+      c >= 'a' && c <= 'f' ||
+      c >= 'A' && c <= 'F');
+  }
+
+  function isDigit(c) {
+    return c !== null && c >= '0' && c <= '9';
+  }
+
+  function isWhitespace(c) {
+    return c !== null && (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r');
+  }
+
+  function isNewLine(c) {
+    return c !== null && (c === '\n' || c === '\r\n' || c === '\r' || c === '\f');
+  }
+
+  function isNameStart(c) {
+    return c !== null && (
+      c >= 'a' && c <= 'z' ||
+      c >= 'A' && c <= 'Z' ||
+      c === '_' || c === '\\' ||
+      c >= '\u00A0' && c <= '\uFFFF');
+  }
+
+  function isNameChar(c) {
+    return c !== null && (c === '-' || c >= '0' && c <= '9' || isNameStart(c));
+  }
+
+  function isIdentStart(c) {
+    return c !== null && (c === '-' || isNameStart(c));
+  }
+
+  function isPseudoElement(pseudo) {
+    if (pseudo.startsWith('::')) return true;
+    switch (lower(pseudo)) {
+      case ':first-letter':
+      case ':first-line':
+      case ':before':
+      case ':after':
+        return true;
+    }
+  }
+
+  function parseString(str) {
+    const replacer = (match, esc) => {
+      if (isNewLine(esc)) return '';
+      const m = /^[0-9a-f]{1,6}/i.exec(esc);
+      return m ? String.fromCodePoint(parseInt(m[0], 16)) : esc;
+    };
+    // Strip surrounding single/double quotes
+    str = str.slice(1, -1);
+    return str.replace(/\\(\r\n|[^\r0-9a-f]|[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)/ig, replacer);
+  }
+
+  function serializeString(value) {
+    const replacer = c => {
+      if (c === '"') return '\\' + c;
+      // We only escape non-surrogate chars, so using charCodeAt is harmless here.
+      const cp = String.codePointAt ? c.codePointAt(0) : c.charCodeAt(0);
+      return '\\' + cp.toString(16) + ' ';
+    };
+    return '"' + value.replace(/["\r\n\f]/g, replacer) + '"';
+  }
 
   //endregion
   //region PUBLIC API
