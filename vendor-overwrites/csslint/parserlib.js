@@ -1020,11 +1020,11 @@ self.parserlib = (() => {
       'hsl':  '<hsl-color>',
       'hsla': '<hsl-color>',
       'hwb':  '<hsl-color>',
-      'gray': '<number> [ / <nonnegative-number-or-percentage> ]? )',
+      'gray': '<number> [ / <nonnegative-number-or-percentage> ]?',
       'device-cmyk': '<number-percentage>{4} [ / <nonnegative-number-or-percentage> ]? , <color>?',
 
       'color':        '[ <color> | [ <number> | <angle> ] ] <color-adjuster>*',
-      'content':      '[ text | before | after | first-letter | marker ]?',
+      'content':      'text | before | after | first-letter | marker',
       'cubic-bezier': '<number>#{4}',
       'frames':       '<integer>',
       'steps':        '<integer> [ , [ start | end ] ]?',
@@ -1074,6 +1074,7 @@ self.parserlib = (() => {
       // omitted values default to the initial value for interpolation
       'blur', 'brightness', 'contrast', 'drop-shadow', 'grayscale',
       'hue-rotate', 'invert', 'opacity', 'saturate', 'sepia',
+      'content',
     ]),
   };
 
@@ -1571,9 +1572,10 @@ self.parserlib = (() => {
    */
   class Matcher {
 
-    constructor(matchFunc, toString) {
+    constructor(matchFunc, toString, options) {
       this.matchFunc = matchFunc;
       this.toString = typeof toString === 'function' ? toString : () => toString;
+      if (options) this.options = options;
     }
 
     static parse(str) {
@@ -1587,80 +1589,7 @@ self.parserlib = (() => {
     /** Simple recursive-descent grammar to build matchers from strings. */
     static doParse(str) {
       const reader = new StringReader(str);
-      function eat(matcher) {
-        const result = reader.readMatch(matcher);
-        if (result === null) {
-          throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
-        }
-        return result;
-      }
-      function expr() {
-        // expr = oror (" | " oror)*
-        const m = [oror()];
-        while (reader.readMatch(' | ')) {
-          m.push(oror());
-        }
-        return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
-      }
-      function oror() {
-        // oror = andand ( " || " andand)*
-        const m = [andand()];
-        while (reader.readMatch(' || ')) {
-          m.push(andand());
-        }
-        return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
-      }
-      function andand() {
-        // andand = seq ( " && " seq)*
-        const m = [seq()];
-        while (reader.readMatch(' && ')) {
-          m.push(seq());
-        }
-        return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
-      }
-      function seq() {
-        // seq = mod ( " " mod)*
-        const m = [mod()];
-        while (reader.readMatch(/\s(?![&|\]])/y)) {
-          m.push(mod());
-        }
-        return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
-      }
-      function mod() {
-        // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
-        const m = term();
-        reader.mark();
-        let hash;
-        switch (reader.read()) {
-          case '?': return m.question();
-          case '*': return m.star();
-          case '+': return m.plus();
-          case '#':
-            if (reader.peek() !== '{') return m.hash();
-            reader.read();
-            hash = '#';
-            // fallthrough
-          case '{': {
-            const min = eat(/\s*\d+\s*/y).trim();
-            const c = eat(/[,}]/y);
-            const max = c === ',' ? eat(/\s*\d+\s*}/y).slice(0, -1).trim() : min;
-            return m.braces(Number(min), Number(max), hash, hash && Matcher.cast(','));
-          }
-          default:
-            reader.reset();
-        }
-        return m;
-      }
-      function term() {
-        // term = <nt> | literal | "[ " expression " ]"
-        if (reader.readMatch('[ ')) {
-          const m = expr();
-          eat(' ]');
-          return m;
-        }
-        return Matcher.fromType(eat(/[^\s?*+#{]+/y));
-      }
-      const result = expr();
+      const result = Matcher.grammarParser.parse(reader);
       if (!reader.eof()) {
         throw new Error(`Internal error. Expected end of string ${reader._line}:${reader._col}.`);
       }
@@ -1675,7 +1604,7 @@ self.parserlib = (() => {
     static fromType(type) {
       let m = cachedMatcher.get(type);
       if (m) return m;
-      m = new Matcher(expr => expr.hasNext() && ValidationTypes.isType(expr, type), type);
+      m = new Matcher(Matcher.matchFunc.fromType, type, type);
       cachedMatcher.set(type, m);
       return m;
     }
@@ -1684,26 +1613,14 @@ self.parserlib = (() => {
     static seq(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
-      return new Matcher(
-        expression => ms.every(m => m.match(expression)),
-        prec => {
-          const p = Matcher.prec.SEQ;
-          const s = ms.map(m => m.toString(p)).join(' ');
-          return prec > p ? `[ ${s} ]` : s;
-        });
+      return new Matcher(Matcher.matchFunc.seq, Matcher.toStringFunc.seq, ms);
     }
 
     // Matcher for one or more alternatives, where exactly one must occur.
     static alt(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
-      return new Matcher(
-        expression => ms.some(m => m.match(expression)),
-        prec => {
-          const p = Matcher.prec.ALT;
-          const s = ms.map(m => m.toString(p)).join(' | ');
-          return prec > p ? `[ ${s} ]` : s;
-        });
+      return new Matcher(Matcher.matchFunc.alt, Matcher.toStringFunc.alt, ms);
     }
 
     /**
@@ -1721,71 +1638,9 @@ self.parserlib = (() => {
           ms.push(Matcher.cast(arg));
         }
       }
-
-      if (required === true) required = new Array(ms.length).fill(true);
-
-      const result = new Matcher(expression => {
-        const seen = [];
-        let max = 0;
-        let pass = 0;
-        // If couldn't get a complete match, retrace our steps to make the
-        // match with the maximum # of required elements.
-        if (!tryMatch(0)) {
-          pass++;
-          tryMatch(0);
-        }
-        if (required === false) {
-          return max > 0;
-        }
-        // Use finer-grained specification of which matchers are required.
-        for (let i = 0; i < ms.length; i++) {
-          if (required[i] && !seen[i]) {
-            return false;
-          }
-        }
-        return true;
-
-        function tryMatch(matchCount) {
-          for (let i = 0; i < ms.length; i++) {
-            if (seen[i]) continue;
-            expression.mark();
-            if (!ms[i].match(expression)) {
-              expression.drop();
-              continue;
-            }
-            seen[i] = true;
-            // Increase matchCount if this was a required element
-            // (or if all the elements are optional)
-            if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
-              expression.drop();
-              return true;
-            }
-            // Backtrack: try *not* matching using this rule, and
-            // let's see if it leads to a better overall match.
-            expression.restore();
-            seen[i] = false;
-          }
-          if (pass === 0) {
-            max = Math.max(matchCount, max);
-            return matchCount === ms.length;
-          } else {
-            return matchCount === max;
-          }
-        }
-
-      }, prec => {
-        const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
-        const s = ms.map((m, i) => {
-          if (required !== false && !required[i]) {
-            return m.toString(Matcher.prec.MOD) + '?';
-          }
-          return m.toString(p);
-        }).join(required === false ? ' || ' : ' && ');
-        return prec > p ? `[ ${s} ]` : s;
-      });
-
-      result.options = ms;
-      return result;
+      const m = new Matcher(Matcher.matchFunc.many, Matcher.toStringFunc.many, ms);
+      m.required = required === true ? new Array(ms.length).fill(true) : required;
+      return m;
     }
 
     // Matcher for two or more options in any order, all mandatory.
@@ -1872,6 +1727,195 @@ self.parserlib = (() => {
     OROR: 2,
     ALT: 1,
   };
+
+  Matcher.matchFunc = {
+
+    alt(expression) {
+      for (const m of this.options) {
+        if (m.match(expression)) return true;
+      }
+      return false;
+    },
+
+    fromType(expr) {
+      return expr.hasNext() && ValidationTypes.isType(expr, this.options);
+    },
+
+    seq(expression) {
+      for (const m of this.options) {
+        if (!m.match(expression)) return false;
+      }
+      return true;
+    },
+
+    many(expression) {
+      const seen = [];
+      const {options: ms, required} = this;
+      let max = 0;
+      let pass = 0;
+      // If couldn't get a complete match, retrace our steps to make the
+      // match with the maximum # of required elements.
+      if (!tryMatch(0)) {
+        pass++;
+        tryMatch(0);
+      }
+      if (required === false) {
+        return max > 0;
+      }
+      // Use finer-grained specification of which matchers are required.
+      for (let i = 0; i < ms.length; i++) {
+        if (required[i] && !seen[i]) {
+          return false;
+        }
+      }
+      return true;
+
+      function tryMatch(matchCount) {
+        for (let i = 0; i < ms.length; i++) {
+          if (seen[i]) continue;
+          expression.mark();
+          if (!ms[i].match(expression)) {
+            expression.drop();
+            continue;
+          }
+          seen[i] = true;
+          // Increase matchCount if this was a required element
+          // (or if all the elements are optional)
+          if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
+            expression.drop();
+            return true;
+          }
+          // Backtrack: try *not* matching using this rule, and
+          // let's see if it leads to a better overall match.
+          expression.restore();
+          seen[i] = false;
+        }
+        if (pass === 0) {
+          max = Math.max(matchCount, max);
+          return matchCount === ms.length;
+        } else {
+          return matchCount === max;
+        }
+      }
+    },
+  };
+
+  Matcher.toStringFunc = {
+
+    alt(prec) {
+      const p = Matcher.prec.ALT;
+      const s = this.options.map(m => m.toString(p)).join(' | ');
+      return prec > p ? `[ ${s} ]` : s;
+    },
+
+    seq(prec) {
+      const p = Matcher.prec.SEQ;
+      const s = this.options.map(m => m.toString(p)).join(' ');
+      return prec > p ? `[ ${s} ]` : s;
+    },
+
+    many(prec) {
+      const {options: ms, required} = this;
+      const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
+      const s = ms.map((m, i) => {
+        if (required !== false && !required[i]) {
+          return m.toString(Matcher.prec.MOD) + '?';
+        }
+        return m.toString(p);
+      }).join(required === false ? ' || ' : ' && ');
+      return prec > p ? `[ ${s} ]` : s;
+    }
+  };
+
+  Matcher.grammarParser = (() => {
+    let reader;
+    return {parse};
+
+    function parse(newReader) {
+      reader = newReader;
+      return expr();
+    }
+
+    function expr() {
+      // expr = oror (" | " oror)*
+      const m = [oror()];
+      while (reader.readMatch(' | ')) {
+        m.push(oror());
+      }
+      return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
+    }
+
+    function oror() {
+      // oror = andand ( " || " andand)*
+      const m = [andand()];
+      while (reader.readMatch(' || ')) {
+        m.push(andand());
+      }
+      return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
+    }
+
+    function andand() {
+      // andand = seq ( " && " seq)*
+      const m = [seq()];
+      while (reader.readMatch(' && ')) {
+        m.push(seq());
+      }
+      return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
+    }
+
+    function seq() {
+      // seq = mod ( " " mod)*
+      const m = [mod()];
+      while (reader.readMatch(/\s(?![&|\]])/y)) {
+        m.push(mod());
+      }
+      return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
+    }
+
+    function mod() {
+      // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
+      const m = term();
+      reader.mark();
+      let hash;
+      switch (reader.read()) {
+        case '?': return m.question();
+        case '*': return m.star();
+        case '+': return m.plus();
+        case '#':
+          if (reader.peek() !== '{') return m.hash();
+          reader.read();
+          hash = '#';
+          // fallthrough
+        case '{': {
+          const min = eat(/\s*\d+\s*/y).trim();
+          const c = eat(/[,}]/y);
+          const max = c === ',' ? eat(/\s*\d+\s*}/y).slice(0, -1).trim() : min;
+          return m.braces(Number(min), Number(max), hash, hash && Matcher.cast(','));
+        }
+        default:
+          reader.reset();
+      }
+      return m;
+    }
+
+    function term() {
+      // term = <nt> | literal | "[ " expression " ]"
+      if (reader.readMatch('[ ')) {
+        const m = expr();
+        eat(' ]');
+        return m;
+      }
+      return Matcher.fromType(eat(/[^\s?*+#{]+/y));
+    }
+
+    function eat(matcher) {
+      const result = reader.readMatch(matcher);
+      if (result === null) {
+        throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
+      }
+      return result;
+    }
+  })();
 
   //endregion
   //region EventTarget
@@ -2464,21 +2508,22 @@ self.parserlib = (() => {
 
     isType(expression, type) {
       const part = expression.peek();
-      let result;
+      let result, m;
 
       if (this.simple['<var>'](part)) {
         result = true;
 
-      } else if (type.charAt(0) !== '<') {
+      } else if (!type.startsWith('<')) {
         result = this.isLiteral(part, type);
 
-      } else if (this.simple[type]) {
-        result = this.simple[type](part);
+      } else if ((m = this.simple[type])) {
+        result = m.call(this.simple, part);
 
       } else {
-        return this.complex[type] instanceof Matcher ?
-          this.complex[type].match(expression) :
-          this.complex[type](expression);
+        m = this.complex[type];
+        return m instanceof Matcher ?
+          m.match(expression) :
+          m.call(this.complex, expression);
       }
 
       if (result) expression.next();
