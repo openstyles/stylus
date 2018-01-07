@@ -300,7 +300,7 @@ function webNavUsercssInstallerFF(data) {
     getTab(tabId),
   ]).then(([pong, tab]) => {
     if (pong !== true && tab.url !== 'about:blank') {
-      API_METHODS.installUsercss({direct: true}, {tab});
+      window.API_METHODS.installUsercss({direct: true}, {tab});
     }
   });
 }
@@ -425,7 +425,7 @@ function updateIcon({tab, styles}) {
 
 
 function onRuntimeMessage(msg, sender, sendResponse) {
-  const fn = API_METHODS[msg.method];
+  const fn = window.API_METHODS[msg.method];
   if (!fn) return;
 
   // wrap 'Error' object instance as {__ERROR__: message},
