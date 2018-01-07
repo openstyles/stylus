@@ -339,7 +339,7 @@
 		"description": "Checkbox to show only non-Usercss (standard) styles"
 	},
 	"liveReloadLabel": {
-		"message": "Recargar sobre la marcha",
+		"message": "Recargar en caliente",
 		"description": "The label of live-reload feature"
 	},
 	"linkGetStyles": {
@@ -963,6 +963,10 @@
 	"importAppendTooltip": {
 		"message": "Agrega el estilo importado al estilo actual",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"liveReloadInstallHint": {
+		"message": "'Recargar en caliente' está habilitado de forma que el estilo instalado se autoactualizará con los cambios externos mientras que tanto esta pestaña como la pestaña con el fichero fuente están abiertas.",
+		"description": "The label of live-reload feature"
 	},
 	"editorStylesButton": {
 		"message": "Buscar estilos del editor",
