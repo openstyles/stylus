@@ -277,33 +277,31 @@ $('#file-all-styles').onclick = () => {
   API.getStyles().then(styles => {
     const text = JSON.stringify(styles, null, '\t');
     const blob = new Blob([text], {type: 'application/json'});
-    const objectURL = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
     let link = $create('a', {
-      href: objectURL,
+      href: url,
       type: 'application/json',
       download: generateFileName(),
     });
-    // TODO: remove the fallback when FF multi-process bug is fixed
-    if (!FIREFOX) {
+    // https://crbug.com/714373
+    if (!FIREFOX && !(CHROME > 3310 && CHROME < Infinity)) {
       link.dispatchEvent(new MouseEvent('click'));
-      setTimeout(() => URL.revokeObjectURL(objectURL));
-    } else {
-      const iframe = document.body.appendChild($create('iframe', {
-        style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
-      }));
-      doTimeout()
-        .then(() => {
-          link = iframe.contentDocument.importNode(link, true);
-          iframe.contentDocument.body.appendChild(link);
-        })
-        .then(() => doTimeout())
-        .then(() => link.dispatchEvent(new MouseEvent('click')))
-        .then(() => doTimeout(1000))
-        .then(() => {
-          URL.revokeObjectURL(objectURL);
-          iframe.remove();
-        });
+      return doTimeout()
+        .then(() => URL.revokeObjectURL(url));
     }
+    const iframe = document.body.appendChild($create('iframe', {
+      style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
+    }));
+    return doTimeout()
+      .then(() => {
+        link = iframe.contentDocument.importNode(link, true);
+        iframe.contentDocument.body.appendChild(link);
+      })
+      .then(() => doTimeout())
+      .then(() => link.dispatchEvent(new MouseEvent('click')))
+      .then(() => doTimeout(1000))
+      .then(() => URL.revokeObjectURL(url))
+      .then(() => iframe.remove());
   });
 
   function doTimeout(ms) {
