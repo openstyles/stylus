@@ -40,11 +40,11 @@
       !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
     ].filter(Boolean).map(rx => rx.source).join('|') || '^$', 'i'),
   };
-  const RX_DETECT = new RegExp('(^|[\\s():,/])' +
+  const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
     '(' +
       RX_COLOR.hex.source + '|' +
       '(?:rgb|hsl)a?(?=\\()|(?:' + [...colorConverter.NAMED_COLORS.keys()].join('|') + ')' +
-      '(?=[\\s;()/]|$)' +
+      '(?=[\\s;(){}[\\]/"]|$)' +
     ')', 'gi');
   const RX_DETECT_FUNC = /(rgb|hsl)a?\(/iy;
 
