@@ -4840,6 +4840,7 @@ self.parserlib = (() => {
       const unary = stream.match([Tokens.MINUS, Tokens.PLUS]) && stream._token;
 
       const finalize = (token, value) => {
+        if (!token && unary) stream.unget();
         if (!token) return null;
         if (token instanceof SyntaxUnit) return token;
         if (unary) {
