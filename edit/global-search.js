@@ -791,6 +791,7 @@ onDOMready().then(() => {
 
 
   function showTally(num, numApplies) {
+    if (!state.tally) return;
     if (num === undefined) {
       num = 0;
       for (const cm of state.editors) {
