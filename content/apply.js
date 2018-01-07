@@ -423,7 +423,7 @@
       if (sort && sortStyleMap()) {
         sortStyleElements();
       }
-      if (!observing && ROOT) {
+      if (!observing && ROOT && docRootObserver) {
         docRootObserver.observe(ROOT, {childList: true});
         observing = true;
       }
@@ -494,7 +494,7 @@
       }
       if (sorting) {
         sorting = false;
-        docRootObserver.takeRecords();
+        if (docRootObserver) docRootObserver.takeRecords();
         if (!restorationLimitExceeded()) {
           start();
         } else {
@@ -515,7 +515,7 @@
     function moveAfter(el, expected) {
       if (!sorting) {
         sorting = true;
-        docRootObserver.stop();
+        if (docRootObserver) docRootObserver.stop();
       }
       expected.insertAdjacentElement('afterend', el);
       if (el.disabled !== disableAll) {
