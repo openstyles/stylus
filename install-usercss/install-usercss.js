@@ -68,13 +68,14 @@
       cm.setCursor(cursor);
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
-      return sendMessage({
+      API.saveUsercssUnsafe({
         id: (installed || installedDup).id,
-        method: 'saveUsercss',
         reason: 'update',
         sourceCode
-      }).then(updateMeta)
-        .catch(showError);
+      }).then(({style, errors}) => {
+        updateMeta(style);
+        if (errors) return Promise.reject(errors);
+      }).catch(showError);
     });
   }
 

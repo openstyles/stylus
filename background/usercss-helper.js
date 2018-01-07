@@ -4,6 +4,7 @@
 (() => {
 
   API_METHODS.saveUsercss = save;
+  API_METHODS.saveUsercssUnsafe = style => save(style, true);
   API_METHODS.buildUsercss = build;
   API_METHODS.installUsercss = install;
 
@@ -47,60 +48,56 @@
     }
   }
 
-  function buildCode(style) {
-    return usercss.buildCode(style);
-  }
-
   // Parse the source and find the duplication
   function build({sourceCode, checkDup = false}) {
     return buildMeta({sourceCode})
-      .then(style => Promise.all([
-        buildCode(style),
-        checkDup && findDup(style)
-      ]))
-      .then(([style, dup]) => ({style, dup}));
+      .then(usercss.buildCode)
+      .then(style => ({
+        style,
+        dup: checkDup && findDup(style),
+      }));
   }
 
-  function save(style) {
+  function save(style, allowErrors = false) {
     // restore if stripped by getStyleWithNoCode
     if (typeof style.sourceCode !== 'string') {
       style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
     }
     return buildMeta(style)
       .then(assignVars)
-      .then(buildCode)
-      .then(saveStyle);
+      .then(style => usercss.buildCode(style, allowErrors))
+      .then(result =>
+        allowErrors ?
+          saveStyle(result.style).then(style => ({style, errors: result.errors})) :
+          saveStyle(result));
 
     function assignVars(style) {
       if (style.reason === 'config' && style.id) {
         return style;
       }
-      return findDup(style).then(dup => {
-        if (dup) {
-          style.id = dup.id;
-          if (style.reason !== 'config') {
-            // preserve style.vars during update
-            usercss.assignVars(style, dup);
-          }
+      const dup = findDup(style);
+      if (dup) {
+        style.id = dup.id;
+        if (style.reason !== 'config') {
+          // preserve style.vars during update
+          usercss.assignVars(style, dup);
         }
-        return style;
-      });
+      }
+      return style;
     }
   }
 
   function findDup(style) {
-    if (style.id) {
-      return getStyles({id: style.id}).then(s => s[0]);
+    if (style.id) return cachedStyles.byId.get(style.id);
+    const {name, namespace} = style.usercssData;
+    for (const dup of cachedStyles.list) {
+      const data = dup.usercssData;
+      if (!data) continue;
+      if (data.name === name &&
+          data.namespace === namespace) {
+        return dup;
+      }
     }
-    return getStyles().then(styles =>
-      styles.find(target => {
-        if (!target.usercssData) {
-          return false;
-        }
-        return target.usercssData.name === style.usercssData.name &&
-          target.usercssData.namespace === style.usercssData.namespace;
-      })
-    );
   }
 
   function install({url, direct, downloaded, tab}, sender) {

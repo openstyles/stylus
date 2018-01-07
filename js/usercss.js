@@ -471,7 +471,13 @@ var usercss = (() => {
     return version;
   }
 
-  function buildCode(style) {
+  /**
+   * @param {Object} style
+   * @param {Boolean} [allowErrors=false]
+   * @returns {(Style | {style: Style, errors: (false|String[])})} - style object
+   *      when allowErrors is falsy or {style, errors} object when allowErrors is truthy
+   */
+  function buildCode(style, allowErrors) {
     const {usercssData: {preprocessor, vars}, sourceCode} = style;
     let builder;
     if (preprocessor) {
@@ -494,11 +500,14 @@ var usercss = (() => {
         styleId: style.id,
         code: mozStyle,
       }))
-      .then(({sections, errors}) => sections.length && sections || Promise.reject(errors))
-      .then(sections => {
+      .then(({sections, errors}) => {
+        if (!errors.length) errors = false;
+        if (!sections.length || errors && !allowErrors) {
+          return Promise.reject(errors);
+        }
         style.sections = sections;
         if (builder.postprocess) builder.postprocess(style.sections, sVars);
-        return style;
+        return allowErrors ? {style, errors} : style;
       }));
   }
 

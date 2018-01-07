@@ -192,13 +192,16 @@ function createSourceEditor(style) {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
     return (
-      API.saveUsercss({
-        reason: 'editSave',
+      API.saveUsercssUnsafe({
         id: style.id,
+        reason: 'editSave',
         enabled: style.enabled,
         sourceCode: code,
       }))
-      .then(replaceStyle)
+      .then(({style, errors}) => {
+        replaceStyle(style);
+        if (errors) return Promise.reject(errors);
+      })
       .catch(err => {
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
