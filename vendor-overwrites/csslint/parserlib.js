@@ -4866,7 +4866,7 @@ self.parserlib = (() => {
         const token = stream._token;
         token.expr = this._expr(inFunction);
         stream.mustMatch(Tokens.type(token.endChar));
-        return finalize(token, token.value + token.expr.text + token.endChar);
+        return finalize(token, token.value + (token.expr || '') + token.endChar);
       }
 
       return finalize(
@@ -4897,10 +4897,10 @@ self.parserlib = (() => {
 
       const start = stream._token;
       const name = start.value.slice(0, -1);
-      const expr = this._expr(lower(name)) || '';
+      const expr = this._expr(lower(name));
       const ieFilter = this.options.ieFilters && stream.peek() === Tokens.EQUALS ?
         this._functionIeFilter() : '';
-      const text = name + '(' + expr + ieFilter + ')';
+      const text = name + '(' + (expr || '') + ieFilter + ')';
 
       stream.mustMatch(Tokens.RPAREN);
       this._ws();
