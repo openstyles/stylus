@@ -12,6 +12,7 @@ const colorConverter = (() => {
     HSVtoHSL,
     constrainHue,
     snapToInt,
+    ALPHA_DIGITS: 3,
     // NAMED_COLORS is added below
   };
 
@@ -87,7 +88,10 @@ const colorConverter = (() => {
 
   function formatAlpha(a) {
     return isNaN(a) ? '' :
-      (a + .5e-6).toFixed(7).slice(0, -1).replace(/^0(?=\.[1-9])|^1\.0+?$|\.?0+$/g, '');
+      (a + .5 * Math.pow(10, -colorConverter.ALPHA_DIGITS))
+        .toFixed(colorConverter.ALPHA_DIGITS + 1)
+        .slice(0, -1)
+        .replace(/^0(?=\.[1-9])|^1\.0+?$|\.?0+$/g, '');
   }
 
   function RGBtoHSV({r, g, b, a}) {

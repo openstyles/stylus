@@ -87,7 +87,7 @@
 .colorpicker-popup {
   --switcher-width: 30px;
   position: relative;
-  width: 350px;
+  width: 325px;
   z-index: 1000;
   transition: opacity .5s;
   color: var(--label-color);
@@ -277,7 +277,7 @@
 }
 
 .colorpicker-input-field[class$="-a"] {
-  flex-grow: 1.5;
+  flex-grow: 1.25;
 }
 
 .colorpicker-hsl-h::before {
