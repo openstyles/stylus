@@ -528,7 +528,7 @@ function handleUpdate(style, {reason, method} = {}) {
       oldEntry.remove();
     }
   }
-  if (reason === 'update' || reason === 'install' && entry.matches('.updatable')) {
+  if ((reason === 'update' || reason === 'install') && entry.matches('.updatable')) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry});
