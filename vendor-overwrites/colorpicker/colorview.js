@@ -575,7 +575,7 @@
 
     function getColor(token) {
       const {style} = getStyleAtPos({styles, pos: start + 1}) || {};
-      const allowed = ALLOWED_STYLES.includes(style);
+      const allowed = !style || ALLOWED_STYLES.includes(style.split(' ', 1)[0]);
       if (!allowed) return;
 
       if (text[start + token.length] === '(') {
