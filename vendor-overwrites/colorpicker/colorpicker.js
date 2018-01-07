@@ -494,6 +494,7 @@
     const rgb = colorConverter.HSVtoRGB(HSV);
     switch (currentFormat) {
       case 'hex':
+        rgb.a = HSV.a;
         $hexCode.value = colorToString(rgb, 'hex');
         break;
       case 'rgb': {
