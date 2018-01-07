@@ -1,4 +1,4 @@
-/* global CodeMirror NAMED_COLORS */
+/* global CodeMirror colorConverter */
 'use strict';
 
 (window.CodeMirror ? window.CodeMirror.prototype : window).colorpicker = function () {
@@ -57,8 +57,6 @@
     hide,
     setColor,
     getColor,
-    stringToColor,
-    colorToString,
     options,
   };
   return PUBLIC_API;
@@ -178,7 +176,7 @@
     Object.defineProperty($inputs.hsl, 'color', {get: inputsToHSL});
     Object.defineProperty($inputs, 'color', {get: () => $inputs[currentFormat].color});
 
-    HUE_COLORS.forEach(color => Object.assign(color, stringToColor(color.hex)));
+    HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
 
     initialized = true;
   }
@@ -235,7 +233,7 @@
   function setColor(color) {
     switch (typeof color) {
       case 'string':
-        color = stringToColor(color);
+        color = colorConverter.parse(color);
         break;
       case 'object': {
         const {r, g, b, a} = color;
@@ -267,7 +265,9 @@
       return;
     }
     readCurrentColorFromRamps();
-    const color = type === 'hsl' ? HSVtoHSL(HSV) : HSVtoRGB(HSV);
+    const color = type === 'hsl' ?
+      colorConverter.HSVtoHSL(HSV) :
+      colorConverter.HSVtoRGB(HSV);
     return type ? colorToString(color, type) : color;
   }
 
@@ -279,7 +279,7 @@
       HSV.h = HSV.s = HSV.v = 0;
     } else {
       const {x, y} = dragging.saturationPointerPos;
-      HSV.h = snapToInt((dragging.hueKnobPos / $hue.offsetWidth) * 360);
+      HSV.h = colorConverter.snapToInt((dragging.hueKnobPos / $hue.offsetWidth) * 360);
       HSV.s = x / $sat.offsetWidth;
       HSV.v = ($sat.offsetHeight - y) / $sat.offsetHeight;
     }
@@ -304,7 +304,7 @@
   function setFromHueElement(event) {
     const {left, width} = getScreenBounds($hue);
     const currentX = event ? getTouchPosition(event).clientX :
-      left + width * constrainHue(HSV.h) / 360;
+      left + width * colorConverter.constrainHue(HSV.h) / 360;
     const normalizedH = constrain(0, 1, (currentX - left) / width);
     const x = dragging.hueKnobPos = width * normalizedH;
     $hueKnob.style.left = (x - Math.round($hueKnob.offsetWidth / 2)) + 'px';
@@ -443,9 +443,11 @@
   //region State-to-DOM
 
   function setFromColor(color) {
-    color = typeof color === 'string' ? stringToColor(color) : color;
-    color = color || stringToColor('#f00');
-    const newHSV = color.type === 'hsl' ? HSLtoHSV(color) : RGBtoHSV(color);
+    color = typeof color === 'string' ? colorConverter.parse(color) : color;
+    color = color || colorConverter.parse('#f00');
+    const newHSV = color.type === 'hsl' ?
+      colorConverter.HSLtoHSV(color) :
+      colorConverter.RGBtoHSV(color);
     if (Object.keys(newHSV).every(k => Math.abs(newHSV[k] - HSV[k]) < 1e-3)) {
       return;
     }
@@ -489,7 +491,7 @@
   }
 
   function renderInputs() {
-    const rgb = HSVtoRGB(HSV);
+    const rgb = colorConverter.HSVtoRGB(HSV);
     switch (currentFormat) {
       case 'hex':
         $hexCode.value = colorToString(rgb, 'hex');
@@ -502,7 +504,7 @@
         break;
       }
       case 'hsl': {
-        const {h, s, l} = HSVtoHSL(HSV);
+        const {h, s, l} = colorConverter.HSVtoHSL(HSV);
         $hsl.h.value = h;
         $hsl.s.value = s;
         $hsl.l.value = l;
@@ -723,144 +725,17 @@
   //region Color conversion utilities
 
   function colorToString(color, type = currentFormat) {
-    const a = alphaToString(color.a);
-    const hasA = Boolean(a);
-    if (type === 'rgb' && color.type === 'hsl') {
-      color = HSVtoRGB(HSLtoHSV(color));
-    }
-    const {r, g, b, h, s, l} = color;
-    switch (type) {
-      case 'hex': {
-        const rgbStr = (0x1000000 + (r << 16) + (g << 8) + (b | 0)).toString(16).slice(1);
-        const aStr = hasA ? (0x100 + Math.round(a * 255)).toString(16).slice(1) : '';
-        const hexStr = `#${rgbStr + aStr}`.replace(/^#(.)\1(.)\2(.)\3(?:(.)\4)?$/, '#$1$2$3$4');
-        return options.hexUppercase ? hexStr.toUpperCase() : hexStr.toLowerCase();
-      }
-      case 'rgb':
-        return hasA ?
-          `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${a})` :
-          `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-      case 'hsl':
-        return hasA ?
-          `hsla(${h}, ${s}%, ${l}%, ${a})` :
-          `hsl(${h}, ${s}%, ${l}%)`;
-    }
+    return colorConverter.format(color, type, options.hexUppercase);
   }
 
-  function stringToColor(str) {
-    if (typeof str !== 'string') return;
-    str = str.trim();
-    if (!str) return;
-
-    if (str[0] !== '#' && !str.includes('(')) {
-      str = NAMED_COLORS.get(str);
-      if (!str) return;
-    }
-
-    if (str[0] === '#') {
-      str = str.slice(1);
-      const [r, g, b, a = 255] = str.length <= 4 ?
-        str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
-        str.match(/(..)/g).map(c => parseInt(c, 16));
-      return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
-    }
-
-    const [, type, value] = str.match(/^(rgb|hsl)a?\((.*?)\)|$/i);
-    if (!type) return;
-
-    const comma = value.includes(',') && !value.includes('/');
-    const num = value.split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
-    if (num.length < 3 || num.length > 4) return;
-
-    let a = !num[3] ? 1 : parseFloat(num[3]) / (num[3].endsWith('%') ? 100 : 1);
-    if (isNaN(a)) a = 1;
-
-    const first = num[0];
-    if (/rgb/i.test(type)) {
-      const k = first.endsWith('%') ? 2.55 : 1;
-      const [r, g, b] = num.map(s => parseFloat(s) * k);
-      return {type: 'rgb', r, g, b, a};
-    } else {
-      let h = parseFloat(first);
-      if (first.endsWith('grad')) h *= 360 / 400;
-      else if (first.endsWith('rad')) h *= 180 / Math.PI;
-      else if (first.endsWith('turn')) h *= 360;
-      const s = parseFloat(num[1]);
-      const l = parseFloat(num[2]);
-      return {type: 'hsl', h, s, l, a};
-    }
-  }
-
-  function constrainHue(h) {
-    return h < 0 ? h % 360 + 360 :
-      h > 360 ? h % 360 :
-        h;
-  }
-
-  function RGBtoHSV({r, g, b, a}) {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const MaxC = Math.max(r, g, b);
-    const MinC = Math.min(r, g, b);
-    const DeltaC = MaxC - MinC;
-
-    let h =
-      DeltaC === 0 ? 0 :
-      MaxC === r ? 60 * (((g - b) / DeltaC) % 6) :
-      MaxC === g ? 60 * (((b - r) / DeltaC) + 2) :
-      MaxC === b ? 60 * (((r - g) / DeltaC) + 4) :
-      0;
-    h = constrainHue(h);
-    return {
-      h,
-      s: MaxC === 0 ? 0 : DeltaC / MaxC,
-      v: MaxC,
-      a,
-    };
-  }
-
-  function HSVtoRGB({h, s, v}) {
-    h = constrainHue(h) % 360;
-    const C = s * v;
-    const X = C * (1 - Math.abs((h / 60) % 2 - 1));
-    const m = v - C;
-    const [r, g, b] =
-      h >= 0 && h < 60 ? [C, X, 0] :
-      h >= 60 && h < 120 ? [X, C, 0] :
-      h >= 120 && h < 180 ? [0, C, X] :
-      h >= 180 && h < 240 ? [0, X, C] :
-      h >= 240 && h < 300 ? [X, 0, C] :
-      h >= 300 && h < 360 ? [C, 0, X] : [];
-    return {
-      r: snapToInt(Math.round((r + m) * 255)),
-      g: snapToInt(Math.round((g + m) * 255)),
-      b: snapToInt(Math.round((b + m) * 255)),
-    };
-  }
-
-  function HSLtoHSV({h, s, l, a}) {
-    const t = s * (l < 50 ? l : 100 - l) / 100;
-    return {
-      h: constrainHue(h),
-      s: t + l ? 200 * t / (t + l) / 100 : 0,
-      v: (t + l) / 100,
-      a,
-    };
-  }
-
-  function HSVtoHSL({h, s, v}) {
-    const l = (2 - s) * v / 2;
-    const t = l < .5 ? l * 2 : 2 - l * 2;
-    return {
-      h: Math.round(constrainHue(h)),
-      s: Math.round(t ? s * v / t * 100 : 0),
-      l: Math.round(l * 100),
-    };
+  function alphaToString(a = HSV.a) {
+    return colorConverter.formatAlpha(a);
   }
 
   function currentColorToString(format = currentFormat, alpha = HSV.a) {
-    const converted = format === 'hsl' ? HSVtoHSL(HSV) : HSVtoRGB(HSV);
+    const converted = format === 'hsl' ?
+      colorConverter.HSVtoHSL(HSV) :
+      colorConverter.HSVtoRGB(HSV);
     converted.a = isNaN(alpha) || alpha === 1 ? undefined : alpha;
     return colorToString(converted, format);
   }
@@ -885,10 +760,6 @@
       prevColor = color;
     }
     return HUE_COLORS[0].hex;
-  }
-
-  function alphaToString(a = HSV.a) {
-    return isNaN(a) ? '' : (a + .5e-6).toFixed(7).slice(0, -1).replace(/^0(?=\.[1-9])|^1\.0+?$|\.?0+$/g, '');
   }
 
   //endregion
@@ -962,11 +833,6 @@
 
   function constrain(min, max, value) {
     return value < min ? min : value > max ? max : value;
-  }
-
-  function snapToInt(num) {
-    const int = Math.round(num);
-    return Math.abs(int - num) < 1e-3 ? int : num;
   }
 
   function parseAs(el, parser) {

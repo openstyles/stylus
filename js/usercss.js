@@ -1,4 +1,4 @@
-/* global loadScript mozParser semverCompare colorParser styleCodeEmpty */
+/* global loadScript mozParser semverCompare colorConverter styleCodeEmpty */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -76,9 +76,10 @@ var usercss = (() => {
           }
           if (rgb) {
             if (vars[name].type === 'color') {
-              // eslint-disable-next-line no-use-before-define
-              const color = colorParser.parse(vars[name].value);
-              return `${color.r}, ${color.g}, ${color.b}`;
+              const color = colorConverter.parse(vars[name].value);
+              if (!color) return null;
+              const {r, g, b} = color;
+              return `${r}, ${g}, ${b}`;
             }
             return null;
           }
@@ -545,7 +546,7 @@ var usercss = (() => {
     } else if (va.type === 'checkbox' && !/^[01]$/.test(va[value])) {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
-      va[value] = colorParser.format(colorParser.parse(va[value]));
+      va[value] = colorConverter.format(colorConverter.parse(va[value]), 'rgb');
     }
   }
 
