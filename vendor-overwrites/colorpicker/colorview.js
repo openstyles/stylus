@@ -44,7 +44,7 @@
     '(' +
       RX_COLOR.hex.source + '|' +
       '(?:rgb|hsl)a?(?=\\()|(?:' + [...colorConverter.NAMED_COLORS.keys()].join('|') + ')' +
-      '(?=[\\s;(){}[\\]/"]|$)' +
+      '(?=[\\s;(){}[\\]/"!]|$)' +
     ')', 'gi');
   const RX_DETECT_FUNC = /(rgb|hsl)a?\(/iy;
 
@@ -368,6 +368,11 @@
       }
 
       color = text.slice(start, isFunc ? text.indexOf(')', end) + 1 : end);
+      const j = !isHex && !isFunc && color.indexOf('!');
+      if (j > 0) {
+        color = color.slice(0, j);
+        end = start + j;
+      }
       const spanState = markedSpans && checkSpan();
       if (spanState === 'same') continue;
       if (checkColor()) {
