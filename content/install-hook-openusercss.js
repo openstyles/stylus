@@ -75,7 +75,43 @@ const attachHandshakeListeners = () => {
   });
 };
 
+const sendInstallCallback = data => {
+  // Send an install callback to the site in order to let it know
+  // we were able to install the theme and it may display a success message
+  allowedOrigins.forEach(origin => {
+    window.postMessage({
+      'type': 'ouc-install-callback',
+      'enabled': data.enabled,
+      'key':     data.key
+    }, origin);
+  });
+};
+
+const attachInstallListeners = () => {
+  // Wait for an install event, then save the theme
+  window.addEventListener('message', event => {
+    if (
+      event.data
+      && event.data.type === 'ouc-install-usercss'
+      && allowedOrigins.includes(event.origin)
+    ) {
+      chrome.runtime.sendMessage({
+        'method':     'saveUsercss',
+        'reason':     'install',
+        'name':       event.data.title,
+        'sourceCode': event.data.code,
+      }, response => {
+        sendInstallCallback({
+          'enabled': response.enabled,
+          'key':     event.data.key
+        });
+      });
+    }
+  });
+};
+
 (() => {
   attachHandshakeListeners();
+  attachInstallListeners();
   askHandshake();
 })();
