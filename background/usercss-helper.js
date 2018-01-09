@@ -7,6 +7,7 @@
   API_METHODS.saveUsercssUnsafe = style => save(style, true);
   API_METHODS.buildUsercss = build;
   API_METHODS.installUsercss = install;
+  API_METHODS.findUsercss = findUsercss;
 
   const TEMP_CODE_PREFIX = 'tempUsercssCode';
   const TEMP_CODE_CLEANUP_DELAY = 60e3;
@@ -54,7 +55,7 @@
       .then(usercss.buildCode)
       .then(style => ({
         style,
-        dup: checkDup && findDup(style),
+        dup: checkDup && findUsercss(style),
       }));
   }
 
@@ -75,7 +76,7 @@
       if (style.reason === 'config' && style.id) {
         return style;
       }
-      const dup = findDup(style);
+      const dup = findUsercss(style);
       if (dup) {
         style.id = dup.id;
         if (style.reason !== 'config') {
@@ -87,9 +88,13 @@
     }
   }
 
-  function findDup(style) {
-    if (style.id) return cachedStyles.byId.get(style.id);
-    const {name, namespace} = style.usercssData;
+  /**
+   * @param {Style|{name:string, namespace:string}} styleOrData
+   * @returns {Style}
+   */
+  function findUsercss(styleOrData) {
+    if (styleOrData.id) return cachedStyles.byId.get(styleOrData.id);
+    const {name, namespace} = styleOrData.usercssData || styleOrData;
     for (const dup of cachedStyles.list) {
       const data = dup.usercssData;
       if (!data) continue;
