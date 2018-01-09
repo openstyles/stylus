@@ -81,8 +81,7 @@ const sendInstallCallback = data => {
   allowedOrigins.forEach(origin => {
     window.postMessage({
       'type': 'ouc-install-callback',
-      'enabled': data.enabled,
-      'key':     data.key
+      'key':  data.key
     }, origin);
   });
 };
