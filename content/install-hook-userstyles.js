@@ -13,18 +13,7 @@
     ['', 'Chrome', 'Opera'].forEach(browser =>
       document.addEventListener('stylish' + type + browser, onClick)));
 
-  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    switch (msg.method) {
-      case 'ping':
-        // orphaned content script check
-        sendResponse(true);
-        break;
-      case 'openSettings':
-        openSettings();
-        sendResponse(true);
-        break;
-    }
-  });
+  chrome.runtime.onMessage.addListener(onMessage);
 
   new MutationObserver((mutations, observer) => {
     if (document.body) {
@@ -37,6 +26,19 @@
       }, checkUpdatability);
     }
   }).observe(document.documentElement, {childList: true});
+
+  function onMessage(msg, sender, sendResponse) {
+    switch (msg.method) {
+      case 'ping':
+        // orphaned content script check
+        sendResponse(true);
+        break;
+      case 'openSettings':
+        openSettings();
+        sendResponse(true);
+        break;
+    }
+  }
 
   /* since we are using "stylish-code-chrome" meta key on all browsers and
     US.o does not provide "advanced settings" on this url if browser is not Chrome,
@@ -304,6 +306,9 @@
     ['Update', 'Install'].forEach(type =>
       ['', 'Chrome', 'Opera'].forEach(browser =>
         document.addEventListener('stylish' + type + browser, onClick)));
+    try {
+      chrome.runtime.onMessage.addListener(onMessage);
+    } catch (e) {}
   }
 })();
 

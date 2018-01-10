@@ -361,6 +361,9 @@
     // so we need to detach event listeners
     [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.takeRecords() && ob.disconnect());
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
+    try {
+      chrome.runtime.onMessage.removeListener(applyOnMessage);
+    } catch (e) {}
   }
 
   function initDocRewriteObserver() {

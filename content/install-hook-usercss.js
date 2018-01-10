@@ -103,6 +103,9 @@
       // In Chrome content script is orphaned on an extension update/reload
       // so we need to detach event listeners
       removeEventListener(eventName, orphanCheckRequest, true);
+      try {
+        chrome.runtime.onConnect.removeListener(onConnected);
+      } catch (e) {}
     };
     dispatchEvent(new Event(eventName));
     addEventListener(eventName, orphanCheckRequest, true);
