@@ -249,9 +249,9 @@ function filterStyles({
   if (!omitCode) return styles;
   if (!asHash) return styles.map(getStyleWithNoCode);
   for (const id in styles) {
-    const style = styles[id];
-    if (style && style.sections) {
-      styles[id] = getStyleWithNoCode(style);
+    const sections = styles[id];
+    if (Array.isArray(sections)) {
+      styles[id] = getStyleWithNoCode({sections}).sections;
     }
   }
   return styles;
