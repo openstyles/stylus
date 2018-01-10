@@ -177,7 +177,7 @@
         // to avoid page flicker when the style is updated
         // instead of removing it immediately we rename its ID and queue it
         // to be deleted in applyStyles after a new version is fetched and applied
-        const deadID = 'ghost-' + id;
+        const deadID = id + '-ghost';
         el.id = ID_PREFIX + deadID;
         // in case something went wrong and new style was never applied
         retiredStyleTimers.set(deadID, setTimeout(removeStyle, 1000, {id: deadID}));
@@ -254,7 +254,9 @@
   function applySections(styleId, code) {
     const id = ID_PREFIX + styleId;
     let el = styleElements.get(id) || document.getElementById(id);
-    if (!el) {
+    if (el) {
+      if (el.textContent !== code) el.textContent = code;
+    } else {
       if (document.documentElement instanceof SVGSVGElement) {
         // SVG document style
         el = document.createElementNS('http://www.w3.org/2000/svg', 'style');
@@ -359,7 +361,7 @@
     }
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
-    [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.takeRecords() && ob.disconnect());
+    [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.disconnect());
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
       chrome.runtime.onMessage.removeListener(applyOnMessage);
@@ -411,6 +413,7 @@
     let restorationCounter = 0;
     let observing = false;
     let sorting = false;
+    let observer;
     // allow any types of elements between ours, except for the following:
     const ORDERED_TAGS = ['head', 'body', 'frameset', 'style', 'link'];
 
@@ -418,23 +421,23 @@
     return;
 
     function init() {
-      docRootObserver = new MutationObserver(sortStyleElements);
-      Object.assign(docRootObserver, {start, stop, evade});
+      observer = new MutationObserver(sortStyleElements);
+      docRootObserver = {start, stop, evade, disconnect: stop};
       setTimeout(sortStyleElements);
     }
     function start({sort = false} = {}) {
       if (sort && sortStyleMap()) {
         sortStyleElements();
       }
-      if (!observing && ROOT && docRootObserver) {
-        docRootObserver.observe(ROOT, {childList: true});
+      if (!observing && ROOT && observer) {
+        observer.observe(ROOT, {childList: true});
         observing = true;
       }
     }
     function stop() {
       if (observing) {
-        docRootObserver.takeRecords();
-        docRootObserver.disconnect();
+        observer.takeRecords();
+        observer.disconnect();
         observing = false;
       }
     }
@@ -497,7 +500,7 @@
       }
       if (sorting) {
         sorting = false;
-        if (docRootObserver) docRootObserver.takeRecords();
+        if (observer) observer.takeRecords();
         if (!restorationLimitExceeded()) {
           start();
         } else {
@@ -518,7 +521,7 @@
     function moveAfter(el, expected) {
       if (!sorting) {
         sorting = true;
-        if (docRootObserver) docRootObserver.stop();
+        if (observer) observer.stop();
       }
       expected.insertAdjacentElement('afterend', el);
       if (el.disabled !== disableAll) {
