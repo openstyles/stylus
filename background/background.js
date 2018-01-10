@@ -21,7 +21,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   detectSloppyRegexps,
   openEditor,
   updateIcon,
-  refreshAllTabs,
 
   closeTab: (msg, sender, respond) => {
     chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
@@ -303,40 +302,6 @@ function webNavUsercssInstallerFF(data) {
       window.API_METHODS.installUsercss({direct: true}, {tab});
     }
   });
-}
-
-
-function refreshAllTabs(msg, sender = {}) {
-  return Promise.all([
-    sender.tab || getActiveTab(),
-    queryTabs(),
-  ]).then(([ownTab, tabs]) => new Promise(resolve => {
-    if (FIREFOX) tabs = tabs.filter(tab => tab.width);
-    const last = tabs.length - 1;
-    for (let i = 0; i < last; i++) {
-      refreshTab(tabs[i], ownTab);
-    }
-    if (tabs.length) {
-      refreshTab(tabs[last], ownTab, resolve);
-    } else {
-      resolve();
-    }
-  }));
-
-  function refreshTab(tab, ownTab, resolve) {
-    const {id: tabId, url: matchUrl} = tab;
-    chrome.webNavigation.getAllFrames({tabId}, (frames = []) => {
-      ignoreChromeError();
-      for (const {frameId} of frames[0] ? frames : [{frameId: 0}]) {
-        getStyles({matchUrl, enabled: true, asHash: true}).then(styles => {
-          const message = {method: 'styleReplaceAll', tabId, frameId, styles};
-          invokeOrPostpone(tab.active, sendMessage, message, ignoreChromeError);
-          if (!frameId) setTimeout(updateIcon, 0, {tab, styles});
-          if (resolve) resolve();
-        });
-      }
-    });
-  }
 }
 
 

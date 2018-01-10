@@ -16,6 +16,7 @@ let dirty = {};
 // array of all CodeMirror instances
 const editors = [];
 let saveSizeOnClose;
+let ownTabId;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -37,6 +38,8 @@ Promise.all([
   $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
   $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
   $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
+
+  $('#preview-label').classList.toggle('hidden', !styleId);
 
   $('#beautify').onclick = beautify;
   $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
@@ -110,7 +113,7 @@ function preinit() {
   }
 
   getOwnTab().then(tab => {
-    const ownTabId = tab.id;
+    ownTabId = tab.id;
 
     // use browser history back when 'back to manage' is clicked
     if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
@@ -153,6 +156,7 @@ function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
       if (styleId && styleId === request.style.id &&
+          request.reason !== 'editPreview' &&
           request.reason !== 'editSave' &&
           request.reason !== 'config') {
         // code-less style from notifyAllTabs
@@ -258,7 +262,6 @@ function initHooks() {
     node.addEventListener('change', onChange);
     node.addEventListener('input', onChange);
   });
-  $('#toggle-style-help').addEventListener('click', showToggleStyleHelp);
   $('#to-mozilla').addEventListener('click', showMozillaFormat, false);
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp, false);
   $('#from-mozilla').addEventListener('click', fromMozillaFormat);
@@ -365,6 +368,7 @@ function save() {
       $('#heading').textContent = t('editStyleHeading');
     }
     updateTitle();
+    $('#preview-label').classList.remove('hidden');
   });
 }
 

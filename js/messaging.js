@@ -144,7 +144,8 @@ var API = (() => {
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;
-  if (msg.method === 'styleUpdated' || msg.method === 'styleAdded') {
+  const styleUpdated = msg.method === 'styleUpdated';
+  if (styleUpdated || msg.method === 'styleAdded') {
     // apply/popup/manage use only meta for these two methods,
     // editor may need the full code but can fetch it directly,
     // so we send just the meta to avoid spamming lots of tabs with huge styles
@@ -167,7 +168,8 @@ function notifyAllTabs(msg) {
   if (affectsTabs || affectsIcon) {
     const notifyTab = tab => {
       // own pages will be notified via runtime.sendMessage later
-      if ((affectsTabs || URLS.optionsUI.includes(tab.url))
+      if (!styleUpdated
+      && (affectsTabs || URLS.optionsUI.includes(tab.url))
       && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
       // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
       && (!FIREFOX || tab.width)) {
@@ -197,6 +199,10 @@ function notifyAllTabs(msg) {
   // notify apply.js on own pages
   if (typeof applyOnMessage !== 'undefined') {
     applyOnMessage(originalMessage);
+  }
+  // propagate saved style state/code efficiently
+  if (styleUpdated) {
+    API.refreshAllTabs(msg);
   }
 }
 
@@ -404,7 +410,7 @@ const debounce = Object.assign((fn, delay, ...args) => {
 
 function deepCopy(obj) {
   if (!obj || typeof obj !== 'object') return obj;
-  // N.B. a copy should be an explicitly  literal
+  // N.B. the copy should be an explicit literal
   if (Array.isArray(obj)) {
     const copy = [];
     for (const v of obj) {

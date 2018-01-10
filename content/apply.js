@@ -519,7 +519,7 @@
     function moveAfter(el, expected) {
       if (!sorting) {
         sorting = true;
-        if (observer) observer.stop();
+        stop();
       }
       expected.insertAdjacentElement('afterend', el);
       if (el.disabled !== disableAll) {

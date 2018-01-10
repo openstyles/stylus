@@ -749,6 +749,14 @@
     "message": "Number of styles active for the current site",
     "description": "Label for the checkbox controlling toolbar badge text."
   },
+  "previewLabel": {
+    "message": "Live preview",
+    "description": "Label for the checkbox in style editor to enable live preview while editing."
+  },
+  "previewTooltip": {
+    "message": "Temporarily applies the changes without saving.\nSave the style to make the changes permanent.",
+    "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
   "replace": {
     "message": "Replace",
     "description": "Label before the replace input field in the editor shown on Ctrl-H"
@@ -927,7 +935,7 @@
     "description": "Label for the enabled state of styles"
   },
   "styleEnabledToggleHint": {
-    "message": "Press Alt-Enter to toggle enabled/disabled state and save the style",
+    "message": "Press Alt-Enter to toggle the enabled/disabled state",
     "description": "Help text for the '[x] enable' checkbox in the editor"
   },
   "styleInstall": {

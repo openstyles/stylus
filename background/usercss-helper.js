@@ -7,7 +7,8 @@
   API_METHODS.saveUsercssUnsafe = style => save(style, true);
   API_METHODS.buildUsercss = build;
   API_METHODS.installUsercss = install;
-  API_METHODS.findUsercss = findUsercss;
+  API_METHODS.parseUsercss = parse;
+  API_METHODS.findUsercss = find;
 
   const TEMP_CODE_PREFIX = 'tempUsercssCode';
   const TEMP_CODE_CLEANUP_DELAY = 60e3;
@@ -49,50 +50,55 @@
     }
   }
 
+  function assignVars(style) {
+    if (style.reason === 'config' && style.id) {
+      return style;
+    }
+    const dup = find(style);
+    if (dup) {
+      style.id = dup.id;
+      if (style.reason !== 'config') {
+        // preserve style.vars during update
+        usercss.assignVars(style, dup);
+      }
+    }
+    return style;
+  }
+
   // Parse the source and find the duplication
   function build({sourceCode, checkDup = false}) {
     return buildMeta({sourceCode})
       .then(usercss.buildCode)
       .then(style => ({
         style,
-        dup: checkDup && findUsercss(style),
+        dup: checkDup && find(style),
       }));
   }
 
-  function save(style, allowErrors = false) {
+  // Parse the source, apply customizations, report fatal/syntax errors
+  function parse(style, allowErrors = false) {
     // restore if stripped by getStyleWithNoCode
     if (typeof style.sourceCode !== 'string') {
       style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
     }
     return buildMeta(style)
       .then(assignVars)
-      .then(style => usercss.buildCode(style, allowErrors))
+      .then(style => usercss.buildCode(style, allowErrors));
+  }
+
+  function save(style, allowErrors = false) {
+    return parse(style, allowErrors)
       .then(result =>
         allowErrors ?
           saveStyle(result.style).then(style => ({style, errors: result.errors})) :
           saveStyle(result));
-
-    function assignVars(style) {
-      if (style.reason === 'config' && style.id) {
-        return style;
-      }
-      const dup = findUsercss(style);
-      if (dup) {
-        style.id = dup.id;
-        if (style.reason !== 'config') {
-          // preserve style.vars during update
-          usercss.assignVars(style, dup);
-        }
-      }
-      return style;
-    }
   }
 
   /**
    * @param {Style|{name:string, namespace:string}} styleOrData
    * @returns {Style}
    */
-  function findUsercss(styleOrData) {
+  function find(styleOrData) {
     if (styleOrData.id) return cachedStyles.byId.get(styleOrData.id);
     const {name, namespace} = styleOrData.usercssData || styleOrData;
     for (const dup of cachedStyles.list) {

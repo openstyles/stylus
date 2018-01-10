@@ -1,7 +1,9 @@
 /*
 global CodeMirror linterConfig loadScript
-global editors editor styleId
+global editors editor styleId ownTabId
 global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
+global getSectionsHashes
+global messageBox
 */
 'use strict';
 
@@ -41,8 +43,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
     addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
     showHotkeyInTooltip();
 
-    // N.B. the event listener should be registered before setupLivePrefs()
+    // N.B. the onchange event listeners should be registered before setupLivePrefs()
     $('#options').addEventListener('change', onOptionElementChanged);
+    setupLivePreview();
     buildThemeElement();
     buildKeymapElement();
     setupLivePrefs();
@@ -530,5 +533,50 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
     }
     return '';
+  }
+
+  function setupLivePreview() {
+    if (!prefs.get('editor.livePreview') && !editors.length) {
+      setTimeout(setupLivePreview);
+      return;
+    }
+    $('#editor.livePreview').onchange = function () {
+      const previewing = this.checked;
+      editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
+      const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
+      $('#enabled')[addRemove]('change', updatePreview);
+      $('#sections')[addRemove]('change', updatePreview);
+      if (!previewing || document.body.classList.contains('dirty')) {
+        updatePreview(null, previewing);
+      }
+    };
+    CodeMirror.defineInitHook(cm => {
+      if (prefs.get('editor.livePreview')) {
+        cm.on('changes', updatePreview);
+      }
+    });
+  }
+
+  function updatePreview(data, previewing) {
+    if (previewing !== true && previewing !== false) {
+      if (data instanceof Event && !event.target.matches('.style-contributor')) return;
+      debounce(updatePreview, data && data.id === 'enabled' ? 0 : 400, null, true);
+      return;
+    }
+    const errors = $('#preview-errors');
+    API.refreshAllTabs({
+      reason: 'editPreview',
+      tabId: ownTabId,
+      style: {
+        id: styleId,
+        enabled: $('#enabled').checked,
+        sections: previewing && (editor ? editors[0].getValue() : getSectionsHashes()),
+      },
+    }).then(() => {
+      errors.classList.add('hidden');
+    }).catch(err => {
+      errors.classList.remove('hidden');
+      errors.onclick = () => messageBox.alert(String(err));
+    });
   }
 });

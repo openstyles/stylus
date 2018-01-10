@@ -515,6 +515,7 @@ Object.assign(handleEvent, {
 
 
 function handleUpdate(style, {reason, method} = {}) {
+  if (reason === 'editPreview') return;
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method === 'styleUpdated') {

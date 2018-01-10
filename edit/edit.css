@@ -41,10 +41,6 @@ body {
   margin-bottom: 12px;
 }
 
-#basic-info-enabled {
-  margin-top: 2px;
-}
-
 label {
   padding-left: 16px;
   position: relative;
@@ -102,6 +98,43 @@ label {
 #url:not([href^="http"]) {
   display: none;
 }
+
+#basic-info-enabled {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  line-height: 16px;
+}
+
+#basic-info-enabled > * {
+  margin-right: 1em;
+  margin-left: 0;
+}
+
+#basic-info-enabled > :last-child {
+  margin-right: 0;
+}
+
+#basic-info-enabled input,
+#basic-info-enabled svg {
+  margin: auto 0;
+  bottom: 0;
+}
+
+#basic-info-enabled svg {
+  left: 2px;
+}
+
+#preview-errors {
+  background-color: red;
+  color: white;
+  padding: 0 6px;
+  border-radius: 9px;
+  margin-left: -.5em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .svg-icon {
   cursor: pointer;
   vertical-align: middle;
@@ -116,9 +149,6 @@ label {
 }
 #mozilla-format-heading .svg-inline-wrapper {
   margin-left: 0;
-}
-#basic-info-enabled .svg-inline-wrapper {
-  margin-left: .1rem;
 }
 #colorpicker-settings.svg-inline-wrapper {
   margin: -2px 0 0 .1rem;
@@ -155,10 +185,6 @@ input:invalid {
 }
 #enabled {
   margin-left: 0;
-  vertical-align: middle;
-}
-#enabled-label {
-  vertical-align: middle;
 }
 /* collapsibles */
 #header summary {

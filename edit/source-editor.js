@@ -1,7 +1,10 @@
-/* global CodeMirror dirtyReporter initLint */
-/* global showToggleStyleHelp goBackToManage updateLintReportIfEnabled */
-/* global editors linterConfig updateLinter regExpTester sectionsToMozFormat */
-/* global createAppliesToLineWidget messageBox */
+/*
+global editors styleId: true
+global CodeMirror dirtyReporter
+global updateLintReportIfEnabled initLint linterConfig updateLinter
+global createAppliesToLineWidget messageBox
+global sectionsToMozFormat
+*/
 'use strict';
 
 function createSourceEditor(style) {
@@ -9,7 +12,6 @@ function createSourceEditor(style) {
   $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
   $('#save-button').onclick = save;
-  $('#toggle-style-help').onclick = showToggleStyleHelp;
   $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
@@ -176,6 +178,8 @@ function createSourceEditor(style) {
       }
       sessionStorage.justEditedStyleId = newStyle.id;
       style = newStyle;
+      styleId = style.id;
+      $('#preview-label').classList.remove('hidden');
       updateMeta();
     }
   }

@@ -249,13 +249,15 @@
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">
-          <label id="enabled-label" i18n-text="styleEnabledLabel">
+          <label id="enabled-label" i18n-text="styleEnabledLabel" i18n-title="styleEnabledToggleHint">
             <input type="checkbox" id="enabled" class="style-contributor">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
-          <a href="#" id="toggle-style-help" class="svg-inline-wrapper">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </a>
+          <label id="preview-label" i18n-text="previewLabel" i18n-title="previewTooltip" class="hidden">
+            <input type="checkbox" id="editor.livePreview">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
+          <span id="preview-errors" class="hidden">!</span>
         </div>
       </section>
       <section id="actions">

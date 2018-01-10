@@ -33,6 +33,7 @@
       "background/style-via-api.js",
       "background/search-db.js",
       "background/update.js",
+      "background/refresh-all-tabs.js",
       "vendor/node-semver/semver.js",
       "vendor-overwrites/colorpicker/colorconverter.js"
     ]
