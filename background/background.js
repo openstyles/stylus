@@ -251,7 +251,7 @@ window.addEventListener('storageReady', function _() {
 // *************************************************************************
 
 function webNavigationListener(method, {url, tabId, frameId}) {
-  getStyles({matchUrl: url, enabled: true, asHash: true}).then(styles => {
+  getStyles({matchUrl: url, asHash: true}).then(styles => {
     if (method && URLS.supported(url) && tabId >= 0) {
       if (method === 'styleApply') {
         handleCssTransitionBug({tabId, frameId, url, styles});
@@ -352,20 +352,14 @@ function updateIcon({tab, styles}) {
     return;
   }
   getTabRealURL(tab)
-    .then(url => getStyles({matchUrl: url, enabled: true, asHash: true}))
+    .then(url => getStyles({matchUrl: url, asHash: true}))
     .then(stylesReceived);
 
-  function countStyles(styles) {
-    if (Array.isArray(styles)) return styles.length;
-    return Object.keys(styles).reduce((sum, id) => sum + !isNaN(Number(id)), 0);
-  }
-
   function stylesReceived(styles) {
-    const numStyles = countStyles(styles);
     const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
-    const postfix = disableAll ? 'x' : numStyles === 0 ? 'w' : '';
+    const postfix = disableAll ? 'x' : !styles.length ? 'w' : '';
     const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
-    const text = prefs.get('show-badge') && numStyles ? String(numStyles) : '';
+    const text = prefs.get('show-badge') && styles.length ? String(styles.length) : '';
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
 
     let tabIcon = tabIcons.get(tab.id);

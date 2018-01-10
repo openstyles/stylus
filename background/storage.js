@@ -202,9 +202,8 @@ function filterStyles({
   omitCode,
   strictRegexp = true, // used by the popup to detect bad regexps
 } = {}) {
-  enabled = enabled === null || typeof enabled === 'boolean' ? enabled :
-    typeof enabled === 'string' ? enabled === 'true' : null;
-  id = id === null ? null : Number(id);
+  if (id) id = Number(id);
+  if (asHash) enabled = true;
 
   if (
     enabled === null &&
@@ -217,10 +216,11 @@ function filterStyles({
   }
 
   if (matchUrl && !URLS.supported(matchUrl)) {
-    return asHash ? {} : [];
+    return asHash ? {length: 0} : [];
   }
 
   const blankHash = asHash && {
+    length: 0,
     disableAll: prefs.get('disableAll'),
     exposeIframes: prefs.get('exposeIframes'),
   };
@@ -286,7 +286,7 @@ function filterStylesInternal({
     // of edit.html with a non-existent style id parameter
     return asHash ? blankHash : [];
   }
-  const filtered = asHash ? {} : [];
+  const filtered = asHash ? {length: 0} : [];
   const needSections = asHash || matchUrl !== null;
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
@@ -307,6 +307,7 @@ function filterStylesInternal({
       if (asHash) {
         if (sections.length) {
           filtered[style.id] = sections;
+          filtered.length++;
         }
       } else if (matchUrl === null || sections.length) {
         filtered.push(style);

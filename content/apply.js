@@ -43,9 +43,8 @@
     }
     const request = Object.assign({
       method: 'getStyles',
-      matchUrl,
-      enabled: true,
       asHash: true,
+      matchUrl,
     }, options);
     // On own pages we request the styles directly to minimize delay and flicker
     if (typeof API === 'function') {
@@ -209,14 +208,12 @@
 
     if ('disableAll' in styles) {
       doDisableAll(styles.disableAll);
-      delete styles.disableAll;
     }
     if ('exposeIframes' in styles) {
       doExposeIframes(styles.exposeIframes);
-      delete styles.exposeIframes;
     }
 
-    const gotNewStyles = Object.keys(styles).length || styles.needTransitionPatch;
+    const gotNewStyles = styles.length || styles.needTransitionPatch;
     if (gotNewStyles) {
       if (docRootObserver) {
         docRootObserver.stop();
@@ -227,12 +224,13 @@
 
     if (styles.needTransitionPatch) {
       applyTransitionPatch();
-      delete styles.needTransitionPatch;
     }
 
     if (gotNewStyles) {
       for (const id in styles) {
-        applySections(id, styles[id].map(section => section.code).join('\n'));
+        const sections = styles[id];
+        if (!Array.isArray(sections)) continue;
+        applySections(id, sections.map(({code}) => code).join('\n'));
       }
       docRootObserver.start({sort: true});
     }

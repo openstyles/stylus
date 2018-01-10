@@ -38,7 +38,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    return getStyles({id, matchUrl: url, enabled: true, asHash: true}).then(styles => {
+    return getStyles({id, matchUrl: url, asHash: true}).then(styles => {
       const tasks = [];
       for (const styleId in styles) {
         if (isNaN(parseInt(styleId))) {
