@@ -16,6 +16,7 @@ function parseMozFormat({code, styleId}) {
     'domain':     'domains',
     'regexp':     'regexps',
   };
+  const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser();
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
@@ -47,7 +48,15 @@ function parseMozFormat({code, styleId}) {
     }
     for (const {name, expr, uri} of e.functions) {
       const aType = CssToProperty[name.toLowerCase()];
-      (section[aType] = section[aType] || []).push(uri || expr && expr.parts[0].value || '');
+      const p0 = expr && expr.parts[0];
+      if (p0 && aType === 'regexps') {
+        const s = p0.text;
+        if (hasSingleEscapes.test(p0.text)) {
+          const isQuoted = (s.startsWith('"') || s.startsWith("'")) && s.endsWith(s[0]);
+          p0.value = isQuoted ? s.slice(1, -1) : s;
+        }
+      }
+      (section[aType] = section[aType] || []).push(uri || p0 && p0.value || '');
     }
     sectionStack.push(section);
   });
