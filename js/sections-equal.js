@@ -1,6 +1,7 @@
 'use strict';
 
-function styleSectionsEqual({sections: a}, {sections: b}) {
+// ignoreCode=true is used by invalidateCache to determine if cached filters should be cleared
+function styleSectionsEqual({sections: a}, {sections: b}, {ignoreCode = false} = {}) {
   if (!a || !b) {
     return undefined;
   }
@@ -17,7 +18,7 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
         return false;
       }
     }
-    return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
+    return ignoreCode || equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
   }
 
   function equalOrEmpty(a, b, telltale, comparator) {

@@ -225,7 +225,14 @@ function filterStyles({
     exposeIframes: prefs.get('exposeIframes'),
   };
 
-  const cacheKey = [enabled, id, matchUrl, md5Url, asHash, strictRegexp].join('\t');
+  // make sure to use the same order in updateFiltersCache()
+  const cacheKey =
+    enabled + '\t' +
+    id + '\t' +
+    matchUrl + '\t' +
+    md5Url + '\t' +
+    asHash + '\t' +
+    strictRegexp;
   const cached = cachedStyles.filters.get(cacheKey);
   let styles;
   if (cached) {
@@ -541,21 +548,27 @@ function styleCodeEmpty(code) {
 
 
 function invalidateCache({added, updated, deletedId} = {}) {
-  if (!cachedStyles.list) {
-    return;
-  }
+  if (!cachedStyles.list) return;
   const id = added ? added.id : updated ? updated.id : deletedId;
   const cached = cachedStyles.byId.get(id);
+
   if (updated) {
     if (cached) {
+      const reenabled = !cached.enabled && updated.enabled;
+      const equal = !reenabled && styleSectionsEqual(updated, cached, {ignoreCode: true});
       Object.assign(cached, updated);
-      cachedStyles.filters.clear();
+      if (equal) {
+        updateFiltersCache(cached);
+      } else {
+        cachedStyles.filters.clear();
+      }
       cachedStyles.needTransitionPatch.delete(id);
       return;
     } else {
       added = updated;
     }
   }
+
   if (added) {
     if (!cached) {
       cachedStyles.list.push(added);
@@ -565,19 +578,62 @@ function invalidateCache({added, updated, deletedId} = {}) {
     }
     return;
   }
+
   if (deletedId !== undefined) {
     if (cached) {
       const cachedIndex = cachedStyles.list.indexOf(cached);
       cachedStyles.list.splice(cachedIndex, 1);
       cachedStyles.byId.delete(deletedId);
-      cachedStyles.filters.clear();
+      for (const {styles} of cachedStyles.filters.values()) {
+        if (Array.isArray(styles)) {
+          const index = styles.findIndex(({id}) => id === deletedId);
+          if (index >= 0) styles.splice(index, 1);
+        } else if (deletedId in styles) {
+          delete styles[deletedId];
+          styles.length--;
+        }
+      }
       cachedStyles.needTransitionPatch.delete(id);
       return;
     }
   }
+
   cachedStyles.list = null;
   cachedStyles.filters.clear();
   cachedStyles.needTransitionPatch.clear(id);
+}
+
+
+function updateFiltersCache(style) {
+  const {id} = style;
+  for (const [key, {styles}] of cachedStyles.filters.entries()) {
+    if (Array.isArray(styles)) {
+      const index = styles.findIndex(style => style.id === id);
+      if (index >= 0) styles[index] = Object.assign({}, style);
+      continue;
+    }
+    if (id in styles) {
+      const [, , matchUrl, , , strictRegexp] = key.split('\t');
+      if (!style.enabled) {
+        delete styles[id];
+        continue;
+      }
+      const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
+      const sections = getApplicableSections({
+        style,
+        matchUrl,
+        matchUrlBase,
+        strictRegexp,
+        skipUrlCheck: true,
+      });
+      if (sections.length) {
+        styles[id] = sections;
+      } else {
+        delete styles[id];
+        styles.length--;
+      }
+    }
+  }
 }
 
 
