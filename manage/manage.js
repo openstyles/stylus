@@ -309,8 +309,8 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
   });
 }
 
-function getFaviconImgSrc() {
-  const targets = $$('.target', installed);
+function getFaviconImgSrc(container = installed) {
+  const targets = $$('.target', container);
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
@@ -536,6 +536,9 @@ function handleUpdate(style, {reason, method} = {}) {
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
+  }
+  if (newUI.enabled && newUI.favicons) {
+    getFaviconImgSrc(entry);
   }
 
   function handleToggledOrCodeOnly() {
