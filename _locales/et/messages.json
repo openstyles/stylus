@@ -39,10 +39,6 @@
 		"message": "vanemad eespool",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
-	"styleEnabledToggleHint": {
-		"message": "Vajuta Alt-Enter, et lülitada ümber lubatud/keelatud olek ja salvestada stiil",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "Ekspordi",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

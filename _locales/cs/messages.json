@@ -27,10 +27,6 @@
 		"message": "Interval automatické aktualizace stylů v hodinách (0 = vypnuto)",
 		"description": ""
 	},
-	"styleEnabledToggleHint": {
-		"message": "Stiskem Alt + Enter můžete zapnout/vypnout a uložit styl",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "Exportovat",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

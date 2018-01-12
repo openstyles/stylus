@@ -43,10 +43,6 @@
 		"message": "最旧的优先",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
-	"styleEnabledToggleHint": {
-		"message": "按 Alt + Enter 切换启用/禁用状态并保存样式",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "导出",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

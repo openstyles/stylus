@@ -43,10 +43,6 @@
 		"message": "najpierw najstarsze",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
-	"styleEnabledToggleHint": {
-		"message": "Naciśnij Alt-Enter, aby przełączyć stan włączenia lub wyłączenia i zapisać styl",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "Eksportuj",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

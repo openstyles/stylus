@@ -342,7 +342,6 @@ function setCleanSection(section) {
 
 function toggleStyle() {
   $('#enabled').checked = !$('#enabled').checked;
-  save();
 }
 
 function save() {
@@ -528,11 +527,6 @@ function showAppliesToHelp(event) {
 function showToMozillaHelp(event) {
   event.preventDefault();
   showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
-}
-
-function showToggleStyleHelp(event) {
-  event.preventDefault();
-  showHelp(t('helpAlt'), t('styleEnabledToggleHint'));
 }
 
 function showHelp(title = '', body) {

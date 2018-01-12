@@ -43,10 +43,6 @@
 		"message": "古い順",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
-	"styleEnabledToggleHint": {
-		"message": "Alt-Enterを押すと、有効/無効の状態を切り替え、スタイルを保存します",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"exportLabel": {
 		"message": "エクスポート",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

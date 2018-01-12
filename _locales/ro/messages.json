@@ -39,10 +39,6 @@
 		"message": "cel mai vechi la început",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
-	"styleEnabledToggleHint": {
-		"message": "Apăsți Alt-Enter pentru a activa/dezactiva tema și pentru a o salva",
-		"description": "Help text for the '[x] enable' checkbox in the editor"
-	},
 	"installButton": {
 		"message": "Instalați tema",
 		"description": "Label for install button"
