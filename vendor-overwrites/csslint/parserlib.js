@@ -5182,7 +5182,7 @@ self.parserlib = (() => {
 
       try {
         while (stream.peek() !== Tokens.RBRACE) {
-          this._ws();
+          this._ws(true);
           if (stream.match(Tokens.SEMICOLON) || readMargins && this._margin()) continue;
           if (!this._declaration(true)) break;
         }
