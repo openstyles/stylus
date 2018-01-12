@@ -540,6 +540,17 @@ onDOMscriptReady('/codemirror.js').then(() => {
       setTimeout(setupLivePreview);
       return;
     }
+    if (!styleId) {
+      new MutationObserver((_, observer) => {
+        if (!styleId) return;
+        observer.disconnect();
+        setupLivePreview();
+      }).observe($('#preview-label'), {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+      return;
+    }
     $('#editor.livePreview').onchange = function () {
       const previewing = this.checked;
       editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
