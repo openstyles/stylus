@@ -616,6 +616,7 @@ function updateFiltersCache(style) {
       const [, , matchUrl, , , strictRegexp] = key.split('\t');
       if (!style.enabled) {
         delete styles[id];
+        styles.length--;
         continue;
       }
       const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
