@@ -641,6 +641,12 @@
     const len = styles.length;
     const end = styles[len - 2];
     if (pos > end) return;
+    if (pos === end) {
+      return {
+        style: styles[len - 1],
+        index: len - 2,
+      };
+    }
     const mid = (pos / end * (len - 1) & ~1) + 1;
     let a = mid;
     let b;
