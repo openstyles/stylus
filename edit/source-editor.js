@@ -44,9 +44,6 @@ function createSourceEditor(style) {
     updateLintReportIfEnabled(cm);
   });
 
-  cm.on('focus', () => cm.rerouteHotkeys(false));
-  cm.on('blur', () => cm.rerouteHotkeys(true));
-
   CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
   CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
   CodeMirror.commands.toggleStyle = toggleStyle;

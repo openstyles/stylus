@@ -190,21 +190,7 @@ function setupCodeMirror(sectionDiv, code, index) {
     clearTimeout(onChangeTimer);
     onChangeTimer = setTimeout(indicateCodeChange, 200, cm, changes);
   });
-  if (prefs.get('editor.autocompleteOnTyping')) {
-    setupAutocomplete(cm);
-  }
   wrapper.addEventListener('keydown', event => nextPrevEditorOnKeydown(cm, event), true);
-  cm.on('blur', () => {
-    editors.lastActive = cm;
-    cm.rerouteHotkeys(true);
-    setTimeout(() => {
-      wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
-    });
-  });
-  cm.on('focus', () => {
-    cm.rerouteHotkeys(false);
-    wrapper.classList.add('CodeMirror-active');
-  });
   cm.on('paste', (cm, event) => {
     const text = event.clipboardData.getData('text') || '';
     if (

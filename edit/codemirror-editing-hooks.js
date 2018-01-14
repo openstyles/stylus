@@ -33,6 +33,27 @@ onDOMscriptReady('/codemirror.js').then(() => {
     rerouteHotkeys,
   });
 
+  CodeMirror.defineInitHook(cm => {
+    if (prefs.get('editor.livePreview')) {
+      cm.on('changes', updatePreview);
+    }
+    if (prefs.get('editor.autocompleteOnTyping')) {
+      setupAutocomplete(cm);
+    }
+    const wrapper = cm.display.wrapper;
+    cm.on('blur', () => {
+      editors.lastActive = cm;
+      cm.rerouteHotkeys(true);
+      setTimeout(() => {
+        wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
+      });
+    });
+    cm.on('focus', () => {
+      cm.rerouteHotkeys(false);
+      wrapper.classList.add('CodeMirror-active');
+    });
+  });
+
   new MutationObserver((mutations, observer) => {
     if (!$('#sections')) {
       return;
@@ -561,11 +582,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
         updatePreview(null, previewing);
       }
     };
-    CodeMirror.defineInitHook(cm => {
-      if (prefs.get('editor.livePreview')) {
-        cm.on('changes', updatePreview);
-      }
-    });
   }
 
   function updatePreview(data, previewing) {
