@@ -341,7 +341,7 @@ function setCleanSection(section) {
 }
 
 function toggleStyle() {
-  $('#enabled').checked = !$('#enabled').checked;
+  $('#enabled').dispatchEvent(new MouseEvent('click', {bubbles: true}));
 }
 
 function save() {

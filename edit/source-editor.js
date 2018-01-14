@@ -186,6 +186,7 @@ function createSourceEditor(style) {
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
     updateMeta();
+    $('#enabled').dispatchEvent(new Event('change', {bubbles: true}));
   }
 
   function save() {
