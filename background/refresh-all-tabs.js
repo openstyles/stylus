@@ -47,6 +47,11 @@ global updateIcon
     if (!style) {
       msg = {method: 'styleReplaceAll'};
 
+    // live preview puts the code in cachedStyles, saves the original in previewFromTabs,
+    // and if preview is being disabled, but the style is already deleted, we bail out
+    } else if (msg.reason === 'editPreview' && !updateCache(msg)) {
+      return;
+
     // simple style update:
     // * if disabled, apply.js will remove the element
     // * if toggled and code is unchanged, apply.js will toggle the element
@@ -60,11 +65,6 @@ global updateIcon
         },
         codeIsUpdated,
       };
-
-    // live preview puts the code in cachedStyles, saves the original in previewFromTabs,
-    // and if preview is being disabled, but the style is already deleted, we bail out
-    } else if (msg.reason === 'editPreview' && !updateCache(msg)) {
-      return;
 
     // live preview normal operation, the new code is already in cachedStyles
     } else {
@@ -127,10 +127,10 @@ global updateIcon
         invokeOrPostpone(tab.active, sendMessage, msg, ignoreChromeError);
       }
 
-      if (msg.method === 'styleReplaceAll' && !frame.frameId) {
+      if (!frame.frameId) {
         setTimeout(updateIcon, 0, {
           tab,
-          styles,
+          styles: msg.method === 'styleReplaceAll' ? styles : undefined,
         });
       }
     }
