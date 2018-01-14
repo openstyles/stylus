@@ -159,7 +159,7 @@ function notifyAllTabs(msg) {
   const affectsIcon = affectsAll || msg.affects.icon;
   const affectsPopup = affectsAll || msg.affects.popup;
   const affectsSelf = affectsPopup || msg.prefs;
-  // notify background page and all open popups
+  // notify all open extension pages and popups
   if (affectsSelf) {
     msg.tabId = undefined;
     sendMessage(msg, ignoreChromeError);
@@ -167,9 +167,9 @@ function notifyAllTabs(msg) {
   // notify tabs
   if (affectsTabs || affectsIcon) {
     const notifyTab = tab => {
-      // own pages will be notified via runtime.sendMessage later
       if (!styleUpdated
       && (affectsTabs || URLS.optionsUI.includes(tab.url))
+      // own pages are already notified via sendMessage
       && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
       // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
       && (!FIREFOX || tab.width)) {

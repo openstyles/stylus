@@ -514,8 +514,11 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style, {reason, method} = {}) {
+function handleUpdate(style, {reason, method, codeIsUpdated} = {}) {
   if (reason === 'editPreview') return;
+  // the style was toggled and refreshAllTabs() sent a mini-notification,
+  // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()
+  if (!style.sections) return;
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method === 'styleUpdated') {
