@@ -61,8 +61,8 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
     // FF applies page CSP even to content scripts, https://bugzil.la/1267027
     chrome.webNavigation.onCommitted.addListener(webNavUsercssInstallerFF, {
       url: [
-        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.css'},
-        {urlPrefix: 'https://raw.githubusercontent.com/', urlSuffix: '.user.styl'},
+        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
+        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
       ]
     });
   }
