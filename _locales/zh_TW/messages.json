@@ -163,6 +163,10 @@
 		"message": "已啟用",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "不儲存而暫時套用變更。\n儲存樣式以永久變更。",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "灰階淡出",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -717,6 +721,10 @@
 	"updateCompleted": {
 		"message": "更新完成。",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "即時預覽",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "總頁面",

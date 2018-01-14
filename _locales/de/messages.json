@@ -159,6 +159,10 @@
 		"message": "Aktiviert",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "Übernimmt die Änderungen nur vorübergehend.\nSpeichere den Style, um die Änderungen dauerhaft anzuwenden.",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "Ausgegraut",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -697,6 +701,10 @@
 	"updateCompleted": {
 		"message": "Aktualisierung abgeschlossen.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Echtzeitvorschau",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Gesamtzahl der Seiten",

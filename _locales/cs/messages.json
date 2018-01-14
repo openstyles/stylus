@@ -19,13 +19,25 @@
 		"message": "Exportovat styly",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Seřadit obsah",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"manageOnlyUsercss": {
 		"message": "Pouze Usercss styly",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortLabelTitleAsc": {
+		"message": "Název (vzestupně)",
+		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+	},
 	"optionsUpdateInterval": {
 		"message": "Interval automatické aktualizace stylů v hodinách (0 = vypnuto)",
 		"description": ""
+	},
+	"sortDateOldestFirst": {
+		"message": "starší nejdříve",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
 	},
 	"exportLabel": {
 		"message": "Exportovat",
@@ -138,6 +150,10 @@
 	"search": {
 		"message": "Vyhledat",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Povoleno",
+		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"manageFaviconsGray": {
 		"message": "Zešednutí",
@@ -321,6 +337,10 @@
 	"unreachableFileHint": {
 		"message": "Stylus může přistupovat k file:// URL pouze při povolení odpovídající možnosti pro rozšíření Stylus ve správci chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Zvolte způsob řazení instalovaných stylů",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Zakázat",
@@ -557,6 +577,10 @@
 		"message": "Platí pro",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Název (sestupně)",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Možnosti",
 		"description": "Go to Options UI"
@@ -674,6 +698,10 @@
 		"message": "Ikona na panelu nástrojů",
 		"description": ""
 	},
+	"genericTitle": {
+		"message": "Název",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Aktalizace dokončena.",
 		"description": "Text that displays when an update completed"
@@ -697,6 +725,10 @@
 	"searchResultRating": {
 		"message": "Hodnocení",
 		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Neznámé",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift + kliknutím nebo pravým kliknutím otevřít správce se styly použitými na této stránce",
@@ -904,6 +936,10 @@
 		"message": "Nastala chyba při používání Stylus databáze. Chcete navštívit webovou stránku s možnými řešeními?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Datum instalace",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Pokročilé",
 		"description": ""
@@ -931,6 +967,10 @@
 	"styleRegexpTestInvalid": {
 		"message": "Neplatné regexp přeskočeny",
 		"description": "RegExp test report: label for the invalid expressions"
+	},
+	"dateUpdated": {
+		"message": "Datum aktualizace",
+		"description": "Option text for the user to sort the style by last update date"
 	},
 	"manageOnlyExternal": {
 		"message": "Pouze externí styly",
@@ -987,6 +1027,10 @@
 	"optionsCustomizeBadge": {
 		"message": "Ikona tlačítka na panelu",
 		"description": ""
+	},
+	"sortDateNewestFirst": {
+		"message": "nejdříve novější",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
 	},
 	"paginationPrevious": {
 		"message": "Předchozí stránka",

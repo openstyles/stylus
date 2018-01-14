@@ -163,6 +163,10 @@
 		"message": "Habilitado",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "Aplica temporalmente los cambios sin guardar.\nGuarde el estilo para hacer lo cambios permanentes.",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "Atenuado",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -713,6 +717,10 @@
 	"updateCompleted": {
 		"message": "Actualización completada.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Previsualización en caliente",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Páginas totales",

@@ -163,6 +163,10 @@
 		"message": "Активные",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "Временно применяет стиль пока вы его редактируете.\nСохраните стиль, чтобы сделать изменения постоянными.",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "Обесцвечивать",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -717,6 +721,10 @@
 	"updateCompleted": {
 		"message": "Обновление завершено.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Предпросмотр",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Всего страниц",

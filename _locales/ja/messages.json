@@ -159,6 +159,10 @@
 		"message": "有効",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "変更を保存しないで一時的に適用します。\n変更を確定する場合は、スタイルを保存してください。",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "グレー表示",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -710,6 +714,10 @@
 		"message": "更新が完了しました。",
 		"description": "Text that displays when an update completed"
 	},
+	"previewLabel": {
+		"message": "自動プレビュー",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
+	},
 	"paginationTotal": {
 		"message": "総ページ数",
 		"description": ""
@@ -901,7 +909,7 @@
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"stylusUnavailableForURL": {
-		"message": "このようなページではStylusは動作しません。",
+		"message": "このページではStylusは動作しません。",
 		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"popupBorders": {
