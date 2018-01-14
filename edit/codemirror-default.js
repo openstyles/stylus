@@ -226,34 +226,45 @@ CodeMirror.hint && (() => {
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
+  const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iyu;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
   CodeMirror.registerHelper('hint', 'css', function (cm) {
-    const {line, ch} = cm.getCursor();
+    const pos = cm.getCursor();
+    const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
-    if (!styles || !editor) {
+    if (!styles) return originalHelper(cm);
+    const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
+    if (style && (style.startsWith('comment') || style.startsWith('string'))) {
       return originalHelper(cm);
     }
-    let prev = 0;
-    for (let i = 1; i < styles.length; i += 2) {
-      let end = styles[i];
-      if (prev <= ch && ch <= end &&
-          (styles[i + 1] || '').includes(USO_VAR)) {
-        const adjust = text[prev] === '/' ? 4 : 0;
-        prev += adjust;
-        end -= adjust;
-        const leftPart = text.slice(prev, ch);
-        const list = Object.keys(editor.getStyle().usercssData.vars)
-          .filter(name => name.startsWith(leftPart));
-        return {
-          list,
-          from: {line, ch: prev},
-          to: {line, ch: end},
-        };
-      }
-      prev = end;
+    if (text[ch - 1] === '!' && /i|\W|^$/iu.test(text[ch] || '')) {
+      RX_IMPORTANT.lastIndex = ch;
+      return {
+        list: ['important'],
+        from: pos,
+        to: {line, ch: ch + RX_IMPORTANT.exec(text)[0].length},
+      };
     }
-    return originalHelper(cm);
+    let prev = index > 2 ? styles[index - 2] : 0;
+    let end = styles[index];
+    if (text[prev] === '#') {
+      return {list: [], from: pos, to: pos};
+    }
+    if (!editor || !style || !style.includes(USO_VAR)) {
+      return originalHelper(cm);
+    }
+    const adjust = text[prev] === '/' ? 4 : 0;
+    prev += adjust;
+    end -= adjust;
+    const leftPart = text.slice(prev, ch);
+    const list = Object.keys(editor.getStyle().usercssData.vars)
+      .filter(name => name.startsWith(leftPart));
+    return {
+      list,
+      from: {line, ch: prev},
+      to: {line, ch: end},
+    };
   });
 
   const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
