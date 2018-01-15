@@ -6,6 +6,7 @@
     // some weird bug in new Chrome: the content script gets injected multiple times
     return;
   }
+  const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
   var ID_PREFIX = 'stylus-';
   var ROOT = document.documentElement;
   var isOwnPage = location.protocol.endsWith('-extension:');
@@ -252,9 +253,16 @@
   function applySections(styleId, code) {
     const id = ID_PREFIX + styleId;
     let el = styleElements.get(id) || document.getElementById(id);
-    if (el) {
-      if (el.textContent !== code) el.textContent = code;
-    } else {
+    if (el && el.textContent !== code) {
+      if (CHROME < 3321) {
+        // workaround for Chrome devtools bug fixed in v65
+        el.remove();
+        el = null;
+      } else {
+        el.textContent = code;
+      }
+    }
+    if (!el) {
       if (document.documentElement instanceof SVGSVGElement) {
         // SVG document style
         el = document.createElementNS('http://www.w3.org/2000/svg', 'style');
