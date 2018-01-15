@@ -34,7 +34,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
   });
 
   CodeMirror.defineInitHook(cm => {
-    if (prefs.get('editor.livePreview')) {
+    if (prefs.get('editor.livePreview') && styleId) {
       cm.on('changes', updatePreview);
     }
     if (prefs.get('editor.autocompleteOnTyping')) {
