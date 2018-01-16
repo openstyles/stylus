@@ -467,7 +467,7 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 #help-popup {
   top: 3rem;
   right: 3rem;
-  max-width: 50vw;
+  max-width: 26rem;
   position: fixed;
   display: none;
   background-color: white;
@@ -489,6 +489,7 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 }
 #help-popup .title {
   font-weight: bold;
+  font-size: 1rem;
   background-color: rgba(0,0,0,0.05);
   margin: -0.5rem -0.5rem 0.5rem;
   padding: .5rem 32px .5rem .5rem;
@@ -497,6 +498,10 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
 }
+#help-popup.info .contents {
+  padding: 1.5rem .75rem;
+}
+
 #help-popup .settings {
   min-width: 500px;
   min-height: 200px;

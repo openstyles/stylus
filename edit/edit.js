@@ -516,22 +516,22 @@ function fromMozillaFormat() {
 
 function showSectionHelp(event) {
   event.preventDefault();
-  showHelp(t('styleSectionsTitle'), t('sectionHelp'));
+  showHelp(t('styleSectionsTitle'), t('sectionHelp'), 'info');
 }
 
 function showAppliesToHelp(event) {
   event.preventDefault();
-  showHelp(t('appliesLabel'), t('appliesHelp'));
+  showHelp(t('appliesLabel'), t('appliesHelp'), 'info');
 }
 
 function showToMozillaHelp(event) {
   event.preventDefault();
-  showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
+  showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'), 'info');
 }
 
-function showHelp(title = '', body) {
+function showHelp(title = '', body, className = '') {
   const div = $('#help-popup');
-  div.className = '';
+  div.className = className;
 
   const contents = $('.contents', div);
   contents.textContent = '';
