@@ -81,6 +81,11 @@ label {
   min-height: 1.4rem;
 }
 
+#mozilla-format-container {
+  align-items: center;
+  margin-top: .5rem;
+}
+
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
@@ -143,7 +148,7 @@ label {
   height: 16px;
 }
 .svg-inline-wrapper {
-  margin-left: .2rem;
+  margin-left: .1rem;
   display: inline-block;
   vertical-align: middle;
 }
@@ -191,7 +196,7 @@ input:invalid {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: .8rem;
   margin-bottom: 8px;
 }
 
@@ -208,10 +213,6 @@ input:invalid {
 
 #header summary svg {
   margin-top: -3px;
-}
-
-#actions {
-  margin-bottom: .5rem;
 }
 
 #options:not([open]) + #lint h2 {
