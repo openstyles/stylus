@@ -43,7 +43,7 @@
       } catch (e) {}
     }
     const request = Object.assign({
-      method: 'getStyles',
+      method: 'getStylesForFrame',
       asHash: true,
       matchUrl,
     }, options);
@@ -143,9 +143,9 @@
     }
     exposeIframes = state;
     const attr = document.documentElement.getAttribute('stylus-iframe');
-    if (state && attr !== '') {
-      document.documentElement.setAttribute('stylus-iframe', '');
-    } else if (!state && attr === '') {
+    if (state && state !== attr) {
+      document.documentElement.setAttribute('stylus-iframe', state);
+    } else if (!state && attr !== undefined) {
       document.documentElement.removeAttribute('stylus-iframe');
     }
   }

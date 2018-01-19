@@ -1212,7 +1212,7 @@
     "message": "Expose iframes via HTML[stylus-iframe]"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Enables writing iframe-specific CSS like 'html[stylus-iframe] h1 { display:none }'"
+    "message": "Exposes the top site domain in each iframe.\nEnables writing iframe-specific CSS like this:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"

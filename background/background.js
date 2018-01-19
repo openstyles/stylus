@@ -248,13 +248,37 @@ window.addEventListener('storageReady', function _() {
 });
 
 // *************************************************************************
+{
+  const getStylesForFrame = (msg, sender) => {
+    const stylesTask = getStyles(msg);
+    if (!sender || !sender.frameId) return stylesTask;
+    return Promise.all([
+      stylesTask,
+      getTab(sender.tab.id),
+    ]).then(([styles, tab]) => {
+      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
+      return styles;
+    });
+  };
+  const updateAPI = (_, enabled) => {
+    window.API_METHODS.getStylesForFrame = enabled ? getStylesForFrame : getStyles;
+  };
+  prefs.subscribe(['exposeIframes'], updateAPI);
+  updateAPI(null, prefs.readOnlyValues.exposeIframes);
+}
+
+// *************************************************************************
 
 function webNavigationListener(method, {url, tabId, frameId}) {
-  getStyles({matchUrl: url, asHash: true}).then(styles => {
+  Promise.all([
+    getStyles({matchUrl: url, asHash: true}),
+    frameId && prefs.readOnlyValues.exposeIframes && getTab(tabId),
+  ]).then(([styles, tab]) => {
     if (method && URLS.supported(url) && tabId >= 0) {
       if (method === 'styleApply') {
         handleCssTransitionBug({tabId, frameId, url, styles});
       }
+      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
       sendMessage({
         tabId,
         frameId,
