@@ -141,13 +141,10 @@ global updateIcon
 
   function getFrameUrl(frame, frames) {
     while (frame.url === 'about:blank' && frame.frameId > 0) {
-      for (const f of frames) {
-        if (f.frameId === frame.parentFrameId) {
-          frame.url = f.url;
-          frame = f;
-          break;
-        }
-      }
+      const parent = frames.find(f => f.frameId === frame.parentFrameId);
+      if (!parent) break;
+      frame.url = parent.url;
+      frame = parent;
     }
     return (frame || frames[0]).url;
   }
