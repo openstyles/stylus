@@ -138,7 +138,9 @@
   }
 
   function doExposeIframes(state = exposeIframes) {
-    if (state === exposeIframes || window === parent) {
+    if (state === exposeIframes ||
+        state === true && typeof exposeIframes === 'string' ||
+        window === parent) {
       return;
     }
     exposeIframes = state;
