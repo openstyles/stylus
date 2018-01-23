@@ -160,7 +160,7 @@
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"previewTooltip": {
-		"message": "変更を保存しないで一時的に適用します。\n変更を確定する場合は、スタイルを保存してください。",
+		"message": "変更を保存しないで一時的に適用します。\n変更を確定する場合には、スタイルを保存してください。",
 		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
 	},
 	"manageFaviconsGray": {
@@ -264,7 +264,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "' html[stylus-iframe] h1 { display:none } ' のようにiframe用のCSSを書くことができるようになります。",
+		"message": "各iframeにトップサイトドメインを公開します。\n次のようにiframe用のCSSを書くことができるようになります:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {

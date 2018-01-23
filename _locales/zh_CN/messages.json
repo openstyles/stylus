@@ -263,10 +263,6 @@
 		"message": "与该正则表达式匹配的网址",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "在开发者工具中，找到 Stylus 特定插入的框架代码，以便调用，例如：“html[stylus-iframe] h1 { display:none }”",
-		"description": ""
-	},
 	"importReportLegendUpdatedCode": {
 		"message": "代码已更新",
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"

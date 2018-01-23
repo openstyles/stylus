@@ -239,10 +239,6 @@
 		"message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Engedélyezi az olyan iframe-specifikus CSS írását, mint a „html[stylus-iframe] h1 { display:none }”",
-		"description": ""
-	},
 	"importReportLegendUpdatedCode": {
 		"message": "frissített kód",
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"

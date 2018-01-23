@@ -268,7 +268,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "啟用寫入特定 iframe 的 CSS，如 'html[stylus-iframe] h1 { display:none }'",
+		"message": "公開每個 iframe 中的頂級頁面網域。\n啟用編寫特別用於 iframe 的 CSS，如這個：\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {

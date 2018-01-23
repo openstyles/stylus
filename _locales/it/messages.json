@@ -15,17 +15,9 @@
 		"message": "Esporta stili",
 		"description": ""
 	},
-	"optionsUpdateInterval": {
-		"message": "Controlla e installa automaticamente tutti gli aggiornamenti stili disponibili (in ore), per disattivare, imposta a 0",
-		"description": ""
-	},
 	"exportLabel": {
 		"message": "Esporta",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"installButton": {
-		"message": "Installa",
-		"description": "Label for install button"
 	},
 	"linterJSONError": {
 		"message": "Formato JSON non valido",
@@ -601,10 +593,6 @@
 		"message": "Larghezza popup (in pixel)",
 		"description": ""
 	},
-	"installButtonReinstall": {
-		"message": "Reinstalla",
-		"description": "Label for reinstall button"
-	},
 	"appliesLineWidgetWarning": {
 		"message": "Non funziona con CSS minificato",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
@@ -650,10 +638,6 @@
 		"message": "Scrivi nuovo stile",
 		"description": "Label for the button to go to the add style page"
 	},
-	"installButtonUpdate": {
-		"message": "Aggiorna",
-		"description": "Label for update button"
-	},
 	"manageOnlyEnabled": {
 		"message": "Solo stili attivati",
 		"description": "Checkbox to show only enabled styles"
@@ -661,10 +645,6 @@
 	"editStyleLabel": {
 		"message": "Modifica",
 		"description": "Label for the button to go to the edit style page"
-	},
-	"installButtonInstalled": {
-		"message": "Installato",
-		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
 		"message": "Autore",

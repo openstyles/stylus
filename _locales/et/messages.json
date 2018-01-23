@@ -251,10 +251,6 @@
 		"message": "Regulaaravaldisele vastavad URLid",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Lubab iframe'i-põhise CSS-koodi kirjutamise, nagu \"html[stylus-iframe] h1 { display:none }\"",
-		"description": ""
-	},
 	"importReportLegendUpdatedCode": {
 		"message": "uuendatud kood",
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"

@@ -183,10 +183,6 @@
 		"message": "Адреси, съвпадащи с регулярен израз",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Включва писането на специфични за 'iframe' стилове като 'html[stylus-iframe] h1 { display:none }'",
-		"description": ""
-	},
 	"importReportLegendUpdatedCode": {
 		"message": "с обновен код",
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"

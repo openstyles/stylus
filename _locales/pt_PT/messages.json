@@ -19,10 +19,6 @@
 		"message": "Exportar estilos",
 		"description": ""
 	},
-	"optionsUpdateInterval": {
-		"message": "Verificar automaticamente e instalar todos as atualizações para estilos do utilizador [userstyles] disponíveis (em horas), para desativar, estabelce a 0",
-		"description": ""
-	},
 	"exportLabel": {
 		"message": "Exportar",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -170,10 +166,6 @@
 	"appliesRegexpOption": {
 		"message": "URLs a combinar com o regexp",
 		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Permite escrever CSS específico a iframe como 'html[stylus-iframe] h1 { display:none }'",
-		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
 		"message": "atualizar código",
