@@ -372,7 +372,7 @@ select {
   align-items: center;
   height: 18px;
   width: 100%;
-  padding: 0 0 0 4px;
+  padding: 0 0 0 8px;
 }
 
 #header .filter-selection label .checkmate {
@@ -390,7 +390,6 @@ select {
   max-width: 100%;
   padding-left: 4px;
   padding-right: 14px;
-  margin-left: 4px;
 }
 
 .filter-selection .select-arrow {
@@ -405,7 +404,7 @@ select {
   max-width: calc(100% - 2em);
   position: absolute;
   top: 0;
-  left: 16px;
+  left: 20px;
 }
 
 #filters label,
@@ -828,11 +827,6 @@ input[id^="manage.newUI"] {
   padding-left: 20px;
 }
 
-#filters label input[type="checkbox"]:not(.slider),
-#filters label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked{
-  left: 4px;
-}
-
 #filters {
   border: 1px solid transparent;
 }
@@ -1163,10 +1157,6 @@ input[id^="manage.newUI"] {
 
   .filter-selection select {
     padding-left: 0;
-  }
-
-  .select-resizer {
-    left: 16px;
   }
 
   #reset-filters {
