@@ -272,7 +272,7 @@ var prefs = new function Prefs() {
       if (BG && BG !== window) return;
       if (BG === window) {
         affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
-        chromeSync.getValue('settings', settings => importFromSync.call(this, settings));
+        chromeSync.getValue('settings').then(settings => importFromSync.call(this, settings));
       }
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area === 'sync' && 'settings' in changes) {
