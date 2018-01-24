@@ -202,10 +202,6 @@ input[type="color"] {
   justify-content: center;
 }
 
-#updates span {
-  white-space: pre-wrap;
-}
-
 html:not(.firefox):not(.opera) #updates {
   margin-bottom: 0;
 }
@@ -249,19 +245,19 @@ html:not(.firefox):not(.opera) #updates {
   color: #333;
 }
 
-#advanced.collapsible .svg-icon {
+.collapsible-resizer .svg-icon {
   fill: #333;
   transition: fill .5s;
   height: 16px;
   width: 16px;
 }
 
-#advanced.collapsible.collapsed .svg-icon,
-#advanced.collapsible:not(.collapsed) h1:hover .svg-icon {
+#advanced.collapsible.collapsed .collapsible-resizer .svg-icon,
+#advanced.collapsible:not(.collapsed) .collapsible-resizer h1:hover .svg-icon {
   fill: #666;
 }
 
-#advanced.collapsible.collapsed:hover .svg-icon {
+#advanced.collapsible.collapsed:hover .collapsible-resizer .svg-icon {
   fill: #333;
 }
 
@@ -270,12 +266,32 @@ html:not(.firefox):not(.opera) #updates {
 }
 
 #advanced.collapsible.collapsed .is-expanded,
-#advanced:not(.collapsible) .svg-icon {
+#advanced:not(.collapsible) .collapsible-resizer .svg-icon {
   display: none;
 }
 
 #advanced.collapsible:not(.collapsed) .is-collapsed {
   display: none;
+}
+
+.svg-inline-wrapper .svg-icon {
+  width: 16px;
+  height: 16px;
+  fill: #666;
+  vertical-align: sub;
+}
+
+.svg-inline-wrapper:hover .svg-icon {
+  fill: #000;
+}
+
+#message-box.note > div {
+  max-width: calc(100vw - 6rem);
+}
+
+.opera #message-box.note,
+.firefox #message-box.note {
+  background-color: transparent;
 }
 
 @keyframes fadeinout {

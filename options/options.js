@@ -1,3 +1,4 @@
+/* global messageBox */
 'use strict';
 
 setupLivePrefs();
@@ -48,11 +49,12 @@ document.onclick = e => {
       break;
 
     case 'note': {
-      const tooltip = (target.closest('[title]') || {}).title;
-      if (tooltip && 'ontouchstart' in document) {
-        e.preventDefault();
-        target.parentNode.replaceChild($create('.expanded-note', tooltip), target);
-      }
+      e.preventDefault();
+      messageBox({
+        className: 'note',
+        contents: target.title,
+        buttons: [t('confirmClose')],
+      });
     }
   }
 };
