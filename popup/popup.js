@@ -1,4 +1,7 @@
-/* global configDialog hotkeys */
+/*
+global configDialog hotkeys
+global popupExclusions
+*/
 
 'use strict';
 
@@ -257,13 +260,16 @@ function createStyleElement({
     styleIsUsercss: Boolean(style.usercssData),
     className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
     onmousedown: handleEvent.maybeEdit,
+    styleMeta: style
   });
 
   const checkbox = $('.checker', entry);
   Object.assign(checkbox, {
     id: ENTRY_ID_PREFIX_RAW + style.id,
+    title: t('exclusionsPopupTip'),
     checked: style.enabled,
     onclick: handleEvent.toggle,
+    oncontextmenu: handleEvent.openExcludeMenu
   });
 
   const editLink = $('.style-edit-link', entry);
@@ -328,6 +334,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event) {
+    event.stopPropagation();
     API.saveStyle({
       id: handleEvent.getClickedStyleId(event),
       enabled: this.matches('.enable') || this.checked,
@@ -410,6 +417,12 @@ Object.assign(handleEvent, {
       event.button === 2)) {
       return;
     }
+    // open exclude page config dialog on right-click
+    if (event.target.classList.contains('checker')) {
+      this.oncontextmenu = handleEvent.openExcludeMenu;
+      event.preventDefault();
+      return;
+    }
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
@@ -445,6 +458,23 @@ Object.assign(handleEvent, {
       handleEvent.openURLandHide.call(this, event);
     }
   },
+
+  openExcludeMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const chkbox = this;
+    const entry = event.target.closest('.entry');
+    if (!chkbox.eventHandled) {
+      chkbox.eventHandled = true;
+      const style = entry.styleMeta;
+      popupExclusions
+        .openPopupDialog(style, tabURL)
+        .then(() => {
+          entry.styleMeta = style;
+          chkbox.eventHandled = null;
+        });
+    }
+  }
 });
 
 

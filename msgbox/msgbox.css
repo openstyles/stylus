@@ -40,7 +40,8 @@
   text-align: center;
 }
 
-#message-box.center #message-box-contents pre {
+#message-box.center #message-box-contents pre,
+#message-box.center.content-left #message-box-contents {
   text-align: left;
 }
 
@@ -53,6 +54,10 @@
   white-space: pre-line;
   font-family: monospace;
   text-align: left;
+}
+
+#message-box-contents h2 {
+  margin-top: 0;
 }
 
 #message-box-title {

@@ -25,7 +25,7 @@ const newUI = {
 newUI.renderClass();
 requestAnimationFrame(usePrefsDuringPageLoad);
 
-const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
+const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps', 'exclusions'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 
@@ -121,7 +121,7 @@ function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
     styles: styles.map(style => ({
       style,
-      name: style.name.toLocaleLowerCase() + '\n' + style.name,
+      name: (style.name || '').toLocaleLowerCase() + '\n' + style.name,
     })),
   });
   let index = 0;
@@ -255,8 +255,16 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
   let numTargets = 0;
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
-    for (const section of style.sections) {
-      for (const targetValue of section[type] || []) {
+    const isExcluded = type === 'exclusions';
+    const sections = isExcluded ? [''] : style.sections;
+    if (isExcluded && !newUI.enabled && Object.keys(style.exclusions || {}).length > 0) {
+      $('.applies-to', entry).insertAdjacentElement('afterend', template.excludedOn.cloneNode(true));
+      container = $('.excluded-on .targets', entry);
+      numTargets = 1;
+    }
+    for (const section of sections) {
+      const target = isExcluded ? Object.keys(style.exclusions || {}) : section[type] || [];
+      for (const targetValue of target) {
         if (displayed.has(targetValue)) {
           continue;
         }
@@ -336,7 +344,7 @@ function getFaviconImgSrc(container = installed) {
       favicon = GET_FAVICON_URL + targetValue;
     } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
-    } else if (type === 'regexps') {
+    } else if (type === 'regexps' || type === 'exclusions') {
       favicon = targetValue
         .replace(regexpRemoveNegativeLookAhead, '')
         .replace(regexpReplaceExtraCharacters, '')
@@ -629,6 +637,9 @@ function switchUI({styleOnly} = {}) {
   $('#style-overrides').textContent = `
     .newUI .targets {
       max-height: ${newUI.targets * 18}px;
+    }
+    .newUI .target[data-type="exclusions"]:before {
+      content: '${t('exclusionsPrefix')}';
     }
   ` + (newUI.faviconsGray ? `
     .newUI .target img {

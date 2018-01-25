@@ -205,6 +205,18 @@
   "configOnChangeTooltip": {
     "message": "Autosave and apply changes automatically"
   },
+  "genericAdd": {
+    "message": "Add",
+    "description": "Used in various places to select/perform an add action."
+  },
+  "genericDelete": {
+    "message": "Delete",
+    "description": "Used in various places to select/perform a delete action."
+  },
+  "genericEdit": {
+    "message": "Edit",
+    "description": "Used in various places to select/perform an edit action."
+  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."
@@ -358,6 +370,68 @@
   "editDeleteText": {
     "message": "Delete",
     "description": "Label for the context menu item in the editor to delete selected text"
+  },
+  "excludedDomain": {
+    "message": "Domain",
+    "description": "Label for a domain or subdomain portion of an URL used to exclude a style"
+  },
+  "excludedPrefix": {
+    "message": "Prefix",
+    "description": "Label for a full url with a subdirectory to be used as the beginning portion of a URL to match to exclude a style"
+  },
+  "exclusionsAddTitle": {
+    "message": "Add excluded page",
+    "description": "Title of popup to add an excluded page (URL)"
+  },
+  "exclusionsEditTitle": {
+    "message": "Edit excluded page(s)",
+    "description": "Title of popup to edit an excluded page (URL)"
+  },
+  "exclusionsEmpty": {
+    "message": "No exclusions",
+    "description": "Label shown when there are no global exclusions"
+  },
+  "exclusionsDeleteConfirmation": {
+    "message": "Are you sure you want to delete $number$ entries?",
+    "description": "Delete confirmation dialog message",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "exclusionsHeader": {
+    "message": "Excluded Pages",
+    "description": "Title of user configurable lists of site urls to exclude per style"
+  },
+  "exclusionsHelp": {
+    "message": "Add one or more exclusions for each style. An exclusion is a string that will match a web location (URL). If a match is found, the given style (and all internal sections) will not be applied to that page. A list of exclusions is set separately from the userstyle so that it will not be effected when updating or editing the style itself.\n\nThis is useful because you can exclude websites that would be effected by a global style.\n\nThe exclusion string may contain wildcards (\"*\") to match any portion of the URL, e.g. \"forum.*.com\" will exclude the forum sub-domains of all dot-com top level domains.\n\nRegular expressions are not supported.",
+    "description": "Help text for user set style exclusions"
+  },
+  "exclusionsHelpTitle": {
+    "message": "Set Style Exclusions",
+    "description": "Header text for help modal"
+  },
+  "exclusionsInvalidUrl": {
+    "message": "Enter a unique and valid URL",
+    "description": "Text for an alert notifying the user that an entered URL is not unique or invalid"
+  },
+  "exclusionsPopupTip": {
+    "message": "Right-click to edit exclusions on this page",
+    "description": "Title on the checkbox in the popup to let the user know how to edit exclusions on the current page"
+  },
+  "exclusionsPrefix": {
+    "message": "Excluded on: ",
+    "description": "Prefix label added to the applies to column in the style manager"
+  },
+  "exclusionsStatus": {
+    "message": "$number$ sites",
+    "description": "Label added next to the Excluded Pages header when 'number' is not zero",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
   },
   "exportLabel": {
     "message": "Export",

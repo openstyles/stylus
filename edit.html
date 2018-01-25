@@ -24,6 +24,7 @@
     <script src="js/localization.js"></script>
     <script src="js/script-loader.js"></script>
     <script src="js/storage-util.js"></script>
+    <script src="js/exclusions.js"></script>
     <script src="content/apply.js"></script>
     <script src="edit/lint.js"></script>
     <script src="edit/util.js"></script>
@@ -397,6 +398,20 @@
               </a>
             </div>
           </div>
+        </div>
+      </details>
+      <details id="exclusions" data-pref="editor.exclusions.expanded">
+        <summary>
+          <h2 i18n-text="exclusionsHeader">: <span id="excluded-stats"></span></h2>
+        </summary>
+        <select id="excluded-list" class="style-contributor" size="4" multiple="true"></select>
+        <div id="excluded-wrap">
+          <button id="excluded-list-add" i18n-text="genericAdd"></button>
+          <button id="excluded-list-edit" i18n-text="genericEdit"></button>
+          <button id="excluded-list-delete" i18n-text="genericDelete"></button>
+          <a id="excluded-list-help" href="#" class="svg-inline-wrapper">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
         </div>
       </details>
       <details id="lint" class="hidden" data-pref="editor.lint.expanded">

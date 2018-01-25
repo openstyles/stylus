@@ -76,11 +76,53 @@ label {
   min-height: 1.4rem;
 }
 
+#excluded-wrap {
+  align-items: center;
+}
+
+#exclusions h3 {
+  margin-top: 0;
+}
+
+#exclusions select {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding: 0 6px;
+}
+
+#exclusions option {
+  overflow: hidden;
+}
+
+#excluded-pages:empty {
+  height: 1.4em;
+  border: none;
+}
+
+#excludedError {
+  position: absolute;
+  top: 7px;
+  color: red;
+}
+
+#excluded-stats:not(:empty) {
+  background-color: darkcyan;
+  border-color: darkcyan;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: normal;
+  padding: 2px 5px;
+  position: relative;
+  top: -2px;
+}
+
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
 }
-#name {
+#name, #excluded-input {
   width: 100%;
 }
 #basic-info-name {

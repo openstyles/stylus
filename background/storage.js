@@ -349,7 +349,6 @@ function saveStyle(style) {
   }
   let existed;
   let codeIsUpdated;
-
   return maybeCalcDigest()
     .then(maybeImportFix)
     .then(decide);
@@ -383,7 +382,9 @@ function saveStyle(style) {
         if (reason === 'update-digest' && oldStyle.originalDigest === style.originalDigest) {
           return style;
         }
-        codeIsUpdated = !existed || 'sections' in style && !styleSectionsEqual(style, oldStyle);
+        codeIsUpdated = !existed
+          || 'sections' in style && !styleSectionsEqual(style, oldStyle)
+          || reason === 'exclusionsUpdate';
         style = Object.assign({installDate: Date.now()}, oldStyle, style);
         return write(style, store);
       });
@@ -398,6 +399,7 @@ function saveStyle(style) {
         url: null,
         originalMd5: null,
         installDate: Date.now(),
+        exclusions: {}
       }, style);
       return write(style);
     }
@@ -442,6 +444,11 @@ function deleteStyle({id, notify = true}) {
   });
 }
 
+function checkExclusions(matchUrl, exclusions = {}) {
+  const values = Object.values(exclusions);
+  return values.length &&
+    values.reduce((acc, exclude) => acc || tryRegExp(exclude).test(matchUrl), false);
+}
 
 function getApplicableSections({
   style,
@@ -456,7 +463,7 @@ function getApplicableSections({
   // but the spec is outdated and doesn't account for SPA sites
   // so we only respect it in case of url("http://exact.url/without/hash")
 }) {
-  if (!skipUrlCheck && !URLS.supported(matchUrl)) {
+  if (!skipUrlCheck && !URLS.supported(matchUrl) || checkExclusions(matchUrl, style.exclusions)) {
     return [];
   }
   const sections = [];

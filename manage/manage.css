@@ -180,6 +180,7 @@ select {
 }
 
 .applies-to,
+.excluded-on,
 .actions {
   padding-left: 15px;
   margin-bottom: 0;
@@ -641,6 +642,14 @@ select {
   box-sizing: border-box;
   padding-right: 1rem;
   line-height: 18px;
+}
+
+.target[data-type="exclusions"] {
+  color: #d22;
+}
+
+.newUI .target[data-type="exclusions"] img {
+  float: left;
 }
 
 .newUI .applies-to .expander {

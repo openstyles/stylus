@@ -4,6 +4,7 @@ global CodeMirror dirtyReporter
 global updateLintReportIfEnabled initLint linterConfig updateLinter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
+global exclusions
 */
 'use strict';
 
@@ -38,6 +39,8 @@ function createSourceEditor(style) {
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
   };
+
+  exclusions.onchange(dirty);
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
@@ -198,12 +201,15 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
+    style.exclusions = exclusions.get();
+    exclusions.save(style, dirty);
     return (
       API.saveUsercssUnsafe({
         id: style.id,
         reason: 'editSave',
         enabled: style.enabled,
         sourceCode: code,
+        exclusions: style.exclusions
       }))
       .then(({style, errors}) => {
         replaceStyle(style);
