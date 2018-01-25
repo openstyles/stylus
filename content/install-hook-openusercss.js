@@ -15,11 +15,53 @@ const askHandshake = () => {
   });
 };
 
+// Listen for queries by the site and respond with a callback object
+const sendInstalledCallback = styleData => {
+  allowedOrigins.forEach(origin => {
+    window.postMessage({
+      'type':  'ouc-is-installed-response',
+      'style': styleData
+    }, origin);
+  });
+};
+
+const attachInstalledListeners = () => {
+  window.addEventListener('message', event => {
+    if (
+      event.data
+      && event.data.type === 'ouc-is-installed'
+      && allowedOrigins.includes(event.origin)
+    ) {
+      chrome.runtime.sendMessage({
+        'method':    'findUsercss',
+        'name':      event.data.name,
+        'namespace': event.data.namespace
+      }, style => {
+        if (style) {
+          sendInstalledCallback({
+            'installed': true,
+            'enabled':   style.enabled,
+            'name':      event.data.name,
+            'namespace': event.data.namespace
+          });
+        } else {
+          sendInstalledCallback({
+            'installed': false,
+            'name':      event.data.name,
+            'namespace': event.data.namespace
+          });
+        }
+      });
+    }
+  });
+};
+
 const doHandshake = () => {
   // This is a representation of features that Stylus is capable of
   const implementedFeatures = [
     'install-usercss',
-    'install-usercss-event',
+    'event:install-usercss',
+    'event:is-installed',
     'configure-after-install',
     'builtin-editor',
     'create-usercss',
@@ -112,5 +154,6 @@ const attachInstallListeners = () => {
 (() => {
   attachHandshakeListeners();
   attachInstallListeners();
+  attachInstalledListeners();
   askHandshake();
 })();
