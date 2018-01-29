@@ -30,7 +30,7 @@ global updateIcon
 
 
   function run(tabs, msg, resolve) {
-    const {style, codeIsUpdated} = msg;
+    const {style, codeIsUpdated, refreshOwnTabs} = msg;
 
     // the style was updated/saved so we need to remove the old copy of the original style
     if (msg.method === 'styleUpdated' && msg.reason !== 'editPreview') {
@@ -80,6 +80,7 @@ global updateIcon
     const last = tabs[tabs.length - 1];
     for (const tab of tabs) {
       if (FIREFOX && !tab.width) continue;
+      if (refreshOwnTabs === false && tab.url.startsWith(URLS.ownOrigin)) continue;
       chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
         refreshFrame(tab, frames, msg, tab === last && resolve));
     }

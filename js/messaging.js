@@ -202,6 +202,7 @@ function notifyAllTabs(msg) {
   }
   // propagate saved style state/code efficiently
   if (styleUpdated) {
+    msg.refreshOwnTabs = false;
     API.refreshAllTabs(msg);
   }
 }
