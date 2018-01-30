@@ -1,9 +1,8 @@
 /* global getStyleWithNoCode styleSectionsEqual */
 'use strict';
 
-const RX_NAMESPACE = new RegExp([/[\s\r\n]*/,
-  /(@namespace[\s\r\n]+(?:[^\s\r\n]+[\s\r\n]+)?url\(http:\/\/.*?\);)/,
-  /[\s\r\n]*/].map(rx => rx.source).join(''), 'g');
+const RX_NAMESPACE = /\s*(@namespace\s+(?:\S+\s+)?url\(http:\/\/.*?\);)\s*/g;
+const RX_CHARSET = /\s*@charset\s+(['"]).*?\1\s*;\s*/g;
 const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
 // eslint-disable-next-line no-var
 var SLOPPY_REGEXP_PREFIX = '\0';
@@ -541,9 +540,10 @@ function styleCodeEmpty(code) {
         code.substr(cmtCloseLast + 2);
     }
   }
-  return !code
-    || !code.trim()
-    || code.includes('@namespace') && !code.replace(RX_NAMESPACE, '').trim();
+  if (!code || !code.trim()) return true;
+  if (code.includes('@namespace')) code = code.replace(RX_NAMESPACE, '').trim();
+  if (code.includes('@charset')) code = code.replace(RX_CHARSET, '').trim();
+  return !code;
 }
 
 
