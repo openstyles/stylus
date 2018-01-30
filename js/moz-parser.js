@@ -80,9 +80,13 @@ function parseMozFormat({code, styleId}) {
     errors.push(`${e.line}:${e.col} ${e.message.replace(/ at line \d.+$/, '')}`);
   });
 
-  parser.parse(mozStyle, {
-    reuseCache: !parseMozFormat.styleId || styleId === parseMozFormat.styleId,
-  });
+  try {
+    parser.parse(mozStyle, {
+      reuseCache: !parseMozFormat.styleId || styleId === parseMozFormat.styleId,
+    });
+  } catch (e) {
+    errors.push(e.message);
+  }
   parseMozFormat.styleId = styleId;
   return {sections, errors};
 
