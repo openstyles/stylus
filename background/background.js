@@ -357,13 +357,18 @@ function updateIcon({tab, styles}) {
     if (tabIcon.iconType !== iconset + postfix) {
       tabIcon.iconType = iconset + postfix;
       const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+      const usePath = tabIcons.get('usePath');
       Promise.all(sizes.map(size => {
         const src = `/images/icon/${iconset}${size}${postfix}.png`;
-        return tabIcons.get(src) || loadIcon(src);
+        return usePath ? src : tabIcons.get(src) || loadIcon(src);
       })).then(data => {
+        const imageKey = typeof data[0] === 'string' ? 'path' : 'imageData';
         const imageData = {};
         sizes.forEach((size, i) => (imageData[size] = data[i]));
-        chrome.browserAction.setIcon({tabId: tab.id, imageData}, ignoreChromeError);
+        chrome.browserAction.setIcon({
+          tabId: tab.id,
+          [imageKey]: imageData,
+        }, ignoreChromeError);
       });
     }
     if (tab.id === undefined) return;
@@ -400,6 +405,16 @@ function updateIcon({tab, styles}) {
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
       const data = ctx.getImageData(0, 0, w, h);
+      // Firefox breaks Canvas when privacy.resistFingerprinting=true, https://bugzil.la/1412961
+      let usePath = tabIcons.get('usePath');
+      if (usePath === undefined) {
+        usePath = data.data.every(b => b === 255);
+        tabIcons.set('usePath', usePath);
+      }
+      if (usePath) {
+        resolve(src);
+        return;
+      }
       tabIcons.set(src, data);
       resolve(data);
     };
