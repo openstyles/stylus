@@ -3,7 +3,7 @@
 
 const RX_NAMESPACE = /\s*(@namespace\s+(?:\S+\s+)?url\(http:\/\/.*?\);)\s*/g;
 const RX_CHARSET = /\s*@charset\s+(['"]).*?\1\s*;\s*/g;
-const RX_CSS_COMMENTS = /\/\*[\s\S]*?\*\//g;
+const RX_CSS_COMMENTS = /\/\*[\s\S]*?(?:\*\/|$)/g;
 // eslint-disable-next-line no-var
 var SLOPPY_REGEXP_PREFIX = '\0';
 

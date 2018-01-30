@@ -484,7 +484,7 @@ function createAppliesToLineWidget(cm) {
     const text = cm.getValue();
     const re = /^[\t ]*@-moz-document[\s\n]+/gm;
     const applyRe = new RegExp([
-      /(?:\/\*[^*]*\*\/[\s\n]*)*/,
+      /(?:\/\*[\s\S]*?(?:\*\/\s*|$))*/,
       /(url|url-prefix|domain|regexp)/,
       /\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)\s*(,\s*)?/,
     ].map(rx => rx.source).join(''), 'giy');

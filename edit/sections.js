@@ -195,7 +195,7 @@ function setupCodeMirror(sectionDiv, code, index) {
     const text = event.clipboardData.getData('text') || '';
     if (
       text.includes('@-moz-document') &&
-      text.replace(/\/\*[\s\S]*?\*\//g, '')
+      text.replace(/\/\*[\s\S]*?(?:\*\/|$)/g, '')
         .match(/@-moz-document[\s\r\n]+(url|url-prefix|domain|regexp)\(/)
     ) {
       event.preventDefault();
