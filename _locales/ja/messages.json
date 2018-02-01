@@ -839,7 +839,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
-		"message": "</> キーで検索欄に移動します。\n[文字列検索] : 名前、コード、適用先のURL/サイト名を検索します。3文字より短い単語は無視されます。\n[URL検索] : 検索文字列の前に <url:> を付けてください。例.  <url:https://github.com/openstyles/stylus>\n[正規表現検索] : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/simguy>\n[正確な文字列検索] : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">",
+		"message": "</> キーで検索欄に移動します。\n文字列検索 : 名前、コード、適用先のURL/サイト名を検索します。3文字より短い単語は無視されます。\nURL検索 : 検索文字列の前に <url:> を付けてください。例.  <url:https://github.com/openstyles/stylus>\n正規表現検索 : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/simguy>\n正確な文字列検索 : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {
