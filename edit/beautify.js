@@ -46,8 +46,10 @@ function beautify(event) {
       scope.forEach(cm => {
         if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
           delete cm.beautifyChange[cm.changeGeneration()];
+          const {scrollX, scrollY} = window;
           cm.undo();
           cm.scrollIntoView(cm.getCursor());
+          window.scrollTo(scrollX, scrollY);
           undoable |= cm.beautifyChange[cm.changeGeneration()];
         }
       });
@@ -71,7 +73,9 @@ function beautify(event) {
           for (let i = 0; i < pos.length; i += 2) {
             selections.push({anchor: pos[i], head: pos[i + 1]});
           }
+          const {scrollX, scrollY} = window;
           cm.setSelections(selections);
+          window.scrollTo(scrollX, scrollY);
           cm.beautifyChange[cm.changeGeneration()] = true;
           undoButton.disabled = false;
         }
