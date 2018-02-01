@@ -61,8 +61,17 @@ onDOMready().then(() => {
         switch (document.activeElement) {
           case state.input:
             if (state.dialog.dataset.type === 'find') {
-              doSearch({canAdvance: false});
-              destroyDialog();
+              const found = doSearch({canAdvance: false});
+              if (found) {
+                const target = $('.' + TARGET_CLASS);
+                const cm = target.CodeMirror;
+                (cm || target).focus();
+                if (cm) {
+                  const pos = cm.state.search.searchPos;
+                  cm.setSelection(pos.from, pos.to);
+                }
+              }
+              destroyDialog({restoreFocus: !found});
               return;
             }
             // fallthrough
@@ -235,6 +244,7 @@ onDOMready().then(() => {
     } else {
       showTally(0, 0);
     }
+    return found;
   }
 
 
@@ -634,7 +644,12 @@ onDOMready().then(() => {
     $.remove(DIALOG_SELECTOR);
     debounce.unregister(doSearch);
     makeTargetVisible(null);
-    if (restoreFocus) setTimeout(focusNoScroll, 0, state.originalFocus);
+    if (restoreFocus) {
+      setTimeout(focusNoScroll, 0, state.originalFocus);
+    } else {
+      saveWindowScrollPos();
+      restoreWindowScrollPos({immediately: false});
+    }
   }
 
 
@@ -868,8 +883,13 @@ onDOMready().then(() => {
 
 
   function restoreWindowScrollPos({immediately = true} = {}) {
+    if (!immediately) {
+      // run in the next microtask cycle
+      new Promise(() => restoreWindowScrollPos({immediately: true}));
+      return;
+    }
     if (window.scrollX !== state.scrollX || window.scrollY !== state.scrollY) {
-      invokeOrPostpone(immediately, window.scrollTo, 0, state.scrollX, state.scrollY);
+      window.scrollTo(state.scrollX, state.scrollY);
     }
   }
 
