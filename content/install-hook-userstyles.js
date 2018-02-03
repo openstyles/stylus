@@ -297,6 +297,7 @@
 
 
   function orphanCheck() {
+    // TODO: switch to install-hook-usercss.js impl, and remove explicit orphanCheck() calls
     if (chrome.i18n && chrome.i18n.getUILanguage()) {
       return true;
     }
@@ -307,7 +308,7 @@
       ['', 'Chrome', 'Opera'].forEach(browser =>
         document.addEventListener('stylish' + type + browser, onClick)));
     try {
-      chrome.runtime.onMessage.addListener(onMessage);
+      chrome.runtime.onMessage.removeListener(onMessage);
     } catch (e) {}
   }
 })();
