@@ -30,30 +30,32 @@
     });
   };
 
-  const attachInstalledListeners = () => {
-    window.addEventListener('message', event => {
-      if (
-        event.data
-        && event.data.type === 'ouc-is-installed'
-        && allowedOrigins.includes(event.origin)
-      ) {
-        chrome.runtime.sendMessage({
-          method: 'findUsercss',
-          name: event.data.name,
-          namespace: event.data.namespace
-        }, style => {
-          const data = {event};
-          const callbackObject = {
-            installed: Boolean(style),
-            enabled: style.enabled,
-            name: data.name,
-            namespace: data.namespace
-          };
+  const installedHandler = event => {
+    if (
+      event.data
+      && event.data.type === 'ouc-is-installed'
+      && allowedOrigins.includes(event.origin)
+    ) {
+      chrome.runtime.sendMessage({
+        method: 'findUsercss',
+        name: event.data.name,
+        namespace: event.data.namespace
+      }, style => {
+        const data = {event};
+        const callbackObject = {
+          installed: Boolean(style),
+          enabled: style.enabled,
+          name: data.name,
+          namespace: data.namespace
+        };
 
-          sendInstalledCallback(callbackObject);
-        });
-      }
-    });
+        sendInstalledCallback(callbackObject);
+      });
+    }
+  };
+
+  const attachInstalledListeners = () => {
+    window.addEventListener('message', installedHandler);
   };
 
   const doHandshake = () => {
@@ -102,17 +104,19 @@
     });
   };
 
+  const handshakeHandler = event => {
+    if (
+      event.data
+      && event.data.type === 'ouc-handshake-question'
+      && allowedOrigins.includes(event.origin)
+    ) {
+      doHandshake();
+    }
+  };
+
   const attachHandshakeListeners = () => {
     // Wait for the handshake request, then start it
-    window.addEventListener('message', event => {
-      if (
-        event.data
-        && event.data.type === 'ouc-handshake-question'
-        && allowedOrigins.includes(event.origin)
-      ) {
-        doHandshake();
-      }
-    });
+    window.addEventListener('message', handshakeHandler);
   };
 
   const sendInstallCallback = data => {
@@ -124,33 +128,37 @@
     });
   };
 
-  const attachInstallListeners = () => {
-    // Wait for an install event, then save the theme
-    window.addEventListener('message', event => {
-      if (
-        event.data
-        && event.data.type === 'ouc-install-usercss'
-        && allowedOrigins.includes(event.origin)
-      ) {
-        chrome.runtime.sendMessage({
-          method: 'saveUsercss',
-          reason: 'install',
-          name: event.data.title,
-          sourceCode: event.data.code,
-        }, response => {
-          sendInstallCallback({
-            enabled: response.enabled,
-            key: event.data.key
-          });
+  const installHandler = event => {
+    if (
+      event.data
+      && event.data.type === 'ouc-install-usercss'
+      && allowedOrigins.includes(event.origin)
+    ) {
+      chrome.runtime.sendMessage({
+        method: 'saveUsercss',
+        reason: 'install',
+        name: event.data.title,
+        sourceCode: event.data.code,
+      }, response => {
+        sendInstallCallback({
+          enabled: response.enabled,
+          key: event.data.key
         });
-      }
-    });
+      });
+    }
   };
 
-  (() => {
-    attachHandshakeListeners();
-    attachInstallListeners();
-    attachInstalledListeners();
-    askHandshake();
-  })();
+  const attachInstallListeners = () => {
+    // Wait for an install event, then save the theme
+    window.addEventListener('message', installHandler);
+  };
+
+  window.removeEventListener('message', installHandler);
+  window.removeEventListener('message', handshakeHandler);
+  window.removeEventListener('message', installedHandler);
+
+  attachHandshakeListeners();
+  attachInstallListeners();
+  attachInstalledListeners();
+  askHandshake();
 })();
