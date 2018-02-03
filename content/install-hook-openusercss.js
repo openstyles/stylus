@@ -7,24 +7,26 @@
     'https://openusercss.com'
   ];
 
+  const sendPostMessage = message => {
+    allowedOrigins.forEach(origin => {
+      if (origin === location.origin) {
+        window.postMessage(message, origin);
+      }
+    });
+  };
+
   const askHandshake = () => {
     // Tell the page that we exist and that it should send the handshake
-    allowedOrigins.forEach(origin => {
-      window.postMessage({
-        type: 'ouc-begin-handshake'
-      }, origin);
+    sendPostMessage({
+      type: 'ouc-begin-handshake'
     });
   };
 
   // Listen for queries by the site and respond with a callback object
   const sendInstalledCallback = styleData => {
-    allowedOrigins.forEach(origin => {
-      if (origin === location.origin) {
-        window.postMessage({
-          type: 'ouc-is-installed-response',
-          style: styleData
-        }, origin);
-      }
+    sendPostMessage({
+      type: 'ouc-is-installed-response',
+      style: styleData
     });
   };
 
@@ -90,15 +92,13 @@
 
     // We send the handshake response, which includes the key we got, plus some
     // additional metadata
-    allowedOrigins.forEach(origin => {
-      window.postMessage({
-        type: 'ouc-handshake-response',
-        key: event.data.key,
-        extension: {
-          name: manifest.name,
-          capabilities: reportedFeatures
-        }
-      }, origin);
+    sendPostMessage({
+      type: 'ouc-handshake-response',
+      key: event.data.key,
+      extension: {
+        name: manifest.name,
+        capabilities: reportedFeatures
+      }
     });
   };
 
@@ -118,11 +118,9 @@
   const sendInstallCallback = data => {
     // Send an install callback to the site in order to let it know
     // we were able to install the theme and it may display a success message
-    allowedOrigins.forEach(origin => {
-      window.postMessage({
-        type: 'ouc-install-callback',
-        key: data.key
-      }, origin);
+    sendPostMessage({
+      type: 'ouc-install-callback',
+      key: data.key
     });
   };
 
