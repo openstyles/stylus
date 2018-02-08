@@ -153,9 +153,26 @@
     window.addEventListener('message', installHandler);
   };
 
-  window.removeEventListener('message', installHandler);
-  window.removeEventListener('message', handshakeHandler);
-  window.removeEventListener('message', installedHandler);
+  const orphanCheck = () => {
+    const eventName = chrome.runtime.id + '-install-hook-openusercss';
+    const orphanCheckRequest = () => {
+      // If we can't get the UI language, it means we are orphaned, and should
+      // remove our event handlers
+      if (chrome.i18n && chrome.i18n.getUILanguage()) return true;
+
+      window.removeEventListener('message', installHandler);
+      window.removeEventListener('message', handshakeHandler);
+      window.removeEventListener('message', installedHandler);
+      window.removeEventListener(eventName, orphanCheckRequest, true);
+    };
+
+    // Send the event before we listen for it, for other possible
+    // running instances of the content script.
+    dispatchEvent(new Event(eventName));
+    addEventListener(eventName, orphanCheckRequest, true);
+  };
+
+  orphanCheck();
 
   attachHandshakeListeners();
   attachInstallListeners();
