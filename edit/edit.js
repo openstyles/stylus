@@ -223,9 +223,23 @@ function initStyleData() {
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   const id = params.get('id');
+
+  let name = '';
+  if (params.get('domain')) {
+    name = params.get('domain');
+  } else if (params.get('url-prefix')) {
+    let url;
+    try {
+      url = new URL(params.get('url-prefix'));
+    } catch (err) {}
+    if (url && url.hostname) {
+      name = url.hostname;
+    }
+  }
+
   const createEmptyStyle = () => ({
     id: null,
-    name: '',
+    name: name,
     enabled: true,
     sections: [
       Object.assign({code: ''},
