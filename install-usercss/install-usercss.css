@@ -116,8 +116,8 @@ h1 small {
 .install {
   font-family: Arial, "DejaVu Sans", Verdana, Geneva, sans-serif;
   font-size: 14px;
-  background: linear-gradient(#666, #555);
-  color: white;
+  background-color: hsl(0, 0%, 33%);
+  color: #eee;
   border-radius: 4px;
   padding: 4px 38px 4px 10px;
   position: relative;
@@ -129,6 +129,20 @@ h1 small {
   margin-bottom: 1ex;
   cursor: pointer;
   box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 hsl(0, 0%, 24%);
+  transition: color .25s, background-color .25s;
+}
+
+.install,
+.install:before {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFiccyZ2qfAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAb0lEQVQY012OwQ3CUAzFnNeMAfsv1hk4VDTm0H6ByMmyLL2U+lRowKobwAVFEEWbwqKIIGDXBTQqBU3VbWYk0CTLIAxNEHI1s5oAYXAYm2AIfZ64Ab1ta4s/yHv908twHB5gqf0Tvyg1l9l3efC9Dw0XRC2vHIXXAAAAAElFTkSuQmCC);
+  background-size: 100% 100%;
+  background-repeat: repeat-x;
+}
+
+.install:hover:not(:disabled) {
+  background-color: hsl(0, 0%, 38%);
+  color: #fff;
+  text-shadow: none;
 }
 
 .install:before,
@@ -145,21 +159,38 @@ h1 small {
 }
 
 .install:before {
-  background-image: linear-gradient(hsl(176, 44%, 40%), hsl(176, 50%, 35%));
-  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 rgba(0, 0, 0, .3), inset -1px 0 0 0 hsl(0, 0%, 38%);
+  border-left: 1px solid rgba(0, 0, 0, .3);
+  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset -1px 0 0 0 hsl(0, 0%, 38%);
   padding: 5px 8px;
+  transition: background-color .25s;
+}
+
+.install:before,
+.install:active:before,
+.install:active:hover:before {
+  background-color: hsl(176, 50%, 35%);
+}
+
+.install:hover:before {
+  background-color: hsl(176, 50%, 40%);
+}
+
+.install:active,
+.install:active:before {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFioX6+ENuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAc0lEQVQY003OwQ0CQQxD0edsRBX03xg9cFjBhMPuSOT0ZdmxuS/zesWTzExBI7xlZhrKeeYkmZkH1Icg3Rfs1D98v3Kgj+NSypJlpZWU0tbKKlpVCm0JSyuxPbbnqpiJ0JLr8+w9sbtGxqRFInvYbLiVGX46ECZMv8VvjwAAAABJRU5ErkJggg==);
+  background-size: 100% 100%;
+  background-repeat: repeat-x;
+}
+
+.install:active,
+.install:active:hover {
+  background-color: hsl(0, 0%, 33%);
 }
 
 .install:after {
   background-image: url(../images/icon/16.png);
   background-repeat: no-repeat;
   background-position: center center;
-}
-
-.install:hover:not(:disabled) {
-  filter: brightness(1.1);
-  color: #eee;
-  text-shadow: none;
 }
 
 .install:disabled {
@@ -169,11 +200,33 @@ h1 small {
 }
 
 .install.reinstall:after {
-  background-color: #333;
   filter: grayscale(100%);
 }
 
+.install.reinstall:before,
+.install.reinstall:active:before,
+.install.reinstall:active:hover:before {
+  background-color: hsl(0, 0%, 20%);
+}
+
+.install.reinstall:hover:before {
+  background-color: hsl(0, 0%, 25%);
+}
+
+.install.reinstall:hover:before {
+  background-color: #444;
+}
+
 .install.update:before,
+.install.update:active:before,
+.install.update:active:hover:before {
+  background-color: hsl(140, 100%, 13%);
+}
+
+.install.update:hover:before {
+  background-color: hsl(140, 100%, 18%);
+}
+
 .install.update:after {
   filter: hue-rotate(-18deg) brightness(.7) contrast(2);
 }
