@@ -106,7 +106,10 @@ function createSourceEditor(style) {
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
-      @name           ${t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}
+      @name           ${
+        style.name ||
+        t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()
+      }
       @namespace      github.com/openstyles/stylus
       @version        0.1.0
       @description    A new userstyle

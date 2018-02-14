@@ -225,7 +225,9 @@ function initStyleData() {
   const id = params.get('id');
   const createEmptyStyle = () => ({
     id: null,
-    name: '',
+    name: params.get('domain') ||
+          tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
+          '',
     enabled: true,
     sections: [
       Object.assign({code: ''},
