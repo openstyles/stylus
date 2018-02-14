@@ -8,11 +8,9 @@
   ];
 
   const sendPostMessage = message => {
-    allowedOrigins.forEach(origin => {
-      if (origin === location.origin) {
-        window.postMessage(message, origin);
-      }
-    });
+    if (allowedOrigins.includes(location.origin)) {
+      window.postMessage(message, location.origin);
+    }
   };
 
   const askHandshake = () => {
