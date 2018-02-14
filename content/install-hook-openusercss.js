@@ -31,10 +31,9 @@
   };
 
   const installedHandler = event => {
-    if (
-      event.data
-      && event.data.type === 'ouc-is-installed'
-      && allowedOrigins.includes(event.origin)
+    if (event.data
+    && event.data.type === 'ouc-is-installed'
+    && allowedOrigins.includes(event.origin)
     ) {
       chrome.runtime.sendMessage({
         method: 'findUsercss',
@@ -105,10 +104,9 @@
   };
 
   const handshakeHandler = event => {
-    if (
-      event.data
-      && event.data.type === 'ouc-handshake-question'
-      && allowedOrigins.includes(event.origin)
+    if (event.data
+    && event.data.type === 'ouc-handshake-question'
+    && allowedOrigins.includes(event.origin)
     ) {
       doHandshake();
     }
@@ -129,19 +127,18 @@
   };
 
   const installHandler = event => {
-    if (
-      event.data
-      && event.data.type === 'ouc-install-usercss'
-      && allowedOrigins.includes(event.origin)
+    if (event.data
+    && event.data.type === 'ouc-install-usercss'
+    && allowedOrigins.includes(event.origin)
     ) {
       chrome.runtime.sendMessage({
         method: 'saveUsercss',
         reason: 'install',
         name: event.data.title,
         sourceCode: event.data.code,
-      }, response => {
+      }, style => {
         sendInstallCallback({
-          enabled: response.enabled,
+          enabled: style.enabled,
           key: event.data.key
         });
       });
