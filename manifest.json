@@ -34,6 +34,7 @@
       "background/search-db.js",
       "background/update.js",
       "background/refresh-all-tabs.js",
+      "background/openusercss-api.js",
       "vendor/node-semver/semver.js",
       "vendor-overwrites/colorpicker/colorconverter.js"
     ]
@@ -59,6 +60,12 @@
       "run_at": "document_start",
       "all_frames": false,
       "js": ["content/install-hook-userstyles.js"]
+    },
+    {
+      "matches": ["https://openusercss.org/*", "https://openusercss.com/*"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "js": ["content/install-hook-openusercss.js"]
     },
     {
       "matches": ["<all_urls>"],
