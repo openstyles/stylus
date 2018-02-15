@@ -59,6 +59,12 @@
     id === tabId &&
     url && url !== tabUrl &&
     closeCurrentTab());
+  // close the tab in case the port didn't report onDisconnect
+  chrome.tabs.onRemoved.addListener(id => {
+    if (id === tabId) {
+      closeCurrentTab();
+    }
+  });
 
   function liveReloadUpdate(sourceCode) {
     liveReloadPending = liveReloadPending.then(() => {
