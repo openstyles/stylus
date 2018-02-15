@@ -49,14 +49,6 @@
       case 'liveReloadStop':
         stop();
         break;
-
-      case 'closeTab':
-        if (history.length > 1) {
-          history.back();
-        } else {
-          chrome.runtime.sendMessage({method: 'closeTab'});
-        }
-        break;
     }
   }
 
