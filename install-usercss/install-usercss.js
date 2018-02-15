@@ -55,10 +55,11 @@
   }, 200);
 
   getTab(tabId).then(tab => (tabUrl = tab.url));
-  chrome.tabs.onUpdated.addListener((id, {url}) =>
-    id === tabId &&
-    url && url !== tabUrl &&
-    closeCurrentTab());
+  chrome.tabs.onUpdated.addListener((id, {url}) => {
+    if (id === tabId && url && url !== tabUrl) {
+      closeCurrentTab();
+    }
+  });
   // close the tab in case the port didn't report onDisconnect
   chrome.tabs.onRemoved.addListener(id => {
     if (id === tabId) {
