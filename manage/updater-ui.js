@@ -57,9 +57,9 @@ function checkUpdateAll() {
     save: false,
     observe: true,
     ignoreDigest,
-  }).then(done);
+  });
 
-  function observer(info) {
+  function observer(info, port) {
     if ('count' in info) {
       total = info.count;
     }
@@ -78,9 +78,10 @@ function checkUpdateAll() {
     const progress = $('#update-progress');
     const maxWidth = progress.parentElement.clientWidth;
     progress.style.width = Math.round(checked / total * maxWidth) + 'px';
-  }
 
-  function done() {
+    if (checked < total) return;
+
+    port.onMessage.removeListener(observer);
     document.body.classList.remove('update-in-progress');
     btnCheck.disabled = total === 0;
     btnApply.disabled = false;
