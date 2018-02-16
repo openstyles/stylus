@@ -1,11 +1,10 @@
 /*
- global dbExec getStyles saveStyle deleteStyle
- global handleCssTransitionBug detectSloppyRegexps
- global openEditor
- global styleViaAPI
- global loadScript
- global updater
- */
+global dbExec getStyles saveStyle deleteStyle
+global handleCssTransitionBug detectSloppyRegexps
+global openEditor
+global styleViaAPI
+global loadScript
+*/
 'use strict';
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {

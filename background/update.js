@@ -6,8 +6,7 @@ global API_METHODS
 */
 'use strict';
 
-// eslint-disable-next-line no-var
-var updater = (() => {
+(() => {
 
   const STATES = {
     UPDATED: 'updated',
@@ -31,7 +30,7 @@ var updater = (() => {
 
   API_METHODS.updateCheckAll = checkAllStyles;
   API_METHODS.updateCheck = checkStyle;
-  API_METHODS.getUpdaterStates = () => updater.STATES;
+  API_METHODS.getUpdaterStates = () => STATES;
 
   prefs.subscribe(['updateInterval'], schedule);
   schedule();
