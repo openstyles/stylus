@@ -79,7 +79,7 @@ function checkUpdateAll() {
     const maxWidth = progress.parentElement.clientWidth;
     progress.style.width = Math.round(checked / total * maxWidth) + 'px';
 
-    if (checked < total) return;
+    if (!info.done) return;
 
     port.onMessage.removeListener(observer);
     document.body.classList.remove('update-in-progress');
