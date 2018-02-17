@@ -27,6 +27,10 @@
 		"message": "Stílus automatikus frissítési intervalluma órában megadva (álltsd 0-ra a kikapcsoláshoz)",
 		"description": ""
 	},
+	"sortDateOldestFirst": {
+		"message": "a legrégebbi elöl",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+	},
 	"exportLabel": {
 		"message": "Exportálás",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -139,6 +143,10 @@
 		"message": "Keresés",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
+	"genericEnabledLabel": {
+		"message": "Engedélyezve",
+		"description": "Used in various lists/options to indicate that something is enabled"
+	},
 	"manageFaviconsGray": {
 		"message": "Szürke mód",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -238,6 +246,10 @@
 	"appliesRegexpOption": {
 		"message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek",
 		"description": "Option to make the style apply to the entered string as a regular expression"
+	},
+	"optionsAdvancedExposeIframesNote": {
+		"message": "Engedélyezi a legfelsőbb szintű domain elérését\nmindegyik iframe-ben. Lehetővé teszi az olyan\niframe-specifikus CSS írását, mint:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
 		"message": "frissített kód",
@@ -557,6 +569,10 @@
 		"message": "Amire érvényesül",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Cím csökkenő sorrendben",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Beállítások",
 		"description": "Go to Options UI"
@@ -617,6 +633,10 @@
 	"importReportTitle": {
 		"message": "A stílusok importálása befejeződött",
 		"description": "Title of the report shown after importing styles"
+	},
+	"unreachableAMOHint": {
+		"message": "Az elérés engedélyezéséhez nyisd meg az <about:config>-ot, kattints jobb egérgombbal, majd „Új”, „Logikai”, és illeszd be, hogy <privacy.resistFingerprinting.block_mozAddonManager>, és kattints az OK-ra,<true> OK, és töltsd újra az oldalt!",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
 	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla formátum",
@@ -810,6 +830,10 @@
 		"message": "Automatikus kiegészítés gépeléskor",
 		"description": "Label for the checkbox in the style editor."
 	},
+	"unreachableAMO": {
+		"message": "A Firefox megtiltja ennek az oldalnak az elérését.",
+		"description": "Note in the popup displayed when opened on addons.mozilla.org"
+	},
 	"linterCSSLintIncompatible": {
 		"message": "A CSSLint nem támogatja a(z) $preprocessorname$ nevű előfeldolgozót",
 		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
@@ -895,6 +919,10 @@
 	"dbError": {
 		"message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"dateInstalled": {
+		"message": "Telepítés dátuma",
+		"description": "Option text for the user to sort the style by install date"
 	},
 	"optionsAdvanced": {
 		"message": "Haladó",
@@ -1065,6 +1093,10 @@
 	"manageNewUI": {
 		"message": "Az új kezelési felületkiosztás",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
 		"message": "Az importálás vissza lett vonva",

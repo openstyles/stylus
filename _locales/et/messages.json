@@ -151,6 +151,10 @@
 		"message": "Lubatud",
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
+	"previewTooltip": {
+		"message": "Ajutiselt rakendab muudatused ilma salvestamata.\nMuudatuste püsivaks tegemiseks salvesta stiil.",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+	},
 	"manageFaviconsGray": {
 		"message": "Tee halliks",
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
@@ -606,6 +610,10 @@
 		"message": "Väärtust ei saa salvestada. Proovi teksti hulka vähendada.",
 		"description": "Displayed when trying to save an excessively big value via storage.sync API"
 	},
+	"findStylesInline": {
+		"message": "Aknasisene",
+		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+	},
 	"optionsCheckUpdate": {
 		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
 		"description": ""
@@ -689,6 +697,10 @@
 	"updateCompleted": {
 		"message": "Uuendus teostatud.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Reaalajas eelvaade",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Lehti kokku",
