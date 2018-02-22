@@ -98,7 +98,8 @@ function createSourceEditor(style) {
   }
 
   function setupNewStyle(style) {
-    style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) + '/* Insert code here... */';
+    style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
+      `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     let section = sectionsToMozFormat(style);
     if (!section.includes('@-moz-document')) {
       style.sections[0].domains = ['example.com'];
@@ -115,13 +116,14 @@ function createSourceEditor(style) {
       @description    A new userstyle
       @author         Me
       ==/UserStyle== */
-    `.replace(/^\s+/gm, '') + '\n\n' + section;
+    `.replace(/^\s+/gm, '');
 
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
 
     chromeSync.getLZValue('usercssTemplate').then(code => {
-      style.sourceCode = code || DEFAULT_CODE;
+      code = code || DEFAULT_CODE;
+      style.sourceCode = code.replace(/\s+$/, '\n\n') + section;
       cm.startOperation();
       cm.setValue(style.sourceCode);
       cm.clearHistory();

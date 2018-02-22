@@ -1151,6 +1151,10 @@
   "usercssReplaceTemplateConfirmation": {
     "message": "Replace the default template for new Usercss styles with the current code?"
   },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Insert code here...",
+    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+  },
   "usercssConfigIncomplete": {
     "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
   },
