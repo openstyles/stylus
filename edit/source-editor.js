@@ -124,7 +124,7 @@ function createSourceEditor(style) {
     chromeSync.getLZValue('usercssTemplate').then(code => {
       code = code || DEFAULT_CODE;
       // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '\n\n') + section;
+      style.sourceCode = code.replace(/@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
       cm.startOperation();
       cm.setValue(style.sourceCode);
       cm.clearHistory();
