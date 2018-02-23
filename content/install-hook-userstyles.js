@@ -277,9 +277,7 @@
 
 
   function openSettings(countdown = 10e3) {
-    const button = document.querySelector('.advanced_button') ||
-      document.evaluate('//*[not(*) and contains(., "Advanced Style Settings")]',
-        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    const button = document.querySelector('.customize_button');
     if (button) {
       button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
       setTimeout(function pollArea(countdown = 2000) {
