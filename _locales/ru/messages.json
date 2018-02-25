@@ -678,6 +678,10 @@
 		"message": "(значения: 0 = выключить, 1 = предупреждение; 2 = ошибка)",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Место для CSS кода...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "Стилей для сайта не найдено.",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"

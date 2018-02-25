@@ -674,6 +674,10 @@
 		"message": "(Establezca la regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Inserte el código aquí...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "No se encontraron estilos para este sitio.",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"

@@ -678,6 +678,10 @@
 		"message": "（設定規則為：0 = 停用；1 = 警告；2 = 錯誤）",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "在此插入程式碼……",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "找不到此頁面相關的樣式",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"

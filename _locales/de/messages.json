@@ -658,6 +658,10 @@
 		"message": "(Regeln: 0 = Deaktiviert; 1 = Warnung; 2 = Fehler)",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Quelltext hier eingeben...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "Keine Styles für diese Seite gefunden.",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"
@@ -1216,7 +1220,7 @@
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
-		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele populäre Websites zu installieren.",
+		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele populäre Webseiten zu installieren.",
 		"description": "Extension description"
 	},
 	"confirmClose": {
