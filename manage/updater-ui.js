@@ -111,6 +111,7 @@ function checkUpdate(entry, {single} = {}) {
 
 
 function reportUpdateState({updated, style, error, STATES}) {
+  const isCheckAll = document.body.classList.contains('update-in-progress');
   const entry = $(ENTRY_ID_PREFIX + style.id);
   const newClasses = new Map([
     /*
@@ -155,8 +156,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     $('.update-note', entry).textContent = message;
     $('.check-update', entry).title = newUI.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
-    if (!document.body.classList.contains('update-in-progress')) {
-      // this is a single update job so we can decide whether to hide the filter
+    if (!isCheckAll) {
       renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
     }
   }
@@ -177,9 +177,9 @@ function reportUpdateState({updated, style, error, STATES}) {
     entry.className = className;
   }
 
-  if (filtersSelector.hide) {
-    filterAndAppend({entry});
-    sorter.update();
+  if (filtersSelector.hide && isCheckAll) {
+    filterAndAppend({entry}).then(() =>
+      sorter.update());
   }
 }
 
