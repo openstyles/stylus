@@ -569,6 +569,10 @@ select {
   fill: red;
 }
 
+.newUI .actions {
+  z-index: 100;
+}
+
 .newUI .updater-icons > :not(.check-update):after {
   content: attr(title);
   position: absolute;
@@ -582,7 +586,6 @@ select {
   font-size: 90%;
   animation: fadeout 10s;
   animation-fill-mode: both;
-  z-index: 999;
 }
 
 .newUI .update-problem .check-update:after {
