@@ -547,7 +547,8 @@ function handleUpdate(style, {reason, method, codeIsUpdated} = {}) {
 
   function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
-    const diff = objectDiff(oldEntry.styleMeta, newStyleMeta);
+    const diff = objectDiff(oldEntry.styleMeta, newStyleMeta)
+      .filter(({key, path}) => path || (!key.startsWith('original') && !key.endsWith('Date')));
     if (diff.length === 0) {
       // only code was modified
       entry = oldEntry;
