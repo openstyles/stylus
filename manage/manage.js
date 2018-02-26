@@ -1,6 +1,6 @@
 /*
 global messageBox getStyleWithNoCode retranslateCSS
-global filtersSelector filterAndAppend urlFilterParam
+global filtersSelector filterAndAppend urlFilterParam showFiltersStats
 global checkUpdate handleUpdateInstalled
 global objectDiff
 global configDialog
@@ -574,6 +574,7 @@ function handleDelete(id) {
       const btnApply = $('#apply-all-updates');
       btnApply.dataset.value = Number(btnApply.dataset.value) - 1;
     }
+    showFiltersStats();
   }
 }
 
