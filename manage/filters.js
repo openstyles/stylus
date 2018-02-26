@@ -156,12 +156,14 @@ function filterOnChange({target: el, forceRefilter}) {
     unhide: buildFilter(false),
   });
   if (installed) {
-    reapplyFilter();
-    sorter.update();
+    reapplyFilter().then(() =>
+      sorter.update());
   }
 }
 
-
+/**
+ * @returns {Promise} resolves on async search
+ */
 function filterAndAppend({entry, container}) {
   if (!container) {
     container = [entry];
@@ -170,15 +172,16 @@ function filterAndAppend({entry, container}) {
       entry.classList.add('hidden');
     }
   }
-  reapplyFilter(container);
+  return reapplyFilter(container);
 }
 
-
+/**
+ * @returns {Promise} resolves on async search
+ */
 function reapplyFilter(container = installed, alreadySearched) {
   if (!alreadySearched && $('#search').value.trim()) {
-    searchStyles({immediately: true, container})
+    return searchStyles({immediately: true, container})
       .then(() => reapplyFilter(container, true));
-    return;
   }
   // A: show
   let toHide = [];
@@ -191,7 +194,7 @@ function reapplyFilter(container = installed, alreadySearched) {
   // showStyles() is building the page and no filters are active
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
-    return;
+    return Promise.resolve();
   }
   // filtering needed or a single-element job from handleUpdate()
   for (const entry of toUnhide.children || toUnhide) {
@@ -208,7 +211,7 @@ function reapplyFilter(container = installed, alreadySearched) {
   }
   if (!toHide.length) {
     showFiltersStats();
-    return;
+    return Promise.resolve();
   }
   for (const entry of toHide) {
     entry.classList.add('hidden');
@@ -219,14 +222,14 @@ function reapplyFilter(container = installed, alreadySearched) {
   if (container instanceof DocumentFragment) {
     installed.appendChild(container);
     showFiltersStats();
-    return;
+    return Promise.resolve();
   }
   // single-element job from handleEvent(): add the last wraith
   if (toHide.length === 1 && toHide[0].parentElement !== installed) {
     installed.appendChild(toHide[0]);
   }
   showFiltersStats();
-  return;
+  return Promise.resolve();
 
   /***************************************/
 
