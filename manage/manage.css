@@ -330,6 +330,12 @@ select {
   padding-bottom: 0;
 }
 
+.newUI .entry.can-update,
+.newUI .entry.update-problem,
+.newUI .entry.update-done {
+  contain: none;
+}
+
 .newUI .entry.odd {
   background-color: rgba(128, 128, 128, 0.05);
 }
