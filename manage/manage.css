@@ -343,7 +343,8 @@ select {
 }
 
 .newUI .entry .actions {
-  contain: layout;
+  contain: none;
+  position: relative;
 }
 
 /************ checkbox & select************/
