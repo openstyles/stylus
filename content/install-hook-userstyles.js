@@ -15,17 +15,32 @@
 
   chrome.runtime.onMessage.addListener(onMessage);
 
+  let gotBody = false;
   new MutationObserver((mutations, observer) => {
-    if (document.body) {
-      observer.disconnect();
+    if (!gotBody) {
+      if (!document.body) return;
+      gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
       chrome.runtime.sendMessage({
         method: 'getStyles',
         md5Url: getMeta('stylish-md5-url') || location.href
       }, checkUpdatability);
+      return;
     }
-  }).observe(document.documentElement, {childList: true});
+    if (document.getElementById('install_button')) {
+      observer.disconnect();
+      onDOMready().then(() => {
+        requestAnimationFrame(() => {
+          sendEvent(sendEvent.lastEvent);
+        });
+      });
+      return;
+    }
+  }).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
 
   function onMessage(msg, sender, sendResponse) {
     switch (msg.method) {
@@ -58,7 +73,7 @@
       detail: installedStyle && installedStyle.updateUrl,
     }));
     if (!installedStyle) {
-      sendEvent('styleCanBeInstalledChrome');
+      sendEvent({type: 'styleCanBeInstalledChrome'});
       return;
     }
     const md5Url = getMeta('stylish-md5-url');
@@ -74,29 +89,32 @@
     }
 
     function reportUpdatable(isUpdatable) {
-      sendEvent(
-        isUpdatable
+      sendEvent({
+        type: isUpdatable
           ? 'styleCanBeUpdatedChrome'
           : 'styleAlreadyInstalledChrome',
-        {
+        detail: {
           updateUrl: installedStyle.updateUrl
-        }
-      );
+        },
+      });
     }
   }
 
 
-  function sendEvent(type, detail = null) {
+  function sendEvent(event) {
+    sendEvent.lastEvent = event;
+    let {type, detail = null} = event;
     if (FIREFOX) {
       type = type.replace('Chrome', '');
     } else if (OPERA || VIVALDI) {
       type = type.replace('Chrome', 'Opera');
     }
-    detail = {detail};
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
-      detail = cloneInto(detail, document);
+      detail = cloneInto({detail}, document);
+    } else {
+      detail = {detail};
     }
     onDOMready().then(() => {
       document.dispatchEvent(new CustomEvent(type, detail));
@@ -164,7 +182,7 @@
             if (!isNew && style.updateUrl.includes('?')) {
               enableUpdateButton(true);
             } else {
-              sendEvent('styleInstalledChrome');
+              sendEvent({type: 'styleInstalledChrome'});
             }
           }
         );
