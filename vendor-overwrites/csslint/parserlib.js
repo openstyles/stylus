@@ -4692,7 +4692,7 @@ self.parserlib = (() => {
       stream.mustMatch(Tokens.RPAREN);
 
       const subpart = new SelectorSubPart(value, 'not', start);
-      subpart.args.push(arg);
+      subpart.args.push(arg[0]);
       return subpart;
     }
 
