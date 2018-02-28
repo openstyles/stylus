@@ -325,15 +325,8 @@ select {
 
 .newUI .entry {
   display: table-row;
-  contain: strict;
   padding-top: 0;
   padding-bottom: 0;
-}
-
-.newUI .entry.can-update,
-.newUI .entry.update-problem,
-.newUI .entry.update-done {
-  contain: none;
 }
 
 .newUI .entry.odd {
@@ -345,11 +338,9 @@ select {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
-  contain: content;
 }
 
 .newUI .entry .actions {
-  contain: none;
   position: relative;
 }
 
@@ -626,7 +617,6 @@ select {
   box-sizing: border-box;
   padding-right: 1rem;
   line-height: 18px;
-  contain: layout style;
 }
 
 .newUI .applies-to .expander {
@@ -665,7 +655,6 @@ select {
   backface-visibility: hidden;
   opacity: .25;
   display: none;
-  contain: layout style size;
 }
 
 .newUI .has-favicons .target {
