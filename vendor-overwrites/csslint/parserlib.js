@@ -2511,6 +2511,13 @@ self.parserlib = (() => {
       let result, m;
 
       if (this.simple['<var>'](part)) {
+        if (expression._i < expression._parts.length - 1) {
+          expression.mark();
+          expression._i++;
+          result = ValidationTypes.isType(expression, type);
+          expression.restore();
+          expression._i += result ? 1 : 0;
+        }
         result = true;
 
       } else if (!type.startsWith('<')) {
