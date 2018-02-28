@@ -4674,37 +4674,26 @@ self.parserlib = (() => {
       if (!stream.match(Tokens.NOT)) return null;
 
       const start = stream._token;
-      let value = stream._token.value + this._ws();
+      let value = start.value + this._ws();
 
-      const arg = this._negationArg();
-      value += arg + this._ws();
-
-      stream.match(Tokens.RPAREN);
-      value += stream._token.value;
+      const arg = this._selectorsGroup();
+      if (!arg) this._unexpectedToken(stream.LT(1));
+      const parts = arg[0].parts;
+      if (arg.length > 1 ||
+          parts.length !== 1 ||
+          parts[0].modifiers.length + (parts[0].elementName ? 1 : 0) > 1 ||
+          /^:not\b/i.test(parts[0])) {
+        this.fire({
+          type: 'error',
+          message: `Simple selector expected, but found '${arg.join(', ')}'`,
+        }, arg[0]);
+      }
+      value += arg[0] + this._ws() + ')';
+      stream.mustMatch(Tokens.RPAREN);
 
       const subpart = new SelectorSubPart(value, 'not', start);
       subpart.args.push(arg);
       return subpart;
-    }
-
-    _negationArg() {
-      const stream = this._tokenStream;
-      const start = stream.LT(1);
-      const next = stream.peek();
-      const ns = this._namespacePrefix();
-      const arg =
-        this._typeSelector(ns) ||
-        this._universal(ns) ||
-        next === Tokens.HASH && this._hash() ||
-        next === Tokens.DOT && this._class() ||
-        next === Tokens.LBRACKET && this._attrib() ||
-        next === Tokens.COLON && this._pseudo();
-
-      if (!arg) this._unexpectedToken(stream.LT(1));
-
-      return arg.type === 'elementName' ?
-        new SelectorPart(arg, [], arg.toString(), start) :
-        new SelectorPart(null, [arg], arg.toString(), start);
     }
 
     _declaration(consumeSemicolon) {
