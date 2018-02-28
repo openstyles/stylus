@@ -34,7 +34,7 @@ function parseMozFormat({code, styleId}) {
     // move last comment before @-moz-document inside the section
     if (!lastCmt.includes('AGENT_SHEET') &&
         !lastCmt.includes('==') &&
-        !/==userstyle==/iu.test(lastCmt)) {
+        !/==userstyle==/i.test(lastCmt)) {
       if (lastCmt) {
         section.code = lastCmt + '\n';
         outerText = outerText.slice(0, -lastCmt.length);

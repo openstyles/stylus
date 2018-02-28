@@ -176,8 +176,8 @@
 
     const execAt = (rx, i) => (rx.lastIndex = i) && null || rx.exec(text);
     const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
-    const atWord = ch => at(/\w/uy, ch);
-    const atSpace = ch => at(/\s/uy, ch);
+    const atWord = ch => at(/\w/y, ch);
+    const atSpace = ch => at(/\s/y, ch);
 
     const atTokenEnd = styles.indexOf(ch, 1);
     ch += atTokenEnd < 0 ? 0 : sticky === 'before' && atWord(ch - 1) ? 0 : atSpace(ch + 1) ? 0 : 1;
@@ -189,19 +189,19 @@
     const isNumber = type === 'number';
     const isSpace = atSpace(ch);
     let wordChars =
-      isNumber ? /[-+\w.%]/uy :
-      isCss ? /[-\w@]/uy :
-      isSpace ? /\s/uy :
-      atWord(ch) ? /\w/uy : /[^\w\s]/uy;
+      isNumber ? /[-+\w.%]/y :
+      isCss ? /[-\w@]/y :
+      isSpace ? /\s/y :
+      atWord(ch) ? /\w/y : /[^\w\s]/y;
 
     let a = ch;
     while (a && at(wordChars, a)) a--;
-    a += !a && at(wordChars, a) || isCss && at(/[.!#@]/uy, a) ? 0 : at(wordChars, a + 1);
+    a += !a && at(wordChars, a) || isCss && at(/[.!#@]/y, a) ? 0 : at(wordChars, a + 1);
 
     let b, found;
 
     if (isNumber) {
-      b = a + execAt(/[+-]?[\d.]+(e\d+)?|$/uyi, a)[0].length;
+      b = a + execAt(/[+-]?[\d.]+(e\d+)?|$/yi, a)[0].length;
       found = b >= ch;
       if (!found) {
         a = b;
@@ -210,7 +210,7 @@
     }
 
     if (!found) {
-      wordChars = isCss ? /[-\w]*/uy : new RegExp(wordChars.source + '*', 'uy');
+      wordChars = isCss ? /[-\w]*/y : new RegExp(wordChars.source + '*', 'uy');
       b = ch + execAt(wordChars, ch)[0].length;
     }
 
@@ -226,7 +226,7 @@ CodeMirror.hint && (() => {
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
-  const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iyu;
+  const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
   CodeMirror.registerHelper('hint', 'css', function (cm) {
@@ -238,7 +238,7 @@ CodeMirror.hint && (() => {
     if (style && (style.startsWith('comment') || style.startsWith('string'))) {
       return originalHelper(cm);
     }
-    if (text[ch - 1] === '!' && /i|\W|^$/iu.test(text[ch] || '')) {
+    if (text[ch - 1] === '!' && /i|\W|^$/i.test(text[ch] || '')) {
       RX_IMPORTANT.lastIndex = ch;
       return {
         list: ['important'],

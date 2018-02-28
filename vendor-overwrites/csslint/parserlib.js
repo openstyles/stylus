@@ -3354,15 +3354,15 @@ self.parserlib = (() => {
     }
 
     readUnquotedURL(first) {
-      return this.readChunksWithEscape(first, /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu);
+      return this.readChunksWithEscape(first, /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/y);
     }
 
     readName(first) {
-      return this.readChunksWithEscape(first, /[-_\da-zA-Z\u00A0-\uFFFF]+/yu);
+      return this.readChunksWithEscape(first, /[-_\da-zA-Z\u00A0-\uFFFF]+/y);
     }
 
     readEscape() {
-      const cp = this._reader.readMatch(/[0-9a-f]{1,6}\b\s*/iyu);
+      const cp = this._reader.readMatch(/[0-9a-f]{1,6}\b\s*/iy);
       return cp ? String.fromCodePoint(parseInt(cp, 16)) : this._reader.read();
     }
 
@@ -3388,7 +3388,7 @@ self.parserlib = (() => {
     readComment(first) {
       return first +
              this._reader.readCount(2 - first.length) +
-             this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/yu);
+             this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y);
     }
   }
 
