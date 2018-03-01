@@ -1346,6 +1346,7 @@ self.parserlib = (() => {
     // modifier
     {name: 'NOT'},
     {name: 'ANY', text: ['any', '-webkit-any', '-moz-any']},
+    {name: 'MATCHES'},
 
     /*
      * Defined in CSS3 Paged Media
@@ -2954,7 +2955,7 @@ self.parserlib = (() => {
          * - CHAR
          */
         case ':':
-          return this.notOrAnyToken(c, pos);
+          return this.notOrAnyOrMatchesToken(c, pos);
 
         /*
          * Potential tokens:
@@ -3163,12 +3164,15 @@ self.parserlib = (() => {
 
     // NOT
     // ANY
+    // MATCHES
     // CHAR
-    notOrAnyToken(first, pos) {
+    notOrAnyOrMatchesToken(first, pos) {
       const reader = this._reader;
-      const func = reader.readMatch(/not\(|(-(moz|webkit)-)?any\(/iy);
+      const func = reader.readMatch(/(not|(-(moz|webkit)-)?any|matches)\(/iy);
       if (func) {
-        const type = func.startsWith('n') || func.startsWith('N') ? Tokens.NOT : Tokens.ANY;
+        const type =
+          func.startsWith('n') || func.startsWith('N') ? Tokens.NOT :
+          func.startsWith('m') || func.startsWith('M') ? Tokens.MATCHES : Tokens.ANY;
         return this.createToken(type, first + func, pos);
       }
       return this.charToken(first, pos);
@@ -4474,17 +4478,11 @@ self.parserlib = (() => {
       }
 
       while (true) {
-        const next = stream.peek();
-        const component =
-          next === Tokens.HASH && this._hash() ||
-          next === Tokens.DOT && this._class() ||
-          next === Tokens.LBRACKET && this._attrib() ||
-          next === Tokens.COLON && this._pseudo() ||
-          next === Tokens.ANY && this._any() ||
-          next === Tokens.NOT && this._negation();
+        const action = Parser.ACTIONS.simpleSelectorSequence.get(stream.peek());
+        const component = action && action.call(this);
         if (!component) break;
         modifiers.push(component);
-        text += component.toString();
+        text += component;
       }
 
       return text && new SelectorPart(elementName, modifiers, text, start);
@@ -4658,21 +4656,23 @@ self.parserlib = (() => {
       return value.length ? value : null;
     }
 
-    _any() {
+    _anyOrMatches() {
       const stream = this._tokenStream;
-      if (!stream.match(Tokens.ANY)) return null;
+      if (!stream.match([Tokens.ANY, Tokens.MATCHES])) return null;
 
+      let arg;
       const start = stream._token;
-      let value = stream._token.value + this._ws();
+      const type = start.type === Tokens.ANY ? 'any' : 'matches';
+      const value =
+        start.value +
+        this._ws() +
+        ((arg = this._selectorsGroup())) +
+        this._ws() +
+        ')';
+      stream.mustMatch(Tokens.RPAREN);
 
-      const arg = this._selectorsGroup();
-      value += arg + this._ws();
-
-      stream.match(Tokens.RPAREN);
-      value += stream._token.value;
-
-      const subpart = new SelectorSubPart(value, 'any', start);
-      subpart.args.push(arg);
+      const subpart = new SelectorSubPart(value, type, start);
+      subpart.args = arg;
       return subpart;
     }
 
@@ -5311,6 +5311,17 @@ self.parserlib = (() => {
   Object.assign(Parser, TYPES);
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
+  Parser.ACTIONS = {
+    simpleSelectorSequence: new Map([
+      [Tokens.HASH, Parser.prototype._hash],
+      [Tokens.DOT, Parser.prototype._class],
+      [Tokens.LBRACKET, Parser.prototype._attrib],
+      [Tokens.COLON, Parser.prototype._pseudo],
+      [Tokens.ANY, Parser.prototype._anyOrMatches],
+      [Tokens.MATCHES, Parser.prototype._anyOrMatches],
+      [Tokens.NOT, Parser.prototype._negation],
+    ]),
+  };
 
   //endregion
   //region Helper functions
