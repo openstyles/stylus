@@ -3785,52 +3785,14 @@ self.parserlib = (() => {
         this._skipCruft();
       }
 
-      const ACTIONS = new Map([
-        [Tokens.MEDIA_SYM, this._media],
-        [Tokens.DOCUMENT_SYM, this._document],
-        [Tokens.SUPPORTS_SYM, this._supports],
-        [Tokens.PAGE_SYM, this._page],
-        [Tokens.FONT_FACE_SYM, this._fontFace],
-        [Tokens.KEYFRAMES_SYM, this._keyframes],
-        [Tokens.VIEWPORT_SYM, this._viewport],
-        [Tokens.S, this._ws],
-        [Tokens.UNKNOWN_SYM, () => {
-          stream.get();
-          const lt0 = stream.LT(0);
-          if (this.options.strict) {
-            throw new SyntaxError('Unknown @ rule.', lt0);
-          }
-
-          this.fire({
-            type: 'error',
-            error: null,
-            message: 'Unknown @ rule: ' + lt0.value + '.',
-          }, lt0);
-
-          // skip {} block
-          let count = 0;
-          do {
-            const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
-            count += brace === Tokens.LBRACE ? 1 : -1;
-          } while (count > 0 && !stream._reader.eof());
-          if (count < 0) stream.unget();
-        }],
-      ]);
-
-      const MISPLACED = new Map([
-        [Tokens.CHARSET_SYM, this._charset],
-        [Tokens.IMPORT_SYM, this._import],
-        [Tokens.NAMESPACE_SYM, this._namespace],
-      ]);
-
       for (let tt; (tt = stream.peek()) > Tokens.EOF; this._skipCruft()) {
         try {
-          let action = ACTIONS.get(tt);
+          let action = Parser.ACTIONS.stylesheet.get(tt);
           if (action) {
             action.call(this);
             continue;
           }
-          action = MISPLACED.get(tt);
+          action = Parser.ACTIONS.stylesheetMisplaced.get(tt);
           if (action) {
             const token = stream.LT(1);
             action.call(this, false);
@@ -3919,17 +3881,8 @@ self.parserlib = (() => {
       this._ws();
 
       for (;; stream.skipComment()) {
-        switch (stream.peek()) {
-          case Tokens.MEDIA_SYM:
-            this._media();
-            continue;
-          case Tokens.SUPPORTS_SYM:
-            this._supports();
-            continue;
-          case Tokens.DOCUMENT_SYM:
-            this._document();
-            continue;
-        }
+        const action = Parser.ACTIONS.supports.get(stream.peek());
+        if (action && action.call(this)) continue;
         if (!this._ruleset()) break;
       }
 
@@ -4010,16 +3963,8 @@ self.parserlib = (() => {
       }, start);
       this._ws();
 
-      const actions = new Map([
-        [Tokens.MEDIA_SYM, this._media],
-        [Tokens.DOCUMENT_SYM, this._document],
-        [Tokens.SUPPORTS_SYM, this._supports],
-        [Tokens.PAGE_SYM, this._page],
-        [Tokens.FONT_FACE_SYM, this._fontFace],
-        [Tokens.VIEWPORT_SYM, this._viewport],
-      ]);
       let action;
-      do action = actions.get(stream.peek());
+      do action = Parser.ACTIONS.media.get(stream.peek());
       while (action ? action.call(this) || true : this._ruleset());
 
       stream.mustMatch(Tokens.RBRACE);
@@ -4265,17 +4210,8 @@ self.parserlib = (() => {
 
       this._ws();
 
-      const actions = new Map([
-        [Tokens.MEDIA_SYM, this._media],
-        [Tokens.DOCUMENT_SYM, this._document],
-        [Tokens.SUPPORTS_SYM, this._supports],
-        [Tokens.PAGE_SYM, this._page],
-        [Tokens.FONT_FACE_SYM, this._fontFace],
-        [Tokens.VIEWPORT_SYM, this._viewport],
-        [Tokens.KEYFRAMES_SYM, this._keyframes],
-      ]);
       let action;
-      do action = actions.get(stream.peek());
+      do action = Parser.ACTIONS.document.get(stream.peek());
       while (action ? action.call(this) || true : this._ruleset());
 
       stream.mustMatch(Tokens.RBRACE);
@@ -5217,6 +5153,29 @@ self.parserlib = (() => {
       return ws;
     }
 
+    _unknownSym() {
+      const stream = this._tokenStream;
+      stream.get();
+      const lt0 = stream.LT(0);
+      if (this.options.strict) {
+        throw new SyntaxError('Unknown @ rule.', lt0);
+      }
+
+      this.fire({
+        type: 'error',
+        error: null,
+        message: 'Unknown @ rule: ' + lt0.value + '.',
+      }, lt0);
+
+      // skip {} block
+      let count = 0;
+      do {
+        const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
+        count += brace === Tokens.LBRACE ? 1 : -1;
+      } while (count > 0 && !stream._reader.eof());
+      if (count < 0) stream.unget();
+    }
+
     _unexpectedToken(token) {
       const {value, startLine: line, startCol: col} = token;
       throw new SyntaxError(`Unexpected token '${value}' at line ${line}, col ${col}.`, token);
@@ -5311,7 +5270,52 @@ self.parserlib = (() => {
   Object.assign(Parser, TYPES);
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
+
   Parser.ACTIONS = {
+
+    stylesheet: new Map([
+      [Tokens.MEDIA_SYM, Parser.prototype._media],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
+      [Tokens.PAGE_SYM, Parser.prototype._page],
+      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
+      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      [Tokens.S, Parser.prototype._ws],
+      [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym],
+    ]),
+
+    stylesheetMisplaced: new Map([
+      [Tokens.CHARSET_SYM, Parser.prototype._charset],
+      [Tokens.IMPORT_SYM, Parser.prototype._import],
+      [Tokens.NAMESPACE_SYM, Parser.prototype._namespace],
+    ]),
+
+    document: new Map([
+      [Tokens.MEDIA_SYM, Parser.prototype._media],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
+      [Tokens.PAGE_SYM, Parser.prototype._page],
+      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
+      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
+    ]),
+
+    supports: new Map([
+      [Tokens.MEDIA_SYM, Parser.prototype._media],
+      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+    ]),
+
+    media: new Map([
+      [Tokens.MEDIA_SYM, Parser.prototype._media],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
+      [Tokens.PAGE_SYM, Parser.prototype._page],
+      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
+      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+    ]),
+
     simpleSelectorSequence: new Map([
       [Tokens.HASH, Parser.prototype._hash],
       [Tokens.DOT, Parser.prototype._class],
