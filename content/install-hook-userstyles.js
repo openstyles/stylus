@@ -16,7 +16,7 @@
   chrome.runtime.onMessage.addListener(onMessage);
 
   let gotBody = false;
-  new MutationObserver((mutations, observer) => {
+  new MutationObserver(function _(mutations, observer) {
     if (!gotBody) {
       if (!document.body) return;
       gotBody = true;
@@ -29,11 +29,12 @@
       return;
     }
     if (document.getElementById('install_button')) {
-      observer.disconnect();
+      if (observer) observer.disconnect();
       onDOMready().then(() => {
         requestAnimationFrame(() => {
           sendEvent(sendEvent.lastEvent);
         });
+        setTimeout(_);
       });
       return;
     }
