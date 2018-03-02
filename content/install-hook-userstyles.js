@@ -16,7 +16,13 @@
   chrome.runtime.onMessage.addListener(onMessage);
 
   let gotBody = false;
-  new MutationObserver(function _(mutations, observer) {
+  new MutationObserver(observeDOM).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+  observeDOM();
+
+  function observeDOM() {
     if (!gotBody) {
       if (!document.body) return;
       gotBody = true;
@@ -26,22 +32,16 @@
         method: 'getStyles',
         md5Url: getMeta('stylish-md5-url') || location.href
       }, checkUpdatability);
-      return;
     }
     if (document.getElementById('install_button')) {
-      if (observer) observer.disconnect();
       onDOMready().then(() => {
         requestAnimationFrame(() => {
           sendEvent(sendEvent.lastEvent);
         });
-        setTimeout(_);
       });
       return;
     }
-  }).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
+  }
 
   function onMessage(msg, sender, sendResponse) {
     switch (msg.method) {
