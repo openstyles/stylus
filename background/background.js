@@ -98,11 +98,13 @@ prefs.subscribe(['iconset'], () =>
 {
   const onInstall = ({reason}) => {
     chrome.runtime.onInstalled.removeListener(onInstall);
-    // reset L10N cache on update
     if (reason === 'update') {
+      // translations may change
       localStorage.L10N = JSON.stringify({
         browserUIlanguage: chrome.i18n.getUILanguage(),
       });
+      // themes may change
+      delete localStorage.codeMirrorThemes;
     }
   };
   // bind for 60 seconds max and auto-unbind if it's a normal run
