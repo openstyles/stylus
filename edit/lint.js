@@ -59,7 +59,7 @@ var linterConfig = {
         // always use default syntax because we don't expose it in config UI
         config.syntax = this.defaults.stylelint.syntax;
       }
-      return config;
+      return Object.assign({}, this.defaults[linter] || {}, config);
     } else {
       return deepCopy(this.defaults[linter] || {});
     }

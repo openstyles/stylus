@@ -858,6 +858,19 @@ CSSLint.addRule({
 });
 
 CSSLint.addRule({
+  id:       'warnings',
+  name:     'Parsing warnings',
+  desc:     'This rule looks for parser warnings.',
+  browsers: 'All',
+
+  init(parser, reporter) {
+    parser.addListener('warning', ({message, line, col}) => {
+      reporter.report(message, line, col, this);
+    });
+  },
+});
+
+CSSLint.addRule({
   id:       'fallback-colors',
   name:     'Require fallback colors',
   desc:     "For older browsers that don't support RGBA, HSL, or HSLA, provide a fallback color.",

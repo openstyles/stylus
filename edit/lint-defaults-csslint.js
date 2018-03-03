@@ -10,6 +10,7 @@ window.linterConfig.defaults.csslint = {
   'duplicate-properties': 1,
   'empty-rules': 1,
   'errors': 1,
+  'warnings': 1,
   'known-properties': 1,
 
   // Default disabled

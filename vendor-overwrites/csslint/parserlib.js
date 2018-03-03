@@ -4627,7 +4627,7 @@ self.parserlib = (() => {
           parts[0].modifiers.length + (parts[0].elementName ? 1 : 0) > 1 ||
           /^:not\b/i.test(parts[0])) {
         this.fire({
-          type: 'error',
+          type: 'warning',
           message: `Simple selector expected, but found '${arg.join(', ')}'`,
         }, arg[0]);
       }
