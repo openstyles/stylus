@@ -43,11 +43,7 @@ var linterConfig = {
     return CodeMirror.lint && CodeMirror.lint[linter] ? {
       getAnnotations: CodeMirror.lint[linter],
       delay: prefs.get('editor.lintDelay'),
-      preUpdateLinting(cm) {
-        cm.startOperation();
-      },
       onUpdateLinting(annotationsNotSorted, annotations, cm) {
-        cm.endOperation();
         updateLintReport(cm);
       },
     } : false;

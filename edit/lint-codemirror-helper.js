@@ -29,15 +29,9 @@
       })),
   };
 
-  function invokeHelper(code, options, cm) {
+  function invokeHelper(code) {
     const config = linterConfig.getCurrent();
     return linterConfig.invokeWorker({code, config})
-      .then(cookResults[linterConfig.getName()])
-      .then(results => {
-        if (options && typeof options.preUpdateLinting === 'function') {
-          options.preUpdateLinting(cm);
-        }
-        return results;
-      });
+      .then(cookResults[linterConfig.getName()]);
   }
 })();
