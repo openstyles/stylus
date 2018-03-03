@@ -38,10 +38,6 @@
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
 
-  CodeMirror.commands.blockComment = cm => {
-    cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
-  };
-
   // 'basic' keymap only has basic keys by design, so we skip it
 
   const extraKeysCommands = {};
@@ -64,7 +60,7 @@
     // 'vim' and 'emacs' define their own autocomplete hotkeys
   }
   if (!extraKeysCommands.blockComment) {
-    CodeMirror.keyMap.sublime['Shift-Ctrl-/'] = 'blockComment';
+    CodeMirror.keyMap.sublime['Shift-Ctrl-/'] = 'commentSelection';
   }
 
   if (navigator.appVersion.includes('Windows')) {

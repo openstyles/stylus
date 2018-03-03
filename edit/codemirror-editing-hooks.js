@@ -17,10 +17,15 @@ onDOMscriptReady('/codemirror.js').then(() => {
     toggleEditorFocus,
     jumpToLine,
     nextEditor, prevEditor,
+    commentSelection,
   };
   // reroute handling to nearest editor when keypress resolves to one of these commands
   const REROUTED = new Set([
-    ...Object.keys(COMMANDS),
+    'save',
+    'toggleStyle',
+    'jumpToLine',
+    'nextEditor', 'prevEditor',
+    'toggleEditorFocus',
     'find', 'findNext', 'findPrev', 'replace', 'replaceAll',
     'colorpicker',
   ]);
@@ -197,6 +202,10 @@ onDOMscriptReady('/codemirror.js').then(() => {
         cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
       }
     }, {value: cur.line + 1});
+  }
+
+  function commentSelection(cm) {
+    cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
   }
 
   function toggleEditorFocus(cm) {
