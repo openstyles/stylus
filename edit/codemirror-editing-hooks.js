@@ -14,6 +14,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
   const COMMANDS = {
     save,
     toggleStyle,
+    toggleEditorFocus,
     jumpToLine,
     nextEditor, prevEditor,
   };
@@ -196,6 +197,15 @@ onDOMscriptReady('/codemirror.js').then(() => {
         cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
       }
     }, {value: cur.line + 1});
+  }
+
+  function toggleEditorFocus(cm) {
+    if (!cm) return;
+    if (cm.hasFocus()) {
+      setTimeout(() => cm.display.input.blur());
+    } else {
+      cm.focus();
+    }
   }
 
   function refocusMinidialog(cm) {
