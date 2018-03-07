@@ -22,7 +22,7 @@ const popupExclusions = (() => {
   }
 
   /* Modal in Popup.html */
-  function createPopupContent(url) {
+  function processURL(url) {
     const results = [];
     const protocol = url.match(/\w+:\/\//);
     const parts = url.replace(/(\w+:\/\/|[#?].*$)/g, '').split('/');
@@ -42,21 +42,63 @@ const popupExclusions = (() => {
       results.push([t('excludedDomain'), domain.join('.')]);
       domain.shift();
     }
+    return results.reverse();
+  }
+
+  function createOption(option) {
+    // ["Domain/Prefix", "{url}"]
+    return $create('option', {
+      value: option[1],
+      title: option[1],
+      textContent: `${option[0]}: ${option[1]}`
+    });
+  }
+
+  function createPopupContent(url) {
+    const options = processURL(url);
     return [
       $create('h2', {textContent: t('exclusionsEditTitle')}),
       $create('select', {
         id: 'popup-exclusions',
-        size: results.length,
+        size: options.length,
         multiple: 'true',
         value: ''
       }, [
-        ...results.reverse().map(link => $create('option', {
-          value: link[1],
-          title: link[1],
-          textContent: `${link[0]}: ${link[1]}`
-        }))
+        ...options.map(option => createOption(option))
       ])
     ];
+  }
+
+  function getIframeURLs(style) {
+    getActiveTab().then(tab => {
+      if (tab && tab.status === 'complete') {
+        chrome.webNavigation.getAllFrames({
+          tabId: tab.id
+        }, frames => {
+          const urls = frames.reduce((acc, frame) => processURL(frame.url), []);
+          updateSelections(style, urls);
+        });
+      }
+    });
+  }
+
+  function updateSelections(style, newOptions = []) {
+    const select = $('select', messageBox.element);
+    const exclusions = Object.keys(style.exclusions || {});
+    if (newOptions.length) {
+      const currentOptions = [...select.children].map(opt => opt.value);
+      newOptions.forEach(opt => {
+        if (!currentOptions.includes(opt[1])) {
+          select.appendChild(createOption(opt));
+        }
+      });
+      select.size = select.children.length;
+    }
+    [...select.children].forEach(option => {
+      if (exclusionExists(exclusions, option.value).length) {
+        option.selected = true;
+      }
+    });
   }
 
   function openPopupDialog(style, tabURL) {
@@ -70,13 +112,8 @@ const popupExclusions = (() => {
         contents.style = `max-width: calc(${popupWidth} - 20px); max-height: none;`;
         document.body.style.minWidth = popupWidth;
         document.body.style.minHeight = popupWidth;
-        const select = $('select', messageBox.element);
-        const exclusions = Object.keys(style.exclusions || {});
-        [...select.children].forEach(option => {
-          if (exclusionExists(exclusions, option.value).length) {
-            option.selected = true;
-          }
-        }, []);
+        updateSelections(style);
+        getIframeURLs(style);
         $('#message-box-buttons button', messageBox.element).onclick = function () {
           handlePopupSave(style, this);
         };
