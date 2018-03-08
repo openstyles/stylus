@@ -603,6 +603,13 @@ self.parserlib = (() => {
     // Z
     'z-index': '<integer> | auto',
     'zoom':    '<number> | <percentage> | normal',
+
+    // nonstandard https://compat.spec.whatwg.org/
+    '-webkit-box-reflect':       '[ above | below | right | left ]? <length>? <image>?',
+    '-webkit-text-fill-color':   '<color>',
+    '-webkit-text-stroke':       '<border-width> || <color>',
+    '-webkit-text-stroke-color': '<color>',
+    '-webkit-text-stroke-width': '<border-width>',
   };
 
   //endregion

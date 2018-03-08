@@ -105,6 +105,13 @@
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
     'mix-blend-mode': true,
     'isolation': true,
+    // nonstandard https://compat.spec.whatwg.org/
+    'box-reflect': true,
+    'text-fill-color': true,
+    'text-stroke': true,
+    'text-stroke-color': true,
+    'text-stroke-width': true,
+    // end
   });
   Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
     'isolate': true,
