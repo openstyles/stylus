@@ -64,6 +64,12 @@ chrome.runtime.onMessage.addListener(onRuntimeMessage);
         {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
       ]
     });
+    // FF misses some about:blank iframes so we inject our content script explicitly
+    chrome.webNavigation.onDOMContentLoaded.addListener(webNavIframeHelperFF, {
+      url: [
+        {urlEquals: 'about:blank'},
+      ]
+    });
   }
 }
 
@@ -326,6 +332,20 @@ function webNavUsercssInstallerFF(data) {
     if (pong !== true && tab.url !== 'about:blank') {
       window.API_METHODS.installUsercss({direct: true}, {tab});
     }
+  });
+}
+
+
+function webNavIframeHelperFF({tabId, frameId}) {
+  if (!frameId) return;
+  sendMessage({method: 'ping', tabId, frameId}, pong => {
+    ignoreChromeError();
+    if (pong) return;
+    chrome.tabs.executeScript(tabId, {
+      frameId,
+      file: '/content/apply.js',
+      matchAboutBlank: true,
+    }, ignoreChromeError);
   });
 }
 
