@@ -624,7 +624,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
       errors.classList.add('hidden');
     }).catch(err => {
       errors.classList.remove('hidden');
-      errors.onclick = () => messageBox.alert(String(err));
+      errors.onclick = () => messageBox.alert(String(err), 'pre');
     });
   }
 });

@@ -51,6 +51,8 @@
 
 #message-box.pre #message-box-contents {
   white-space: pre-line;
+  font-family: monospace;
+  text-align: left;
 }
 
 #message-box-title {

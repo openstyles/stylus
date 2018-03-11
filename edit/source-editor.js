@@ -225,7 +225,7 @@ function createSourceEditor(style) {
           contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
           contents.push($create('pre', drawLinePointer(pos)));
         }
-        messageBox.alert(contents);
+        messageBox.alert(contents, 'pre');
       });
   }
 

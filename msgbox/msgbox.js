@@ -1,14 +1,32 @@
 /* global focusAccessibility */
 'use strict';
 
+/**
+ * @param {Object} params
+ * @param {String} params.title
+ * @param {String|Node|Object|Array<String|Node|Object>} params.contents
+ *        a string gets parsed via tHTML,
+ *        a non-string is passed as is to $create()
+ * @param {String} [params.className]
+ *        CSS class name of the message box element
+ * @param {Array<String|{textContent: String, onclick: Function, ...etc}>} [params.buttons]
+ *        ...etc means anything $create() can handle
+ * @param {Function(messageboxElement)} [params.onshow]
+ *        invoked after the messagebox is shown
+ * @param {Boolean} [params.blockScroll]
+ *        blocks the page scroll
+ * @returns {Promise}
+ *        resolves to an object with optionally present properties depending on the interaction:
+ *        {button: Number, enter: Boolean, esc: Boolean}
+ */
 function messageBox({
-  title,          // [mandatory] string
-  contents,       // [mandatory] 1) DOM element 2) string
-  className = '', // string, CSS class name of the message box element
-  buttons = [],   // array of strings or objects like {textContent[string], onclick[function]}.
-  onshow,         // function(messageboxElement) invoked after the messagebox is shown
-  blockScroll,    // boolean, blocks the page scroll
-}) {              // RETURNS: Promise resolved to {button[number], enter[boolean], esc[boolean]}
+  title,
+  contents,
+  className = '',
+  buttons = [],
+  onshow,
+  blockScroll,
+}) {
   initOwnListeners();
   bindGlobalListeners();
   createElement();
@@ -137,16 +155,26 @@ function messageBox({
   }
 }
 
-messageBox.alert = text =>
+/**
+ * @param {String|Node|Array<String|Node>} contents
+ * @param {String} [className] like 'pre' for monospace font
+ * @returns {Promise<Boolean>} same as messageBox
+ */
+messageBox.alert = (contents, className) =>
   messageBox({
-    contents: text,
-    className: 'pre center',
+    contents,
+    className: `center ${className || ''}`,
     buttons: [t('confirmClose')]
   });
 
-messageBox.confirm = text =>
+/**
+ * @param {String|Node|Array<String|Node>} contents
+ * @param {String} [className] like 'pre' for monospace font
+ * @returns {Promise<Boolean>} resolves to true when confirmed
+ */
+messageBox.confirm = (contents, className) =>
   messageBox({
-    contents: text,
-    className: 'pre center',
+    contents,
+    className: `center ${className || ''}`,
     buttons: [t('confirmYes'), t('confirmNo')]
   }).then(result => result.button === 0 || result.enter);

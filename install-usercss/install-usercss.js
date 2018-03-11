@@ -23,14 +23,14 @@
       switch (msg.method) {
         case 'getSourceCodeResponse':
           if (msg.error) {
-            messageBox.alert(msg.error);
+            messageBox.alert(msg.error, 'pre');
           } else {
             initSourceCode(msg.sourceCode);
           }
           break;
         case 'sourceCodeChanged':
           if (msg.error) {
-            messageBox.alert(msg.error);
+            messageBox.alert(msg.error, 'pre');
           } else {
             liveReloadUpdate(msg.sourceCode);
           }
@@ -292,7 +292,7 @@
       ).then(ok => ok &&
         API.saveUsercss(Object.assign(style, dup && {reason: 'update'}))
           .then(install)
-          .catch(err => messageBox.alert(t('styleInstallFailed', err)))
+          .catch(err => messageBox.alert(t('styleInstallFailed', err), 'pre'))
       );
     };
 
@@ -404,7 +404,7 @@
       // on the off-chance dbExecChromeStorage.getAll ran right after bg download was saved
       download(params.get('updateUrl'))
         .then(initSourceCode)
-        .catch(err => messageBox.alert(t('styleInstallFailed', String(err))));
+        .catch(err => messageBox.alert(t('styleInstallFailed', String(err)), 'pre'));
     });
   }
 

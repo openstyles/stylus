@@ -165,7 +165,7 @@ function configDialog(style) {
         $create('ol', {style: 'text-align: left'},
           invalid.map(msg =>
             $create({tag: 'li', appendChild: msg}))),
-      ]);
+      ], 'pre');
     }
     if (!numValid) {
       return;
