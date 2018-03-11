@@ -450,8 +450,8 @@ var usercss = (() => {
     try {
       doParse();
     } catch (e) {
-      // grab additional info
-      e.index = metaIndex;
+      // the source code string offset
+      e.index = metaIndex + state.re.lastIndex;
       throw e;
     }
 

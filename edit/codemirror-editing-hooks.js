@@ -623,6 +623,10 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }).then(() => {
       errors.classList.add('hidden');
     }).catch(err => {
+      if (err && editor && !Number.isNaN(err.index)) {
+        const pos = editors[0].posFromIndex(err.index);
+        err = `${pos.line}:${pos.ch} ${err}`;
+      }
       errors.classList.remove('hidden');
       errors.onclick = () => messageBox.alert(String(err), 'pre');
     });
