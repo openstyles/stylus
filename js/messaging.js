@@ -449,10 +449,20 @@ function sessionStorageHash(name) {
   };
 }
 
-
+/**
+ * @param {String} url
+ * @param {Object} params
+ * @param {String} [params.method]
+ * @param {String|Object} [params.body]
+ * @param {String} [params.responseType] arraybuffer, blob, document, json, text
+ * @param {Number} [params.requiredStatusCode] resolved when matches, otherwise rejected
+ * @param {Number} [params.timeout] ms
+ * @param {Object} [params.headers] {name: value}
+ * @returns {Promise}
+ */
 function download(url, {
-  method = url.includes('?') ? 'POST' : 'GET',
-  body = url.includes('?') ? url.slice(url.indexOf('?')) : null,
+  method = 'GET',
+  body = null,
   responseType = 'text',
   requiredStatusCode = 200,
   timeout = 10e3,
@@ -460,6 +470,12 @@ function download(url, {
     'Content-type': 'application/x-www-form-urlencoded',
   },
 } = {}) {
+  const queryPos = url.indexOf('?');
+  if (queryPos > 0) {
+    method = 'POST';
+    body = url.slice(queryPos);
+    url = url.slice(0, queryPos);
+  }
   return new Promise((resolve, reject) => {
     url = new URL(url);
     if (url.protocol === 'file:' && FIREFOX) {
