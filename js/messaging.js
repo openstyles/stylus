@@ -462,7 +462,7 @@ function sessionStorageHash(name) {
  */
 function download(url, {
   method = 'GET',
-  body = null,
+  body,
   responseType = 'text',
   requiredStatusCode = 200,
   timeout = 10e3,
@@ -471,7 +471,7 @@ function download(url, {
   },
 } = {}) {
   const queryPos = url.indexOf('?');
-  if (queryPos > 0) {
+  if (queryPos > 0 && body === undefined) {
     method = 'POST';
     body = url.slice(queryPos);
     url = url.slice(0, queryPos);
