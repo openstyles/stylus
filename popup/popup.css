@@ -8,6 +8,12 @@
   --outer-padding: 9px;
 }
 
+html {
+  /* Chrome 66-?? adds a gap equal to the scrollbar width,
+     which looks like a bug, see https://crbug.com/821143 */
+  overflow: overlay;
+}
+
 html, body {
   height: min-content;
   max-height: 600px;
