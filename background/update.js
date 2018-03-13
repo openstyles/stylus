@@ -119,7 +119,8 @@ global API_METHODS
         if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
           return Promise.reject(STATES.SAME_MD5);
         }
-        return download(style.updateUrl)
+        // USO can't handle POST requests for style json
+        return download(style.updateUrl, {body: null})
           .then(text => tryJSONparse(text));
       });
     }
