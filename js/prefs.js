@@ -63,7 +63,7 @@ var prefs = new function Prefs() {
     'editor.matchHighlight': 'token', // token = token/word under cursor even if nothing is selected
                                       // selection = only when something is selected
                                       // '' (empty string) = disabled
-    'editor.autoCloseBrackets': false,    // auto-add a closing pair when typing an opening one of ()[]{}''""
+    'editor.autoCloseBrackets': true,    // auto-add a closing pair when typing an opening one of ()[]{}''""
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
 
