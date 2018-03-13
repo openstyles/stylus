@@ -24,6 +24,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   openEditor,
   updateIcon,
 
+  // exposed for stuff that requires followup sendMessage() like popup::openSettings
+  // that would fail otherwise if another extension forced the tab to open
+  // in the foreground thus auto-closing the popup (in Chrome)
+  openURL,
+
   closeTab: (msg, sender, respond) => {
     chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
       if (chrome.runtime.lastError && msg.tabId !== sender.tab.id) {

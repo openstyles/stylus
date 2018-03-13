@@ -427,22 +427,12 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
-    const el = this;
-    const msg = tryJSONparse(el.dataset.sendMessage);
     getActiveTab()
-      .then(activeTab => openURL({
+      .then(activeTab => API.openURL({
         url: this.href || this.dataset.href,
         index: activeTab.index + 1,
-        active: msg ? false : undefined,
+        message: tryJSONparse(this.dataset.sendMessage),
       }))
-      .then(msg && (
-        function poll(tab, t0 = performance.now()) {
-          msg.tabId = tab.id;
-          return sendMessage(msg)
-            .catch(ignoreChromeError)
-            .then(handled => handled || performance.now() - t0 < 200 && poll(tab))
-            .then(() => chrome.tabs.update(tab.id, {active: true}));
-        }))
       .then(window.close);
   },
 

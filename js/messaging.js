@@ -282,18 +282,28 @@ function getTabRealURL(tab) {
 /**
  * Opens a tab or activates an existing one,
  * reuses the New Tab page or about:blank if it's focused now
- * @param {Object} params - or just a string e.g. openURL('foo')
- * @param {string} params.url - if relative, it's auto-expanded to the full extension URL
- * @param {number} [params.index] - move the tab to this index in the tab strip, -1 = last
- * @param {Boolean} [params.active=tue] - true to activate the tab, false to open in background
- * @param {?Boolean} [params.currentWindow=true] - pass null to check all windows
- * @returns {Promise}
+ * @param {Object} params
+ *        or just a string e.g. openURL('foo')
+ * @param {string} params.url
+ *        if relative, it's auto-expanded to the full extension URL
+ * @param {number} [params.index]
+ *        move the tab to this index in the tab strip, -1 = last
+ * @param {Boolean} [params.active]
+ *        true to activate the tab (this is the default value in the extensions API),
+ *        false to open in background
+ * @param {?Boolean} [params.currentWindow]
+ *        pass null to check all windows
+ * @param {any} [params.message]
+ *        JSONifiable data to be sent to the tab via sendMessage() repeatedly for 200ms
+ *        until the remote end returns a non-undefined response
+ * @returns {Promise<Tab>} Promise that resolves to the opened/activated tab
  */
 function openURL({
   url = arguments[0],
   index,
   active,
   currentWindow = true,
+  message,
 }) {
   url = url.includes('://') ? url : chrome.runtime.getURL(url);
   // [some] chromium forks don't handle their fake branded protocols
@@ -305,7 +315,21 @@ function openURL({
     FIREFOX && url.includes('%2F') ?
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
-  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
+
+  let task = queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
+
+  if (message) {
+    task = task.then(function poll(tab, t0 = performance.now()) {
+      message.tabId = tab.id;
+      return sendMessage(message)
+        .then(ack => ack !== undefined ? tab : Promise.reject())
+        .catch(() => {
+          ignoreChromeError();
+          return performance.now() - t0 < 200 ? poll(tab) : tab;
+        });
+    });
+  }
+  return task;
 
   function maybeSwitch(tabs = []) {
     const urlFF = FIREFOX && url.replace(/%2F/g, '/');
