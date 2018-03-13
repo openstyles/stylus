@@ -219,7 +219,12 @@
       if (url.startsWith('#')) {
         resolve(document.getElementById(url.slice(1)).textContent);
       } else {
-        chrome.runtime.sendMessage({method: 'download', url}, result => {
+        chrome.runtime.sendMessage({
+          url,
+          method: 'download',
+          // USO can't handle POST requests for style json
+          body: null,
+        }, result => {
           const error = result && result.__ERROR__;
           if (error) {
             alert('Error' + (error ? '\n' + error : ''));

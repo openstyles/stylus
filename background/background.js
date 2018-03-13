@@ -13,7 +13,10 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   saveStyle,
   deleteStyle,
 
-  download:    msg => download(msg.url),
+  download(msg) {
+    delete msg.method;
+    return download(msg.url, msg);
+  },
   getPrefs:    () => prefs.getAll(),
   healthCheck: () => dbExec().then(() => true),
 
