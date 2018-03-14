@@ -280,6 +280,71 @@ function getTabRealURL(tab) {
 }
 
 /**
+ * Resolves when the [just created] tab is ready for communication.
+ * @param {Number|Tab} tabOrId
+ * @returns {Promise<?Tab>}
+ */
+function onTabReady(tabOrId) {
+  let tabId, tab;
+  if (Number.isInteger(tabOrId)) {
+    tabId = tabOrId;
+  } else {
+    tab = tabOrId;
+    tabId = tab && tab.id;
+  }
+  if (!tab) {
+    return getTab(tabId).then(onTabReady);
+  }
+  if (tab.status === 'complete') {
+    if (!FIREFOX || tab.url !== 'about:blank') {
+      return Promise.resolve(tab);
+    } else {
+      return new Promise(resolve => {
+        chrome.webNavigation.getFrame({tabId, frameId: 0}, frame => {
+          ignoreChromeError();
+          if (frame) {
+            onTabReady(tab).then(resolve);
+          } else {
+            setTimeout(() => onTabReady(tabId).then(resolve));
+          }
+        });
+      });
+    }
+  }
+  return new Promise((resolve, reject) => {
+    chrome.webNavigation.onCommitted.addListener(onCommitted);
+    chrome.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
+    chrome.tabs.onRemoved.addListener(onTabRemoved);
+    chrome.tabs.onReplaced.addListener(onTabReplaced);
+    function onCommitted(info) {
+      if (info.tabId !== tabId) return;
+      unregister();
+      getTab(tab.id).then(resolve);
+    }
+    function onErrorOccurred(info) {
+      if (info.tabId !== tabId) return;
+      unregister();
+      reject();
+    }
+    function onTabRemoved(removedTabId) {
+      if (removedTabId !== tabId) return;
+      unregister();
+      reject();
+    }
+    function onTabReplaced(addedTabId, removedTabId) {
+      onTabRemoved(removedTabId);
+    }
+    function unregister() {
+      chrome.webNavigation.onCommitted.removeListener(onCommitted);
+      chrome.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+      chrome.tabs.onRemoved.removeListener(onTabRemoved);
+      chrome.tabs.onReplaced.removeListener(onTabReplaced);
+    }
+  });
+}
+
+
+/**
  * Opens a tab or activates an existing one,
  * reuses the New Tab page or about:blank if it's focused now
  * @param {Object} params
@@ -294,8 +359,7 @@ function getTabRealURL(tab) {
  * @param {?Boolean} [params.currentWindow]
  *        pass null to check all windows
  * @param {any} [params.message]
- *        JSONifiable data to be sent to the tab via sendMessage() repeatedly for 200ms
- *        until the remote end returns a non-undefined response
+ *        JSONifiable data to be sent to the tab via sendMessage()
  * @returns {Promise<Tab>} Promise that resolves to the opened/activated tab
  */
 function openURL({
@@ -316,20 +380,15 @@ function openURL({
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
 
-  let task = queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
-
-  if (message) {
-    task = task.then(function poll(tab, t0 = performance.now()) {
+  const task = queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
+  if (!message) {
+    return task;
+  } else {
+    return task.then(onTabReady).then(tab => {
       message.tabId = tab.id;
-      return sendMessage(message)
-        .then(ack => ack !== undefined ? tab : Promise.reject())
-        .catch(() => {
-          ignoreChromeError();
-          return performance.now() - t0 < 200 ? poll(tab) : tab;
-        });
+      return sendMessage(message).then(() => tab);
     });
   }
-  return task;
 
   function maybeSwitch(tabs = []) {
     const urlFF = FIREFOX && url.replace(/%2F/g, '/');
