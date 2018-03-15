@@ -214,6 +214,11 @@ function createAppliesToLineWidget(cm) {
   }
 
   function updateWidgetStyle() {
+    if (prefs.get('editor.theme') !== 'default' &&
+        !tryCatch(() => $('#cm-theme').sheet.cssRules)) {
+      requestAnimationFrame(updateWidgetStyle);
+      return;
+    }
     const MIN_LUMA = .05;
     const MIN_LUMA_DIFF = .4;
     const color = {
@@ -249,8 +254,9 @@ function createAppliesToLineWidget(cm) {
         color: ${fore};
       }
       .applies-to input,
+      .applies-to button,
       .applies-to select {
-        background-color: rgba(255, 255, 255, ${
+        background: rgba(255, 255, 255, ${
           Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
         });
         border: ${borderStyleForced};
@@ -260,9 +266,6 @@ function createAppliesToLineWidget(cm) {
       .applies-to .svg-icon.select-arrow {
         fill: ${fore};
         transition: none;
-      }
-      .applies-to button {
-        color: ${fore};
       }
     `;
     document.documentElement.appendChild(actualStyle);
