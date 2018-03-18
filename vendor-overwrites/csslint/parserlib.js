@@ -3889,8 +3889,11 @@ self.parserlib = (() => {
 
       for (;; stream.skipComment()) {
         const action = Parser.ACTIONS.supports.get(stream.peek());
-        if (action && action.call(this)) continue;
-        if (!this._ruleset()) break;
+        if (action) {
+          action.call(this);
+        } else if (!this._ruleset()) {
+          break;
+        }
       }
 
       stream.mustMatch(Tokens.RBRACE);
