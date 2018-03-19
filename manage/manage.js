@@ -283,8 +283,14 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
     }
   }
   if (numTargets) {
-    if (!iconsOnly) entryTargets.parentElement.replaceChild(targets, entryTargets);
-  } else {
+    if (!iconsOnly) {
+      entryTargets.parentElement.replaceChild(targets, entryTargets);
+    }
+  } else if (!entry.classList.contains('global') ||
+             !entryTargets.firstElementChild) {
+    if (entryTargets.firstElementChild) {
+      entryTargets.textContent = '';
+    }
     entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
