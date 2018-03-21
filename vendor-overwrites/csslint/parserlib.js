@@ -4235,6 +4235,14 @@ self.parserlib = (() => {
       this._ws();
     }
 
+    _documentMisplaced() {
+      this.fire({
+        type:    'error',
+        message: 'Nested @document produces broken code',
+      }, this._tokenStream.LT(1));
+      this._document();
+    }
+
     _documentFunction() {
       const stream = this._tokenStream;
       return stream.match(Tokens.URI) ?
@@ -5303,7 +5311,7 @@ self.parserlib = (() => {
 
     document: new Map([
       [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.PAGE_SYM, Parser.prototype._page],
       [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
@@ -5314,12 +5322,12 @@ self.parserlib = (() => {
     supports: new Map([
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
     ]),
 
     media: new Map([
       [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
+      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.PAGE_SYM, Parser.prototype._page],
       [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
