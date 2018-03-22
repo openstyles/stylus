@@ -554,8 +554,17 @@ function invalidateCache({added, updated, deletedId} = {}) {
 
   if (updated) {
     if (cached) {
+      const isSectionGlobal = section =>
+        !section.urls.length &&
+        !section.urlPrefixes.length &&
+        !section.domains.length &&
+        !section.regexps.length;
+      const hadOrHasGlobals = cached.sections.some(isSectionGlobal) ||
+                              updated.sections.some(isSectionGlobal);
       const reenabled = !cached.enabled && updated.enabled;
-      const equal = !reenabled && styleSectionsEqual(updated, cached, {ignoreCode: true});
+      const equal = !hadOrHasGlobals &&
+                    !reenabled &&
+                    styleSectionsEqual(updated, cached, {ignoreCode: true});
       Object.assign(cached, updated);
       if (equal) {
         updateFiltersCache(cached);
