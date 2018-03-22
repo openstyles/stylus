@@ -375,7 +375,10 @@ function openURL({
   // FF doesn't handle moz-extension:// URLs (bug)
   // FF decodes %2F in encoded parameters (bug)
   // API doesn't handle the hash-fragment part
-  const urlQuery = url.startsWith('moz-extension') ? undefined :
+  const urlQuery =
+    url.startsWith('moz-extension') ||
+    url.startsWith('chrome:') ?
+      undefined :
     FIREFOX && url.includes('%2F') ?
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
@@ -391,8 +394,9 @@ function openURL({
   }
 
   function maybeSwitch(tabs = []) {
+    const urlWithSlash = url + '/';
     const urlFF = FIREFOX && url.replace(/%2F/g, '/');
-    const tab = tabs.find(tab => tab.url === url || tab.url === urlFF);
+    const tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash);
     if (!tab) {
       return getActiveTab().then(maybeReplace);
     }
