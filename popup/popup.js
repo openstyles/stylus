@@ -129,12 +129,14 @@ function initPopup() {
       const info = template.unreachableInfo;
       if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
         $('label', info).textContent = t('unreachableAMO');
-        $('p', info).insertAdjacentElement('afterend',
-          $create('p',
-            t(FIREFOX < 59 ? 'unreachableAMOHintOldFF' : 'unreachableAMOHint')
-              .split(/(<.*?>)/)
-              .map(s => s[0] === '<' ? $create('b', s.slice(1, -1)) : s)));
-        $('p', info).remove();
+        const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
+                     (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
+        const renderToken = s => s[0] === '<' ? $create('b', s.slice(1, -1)) : s;
+        const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
+        const noteNode = $create('fragment', note.split('\n').map(renderLine));
+        const target = $('p', info);
+        target.parentNode.insertBefore(noteNode, target);
+        target.remove();
       }
       document.body.classList.add('unreachable');
       document.body.insertBefore(info, document.body.firstChild);

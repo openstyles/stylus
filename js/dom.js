@@ -224,7 +224,9 @@ function $create(selector = 'div', properties, children) {
 
   const element = ns
     ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
-    : document.createElement(tag || 'div');
+    : tag === 'fragment'
+      ? document.createDocumentFragment()
+      : document.createElement(tag || 'div');
 
   for (const child of Array.isArray(children) ? children : [children]) {
     if (child) {
