@@ -18,8 +18,6 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  min-width: 480px;
-  max-width: 800px;
 }
 
 @media (min-width: 401px) {
@@ -31,6 +29,8 @@ body {
 .firefox body {
   /* match the default FF theme */
   background-color: #f9f9fa;
+  min-width: 480px;
+  max-width: 800px;
 }
 
 .firefox .chromium-only {
