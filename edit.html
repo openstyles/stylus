@@ -117,7 +117,7 @@
         <br>
         <div class="applies-to">
           <label i18n-text="appliesLabel">
-            <a href="#" class="svg-inline-wrapper applies-to-help">
+            <a href="#" class="svg-inline-wrapper applies-to-help" tabindex="0">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
             </a>
           </label>
@@ -135,14 +135,14 @@
         <div data-type="main">
           <div data-type="content"></div>
           <div data-type="actions">
-            <a data-action="case" i18n-title="searchCaseSensitive" href="#">Aa</a>
-            <a data-action="prev" i18n-title="genericPrevious" href="#" data-hotkey-tooltip="findPrev">
+            <a data-action="case" i18n-title="searchCaseSensitive" href="#" tabindex="0">Aa</a>
+            <a data-action="prev" i18n-title="genericPrevious" href="#" data-hotkey-tooltip="findPrev" tabindex="0">
               <svg class="svg-icon" style="transform: rotate(180deg)"><use xlink:href="#svg-icon-v"/></svg>
             </a>
-            <a data-action="next" i18n-title="genericNext" href="#" data-hotkey-tooltip="findNext">
+            <a data-action="next" i18n-title="genericNext" href="#" data-hotkey-tooltip="findNext" tabindex="0">
               <svg class="svg-icon"><use xlink:href="#svg-icon-v"/></svg>
             </a>
-            <a data-action="close" i18n-title="confirmClose" href="#" data-hotkey-tooltip="=Esc">
+            <a data-action="close" i18n-title="confirmClose" href="#" data-hotkey-tooltip="=Esc" tabindex="0">
               <svg class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
             </a>
           </div>
@@ -271,7 +271,7 @@
         </div>
         <div id="mozilla-format-container">
           <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading">
-            <a id="to-mozilla-help" class="svg-inline-wrapper" href="#">
+            <a id="to-mozilla-help" class="svg-inline-wrapper" href="#" tabindex="0">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
             </a>
           </h2>
@@ -316,7 +316,7 @@
             <input id="editor.colorpicker" type="checkbox">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
-          <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote">
+          <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote" tabindex="0">
             <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
           </a>
         </div>
@@ -336,7 +336,7 @@
             <select id="editor.keyMap"></select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
-          <a id="keyMap-help" href="#" class="svg-inline-wrapper">
+          <a id="keyMap-help" href="#" class="svg-inline-wrapper" tabindex="0">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
         </div>
@@ -368,7 +368,7 @@
               </select>
               <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
             </div>
-          <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip">
+          <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip" tabindex="0">
             <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
           </a>
         </div>
@@ -376,7 +376,7 @@
       <details id="lint" class="hidden" data-pref="editor.lint.expanded">
         <summary>
           <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
-            <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click">
+            <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click" tabindex="0">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
             </a>
           </h2>
@@ -391,7 +391,7 @@
     </div>
     <section id="sections">
       <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span>
-        <a id="sections-help" href="#" class="svg-inline-wrapper">
+        <a id="sections-help" href="#" class="svg-inline-wrapper" tabindex="0">
           <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
         </a>
       </h2>
