@@ -45,6 +45,18 @@ const URLS = {
     OPERA ? 'https://addons.opera.com/' :
       'https://chrome.google.com/webstore/',
 
+  emptyTab: [
+    // Chrome and simple forks
+    'chrome://newtab/',
+    // Opera
+    'chrome://startpage/',
+    // Vivaldi
+    'chrome-extension://mpognobbkildjkofajifpdfhcoklimli/components/startpage/startpage.html',
+    // Firefox
+    'about:home',
+    'about:newtab',
+  ],
+
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 3161,
@@ -410,7 +422,7 @@ function openURL({
   // except when 'url' is chrome:// or chrome-extension:// in incognito
   function maybeReplace(tab) {
     const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
-    const emptyTab = tab && (tab.url === 'chrome://newtab/' || tab.url === 'about:newtab');
+    const emptyTab = tab && URLS.emptyTab.includes(tab.url);
     if (emptyTab && !chromeInIncognito) {
       return new Promise(resolve =>
         chrome.tabs.update({url}, resolve));
