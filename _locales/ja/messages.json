@@ -39,6 +39,10 @@
 		"message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "Firefox 60 以降では、<about:config>の<extensions.webextensions.restrictedDomains>からAMOのドメインを削除する必要があるかもしれません。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "古い順",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"

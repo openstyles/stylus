@@ -39,6 +39,10 @@
 		"message": "Userstyle Updateintervall in Stunden (0 zum Deaktivieren)",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "In Firefox 60 und neuer muss auch die addons.mozilla.org domain von <extensions.webextensions.restrictedDomains> in <about:config> entfernt werden.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "älteste zuerst",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"

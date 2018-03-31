@@ -39,6 +39,10 @@
 		"message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "在 Firefox 60 或更新的版本中，您也必須將 AMO 的網域從 <about:config> 中的 <extensions.webextensions.restrictedDomains> 移除。",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "最舊的優先",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"

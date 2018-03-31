@@ -39,6 +39,10 @@
 		"message": "Интервал обновления стилей, в часах (укажите 0 для выключения)",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "Начиная с Firefox 60 нужно также удалить адрес этого сайта из <extensions.webextensions.restrictedDomains> в <about:config>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "старые сверху",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"

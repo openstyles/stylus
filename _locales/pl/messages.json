@@ -39,6 +39,10 @@
 		"message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "W Firefox 60 lub nowszym będziesz musiał również usunąć domenę AMO z <extensions.webextensions.restrictedDomains> w <about:config>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "najpierw najstarsze",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"

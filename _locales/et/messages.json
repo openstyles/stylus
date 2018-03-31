@@ -638,6 +638,10 @@
 		"message": "Stiilide importimine lõpetatud",
 		"description": "Title of the report shown after importing styles"
 	},
+	"unreachableAMOHint": {
+		"message": "Ligipääsu lubamiseks ava <about:config>, parem-klõpsa nimekirjal, vali 'Uus', seejärel 'Tõeväärtus', kleebi <privacy.resistFingerprinting.block_mozAddonManager> ja klõpsa Sobib, <true>, Sobib, laadi leht <addons.mozilla.org> uuesti.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"styleMozillaFormatHeading": {
 		"message": "Mozilla-vorming",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
@@ -653,6 +657,10 @@
 	"linterCSSLintSettings": {
 		"message": "(Määra reegel kui: 0 = keelatud; 1 = hoiatus; 2 = viga)",
 		"description": "CSSLint rule config values"
+	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Sisesta kood siia...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
 	},
 	"searchResultNoneFound": {
 		"message": "Sellele saidile ei leitud stiile.",
