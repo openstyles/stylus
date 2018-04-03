@@ -217,7 +217,7 @@ CodeMirror.hint && (() => {
   const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
-  CodeMirror.registerHelper('hint', 'css', function (cm) {
+  const helper = cm => {
     const pos = cm.getCursor();
     const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
@@ -226,6 +226,8 @@ CodeMirror.hint && (() => {
     if (style && (style.startsWith('comment') || style.startsWith('string'))) {
       return originalHelper(cm);
     }
+
+    // !important
     if (text[ch - 1] === '!' && /i|\W|^$/i.test(text[ch] || '')) {
       RX_IMPORTANT.lastIndex = ch;
       return {
@@ -234,18 +236,55 @@ CodeMirror.hint && (() => {
         to: {line, ch: ch + RX_IMPORTANT.exec(text)[0].length},
       };
     }
+
     let prev = index > 2 ? styles[index - 2] : 0;
     let end = styles[index];
+
+    // #hex colors
     if (text[prev] === '#') {
       return {list: [], from: pos, to: pos};
     }
-    if (!editor || !style || !style.includes(USO_VAR)) {
-      return originalHelper(cm);
-    }
+
+    // adjust cursor position for /*[[ and ]]*/
     const adjust = text[prev] === '/' ? 4 : 0;
     prev += adjust;
     end -= adjust;
     const leftPart = text.slice(prev, ch);
+
+    // --css-variables
+    const startsWithDoubleDash = text[prev] === '-' && text[prev + 1] === '-';
+    if (startsWithDoubleDash ||
+        leftPart === '(' && /\bvar/i.test(text.slice(prev - 4, prev))) {
+      // simplified regex without CSS escapes
+      const RX_CSS_VAR = new RegExp(
+        '(?:^|[\\s/;{])(' +
+        (leftPart.startsWith('--') ? leftPart : '--') +
+        (leftPart.length <= 2 ? '[a-zA-Z_\u0080-\uFFFF]' : '') +
+        '[-0-9a-zA-Z_\u0080-\uFFFF]*)',
+        'gm');
+      const cursor = cm.getSearchCursor(RX_CSS_VAR, null, {caseFold: false, multiline: false});
+      const list = new Set();
+      while (cursor.findNext()) {
+        list.add(cursor.pos.match[1]);
+      }
+      if (!startsWithDoubleDash) {
+        prev++;
+      }
+      const rxEnd = /[\s,)]|$/g;
+      rxEnd.lastIndex = prev;
+      end = rxEnd.exec(text).index;
+      return {
+        list: [...list.keys()].sort(),
+        from: {line, ch: prev},
+        to: {line, ch: end},
+      };
+    }
+
+    if (!editor || !style || !style.includes(USO_VAR)) {
+      return originalHelper(cm);
+    }
+
+    // USO vars in usercss mode editor
     const list = Object.keys(editor.getStyle().usercssData.vars)
       .filter(name => name.startsWith(leftPart));
     return {
@@ -253,7 +292,9 @@ CodeMirror.hint && (() => {
       from: {line, ch: prev},
       to: {line, ch: end},
     };
-  });
+  };
+  CodeMirror.registerHelper('hint', 'css', helper);
+  CodeMirror.registerHelper('hint', 'stylus', helper);
 
   const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
   const originalCommentHook = hooks['/'];
