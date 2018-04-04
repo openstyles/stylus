@@ -215,6 +215,8 @@ CodeMirror.hint && (() => {
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
   const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
+  const RX_VAR_KEYWORD = /(^|[^-\w\u0080-\uFFFF])var\(/iy;
+  const RX_END_OF_VAR = /[\s,)]|$/g;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
   const helper = cm => {
@@ -254,7 +256,7 @@ CodeMirror.hint && (() => {
     // --css-variables
     const startsWithDoubleDash = text[prev] === '-' && text[prev + 1] === '-';
     if (startsWithDoubleDash ||
-        leftPart === '(' && /\bvar/i.test(text.slice(prev - 4, prev))) {
+        leftPart === '(' && testAt(RX_VAR_KEYWORD, Math.max(0, prev - 4), text)) {
       // simplified regex without CSS escapes
       const RX_CSS_VAR = new RegExp(
         '(?:^|[\\s/;{])(' +
@@ -270,9 +272,8 @@ CodeMirror.hint && (() => {
       if (!startsWithDoubleDash) {
         prev++;
       }
-      const rxEnd = /[\s,)]|$/g;
-      rxEnd.lastIndex = prev;
-      end = rxEnd.exec(text).index;
+      RX_END_OF_VAR.lastIndex = prev;
+      end = RX_END_OF_VAR.exec(text).index;
       return {
         list: [...list.keys()].sort(),
         from: {line, ch: prev},
@@ -321,5 +322,11 @@ CodeMirror.hint && (() => {
       }
     }
     return token;
+  }
+
+  function testAt(rx, index, text) {
+    if (!rx) return false;
+    rx.lastIndex = index;
+    return rx.test(text);
   }
 })();
