@@ -409,8 +409,12 @@ function updateIcon({tab, styles}) {
       chrome.browserAction.setBadgeBackgroundColor({color});
     }
 
-    if (tabIcon.text !== text) {
-      tabIcon.text = text;
+    if (tabIcon.text === text) return;
+    tabIcon.text = text;
+    try {
+      // Chrome supports the callback since 67.0.3381.0, see https://crbug.com/451320
+      chrome.browserAction.setBadgeText({text, tabId: tab.id}, ignoreChromeError);
+    } catch (e) {
       setTimeout(() => {
         getTab(tab.id).then(realTab => {
           // skip pre-rendered tabs
