@@ -27,6 +27,10 @@
 		"message": "Stílus automatikus frissítési intervalluma órában megadva (álltsd 0-ra a kikapcsoláshoz)",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "A Firefox 60-ban vagy annál újabb verzióban az AMO doménjét is el kell távolítanod a <about:config>-ban levő <extensions.webextensions.restrictedDomains>-ból.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "a legrégebbi elöl",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
@@ -146,6 +150,10 @@
 	"genericEnabledLabel": {
 		"message": "Engedélyezve",
 		"description": "Used in various lists/options to indicate that something is enabled"
+	},
+	"previewTooltip": {
+		"message": "Átmenetileg alkalmazza a változtatásokat mentés nélkül.\nMentsd a stílust, hogy a változtatások véglegesek legyenek!",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
 	},
 	"manageFaviconsGray": {
 		"message": "Szürke mód",
@@ -654,6 +662,10 @@
 		"message": "(Szabály megadása: 0 = letiltva; 1 = figyelmeztetés; 2 = hiba)",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Írj kódot ide…",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "Nem találhatók stílusok ehhez az oldalhoz.",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"
@@ -693,6 +705,10 @@
 	"updateCompleted": {
 		"message": "A frissítés befejeződött.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Valós idejű előnézet",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Összes oldal",
@@ -935,6 +951,10 @@
 	"importAppendTooltip": {
 		"message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"liveReloadInstallHint": {
+		"message": "A valós idejű újratöltés engedélyezve van, így a telepített stílus automatikusan frissítve lesz kűlső változtatások során amíg ez a fül és a forrásfájlt tartalmazó fül nyitva van.",
+		"description": "The label of live-reload feature"
 	},
 	"editorStylesButton": {
 		"message": "A szerkesztő stílusainak keresése",
