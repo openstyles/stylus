@@ -222,6 +222,7 @@
         chrome.runtime.sendMessage({
           url,
           method: 'download',
+          timeout: 60e3,
         }, result => {
           const error = result && result.__ERROR__;
           if (error) {
