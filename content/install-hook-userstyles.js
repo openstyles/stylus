@@ -223,6 +223,8 @@
           url,
           method: 'download',
           timeout: 60e3,
+          // USO can't handle POST requests for style json
+          body: null,
         }, result => {
           const error = result && result.__ERROR__;
           if (error) {
