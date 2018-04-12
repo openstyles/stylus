@@ -191,6 +191,7 @@ function $create(selector = 'div', properties, children) {
       children = properties;
     } else {
       opt = properties || {};
+      children = children || opt.appendChild;
     }
     const idStart = (selector.indexOf('#') + 1 || selector.length + 1) - 1;
     const classStart = (selector.indexOf('.') + 1 || selector.length + 1) - 1;
