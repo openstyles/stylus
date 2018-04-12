@@ -37,6 +37,12 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     });
     return KEEP_CHANNEL_OPEN;
   },
+
+  optionsCustomizeHotkeys() {
+    return browser.runtime.openOptionsPage()
+      .then(() => new Promise(resolve => setTimeout(resolve, 100)))
+      .then(() => sendMessage({method: 'optionsCustomizeHotkeys'}));
+  },
 });
 
 // eslint-disable-next-line no-var

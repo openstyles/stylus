@@ -58,7 +58,10 @@ function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
-  $('#manage-shortcuts-button').onclick = () => openURL({url: URLS.configureCommands});
+  {
+    const btn = $('#manage-shortcuts-button');
+    btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
+  }
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
   // show date installed & last update on hover
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
@@ -690,4 +693,10 @@ function usePrefsDuringPageLoad() {
     }
   }
   $$('#header select').forEach(el => el.adjustWidth());
+
+  if (FIREFOX && 'update' in (chrome.commands || {})) {
+    const btn = $('#manage-shortcuts-button');
+    btn.classList.remove('chromium-only');
+    btn.onclick = API.optionsCustomizeHotkeys;
+  }
 }

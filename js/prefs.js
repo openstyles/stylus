@@ -79,6 +79,11 @@ var prefs = new function Prefs() {
     // last color
     'editor.colorpicker.color': '',
 
+    // Firefox-only chrome.commands.update
+    'hotkey._execute_browser_action': '',
+    'hotkey.openManage': '',
+    'hotkey.styleDisableAll': '',
+
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 

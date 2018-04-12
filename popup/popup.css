@@ -456,7 +456,6 @@ body.blocked .actions > .main-controls {
   min-width: 4em;
 }
 
-.firefox #popup-options button:nth-last-child(2),
 #popup-options button:last-child {
   margin-right: 0;
 }

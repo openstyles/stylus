@@ -100,6 +100,13 @@ function initPopup() {
   shortcutsButton.dataset.href = URLS.configureCommands;
   shortcutsButton.onclick = handleEvent.openURLandHide;
 
+  if (FIREFOX && 'update' in (chrome.commands || {})) {
+    shortcutsButton.classList.remove('chromium-only');
+    shortcutsButton.onclick = () => API.optionsCustomizeHotkeys().then(window.close);
+  } else if (FIREFOX) {
+    shortcutsButton.remove();
+  }
+
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
       $('body > .actions'),

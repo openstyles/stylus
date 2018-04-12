@@ -18,6 +18,15 @@ if (!FIREFOX && !OPERA) {
   block.classList.add('collapsible', 'collapsed');
 }
 
+if (FIREFOX && 'update' in (chrome.commands || {})) {
+  $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
+  chrome.runtime.onMessage.addListener(msg => {
+    if (msg.method === 'optionsCustomizeHotkeys') {
+      customizeHotkeys();
+    }
+  });
+}
+
 // actions
 document.onclick = e => {
   const target = e.target.closest('[data-cmd]');
@@ -37,7 +46,11 @@ document.onclick = e => {
       break;
 
     case 'open-keyboard':
-      openURL({url: URLS.configureCommands});
+      if (FIREFOX) {
+        customizeHotkeys();
+      } else {
+        openURL({url: URLS.configureCommands});
+      }
       e.preventDefault();
       break;
 
@@ -124,6 +137,65 @@ function splitLongTooltips() {
       .join('\n');
     if (newTitle !== el.title) {
       el.title = newTitle;
+    }
+  }
+}
+
+function customizeHotkeys() {
+  // command name -> i18n id
+  const hotkeys = new Map([
+    ['_execute_browser_action', 'optionsCustomizePopup'],
+    ['openManage', 'openManage'],
+    ['styleDisableAll', 'disableAllStyles'],
+  ]);
+
+  messageBox({
+    title: t('shortcutsNote'),
+    contents: [
+      $create('table',
+        [...hotkeys.entries()].map(([cmd, i18n]) =>
+          $create('tr', [
+            $create('td', t(i18n)),
+            $create('td',
+              $create('input', {
+                id: 'hotkey.' + cmd,
+                //placeholder: t('helpKeyMapHotkey'),
+              })),
+          ]))),
+    ],
+    className: 'center',
+    buttons: [t('confirmClose')],
+    onshow(box) {
+      const ids = [];
+      for (const cmd of hotkeys.keys()) {
+        const id = 'hotkey.' + cmd;
+        ids.push(id);
+        $('#' + id).oninput = onInput;
+      }
+      setupLivePrefs(ids);
+      $('button', box).insertAdjacentElement('beforebegin',
+        $createLink(
+          'https://developer.mozilla.org/Add-ons/WebExtensions/manifest.json/commands#Key_combinations',
+          t('helpAlt')));
+    },
+  });
+
+  function onInput() {
+    const hotkey = this.value.trim();
+    if (!hotkey) {
+      this.setCustomValidity('');
+      return;
+    }
+    try {
+      browser.commands.update({
+        name: this.id.split('.')[1],
+        shortcut: hotkey,
+      }).then(
+        () => this.setCustomValidity(''),
+        err => this.setCustomValidity(err)
+      );
+    } catch (err) {
+      this.setCustomValidity(err);
     }
   }
 }
