@@ -61,6 +61,8 @@ const URLS = {
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 3161,
 
+  userstylesOrgJson: 'https://userstyles.org/styles/chrome/',
+
   supported: url => (
     url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
     url.startsWith('ftp') ||
@@ -575,13 +577,18 @@ function download(url, {
     body = url.slice(queryPos);
     url = url.slice(0, queryPos);
   }
+  // * USO can't handle POST requests for style json
+  // * XHR/fetch can't handle long URL
+  // So we need to collapse all long variables and expand them in the response
+  const usoVars = [];
+
   return new Promise((resolve, reject) => {
-    url = new URL(url);
-    if (url.protocol === 'file:' && FIREFOX) {
+    const u = new URL(collapseUsoVars(url));
+    if (u.protocol === 'file:' && FIREFOX) {
       // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
       // FIXME: add FetchController when it is available.
-      const timer = setTimeout(reject, timeout, new Error('Timeout fetching ' + url.href));
-      fetch(url.href, {mode: 'same-origin'})
+      const timer = setTimeout(reject, timeout, new Error('Timeout fetching ' + u.href));
+      fetch(u.href, {mode: 'same-origin'})
         .then(r => {
           clearTimeout(timer);
           return r.status === 200 ? r.text() : Promise.reject(r.status);
@@ -595,20 +602,50 @@ function download(url, {
     xhr.onloadend = event => {
       if (event.type !== 'error' && (
           xhr.status === requiredStatusCode || !requiredStatusCode ||
-          url.protocol === 'file:')) {
-        resolve(xhr.response);
+          u.protocol === 'file:')) {
+        resolve(expandUsoVars(xhr.response));
       } else {
         reject(xhr.status);
       }
     };
     xhr.onerror = xhr.onloadend;
     xhr.responseType = responseType;
-    xhr.open(method, url.href, true);
+    xhr.open(method, u.href, true);
     for (const key in headers) {
       xhr.setRequestHeader(key, headers[key]);
     }
     xhr.send(body);
   });
+
+  function collapseUsoVars(url) {
+    if (queryPos < 0 ||
+        url.length < 2000 ||
+        !url.startsWith(URLS.userstylesOrgJson) ||
+        !/^get$/i.test(method)) {
+      return url;
+    }
+    const params = new URLSearchParams(url.slice(queryPos + 1));
+    for (const [k, v] of params.entries()) {
+      if (v.length < 10 || v.startsWith('ik-')) continue;
+      usoVars.push(v);
+      params.set(k, `\x01${usoVars.length}\x02`);
+    }
+    return url.slice(0, queryPos + 1) + params.toString();
+  }
+
+  function expandUsoVars(response) {
+    if (!usoVars.length || !response) return response;
+    const isText = typeof response === 'string';
+    const json = isText && tryJSONparse(response) || response;
+    json.updateUrl = url;
+    for (const section of json.sections || []) {
+      const {code} = section;
+      if (code.includes('\x01')) {
+        section.code = code.replace(/\x01(\d+)\x02/g, (_, num) => usoVars[num - 1] || '');
+      }
+    }
+    return isText ? JSON.stringify(json) : json;
+  }
 }
 
 

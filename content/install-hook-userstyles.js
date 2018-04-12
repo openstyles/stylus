@@ -214,18 +214,18 @@
   }
 
 
-  function getResource(url) {
+  function getResource(url, options) {
     return new Promise(resolve => {
       if (url.startsWith('#')) {
         resolve(document.getElementById(url.slice(1)).textContent);
       } else {
-        chrome.runtime.sendMessage({
+        chrome.runtime.sendMessage(Object.assign({
           url,
           method: 'download',
           timeout: 60e3,
           // USO can't handle POST requests for style json
           body: null,
-        }, result => {
+        }, options), result => {
           const error = result && result.__ERROR__;
           if (error) {
             alert('Error' + (error ? '\n' + error : ''));
@@ -239,14 +239,8 @@
 
 
   function getStyleJson() {
-    const url = getStyleURL();
-    return getResource(url).then(code => {
-      try {
-        return JSON.parse(code);
-      } catch (e) {
-        return fetch(url).then(r => r.json()).catch(() => null);
-      }
-    });
+    return getResource(getStyleURL(), {responseType: 'json'})
+      .catch(() => null);
   }
 
 
