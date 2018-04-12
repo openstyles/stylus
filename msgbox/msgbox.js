@@ -113,9 +113,10 @@ function messageBox({
             buttons.map((content, buttonIndex) => content &&
               $create('button', Object.assign({
                 buttonIndex,
-                textContent: typeof content === 'object' ? '' : content,
                 onclick: messageBox.listeners.button,
-              }, typeof content === 'object' && content)))),
+              }, typeof content === 'object' ? content : {
+                textContent: content,
+              })))),
         ]),
       ]);
   }
