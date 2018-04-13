@@ -159,6 +159,7 @@ function customizeHotkeys() {
             $create('td',
               $create('input', {
                 id: 'hotkey.' + cmd,
+                type: 'search',
                 //placeholder: t('helpKeyMapHotkey'),
               })),
           ]))),
@@ -181,16 +182,15 @@ function customizeHotkeys() {
   });
 
   function onInput() {
-    const hotkey = this.value.trim();
-    if (!hotkey) {
+    const name = this.id.split('.')[1];
+    const shortcut = this.value.trim();
+    if (!shortcut) {
+      browser.commands.reset(name).catch(ignoreChromeError);
       this.setCustomValidity('');
       return;
     }
     try {
-      browser.commands.update({
-        name: this.id.split('.')[1],
-        shortcut: hotkey,
-      }).then(
+      browser.commands.update({name, shortcut}).then(
         () => this.setCustomValidity(''),
         err => this.setCustomValidity(err)
       );

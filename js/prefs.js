@@ -299,6 +299,21 @@ var prefs = new function Prefs() {
     });
   });
 
+  // register hotkeys
+  if (FIREFOX && (browser.commands || {}).update) {
+    const hotkeyPrefs = Object.keys(values).filter(k => k.startsWith('hotkey.'));
+    this.subscribe(hotkeyPrefs, (name, value) => {
+      try {
+        name = name.split('.')[1];
+        if (value.trim()) {
+          browser.commands.update({name, shortcut: value}).catch(ignoreChromeError);
+        } else {
+          browser.commands.reset(name).catch(ignoreChromeError);
+        }
+      } catch (e) {}
+    });
+  }
+
   return;
 
   function doBroadcast() {
