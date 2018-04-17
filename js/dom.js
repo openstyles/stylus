@@ -96,6 +96,7 @@ function onDOMready() {
 
 function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   // align to the top/bottom of the visible area if wasn't visible
+  if (!element.parentNode) return;
   const {top, height} = element.getBoundingClientRect();
   const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
   const windowHeight = window.innerHeight;
