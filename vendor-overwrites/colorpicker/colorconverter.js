@@ -16,7 +16,8 @@ const colorConverter = (() => {
     // NAMED_COLORS is added below
   };
 
-  function format(color, type, hexUppercase) {
+  function format(color = '', type = color.type, hexUppercase) {
+    if (!color || !type) return '';
     const a = formatAlpha(color.a);
     const hasA = Boolean(a);
     if (type === 'rgb' && color.type === 'hsl') {
