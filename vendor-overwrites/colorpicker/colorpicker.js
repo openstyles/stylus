@@ -16,6 +16,7 @@
 
   let HSV = {};
   let currentFormat;
+  const prevHSV = {};
 
   let initialized = false;
   let shown = false;
@@ -175,6 +176,9 @@
     Object.defineProperty($inputs.rgb, 'color', {get: inputsToRGB});
     Object.defineProperty($inputs.hsl, 'color', {get: inputsToHSL});
     Object.defineProperty($inputs, 'color', {get: () => $inputs[currentFormat].color});
+    Object.defineProperty($inputs, 'colorString', {
+      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color)
+    });
 
     HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
 
@@ -328,6 +332,9 @@
     const formats = ['hex', 'rgb', 'hsl'];
     const dir = shiftKey ? -1 : 1;
     const total = formats.length;
+    if ($inputs.colorString === $inputs.prevColorString) {
+      Object.assign(HSV, prevHSV);
+    }
     switchInputGroup(formats[(formats.indexOf(currentFormat) + dir + total) % total]);
     renderInputs();
   }
@@ -516,7 +523,18 @@
     $opacityBar.style.background = 'linear-gradient(to right,' +
       colorToString(Object.assign(rgb, {a: 0}), 'rgb') + ',' +
       colorToString(Object.assign(rgb, {a: 1}), 'rgb') + ')';
+
     colorpickerCallback();
+
+    const colorString = $inputs.colorString;
+    if ($inputs.prevColorString === colorString) {
+      // keep the internal HSV calculated initially for this color format
+      Object.assign(HSV, prevHSV);
+    } else {
+      // remember the internal HSV
+      $inputs.prevColorString = colorString;
+      Object.assign(prevHSV, HSV);
+    }
   }
 
   //endregion
