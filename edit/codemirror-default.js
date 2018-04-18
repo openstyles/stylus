@@ -33,7 +33,6 @@
       'Ctrl-Pause': 'toggleEditorFocus',
     }),
     maxHighlightLength: 100e3,
-    configureMouse: (cm, repeat) => repeat === 'double' ? {unit: selectTokenOnDoubleclick} : {},
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
@@ -156,6 +155,20 @@
     });
     return isBlank;
   });
+
+  // doubleclick option
+  {
+    const fn = (cm, repeat) =>
+      repeat === 'double' ?
+        {unit: selectTokenOnDoubleclick} :
+        {};
+    const configure = (_, enabled) => {
+      editors.forEach(cm => cm.setOption('configureMouse', enabled ? fn : null));
+      CodeMirror.defaults.configureMouse = enabled ? fn : null;
+    };
+    configure(null, prefs.get('editor.selectByTokens'));
+    prefs.subscribe(['editor.selectByTokens'], configure);
+  }
 
   function selectTokenOnDoubleclick(cm, pos) {
     let {ch} = pos;

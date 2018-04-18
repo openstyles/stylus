@@ -66,6 +66,7 @@ var prefs = new function Prefs() {
     'editor.autoCloseBrackets': true,    // auto-add a closing pair when typing an opening one of ()[]{}''""
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
+    'editor.selectByTokens': true,
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
     'editor.livePreview': true,

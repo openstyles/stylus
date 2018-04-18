@@ -139,6 +139,13 @@
     "message": "Colorpickers for CSS colors",
     "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
+  "cm_selectByTokens": {
+    "message": "Double-clicking selects tokens",
+    "description": "Label for the checkbox in the editor."
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Examples of tokens: .foo-bar-2 #aabbcc 0.32 !important\nWhen disabled: punctuation-delimited words are selected."
+  },
   "cm_indentWithTabs": {
     "message": "Use tabs with smart indentation",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
