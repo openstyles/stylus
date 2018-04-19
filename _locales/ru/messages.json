@@ -251,6 +251,10 @@
 		"message": "Импорт стилей",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "Двойной клик выделяет лексемы",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "Стоп",
 		"description": "'Stop' button in a confirm dialog"
@@ -736,6 +740,10 @@
 	},
 	"paginationTotal": {
 		"message": "Всего страниц",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "Образцы лексем: .foo-bar-2 #aabbcc 0.32 !important\nПри выключении: выделение по знакам препинания т.е. по словам.",
 		"description": ""
 	},
 	"checkingForUpdate": {

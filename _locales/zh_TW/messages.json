@@ -251,6 +251,10 @@
 		"message": "匯入樣式",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "雙擊選取 token",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "停止",
 		"description": "'Stop' button in a confirm dialog"
@@ -736,6 +740,10 @@
 	},
 	"paginationTotal": {
 		"message": "總頁面",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "Token 的範例：.foo-bar-2 #aabbcc 0.32 !important\n當停用時：將會選取被標點符號分隔的字詞。",
 		"description": ""
 	},
 	"checkingForUpdate": {

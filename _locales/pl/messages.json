@@ -897,7 +897,7 @@
 		}
 	},
 	"externalFeedback": {
-		"message": "Informacje zwrotne",
+		"message": "Prześlij opinię",
 		"description": "Label for the external link to send feedback for the style"
 	},
 	"genericPrevious": {

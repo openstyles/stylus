@@ -243,6 +243,10 @@
 		"message": "Styles importieren",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "Doppelklick markiert Zeichenkette",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "Stopp",
 		"description": "'Stop' button in a confirm dialog"
@@ -716,6 +720,10 @@
 	},
 	"paginationTotal": {
 		"message": "Gesamtzahl der Seiten",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "Beispiele von Zeichenketten: .foo-bar-2 #aabbcc 0.32 !important\nWenn deaktiviert, werden Wörter je nach Interpunktion ausgewählt.",
 		"description": ""
 	},
 	"checkingForUpdate": {
