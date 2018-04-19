@@ -40,8 +40,6 @@ function createSourceEditor(style) {
     style.enabled = value;
   };
 
-  exclusions.onchange(dirty);
-
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     updateLintReportIfEnabled(cm);
@@ -201,15 +199,18 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
-    style.exclusions = exclusions.get();
-    exclusions.save(style, dirty);
+    const exclusionList = exclusions.get();
+    exclusions.save({
+      id: style.id,
+      exclusionList
+    });
     return (
       API.saveUsercssUnsafe({
         id: style.id,
         reason: 'editSave',
         enabled: style.enabled,
         sourceCode: code,
-        exclusions: style.exclusions
+        exclusions: exclusionList
       }))
       .then(({style, errors}) => {
         replaceStyle(style);

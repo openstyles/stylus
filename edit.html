@@ -172,6 +172,16 @@
       </div>
     </template>
 
+    <template data-id="exclusionEntry">
+      <div class="exclusion-entry">
+        <input class="exclusion-input" placeholder="*://*.google.com/*foo*">
+        <button class="exclusion-add" i18n-title="exclusionsAddTitle">+</button>
+        <button class="exclusion-delete" i18n-title="confirmDelete">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-delete"/></svg>
+        </button>
+      </div>
+    </template>
+
     <template data-id="find">
       <div data-type="content">
         <div data-type="input-wrapper">
@@ -400,19 +410,15 @@
           </div>
         </div>
       </details>
-      <details id="exclusions" data-pref="editor.exclusions.expanded">
+      <details id="exclusions">
         <summary>
-          <h2 i18n-text="exclusionsHeader">: <span id="excluded-stats"></span></h2>
-        </summary>
-        <select id="excluded-list" class="style-contributor" size="4" multiple="true"></select>
-        <div id="excluded-wrap">
-          <button id="excluded-list-add" i18n-text="genericAdd"></button>
-          <button id="excluded-list-edit" i18n-text="genericEdit"></button>
-          <button id="excluded-list-delete" i18n-text="genericDelete"></button>
+          <h2 i18n-text="exclusionsHeader"></h2>
           <a id="excluded-list-help" href="#" class="svg-inline-wrapper">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
-        </div>
+          <span id="excluded-stats"></span>
+        </summary>
+        <div id="excluded-wrap"></div>
       </details>
       <details id="lint" class="hidden" data-pref="editor.lint.expanded">
         <summary>
@@ -478,6 +484,10 @@
 
       <symbol id="svg-icon-minus" viewBox="0 0 8 8">
         <path fill-rule="evenodd" d="M0 3v2h8v-2h-8z"/>
+      </symbol>
+
+      <symbol id="svg-icon-delete" viewBox="0 0 14 16">
+        <path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/>
       </symbol>
 
     </svg>

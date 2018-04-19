@@ -205,18 +205,6 @@
   "configOnChangeTooltip": {
     "message": "Autosave and apply changes automatically"
   },
-  "genericAdd": {
-    "message": "Add",
-    "description": "Used in various places to select/perform an add action."
-  },
-  "genericDelete": {
-    "message": "Delete",
-    "description": "Used in various places to select/perform a delete action."
-  },
-  "genericEdit": {
-    "message": "Edit",
-    "description": "Used in various places to select/perform an edit action."
-  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."
@@ -380,41 +368,28 @@
     "description": "Label for a full url with a subdirectory to be used as the beginning portion of a URL to match to exclude a style"
   },
   "exclusionsAddTitle": {
-    "message": "Add excluded page",
-    "description": "Title of popup to add an excluded page (URL)"
-  },
-  "exclusionsEditTitle": {
-    "message": "Edit excluded page(s)",
-    "description": "Title of popup to edit an excluded page (URL)"
-  },
-  "exclusionsEmpty": {
-    "message": "No exclusions",
-    "description": "Label shown when there are no global exclusions"
-  },
-  "exclusionsDeleteConfirmation": {
-    "message": "Are you sure you want to delete $number$ entries?",
-    "description": "Delete confirmation dialog message",
-    "placeholders": {
-      "number": {
-        "content": "$1"
-      }
-    }
+    "message": "Add exclusion",
+    "description": "Title of popup to add an excluded site or page (URL)"
   },
   "exclusionsHeader": {
-    "message": "Excluded Pages",
+    "message": "Excluded",
     "description": "Title of user configurable lists of site urls to exclude per style"
   },
   "exclusionsHelp": {
-    "message": "Add one or more exclusions for each style. An exclusion is a string that will match a web location (URL). If a match is found, the given style (and all internal sections) will not be applied to that page. A list of exclusions is set separately from the userstyle so that it will not be effected when updating or editing the style itself.\n\nThis is useful because you can exclude websites that would be effected by a global style.\n\nThe exclusion string may contain wildcards (\"*\") to match any portion of the URL, e.g. \"forum.*.com\" will exclude the forum sub-domains of all dot-com top level domains.\n\nRegular expressions are not supported.",
+    "message": "Exclusion entries are only checked when a style is set to be applied to a page, and if an exclusion is found, the given style (and all internal sections) will not be applied to that page.\n\nThe list of exclusions is set separately from the userstyle so that it will not be effected when updating or editing the style itself. This is useful because you can exclude pages that would be otherwise be effected by a global style.\n\nAdd one or more exclusion entries for each style. An exclusion entry string contains a pattern that will match a web location (URL). This string may contain wildcards (\"*\") to match any portion of a URL, e.g. \"forum.*.com\" will exclude the forum sub-domains of all top level dot-com domains. Regular expressions are allowed, except `.` and `*` are altered, and are saved as a string so character classes must be doubly escaped (e.g. `\\w`).\n\nExcluded pages are automatically updated while typing; invalid entries will be removed on page reload!",
     "description": "Help text for user set style exclusions"
   },
   "exclusionsHelpTitle": {
     "message": "Set Style Exclusions",
     "description": "Header text for help modal"
   },
-  "exclusionsInvalidUrl": {
+  "exclusionsvalidateEntry": {
     "message": "Enter a unique and valid URL",
     "description": "Text for an alert notifying the user that an entered URL is not unique or invalid"
+  },
+  "exclusionsPopupTitle": {
+    "message": "Exclude the site or page",
+    "description": "Title of exclusion popup dialog within the extension popup"
   },
   "exclusionsPopupTip": {
     "message": "Right-click to edit exclusions on this page",
@@ -425,7 +400,7 @@
     "description": "Prefix label added to the applies to column in the style manager"
   },
   "exclusionsStatus": {
-    "message": "$number$ sites",
+    "message": "$number$ pages",
     "description": "Label added next to the Excluded Pages header when 'number' is not zero",
     "placeholders": {
       "number": {

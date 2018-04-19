@@ -84,27 +84,22 @@ label {
   margin-top: 0;
 }
 
-#exclusions select {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-  margin-bottom: 10px;
-  padding: 0 6px;
+#exclusions .exclusion-input {
+  flex: auto;
 }
 
-#exclusions option {
-  overflow: hidden;
+#exclusions button {
+  margin-left: 2px;
 }
 
-#excluded-pages:empty {
-  height: 1.4em;
-  border: none;
+#exclusions .exclusion-input:invalid {
+  border-color: red;
 }
 
-#excludedError {
-  position: absolute;
-  top: 7px;
-  color: red;
+#exclusions .exclusion-delete .svg-icon {
+  pointer-events: none;
+  vertical-align: text-top;
+  height: 15px;
 }
 
 #excluded-stats:not(:empty) {
@@ -443,7 +438,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin: 0;
   padding: 0;
 }
-.applies-to li {
+.applies-to li, .exclusion-entry {
   display: flex;
   flex-wrap: wrap;
   list-style-type: none;

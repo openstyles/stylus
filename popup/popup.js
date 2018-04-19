@@ -253,12 +253,15 @@ function createStyleElement({
   container = installed,
 }) {
   const entry = template.style.cloneNode(true);
+  const excluded = popupExclusions.isExcluded(tabURL, style.exclusions);
   entry.setAttribute('style-id', style.id);
   Object.assign(entry, {
     id: ENTRY_ID_PREFIX_RAW + style.id,
     styleId: style.id,
     styleIsUsercss: Boolean(style.usercssData),
-    className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
+    className: entry.className + ' ' +
+      (style.enabled ? 'enabled' : 'disabled') +
+      (excluded ? ' excluded' : ''),
     onmousedown: handleEvent.maybeEdit,
     styleMeta: style
   });
@@ -466,11 +469,9 @@ Object.assign(handleEvent, {
     const entry = event.target.closest('.entry');
     if (!chkbox.eventHandled) {
       chkbox.eventHandled = true;
-      const style = entry.styleMeta;
       popupExclusions
-        .openPopupDialog(style, tabURL)
+        .openPopupDialog(entry, tabURL)
         .then(() => {
-          entry.styleMeta = style;
           chkbox.eventHandled = null;
         });
     }

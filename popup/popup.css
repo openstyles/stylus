@@ -117,11 +117,15 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   margin-right: .5em;
 }
 
+#popup-exclusions-title {
+  margin: 2px;
+}
+
 #popup-exclusions {
   height: auto;
-  overflow: hidden;
-  max-width: 95%;
-  padding: 0 6px;
+  overflow-y: auto;
+  max-width: 98%;
+  padding: 0 2px;
 }
 
 #popup-exclusions option {
@@ -243,6 +247,10 @@ html[style] .entry {
   overflow: hidden;
   align-items: center;
   padding-right: 5px;
+}
+
+.entry.excluded .style-name {
+  color: #d22;
 }
 
 .entry:nth-child(even) {
@@ -490,7 +498,7 @@ body.blocked .actions > .main-controls {
 
 /* confirm */
 
-#confirm {
+#confirm, #exclude {
   align-items: center;
   justify-content: center;
   z-index: 2147483647;
@@ -507,21 +515,26 @@ body.blocked .actions > .main-controls {
   animation-fill-mode: both;
 }
 
-#confirm.lights-on {
+#confirm.lights-on,
+#exclude.lights-on {
   animation: lights-on .25s ease-in-out;
   animation-fill-mode: both;
 }
 
 #confirm.lights-on,
-#confirm.lights-on > div {
+#confirm.lights-on > div,
+#exclude.lights-on,
+#exclude.lights-on > div {
   display: none;
 }
 
-#confirm[data-display=true] {
+#confirm[data-display=true],
+#exclude[data-display=true] {
   display: flex;
 }
 
-#confirm > div {
+#confirm > div,
+#exclude > div {
   width: 80%;
   max-height: 80%;
   min-height: 6em;
@@ -536,16 +549,23 @@ body.blocked .actions > .main-controls {
   padding-bottom: .5em;
 }
 
-#confirm > div > div {
+#exclude select {
+  margin: .5em 0;
+}
+
+#confirm > div > div,
+#exclude > div > div {
   text-align: center;
 }
 
-.non-windows #confirm > div > div {
+.non-windows #confirm > div > div,
+.non-windows #exclude > div > div {
   direction: rtl;
   text-align: right;
 }
 
-#confirm > button {
+#confirm > button,
+#exclude > button {
   /* add a gap between buttons both for horizontal
   or vertical (when the label is wide) layout */
   margin: 0 .25em .25em 0;

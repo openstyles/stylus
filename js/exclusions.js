@@ -1,190 +1,132 @@
 /*
 global messageBox resolveWith
-gloabl editor showHelp onChange
+gloabl editor showHelp getSectionsHashes
+global popupExclusions
 */
 'use strict';
 
 const exclusions = (() => {
 
+  // `\S*\*\S*` => `foo*`, `*bar`, `f*bar`
+  // `\S+\.\S+` => `foo.bar`, `f.b`
+  // see https://regex101.com/r/NUuwiu/2
+  const validExclusionRegex = /^(\S*\*\S*|\S+\.\S+)$/;
+  // ms to wait before validating user input
+  const saveDelay = 250;
+
   // get exclusions from a select element
-  function get(options = {}) {
-    const lists = {};
-    const excluded = options.exclusions || getMultiOptions(options);
-    excluded.forEach(list => {
-      lists[list] = createRegExp(list);
+  function get() {
+    exclusions.list = {};
+    $$('#excluded-wrap input').forEach(input => {
+      const url = input.value;
+      if (url && validExclusionRegex.test(url)) {
+        exclusions.list[url] = createRegExp(url);
+      }
     });
-    return lists;
+    return exclusions.list;
   }
 
   function createRegExp(url) {
-    // returning a regex string; Object.assign is used on style & doesn't save RegExp
-    return url.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/[*]/g, '.+?');
+    // Include boundaries to prevent `e.c` from matching `google.com`
+    const prefix = url.startsWith('^') ? '' : '\\b';
+    const suffix = url.endsWith('$') ? '' : '\\b';
+    // Only escape `.`; alter `*`; all other regex allowed
+    return `${prefix}${url.replace(/\./g, '\\.').replace(/\*/g, '.*?')}${suffix}`;
   }
 
-  function getMultiOptions({select, selectedOnly, elements} = {}) {
-    return [...(select || exclusions.select).children].reduce((acc, opt) => {
-      if (selectedOnly && opt.selected) {
-        acc.push(elements ? opt : opt.value);
-      } else if (!selectedOnly) {
-        acc.push(elements ? opt : opt.value);
-      }
-      return acc;
-    }, []);
-  }
-
-  function populateSelect(options = []) {
-    exclusions.select.textContent = '';
-    const option = $create('option');
-    options.forEach(value => {
-      const opt = option.cloneNode();
-      opt.value = value;
-      opt.textContent = value;
-      opt.title = value;
-      exclusions.select.appendChild(opt);
-    });
-    exclusions.lastValue = exclusions.select.textContent;
-  }
-
-  function openInputDialog({title, callback, value = ''}) {
-    messageBox({
-      title,
-      className: 'center',
-      contents: [
-        $create('div', {id: 'excludedError', textContent: '\xa0\xa0'}),
-        $create('input', {type: 'text', id: 'excluded-input', value})
-      ],
-      buttons: [t('confirmOK'), t('confirmCancel')]
-    });
-    setTimeout(() => {
-      const btn = $('#message-box-buttons button', messageBox.element);
-      // not using onkeyup here because pressing enter to activate add/edit
-      // button fires onkeyup here when user releases the key
-      $('#excluded-input').onkeydown = event => {
-        if (event.which === 13) {
-          event.preventDefault();
-          callback.apply(btn);
-        }
-      };
-      btn.onclick = callback;
-    }, 1);
-  }
-
-  function validateURL(url) {
-    const lists = getMultiOptions();
-    // Generic URL globs; e.g. "https://test.com/*" & "*.test.com"
-    return !lists.includes(url) && /^(?:https?:\/\/)?([\w*]+\.)+[\w*./-]+/.test(url);
-  }
-
-  function addExclusion() {
-    openInputDialog({
-      title: t('exclusionsAddTitle'),
-      callback: function () {
-        const value = $('#excluded-input').value;
-        if (value && validateURL(value)) {
-          exclusions.select.appendChild($create('option', {value, innerText: value}));
-          done();
-          messageBox.listeners.button.apply(this);
-        } else {
-          const errorBox = $('#excludedError', messageBox.element);
-          errorBox.textContent = t('exclusionsInvalidUrl');
-          setTimeout(() => {
-            errorBox.textContent = '';
-          }, 5000);
-        }
-      }
-    });
-  }
-
-  function editExclusion() {
-    const value = exclusions.select.value;
-    if (value) {
-      openInputDialog({
-        title: t('exclusionsAddTitle'),
-        value,
-        callback: function () {
-          const newValue = $('#excluded-input').value;
-          // only edit the first selected option
-          const option = getMultiOptions({selectedOnly: true, elements: true})[0];
-          if (newValue && validateURL(newValue) && option) {
-            option.value = newValue;
-            option.textContent = newValue;
-            option.title = newValue;
-            if (newValue !== value) {
-              // make it dirty!
-              exclusions.select.savedValue = '';
-            }
-            done();
-            messageBox.listeners.button.apply(this);
-          } else {
-            const errorBox = $('#excludedError', messageBox.element);
-            errorBox.textContent = t('exclusionsInvalidUrl');
-            setTimeout(() => {
-              errorBox.textContent = '';
-            }, 5000);
-          }
-        }
-      });
-    }
-  }
-
-  function deleteExclusions() {
-    const entries = getMultiOptions({selectedOnly: true, elements: true});
-    if (entries.length) {
-      messageBox
-        .confirm(t('exclusionsDeleteConfirmation', [entries.length]))
-        .then(ok => {
-          if (ok) {
-            entries.forEach(el => exclusions.select.removeChild(el));
-            done();
-          }
-        });
-    }
-  }
-
-  function excludeAction(event) {
-    const target = event.target;
-    if (target.id && target.id.startsWith('excluded-list-')) {
-      // class "excluded-list-(add/edit/delete)" -> ['excluded', 'list', 'add']
-      const type = target.id.split('-').pop();
-      switch (type) {
-        case 'add':
-          addExclusion();
-          break;
-        case 'edit':
-          editExclusion();
-          break;
-        case 'delete':
-          deleteExclusions();
-          break;
-      }
-    }
-  }
-
-  function done() {
-    if (editor) {
-      // make usercss dirty
-      exclusions.select.onchange();
+  function addExclusionEntry({container, value, insertAfter}) {
+    const item = template.exclusionEntry.cloneNode(true);
+    const input = $('input', item);
+    const regex = validExclusionRegex.toString();
+    input.value = value;
+    input.setAttribute('pattern', regex.substring(1, regex.length - 1));
+    if (insertAfter) {
+      insertAfter.insertAdjacentElement('afterend', item);
     } else {
-      // make regular userstyle dirty
-      onChange({target: exclusions.select});
+      container.appendChild(item);
     }
+    input.focus();
+  }
+
+  function populateList() {
+    // List should never be empty - need to add an empty input
+    const list = exclusions.list.length ? exclusions.list : [''];
+    const block = $('#excluded-wrap');
+    block.textContent = '';
+    const container = document.createDocumentFragment();
+    list.forEach(value => {
+      addExclusionEntry({container, value});
+    });
+    block.appendChild(container);
+  }
+
+  function validateEntry(input) {
+    const lists = Object.keys(get());
+    const url = input.value;
+    const index = $$('.exclusion-entry input:valid').indexOf(input);
+    // Generic URL globs; e.g. "https://test.com/*" & "*.test.com"
+    return !(lists.includes(url) && lists.indexOf(url) !== index) &&
+      validExclusionRegex.test(url);
+  }
+
+  function updateList() {
+    const list = get();
+    const keys = Object.keys(list);
+    if (exclusions.savedValue !== keys.join(',')) {
+      exclusions.saveValue = keys.join(',');
+      exclusions.list = list;
+    }
+    debounce(save, 100, {});
     updateStats();
   }
 
-  function updateStats() {
-    if (exclusions.select) {
-      const excludedTotal = exclusions.select.children.length;
-      const state = excludedTotal === 0;
-      exclusions.select.setAttribute('size', excludedTotal || 1);
-      $('#excluded-stats').textContent = state ? '' : t('exclusionsStatus', [excludedTotal]);
-      toggleButtons(state);
+  function deleteExclusions(entry) {
+    if ($('#excluded-wrap').children.length === 1) {
+      const input = $('.exclusion-input', entry);
+      input.value = '';
+      input.focus();
+    } else {
+      const nextFocus = entry.previousElementSibling || entry.nextElementSibling;
+      entry.parentNode.removeChild(entry);
+      if (nextFocus) {
+        $('input', nextFocus).focus();
+      }
+    }
+    updateList();
+  }
+
+  function excludeAction(event) {
+    event.preventDefault();
+    const target = event.target;
+    const entry = target.closest('.exclusion-entry');
+    if (target.classList.contains('exclusion-add')) {
+      addExclusionEntry({
+        container: $('#excluded-wrap'),
+        value: '',
+        insertAfter: entry
+      });
+    } else if (target.classList.contains('exclusion-delete')) {
+      deleteExclusions(entry);
     }
   }
 
-  function toggleButtons(state = false) {
-    const noSelection = exclusions.select.value === '';
-    $('#excluded-list-edit').disabled = noSelection || state;
-    $('#excluded-list-delete').disabled = noSelection || state;
+  function excludeValidate(event) {
+    const target = event.target;
+    target.setCustomValidity('');
+    target.title = '';
+    if (target.matches(':valid')) {
+      if (!validateEntry(target)) {
+        target.setCustomValidity(t('exclusionsvalidateEntry'));
+        target.title = t('exclusionsvalidateEntry');
+      } else {
+        updateList();
+      }
+    }
+  }
+
+  function updateStats() {
+    const total = Object.keys(exclusions.list).length;
+    $('#excluded-stats').textContent = total ? t('exclusionsStatus', [total]) : '';
   }
 
   function showExclusionHelp(event) {
@@ -193,49 +135,51 @@ const exclusions = (() => {
   }
 
   function onRuntimeMessage(msg) {
-    if (msg.method === 'styleUpdated' && msg.style && msg.style.exclusions && exclusions.select) {
-      update(Object.keys(msg.style.exclusions));
+    if (msg.method === 'exclusionsUpdate' && msg.style && msg.style.exclusions) {
+      update({list: Object.keys(msg.style.exclusions), isUpdating: true});
+      // update popup, if loaded
+      if (typeof popupExclusions !== 'undefined') {
+        popupExclusions.selectExclusions(msg.style.exclusions);
+      }
     }
   }
 
-  function update(list = exclusions.list) {
-    populateSelect(list);
+  function update({list = exclusions.list, isUpdating}) {
+    if (!isUpdating) {
+      exclusions.list = list;
+      populateList();
+    }
     updateStats();
   }
 
-  function onchange(dirty) {
-    exclusions.select.onchange = function () {
-      dirty.modify('exclusions', exclusions.lastValue, exclusions.select.textContent);
-    };
-  }
-
-  function save(style, dirty) {
-    style.reason = 'exclusionsUpdate';
-    API.saveStyle(style);
-    if (dirty) {
-      dirty.clear('exclusions');
-    }
+  function save({id, exclusionList = get()}) {
+    // get last saved version
+    API.getStyles({id: id || exclusions.id}).then(([style]) => {
+      style.exclusions = exclusionList;
+      style.reason = 'exclusionsUpdate';
+      API.saveStyle(style);
+    });
   }
 
   function init(style) {
+    const block = $('#exclusions');
     const list = Object.keys(style.exclusions || {});
     const size = list.length;
-    exclusions.select = $('#excluded-list');
-    exclusions.select.savedValue = String(size);
+    exclusions.id = style.id;
+    exclusions.savedValue = list.join(',');
     exclusions.list = list;
-    update();
+    if (size) {
+      block.setAttribute('open', true);
+    } else {
+      block.removeAttribute('open');
+    }
+    update({});
 
     $('#excluded-wrap').onclick = excludeAction;
+    $('#excluded-wrap').oninput = event => debounce(excludeValidate, saveDelay, event);
     $('#excluded-list-help').onclick = showExclusionHelp;
-    // Disable Edit & Delete buttons if nothing selected
-    exclusions.select.onclick = () => toggleButtons();
-    document.head.appendChild($create('style', `
-      #excluded-list:empty:after {
-        content: "${t('exclusionsEmpty')}";
-      }
-    `));
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
   }
 
-  return {init, get, update, onchange, save, createRegExp, getMultiOptions};
+  return {init, get, update, save, createRegExp};
 })();

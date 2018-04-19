@@ -165,7 +165,7 @@
   <script src="js/script-loader.js" async></script>
   <script src="js/storage-util.js" async></script>
   <script src="js/exclusions.js" async></script>
-  <script src="popup/popup-exclusions.js" async></script>
+  <script src="popup/popup-exclusions.js"></script>
 </head>
 
 <body id="stylus-popup">
@@ -176,6 +176,18 @@
       <span i18n-text="deleteStyleConfirm"></span>
       <div>
         <button i18n-text="confirmDelete" data-cmd="ok"></button>
+        <button i18n-text="confirmCancel" data-cmd="cancel"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="exclude">
+    <div>
+      <strong>Style's Name</strong>
+      <span i18n-text="exclusionsPopupTitle"></span>
+      <select id="popup-exclusions" size="0" multiple></select>
+      <div>
+        <button i18n-text="confirmOK" data-cmd="ok"></button>
         <button i18n-text="confirmCancel" data-cmd="cancel"></button>
       </div>
     </div>

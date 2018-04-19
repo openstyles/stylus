@@ -19,6 +19,7 @@ var cachedStyles = {
   byId: new Map(),       // all styles indexed by id
   filters: new Map(),    // filterStyles() parameters mapped to the returned results, 10k max
   regexps: new Map(),    // compiled style regexps
+  exclusions: new Map(), // compiled exclusion regexps
   urlDomains: new Map(), // getDomain() results for 100 last checked urls
   needTransitionPatch: new Map(), // FF bug workaround
   mutex: {
@@ -250,6 +251,7 @@ function filterStyles({
       strictRegexp,
       blankHash,
       cacheKey,
+      omitCode,
     });
   }
   if (!omitCode) return styles;
@@ -275,6 +277,7 @@ function filterStylesInternal({
   strictRegexp,
   blankHash,
   cacheKey,
+  omitCode,
 }) {
   if (matchUrl && !cachedStyles.urlDomains.has(matchUrl)) {
     cachedStyles.urlDomains.set(matchUrl, getDomains(matchUrl));
@@ -309,6 +312,7 @@ function filterStylesInternal({
           stopOnFirst: !asHash,
           skipUrlCheck: true,
           matchUrlBase,
+          omitCode,
         });
       if (asHash) {
         if (sections.length) {
@@ -423,10 +427,9 @@ function saveStyle(style) {
     style.id = style.id || event.target.result;
     invalidateCache(existed ? {updated: style} : {added: style});
     if (notify) {
-      notifyAllTabs({
-        method: existed ? 'styleUpdated' : 'styleAdded',
-        style, codeIsUpdated, reason,
-      });
+      const method = reason === 'exclusionsUpdate' ? reason :
+        existed ? 'styleUpdated' : 'styleAdded';
+      notifyAllTabs({method, style, codeIsUpdated, reason});
     }
     return style;
   }
@@ -444,11 +447,27 @@ function deleteStyle({id, notify = true}) {
   });
 }
 
-function checkExclusions(matchUrl, exclusions = {}) {
-  const values = Object.values(exclusions);
-  return values.length &&
-    values.reduce((acc, exclude) => acc || tryRegExp(exclude).test(matchUrl), false);
+
+function compileExclusionRegexps(exclusions) {
+  exclusions.forEach(exclusion => {
+    if (!cachedStyles.exclusions.get(exclusion)) {
+      cachedStyles.exclusions.set(exclusion, tryRegExp(exclusion) || false);
+    }
+  });
 }
+
+function isPageExcluded(matchUrl, exclusions = {}) {
+  const values = Object.values(exclusions);
+  if (!values.length) {
+    return false;
+  }
+  compileExclusionRegexps(values);
+  return values.some(exclude => {
+    const rx = cachedStyles.exclusions.get(exclude);
+    return rx && rx.test(matchUrl);
+  });
+}
+
 
 function getApplicableSections({
   style,
@@ -458,12 +477,13 @@ function getApplicableSections({
   stopOnFirst,
   skipUrlCheck,
   matchUrlBase = matchUrl.includes('#') && matchUrl.split('#', 1)[0],
+  omitCode,
   // as per spec the fragment portion is ignored in @-moz-document:
   // https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
   // but the spec is outdated and doesn't account for SPA sites
   // so we only respect it in case of url("http://exact.url/without/hash")
 }) {
-  if (!skipUrlCheck && !URLS.supported(matchUrl) || checkExclusions(matchUrl, style.exclusions)) {
+  if (!skipUrlCheck && !URLS.supported(matchUrl) || omitCode !== false && isPageExcluded(matchUrl, style.exclusions)) {
     return [];
   }
   const sections = [];
@@ -642,6 +662,7 @@ function updateFiltersCache(style) {
         matchUrlBase,
         strictRegexp,
         skipUrlCheck: true,
+        omitCode: false
       });
       if (sections.length) {
         styles[id] = sections;
@@ -830,8 +851,8 @@ function detectSloppyRegexps({matchUrl, ids}) {
       }
     }
     if (!hasRegExp) continue;
-    const applied = getApplicableSections({style, matchUrl});
-    const wannabe = getApplicableSections({style, matchUrl, strictRegexp: false});
+    const applied = getApplicableSections({style, matchUrl, omitCode: false});
+    const wannabe = getApplicableSections({style, matchUrl, omitCode: false, strictRegexp: false});
     results.push({
       id,
       applied,

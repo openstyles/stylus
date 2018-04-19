@@ -6,8 +6,6 @@ global exclusions
 
 const popupExclusions = (() => {
 
-  const popupWidth = '400px';
-
   // return matches on url ending to prevent duplicates in the exclusion list
   // e.g. http://test.com and http://test.com/* are equivalent
   // this function would return ['', '/*']
@@ -25,7 +23,8 @@ const popupExclusions = (() => {
   function processURL(url) {
     const results = [];
     const protocol = url.match(/\w+:\/\//);
-    const parts = url.replace(/(\w+:\/\/|[#?].*$)/g, '').split('/');
+    // remove ending '/', protocol, hash & search strings
+    const parts = url.replace(/\/$/, '').replace(/(\w+:\/\/|[#?].*$)/g, '').split('/');
     const domain = parts[0].split('.');
     /*
     Domain: a.b.com
@@ -45,28 +44,42 @@ const popupExclusions = (() => {
     return results.reverse();
   }
 
+  function shortenURL(text) {
+    const len = text.length;
+    let prefix = '\u2026';
+    // account for URL that end with a '/'
+    let index = (text.endsWith('/') ? text.substring(0, len - 1) : text).lastIndexOf('/');
+    if (index < 0 || len - index < 2) {
+      index = 0;
+      prefix = '';
+    }
+    return prefix + text.substring(index, len);
+  }
+
   function createOption(option) {
     // ["Domain/Prefix", "{url}"]
     return $create('option', {
       value: option[1],
       title: option[1],
-      textContent: `${option[0]}: ${option[1]}`
+      textContent: `${option[0]}: ${shortenURL(option[1])}`
     });
   }
 
-  function createPopupContent(url) {
+  function getMultiOptions({select, selectedOnly} = {}) {
+    return [...select.children].reduce((acc, opt) => {
+      if (selectedOnly && opt.selected || !selectedOnly) {
+        acc.push(opt.value);
+      }
+      return acc;
+    }, []);
+  }
+
+  function updatePopupContent(url) {
     const options = processURL(url);
-    return [
-      $create('h2', {textContent: t('exclusionsEditTitle')}),
-      $create('select', {
-        id: 'popup-exclusions',
-        size: options.length,
-        multiple: 'true',
-        value: ''
-      }, [
-        ...options.map(option => createOption(option))
-      ])
-    ];
+    const renderBin = document.createDocumentFragment();
+    options.map(option => renderBin.appendChild(createOption(option)));
+    $('#popup-exclusions').textContent = '';
+    $('#popup-exclusions').appendChild(renderBin);
   }
 
   function getIframeURLs(style) {
@@ -75,62 +88,89 @@ const popupExclusions = (() => {
         chrome.webNavigation.getAllFrames({
           tabId: tab.id
         }, frames => {
-          const urls = frames.reduce((acc, frame) => processURL(frame.url), []);
+          const urls = frames.reduce((acc, frame) => [...acc, ...processURL(frame.url)], []);
           updateSelections(style, urls);
         });
       }
     });
   }
 
-  function updateSelections(style, newOptions = []) {
-    const select = $('select', messageBox.element);
-    const exclusions = Object.keys(style.exclusions || {});
-    if (newOptions.length) {
-      const currentOptions = [...select.children].map(opt => opt.value);
-      newOptions.forEach(opt => {
-        if (!currentOptions.includes(opt[1])) {
-          select.appendChild(createOption(opt));
-        }
-      });
-      select.size = select.children.length;
-    }
+  function selectExclusions(exclusions) {
+    const select = $('#exclude select');
+    const excludes = Object.keys(exclusions || {});
     [...select.children].forEach(option => {
-      if (exclusionExists(exclusions, option.value).length) {
+      if (exclusionExists(excludes, option.value).length) {
         option.selected = true;
       }
     });
   }
 
-  function openPopupDialog(style, tabURL) {
-    const msgBox = messageBox({
-      title: style.name,
-      className: 'center content-left',
-      contents: createPopupContent(tabURL),
-      buttons: [t('confirmOK'), t('confirmCancel')],
-      onshow: box => {
-        const contents = box.firstElementChild;
-        contents.style = `max-width: calc(${popupWidth} - 20px); max-height: none;`;
-        document.body.style.minWidth = popupWidth;
-        document.body.style.minHeight = popupWidth;
-        updateSelections(style);
-        getIframeURLs(style);
-        $('#message-box-buttons button', messageBox.element).onclick = function () {
-          handlePopupSave(style, this);
-        };
-      }
-    })
-    .then(() => {
-      document.body.style.minWidth = '';
-      document.body.style.minHeight = '';
-    });
-    return msgBox;
+  function updateSelections(style, newOptions = []) {
+    const wrap = $('#exclude');
+    const select = $('select', wrap);
+    if (newOptions.length) {
+      const currentOptions = [...select.children].map(opt => opt.value);
+      newOptions.forEach(opt => {
+        if (!currentOptions.includes(opt[1])) {
+          select.appendChild(createOption(opt));
+          // newOptions may have duplicates (e.g. multiple iframes from same source)
+          currentOptions.push(opt[1]);
+        }
+      });
+      select.size = select.children.length;
+      // hide select, then calculate & adjust height
+      select.style.height = '0';
+      document.body.style.height = `${select.scrollHeight + wrap.offsetHeight}px`;
+      select.style.height = '';
+    }
+    selectExclusions(style.exclusions);
   }
 
-  function handlePopupSave(style, button) {
+  function isExcluded(matchUrl, exclusions = {}) {
+    const values = Object.values(exclusions);
+    return values.length && values.some(exclude => tryRegExp(exclude).test(matchUrl));
+  }
+
+  function openPopupDialog(entry, tabURL) {
+    const style = entry.styleMeta;
+    updateSelections(style, updatePopupContent(tabURL));
+    getIframeURLs(style);
+    const box = $('#exclude');
+    box.dataset.display = true;
+    box.style.cssText = '';
+    $('strong', box).textContent = style.name;
+    $('[data-cmd="ok"]', box).focus();
+    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    window.onkeydown = event => {
+      const keyCode = event.keyCode || event.which;
+      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+        && (keyCode === 13 || keyCode === 27)) {
+        event.preventDefault();
+        confirm(keyCode === 13);
+      }
+    };
+    function confirm(ok) {
+      window.onkeydown = null;
+      animateElement(box, {
+        className: 'lights-on',
+        onComplete: () => (box.dataset.display = false),
+      });
+      if (ok) {
+        handlePopupSave(style);
+        entry.styleMeta = style;
+        entry.classList.toggle('excluded', isExcluded(tabURL, style.exclusions));
+        document.body.style.height = '';
+      }
+    }
+    return Promise.resolve();
+  }
+
+  function handlePopupSave(style) {
     const current = Object.keys(style.exclusions);
     const select = $('#popup-exclusions', messageBox.element);
-    const all = exclusions.getMultiOptions({select});
-    const selected = exclusions.getMultiOptions({select, selectedOnly: true});
+    const all = getMultiOptions({select});
+    const selected = getMultiOptions({select, selectedOnly: true});
     // Add exclusions
     selected.forEach(value => {
       let exists = exclusionExists(current, value);
@@ -151,10 +191,12 @@ const popupExclusions = (() => {
         delete style.exclusions[value + ending];
       });
     });
-    exclusions.save(style);
-    messageBox.listeners.button.apply(button);
+    exclusions.save({
+      id: style.id,
+      exclusionList: style.exclusions
+    });
   }
 
-  return {openPopupDialog};
+  return {openPopupDialog, selectExclusions, isExcluded};
 
 })();
