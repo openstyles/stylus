@@ -126,17 +126,30 @@
   });
 
   const MODE = {
+    less: {
+      family: 'css',
+      value: 'text/x-less',
+      isActive: cm =>
+        cm.doc.mode &&
+        cm.doc.mode.name === 'css' &&
+        cm.doc.mode.helperType === 'less',
+    },
     stylus: 'stylus',
     uso: 'css'
   };
 
   CodeMirror.defineExtension('setPreprocessor', function (preprocessor, force = false) {
     const mode = MODE[preprocessor] || 'css';
-    if ((this.doc.mode || {}).name === mode && !force) {
+    const isActive = mode.isActive || (
+      cm => cm.doc.mode === mode ||
+            cm.doc.mode && (cm.doc.mode.name + (cm.doc.mode.helperType || '') === mode)
+    );
+    if (!force && isActive(this)) {
       return Promise.resolve();
     }
-    if (mode === 'css') {
-      this.setOption('mode', mode);
+    if ((mode.family || mode) === 'css') {
+      // css.js is always loaded via html
+      this.setOption('mode', mode.value || mode);
       return Promise.resolve();
     }
     return loadScript(`/vendor/codemirror/mode/${mode}/${mode}.js`).then(() => {

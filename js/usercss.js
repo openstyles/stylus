@@ -62,6 +62,18 @@ var usercss = (() => {
         ));
       }
     },
+    less: {
+      preprocess(source, vars) {
+        window.less = window.less || {
+          logLevel: 0,
+          useFileCache: false,
+        };
+        const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
+        return loadScript('/vendor/less/less.min.js')
+          .then(() => window.less.render(varDefs + source))
+          .then(({css}) => css);
+      }
+    },
     uso: {
       preprocess(source, vars) {
         const pool = new Map();

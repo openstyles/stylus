@@ -330,7 +330,9 @@ function createSourceEditor(style) {
 
   function getModeName() {
     const mode = cm.doc.mode;
-    return mode && mode.name || mode;
+    if (!mode) return '';
+    return (mode.name || mode || '') +
+           (mode.helperType || '');
   }
 
   return {

@@ -32,7 +32,7 @@ var linterConfig = {
     // some dirty hacks to override editor.linter getting from prefs
     const linter = prefs.get('editor.linter');
     const mode = linter && editors[0] && editors[0].doc.mode;
-    return mode && mode !== 'css' && mode.name !== 'css' ? 'stylelint' : linter;
+    return mode && ((mode.name || mode) !== 'css' || mode.helperType) ? 'stylelint' : linter;
   },
 
   getCurrent(linter = linterConfig.getName()) {
