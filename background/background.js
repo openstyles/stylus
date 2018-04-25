@@ -239,7 +239,7 @@ window.addEventListener('storageReady', function _() {
   }
 
   const injectCS = (cs, tabId) => {
-    if (chrome.runtime.lastError) return;
+    ignoreChromeError();
     chrome.tabs.executeScript(tabId, {
       file: cs.js[0],
       runAt: cs.run_at,
