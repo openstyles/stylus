@@ -161,7 +161,7 @@ var API = (() => {
 
 function notifyAllTabs(msg) {
   const originalMessage = msg;
-  const styleUpdated = msg.method === 'styleUpdated';
+  const styleUpdated = msg.method === 'styleUpdated' || msg.method === 'exclusionsUpdated';
   if (styleUpdated || msg.method === 'styleAdded') {
     // apply/popup/manage use only meta for these two methods,
     // editor may need the full code but can fetch it directly,

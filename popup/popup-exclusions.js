@@ -156,11 +156,11 @@ const popupExclusions = (() => {
         className: 'lights-on',
         onComplete: () => (box.dataset.display = false),
       });
+      document.body.style.height = '';
       if (ok) {
         handlePopupSave(style);
         entry.styleMeta = style;
         entry.classList.toggle('excluded', isExcluded(tabURL, style.exclusions));
-        document.body.style.height = '';
       }
     }
     return Promise.resolve();

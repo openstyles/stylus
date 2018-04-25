@@ -135,7 +135,7 @@ const exclusions = (() => {
   }
 
   function onRuntimeMessage(msg) {
-    if (msg.method === 'exclusionsUpdate' && msg.style && msg.style.exclusions) {
+    if (msg.method === 'exclusionsUpdated' && msg.style && msg.style.exclusions) {
       update({list: Object.keys(msg.style.exclusions), isUpdating: true});
       // update popup, if loaded
       if (typeof popupExclusions !== 'undefined') {
@@ -156,7 +156,7 @@ const exclusions = (() => {
     // get last saved version
     API.getStyles({id: id || exclusions.id}).then(([style]) => {
       style.exclusions = exclusionList;
-      style.reason = 'exclusionsUpdate';
+      style.reason = 'exclusionsUpdated';
       API.saveStyle(style);
     });
   }

@@ -388,7 +388,7 @@ function saveStyle(style) {
         }
         codeIsUpdated = !existed
           || 'sections' in style && !styleSectionsEqual(style, oldStyle)
-          || reason === 'exclusionsUpdate';
+          || reason === 'exclusionsUpdated';
         style = Object.assign({installDate: Date.now()}, oldStyle, style);
         return write(style, store);
       });
@@ -427,7 +427,7 @@ function saveStyle(style) {
     style.id = style.id || event.target.result;
     invalidateCache(existed ? {updated: style} : {added: style});
     if (notify) {
-      const method = reason === 'exclusionsUpdate' ? reason :
+      const method = reason === 'exclusionsUpdated' ? reason :
         existed ? 'styleUpdated' : 'styleAdded';
       notifyAllTabs({method, style, codeIsUpdated, reason});
     }
@@ -457,12 +457,12 @@ function compileExclusionRegexps(exclusions) {
 }
 
 function isPageExcluded(matchUrl, exclusions = {}) {
-  const values = Object.values(exclusions);
-  if (!values.length) {
+  const keys = Object.keys(exclusions);
+  if (!keys.length) {
     return false;
   }
-  compileExclusionRegexps(values);
-  return values.some(exclude => {
+  compileExclusionRegexps(keys);
+  return keys.some(exclude => {
     const rx = cachedStyles.exclusions.get(exclude);
     return rx && rx.test(matchUrl);
   });
