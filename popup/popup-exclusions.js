@@ -167,6 +167,9 @@ const popupExclusions = (() => {
   }
 
   function handlePopupSave(style) {
+    if (typeof style.exclusions === 'undefined') {
+      style.exclusions = {};
+    }
     const current = Object.keys(style.exclusions);
     const select = $('#popup-exclusions', messageBox.element);
     const all = getMultiOptions({select});
