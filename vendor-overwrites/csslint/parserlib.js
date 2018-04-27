@@ -903,7 +903,7 @@ self.parserlib = (() => {
          Matcher.cast('<nonnegative-length-or-percentage>')
            .braces(1, Infinity, '#', Matcher.cast(',').question()),
 
-      '<display-listitem>': 'list-item && <display-outside>? && [ flow | flow-root ]?',
+      '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
 
       '<explicit-track-list>'  : '[ <line-names>? <track-size> ]+ <line-names>?',
 
