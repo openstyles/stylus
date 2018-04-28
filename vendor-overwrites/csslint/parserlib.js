@@ -73,6 +73,8 @@ self.parserlib = (() => {
 
     dpi:  'resolution',
     dpcm: 'resolution',
+
+    ar:   'dimension',
   };
 
   //endregion
@@ -627,6 +629,8 @@ self.parserlib = (() => {
 
       '<angle>': part => part.type === 'angle',
 
+      '<aspect-ratio>': part => part.units && lower(part.units) === 'ar',
+
       '<attr-fallback>': part => !/\battr\(/i.test(part.text),
 
       '<attachment>': 'scroll | fixed | local',
@@ -843,6 +847,7 @@ self.parserlib = (() => {
 
     complex: {
       '<align-content>': 'normal | <baseline-position> | <content-distribution> | ' +
+                         '<aspect-ratio> <content-distribution>? | ' +
                          '<overflow-position>? <content-position>',
 
       '<align-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>',
@@ -958,8 +963,8 @@ self.parserlib = (() => {
       '<grid-template-columns>': 'none | <track-list> | <auto-track-list>',
       '<grid-template-rows>': '<grid-template-columns>',
 
-      '<justify-content>': 'normal | <content-distribution> | <overflow-position>? ' +
-                           '[ <content-position> | left | right ]',
+      '<justify-content>': 'normal | <content-distribution> | <aspect-ratio> <content-distribution>? | ' +
+                           '<overflow-position>? [ <content-position> | left | right ]',
 
       '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
                         '[ <self-position> | left | right ]',
