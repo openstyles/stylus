@@ -28,6 +28,8 @@ global API_METHODS
   let logQueue = [];
   let logLastWriteTime = 0;
 
+  const retrying = new Set();
+
   API_METHODS.updateCheckAll = checkAllStyles;
   API_METHODS.updateCheck = checkStyle;
   API_METHODS.getUpdaterStates = () => STATES;
@@ -44,6 +46,7 @@ global API_METHODS
   } = {}) {
     resetInterval();
     checkingAll = true;
+    retrying.clear();
     const port = observe && chrome.runtime.connect({name: 'updater'});
     return getStyles({}).then(styles => {
       styles = styles.filter(style => style.updateUrl);
@@ -58,6 +61,7 @@ global API_METHODS
       if (port) port.disconnect();
       log('');
       checkingAll = false;
+      retrying.clear();
     });
   }
 
@@ -98,6 +102,15 @@ global API_METHODS
     }
 
     function reportFailure(error) {
+      // retry once if the error is 503 Service Unavailable
+      if (error === 503 && !retrying.get(id)) {
+        retrying.add(id);
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve(checkStyle(id, style, port, save, ignoreDigest));
+          }, 1000);
+        });
+      }
       error = error === 0 ? 'server unreachable' : error;
       log(STATES.SKIPPED + ` (${error}) #${style.id} ${style.name}`);
       const info = {error, STATES, style: getStyleWithNoCode(style)};
