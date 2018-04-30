@@ -247,6 +247,10 @@
 		"message": "スタイルをインポート",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "ダブルクリックでトークンを選択する",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "中止",
 		"description": "'Stop' button in a confirm dialog"
@@ -728,6 +732,10 @@
 	},
 	"paginationTotal": {
 		"message": "総ページ数",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "トークンの例: .foo-bar-2 #aabbcc 0.32 !important\n無効にすると、記号で区切られた範囲で単語が選択されます。",
 		"description": ""
 	},
 	"checkingForUpdate": {

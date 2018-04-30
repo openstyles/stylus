@@ -247,6 +247,10 @@
 		"message": "Importuj style",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "Dwukrotne kliknięcie wybiera tokeny",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "Zatrzymaj",
 		"description": "'Stop' button in a confirm dialog"
@@ -732,6 +736,10 @@
 	},
 	"paginationTotal": {
 		"message": "Wszystkie strony",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "Przykłady tokenów: .foo-bar-2 #aabbcc 0.32 !important\nPo wyłączeniu: wyrazy rozdzielone przecinkami są wybrane.",
 		"description": ""
 	},
 	"checkingForUpdate": {
