@@ -2,18 +2,21 @@
 'use strict';
 
 (() => {
-  const FIREFOX = !chrome.app;
-  const VIVALDI = chrome.app && /Vivaldi/.test(navigator.userAgent);
-  const OPERA = chrome.app && /OPR/.test(navigator.userAgent);
-
   window.dispatchEvent(new CustomEvent(chrome.runtime.id + '-install'));
   window.addEventListener(chrome.runtime.id + '-install', orphanCheck, true);
 
-  ['Update', 'Install'].forEach(type =>
-    ['', 'Chrome', 'Opera'].forEach(browser =>
-      document.addEventListener('stylish' + type + browser, onClick)));
+  document.addEventListener('stylishInstallChrome', onClick);
+  document.addEventListener('stylishUpdateChrome', onClick);
 
   chrome.runtime.onMessage.addListener(onMessage);
+
+  document.addEventListener('DOMContentLoaded', function _() {
+    document.removeEventListener('DOMContentLoaded', _);
+    window.postMessage({
+      direction: 'from-content-script',
+      message: 'StylishInstalled',
+    }, '*');
+  });
 
   let gotBody = false;
   new MutationObserver(observeDOM).observe(document.documentElement, {
@@ -77,14 +80,19 @@
       sendEvent({type: 'styleCanBeInstalledChrome'});
       return;
     }
+    const isCustomizable = /\?/.test(installedStyle.updateUrl);
     const md5Url = getMeta('stylish-md5-url');
     if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
       getResource(md5Url).then(md5 => {
-        reportUpdatable(md5 !== installedStyle.originalMd5);
+        reportUpdatable(
+          isCustomizable ||
+          md5 !== installedStyle.originalMd5);
       });
     } else {
       getStyleJson().then(json => {
-        reportUpdatable(!json ||
+        reportUpdatable(
+          isCustomizable ||
+          !json ||
           !styleSectionsEqual(json, installedStyle));
       });
     }
@@ -105,11 +113,6 @@
   function sendEvent(event) {
     sendEvent.lastEvent = event;
     let {type, detail = null} = event;
-    if (FIREFOX) {
-      type = type.replace('Chrome', '');
-    } else if (OPERA || VIVALDI) {
-      type = type.replace('Chrome', 'Opera');
-    }
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
