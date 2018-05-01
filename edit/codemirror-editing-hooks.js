@@ -19,6 +19,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
     nextEditor, prevEditor,
     commentSelection,
   };
+  const ORIGINAL_COMMANDS = {
+    insertTab: CodeMirror.commands.insertTab,
+  };
   // reroute handling to nearest editor when keypress resolves to one of these commands
   const REROUTED = new Set([
     'save',
@@ -242,6 +245,12 @@ onDOMscriptReady('/codemirror.js').then(() => {
       case 'tabSize':
         value = Number(value);
         CodeMirror.setOption('indentUnit', value);
+        break;
+
+      case 'indentWithTabs':
+        CodeMirror.commands.insertTab = value ?
+          ORIGINAL_COMMANDS.insertTab :
+          CodeMirror.commands.insertSoftTab;
         break;
 
       case 'theme': {
