@@ -863,7 +863,7 @@
 		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
-		"message": "CSSLint unterstützt $preprocessorname$ nicht",
+		"message": "CSSLint unterstützt den $preprocessorname$ Präprozessor nicht",
 		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
 		"placeholders": {
 			"preprocessorname": {

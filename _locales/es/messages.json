@@ -12,7 +12,7 @@
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"styleRegexpTestTitle": {
-		"message": "Lista de pestañas coincidentes abiertas (pulse en el URL para poner el foco en esa pestaña)",
+		"message": "Lista de pestañas abiertas que coinciden (haga clic en la URL para enfocar su pestaña)",
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
@@ -39,6 +39,10 @@
 		"message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "En Firefox 60 y versiones posteriores también deberá eliminar el dominio AMO de <extensions.webextensions.restrictedDomains> en <about:config>.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "el más antiguo primero",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
@@ -52,7 +56,7 @@
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
-		"message": "Casilla @var no válida: El valor debe estar ser 0 o 1",
+		"message": "Casilla @var no válida: El valor debe ser 0 o 1",
 		"description": "Error displayed when the value of @var checkbox is invalid"
 	},
 	"linterJSONError": {
@@ -72,7 +76,7 @@
 		"description": ""
 	},
 	"cm_tabSize": {
-		"message": "Tamaño de la pestaña",
+		"message": "Tamaño de la tabulación",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
@@ -120,7 +124,7 @@
 		"description": "Label for the import error"
 	},
 	"importAppendLabel": {
-		"message": "Agregar al estilo",
+		"message": "Adicionar al estilo",
 		"description": "Label for the button to import a style and append to the existing sections"
 	},
 	"optionsOpenManager": {
@@ -132,7 +136,7 @@
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"importReportLegendAdded": {
-		"message": "añadidos",
+		"message": "agregados",
 		"description": "Text after the number of styles added in the report shown after importing styles"
 	},
 	"styleFromMozillaFormatPrompt": {
@@ -140,7 +144,7 @@
 		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
 	},
 	"dragDropMessage": {
-		"message": "Suelte su fichero de copia de seguridad en cualquier lugar de esta página para importarlo.",
+		"message": "Deje caer su archivo de copia de seguridad en cualquier lugar de esta página para importarlo.",
 		"description": "Drag'n'drop message"
 	},
 	"styleRegexpTestNote": {
@@ -164,7 +168,7 @@
 		"description": "Used in various lists/options to indicate that something is enabled"
 	},
 	"previewTooltip": {
-		"message": "Aplica temporalmente los cambios sin guardar.\nGuarde el estilo para hacer lo cambios permanentes.",
+		"message": "Aplica temporalmente los cambios sin guardar.\nGuarde el estilo para que los cambios sean permanentes.",
 		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
 	},
 	"manageFaviconsGray": {
@@ -172,7 +176,7 @@
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"versionInvalidOlder": {
-		"message": "Esta versión es posterior al estilo instalado.",
+		"message": "La versión es más antigua que el estilo instalado.",
 		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
@@ -180,7 +184,7 @@
 		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
-		"message": "Encontrar más estilos para este sitio",
+		"message": "Buscar más estilos para este sitio",
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
@@ -188,7 +192,7 @@
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
-		"message": "Embellecer",
+		"message": "Formatear",
 		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleRegexpProblemTooltip": {
@@ -212,11 +216,11 @@
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
-		"message": "Añadir otra sección",
+		"message": "Agregar otra sección",
 		"description": "Label for the button to add a section"
 	},
 	"styleRegexpTestPartial": {
-		"message": "No completamente coincidentes, por tanto omitidos",
+		"message": "No coincide completamente, por lo que se omitió",
 		"description": "RegExp test report: label for the partially matching expressions"
 	},
 	"styleSaveLabel": {
@@ -247,6 +251,10 @@
 		"message": "Importar estilos",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "Al hacer doble clic se seleccionan los tokens",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "Detener",
 		"description": "'Stop' button in a confirm dialog"
@@ -260,7 +268,7 @@
 		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
-		"message": "Añadir",
+		"message": "Agregar",
 		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
@@ -268,7 +276,7 @@
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"optionsAdvancedExposeIframesNote": {
-		"message": "Expone el dominio del sitio principal en cada iframe.\nHabilita la escritura de CSS específico-de-iframe como este:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+		"message": "Despliega el dominio superior del sitio en cada iframe.\nPermite definir CSS para un iframe específico de esta manera:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
 		"description": ""
 	},
 	"importReportLegendUpdatedCode": {
@@ -306,7 +314,7 @@
 		}
 	},
 	"searchNumberOfResults2": {
-		"message": "Número de coincidencias en el código y los valores se-aplica-a",
+		"message": "Número de coincidencias en el código y en los valores 'Se aplica a'",
 		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
 	},
 	"linterIssuesHelp": {
@@ -319,7 +327,7 @@
 		}
 	},
 	"parseUsercssError": {
-		"message": "Stylus no pudo interpretar usercss:",
+		"message": "Stylus no pudo interpretar el usercss:",
 		"description": "The error message to show when stylus failed to parse usercss"
 	},
 	"searchStyles": {
@@ -339,7 +347,7 @@
 		"description": "Checkbox to show only non-Usercss (standard) styles"
 	},
 	"liveReloadLabel": {
-		"message": "Recargar en caliente",
+		"message": "Recarga en tiempo real",
 		"description": "The label of live-reload feature"
 	},
 	"linkGetStyles": {
@@ -347,7 +355,7 @@
 		"description": "Help link text on the manage page e.g. https://userstyles.org"
 	},
 	"unreachableFileHint": {
-		"message": "Stylus puede acceder a URL file:// solo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
+		"message": "Stylus puede acceder a las URLs file:// sólo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"sortLabel": {
@@ -363,7 +371,7 @@
 		"description": "Label for the checkbox controlling toolbar badge text."
 	},
 	"manageFavicons": {
-		"message": "Favicons en la columna se-aplica-a",
+		"message": "Favicons en la columna 'Se aplica a'",
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"paginationCurrent": {
@@ -423,7 +431,7 @@
 		"description": "Confirmation before deleting a style"
 	},
 	"optionsCustomizePopup": {
-		"message": "Cuadro emergente",
+		"message": "Ventana emergente",
 		"description": ""
 	},
 	"styleBadRegexp": {
@@ -506,7 +514,7 @@
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"popupBordersTooltip": {
-		"message": "Útil para temas oscuros en el nuevo Chrome pues ya no pinta los bordes laterales",
+		"message": "Útil para temas oscuros en el nuevo Chrome ya que no pinta los bordes laterales",
 		"description": ""
 	},
 	"updateCheckManualUpdateHint": {
@@ -514,7 +522,7 @@
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"toggleStyle": {
-		"message": "Conmutar estilo",
+		"message": "Activar/Desactivar estilo",
 		"description": "Label for the checkbox to enable/disable a style"
 	},
 	"searchNumberOfResults": {
@@ -522,7 +530,7 @@
 		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
 	},
 	"importReplaceTooltip": {
-		"message": "Descarta contenidos del estilo actual y los sobrescribe con el estilo importado",
+		"message": "Descartar el contenido del estilo actual y sobrescribirlo con el estilo importado",
 		"description": "Label for the button to import and overwrite current style"
 	},
 	"installUpdateFromLabel": {
@@ -578,11 +586,11 @@
 		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"styleRegexpTestNone": {
-		"message": "No hay pestañas coincidentes",
+		"message": "No hay pestañas que coincidan",
 		"description": "RegExp test report: label for expressions that didn't match any tabs"
 	},
 	"importReportLegendUpdatedMeta": {
-		"message": "actualizaron la meta información",
+		"message": "metadatos actualizados",
 		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
 	},
 	"appliesLabel": {
@@ -667,7 +675,7 @@
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
 	},
 	"styleRegexpPartialExplanation": {
-		"message": "Este estilo utiliza expresiones regulares (regexps) parcialmente coincidentes violando así la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia completa de URL. Las secciones CSS afectadas no se aplicaron a la página. Probablemente este estilo fue creado con Stylish-para-Chrome, que evalúa de modo incorrecto las reglas 'regexp()' desde la primera versión (un fallo conocido).",
+		"message": "Este estilo utiliza expresiones regulares (regexps) con coincidencias parciales, infringiendo la <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>especificación @document de CSS4</a> que requiere una coincidencia de URL completa. \nLas secciones CSS correspondientes a estas expresiones regulares no se aplicaron a la página. Este estilo fue probablemente creado con Stylish para Chrome que evalúa incorrectamente las reglas 'regexp()' desde la primera versión (fallo conocido).",
 		"description": ""
 	},
 	"linterCSSLintSettings": {
@@ -703,7 +711,7 @@
 		"description": "Label for the checkbox to display applies-to information in the single editor"
 	},
 	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "Este estilo podría haberse editado localmente.",
+		"message": "Este estilo podría haber sido editado localmente.",
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
@@ -723,11 +731,15 @@
 		"description": "Text that displays when an update completed"
 	},
 	"previewLabel": {
-		"message": "Previsualización en caliente",
+		"message": "Vista previa en tiempo real",
 		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "Páginas totales",
+		"description": ""
+	},
+	"cm_selectByTokensTooltip": {
+		"message": "Ejemplos de tokens: .foo-bar-2 #aabbcc 0.32 !important\nCuando está desactivado: se seleccionan las palabras delimitadas por puntos.",
 		"description": ""
 	},
 	"checkingForUpdate": {
@@ -739,7 +751,7 @@
 		"description": "RegExp test report: label for the fully matching expressions"
 	},
 	"manageMaxTargets": {
-		"message": "Número de elementos se-aplica-a",
+		"message": "Número de elementos 'Se aplica a'",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
 	},
 	"searchResultRating": {
@@ -759,7 +771,7 @@
 		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
 	},
 	"paginationEstimated": {
-		"message": "Número de páginas estimado",
+		"message": "Número estimado de páginas",
 		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
@@ -786,7 +798,7 @@
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"styleUpdateDiscardChanges": {
-		"message": "El estilo se cambió fuera del editor. ¿Desea recagar el estilo?",
+		"message": "El estilo se ha modificado fuera del editor. ¿Desea recargar el estilo?",
 		"description": "Confirmation to update the style in the editor"
 	},
 	"optionsResetButton": {
@@ -810,11 +822,11 @@
 		"description": "Label for the external link to usercss documentation"
 	},
 	"optionsAdvancedContextDelete": {
-		"message": "Añadir 'Eliminar' al menú contextual del editor",
+		"message": "Agregar 'Eliminar' al menú contextual del editor",
 		"description": ""
 	},
 	"linterConfigPopupTitle": {
-		"message": "Establezcer configuración de $linter$ reglas",
+		"message": "Establecer configuración de $linter$ reglas",
 		"description": "Stylelint or CSSLint popup header",
 		"placeholders": {
 			"linter": {
@@ -827,7 +839,7 @@
 		"description": "Label for the button to configure usercss userstyle"
 	},
 	"importReportLegendUpdatedBoth": {
-		"message": "actualizarón tanto meta información como código",
+		"message": "actualizado tanto metadatos como código",
 		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
 	},
 	"cm_smartIndent": {
@@ -835,7 +847,7 @@
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
-		"message": "Prueba de regexp",
+		"message": "Probar regexp",
 		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
 	},
 	"appliesHelp": {
@@ -871,7 +883,7 @@
 		"description": "Note in the popup displayed when opened on addons.mozilla.org"
 	},
 	"linterCSSLintIncompatible": {
-		"message": "CSSLint no soporta el 'preprocessor' $preprocessorname$",
+		"message": "CSSLint no soporta el preprocesador $preprocessorname$",
 		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
 		"placeholders": {
 			"preprocessorname": {
@@ -905,7 +917,7 @@
 		"description": "Checkbox to show only disabled styles"
 	},
 	"stylusUnavailableForURLdetails": {
-		"message": "Como precaución de seguridad, el navegador prohíbe que las extensiones afecten a sus páginas integradas (como chrome://version, o la página estándar de nueva pestaña desde Chrome 61, o about:addons, y demás) así como las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO).",
+		"message": "Como medida de seguridad, el navegador impide que las extensiones afecten a sus páginas incorporadas(como chrome://version, la página de pestaña nueva a partir de Chrome 61, about:addons, etc.), así como a las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO).",
 		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
 	},
 	"cm_matchHighlightSelection": {
@@ -929,7 +941,7 @@
 		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
 	},
 	"addStyleTitle": {
-		"message": "Añadir estilo",
+		"message": "Agregar un estilo",
 		"description": "Title of the page for adding styles"
 	},
 	"externalLink": {
@@ -937,7 +949,7 @@
 		"description": "Label for external links"
 	},
 	"externalHomepage": {
-		"message": "Página principal",
+		"message": "Página de inicio",
 		"description": "Label for the external link to style's homepage"
 	},
 	"importReplaceLabel": {
@@ -961,7 +973,7 @@
 		"description": "Option text for the user to sort the style by install date"
 	},
 	"optionsAdvanced": {
-		"message": "Avanzadas",
+		"message": "Avanzado",
 		"description": ""
 	},
 	"alphaChannel": {
@@ -973,7 +985,7 @@
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"liveReloadInstallHint": {
-		"message": "'Recargar en caliente' está habilitado de forma que el estilo instalado se autoactualizará con los cambios externos mientras que tanto esta pestaña como la pestaña con el fichero fuente están abiertas.",
+		"message": "La recarga en tiempo real está habilitada, por lo que el estilo instalado se actualizará automáticamente con los cambios externos mientras estén abiertas esta pestaña y la pestaña del archivo de origen.",
 		"description": "The label of live-reload feature"
 	},
 	"editorStylesButton": {
@@ -1033,7 +1045,7 @@
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
 	"manageOnlyLocalTooltip": {
-		"message": "(los estilos no instalados mediante una página de userstyles.org)",
+		"message": "(los estilos no instalados a través de una página userstyles.org)",
 		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
@@ -1111,7 +1123,7 @@
 		"description": "A warning that applies-to information won't show properly with minified CSS"
 	},
 	"configureStyleOnHomepage": {
-		"message": "Configurar en la página principal",
+		"message": "Configurar en la página de inicio",
 		"description": "Label for the button to configure userstyles.org userstyle"
 	},
 	"undo": {
@@ -1135,7 +1147,7 @@
 		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
-		"message": "Nuevo diseño de interfaz de gestión",
+		"message": "Nuevo diseño de la administración",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
 	"unreachableAMOHintOldFF": {
@@ -1143,7 +1155,7 @@
 		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
 	},
 	"importReportUndoneTitle": {
-		"message": "La importación ha sido revertida",
+		"message": "La importación ha sido anulada",
 		"description": "Title of the message box shown after undoing the import of styles"
 	},
 	"genericDisabledLabel": {
@@ -1151,7 +1163,7 @@
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "Usar pestañas con sangría inteligente",
+		"message": "Usar tabulaciones con sangría inteligente",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
@@ -1159,7 +1171,7 @@
 		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"liveReloadError": {
-		"message": "Ocurrió un error al vigilar el fichero",
+		"message": "Se ha producido un error al visualizar el archivo",
 		"description": "The label of live-reload error"
 	},
 	"deleteStyleLabel": {
@@ -1180,7 +1192,7 @@
 		}
 	},
 	"optionsAdvancedExposeIframes": {
-		"message": "Exponer marcos integrados (iframes) vía HTML[stylus-iframe]",
+		"message": "Visualizar marcos integrados (iframes) a través de HTML[stylus-iframe]",
 		"description": ""
 	},
 	"usercssEditorNamePlaceholder": {
@@ -1228,11 +1240,11 @@
 		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
 	},
 	"appliesRemoveError": {
-		"message": "No se puede eliminar la última entrada 'se aplica a'",
+		"message": "No se puede eliminar la última entrada 'Se aplica a'",
 		"description": "Error displayed when the last 'applies' is going to be removed"
 	},
 	"backupMessage": {
-		"message": "Seleccione un fichero o arrástrelo y suéltelo en esta página.",
+		"message": "Seleccione un archivo o arrástrelo y suéltelo en esta página.",
 		"description": "Message for backup"
 	},
 	"importReportUndone": {

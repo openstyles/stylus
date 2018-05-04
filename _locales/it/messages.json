@@ -15,9 +15,21 @@
 		"message": "Esporta stili",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Ordina contenuti",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
+	"sortDateOldestFirst": {
+		"message": "prima i più vecchi",
+		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+	},
 	"exportLabel": {
 		"message": "Esporta",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"installButton": {
+		"message": "Installa stile",
+		"description": "Label for install button"
 	},
 	"linterJSONError": {
 		"message": "Formato JSON non valido",
@@ -30,6 +42,10 @@
 	"updateCheckHistory": {
 		"message": "Cronologia controlli aggiornamento",
 		"description": ""
+	},
+	"cm_tabSize": {
+		"message": "Dimensione scheda",
+		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
 		"message": "Attiva",
@@ -63,6 +79,10 @@
 		"message": "Importazione da formato Mozilla fallita",
 		"description": "Label for the import error"
 	},
+	"importAppendLabel": {
+		"message": "Aggiungi ad uno stile",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
 	"optionsOpenManager": {
 		"message": "Organizza stili",
 		"description": ""
@@ -86,6 +106,14 @@
 	"search": {
 		"message": "Cerca",
 		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Attivato",
+		"description": "Used in various lists/options to indicate that something is enabled"
+	},
+	"previewTooltip": {
+		"message": "Applica temporaneamente le modifiche senza salvarle.\nSalva lo stile per rendere le modifiche permanenti.",
+		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
 	},
 	"versionInvalidOlder": {
 		"message": "La versione dello stile è più vecchia di quella installata.",
@@ -184,13 +212,25 @@
 		"message": "Contenuti ricerca",
 		"description": "Label for the search filter textbox on the Manage styles page"
 	},
+	"optionsUpdateImportNote": {
+		"message": "Quando importi backup di stili da una vecchia versione di Stylish, esegui un controllo una tantum manualmente nel gestore stili per assicurarti che siano tutti aggiornati.",
+		"description": ""
+	},
 	"checkAllUpdatesForce": {
 		"message": "Controlla di nuovo, non ho modificato nessuno stile!",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"liveReloadLabel": {
+		"message": "Ricaricamento live",
+		"description": "The label of live-reload feature"
+	},
 	"linkGetStyles": {
 		"message": "Ottieni stili",
 		"description": "Help link text on the manage page e.g. https://userstyles.org"
+	},
+	"sortLabel": {
+		"message": "Seleziona come ordinare gli stili installati",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Disattiva",
@@ -199,6 +239,10 @@
 	"prefShowBadge": {
 		"message": "Stili attivi per il sito attuale",
 		"description": "Label for the checkbox controlling toolbar badge text."
+	},
+	"paginationCurrent": {
+		"message": "Pagina corrente",
+		"description": "Tooltip for the current page index in search results"
 	},
 	"styleCancelEditLabel": {
 		"message": "Torna a gestione",
@@ -219,6 +263,10 @@
 	"updateCheckFailServerUnreachable": {
 		"message": "Aggiornamento non riuscito: server non raggiungibile.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
+	},
+	"genericError": {
+		"message": "Errore",
+		"description": "Used in various places to indicate some error occurred."
 	},
 	"manageFilters": {
 		"message": "Filtri",
@@ -311,6 +359,10 @@
 		"message": "Forzare un aggiornamento sovrascriverà tutte le modifiche locali",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
+	"importReplaceTooltip": {
+		"message": "Scarta i contenuti dello stile corrente e sovrascrivili con quelli dello stile importato",
+		"description": "Label for the button to import and overwrite current style"
+	},
 	"installUpdateFromLabel": {
 		"message": "Controlla aggiornamenti",
 		"description": "Label for the checkbox to save current URL for update check"
@@ -355,6 +407,10 @@
 		"message": "Vale per",
 		"description": "Label for 'applies to' fields on the edit/add screen"
 	},
+	"sortLabelTitleDesc": {
+		"message": "Titolo Discendente",
+		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+	},
 	"openOptionsPopup": {
 		"message": "Opzioni",
 		"description": "Go to Options UI"
@@ -380,9 +436,17 @@
 		"message": "Installa aggiornamento",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"syncStorageErrorSaving": {
+		"message": "Il valore non può essere salvato. Prova a ridurre la quantità di testo.",
+		"description": "Displayed when trying to save an excessively big value via storage.sync API"
+	},
 	"optionsCheckUpdate": {
 		"message": "Controlla e installa gli aggiornamenti disponibili",
 		"description": ""
+	},
+	"clickToUninstall": {
+		"message": "Clica per disinstallare",
+		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
 	},
 	"filteredStyles": {
 		"message": "$numShown$ mostrati di $numTotal$ totali",
@@ -404,6 +468,18 @@
 		"message": "Formato Mozilla",
 		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "Inserisci codice qui...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
+	"searchResultNoneFound": {
+		"message": "Nessuno stile trovato per questo sito.",
+		"description": "Error text in the popup when inline search didn't find any site-specific styles"
+	},
+	"unreachableContentScript": {
+		"message": "Impossibile comunicare con la pagina. Prova a ricaricare la scheda.",
+		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+	},
 	"sectionRemove": {
 		"message": "Rimuovi sezione",
 		"description": "Label for the button to remove a section"
@@ -416,13 +492,33 @@
 		"message": "Annulla in tutte le sezioni",
 		"description": "CSS-beautify global Undo button label"
 	},
+	"genericTitle": {
+		"message": "Titolo",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Aggiornamento completato.",
 		"description": "Text that displays when an update completed"
 	},
+	"previewLabel": {
+		"message": "Anteprima live",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
+	},
+	"paginationTotal": {
+		"message": "Totale pagine",
+		"description": ""
+	},
 	"checkingForUpdate": {
 		"message": "Verifica in corso...",
 		"description": "Text to display when checking a style for an update"
+	},
+	"searchResultRating": {
+		"message": "Valutazioni",
+		"description": "Text for label that shows the search result's rating"
+	},
+	"genericUnknown": {
+		"message": "Sconosciuto",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"popupManageTooltip": {
 		"message": "Shift-click o click destro apre il gestore con gli stili applicabili per il sito corrente",
@@ -459,6 +555,14 @@
 		"message": "Reimposta opzioni",
 		"description": ""
 	},
+	"paginationNext": {
+		"message": "Pagine successiva",
+		"description": "Tooltip for the '->' (next page) button in search results"
+	},
+	"searchResultInstallCount": {
+		"message": "Installazioni totali",
+		"description": "Text for label that shows the number of times a search result was installed"
+	},
 	"sectionCode": {
 		"message": "Codice",
 		"description": "Label for the code for a section"
@@ -487,6 +591,10 @@
 		"message": "Otteini aiuto",
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
+	"findStyles": {
+		"message": "Trova stili",
+		"description": "Text for a link that gets a list of styles for the current site"
+	},
 	"editStyleHeading": {
 		"message": "Modifica di stili",
 		"description": "Title of the page for editing styles"
@@ -508,6 +616,10 @@
 			}
 		}
 	},
+	"genericPrevious": {
+		"message": "Precedente",
+		"description": "Used in various places to select/perform the previous step/action"
+	},
 	"manageOnlyDisabled": {
 		"message": "Solo stili disattivati",
 		"description": "Checkbox to show only disabled styles"
@@ -515,6 +627,10 @@
 	"cm_matchHighlightSelection": {
 		"message": "Solo selezione",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+	},
+	"updateAllCheckSucceededSomeEdited": {
+		"message": "Alcuni aggiornamenti di stili non sono stati controllati per evitare la perdita di modifiche locali. Gli aggiornamenti possono essere forzati individualmente, o eseguendo un ulteriore controllo per tutti gli stili (le modifiche locali saranno sovrascritte).",
+		"description": "Text that displays when an update all check completed and no updates are available"
 	},
 	"stylusUnavailableForURL": {
 		"message": "Stylus non funziona in pagine come questa.",
@@ -540,6 +656,18 @@
 		"message": "Sovrascrivi stile",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"genericNext": {
+		"message": "Successivo",
+		"description": "Used in various places to select/perform the next step/action"
+	},
+	"dbError": {
+		"message": "Si è verificato un errore durante l'utilizzo del database Stylus. Vuoi visitare una pagina web con le possibili soluzioni?",
+		"description": "Prompt when a DB error is encountered"
+	},
+	"dateInstalled": {
+		"message": "Data installazione",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Avanzato",
 		"description": ""
@@ -547,6 +675,10 @@
 	"alphaChannel": {
 		"message": "Opacità",
 		"description": "Label of color's opacity"
+	},
+	"importAppendTooltip": {
+		"message": "Aggiungi lo stile importato a quello corrente",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"editorStylesButton": {
 		"message": "Cerca stili editor",
@@ -560,6 +692,10 @@
 		"message": "Solo stili esterni",
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
+	"searchResultWeeklyCount": {
+		"message": "Installazioni settimanali",
+		"description": "Text for label that shows the number of times a search result was installed during last week"
+	},
 	"replaceAll": {
 		"message": "Sostituisci tutto",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -567,6 +703,14 @@
 	"importReportUnchanged": {
 		"message": "Non è stato cambiato nulla.",
 		"description": "Message in the report shown after importing styles"
+	},
+	"confirmDiscardChanges": {
+		"message": "Scartare le modifiche?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+	},
+	"searchResultUpdated": {
+		"message": "Aggiornato",
+		"description": "Text for label that shows the search result's last update date"
 	},
 	"optionsActions": {
 		"message": "Azioni",
@@ -579,6 +723,18 @@
 	"openOptionsManage": {
 		"message": "Opzioni UI",
 		"description": "Go to Options UI"
+	},
+	"colorpickerTooltip": {
+		"message": "Apri selettore colore",
+		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+	},
+	"sortDateNewestFirst": {
+		"message": "prima i più recenti",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
+	},
+	"paginationPrevious": {
+		"message": "Pagine precedente",
+		"description": "Tooltip for the '<-' button in search results"
 	},
 	"installUpdateFrom": {
 		"message": "Attualmente lo stile è aggiornato da $url$",
@@ -593,6 +749,14 @@
 		"message": "Larghezza popup (in pixel)",
 		"description": ""
 	},
+	"installButtonReinstall": {
+		"message": "Reinstalla stile",
+		"description": "Label for reinstall button"
+	},
+	"linterInvalidConfigError": {
+		"message": "Non salvato a causa di queste impostazioni di configurazione non valide:",
+		"description": "Invalid linter config will show a message followed by a list of invalid entries"
+	},
 	"appliesLineWidgetWarning": {
 		"message": "Non funziona con CSS minificato",
 		"description": "A warning that applies-to information won't show properly with minified CSS"
@@ -600,6 +764,10 @@
 	"undo": {
 		"message": "Annulla",
 		"description": "Button label"
+	},
+	"cm_keyMap": {
+		"message": "Mappa caratteri",
+		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
 	"externalSupport": {
 		"message": "Supporto",
@@ -609,9 +777,25 @@
 		"message": "Salva",
 		"description": "'Save' button in a confirm dialog"
 	},
+	"manageNewUI": {
+		"message": "Nuovo layout Gestione UI",
+		"description": "Label for the checkbox that toggles the new UI on manage page"
+	},
+	"unreachableAMOHintOldFF": {
+		"message": "Solo Firefox 59 e successivi possono essere configurati per consentire alle WebExtensions di aggiungere elementi degli stili su siti CSP-protected come questo.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+	},
+	"importReportUndoneTitle": {
+		"message": "Importazione annullata",
+		"description": "Title of the message box shown after undoing the import of styles"
+	},
 	"genericDisabledLabel": {
 		"message": "Disattivato",
 		"description": "Used in various lists/options to indicate that something is disabled"
+	},
+	"cm_indentWithTabs": {
+		"message": "Usa schede con indentazione intellingente",
+		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
 		"message": "Sostituisci con",
@@ -638,6 +822,10 @@
 		"message": "Scrivi nuovo stile",
 		"description": "Label for the button to go to the add style page"
 	},
+	"installButtonUpdate": {
+		"message": "Aggiorna stile",
+		"description": "Label for update button"
+	},
 	"manageOnlyEnabled": {
 		"message": "Solo stili attivati",
 		"description": "Checkbox to show only enabled styles"
@@ -646,6 +834,10 @@
 		"message": "Modifica",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"installButtonInstalled": {
+		"message": "Stile installato",
+		"description": "Text displayed when the style is successfully installed"
+	},
 	"author": {
 		"message": "Autore",
 		"description": "Label for the style author"
@@ -653,6 +845,10 @@
 	"cm_theme": {
 		"message": "Tema",
 		"description": "Label for the style editor's CSS theme."
+	},
+	"findStylesInlineTooltip": {
+		"message": "Visualizza risultati in questa finestra.",
+		"description": "Text for a checkbox that displays search results within the Stylus popup."
 	},
 	"popupOpenEditInWindow": {
 		"message": "Apri editor in una nuova finestra",
