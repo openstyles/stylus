@@ -103,7 +103,7 @@ global API_METHODS
 
     function reportFailure(error) {
       // retry once if the error is 503 Service Unavailable
-      if (error === 503 && !retrying.get(id)) {
+      if (error === 503 && !retrying.has(id)) {
         retrying.add(id);
         return new Promise(resolve => {
           setTimeout(() => {
