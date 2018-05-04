@@ -591,27 +591,32 @@ onDOMscriptReady('/codemirror.js').then(() => {
       setTimeout(setupLivePreview);
       return;
     }
-    if (!styleId) {
-      new MutationObserver((_, observer) => {
-        if (!styleId) return;
-        observer.disconnect();
-        setupLivePreview();
-      }).observe($('#preview-label'), {
-        attributes: true,
-        attributeFilter: ['class'],
-      });
+    if (styleId) {
+      $('#editor.livePreview').onchange = livePreviewToggled;
       return;
     }
-    $('#editor.livePreview').onchange = function () {
-      const previewing = this.checked;
-      editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
-      const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
-      $('#enabled')[addRemove]('change', updatePreview);
-      $('#sections')[addRemove]('change', updatePreview);
-      if (!previewing || document.body.classList.contains('dirty')) {
-        updatePreview(null, previewing);
-      }
-    };
+    // wait for #preview-label's class to lose 'hidden' after the first save
+    new MutationObserver((_, observer) => {
+      if (!styleId) return;
+      observer.disconnect();
+      setupLivePreview();
+      livePreviewToggled();
+    }).observe($('#preview-label'), {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+  }
+
+  function livePreviewToggled() {
+    const me = this instanceof Node ? this : $('#editor.livePreview');
+    const previewing = me.checked;
+    editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
+    const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
+    $('#enabled')[addRemove]('change', updatePreview);
+    $('#sections')[addRemove]('change', updatePreview);
+    if (!previewing || document.body.classList.contains('dirty')) {
+      updatePreview(null, previewing);
+    }
   }
 
   function updatePreview(data, previewing) {
