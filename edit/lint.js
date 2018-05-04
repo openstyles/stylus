@@ -363,7 +363,7 @@ function showLintHelp() {
     : 'https://github.com/CSSLint/csslint/issues/535';
   let headerLink, template, csslintRules;
   if (linter === 'csslint') {
-    headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules-by-ID', 'CSSLint');
+    headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules', 'CSSLint');
     template = ruleID => {
       const rule = csslintRules.find(rule => rule.id === ruleID);
       return rule &&
