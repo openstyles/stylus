@@ -93,6 +93,8 @@ if (!BG || BG !== window) {
     getActiveTab().then(tab =>
       window.API.updateIcon({tab}));
   }
+} else if (!BG.API_METHODS) {
+  BG.API_METHODS = {};
 }
 
 const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage);
