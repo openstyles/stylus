@@ -60,3 +60,27 @@
 .CodeMirror-activeline .applies-to ul {
   z-index: 2;
 }
+
+.CodeMirror-foldgutter-open::after,
+.CodeMirror-foldgutter-folded::after {
+  top: 5px;
+  width: 0;
+  height: 0;
+  content: "";
+  position: absolute;
+  border-style: solid;
+  opacity: .5;
+  left: 1px;
+}
+
+.CodeMirror-foldgutter-open::after {
+  border-width: 5px 3px 0 3px;
+  border-color: currentColor transparent transparent transparent;
+}
+
+.CodeMirror-foldgutter-folded::after {
+  margin-top: -2px;
+  margin-left: 1px;
+  border-width: 4px 0 4px 5px;
+  border-color: transparent transparent transparent currentColor;
+}
