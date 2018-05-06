@@ -276,7 +276,7 @@
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
-		"message": "\"$stylename$\" in Stylus installieren?",
+		"message": "\"$stylename$\" mit Stylus installieren?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
