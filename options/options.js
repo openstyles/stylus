@@ -6,7 +6,8 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
-if (!FIREFOX && !OPERA) {
+// collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
+if (!FIREFOX && !OPERA && CHROME < 3343) {
   const block = $('#advanced');
   $('h1', block).onclick = event => {
     event.preventDefault();
