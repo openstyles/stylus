@@ -21,7 +21,18 @@ var [chromeLocal, chromeSync] = (() => {
       set: data => new Promise(resolve => storage.set(data, () => resolve(data))),
       remove: data => new Promise(resolve => storage.remove(data, resolve)),
 
-      getValue: key => wrapper.get(key).then(data => data[key]),
+      /**
+       * @param {String} key
+       * @param {Any}    [defaultValue]
+       * @returns {Promise<any>}
+       */
+      getValue: (key, defaultValue) =>
+        wrapper.get(
+          defaultValue !== undefined ?
+            {[key]: defaultValue} :
+            key
+        ).then(data => data[key]),
+
       setValue: (key, value) => wrapper.set({[key]: value}),
 
       getLZValue: key => wrapper.getLZValues([key]).then(data => data[key]),

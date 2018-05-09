@@ -225,12 +225,11 @@ global API_METHODS
     debounce(flushQueue, text && checkingAll ? 1000 : 0);
   }
 
-  function flushQueue(stored) {
-    if (!stored) {
-      chrome.storage.local.get('updateLog', flushQueue);
+  function flushQueue(lines) {
+    if (!lines) {
+      chromeLocal.getValue('updateLog', []).then(flushQueue);
       return;
     }
-    const lines = stored.lines || [];
     const time = Date.now() - logLastWriteTime > 11e3 ?
       logQueue[0].time + ' ' :
       '';
@@ -242,7 +241,7 @@ global API_METHODS
     lines.push(time + (logQueue[0] && logQueue[0].text || ''));
     lines.push(...logQueue.slice(1).map(item => item.text));
 
-    chrome.storage.local.set({updateLog: lines});
+    chromeLocal.setValue('updateLog', lines);
     logLastWriteTime = Date.now();
     logQueue = [];
   }
