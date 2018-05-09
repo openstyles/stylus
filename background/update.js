@@ -107,7 +107,7 @@ global API_METHODS
         retrying.add(id);
         return new Promise(resolve => {
           setTimeout(() => {
-            resolve(checkStyle(id, style, port, save, ignoreDigest));
+            resolve(checkStyle({id, style, port, save, ignoreDigest}));
           }, 1000);
         });
       }
