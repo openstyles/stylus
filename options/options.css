@@ -9,10 +9,6 @@ html.opera body {
   width: auto;
 }
 
-html.firefox .block {
-  padding-left: 6px;
-}
-
 body {
   background: #fff;
   margin: 0;
@@ -22,15 +18,17 @@ body {
   max-width: 800px;
 }
 
-@media (min-width: 401px) {
-  .firefox body {
-    width: calc(100% - 6px); /* TODO: rework to avoid compensating padding of 'html.firefox .block'  */
+@supports (-moz-appearance:none) {
+  body {
+    --addons-page-left-padding: 6px;
+    /* compensate 'html.firefox .block' padding-left */
+    width: calc(100% - var(--addons-page-left-padding));
+    /* match the default FF theme */
+    background-color: #f9f9fa;
   }
-}
-
-.firefox body {
-  /* match the default FF theme */
-  background-color: #f9f9fa;
+  html.firefox .block {
+    padding-left: var(--addons-page-left-padding);
+  }
 }
 
 .firefox .chromium-only {
