@@ -23,6 +23,9 @@ global API_METHODS
     ERROR_VERSION: 'error: version is older than installed style',
   };
 
+  const ALARM_NAME = 'scheduledUpdate';
+  const MIN_INTERVAL_MS = 60e3;
+
   let lastUpdateTime = parseInt(localStorage.lastUpdateTime) || Date.now();
   let checkingAll = false;
   let logQueue = [];
@@ -207,12 +210,20 @@ global API_METHODS
 
   function schedule() {
     const interval = prefs.get('updateInterval') * 60 * 60 * 1000;
-    if (interval) {
+    if (interval > 0) {
       const elapsed = Math.max(0, Date.now() - lastUpdateTime);
-      debounce(checkAllStyles, Math.max(10e3, interval - elapsed));
+      chrome.alarms.create(ALARM_NAME, {
+        when: Date.now() + Math.max(MIN_INTERVAL_MS, interval - elapsed),
+      });
+      chrome.alarms.onAlarm.addListener(onAlarm);
     } else {
-      debounce.unregister(checkAllStyles);
+      chrome.alarms.clear(ALARM_NAME, ignoreChromeError);
+      chrome.alarms.onAlarm.removeListener(onAlarm);
     }
+  }
+
+  function onAlarm({name}) {
+    if (name === ALARM_NAME) checkAllStyles();
   }
 
   function resetInterval() {

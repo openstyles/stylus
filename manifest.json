@@ -16,6 +16,7 @@
     "webNavigation",
     "contextMenus",
     "storage",
+    "alarms",
     "<all_urls>"
   ],
   "background": {
