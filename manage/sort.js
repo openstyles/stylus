@@ -61,6 +61,8 @@ const sorter = (() => {
 
   const splitRegex = /\s*,\s*/;
 
+  let columns = 1;
+
   function addOptions() {
     let container;
     const select = $('#manage.newUI.sort');
@@ -140,15 +142,37 @@ const sorter = (() => {
     updateStripes();
   }
 
-  function updateStripes() {
+  function updateStripes({onlyWhenColumnsChanged} = {}) {
+    if (onlyWhenColumnsChanged && !updateColumnCount()) return;
     let index = 0;
-    [...installed.children].forEach(entry => {
-      const list = entry.classList;
-      if (!list.contains('hidden')) {
-        list.add(index % 2 ? 'odd' : 'even');
-        list.remove(index++ % 2 ? 'even' : 'odd');
+    let isOdd = false;
+    const flipRows = columns % 2 === 0;
+    for (const {classList} of installed.children) {
+      if (classList.contains('hidden')) continue;
+      classList.toggle('odd', isOdd);
+      classList.toggle('even', !isOdd);
+      if (flipRows && ++index >= columns) {
+        index = 0;
+      } else {
+        isOdd = !isOdd;
       }
-    });
+    }
+  }
+
+  function updateColumnCount() {
+    let newValue = 1;
+    for (let el = document.documentElement.lastElementChild;
+         el.localName === 'style';
+         el = el.previousElementSibling) {
+      if (el.textContent.includes('--columns:')) {
+        newValue = Math.max(1, getComputedStyle(document.documentElement).getPropertyValue('--columns') | 0);
+        break;
+      }
+    }
+    if (columns !== newValue) {
+      columns = newValue;
+      return true;
+    }
   }
 
   function showHelp(event) {
@@ -168,6 +192,7 @@ const sorter = (() => {
     prefs.subscribe(['manage.newUI.sort'], update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
+    updateColumnCount();
   }
 
   return {init, update, sort, updateStripes};

@@ -50,7 +50,13 @@ function onRuntimeMessage(msg) {
     case 'styleDeleted':
       handleDelete(msg.id);
       break;
+    case 'styleApply':
+    case 'styleReplaceAll':
+      break;
+    default:
+      return;
   }
+  setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
 
@@ -117,9 +123,6 @@ function showStyles(styles = [], matchUrlIds) {
       style,
       name: style.name.toLocaleLowerCase() + '\n' + style.name,
     })),
-  }).map((info, index) => {
-    info.index = index;
-    return info;
   });
   let index = 0;
   let firstRun = true;
@@ -149,7 +152,7 @@ function showStyles(styles = [], matchUrlIds) {
       }
       renderBin.appendChild(entry);
     }
-    filterAndAppend({container: renderBin});
+    filterAndAppend({container: renderBin}).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
       if (firstRun) setTimeout(recreateStyleTargets, 0, {styles, iconsOnly: true});
@@ -174,7 +177,7 @@ function showStyles(styles = [], matchUrlIds) {
 }
 
 
-function createStyleElement({style, name, index}) {
+function createStyleElement({style, name}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -227,7 +230,6 @@ function createStyleElement({style, name, index}) {
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
     (style.usercssData ? ' usercss' : '');
-  if (index !== undefined) entry.classList.add(index % 2 ? 'odd' : 'even');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
