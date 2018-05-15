@@ -136,8 +136,8 @@ const sorter = (() => {
       const renderBin = document.createDocumentFragment();
       sorted.forEach(({entry}) => renderBin.appendChild(entry));
       installed.appendChild(renderBin);
-      updateStripes();
     }
+    updateStripes();
   }
 
   function updateStripes() {
