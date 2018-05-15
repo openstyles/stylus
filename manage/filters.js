@@ -156,8 +156,7 @@ function filterOnChange({target: el, forceRefilter}) {
     unhide: buildFilter(false),
   });
   if (installed) {
-    reapplyFilter().then(() =>
-      sorter.update());
+    reapplyFilter().then(sorter.updateStripes);
   }
 }
 

@@ -1,4 +1,4 @@
-/* global installed updateStripes */
+/* global installed */
 /* global messageBox */
 'use strict';
 

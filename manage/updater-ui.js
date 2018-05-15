@@ -178,8 +178,7 @@ function reportUpdateState({updated, style, error, STATES}) {
   }
 
   if (filtersSelector.hide && isCheckAll) {
-    filterAndAppend({entry}).then(() =>
-      sorter.update());
+    filterAndAppend({entry}).then(sorter.updateStripes);
   }
 }
 

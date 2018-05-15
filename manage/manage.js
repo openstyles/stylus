@@ -544,8 +544,7 @@ function handleUpdate(style, {reason, method, codeIsUpdated} = {}) {
   if ((reason === 'update' || reason === 'install') && entry.matches('.updatable')) {
     handleUpdateInstalled(entry, reason);
   }
-  filterAndAppend({entry}).then(() =>
-    sorter.update());
+  filterAndAppend({entry}).then(sorter.updateStripes);
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
