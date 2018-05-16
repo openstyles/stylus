@@ -621,7 +621,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function updatePreview(data, previewing) {
     if (previewing !== true && previewing !== false) {
-      if (data instanceof Event && !event.target.matches('.style-contributor')) return;
+      if (data instanceof Event && !data.target.matches('.style-contributor')) return;
       debounce(updatePreview, data && data.id === 'enabled' ? 0 : 400, null, true);
       return;
     }
