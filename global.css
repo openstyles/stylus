@@ -177,7 +177,6 @@ select[disabled] > option {
   display: none !important;
 }
 
-[data-focused-via-click] :focus,
 [data-focused-via-click]:focus {
   outline: none;
 }
