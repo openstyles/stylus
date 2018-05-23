@@ -17,7 +17,7 @@
     "contextMenus",
     "storage",
     "alarms",
-    ["*://*.workflowy/*"]
+    "*://*.workflowy/*"
   ],
   "background": {
     "scripts": [
