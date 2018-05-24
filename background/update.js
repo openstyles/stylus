@@ -244,7 +244,7 @@ global API_METHODS
     const time = Date.now() - logLastWriteTime > 11e3 ?
       logQueue[0].time + ' ' :
       '';
-    if (!logQueue[0].text) {
+    if (logQueue[0] && !logQueue[0].text) {
       logQueue.shift();
       if (lines[lines.length - 1]) lines.push('');
     }
