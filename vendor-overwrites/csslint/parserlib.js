@@ -257,6 +257,7 @@ self.parserlib = (() => {
     'column-span':       'none | all',
     'column-width':      '<length> | auto',
     'columns':           1,
+    'contain':           'none | strict | content | [ size || layout || style || paint ]',
     'content':           'normal | none | <content-list> [ / <string> ]?',
     'counter-increment': 1,
     'counter-reset':     1,
