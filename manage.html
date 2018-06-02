@@ -161,10 +161,14 @@
   <script src="manage/updater-ui.js" async></script>
   <script src="manage/object-diff.js" async></script>
   <script src="manage/import-export.js" async></script>
+
   <script src="manage/incremental-search.js" async></script>
   <script src="msgbox/msgbox.js" async></script>
   <script src="js/sections-equal.js" async></script>
   <script src="js/storage-util.js" async></script>
+
+  <script src="vendor/dropbox/dropbox-sdk.js" async></script>
+  <script src="manage/import-export-dropbox.js" async></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
@@ -354,6 +358,10 @@
     <p>
       <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
       <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
+    </p>
+    <p>
+      <button id="sync-dropbox-export" i18n-text="bckpDropboxStyles"></button>
+      <button id="sync-dropbox-import" i18n-text="retrieveDropboxBckp"></button>
     </p>
   </details>
 

@@ -77,6 +77,9 @@
       "js": ["content/install-hook-usercss.js"]
     }
   ],
+  "web_accessible_resources": [
+    "/dropbox-oauth.html"
+  ],
   "browser_action": {
     "default_icon": {
       "16": "/images/icon/16w.png",

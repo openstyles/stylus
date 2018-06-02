@@ -1182,10 +1182,25 @@
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "bckpInstStyles": {
-      "message": "Export styles"
+    "message": "Export styles"
   },
   "retrieveBckp": {
-      "message": "Import styles"
+    "message": "Import styles"
+  },
+  "bckpDropboxStyles": {
+    "message": "Dropbox Export"
+  },
+  "retrieveDropboxBckp": {
+    "message": "Dropbox Import"
+  },
+  "overwriteFileExport": {
+    "message": "Do you want to overwrite an existing file?"
+  },
+  "exportSavedSuccess": {
+    "message": "File saved with success"
+  },
+  "noFileToImport": {
+    "message": "You don't have a file to import."
   },
   "optionsBadgeNormal": {
     "message": "Background color"
