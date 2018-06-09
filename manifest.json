@@ -17,6 +17,7 @@
     "contextMenus",
     "storage",
     "alarms",
+    "identity",
     "<all_urls>"
   ],
   "background": {
@@ -76,9 +77,6 @@
       "all_frames": false,
       "js": ["content/install-hook-usercss.js"]
     }
-  ],
-  "web_accessible_resources": [
-    "/dropbox-oauth.html"
   ],
   "browser_action": {
     "default_icon": {

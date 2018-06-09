@@ -11,142 +11,129 @@ const HTTP_STATUS_CANCEL = 499;
   * tried localStorage, but didn't work :/
  */
 function hasDropboxAccessToken() {
-  if (typeof browser !== 'undefined') { /* firefox */
-    return browser.storage.local.get('dropbox_access_token')
-    .then(item => {
-      return item.dropbox_access_token;
-    });
-  } else { /* chrome */
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get(['dropbox_access_token'], result => {
-        resolve(result.dropbox_access_token);
-      });
-    });
-  }
+  return chromeLocal.getValue('dropbox_access_token');
 }
 
-function openDropboxOauthPage() {
-  let client = new Dropbox.Dropbox({clientId: DROPBOX_API_KEY});
-  let authUrl = client.getAuthenticationUrl(window.location.origin + DROPBOX_RECEIVER_HTML);
+function requestDropboxAccessToken() {
+  const browserApi = typeof browser === 'undefined' ? chrome : browser;
+  const client = new Dropbox.Dropbox({clientId: DROPBOX_API_KEY});
+  const authUrl = client.getAuthenticationUrl(browserApi.identity.getRedirectURL());
 
-  window.location.href = authUrl;
+  return browserApi.identity.launchWebAuthFlow({url: authUrl, interactive: true})
+  .then(urlReturned => {
+    const params = new URLSearchParams(new URL(urlReturned).hash.replace('#', '?'));
+
+    chromeLocal.setValue('dropbox_access_token', params.get('access_token'));
+
+    return params.get('access_token');
+  });
 }
 
 function uploadFileDropbox(client, stylesText) {
   return client.filesUpload({path: '/' + FILENAME, contents: stylesText});
 }
 
+$('#sync-dropbox-export').onclick = () => {
 
-$('#sync-dropbox-export').onclick = async () => {
-  let accessToken = await hasDropboxAccessToken();
-  if (!accessToken) {
-    openDropboxOauthPage();
-
-    return;
-  }
-
-  let client = new Dropbox.Dropbox({
-    clientId: DROPBOX_API_KEY,
-    accessToken: accessToken
-  });
-
-  /**
-   * check if the file exists, if exists, delete it before upload another
-   */
-  client.filesDownload({path: '/' + FILENAME})
-  .then(responseGet => {
-    /** deletes file if user want to */
-    if (!confirm(t('overwriteFileExport'))) {
-      return Promise.reject({status: HTTP_STATUS_CANCEL});
+  hasDropboxAccessToken().then(token => {
+    if (typeof token === 'undefined') {
+      return requestDropboxAccessToken();
     }
 
-    return client.filesDelete({path: '/' + FILENAME});
+    return token;
   })
-  .then(responseDelete => {
+  .then(token => {
+    const client = new Dropbox.Dropbox({
+      clientId: DROPBOX_API_KEY,
+      accessToken: token
+    });
+
+    return client.filesDownload({path: '/' + FILENAME})
+    .then(_ => {
+      /** deletes file if user want to */
+      if (!confirm(t('overwriteFileExport'))) {
+        return Promise.reject({status: HTTP_STATUS_CANCEL});
+      }
+
+      return client.filesDelete({path: '/' + FILENAME});
+    })
     /** file deleted with success, get styles and create a file */
-    return API.getStyles().then(styles => JSON.stringify(styles, null, '\t'))
-  })
-  .then(stylesText => {
+    .then(_ => API.getStyles().then(styles => JSON.stringify(styles, null, '\t')))
     /** create file dropbox */
-    return uploadFileDropbox(client, stylesText);
-  })
-  .then(responseSave => {
-    alert(t('exportSavedSuccess'));
-  })
-  .catch(async error => {
-    /* saving file first time */
-    if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
-      let stylesText = await API.getStyles().then(styles => JSON.stringify(styles, null, '\t'));
+    .then(stylesText => uploadFileDropbox(client, stylesText))
+    /** gives feedback to user */
+    .then(_ => alert(t('exportSavedSuccess')))
+    /* handle not found cases and cancel action */
+    .catch(error => {
+      /* saving file first time */
+      if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
 
-      uploadFileDropbox(client, stylesText)
-      .then(response => {
-        alert(t('exportSavedSuccess'));
-      })
-      .catch(err => {
-        console.error(error);
-      });
+        API.getStyles()
+        .then(styles => JSON.stringify(styles, null, '\t'))
+        .then(stylesText => uploadFileDropbox(client, stylesText))
+        .then(_ => alert(t('exportSavedSuccess')))
+        .catch(err => console.error(err));
 
-      return;
-    }
+        return;
+      }
 
-    /* user cancelled the flow */
-    if (error.status === HTTP_STATUS_CANCEL) {
-      return;
-    }
+      /* user cancelled the flow */
+      if (error.status === HTTP_STATUS_CANCEL) {
+        return;
+      }
 
-    console.error(error);
-
-    return;
+      console.error(error);
+    });
   });
-
 };
 
-$('#sync-dropbox-import').onclick = async () => {
+$('#sync-dropbox-import').onclick = () => {
 
-  let accessToken = await hasDropboxAccessToken();
-  if (!accessToken) {
-    openDropboxOauthPage();
-
-    return;
-  }
-
-  let client = new Dropbox.Dropbox({
-    clientId: DROPBOX_API_KEY,
-    accessToken: accessToken
-  });
-
-  client.filesDownload({path: '/' + FILENAME})
-  .then(response => {
-    let fileBlob = response.fileBlob;
-
-    /* it's based on the import-export.js */
-    const fReader = new FileReader();
-    fReader.onloadend = event => {
-      const text = event.target.result;
-      const maybeUsercss = !/^[\s\r\n]*\[/.test(text) &&
-        (text.includes('==UserStyle==') || /==UserStyle==/i.test(text));
-
-      (!maybeUsercss ?
-        importFromString(text) :
-        getOwnTab().then(tab => {
-          tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-          return API.installUsercss({direct: true, tab})
-            .then(() => URL.revokeObjectURL(tab.url));
-        })
-      );
-    };
-    fReader.readAsText(fileBlob, 'utf-8');
-  })
-  .catch(error => {
-    /* no file */
-    if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
-      alert(t('noFileToImport'));
-
-      return;
+  hasDropboxAccessToken().then(token => {
+    if (typeof token === 'undefined') {
+      return requestDropboxAccessToken();
     }
 
-    console.error(err);
-  });
+    return token;
+  })
+  .then(token => {
 
-  return;
+    const client = new Dropbox.Dropbox({
+      clientId: DROPBOX_API_KEY,
+      accessToken: token
+    });
+
+    return client.filesDownload({path: '/' + FILENAME})
+    .then(response => {
+      const fileBlob = response.fileBlob;
+
+      /* it's based on the import-export.js */
+      const fReader = new FileReader();
+      fReader.onloadend = event => {
+        const text = event.target.result;
+        const maybeUsercss = !/^[\s\r\n]*\[/.test(text) &&
+          (text.includes('==UserStyle==') || /==UserStyle==/i.test(text));
+
+        (!maybeUsercss ?
+          importFromString(text) :
+          getOwnTab().then(tab => {
+            tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
+            return API.installUsercss({direct: true, tab})
+              .then(() => URL.revokeObjectURL(tab.url));
+          })
+        );
+      };
+      fReader.readAsText(fileBlob, 'utf-8');
+    })
+    .catch(error => {
+      /* no file */
+      if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
+        alert(t('noFileToImport'));
+
+        return;
+      }
+
+      console.error(error);
+    });
+  });
 };
