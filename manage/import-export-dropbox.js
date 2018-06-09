@@ -1,6 +1,5 @@
 'use strict';
 
-const DROPBOX_RECEIVER_HTML = '/dropbox-oauth.html';
 const DROPBOX_API_KEY = '';
 const FILENAME = 'stylus.json';
 const API_ERROR_STATUS_FILE_NOT_FOUND = 409;
