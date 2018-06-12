@@ -102,6 +102,10 @@
   }
 
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
+    // CSS Backgrounds and Borders Module L4
+    'background-position-x': true,
+    'background-position-y': true,
+
     // CSS Logical Properties and Values L1
     'block-size': true,
     'border-block-color': true,
