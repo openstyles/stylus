@@ -4944,10 +4944,12 @@ self.parserlib = (() => {
     _function({asText} = {}) {
       const stream = this._tokenStream;
       if (!stream.match(Tokens.FUNCTION)) return null;
-      this._ws();
 
       const start = stream._token;
       const name = start.value.slice(0, -1);
+
+      this._ws();
+
       const expr = this._expr(lower(name));
       const ieFilter = this.options.ieFilters && stream.peek() === Tokens.EQUALS ?
         this._functionIeFilter() : '';
