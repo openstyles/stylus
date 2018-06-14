@@ -140,6 +140,7 @@
 
 #message-box-buttons button {
   margin: 0 .375rem;
+  width: auto;
 }
 
 /* popup */
