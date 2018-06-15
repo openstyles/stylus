@@ -508,11 +508,16 @@
                     // sass/less parent reference don't use a space
                     // sass nested pseudo-class don't use a space
 
+                    /* Stylus override.
+                       Disabling this block since we don't like the result.
+
                     // preserve space before pseudoclasses/pseudoelements, as it means "in any child"
                     if (lookBack(" ") && output[output.length - 1] !== " ") {
                         output.push(" ");
                         outputPosCol++;
                     }
+                    */
+
                     if (peek() === ":") {
                         // pseudo-element
                         next();
