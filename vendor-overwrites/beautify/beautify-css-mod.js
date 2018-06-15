@@ -468,6 +468,7 @@
                     // when entering conditional groups, only rulesets are allowed
                     if (enteringConditionalGroup) {
                         enteringConditionalGroup = false;
+                        insidePropertyValue = false;
                         insideConditionalGroup = true;
                         insideRule = (indentLevel > nestedLevel);
                     } else {
