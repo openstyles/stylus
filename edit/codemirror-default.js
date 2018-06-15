@@ -159,6 +159,8 @@
     'contain': true,
     'mix-blend-mode': true,
     'isolation': true,
+    'zoom': true,
+
     // nonstandard https://compat.spec.whatwg.org/
     'box-reflect': true,
     'text-fill-color': true,
