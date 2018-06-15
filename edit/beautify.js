@@ -24,7 +24,7 @@ function beautify(event) {
 
     showHelp(t('styleBeautify'), '<div class="beautify-options">' +
       optionHtml('.selector1,', 'selector_separator_newline') +
-      optionHtml('.selector2,', 'newline_before_open_brace') +
+      optionHtml('.selector2', 'newline_before_open_brace') +
       optionHtml('{', 'newline_after_open_brace') +
       optionHtml('border: none;', 'newline_between_properties', true) +
       optionHtml('display: block;', 'newline_before_close_brace', true) +
