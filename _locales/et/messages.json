@@ -1130,6 +1130,10 @@
 		"message": "Uus haldusliidese välimus",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
+	"unreachableAMOHintOldFF": {
+		"message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+	},
 	"importReportUndoneTitle": {
 		"message": "Importimine on tagasi võetud",
 		"description": "Title of the message box shown after undoing the import of styles"
