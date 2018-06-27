@@ -693,7 +693,9 @@ function usePrefsDuringPageLoad() {
       el.value = value;
     }
   }
-  $$('#header select').forEach(el => el.adjustWidth());
+  if (!VIVALDI) {
+    $$('#header select').forEach(el => el.adjustWidth());
+  }
 
   if (FIREFOX && 'update' in (chrome.commands || {})) {
     const btn = $('#manage-shortcuts-button');
