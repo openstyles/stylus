@@ -96,6 +96,8 @@ onDOMready().then(() => {
         this._input.focus();
         document.execCommand('selectAll', false, null);
         document.execCommand('delete', false, null);
+        // some versions of Firefox ignore the above
+        this._input.value = '';
       },
       case() {
         state.icase = !state.icase;
@@ -535,7 +537,7 @@ onDOMready().then(() => {
     setActiveEditor(cm);
 
     const dialogFocused = state.dialog && state.dialog.contains(document.activeElement);
-    let sel = dialogFocused ? '' : getSelection().toString();
+    let sel = dialogFocused ? '' : getSelection().toString() || cm && cm.getSelection();
     sel = !sel.includes('\n') && !sel.includes('\r') && sel;
     if (sel) state.find = sel;
 
@@ -546,6 +548,8 @@ onDOMready().then(() => {
       state.input.focus();
       state.input.select();
       document.execCommand('insertText', false, sel);
+      // some versions of Firefox ignore the above
+      state.input.value = sel;
     }
 
     state.input.focus();
