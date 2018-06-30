@@ -17,7 +17,7 @@ const colorConverter = (() => {
   };
 
   function format(color = '', type = color.type, hexUppercase) {
-    if (!color || !type) return '';
+    if (!color || !type) return typeof color === 'string' ? color : '';
     const a = formatAlpha(color.a);
     const hasA = Boolean(a);
     if (type === 'rgb' && color.type === 'hsl') {
