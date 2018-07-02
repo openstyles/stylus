@@ -19,31 +19,15 @@ html, body {
   max-height: 600px;
 }
 
-html.dev body {
-  border: 1px solid hsl(0, 0%, 50%);
-  box-shadow: 0 1px 2px hsla(0, 0%, 50%, .5);
-  max-height: 100vh;
-}
-
-html.dev {
-  height: 100vh;
-  max-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 body {
   width: 252px;
   font-size: 12px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  margin: 0;
-  background-color: #fff;
-}
+  margin: 0;}
 
 .firefox body {
   color: #000;
+  background-color: #fff;
 }
 
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
@@ -531,7 +515,7 @@ body.blocked .actions > .main-controls {
   max-height: 80%;
   min-height: 6em;
   padding: 1em;
-  background-color: #fff;;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   border: solid 2px rgba(0, 0, 0, 0.5);
@@ -610,7 +594,7 @@ body.blocked .actions > .main-controls {
   flex-direction: column;
   border-left: 2px solid white;
   box-shadow: 0 0 90px rgba(0, 0, 0, .5);
-  z-index: 5;`
+  z-index: 5;
 }
 
 #hotkey-info div:first-child {
