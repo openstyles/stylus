@@ -96,16 +96,7 @@ function initPopup() {
     window.close();
   };
 
-  const shortcutsButton = $('#popup-shortcuts-button');
-  shortcutsButton.dataset.href = URLS.configureCommands;
-  shortcutsButton.onclick = handleEvent.openURLandHide;
-
-  if (FIREFOX && 'update' in (chrome.commands || {})) {
-    shortcutsButton.classList.remove('chromium-only');
-    shortcutsButton.onclick = () => API.optionsCustomizeHotkeys().then(window.close);
-  } else if (FIREFOX) {
-    shortcutsButton.remove();
-  }
+  $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
 
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
