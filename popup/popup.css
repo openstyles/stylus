@@ -19,15 +19,30 @@ html, body {
   max-height: 600px;
 }
 
+html.dev body {
+  border: 1px solid hsl(0, 0%, 50%);
+  box-shadow: 0 1px 2px hsla(0, 0%, 50%, .5);
+  max-height: 100vh;
+}
+
+html.dev {
+  height: 100vh;
+  max-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body {
   width: 252px;
   font-size: 12px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   margin: 0;
+  background-color: #fff;
 }
 
 .firefox body {
-  background-color: #fff;
   color: #000;
 }
 
@@ -206,6 +221,24 @@ html[style] .entry {
   white-space: nowrap;
   padding-left: 26px;
   position: relative;
+}
+
+.entry .style-name::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .1s;
+  will-change: opacity;
+}
+
+.entry .style-name:hover::before {
+  opacity: 1;
 }
 
 .entry .main-controls {
@@ -498,7 +531,7 @@ body.blocked .actions > .main-controls {
   max-height: 80%;
   min-height: 6em;
   padding: 1em;
-  background-color: #fff;
+  background-color: #fff;;
   display: flex;
   flex-direction: column;
   border: solid 2px rgba(0, 0, 0, 0.5);
@@ -577,7 +610,7 @@ body.blocked .actions > .main-controls {
   flex-direction: column;
   border-left: 2px solid white;
   box-shadow: 0 0 90px rgba(0, 0, 0, .5);
-  z-index: 5;
+  z-index: 5;`
 }
 
 #hotkey-info div:first-child {
