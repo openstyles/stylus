@@ -2,6 +2,10 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   user-select: none;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 2px 7px;
   border: 1px solid hsl(0, 0%, 62%);
   font: 400 13.3333px Arial;
