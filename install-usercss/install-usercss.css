@@ -462,7 +462,7 @@ label {
     padding: 0;
   }
   .main {
-  	flex: 1;
+    flex: 1;
   }
   #header-content-wrapper {
     display: flex;
