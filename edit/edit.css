@@ -415,6 +415,10 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
 .applies-to li .add-applies-to:first-child {
   margin-left: 1rem;
 }
+.applies-to li .applies-value-wrapper {
+  flex-grow: 1;
+  display: flex;
+}
 .applies-to li .applies-value {
   flex-grow: 1;
   padding-left: 0.2rem;
