@@ -375,7 +375,7 @@
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
 	},
 	"popupHotkeysInfo": {
-		"message": "<1>-<9>, <0>, auch auf NumPad - schaltet n-ten Style um (0 ist 10)\n<A>-<Z> schaltet ersten Style, dessen Name mit diesem Buchstaben beginnt\n<Shift> öffnet Editor statt umzuschalten\n<Numpad +> aktiviert die aufgeführten Styles\n<Numpad –> deaktiviert die aufgeführten Styles\n<Numpad *> und <`> (backtick) - schaltet anfänglich aktivierte Styles; trifft nicht auf Styles zu, die erst aktiviert werden, wenn das Popup noch geöffnet ist. Dadurch kann die Anfangseinstellung nach einem Test wiederhergestellt werden: Einfach alle deaktivieren, dann schalte z.B. <Numpad –> <Numpad *>\nMehr dazu im Wiki",
+		"message": "<0>-<9> (auch auf NumPad) schaltet den n-ten Style um (0 ist 10)\n<A>-<Z> schaltet ersten Style, dessen Name mit diesem Buchstaben beginnt, um\n<Shift> öffnet Editor statt umzuschalten\n<Numpad +> aktiviert die aufgeführten Styles\n<Numpad –> deaktiviert die aufgeführten Styles\n<Numpad *> schaltet anfänglich aktivierte Styles um. Trifft nicht auf Styles zu, die erst aktiviert werden, wenn das Popup noch geöffnet ist. Dadurch kann z.B. die Anfangseinstellung nach einem Test wiederhergestellt werden: <Numpad –> <Numpad *>\nMehr dazu im Wiki",
 		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
 	},
 	"cm_lineWrapping": {
@@ -823,7 +823,7 @@
 		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
 	},
 	"cm_smartIndent": {
-		"message": "Intelligenten Einzug verwenden",
+		"message": "Intelligenter Einzug",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"styleRegexpTestButton": {
@@ -839,7 +839,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
-		"message": "Die </>-Taste fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nURL suchen: Stelle <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\">",
+		"message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nURL suchen: Stelle <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {
@@ -1123,7 +1123,7 @@
 		"description": "'Save' button in a confirm dialog"
 	},
 	"manageNewUI": {
-		"message": "Neues Verwaltungs Design-Layout.",
+		"message": "Neues Verwaltungs-Layout",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
 	"unreachableAMOHintOldFF": {
@@ -1139,7 +1139,7 @@
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "Tabs mit intelligentem Einzug verwenden",
+		"message": "Tabs mit intelligentem Einzug",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
@@ -1232,7 +1232,7 @@
 		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
 	},
 	"description": {
-		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele populäre Webseiten zu installieren.",
+		"message": "Gestalte das Web neu mit Stylus, dem Style Manager. Stylus ermöglicht dir ganz einfach Themes und Designs für viele beliebte Webseiten zu installieren.",
 		"description": "Extension description"
 	},
 	"confirmClose": {
