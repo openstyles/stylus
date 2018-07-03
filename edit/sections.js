@@ -125,7 +125,7 @@ function addSection(event, section) {
     div.classList.toggle('has-regexp', show);
     appliesTo.oninput = appliesTo.oninput || show && (event => {
       if (event.target.matches('.applies-value') &&
-          $('.applies-type', event.target.parentElement).value === 'regexp') {
+          $('.applies-type', event.target.closest('.applies-to-item')).value === 'regexp') {
         regExpTester.update(getRegExps());
       }
     });
@@ -171,9 +171,7 @@ function addAppliesTo(list, name, value) {
   } else {
     e = template.appliesToEverything.cloneNode(true);
   }
-  $('.add-applies-to', e).addEventListener('click', function () {
-    addAppliesTo(this.parentNode.parentNode);
-  }, false);
+  $('.add-applies-to', e).addEventListener('click', () => addAppliesTo(list));
   list.appendChild(e);
 }
 
@@ -403,8 +401,8 @@ function getSectionsHashes() {
 }
 
 function removeAppliesTo(event) {
-  const appliesTo = event.target.parentNode;
-  const appliesToList = appliesTo.parentNode;
+  const appliesTo = event.target.closest('.applies-to-item');
+  const appliesToList = appliesTo.closest('.applies-to-list');
   removeAreaAndSetDirty(appliesTo);
   if (!appliesToList.hasChildNodes()) {
     addAppliesTo(appliesToList);
@@ -437,7 +435,7 @@ function removeAreaAndSetDirty(area) {
     }
   });
   updateTitle();
-  area.parentNode.removeChild(area);
+  area.remove();
 }
 
 function makeSectionVisible(cm) {
