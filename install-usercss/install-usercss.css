@@ -475,6 +475,7 @@ label {
     flex-grow: 1;
     margin: 0;
     padding: 0 1rem .5rem;
+    min-width: 0;
   }
   #header-content-wrapper > .meta-description {
     flex-basis: 100%;
