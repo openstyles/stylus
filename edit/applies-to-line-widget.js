@@ -41,6 +41,7 @@ function createAppliesToLineWidget(cm) {
       '.test-regexp': showRegExpTester,
 
       '.remove-applies-to': (item, apply) => {
+      	event.preventDefault() 
         const applies = item.closest('.applies-to').__applies;
         const i = applies.indexOf(apply);
         let repl;
@@ -73,6 +74,7 @@ function createAppliesToLineWidget(cm) {
       },
 
       '.add-applies-to': (item, apply) => {
+      	event.preventDefault() 
         const applies = item.closest('.applies-to').__applies;
         const i = applies.indexOf(apply);
         const pos = apply.mark.find().to;
