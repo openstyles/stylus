@@ -306,8 +306,13 @@ select {
   margin: 0 0 -2px -13px;
 }
 
+#header #filters summary h2 {
+  margin-left: -4px;
+}
+
 #header summary h2 {
-  display: inline-block;
+  display: inline-flex;
+  flex-wrap: wrap;
   border-bottom: 1px dotted transparent;
   margin-top: .1em;
   margin-bottom: .1em;
@@ -848,10 +853,6 @@ input[id^="manage.newUI"] {
   border: 1px solid transparent;
 }
 
-#filters summary h2 {
-  margin-left: -4px;
-}
-
 .active #filters-stats {
   background-color: darkcyan;
   border-color: darkcyan;
@@ -860,13 +861,21 @@ input[id^="manage.newUI"] {
   font-weight: normal;
   padding: 2px 5px;
   position: relative;
-  top: -2px;
+  white-space: nowrap;
 }
 
-#reset-filters {
-  position: absolute;
-  margin-top: 2px;
-  display: inline-block;
+.filter-stats-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: .2rem;
+}
+
+#header #filters summary {
+  white-space: nowrap;
+}
+
+#header #filters summary ::-webkit-details-marker {
+  margin-top: 4px
 }
 
 #reset-filters svg {
@@ -1012,11 +1021,11 @@ input[id^="manage.newUI"] {
 }
 
 #message-box details:not(:last-child) {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 #message-box details small div {
-    margin-left: 1.5em;
+  margin-left: 1.5em;
 }
 
 .update-history-log {
@@ -1099,8 +1108,8 @@ input[id^="manage.newUI"] {
   }
 
   #message-box > div {
-  	left: 0;
-  	right: 0!important;
+    left: 0;
+    right: 0!important;
     margin-left: auto;
     margin-right: auto;
   }
@@ -1110,10 +1119,10 @@ input[id^="manage.newUI"] {
   }
 
   #header {
-  	display: table-header-group;
+    display: table-header-group;
     height: auto;
-  	padding: 0;
-  	width: 100%;
+    padding: 0;
+    width: 100%;
     position: static;
     border-right: none;
     border-bottom: 1px dashed #AAA;
