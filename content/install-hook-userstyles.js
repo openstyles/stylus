@@ -10,8 +10,7 @@
 
   chrome.runtime.onMessage.addListener(onMessage);
 
-  document.addEventListener('DOMContentLoaded', function _() {
-    document.removeEventListener('DOMContentLoaded', _);
+  onDOMready().then(() => {
     window.postMessage({
       direction: 'from-content-script',
       message: 'StylishInstalled',
@@ -42,7 +41,6 @@
           sendEvent(sendEvent.lastEvent);
         });
       });
-      return;
     }
   }
 
@@ -324,9 +322,8 @@
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(chrome.runtime.id + '-install', orphanCheck, true);
-    ['Update', 'Install'].forEach(type =>
-      ['', 'Chrome', 'Opera'].forEach(browser =>
-        document.addEventListener('stylish' + type + browser, onClick)));
+    document.removeEventListener('stylishInstallChrome', onClick);
+    document.removeEventListener('stylishUpdateChrome', onClick);
     try {
       chrome.runtime.onMessage.removeListener(onMessage);
     } catch (e) {}
