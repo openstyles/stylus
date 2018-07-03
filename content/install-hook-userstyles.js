@@ -333,12 +333,33 @@
   }
 })();
 
-// TODO: remove the following statement when USO is fixed
 document.documentElement.appendChild(document.createElement('script')).text = '(' +
   function () {
+    document.currentScript.remove();
+
+    // spoof Stylish extension presence in Chrome
+    if (chrome.app) {
+      const realImage = window.Image;
+      window.Image = function Image(...args) {
+        return new Proxy(new realImage(...args), {
+          get(obj, key) {
+            return obj[key];
+          },
+          set(obj, key, value) {
+            if (key === 'src' && /^chrome-extension:/i.test(value)) {
+              setTimeout(() => typeof obj.onload === 'function' && obj.onload());
+            } else {
+              obj[key] = value;
+            }
+            return true;
+          },
+        });
+      };
+    }
+
+    // USO bug workaround: use the actual style settings in API response
     let settings;
     const originalResponseJson = Response.prototype.json;
-    document.currentScript.remove();
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
       // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
