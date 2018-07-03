@@ -709,7 +709,8 @@ html:not(.usercss) .usercss-only,
   color: #888;
 }
 
-#sections .single-editor {
+#sections .single-editor,
+#sections > div.single-editor:first-of-type {
   margin: 0;
   padding: 0;
   display: flex;
@@ -874,7 +875,12 @@ html:not(.usercss) .usercss-only,
   }
   #sections {
     padding-left: 0;
+    display: flex;
     flex: 1;
+  }
+  .usercss #sections {
+    flex: 1;
+    flex-direction: column;
   }
   #sections > div {
     padding: .5rem 0 0;
