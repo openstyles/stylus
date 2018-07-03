@@ -405,13 +405,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .applies-to li:not(.applies-to-everything) > * {
   margin: 0 .2rem .5rem 0;
 }
-html:not(.usercss) .applies-to li .add-applies-to {
-  visibility: hidden;
-  text-align: left;
-}
-html:not(.usercss) .applies-to li:last-child .add-applies-to {
-  visibility: visible
-}
 .applies-to li .add-applies-to:first-child {
   margin-left: 1rem;
 }

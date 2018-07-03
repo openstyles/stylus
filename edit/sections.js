@@ -150,29 +150,44 @@ function addSection(event, section) {
   return div;
 }
 
-function addAppliesTo(list, name, value) {
-  const showingEverything = $('.applies-to-everything', list) !== null;
+// may be invoked as a DOM listener
+function addAppliesTo(list, type, value) {
+  let clickedItem;
+  if (this instanceof Node) {
+    clickedItem = this.closest('.applies-to-item');
+    list = this.closest('.applies-to-list');
+  }
+  const showingEverything = $('.applies-to-everything', list);
   // blow away 'Everything' if it's there
   if (showingEverything) {
     list.removeChild(list.firstChild);
   }
-  let e;
-  if (name) {
-    e = template.appliesTo.cloneNode(true);
-    $('[name=applies-type]', e).value = name;
-    $('[name=applies-value]', e).value = value;
-    $('.remove-applies-to', e).addEventListener('click', removeAppliesTo, false);
-  } else if (showingEverything || list.hasChildNodes()) {
-    e = template.appliesTo.cloneNode(true);
-    if (list.hasChildNodes()) {
-      $('[name=applies-type]', e).value = $('li:last-child [name="applies-type"]', list).value;
+  let item, toFocus;
+
+  // a section is added with known applies-to
+  if (type) {
+    item = template.appliesTo.cloneNode(true);
+    $('[name=applies-type]', item).value = type;
+    $('[name=applies-value]', item).value = value;
+    $('.remove-applies-to', item).addEventListener('click', removeAppliesTo);
+
+  // a "+" button was clicked
+  } else if (showingEverything || clickedItem) {
+    item = template.appliesTo.cloneNode(true);
+    toFocus = $('[name=applies-type]', item);
+    if (clickedItem) {
+      $('[name=applies-type]', item).value = $('[name="applies-type"]', clickedItem).value;
     }
-    $('.remove-applies-to', e).addEventListener('click', removeAppliesTo, false);
+    $('.remove-applies-to', item).addEventListener('click', removeAppliesTo);
+
+  // a global section is added
   } else {
-    e = template.appliesToEverything.cloneNode(true);
+    item = template.appliesToEverything.cloneNode(true);
   }
-  $('.add-applies-to', e).addEventListener('click', () => addAppliesTo(list));
-  list.appendChild(e);
+
+  $('.add-applies-to', item).addEventListener('click', addAppliesTo);
+  list.insertBefore(item, clickedItem && clickedItem.nextElementSibling);
+  if (toFocus) toFocus.focus();
 }
 
 function setupCodeMirror(sectionDiv, code, index) {
