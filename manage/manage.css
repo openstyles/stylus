@@ -1111,6 +1111,7 @@ input[id^="manage.newUI"] {
 
   #header {
   	display: table-header-group;
+    height: auto;
   	padding: 0;
   	width: 100%;
     position: static;
