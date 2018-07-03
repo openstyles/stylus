@@ -307,7 +307,7 @@ input:invalid {
   margin-bottom: 7px; /* make space for resize-grip */
 }
 .resize-grip-enabled .CodeMirror-hscrollbar {
-    bottom: 7px; /* make space for resize-grip */
+  bottom: 7px; /* make space for resize-grip */
 }
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
@@ -777,9 +777,9 @@ html:not(.usercss) .usercss-only,
     padding: 0;
   }
   #actions {
-  	padding: 0 1rem;
-  	margin: 0;
-  	box-sizing: border-box;
+    padding: 0 1rem;
+    margin: 0;
+    box-sizing: border-box;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;
@@ -789,9 +789,9 @@ html:not(.usercss) .usercss-only,
     display: none;
   }
   #basic-info {
-  	padding: .5rem 1rem;
-  	margin: 0;
-  	box-sizing: border-box;
+    padding: .5rem 1rem;
+    margin: 0;
+    box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
   }
@@ -810,15 +810,15 @@ html:not(.usercss) .usercss-only,
     white-space: nowrap;
   }
   #options-wrapper {
-  	display: flex;
-  	flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
     padding: .5rem 1rem;
     box-sizing: border-box;
   }
   .options-column {
-  	flex-grow: 1;
-  	padding-right: .5rem;
-  	box-sizing: border-box;
+    flex-grow: 1;
+    padding-right: .5rem;
+    box-sizing: border-box;
   }
   #options:not([open]),
   #lint:not([open]) {
@@ -856,7 +856,7 @@ html:not(.usercss) .usercss-only,
     margin-top: -1em;
   }
   #header summary {
-  	margin-bottom: 0;
+    margin-bottom: 0;
   }
   #lint > div {
     margin-top: 0;
@@ -871,7 +871,7 @@ html:not(.usercss) .usercss-only,
     margin: .25em 0 -1em .25em;
   }
   #sections {
-  	height: unset !important;
+    height: unset !important;
     min-height: 0;
     padding-left: 0;
     display: flex;
