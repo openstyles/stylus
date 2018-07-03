@@ -34,7 +34,7 @@ function createAppliesToLineWidget(cm) {
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
 
-    $('button', TPL.listItem).insertAdjacentElement('beforebegin',
+    $('.applies-value', TPL.listItem).insertAdjacentElement('afterend',
       $create('button.test-regexp', t('styleRegexpTestButton')));
 
     CLICK_ROUTE = {
