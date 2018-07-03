@@ -229,7 +229,7 @@
   });
 
   // doubleclick option
-  {
+  if (window.editors) {
     const fn = (cm, repeat) =>
       repeat === 'double' ?
         {unit: selectTokenOnDoubleclick} :
