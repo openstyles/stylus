@@ -1174,10 +1174,23 @@ input[id^="manage.newUI"] {
 
   .newUI .style-name {
     width: 50%;
+    padding: .5rem 1rem;
+    text-indent: unset;
+  }
+
+  .newUI .entry .actions {
+    padding: 0;
+    width: 112px;
+    padding: .5rem 0;
+  }
+
+  .newUI .entry .applis-to {
+    padding: .5rem 1rem;
+    width: calc(50% - 112px);
   }
 
   .newUI .target {
-    max-width: calc(50vw - var(--actions-width));
+    max-width: 100%;
   }
 }
 
