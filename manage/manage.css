@@ -1169,12 +1169,20 @@ input[id^="manage.newUI"] {
   }
 
   .newUI .entry {
-    margin: 0;
+    padding: 0;
+  }
+
+  .newUI .checkmate {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
   }
 
   .newUI .style-name {
     width: 50%;
-    padding: .5rem 1rem;
+    padding: .5rem 1rem .5rem 36px;
     text-indent: unset;
   }
 
@@ -1184,7 +1192,7 @@ input[id^="manage.newUI"] {
     padding: .5rem 0;
   }
 
-  .newUI .entry .applis-to {
+  .newUI .entry .applies-to {
     padding: .5rem 1rem;
     width: calc(50% - 112px);
   }
