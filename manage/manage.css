@@ -1172,7 +1172,7 @@ input[id^="manage.newUI"] {
     padding: 0;
   }
 
-  .newUI .checkmate {
+  .newUI .entry .checkmate {
     position: absolute;
     left: 16px;
     top: 0;
@@ -1180,7 +1180,7 @@ input[id^="manage.newUI"] {
     margin: auto;
   }
 
-  .newUI .style-name {
+  .newUI .entry .style-name {
     width: 50%;
     padding: .5rem 1rem .5rem 36px;
     text-indent: unset;
