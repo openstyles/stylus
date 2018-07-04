@@ -187,6 +187,10 @@
 		"message": "Installierte Styles",
 		"description": "Heading for the manage page"
 	},
+	"styleBeautify": {
+		"message": "Code formatieren",
+		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
 	"styleRegexpProblemTooltip": {
 		"message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter Regulärer Ausdrücke nicht angewendet wurden.",
 		"description": "Tooltip in the popup for styles that were applied only partially"
@@ -778,7 +782,7 @@
 		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"linterRulesLink": {
-		"message": "Vollständige Liste der Regeln anzeigen für",
+		"message": "Vollständige Liste der Regeln anzeigen",
 		"description": "Stylelint or CSSLint rules label added immediately before a link"
 	},
 	"styleUpdateDiscardChanges": {
