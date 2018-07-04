@@ -51,6 +51,7 @@ var usercss = (() => {
         return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
             const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
+            if (!Error.captureStackTrace) Error.captureStackTrace = () => {};
             window.stylus(varDef + source).render((err, output) => {
               if (err) {
                 reject(err);
