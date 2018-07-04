@@ -1093,6 +1093,10 @@ input[id^="manage.newUI"] {
     left: 3.75rem;
   }
 
+  html:not(.newUI) .applies-to {
+    word-break: break-all;
+  }
+
   #installed {
     table-layout: fixed;
   }
@@ -1157,6 +1161,11 @@ input[id^="manage.newUI"] {
 
   #backup-buttons {
     margin-top: 0;
+  }
+
+  #header summary {
+    margin-top: 0;
+    padding-bottom: .25rem;
   }
 
   .newUI .entry {
