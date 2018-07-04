@@ -14,6 +14,8 @@
   "permissions": [
     "tabs",
     "webNavigation",
+    "webRequest",
+    "webRequestBlocking",
     "contextMenus",
     "storage",
     "alarms",
@@ -60,7 +62,7 @@
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
-      "all_frames": false,
+      "all_frames": true,
       "js": ["content/install-hook-userstyles.js"]
     },
     {

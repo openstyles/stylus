@@ -330,12 +330,13 @@
   }
 })();
 
-document.documentElement.appendChild(document.createElement('script')).text = '(' +
-  function () {
+// run in page context
+document.documentElement.appendChild(document.createElement('script')).text = `(${
+  EXTENSION_ORIGIN => {
     document.currentScript.remove();
 
     // spoof Stylish extension presence in Chrome
-    if (chrome.app) {
+    if (window.chrome && chrome.app) {
       const realImage = window.Image;
       window.Image = function Image(...args) {
         return new Proxy(new realImage(...args), {
@@ -352,6 +353,29 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
           },
         });
       };
+    }
+
+    // spoof USO referrer for style search in the popup
+    if (window !== top && location.pathname === '/') {
+      window.addEventListener('message', ({data, origin}) => {
+        if (!data ||
+            !data.xhr ||
+            origin !== EXTENSION_ORIGIN) {
+          return;
+        }
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'json';
+        xhr.onloadend = xhr.onerror = () => {
+          window.stop();
+          top.postMessage({
+            id: data.xhr.id,
+            status: xhr.status,
+            response: xhr.response,
+          }, EXTENSION_ORIGIN);
+        };
+        xhr.open('GET', data.xhr.url);
+        xhr.send();
+      });
     }
 
     // USO bug workaround: use the actual style settings in API response
@@ -426,7 +450,8 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
         return json;
       });
     };
-  } + ')()';
+  }
+})('${chrome.runtime.getURL('').slice(0, -1)}')`;
 
 // TODO: remove the following statement when USO pagination is fixed
 if (location.search.includes('category=')) {

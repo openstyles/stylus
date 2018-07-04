@@ -51,6 +51,9 @@ window.addEventListener('showStyles:done', function _() {
   let searchCurrentPage = 1;
   let searchExhausted = false;
 
+  let searchFrame;
+  let searchFrameQueue;
+
   const processedResults = [];
   const unprocessedResults = [];
 
@@ -697,15 +700,7 @@ window.addEventListener('showStyles:done', function _() {
     return readCache(cacheKey)
       .then(json =>
         json ||
-        download(searchURL, {
-          method: 'GET',
-          headers: {
-            'Content-type': 'application/json',
-            'Accept': '*/*'
-          },
-          responseType: 'json',
-          body: null
-        }).then(writeCache))
+        searchInFrame(searchURL).then(writeCache))
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
@@ -781,6 +776,79 @@ window.addEventListener('showStyles:done', function _() {
       chrome.storage.local.remove(toRemove.map(item => item.key), ignoreChromeError);
     }
     ignoreChromeError();
+  }
+
+  //endregion
+  //region USO referrer spoofing via iframe
+
+  function searchInFrame(url) {
+    return searchFrame ? new Promise((resolve, reject) => {
+      const id = performance.now();
+      const timeout = setTimeout(() => {
+        searchFrameQueue.get(id).reject();
+        searchFrameQueue.delete(id);
+      }, 10e3);
+      searchFrameQueue.set(id, {resolve, reject, timeout});
+      searchFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
+    }) : setupFrame().then(() => searchInFrame(url));
+  }
+
+  function setupFrame() {
+    searchFrame = $create('iframe', {src: BASE_URL});
+    searchFrameQueue = new Map();
+
+    const stripHeaders = info => ({
+      responseHeaders: info.responseHeaders.filter(({name}) => !/^X-Frame-Options$/i.test(name)),
+    });
+    chrome.webRequest.onHeadersReceived.addListener(stripHeaders, {
+      urls: [BASE_URL + '/'],
+      types: ['sub_frame'],
+    }, [
+      'blocking',
+      'responseHeaders',
+    ]);
+
+    let frameId;
+    const stripResources = info => {
+      if (!frameId && info.url === BASE_URL + '/') {
+        frameId = info.frameId;
+      } else if (frameId === info.frameId && info.type !== 'xmlhttprequest') {
+        return {redirectUrl: 'data:,'};
+      }
+    };
+    chrome.webRequest.onBeforeRequest.addListener(stripResources, {
+      urls: ['<all_urls>'],
+    }, [
+      'blocking',
+    ]);
+    setTimeout(() => {
+      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
+    }, 10e3);
+
+    window.addEventListener('message', ({data, origin}) => {
+      if (!data || origin !== BASE_URL) return;
+      const {resolve, reject, timeout} = searchFrameQueue.get(data.id) || {};
+      if (!resolve) return;
+      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
+      searchFrameQueue.delete(data.id);
+      clearTimeout(timeout);
+      if (data.response && data.status < 400) {
+        resolve(data.response);
+      } else {
+        reject(data.status);
+      }
+    });
+
+    return new Promise((resolve, reject) => {
+      const done = event => {
+        chrome.webRequest.onHeadersReceived.removeListener(stripHeaders);
+        (event.type === 'load' ? resolve : reject)();
+      };
+      searchFrame.addEventListener('load', done, {once: true});
+      searchFrame.addEventListener('error', done, {once: true});
+      searchFrame.style.setProperty('display', 'none', 'important');
+      document.body.appendChild(searchFrame);
+    });
   }
 
   //endregion
