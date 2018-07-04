@@ -211,6 +211,10 @@ input:invalid {
   flex-wrap: wrap;
 }
 
+#mozilla-format-container {
+  flex-direction: column;
+}
+
 #mozilla-format-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -607,7 +611,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   position: absolute;
 }
 #lint > div {
-  margin-top: 4em;
+  margin-top: 2.75rem;
 }
 #lint table {
   font-size: 100%;
@@ -701,6 +705,15 @@ html:not(.usercss) .usercss-only,
   display: none !important; /* hide during page init */
 }
 
+#lint {
+  padding: 1rem 0 0;
+  box-sizing: border-box;
+}
+
+#options:not([open]) + #lint {
+  padding-top: 0;
+}
+
 .usercss #name {
   background-color: #eee;
   color: #888;
@@ -773,7 +786,6 @@ html:not(.usercss) .usercss-only,
     position: inherit;
     border-right: none;
     border-bottom: 1px dashed #AAA;
-    min-height: var(--header-narrow-min-height);
     padding: 0;
   }
   #actions {
@@ -812,7 +824,7 @@ html:not(.usercss) .usercss-only,
   #options-wrapper {
     display: flex;
     flex-wrap: wrap;
-    padding: .5rem 1rem;
+    padding: 0 1rem  .5rem;
     box-sizing: border-box;
   }
   .options-column {
@@ -825,7 +837,7 @@ html:not(.usercss) .usercss-only,
     overflow: initial;
   }
   #options:not([open]) + #lint:not([open]) {
-    margin-top: -1em;
+    margin-top: 0;
   }
   #lint {
     overflow: initial;
@@ -852,14 +864,18 @@ html:not(.usercss) .usercss-only,
     position: relative;
     top: 0.2rem;
   }
-  #options:not([open]) ~ #lint {
-    margin-top: -1em;
-  }
-  #header summary {
-    margin-bottom: 0;
-  }
   #lint > div {
     margin-top: 0;
+    overflow: hidden;
+  }
+  #lint {
+    padding: 0 1rem .5rem;
+  }
+  #lint > summary {
+    margin-top: 0;
+  }
+  #lint caption {
+    text-indent: 4px;
   }
   #lint table {
     width: 100%;
@@ -878,15 +894,13 @@ html:not(.usercss) .usercss-only,
     flex-direction: column;
     flex: 1;
   }
-  .usercss #sections {
-    flex: 1;
-    flex-direction: column;
-  }
   #sections > div {
+    margin: 0 .5rem .5rem;
     padding: .5rem 0 0;
   }
-  #sections > *:not(h2) {
-    padding-left: 0.4rem;
+  #sections > div:first-of-type {
+    margin: .5rem;
+    padding: 0;
   }
   .usercss .CodeMirror-scroll {
     max-height: calc(100vh - var(--header-narrow-min-height));
@@ -895,7 +909,28 @@ html:not(.usercss) .usercss-only,
   .usercss #lint:not([open]) + #footer {
     margin-top: -.25em;
   }
-  #help-popup.big {
-    left: 3rem;
+  #help-popup.big[style="display: block;"],
+  #help-popup[style="display: block;"] {
+    width: max-content;
+    height: min-content;
+    max-width: 90%;
+    max-height: 90vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+  #help-popup[style*="left:"] {
+    left: 1rem !important;
+    margin-top: -2.35rem;
+  }
+  #help-popup:not([style*="display: block;"]),
+  #help-popup .CodeMirror-lint-markers,
+  #help-popup .CodeMirror-guttermarker-subtle {
+    display: none !important;
+  }
+  #help-popup .CodeMirror-linenumber {
+   padding: 0;
   }
 }
