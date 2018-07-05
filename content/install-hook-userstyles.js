@@ -364,12 +364,13 @@ document.documentElement.appendChild(document.createElement('script')).text = `(
           return;
         }
         const xhr = new XMLHttpRequest();
-        xhr.responseType = 'json';
         xhr.onloadend = xhr.onerror = () => {
           window.stop();
           top.postMessage({
             id: data.xhr.id,
             status: xhr.status,
+            // [being overcautious] a string response is used instead of relying on responseType=json
+            // because it was invoked in a web page context so another extension may have incorrectly spoofed it
             response: xhr.response,
           }, EXTENSION_ORIGIN);
         };

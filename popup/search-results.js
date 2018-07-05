@@ -832,8 +832,11 @@ window.addEventListener('showStyles:done', function _() {
       chrome.webRequest.onBeforeRequest.removeListener(stripResources);
       searchFrameQueue.delete(data.id);
       clearTimeout(timeout);
-      if (data.response && data.status < 400) {
-        resolve(data.response);
+      // [being overcautious] a string response is used instead of relying on responseType=json
+      // because it was invoked in a web page context so another extension may have incorrectly spoofed it
+      const json = tryJSONparse(data.response);
+      if (json && data.status < 400) {
+        resolve(json);
       } else {
         reject(data.status);
       }
