@@ -7,9 +7,17 @@
 		"message": "défaut",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
+	"bckpInstStyles": {
+		"message": "Exporter des styles",
+		"description": ""
+	},
 	"exportLabel": {
 		"message": "Exportez",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"optionsBadgeNormal": {
+		"message": "Couleur d'arrière plan",
+		"description": ""
 	},
 	"cm_tabSize": {
 		"message": "Taille des tabulations",
@@ -31,6 +39,10 @@
 		"message": "Rechercher des mises à jour",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"optionsOpenManager": {
+		"message": "Gérer les styles",
+		"description": ""
+	},
 	"updateAllCheckSucceededNoUpdate": {
 		"message": "All styles are up to date.",
 		"description": "Text that displays when an update all check completed and no updates are available"
@@ -38,6 +50,10 @@
 	"helpAlt": {
 		"message": "Aide",
 		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Rechercher",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
 	},
 	"confirmYes": {
 		"message": "Oui",
@@ -50,6 +66,10 @@
 	"manageHeading": {
 		"message": "Styles installés",
 		"description": "Heading for the manage page"
+	},
+	"styleBeautify": {
+		"message": "Embellir ",
+		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleEnabledLabel": {
 		"message": "Activé",
@@ -67,9 +87,29 @@
 		"message": "Enregistrer",
 		"description": "Label for save button for style editing"
 	},
+	"confirmDelete": {
+		"message": "Supprimer",
+		"description": ""
+	},
+	"confirmCancel": {
+		"message": "Annuler",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "Importer des styles",
+		"description": ""
+	},
+	"confirmStop": {
+		"message": "Arrêt ",
+		"description": "'Stop' button in a confirm dialog"
+	},
 	"writeStyleForURL": {
 		"message": "cette URL",
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "Plus de paramètres",
+		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
 		"message": "Ajouter",
@@ -87,6 +127,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"optionsCheck": {
+		"message": "Mettre à jour les styles",
+		"description": ""
 	},
 	"disableStyleLabel": {
 		"message": "Désactiver",
@@ -108,6 +152,10 @@
 		"message": "Vous avez apporté des modifications à ce style sans les enregistrer.",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
+	"importLabel": {
+		"message": "Importer",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Échec de la mise à jour: le serveur est inaccessible.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
@@ -115,6 +163,10 @@
 	"manageFilters": {
 		"message": "Filtres",
 		"description": "Label for filters container"
+	},
+	"applyAllUpdates": {
+		"message": "Appliquer toutes les mises à jour",
+		"description": "Label for the button to apply all detected updates"
 	},
 	"deleteStyleConfirm": {
 		"message": "Voulez-vous vraiment supprimer ce style ?",
@@ -132,6 +184,10 @@
 				"content": "$1"
 			}
 		}
+	},
+	"openStylesManager": {
+		"message": "Ouvrir le gestionnaire de styles",
+		"description": "Label for the style maanger opener in the browser action context menu."
 	},
 	"styleUpdate": {
 		"message": "Voulez-vous mettre à jour '$stylename$'?",
@@ -179,9 +235,17 @@
 		"message": "Supprimer",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"replace": {
+		"message": "Remplacer",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
 	"appliesLabel": {
 		"message": "S'applique à",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openOptionsPopup": {
+		"message": "Paramètres",
+		"description": "Go to Options UI"
 	},
 	"openManage": {
 		"message": "Gérer les styles installés",
@@ -212,6 +276,10 @@
 		"message": "Désactiver tous les styles",
 		"description": "Label for the checkbox that turns all enabled styles off."
 	},
+	"undoGlobal": {
+		"message": "Tout annuler",
+		"description": "CSS-beautify global Undo button label"
+	},
 	"updateCompleted": {
 		"message": "Mise à jour terminée.",
 		"description": "Text that displays when an update completed"
@@ -219,6 +287,10 @@
 	"checkingForUpdate": {
 		"message": "Vérification en cours…",
 		"description": "Text to display when checking a style for an update"
+	},
+	"cm_smartIndent": {
+		"message": "Utiliser l'indentation intelligente",
+		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"appliesHelp": {
 		"message": "Utilisez l'option \"S'applique à\" pour préciser les URL auxquelles le code de cette section s'applique.",
@@ -240,13 +312,25 @@
 		"message": "Une erreur s'est produite dans la base de donnée de Stylus. Voulez-vous visiter une page web avec les solutions possibles ?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"optionsOpen": {
+		"message": "Ouvrir",
+		"description": ""
+	},
 	"checkAllUpdates": {
 		"message": "Rechercher des mises à jour pour tous les styles",
 		"description": "Label for the button to check all styles for updates"
 	},
+	"openOptionsManage": {
+		"message": "Paramètres d'interface graphique",
+		"description": "Go to Options UI"
+	},
 	"confirmNo": {
 		"message": "Non",
 		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Annuler",
+		"description": "Button label"
 	},
 	"deleteStyleLabel": {
 		"message": "Supprimer",
@@ -256,9 +340,17 @@
 		"message": "Créer un nouveau style",
 		"description": "Label for the button to go to the add style page"
 	},
+	"backupButtons": {
+		"message": "Sauvergarde",
+		"description": "Heading for backup"
+	},
 	"editStyleLabel": {
 		"message": "Modifier",
 		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Thème",
+		"description": "Label for the style editor's CSS theme."
 	},
 	"helpKeyMapCommand": {
 		"message": "Tapez un nom de commande",
