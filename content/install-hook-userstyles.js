@@ -346,7 +346,7 @@
 })();
 
 // run in page context
-document.documentElement.appendChild(document.createElement('script')).text = `(${
+document.documentElement.appendChild(document.createElement('script')).text = '(' + (
   EXTENSION_ORIGIN => {
     document.currentScript.remove();
 
@@ -466,7 +466,7 @@ document.documentElement.appendChild(document.createElement('script')).text = `(
       });
     };
   }
-})('${chrome.runtime.getURL('').slice(0, -1)}')`;
+) + `)('${chrome.runtime.getURL('').slice(0, -1)}')`;
 
 // TODO: remove the following statement when USO pagination is fixed
 if (location.search.includes('category=')) {
