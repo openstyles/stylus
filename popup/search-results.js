@@ -788,10 +788,7 @@ window.addEventListener('showStyles:done', function _() {
       const data = {url, resolve, reject, timeout};
       usoFrameQueue.set(id, data);
       usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
-    }) :
-      setupFrame()
-        .then(() => new Promise(setTimeout))
-        .then(() => downloadInFrame(url));
+    }) : setupFrame().then(() => downloadInFrame(url));
   }
 
   function setupFrame() {
@@ -847,6 +844,9 @@ window.addEventListener('showStyles:done', function _() {
       const done = event => {
         chrome.webRequest.onHeadersReceived.removeListener(stripHeaders);
         (event.type === 'load' ? resolve : reject)();
+        usoFrameQueue.forEach(({url}, id) => {
+          usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
+        });
       };
       usoFrame.addEventListener('load', done, {once: true});
       usoFrame.addEventListener('error', done, {once: true});
