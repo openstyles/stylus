@@ -21,7 +21,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   parseCss({code}) {
     return usercss.invokeWorker({action: 'parse', code});
   },
-  getPrefs:    () => prefs.getAll(),
+  getPrefs: prefs.getAll,
   healthCheck: () => dbExec().then(() => true),
 
   detectSloppyRegexps,
