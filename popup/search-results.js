@@ -44,7 +44,8 @@ window.addEventListener('showStyles:done', function _() {
   const CACHE_SIZE = 1e6;
   const CACHE_PREFIX = 'usoSearchCache/';
   const CACHE_DURATION = 24 * 3600e3;
-  const CACHE_CLEANUP_THROTTLE = 60e3;
+  const CACHE_CLEANUP_THROTTLE = 10e3;
+  const CACHE_CLEANUP_NEEDED = CACHE_PREFIX + 'clean?';
   const CACHE_EXCEPT_PROPS = ['css', 'discussions', 'additional_info'];
 
   let searchTotalPages;
@@ -148,6 +149,9 @@ window.addEventListener('showStyles:done', function _() {
         renderActionButtons($('#' + RESULT_ID_PREFIX + usoId));
       }
     });
+
+    chromeLocal.getValue(CACHE_CLEANUP_NEEDED).then(value =>
+      value && debounce(cleanupCache, CACHE_CLEANUP_THROTTLE));
   }
 
   //endregion
@@ -737,6 +741,7 @@ window.addEventListener('showStyles:done', function _() {
       setTimeout(writeCache, 100, data, true);
       return data;
     } else {
+      chromeLocal.setValue(CACHE_CLEANUP_NEEDED, true);
       debounce(cleanupCache, CACHE_CLEANUP_THROTTLE);
       return chromeLocal.loadLZStringScript().then(() =>
         chromeLocal.setValue(CACHE_PREFIX + data.id, {
@@ -751,15 +756,16 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function cleanupCache() {
-    if (!chrome.storage.local.getBytesInUse) {
-      chrome.storage.local.get(null, cleanupCacheInternal);
-    } else {
+    chromeLocal.remove(CACHE_CLEANUP_NEEDED);
+    if (chrome.storage.local.getBytesInUse) {
       chrome.storage.local.getBytesInUse(null, size => {
         if (size > CACHE_SIZE) {
           chrome.storage.local.get(null, cleanupCacheInternal);
         }
         ignoreChromeError();
       });
+    } else {
+      chrome.storage.local.get(null, cleanupCacheInternal);
     }
   }
 
