@@ -241,6 +241,21 @@
 
   function getStyleJson() {
     return getResource(getStyleURL(), {responseType: 'json'})
+      .then(style => {
+        if (!style || !Array.isArray(style.sections) || style.sections.length) {
+          return style;
+        }
+        const codeElement = document.getElementById('stylish-code');
+        if (codeElement && !codeElement.textContent.trim()) {
+          return style;
+        }
+        return getResource(getMeta('stylish-update-url')).then(code => new Promise(resolve => {
+          chrome.runtime.sendMessage({method: 'parseCss', code}, ({sections}) => {
+            style.sections = sections;
+            resolve(style);
+          });
+        }));
+      })
       .catch(() => null);
   }
 

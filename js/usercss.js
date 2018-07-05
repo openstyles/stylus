@@ -617,5 +617,5 @@ var usercss = (() => {
     });
   }
 
-  return {buildMeta, buildCode, assignVars};
+  return {buildMeta, buildCode, assignVars, invokeWorker};
 })();

@@ -4,6 +4,7 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
+global usercss
 */
 'use strict';
 
@@ -16,6 +17,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   download(msg) {
     delete msg.method;
     return download(msg.url, msg);
+  },
+  parseCss({code}) {
+    return usercss.invokeWorker({action: 'parse', code});
   },
   getPrefs:    () => prefs.getAll(),
   healthCheck: () => dbExec().then(() => true),
