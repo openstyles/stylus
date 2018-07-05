@@ -381,7 +381,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 .applies-to label {
   display: flex;
-  padding: 0; 
+  padding: 0;
   height: 22px;
   align-items: center;
   margin: 0 .2em 0 0;
@@ -789,6 +789,9 @@ html:not(.usercss) .usercss-only,
     padding: 0;
   }
   #actions {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: nowrap;
     padding: 0 1rem;
     margin: 0;
     box-sizing: border-box;
@@ -816,11 +819,6 @@ html:not(.usercss) .usercss-only,
   #basic-info #name {
     flex-grow: 1;
   }
-  #actions {
-    display: flex;
-    flex-wrap: wrap;
-    white-space: nowrap;
-  }
   #options-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -845,6 +843,10 @@ html:not(.usercss) .usercss-only,
   #lint summary {
     position: static;
     margin-bottom:  0;
+  }
+  #lint tbody {
+    display: flex;
+    flex-direction: column;
   }
   #options summary {
     margin-left: 0;
