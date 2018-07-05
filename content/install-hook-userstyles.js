@@ -380,7 +380,6 @@ document.documentElement.appendChild(document.createElement('script')).text = `(
         }
         const xhr = new XMLHttpRequest();
         xhr.onloadend = xhr.onerror = () => {
-          window.stop();
           top.postMessage({
             id: data.xhr.id,
             status: xhr.status,

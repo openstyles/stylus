@@ -52,8 +52,8 @@ window.addEventListener('showStyles:done', function _() {
   let searchCurrentPage = 1;
   let searchExhausted = false;
 
-  let searchFrame;
-  let searchFrameQueue;
+  let usoFrame;
+  let usoFrameQueue;
 
   const processedResults = [];
   const unprocessedResults = [];
@@ -651,9 +651,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyleJson(result) {
     return Promise.resolve(
       result.json ||
-      download(BASE_URL + '/styles/chrome/' + result.id + '.json', {
-        responseType: 'json',
-      }).then(json => {
+      downloadInFrame(BASE_URL + '/styles/chrome/' + result.id + '.json').then(json => {
         result.json = json;
         return json;
       }));
@@ -667,15 +665,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyle(userstylesId) {
     return readCache(userstylesId).then(json =>
       json ||
-      download(BASE_URL + '/api/v1/styles/' + userstylesId, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': '*/*'
-        },
-        responseType: 'json',
-        body: null
-      }).then(writeCache));
+      downloadInFrame(BASE_URL + '/api/v1/styles/' + userstylesId).then(writeCache));
   }
 
   /**
@@ -704,7 +694,7 @@ window.addEventListener('showStyles:done', function _() {
     return readCache(cacheKey)
       .then(json =>
         json ||
-        searchInFrame(searchURL).then(writeCache))
+        downloadInFrame(searchURL).then(writeCache))
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
@@ -787,21 +777,26 @@ window.addEventListener('showStyles:done', function _() {
   //endregion
   //region USO referrer spoofing via iframe
 
-  function searchInFrame(url) {
-    return searchFrame ? new Promise((resolve, reject) => {
+  function downloadInFrame(url) {
+    return usoFrame ? new Promise((resolve, reject) => {
       const id = performance.now();
       const timeout = setTimeout(() => {
-        searchFrameQueue.get(id).reject();
-        searchFrameQueue.delete(id);
+        const {reject} = usoFrameQueue.get(id) || {};
+        usoFrameQueue.delete(id);
+        if (reject) reject();
       }, 10e3);
-      searchFrameQueue.set(id, {resolve, reject, timeout});
-      searchFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
-    }) : setupFrame().then(() => searchInFrame(url));
+      const data = {url, resolve, reject, timeout};
+      usoFrameQueue.set(id, data);
+      usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
+    }) :
+      setupFrame()
+        .then(() => new Promise(setTimeout))
+        .then(() => downloadInFrame(url));
   }
 
   function setupFrame() {
-    searchFrame = $create('iframe', {src: BASE_URL});
-    searchFrameQueue = new Map();
+    usoFrame = $create('iframe', {src: BASE_URL});
+    usoFrameQueue = new Map();
 
     const stripHeaders = info => ({
       responseHeaders: info.responseHeaders.filter(({name}) => !/^X-Frame-Options$/i.test(name)),
@@ -833,10 +828,10 @@ window.addEventListener('showStyles:done', function _() {
 
     window.addEventListener('message', ({data, origin}) => {
       if (!data || origin !== BASE_URL) return;
-      const {resolve, reject, timeout} = searchFrameQueue.get(data.id) || {};
+      const {resolve, reject, timeout} = usoFrameQueue.get(data.id) || {};
       if (!resolve) return;
       chrome.webRequest.onBeforeRequest.removeListener(stripResources);
-      searchFrameQueue.delete(data.id);
+      usoFrameQueue.delete(data.id);
       clearTimeout(timeout);
       // [being overcautious] a string response is used instead of relying on responseType=json
       // because it was invoked in a web page context so another extension may have incorrectly spoofed it
@@ -853,10 +848,10 @@ window.addEventListener('showStyles:done', function _() {
         chrome.webRequest.onHeadersReceived.removeListener(stripHeaders);
         (event.type === 'load' ? resolve : reject)();
       };
-      searchFrame.addEventListener('load', done, {once: true});
-      searchFrame.addEventListener('error', done, {once: true});
-      searchFrame.style.setProperty('display', 'none', 'important');
-      document.body.appendChild(searchFrame);
+      usoFrame.addEventListener('load', done, {once: true});
+      usoFrame.addEventListener('error', done, {once: true});
+      usoFrame.style.setProperty('display', 'none', 'important');
+      document.body.appendChild(usoFrame);
     });
   }
 
