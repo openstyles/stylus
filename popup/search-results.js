@@ -808,7 +808,12 @@ window.addEventListener('showStyles:done', function _() {
 
     let frameId;
     const stripResources = info => {
-      if (!frameId && info.url === BASE_URL + '/') {
+      if (!frameId &&
+          info.frameId &&
+          info.type === 'sub_frame' &&
+          (info.initiator === location.origin || !info.initiator) && // Chrome 63+
+          (info.originUrl === location.href || !info.originUrl) && // FF 48+
+          info.url === BASE_URL + '/') {
         frameId = info.frameId;
       } else if (frameId === info.frameId && info.type !== 'xmlhttprequest') {
         return {redirectUrl: 'data:,'};
