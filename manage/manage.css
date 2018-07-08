@@ -1077,7 +1077,7 @@ input[id^="manage.newUI"] {
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 850px) {
   body {
     display: table;
   }
