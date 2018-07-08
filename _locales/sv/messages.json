@@ -3,8 +3,16 @@
 		"message": "Allt",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"manageOnlyUsercss": {
+		"message": "Endast Usercss stilar",
+		"description": "Checkbox to show only Usercss styles"
+	},
+	"exportLabel": {
+		"message": "Exportera",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
 	"cm_tabSize": {
-		"message": "Flikstorlek",
+		"message": "Tabbstorlek",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
@@ -15,6 +23,10 @@
 		"message": "Ange ett namn",
 		"description": "Error displayed when user saves without providing a name"
 	},
+	"genericHistoryLabel": {
+		"message": "Historik",
+		"description": "Used in various places to show a history log of something"
+	},
 	"appliesDomainOption": {
 		"message": "URL:er på domänen",
 		"description": "Option to make the style apply to the entered string as a domain"
@@ -23,13 +35,37 @@
 		"message": "Leta efter uppdatering",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"styleFromMozillaFormatError": {
+		"message": "Import av Mozilla-format misslyckades",
+		"description": "Label for the import error"
+	},
+	"importAppendLabel": {
+		"message": "Lägg till i stil",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
 	"updateAllCheckSucceededNoUpdate": {
 		"message": "Alla stilar är fullt uppdaterade.",
 		"description": "Text that displays when an update all check completed and no updates are available"
 	},
+	"styleFromMozillaFormatPrompt": {
+		"message": "Klistra in koden i Mozilla-formatet",
+		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+	},
 	"helpAlt": {
 		"message": "Hjälp",
 		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Sök",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"genericEnabledLabel": {
+		"message": "Aktiverad",
+		"description": "Used in various lists/options to indicate that something is enabled"
+	},
+	"confirmYes": {
+		"message": "Ja",
+		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
 		"message": "Hitta fler stilar för denna sida",
@@ -76,6 +112,22 @@
 			}
 		}
 	},
+	"manageOnlyLocal": {
+		"message": "Endast lokalt skapade stilar",
+		"description": "Checkbox to show only locally created styles i.e. non-updatable"
+	},
+	"searchStyles": {
+		"message": "Sök innehåll",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
+	"manageOnlyNonUsercss": {
+		"message": "Endast icke-Usercss stilar",
+		"description": "Checkbox to show only non-Usercss (standard) styles"
+	},
+	"linkGetStyles": {
+		"message": "Skaffa stilar",
+		"description": "Help link text on the manage page e.g. https://userstyles.org"
+	},
 	"disableStyleLabel": {
 		"message": "Inaktivera",
 		"description": "Label for the button to disable a style"
@@ -99,6 +151,10 @@
 	"styleChangesNotSaved": {
 		"message": "Du har gjort ändringar i denna stil utan att spara.",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+	},
+	"importLabel": {
+		"message": "Importera",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
 	},
 	"updateCheckFailServerUnreachable": {
 		"message": "Uppdateringen misslyckades: server onåbar.",
@@ -146,6 +202,10 @@
 		"message": "Sektioner",
 		"description": "Title for the style sections section"
 	},
+	"optionsAdvancedNewStyleAsUsercss": {
+		"message": "Skriv ny stil som Usercss",
+		"description": ""
+	},
 	"editStyleTitle": {
 		"message": "Ändra i Stil $stylename$",
 		"description": "Title of the page for editing styles",
@@ -162,6 +222,10 @@
 	"appliesUrlPrefixOption": {
 		"message": "URL:er som börjar på",
 		"description": "Option to make the style apply to the entered string as a URL prefix"
+	},
+	"searchRegexp": {
+		"message": "Använd /re/ för regexp-sökning",
+		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"popupStylesFirst": {
 		"message": "Lista stilar före kommandon i verktygsfältets knappmeny",
@@ -183,13 +247,17 @@
 		"message": "Ta bort",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
-	"manageTitle": {
-		"message": "Tyylikäs",
-		"description": "Title for the manage page"
+	"styleToMozillaFormatTitle": {
+		"message": "Stil i Mozilla-format",
+		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
 	},
 	"writeStyleFor": {
 		"message": "Skriv stil för:",
 		"description": "Label for toolbar pop-up that precedes the links to write a new style"
+	},
+	"replace": {
+		"message": "Ersätt",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
 	},
 	"appliesLabel": {
 		"message": "Gäller för",
@@ -216,6 +284,10 @@
 		"message": "Installera uppdatering",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"styleMozillaFormatHeading": {
+		"message": "Mozilla-format",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"sectionRemove": {
 		"message": "Ta bort sektion",
 		"description": "Label for the button to remove a section"
@@ -223,6 +295,10 @@
 	"disableAllStyles": {
 		"message": "Stäng av alla stilar",
 		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "Ångra i alla sektioner",
+		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
 		"message": "Uppdatering slutförd.",
@@ -236,6 +312,10 @@
 		"message": "Kod",
 		"description": "Label for the code for a section"
 	},
+	"externalUsercssDocument": {
+		"message": "Dokumentation för Usercss",
+		"description": "Label for the external link to usercss documentation"
+	},
 	"cm_smartIndent": {
 		"message": "Använd smart indrag",
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
@@ -244,9 +324,17 @@
 		"message": "Använd 'Gäller för' alternativet för att begränsa vilka URL:er koden i denna sektion gäller för.",
 		"description": "Help text for 'applies to' section"
 	},
+	"linkGetHelp": {
+		"message": "Hjälp",
+		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
 	"editStyleHeading": {
 		"message": "Ändra i Stil",
 		"description": "Title of the page for editing styles"
+	},
+	"manageOnlyDisabled": {
+		"message": "Endast inaktiverade stilar",
+		"description": "Checkbox to show only disabled styles"
 	},
 	"stylusUnavailableForURL": {
 		"message": "Stylus fungerar inte på sidor som denna.",
@@ -256,25 +344,65 @@
 		"message": "Lägg till stil",
 		"description": "Title of the page for adding styles"
 	},
+	"importReplaceLabel": {
+		"message": "Ersätt stil",
+		"description": "Label for the button to import and overwrite current style"
+	},
 	"dbError": {
 		"message": "Ett fel inträffades vid hanteringen av Stylus-databasen. Skulle du vilja besöka en sida med eventuella lösningar?",
 		"description": "Prompt when a DB error is encountered"
+	},
+	"importAppendTooltip": {
+		"message": "Lägg till den importerad stilen i aktuell stil",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"manageOnlyExternal": {
+		"message": "Endast externa stilar",
+		"description": "Checkbox to show only externally installed styles i.e. updatable"
+	},
+	"replaceAll": {
+		"message": "Ersätt alla",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"editGotoLine": {
 		"message": "Gå till rad (eller rad:kol)",
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
 	"checkAllUpdates": {
-		"message": "Leta igenom alla stilar efter uppdateringar",
+		"message": "Sök efter uppdateringar",
 		"description": "Label for the button to check all styles for updates"
+	},
+	"manageNewStyleAsUsercss": {
+		"message": "som Usercss",
+		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+	},
+	"confirmNo": {
+		"message": "Nej",
+		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Ångra",
+		"description": "Button label"
 	},
 	"cm_keyMap": {
 		"message": "Nyckelkarta",
 		"description": "Label for the drop-down list controlling the keymap for the style editor."
 	},
+	"confirmSave": {
+		"message": "Spara",
+		"description": "'Save' button in a confirm dialog"
+	},
+	"genericDisabledLabel": {
+		"message": "Inaktiverad",
+		"description": "Used in various lists/options to indicate that something is disabled"
+	},
 	"cm_indentWithTabs": {
-		"message": "Använd flikar med smart indrag",
+		"message": "Använd tabbar med smart indrag",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+	},
+	"replaceWith": {
+		"message": "Ersätt med",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
 		"message": "Ta bort",
@@ -292,8 +420,16 @@
 		"message": "Ändra",
 		"description": "Label for the button to go to the edit style page"
 	},
+	"cm_theme": {
+		"message": "Tema",
+		"description": "Label for the style editor's CSS theme."
+	},
 	"description": {
 		"message": "Style:a om webben med Stylus, en användarstils-hanterare. Stylus låter dig enkelt installera teman och skal för många populära sidor.",
 		"description": "Extension description"
+	},
+	"confirmClose": {
+		"message": "Stäng",
+		"description": "'Close' button in a confirm dialog"
 	}
 }
