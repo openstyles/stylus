@@ -49,7 +49,7 @@ label {
   overflow: auto;
   position: fixed;
   top: 0;
-  padding: 15px;
+  padding: 1rem;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 3rem -1.2rem black;
   box-shadow: 0 0 3rem -1.2rem black;
