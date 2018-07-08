@@ -54,7 +54,7 @@ select {
   height: 100vh;
   position: fixed;
   top: 0;
-  padding: 15px;
+  padding: 1rem;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 50px -18px black;
   box-shadow: 0 0 50px -18px black;
