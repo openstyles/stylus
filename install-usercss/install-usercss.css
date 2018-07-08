@@ -446,7 +446,7 @@ label {
 
 /************ reponsive layouts ************/
 
-@media (max-width:800px) {
+@media (max-width:850px) {
   body {
     overflow: hidden;
   }
