@@ -302,7 +302,7 @@ select {
   cursor: pointer;
 }
 
-#header #filters summary { 
+#header #filters summary {
   margin: 0 0 -2px -13px;
 }
 
@@ -1100,11 +1100,11 @@ input[id^="manage.newUI"] {
   #installed {
     table-layout: fixed;
   }
-  
+
   .newUI .entry .actions {
     padding-right: 30px
   }
-  
+
   #search-wrapper,
   #sort-wrapper,
   #header summary {
@@ -1174,31 +1174,35 @@ input[id^="manage.newUI"] {
 
   .newUI .entry .checkmate {
     position: absolute;
-    left: 16px;
+    left: 14px;
     top: 0;
     bottom: 0;
     margin: auto;
   }
 
   .newUI .entry .style-name {
-    width: 50%;
-    padding: .5rem 1rem .5rem 36px;
+    padding: .5rem 0 .5rem 34px;
     text-indent: unset;
   }
 
   .newUI .entry .actions {
-    padding: 0;
-    width: 112px;
-    padding: .5rem 0;
+    width: 104px;
+    padding: .5rem 0 .5rem 6px;
   }
 
   .newUI .entry .applies-to {
-    padding: .5rem 1rem;
-    width: calc(50% - 112px);
+    padding: .25rem .5rem .25rem 0;
   }
 
-  .newUI .target {
+  .newUI .entry .target {
     max-width: 100%;
+    padding-right: 0;
+  }
+
+  .newUI .style-name::after,
+  .newUI .style-name-link::after {
+    text-indent: 0;
+    display: inline-block;
   }
 }
 
