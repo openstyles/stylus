@@ -220,8 +220,17 @@ input:invalid {
   flex-wrap: wrap;
 }
 
-#actions button {
+#actions > div > a {
+  height: min-content;
+}
+
+#actions button,
+#actions > div > a {
   margin: 0 .2rem .5rem 0;
+}
+
+#actions #cancel-button {
+  margin: 0;
 }
 
 #options:not([open]) + #lint h2 {
