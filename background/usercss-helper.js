@@ -3,7 +3,7 @@
 
 (() => {
 
-  API_METHODS.saveUsercss = save;
+  API_METHODS.saveUsercss = style => save(style, false);
   API_METHODS.saveUsercssUnsafe = style => save(style, true);
   API_METHODS.buildUsercss = build;
   API_METHODS.installUsercss = install;
