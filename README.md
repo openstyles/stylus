@@ -45,12 +45,14 @@ See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-For copyright status of the "codemirror" directory, see [codemirror/LICENSE](https://github.com/openstyles/stylus/blob/master/src/vendor/codemirror/LICENSE). Everything else is:
+Predecessor [Stylish](https://github.com/stylish-userstyles/stylish/):  
+Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
-Copyright (C) 2005-2014 Jason Barnabe <jason.barnabe@gmail.com>
 
-Copyright (C) 2017 Stylus Team
+Current Stylus:  
+Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
+**[GNU GPLv3](https://github.com/openstyles/stylus/blob/master/COPYING)**  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -63,3 +65,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+### External libraries
+
+The licenses of [external libraries](https://github.com/openstyles/stylus/tree/master/vendor) used in this project or [modified versions of external libraries](https://github.com/openstyles/stylus/tree/master/vendor-overwrites) can be found in their respective directory.
