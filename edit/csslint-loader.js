@@ -1,7 +1,9 @@
-/* global parserlib CSSLint parseMozFormat */
+/* global importScripts parserlib CSSLint parseMozFormat */
 'use strict';
 
-self.importScripts('./parserlib.js');
+const CSSLINT_PATH = '/vendor-overwrites/csslint/';
+importScripts(CSSLINT_PATH + 'parserlib.js');
+
 parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
 
 self.onmessage = ({data}) => {
@@ -14,7 +16,7 @@ self.onmessage = ({data}) => {
     return;
   }
 
-  if (!self.CSSLint) self.importScripts('./csslint.js');
+  if (!self.CSSLint) self.importScripts(CSSLINT_PATH + 'csslint.js');
 
   switch (action) {
     case 'getAllRuleIds':
