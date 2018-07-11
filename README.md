@@ -49,7 +49,7 @@ Inherited code from the original [Stylish](https://github.com/stylish-userstyles
 Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
 Current Stylus:  
-Copyright &copy; 2017-2018 [Stylus Team](./graphs/contributors)
+Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
 **[GNU GPLv3](./blob/master/LICENSE)**  
 This program is free software: you can redistribute it and/or modify
