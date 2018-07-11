@@ -28,9 +28,9 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Help
 
-[![Discord][chat-image]][chat-link]
-
-See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userstyles.org forum](https://forum.userstyles.org). For Stylus specific questions and suggestions please use [review section](http://add0n.com/stylus.html#reviews) of the FAQs page.
+- [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
+- [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
+- Discord: [![Discord][chat-image]][chat-link]
 
 [chat-image]: https://img.shields.io/discord/379521691774353408.svg
 [chat-link]: https://discordapp.com/widget?id=379521691774353408
@@ -51,7 +51,7 @@ Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 Current Stylus:  
 Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
-**[GNU GPLv3](https://github.com/openstyles/stylus/blob/master/LICENSE)**
+**[GNU GPLv3](./LICENSE)**  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -63,8 +63,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ### External libraries
 
-The licenses of [external libraries](https://github.com/openstyles/stylus/tree/master/vendor) used in this project or [modified versions of external libraries](https://github.com/openstyles/stylus/tree/master/vendor-overwrites) can be found in their respective directory.
+The licenses of [external libraries](./vendor) used in this project or [modified versions of external libraries](./vendor-overwrites) can be found in their respective directory.
