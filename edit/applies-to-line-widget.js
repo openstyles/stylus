@@ -40,8 +40,8 @@ function createAppliesToLineWidget(cm) {
     CLICK_ROUTE = {
       '.test-regexp': showRegExpTester,
 
-      '.remove-applies-to': (item, apply) => {
-        event.preventDefault() 
+      '.remove-applies-to': (item, apply, event) => {
+        event.preventDefault();
         const applies = item.closest('.applies-to').__applies;
         const i = applies.indexOf(apply);
         let repl;
@@ -73,8 +73,8 @@ function createAppliesToLineWidget(cm) {
         applies.splice(i, 1);
       },
 
-      '.add-applies-to': (item, apply) => {
-        event.preventDefault() 
+      '.add-applies-to': (item, apply, event) => {
+        event.preventDefault();
         const applies = item.closest('.applies-to').__applies;
         const i = applies.indexOf(apply);
         const pos = apply.mark.find().to;
@@ -111,12 +111,13 @@ function createAppliesToLineWidget(cm) {
           changeItem(item, apply, 'value', target.value);
         }
       },
-      onclick({target}) {
+      onclick(event) {
+        const {target} = event;
         for (const selector in CLICK_ROUTE) {
           const routed = target.closest(selector);
           if (routed) {
             const item = routed.closest('.applies-to-item');
-            CLICK_ROUTE[selector].call(routed, item, item.__apply);
+            CLICK_ROUTE[selector].call(routed, item, item.__apply, event);
             return;
           }
         }
