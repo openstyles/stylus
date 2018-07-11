@@ -51,8 +51,7 @@ Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 Current Stylus:  
 Copyright &copy; 2017-2018 [Stylus Team](./graphs/contributors)
 
-**[GNU GPLv3](./blob/master/LICENSE)**
-
+**[GNU GPLv3](./blob/master/LICENSE)**  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
