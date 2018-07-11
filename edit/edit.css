@@ -762,7 +762,7 @@ html:not(.usercss) .usercss-only,
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
   margin: 1em 0;
-  padding: 1em;
+  padding: .75rem .75rem .25rem;
   padding-right: calc(1em + 20px);
 }
 
