@@ -28,7 +28,7 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Help
 
-- [Stylus help, FAQ and Wiki](https://github.com/openstyles/stylus/wiki)
+- [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
 - [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
 - Discord: [![Discord][chat-image]][chat-link]
 
