@@ -67,4 +67,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ### External libraries
 
-The licenses of [external libraries](./tree/master/vendor) used in this project or [modified versions of external libraries](./tree/master/vendor-overwrites) can be found in their respective directory.
+The licenses of [external libraries](./vendor) used in this project or [modified versions of external libraries](./vendor-overwrites) can be found in their respective directory.
