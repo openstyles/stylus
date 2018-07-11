@@ -37,7 +37,7 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Contributing
 
-The source is hosted on [GitHub](https://github.com/openstyles/stylus/) and pull requests are welcome.
+The source is hosted on [GitHub](https://github.com/openstyles/stylus) and pull requests are welcome.
 
 You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylus/issues](https://github.com/openstyles/stylus/issues).
 
