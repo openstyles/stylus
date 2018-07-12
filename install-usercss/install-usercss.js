@@ -141,7 +141,7 @@
     requestAnimationFrame(adjustCodeHeight);
 
     function makeAuthor(text) {
-      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
+      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
       if (!match) {
         return document.createTextNode(text);
       }
