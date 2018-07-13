@@ -5,6 +5,7 @@
 3. [Adding translations](#adding-translations)
 4. [Core style guide](#core-style-guide)
 5. [Pull requests](#pull-requests)
+6. [Contact us](#contact-us)
 
 ## Getting involved
 
