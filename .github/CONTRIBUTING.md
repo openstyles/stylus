@@ -3,9 +3,8 @@
 1. [Getting involved](#getting-involved)
 2. [How to report issues](#how-to-report-issues)
 3. [Adding translations](#adding-translations)
-4. [Core style guide](#core-style-guide)
-5. [Pull requests](#pull-requests)
-6. [Contact us](#contact-us)
+4. [Pull requests](#pull-requests)
+5. [Contact us](#contact-us)
 
 ## Getting involved
 
