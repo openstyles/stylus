@@ -72,12 +72,24 @@
       "js": ["content/install-hook-openusercss.js"]
     },
     {
-      "matches": ["<all_urls>"],
-      "include_globs": [
-        "*.user.css",
-        "*.user.styl",
-        "*.user.css\\?*",
-        "*.user.styl\\?*"
+      "matches": [
+        "*://*/*.user.css",
+        "*://*/*.user.styl",
+
+        "file://*/*.user.css",
+        "file://*/*.user.styl",
+
+        "ftp://*/*.user.css",
+        "ftp://*/*.user.styl",
+
+        "*://*/*.user.css?*",
+        "*://*/*.user.styl?*",
+
+        "file://*/*.user.css?*",
+        "file://*/*.user.styl?*",
+
+        "ftp://*/*.user.css?*",
+        "ftp://*/*.user.styl?*"
       ],
       "run_at": "document_idle",
       "all_frames": false,
