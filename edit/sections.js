@@ -156,6 +156,8 @@ function addAppliesTo(list, type, value) {
   if (this instanceof Node) {
     clickedItem = this.closest('.applies-to-item');
     list = this.closest('.applies-to-list');
+    // dummy <a> wrapper was clicked
+    if (arguments[0] instanceof Event) arguments[0].preventDefault();
   }
   const showingEverything = $('.applies-to-everything', list);
   // blow away 'Everything' if it's there
@@ -416,6 +418,7 @@ function getSectionsHashes() {
 }
 
 function removeAppliesTo(event) {
+  event.preventDefault();
   const appliesTo = event.target.closest('.applies-to-item');
   const appliesToList = appliesTo.closest('.applies-to-list');
   removeAreaAndSetDirty(appliesTo);
