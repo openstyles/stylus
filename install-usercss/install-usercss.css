@@ -462,32 +462,65 @@ label {
     overflow-y: hidden;
     padding: 0;
   }
+  #header:not(.meta-init) {
+    min-height: 300px;
+  }
   .main {
     flex: 1;
   }
   #header-content-wrapper {
     display: flex;
     flex-wrap: wrap;
-    padding: 1rem 0;
+    padding: .5rem 0 0 1rem;
     box-sizing: border-box;
     height: min-content;
   }
   #header-content-wrapper > * {
     flex-grow: 1;
     margin: 0;
-    padding: 0 1rem .5rem;
+    padding: 0 1rem .5rem 0;
     min-width: 0;
+  }
+  #header-content-wrapper > .meta-description + .flex-wrapper {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+  #header-content-wrapper > .meta-description + .flex-wrapper > * {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    padding: 0 1rem .5rem 0;
+    box-sizing: border-box;
+  }
+  .flex-wrapper ul {
+    margin: 0;
   }
   #header-content-wrapper > .meta-description {
     flex-basis: 100%;
-  }
-  #header-content-wrapper > :last-child {
-    padding-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
+  }
+  .set-update-url p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .actions label {
+    min-width: 100px;
+    flex: 1;
+  }
+  .actions label span {
+    white-space: nowrap;
   }
   .has-warnings #header {
     min-height: 4em;
@@ -504,10 +537,24 @@ label {
   .actions label {
     margin: 0;
   }
+  #header-content-wrapper > h1 {
+    font-size: 1.75em;
+    display: flex;
+    align-items: baseline;
+  }
+  #header-content-wrapper > h1 > .meta-version {
+    padding-left: 3px;
+  }
+  #header-content-wrapper > h1 > .meta-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   #header-content-wrapper > * h3 {
-    margin-top: 0;
+    margin: 0 0 .5rem;
   }
   .install {
+    flex-shrink: 0;
     margin-right: 1em;
   }
 }
