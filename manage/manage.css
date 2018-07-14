@@ -226,6 +226,11 @@ select {
   display: none;
 }
 
+.newUI .style-name::after,
+.newUI .style-name-link::after {
+  vertical-align: text-top;
+}
+
 .disabled h2::after, .entry.usercss .style-name-link::after {
   font-weight: normal;
   font-size: 11px;
