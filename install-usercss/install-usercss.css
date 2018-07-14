@@ -79,6 +79,7 @@ input:disabled + span {
   overflow-wrap: break-word;
   white-space: pre-wrap;
   margin: 1ex 0 0;
+  font-family: monospace;
   font-weight: normal;
   font-size: 80%;
 }

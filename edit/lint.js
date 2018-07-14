@@ -20,8 +20,8 @@ var linterConfig = {
     stylelint: 'editorStylelintConfig',
   },
   worker: {
-    csslint: {path: '/vendor-overwrites/csslint/csslint-loader.js'},
-    stylelint: {path: '/vendor-overwrites/stylelint/stylelint-bundle.min.js'},
+    csslint: {path: '/edit/csslint-loader.js'},
+    stylelint: {path: '/edit/stylelint-loader.js'},
   },
   allRuleIds: {
     csslint: null,

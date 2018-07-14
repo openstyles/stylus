@@ -141,7 +141,7 @@
     requestAnimationFrame(adjustCodeHeight);
 
     function makeAuthor(text) {
-      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
+      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
       if (!match) {
         return document.createTextNode(text);
       }
@@ -230,7 +230,7 @@
   function buildWarning(err) {
     const contents = Array.isArray(err) ?
       [$create('pre', err.join('\n'))] :
-      [err && err.message || err || 'Unknown error'];
+      [err && err.message && $create('pre', err.message) || err || 'Unknown error'];
     if (Number.isInteger(err.index)) {
       const pos = cm.posFromIndex(err.index);
       contents[0] = `${pos.line + 1}:${pos.ch + 1} ` + contents[0];

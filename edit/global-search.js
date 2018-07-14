@@ -93,11 +93,7 @@ onDOMready().then(() => {
       replaceAll: () => doReplaceAll(),
       undo: () => doUndo(),
       clear() {
-        this._input.focus();
-        document.execCommand('selectAll', false, null);
-        document.execCommand('delete', false, null);
-        // some versions of Firefox ignore the above
-        this._input.value = '';
+        setInputValue(this._input, '');
       },
       case() {
         state.icase = !state.icase;
@@ -545,11 +541,7 @@ onDOMready().then(() => {
       destroyDialog();
       createDialog(type);
     } else if (sel) {
-      state.input.focus();
-      state.input.select();
-      document.execCommand('insertText', false, sel);
-      // some versions of Firefox ignore the above
-      state.input.value = sel;
+      setInputValue(state.input, sel);
     }
 
     state.input.focus();
@@ -933,4 +925,19 @@ onDOMready().then(() => {
         })
       }));
   }
+
+
+  function setInputValue(input, value) {
+    input.focus();
+    input.select();
+    // using execCommand to add to the input's undo history
+    document.execCommand(value ? 'insertText' : 'delete', false, value);
+    // some versions of Firefox ignore execCommand
+    if (input.value !== value) {
+      input.value = value;
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+  }
+
+  //endregion
 });

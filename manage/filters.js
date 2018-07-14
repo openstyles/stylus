@@ -23,8 +23,9 @@ HTMLSelectElement.prototype.adjustWidth = function () {
   singleSelect.style.width = '';
   singleSelect.appendChild(option0.cloneNode(true));
   parent.replaceChild(singleSelect, this);
-  if (this.style.width !== singleSelect.offsetWidth + 'px') {
-    this.style.width = singleSelect.offsetWidth + 'px';
+  const w = singleSelect.offsetWidth;
+  if (w && this.style.width !== w + 'px') {
+    this.style.width = w + 'px';
   }
   parent.replaceChild(this, singleSelect);
 };

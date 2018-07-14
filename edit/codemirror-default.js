@@ -229,7 +229,7 @@
   });
 
   // doubleclick option
-  {
+  if (typeof editors !== 'undefined') {
     const fn = (cm, repeat) =>
       repeat === 'double' ?
         {unit: selectTokenOnDoubleclick} :

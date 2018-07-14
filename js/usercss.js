@@ -51,6 +51,7 @@ var usercss = (() => {
         return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
             const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
+            if (!Error.captureStackTrace) Error.captureStackTrace = () => {};
             window.stylus(varDef + source).render((err, output) => {
               if (err) {
                 reject(err);
@@ -599,7 +600,7 @@ var usercss = (() => {
 
   function invokeWorker(message) {
     if (!worker.queue) {
-      worker.instance = new Worker('/vendor-overwrites/csslint/csslint-loader.js');
+      worker.instance = new Worker('/edit/csslint-loader.js');
       worker.queue = [];
       worker.instance.onmessage = ({data}) => {
         worker.queue.shift().resolve(data.__ERROR__ ? Promise.reject(data.__ERROR__) : data);
@@ -616,5 +617,5 @@ var usercss = (() => {
     });
   }
 
-  return {buildMeta, buildCode, assignVars};
+  return {buildMeta, buildCode, assignVars, invokeWorker};
 })();

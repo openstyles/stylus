@@ -44,12 +44,16 @@ window.addEventListener('showStyles:done', function _() {
   const CACHE_SIZE = 1e6;
   const CACHE_PREFIX = 'usoSearchCache/';
   const CACHE_DURATION = 24 * 3600e3;
-  const CACHE_CLEANUP_THROTTLE = 60e3;
+  const CACHE_CLEANUP_THROTTLE = 10e3;
+  const CACHE_CLEANUP_NEEDED = CACHE_PREFIX + 'clean?';
   const CACHE_EXCEPT_PROPS = ['css', 'discussions', 'additional_info'];
 
   let searchTotalPages;
   let searchCurrentPage = 1;
   let searchExhausted = false;
+
+  let usoFrame;
+  let usoFrameQueue;
 
   const processedResults = [];
   const unprocessedResults = [];
@@ -145,6 +149,9 @@ window.addEventListener('showStyles:done', function _() {
         renderActionButtons($('#' + RESULT_ID_PREFIX + usoId));
       }
     });
+
+    chromeLocal.getValue(CACHE_CLEANUP_NEEDED).then(value =>
+      value && debounce(cleanupCache, CACHE_CLEANUP_THROTTLE));
   }
 
   //endregion
@@ -644,9 +651,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyleJson(result) {
     return Promise.resolve(
       result.json ||
-      download(BASE_URL + '/styles/chrome/' + result.id + '.json', {
-        responseType: 'json',
-      }).then(json => {
+      downloadInFrame(BASE_URL + '/styles/chrome/' + result.id + '.json').then(json => {
         result.json = json;
         return json;
       }));
@@ -660,15 +665,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyle(userstylesId) {
     return readCache(userstylesId).then(json =>
       json ||
-      download(BASE_URL + '/api/v1/styles/' + userstylesId, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': '*/*'
-        },
-        responseType: 'json',
-        body: null
-      }).then(writeCache));
+      downloadInFrame(BASE_URL + '/api/v1/styles/' + userstylesId).then(writeCache));
   }
 
   /**
@@ -697,15 +694,7 @@ window.addEventListener('showStyles:done', function _() {
     return readCache(cacheKey)
       .then(json =>
         json ||
-        download(searchURL, {
-          method: 'GET',
-          headers: {
-            'Content-type': 'application/json',
-            'Accept': '*/*'
-          },
-          responseType: 'json',
-          body: null
-        }).then(writeCache))
+        downloadInFrame(searchURL).then(writeCache))
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
@@ -742,6 +731,7 @@ window.addEventListener('showStyles:done', function _() {
       setTimeout(writeCache, 100, data, true);
       return data;
     } else {
+      chromeLocal.setValue(CACHE_CLEANUP_NEEDED, true);
       debounce(cleanupCache, CACHE_CLEANUP_THROTTLE);
       return chromeLocal.loadLZStringScript().then(() =>
         chromeLocal.setValue(CACHE_PREFIX + data.id, {
@@ -756,15 +746,16 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function cleanupCache() {
-    if (!chrome.storage.local.getBytesInUse) {
-      chrome.storage.local.get(null, cleanupCacheInternal);
-    } else {
+    chromeLocal.remove(CACHE_CLEANUP_NEEDED);
+    if (chrome.storage.local.getBytesInUse) {
       chrome.storage.local.getBytesInUse(null, size => {
         if (size > CACHE_SIZE) {
           chrome.storage.local.get(null, cleanupCacheInternal);
         }
         ignoreChromeError();
       });
+    } else {
+      chrome.storage.local.get(null, cleanupCacheInternal);
     }
   }
 
@@ -781,6 +772,92 @@ window.addEventListener('showStyles:done', function _() {
       chrome.storage.local.remove(toRemove.map(item => item.key), ignoreChromeError);
     }
     ignoreChromeError();
+  }
+
+  //endregion
+  //region USO referrer spoofing via iframe
+
+  function downloadInFrame(url) {
+    return usoFrame ? new Promise((resolve, reject) => {
+      const id = performance.now();
+      const timeout = setTimeout(() => {
+        const {reject} = usoFrameQueue.get(id) || {};
+        usoFrameQueue.delete(id);
+        if (reject) reject();
+      }, 10e3);
+      const data = {url, resolve, reject, timeout};
+      usoFrameQueue.set(id, data);
+      usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
+    }) : setupFrame().then(() => downloadInFrame(url));
+  }
+
+  function setupFrame() {
+    usoFrame = $create('iframe', {src: BASE_URL});
+    usoFrameQueue = new Map();
+
+    const stripHeaders = info => ({
+      responseHeaders: info.responseHeaders.filter(({name}) => !/^X-Frame-Options$/i.test(name)),
+    });
+    chrome.webRequest.onHeadersReceived.addListener(stripHeaders, {
+      urls: [BASE_URL + '/'],
+      types: ['sub_frame'],
+    }, [
+      'blocking',
+      'responseHeaders',
+    ]);
+
+    let frameId;
+    const stripResources = info => {
+      if (!frameId &&
+          info.frameId &&
+          info.type === 'sub_frame' &&
+          (info.initiator === location.origin || !info.initiator) && // Chrome 63+
+          (info.originUrl === location.href || !info.originUrl) && // FF 48+
+          info.url === BASE_URL + '/') {
+        frameId = info.frameId;
+      } else if (frameId === info.frameId && info.type !== 'xmlhttprequest') {
+        return {redirectUrl: 'data:,'};
+      }
+    };
+    chrome.webRequest.onBeforeRequest.addListener(stripResources, {
+      urls: ['<all_urls>'],
+    }, [
+      'blocking',
+    ]);
+    setTimeout(() => {
+      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
+    }, 10e3);
+
+    window.addEventListener('message', ({data, origin}) => {
+      if (!data || origin !== BASE_URL) return;
+      const {resolve, reject, timeout} = usoFrameQueue.get(data.id) || {};
+      if (!resolve) return;
+      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
+      usoFrameQueue.delete(data.id);
+      clearTimeout(timeout);
+      // [being overcautious] a string response is used instead of relying on responseType=json
+      // because it was invoked in a web page context so another extension may have incorrectly spoofed it
+      const json = tryJSONparse(data.response);
+      if (json && data.status < 400) {
+        resolve(json);
+      } else {
+        reject(data.status);
+      }
+    });
+
+    return new Promise((resolve, reject) => {
+      const done = event => {
+        chrome.webRequest.onHeadersReceived.removeListener(stripHeaders);
+        (event.type === 'load' ? resolve : reject)();
+        usoFrameQueue.forEach(({url}, id) => {
+          usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
+        });
+      };
+      usoFrame.addEventListener('load', done, {once: true});
+      usoFrame.addEventListener('error', done, {once: true});
+      usoFrame.style.setProperty('display', 'none', 'important');
+      document.body.appendChild(usoFrame);
+    });
   }
 
   //endregion

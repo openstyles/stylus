@@ -471,7 +471,7 @@ body.blocked .actions > .main-controls {
   margin-right: 4px;
   /* several languages have labels of wildly different lengths so we try to maintain the proportion */
   flex: 1 1 auto;
-  min-width: 4em;
+  min-width: 2em;
 }
 
 #popup-options button:last-child {
