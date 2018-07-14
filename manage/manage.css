@@ -942,7 +942,7 @@ input[id^="manage.newUI"] {
 }
 
 #search-help, #sorter-help {
-  margin: 4px -5px 0 2px;
+  margin: 0 -5px 0 2px;
 }
 
 #sort-wrapper .select-arrow {
