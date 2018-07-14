@@ -723,6 +723,10 @@ html:not(.usercss) .usercss-only,
   padding-top: 0;
 }
 
+#options-wrapper .options-column:nth-child(2) {
+  margin-top: .75rem;
+}
+
 .usercss #name {
   background-color: #eee;
   color: #888;
@@ -838,6 +842,9 @@ html:not(.usercss) .usercss-only,
     flex-grow: 1;
     padding-right: .5rem;
     box-sizing: border-box;
+  }
+  #options-wrapper .options-column:nth-child(2) {
+    margin-top: 0;
   }
   #options:not([open]),
   #lint:not([open]) {
