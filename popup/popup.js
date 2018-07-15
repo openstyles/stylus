@@ -35,6 +35,7 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
+    case 'exclusionsUpdated':
       if (msg.reason === 'editPreview') return;
       handleUpdate(msg.style);
       break;

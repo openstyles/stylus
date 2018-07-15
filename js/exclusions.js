@@ -16,13 +16,17 @@ const exclusions = (() => {
 
   // get exclusions from a select element
   function get() {
-    exclusions.list = {};
+    const list = {};
     $$('#excluded-wrap input').forEach(input => {
       const url = input.value;
       if (url && validExclusionRegex.test(url)) {
-        exclusions.list[url] = createRegExp(url);
+        list[url] = createRegExp(url);
       }
     });
+    exclusions.list = Object.keys(list).sort().reduce((acc, ex) => {
+      acc[ex] = list[ex];
+      return acc;
+    }, {});
     return exclusions.list;
   }
 
@@ -54,7 +58,7 @@ const exclusions = (() => {
     const block = $('#excluded-wrap');
     block.textContent = '';
     const container = document.createDocumentFragment();
-    list.forEach(value => {
+    list.sort().forEach(value => {
       addExclusionEntry({container, value});
     });
     block.appendChild(container);
@@ -158,6 +162,7 @@ const exclusions = (() => {
       style.exclusions = exclusionList;
       style.reason = 'exclusionsUpdated';
       API.saveStyle(style);
+      notifyAllTabs({method: 'exclusionsUpdated', style, id});
     });
   }
 

@@ -298,7 +298,6 @@ function filterStylesInternal({
   const filtered = asHash ? {length: 0} : [];
   const needSections = asHash || matchUrl !== null;
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
-
   let style;
   for (let i = 0; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled === enabled)
@@ -483,8 +482,13 @@ function getApplicableSections({
   // but the spec is outdated and doesn't account for SPA sites
   // so we only respect it in case of url("http://exact.url/without/hash")
 }) {
-  if (!skipUrlCheck && !URLS.supported(matchUrl) || omitCode !== false && isPageExcluded(matchUrl, style.exclusions)) {
+  const excluded = isPageExcluded(matchUrl, style.exclusions);
+  if (!skipUrlCheck && !URLS.supported(matchUrl) || omitCode !== false && excluded) {
     return [];
+  }
+  // Show excluded style in popup
+  if (excluded) {
+    return [''];
   }
   const sections = [];
   for (const section of style.sections) {

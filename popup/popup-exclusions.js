@@ -162,6 +162,7 @@ const popupExclusions = (() => {
         entry.styleMeta = style;
         entry.classList.toggle('excluded', isExcluded(tabURL, style.exclusions));
       }
+      notifyAllTabs({method: 'exclusionsUpdated', style, id: entry.styleId});
     }
     return Promise.resolve();
   }

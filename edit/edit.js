@@ -190,6 +190,12 @@ function onRuntimeMessage(request) {
     case 'editDeleteText':
       document.execCommand('delete');
       break;
+    case 'exclusionsUpdated':
+      debounce(() => exclusions.update({
+        list: Object.keys(request.style.exclusions),
+        isUpdating: false
+      }), 100);
+      break;
   }
 }
 
