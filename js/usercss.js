@@ -35,10 +35,9 @@ var usercss = (() => {
   const BUILDER = {
     default: {
       postprocess(sections, vars) {
-        const varDef =
-          ':root {\n' +
-          Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('') +
-          '}\n';
+        let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
+        if (!varDef) return;
+        varDef = ':root {\n' + varDef + '}\n';
         for (const section of sections) {
           if (!styleCodeEmpty(section.code)) {
             section.code = varDef + section.code;
