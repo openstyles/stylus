@@ -314,7 +314,7 @@ function filterStylesInternal({
           omitCode,
         });
       if (asHash) {
-        if (sections.length) {
+        if (sections.length && sections[0] !== '') {
           filtered[style.id] = sections;
           filtered.length++;
         }
@@ -857,12 +857,14 @@ function detectSloppyRegexps({matchUrl, ids}) {
     if (!hasRegExp) continue;
     const applied = getApplicableSections({style, matchUrl, omitCode: false});
     const wannabe = getApplicableSections({style, matchUrl, omitCode: false, strictRegexp: false});
-    results.push({
-      id,
-      applied,
-      skipped: wannabe.length - applied.length,
-      hasInvalidRegexps: wannabe.some(({regexps}) => regexps.some(rx => !rxCache.has(rx))),
-    });
+    if (wannabe.length && wannabe[0] !== '') {
+      results.push({
+        id,
+        applied,
+        skipped: wannabe.length - applied.length,
+        hasInvalidRegexps: wannabe.some(({regexps}) => regexps.some(rx => !rxCache.has(rx))),
+      });
+    }
   }
   return results;
 }
