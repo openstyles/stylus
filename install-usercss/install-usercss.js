@@ -49,7 +49,7 @@
 
   setTimeout(() => {
     if (!installed) {
-      $('.header').appendChild($create('.lds-spinner',
+      $('#header').appendChild($create('.lds-spinner',
         new Array(12).fill($create('div')).map(e => e.cloneNode())));
     }
   }, 200);
@@ -133,8 +133,8 @@
       $('.external-link').appendChild(externalLink);
     }
 
-    $('.header').classList.add('meta-init');
-    $('.header').classList.remove('meta-init-error');
+    $('#header').classList.add('meta-init');
+    $('#header').classList.remove('meta-init-error');
     setTimeout(() => $.remove('.lds-spinner'), 1000);
 
     showError('');
@@ -222,7 +222,7 @@
     API.buildUsercss({sourceCode, checkDup: true})
       .then(init)
       .catch(err => {
-        $('.header').classList.add('meta-init-error');
+        $('#header').classList.add('meta-init-error');
         showError(err);
       });
   }
