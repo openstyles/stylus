@@ -620,10 +620,7 @@
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
       switch (e.which) {
         case 13:
-          setFromInputs({});
-        // fallthrough to 27
         case 27:
-          colorpickerCallback(e.which === 27 ? '' : undefined);
           e.preventDefault();
           e.stopPropagation();
           hide({notify: false});

@@ -27,6 +27,10 @@
 		"message": "Ainult Usercss stiilid",
 		"description": "Checkbox to show only Usercss styles"
 	},
+	"sortStylesHelp": {
+		"message": "Vali paigaldatud üksustele rakendatav sorteerimismeetod sorteerimise rippmenüüst. Vaikimisi seadistus rakendab kasvava sorteerimise (A-st Z-ni) üksuste pealkirjades. Sorteerimised grupis \"Kahanev pealkiri\" rakendavad pealkirjale kahaneva sorteerimise (Z-st A-ni).\nOn olemas ka teisi eelseadistusi, mis võimaldavad üksuste sorteerimist mitme kriteeriumi järgi. Mõtle sellest, nagu sorteeriksid mitme veeruga tabelit ja iga kategooria valikus (plussmärkide vahel) tähistab veergu või gruppi.\nNäiteks, kui valik on \"Lubatud (esimene) + pealkiri\", sorteeritakse üksused nii, et kõik lubatud üksused on nimekirja tipus ning nimekirja pealkirja kasvav sorteerimine (A-st Z-ni) rakendatakse nii lubatud kui keelatud üksustele eraldi.",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
 	"sortLabelTitleAsc": {
 		"message": "Pealkiri tõusvas järjestuses",
 		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
@@ -48,7 +52,7 @@
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
 	},
 	"installButton": {
-		"message": "Installi stiil",
+		"message": "Paigalda stiil",
 		"description": "Label for install button"
 	},
 	"styleMetaErrorCheckbox": {
@@ -143,6 +147,10 @@
 		"message": "Lohista importimiseks oma varundusfail kuskile siia lehele.",
 		"description": "Drag'n'drop message"
 	},
+	"styleRegexpTestNote": {
+		"message": "Märkus: kasuta üksikut \\, et keelata märgi töötlemine regulaaravaldise sisendväljas, mis konverteeritakse automaatselt \\\\-ks stiili koodis, nagu CSSi tsiteeritud sõnede spetsifikatsioon ette näeb.",
+		"description": "RegExp test report: a note displayed at the bottom of the dialog"
+	},
 	"helpAlt": {
 		"message": "Abi",
 		"description": "Alternate text for help buttons"
@@ -164,7 +172,7 @@
 		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
 	},
 	"versionInvalidOlder": {
-		"message": "Versioon on installitud stiilist vanem.",
+		"message": "Versioon on paigaldatud stiilist vanem.",
 		"description": "Displayed when the version of style is older than the installed one"
 	},
 	"confirmYes": {
@@ -176,7 +184,7 @@
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
-		"message": "Installitud stiilid",
+		"message": "Paigaldatud stiilid",
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
@@ -239,6 +247,10 @@
 		"message": "Impordi stiilid",
 		"description": ""
 	},
+	"cm_selectByTokens": {
+		"message": "Topeltklõps valib sõnesid",
+		"description": "Label for the checkbox in the editor."
+	},
 	"confirmStop": {
 		"message": "Peata",
 		"description": "'Stop' button in a confirm dialog"
@@ -268,7 +280,7 @@
 		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
 	},
 	"styleInstall": {
-		"message": "Installida \"$stylename$\" Stylus'isse?",
+		"message": "Paigaldad \"$stylename$\" Stylus'isse?",
 		"description": "Confirmation when installing a style",
 		"placeholders": {
 			"stylename": {
@@ -343,7 +355,7 @@
 		"description": "Note in the toolbar popup for file:// URLs"
 	},
 	"sortLabel": {
-		"message": "Vali, milline järjestus installitud stiilidele rakendada",
+		"message": "Vali, milline järjestus paigaldatud stiilidele rakendada",
 		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
@@ -365,6 +377,10 @@
 	"menuShowBadge": {
 		"message": "Kuva aktiivsete stiilide hulka",
 		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+	},
+	"popupHotkeysInfo": {
+		"message": "<1>-<9>, <0>, ka numbriklahvidel - lülitab N. stiili (0 on 10)\n<A>-<Z> lülitab esimest stiili, mille nimi algab selle tähega\n<Shift> avab redaktori lülitamise asemel\n<Numpad +> lubab nimekirjas olevad stiilid\n<Numpad –> keelab nimekirjas olevad stiilid\n<Numpad *> ja <`> (graavis) - lülitab esialgu lubatud stiilid; ei rakendu järgnevalt lubatud stiilidele hüpiku avatud olekus, seega saad taastada esialgse valiku peale asjade testimist: lihtsalt keela kõik ning lülita, seega <Numpad –> <Numpad *>\nRohkem teavet vikis",
+		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
 	},
 	"cm_lineWrapping": {
 		"message": "Reamurdmine",
@@ -490,7 +506,7 @@
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"cm_matchHighlightToken": {
-		"message": "Kursori all olev sõna",
+		"message": "Kursori all olev sõne",
 		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
 	},
 	"searchRegexp": {
@@ -534,7 +550,7 @@
 		"description": "Help text for sections"
 	},
 	"noStylesForSite": {
-		"message": "Sellele saidile pole stiile installitud.",
+		"message": "Sellele saidile pole stiile paigaldatud.",
 		"description": "Text displayed when no styles are installed for the current site"
 	},
 	"appliesDisplayTruncatedSuffix": {
@@ -546,7 +562,7 @@
 		"description": "Label for the button to remove an 'applies' entry"
 	},
 	"updatesCurrentlyInstalled": {
-		"message": "Uuendused installitud:",
+		"message": "Uuendused paigaldatud:",
 		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
 	},
 	"styleToMozillaFormatTitle": {
@@ -611,7 +627,7 @@
 		"description": "Label for the button to make a style apply only to specific sites"
 	},
 	"installUpdate": {
-		"message": "Installi uuendus",
+		"message": "Paigalda uuendus",
 		"description": "Label for the button to install an update for a single style"
 	},
 	"syncStorageErrorSaving": {
@@ -623,7 +639,7 @@
 		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
 	},
 	"optionsCheckUpdate": {
-		"message": "Kontrolli ja installi kõik saadaolevad uuendused",
+		"message": "Kontrolli ja paigalda kõik saadaolevad uuendused",
 		"description": ""
 	},
 	"clickToUninstall": {
@@ -722,6 +738,10 @@
 		"message": "Lehti kokku",
 		"description": ""
 	},
+	"cm_selectByTokensTooltip": {
+		"message": "Sõnede näited: .foo-bar-2 #aabbcc 0.32 !important\nKeelamisel valitakse punktidega eraldatud sõnad.",
+		"description": ""
+	},
 	"checkingForUpdate": {
 		"message": "Kontrollin...",
 		"description": "Text to display when checking a style for an update"
@@ -755,7 +775,7 @@
 		"description": "Tooltip for the total page count in search results"
 	},
 	"styleInstallOverwrite": {
-		"message": "'$stylename$' on juba installitud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
+		"message": "'$stylename$' on juba paigaldatud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
 		"description": "Confirmation when re-installing a style",
 		"placeholders": {
 			"stylename": {
@@ -790,7 +810,7 @@
 		"description": "Tooltip for the '->' (next page) button in search results"
 	},
 	"searchResultInstallCount": {
-		"message": "Installimisi kokku",
+		"message": "Paigaldusi kokku",
 		"description": "Text for label that shows the number of times a search result was installed"
 	},
 	"sectionCode": {
@@ -837,6 +857,10 @@
 	"linkGetHelp": {
 		"message": "Hangi abi",
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+	},
+	"searchStylesHelp": {
+		"message": "</> klahv fokuseerib otsinguvälja.\nLihttekst: otsi nimest, koodist, kodulehe URList ja rakendatavatest saitidest. Sõnu alla 3 tähemärgi ignoreeritakse.\nVastav URL: kasuta otsingus eesliidet <url:>, nt <url:https://github.com/openstyles/stylus>\nRegulaaravaldised sisaldavad kaldkriipse ja lippe, nt </body.*?\\ba\\b/simguy>\nTäpsed sõnad: kirjuta väljendi ümber jutumärgid, nt <\".header ~ div\">",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {
 		"message": "Leia stiile",
@@ -945,7 +969,7 @@
 		"description": "Prompt when a DB error is encountered"
 	},
 	"dateInstalled": {
-		"message": "Installimise kuupäev",
+		"message": "Paigaldamise kuupäev",
 		"description": "Option text for the user to sort the style by install date"
 	},
 	"optionsAdvanced": {
@@ -961,7 +985,7 @@
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
 	"liveReloadInstallHint": {
-		"message": "Reaalajas uuestilaadimine on lubatud, seega installitud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
+		"message": "Reaalajas uuestilaadimine on lubatud, seega paigaldatud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
 		"description": "The label of live-reload feature"
 	},
 	"editorStylesButton": {
@@ -989,7 +1013,7 @@
 		"description": "Checkbox to show only externally installed styles i.e. updatable"
 	},
 	"searchResultWeeklyCount": {
-		"message": "Installimisi nädalas",
+		"message": "Paigaldus nädalas",
 		"description": "Text for label that shows the number of times a search result was installed during last week"
 	},
 	"replaceAll": {
@@ -1021,7 +1045,7 @@
 		"description": "Go to line or line:column on Ctrl-G in style code editor"
 	},
 	"manageOnlyLocalTooltip": {
-		"message": "(stiilid, mida ei installitud userstyles.org lehelt)",
+		"message": "(stiilid, mida ei paigaldatud lehelt userstyles.org)",
 		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
 	},
 	"checkAllUpdates": {
@@ -1074,7 +1098,7 @@
 		"description": "Label for the checkbox in the style editor."
 	},
 	"installButtonReinstall": {
-		"message": "Installi stiil uuesti",
+		"message": "Paigalda stiil uuesti",
 		"description": "Label for reinstall button"
 	},
 	"linterInvalidConfigError": {
@@ -1130,6 +1154,10 @@
 		"message": "Uus haldusliidese välimus",
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
+	"unreachableAMOHintOldFF": {
+		"message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see.",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+	},
 	"importReportUndoneTitle": {
 		"message": "Importimine on tagasi võetud",
 		"description": "Title of the message box shown after undoing the import of styles"
@@ -1155,11 +1183,11 @@
 		"description": "Label for the button to delete a style"
 	},
 	"updateCheckManualUpdateForce": {
-		"message": "Installi uuendus (kohalikud muutused kirjutatakse üle)",
+		"message": "Paigalda uuendus (kohalikud muutused kirjutatakse üle)",
 		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
 	},
 	"styleInstallFailed": {
-		"message": "Kasutajastiili installimine ebaõnnestus!\n$error$",
+		"message": "Kasutajastiili paigaldamine ebaõnnestus!\n$error$",
 		"description": "Warning when installation failed",
 		"placeholders": {
 			"error": {
@@ -1196,7 +1224,7 @@
 		"description": "Label for the button to go to the edit style page"
 	},
 	"installButtonInstalled": {
-		"message": "Stiil installitud",
+		"message": "Stiil paigaldatud",
 		"description": "Text displayed when the style is successfully installed"
 	},
 	"author": {
@@ -1240,7 +1268,7 @@
 		"description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
 	},
 	"description": {
-		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt installida teemasid ja välimusi mitmetele populaarsetele saitidele.",
+		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt paigaldada teemasid ja välimusi mitmetele populaarsetele saitidele.",
 		"description": "Extension description"
 	},
 	"confirmClose": {

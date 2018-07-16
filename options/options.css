@@ -95,7 +95,6 @@ label:not([disabled]):hover > :first-child {
   cursor: pointer;
 }
 
-button,
 input[type=number],
 input[type="color"],
 select,

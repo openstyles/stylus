@@ -19,9 +19,21 @@
 		"message": "Exportar estilos",
 		"description": ""
 	},
+	"sortStylesHelpTitle": {
+		"message": "Ordenar conteúdos",
+		"description": "Label for the sort info popup on the Manage styles page"
+	},
 	"exportLabel": {
 		"message": "Exportar",
 		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"installButton": {
+		"message": "Instalar estilo",
+		"description": "Label for install button"
+	},
+	"popupHotkeysTooltip": {
+		"message": "Clique para ver as teclas de atalho disponíveis",
+		"description": "Tooltip displayed when hovering the right edge of the extension popup"
 	},
 	"optionsBadgeNormal": {
 		"message": "Cor de fundo",
@@ -316,7 +328,7 @@
 		"description": "Option to make the style apply to the entered string as a URL prefix"
 	},
 	"searchRegexp": {
-		"message": "Usa a syntax /re/ para pesquisas regexp",
+		"message": "Usa a sintaxe /re/ para pesquisas regexp",
 		"description": "Label after the search input field in the editor shown on Ctrl-F"
 	},
 	"updateCheckManualUpdateHint": {
@@ -436,6 +448,10 @@
 		"message": "Desfazer em todas as seções",
 		"description": "CSS-beautify global Undo button label"
 	},
+	"genericTitle": {
+		"message": "Título",
+		"description": "Used in various parts of the UI to indicate the title of something"
+	},
 	"updateCompleted": {
 		"message": "Atualização completa.",
 		"description": "Text that displays when an update completed"
@@ -451,6 +467,10 @@
 	"manageMaxTargets": {
 		"message": "Número de items aos quais se aplica",
 		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+	},
+	"genericUnknown": {
+		"message": "Desconhecido",
+		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
 	},
 	"manageFaviconsHelp": {
 		"message": "O Stylus usa um serviço externo https://www.google.com/s2/favicons",
@@ -516,9 +536,17 @@
 		"message": "Ocorreu um erro ao usar a base de dados do Stylus. Gostarias de visitar um website com soluções possíveis?",
 		"description": "Prompt when a DB error is encountered"
 	},
+	"dateInstalled": {
+		"message": "Data de instalação",
+		"description": "Option text for the user to sort the style by install date"
+	},
 	"optionsAdvanced": {
 		"message": "Avançado",
 		"description": ""
+	},
+	"alphaChannel": {
+		"message": "Opacidade",
+		"description": "Label of color's opacity"
 	},
 	"importAppendTooltip": {
 		"message": "Anexar o estilo importado ao estilo atual",
@@ -536,6 +564,10 @@
 		"message": "Carrega numa tecla de atalho",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"dateUpdated": {
+		"message": "Última actualização",
+		"description": "Option text for the user to sort the style by last update date"
+	},
 	"replaceAll": {
 		"message": "Substituir todos",
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
@@ -543,6 +575,10 @@
 	"importReportUnchanged": {
 		"message": "Nada foi mudado",
 		"description": "Message in the report shown after importing styles"
+	},
+	"confirmDiscardChanges": {
+		"message": "Descartar as alterações?",
+		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
 	},
 	"optionsActions": {
 		"message": "Ações",
@@ -563,6 +599,19 @@
 	"openOptionsManage": {
 		"message": "Opções de interface",
 		"description": "Go to Options UI"
+	},
+	"sortDateNewestFirst": {
+		"message": "Mais recente primeiro",
+		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
+	},
+	"installUpdateFrom": {
+		"message": "Actualmente o estilo é actualizado a partir de $url$",
+		"description": "Label to describe where the style gets update",
+		"placeholders": {
+			"url": {
+				"content": "$1"
+			}
+		}
 	},
 	"importReportLegendIdentical": {
 		"message": "idênticos ignorados",

@@ -409,7 +409,13 @@ Object.assign(handleEvent, {
       if (chrome.windows && openWindow) {
         chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
       } else {
-        openURL({url, active: openForegroundTab});
+        getOwnTab().then(({index}) => {
+          openURL({
+            url,
+            index: index + 1,
+            active: openForegroundTab
+          });
+        });
       }
     } else {
       rememberScrollPosition();
@@ -458,7 +464,17 @@ Object.assign(handleEvent, {
   },
 
   external(event) {
-    openURL({url: event.target.closest('a').href});
+    if (event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey) {
+      // Shift-click = the built-in 'open in a new window' action
+      return;
+    }
+    getOwnTab().then(({index}) => {
+      openURL({
+        url: event.target.closest('a').href,
+        index: index + 1,
+        active: !event.ctrlKey || event.shiftKey,
+      });
+    });
     event.preventDefault();
   },
 
@@ -693,7 +709,9 @@ function usePrefsDuringPageLoad() {
       el.value = value;
     }
   }
-  $$('#header select').forEach(el => el.adjustWidth());
+  if (!VIVALDI) {
+    $$('#header select').forEach(el => el.adjustWidth());
+  }
 
   if (FIREFOX && 'update' in (chrome.commands || {})) {
     const btn = $('#manage-shortcuts-button');

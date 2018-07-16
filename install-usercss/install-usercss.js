@@ -49,7 +49,7 @@
 
   setTimeout(() => {
     if (!installed) {
-      $('.header').appendChild($create('.lds-spinner',
+      $('#header').appendChild($create('.lds-spinner',
         new Array(12).fill($create('div')).map(e => e.cloneNode())));
     }
   }, 200);
@@ -133,15 +133,15 @@
       $('.external-link').appendChild(externalLink);
     }
 
-    $('.header').classList.add('meta-init');
-    $('.header').classList.remove('meta-init-error');
+    $('#header').classList.add('meta-init');
+    $('#header').classList.remove('meta-init-error');
     setTimeout(() => $.remove('.lds-spinner'), 1000);
 
     showError('');
     requestAnimationFrame(adjustCodeHeight);
 
     function makeAuthor(text) {
-      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))$/);
+      const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
       if (!match) {
         return document.createTextNode(text);
       }
@@ -222,7 +222,7 @@
     API.buildUsercss({sourceCode, checkDup: true})
       .then(init)
       .catch(err => {
-        $('.header').classList.add('meta-init-error');
+        $('#header').classList.add('meta-init-error');
         showError(err);
       });
   }
@@ -230,7 +230,7 @@
   function buildWarning(err) {
     const contents = Array.isArray(err) ?
       [$create('pre', err.join('\n'))] :
-      [err && err.message || err || 'Unknown error'];
+      [err && err.message && $create('pre', err.message) || err || 'Unknown error'];
     if (Number.isInteger(err.index)) {
       const pos = cm.posFromIndex(err.index);
       contents[0] = `${pos.line + 1}:${pos.ch + 1} ` + contents[0];

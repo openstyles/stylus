@@ -39,6 +39,10 @@
 		"message": "每隔 N 小时，检查所有样式更新（0 为关闭检查）",
 		"description": ""
 	},
+	"unreachableAMOHintNewFF": {
+		"message": "在 Firefox 60 及其更新版本中，你必须从 <extensions.webextensions.restrictedDomains> 中删除 AMO 域<about:config>",
+		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
+	},
 	"sortDateOldestFirst": {
 		"message": "最旧的优先",
 		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
@@ -670,6 +674,10 @@
 		"message": "（设置规则为：0 = 禁用; 1 =  警告; 2 = 错误）",
 		"description": "CSSLint rule config values"
 	},
+	"usercssReplaceTemplateSectionBody": {
+		"message": "在此插入代码...",
+		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+	},
 	"searchResultNoneFound": {
 		"message": "没有找到与此页面相关的样式.",
 		"description": "Error text in the popup when inline search didn't find any site-specific styles"
@@ -713,6 +721,10 @@
 	"updateCompleted": {
 		"message": "更新已完成。",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "实时预览",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"paginationTotal": {
 		"message": "总页面",

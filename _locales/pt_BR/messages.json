@@ -3,6 +3,22 @@
 		"message": "Tudo",
 		"description": "Text displayed for styles that apply to all sites"
 	},
+	"defaultTheme": {
+		"message": "padrão",
+		"description": "Default CodeMirror CSS theme option on the edit style page"
+	},
+	"bckpInstStyles": {
+		"message": "Exportar estilos",
+		"description": ""
+	},
+	"exportLabel": {
+		"message": "Exportar ",
+		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+	},
+	"optionsBadgeNormal": {
+		"message": "Cor de fundo",
+		"description": ""
+	},
 	"enableStyleLabel": {
 		"message": "Ativar",
 		"description": "Label for the button to enable a style"
@@ -19,9 +35,25 @@
 		"message": "Verificar atualizações",
 		"description": "Label for the button to check a single style for an update"
 	},
+	"importAppendLabel": {
+		"message": "Anexar ao estilo",
+		"description": "Label for the button to import a style and append to the existing sections"
+	},
+	"updateAllCheckSucceededNoUpdate": {
+		"message": "Nenhuma atualização encontrada.",
+		"description": "Text that displays when an update all check completed and no updates are available"
+	},
 	"helpAlt": {
 		"message": "Ajuda",
 		"description": "Alternate text for help buttons"
+	},
+	"search": {
+		"message": "Buscar",
+		"description": "Label before the search input field in the editor shown on Ctrl-F"
+	},
+	"confirmYes": {
+		"message": "Sim",
+		"description": "'Yes' button in a confirm dialog"
 	},
 	"findStylesForSite": {
 		"message": "Procurar mais estilos para este site",
@@ -30,6 +62,10 @@
 	"manageHeading": {
 		"message": "Estilos instalados",
 		"description": "Heading for the manage page"
+	},
+	"styleBeautify": {
+		"message": "Embelezar",
+		"description": "Label for the CSS-beautifier button on the edit style page"
 	},
 	"styleEnabledLabel": {
 		"message": "Ativado",
@@ -46,6 +82,30 @@
 	"styleSaveLabel": {
 		"message": "Salvar",
 		"description": "Label for save button for style editing"
+	},
+	"confirmDelete": {
+		"message": "Deletar",
+		"description": ""
+	},
+	"confirmCancel": {
+		"message": "Cancelar",
+		"description": ""
+	},
+	"retrieveBckp": {
+		"message": "Importar estilos",
+		"description": ""
+	},
+	"confirmStop": {
+		"message": "Parar",
+		"description": "'Stop' button in a confirm dialog"
+	},
+	"writeStyleForURL": {
+		"message": "esse URL",
+		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
+	},
+	"optionsSubheading": {
+		"message": "Mais Opções",
+		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
 		"message": "Adicionar",
@@ -64,6 +124,18 @@
 			}
 		}
 	},
+	"optionsBadgeDisabled": {
+		"message": "Cor de fundo quando desativado",
+		"description": ""
+	},
+	"optionsCheck": {
+		"message": "Atualizar estilos",
+		"description": ""
+	},
+	"searchStyles": {
+		"message": "Buscar conteúdos",
+		"description": "Label for the search filter textbox on the Manage styles page"
+	},
 	"disableStyleLabel": {
 		"message": "Desativar",
 		"description": "Label for the button to disable a style"
@@ -80,13 +152,29 @@
 		"message": "Você fez alterações neste estilo sem salvar.",
 		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
 	},
+	"importLabel": {
+		"message": "Importar",
+		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+	},
 	"updateCheckFailServerUnreachable": {
 		"message": "A atualização falhou: servidor inacessível.",
 		"description": "Text that displays when an update check failed because the update server is unreachable"
 	},
+	"applyAllUpdates": {
+		"message": "Aplicar todas as atualizações",
+		"description": "Label for the button to apply all detected updates"
+	},
 	"deleteStyleConfirm": {
 		"message": "Tem certeza de que deseja excluir este estilo?",
 		"description": "Confirmation before deleting a style"
+	},
+	"styleBadRegexp": {
+		"message": "Expressão regular é inválida",
+		"description": "Validation message for a bad regexp in a style"
+	},
+	"optionsHeading": {
+		"message": "Opções",
+		"description": "Heading for options section on manage page."
 	},
 	"appliesDisplay": {
 		"message": "Aplica-se a: $applies$",
@@ -134,9 +222,17 @@
 		"message": "Remover",
 		"description": "Label for the button to remove an 'applies' entry"
 	},
+	"replace": {
+		"message": "Substituir",
+		"description": "Label before the replace input field in the editor shown on Ctrl-H"
+	},
 	"appliesLabel": {
 		"message": "Aplica-se a",
 		"description": "Label for 'applies to' fields on the edit/add screen"
+	},
+	"openOptionsPopup": {
+		"message": "Opções",
+		"description": "Go to Options UI"
 	},
 	"openManage": {
 		"message": "Gerenciar estilos instalados",
@@ -159,9 +255,21 @@
 		"message": "Instalar atualização",
 		"description": "Label for the button to install an update for a single style"
 	},
+	"styleMozillaFormatHeading": {
+		"message": "Formato Mozilla",
+		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
+	},
 	"sectionRemove": {
 		"message": "Remover seção",
 		"description": "Label for the button to remove a section"
+	},
+	"disableAllStyles": {
+		"message": "Desativar todos os estilos",
+		"description": "Label for the checkbox that turns all enabled styles off."
+	},
+	"undoGlobal": {
+		"message": "Desfazer todas as seções",
+		"description": "CSS-beautify global Undo button label"
 	},
 	"updateCompleted": {
 		"message": "Atualização concluída.",
@@ -187,9 +295,45 @@
 		"message": "Adicionar estilo",
 		"description": "Title of the page for adding styles"
 	},
+	"importReplaceLabel": {
+		"message": "Sobrescrever estilo",
+		"description": "Label for the button to import and overwrite current style"
+	},
+	"importAppendTooltip": {
+		"message": "Anexar o estilo importado ao atual",
+		"description": "Tooltip for the button to import a style and append to the existing sections"
+	},
+	"optionsOpen": {
+		"message": "Abrir",
+		"description": ""
+	},
+	"replaceAll": {
+		"message": "Substituir todos",
+		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+	},
+	"optionsActions": {
+		"message": "Ações",
+		"description": ""
+	},
+	"editGotoLine": {
+		"message": "Ir para linha (ou linha:coluna)",
+		"description": "Go to line or line:column on Ctrl-G in style code editor"
+	},
 	"checkAllUpdates": {
 		"message": "Verificar atualizações para todos os estilos",
 		"description": "Label for the button to check all styles for updates"
+	},
+	"confirmNo": {
+		"message": "Não",
+		"description": "'No' button in a confirm dialog"
+	},
+	"undo": {
+		"message": "Desfazer",
+		"description": "Button label"
+	},
+	"replaceWith": {
+		"message": "Substituir com",
+		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
 	},
 	"deleteStyleLabel": {
 		"message": "Excluir",
@@ -202,6 +346,10 @@
 	"editStyleLabel": {
 		"message": "Editar",
 		"description": "Label for the button to go to the edit style page"
+	},
+	"cm_theme": {
+		"message": "Tema",
+		"description": "Label for the style editor's CSS theme."
 	},
 	"description": {
 		"message": "Mude o estilo da web com o Stylus, um gerenciador de estilos do usuário. O Stylus permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites.",

@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.4.5",
+  "version": "1.4.16",
   "minimum_chrome_version": "49",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
@@ -14,6 +14,8 @@
   "permissions": [
     "tabs",
     "webNavigation",
+    "webRequest",
+    "webRequestBlocking",
     "contextMenus",
     "storage",
     "alarms",
@@ -61,7 +63,7 @@
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
-      "all_frames": false,
+      "all_frames": true,
       "js": ["content/install-hook-userstyles.js"]
     },
     {
@@ -71,8 +73,25 @@
       "js": ["content/install-hook-openusercss.js"]
     },
     {
-      "matches": ["<all_urls>"],
-      "include_globs": ["*.user.css", "*.user.styl"],
+      "matches": [
+        "*://*/*.user.css",
+        "*://*/*.user.styl",
+
+        "file://*/*.user.css",
+        "file://*/*.user.styl",
+
+        "ftp://*/*.user.css",
+        "ftp://*/*.user.styl",
+
+        "*://*/*.user.css?*",
+        "*://*/*.user.styl?*",
+
+        "file://*/*.user.css?*",
+        "file://*/*.user.styl?*",
+
+        "ftp://*/*.user.css?*",
+        "ftp://*/*.user.styl?*"
+      ],
       "run_at": "document_idle",
       "all_frames": false,
       "js": ["content/install-hook-usercss.js"]

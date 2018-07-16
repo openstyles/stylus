@@ -93,9 +93,7 @@ onDOMready().then(() => {
       replaceAll: () => doReplaceAll(),
       undo: () => doUndo(),
       clear() {
-        this._input.focus();
-        document.execCommand('selectAll', false, null);
-        document.execCommand('delete', false, null);
+        setInputValue(this._input, '');
       },
       case() {
         state.icase = !state.icase;
@@ -535,7 +533,7 @@ onDOMready().then(() => {
     setActiveEditor(cm);
 
     const dialogFocused = state.dialog && state.dialog.contains(document.activeElement);
-    let sel = dialogFocused ? '' : getSelection().toString();
+    let sel = dialogFocused ? '' : getSelection().toString() || cm && cm.getSelection();
     sel = !sel.includes('\n') && !sel.includes('\r') && sel;
     if (sel) state.find = sel;
 
@@ -543,9 +541,7 @@ onDOMready().then(() => {
       destroyDialog();
       createDialog(type);
     } else if (sel) {
-      state.input.focus();
-      state.input.select();
-      document.execCommand('insertText', false, sel);
+      setInputValue(state.input, sel);
     }
 
     state.input.focus();
@@ -929,4 +925,19 @@ onDOMready().then(() => {
         })
       }));
   }
+
+
+  function setInputValue(input, value) {
+    input.focus();
+    input.select();
+    // using execCommand to add to the input's undo history
+    document.execCommand(value ? 'insertText' : 'delete', false, value);
+    // some versions of Firefox ignore execCommand
+    if (input.value !== value) {
+      input.value = value;
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+  }
+
+  //endregion
 });

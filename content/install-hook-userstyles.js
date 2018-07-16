@@ -10,8 +10,7 @@
 
   chrome.runtime.onMessage.addListener(onMessage);
 
-  document.addEventListener('DOMContentLoaded', function _() {
-    document.removeEventListener('DOMContentLoaded', _);
+  onDOMready().then(() => {
     window.postMessage({
       direction: 'from-content-script',
       message: 'StylishInstalled',
@@ -42,7 +41,6 @@
           sendEvent(sendEvent.lastEvent);
         });
       });
-      return;
     }
   }
 
@@ -243,6 +241,21 @@
 
   function getStyleJson() {
     return getResource(getStyleURL(), {responseType: 'json'})
+      .then(style => {
+        if (!style || !Array.isArray(style.sections) || style.sections.length) {
+          return style;
+        }
+        const codeElement = document.getElementById('stylish-code');
+        if (codeElement && !codeElement.textContent.trim()) {
+          return style;
+        }
+        return getResource(getMeta('stylish-update-url')).then(code => new Promise(resolve => {
+          chrome.runtime.sendMessage({method: 'parseCss', code}, ({sections}) => {
+            style.sections = sections;
+            resolve(style);
+          });
+        }));
+      })
       .catch(() => null);
   }
 
@@ -324,21 +337,65 @@
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(chrome.runtime.id + '-install', orphanCheck, true);
-    ['Update', 'Install'].forEach(type =>
-      ['', 'Chrome', 'Opera'].forEach(browser =>
-        document.addEventListener('stylish' + type + browser, onClick)));
+    document.removeEventListener('stylishInstallChrome', onClick);
+    document.removeEventListener('stylishUpdateChrome', onClick);
     try {
       chrome.runtime.onMessage.removeListener(onMessage);
     } catch (e) {}
   }
 })();
 
-// TODO: remove the following statement when USO is fixed
-document.documentElement.appendChild(document.createElement('script')).text = '(' +
-  function () {
+// run in page context
+document.documentElement.appendChild(document.createElement('script')).text = '(' + (
+  EXTENSION_ORIGIN => {
+    document.currentScript.remove();
+
+    // spoof Stylish extension presence in Chrome
+    if (window.chrome && chrome.app) {
+      const realImage = window.Image;
+      window.Image = function Image(...args) {
+        return new Proxy(new realImage(...args), {
+          get(obj, key) {
+            return obj[key];
+          },
+          set(obj, key, value) {
+            if (key === 'src' && /^chrome-extension:/i.test(value)) {
+              setTimeout(() => typeof obj.onload === 'function' && obj.onload());
+            } else {
+              obj[key] = value;
+            }
+            return true;
+          },
+        });
+      };
+    }
+
+    // spoof USO referrer for style search in the popup
+    if (window !== top && location.pathname === '/') {
+      window.addEventListener('message', ({data, origin}) => {
+        if (!data ||
+            !data.xhr ||
+            origin !== EXTENSION_ORIGIN) {
+          return;
+        }
+        const xhr = new XMLHttpRequest();
+        xhr.onloadend = xhr.onerror = () => {
+          top.postMessage({
+            id: data.xhr.id,
+            status: xhr.status,
+            // [being overcautious] a string response is used instead of relying on responseType=json
+            // because it was invoked in a web page context so another extension may have incorrectly spoofed it
+            response: xhr.response,
+          }, EXTENSION_ORIGIN);
+        };
+        xhr.open('GET', data.xhr.url);
+        xhr.send();
+      });
+    }
+
+    // USO bug workaround: use the actual style settings in API response
     let settings;
     const originalResponseJson = Response.prototype.json;
-    document.currentScript.remove();
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
       // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
@@ -408,7 +465,8 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
         return json;
       });
     };
-  } + ')()';
+  }
+) + `)('${chrome.runtime.getURL('').slice(0, -1)}')`;
 
 // TODO: remove the following statement when USO pagination is fixed
 if (location.search.includes('category=')) {

@@ -28,17 +28,12 @@ body {
 }
 
 /************ checkbox & select************/
-#options > div[class="option"] {
+.options-column > div[class="option"] {
   margin-bottom: 4px;
 }
 
-#options > div.option:nth-last-of-type(7) {
-  margin-bottom: 12px;
-}
-
-#options > div.option:nth-last-of-type(7) + .usercss-only {
-  margin-top: -8px;
-  margin-bottom: 12px;
+.options-column > .usercss-only {
+  margin-bottom: .75rem;
 }
 
 label {
@@ -53,7 +48,7 @@ label {
   overflow: auto;
   position: fixed;
   top: 0;
-  padding: 15px;
+  padding: 1rem;
   border-right: 1px dashed #AAA;
   -webkit-box-shadow: 0 0 3rem -1.2rem black;
   box-shadow: 0 0 3rem -1.2rem black;
@@ -154,7 +149,7 @@ label {
   margin: -2px 0 0 .1rem;
 }
 .svg-inline-wrapper.applies-to-help {
-  margin: -2px 0 0 .25rem;
+  margin: 0 0 0 .25rem;
 }
 .aligned .svg-inline-wrapper {
   margin: -2px 0 0 .3rem;
@@ -191,8 +186,8 @@ input:invalid {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 
 #header summary h2 {
@@ -210,8 +205,31 @@ input:invalid {
   margin-top: -3px;
 }
 
-#actions {
-  margin-bottom: .5rem;
+#actions > * {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+#mozilla-format-container {
+  flex-direction: column;
+}
+
+#mozilla-format-buttons {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#actions > div > a {
+  height: min-content;
+}
+
+#actions button,
+#actions > div > a {
+  margin: 0 .2rem .5rem 0;
+}
+
+#actions #cancel-button {
+  margin: 0;
 }
 
 #options:not([open]) + #lint h2 {
@@ -248,16 +266,23 @@ input:invalid {
 /************ content ***********/
 #sections > div {
   margin: 0.7rem;
-  padding: 1rem;
+  padding: 1rem 1rem .3rem;
+}
+#sections > div:first-of-type {
+  padding: 0 1rem .3rem;
 }
 #sections > div:not(:first-of-type) {
-  border-top: 2px solid black;
+  border-top: 2px solid hsl(0, 0%, 80%);
 }
 #sections > div:only-of-type .remove-section {
   display: none;
 }
-#sections > div > button:not(:first-of-type) {
-  margin-left: 0.2rem;
+.edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+.edit-actions button {
+  margin: 0 .2rem .5rem 0;
 }
 .dirty > label::before {
   content: "*";
@@ -294,7 +319,7 @@ input:invalid {
   margin-bottom: 7px; /* make space for resize-grip */
 }
 .resize-grip-enabled .CodeMirror-hscrollbar {
-    bottom: 7px; /* make space for resize-grip */
+  bottom: 7px; /* make space for resize-grip */
 }
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
@@ -358,44 +383,75 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 /* applies-to */
 .applies-to {
   display: flex;
+  align-items: flex-start;
+  min-height: 30px;
+  flex-wrap: wrap;
 }
 .applies-to label {
-  flex: auto;
-  margin-top: 0.2rem;
+  display: flex;
+  padding: 0;
+  height: 22px;
+  align-items: center;
+  margin: 0 .2em 0 0;
+  white-space: nowrap;
 }
 .applies-to ul {
   flex: auto;
-  flex-grow: 99;
+  flex-grow: 1;
   margin: 0;
   padding: 0;
 }
 .applies-to li {
   display: flex;
+  flex-wrap: wrap;
   list-style-type: none;
   align-items: center;
-  margin-bottom: 0.35rem;
 }
-.applies-to li > *:not(button):not(.select-resizer) {
-  flex: auto;
+.applies-to li.applies-to-everything {
+  align-items: unset;
+  line-height: 22px;
+}
+.applies-to li > input {
   min-height: 1.4rem;
-  margin-left: 0.35rem;
 }
-html:not(.usercss) .applies-to li .add-applies-to {
-  visibility: hidden;
-  text-align: left;
-}
-html:not(.usercss) .applies-to li:last-child .add-applies-to {
-  visibility: visible
+.applies-to li:not(.applies-to-everything) > * {
+  margin: 0 .2rem .5rem 0;
 }
 .applies-to li .add-applies-to:first-child {
   margin-left: 1rem;
 }
+.applies-to li .applies-value-wrapper {
+  flex-grow: 1;
+  display: flex;
+}
 .applies-to li .applies-value {
-  flex-grow: 99;
+  flex-grow: 1;
   padding-left: 0.2rem;
 }
 .applies-to img {
   vertical-align: bottom;
+}
+.add-applies-to,
+.remove-applies-to {
+  font-size: 0;
+  height: 22px;
+  width: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.add-applies-to .svg-icon,
+.remove-applies-to .svg-icon {
+  pointer-events: none;
+  fill: hsl(0, 0%, 60%);
+  height: 12px;
+  width: 12px;
+}
+.add-applies-to:hover .svg-icon,
+.remove-applies-to:hover .svg-icon {
+  pointer-events: none;
+  fill: hsl(0, 0%, 0%);
 }
 .test-regexp {
   display: none;
@@ -563,7 +619,7 @@ html:not(.usercss) .applies-to li:last-child .add-applies-to {
   position: absolute;
 }
 #lint > div {
-  margin-top: 4em;
+  margin-top: 2.75rem;
 }
 #lint table {
   font-size: 100%;
@@ -657,12 +713,26 @@ html:not(.usercss) .usercss-only,
   display: none !important; /* hide during page init */
 }
 
+#lint {
+  padding: 1rem 0 0;
+  box-sizing: border-box;
+}
+
+#options:not([open]) + #lint {
+  padding-top: 0;
+}
+
+#options-wrapper .options-column:nth-child(2) {
+  margin-top: .75rem;
+}
+
 .usercss #name {
   background-color: #eee;
   color: #888;
 }
 
-#sections .single-editor {
+#sections .single-editor,
+#sections > div.single-editor:first-of-type {
   margin: 0;
   padding: 0;
   display: flex;
@@ -695,7 +765,7 @@ html:not(.usercss) .usercss-only,
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
   margin: 1em 0;
-  padding: 1em;
+  padding: .75rem .75rem .25rem;
   padding-right: calc(1em + 20px);
 }
 
@@ -717,19 +787,26 @@ html:not(.usercss) .usercss-only,
 
 /************ reponsive layouts ************/
 @media(max-width: 850px) {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
   #header {
-    width: auto;
-    height: auto;
+    flex: 0 1 auto;
+    height: unset;
+    width: unset;
     position: inherit;
     border-right: none;
     border-bottom: 1px dashed #AAA;
-    min-height: var(--header-narrow-min-height);
-    max-height: 50vh;
-    flex-wrap: wrap;
-    flex-direction: row;
+    padding: 0;
   }
-  #header section:not(:last-child) {
-    margin-bottom: .5rem;
+  #actions {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    padding: 0 1rem;
+    margin: 0;
+    box-sizing: border-box;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;
@@ -739,45 +816,41 @@ html:not(.usercss) .usercss-only,
     display: none;
   }
   #basic-info {
+    padding: .5rem 1rem;
+    margin: 0;
+    box-sizing: border-box;
     display: flex;
-    align-items: baseline;
-    flex: 1;
-    margin-right: 2em;
-  }
-  #basic-info > * {
-    flex: auto;
+    flex-wrap: wrap;
   }
   #basic-info > *:first-child {
-    flex-grow: 99;
-    display: flex;
+    flex-grow: 1;
   }
   #basic-info > *:not(:last-child) {
     margin-right: 0.8rem;
   }
   #basic-info #name {
-    width: auto;
-    flex-grow: 99;
+    flex-grow: 1;
   }
-  #actions {
+  #options-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 1rem  .5rem;
+    box-sizing: border-box;
+  }
+  .options-column {
+    flex-grow: 1;
+    padding-right: .5rem;
+    box-sizing: border-box;
+  }
+  #options-wrapper .options-column:nth-child(2) {
     margin-top: 0;
-    white-space: nowrap;
-  }
-  #actions > * {
-    display: inline-block;
-  }
-  #options {
-    -webkit-column-count: 3;
-    -moz-column-count: 3;
-    column-count: 3;
-    width: 100%;
   }
   #options:not([open]),
   #lint:not([open]) {
-    column-count: 1;
     overflow: initial;
   }
   #options:not([open]) + #lint:not([open]) {
-    margin-top: -1em;
+    margin-top: 0;
   }
   #lint {
     overflow: initial;
@@ -786,14 +859,18 @@ html:not(.usercss) .usercss-only,
     position: static;
     margin-bottom:  0;
   }
+  #lint tbody {
+    display: flex;
+    flex-direction: column;
+  }
   #options summary {
-    margin-top: -.25em;
+    margin-left: 0;
+    padding-left: 4px;
   }
   #options h2 {
     margin: 0 0 .5em;
   }
   .option label {
-    line-height: 1.25rem;
     margin: 0;
   }
   #options [type="number"] {
@@ -804,11 +881,18 @@ html:not(.usercss) .usercss-only,
     position: relative;
     top: 0.2rem;
   }
-  #options:not([open]) ~ #lint {
-    margin-top: -1em;
-  }
   #lint > div {
     margin-top: 0;
+    overflow: hidden;
+  }
+  #lint {
+    padding: 0 1rem .5rem;
+  }
+  #lint > summary {
+    margin-top: 0;
+  }
+  #lint caption {
+    text-indent: 4px;
   }
   #lint table {
     width: 100%;
@@ -820,13 +904,20 @@ html:not(.usercss) .usercss-only,
     margin: .25em 0 -1em .25em;
   }
   #sections {
+    height: unset !important;
+    min-height: 0;
     padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
   #sections > div {
-    padding: 0;
+    margin: 0 .5rem .5rem;
+    padding: .5rem 0 0;
   }
-  #sections > *:not(h2) {
-    padding-left: 0.4rem;
+  #sections > div:first-of-type {
+    margin: .5rem;
+    padding: 0;
   }
   .usercss .CodeMirror-scroll {
     max-height: calc(100vh - var(--header-narrow-min-height));
@@ -835,27 +926,28 @@ html:not(.usercss) .usercss-only,
   .usercss #lint:not([open]) + #footer {
     margin-top: -.25em;
   }
-  #help-popup.big {
-    left: 3rem;
+  #help-popup.big[style="display: block;"],
+  #help-popup[style="display: block;"] {
+    width: max-content;
+    height: min-content;
+    max-width: 90%;
+    max-height: 90vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
   }
-}
-
-@media (max-width: 720px) {
-  #options {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
+  #help-popup[style*="left:"] {
+    left: 1rem !important;
+    margin-top: -2.35rem;
   }
-}
-
-@media (max-width: 450px) {
-  #options {
-    -webkit-column-count: 1;
-    -moz-column-count: 1;
-    column-count: 1;
+  #help-popup:not([style*="display: block;"]),
+  #help-popup .CodeMirror-lint-markers,
+  #help-popup .CodeMirror-guttermarker-subtle {
+    display: none !important;
   }
-  #actions {
-    flex-wrap: wrap;
-    white-space: normal;
+  #help-popup .CodeMirror-linenumber {
+   padding: 0;
   }
 }

@@ -14,8 +14,8 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 ## Releases
 
 1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) (or [beta](https://chrome.google.com/webstore/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo))
-2. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/) (or [beta](https://addons.mozilla.org/en-US/firefox/addon/styl-us/versions/beta))
-3. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/)
+2. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/)
+3. [Opera add-ons](https://addons.opera.com/extensions/details/stylus/) (see [wiki](https://github.com/openstyles/stylus/wiki/Opera,-Outdated-Stylus) for more recent version)
 
 ## Screenshots
 
@@ -28,9 +28,9 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Help
 
-[![Discord][chat-image]][chat-link]
-
-See the [help docs](http://userstyles.org/help/stylish_chrome) or [ask in userstyles.org forum](https://forum.userstyles.org). For Stylus specific questions and suggestions please use [review section](http://add0n.com/stylus.html#reviews) of the FAQs page.
+- [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
+- [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
+- Discord: [![Discord][chat-image]][chat-link]
 
 [chat-image]: https://img.shields.io/discord/379521691774353408.svg
 [chat-link]: https://discordapp.com/widget?id=379521691774353408
@@ -45,12 +45,13 @@ See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-For copyright status of the "codemirror" directory, see [codemirror/LICENSE](https://github.com/openstyles/stylus/blob/master/src/vendor/codemirror/LICENSE). Everything else is:
+Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):  
+Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
-Copyright (C) 2005-2014 Jason Barnabe <jason.barnabe@gmail.com>
+Current Stylus:  
+Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
-Copyright (C) 2017 Stylus Team
-
+**[GNU GPLv3](./LICENSE)**  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -62,4 +63,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+### External libraries
+
+The licenses of [external libraries](./vendor) used in this project or [modified versions of external libraries](./vendor-overwrites) can be found in their respective directory.

@@ -45,40 +45,44 @@
 </head>
 <body id="stylus-install-usercss">
   <div class="container">
-    <div class="header">
-      <h1>
-        <span class="meta-name"></span>
-        <small class="meta-version"></small>
-      </h1>
-      <div class="actions">
-        <h2 class="installed" i18n-text="installButtonInstalled"></h2>
-        <button class="install" i18n-text="installButton"></button>
-        <p id="live-reload-install-hint" i18n-text="liveReloadInstallHint" class="hidden"></p>
-        <label class="set-update-url">
-          <input type="checkbox">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span></span>
-          <p></p>
-        </label>
-        <label class="live-reload">
-          <input type="checkbox">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n-text="liveReloadLabel"></span>
-        </label>
+    <div id="header">
+      <div id="header-content-wrapper">
+        <h1>
+          <span class="meta-name"></span>
+          <small class="meta-version"></small>
+        </h1>
+        <div class="actions">
+          <h2 class="installed" i18n-text="installButtonInstalled"></h2>
+          <button class="install" i18n-text="installButton"></button>
+          <p id="live-reload-install-hint" i18n-text="liveReloadInstallHint" class="hidden"></p>
+          <label class="set-update-url">
+            <input type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            <span></span>
+            <p></p>
+          </label>
+          <label class="live-reload">
+            <input type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            <span i18n-text="liveReloadLabel"></span>
+          </label>
+        </div>
+        <p class="meta-description"></p>
+        <div>
+          <h3 i18n-text="author"></h3>
+          <span class="meta-author"></span>
+        </div>
+        <div>
+          <h3 i18n-text="license"></h3>
+          <span class="meta-license"></span>
+        </div>
+        <div class="external-link"></div>
+        <div id="applies-to-wrapper">
+          <h3 i18n-text="appliesLabel"></h3>
+          <ul class="applies-to">
+          </ul>
+        </div>
       </div>
-      <p class="meta-description"></p>
-      <div>
-        <h3 i18n-text="author"></h3>
-        <span class="meta-author"></span>
-      </div>
-      <div>
-        <h3 i18n-text="license"></h3>
-        <span class="meta-license"></span>
-      </div>
-      <h3 i18n-text="appliesLabel"></h3>
-      <ul class="applies-to">
-      </ul>
-      <div class="external-link"></div>
     </div>
     <div class="main">
       <div class="warnings"></div>
