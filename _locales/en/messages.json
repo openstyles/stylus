@@ -1202,6 +1202,24 @@
   "noFileToImport": {
     "message": "You don't have a file to import."
   },
+  "connectingDropbox": {
+      "message": "Connecting Dropbox."
+  },
+  "gettingStyles": {
+      "message": "Getting all styles."
+  },
+  "compactStyles": {
+      "message": "Compacting styles."
+  },
+  "descompactStyles": {
+      "message": "Descompating styles."
+  },
+  "readingStyles": {
+      "message": "Reading styles."
+  },
+  "uploadingFile": {
+      "message": "Uploading File."
+  },
   "optionsBadgeNormal": {
     "message": "Background color"
   },
