@@ -950,7 +950,7 @@
       }
     }
   },
-  "styleInstallOverwrite" : {
+  "styleInstallOverwrite": {
     "message": "'$stylename$' is already installed. Overwrite?\nVersion: $oldVersion$ -> $newVersion$",
     "description": "Confirmation when re-installing a style",
     "placeholders": {
@@ -1182,10 +1182,10 @@
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "bckpInstStyles": {
-      "message": "Export styles"
+    "message": "Export styles"
   },
   "retrieveBckp": {
-      "message": "Import styles"
+    "message": "Import styles"
   },
   "optionsBadgeNormal": {
     "message": "Background color"
