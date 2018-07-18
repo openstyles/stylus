@@ -69,7 +69,7 @@ var [chromeLocal, chromeSync] = (() => {
   function loadLZStringScript() {
     return window.LZString ?
       Promise.resolve(window.LZString) :
-      loadScript('/vendor/lz-string/lz-string-unsafe.js').then(() =>
+      loadScript('/vendor/lz-string-unsafe/lz-string-unsafe.min.js').then(() =>
         (window.LZString = window.LZString || window.LZStringUnsafe));
   }
 

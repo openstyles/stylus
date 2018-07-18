@@ -43,6 +43,9 @@ const files = {
   ],
   'less': [
     'dist/less.min.js → less.min.js'
+  ],
+  'lz-string-unsafe': [
+    'lz-string-unsafe.min.js → lz-string-unsafe.min.js'
   ]
 };
 

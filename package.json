@@ -11,6 +11,7 @@
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
     "less": "^3.7.1",
+    "lz-string-unsafe": "^1.4.4-beta",
     "updates": "^3.2.3"
   },
   "scripts": {
