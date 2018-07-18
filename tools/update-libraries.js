@@ -47,7 +47,7 @@ async function updateReadme(lib) {
   const pkg = await fs.readJson(`${root}/node_modules/${lib}/package.json`);
   const file = `${root}/vendor/${lib}/README.md`;
   const txt = await fs.readFile(file, 'utf8');
-  return fs.writeFile(file, txt.replace(/##\s*v[-\w.]+/, `## v${pkg.version}`));
+  return fs.writeFile(file, txt.replace(/\bv[\d.]+[-\w]*\b/g, `v${pkg.version}`));
 }
 
 async function copy(lib, folder) {

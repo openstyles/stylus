@@ -1,4 +1,4 @@
-## v5.39.0
+## CodeMirror v0.0.0
 
 List of essential folders & files copied from `node_modules/codemirror` to `vendor/codemirror`:
 
