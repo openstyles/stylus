@@ -1,12 +1,13 @@
 # https://github.com/eslint/eslint/blob/master/docs/rules/README.md
 
 parserOptions:
-  ecmaVersion: 2015
+  ecmaVersion: 2017
 
 env:
   browser: true
   es6: true
   webextensions: true
+  node: true
 
 globals:
   # messaging.js
@@ -224,7 +225,7 @@ rules:
   no-unsafe-negation: [2]
   no-unused-expressions: [1]
   no-unused-labels: [0]
-  no-unused-vars: [1, {args: after-used, vars: local, argsIgnorePattern: ^_}]
+  no-unused-vars: [0]
   no-use-before-define: [2, nofunc]
   no-useless-call: [2]
   no-useless-computed-key: [2]
