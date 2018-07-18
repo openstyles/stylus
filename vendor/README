@@ -1,0 +1,21 @@
+# Vendor files are populated by the build script:
+
+## What the build script does
+
+Using this repo, run `npm install`... the latest versions of:
+
+* `CodeMirror` (https://github.com/codemirror/CodeMirror) is installed.<br><br>
+* **TODO**: `jsonlint` () is installed.
+* **TODO**: `less` () is installed.
+* **TODO**: `lz-string-unsafe` (https://github.com/openstyles/lz-string-unsafe) is installed.
+* **TODO**: `node-semver` () is installed.
+* **TODO**: `stylus-lang` () is installed.<br><br>
+* The necessary build tools; see `devDependencies` in the `package.json`.
+
+## Running the build script
+
+Use `npm run build` to update packages in the `node_modules` folder & update the vendor folder.
+
+The following changes are made:
+
+* Only the essential CodeMirror files are copied directly from the `node_modules` folder to `vendor/codemirror`; see the `vendor/codemirror/README` for specifics.

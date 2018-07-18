@@ -482,6 +482,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     if (!chrome.runtime.getPackageDirectoryEntry) {
       const themes = [
         chrome.i18n.getMessage('defaultTheme'),
+        /* populate-theme-start*/
         '3024-day',
         '3024-night',
         'abcdef',
@@ -531,7 +532,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'xq-dark',
         'xq-light',
         'yeti',
-        'zenburn',
+        'zenburn'
+        /* populate-theme-end */
       ];
       localStorage.codeMirrorThemes = themes.join(' ');
       return Promise.resolve(themes);
