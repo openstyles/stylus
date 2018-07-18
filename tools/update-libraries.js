@@ -37,6 +37,9 @@ const files = {
     'mode/javascript',
     'mode/stylus',
     'theme'
+  ],
+  'jsonlint': [
+    'lib/jsonlint.js → jsonlint.js'
   ]
 };
 
@@ -48,8 +51,9 @@ async function updateReadme(lib) {
 }
 
 async function copy(lib, folder) {
+  const [src, dest] = folder.split(/\s*→\s*/);
   try {
-    await fs.copy(`${root}/node_modules/${lib}/${folder}`, `${root}/vendor/${lib}/${folder}`);
+    await fs.copy(`${root}/node_modules/${lib}/${src}`, `${root}/vendor/${lib}/${dest || src}`);
   } catch (err) {
     exit(err);
   }

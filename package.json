@@ -9,6 +9,7 @@
     "codemirror": "^5.39.0",
     "eslint": "^5.1.0",
     "fs-extra": "^7.0.0",
+    "jsonlint": "^1.6.3",
     "updates": "^3.2.3"
   },
   "scripts": {
