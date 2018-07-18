@@ -10,6 +10,7 @@
     "eslint": "^5.1.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
+    "less": "^3.7.1",
     "updates": "^3.2.3"
   },
   "scripts": {

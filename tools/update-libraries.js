@@ -40,6 +40,9 @@ const files = {
   ],
   'jsonlint': [
     'lib/jsonlint.js → jsonlint.js'
+  ],
+  'less': [
+    'dist/less.min.js → less.min.js'
   ]
 };
 
