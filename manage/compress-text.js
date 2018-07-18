@@ -1,23 +1,19 @@
 /* global messageBox */
 'use strict';
 
-onDOMready().then(_ => {
-  zip.workerScriptsPath = "/vendor/zipjs/";
+onDOMready().then(() => {
+  zip.workerScriptsPath = '/vendor/zipjs/';
 });
 
 function createZipFileFromText(filename, text) {
   return new Promise((resolve, reject) => {
-    // use a BlobWriter to store the zip into a Blob object
     zip.createWriter(new zip.BlobWriter('application/zip'), writer => {
-      // use a TextReader to read the String to add
       writer.add(filename, new zip.TextReader(text), function () {
-        // close the zip writer
         writer.close(blob => {
-          // blob contains the zip file as a Blob object
           resolve(blob);
         });
       });
-    }, error => reject(error));
+    }, reject);
   });
 }
 
@@ -30,6 +26,6 @@ function readZipFileFromBlob(blob) {
           resolve(data);
         });
       });
-    }, error => reject(error))
+    }, reject);
   });
 }

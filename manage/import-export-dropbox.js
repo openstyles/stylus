@@ -1,7 +1,7 @@
 /* global messageBox */
 'use strict';
 
-const DROPBOX_API_KEY = 'uyfixgzre8v1bkg';
+const DROPBOX_API_KEY = '';
 const FILENAME_ZIP_FILE = 'stylus.json';
 const DROPBOX_FILE = 'stylus.zip';
 const API_ERROR_STATUS_FILE_NOT_FOUND = 409;
@@ -18,7 +18,7 @@ function messageProgressBar(data) {
       textContent: t('confirmClose'),
       dataset: {cmd: 'close'},
     }],
-  }).then(_ => {
+  }).then(() => {
     document.body.style.minWidth = '';
     document.body.style.minHeight = '';
   });
@@ -35,10 +35,8 @@ function requestDropboxAccessToken() {
 
   return browserApi.identity.launchWebAuthFlow({url: authUrl, interactive: true})
   .then(urlReturned => {
-    const params = new URLSearchParams(new URL(urlReturned).hash.replace('#', '?'));
-
+    const params = new URLSearchParams(new URL(urlReturned).hash.replace('#', ''));
     chromeLocal.setValue('dropbox_access_token', params.get('access_token'));
-
     return params.get('access_token');
   });
 }
@@ -51,13 +49,7 @@ $('#sync-dropbox-export').onclick = () => {
 
   messageProgressBar({title: t('bckpDropboxStyles'), text: t('connectingDropbox')});
 
-  hasDropboxAccessToken().then(token => {
-    if (typeof token === 'undefined') {
-      return requestDropboxAccessToken();
-    }
-
-    return token;
-  })
+  hasDropboxAccessToken().then(token => token || requestDropboxAccessToken())
   .then(token => {
     const client = new Dropbox.Dropbox({
       clientId: DROPBOX_API_KEY,
@@ -65,63 +57,63 @@ $('#sync-dropbox-export').onclick = () => {
     });
 
     return client.filesDownload({path: '/' + DROPBOX_FILE})
-     .then(_ => messageBox.confirm(t('overwriteFileExport')))
+    .then(() => messageBox.confirm(t('overwriteFileExport')))
     .then(ok => {
-      /** deletes file if user want to */
+      // deletes file if user want to
       if (!ok) {
         return Promise.reject({status: HTTP_STATUS_CANCEL});
       }
 
       return client.filesDelete({path: '/' + DROPBOX_FILE});
     })
-    /** file deleted with success, get styles and create a file */
-    .then(_ => {
-      messageProgressBar({title: t('bckpDropboxStyles'), text: t('gettingStyles') });
+    // file deleted with success, get styles and create a file
+    .then(() => {
+      messageProgressBar({title: t('bckpDropboxStyles'), text: t('gettingStyles')});
 
       return API.getStyles().then(styles => JSON.stringify(styles, null, '\t'));
     })
-    /** create zip file */
+    // create zip file
     .then(stylesText => {
-      messageProgressBar({title: t('bckpDropboxStyles'), text: t('compactStyles') });
+      messageProgressBar({title: t('bckpDropboxStyles'), text: t('compactStyles')});
 
       return createZipFileFromText(FILENAME_ZIP_FILE, stylesText);
     })
-    /** create file dropbox */
+    // create file dropbox
     .then(zipedText =>{
-      messageProgressBar({title: t('bckpDropboxStyles'), text: t('uploadingFile') });
+      messageProgressBar({title: t('bckpDropboxStyles'), text: t('uploadingFile')});
 
       return  uploadFileDropbox(client, zipedText);
     })
-    /** gives feedback to user */
-    .then(_ => messageProgressBar({title: t('bckpDropboxStyles'), text: t('exportSavedSuccess') }))
-    /* handle not found cases and cancel action */
+    // gives feedback to user
+    .then(() => messageProgressBar({title: t('bckpDropboxStyles'), text: t('exportSavedSuccess')}))
+    // handle not found cases and cancel action
     .catch(error => {
-      /* saving file first time */
+      // saving file first time
       if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
 
         API.getStyles()
         .then(styles => {
-          messageProgressBar({title: t('bckpDropboxStyles'), text: t('gettingStyles') });
+          messageProgressBar({title: t('bckpDropboxStyles'), text: t('gettingStyles')});
 
           return JSON.stringify(styles, null, '\t');
         })
         .then(stylesText => {
-          messageProgressBar({title: t('bckpDropboxStyles'), text: t('compactStyles') });
+          messageProgressBar({title: t('bckpDropboxStyles'), text: t('compactStyles')});
 
           return createZipFileFromText(FILENAME_ZIP_FILE, stylesText);
         })
         .then(zipedText => {
-          messageProgressBar({title: t('bckpDropboxStyles'), text: t('uploadingFile') });
+          messageProgressBar({title: t('bckpDropboxStyles'), text: t('uploadingFile')});
 
           return uploadFileDropbox(client, zipedText);
         })
-        .then(_ => messageProgressBar({title: t('bckpDropboxStyles'), text: t('exportSavedSuccess') }))
+        .then(() => messageProgressBar({title: t('bckpDropboxStyles'), text: t('exportSavedSuccess')}))
         .catch(err => messageBox.alert(err));
 
         return;
       }
 
-      /* user cancelled the flow */
+      // user cancelled the flow
       if (error.status === HTTP_STATUS_CANCEL) {
         return;
       }
@@ -133,15 +125,9 @@ $('#sync-dropbox-export').onclick = () => {
 
 $('#sync-dropbox-import').onclick = () => {
 
-  messageProgressBar({title: t('retrieveDropboxBckp'), text: t('connectingDropbox') });
+  messageProgressBar({title: t('retrieveDropboxBckp'), text: t('connectingDropbox')});
 
-  hasDropboxAccessToken().then(token => {
-    if (typeof token === 'undefined') {
-      return requestDropboxAccessToken();
-    }
-
-    return token;
-  })
+  hasDropboxAccessToken().then(token => token || requestDropboxAccessToken())
   .then(token => {
     const client = new Dropbox.Dropbox({
       clientId: DROPBOX_API_KEY,
@@ -150,16 +136,16 @@ $('#sync-dropbox-import').onclick = () => {
 
     return client.filesDownload({path: '/' + DROPBOX_FILE})
     .then(response => {
-      messageProgressBar({title: t('retrieveDropboxBckp'), text: t('descompactStyles') });
+      messageProgressBar({title: t('retrieveDropboxBckp'), text: t('descompactStyles')});
 
       return readZipFileFromBlob(response.fileBlob);
     })
     .then(zipedFileBlob => {
-      messageProgressBar({title: t('retrieveDropboxBckp'), text: t('readingStyles') });
+      messageProgressBar({title: t('retrieveDropboxBckp'), text: t('readingStyles')});
 
       const fileBlob = zipedFileBlob;
 
-      /* it's based on the import-export.js */
+      // it's based on the import-export.js
       const fReader = new FileReader();
       fReader.onloadend = event => {
         const text = event.target.result;
@@ -178,7 +164,7 @@ $('#sync-dropbox-import').onclick = () => {
       fReader.readAsText(fileBlob, 'utf-8');
     })
     .catch(error => {
-      /* no file */
+      // no file
       if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
         messageBox.alert(t('noFileToImport'));
 
