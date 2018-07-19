@@ -2,7 +2,23 @@ body {
   overflow: hidden;
   margin: 0;
   font: 12px arial, sans-serif;
-  background: white;
+  color: hsl(0, 0%, 20%);
+  background-color: hsl(0, 0%, 88%);
+}
+
+.CodeMirror.cm-s-default {
+  background: hsl(0, 0%, 92%);
+  border: 1px solid hsl(0, 0%, 72%);
+  box-shadow: 0 0 0 1px hsla(0, 0%, 100%, .4);
+}
+
+.CodeMirror-gutters {
+  background-color: hsl(0, 0%, 90%) !important;
+  border-right: 1px solid hsl(0, 0%, 80%) !important;
+}
+
+.CodeMirror-activeline-background {
+  background: hsl(180, 22%, 88%) !important;
 }
 
 a {
@@ -45,11 +61,12 @@ input:disabled + span {
   flex: 0 0 280px;
   box-sizing: border-box;
   padding: 1rem;
-  border-right: 1px dashed #aaa;
-  box-shadow: 0 0 50px -18px black;
   overflow-wrap: break-word;
   overflow-y: auto;
   z-index: 100;
+  background-color: hsl(0, 0%, 88%);
+  border-right: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset -1px 0 0 0 hsla(0, 0%, 100%, .4), 0 0 50px -18px #000;
 }
 
 #header.meta-init-error {
@@ -62,7 +79,7 @@ input:disabled + span {
   flex-basis: auto;
   background: #ffe2e2;
   border-right: none;
-  border-bottom: 1px dashed #aaa;
+  border-bottom: 1px solid hsl(0, 0%, 80%);
 }
 
 .has-warnings .warnings {
@@ -253,7 +270,7 @@ h2.installed.active {
 
 .set-update-url p {
   word-break: break-all;
-  opacity: .5;
+  opacity: .7;
   width: 100%;
   margin: .25em 0 .25em;
 }
@@ -457,7 +474,9 @@ label {
   #header {
     flex: 0 1 auto;
     border-right: none;
-    border-bottom: 1px dashed #AAA;
+    background-color: hsl(0, 0%, 90%);
+    border-bottom: 1px solid hsl(0, 0%, 80%);
+    box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4), 0 0 50px -18px #000;
     overflow-x: auto;
     overflow-y: hidden;
     padding: 0;
