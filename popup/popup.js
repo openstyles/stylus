@@ -241,6 +241,11 @@ function showStyles(styles) {
     }
     window.dispatchEvent(new Event('showStyles:done'));
   });
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)');
+  if (typeof(reverseZebra) !== 'undefined' && reverseZebra !== null) {
+    $('#installed').classList.add('reverse-stripe');
+  }
 }
 
 
@@ -473,6 +478,13 @@ function handleDelete(id) {
   $.remove(ENTRY_ID_PREFIX + id);
   if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
+  }
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)');
+  if (typeof(reverseZebra) !== 'undefined' && reverseZebra !== null) {
+    $('#installed').classList.add('reverse-stripe');
+  } else {
+    $('#installed').classList.remove('reverse-stripe');
   }
 }
 
