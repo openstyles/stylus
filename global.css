@@ -4,12 +4,12 @@
 
 ::selection {
   color: #fff;
-  background-color: hsl(180, 50%, 34%)
+  background-color: hsl(180, 50%, 34%);
 }
 
 ::-moz-selection {
   color: #fff;
-  background-color: hsl(180, 50%, 34%)
+  background-color: hsl(180, 50%, 34%);
 }
 
 button {
@@ -24,7 +24,7 @@ button {
   border: 1px solid hsl(0, 0%, 56%);
   font: 400 13.3333px Arial;
   color: hsl(0, 0%, 24%);
-  background-color: hsl(0, 0%, 100%);
+  background-color: hsl(0, 0%, 95%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
   background-repeat: repeat-x;
   background-size: 100% 100%;
@@ -33,22 +33,16 @@ button {
 
 button:not(:disabled):hover {
   color: hsl(0, 0%, 10%);
-  background-color: hsl(0, 0%, 95%);
+  background-color: hsl(0, 0%, 90%);
   border-color: hsl(0, 0%, 46%);
 }
 
 button:active {
-  background-color: hsl(0, 0%, 95%);
+  background-color: hsl(0, 0%, 90%);
   border-color: hsl(0, 0%, 46%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
   background-repeat: repeat-x;
   background-size: 100% 100%;
-}
-
-/* For some odd reason these hovers appear lighter than all other button hovers in every browser */
-#message-box.center #message-box-buttons button:not(:disabled):hover {
-  background-color: hsl(0, 0%, 90%);
-  border-color: hsl(0, 0%, 50%);
 }
 
 input:not([type]),
