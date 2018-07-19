@@ -1,3 +1,17 @@
+* {
+  outline-color: hsl(180, 100%, 34%) !important;
+}
+
+::selection {
+  color: #fff;
+  background-color: hsl(180, 50%, 34%)
+}
+
+::-moz-selection {
+  color: #fff;
+  background-color: hsl(180, 50%, 34%)
+}
+
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -7,44 +21,60 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 2px 7px;
-  border: 1px solid hsl(0, 0%, 62%);
+  border: 1px solid hsl(0, 0%, 56%);
   font: 400 13.3333px Arial;
-  color: #000;
+  color: hsl(0, 0%, 24%);
   background-color: hsl(0, 0%, 100%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
   background-repeat: repeat-x;
   background-size: 100% 100%;
-  transition: background-color .25s, border-color .25s;
+  transition: color .25s, background-color .25s, border-color .25s;
 }
 
 button:not(:disabled):hover {
+  color: hsl(0, 0%, 10%);
   background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  border-color: hsl(0, 0%, 46%);
 }
 
 button:active {
   background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  border-color: hsl(0, 0%, 46%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
   background-repeat: repeat-x;
   background-size: 100% 100%;
 }
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
-#message-box-buttons button:not(:disabled):hover {
+#message-box.center #message-box-buttons button:not(:disabled):hover {
   background-color: hsl(0, 0%, 90%);
   border-color: hsl(0, 0%, 50%);
 }
 
-input:not([type]) {
-  background: #fff;
-  color: #000;
+input:not([type]),
+input[type="number"],
+input[type="search"],
+input.config-value {
+  background: hsl(0, 0%, 92%);
+  color: hsl(0, 0%, 30%);
   height: 22px;
   min-height: 22px!important;
   line-height: 22px;
   padding: 0 3px;
   font: 400 13.3333px Arial;
   border: 1px solid hsl(0, 0%, 66%);
+  transition: border-color .25s;
+}
+
+input[data-focused-via-click]:not([type]):focus,
+input[data-focused-via-click][type="number"]:focus,
+input[data-focused-via-click][type="search"]:focus,
+label[data-focused-via-click] input[type="number"]:focus,
+label[data-focused-via-click] + input[type="number"]:focus,
+input[data-focused-via-click].config-value:focus,
+label[data-focused-via-click] input.config-value:focus {
+  outline: none;
+  border-color: hsl(180, 100%, 34%);
 }
 
 .svg-icon.checked {
@@ -52,13 +82,17 @@ input:not([type]) {
   height: 8px;
   width: 8px;
   display: none;
-  fill: #000;
+  fill: hsl(0, 0%, 30%);
   margin: 2px 0 0 2px;
 }
 
 input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
   display: inline-flex;
   transition: fill .1s;
+}
+
+input[type="checkbox"]:not(.slider):checked:hover + .svg-icon.checked {
+  fill: hsl(0, 0%, 10%);
 }
 
 input[type="checkbox"]:not(.slider) {
@@ -72,14 +106,13 @@ input[type="checkbox"]:not(.slider) {
   width: 12px;
   display: inline-flex;
   border-radius: 2px;
-  background-color: hsla(0, 0%, 0%, .1);
+  background-color: hsl(0, 0%, 88%);
   margin: 0;
   transition: background-color .1s, border-color .1s;
 }
 
 input[type="checkbox"]:not(.slider):hover {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
+  border-color: hsl(0, 0%, 10%);
 }
 
 input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
@@ -91,19 +124,26 @@ input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
 
 input[type="checkbox"]:not(.slider):disabled {
   background-color: transparent;
-  border-color: hsl(0, 0%, 50%);
+  border-color: hsl(0, 0%, 60%);
 }
 
-input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked {
-  fill: hsl(0, 0%, 50%);
+input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked,
+input[type="checkbox"]:not(.slider):disabled:hover + .svg-icon.checked {
+  fill: hsl(0, 0%, 60%);
 }
 
-input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
-  color: hsl(0, 0%, 50%);
+input[type="checkbox"]:not(.slider):disabled  ~ *,
+input[type="checkbox"]:not(.slider):disabled:hover ~ * {
+  color: hsl(0, 0%, 60%);
 }
 
 label {
+  color: hsl(0, 0%, 30%);
   transition: color .1s;
+}
+
+label:hover {
+  color: hsl(0, 0%, 10%);
 }
 
 select {
@@ -111,11 +151,31 @@ select {
   -webkit-appearance: none;
   height: 22px;
   font: 400 13.3333px Arial;
-  color: #000;
-  background-color: transparent;
+  color: hsl(0, 0%, 24%);
   border: 1px solid hsl(0, 0%, 66%);
   padding: 0 20px 0 6px;
-  transition: color .5s;
+  transition: color .25s, background-color .25s, border-color .25s, box-shadow .25s;
+  box-shadow: 0 1px 1px hsla(0, 0%, 0%, .05);
+  background-color: hsl(0, 0%, 90%);
+  background-image: linear-gradient(to bottom, hsla(0, 0%, 100%, .5), hsla(0, 0%, 80%, .5));
+}
+
+select:hover,
+select:focus {
+  color: hsl(0, 0%, 14%);
+  border: 1px solid hsl(0, 0%, 60%);
+  background-color: hsl(0, 0%, 85%);
+  box-shadow: 0 1px 1px hsla(0, 0%, 0%, .1);
+}
+
+select option,
+select optgroup {
+  background-color: hsl(0, 0%, 90%)
+}
+
+select:hover + .svg-icon.select-arrow,
+select:focus + .svg-icon.select-arrow {
+  fill: hsl(0, 0%, 30%);
 }
 
 .select-resizer {
@@ -130,11 +190,11 @@ select {
   display: inline-flex;
   height: 14px;
   width: 14px;
-  fill: #000;
+  fill: hsl(0, 0%, 50%);
   position: absolute;
   top: 4px;
   right: 4px;
-  transition: fill .5s;
+  transition: fill .25s;
 }
 
 input[type="radio"] {
@@ -208,6 +268,15 @@ select[disabled] > option {
 
   .moz-appearance-bug input[type="checkbox"] {
     -moz-appearance: checkbox !important;
+    opacity: .6;
+    filter: brightness(.9)grayscale(1);
+    transition: opacity .1s;
+    will-change: opacity;
+  }
+
+  .moz-appearance-bug input[type="checkbox"]:hover,
+  .moz-appearance-bug #stylus-popup .style-name:hover input[type="checkbox"] {
+    opacity: 1;
   }
 
   .moz-appearance-bug input[type="radio"] {

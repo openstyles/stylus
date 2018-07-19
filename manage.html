@@ -171,12 +171,12 @@
 
 <div id="header">
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
-
+  
   <div id="manage-settings">
     <div class="settings-column">
       <details id="filters" data-pref="manage.filters.expanded">
         <summary>
-          <h2 i18n-text="manageFilters">:
+          <h2 i18n-text="manageFilters">: 
             <div class="filter-stats-wrapper">
               <span id="filters-stats"></span>
               <a id="reset-filters" href="#" tabindex="0">
@@ -189,7 +189,7 @@
             </div>
           </h2>
         </summary>
-
+      
         <div class="filter-selection">
           <label>
             <div class="checkmate">
@@ -207,7 +207,7 @@
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
-
+      
         <div class="filter-selection">
           <label>
             <div class="checkmate">
@@ -225,7 +225,7 @@
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
-
+      
         <div class="filter-selection">
           <label>
             <div class="checkmate">
@@ -243,7 +243,7 @@
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
-
+      
         <label id="only-updates" class="hidden">
           <input type="checkbox"
                  data-filter=".can-update, .update-problem, .update-done"
@@ -251,7 +251,7 @@
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           <span i18n-text="manageOnlyUpdates"></span>
         </label>
-
+      
         <div id="search-wrapper">
           <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
                  data-filter=":not(.not-matching)"
@@ -272,7 +272,7 @@
           <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
         </a>
       </div>
-
+      
       <div id="style-actions">
         <div id="update-check">
           <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
@@ -282,13 +282,13 @@
             </svg>
           </a>
         </div>
-
+        
         <div id="update-all">
           <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
           <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
           <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
         </div>
-
+        
         <div id="add-style-wrapper">
           <a href="edit.html">
             <button id="add-style-label" i18n-text="addStyleLabel" tabindex="-1"></button>
@@ -309,30 +309,32 @@
         </div>
       </div>
     </div>
-
+    
     <div class="settings-column">
       <details id="options" data-pref="manage.options.expanded">
-
+      
         <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
-
+      
         <label>
           <input id="manage.newUI" type="checkbox">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           <span i18n-text="manageNewUI"></span>
         </label>
-
+      
         <div id="newUIoptions">
           <div>
-            <label for="manage.newUI.favicons" i18n-text="manageFavicons">
-              <input id="manage.newUI.favicons" type="checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            <div class="favicon-help-wrapper">
+              <label for="manage.newUI.favicons" i18n-text="manageFavicons">
+                <input id="manage.newUI.favicons" type="checkbox">
+                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+              </label>
               <a href="#" data-toggle-on-click="#faviconsHelp" tabindex="0">
                 <svg class="svg-icon select-arrow">
                   <title i18n-text="optionsSubheading"></title>
                   <use xlink:href="#svg-icon-select-arrow"/>
                 </svg>
               </a>
-            </label>
+            </div>
             <div id="faviconsHelp" class="hidden" i18n-text="manageFaviconsHelp">
               <div>
                 <label for="manage.newUI.faviconsGray" i18n-text="manageFaviconsGray">
@@ -344,7 +346,7 @@
           </div>
          <label><input id="manage.newUI.targets" type="number" min="1" max="99"><span i18n-text="manageMaxTargets"></span></label>
         </div>
-
+      
         <div id="options-buttons">
           <button id="manage-options-button" i18n-text="openOptionsManage"></button>
           <button id="manage-shortcuts-button" class="chromium-only"
@@ -355,9 +357,9 @@
              i18n-title="editorStylesButton"
              target="_blank"><button i18n-text="cm_theme" tabindex="-1"></button></a>
         </div>
-
+      
       </details>
-
+      
       <details id="backup" data-pref="manage.backup.expanded">
         <summary><h2 id="backup-title" i18n-text="backupButtons"></h2></summary>
         <span id="backup-message" i18n-text="backupMessage"></span>
@@ -366,7 +368,7 @@
           <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
         </div>
       </details>
-
+      
       <div id="manage-text">
         <span><a href="https://userstyles.org" target="_blank" i18n-text="linkGetStyles"></a></span>
         <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n-text="linkGetHelp"></a></span>
