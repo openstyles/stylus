@@ -12,27 +12,23 @@ html {
   /* Chrome 66-?? adds a gap equal to the scrollbar width,
      which looks like a bug, see https://crbug.com/821143 */
   overflow: overlay;
-  max-height: 600px;
 }
 
 html, body {
   height: min-content;
+  max-height: 600px;
 }
 
 body {
   width: 252px;
-  max-height: 596px;
   font-size: 12px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  margin: 0 0 1px;
-  color: hsl(0, 0%, 20%);
-  background-color: hsl(0, 0%, 88%);
-  border: 1px solid hsl(0, 0%, 80%);
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
+  margin: 0;
 }
 
-body.blocked {
-  background-color: hsl(0, 0%, 90%);
+.firefox body {
+  color: #000;
+  background-color: #fff;
 }
 
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
@@ -45,12 +41,14 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 /************ checkbox ************/
 
-.style-name:hover input[type="checkbox"] {
-  border-color: hsl(0, 0%, 10%);
+.style-name:hover input[type="checkbox"]:checked {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
 }
 
-.style-name:hover input[type="checkbox"]:checked + .svg-icon.checked {
-  fill: hsl(0, 0%, 0%);
+.style-name:hover input[type="checkbox"] {
+  border-color: hsl(0, 0%, 32%);
+  background-color: hsl(0, 0%, 82%);
 }
 
 #disable-all-wrapper input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
@@ -61,11 +59,11 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
-  fill: hsl(0, 100%, 36%);
+  fill: hsl(0, 68%, 42%);
 }
 
 #installed.disabled + .actions #disableAll:checked {
-  border-color: hsl(0, 100%, 36%);
+  border-color: hsl(0, 68%, 50%);
 }
 
 #installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
@@ -73,16 +71,17 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #disableAll:hover {
-  border-color: hsl(0, 100%, 36%);
+  border-color: hsl(0, 68%, 50%);
+  background-color: hsl(20, 70%, 75%);
 }
 
 #disableAll-label:hover {
-  color: hsl(0, 100%, 36%);
+  color: hsl(0, 68%, 42%);
 }
 
 #installed.disabled + .actions #disableAll:checked:hover {
-  border-color: hsl(0, 100%, 36%);
-  background-color: hsl(0, 100%, 36%);
+  border-color: hsl(0, 50%, 56%);
+  background-color: hsl(0, 50%, 56%);
 }
 
 #installed .style-name .checker,
@@ -110,11 +109,8 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #no-styles {
-  background-color: hsl(0, 0%, 91%);
   padding: 4px var(--outer-padding) 6px;
   font-weight: bold;
-  border-bottom: 1px solid hsl(0, 0%, 80%);
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
 }
 
 #find-styles-link {
@@ -150,13 +146,13 @@ body.blocked > DIV {
 }
 
 #installed {
+  border-bottom: 1px solid black;
+  padding-bottom: 2px;
+  padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
   position: relative;
-  background-color: hsl(0, 0%, 88%);
-  border-bottom: 1px solid hsl(0, 0%, 80%);
-  box-shadow: 0 1px 0 0 hsla(0, 0%, 100%, .4);
 }
 
 #installed.disabled .style-name {
@@ -165,7 +161,7 @@ body.blocked > DIV {
 
 #installed.disabled + .actions #disableAll-label {
   font-weight: bold;
-  color: hsl(0, 100%, 36%);
+  color: firebrick;
 }
 
 #installed .actions {
@@ -183,17 +179,12 @@ body.blocked > DIV {
   display: flex;
   align-items: center;
   height: 26px;
-  padding: 0 13px 0 0;
+  padding: 0 14px 0 0;
   position: relative;
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
-}
-
-.entry:not(:last-of-type) {
-  border-bottom: 1px solid hsl(0, 0%, 80%);
 }
 
 html[style] .entry {
-  padding: 0 15px 0 0;
+  padding: 0 16px 0 0;
 }
 
 #no-styles.entry {
@@ -202,9 +193,6 @@ html[style] .entry {
 
 .entry .actions {
   display: inline-flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
 }
 
 .style-name {
@@ -227,7 +215,7 @@ html[style] .entry {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to right, hsla(0, 0%, 50%, 0.2), hsla(0, 0%, 50%, 0.05) 50%, transparent);
+  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
   pointer-events: none;
   opacity: 0;
   transition: opacity .1s;
@@ -247,20 +235,8 @@ html[style] .entry {
   padding-right: 5px;
 }
 
-.entry:nth-child(odd) {
-  background-color: hsl(0, 0%, 91%);
-}
-
 .entry:nth-child(even) {
-  background-color: hsl(0, 0%, 88%);
-}
-
-.reverse-stripe .entry:nth-child(even) {
-  background-color: hsl(0, 0%, 91%);
-}
-
-.reverse-stripe .entry:nth-child(odd) {
-  background-color: hsl(0, 0%, 88%);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .entry:nth-child(-n+10):before,
@@ -283,12 +259,15 @@ html[style*="border"] .entry:nth-child(11):before {
   right: 7px;
 }
 
+.entry .actions {
+  margin-left: -1px;
+  margin-right: -1px;
+}
+
 .entry .actions > * {
-  display: inline-flex;
-  height: 18px;
-  width: 18px;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  padding: 0 1px;
+  margin: 0 1px;
 }
 
 .not-applied .checker,
@@ -363,29 +342,13 @@ html[style*="border"] .entry:nth-child(11):before {
 .svg-icon {
   pointer-events: none;
   transition: fill .5s;
-  width: 16px;
-  height: 16px;
-  fill: hsl(0, 0%, 54%);
-}
-
-.entry .actions .svg-icon.config {
-  height: 15px;
-  width: 15px;
-  margin-left: -2px;
-}
-
-.entry .actions .svg-icon.edit {
   width: 14px;
+  height: 16px;
+  fill: #666;
 }
 
-.entry .actions .svg-icon.remove {
-  width: 12px;
-  margin-left: -2px;
-}
-
-a:hover .svg-icon,
-#message-box-close-icon:hover .svg-icon {
-  fill: hsl(0, 0%, 10%);
+a:hover .svg-icon {
+  fill: #000;
 }
 
 body > .actions {
@@ -497,7 +460,7 @@ body.blocked .actions > .main-controls {
 #popup-options {
   display: flex;
   flex-direction: row;
-  padding: var(--outer-padding) 1px 8px;
+  padding: var(--outer-padding) 1px;
 }
 
 #popup-options button {
@@ -553,11 +516,10 @@ body.blocked .actions > .main-controls {
   max-height: 80%;
   min-height: 6em;
   padding: 1em;
-  background-color: hsl(0, 0%, 92%);
+  background-color: #fff;
   display: flex;
   flex-direction: column;
-  border: solid 1px hsl(0, 0%, 40%);
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 1);
+  border: solid 2px rgba(0, 0, 0, 0.5);
 }
 
 #confirm > div > *:not(:last-child) {
@@ -631,14 +593,12 @@ body.blocked .actions > .main-controls {
   cursor: auto;
   display: flex;
   flex-direction: column;
-  border: 1px solid hsl(0, 0%, 80%);
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 80%, .4), 0 0 90px rgba(0, 0, 0, .5);
+  border-left: 2px solid white;
+  box-shadow: 0 0 90px rgba(0, 0, 0, .5);
   z-index: 5;
 }
 
 #hotkey-info div:first-child {
-  background-color: hsl(0, 0%, 90%);
-  box-shadow: inset 0 0 0 1px hsla(0, 0%, 80%, .4);
   flex-grow: 1;
   padding: 0 1em;
   font-size: 11px;
@@ -647,11 +607,12 @@ body.blocked .actions > .main-controls {
 
 #hotkey-info div {
   padding: 1em;
+  border-top: 1px solid #ddd;
+  background-color: white;
 }
 
 #hotkey-info div:last-child {
   box-shadow: 0 0 90px rgba(0, 0, 0, .25);
-  background-color: hsl(0, 0%, 80%);
   position: relative;
 }
 
