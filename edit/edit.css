@@ -27,12 +27,12 @@ body {
   box-shadow: 0 0 0 1px hsla(0, 0%, 100%, .4);
 }
 
-.CodeMirror-gutters {
+.CodeMirror.cm-s-default .CodeMirror-gutters {
   background-color: hsl(0, 0%, 90%) !important;
   border-right: 1px solid hsl(0, 0%, 80%) !important;
 }
 
-.CodeMirror-activeline-background {
+.CodeMirror.cm-s-default .CodeMirror-activeline-background {
   background: hsl(180, 22%, 88%) !important;
 }
 
