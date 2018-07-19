@@ -1240,7 +1240,7 @@ input[id^="manage.newUI"] {
     position: static;
     border-right: none;
     background-color: hsl(0, 0%, 90%);
-    }
+  }
 
   #manage-settings {
     display: flex;
