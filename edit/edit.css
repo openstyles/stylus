@@ -5,6 +5,35 @@
 body {
   margin: 0;
   font: 12px arial,sans-serif;
+  color: hsl(0, 0%, 20%);
+  background-color: hsl(0, 0%, 86%);
+}
+
+.CodeMirror {
+  outline-style: solid !important;
+  outline-color: transparent!important;
+  outline-width: 1px !important;
+  outline-offset: -1px !important;
+  transition: outline-color .25s;
+}
+
+.CodeMirror-focused {
+  outline-color: hsl(180, 100%, 34%)!important;
+}
+
+.CodeMirror.cm-s-default {
+  background: hsl(0, 0%, 92%);
+  border: 1px solid hsl(0, 0%, 72%);
+  box-shadow: 0 0 0 1px hsla(0, 0%, 100%, .4);
+}
+
+.CodeMirror-gutters {
+  background-color: hsl(0, 0%, 90%) !important;
+  border-right: 1px solid hsl(0, 0%, 80%) !important;
+}
+
+.CodeMirror-activeline-background {
+  background: hsl(180, 22%, 88%) !important;
 }
 
 #global-progress {
@@ -41,6 +70,11 @@ label {
   position: relative;
 }
 
+.applies-to label:hover,
+label.code-label:hover {
+  color: hsl(0, 0%, 30%);
+}
+
 /************ header ************/
 #header {
   width: 280px;
@@ -49,13 +83,13 @@ label {
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
-  -webkit-box-shadow: 0 0 3rem -1.2rem black;
-  box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
   display: flex;
   flex-direction: column;
+  background-color: hsl(0, 0%, 88%);
+  border-right: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset -1px 0 0 0 hsla(0, 0%, 100%, .4), 0 0 50px -18px #000;
 }
 #header h1 {
   margin-top: 0;
@@ -161,15 +195,11 @@ label {
   width: 14px;
   height: 16px;
 }
-.svg-icon:hover,
-.svg-icon.info,
-.svg-icon.settings {
-  fill: #666;
+.svg-icon {
+  fill: hsl(0, 0%, 56%);
 }
-.svg-icon,
-.svg-icon.info:hover,
-.svg-icon.settings:hover {
-  fill: #000;
+.svg-icon:hover {
+  fill: hsl(0, 0%, 10%);
 }
 #options span .svg-icon {
   margin-top: -3px; /* inline info and config icons */
@@ -188,6 +218,11 @@ input:invalid {
   cursor: pointer;
   margin-top: .5rem;
   margin-bottom: .5rem;
+  transition: .25s color;
+}
+
+#header summary:hover {
+  color: #000;
 }
 
 #header summary h2 {
@@ -195,10 +230,11 @@ input:invalid {
   border-bottom: 1px dotted transparent;
   margin-top: .1em;
   margin-bottom: .1em;
+  transition: .25s border-color;
 }
 
 #header summary:hover h2 {
-  border-color: #bbb;
+  border-color: #000;
 }
 
 #header summary svg {
@@ -273,6 +309,7 @@ input:invalid {
 }
 #sections > div:not(:first-of-type) {
   border-top: 2px solid hsl(0, 0%, 80%);
+  box-shadow: 0 -1px 0 0 hsla(0, 0%, 100%, .4), inset 0 1px 0 0 hsla(0, 0%, 100%, .4);
 }
 #sections > div:only-of-type .remove-section {
   display: none;
@@ -444,14 +481,13 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .add-applies-to .svg-icon,
 .remove-applies-to .svg-icon {
   pointer-events: none;
-  fill: hsl(0, 0%, 60%);
+  fill: hsl(0, 0%, 66%);
   height: 12px;
   width: 12px;
 }
 .add-applies-to:hover .svg-icon,
 .remove-applies-to:hover .svg-icon {
-  pointer-events: none;
-  fill: hsl(0, 0%, 0%);
+  fill: hsl(0, 0%, 10%);
 }
 .test-regexp {
   display: none;
@@ -526,7 +562,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-width: 50vw;
   position: fixed;
   display: none;
-  background-color: white;
+  background-color: hsl(0, 0%, 92%);
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
   padding: 0.5rem;
   z-index: 99;
@@ -536,6 +572,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-width: 100%;
 }
 #help-popup.big {
+  background-color: hsl(0, 0%, 90%);
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
   left: calc(280px - 3rem);
 }
@@ -767,6 +804,10 @@ html:not(.usercss) .usercss-only,
   margin: 1em 0;
   padding: .75rem .75rem .25rem;
   padding-right: calc(1em + 20px);
+  background-color: hsl(0, 0%, 88%);
+  border-top: 1px solid hsl(0, 0%, 80%);
+  border-bottom: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset 0 1px 0 0 hsla(0, 0%, 100%, .4), inset 0 -1px 0 0 hsla(0, 0%, 100%, .4);
 }
 
 .CodeMirror-linewidget .applies-to li {
@@ -797,7 +838,9 @@ html:not(.usercss) .usercss-only,
     width: unset;
     position: inherit;
     border-right: none;
-    border-bottom: 1px dashed #AAA;
+    background-color: hsl(0, 0%, 90%);
+    border-bottom: 1px solid hsl(0, 0%, 80%);
+    box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4), 0 0 50px -18px #000;
     padding: 0;
   }
   #actions {

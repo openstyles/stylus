@@ -124,7 +124,7 @@ function createAppliesToLineWidget(cm) {
       }
     };
 
-    actualStyle = $create('style');
+
     fromLine = 0;
     toLine = cm.doc.size;
 
@@ -145,7 +145,6 @@ function createAppliesToLineWidget(cm) {
     cm.off('change', onChange);
     cm.off('optionChange', onOptionChange);
     chrome.runtime.onMessage.removeListener(onRuntimeMessage);
-    actualStyle.remove();
   }
 
   function onChange(cm, event) {
@@ -246,32 +245,6 @@ function createAppliesToLineWidget(cm) {
 
     const border = fore.replace(/[\d.]+(?=\))/, MIN_LUMA_DIFF / 2);
     const borderStyleForced = `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
-
-    actualStyle.textContent = `
-      .applies-to {
-        background-color: ${color.gutter.bg};
-        border-top: ${borderStyleForced};
-        border-bottom: ${borderStyleForced};
-      }
-      .applies-to label {
-        color: ${fore};
-      }
-      .applies-to input,
-      .applies-to button,
-      .applies-to select {
-        background: rgba(255, 255, 255, ${
-          Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
-        });
-        border: ${borderStyleForced};
-        transition: none;
-        color: ${fore};
-      }
-      .applies-to .svg-icon.select-arrow {
-        fill: ${fore};
-        transition: none;
-      }
-    `;
-    document.documentElement.appendChild(actualStyle);
   }
 
   function doUpdate() {
