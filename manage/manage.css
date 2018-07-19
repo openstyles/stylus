@@ -13,6 +13,8 @@ body {
   /* Firefox: fill the entire page for drag'n'drop to work */
   display: flex;
   height: 100%;
+  color: hsl(0, 0%, 20%);
+  background-color: hsl(0, 0%, 88%);
 }
 
 body.all-styles-hidden-by-filters:before,
@@ -55,12 +57,12 @@ select {
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
-  -webkit-box-shadow: 0 0 50px -18px black;
-  box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;
   z-index: 9;
+  background-color: hsl(0, 0%, 88%);
+  border-right: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset -1px 0 0 0 hsla(0, 0%, 100%, .4), 0 0 50px -18px #000;
 }
 
 #update-check,
@@ -136,11 +138,11 @@ select {
   transition: fill .5s;
   width: 20px;
   height: 20px;
-  fill: #666;
+  fill: hsl(0, 0%, 56%);
 }
 
 .svg-icon:hover {
-  fill: #000;
+  fill: hsl(0, 0%, 10%);
 }
 
 .svg-icon.info {
@@ -150,7 +152,9 @@ select {
 }
 
 .svg-icon.config {
-  transform: scale(.8);
+  height: 16px;
+  width: 16px;
+  margin: 2px 0 0 2px;
 }
 
 .homepage {
@@ -245,7 +249,7 @@ select {
 .entry.usercss .style-name-link::after {
   content: "usercss";
   background-color: hsla(180, 100%, 20%, 1);
-  color: white;
+  color: #fff;
 }
 
 .disabled h2 .style-name-link,
@@ -287,8 +291,17 @@ select {
 }
 
 #options-buttons button,
-#backup-buttons button {
+#backup-buttons button,
+#find-editor-styles {
   margin: 0 .2rem .5rem 0;
+}
+
+#options-buttons #find-editor-styles button {
+  margin: 0;
+}
+
+#find-editor-styles {
+  height: min-content;
 }
 
 #header details:not([open]),
@@ -305,6 +318,11 @@ select {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
+  transition: .25s color;
+}
+
+#header summary:hover {
+  color: #000;
 }
 
 #header #filters summary {
@@ -321,10 +339,11 @@ select {
   border-bottom: 1px dotted transparent;
   margin-top: .1em;
   margin-bottom: .1em;
+  transition: .25s border-color;
 }
 
 #header summary:hover h2 {
-  border-color: #bbb;
+  border-color: #000;
 }
 
 /* compact layout */
@@ -340,13 +359,18 @@ select {
 }
 
 .newUI .entry {
+  border: 0;
   display: table-row;
   padding-top: 0;
   padding-bottom: 0;
 }
 
+.newUI .entry.even {
+  background-color: hsl(0, 0%, 88%);
+}
+
 .newUI .entry.odd {
-  background-color: rgba(128, 128, 128, 0.05);
+  background-color: hsl(0, 0%, 90%);
 }
 
 .newUI .entry > * {
@@ -354,6 +378,21 @@ select {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
+}
+
+.newUI .entry:not(:first-of-type):not(:last-of-type) > * {
+  border-bottom: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset 0 1px 0 0 hsla(0, 0%, 100%, .4), inset 0 -1px 0 0 hsla(0, 0%, 100%, .4);
+}
+
+.newUI .entry.even:first-of-type > * {
+  border-bottom: 1px solid hsl(0, 0%, 80%);
+  box-shadow: inset 0 -1px 0 0 hsla(0, 0%, 100%, .4);
+}
+
+.newUI .entry.even:last-of-type > *,
+.newUI .entry.odd:last-of-type > * {
+  box-shadow: inset 0 1px 0 0 hsla(0, 0%, 100%, .4);
 }
 
 .newUI .entry .actions {
@@ -375,10 +414,28 @@ select {
   left: -9px;
 }
 
+#header .filter-selection label {
+  transition: fill .25s, transform .25s;
+  will-change transform;
+}
+
+#header .filter-selection label:hover + .select-resizer select:not(:hover) {
+  color: hsl(0, 0%, 14%);
+}
+
+#header .filter-selection label:hover + .select-resizer select:not(:hover) + .select-arrow {
+  fill: hsl(0, 0%, 30%);
+  transform: rotate(270deg);
+}
+
 #header label {
   padding-left: 16px;
   position: relative;
   white-space: nowrap;
+}
+
+.favicon-help-wrapper {
+  display: inline-flex;
 }
 
 #header .filter-selection label {
@@ -400,10 +457,13 @@ select {
 
 .filter-selection select {
   height: 18px;
-  border: none;
+  border: 0;
   max-width: 100%;
   padding-left: 4px;
   padding-right: 14px;
+  background-image: none;
+  box-shadow: none;
+  background-color: transparent;
 }
 
 .filter-selection .select-arrow {
@@ -456,7 +516,12 @@ select {
 
 .newUI .entry .svg-icon.checked,
 .newUI .entry:hover .svg-icon.checked {
-  fill: #000;
+  fill: hsl(0, 0%, 30%);
+}
+
+.newUI .entry input[type="checkbox"]:not(.slider):hover .svg-icon.checked,
+.newUI .entry:hover input[type="checkbox"]:not(.slider):hover + .svg-icon.checked {
+  fill: hsl(0, 0%, 10%);
 }
 
 .newUI .entry input[type="checkbox"]:not(.slider) {
@@ -491,8 +556,12 @@ select {
   opacity: 1;
 }
 
+.newUI .entry .style-name .style-name-link {
+  color: hsl(0, 0%, 14%);
+}
+
 .newUI .entry.enabled .style-name:hover .style-name-link {
-  color: hsla(180, 100%, 15%, 1);
+  color: hsl(180, 100%, 15%);
 }
 
 .newUI .style-name:after {
@@ -519,6 +588,8 @@ select {
   margin: 0 6px 0 0;
   width: 20px;
   height: 20px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .newUI .updater-icons > * {
@@ -527,15 +598,15 @@ select {
 }
 
 .newUI .entry .svg-icon {
-  fill: #999;
+  fill: hsl(0, 0%, 70%)
 }
 
 .newUI .entry:hover .svg-icon {
-  fill: #666;
+  fill: hsl(0, 0%, 56%)
 }
 
-.newUI .entry:hover .svg-icon:hover {
-  fill: #000;
+.newUI .entry:hover a:hover .svg-icon {
+  fill: hsl(0, 0%, 10%)
 }
 
 .newUI .checking-update .check-update {
@@ -571,17 +642,17 @@ select {
 
 .newUI .can-update[data-details$="locally edited"] .update svg,
 .newUI .update-problem .check-update svg {
-  fill: #ef6969;
+  fill: hsl(0, 42%, 66%);
 }
 
 .newUI .can-update[data-details$="locally edited"]:hover .update svg,
 .newUI .entry.update-problem:hover .check-update svg {
-  fill: #fd4040;
+  fill: hsl(0, 60%, 56%);
 }
 
 .newUI .can-update[data-details$="locally edited"]:hover .update svg:hover,
 .newUI .entry.update-problem:hover .check-update svg:hover {
-  fill: red;
+  fill: hsl(0, 100%, 36%);
 }
 
 .newUI .actions {
@@ -594,8 +665,8 @@ select {
   margin-top: 18px;
   margin-left: -36px;
   padding: 1ex 1.5ex;
-  border: 1px solid #ded597;
-  background-color: #fffbd6;
+  border: 1px solid hsl(0, 0%, 66%);
+  background-color: hsl(0, 0%, 90%);
   border-radius: 4px;
   box-shadow: 2px 3px 10px rgba(0,0,0,.25);
   font-size: 90%;
@@ -604,9 +675,9 @@ select {
 }
 
 .newUI .update-problem .check-update:after {
-  background-color: red;
-  border: 1px solid #d40000;
-  color: white;
+  background-color: hsl(0, 50%, 50%);
+  border: 1px solid hsl(0, 100%, 25%);
+  color: #fff;
   animation: none;
 }
 
@@ -643,14 +714,29 @@ select {
   line-height: 18px;
 }
 
+.newUI .applies-to.has-more .targets {
+  margin-bottom: 12px;
+}
+
+.newUI .applies-to.has-more {
+  position: relative;
+}
+
 .newUI .applies-to .expander {
+  position: absolute;
+  left: 0;
+  bottom: 4px;
   margin: 0;
   cursor: pointer;
   font-size: 3ex;
-  line-height: .5ex;
-  vertical-align: super;
+  line-height: 2px;
+  height: 12px;
   letter-spacing: .1ex;
   text-decoration: none;
+}
+
+.newUI.firefox .applies-to .expander {
+  line-height: 0;
 }
 
 .newUI .applies-to:not(.has-more) .expander {
@@ -720,10 +806,19 @@ select {
 #newUIoptions [data-toggle-on-click="#faviconsHelp"] {
   width: 14px;
   height: 14px;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
+  display: inline-flex;
+}
+
+#newUIoptions [data-toggle-on-click="#faviconsHelp"] .svg-icon.select-arrow {
+  fill: hsl(0, 0%, 56%);
+}
+
+#newUIoptions label[for="manage.newUI.favicons"] {
+  padding-right: 1px;
+}
+
+#newUIoptions [data-toggle-on-click="#faviconsHelp"]:hover .svg-icon.select-arrow {
+  fill: hsl(0, 0%, 10%);
 }
 
 #newUIoptions [data-toggle-on-click] > svg {
@@ -861,7 +956,7 @@ input[id^="manage.newUI"] {
 .active #filters-stats {
   background-color: darkcyan;
   border-color: darkcyan;
-  color: white;
+  color: #fff;
   font-size: 0.7rem;
   font-weight: normal;
   padding: 2px 5px;
@@ -918,28 +1013,29 @@ input[id^="manage.newUI"] {
   max-width: calc(100% - 30px);
 }
 
-#manage\.newUI\.sort {
-  max-width: 100%;
+#search {
+  font: 400 12px Arial;
+  max-width: calc(100% - 30px);
+  background-color: hsl(0, 0%, 92%);
+  border: 1px solid hsl(0, 0%, 66%);
+  transition: border-color .25s;
 }
 
-#search {
-  max-width: calc(100% - 30px);
+#search[data-focused-via-click]:focus {
+  border-color: hsl(180, 100%, 34%);
 }
 
 #search, #manage\.newUI\.sort {
   flex-grow: 1;
-  background: #fff;
   height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
-  font: 400 12px Arial;
-  color: #000;
-  border: 1px solid hsl(0, 0%, 66%);
 }
 
 #manage\.newUI\.sort {
   padding: 0 18px 0 4px;
   width: 100%;
+  max-width: 100%;
 }
 
 .firefox #manage\.newUI\.sort {
@@ -999,7 +1095,7 @@ input[id^="manage.newUI"] {
 /* drag-n-drop on import button */
 .dropzone:after {
   background-color: rgba(0, 0, 0, 0.7);
-  color: white;
+  color: #fff;
   left: 0;
   top: 0;
   right: 0;
@@ -1085,6 +1181,7 @@ input[id^="manage.newUI"] {
 @media (max-width: 850px) {
   body {
     display: table;
+    background-color: hsl(0, 0%, 93%);
   }
 
   body.all-styles-hidden-by-filters:before {
@@ -1100,6 +1197,14 @@ input[id^="manage.newUI"] {
 
   html:not(.newUI) .applies-to {
     word-break: break-all;
+  }
+
+  .newUI .entry.even {
+    background-color: hsl(0, 0%, 93%);
+  }
+
+  .newUI .entry.odd {
+    background-color: hsl(0, 0%, 90%);
   }
 
   #installed {
@@ -1134,14 +1239,16 @@ input[id^="manage.newUI"] {
     width: 100%;
     position: static;
     border-right: none;
-    border-bottom: 1px dashed #AAA;
-  }
+    background-color: hsl(0, 0%, 90%);
+    }
 
   #manage-settings {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
     padding: .5rem 0 1rem;
+    border-bottom: 1px solid hsl(0, 0%, 80%);
+    box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
   }
 
   #manage-settings > .settings-column {
@@ -1214,10 +1321,6 @@ input[id^="manage.newUI"] {
 @supports (-moz-appearance: none) {
   .chromium-only {
     display: none;
-  }
-
-  #header .filter-selection label .checkmate {
-    margin: 0;
   }
 
   .filter-selection select {
