@@ -10,7 +10,9 @@ html.opera body {
 }
 
 body {
-  background: #fff;
+  color: hsl(0, 0%, 20%);
+  background-color: hsl(0, 0%, 90%);
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
@@ -38,10 +40,10 @@ body {
 .block {
   display: flex;
   align-items: center;
-  margin: 1em 0;
-  border-bottom: 1px dotted #ccc;
-  padding: 0 16px .75em;
+  border-bottom: 1px solid hsl(0, 0%, 74%);
+  padding: 1em 16px 1.75em;
   position: relative;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, .4);
 }
 
 .block:nth-last-child(2) {
@@ -79,6 +81,7 @@ label {
   display: flex;
   margin: .25ex 0;
   align-items: center;
+  cursor: pointer;
 }
 
 label > :first-child {
@@ -143,7 +146,6 @@ input[type="color"] {
   align-items: stretch;
   padding: 1em;
   white-space: nowrap;
-  background-color: rgba(0, 0, 0, .05);
   margin: 0;
 }
 

@@ -33,7 +33,7 @@
   height: 12px;
   padding: 0;
   line-height: 12px;
-  border: 0 solid #E3E3E3;
+  border: 1px solid hsl(0, 0%, 80%);
   border-radius: 12px;
   background-color: #E0E0E0;
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
@@ -55,11 +55,11 @@
 }
 
 .onoffswitch input:checked + span {
-  background-color: #CAEBE3;
+  background-color: hsl(165, 45%, 80%);
 }
 
 .onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
-  border-color: #CAEBE3;
+  border-color: hsl(165, 45%, 66%);
 }
 
 .onoffswitch input:checked + span .onoffswitch-inner {
