@@ -13,6 +13,7 @@
     "less": "^3.7.1",
     "lz-string-unsafe": "^1.4.4-beta",
     "semver-bundle": "^0.1.0",
+    "stylelint-bundle": "^8.0.0",
     "updates": "^4.0.0"
   },
   "scripts": {

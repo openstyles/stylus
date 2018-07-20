@@ -45,10 +45,13 @@ const files = {
     'dist/less.min.js → less.min.js'
   ],
   'lz-string-unsafe': [
-    'lz-string-unsafe.min.js → lz-string-unsafe.min.js'
+    'lz-string-unsafe.min.js'
   ],
   'semver-bundle': [
     'dist/semver.js → semver.js'
+  ],
+  'stylelint-bundle': [
+    'stylelint-bundle.min.js'
   ]
 };
 
