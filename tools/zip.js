@@ -6,25 +6,15 @@ const archiver = require('archiver');
 
 function createZip() {
   const fileName = 'stylus.zip';
-  const includes = [
-    '_locales/*',
-    'background/*',
-    'content/*',
-    'edit/*',
-    'images/*',
-    'install-usercss/*',
-    'js/*',
-    'manage/*',
-    'msgbox/*',
-    'options/*',
-    'popup/*',
-    'vendor/*',
-    'vendor-overwrites/*',
-    '*.html',
-    '*.css',
-    'manifest.json',
-    'LICENSE',
-    'README.md'
+  const exclude = [
+    '.editorconfig',
+    '.es*',
+    '.git*',
+    '.github',
+    'node_modules',
+    'tools',
+    'package.json',
+    'stylus.zip'
   ];
 
   const file = fs.createWriteStream(fileName);
@@ -47,7 +37,7 @@ function createZip() {
     });
 
     archive.pipe(file);
-    includes.forEach(file => archive.glob(file));
+    archive.glob(`!(${exclude.join('|')})`);
     archive.finalize();
   });
 }
