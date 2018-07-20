@@ -169,6 +169,7 @@
 
     state.line = viewFrom;
     state.inComment = null;
+    state.now = performance.now();
     state.stopAt = state.stopped = null;
 
     cm.doc.iter(viewFrom, viewTo, lineHandle => colorizeLine(state, lineHandle));
@@ -188,7 +189,8 @@
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
 
-    state.stopAt = performance.now() + TIME_BUDGET;
+    state.now = performance.now();
+    state.stopAt = state.now + TIME_BUDGET;
     state.stopped = null;
 
     // before the visible range
@@ -247,7 +249,8 @@
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
 
-    const stopAt = canPostpone && performance.now() + TIME_BUDGET;
+    state.now = performance.now();
+    const stopAt = canPostpone && state.now + TIME_BUDGET;
     let stopped = null;
 
     let change, changeFromLine;
@@ -271,7 +274,7 @@
         if (!lineHandle.styles) state.cm.getTokenTypeAt({line, ch: 0});
         colorizeLineViaStyles(state, lineHandle);
       }
-      if (canPostpone && performance.now() > stopAt) {
+      if (canPostpone && (state.now = performance.now()) > stopAt) {
         stopped = true;
         return true;
       }
@@ -295,7 +298,7 @@
 
 
   function colorizeLine(state, lineHandle) {
-    if (state.stopAt && performance.now() > state.stopAt) {
+    if (state.stopAt && (state.now = performance.now()) > state.stopAt) {
       state.stopped = true;
       return true;
     }
@@ -349,6 +352,8 @@
 
     let {markedSpans} = lineHandle;
     let spansSorted = false;
+    let spansZombies = markedSpans && markedSpans.length;
+    const spanGeneration = state.now;
 
     for (let i = styleIndex; i + 1 < styles.length; i += 2) {
       style = styles[i + 1];
@@ -432,6 +437,8 @@
           break;
         }
         if (span.from === start && span.marker.className === COLORVIEW_CLASS) {
+          spansZombies--;
+          span.generation = spanGeneration;
           const same = color === span.marker.color &&
             (isFunc || /\W|^$/i.test(text.substr(start + color.length, 1)));
           if (same) return 'same';
@@ -442,6 +449,7 @@
     }
 
     function redeem(colorValue) {
+      spansZombies++;
       state.markersToRemove.pop();
       state.markersToRepaint.push(span);
       span.to = end;
@@ -452,9 +460,10 @@
     }
 
     function removeDeadSpans() {
-      while (markedSpans && spanIndex < markedSpans.length) {
-        span = markedSpans[spanIndex++];
-        if (span.marker.className === COLORVIEW_CLASS) {
+      if (!spansZombies) return;
+      for (const span of markedSpans) {
+        if (span.generation !== spanGeneration &&
+            span.marker.className === COLORVIEW_CLASS) {
           state.markersToRemove.push(span.marker);
         }
       }
