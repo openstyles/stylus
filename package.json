@@ -13,7 +13,7 @@
     "less": "^3.7.1",
     "lz-string-unsafe": "^1.4.4-beta",
     "semver-bundle": "^0.1.0",
-    "updates": "^3.2.3"
+    "updates": "^4.0.0"
   },
   "scripts": {
     "build": "npm run update && npm run build:cm",
