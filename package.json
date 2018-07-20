@@ -6,6 +6,7 @@
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
   "devDependencies": {
+    "archiver": "^2.1.1",
     "codemirror": "^5.39.2",
     "eslint": "^5.1.0",
     "fs-extra": "^7.0.0",
@@ -21,6 +22,7 @@
     "build": "npm run update && npm run build:cm",
     "build:cm": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "lint": "eslint **/*.js || true",
-    "update": "updates -u && npm update"
+    "update": "updates -u && npm update",
+    "zip": "node tools/zip.js"
   }
 }

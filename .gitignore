@@ -4,3 +4,4 @@ pull_locales_login.rb
 node_modules/
 package-lock.json
 yarn.lock
+*.zip
