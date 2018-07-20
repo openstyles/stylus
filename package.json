@@ -6,7 +6,7 @@
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
   "devDependencies": {
-    "codemirror": "^5.39.0",
+    "codemirror": "^5.39.2",
     "eslint": "^5.1.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
