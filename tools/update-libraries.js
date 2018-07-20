@@ -46,6 +46,9 @@ const files = {
   ],
   'lz-string-unsafe': [
     'lz-string-unsafe.min.js → lz-string-unsafe.min.js'
+  ],
+  'semver-bundle': [
+    'dist/semver.js → semver.js'
   ]
 };
 

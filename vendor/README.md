@@ -7,8 +7,8 @@ Using this repo, run `npm install`... the latest versions of:
 * `CodeMirror` (https://github.com/codemirror/CodeMirror) is installed.
 * `jsonlint` (https://github.com/zaach/jsonlint) is installed.
 * `less` (https://github.com/less/less.js) is installed.
-* `lz-string-unsafe` (https://github.com/openstyles/lz-string-unsafe) is installed.<br><br>
-* **TODO**: `node-semver` (https://github.com/eight04/node-semver-bundle) is installed.
+* `lz-string-unsafe` (https://github.com/openstyles/lz-string-unsafe) is installed.
+* `semver-bundle` (https://github.com/openstyles/semver-bundle) is installed.<br><br>
 * **TODO**: `stylus-lang` (https://github.com/eight04/stylus-lang-bundle) is installed.<br><br>
 * The necessary build tools are installed; see `devDependencies` in the `package.json`.
 
@@ -22,3 +22,4 @@ The following changes are made:
 * `jsonlint`: The uncompressed `lib/jsonlint.js` is copied directly to `vendor/jsonlint`.
 * `less`: The compressed `dist/less.min.js` file is copied directly into `vendor/less`.
 * `lz-string-unsafe`: The compressed `lz-string-unsafe.min.js` file is copied directly into `vendor/lz-string-unsafe`.
+* `semver-bundle`: The `dist/semver.js` file is copied directly into `vendor/semver`.
