@@ -52,6 +52,9 @@ const files = {
   ],
   'stylelint-bundle': [
     'stylelint-bundle.min.js'
+  ],
+  'stylus-lang-bundle': [
+    'stylus.min.js'
   ]
 };
 
