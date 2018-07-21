@@ -19,9 +19,9 @@
     "updates": "^4.0.1"
   },
   "scripts": {
-    "build": "npm run update-node && npm run update-versions && npm run build-codemirror",
-    "build-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "lint": "eslint **/*.js || true",
+    "update": "npm run update-node && npm run update-versions && npm run update-codemirror",
+    "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "update-node": "updates -u && npm update",
     "update-versions": "node tools/update-versions",
     "zip": "npm run update-versions && node tools/zip.js"
