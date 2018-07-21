@@ -8,9 +8,7 @@ function createZip() {
   const fileName = 'stylus.zip';
   const exclude = [
     '.editorconfig',
-    '.es*',
-    '.git*',
-    '.github',
+    '.*',
     'node_modules',
     'tools',
     'package.json',
