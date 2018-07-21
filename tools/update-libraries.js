@@ -8,35 +8,8 @@ const root = path.join(__dirname, '..');
 
 const files = {
   'codemirror': [
-    'addon/comment/comment.js',
-    'addon/dialog',
-    'addon/edit/closebrackets.js',
-    'addon/edit/matchbrackets.js',
-    'addon/fold/brace-fold.js',
-    'addon/fold/comment-fold.js',
-    'addon/fold/foldcode.js',
-    'addon/fold/foldgutter.css',
-    'addon/fold/foldgutter.js',
-    'addon/fold/indent-fold.js',
-    'addon/hint/css-hint.js',
-    'addon/hint/show-hint.css',
-    'addon/hint/show-hint.js',
-    'addon/lint/css-lint.js',
-    'addon/lint/json-lint.js',
-    'addon/lint/lint.css',
-    'addon/lint/lint.js',
-    'addon/scroll/annotatescrollbar.js',
-    'addon/search/match-highlighter.js',
-    'addon/search/matchesonscrollbar.css',
-    'addon/search/matchesonscrollbar.js',
-    'addon/search/searchcursor.js',
-    'addon/selection/active-line.js',
-    'keymap',
-    'lib',
-    'mode/css',
-    'mode/javascript',
-    'mode/stylus',
-    'theme'
+    '*', // only update existing vendor files
+    'theme' // update all theme files
   ],
   'jsonlint': [
     'lib/jsonlint.js → jsonlint.js'
@@ -65,10 +38,56 @@ async function updateReadme(lib) {
   return fs.writeFile(file, txt.replace(/\bv[\d.]+[-\w]*\b/g, `v${pkg.version}`));
 }
 
+function isFolder(fileOrFolder) {
+  const stat = fs.statSync(fileOrFolder);
+  return stat.isDirectory();
+}
+
+function updateExisting(lib) {
+  const libRoot = `${root}/node_modules/`;
+  const vendorRoot = `${root}/vendor/`;
+  const folders = [lib];
+
+  const process = function () {
+    if (folders.length) {
+      const folder = folders.shift();
+      const folderRoot = `${vendorRoot}${folder}`;
+      const entries = fs.readdirSync(folderRoot);
+      entries.forEach(entry => {
+        // Ignore README.md & LICENSE files
+        if (entry !== 'README.md' && entry !== 'LICENSE') {
+          const entryPath = `${folderRoot}/${entry}`;
+          try {
+            if (fs.existsSync(entryPath)) {
+              if (isFolder(entryPath)) {
+                folders.push(`${folder}/${entry}`);
+              } else {
+                fs.copySync(`${libRoot}${folder}/${entry}`, entryPath);
+              }
+            }
+          } catch (err) {
+            // Show error in case file exists in vendor, but not in node_modules
+            console.log('\x1b[36m%s\x1b[0m', `"${entryPath}" doesn't exist!`);
+          }
+        }
+      });
+    }
+    if (folders.length) {
+      process();
+    }
+  };
+
+  process();
+}
+
 async function copy(lib, folder) {
   const [src, dest] = folder.split(/\s*→\s*/);
   try {
-    await fs.copy(`${root}/node_modules/${lib}/${src}`, `${root}/vendor/${lib}/${dest || src}`);
+    if (folder === '*') {
+      await updateExisting(lib);
+    } else {
+      await fs.copy(`${root}/node_modules/${lib}/${src}`, `${root}/vendor/${lib}/${dest || src}`);
+    }
   } catch (err) {
     exit(err);
   }
@@ -82,7 +101,11 @@ function exit(err) {
 Object.keys(files).forEach(lib => {
   updateReadme(lib);
   files[lib].forEach(folder => {
-    copy(lib, folder);
+    if (folder === '*') {
+      updateExisting(lib);
+    } else {
+      copy(lib, folder);
+    }
   });
   console.log('\x1b[32m%s\x1b[0m', `${lib} files updated`);
 });
