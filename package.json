@@ -8,7 +8,7 @@
   "devDependencies": {
     "archiver": "^2.1.1",
     "codemirror": "^5.39.2",
-    "eslint": "^5.1.0",
+    "eslint": "^5.2.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
     "less": "^3.7.1",
@@ -16,7 +16,7 @@
     "semver-bundle": "^0.1.0",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^4.0.0"
+    "updates": "^4.0.1"
   },
   "scripts": {
     "build": "npm run update-node && npm run update-versions && npm run build-codemirror",
