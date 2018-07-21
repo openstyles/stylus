@@ -7,7 +7,6 @@ const archiver = require('archiver');
 function createZip() {
   const fileName = 'stylus.zip';
   const exclude = [
-    '.editorconfig',
     '.*',
     'node_modules',
     'tools',
