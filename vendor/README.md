@@ -14,7 +14,7 @@ Using this repo, run `npm install`... the latest versions of:
 
 ## Running the build script
 
-Use `npm run build` to first update the packages in the `node_modules` folder & then update the vendor folder.
+Use `npm run update` to first update the packages in the `node_modules` folder & then update the vendor folder.
 
 The following changes are made:
 
