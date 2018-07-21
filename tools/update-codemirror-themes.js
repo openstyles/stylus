@@ -19,7 +19,7 @@ function replaceThemes(content, themes) {
   return content.replace(
     /\/\*\s*populate-theme-start\s*\*\/[\s\S]+\/\*\s*populate-theme-end\s*\*\//,
     // strip off square brackets & first 8 spaces
-    `/* populate-theme-start*/\n${list.substring(2, list.length - 2)}\n        /* populate-theme-end */`
+    `/* populate-theme-start */\n${list.substring(2, list.length - 2)}\n        /* populate-theme-end */`
   );
 }
 

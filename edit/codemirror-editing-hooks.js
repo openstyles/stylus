@@ -482,7 +482,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     if (!chrome.runtime.getPackageDirectoryEntry) {
       const themes = [
         chrome.i18n.getMessage('defaultTheme'),
-        /* populate-theme-start*/
+        /* populate-theme-start */
         '3024-day',
         '3024-night',
         'abcdef',
