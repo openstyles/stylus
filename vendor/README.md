@@ -18,7 +18,7 @@ Use `npm run build` to first update the packages in the `node_modules` folder & 
 
 The following changes are made:
 
-* `CodeMirror`: Only existing files are updated directly from the `node_modules` folder; see the [CodeMirror readme](codemirror/README) for specifics.
+* `CodeMirror`: Only existing files are updated directly from the `node_modules` folder; see the [CodeMirror readme](codemirror/README.md) for specifics.
 * `jsonlint`: The uncompressed `lib/jsonlint.js` is copied directly to `vendor/jsonlint`.
 * `less`: The compressed `dist/less.min.js` file is copied directly into `vendor/less`.
 * `lz-string-unsafe`: The compressed `lz-string-unsafe.min.js` file is copied directly into `vendor/lz-string-unsafe`.
