@@ -1,6 +1,6 @@
 ## color-picker - forked from v1.0.9
 
-codemirror-colorpicker was heavily modified from its source:
+codemirror-colorpicker was **heavily** modified from its source:
 
 https://github.com/easylogic/codemirror-colorpicker/...
 
