@@ -84,7 +84,7 @@ async function copy(lib, folder) {
   const [src, dest] = folder.split(/\s*→\s*/);
   try {
     if (folder === '*') {
-      await updateExisting(lib);
+      updateExisting(lib);
     } else {
       await fs.copy(`${root}/node_modules/${lib}/${src}`, `${root}/vendor/${lib}/${dest || src}`);
     }
