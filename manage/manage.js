@@ -541,7 +541,7 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style, {reason, method, codeIsUpdated} = {}) {
+function handleUpdate(style, {reason, method} = {}) {
   if (reason === 'editPreview') return;
   // the style was toggled and refreshAllTabs() sent a mini-notification,
   // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()

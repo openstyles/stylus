@@ -379,6 +379,8 @@ function onTabReady(tabOrId) {
  * @returns {Promise<Tab>} Promise that resolves to the opened/activated tab
  */
 function openURL({
+  // https://github.com/eslint/eslint/issues/10639
+  // eslint-disable-next-line no-undef
   url = arguments[0],
   index,
   active,
