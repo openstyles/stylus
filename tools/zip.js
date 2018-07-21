@@ -11,7 +11,7 @@ function createZip() {
     'node_modules',
     'tools',
     'package.json',
-    'stylus.zip'
+    '*.zip'
   ];
 
   const file = fs.createWriteStream(fileName);
