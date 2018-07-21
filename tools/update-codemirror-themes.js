@@ -36,5 +36,5 @@ function exit(err) {
 
 getThemes()
   .then(themes => updateHook(themes))
-  .then(() => console.log('\x1b[32m%s\x1b[0m', `codemirror themes list updated`))
+  .then(() => console.log('\x1b[32m%s\x1b[0m', 'codemirror themes list updated'))
   .catch(exit);
