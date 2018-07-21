@@ -94,7 +94,9 @@ async function copy(lib, folder) {
 }
 
 function exit(err) {
-  if (err) console.error(err);
+  if (err) {
+    console.error(err);
+  }
   process.exit(err ? 1 : 0);
 }
 
