@@ -537,7 +537,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'xq-dark',
         'xq-light',
         'yeti',
-        'zenburn'
+        'zenburn',
         /* populate-theme-end */
       ];
       localStorage.codeMirrorThemes = themes.join(' ');

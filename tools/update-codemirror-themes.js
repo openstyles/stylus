@@ -15,11 +15,13 @@ async function getThemes() {
 }
 
 function replaceThemes(content, themes) {
-  const list = JSON.stringify(themes, null, 8).replace(/"/g, '\'');
+  const lineFeed = content.includes('\r\n') ? '\r\n' : '\n';
   return content.replace(
-    /\/\*\s*populate-theme-start\s*\*\/[\s\S]+\/\*\s*populate-theme-end\s*\*\//,
-    // strip off square brackets & first 8 spaces
-    `/* populate-theme-start */\n${list.substring(2, list.length - 2)}\n        /* populate-theme-end */`
+    /(\x20+)(\/\*\s*populate-theme-start\s*\*\/)[\s\S]+?(\/\*\s*populate-theme-end\s*\*\/)/,
+    (_, indent, intro, outro) =>
+      indent + intro + lineFeed +
+      themes.map(_ => `${indent}'${_}',`).join(lineFeed) + lineFeed +
+      indent + outro
   );
 }
 
