@@ -1,0 +1,9 @@
+# https://github.com/eslint/eslint/blob/master/docs/rules/README.md
+
+parserOptions:
+  ecmaVersion: 2017
+
+env:
+  browser: true
+  es6: true
+  node: true

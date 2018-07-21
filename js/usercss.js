@@ -47,7 +47,7 @@ var usercss = (() => {
     },
     stylus: {
       preprocess(source, vars) {
-        return loadScript('/vendor/stylus-lang/stylus.min.js').then(() => (
+        return loadScript('/vendor/stylus-lang-bundle/stylus.min.js').then(() => (
           new Promise((resolve, reject) => {
             const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
             if (!Error.captureStackTrace) Error.captureStackTrace = () => {};

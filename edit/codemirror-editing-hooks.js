@@ -482,6 +482,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     if (!chrome.runtime.getPackageDirectoryEntry) {
       const themes = [
         chrome.i18n.getMessage('defaultTheme'),
+        /* populate-theme-start */
         '3024-day',
         '3024-night',
         'abcdef',
@@ -493,17 +494,21 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'blackboard',
         'cobalt',
         'colorforth',
+        'darcula',
         'dracula',
         'duotone-dark',
         'duotone-light',
         'eclipse',
         'elegant',
         'erlang-dark',
+        'gruvbox-dark',
         'hopscotch',
         'icecoder',
+        'idea',
         'isotope',
         'lesser-dark',
         'liquibyte',
+        'lucario',
         'material',
         'mbo',
         'mdn-like',
@@ -522,6 +527,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'seti',
         'shadowfox',
         'solarized',
+        'ssms',
         'the-matrix',
         'tomorrow-night-bright',
         'tomorrow-night-eighties',
@@ -532,6 +538,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'xq-light',
         'yeti',
         'zenburn',
+        /* populate-theme-end */
       ];
       localStorage.codeMirrorThemes = themes.join(' ');
       return Promise.resolve(themes);
