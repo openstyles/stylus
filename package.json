@@ -19,10 +19,11 @@
     "updates": "^4.0.0"
   },
   "scripts": {
-    "build": "npm run update && npm run build:cm",
+    "build": "npm run update && npm run versions && npm run build:cm",
     "build:cm": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "lint": "eslint **/*.js || true",
     "update": "updates -u && npm update",
-    "zip": "node tools/zip.js"
+    "versions": "node tools/update-versions",
+    "zip": "npm run versions && node tools/zip.js"
   }
 }
