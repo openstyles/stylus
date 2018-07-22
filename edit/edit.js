@@ -427,18 +427,18 @@ function toMozillaFormat() {
 
 function fromMozillaFormat() {
   const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-    $create([
-      $create('button', {
-        name: 'import-append',
-        textContent: t('importAppendLabel'),
-        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
-        onclick: doImport,
-      }),
+    $create('.buttons', [
       $create('button', {
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
         title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
+      }),
+      $create('button', {
+        name: 'import-append',
+        textContent: t('importAppendLabel'),
+        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
+        onclick: doImport,
       }),
     ]));
   const contents = $('.contents', popup);

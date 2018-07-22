@@ -448,10 +448,12 @@ function setupLinterPopup(config) {
           t('linterRulesLink')),
         linter === 'csslint' ? ' ' + t('linterCSSLintSettings') : '',
       ]),
-      $create('button.save', {onclick: save, title: 'Ctrl-Enter'}, t('styleSaveLabel')),
-      $create('button.cancel', {onclick: cancel}, t('confirmClose')),
-      $create('button.reset', {onclick: reset, title: t('linterResetMessage')}, t('genericResetLabel')),
-      $create('span.saved-message', t('genericSavedMessage')),
+      $create('.buttons', [
+        $create('button.save', {onclick: save, title: 'Ctrl-Enter'}, t('styleSaveLabel')),
+        $create('button.cancel', {onclick: cancel}, t('confirmClose')),
+        $create('button.reset', {onclick: reset, title: t('linterResetMessage')}, t('genericResetLabel')),
+        $create('span.saved-message', t('genericSavedMessage')),
+      ]),
     ]);
   }
 
