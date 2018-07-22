@@ -597,7 +597,7 @@ function showCodeMirrorPopup(title, html, options) {
   let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
     mode: 'css',
     lineNumbers: true,
-    lineWrapping: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
