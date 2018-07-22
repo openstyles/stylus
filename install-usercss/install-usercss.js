@@ -40,10 +40,18 @@
     port.onDisconnect.addListener(onPortDisconnected);
   }
 
+  const theme = prefs.get('editor.theme');
   const cm = CodeMirror($('.main'), {
     readOnly: true,
     colorpicker: true,
+    theme,
   });
+  if (theme !== 'default') {
+    document.head.appendChild($create('link', {
+      rel: 'stylesheet',
+      href: `vendor/codemirror/theme/${theme}.css`
+    }));
+  }
   let liveReloadPending = Promise.resolve();
   window.addEventListener('resize', adjustCodeHeight);
 
