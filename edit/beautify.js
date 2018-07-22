@@ -16,50 +16,53 @@ function beautify(event) {
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
     const options = prefs.get('editor.beautify');
+    for (const k of Object.keys(prefs.defaults['editor.beautify'])) {
+      if (!(k in options)) options[k] = prefs.defaults['editor.beautify'][k];
+    }
     options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
     options.indent_char = tabs ? '\t' : ' ';
 
     const section = getSectionForChild(event.target);
     const scope = section ? [section.CodeMirror] : editors;
 
-    showHelp(t('styleBeautify'), '<div class="beautify-options">' +
-      optionHtml('.selector1,', 'selector_separator_newline') +
-      optionHtml('.selector2', 'newline_before_open_brace') +
-      optionHtml('{', 'newline_after_open_brace') +
-      optionHtml('border: none;', 'newline_between_properties', true) +
-      optionHtml('display: block;', 'newline_before_close_brace', true) +
-      optionHtml('}', 'newline_between_rules') +
-      `<label style="display: block; clear: both;">
-        <input data-option="indent_conditional" type="checkbox"
-          ${options.indent_conditional !== false ? 'checked' : ''}>
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>` +
-        t('styleBeautifyIndentConditional') + '</label>' +
-      '</div>' +
-      `<div class="buttons">
-        <button role="close" i18n-text="confirmClose"></button>
-        <button role="undo"></button>
-      </div>`);
+    showHelp(t('styleBeautify'),
+      $create([
+        $create('.beautify-options', [
+          $createOption('.selector1,', 'selector_separator_newline'),
+          $createOption('.selector2', 'newline_before_open_brace'),
+          $createOption('{', 'newline_after_open_brace'),
+          $createOption('border: none;', 'newline_between_properties', true),
+          $createOption('display: block;', 'newline_before_close_brace', true),
+          $createOption('}', 'newline_between_rules'),
+          $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
+          $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
+        ]),
+        $create('.buttons', [
+          $create('button', {
+            attributes: {role: 'close'},
+            onclick: showHelp.close,
+          }, t('confirmClose')),
+          $create('button', {
+            attributes: {role: 'undo'},
+            onclick() {
+              let undoable = false;
+              for (const cm of scope) {
+                const data = cm.beautifyChange;
+                if (!data || !data[cm.changeGeneration()]) continue;
+                delete data[cm.changeGeneration()];
+                const {scrollX, scrollY} = window;
+                cm.undo();
+                cm.scrollIntoView(cm.getCursor());
+                window.scrollTo(scrollX, scrollY);
+                undoable |= data[cm.changeGeneration()];
+              }
+              this.disabled = !undoable;
+            },
+          }, t(scope.length === 1 ? 'undo' : 'undoGlobal')),
+        ]),
+      ]));
 
     $('#help-popup').className = 'wide';
-
-    $('#help-popup button[role="close"]').onclick = showHelp.close;
-
-    const undoButton = $('#help-popup button[role="undo"]');
-    undoButton.textContent = t(scope.length === 1 ? 'undo' : 'undoGlobal');
-    undoButton.addEventListener('click', () => {
-      let undoable = false;
-      scope.forEach(cm => {
-        if (cm.beautifyChange && cm.beautifyChange[cm.changeGeneration()]) {
-          delete cm.beautifyChange[cm.changeGeneration()];
-          const {scrollX, scrollY} = window;
-          cm.undo();
-          cm.scrollIntoView(cm.getCursor());
-          window.scrollTo(scrollX, scrollY);
-          undoable |= cm.beautifyChange[cm.changeGeneration()];
-        }
-      });
-      undoButton.disabled = !undoable;
-    });
 
     scope.forEach(cm => {
       setTimeout(() => {
@@ -82,9 +85,9 @@ function beautify(event) {
           cm.setSelections(selections);
           window.scrollTo(scrollX, scrollY);
           cm.beautifyChange[cm.changeGeneration()] = true;
-          undoButton.disabled = false;
+          $('#help-popup button[role="close"]').disabled = false;
         }
-      }, 0);
+      });
     });
 
     $('.beautify-options').onchange = ({target}) => {
@@ -96,21 +99,41 @@ function beautify(event) {
       doBeautify();
     };
 
-    function optionHtml(label, optionName, indent) {
+    function $createOption(label, optionName, indent) {
       const value = options[optionName];
-      return '<div newline="' + value.toString() + '">' +
-        '<span' + (indent ? ' indent' : '') + '>' + label + '</span>' +
-        '<div class="select-resizer">' +
-          '<select data-option="' + optionName + '">' +
-            '<option' + (value ? '' : ' selected') + '>&nbsp;</option>' +
-            '<option' + (value ? ' selected' : '') + '>\\n</option>' +
-          '</select>' +
-          '<svg class="svg-icon select-arrow" viewBox="0 0 1792 1792">' +
-            '<path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 ' +
-              '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>' +
-          '</svg>' +
-        '</div>' +
-      '</div>';
+      return (
+        $create('div', {attributes: {newline: value}}, [
+          $create('span', indent ? {attributes: {indent: ''}} : {}, label),
+          $create('div.select-resizer', [
+            $create('select', {dataset: {option: optionName}}, [
+              $create('option', {selected: !value}, '\xA0'),
+              $create('option', {selected: value}, '\\n'),
+            ]),
+            $create('SVG:svg.svg-icon.select-arrow', {viewBox: '0 0 1792 1792'}, [
+              $create('SVG:path', {
+                'fill-rule': 'evenodd',
+                'd': 'M1408 704q0 26-19 45l-448 448q-19 19-45 ' +
+                     '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z'
+              }),
+            ]),
+          ]),
+        ])
+      );
+    }
+
+    function $createLabeledCheckbox(optionName, i18nKey) {
+      return (
+        $create('label', {style: 'display: block; clear: both;'}, [
+          $create('input', {
+            type: 'checkbox',
+            dataset: {option: optionName},
+            checked: options[optionName] !== false
+          }),
+          $create('SVG:svg.svg-icon.checked',
+            $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+          t(i18nKey),
+        ])
+      );
     }
   }
 }

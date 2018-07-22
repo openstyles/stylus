@@ -54,6 +54,7 @@ var prefs = new function Prefs() {
       newline_between_properties: true,
       newline_before_close_brace: true,
       newline_between_rules: false,
+      preserve_newlines: true,
       end_with_newline: false,
       indent_conditional: true,
     },

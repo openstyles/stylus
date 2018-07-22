@@ -929,6 +929,10 @@
     "message": "Indent @media, @supports",
     "description": "CSS-beautifier option"
   },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Preserve new lines",
+    "description": "CSS-beautifier option"
+  },
   "styleCancelEditLabel": {
     "message": "Back to manage",
     "description": "Label for cancel button for style editing"
