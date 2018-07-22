@@ -29,7 +29,7 @@ function createAppliesToLineWidget(cm) {
           $create('label', t('appliesLabel')),
           $create('ul.applies-to-list'),
         ]),
-      listItem: template.appliesTo,
+      listItem: template.appliesTo.cloneNode(true),
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
