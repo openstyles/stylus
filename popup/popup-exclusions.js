@@ -157,12 +157,13 @@ const popupExclusions = (() => {
         onComplete: () => (box.dataset.display = false),
       });
       document.body.style.height = '';
+      const excluded = isExcluded(tabURL, style.exclusions);
       if (ok) {
         handlePopupSave(style);
         entry.styleMeta = style;
-        entry.classList.toggle('excluded', isExcluded(tabURL, style.exclusions));
+        entry.classList.toggle('excluded', excluded);
       }
-      notifyAllTabs({method: 'exclusionsUpdated', style, id: entry.styleId});
+      notifyAllTabs({method: 'exclusionsUpdated', style, id: entry.styleId, affects: true, excluded});
     }
     return Promise.resolve();
   }

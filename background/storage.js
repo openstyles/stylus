@@ -315,6 +315,7 @@ function filterStylesInternal({
         });
       if (asHash) {
         if (sections.length && sections[0] !== '') {
+          sections.unshift({included: !isPageExcluded(matchUrl, style.exclusions)});
           filtered[style.id] = sections;
           filtered.length++;
         }
@@ -488,7 +489,7 @@ function getApplicableSections({
   }
   // Show excluded style in popup
   if (excluded) {
-    return [''];
+    return [{}];
   }
   const sections = [];
   for (const section of style.sections) {

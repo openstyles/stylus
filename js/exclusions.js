@@ -162,7 +162,7 @@ const exclusions = (() => {
       style.exclusions = exclusionList;
       style.reason = 'exclusionsUpdated';
       API.saveStyle(style);
-      notifyAllTabs({method: 'exclusionsUpdated', style, id});
+      notifyAllTabs({method: 'exclusionsUpdated', style, id, excluded: exclusionList});
     });
   }
 

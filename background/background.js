@@ -381,16 +381,22 @@ function updateIcon({tab, styles}) {
     return;
   }
   getTabRealURL(tab)
-    .then(url => getStyles({matchUrl: url, asHash: true}))
+    .then(url => getStyles({matchUrl: url, asHash: true, omitCode: true}))
     .then(stylesReceived);
+
+  function getLength(styles) {
+    const keys = Object.keys(styles || {});
+    // Using "included" because styles may not include the psuedo-section added by the
+    // filterStylesInternal function
+    return String(keys.filter(key => styles[key][0] ? styles[key][0].included : false).length);
+  }
 
   function stylesReceived(styles) {
     const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
     const postfix = disableAll ? 'x' : !styles.length ? 'w' : '';
     const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
-    const text = prefs.get('show-badge') && styles.length ? String(styles.length) : '';
+    const text = prefs.get('show-badge') && styles.length ? getLength(styles) : '';
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-
     let tabIcon = tabIcons.get(tab.id);
     if (!tabIcon) tabIcons.set(tab.id, (tabIcon = {}));
 
