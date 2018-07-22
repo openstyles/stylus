@@ -565,6 +565,7 @@ onDOMready().then(() => {
     Object.assign(dialog, DIALOG_PROPS.dialog);
     dialog.addEventListener('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
+    dialog.style.pointerEvents = 'auto';
 
     const content = $('[data-type="content"]', dialog);
     content.parentNode.replaceChild(template[type].cloneNode(true), content);

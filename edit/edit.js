@@ -7,6 +7,7 @@ global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
+global moveFocus
 */
 'use strict';
 
@@ -606,16 +607,29 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap')
   }, options));
   cm.focus();
-  const rerouteOn = () => cm.rerouteHotkeys(false);
-  const rerouteOff = () => cm.rerouteHotkeys(true);
-  cm.on('focus', rerouteOn);
-  cm.on('blur', rerouteOff);
+  cm.rerouteHotkeys(false);
+
+  document.documentElement.style.pointerEvents = 'none';
+  popup.style.pointerEvents = 'auto';
+
+  const onKeyDown = event => {
+    if (event.which === 9 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      const search = $('#search-replace-dialog');
+      const area = search && search.contains(document.activeElement) ? search : popup;
+      moveFocus(area, event.shiftKey ? -1 : 1);
+      event.preventDefault();
+    }
+  };
+  window.addEventListener('keydown', onKeyDown, true);
+
   window.addEventListener('closeHelp', function _() {
     window.removeEventListener('closeHelp', _);
-    cm.off('focus', rerouteOn);
-    cm.off('blur', rerouteOff);
+    window.removeEventListener('keydown', onKeyDown, true);
+    document.documentElement.style.removeProperty('pointer-events');
+    cm.rerouteHotkeys(true);
     cm = popup.codebox = null;
   });
+
   return popup;
 }
 
