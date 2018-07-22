@@ -205,6 +205,14 @@
   "configOnChangeTooltip": {
     "message": "Autosave and apply changes automatically"
   },
+  "genericAdd": {
+    "message": "Add",
+    "description": "Used in various places for an action that adds something"
+  },
+  "genericClone": {
+    "message": "Clone",
+    "description": "Used in various places for an action that clones something"
+  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."
@@ -839,6 +847,10 @@
   "sectionRemove": {
     "message": "Remove section",
     "description": "Label for the button to remove a section"
+  },
+  "sectionRestore": {
+    "message": "Restore removed section",
+    "description": "Label for the button to restore a removed section"
   },
   "shortcuts": {
     "message": "Shortcuts",

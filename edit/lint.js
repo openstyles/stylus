@@ -1,6 +1,7 @@
 /* global CodeMirror messageBox */
 /* global editors makeSectionVisible showCodeMirrorPopup showHelp */
 /* global loadScript require CSSLint stylelint */
+/* global clipString */
 'use strict';
 
 onDOMready().then(loadLinterAssets);
@@ -287,10 +288,6 @@ function updateLintReportInternal(scope, {postponeNewIssues} = {}) {
     result.changed |= oldText !== body.textContentCached;
     result.fixedSome |= lintState.reportDisplayed && oldMarkers.size;
     return result;
-  }
-
-  function clipString(str, limit) {
-    return str.length <= limit ? str : str.substr(0, limit) + '...';
   }
 }
 
