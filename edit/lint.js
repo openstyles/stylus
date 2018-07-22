@@ -150,18 +150,6 @@ var linterConfig = {
     setupLinterPopup(linterConfig.stringify());
   },
 
-  showSavedMessage() {
-    $('#help-popup .saved-message').classList.add('show');
-    clearTimeout($('#help-popup .contents').timer);
-    $('#help-popup .contents').timer = setTimeout(() => {
-      // popup may be closed at this point
-      const msg = $('#help-popup .saved-message');
-      if (msg) {
-        msg.classList.remove('show');
-      }
-    }, 2000);
-  },
-
   init() {
     if (!this.init.pending) this.init.pending = this.loadAll();
     return this.init.pending;
@@ -452,7 +440,6 @@ function setupLinterPopup(config) {
         $create('button.save', {onclick: save, title: 'Ctrl-Enter'}, t('styleSaveLabel')),
         $create('button.cancel', {onclick: cancel}, t('confirmClose')),
         $create('button.reset', {onclick: reset, title: t('linterResetMessage')}, t('genericResetLabel')),
-        $create('span.saved-message', t('genericSavedMessage')),
       ]),
     ]);
   }
@@ -477,7 +464,6 @@ function setupLinterPopup(config) {
       }
       linterConfig.setLinter(linter);
       linterConfig.save(json);
-      linterConfig.showSavedMessage();
       cm.markClean();
       cm.focus();
       updateButtonState();

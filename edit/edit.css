@@ -563,16 +563,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   right: 4px;
   top: .5em;
 }
-#help-popup .saved-message {
-  /* display: none; */
-  color: #090;
-  /* margin-left: 10px; */
-  font-weight: bold;
-  position: absolute;
-}
-#help-popup .saved-message.show {
-  display: inline-block;
-}
 
 .keymap-list {
   font-size: 12px;
