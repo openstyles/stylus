@@ -97,7 +97,7 @@ function addSection(event, section) {
     }
   }
   if (!appliesToAdded) {
-    addAppliesTo(appliesTo);
+    addAppliesTo(appliesTo, event && 'url-prefix', '');
   }
 
   appliesTo.addEventListener('change', onChange);
