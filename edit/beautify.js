@@ -35,9 +35,14 @@ function beautify(event) {
         <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>` +
         t('styleBeautifyIndentConditional') + '</label>' +
       '</div>' +
-      '<div><button role="undo"></button></div>');
+      `<div class="buttons">
+        <button role="close" i18n-text="confirmClose"></button>
+        <button role="undo"></button>
+      </div>`);
 
     $('#help-popup').className = 'wide';
+
+    $('#help-popup button[role="close"]').onclick = showHelp.close;
 
     const undoButton = $('#help-popup button[role="undo"]');
     undoButton.textContent = t(scope.length === 1 ? 'undo' : 'undoGlobal');
