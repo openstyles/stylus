@@ -13,7 +13,7 @@
     "jsonlint": "^1.6.3",
     "less": "^3.8.0",
     "lz-string-unsafe": "^1.4.4-beta",
-    "semver-bundle": "^0.1.0",
+    "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "updates": "^4.0.1"
