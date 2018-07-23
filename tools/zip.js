@@ -8,9 +8,12 @@ function createZip() {
   const fileName = 'stylus.zip';
   const exclude = [
     '.*', // dot files/folders (glob, not regexp)
-    'node_modules',
-    'tools',
+    'vendor/codemirror/lib/**', // get unmodified copy from node_modules
+    'node_modules/**',
+    'tools/**',
     'package.json',
+    'package-lock.json',
+    'yarn.lock',
     '*.zip'
   ];
 
@@ -34,7 +37,9 @@ function createZip() {
     });
 
     archive.pipe(file);
-    archive.glob(`!(${exclude.join('|')})`);
+    archive.glob('**', {ignore: exclude});
+    // Don't use modified codemirror.js (see "update-libraries.js")
+    archive.directory('node_modules/codemirror/lib', 'vendor/codemirror/lib');
     archive.finalize();
   });
 }
