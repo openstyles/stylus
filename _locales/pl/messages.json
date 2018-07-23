@@ -642,6 +642,10 @@
 		"message": "Sprawdź i zainstaluj wszystkie dostępne aktualizacje",
 		"description": ""
 	},
+	"styleBeautifyPreserveNewlines": {
+		"message": "Zachowaj nowe linie",
+		"description": "CSS-beautifier option"
+	},
 	"clickToUninstall": {
 		"message": "Kliknij, aby odinstalować",
 		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
@@ -859,7 +863,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
-		"message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nPasujący adres URL:  szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
+		"message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nStyle pasujące do pełnego adresu URL: szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {
