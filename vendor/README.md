@@ -20,7 +20,7 @@ The following changes are made:
 
 * `CodeMirror`: Only existing files are updated directly from the `node_modules` folder; see the [CodeMirror readme](codemirror/README.md) for specifics.
 * `jsonlint`: The uncompressed `lib/jsonlint.js` is copied directly to `vendor/jsonlint`.
-* `less`: The compressed `dist/less.min.js` file is copied directly into `vendor/less`.
+* `less`: The `dist/less.js` file is copied directly into `vendor/less`.
 * `lz-string-unsafe`: The compressed `lz-string-unsafe.min.js` file is copied directly into `vendor/lz-string-unsafe`.
 * `semver-bundle`: The `dist/semver.js` file is copied directly into `vendor/semver`.
 * `stylus-lang-bundle`: The `stylus.min.js` file is copied directly into `vendor/stylus-lang-bundle`.

@@ -15,7 +15,7 @@ const files = {
     'lib/jsonlint.js → jsonlint.js'
   ],
   'less': [
-    'dist/less.min.js → less.min.js'
+    'dist/less.js → less.js'
   ],
   'lz-string-unsafe': [
     'lz-string-unsafe.min.js'
