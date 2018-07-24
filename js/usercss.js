@@ -69,7 +69,7 @@ var usercss = (() => {
           useFileCache: false,
         };
         const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
-        return loadScript('/vendor/less/less.min.js')
+        return loadScript('/vendor/less/less.js')
           .then(() => window.less.render(varDefs + source))
           .then(({css}) => css);
       }
