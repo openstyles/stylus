@@ -331,6 +331,7 @@ function getFaviconImgSrc(container = installed) {
   for (const target of targets) {
     const type = target.dataset.type;
     const targetValue = target.textContent;
+    if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
       favicon = GET_FAVICON_URL + targetValue;
