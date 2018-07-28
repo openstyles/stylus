@@ -321,14 +321,12 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
 }
 
 function getFaviconImgSrc(container = installed) {
-  const targets = $$('.target', container);
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
-  const domainExt = 'com,org,co,net,im,io,edu,gov,biz,info,de,cn,uk,nl,eu,ru'.split(',');
-  const regexpMatchRegExp = new RegExp(`[\\w-]+[\\.(]+(${domainExt.join('|')})\\b`, 'g');
+  const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
   const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
-  for (const target of targets) {
+  for (const target of $$('.target', container)) {
     const type = target.dataset.type;
     const targetValue = target.textContent;
     if (!targetValue) continue;
