@@ -240,6 +240,8 @@ select {
   border-radius: 4px;
   margin-left: 1ex;
   white-space: nowrap;
+  position: relative;
+  top: 2px;
 }
 
 .entry.usercss .style-name-link::after {
