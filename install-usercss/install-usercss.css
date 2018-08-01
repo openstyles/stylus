@@ -306,7 +306,7 @@ li {
   user-select: auto;
 }
 
-label {
+label:not(.unavailable) {
   padding-left: 16px;
   position: relative;
 }

@@ -3,6 +3,8 @@
 'use strict';
 
 (() => {
+  const DUMMY_URL = 'foo:';
+
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   let liveReload = false;
@@ -14,7 +16,8 @@
   let port;
 
   if (params.has('direct')) {
-    $('.live-reload').remove();
+    $('.live-reload').textContent = t('liveReloadUnavailable');
+    $('.live-reload').classList.add('unavailable');
     getCodeDirectly();
   } else {
     port = chrome.tabs.connect(tabId);
@@ -308,15 +311,17 @@
     const checker = $('.set-update-url input[type=checkbox]');
     // prefer the installation URL unless drag'n'dropped on the manage page
     const installationUrl = (params.get('updateUrl') || '').replace(/^blob.+/, '');
-    const updateUrl = new URL(installationUrl || style.updateUrl || 'foo:bar');
+    const updateUrl = new URL(installationUrl || style.updateUrl || DUMMY_URL);
     $('.set-update-url > span').textContent = t('installUpdateFromLabel');
     if (dup && dup.updateUrl === updateUrl.href) {
       checker.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
       checker.disabled = true;
-    } else if (updateUrl.protocol === 'foo:') {
+    } else if (updateUrl.href === DUMMY_URL) {
       // drag'n'dropped on the manage page and the style doesn't have @updateURL
-      checker.disabled = true;
+      $('.set-update-url').textContent = t('installUpdateUnavailable');
+      $('.set-update-url').classList.add('unavailable');
+      return;
     } else if (updateUrl.protocol !== 'file:') {
       checker.checked = true;
       style.updateUrl = updateUrl.href;

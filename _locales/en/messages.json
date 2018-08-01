@@ -528,6 +528,9 @@
     "message": "Check for updates",
     "description": "Label for the checkbox to save current URL for update check"
   },
+  "installUpdateUnavailable": {
+    "message": "To enable check for updates, drop the file on the tab strip or specify @updateURL in the style metadata."
+  },
   "license": {
     "message": "License",
     "description": "Label for the license"
@@ -610,6 +613,9 @@
   "liveReloadError": {
     "message": "An error occurred while watching the file",
     "description": "The label of live-reload error"
+  },
+  "liveReloadUnavailable": {
+    "message": "To enable live reload, drop the file on the tab strip (the area where the tab titles are shown)."
   },
   "manageFilters": {
     "message": "Filters",
