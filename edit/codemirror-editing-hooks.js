@@ -632,7 +632,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   /**
-   * Observes newly added section elements and sets an 'input' event listener on .applies-to inside.
+   * Observes newly added section elements, and sets these event listeners:
+   *   1. 'changes' on CodeMirror inside
+   *   2. 'input' on .applies-to inside
    * The goal is to avoid listening to 'input' on the entire #sections tree,
    * which would trigger updatePreview() twice on any keystroke -
    * both for the synthetic event from CodeMirror and the original event.
@@ -652,6 +654,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
           for (const node of addedNodes) {
             const el = node.children && $('.applies-to', node);
             if (el) el.addEventListener('input', updatePreview);
+            if (node.CodeMirror) node.CodeMirror.on('changes', updatePreview);
           }
         }
       });
