@@ -620,7 +620,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
     const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
     $('#enabled')[addRemove]('change', updatePreview);
-    $('#sections')[addRemove]('change', updatePreview);
+    $('#sections')[addRemove]('input', updatePreview);
     if (!previewing || document.body.classList.contains('dirty')) {
       updatePreview(null, previewing);
     }
