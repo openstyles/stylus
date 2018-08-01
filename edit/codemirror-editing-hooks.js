@@ -618,11 +618,50 @@ onDOMscriptReady('/codemirror.js').then(() => {
     const me = this instanceof Node ? this : $('#editor.livePreview');
     const previewing = me.checked;
     editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
-    const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
-    $('#enabled')[addRemove]('change', updatePreview);
-    $('#sections')[addRemove]('input', updatePreview);
+    const addRemove = EventTarget.prototype[previewing ? 'addEventListener' : 'removeEventListener'];
+    addRemove.call($('#enabled'), 'change', updatePreview);
+    if (!editor) {
+      for (const el of $$('#sections .applies-to')) {
+        addRemove.call(el, 'input', updatePreview);
+      }
+      toggleLivePreviewSectionsObserver(previewing);
+    }
     if (!previewing || document.body.classList.contains('dirty')) {
       updatePreview(null, previewing);
+    }
+  }
+
+  /**
+   * Observes newly added section elements and sets an 'input' event listener on .applies-to inside.
+   * The goal is to avoid listening to 'input' on the entire #sections tree,
+   * which would trigger updatePreview() twice on any keystroke -
+   * both for the synthetic event from CodeMirror and the original event.
+   * Side effects:
+   *   two expando properties on #sections
+   *   1. __livePreviewObserver
+   *   2. __livePreviewObserverEnabled
+   * @param {Boolean} enable
+   */
+  function toggleLivePreviewSectionsObserver(enable) {
+    const sections = $('#sections');
+    const observing = sections.__livePreviewObserverEnabled;
+    let mo = sections.__livePreviewObserver;
+    if (enable && !mo) {
+      sections.__livePreviewObserver = mo = new MutationObserver(mutations => {
+        for (const {addedNodes} of mutations) {
+          for (const node of addedNodes) {
+            const el = node.children && $('.applies-to', node);
+            if (el) el.addEventListener('input', updatePreview);
+          }
+        }
+      });
+    }
+    if (enable && !observing) {
+      mo.observe(sections, {childList: true});
+      sections.__livePreviewObserverEnabled = true;
+    } else if (!enable && observing) {
+      mo.disconnect();
+      sections.__livePreviewObserverEnabled = false;
     }
   }
 
