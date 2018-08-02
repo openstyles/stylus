@@ -25,7 +25,8 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-window.onbeforeunload = beforeUnload;
+
+document.addEventListener('visibilitychange', beforeUnload);
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 preinit();
@@ -176,7 +177,8 @@ function onRuntimeMessage(request) {
       break;
     case 'styleDeleted':
       if (styleId === request.id || editor && editor.getStyle().id === request.id) {
-        window.onbeforeunload = () => {};
+        document.removeEventListener('visibilitychange', beforeUnload);
+        window.onbeforeunload = null;
         closeCurrentTab();
         break;
       }
@@ -192,24 +194,27 @@ function onRuntimeMessage(request) {
   }
 }
 
+/**
+ * Invoked for 'visibilitychange' event by default.
+ * Invoked for 'beforeunload' event when the style is modified and unsaved.
+ * See https://developers.google.com/web/updates/2018/07/page-lifecycle-api#legacy-lifecycle-apis-to-avoid
+ *   > Never add a beforeunload listener unconditionally or use it as an end-of-session signal.
+ *   > Only add it when a user has unsaved work, and remove it as soon as that work has been saved.
+ */
 function beforeUnload() {
-  if (saveSizeOnClose) {
-    rememberWindowSize();
+  if (saveSizeOnClose) rememberWindowSize();
+  const activeElement = document.activeElement;
+  if (activeElement) {
+    // blurring triggers 'change' or 'input' event if needed
+    activeElement.blur();
+    // refocus if unloading was canceled
+    setTimeout(() => activeElement.focus());
   }
-  document.activeElement.blur();
-  if (isClean()) {
-    return;
-  }
-  updateLintReportIfEnabled(null, 0);
-  // neither confirm() nor custom messages work in modern browsers but just in case
-  return t('styleChangesNotSaved');
-
-  function isClean() {
-    if (editor) {
-      return !editor.isDirty();
-    } else {
-      return isCleanGlobal();
-    }
+  const isDirty = editor ? editor.isDirty() : !isCleanGlobal();
+  if (isDirty) {
+    updateLintReportIfEnabled(null, 0);
+    // neither confirm() nor custom messages work in modern browsers but just in case
+    return t('styleChangesNotSaved');
   }
 }
 
@@ -406,6 +411,7 @@ function updateTitle() {
   const clean = isCleanGlobal();
   const title = styleId === null ? t('addStyleTitle') : t('editStyleTitle', [name]);
   document.title = clean ? title : DIRTY_TITLE.replace('$', title);
+  window.onbeforeunload = clean ? null : beforeUnload;
   $('#save-button').disabled = clean;
 }
 

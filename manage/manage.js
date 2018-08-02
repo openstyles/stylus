@@ -73,8 +73,7 @@ function initGlobalEvents() {
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
   installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
-  // remember scroll position on normal history navigation
-  window.onbeforeunload = rememberScrollPosition;
+  document.addEventListener('visibilitychange', rememberScrollPosition);
 
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+

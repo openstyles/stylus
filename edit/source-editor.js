@@ -4,6 +4,7 @@ global CodeMirror dirtyReporter
 global updateLintReportIfEnabled initLint linterConfig updateLinter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
+global beforeUnload
 */
 'use strict';
 
@@ -18,8 +19,10 @@ function createSourceEditor(style) {
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
-    document.body.classList.toggle('dirty', dirty.isDirty());
-    $('#save-button').disabled = !dirty.isDirty();
+    const isDirty = dirty.isDirty();
+    window.onbeforeunload = isDirty ? beforeUnload : null;
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
     updateTitle();
   });
 
