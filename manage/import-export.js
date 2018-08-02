@@ -298,7 +298,7 @@ $('#file-all-styles').onclick = () => {
         iframe.contentDocument.body.appendChild(link);
       })
       .then(() => doTimeout())
-      .then(() => link.dispatchEvent(new MouseEvent('click')))
+      .then(() => link.dispatchEvent(new MouseEvent('click')));
     // we don't remove the iframe or the object URL because the browser may show
     // a download dialog and we don't know how long it'll take until the user confirms it
     // (some browsers like Vivaldi can't download if we revoke the URL)
