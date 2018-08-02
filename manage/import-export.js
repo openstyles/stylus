@@ -299,9 +299,9 @@ $('#file-all-styles').onclick = () => {
       })
       .then(() => doTimeout())
       .then(() => link.dispatchEvent(new MouseEvent('click')))
-      .then(() => doTimeout(1000))
-      .then(() => URL.revokeObjectURL(url))
-      .then(() => iframe.remove());
+    // we don't remove the iframe or the object URL because the browser may show
+    // a download dialog and we don't know how long it'll take until the user confirms it
+    // (some browsers like Vivaldi can't download if we revoke the URL)
   });
 
   function doTimeout(ms) {
