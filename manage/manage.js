@@ -73,7 +73,7 @@ function initGlobalEvents() {
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
   installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
-  document.addEventListener('visibilitychange', rememberScrollPosition);
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
@@ -114,7 +114,6 @@ function initGlobalEvents() {
     }
   `));
 }
-
 
 function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
@@ -164,14 +163,7 @@ function showStyles(styles = [], matchUrlIds) {
     if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
-    if (sessionStorage.justEditedStyleId) {
-      const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
-      delete sessionStorage.justEditedStyleId;
-      if (entry) {
-        animateElement(entry);
-        requestAnimationFrame(() => scrollElementIntoView(entry));
-      }
-    }
+    highlightEditedStyle();
   }
 }
 
@@ -416,7 +408,7 @@ Object.assign(handleEvent, {
         });
       }
     } else {
-      rememberScrollPosition();
+      onVisibilityChange();
       getActiveTab().then(tab => {
         sessionStorageHash('manageStylesHistory').set(tab.id, url);
         location.href = url;
@@ -687,8 +679,28 @@ function switchUI({styleOnly} = {}) {
 }
 
 
-function rememberScrollPosition() {
-  history.replaceState({scrollY: window.scrollY}, document.title);
+function onVisibilityChange() {
+  switch (document.visibilityState) {
+    // page restored without reloading via history navigation (currently only in FF)
+    case 'visible':
+      highlightEditedStyle();
+      break;
+    // going away
+    case 'hidden':
+      history.replaceState({scrollY: window.scrollY}, document.title);
+      break;
+  }
+}
+
+
+function highlightEditedStyle() {
+  if (!sessionStorage.justEditedStyleId) return;
+  const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
+  delete sessionStorage.justEditedStyleId;
+  if (entry) {
+    animateElement(entry);
+    requestAnimationFrame(() => scrollElementIntoView(entry));
+  }
 }
 
 
