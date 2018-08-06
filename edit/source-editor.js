@@ -128,7 +128,7 @@ function createSourceEditor(style) {
           style.name ||
           t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}`);
       // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
+      style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
       cm.startOperation();
       cm.setValue(style.sourceCode);
       cm.clearHistory();
