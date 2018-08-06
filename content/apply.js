@@ -235,7 +235,7 @@
         if (!Array.isArray(sections)) continue;
         applySections(id, sections.map(({code}) => code).join('\n'));
       }
-      docRootObserver.start({sort: true});
+      docRootObserver.firstStart();
     }
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
@@ -431,13 +431,16 @@
 
     function init() {
       observer = new MutationObserver(sortStyleElements);
-      docRootObserver = {start, stop, evade, disconnect: stop};
+      docRootObserver = {firstStart, start, stop, evade, disconnect: stop};
       setTimeout(sortStyleElements);
     }
-    function start({sort = false} = {}) {
-      if (sort && sortStyleMap()) {
+    function firstStart() {
+      if (sortStyleMap()) {
         sortStyleElements();
       }
+      start();
+    }
+    function start() {
       if (!observing && ROOT && observer) {
         observer.observe(ROOT, {childList: true});
         observing = true;
