@@ -5,7 +5,7 @@
   CodeMirror.registerHelper('lint', 'csslint', invokeHelper);
   CodeMirror.registerHelper('lint', 'stylelint', invokeHelper);
 
-  const cookResults = {
+  const COOKS = {
     csslint: results =>
       results.map(({line, col: ch, message, rule, type: severity}) => line && {
         message,
@@ -36,7 +36,7 @@
 
   function invokeHelper(code, options, cm) {
     const config = linterConfig.getCurrent();
-    const cook = cookResults[linterConfig.getName()];
+    const cook = COOKS[linterConfig.getName()];
     return linterConfig.invokeWorker({code, config})
       .then(data => cook(data, cm));
   }
