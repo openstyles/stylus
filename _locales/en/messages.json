@@ -547,6 +547,10 @@
     "message": "Wiki",
     "description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
   },
+  "linkTranslate": {
+    "message": "Translate",
+    "description": "Transifex link text on the manage page"
+  },
   "linterConfigPopupTitle": {
     "message": "Set $linter$ rules configuration",
     "description": "Stylelint or CSSLint popup header",

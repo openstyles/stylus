@@ -447,6 +447,7 @@ select {
 
 #manage-text {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   padding-top: .35rem;
 }
