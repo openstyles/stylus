@@ -419,6 +419,7 @@
   function initDocRootObserver() {
     let lastRestorationTime = 0;
     let restorationCounter = 0;
+    let scheduledSort = false;
     let observing = false;
     let sorting = false;
     let observer;
@@ -476,8 +477,9 @@
         return true;
       }
     }
-    function sortStyleElements() {
-      if (!observing) {
+    function sortStyleElements({force} = {}) {
+      if (!observing ||
+          !force && scheduledSort) {
         return;
       }
       let prevExpected = document.documentElement.lastElementChild;
@@ -487,6 +489,12 @@
       if (!prevExpected) {
         return;
       }
+      if (!CHROME && !force && window !== top) {
+        requestAnimationFrame(() => sortStyleElements({force: true}));
+        scheduledSort = true;
+        return;
+      }
+      scheduledSort = false;
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;
