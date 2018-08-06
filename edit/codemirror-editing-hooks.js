@@ -686,7 +686,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }).then(() => {
       errors.classList.add('hidden');
     }).catch(err => {
-      if (err && editor && !Number.isNaN(err.index)) {
+      if (Array.isArray(err)) err = err.join('\n');
+      if (err && editor && !isNaN(err.index)) {
         const pos = editors[0].posFromIndex(err.index);
         err = `${pos.line}:${pos.ch} ${err}`;
       }
