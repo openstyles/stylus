@@ -485,6 +485,7 @@
           !force && scheduledSort) {
         return;
       }
+      scheduledSort = false;
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
@@ -497,7 +498,6 @@
         scheduledSort = true;
         return;
       }
-      scheduledSort = false;
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;
