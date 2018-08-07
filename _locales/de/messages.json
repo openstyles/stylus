@@ -634,6 +634,10 @@
 		"message": "Alle verfügbaren Updates Installieren",
 		"description": ""
 	},
+	"styleBeautifyPreserveNewlines": {
+		"message": "Leerzeilen schützen",
+		"description": "CSS-beautifier option"
+	},
 	"clickToUninstall": {
 		"message": "Klicken zum Deinstallieren",
 		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
@@ -843,7 +847,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
-		"message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nURL suchen: Stelle <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\">",
+		"message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nStyles, die auf eine URL passen: Stelle der Suche <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\"> ",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {

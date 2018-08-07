@@ -4,6 +4,7 @@ global CodeMirror dirtyReporter
 global updateLintReportIfEnabled initLint linterConfig updateLinter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
+global beforeUnload
 */
 'use strict';
 
@@ -18,8 +19,10 @@ function createSourceEditor(style) {
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
-    document.body.classList.toggle('dirty', dirty.isDirty());
-    $('#save-button').disabled = !dirty.isDirty();
+    const isDirty = dirty.isDirty();
+    window.onbeforeunload = isDirty ? beforeUnload : null;
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
     updateTitle();
   });
 
@@ -107,12 +110,9 @@ function createSourceEditor(style) {
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
-      @name           ${
-        style.name ||
-        t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()
-      }
+      @name           ${''/* a trick to preserve the trailing spaces */}
       @namespace      github.com/openstyles/stylus
-      @version        0.1.0
+      @version        1.0.0
       @description    A new userstyle
       @author         Me
       ==/UserStyle== */
@@ -123,8 +123,12 @@ function createSourceEditor(style) {
 
     chromeSync.getLZValue('usercssTemplate').then(code => {
       code = code || DEFAULT_CODE;
+      code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
+        `${str}${space ? '' : ' '}${
+          style.name ||
+          t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}`);
       // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
+      style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
       cm.startOperation();
       cm.setValue(style.sourceCode);
       cm.clearHistory();

@@ -45,13 +45,13 @@ See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):  
+Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):<br>
 Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
-Current Stylus:  
+Current Stylus:<br>
 Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
-**[GNU GPLv3](./LICENSE)**  
+**[GNU GPLv3](./LICENSE)**<br>
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or

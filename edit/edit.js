@@ -7,6 +7,7 @@ global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
+global moveFocus
 */
 'use strict';
 
@@ -24,7 +25,8 @@ const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'do
 
 let editor;
 
-window.onbeforeunload = beforeUnload;
+
+document.addEventListener('visibilitychange', beforeUnload);
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 preinit();
@@ -175,7 +177,8 @@ function onRuntimeMessage(request) {
       break;
     case 'styleDeleted':
       if (styleId === request.id || editor && editor.getStyle().id === request.id) {
-        window.onbeforeunload = () => {};
+        document.removeEventListener('visibilitychange', beforeUnload);
+        window.onbeforeunload = null;
         closeCurrentTab();
         break;
       }
@@ -191,24 +194,27 @@ function onRuntimeMessage(request) {
   }
 }
 
+/**
+ * Invoked for 'visibilitychange' event by default.
+ * Invoked for 'beforeunload' event when the style is modified and unsaved.
+ * See https://developers.google.com/web/updates/2018/07/page-lifecycle-api#legacy-lifecycle-apis-to-avoid
+ *   > Never add a beforeunload listener unconditionally or use it as an end-of-session signal.
+ *   > Only add it when a user has unsaved work, and remove it as soon as that work has been saved.
+ */
 function beforeUnload() {
-  if (saveSizeOnClose) {
-    rememberWindowSize();
+  if (saveSizeOnClose) rememberWindowSize();
+  const activeElement = document.activeElement;
+  if (activeElement) {
+    // blurring triggers 'change' or 'input' event if needed
+    activeElement.blur();
+    // refocus if unloading was canceled
+    setTimeout(() => activeElement.focus());
   }
-  document.activeElement.blur();
-  if (isClean()) {
-    return;
-  }
-  updateLintReportIfEnabled(null, 0);
-  // neither confirm() nor custom messages work in modern browsers but just in case
-  return t('styleChangesNotSaved');
-
-  function isClean() {
-    if (editor) {
-      return !editor.isDirty();
-    } else {
-      return isCleanGlobal();
-    }
+  const isDirty = editor ? editor.isDirty() : !isCleanGlobal();
+  if (isDirty) {
+    updateLintReportIfEnabled(null, 0);
+    // neither confirm() nor custom messages work in modern browsers but just in case
+    return t('styleChangesNotSaved');
   }
 }
 
@@ -331,7 +337,7 @@ function isCleanGlobal() {
 
 function setCleanGlobal() {
   setCleanItem($('#sections'), true);
-  $$('#header, #sections > div').forEach(setCleanSection);
+  $$('#header, #sections > .section').forEach(setCleanSection);
   // forget the dirty applies-to ids from a deleted section after the style was saved
   dirty = {};
 }
@@ -405,6 +411,7 @@ function updateTitle() {
   const clean = isCleanGlobal();
   const title = styleId === null ? t('addStyleTitle') : t('editStyleTitle', [name]);
   document.title = clean ? title : DIRTY_TITLE.replace('$', title);
+  window.onbeforeunload = clean ? null : beforeUnload;
   $('#save-button').disabled = clean;
 }
 
@@ -426,18 +433,18 @@ function toMozillaFormat() {
 
 function fromMozillaFormat() {
   const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-    $create([
-      $create('button', {
-        name: 'import-append',
-        textContent: t('importAppendLabel'),
-        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
-        onclick: doImport,
-      }),
+    $create('.buttons', [
       $create('button', {
         name: 'import-replace',
         textContent: t('importReplaceLabel'),
         title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
         onclick: () => doImport({replaceOldStyle: true}),
+      }),
+      $create('button', {
+        name: 'import-append',
+        textContent: t('importAppendLabel'),
+        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
+        onclick: doImport,
       }),
     ]));
   const contents = $('.contents', popup);
@@ -596,7 +603,7 @@ function showCodeMirrorPopup(title, html, options) {
   let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
     mode: 'css',
     lineNumbers: true,
-    lineWrapping: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
@@ -606,16 +613,29 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap')
   }, options));
   cm.focus();
-  const rerouteOn = () => cm.rerouteHotkeys(false);
-  const rerouteOff = () => cm.rerouteHotkeys(true);
-  cm.on('focus', rerouteOn);
-  cm.on('blur', rerouteOff);
+  cm.rerouteHotkeys(false);
+
+  document.documentElement.style.pointerEvents = 'none';
+  popup.style.pointerEvents = 'auto';
+
+  const onKeyDown = event => {
+    if (event.which === 9 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      const search = $('#search-replace-dialog');
+      const area = search && search.contains(document.activeElement) ? search : popup;
+      moveFocus(area, event.shiftKey ? -1 : 1);
+      event.preventDefault();
+    }
+  };
+  window.addEventListener('keydown', onKeyDown, true);
+
   window.addEventListener('closeHelp', function _() {
     window.removeEventListener('closeHelp', _);
-    cm.off('focus', rerouteOn);
-    cm.off('blur', rerouteOff);
+    window.removeEventListener('keydown', onKeyDown, true);
+    document.documentElement.style.removeProperty('pointer-events');
+    cm.rerouteHotkeys(true);
     cm = popup.codebox = null;
   });
+
   return popup;
 }
 

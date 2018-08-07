@@ -121,7 +121,7 @@
     </template>
 
     <template data-id="section">
-      <div>
+      <div class="section">
         <label i18n-text="sectionCode" class="code-label"></label>
         <br>
         <div class="applies-to">
@@ -134,11 +134,21 @@
         </div>
         <div class="edit-actions">
           <button class="remove-section" i18n-text="sectionRemove"></button>
-          <button class="add-section" i18n-text="sectionAdd"></button>
+          <button class="add-section" i18n-long-text="sectionAdd" i18n-short-text="genericAdd"></button>
+          <button class="clone-section" i18n-text="genericClone"></button>
+          <button class="move-section-up"></button>
+          <button class="move-section-down"></button>
           <button class="beautify-section" i18n-text="styleBeautify"></button>
           <button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
         </div>
       </div>
+    </template>
+
+    <!-- not using DIV to make our CSS work for #sections > div:only-of-type .remove-section -->
+    <template data-id="deletedSection">
+      <p class="deleted-section">
+        <button class="restore-section" i18n-text="sectionRestore"></button>
+      </p>
     </template>
 
     <template data-id="searchReplaceDialog">
@@ -456,11 +466,11 @@
       <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
         <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
       </symbol>
-      
+
       <symbol id="svg-icon-plus" viewBox="0 0 8 8">
         <path fill-rule="evenodd" d="M3 0v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2z"/>
       </symbol>
-      
+
       <symbol id="svg-icon-minus" viewBox="0 0 8 8">
         <path fill-rule="evenodd" d="M0 3v2h8v-2h-8z"/>
       </symbol>

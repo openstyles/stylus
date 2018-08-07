@@ -116,3 +116,8 @@ function sectionsToMozFormat(style) {
       section.code;
   }).join('\n\n');
 }
+
+
+function clipString(str, limit = 100) {
+  return str.length <= limit ? str : str.substr(0, limit) + '...';
+}

@@ -8,11 +8,11 @@
 		"description": "Label for the CSS linter issues block on the style edit page"
 	},
 	"defaultTheme": {
-		"message": "padrão",
+		"message": "predefinição",
 		"description": "Default CodeMirror CSS theme option on the edit style page"
 	},
 	"styleRegexpTestTitle": {
-		"message": "Lista de separadores abertos correspondentes (clica no URL para focar no separador)",
+		"message": "Lista de separadores correspondentes abertos (clique no URL para focar no separador)",
 		"description": "RegExp test report: title of the report"
 	},
 	"bckpInstStyles": {
@@ -22,6 +22,14 @@
 	"sortStylesHelpTitle": {
 		"message": "Ordenar conteúdos",
 		"description": "Label for the sort info popup on the Manage styles page"
+	},
+	"sortStylesHelp": {
+		"message": "Escolha o tipo de ordenação a ser aplicado às entradas instaladas na lista suspensa de ordenação. A configuração predefinida aplica uma ordem crescente (A a Z) aos títulos de entrada. As ordenações dentro do grupo \"Título Decrescente\" aplicarão uma classificação decrescente (Z a A) ao título. Existem outras predefinições que permitirão classificar as entradas por vários critérios. Pense sobre isso como ordenar uma tabela com várias colunas e cada categoria em uma seleção (entre os sinais de mais) representa uma coluna ou grupo. Por exemplo, se a configuração for \"Ativado (primeiro) + Título\", as entradas serão ordenadas de modo que todas as entradas ativadas sejam classificadas no topo da lista, então uma classificação crescente de título de entrada (A a Z) será aplicada a ambas as entradas ativadas e desativadas separadamente.",
+		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+	},
+	"optionsUpdateInterval": {
+		"message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)",
+		"description": ""
 	},
 	"exportLabel": {
 		"message": "Exportar",
@@ -44,7 +52,7 @@
 		"description": ""
 	},
 	"cm_tabSize": {
-		"message": "Tamanho do tab",
+		"message": "Tamanho da tabulação",
 		"description": "Label for the text box controlling tab size option for the style editor."
 	},
 	"enableStyleLabel": {
@@ -60,7 +68,7 @@
 		"description": "Used in various places to show a history log of something"
 	},
 	"shortcutsNote": {
-		"message": "Definir atalhos de teclad",
+		"message": "Definir atalhos de teclado",
 		"description": ""
 	},
 	"appliesDomainOption": {
@@ -72,7 +80,7 @@
 		"description": "Label for the button to check a single style for an update"
 	},
 	"styleRegexpInvalidExplanation": {
-		"message": "Algumas regras 'regexp()' que não podiam ser compiladas de todo",
+		"message": "Algumas regras de 'regexp()' que não puderam ser compiladas.",
 		"description": ""
 	},
 	"importAppendLabel": {
@@ -120,12 +128,16 @@
 		"description": "Text for a link that gets a list of styles for the current site"
 	},
 	"manageHeading": {
-		"message": "Estilos instalados",
+		"message": "Estilos Instalados",
 		"description": "Heading for the manage page"
 	},
 	"styleBeautify": {
 		"message": "Embelezar",
 		"description": "Label for the CSS-beautifier button on the edit style page"
+	},
+	"styleRegexpProblemTooltip": {
+		"message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'",
+		"description": "Tooltip in the popup for styles that were applied only partially"
 	},
 	"styleEnabledLabel": {
 		"message": "Ativado",
@@ -136,7 +148,7 @@
 		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
 	},
 	"sectionAdd": {
-		"message": "Adicionar outra seção",
+		"message": "Adicionar outra secção",
 		"description": "Label for the button to add a section"
 	},
 	"styleSaveLabel": {
@@ -150,6 +162,10 @@
 	"confirmDelete": {
 		"message": "Apagar",
 		"description": ""
+	},
+	"confirmDefault": {
+		"message": "Use predefinição",
+		"description": "'Set to default' button in a confirm dialog"
 	},
 	"confirmCancel": {
 		"message": "Cancelar",
@@ -168,7 +184,7 @@
 		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
 	},
 	"optionsSubheading": {
-		"message": "Mais opções",
+		"message": "Mais Opções",
 		"description": "Subheading for options section on manage page."
 	},
 	"appliesAdd": {
@@ -176,7 +192,7 @@
 		"description": "Label for the button to add an 'applies' entry"
 	},
 	"appliesRegexpOption": {
-		"message": "URLs a combinar com o regexp",
+		"message": "URLs correspondentes ao regexp",
 		"description": "Option to make the style apply to the entered string as a regular expression"
 	},
 	"importReportLegendUpdatedCode": {
@@ -208,6 +224,10 @@
 		"message": "Verifica outra vez, eu não editei nenhum estilo!",
 		"description": "Label for the button to apply all detected updates"
 	},
+	"liveReloadLabel": {
+		"message": "Recarregamento dinâmico",
+		"description": "The label of live-reload feature"
+	},
 	"linkGetStyles": {
 		"message": "Obter estilos",
 		"description": "Help link text on the manage page e.g. https://userstyles.org"
@@ -215,6 +235,10 @@
 	"unreachableFileHint": {
 		"message": "O Stylus pode acessar URLs file:// apenas se ativares a checkbox correspondente para a extensão Stylus na página chrome://extensions",
 		"description": "Note in the toolbar popup for file:// URLs"
+	},
+	"sortLabel": {
+		"message": "Selecione uma ordenação para aplicar aos estilos instalados",
+		"description": "Title on the sort select to indicate it is used for sorting entries"
 	},
 	"disableStyleLabel": {
 		"message": "Desativar",
@@ -265,7 +289,7 @@
 		"description": "Label for the button to apply all detected updates"
 	},
 	"optionsReset": {
-		"message": "Restabelecer as opções aos valores iniciais",
+		"message": "Restabelecer as opções aos valores predefinidos",
 		"description": ""
 	},
 	"optionsCustomizeUpdate": {
@@ -307,7 +331,7 @@
 		}
 	},
 	"styleSectionsTitle": {
-		"message": "Seções",
+		"message": "Secções",
 		"description": "Title for the style sections section"
 	},
 	"editStyleTitle": {
@@ -348,7 +372,7 @@
 		"description": "Label for the checkbox controlling section order in the popup."
 	},
 	"sectionHelp": {
-		"message": "As seções deixam definir diferentes peças de código a aplicar em diferentes conjuntos de URLs no mesmo estilo. Por exemplo, um só estilo pode mudar a página principal de um site de uma maneira, enquanto muda o resto do site de outra.",
+		"message": "As secções deixam definir diferentes peças de código a aplicar em diferentes conjuntos de URLs no mesmo estilo. Por exemplo, um só estilo pode mudar a página principal de um site de uma maneira, enquanto muda o resto do site de outra maneira.",
 		"description": "Help text for sections"
 	},
 	"noStylesForSite": {
@@ -425,15 +449,19 @@
 		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
 	},
 	"styleRegexpPartialExplanation": {
-		"message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requere um URL inteiro. As seções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido).",
+		"message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requer um URL inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido).",
 		"description": ""
 	},
 	"styleBeautifyIndentConditional": {
 		"message": "Indentar @media, @supports",
 		"description": "CSS-beautifier option"
 	},
+	"unreachableContentScript": {
+		"message": "Não foi possível comunicar com a página. Tente recarregar o separador.",
+		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+	},
 	"sectionRemove": {
-		"message": "Remover seção",
+		"message": "Remover secção",
 		"description": "Label for the button to remove a section"
 	},
 	"disableAllStyles": {
@@ -445,7 +473,7 @@
 		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
 	},
 	"undoGlobal": {
-		"message": "Desfazer em todas as seções",
+		"message": "Anular em todas as secções",
 		"description": "CSS-beautify global Undo button label"
 	},
 	"genericTitle": {
@@ -455,6 +483,10 @@
 	"updateCompleted": {
 		"message": "Atualização completa.",
 		"description": "Text that displays when an update completed"
+	},
+	"previewLabel": {
+		"message": "Pré-visualização dinâmica",
+		"description": "Label for the checkbox in style editor to enable live preview while editing."
 	},
 	"checkingForUpdate": {
 		"message": "A verificar...",
@@ -493,7 +525,7 @@
 		"description": "Label for the checkbox controlling smart indentation option for the style editor."
 	},
 	"appliesHelp": {
-		"message": "Usa os controlos \"Aplica-se a\" para limitar a que URLs o código nesta seção se aplica.",
+		"message": "Use os controlos \"Aplica-se a\" para limitar a que URLs o código nesta secção se aplica.",
 		"description": "Help text for 'applies to' section"
 	},
 	"linkGetHelp": {
@@ -501,7 +533,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"editStyleHeading": {
-		"message": "Editar estil",
+		"message": "Editar Estilo",
 		"description": "Title of the page for editing styles"
 	},
 	"editDeleteText": {
@@ -532,6 +564,10 @@
 		"message": "Substituir estil",
 		"description": "Label for the button to import and overwrite current style"
 	},
+	"popupOpenEditInWindowTooltip": {
+		"message": "Também ativado ao desanexar o separador do editor de uma janela do browser, e desativado por anexar um separador único do editor a outra janela.",
+		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+	},
 	"dbError": {
 		"message": "Ocorreu um erro ao usar a base de dados do Stylus. Gostarias de visitar um website com soluções possíveis?",
 		"description": "Prompt when a DB error is encountered"
@@ -552,8 +588,12 @@
 		"message": "Anexar o estilo importado ao estilo atual",
 		"description": "Tooltip for the button to import a style and append to the existing sections"
 	},
+	"liveReloadInstallHint": {
+		"message": "O recarregamento dinâmico está ativado para que o estilo instalado seja atualizado automaticamente em alterações externas enquanto esse separador e o separador do arquivo de origem estiverem abertos.",
+		"description": "The label of live-reload feature"
+	},
 	"editorStylesButton": {
-		"message": "Encontrar editor de estilos",
+		"message": "Encontrar estilos para o editor",
 		"description": "Find styles for the editor"
 	},
 	"optionsOpen": {
@@ -561,7 +601,7 @@
 		"description": ""
 	},
 	"helpKeyMapHotkey": {
-		"message": "Carrega numa tecla de atalho",
+		"message": "Prima uma tecla de atalho",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
 	"dateUpdated": {
@@ -573,7 +613,7 @@
 		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
 	},
 	"importReportUnchanged": {
-		"message": "Nada foi mudado",
+		"message": "Nada foi alterado.",
 		"description": "Message in the report shown after importing styles"
 	},
 	"confirmDiscardChanges": {
@@ -626,8 +666,12 @@
 		"description": "'No' button in a confirm dialog"
 	},
 	"undo": {
-		"message": "Desfazer",
+		"message": "Anular",
 		"description": "Button label"
+	},
+	"usercssReplaceTemplateConfirmation": {
+		"message": "Substituir o modelo predefinido para novos estilos de Usercss com o código atual?",
+		"description": ""
 	},
 	"cm_keyMap": {
 		"message": "Mapa de teclado",
@@ -638,7 +682,7 @@
 		"description": "Label for the checkbox that toggles the new UI on manage page"
 	},
 	"importReportUndoneTitle": {
-		"message": "Importação foi desfeita",
+		"message": "A Importação foi anulada",
 		"description": "Title of the message box shown after undoing the import of styles"
 	},
 	"genericDisabledLabel": {
@@ -646,7 +690,7 @@
 		"description": "Used in various lists/options to indicate that something is disabled"
 	},
 	"cm_indentWithTabs": {
-		"message": "Usar tabs com indentação inteligente",
+		"message": "Usar tabulação com indentação inteligente",
 		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
 	},
 	"replaceWith": {
@@ -697,8 +741,16 @@
 		"message": "Escreve um nome de comando",
 		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
 	},
+	"linterResetMessage": {
+		"message": "Para anular a redefinição acidental, prima Ctrl-Z (ou Cmd-Z) na caixa de texto",
+		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
+	},
 	"description": {
 		"message": "Redesenha a web com o Stylus, um gerenciador dos estilos do utilizador [user styles]. O Stylus permite-te instalar facilmente temas e skins em muitos sites populares.",
 		"description": "Extension description"
+	},
+	"usercssReplaceTemplateName": {
+		"message": "@name vazio substitui o modelo predefinido",
+		"description": "The text shown after @name when creating a new Usercss style"
 	}
 }

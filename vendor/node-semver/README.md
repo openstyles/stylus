@@ -1,1 +1,0 @@
-See https://github.com/eight04/node-semver-bundle.

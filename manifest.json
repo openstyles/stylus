@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "minimum_chrome_version": "49",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
@@ -39,7 +39,7 @@
       "background/update.js",
       "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
-      "vendor/node-semver/semver.js",
+      "vendor/semver-bundle/semver.js",
       "vendor-overwrites/colorpicker/colorconverter.js"
     ]
   },

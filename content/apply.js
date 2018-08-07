@@ -235,7 +235,7 @@
         if (!Array.isArray(sections)) continue;
         applySections(id, sections.map(({code}) => code).join('\n'));
       }
-      docRootObserver.start({sort: true});
+      docRootObserver.firstStart();
     }
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
@@ -419,6 +419,7 @@
   function initDocRootObserver() {
     let lastRestorationTime = 0;
     let restorationCounter = 0;
+    let scheduledSort = false;
     let observing = false;
     let sorting = false;
     let observer;
@@ -430,13 +431,16 @@
 
     function init() {
       observer = new MutationObserver(sortStyleElements);
-      docRootObserver = {start, stop, evade, disconnect: stop};
+      docRootObserver = {firstStart, start, stop, evade, disconnect: stop};
       setTimeout(sortStyleElements);
     }
-    function start({sort = false} = {}) {
-      if (sort && sortStyleMap()) {
+    function firstStart() {
+      if (sortStyleMap()) {
         sortStyleElements();
       }
+      start();
+    }
+    function start() {
       if (!observing && ROOT && observer) {
         observer.observe(ROOT, {childList: true});
         observing = true;
@@ -476,15 +480,22 @@
         return true;
       }
     }
-    function sortStyleElements() {
-      if (!observing) {
+    function sortStyleElements({force} = {}) {
+      if (!observing ||
+          !force && scheduledSort) {
         return;
       }
+      scheduledSort = false;
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
       }
       if (!prevExpected) {
+        return;
+      }
+      if (!CHROME && !force && window !== top) {
+        requestAnimationFrame(() => sortStyleElements({force: true}));
+        scheduledSort = true;
         return;
       }
       for (const el of styleElements.values()) {

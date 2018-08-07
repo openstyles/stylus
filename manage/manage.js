@@ -73,8 +73,7 @@ function initGlobalEvents() {
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
   installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
-  // remember scroll position on normal history navigation
-  window.onbeforeunload = rememberScrollPosition;
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
@@ -115,7 +114,6 @@ function initGlobalEvents() {
     }
   `));
 }
-
 
 function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
@@ -165,14 +163,7 @@ function showStyles(styles = [], matchUrlIds) {
     if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
-    if (sessionStorage.justEditedStyleId) {
-      const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
-      delete sessionStorage.justEditedStyleId;
-      if (entry) {
-        animateElement(entry);
-        requestAnimationFrame(() => scrollElementIntoView(entry));
-      }
-    }
+    highlightEditedStyle();
   }
 }
 
@@ -321,16 +312,15 @@ function recreateStyleTargets({styles, iconsOnly = false} = {}) {
 }
 
 function getFaviconImgSrc(container = installed) {
-  const targets = $$('.target', container);
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
-  const domainExt = 'com,org,co,net,im,io,edu,gov,biz,info,de,cn,uk,nl,eu,ru'.split(',');
-  const regexpMatchRegExp = new RegExp(`[\\w-]+[\\.(]+(${domainExt.join('|')})\\b`, 'g');
+  const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
   const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
-  for (const target of targets) {
+  for (const target of $$('.target', container)) {
     const type = target.dataset.type;
     const targetValue = target.textContent;
+    if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
       favicon = GET_FAVICON_URL + targetValue;
@@ -418,7 +408,7 @@ Object.assign(handleEvent, {
         });
       }
     } else {
-      rememberScrollPosition();
+      onVisibilityChange();
       getActiveTab().then(tab => {
         sessionStorageHash('manageStylesHistory').set(tab.id, url);
         location.href = url;
@@ -541,7 +531,7 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style, {reason, method, codeIsUpdated} = {}) {
+function handleUpdate(style, {reason, method} = {}) {
   if (reason === 'editPreview') return;
   // the style was toggled and refreshAllTabs() sent a mini-notification,
   // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()
@@ -689,8 +679,28 @@ function switchUI({styleOnly} = {}) {
 }
 
 
-function rememberScrollPosition() {
-  history.replaceState({scrollY: window.scrollY}, document.title);
+function onVisibilityChange() {
+  switch (document.visibilityState) {
+    // page restored without reloading via history navigation (currently only in FF)
+    case 'visible':
+      highlightEditedStyle();
+      break;
+    // going away
+    case 'hidden':
+      history.replaceState({scrollY: window.scrollY}, document.title);
+      break;
+  }
+}
+
+
+function highlightEditedStyle() {
+  if (!sessionStorage.justEditedStyleId) return;
+  const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
+  delete sessionStorage.justEditedStyleId;
+  if (entry) {
+    animateElement(entry);
+    requestAnimationFrame(() => scrollElementIntoView(entry));
+  }
 }
 
 

@@ -1,4 +1,5 @@
 /* global focusAccessibility */
+/* global moveFocus */
 'use strict';
 
 /**
@@ -33,7 +34,7 @@ function messageBox({
   document.body.appendChild(messageBox.element);
 
   messageBox.originalFocus = document.activeElement;
-  moveFocus(1);
+  moveFocus(messageBox.element, 1);
 
   if (typeof onshow === 'function') {
     onshow(messageBox.element);
@@ -67,7 +68,7 @@ function messageBox({
             event.stopPropagation();
             break;
           case 9:
-            moveFocus(shiftKey ? -1 : 1);
+            moveFocus(messageBox.element, shiftKey ? -1 : 1);
             event.preventDefault();
             return;
           default:
@@ -138,21 +139,6 @@ function messageBox({
     messageBox.element.remove();
     messageBox.element = null;
     messageBox.resolve = null;
-  }
-
-  function moveFocus(dir) {
-    const elements = [...messageBox.element.getElementsByTagName('*')];
-    const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
-    const num = elements.length;
-    for (let i = 1; i < num; i++) {
-      const elementIndex = (activeIndex + i * dir + num) % num;
-      // we don't use positive tabindex so we stop at any valid value
-      const el = elements[elementIndex];
-      if (!el.disabled && el.tabIndex >= 0) {
-        el.focus();
-        return;
-      }
-    }
   }
 }
 

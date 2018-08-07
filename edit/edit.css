@@ -264,15 +264,21 @@ input:invalid {
   margin-top: 4em;
 }
 /************ content ***********/
-#sections > div {
+#sections > * {
   margin: 0.7rem;
   padding: 1rem 1rem .3rem;
 }
-#sections > div:first-of-type {
+#sections > *:first-child {
   padding: 0 1rem .3rem;
 }
-#sections > div:not(:first-of-type) {
+#sections > *:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
+}
+.add-section:after {
+  content: attr(short-text);
+}
+#sections > div:only-of-type .add-section:after {
+  content: attr(long-text);
 }
 #sections > div:only-of-type .remove-section {
   display: none;
@@ -291,16 +297,34 @@ input:invalid {
 #sections {
   counter-reset: codebox;
 }
-#sections > div > label {
+#sections > .section > label {
   animation: 2s highlight;
   animation-play-state: paused;
   animation-direction: reverse;
   animation-fill-mode: both;
 }
-#sections > div > label::after {
+#sections > .section > label::after {
   counter-increment: codebox;
   content: counter(codebox);
   margin-left: 0.25rem;
+}
+.section:only-of-type .move-section-up,
+.section:only-of-type .move-section-down {
+  display: none;
+}
+.move-section-up:after {
+  content: "";
+  display: block;
+  border-style: solid;
+  border-width: 0 .3em .5em .3em;
+  border-color: transparent transparent currentColor transparent;
+}
+.move-section-down:after {
+  content: "";
+  display: block;
+  border-style: solid;
+  border-width: .5em .3em 0 .3em;
+  border-color: currentColor transparent transparent transparent;
 }
 /* code */
 .code {
@@ -563,15 +587,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   right: 4px;
   top: .5em;
 }
-#help-popup .saved-message {
-  display: none;
-  color: #090;
-  margin-left: 10px;
-  font-weight: bold;
-}
-#help-popup .saved-message.show {
-  display: inline-block;
-}
 
 .keymap-list {
   font-size: 12px;
@@ -590,13 +605,19 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   padding-right: 0.5rem;
 }
 
+#help-popup .buttons {
+  text-align: center;
+}
+.non-windows #help-popup .buttons {
+  direction: rtl;
+  text-align: right;
+}
 #help-popup button[name^="import"] {
   line-height: 1.5rem;
   padding: 0 0.5rem;
   margin: 0.5rem 0 0 0.5rem;
   pointer-events: none;
   opacity: 0.5;
-  float: right;
 }
 #help-popup.ready button[name^="import"] {
   pointer-events: all;
@@ -732,7 +753,7 @@ html:not(.usercss) .usercss-only,
 }
 
 #sections .single-editor,
-#sections > div.single-editor:first-of-type {
+#sections > .single-editor:first-child {
   margin: 0;
   padding: 0;
   display: flex;
@@ -911,11 +932,11 @@ html:not(.usercss) .usercss-only,
     flex-direction: column;
     flex: 1;
   }
-  #sections > div {
+  #sections > * {
     margin: 0 .5rem .5rem;
     padding: .5rem 0 0;
   }
-  #sections > div:first-of-type {
+  #sections > *:first-child {
     margin: .5rem;
     padding: 0;
   }

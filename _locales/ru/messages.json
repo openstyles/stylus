@@ -646,6 +646,10 @@
 		"message": "Найти и установить обновления стилей",
 		"description": ""
 	},
+	"styleBeautifyPreserveNewlines": {
+		"message": "Беречь пустые строки",
+		"description": "CSS-beautifier option"
+	},
 	"clickToUninstall": {
 		"message": "Нажмите, чтобы удалить стиль",
 		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
@@ -863,7 +867,7 @@
 		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
 	},
 	"searchStylesHelp": {
-		"message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед адресом, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
+		"message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед полным адресом сайта, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
 		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
 	},
 	"findStyles": {

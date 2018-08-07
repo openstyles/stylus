@@ -565,6 +565,7 @@ onDOMready().then(() => {
     Object.assign(dialog, DIALOG_PROPS.dialog);
     dialog.addEventListener('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
+    dialog.style.pointerEvents = 'auto';
 
     const content = $('[data-type="content"]', dialog);
     content.parentNode.replaceChild(template[type].cloneNode(true), content);
@@ -583,10 +584,10 @@ onDOMready().then(() => {
       $(DIALOG_STYLE_SELECTOR) ||
       $create('style' + DIALOG_STYLE_SELECTOR)
     ).textContent = `
-      #search-replace-dialog { 
+      #search-replace-dialog {
         background-color: ${colors.body.bg};
       }
-      #search-replace-dialog textarea { 
+      #search-replace-dialog textarea {
         color: ${colors.body.fore};
         background-color: ${colors.input.bg};
       }

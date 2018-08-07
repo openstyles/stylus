@@ -240,6 +240,8 @@ select {
   border-radius: 4px;
   margin-left: 1ex;
   white-space: nowrap;
+  position: relative;
+  top: 2px;
 }
 
 .entry.usercss .style-name-link::after {
@@ -445,6 +447,7 @@ select {
 
 #manage-text {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   padding-top: .35rem;
 }
