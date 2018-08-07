@@ -149,7 +149,7 @@ function createSourceEditor(style) {
 
   function updateTitle() {
     const newTitle = (dirty.isDirty() ? '* ' : '') +
-      (style.id ? t('editStyleTitle', [style.name]) : t('addStyleTitle'));
+      (style.id ? style.name : t('addStyleTitle'));
     if (document.title !== newTitle) {
       document.title = newTitle;
     }
