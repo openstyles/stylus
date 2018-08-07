@@ -1,10 +1,16 @@
 /* global messageBox */
+/* global zip */
 'use strict';
 
 onDOMready().then(() => {
-  zip.workerScriptsPath = '/vendor/zipjs/';
+  zip.workerScriptsPath = '/sync/vendor/zipjs/';
 });
 
+/**
+ * @param {String} filename
+ * @param {String} text content of the file as text
+ * @returns {Promise<Blob>} resolves to a blob object representing the zip file
+ */
 function createZipFileFromText(filename, text) {
   return new Promise((resolve, reject) => {
     zip.createWriter(new zip.BlobWriter('application/zip'), writer => {
@@ -17,6 +23,10 @@ function createZipFileFromText(filename, text) {
   });
 }
 
+/**
+ * @param {Object} blob object of zip file
+ * @returns {Promise<String>} resolves to a string the content of the first file of the zip
+ */
 function readZipFileFromBlob(blob) {
   return new Promise((resolve, reject) => {
     zip.createReader(new zip.BlobReader(blob), zipReader => {

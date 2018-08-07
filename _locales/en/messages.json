@@ -1187,10 +1187,10 @@
   "retrieveBckp": {
     "message": "Import styles"
   },
-  "bckpDropboxStyles": {
+  "syncDropboxStyles": {
     "message": "Dropbox Export"
   },
-  "retrieveDropboxBckp": {
+  "retrieveDropboxSync": {
     "message": "Dropbox Import"
   },
   "overwriteFileExport": {
@@ -1203,22 +1203,22 @@
     "message": "You don't have a file to import."
   },
   "connectingDropbox": {
-      "message": "Connecting Dropbox."
+    "message": "Connecting Dropbox..."
   },
   "gettingStyles": {
-      "message": "Getting all styles."
+    "message": "Getting all styles..."
   },
-  "compactStyles": {
-      "message": "Compacting styles."
+  "zipStyles": {
+    "message": "Zipping styles..."
   },
-  "descompactStyles": {
-      "message": "Descompating styles."
+  "unzipStyles": {
+    "message": "Unzipping styles..."
   },
   "readingStyles": {
-      "message": "Reading styles."
+    "message": "Reading styles..."
   },
   "uploadingFile": {
-      "message": "Uploading File."
+    "message": "Uploading File..."
   },
   "optionsBadgeNormal": {
     "message": "Background color"

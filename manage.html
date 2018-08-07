@@ -167,10 +167,11 @@
   <script src="js/sections-equal.js" async></script>
   <script src="js/storage-util.js" async></script>
 
-  <script src="vendor/dropbox/dropbox-sdk.js" async></script>
-  <script src="vendor/zipjs/zip.js" defer></script>
-  <script src="manage/compress-text.js" defer></script>
-  <script src="manage/import-export-dropbox.js" async></script>
+  <script src="sync/vendor/dropbox/dropbox-sdk.js" async></script>
+  <script src="sync/vendor/zipjs/zip.js" defer></script>
+  <script src="sync/compress-text.js" defer></script>
+  <script src="sync/cross-browser-functions.js" defer></script>
+  <script src="sync/import-export-dropbox.js" async></script>
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
@@ -370,8 +371,8 @@
         <div id="backup-buttons">
           <button id="file-all-styles" i18n-text="bckpInstStyles"></button>
           <button id="unfile-all-styles" i18n-text="retrieveBckp"></button>
-         <button id="sync-dropbox-export" i18n-text="bckpDropboxStyles"></button>
-         <button id="sync-dropbox-import" i18n-text="retrieveDropboxBckp"></button>
+          <button id="sync-dropbox-export" i18n-text="syncDropboxStyles"></button>
+          <button id="sync-dropbox-import" i18n-text="retrieveDropboxSync"></button>
         </div>
       </details>
 
