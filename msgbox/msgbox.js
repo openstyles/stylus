@@ -40,6 +40,11 @@ function messageBox({
     onshow(messageBox.element);
   }
 
+  if (!$('#message-box-title').textContent) {
+    $('#message-box-title').hidden = true;
+    $('#message-box-close-icon').hidden = true;
+  }
+
   return new Promise(_resolve => {
     messageBox.resolve = _resolve;
   });
