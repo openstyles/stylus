@@ -583,10 +583,8 @@ function showHelp(title = '', body) {
     window.dispatchEvent(new Event('closeHelp'));
   });
 
-  if (getComputedStyle(div).display === 'none') {
-    window.addEventListener('keydown', showHelp.close, true);
-    $('.dismiss', div).onclick = showHelp.close;
-  }
+  window.addEventListener('keydown', showHelp.close, true);
+  $('.dismiss', div).onclick = showHelp.close;
 
   // reset any inline styles
   div.style = 'display: block';
