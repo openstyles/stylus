@@ -1,9 +1,4 @@
-/* global messageBox */
-/* global Dropbox */
-/* global createZipFileFromText */
-/* global readZipFileFromBlob */
-/* global launchWebAuthFlow */
-/* global getRedirectUrlAuthFlow */
+/* global messageBox Dropbox createZipFileFromText readZipFileFromBlob launchWebAuthFlow getRedirectUrlAuthFlow importFromString resolve */
 'use strict';
 
 const DROPBOX_API_KEY = '';
@@ -150,15 +145,12 @@ $('#sync-dropbox-import').onclick = () => {
     .then(zipedFileBlob => {
       messageProgressBar({title: title, text: t('readingStyles')});
 
-      const fileBlob = zipedFileBlob;
-
-      // it's based on the import-export.js
+      document.body.style.cursor = 'wait';
       const fReader = new FileReader();
       fReader.onloadend = event => {
         const text = event.target.result;
         const maybeUsercss = !/^[\s\r\n]*\[/.test(text) &&
           (text.includes('==UserStyle==') || /==UserStyle==/i.test(text));
-
         (!maybeUsercss ?
           importFromString(text) :
           getOwnTab().then(tab => {
@@ -166,9 +158,12 @@ $('#sync-dropbox-import').onclick = () => {
             return API.installUsercss({direct: true, tab})
               .then(() => URL.revokeObjectURL(tab.url));
           })
-        );
+        ).then(numStyles => {
+          document.body.style.cursor = '';
+          resolve(numStyles);
+        });
       };
-      fReader.readAsText(fileBlob, 'utf-8');
+      fReader.readAsText(zipedFileBlob, 'utf-8');
     })
     .catch(error => {
       // no file
