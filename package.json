@@ -20,9 +20,11 @@
   },
   "scripts": {
     "lint": "eslint **/*.js || true",
-    "update": "npm run update-node && npm run update-versions && npm run update-codemirror",
+    "update": "npm run update-node && npm run update-main",
+    "update-quick": "updates -u && npm update && npm run update-main",
+    "update-main": "npm run update-versions && npm run update-codemirror",
+    "update-node": "updates -u && rm -rf node_modules && npm install",
     "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
-    "update-node": "updates -u && npm update",
     "update-versions": "node tools/update-versions",
     "zip": "npm run update-versions && node tools/zip.js"
   }
