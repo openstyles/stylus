@@ -97,6 +97,7 @@
     }
   ],
   "browser_action": {
+    "browser_style": true,
     "default_icon": {
       "16": "/images/icon/16w.png",
       "32": "/images/icon/32w.png",
