@@ -8,15 +8,15 @@
   "devDependencies": {
     "archiver": "^2.1.1",
     "codemirror": "^5.39.2",
-    "eslint": "^5.2.0",
+    "eslint": "^5.3.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
-    "less": "^3.8.0",
-    "lz-string-unsafe": "^1.4.4-beta",
+    "less": "^3.8.1",
+    "lz-string-unsafe": "^1.4.4-fork-1",
     "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^4.0.1"
+    "updates": "^4.1.2"
   },
   "scripts": {
     "lint": "eslint **/*.js || true",
