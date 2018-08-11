@@ -100,7 +100,7 @@
       if (!this.popup) {
         delete CM_EVENTS.mousedown;
         document.head.appendChild(document.createElement('style')).textContent = `
-          .colorview-swatch::after {
+          .colorview-swatch::before {
             cursor: auto;
           }
         `;
@@ -691,7 +691,7 @@
     if (button) return;
     const swatch = target.closest('.' + COLORVIEW_CLASS);
     if (!swatch) return;
-    const {left, width, height} = getComputedStyle(swatch, '::after');
+    const {left, width, height} = getComputedStyle(swatch, '::before');
     const bounds = swatch.getBoundingClientRect();
     const swatchClicked =
       offsetX >= parseFloat(left) - 1 &&
