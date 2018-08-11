@@ -40,6 +40,9 @@
       !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
     ].filter(Boolean).map(rx => rx.source).join('|') || '^$', 'i'),
   };
+  if (RX_COLOR.unsupported.source === '^$') {
+    RX_COLOR.unsupported = null;
+  }
   const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
     '(' +
       RX_COLOR.hex.source + '|' +
@@ -418,7 +421,7 @@
 
     function getSafeColorValue() {
       if (isHex && color.length !== 5 && color.length !== 9) return color;
-      if (!isFunc || !RX_COLOR.unsupported.test(color)) return color;
+      if (!RX_COLOR.unsupported || !RX_COLOR.unsupported.test(color)) return color;
       const value = colorConverter.parse(color);
       return colorConverter.format(value, 'rgb');
     }
