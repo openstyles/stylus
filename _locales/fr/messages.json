@@ -1,363 +1,279 @@
 {
-	"appliesToEverything": {
-		"message": "Tout",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"defaultTheme": {
-		"message": "défaut",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
-	},
-	"bckpInstStyles": {
-		"message": "Exporter des styles",
-		"description": ""
-	},
-	"exportLabel": {
-		"message": "Exportez",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"optionsBadgeNormal": {
-		"message": "Couleur d'arrière plan",
-		"description": ""
-	},
-	"cm_tabSize": {
-		"message": "Taille des tabulations",
-		"description": "Label for the text box controlling tab size option for the style editor."
-	},
-	"enableStyleLabel": {
-		"message": "Activer",
-		"description": "Label for the button to enable a style"
-	},
-	"styleMissingName": {
-		"message": "Veuillez saisir un nom",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"appliesDomainOption": {
-		"message": "URL sur le domaine",
-		"description": "Option to make the style apply to the entered string as a domain"
-	},
-	"checkForUpdate": {
-		"message": "Rechercher des mises à jour",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"optionsOpenManager": {
-		"message": "Gérer les styles",
-		"description": ""
-	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "All styles are up to date.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"helpAlt": {
-		"message": "Aide",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Rechercher",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"confirmYes": {
-		"message": "Oui",
-		"description": "'Yes' button in a confirm dialog"
-	},
-	"findStylesForSite": {
-		"message": "Rechercher d'autres styles pour ce site",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"manageHeading": {
-		"message": "Styles installés",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Embellir ",
-		"description": "Label for the CSS-beautifier button on the edit style page"
-	},
-	"styleEnabledLabel": {
-		"message": "Activé",
-		"description": "Label for the enabled state of styles"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"sectionAdd": {
-		"message": "Ajouter une section",
-		"description": "Label for the button to add a section"
-	},
-	"styleSaveLabel": {
-		"message": "Enregistrer",
-		"description": "Label for save button for style editing"
-	},
-	"confirmDelete": {
-		"message": "Supprimer",
-		"description": ""
-	},
-	"confirmCancel": {
-		"message": "Annuler",
-		"description": ""
-	},
-	"retrieveBckp": {
-		"message": "Importer des styles",
-		"description": ""
-	},
-	"confirmStop": {
-		"message": "Arrêt ",
-		"description": "'Stop' button in a confirm dialog"
-	},
-	"writeStyleForURL": {
-		"message": "cette URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
-	"optionsSubheading": {
-		"message": "Plus de paramètres",
-		"description": "Subheading for options section on manage page."
-	},
-	"appliesAdd": {
-		"message": "Ajouter",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesRegexpOption": {
-		"message": "URL correspondant à l'expression régulière",
-		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"styleInstall": {
-		"message": "Installer \"$stylename$\" dans Stylus ?",
-		"description": "Confirmation when installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsCheck": {
-		"message": "Mettre à jour les styles",
-		"description": ""
-	},
-	"disableStyleLabel": {
-		"message": "Désactiver",
-		"description": "Label for the button to disable a style"
-	},
-	"prefShowBadge": {
-		"message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus",
-		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"cm_lineWrapping": {
-		"message": "Retour à la ligne automatique",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
-	},
-	"styleCancelEditLabel": {
-		"message": "Retour à la gestion",
-		"description": "Label for cancel button for style editing"
-	},
-	"styleChangesNotSaved": {
-		"message": "Vous avez apporté des modifications à ce style sans les enregistrer.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"importLabel": {
-		"message": "Importer",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
-	},
-	"updateCheckFailServerUnreachable": {
-		"message": "Échec de la mise à jour: le serveur est inaccessible.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"manageFilters": {
-		"message": "Filtres",
-		"description": "Label for filters container"
-	},
-	"applyAllUpdates": {
-		"message": "Appliquer toutes les mises à jour",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"deleteStyleConfirm": {
-		"message": "Voulez-vous vraiment supprimer ce style ?",
-		"description": "Confirmation before deleting a style"
-	},
-	"styleBadRegexp": {
-		"message": "Le Regexp est éronné",
-		"description": "Validation message for a bad regexp in a style"
-	},
-	"appliesDisplay": {
-		"message": "S'applique à : $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"openStylesManager": {
-		"message": "Ouvrir le gestionnaire de styles",
-		"description": "Label for the style maanger opener in the browser action context menu."
-	},
-	"styleUpdate": {
-		"message": "Voulez-vous mettre à jour '$stylename$'?",
-		"description": "Confirmation when updating a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"editStyleTitle": {
-		"message": "Modifier le style $stylename$",
-		"description": "Title of the page for editing styles",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"updateCheckSucceededNoUpdate": {
-		"message": "Le style est à jour.",
-		"description": "Text that displays when an update check completed and no update is available"
-	},
-	"appliesUrlPrefixOption": {
-		"message": "URL commençant par",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"popupStylesFirst": {
-		"message": "List styles before commands in the toolbar button menu",
-		"description": "Label for the checkbox controlling section order in the popup."
-	},
-	"sectionHelp": {
-		"message": "Les sections vous permettent de définir différentes portions de code correspondant à un même style que vous pouvez appliquer à des ensembles d'URL distincts. Par exemple, un même style appliqué à la page d'accueil peut modifier celle-ci d'une certaine manière et modifier le reste du site Web d'une autre manière.",
-		"description": "Help text for sections"
-	},
-	"noStylesForSite": {
-		"message": "Aucun style n'est installé pour ce site.",
-		"description": "Text displayed when no styles are installed for the current site"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "et bien plus encore",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "Supprimer",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"replace": {
-		"message": "Remplacer",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
-	},
-	"appliesLabel": {
-		"message": "S'applique à",
-		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"openOptionsPopup": {
-		"message": "Paramètres",
-		"description": "Go to Options UI"
-	},
-	"openManage": {
-		"message": "Gérer les styles installés",
-		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "Échec de la mise à jour: le serveur a renvoyé le code $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesSpecify": {
-		"message": "Préciser",
-		"description": "Label for the button to make a style apply only to specific sites"
-	},
-	"installUpdate": {
-		"message": "Installer la mise à jour",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"sectionRemove": {
-		"message": "Supprimer la section",
-		"description": "Label for the button to remove a section"
-	},
-	"disableAllStyles": {
-		"message": "Désactiver tous les styles",
-		"description": "Label for the checkbox that turns all enabled styles off."
-	},
-	"undoGlobal": {
-		"message": "Tout annuler",
-		"description": "CSS-beautify global Undo button label"
-	},
-	"updateCompleted": {
-		"message": "Mise à jour terminée.",
-		"description": "Text that displays when an update completed"
-	},
-	"checkingForUpdate": {
-		"message": "Vérification en cours…",
-		"description": "Text to display when checking a style for an update"
-	},
-	"cm_smartIndent": {
-		"message": "Utiliser l'indentation intelligente",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"appliesHelp": {
-		"message": "Utilisez l'option \"S'applique à\" pour préciser les URL auxquelles le code de cette section s'applique.",
-		"description": "Help text for 'applies to' section"
-	},
-	"editStyleHeading": {
-		"message": "Modifier le style",
-		"description": "Title of the page for editing styles"
-	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus ne fonctionne pas sur les pages de ce genre",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"addStyleTitle": {
-		"message": "Ajouter un style",
-		"description": "Title of the page for adding styles"
-	},
-	"dbError": {
-		"message": "Une erreur s'est produite dans la base de donnée de Stylus. Voulez-vous visiter une page web avec les solutions possibles ?",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"optionsOpen": {
-		"message": "Ouvrir",
-		"description": ""
-	},
-	"checkAllUpdates": {
-		"message": "Rechercher des mises à jour pour tous les styles",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"openOptionsManage": {
-		"message": "Paramètres d'interface graphique",
-		"description": "Go to Options UI"
-	},
-	"confirmNo": {
-		"message": "Non",
-		"description": "'No' button in a confirm dialog"
-	},
-	"undo": {
-		"message": "Annuler",
-		"description": "Button label"
-	},
-	"deleteStyleLabel": {
-		"message": "Supprimer",
-		"description": "Label for the button to delete a style"
-	},
-	"addStyleLabel": {
-		"message": "Créer un nouveau style",
-		"description": "Label for the button to go to the add style page"
-	},
-	"backupButtons": {
-		"message": "Sauvergarde",
-		"description": "Heading for backup"
-	},
-	"editStyleLabel": {
-		"message": "Modifier",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"cm_theme": {
-		"message": "Thème",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"helpKeyMapCommand": {
-		"message": "Tapez un nom de commande",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"description": {
-		"message": "Changez l'apparence du Web grâce à Stylus, un outil de gestion des styles utilisateur. Stylus vous permet d'installer facilement des thèmes et des habillages pour Google, Facebook, YouTube, orkut et bien d'autres sites encore.",
-		"description": "Extension description"
-	}
+  "addStyleLabel": {
+    "message": "Créer un nouveau style"
+  },
+  "addStyleTitle": {
+    "message": "Ajouter un style"
+  },
+  "appliesAdd": {
+    "message": "Ajouter"
+  },
+  "appliesDisplay": {
+    "message": "S'applique à : $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "et bien plus encore"
+  },
+  "appliesDomainOption": {
+    "message": "URL sur le domaine"
+  },
+  "appliesHelp": {
+    "message": "Utilisez l'option \"S'applique à\" pour préciser les URL auxquelles le code de cette section s'applique."
+  },
+  "appliesLabel": {
+    "message": "S'applique à"
+  },
+  "appliesRegexpOption": {
+    "message": "URL correspondant à l'expression régulière"
+  },
+  "appliesRemove": {
+    "message": "Supprimer"
+  },
+  "appliesSpecify": {
+    "message": "Préciser"
+  },
+  "appliesToEverything": {
+    "message": "Tout"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL commençant par"
+  },
+  "applyAllUpdates": {
+    "message": "Appliquer toutes les mises à jour"
+  },
+  "backupButtons": {
+    "message": "Sauvergarde"
+  },
+  "bckpInstStyles": {
+    "message": "Exporter des styles"
+  },
+  "checkAllUpdates": {
+    "message": "Rechercher des mises à jour pour tous les styles"
+  },
+  "checkForUpdate": {
+    "message": "Rechercher des mises à jour"
+  },
+  "checkingForUpdate": {
+    "message": "Vérification en cours…"
+  },
+  "cm_lineWrapping": {
+    "message": "Retour à la ligne automatique"
+  },
+  "cm_smartIndent": {
+    "message": "Utiliser l'indentation intelligente"
+  },
+  "cm_tabSize": {
+    "message": "Taille des tabulations"
+  },
+  "cm_theme": {
+    "message": "Thème"
+  },
+  "confirmCancel": {
+    "message": "Annuler"
+  },
+  "confirmDelete": {
+    "message": "Supprimer"
+  },
+  "confirmNo": {
+    "message": "Non"
+  },
+  "confirmStop": {
+    "message": "Arrêt "
+  },
+  "confirmYes": {
+    "message": "Oui"
+  },
+  "dbError": {
+    "message": "Une erreur s'est produite dans la base de donnée de Stylus. Voulez-vous visiter une page web avec les solutions possibles ?"
+  },
+  "defaultTheme": {
+    "message": "défaut"
+  },
+  "deleteStyleConfirm": {
+    "message": "Voulez-vous vraiment supprimer ce style ?"
+  },
+  "deleteStyleLabel": {
+    "message": "Supprimer"
+  },
+  "description": {
+    "message": "Changez l'apparence du Web grâce à Stylus, un outil de gestion des styles utilisateur. Stylus vous permet d'installer facilement des thèmes et des habillages pour Google, Facebook, YouTube, orkut et bien d'autres sites encore."
+  },
+  "disableAllStyles": {
+    "message": "Désactiver tous les styles"
+  },
+  "disableStyleLabel": {
+    "message": "Désactiver"
+  },
+  "editStyleHeading": {
+    "message": "Modifier le style"
+  },
+  "editStyleLabel": {
+    "message": "Modifier"
+  },
+  "editStyleTitle": {
+    "message": "Modifier le style $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "enableStyleLabel": {
+    "message": "Activer"
+  },
+  "exportLabel": {
+    "message": "Exportez"
+  },
+  "findStylesForSite": {
+    "message": "Rechercher d'autres styles pour ce site"
+  },
+  "helpAlt": {
+    "message": "Aide"
+  },
+  "helpKeyMapCommand": {
+    "message": "Tapez un nom de commande"
+  },
+  "importLabel": {
+    "message": "Importer"
+  },
+  "installUpdate": {
+    "message": "Installer la mise à jour"
+  },
+  "manageFilters": {
+    "message": "Filtres"
+  },
+  "manageHeading": {
+    "message": "Styles installés"
+  },
+  "noStylesForSite": {
+    "message": "Aucun style n'est installé pour ce site."
+  },
+  "openManage": {
+    "message": "Gérer les styles installés"
+  },
+  "openOptionsManage": {
+    "message": "Paramètres d'interface graphique"
+  },
+  "openOptionsPopup": {
+    "message": "Paramètres"
+  },
+  "openStylesManager": {
+    "message": "Ouvrir le gestionnaire de styles"
+  },
+  "optionsBadgeNormal": {
+    "message": "Couleur d'arrière plan"
+  },
+  "optionsCheck": {
+    "message": "Mettre à jour les styles"
+  },
+  "optionsOpen": {
+    "message": "Ouvrir"
+  },
+  "optionsOpenManager": {
+    "message": "Gérer les styles"
+  },
+  "optionsSubheading": {
+    "message": "Plus de paramètres"
+  },
+  "popupStylesFirst": {
+    "message": "List styles before commands in the toolbar button menu"
+  },
+  "prefShowBadge": {
+    "message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus"
+  },
+  "replace": {
+    "message": "Remplacer"
+  },
+  "retrieveBckp": {
+    "message": "Importer des styles"
+  },
+  "search": {
+    "message": "Rechercher"
+  },
+  "sectionAdd": {
+    "message": "Ajouter une section"
+  },
+  "sectionHelp": {
+    "message": "Les sections vous permettent de définir différentes portions de code correspondant à un même style que vous pouvez appliquer à des ensembles d'URL distincts. Par exemple, un même style appliqué à la page d'accueil peut modifier celle-ci d'une certaine manière et modifier le reste du site Web d'une autre manière."
+  },
+  "sectionRemove": {
+    "message": "Supprimer la section"
+  },
+  "styleBadRegexp": {
+    "message": "Le Regexp est éronné"
+  },
+  "styleBeautify": {
+    "message": "Embellir "
+  },
+  "styleCancelEditLabel": {
+    "message": "Retour à la gestion"
+  },
+  "styleChangesNotSaved": {
+    "message": "Vous avez apporté des modifications à ce style sans les enregistrer."
+  },
+  "styleEnabledLabel": {
+    "message": "Activé"
+  },
+  "styleInstall": {
+    "message": "Installer \"$stylename$\" dans Stylus ?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "Veuillez saisir un nom"
+  },
+  "styleSaveLabel": {
+    "message": "Enregistrer"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
+  },
+  "styleUpdate": {
+    "message": "Voulez-vous mettre à jour '$stylename$'?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus ne fonctionne pas sur les pages de ce genre"
+  },
+  "undo": {
+    "message": "Annuler"
+  },
+  "undoGlobal": {
+    "message": "Tout annuler"
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "All styles are up to date."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Échec de la mise à jour: le serveur a renvoyé le code $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Échec de la mise à jour: le serveur est inaccessible."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "Le style est à jour."
+  },
+  "updateCompleted": {
+    "message": "Mise à jour terminée."
+  },
+  "writeStyleForURL": {
+    "message": "cette URL"
+  }
 }
