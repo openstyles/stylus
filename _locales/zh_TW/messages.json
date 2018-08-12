@@ -284,6 +284,12 @@
   "findStylesInlineTooltip": {
     "message": "在此視窗中顯示搜尋結果。"
   },
+  "genericAdd": {
+    "message": "新增"
+  },
+  "genericClone": {
+    "message": "複製"
+  },
   "genericDisabledLabel": {
     "message": "已停用"
   },
@@ -394,6 +400,9 @@
   "installUpdateFromLabel": {
     "message": "檢查更新"
   },
+  "installUpdateUnavailable": {
+    "message": "要啟用檢查更新，將檔案拖放到分頁條上或是在樣式詮釋資料中指定 @updateURL。"
+  },
   "license": {
     "message": "授權條款"
   },
@@ -402,6 +411,9 @@
   },
   "linkGetStyles": {
     "message": "取得樣式"
+  },
+  "linkTranslate": {
+    "message": "翻譯"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint 不支援 $preprocessorname$ 預處理器",
@@ -456,6 +468,9 @@
   },
   "liveReloadLabel": {
     "message": "即時重新整理"
+  },
+  "liveReloadUnavailable": {
+    "message": "要啟用即時重新整理，將檔案托放到分頁條上（分頁標題顯示的區域）。"
   },
   "manageFavicons": {
     "message": "Favicons 要套用到的欄位"
@@ -708,6 +723,9 @@
   },
   "sectionRemove": {
     "message": "移除樣式段"
+  },
+  "sectionRestore": {
+    "message": "復原已移除的部份"
   },
   "shortcuts": {
     "message": "快速鍵"

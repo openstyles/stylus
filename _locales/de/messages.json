@@ -269,6 +269,12 @@
   "findStylesInlineTooltip": {
     "message": "Suchergebnisse in diesem Fenster anzeigen."
   },
+  "genericAdd": {
+    "message": "Hinzufügen"
+  },
+  "genericClone": {
+    "message": "Kopieren"
+  },
   "genericDisabledLabel": {
     "message": "Deaktiviert"
   },
@@ -333,13 +339,13 @@
     "message": "Ungültige übersprungen"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "Aktualisierte Meta Infos und Codes"
+    "message": "Aktualisierte Codes und Metadaten"
   },
   "importReportLegendUpdatedCode": {
     "message": "Aktualisierter Code"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "Aktualisierte Meta Infos"
+    "message": "Aktualisierte Metadaten"
   },
   "importReportTitle": {
     "message": "Importieren der Styles abgeschlossen."
@@ -379,6 +385,9 @@
   "installUpdateFromLabel": {
     "message": "Nach Updates suchen"
   },
+  "installUpdateUnavailable": {
+    "message": "Ziehe die Datei auf die Tableiste oder definiere @updateURL in den Metadaten des Styles, um automatisch nach Updates zu suchen."
+  },
   "license": {
     "message": "Lizenz"
   },
@@ -387,6 +396,9 @@
   },
   "linkGetStyles": {
     "message": "Styles beziehen"
+  },
+  "linkTranslate": {
+    "message": "Übersetzen"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint unterstützt den $preprocessorname$ Präprozessor nicht",
@@ -442,6 +454,9 @@
   "liveReloadLabel": {
     "message": "Echtzeitaktualisierung"
   },
+  "liveReloadUnavailable": {
+    "message": "Ziehe die Datei auf die Tableiste, um die Echtzeitaktualisierung nutzen zu können."
+  },
   "manageFavicons": {
     "message": "Favicons in der \"Gilt für\" Spalte anzeigen"
   },
@@ -491,7 +506,7 @@
     "message": "Nur Usercss Styles"
   },
   "menuShowBadge": {
-    "message": "Zählung der aktiven Styles anzeigen "
+    "message": "Anzahl der aktiven Styles anzeigen"
   },
   "noStylesForSite": {
     "message": "Für diese Webseite sind keine Styles installiert."
@@ -684,6 +699,9 @@
   },
   "sectionRemove": {
     "message": "Bereich entfernen"
+  },
+  "sectionRestore": {
+    "message": "Gelöschten Bereich wiederherstellen"
   },
   "shortcuts": {
     "message": "Tastenkürzel"

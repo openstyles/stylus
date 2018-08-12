@@ -278,6 +278,12 @@
   "findStylesInlineTooltip": {
     "message": "Näita otsingu tulemusi selles aknas."
   },
+  "genericAdd": {
+    "message": "Lisa"
+  },
+  "genericClone": {
+    "message": "Klooni"
+  },
   "genericDisabledLabel": {
     "message": "Keelatud"
   },
@@ -706,6 +712,9 @@
   "sectionRemove": {
     "message": "Eemalda jaotis"
   },
+  "sectionRestore": {
+    "message": "Taasta eemaldatud jaotis"
+  },
   "shortcuts": {
     "message": "Otseteed"
   },
@@ -741,6 +750,9 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "Taanda @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Säilita reavahetused"
   },
   "styleCancelEditLabel": {
     "message": "Tagasi haldusesse"

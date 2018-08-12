@@ -275,6 +275,12 @@
   "findStylesInlineTooltip": {
     "message": "Zoekresultaten binnen dit venster weergeven"
   },
+  "genericAdd": {
+    "message": "Toevoegen"
+  },
+  "genericClone": {
+    "message": "Dupliceren"
+  },
   "genericDisabledLabel": {
     "message": "Uitgeschakeld"
   },
@@ -385,6 +391,9 @@
   "installUpdateFromLabel": {
     "message": "Controleren op updates"
   },
+  "installUpdateUnavailable": {
+    "message": "Als u controle op updates wilt inschakelen, sleep dan het bestand naar de tabbladenstrook of geef een @updateURL op in de metagegevens van de stijl."
+  },
   "license": {
     "message": "Licentie"
   },
@@ -393,6 +402,9 @@
   },
   "linkGetStyles": {
     "message": "Stijlen verkrijgen"
+  },
+  "linkTranslate": {
+    "message": "Vertalen"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint heeft geen ondersteuning voor $preprocessorname$",
@@ -447,6 +459,9 @@
   },
   "liveReloadLabel": {
     "message": "Live herladen"
+  },
+  "liveReloadUnavailable": {
+    "message": "Als u live herladen wilt inschakelen, sleep dan het bestand naar de tabbladenstrook (het gebied waar de tabbladtitels worden getoond)."
   },
   "manageFavicons": {
     "message": "Favicons in kolom ‘Van toepassing op’"
@@ -690,6 +705,9 @@
   },
   "sectionRemove": {
     "message": "Sectie verwijderen"
+  },
+  "sectionRestore": {
+    "message": "Verwijderde sectie herstellen"
   },
   "shortcuts": {
     "message": "Sneltoetsen"

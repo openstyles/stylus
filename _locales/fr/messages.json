@@ -5,6 +5,9 @@
   "addStyleTitle": {
     "message": "Ajouter un style"
   },
+  "alphaChannel": {
+    "message": "Opacité"
+  },
   "appliesAdd": {
     "message": "Ajouter"
   },
@@ -46,8 +49,14 @@
   "applyAllUpdates": {
     "message": "Appliquer toutes les mises à jour"
   },
+  "author": {
+    "message": "Auteur"
+  },
   "backupButtons": {
     "message": "Sauvergarde"
+  },
+  "backupMessage": {
+    "message": "Sélectionner un fichier ou le glisser-déposer sur cette page"
   },
   "bckpInstStyles": {
     "message": "Exporter des styles"
@@ -61,6 +70,9 @@
   "checkingForUpdate": {
     "message": "Vérification en cours…"
   },
+  "clickToUninstall": {
+    "message": "Cliquer pour désinstaller"
+  },
   "cm_lineWrapping": {
     "message": "Retour à la ligne automatique"
   },
@@ -73,20 +85,38 @@
   "cm_theme": {
     "message": "Thème"
   },
+  "configureStyle": {
+    "message": "Configurer"
+  },
   "confirmCancel": {
     "message": "Annuler"
+  },
+  "confirmClose": {
+    "message": "Fermer"
   },
   "confirmDelete": {
     "message": "Supprimer"
   },
+  "confirmDiscardChanges": {
+    "message": "Annuler les changements ?"
+  },
   "confirmNo": {
     "message": "Non"
+  },
+  "confirmOK": {
+    "message": "Valider"
+  },
+  "confirmSave": {
+    "message": "Enregistrer"
   },
   "confirmStop": {
     "message": "Arrêt "
   },
   "confirmYes": {
     "message": "Oui"
+  },
+  "dateInstalled": {
+    "message": "Date d'installation"
   },
   "dbError": {
     "message": "Une erreur s'est produite dans la base de donnée de Stylus. Voulez-vous visiter une page web avec les solutions possibles ?"
@@ -109,6 +139,12 @@
   "disableStyleLabel": {
     "message": "Désactiver"
   },
+  "editDeleteText": {
+    "message": "Supprimer"
+  },
+  "editGotoLine": {
+    "message": "Aller à la ligne (ou ligne:colonne)"
+  },
   "editStyleHeading": {
     "message": "Modifier le style"
   },
@@ -129,8 +165,50 @@
   "exportLabel": {
     "message": "Exportez"
   },
+  "externalLink": {
+    "message": "Lien externe"
+  },
+  "externalUsercssDocument": {
+    "message": "Documentation d'Usercss"
+  },
+  "findStyles": {
+    "message": "Trouver des styles"
+  },
   "findStylesForSite": {
     "message": "Rechercher d'autres styles pour ce site"
+  },
+  "genericAdd": {
+    "message": "Ajouter"
+  },
+  "genericClone": {
+    "message": "Dupliquer"
+  },
+  "genericDisabledLabel": {
+    "message": "Désactivé"
+  },
+  "genericError": {
+    "message": "Erreur"
+  },
+  "genericHistoryLabel": {
+    "message": "Historique"
+  },
+  "genericNext": {
+    "message": "Suivant"
+  },
+  "genericPrevious": {
+    "message": "Précédent"
+  },
+  "genericResetLabel": {
+    "message": "Ré-initialiser"
+  },
+  "genericSavedMessage": {
+    "message": "Enregistré"
+  },
+  "genericTitle": {
+    "message": "Titre"
+  },
+  "genericUnknown": {
+    "message": "Inconnu(e)"
   },
   "helpAlt": {
     "message": "Aide"
@@ -141,14 +219,59 @@
   "importLabel": {
     "message": "Importer"
   },
+  "importReplaceLabel": {
+    "message": "Écraser le style"
+  },
+  "importReportLegendAdded": {
+    "message": "ajouté(s)"
+  },
+  "installButton": {
+    "message": "Installer le style"
+  },
+  "installButtonInstalled": {
+    "message": "Style installé"
+  },
+  "installButtonReinstall": {
+    "message": "Ré-installer le style"
+  },
   "installUpdate": {
     "message": "Installer la mise à jour"
+  },
+  "installUpdateFromLabel": {
+    "message": "Rechercher les mises à jour"
+  },
+  "license": {
+    "message": "Licence"
+  },
+  "linkGetHelp": {
+    "message": "Consulter l'aide"
+  },
+  "linkGetStyles": {
+    "message": "Obtenir des styles"
+  },
+  "linterJSONError": {
+    "message": "Format JSON invalide"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus utilise le service externe https://www.google.com/s2/favicons"
   },
   "manageFilters": {
     "message": "Filtres"
   },
   "manageHeading": {
     "message": "Styles installés"
+  },
+  "manageOnlyDisabled": {
+    "message": "Seulement les styles désactivés"
+  },
+  "manageOnlyEnabled": {
+    "message": "Seulement les styles activés"
+  },
+  "manageOnlyExternal": {
+    "message": "Seulement les styles externes"
+  },
+  "manageOnlyLocal": {
+    "message": "Seulement les styles créés localement"
   },
   "noStylesForSite": {
     "message": "Aucun style n'est installé pour ce site."
@@ -165,11 +288,20 @@
   "openStylesManager": {
     "message": "Ouvrir le gestionnaire de styles"
   },
+  "optionsBadgeDisabled": {
+    "message": "Couleur d'arrière plan si désactivé"
+  },
   "optionsBadgeNormal": {
     "message": "Couleur d'arrière plan"
   },
   "optionsCheck": {
     "message": "Mettre à jour les styles"
+  },
+  "optionsCheckUpdate": {
+    "message": "Vérifier et installer toutes les mises à jour disponibles"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Mises à jour"
   },
   "optionsOpen": {
     "message": "Ouvrir"
@@ -177,8 +309,23 @@
   "optionsOpenManager": {
     "message": "Gérer les styles"
   },
+  "optionsReset": {
+    "message": "Ré-initialiser les options"
+  },
+  "optionsResetButton": {
+    "message": "Ré-initialiser les options"
+  },
   "optionsSubheading": {
     "message": "Plus de paramètres"
+  },
+  "paginationNext": {
+    "message": "Page suivante"
+  },
+  "paginationPrevious": {
+    "message": "Page précédente"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Ouvrir l'éditeur dans une nouvelle fenêtre"
   },
   "popupStylesFirst": {
     "message": "List styles before commands in the toolbar button menu"
@@ -186,14 +333,35 @@
   "prefShowBadge": {
     "message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus"
   },
+  "previewLabel": {
+    "message": "Prévisualiser en direct"
+  },
   "replace": {
     "message": "Remplacer"
+  },
+  "replaceAll": {
+    "message": "Tout remplacer"
+  },
+  "replaceWith": {
+    "message": "Remplacer par"
   },
   "retrieveBckp": {
     "message": "Importer des styles"
   },
   "search": {
     "message": "Rechercher"
+  },
+  "searchCaseSensitive": {
+    "message": "Sensible à la casse"
+  },
+  "searchResultInstallCount": {
+    "message": "Total d'installations"
+  },
+  "searchResultNoneFound": {
+    "message": "Aucun style trouvé pour ce site"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Installations hebdomadaires"
   },
   "sectionAdd": {
     "message": "Ajouter une section"
@@ -203,6 +371,21 @@
   },
   "sectionRemove": {
     "message": "Supprimer la section"
+  },
+  "sectionRestore": {
+    "message": "Restaurer la section supprimée"
+  },
+  "shortcuts": {
+    "message": "Raccourcis"
+  },
+  "shortcutsNote": {
+    "message": "Définir les raccourcis clavier"
+  },
+  "sortDateNewestFirst": {
+    "message": "les plus récents en premier"
+  },
+  "sortDateOldestFirst": {
+    "message": "les plus anciens en premier"
   },
   "styleBadRegexp": {
     "message": "Le Regexp est éronné"
@@ -219,6 +402,12 @@
   "styleEnabledLabel": {
     "message": "Activé"
   },
+  "styleFromMozillaFormatError": {
+    "message": "Échec de l'importation depuis le format Mozilla"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Coller le code au format Mozilla"
+  },
   "styleInstall": {
     "message": "Installer \"$stylename$\" dans Stylus ?",
     "placeholders": {
@@ -227,14 +416,56 @@
       }
     }
   },
+  "styleInstallOverwrite": {
+    "message": "\"$stylename$\" est déjà installé. L'écraser ?\nVersion : $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorCheckbox": {
+    "message": "Boite à cocher @var invalide : elle doit valoir 0 ou 1"
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ n'est pas une couleur valide",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingMeta": {
+    "message": "Metadonnée $key$ manquante",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
   "styleMissingName": {
     "message": "Veuillez saisir un nom"
+  },
+  "styleMozillaFormatHeading": {
+    "message": "Format Mozilla"
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Le style n'a pu s'appliquer en raison d'une utilisation erronée de 'regexp()'"
   },
   "styleSaveLabel": {
     "message": "Enregistrer"
   },
   "styleToMozillaFormatHelp": {
     "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Style au format Mozilla"
   },
   "styleUpdate": {
     "message": "Voulez-vous mettre à jour '$stylename$'?",
@@ -253,6 +484,9 @@
   "undoGlobal": {
     "message": "Tout annuler"
   },
+  "unreachableAMO": {
+    "message": "Firefox interdit l'accès pour ce site"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "All styles are up to date."
   },
@@ -267,11 +501,26 @@
   "updateCheckFailServerUnreachable": {
     "message": "Échec de la mise à jour: le serveur est inaccessible."
   },
+  "updateCheckManualUpdateHint": {
+    "message": "Forcer une mise à jour écrasera les modifications faites localement."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Ce style a été modifié localement"
+  },
   "updateCheckSucceededNoUpdate": {
     "message": "Le style est à jour."
   },
   "updateCompleted": {
     "message": "Mise à jour terminée."
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Insérer le code ici..."
+  },
+  "versionInvalidOlder": {
+    "message": "La version est antérieure à celle déjà installée."
+  },
+  "writeStyleFor": {
+    "message": "Écrire un style pour :"
   },
   "writeStyleForURL": {
     "message": "cette URL"

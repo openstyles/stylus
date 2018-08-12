@@ -278,6 +278,9 @@
   "findStylesInlineTooltip": {
     "message": "Muestra los resultados de búsqueda dentro de esta ventana."
   },
+  "genericAdd": {
+    "message": "Agregar"
+  },
   "genericDisabledLabel": {
     "message": "Desactivado"
   },
@@ -699,6 +702,9 @@
   },
   "sectionRemove": {
     "message": "Eliminar sección"
+  },
+  "sectionRestore": {
+    "message": "Restaurar sección eliminada"
   },
   "shortcuts": {
     "message": "Atajos"

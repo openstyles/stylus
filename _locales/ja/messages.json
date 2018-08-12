@@ -278,6 +278,12 @@
   "findStylesInlineTooltip": {
     "message": "検索結果をこのウィンドウに表示"
   },
+  "genericAdd": {
+    "message": "追加"
+  },
+  "genericClone": {
+    "message": "複製"
+  },
   "genericDisabledLabel": {
     "message": "無効化"
   },
@@ -388,6 +394,9 @@
   "installUpdateFromLabel": {
     "message": "更新をチェック"
   },
+  "installUpdateUnavailable": {
+    "message": "更新のチェックを有効にするには、ファイルをタブストリップにドロップするか、スタイルのメタデータで @updateURL を指定してください。"
+  },
   "license": {
     "message": "ライセンス"
   },
@@ -396,6 +405,9 @@
   },
   "linkGetStyles": {
     "message": "スタイルを取得"
+  },
+  "linkTranslate": {
+    "message": "翻訳"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLintは「$preprocessorname$」プリプロセッサをサポートしていません",
@@ -450,6 +462,9 @@
   },
   "liveReloadLabel": {
     "message": "自動リロード"
+  },
+  "liveReloadUnavailable": {
+    "message": "自動リロードを有効にするには、ファイルをタブストリップ（タブのタイトルが表示されている領域）にドロップしてください。"
   },
   "manageFavicons": {
     "message": "適用先欄のファビコン"
@@ -578,10 +593,10 @@
     "message": "ポップアップの幅（ピクセル単位）"
   },
   "optionsReset": {
-    "message": "オプションをデフォルト値にリセットする"
+    "message": "設定をデフォルト値にリセットする"
   },
   "optionsResetButton": {
-    "message": "オプションをリセット"
+    "message": "設定をリセット"
   },
   "optionsSubheading": {
     "message": "その他のオプション"
@@ -703,6 +718,9 @@
   "sectionRemove": {
     "message": "セクションを削除"
   },
+  "sectionRestore": {
+    "message": "削除したセクションを復旧"
+  },
   "shortcuts": {
     "message": "ショートカット"
   },
@@ -738,6 +756,9 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "@media, @supports をインデント"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "改行を保存"
   },
   "styleCancelEditLabel": {
     "message": "管理画面に戻る"

@@ -284,6 +284,12 @@
   "findStylesInlineTooltip": {
     "message": "Показывать найденные стили в этом окне."
   },
+  "genericAdd": {
+    "message": "Добавить"
+  },
+  "genericClone": {
+    "message": "Клонировать"
+  },
   "genericDisabledLabel": {
     "message": "Отключен"
   },
@@ -394,6 +400,9 @@
   "installUpdateFromLabel": {
     "message": "Проверить обновления"
   },
+  "installUpdateUnavailable": {
+    "message": "Для проверки обновлений перетяните файл на полоску вкладок или впишите @updateURL в мета-данных стиля."
+  },
   "license": {
     "message": "Лицензия"
   },
@@ -405,6 +414,9 @@
   },
   "linkStylusWiki": {
     "message": "Инфо"
+  },
+  "linkTranslate": {
+    "message": "Перевод"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint не поддерживает препроцессор $preprocessorname$",
@@ -459,6 +471,9 @@
   },
   "liveReloadLabel": {
     "message": "Автозагрузка изменений"
+  },
+  "liveReloadUnavailable": {
+    "message": "Для автозагрузки изменений перетяните файл на полоску вкладок (область, где показываются названия вкладок)."
   },
   "manageFavicons": {
     "message": "Пиктограммы для целевых сайтов"
@@ -711,6 +726,9 @@
   },
   "sectionRemove": {
     "message": "Удалить раздел"
+  },
+  "sectionRestore": {
+    "message": "Восстановить удаленный раздел"
   },
   "shortcuts": {
     "message": "Клавиши"

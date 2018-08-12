@@ -284,6 +284,12 @@
   "findStylesInlineTooltip": {
     "message": "Wyświetlaj wyniki wyszukiwania w tym oknie."
   },
+  "genericAdd": {
+    "message": "Dodaj"
+  },
+  "genericClone": {
+    "message": "Sklonuj"
+  },
   "genericDisabledLabel": {
     "message": "Wyłączone"
   },
@@ -394,6 +400,9 @@
   "installUpdateFromLabel": {
     "message": "Sprawdź aktualizacje"
   },
+  "installUpdateUnavailable": {
+    "message": "Aby włączyć sprawdzanie aktualizacji, upuść plik na pasku kart lub określ @updateURL w metadanych stylu."
+  },
   "license": {
     "message": "Licencja"
   },
@@ -402,6 +411,9 @@
   },
   "linkGetStyles": {
     "message": "Pobierz style"
+  },
+  "linkTranslate": {
+    "message": "Tłumacz"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint nie obsługuje preprocesora $preprocessorname$",
@@ -456,6 +468,9 @@
   },
   "liveReloadLabel": {
     "message": "Przeładuj na żywo"
+  },
+  "liveReloadUnavailable": {
+    "message": "Aby włączyć przeładowanie na żywo, upuść plik na pasku kart (obszar, w którym wyświetlane są tytuły kart)."
   },
   "manageFavicons": {
     "message": "Ikony ulubionych w kolumnie dotyczących"
@@ -708,6 +723,9 @@
   },
   "sectionRemove": {
     "message": "Usuń sekcję"
+  },
+  "sectionRestore": {
+    "message": "Przywróć usuniętą sekcję"
   },
   "shortcuts": {
     "message": "Skróty"
