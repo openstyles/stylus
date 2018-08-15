@@ -66,7 +66,6 @@ function checkUpdateAll() {
     if (info.updated) {
       if (++updated === 1) {
         btnApply.disabled = true;
-        btnApply.classList.remove('hidden');
       }
       btnApply.dataset.value = updated;
     }
@@ -179,6 +178,8 @@ function reportUpdateState({updated, style, error, STATES}) {
 
   if (filtersSelector.hide && isCheckAll) {
     filterAndAppend({entry}).then(sorter.updateStripes);
+  } else if (updated && !isCheckAll) {
+    renderUpdatesOnlyFilter();
   }
 }
 
@@ -195,13 +196,8 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   checkbox.dispatchEvent(new Event('change'));
 
   const btnApply = $('#apply-all-updates');
-  if (!btnApply.matches('.hidden')) {
-    if (numUpdatable > 0) {
-      btnApply.dataset.value = numUpdatable;
-    } else {
-      btnApply.classList.add('hidden');
-    }
-  }
+  btnApply.classList.toggle('hidden', !numUpdatable);
+  btnApply.dataset.value = numUpdatable;
 }
 
 
