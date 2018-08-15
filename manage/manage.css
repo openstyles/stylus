@@ -9,10 +9,17 @@
 
 body {
   margin: 0;
-  font: 12px arial, sans-serif;
   /* Firefox: fill the entire page for drag'n'drop to work */
   display: flex;
   height: 100%;
+}
+
+body,
+select,
+.firefox select,
+#search,
+#manage\.newUI\.sort {
+  font: normal 12px Arial, sans-serif;
 }
 
 body.all-styles-hidden-by-filters:before,
@@ -43,10 +50,6 @@ a, .disabled a:hover {
 
 a:hover {
   color: #666;
-}
-
-select {
-  font-size: 12px;
 }
 
 #header {
@@ -935,7 +938,6 @@ input[id^="manage.newUI"] {
   height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
-  font: 400 12px Arial;
   color: #000;
   border: 1px solid hsl(0, 0%, 66%);
 }
