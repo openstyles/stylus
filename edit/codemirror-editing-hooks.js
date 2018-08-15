@@ -492,6 +492,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
         'base16-light',
         'bespin',
         'blackboard',
+        'bloodshot',
         'cobalt',
         'colorforth',
         'darcula',
