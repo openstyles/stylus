@@ -21,7 +21,7 @@ If not, then provide details describing which page the feature will effect, e.g.
 
 ## Adding translations
 
-You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus). When `messages.json` file is ready to be merged, please open a new bug report in [stylus/issues](https://github.com/openstyles/stylus/issues).
+You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus).
 
 ## Pull requests
 

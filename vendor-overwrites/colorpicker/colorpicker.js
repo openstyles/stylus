@@ -788,8 +788,8 @@
     const maxTopUnobscured = options.top <= maxTop ? maxTop : options.top - height - 20;
     const maxRight = window.innerWidth - width;
     const maxRightUnobscured = options.left <= maxRight ? maxRight : options.left - width;
-    const left = constrain(0, maxRightUnobscured, options.left);
-    const top = constrain(0, maxTopUnobscured, options.top);
+    const left = constrain(0, Math.max(0, maxRightUnobscured), options.left);
+    const top = constrain(0, Math.max(0, maxTopUnobscured), options.top);
     $root.style.setProperty('left', left + 'px', 'important');
     $root.style.setProperty('top', top + 'px', 'important');
   }
