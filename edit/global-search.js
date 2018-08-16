@@ -882,7 +882,7 @@ onDOMready().then(() => {
   function restoreWindowScrollPos({immediately = true} = {}) {
     if (!immediately) {
       // run in the next microtask cycle
-      new Promise(() => restoreWindowScrollPos({immediately: true}));
+      Promise.resolve().then(restoreWindowScrollPos);
       return;
     }
     if (window.scrollX !== state.scrollX || window.scrollY !== state.scrollY) {
