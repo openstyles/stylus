@@ -150,10 +150,12 @@ function messageBox({
 /**
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
+ * @param {String} [title]
  * @returns {Promise<Boolean>} same as messageBox
  */
-messageBox.alert = (contents, className) =>
+messageBox.alert = (contents, className, title) =>
   messageBox({
+    title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmClose')]

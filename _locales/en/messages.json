@@ -1259,6 +1259,10 @@
     "message": "Specify @name in the code",
     "description": "Placeholder text for the empty name input field when creating a new Usercss style"
   },
+  "usercssAvoidOverwriting": {
+    "message": "Please change the value of @name or @namespace to avoid overwriting an existing style.",
+    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
+  },
   "usercssReplaceTemplateConfirmation": {
     "message": "Replace the default template for new Usercss styles with the current code?"
   },
