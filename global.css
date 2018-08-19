@@ -8,7 +8,7 @@ button {
   text-overflow: ellipsis;
   padding: 2px 7px;
   border: 1px solid hsl(0, 0%, 62%);
-  font: 400 13.3333px Arial;
+  font: 400 calc(40 / 3)px Arial;
   color: #000;
   background-color: hsl(0, 0%, 100%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
@@ -43,7 +43,7 @@ input:not([type]) {
   min-height: 22px!important;
   line-height: 22px;
   padding: 0 3px;
-  font: 400 13.3333px Arial;
+  font: 400 calc(40 / 3)px Arial;
   border: 1px solid hsl(0, 0%, 66%);
 }
 
@@ -110,7 +110,7 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: 22px;
-  font: 400 13.3333px Arial;
+  font: 400 calc(40 / 3)px Arial;
   color: #000;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
@@ -186,7 +186,7 @@ select[disabled] > option {
   outline: none;
 }
 
-/* use a readable font for Japanese/Chinese */
+/* use a readable font for Japanese/Chinese Simplified/Chinese Traditional */
 
 .actions:lang(ja) *,
 #header:lang(ja) * {
@@ -194,9 +194,16 @@ select[disabled] > option {
   font-weight: normal;
 }
 
-.actions:lang(zh) *,
-#header:lang(zh) * {
-  font-family: 'MingLiU', system-ui, Arial, sans-serif;
+.actions:lang(zh-CN) *,
+#header:lang(zh-CN) * {
+  font-family: 'Microsoft YaHei UI', system-ui, 'SimSun', Arial, sans-serif;
+}
+
+.actions:lang(zh-HK) *,
+#header:lang(zh-HK) *,
+.actions:lang(zh-TW) *,
+#header:lang(zh-TW) * {
+  font-family: 'Microsoft JhengHei UI', system-ui, 'MingLiU', Arial, sans-serif;
 }
 
 @supports (-moz-appearance: none) {
