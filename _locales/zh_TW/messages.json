@@ -980,6 +980,9 @@
   "updatesCurrentlyInstalled": {
     "message": "更新已安裝的："
   },
+  "usercssAvoidOverwriting": {
+    "message": "請變更 @name 或 @namespace 的值以避免覆寫既有的樣式。"
+  },
   "usercssConfigIncomplete": {
     "message": "在設定對話框顯示後，樣式已更新或刪除。這個變數將不會儲存，以避免損毀樣式的詮釋資料。"
   },

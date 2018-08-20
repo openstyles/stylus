@@ -244,5 +244,44 @@
   },
   "liveReloadLabel": {
     "message": "Преглед на живо"
+  },
+  "liveReloadUnavailable": {
+    "message": "За да разрешите презареждане в реално време, пуснете файла върху лентата с табове (областта, където са показани заглавията на табовете)."
+  },
+  "manageFilters": {
+    "message": "Филтри"
+  },
+  "manageHeading": {
+    "message": "Инсталирани стилове"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "като Потребителскиcss"
+  },
+  "manageNewUI": {
+    "message": "Нова подредба на UI"
+  },
+  "manageOnlyDisabled": {
+    "message": "Само забранените стилове"
+  },
+  "manageOnlyEnabled": {
+    "message": "Само разрешените стилове"
+  },
+  "manageOnlyExternal": {
+    "message": "Само външните стилове"
+  },
+  "manageOnlyLocal": {
+    "message": "Само локалните стилове"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(стиловете не инсталирани чрез страницата на userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Само не-Потребителскитеcss стилове"
+  },
+  "manageOnlyUpdates": {
+    "message": "Само с обновления или проблеми"
+  },
+  "manageOnlyUsercss": {
+    "message": "Само Потребителскиcss стилове"
   }
 }

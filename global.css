@@ -1,3 +1,20 @@
+body {
+  font: normal 12px Arial, system-ui, sans-serif;
+}
+
+body:lang(ja) {
+  font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
+}
+
+body:lang(zh-CN) {
+  font-family: Arial, 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+body:lang(zh-TW),
+body:lang(zh-HK) {
+  font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
+}
+
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -8,7 +25,8 @@ button {
   text-overflow: ellipsis;
   padding: 2px 7px;
   border: 1px solid hsl(0, 0%, 62%);
-  font: 400 13.3333px Arial;
+  font: inherit;
+  font-size: 13px;
   color: #000;
   background-color: hsl(0, 0%, 100%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
@@ -36,6 +54,10 @@ button:active {
   border-color: hsl(0, 0%, 50%);
 }
 
+input  {
+  font: inherit;
+}
+
 input:not([type]) {
   background: #fff;
   color: #000;
@@ -43,7 +65,7 @@ input:not([type]) {
   min-height: 22px!important;
   line-height: 22px;
   padding: 0 3px;
-  font: 400 13.3333px Arial;
+  font: inherit;
   border: 1px solid hsl(0, 0%, 66%);
 }
 
@@ -110,7 +132,7 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   height: 22px;
-  font: 400 13.3333px Arial;
+  font: inherit;
   color: #000;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
@@ -186,19 +208,6 @@ select[disabled] > option {
   outline: none;
 }
 
-/* use a readable font for Japanese/Chinese */
-
-.actions:lang(ja) *,
-#header:lang(ja) * {
-  font-family: 'Meiryo UI', system-ui, 'MS Gothic', Arial, sans-serif;
-  font-weight: normal;
-}
-
-.actions:lang(zh) *,
-#header:lang(zh) * {
-  font-family: 'MingLiU', system-ui, Arial, sans-serif;
-}
-
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
   .moz-appearance-bug .onoffswitch input,
@@ -215,7 +224,6 @@ select[disabled] > option {
   }
 
   .firefox select {
-    font-size: 13px;
     padding: 0 20px 0 2px;
     line-height: 22px!important;
   }
@@ -243,13 +251,8 @@ select[disabled] > option {
     padding: 4px;
   }
 
-  .firefox.non-windows .style-name {
-    font-family: Arial, sans-serif;
-  }
-
 /* Firefox cannot handle fractions in font-size */
   .firefox button:not(.install) {
-    font-size: 13px;
     line-height: 13px;
     padding: 3px 7px;
   }

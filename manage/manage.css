@@ -14,12 +14,8 @@ body {
   height: 100%;
 }
 
-body,
-select,
-.firefox select,
-#search,
-#manage\.newUI\.sort {
-  font: normal 12px Arial, sans-serif;
+#header:lang(ja) h1 {
+  font-weight: normal;
 }
 
 body.all-styles-hidden-by-filters:before,
@@ -471,7 +467,6 @@ a:hover {
 
 .newUI .style-name {
   font-size: 14px;
-  font-family: sans-serif;
   text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
   padding-left: var(--name-padding-left);
   padding-right: var(--name-padding-right);

@@ -1,0 +1,87 @@
+{
+  "appliesRemoveError": {
+    "message": "Cannot remove last 'applies to' entry"
+  },
+  "applyAllUpdates": {
+    "message": "Apply all updates"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Check again—I didn't edit any styles!"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Auto-close brackets and quotes"
+  },
+  "cm_colorpicker": {
+    "message": "Colour pickers for CSS colours"
+  },
+  "cm_resizeGripHint": {
+    "message": "Double-click to maximise/restore the height"
+  },
+  "colorpickerTooltip": {
+    "message": "Open colour picker"
+  },
+  "confirmDiscardChanges": {
+    "message": "Discard the changes?"
+  },
+  "deleteStyleConfirm": {
+    "message": "Are you sure you want to delete this style?"
+  },
+  "description": {
+    "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites."
+  },
+  "dragDropMessage": {
+    "message": "Drop your backup file anywhere on this page to import."
+  },
+  "editGotoLine": {
+    "message": "Go to line (or line:col)"
+  },
+  "editStyleHeading": {
+    "message": "Edit style"
+  },
+  "installUpdateUnavailable": {
+    "message": "To enable checking for updates, drop the file on the tab strip or specify @updateURL in the style metadata."
+  },
+  "license": {
+    "message": "Licence"
+  },
+  "manageFaviconsGray": {
+    "message": "Greyed out"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Background colour when disabled"
+  },
+  "optionsBadgeNormal": {
+    "message": "Background colour"
+  },
+  "optionsUpdateImportNote": {
+    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
+  },
+  "optionsUpdateInterval": {
+    "message": "Userstyle auto-update interval in hours (specify 0 to disable)"
+  },
+  "styleInstallFailed": {
+    "message": "Failed to install userstyle\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ is not a valid colour",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug)."
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "The style has been changed outside the editor. Would you like to reload the style?"
+  },
+  "usercssConfigIncomplete": {
+    "message": "The style was updated or deleted after the configuration dialogue was shown. These variables were not saved to avoid corrupting the style's metadata:"
+  }
+}

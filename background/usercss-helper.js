@@ -65,10 +65,21 @@
     return style;
   }
 
-  // Parse the source and find the duplication
-  function build({sourceCode, checkDup = false}) {
-    return buildMeta({sourceCode})
-      .then(usercss.buildCode)
+  /**
+   * Parse the source and find the duplication
+   * @param _
+   * @param {String} _.sourceCode
+   * @param {Boolean=} _.checkDup
+   * @param {Boolean=} _.metaOnly
+   * @returns {Promise<{style, dup:Boolean?}>}
+   */
+  function build({
+    sourceCode,
+    checkDup,
+    metaOnly,
+  }) {
+    const task = buildMeta({sourceCode});
+    return (metaOnly ? task : task.then(usercss.buildCode))
       .then(style => ({
         style,
         dup: checkDup && find(style),

@@ -590,7 +590,7 @@
     "message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Updatesuche in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind."
   },
   "optionsUpdateInterval": {
-    "message": "Userstyle Updateintervall in Stunden (0 zum Deaktivieren)"
+    "message": "Style-Updateintervall in Stunden (0 zum Deaktivieren)"
   },
   "paginationCurrent": {
     "message": "Aktuelle Seite"
@@ -766,7 +766,7 @@
     }
   },
   "styleInstallFailed": {
-    "message": "Installation des Userstyles fehlgeschlagen!\n$error$",
+    "message": "Installation des Styles fehlgeschlagen!\n$error$",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -952,6 +952,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Installierte Updates:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Bitte ändere @name oder @namespace, um das Überschreiben eines bereits existierenden Styles zu verhindern."
   },
   "usercssConfigIncomplete": {
     "message": "Der Style wurde aktualisiert oder gelöscht, nachdem der Einstellungsdialog gezeigt wurde. Folgende Variablen wurden nicht gespeichert, um Metadatenkorruption zu verhindern:"
