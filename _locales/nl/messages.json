@@ -962,6 +962,9 @@
   "updatesCurrentlyInstalled": {
     "message": "Geïnstalleerde updates:"
   },
+  "usercssAvoidOverwriting": {
+    "message": "Wijzig de waarde van @name of @namespace om te voorkomen dat een bestaande stijl wordt overschreven."
+  },
   "usercssConfigIncomplete": {
     "message": "De stijl is bijgewerkt of verwijderd nadat het configuratievenster werd getoond. Om beschadiging van metagegevens van de extensie te voorkomen, zijn deze variabelen niet opgeslagen:"
   },

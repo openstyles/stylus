@@ -23,7 +23,7 @@
     "message": "更多"
   },
   "appliesDomainOption": {
-    "message": "该域上的网址"
+    "message": "域名"
   },
   "appliesHelp": {
     "message": "使用“应用于”控件来限制此部分中的代码所应用到的网址。"
@@ -38,7 +38,7 @@
     "message": "无法与压缩过的CSS一起运作"
   },
   "appliesRegexpOption": {
-    "message": "与该正则表达式匹配的网址"
+    "message": "正则表达式"
   },
   "appliesRemove": {
     "message": "删除"
@@ -89,10 +89,10 @@
     "message": "点击卸载"
   },
   "cm_autoCloseBrackets": {
-    "message": "自动补全括号及引号"
+    "message": "自动补全括号与引号"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "当输入 () [] {} '' \"\" 字符的时候自动补全"
+    "message": "输入 () [] {} '' \"\" 时自动补全"
   },
   "cm_autocompleteOnTyping": {
     "message": "输入时自动完成"
@@ -185,7 +185,7 @@
     "message": "更新日期"
   },
   "dbError": {
-    "message": "应用Stylus数据库时发生了一个错误。您想要访问包含可能的解决方案的网页吗？"
+    "message": "使用 Stylus 数据库时发生了一个错误。您想访问含有可能的解决方案的网页吗？"
   },
   "defaultTheme": {
     "message": "默认"
@@ -250,7 +250,7 @@
     "message": "支持"
   },
   "externalUsercssDocument": {
-    "message": "Usercss 外部文档"
+    "message": "UserCSS 外部文档"
   },
   "filteredStyles": {
     "message": "已显示 $numShown$ 个，总共 $numTotal$ 个",
@@ -277,6 +277,9 @@
   },
   "findStylesInlineTooltip": {
     "message": "将搜索结果嵌入到此页面显示"
+  },
+  "genericAdd": {
+    "message": "添加"
   },
   "genericDisabledLabel": {
     "message": "未启用"
@@ -397,6 +400,9 @@
   "linkGetStyles": {
     "message": "获取样式"
   },
+  "linkTranslate": {
+    "message": "翻译"
+  },
   "linterCSSLintIncompatible": {
     "message": "CSSLint 不支持 $preprocessorname$ 预处理器",
     "placeholders": {
@@ -467,7 +473,7 @@
     "message": "显示应用的规则列表数量"
   },
   "manageNewStyleAsUsercss": {
-    "message": "作为 Usercss 样式"
+    "message": "作为 UserCSS 样式"
   },
   "manageNewUI": {
     "message": "新的样式管理界面"
@@ -488,13 +494,13 @@
     "message": "（此样式无法通过 userstyles.org 页面进行安装）"
   },
   "manageOnlyNonUsercss": {
-    "message": "只显示非 Usercss 样式"
+    "message": "只显示非 UserCSS 样式"
   },
   "manageOnlyUpdates": {
     "message": "只显示可升级的样式"
   },
   "manageOnlyUsercss": {
-    "message": "只显示仅 Usercss 样式"
+    "message": "只显示仅 UserCSS 样式"
   },
   "menuShowBadge": {
     "message": "显示生效的样式计数"
@@ -521,7 +527,7 @@
     "message": "高级设置"
   },
   "optionsAdvancedContextDelete": {
-    "message": "添加“删除”到编辑器的菜单"
+    "message": "向编辑器右键菜单添加“删除”"
   },
   "optionsAdvancedExposeIframes": {
     "message": "通过 HTML[stylus-iframe] 方式改变 iframes 的 css"
@@ -569,7 +575,7 @@
     "message": "管理样式"
   },
   "optionsPopupWidth": {
-    "message": "Stylus 样式管理弹出框宽度 / px"
+    "message": "Stylus 样式管理弹出框宽度（px）"
   },
   "optionsReset": {
     "message": "重置所有选项为默认值"
@@ -602,7 +608,7 @@
     "message": "总页面"
   },
   "parseUsercssError": {
-    "message": "Stylus 未能成功解析 Usercss:"
+    "message": "Stylus 未能成功解析 UserCSS："
   },
   "popupBorders": {
     "message": "在两边增加白色边框"
@@ -611,7 +617,7 @@
     "message": "对于新 Chrome 中的暗色主题很有用，因为它不再绘制边框"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, 数字小键盘也可以 - 切换到第 N 样式 （0 是切换到第 10 个样式）\n<A>-<Z> 切换以该字母为名称首字母的样式\n<Shift> 开启编辑器而不是切换\n<Numpad +> 启用列出的样式\n<Numpad –> 禁用列出的样式\n<Numpad *> 和  <`> (倒引号) - 切换初始使用的样式;当弹窗开启时不应用后来启用的样式，因此你可以在测试完成后回复默认的初始选择：简单的禁用所有，然后切换。 <Numpad –> <Numpad *>\n更多信息详见Wiki"
+    "message": "<1>-<9>, <0>, 数字小键盘也可以 - 切换到第 N 样式 （0 是切换到第 10 个样式）\n<A>-<Z> 切换以该字母为名称首字母的样式\n<Shift> 开启编辑器而不是切换\n<Numpad +> 启用列出的样式\n<Numpad –> 禁用列出的样式\n<Numpad *> 和  <`> (倒引号) - 切换初始使用的样式;当弹窗开启时不应用后来启用的样式，因此你可以在测试完成后回复默认的初始选择：简单的禁用所有，然后切换。 <Numpad –> <Numpad *>\n更多信息详见 Wiki"
   },
   "popupHotkeysTooltip": {
     "message": "单击以检视可用的快捷键"
@@ -633,6 +639,9 @@
   },
   "previewLabel": {
     "message": "实时预览"
+  },
+  "previewTooltip": {
+    "message": "无需保存即可临时应用样式预览效果。保存以使更改永久生效。"
   },
   "replace": {
     "message": "替换"
