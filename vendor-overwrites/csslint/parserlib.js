@@ -591,8 +591,8 @@ self.parserlib = (() => {
     'text-align-all':  'start | end | left | right | center | justify | match-parent',
     'text-align-last': 'auto | start | end | left | right | center | justify',
     'text-anchor':     'start | middle | end',
-    'text-decoration':       '<text-decoration-line> || <text-decoration-style> || <text-decoration-color>',
-    'text-decoration-color': '<text-decoration-color>',
+    'text-decoration':       '<text-decoration-line> || <text-decoration-style> || <color>',
+    'text-decoration-color': '<color>',
     'text-decoration-line':  '<text-decoration-line>',
     'text-decoration-skip':  'none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || ' +
                              'edges || box-decoration ]',
@@ -858,8 +858,6 @@ self.parserlib = (() => {
       '<step-timing-function>': 'step-start | step-end | steps()',
 
       '<string>': part => part.type === 'string',
-
-      '<text-decoration-color>': '<color>',
 
       '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
 

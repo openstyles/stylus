@@ -254,7 +254,9 @@
         <label id="only-updates" class="hidden">
           <input type="checkbox"
                  data-filter=".can-update, .update-problem, .update-done"
-                 data-filter-hide=":not(.updatable):not(.update-done), .no-update:not(.update-problem)">
+                 data-filter-hide=":not(.updatable):not(.update-done),
+                                   .no-update:not(.update-problem),
+                                   .updatable:not(.can-update):not(.update-problem):not(.update-done)">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           <span i18n-text="manageOnlyUpdates"></span>
         </label>

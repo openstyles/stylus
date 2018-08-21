@@ -1,1282 +1,995 @@
 {
-	"appliesToEverything": {
-		"message": "Kõik",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"linterIssues": {
-		"message": "Vead",
-		"description": "Label for the CSS linter issues block on the style edit page"
-	},
-	"defaultTheme": {
-		"message": "vaikimisi",
-		"description": "Default CodeMirror CSS theme option on the edit style page"
-	},
-	"styleRegexpTestTitle": {
-		"message": "Vastavate avatud kaardide nimekiri (klõpsa URLile selle kaardi fookustamiseks)",
-		"description": "RegExp test report: title of the report"
-	},
-	"bckpInstStyles": {
-		"message": "Ekspordi stiilid",
-		"description": ""
-	},
-	"sortStylesHelpTitle": {
-		"message": "Järjesta sisu",
-		"description": "Label for the sort info popup on the Manage styles page"
-	},
-	"manageOnlyUsercss": {
-		"message": "Ainult Usercss stiilid",
-		"description": "Checkbox to show only Usercss styles"
-	},
-	"sortStylesHelp": {
-		"message": "Vali paigaldatud üksustele rakendatav sorteerimismeetod sorteerimise rippmenüüst. Vaikimisi seadistus rakendab kasvava sorteerimise (A-st Z-ni) üksuste pealkirjades. Sorteerimised grupis \"Kahanev pealkiri\" rakendavad pealkirjale kahaneva sorteerimise (Z-st A-ni).\nOn olemas ka teisi eelseadistusi, mis võimaldavad üksuste sorteerimist mitme kriteeriumi järgi. Mõtle sellest, nagu sorteeriksid mitme veeruga tabelit ja iga kategooria valikus (plussmärkide vahel) tähistab veergu või gruppi.\nNäiteks, kui valik on \"Lubatud (esimene) + pealkiri\", sorteeritakse üksused nii, et kõik lubatud üksused on nimekirja tipus ning nimekirja pealkirja kasvav sorteerimine (A-st Z-ni) rakendatakse nii lubatud kui keelatud üksustele eraldi.",
-		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
-	},
-	"sortLabelTitleAsc": {
-		"message": "Pealkiri tõusvas järjestuses",
-		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
-	},
-	"optionsUpdateInterval": {
-		"message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)",
-		"description": ""
-	},
-	"unreachableAMOHintNewFF": {
-		"message": "Firefox 60-s ja uuemas pead ka lehel <about:config> eelistusest <extensions.webextensions.restrictedDomains> eemaldama AMO domeeni.",
-		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-	},
-	"sortDateOldestFirst": {
-		"message": "vanemad eespool",
-		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
-	},
-	"exportLabel": {
-		"message": "Ekspordi",
-		"description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
-	},
-	"installButton": {
-		"message": "Paigalda stiil",
-		"description": "Label for install button"
-	},
-	"styleMetaErrorCheckbox": {
-		"message": "Vigane @var märkeruut: väärtus peab olema 0 või 1",
-		"description": "Error displayed when the value of @var checkbox is invalid"
-	},
-	"linterJSONError": {
-		"message": "Vigane JSON-formaat",
-		"description": "Setting linter config with invalid JSON"
-	},
-	"popupHotkeysTooltip": {
-		"message": "Kiirklahvide nägemiseks klõpsa",
-		"description": "Tooltip displayed when hovering the right edge of the extension popup"
-	},
-	"optionsBadgeNormal": {
-		"message": "Taustavärv",
-		"description": ""
-	},
-	"updateCheckHistory": {
-		"message": "Uuenduskontrollide ajalugu",
-		"description": ""
-	},
-	"cm_tabSize": {
-		"message": "Tabeldussuurus",
-		"description": "Label for the text box controlling tab size option for the style editor."
-	},
-	"enableStyleLabel": {
-		"message": "Luba",
-		"description": "Label for the button to enable a style"
-	},
-	"styleMissingName": {
-		"message": "Sisesta nimi",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"genericHistoryLabel": {
-		"message": "Ajalugu",
-		"description": "Used in various places to show a history log of something"
-	},
-	"shortcutsNote": {
-		"message": "Defineeri klaviatuuriotseteed",
-		"description": ""
-	},
-	"appliesDomainOption": {
-		"message": "URLid domeenis",
-		"description": "Option to make the style apply to the entered string as a domain"
-	},
-	"checkForUpdate": {
-		"message": "Kontrolli uuendusi",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"styleNotAppliedRegexpProblemTooltip": {
-		"message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu",
-		"description": "Tooltip in the popup for styles that were not applied at all"
-	},
-	"colorpickerSwitchFormatTooltip": {
-		"message": "Vaheta formaate: HEX -> RGB -> HSL.\nShift-klõps vastupidise suuna jaoks.\nSamuti klahvidega PgUp (PageUp), PgDn (PageDown).",
-		"description": "Tooltip for the switch button in the color picker popup in the style editor."
-	},
-	"styleRegexpInvalidExplanation": {
-		"message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida.",
-		"description": ""
-	},
-	"optionsIconDark": {
-		"message": "Tumedad brauseriteemad",
-		"description": ""
-	},
-	"styleFromMozillaFormatError": {
-		"message": "Mozilla-vormingust importimine ebaõnnestus",
-		"description": "Label for the import error"
-	},
-	"importAppendLabel": {
-		"message": "Lisa stiilile",
-		"description": "Label for the button to import a style and append to the existing sections"
-	},
-	"optionsOpenManager": {
-		"message": "Halda stiile",
-		"description": ""
-	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "Uuendusi ei leitud.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"importReportLegendAdded": {
-		"message": "lisatud",
-		"description": "Text after the number of styles added in the report shown after importing styles"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Kleebi Mozilla-vormingus koodi",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-	},
-	"dragDropMessage": {
-		"message": "Lohista importimiseks oma varundusfail kuskile siia lehele.",
-		"description": "Drag'n'drop message"
-	},
-	"styleRegexpTestNote": {
-		"message": "Märkus: kasuta üksikut \\, et keelata märgi töötlemine regulaaravaldise sisendväljas, mis konverteeritakse automaatselt \\\\-ks stiili koodis, nagu CSSi tsiteeritud sõnede spetsifikatsioon ette näeb.",
-		"description": "RegExp test report: a note displayed at the bottom of the dialog"
-	},
-	"helpAlt": {
-		"message": "Abi",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Otsi",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"genericEnabledLabel": {
-		"message": "Lubatud",
-		"description": "Used in various lists/options to indicate that something is enabled"
-	},
-	"previewTooltip": {
-		"message": "Ajutiselt rakendab muudatused ilma salvestamata.\nMuudatuste püsivaks tegemiseks salvesta stiil.",
-		"description": "Tooltip for the checkbox in style editor to enable live preview while editing."
-	},
-	"manageFaviconsGray": {
-		"message": "Tee halliks",
-		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
-	},
-	"versionInvalidOlder": {
-		"message": "Versioon on paigaldatud stiilist vanem.",
-		"description": "Displayed when the version of style is older than the installed one"
-	},
-	"confirmYes": {
-		"message": "Jah",
-		"description": "'Yes' button in a confirm dialog"
-	},
-	"findStylesForSite": {
-		"message": "Leia sellele saidile veel stiile",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"manageHeading": {
-		"message": "Paigaldatud stiilid",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Ilusta",
-		"description": "Label for the CSS-beautifier button on the edit style page"
-	},
-	"styleRegexpProblemTooltip": {
-		"message": "\"regexp()\" vale kasutuse tõttu rakendamata jaotiste arv",
-		"description": "Tooltip in the popup for styles that were applied only partially"
-	},
-	"styleEnabledLabel": {
-		"message": "Lubatud",
-		"description": "Label for the enabled state of styles"
-	},
-	"configOnChange": {
-		"message": "muutmisel",
-		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
-	},
-	"linterConfigTooltip": {
-		"message": "Selle linteri seadistamiseks klõpsa",
-		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Koodi Mozilla-vormingut saab üles laadida saidile userstyles.org ja kasutada klassikalise Firefoxi Stylish'iga",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"sectionAdd": {
-		"message": "Lisa uus jaotis",
-		"description": "Label for the button to add a section"
-	},
-	"styleRegexpTestPartial": {
-		"message": "Ei vasta täielikult, seega vahele jäetud",
-		"description": "RegExp test report: label for the partially matching expressions"
-	},
-	"styleSaveLabel": {
-		"message": "Salvesta",
-		"description": "Label for save button for style editing"
-	},
-	"genericSavedMessage": {
-		"message": "Salvestatud",
-		"description": "Used in various parts of the UI to indicate that something was saved"
-	},
-	"confirmDelete": {
-		"message": "Kustuta",
-		"description": ""
-	},
-	"confirmDefault": {
-		"message": "Kasuta vaikesätet",
-		"description": "'Set to default' button in a confirm dialog"
-	},
-	"confirmCancel": {
-		"message": "Tühista",
-		"description": ""
-	},
-	"cm_autoCloseBracketsTooltip": {
-		"message": "Automaatselt lisab sulgeva paarilise, kui kirjutad avava ühest järgnevast: ()[]{}''\"\"",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"retrieveBckp": {
-		"message": "Impordi stiilid",
-		"description": ""
-	},
-	"cm_selectByTokens": {
-		"message": "Topeltklõps valib sõnesid",
-		"description": "Label for the checkbox in the editor."
-	},
-	"confirmStop": {
-		"message": "Peata",
-		"description": "'Stop' button in a confirm dialog"
-	},
-	"writeStyleForURL": {
-		"message": "see URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
-	"optionsSubheading": {
-		"message": "Rohkem valikuid",
-		"description": "Subheading for options section on manage page."
-	},
-	"appliesAdd": {
-		"message": "Lisa",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesRegexpOption": {
-		"message": "Regulaaravaldisele vastavad URLid",
-		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"optionsAdvancedExposeIframesNote": {
-		"message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
-		"description": ""
-	},
-	"importReportLegendUpdatedCode": {
-		"message": "uuendatud kood",
-		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
-	},
-	"styleInstall": {
-		"message": "Paigaldad \"$stylename$\" Stylus'isse?",
-		"description": "Confirmation when installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsBadgeDisabled": {
-		"message": "Taustavärv keelatud olekus",
-		"description": ""
-	},
-	"optionsCheck": {
-		"message": "Uuenda stiile",
-		"description": ""
-	},
-	"manageOnlyLocal": {
-		"message": "Ainult kohalikult loodud stiilid",
-		"description": "Checkbox to show only locally created styles i.e. non-updatable"
-	},
-	"styleMetaErrorPreprocessor": {
-		"message": "Mittetoetatud eeltöötleja: $preprocessor$",
-		"description": "Error displayed when the value of @preprocessor is not supported",
-		"placeholders": {
-			"preprocessor": {
-				"content": "$1"
-			}
-		}
-	},
-	"searchNumberOfResults2": {
-		"message": "Vasteid koodis ja rakendub-üksuste väärtustes",
-		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
-	},
-	"linterIssuesHelp": {
-		"message": "$link$ leidis need vead:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
-	"parseUsercssError": {
-		"message": "Stylus ei suutnud usercss-i analüüsida:",
-		"description": "The error message to show when stylus failed to parse usercss"
-	},
-	"searchStyles": {
-		"message": "Otsi sisu",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
-	"optionsUpdateImportNote": {
-		"message": "Kui impordid stiilide varundusi vanast versioonist või Stylish'ist, tee ühekordne käsitsi uuenduste kontroll stiilide halduris, et veenduda kõikide stiilide ajakohasuses.",
-		"description": ""
-	},
-	"checkAllUpdatesForce": {
-		"message": "Kontrolli uuesti, ma ei muutnud ühtegi stiili!",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"manageOnlyNonUsercss": {
-		"message": "Ainult mitte-Usercss stiilid",
-		"description": "Checkbox to show only non-Usercss (standard) styles"
-	},
-	"liveReloadLabel": {
-		"message": "Reaalajas uuestilaadimine",
-		"description": "The label of live-reload feature"
-	},
-	"linkGetStyles": {
-		"message": "Hangi stiile",
-		"description": "Help link text on the manage page e.g. https://userstyles.org"
-	},
-	"unreachableFileHint": {
-		"message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
-		"description": "Note in the toolbar popup for file:// URLs"
-	},
-	"sortLabel": {
-		"message": "Vali, milline järjestus paigaldatud stiilidele rakendada",
-		"description": "Title on the sort select to indicate it is used for sorting entries"
-	},
-	"disableStyleLabel": {
-		"message": "Keela",
-		"description": "Label for the button to disable a style"
-	},
-	"prefShowBadge": {
-		"message": "Praegusel saidil aktiivsete stiilide arv",
-		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"manageFavicons": {
-		"message": "Lehe ikoonid rakendub-tulbas",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
-	},
-	"paginationCurrent": {
-		"message": "Praegune leht",
-		"description": "Tooltip for the current page index in search results"
-	},
-	"menuShowBadge": {
-		"message": "Kuva aktiivsete stiilide hulka",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-	},
-	"popupHotkeysInfo": {
-		"message": "<1>-<9>, <0>, ka numbriklahvidel - lülitab N. stiili (0 on 10)\n<A>-<Z> lülitab esimest stiili, mille nimi algab selle tähega\n<Shift> avab redaktori lülitamise asemel\n<Numpad +> lubab nimekirjas olevad stiilid\n<Numpad –> keelab nimekirjas olevad stiilid\n<Numpad *> ja <`> (graavis) - lülitab esialgu lubatud stiilid; ei rakendu järgnevalt lubatud stiilidele hüpiku avatud olekus, seega saad taastada esialgse valiku peale asjade testimist: lihtsalt keela kõik ning lülita, seega <Numpad –> <Numpad *>\nRohkem teavet vikis",
-		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
-	},
-	"cm_lineWrapping": {
-		"message": "Reamurdmine",
-		"description": "Label for the checkbox controlling word wrap option for the style editor."
-	},
-	"styleCancelEditLabel": {
-		"message": "Tagasi haldusesse",
-		"description": "Label for cancel button for style editing"
-	},
-	"styleChangesNotSaved": {
-		"message": "Sa oled teinud sellele stiilile muutusi ilma salvestamata.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"importLabel": {
-		"message": "Impordi",
-		"description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
-	},
-	"shortcuts": {
-		"message": "Otseteed",
-		"description": "Go to shortcut configuration"
-	},
-	"updateCheckFailServerUnreachable": {
-		"message": "Uuendamine ebaõnnestus: server on kättesaamatu.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"genericError": {
-		"message": "Viga",
-		"description": "Used in various places to indicate some error occurred."
-	},
-	"manageFilters": {
-		"message": "Filtrid",
-		"description": "Label for filters container"
-	},
-	"applyAllUpdates": {
-		"message": "Rakenda kõik uuendused",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"optionsReset": {
-		"message": "Lähtesta valikud vaikeväärtustele",
-		"description": ""
-	},
-	"optionsCustomizeUpdate": {
-		"message": "Uuendused",
-		"description": ""
-	},
-	"deleteStyleConfirm": {
-		"message": "Kas soovid kindlasti selle stiili kustutada?",
-		"description": "Confirmation before deleting a style"
-	},
-	"optionsCustomizePopup": {
-		"message": "Hüpikaken",
-		"description": ""
-	},
-	"styleBadRegexp": {
-		"message": "Regulaaravaldis on sobimatu.",
-		"description": "Validation message for a bad regexp in a style"
-	},
-	"license": {
-		"message": "Litsents",
-		"description": "Label for the license"
-	},
-	"optionsHeading": {
-		"message": "Valikud",
-		"description": "Heading for options section on manage page."
-	},
-	"appliesDisplay": {
-		"message": "Rakendub saitidele: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsIconLight": {
-		"message": "Heledad brauseriteemad",
-		"description": ""
-	},
-	"openStylesManager": {
-		"message": "Ava stiilihaldur",
-		"description": "Label for the style maanger opener in the browser action context menu."
-	},
-	"styleUpdate": {
-		"message": "Kas soovid kindlasti uuendada \"$stylename$\"?",
-		"description": "Confirmation when updating a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleSectionsTitle": {
-		"message": "Jaotised",
-		"description": "Title for the style sections section"
-	},
-	"importReportLegendInvalid": {
-		"message": "sobimatut vahele jäetud",
-		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
-	},
-	"optionsAdvancedNewStyleAsUsercss": {
-		"message": "Kirjuta uus stiil usercss-ina",
-		"description": ""
-	},
-	"genericResetLabel": {
-		"message": "Lähtesta",
-		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
-	},
-	"editStyleTitle": {
-		"message": "Muuda stiili $stylename$",
-		"description": "Title of the page for editing styles",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"updateCheckSucceededNoUpdate": {
-		"message": "Stiil on ajakohane.",
-		"description": "Text that displays when an update check completed and no update is available"
-	},
-	"appliesUrlPrefixOption": {
-		"message": "URLid algusega",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"cm_matchHighlightToken": {
-		"message": "Kursori all olev sõne",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
-	},
-	"searchRegexp": {
-		"message": "Kasuta /re/ süntaksit regulaaravaldise otsinguks",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
-	},
-	"popupBordersTooltip": {
-		"message": "Kasulik tumedate teemade puhul Chrome'is, kuna see ei joonista enam külje piirjooni",
-		"description": ""
-	},
-	"updateCheckManualUpdateHint": {
-		"message": "Uuenduse sundimine kirjutab üle mistahes kohalikud muutused.",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"toggleStyle": {
-		"message": "Luba/keela stiil",
-		"description": "Label for the checkbox to enable/disable a style"
-	},
-	"searchNumberOfResults": {
-		"message": "Vastete arv",
-		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
-	},
-	"importReplaceTooltip": {
-		"message": "Tühista praeguse stiili sisu ja kirjuta see üle imporditud stiiliga",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"installUpdateFromLabel": {
-		"message": "Kontrolli uuendusi",
-		"description": "Label for the checkbox to save current URL for update check"
-	},
-	"cm_resizeGripHint": {
-		"message": "Topeltklõpsa, et maksimeerida/taastada kõrgus",
-		"description": "Tooltip for the resize grip in style editor"
-	},
-	"popupStylesFirst": {
-		"message": "Stiilid enne käske",
-		"description": "Label for the checkbox controlling section order in the popup."
-	},
-	"sectionHelp": {
-		"message": "Jaotised võimaldavad sul määrata erinevaid koodiosi, mida rakendada mitmetele URLide kogumikele samas stiilis. Näiteks võib üks stiil muuta saidi kodulehte ühtemoodi, seejuures muutes ülejäänud saiti teistmoodi.",
-		"description": "Help text for sections"
-	},
-	"noStylesForSite": {
-		"message": "Sellele saidile pole stiile paigaldatud.",
-		"description": "Text displayed when no styles are installed for the current site"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "ja veel",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "Eemalda",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"updatesCurrentlyInstalled": {
-		"message": "Uuendused paigaldatud:",
-		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Stiil Mozilla-vormingus",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"cm_colorpicker": {
-		"message": "CSS-värvide värvivalijad",
-		"description": "Label for the checkbox controlling colorpicker option for the style editor."
-	},
-	"filteredStylesAllHidden": {
-		"message": "Hetkel rakendatud filtritele ei vasta ükski stiil",
-		"description": "Text shown when no styles match currently applied filter in the style manager"
-	},
-	"writeStyleFor": {
-		"message": "Kirjuta stiil:",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
-	},
-	"replace": {
-		"message": "Asenda",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
-	},
-	"styleRegexpTestNone": {
-		"message": "Pole vastavaid kaarte",
-		"description": "RegExp test report: label for expressions that didn't match any tabs"
-	},
-	"importReportLegendUpdatedMeta": {
-		"message": "metainfo uuendatud",
-		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
-	},
-	"appliesLabel": {
-		"message": "Rakendub saitidele",
-		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"sortLabelTitleDesc": {
-		"message": "Pealkiri laskuvas järjestuses",
-		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
-	},
-	"openOptionsPopup": {
-		"message": "Valikud",
-		"description": "Go to Options UI"
-	},
-	"usercssConfigIncomplete": {
-		"message": "Stiili uuendati või eemaldati pärast seadistusdialoogi kuvamist. Neid muutujaid ei salvestatud, et vältida stiili metaandmete korrumpeerumist:",
-		"description": ""
-	},
-	"openManage": {
-		"message": "Halda",
-		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "Uuendamine ebaõnnestus: server vastas koodiga $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesSpecify": {
-		"message": "Täpsusta",
-		"description": "Label for the button to make a style apply only to specific sites"
-	},
-	"installUpdate": {
-		"message": "Paigalda uuendus",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"syncStorageErrorSaving": {
-		"message": "Väärtust ei saa salvestada. Proovi teksti hulka vähendada.",
-		"description": "Displayed when trying to save an excessively big value via storage.sync API"
-	},
-	"findStylesInline": {
-		"message": "Aknasisene",
-		"description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
-	},
-	"optionsCheckUpdate": {
-		"message": "Kontrolli ja paigalda kõik saadaolevad uuendused",
-		"description": ""
-	},
-	"clickToUninstall": {
-		"message": "Eemaldamiseks klõpsa",
-		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
-	},
-	"filteredStyles": {
-		"message": "$numShown$/$numTotal$ kuvatud",
-		"description": "TL note - make this message short",
-		"placeholders": {
-			"numTotal": {
-				"content": "$2"
-			},
-			"numShown": {
-				"content": "$1"
-			}
-		}
-	},
-	"importReportTitle": {
-		"message": "Stiilide importimine lõpetatud",
-		"description": "Title of the report shown after importing styles"
-	},
-	"unreachableAMOHint": {
-		"message": "Ligipääsu lubamiseks ava <about:config>, parem-klõpsa nimekirjal, vali 'Uus', seejärel 'Tõeväärtus', kleebi <privacy.resistFingerprinting.block_mozAddonManager> ja klõpsa Sobib, <true>, Sobib, laadi leht <addons.mozilla.org> uuesti.",
-		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Mozilla-vorming",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"cm_matchHighlight": {
-		"message": "Tõsta esile",
-		"description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
-	},
-	"styleRegexpPartialExplanation": {
-		"message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga).",
-		"description": ""
-	},
-	"linterCSSLintSettings": {
-		"message": "(Määra reegel kui: 0 = keelatud; 1 = hoiatus; 2 = viga)",
-		"description": "CSSLint rule config values"
-	},
-	"usercssReplaceTemplateSectionBody": {
-		"message": "Sisesta kood siia...",
-		"description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
-	},
-	"searchResultNoneFound": {
-		"message": "Sellele saidile ei leitud stiile.",
-		"description": "Error text in the popup when inline search didn't find any site-specific styles"
-	},
-	"styleBeautifyIndentConditional": {
-		"message": "Taanda @media, @supports",
-		"description": "CSS-beautifier option"
-	},
-	"unreachableContentScript": {
-		"message": "Lehega ei saanud ühendust. Proovi kaart uuesti laadida.",
-		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
-	},
-	"sectionRemove": {
-		"message": "Eemalda jaotis",
-		"description": "Label for the button to remove a section"
-	},
-	"disableAllStyles": {
-		"message": "Lülita kõik stiilid välja",
-		"description": "Label for the checkbox that turns all enabled styles off."
-	},
-	"appliesLineWidgetLabel": {
-		"message": "Näita 'Rakendub' teavet",
-		"description": "Label for the checkbox to display applies-to information in the single editor"
-	},
-	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "Seda stiili võib olla kohalikult muudetud.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
-	},
-	"undoGlobal": {
-		"message": "Võta kõigis jaotistes tagasi",
-		"description": "CSS-beautify global Undo button label"
-	},
-	"optionsCustomizeIcon": {
-		"message": "Tööriistaribaikoon",
-		"description": ""
-	},
-	"genericTitle": {
-		"message": "Pealkiri",
-		"description": "Used in various parts of the UI to indicate the title of something"
-	},
-	"updateCompleted": {
-		"message": "Uuendus teostatud.",
-		"description": "Text that displays when an update completed"
-	},
-	"previewLabel": {
-		"message": "Reaalajas eelvaade",
-		"description": "Label for the checkbox in style editor to enable live preview while editing."
-	},
-	"paginationTotal": {
-		"message": "Lehti kokku",
-		"description": ""
-	},
-	"cm_selectByTokensTooltip": {
-		"message": "Sõnede näited: .foo-bar-2 #aabbcc 0.32 !important\nKeelamisel valitakse punktidega eraldatud sõnad.",
-		"description": ""
-	},
-	"checkingForUpdate": {
-		"message": "Kontrollin...",
-		"description": "Text to display when checking a style for an update"
-	},
-	"styleRegexpTestFull": {
-		"message": "Vastavad kaardid",
-		"description": "RegExp test report: label for the fully matching expressions"
-	},
-	"manageMaxTargets": {
-		"message": "Rakendub-üksuste arv",
-		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
-	},
-	"searchResultRating": {
-		"message": "Hinnang",
-		"description": "Text for label that shows the search result's rating"
-	},
-	"genericUnknown": {
-		"message": "Tundmatu",
-		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
-	},
-	"popupManageTooltip": {
-		"message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega",
-		"description": "Tooltip for the 'Manage' button in the popup."
-	},
-	"manageFaviconsHelp": {
-		"message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
-	},
-	"paginationEstimated": {
-		"message": "Hinnanguline lehtede arv",
-		"description": "Tooltip for the total page count in search results"
-	},
-	"styleInstallOverwrite": {
-		"message": "'$stylename$' on juba paigaldatud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
-		"description": "Confirmation when re-installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			},
-			"newVersion": {
-				"content": "$3"
-			},
-			"oldVersion": {
-				"content": "$2"
-			}
-		}
-	},
-	"updateCheckSkippedLocallyEdited": {
-		"message": "Seda stiili muudeti kohalikult.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"linterRulesLink": {
-		"message": "Vaata reeglite täielikku loendit",
-		"description": "Stylelint or CSSLint rules label added immediately before a link"
-	},
-	"styleUpdateDiscardChanges": {
-		"message": "Stiili on redaktoriväliselt muudetud. Kas soovid stiili uuesti laadida?",
-		"description": "Confirmation to update the style in the editor"
-	},
-	"optionsResetButton": {
-		"message": "Lähtesta valikud",
-		"description": ""
-	},
-	"paginationNext": {
-		"message": "Järgmine leht",
-		"description": "Tooltip for the '->' (next page) button in search results"
-	},
-	"searchResultInstallCount": {
-		"message": "Paigaldusi kokku",
-		"description": "Text for label that shows the number of times a search result was installed"
-	},
-	"sectionCode": {
-		"message": "Kood",
-		"description": "Label for the code for a section"
-	},
-	"externalUsercssDocument": {
-		"message": "Usercss dokumentatsioon",
-		"description": "Label for the external link to usercss documentation"
-	},
-	"optionsAdvancedContextDelete": {
-		"message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse",
-		"description": ""
-	},
-	"linterConfigPopupTitle": {
-		"message": "Linteri $linter$ reeglite seadistuse määramine",
-		"description": "Stylelint or CSSLint popup header",
-		"placeholders": {
-			"linter": {
-				"content": "$1"
-			}
-		}
-	},
-	"configureStyle": {
-		"message": "Seadista",
-		"description": "Label for the button to configure usercss userstyle"
-	},
-	"importReportLegendUpdatedBoth": {
-		"message": "said uuenduse nii metaandmetele kui koodile",
-		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
-	},
-	"cm_smartIndent": {
-		"message": "Kasuta tarka taanet",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"styleRegexpTestButton": {
-		"message": "Regulaaravaldise katsetus",
-		"description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
-	},
-	"appliesHelp": {
-		"message": "Kasuta \"rakendub\" valikuid, et piirata, mis URLidele selles jaotises olev kood rakendub.",
-		"description": "Help text for 'applies to' section"
-	},
-	"linkGetHelp": {
-		"message": "Hangi abi",
-		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
-	},
-	"searchStylesHelp": {
-		"message": "</> klahv fokuseerib otsinguvälja.\nLihttekst: otsi nimest, koodist, kodulehe URList ja rakendatavatest saitidest. Sõnu alla 3 tähemärgi ignoreeritakse.\nVastav URL: kasuta otsingus eesliidet <url:>, nt <url:https://github.com/openstyles/stylus>\nRegulaaravaldised sisaldavad kaldkriipse ja lippe, nt </body.*?\\ba\\b/simguy>\nTäpsed sõnad: kirjuta väljendi ümber jutumärgid, nt <\".header ~ div\">",
-		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-	},
-	"findStyles": {
-		"message": "Leia stiile",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"editStyleHeading": {
-		"message": "Muuda stiili",
-		"description": "Title of the page for editing styles"
-	},
-	"editDeleteText": {
-		"message": "Kustuta",
-		"description": "Label for the context menu item in the editor to delete selected text"
-	},
-	"cm_autocompleteOnTyping": {
-		"message": "Automaattäide kirjutamisel",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"unreachableAMO": {
-		"message": "Firefox keelab ligipääsu sellele saidile.",
-		"description": "Note in the popup displayed when opened on addons.mozilla.org"
-	},
-	"linterCSSLintIncompatible": {
-		"message": "CSSLint ei toeta eeltöötlejat $preprocessorname$",
-		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
-		"placeholders": {
-			"preprocessorname": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleMetaErrorSelectValueMismatch": {
-		"message": "Vigane @select: väärtust pole loendis olemas",
-		"description": "Error displayed when the value of @select is invalid"
-	},
-	"styleMetaErrorColor": {
-		"message": "$color$ ei ole sobiv värv",
-		"description": "Error displayed when the value of @var color is invalid",
-		"placeholders": {
-			"color": {
-				"content": "$1"
-			}
-		}
-	},
-	"externalFeedback": {
-		"message": "Tagasiside",
-		"description": "Label for the external link to send feedback for the style"
-	},
-	"genericPrevious": {
-		"message": "Eelmine",
-		"description": "Used in various places to select/perform the previous step/action"
-	},
-	"manageOnlyDisabled": {
-		"message": "Ainult keelatud stiilid",
-		"description": "Checkbox to show only disabled styles"
-	},
-	"stylusUnavailableForURLdetails": {
-		"message": "Turvakaalutlustel keelab brauser laiendustel sisseehitatud lehtede (nagu chrome://version, standardne uue kaardi leht alates versioonist Chrome 61, about:addons jne) ning ka teiste laienduste lehtede muutmise. Iga brauser piirab lisaks juurdepääsu oma laienduste galeriile (nagu Chrome'i veebipood või AMO).",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"cm_matchHighlightSelection": {
-		"message": "Ainult valik",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-	},
-	"updateAllCheckSucceededSomeEdited": {
-		"message": "Mõndasid uuendatavaid stiile ei kontrollitud, et vältida võimalike kohalike muutuste kadu. Uuendusi saab sundida, kontrollides ükshaaval või käivitades uue kontrolli kõikidele stiilidele (kohalikud muutused kirjutatakse üle).",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus ei tööta sellistel lehtedel.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"popupBorders": {
-		"message": "Lisa äärtesse valged piirjooned",
-		"description": ""
-	},
-	"manageOnlyUpdates": {
-		"message": "Ainult uuenduste ja vigadega",
-		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
-	},
-	"addStyleTitle": {
-		"message": "Lisa stiil",
-		"description": "Title of the page for adding styles"
-	},
-	"externalLink": {
-		"message": "Väline link",
-		"description": "Label for external links"
-	},
-	"externalHomepage": {
-		"message": "Koduleht",
-		"description": "Label for the external link to style's homepage"
-	},
-	"importReplaceLabel": {
-		"message": "Kirjuta stiil üle",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"genericNext": {
-		"message": "Järgmine",
-		"description": "Used in various places to select/perform the next step/action"
-	},
-	"popupOpenEditInWindowTooltip": {
-		"message": "Lubatakse ka redaktori kaardi veebilehitseja aknast eraldamisel,\nja keelatakse üksiku redaktori kaardi haakimisel teise aknasse.",
-		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
-	},
-	"dbError": {
-		"message": "Stylus'i andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"dateInstalled": {
-		"message": "Paigaldamise kuupäev",
-		"description": "Option text for the user to sort the style by install date"
-	},
-	"optionsAdvanced": {
-		"message": "Täpsem",
-		"description": ""
-	},
-	"alphaChannel": {
-		"message": "Läbipaistmatus",
-		"description": "Label of color's opacity"
-	},
-	"importAppendTooltip": {
-		"message": "Lisa imporditud stiil praegusele stiilile",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"liveReloadInstallHint": {
-		"message": "Reaalajas uuestilaadimine on lubatud, seega paigaldatud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
-		"description": "The label of live-reload feature"
-	},
-	"editorStylesButton": {
-		"message": "Leia redaktori stiile",
-		"description": "Find styles for the editor"
-	},
-	"optionsOpen": {
-		"message": "Ava",
-		"description": ""
-	},
-	"helpKeyMapHotkey": {
-		"message": "Vajuta kiirklahvi",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"styleRegexpTestInvalid": {
-		"message": "Sobimatud regulaaravaldised vahele jäetud",
-		"description": "RegExp test report: label for the invalid expressions"
-	},
-	"dateUpdated": {
-		"message": "Uuendamise kuupäev",
-		"description": "Option text for the user to sort the style by last update date"
-	},
-	"manageOnlyExternal": {
-		"message": "Ainult välised stiilid",
-		"description": "Checkbox to show only externally installed styles i.e. updatable"
-	},
-	"searchResultWeeklyCount": {
-		"message": "Paigaldus nädalas",
-		"description": "Text for label that shows the number of times a search result was installed during last week"
-	},
-	"replaceAll": {
-		"message": "Asenda kõik",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"importReportUnchanged": {
-		"message": "Midagi ei muudetud.",
-		"description": "Message in the report shown after importing styles"
-	},
-	"confirmDiscardChanges": {
-		"message": "Tühistada muudatused?",
-		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
-	},
-	"searchResultUpdated": {
-		"message": "Uuendatud",
-		"description": "Text for label that shows the search result's last update date"
-	},
-	"configOnChangeTooltip": {
-		"message": "Automaatselt salvesta ja rakenda muudatused",
-		"description": ""
-	},
-	"optionsActions": {
-		"message": "Tegevused",
-		"description": ""
-	},
-	"editGotoLine": {
-		"message": "Mine reale (või rida:tulp)",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
-	},
-	"manageOnlyLocalTooltip": {
-		"message": "(stiilid, mida ei paigaldatud lehelt userstyles.org)",
-		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
-	},
-	"checkAllUpdates": {
-		"message": "Kontrolli kõikide stiilide uuendusi",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"openOptionsManage": {
-		"message": "Valikute liides",
-		"description": "Go to Options UI"
-	},
-	"colorpickerTooltip": {
-		"message": "Ava värvivalija",
-		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
-	},
-	"optionsCustomizeBadge": {
-		"message": "Number tööriistaribaikoonil",
-		"description": ""
-	},
-	"sortDateNewestFirst": {
-		"message": "uuemad eespool",
-		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
-	},
-	"paginationPrevious": {
-		"message": "Eelmine leht",
-		"description": "Tooltip for the '<-' button in search results"
-	},
-	"installUpdateFrom": {
-		"message": "Praegu uuendatakse stiili aadressilt $url$",
-		"description": "Label to describe where the style gets update",
-		"placeholders": {
-			"url": {
-				"content": "$1"
-			}
-		}
-	},
-	"importReportLegendIdentical": {
-		"message": "identset vahele jäetud",
-		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
-	},
-	"manageNewStyleAsUsercss": {
-		"message": "Usercss-ina",
-		"description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
-	},
-	"optionsPopupWidth": {
-		"message": "Hüpikakna laius (pikslites)",
-		"description": ""
-	},
-	"cm_autoCloseBrackets": {
-		"message": "Automaatselt sulge sulud ja jutumärgid",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"installButtonReinstall": {
-		"message": "Paigalda stiil uuesti",
-		"description": "Label for reinstall button"
-	},
-	"linterInvalidConfigError": {
-		"message": "Ei salvestatud nende vigaste seadistuste tõttu:",
-		"description": "Invalid linter config will show a message followed by a list of invalid entries"
-	},
-	"confirmNo": {
-		"message": "Ei",
-		"description": "'No' button in a confirm dialog"
-	},
-	"styleMissingMeta": {
-		"message": "@$key$ metaandmed puuduvad",
-		"description": "Error displayed when a mandatory metadata is missing",
-		"placeholders": {
-			"key": {
-				"content": "$1"
-			}
-		}
-	},
-	"searchCaseSensitive": {
-		"message": "Tõstutundlik",
-		"description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
-	},
-	"appliesLineWidgetWarning": {
-		"message": "Ei tööta minimeeritud CSS-iga",
-		"description": "A warning that applies-to information won't show properly with minified CSS"
-	},
-	"configureStyleOnHomepage": {
-		"message": "Seadista kodulehel",
-		"description": "Label for the button to configure userstyles.org userstyle"
-	},
-	"undo": {
-		"message": "Võta tagasi",
-		"description": "Button label"
-	},
-	"usercssReplaceTemplateConfirmation": {
-		"message": "Asendad vaikimisi malli uutes kasutajacss stiilides praeguse koodiga?",
-		"description": ""
-	},
-	"cm_keyMap": {
-		"message": "Klahvimäärangud",
-		"description": "Label for the drop-down list controlling the keymap for the style editor."
-	},
-	"externalSupport": {
-		"message": "Kasutajatugi",
-		"description": "Label for the external link to style's support site"
-	},
-	"confirmSave": {
-		"message": "Salvesta",
-		"description": "'Save' button in a confirm dialog"
-	},
-	"manageNewUI": {
-		"message": "Uus haldusliidese välimus",
-		"description": "Label for the checkbox that toggles the new UI on manage page"
-	},
-	"unreachableAMOHintOldFF": {
-		"message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see.",
-		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
-	},
-	"importReportUndoneTitle": {
-		"message": "Importimine on tagasi võetud",
-		"description": "Title of the message box shown after undoing the import of styles"
-	},
-	"genericDisabledLabel": {
-		"message": "Keelatud",
-		"description": "Used in various lists/options to indicate that something is disabled"
-	},
-	"cm_indentWithTabs": {
-		"message": "Kasuta tabeldusmärke targa taandega",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-	},
-	"replaceWith": {
-		"message": "Asenda tekstiga",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
-	},
-	"liveReloadError": {
-		"message": "Faili vaatamisel esines viga",
-		"description": "The label of live-reload error"
-	},
-	"deleteStyleLabel": {
-		"message": "Kustuta",
-		"description": "Label for the button to delete a style"
-	},
-	"updateCheckManualUpdateForce": {
-		"message": "Paigalda uuendus (kohalikud muutused kirjutatakse üle)",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"styleInstallFailed": {
-		"message": "Kasutajastiili paigaldamine ebaõnnestus!\n$error$",
-		"description": "Warning when installation failed",
-		"placeholders": {
-			"error": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsAdvancedExposeIframes": {
-		"message": "Paljasta iframe-id HTML [stylus-iframe] kaudu",
-		"description": ""
-	},
-	"usercssEditorNamePlaceholder": {
-		"message": "Kirjelda koodis @name",
-		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
-	},
-	"addStyleLabel": {
-		"message": "Kirjuta uus stiil",
-		"description": "Label for the button to go to the add style page"
-	},
-	"installButtonUpdate": {
-		"message": "Uuenda stiil",
-		"description": "Label for update button"
-	},
-	"backupButtons": {
-		"message": "Varunda",
-		"description": "Heading for backup"
-	},
-	"manageOnlyEnabled": {
-		"message": "Ainult lubatud stiilid",
-		"description": "Checkbox to show only enabled styles"
-	},
-	"editStyleLabel": {
-		"message": "Muuda",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"installButtonInstalled": {
-		"message": "Stiil paigaldatud",
-		"description": "Text displayed when the style is successfully installed"
-	},
-	"author": {
-		"message": "Autor",
-		"description": "Label for the style author"
-	},
-	"cm_theme": {
-		"message": "Teema",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"findStylesInlineTooltip": {
-		"message": "Näita otsingu tulemusi selles aknas.",
-		"description": "Text for a checkbox that displays search results within the Stylus popup."
-	},
-	"popupOpenEditInWindow": {
-		"message": "Ava redaktor uues aknas",
-		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
-	},
-	"appliesRemoveError": {
-		"message": "Viimast 'rakendub'-sisestust ei saa eemaldada",
-		"description": "Error displayed when the last 'applies' is going to be removed"
-	},
-	"backupMessage": {
-		"message": "Vali fail või lohista see siia lehele.",
-		"description": "Message for backup"
-	},
-	"importReportUndone": {
-		"message": "stiili võeti tagasi",
-		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
-	},
-	"helpKeyMapCommand": {
-		"message": "Kirjuta käsu nimi",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"linterResetMessage": {
-		"message": "Kogemata tehtud lähtestamiste tagasi võtmiseks vajuta tekstikastis Ctrl-Z (või Cmd-Z)",
-		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
-	},
-	"linkStylusWiki": {
-		"message": "Viki",
-		"description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
-	},
-	"description": {
-		"message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt paigaldada teemasid ja välimusi mitmetele populaarsetele saitidele.",
-		"description": "Extension description"
-	},
-	"confirmClose": {
-		"message": "Sulge",
-		"description": "'Close' button in a confirm dialog"
-	},
-	"usercssReplaceTemplateName": {
-		"message": "Tühi @name asendab vaikimisi malli",
-		"description": "The text shown after @name when creating a new Usercss style"
-	}
+  "addStyleLabel": {
+    "message": "Kirjuta uus stiil"
+  },
+  "addStyleTitle": {
+    "message": "Lisa stiil"
+  },
+  "alphaChannel": {
+    "message": "Läbipaistmatus"
+  },
+  "appliesAdd": {
+    "message": "Lisa"
+  },
+  "appliesDisplay": {
+    "message": "Rakendub saitidele: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "ja veel"
+  },
+  "appliesDomainOption": {
+    "message": "URLid domeenis"
+  },
+  "appliesHelp": {
+    "message": "Kasuta \"rakendub\" valikuid, et piirata, mis URLidele selles jaotises olev kood rakendub."
+  },
+  "appliesLabel": {
+    "message": "Rakendub saitidele"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Näita 'Rakendub' teavet"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Ei tööta minimeeritud CSS-iga"
+  },
+  "appliesRegexpOption": {
+    "message": "Regulaaravaldisele vastavad URLid"
+  },
+  "appliesRemove": {
+    "message": "Eemalda"
+  },
+  "appliesRemoveError": {
+    "message": "Viimast 'rakendub'-sisestust ei saa eemaldada"
+  },
+  "appliesSpecify": {
+    "message": "Täpsusta"
+  },
+  "appliesToEverything": {
+    "message": "Kõik"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URLid algusega"
+  },
+  "applyAllUpdates": {
+    "message": "Rakenda kõik uuendused"
+  },
+  "author": {
+    "message": "Autor"
+  },
+  "backupButtons": {
+    "message": "Varunda"
+  },
+  "backupMessage": {
+    "message": "Vali fail või lohista see siia lehele."
+  },
+  "bckpInstStyles": {
+    "message": "Ekspordi stiilid"
+  },
+  "checkAllUpdates": {
+    "message": "Kontrolli kõikide stiilide uuendusi"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Kontrolli uuesti, ma ei muutnud ühtegi stiili!"
+  },
+  "checkForUpdate": {
+    "message": "Kontrolli uuendusi"
+  },
+  "checkingForUpdate": {
+    "message": "Kontrollin..."
+  },
+  "clickToUninstall": {
+    "message": "Eemaldamiseks klõpsa"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Automaatselt sulge sulud ja jutumärgid"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Automaatselt lisab sulgeva paarilise, kui kirjutad avava ühest järgnevast: ()[]{}''\"\""
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Automaattäide kirjutamisel"
+  },
+  "cm_colorpicker": {
+    "message": "CSS-värvide värvivalijad"
+  },
+  "cm_indentWithTabs": {
+    "message": "Kasuta tabeldusmärke targa taandega"
+  },
+  "cm_keyMap": {
+    "message": "Klahvimäärangud"
+  },
+  "cm_lineWrapping": {
+    "message": "Reamurdmine"
+  },
+  "cm_matchHighlight": {
+    "message": "Tõsta esile"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Ainult valik"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Kursori all olev sõne"
+  },
+  "cm_resizeGripHint": {
+    "message": "Topeltklõpsa, et maksimeerida/taastada kõrgus"
+  },
+  "cm_selectByTokens": {
+    "message": "Topeltklõps valib sõnesid"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Sõnede näited: .foo-bar-2 #aabbcc 0.32 !important\nKeelamisel valitakse punktidega eraldatud sõnad."
+  },
+  "cm_smartIndent": {
+    "message": "Kasuta tarka taanet"
+  },
+  "cm_tabSize": {
+    "message": "Tabeldussuurus"
+  },
+  "cm_theme": {
+    "message": "Teema"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Vaheta formaate: HEX -> RGB -> HSL.\nShift-klõps vastupidise suuna jaoks.\nSamuti klahvidega PgUp (PageUp), PgDn (PageDown)."
+  },
+  "colorpickerTooltip": {
+    "message": "Ava värvivalija"
+  },
+  "configOnChange": {
+    "message": "muutmisel"
+  },
+  "configOnChangeTooltip": {
+    "message": "Automaatselt salvesta ja rakenda muudatused"
+  },
+  "configureStyle": {
+    "message": "Seadista"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Seadista kodulehel"
+  },
+  "confirmCancel": {
+    "message": "Tühista"
+  },
+  "confirmClose": {
+    "message": "Sulge"
+  },
+  "confirmDefault": {
+    "message": "Kasuta vaikesätet"
+  },
+  "confirmDelete": {
+    "message": "Kustuta"
+  },
+  "confirmDiscardChanges": {
+    "message": "Tühistada muudatused?"
+  },
+  "confirmNo": {
+    "message": "Ei"
+  },
+  "confirmSave": {
+    "message": "Salvesta"
+  },
+  "confirmStop": {
+    "message": "Peata"
+  },
+  "confirmYes": {
+    "message": "Jah"
+  },
+  "dateInstalled": {
+    "message": "Paigaldamise kuupäev"
+  },
+  "dateUpdated": {
+    "message": "Uuendamise kuupäev"
+  },
+  "dbError": {
+    "message": "Stylus'i andmebaasi uuendamisel esines viga. Kas soovid külastada võimalike lahendustega veebilehte?"
+  },
+  "defaultTheme": {
+    "message": "vaikimisi"
+  },
+  "deleteStyleConfirm": {
+    "message": "Kas soovid kindlasti selle stiili kustutada?"
+  },
+  "deleteStyleLabel": {
+    "message": "Kustuta"
+  },
+  "description": {
+    "message": "Disaini veeb ümber kasutajastiilide halduri Stylus'iga. Stylus võimaldab sul lihtsalt paigaldada teemasid ja välimusi mitmetele populaarsetele saitidele."
+  },
+  "disableAllStyles": {
+    "message": "Lülita kõik stiilid välja"
+  },
+  "disableStyleLabel": {
+    "message": "Keela"
+  },
+  "dragDropMessage": {
+    "message": "Lohista importimiseks oma varundusfail kuskile siia lehele."
+  },
+  "editDeleteText": {
+    "message": "Kustuta"
+  },
+  "editGotoLine": {
+    "message": "Mine reale (või rida:tulp)"
+  },
+  "editStyleHeading": {
+    "message": "Muuda stiili"
+  },
+  "editStyleLabel": {
+    "message": "Muuda"
+  },
+  "editStyleTitle": {
+    "message": "Muuda stiili $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorStylesButton": {
+    "message": "Leia redaktori stiile"
+  },
+  "enableStyleLabel": {
+    "message": "Luba"
+  },
+  "exportLabel": {
+    "message": "Ekspordi"
+  },
+  "externalFeedback": {
+    "message": "Tagasiside"
+  },
+  "externalHomepage": {
+    "message": "Koduleht"
+  },
+  "externalLink": {
+    "message": "Väline link"
+  },
+  "externalSupport": {
+    "message": "Kasutajatugi"
+  },
+  "externalUsercssDocument": {
+    "message": "Usercss dokumentatsioon"
+  },
+  "filteredStyles": {
+    "message": "$numShown$/$numTotal$ kuvatud",
+    "placeholders": {
+      "numShown": {
+        "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Hetkel rakendatud filtritele ei vasta ükski stiil"
+  },
+  "findStyles": {
+    "message": "Leia stiile"
+  },
+  "findStylesForSite": {
+    "message": "Leia sellele saidile veel stiile"
+  },
+  "findStylesInline": {
+    "message": "Aknasisene"
+  },
+  "findStylesInlineTooltip": {
+    "message": "Näita otsingu tulemusi selles aknas."
+  },
+  "genericAdd": {
+    "message": "Lisa"
+  },
+  "genericClone": {
+    "message": "Klooni"
+  },
+  "genericDisabledLabel": {
+    "message": "Keelatud"
+  },
+  "genericEnabledLabel": {
+    "message": "Lubatud"
+  },
+  "genericError": {
+    "message": "Viga"
+  },
+  "genericHistoryLabel": {
+    "message": "Ajalugu"
+  },
+  "genericNext": {
+    "message": "Järgmine"
+  },
+  "genericPrevious": {
+    "message": "Eelmine"
+  },
+  "genericResetLabel": {
+    "message": "Lähtesta"
+  },
+  "genericSavedMessage": {
+    "message": "Salvestatud"
+  },
+  "genericTitle": {
+    "message": "Pealkiri"
+  },
+  "genericUnknown": {
+    "message": "Tundmatu"
+  },
+  "helpAlt": {
+    "message": "Abi"
+  },
+  "helpKeyMapCommand": {
+    "message": "Kirjuta käsu nimi"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Vajuta kiirklahvi"
+  },
+  "importAppendLabel": {
+    "message": "Lisa stiilile"
+  },
+  "importAppendTooltip": {
+    "message": "Lisa imporditud stiil praegusele stiilile"
+  },
+  "importLabel": {
+    "message": "Impordi"
+  },
+  "importReplaceLabel": {
+    "message": "Kirjuta stiil üle"
+  },
+  "importReplaceTooltip": {
+    "message": "Tühista praeguse stiili sisu ja kirjuta see üle imporditud stiiliga"
+  },
+  "importReportLegendAdded": {
+    "message": "lisatud"
+  },
+  "importReportLegendIdentical": {
+    "message": "identset vahele jäetud"
+  },
+  "importReportLegendInvalid": {
+    "message": "sobimatut vahele jäetud"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "said uuenduse nii metaandmetele kui koodile"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "uuendatud kood"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "metainfo uuendatud"
+  },
+  "importReportTitle": {
+    "message": "Stiilide importimine lõpetatud"
+  },
+  "importReportUnchanged": {
+    "message": "Midagi ei muudetud."
+  },
+  "importReportUndone": {
+    "message": "stiili võeti tagasi"
+  },
+  "importReportUndoneTitle": {
+    "message": "Importimine on tagasi võetud"
+  },
+  "installButton": {
+    "message": "Paigalda stiil"
+  },
+  "installButtonInstalled": {
+    "message": "Stiil paigaldatud"
+  },
+  "installButtonReinstall": {
+    "message": "Paigalda stiil uuesti"
+  },
+  "installButtonUpdate": {
+    "message": "Uuenda stiil"
+  },
+  "installUpdate": {
+    "message": "Paigalda uuendus"
+  },
+  "installUpdateFrom": {
+    "message": "Praegu uuendatakse stiili aadressilt $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Kontrolli uuendusi"
+  },
+  "license": {
+    "message": "Litsents"
+  },
+  "linkGetHelp": {
+    "message": "Hangi abi"
+  },
+  "linkGetStyles": {
+    "message": "Hangi stiile"
+  },
+  "linkStylusWiki": {
+    "message": "Viki"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint ei toeta eeltöötlejat $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Määra reegel kui: 0 = keelatud; 1 = hoiatus; 2 = viga)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Linteri $linter$ reeglite seadistuse määramine",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Selle linteri seadistamiseks klõpsa"
+  },
+  "linterInvalidConfigError": {
+    "message": "Ei salvestatud nende vigaste seadistuste tõttu:"
+  },
+  "linterIssues": {
+    "message": "Vead"
+  },
+  "linterIssuesHelp": {
+    "message": "$link$ leidis need vead:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Vigane JSON-formaat"
+  },
+  "linterResetMessage": {
+    "message": "Kogemata tehtud lähtestamiste tagasi võtmiseks vajuta tekstikastis Ctrl-Z (või Cmd-Z)"
+  },
+  "linterRulesLink": {
+    "message": "Vaata reeglite täielikku loendit"
+  },
+  "liveReloadError": {
+    "message": "Faili vaatamisel esines viga"
+  },
+  "liveReloadInstallHint": {
+    "message": "Reaalajas uuestilaadimine on lubatud, seega paigaldatud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on."
+  },
+  "liveReloadLabel": {
+    "message": "Reaalajas uuestilaadimine"
+  },
+  "manageFavicons": {
+    "message": "Lehe ikoonid rakendub-tulbas"
+  },
+  "manageFaviconsGray": {
+    "message": "Tee halliks"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons"
+  },
+  "manageFilters": {
+    "message": "Filtrid"
+  },
+  "manageHeading": {
+    "message": "Paigaldatud stiilid"
+  },
+  "manageMaxTargets": {
+    "message": "Rakendub-üksuste arv"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "Usercss-ina"
+  },
+  "manageNewUI": {
+    "message": "Uus haldusliidese välimus"
+  },
+  "manageOnlyDisabled": {
+    "message": "Ainult keelatud stiilid"
+  },
+  "manageOnlyEnabled": {
+    "message": "Ainult lubatud stiilid"
+  },
+  "manageOnlyExternal": {
+    "message": "Ainult välised stiilid"
+  },
+  "manageOnlyLocal": {
+    "message": "Ainult kohalikult loodud stiilid"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(stiilid, mida ei paigaldatud lehelt userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Ainult mitte-Usercss stiilid"
+  },
+  "manageOnlyUpdates": {
+    "message": "Ainult uuenduste ja vigadega"
+  },
+  "manageOnlyUsercss": {
+    "message": "Ainult Usercss stiilid"
+  },
+  "menuShowBadge": {
+    "message": "Kuva aktiivsete stiilide hulka"
+  },
+  "noStylesForSite": {
+    "message": "Sellele saidile pole stiile paigaldatud."
+  },
+  "openManage": {
+    "message": "Halda"
+  },
+  "openOptionsManage": {
+    "message": "Valikute liides"
+  },
+  "openOptionsPopup": {
+    "message": "Valikud"
+  },
+  "openStylesManager": {
+    "message": "Ava stiilihaldur"
+  },
+  "optionsActions": {
+    "message": "Tegevused"
+  },
+  "optionsAdvanced": {
+    "message": "Täpsem"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Lisa \"Kustuta\" redaktori kontekstmenüüsse"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Paljasta iframe-id HTML [stylus-iframe] kaudu"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Kirjuta uus stiil usercss-ina"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Taustavärv keelatud olekus"
+  },
+  "optionsBadgeNormal": {
+    "message": "Taustavärv"
+  },
+  "optionsCheck": {
+    "message": "Uuenda stiile"
+  },
+  "optionsCheckUpdate": {
+    "message": "Kontrolli ja paigalda kõik saadaolevad uuendused"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Number tööriistaribaikoonil"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Tööriistaribaikoon"
+  },
+  "optionsCustomizePopup": {
+    "message": "Hüpikaken"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Uuendused"
+  },
+  "optionsHeading": {
+    "message": "Valikud"
+  },
+  "optionsIconDark": {
+    "message": "Tumedad brauseriteemad"
+  },
+  "optionsIconLight": {
+    "message": "Heledad brauseriteemad"
+  },
+  "optionsOpen": {
+    "message": "Ava"
+  },
+  "optionsOpenManager": {
+    "message": "Halda stiile"
+  },
+  "optionsPopupWidth": {
+    "message": "Hüpikakna laius (pikslites)"
+  },
+  "optionsReset": {
+    "message": "Lähtesta valikud vaikeväärtustele"
+  },
+  "optionsResetButton": {
+    "message": "Lähtesta valikud"
+  },
+  "optionsSubheading": {
+    "message": "Rohkem valikuid"
+  },
+  "optionsUpdateImportNote": {
+    "message": "Kui impordid stiilide varundusi vanast versioonist või Stylish'ist, tee ühekordne käsitsi uuenduste kontroll stiilide halduris, et veenduda kõikide stiilide ajakohasuses."
+  },
+  "optionsUpdateInterval": {
+    "message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)"
+  },
+  "paginationCurrent": {
+    "message": "Praegune leht"
+  },
+  "paginationEstimated": {
+    "message": "Hinnanguline lehtede arv"
+  },
+  "paginationNext": {
+    "message": "Järgmine leht"
+  },
+  "paginationPrevious": {
+    "message": "Eelmine leht"
+  },
+  "paginationTotal": {
+    "message": "Lehti kokku"
+  },
+  "parseUsercssError": {
+    "message": "Stylus ei suutnud usercss-i analüüsida:"
+  },
+  "popupBorders": {
+    "message": "Lisa äärtesse valged piirjooned"
+  },
+  "popupBordersTooltip": {
+    "message": "Kasulik tumedate teemade puhul Chrome'is, kuna see ei joonista enam külje piirjooni"
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>-<9>, <0>, ka numbriklahvidel - lülitab N. stiili (0 on 10)\n<A>-<Z> lülitab esimest stiili, mille nimi algab selle tähega\n<Shift> avab redaktori lülitamise asemel\n<Numpad +> lubab nimekirjas olevad stiilid\n<Numpad –> keelab nimekirjas olevad stiilid\n<Numpad *> ja <`> (graavis) - lülitab esialgu lubatud stiilid; ei rakendu järgnevalt lubatud stiilidele hüpiku avatud olekus, seega saad taastada esialgse valiku peale asjade testimist: lihtsalt keela kõik ning lülita, seega <Numpad –> <Numpad *>\nRohkem teavet vikis"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Kiirklahvide nägemiseks klõpsa"
+  },
+  "popupManageTooltip": {
+    "message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Ava redaktor uues aknas"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Lubatakse ka redaktori kaardi veebilehitseja aknast eraldamisel,\nja keelatakse üksiku redaktori kaardi haakimisel teise aknasse."
+  },
+  "popupStylesFirst": {
+    "message": "Stiilid enne käske"
+  },
+  "prefShowBadge": {
+    "message": "Praegusel saidil aktiivsete stiilide arv"
+  },
+  "previewLabel": {
+    "message": "Reaalajas eelvaade"
+  },
+  "previewTooltip": {
+    "message": "Ajutiselt rakendab muudatused ilma salvestamata.\nMuudatuste püsivaks tegemiseks salvesta stiil."
+  },
+  "replace": {
+    "message": "Asenda"
+  },
+  "replaceAll": {
+    "message": "Asenda kõik"
+  },
+  "replaceWith": {
+    "message": "Asenda tekstiga"
+  },
+  "retrieveBckp": {
+    "message": "Impordi stiilid"
+  },
+  "search": {
+    "message": "Otsi"
+  },
+  "searchCaseSensitive": {
+    "message": "Tõstutundlik"
+  },
+  "searchNumberOfResults": {
+    "message": "Vastete arv"
+  },
+  "searchNumberOfResults2": {
+    "message": "Vasteid koodis ja rakendub-üksuste väärtustes"
+  },
+  "searchRegexp": {
+    "message": "Kasuta /re/ süntaksit regulaaravaldise otsinguks"
+  },
+  "searchResultInstallCount": {
+    "message": "Paigaldusi kokku"
+  },
+  "searchResultNoneFound": {
+    "message": "Sellele saidile ei leitud stiile."
+  },
+  "searchResultRating": {
+    "message": "Hinnang"
+  },
+  "searchResultUpdated": {
+    "message": "Uuendatud"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Paigaldus nädalas"
+  },
+  "searchStyles": {
+    "message": "Otsi sisu"
+  },
+  "searchStylesHelp": {
+    "message": "</> klahv fokuseerib otsinguvälja.\nLihttekst: otsi nimest, koodist, kodulehe URList ja rakendatavatest saitidest. Sõnu alla 3 tähemärgi ignoreeritakse.\nVastav URL: kasuta otsingus eesliidet <url:>, nt <url:https://github.com/openstyles/stylus>\nRegulaaravaldised sisaldavad kaldkriipse ja lippe, nt </body.*?\\ba\\b/simguy>\nTäpsed sõnad: kirjuta väljendi ümber jutumärgid, nt <\".header ~ div\">"
+  },
+  "sectionAdd": {
+    "message": "Lisa uus jaotis"
+  },
+  "sectionCode": {
+    "message": "Kood"
+  },
+  "sectionHelp": {
+    "message": "Jaotised võimaldavad sul määrata erinevaid koodiosi, mida rakendada mitmetele URLide kogumikele samas stiilis. Näiteks võib üks stiil muuta saidi kodulehte ühtemoodi, seejuures muutes ülejäänud saiti teistmoodi."
+  },
+  "sectionRemove": {
+    "message": "Eemalda jaotis"
+  },
+  "sectionRestore": {
+    "message": "Taasta eemaldatud jaotis"
+  },
+  "shortcuts": {
+    "message": "Otseteed"
+  },
+  "shortcutsNote": {
+    "message": "Defineeri klaviatuuriotseteed"
+  },
+  "sortDateNewestFirst": {
+    "message": "uuemad eespool"
+  },
+  "sortDateOldestFirst": {
+    "message": "vanemad eespool"
+  },
+  "sortLabel": {
+    "message": "Vali, milline järjestus paigaldatud stiilidele rakendada"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Pealkiri tõusvas järjestuses"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Pealkiri laskuvas järjestuses"
+  },
+  "sortStylesHelp": {
+    "message": "Vali paigaldatud üksustele rakendatav sorteerimismeetod sorteerimise rippmenüüst. Vaikimisi seadistus rakendab kasvava sorteerimise (A-st Z-ni) üksuste pealkirjades. Sorteerimised grupis \"Kahanev pealkiri\" rakendavad pealkirjale kahaneva sorteerimise (Z-st A-ni).\nOn olemas ka teisi eelseadistusi, mis võimaldavad üksuste sorteerimist mitme kriteeriumi järgi. Mõtle sellest, nagu sorteeriksid mitme veeruga tabelit ja iga kategooria valikus (plussmärkide vahel) tähistab veergu või gruppi.\nNäiteks, kui valik on \"Lubatud (esimene) + pealkiri\", sorteeritakse üksused nii, et kõik lubatud üksused on nimekirja tipus ning nimekirja pealkirja kasvav sorteerimine (A-st Z-ni) rakendatakse nii lubatud kui keelatud üksustele eraldi."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Järjesta sisu"
+  },
+  "styleBadRegexp": {
+    "message": "Regulaaravaldis on sobimatu."
+  },
+  "styleBeautify": {
+    "message": "Ilusta"
+  },
+  "styleBeautifyIndentConditional": {
+    "message": "Taanda @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Säilita reavahetused"
+  },
+  "styleCancelEditLabel": {
+    "message": "Tagasi haldusesse"
+  },
+  "styleChangesNotSaved": {
+    "message": "Sa oled teinud sellele stiilile muutusi ilma salvestamata."
+  },
+  "styleEnabledLabel": {
+    "message": "Lubatud"
+  },
+  "styleFromMozillaFormatError": {
+    "message": "Mozilla-vormingust importimine ebaõnnestus"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Kleebi Mozilla-vormingus koodi"
+  },
+  "styleInstall": {
+    "message": "Paigaldad \"$stylename$\" Stylus'isse?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Kasutajastiili paigaldamine ebaõnnestus!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "'$stylename$' on juba paigaldatud. Kas kirjutada üle?\nVersioon: $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorCheckbox": {
+    "message": "Vigane @var märkeruut: väärtus peab olema 0 või 1"
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ ei ole sobiv värv",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorPreprocessor": {
+    "message": "Mittetoetatud eeltöötleja: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelectValueMismatch": {
+    "message": "Vigane @select: väärtust pole loendis olemas"
+  },
+  "styleMissingMeta": {
+    "message": "@$key$ metaandmed puuduvad",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "Sisesta nimi"
+  },
+  "styleMozillaFormatHeading": {
+    "message": "Mozilla-vorming"
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Stiili ei rakendatud selle \"regexp()\" vale kasutuse tõttu"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Teatud \"regexp()\" reegleid ei suudetud üldse kompileerida."
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "See stiil kasutab osaliselt vastavaid regulaaravaldisi, olles <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokument standardiga</a> vastuolus, mis nõuab terve URLi vastet. Mõjutatud CSS-jaotisi ei rakendatud lehele. See stiil tehti tõenäoliselt Chrome'i Stylish'is, mis kontrollib \"regexp()\" reegleid valesti alates esimesest versioonist (teadaolev viga)."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "\"regexp()\" vale kasutuse tõttu rakendamata jaotiste arv"
+  },
+  "styleRegexpTestButton": {
+    "message": "Regulaaravaldise katsetus"
+  },
+  "styleRegexpTestFull": {
+    "message": "Vastavad kaardid"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Sobimatud regulaaravaldised vahele jäetud"
+  },
+  "styleRegexpTestNone": {
+    "message": "Pole vastavaid kaarte"
+  },
+  "styleRegexpTestNote": {
+    "message": "Märkus: kasuta üksikut \\, et keelata märgi töötlemine regulaaravaldise sisendväljas, mis konverteeritakse automaatselt \\\\-ks stiili koodis, nagu CSSi tsiteeritud sõnede spetsifikatsioon ette näeb."
+  },
+  "styleRegexpTestPartial": {
+    "message": "Ei vasta täielikult, seega vahele jäetud"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Vastavate avatud kaardide nimekiri (klõpsa URLile selle kaardi fookustamiseks)"
+  },
+  "styleSaveLabel": {
+    "message": "Salvesta"
+  },
+  "styleSectionsTitle": {
+    "message": "Jaotised"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "Koodi Mozilla-vormingut saab üles laadida saidile userstyles.org ja kasutada klassikalise Firefoxi Stylish'iga"
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Stiil Mozilla-vormingus"
+  },
+  "styleUpdate": {
+    "message": "Kas soovid kindlasti uuendada \"$stylename$\"?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "Stiili on redaktoriväliselt muudetud. Kas soovid stiili uuesti laadida?"
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus ei tööta sellistel lehtedel."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Turvakaalutlustel keelab brauser laiendustel sisseehitatud lehtede (nagu chrome://version, standardne uue kaardi leht alates versioonist Chrome 61, about:addons jne) ning ka teiste laienduste lehtede muutmise. Iga brauser piirab lisaks juurdepääsu oma laienduste galeriile (nagu Chrome'i veebipood või AMO)."
+  },
+  "syncStorageErrorSaving": {
+    "message": "Väärtust ei saa salvestada. Proovi teksti hulka vähendada."
+  },
+  "toggleStyle": {
+    "message": "Luba/keela stiil"
+  },
+  "undo": {
+    "message": "Võta tagasi"
+  },
+  "undoGlobal": {
+    "message": "Võta kõigis jaotistes tagasi"
+  },
+  "unreachableAMO": {
+    "message": "Firefox keelab ligipääsu sellele saidile."
+  },
+  "unreachableAMOHint": {
+    "message": "Ligipääsu lubamiseks ava <about:config>, parem-klõpsa nimekirjal, vali 'Uus', seejärel 'Tõeväärtus', kleebi <privacy.resistFingerprinting.block_mozAddonManager> ja klõpsa Sobib, <true>, Sobib, laadi leht <addons.mozilla.org> uuesti."
+  },
+  "unreachableAMOHintNewFF": {
+    "message": "Firefox 60-s ja uuemas pead ka lehel <about:config> eelistusest <extensions.webextensions.restrictedDomains> eemaldama AMO domeeni."
+  },
+  "unreachableAMOHintOldFF": {
+    "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see."
+  },
+  "unreachableContentScript": {
+    "message": "Lehega ei saanud ühendust. Proovi kaart uuesti laadida."
+  },
+  "unreachableFileHint": {
+    "message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel"
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "Uuendusi ei leitud."
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Mõndasid uuendatavaid stiile ei kontrollitud, et vältida võimalike kohalike muutuste kadu. Uuendusi saab sundida, kontrollides ükshaaval või käivitades uue kontrolli kõikidele stiilidele (kohalikud muutused kirjutatakse üle)."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Uuendamine ebaõnnestus: server vastas koodiga $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Uuendamine ebaõnnestus: server on kättesaamatu."
+  },
+  "updateCheckHistory": {
+    "message": "Uuenduskontrollide ajalugu"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Paigalda uuendus (kohalikud muutused kirjutatakse üle)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Uuenduse sundimine kirjutab üle mistahes kohalikud muutused."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Seda stiili muudeti kohalikult."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Seda stiili võib olla kohalikult muudetud."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "Stiil on ajakohane."
+  },
+  "updateCompleted": {
+    "message": "Uuendus teostatud."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Uuendused paigaldatud:"
+  },
+  "usercssConfigIncomplete": {
+    "message": "Stiili uuendati või eemaldati pärast seadistusdialoogi kuvamist. Neid muutujaid ei salvestatud, et vältida stiili metaandmete korrumpeerumist:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Kirjelda koodis @name"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Asendad vaikimisi malli uutes kasutajacss stiilides praeguse koodiga?"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "Tühi @name asendab vaikimisi malli"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Sisesta kood siia..."
+  },
+  "versionInvalidOlder": {
+    "message": "Versioon on paigaldatud stiilist vanem."
+  },
+  "writeStyleFor": {
+    "message": "Kirjuta stiil:"
+  },
+  "writeStyleForURL": {
+    "message": "see URL"
+  }
 }

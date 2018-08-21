@@ -50,8 +50,32 @@
     // On own pages we request the styles directly to minimize delay and flicker
     if (typeof API === 'function') {
       API.getStyles(request).then(callback);
+    } else if (!CHROME && getStylesFallback(request)) {
+      // NOP
     } else {
       chrome.runtime.sendMessage(request, callback);
+    }
+  }
+
+  /**
+   * TODO: remove when FF fixes the bug.
+   * Firefox borks sendMessage in same-origin iframes that have 'src' with a real path on the site.
+   * We implement a workaround for the initial styleApply case only.
+   * Everything else (like toggling of styles) is still buggy.
+   * @param {Object} msg
+   * @param {Function} callback
+   * @returns {Boolean|undefined}
+   */
+  function getStylesFallback(msg) {
+    if (window !== parent &&
+        location.href !== 'about:blank') {
+      try {
+        if (parent.location.origin === location.origin &&
+            parent.location.href !== location.href) {
+          chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
+          return true;
+        }
+      } catch (e) {}
     }
   }
 

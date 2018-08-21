@@ -406,11 +406,10 @@ function validate() {
 }
 
 function updateTitle() {
-  const DIRTY_TITLE = '* $';
   const name = $('#name').savedValue;
   const clean = isCleanGlobal();
-  const title = styleId === null ? t('addStyleTitle') : t('editStyleTitle', [name]);
-  document.title = clean ? title : DIRTY_TITLE.replace('$', title);
+  const title = styleId === null ? t('addStyleTitle') : name;
+  document.title = (clean ? '' : '* ') + title;
   window.onbeforeunload = clean ? null : beforeUnload;
   $('#save-button').disabled = clean;
 }
@@ -584,10 +583,8 @@ function showHelp(title = '', body) {
     window.dispatchEvent(new Event('closeHelp'));
   });
 
-  if (getComputedStyle(div).display === 'none') {
-    window.addEventListener('keydown', showHelp.close, true);
-    $('.dismiss', div).onclick = showHelp.close;
-  }
+  window.addEventListener('keydown', showHelp.close, true);
+  $('.dismiss', div).onclick = showHelp.close;
 
   // reset any inline styles
   div.style = 'display: block';

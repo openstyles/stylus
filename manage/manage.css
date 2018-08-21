@@ -9,10 +9,13 @@
 
 body {
   margin: 0;
-  font: 12px arial, sans-serif;
   /* Firefox: fill the entire page for drag'n'drop to work */
   display: flex;
   height: 100%;
+}
+
+#header:lang(ja) h1 {
+  font-weight: normal;
 }
 
 body.all-styles-hidden-by-filters:before,
@@ -43,10 +46,6 @@ a, .disabled a:hover {
 
 a:hover {
   color: #666;
-}
-
-select {
-  font-size: 12px;
 }
 
 #header {
@@ -468,7 +467,6 @@ select {
 
 .newUI .style-name {
   font-size: 14px;
-  font-family: sans-serif;
   text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
   padding-left: var(--name-padding-left);
   padding-right: var(--name-padding-right);
@@ -935,7 +933,6 @@ input[id^="manage.newUI"] {
   height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
-  font: 400 12px Arial;
   color: #000;
   border: 1px solid hsl(0, 0%, 66%);
 }

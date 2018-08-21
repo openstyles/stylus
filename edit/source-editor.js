@@ -122,11 +122,11 @@ function createSourceEditor(style) {
     style.sourceCode = '';
 
     chromeSync.getLZValue('usercssTemplate').then(code => {
+      const name = style.name || t('usercssReplaceTemplateName');
+      const date = new Date().toLocaleString();
       code = code || DEFAULT_CODE;
       code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
-        `${str}${space ? '' : ' '}${
-          style.name ||
-          t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()}`);
+        `${str}${space ? '' : ' '}${name} - ${date}`);
       // strip the last dummy section if any, add an empty line followed by the section
       style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
       cm.startOperation();
@@ -149,7 +149,7 @@ function createSourceEditor(style) {
 
   function updateTitle() {
     const newTitle = (dirty.isDirty() ? '* ' : '') +
-      (style.id ? t('editStyleTitle', [style.name]) : t('addStyleTitle'));
+      (style.id ? style.name : t('addStyleTitle'));
     if (document.title !== newTitle) {
       document.title = newTitle;
     }
@@ -202,8 +202,8 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
-    return (
-      API.saveUsercssUnsafe({
+    return ensureUniqueStyle(code)
+      .then(() => API.saveUsercssUnsafe({
         id: style.id,
         reason: 'editSave',
         enabled: style.enabled,
@@ -214,6 +214,7 @@ function createSourceEditor(style) {
         if (errors) return Promise.reject(errors);
       })
       .catch(err => {
+        if (err.handled) return;
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
             chromeSync.setLZValue('usercssTemplate', code)
@@ -230,6 +231,20 @@ function createSourceEditor(style) {
           contents.push($create('pre', drawLinePointer(pos)));
         }
         messageBox.alert(contents, 'pre');
+      });
+  }
+
+  function ensureUniqueStyle(code) {
+    return style.id ? Promise.resolve() :
+      API.buildUsercss({
+        sourceCode: code,
+        checkDup: true,
+        metaOnly: true,
+      }).then(({dup}) => {
+        if (dup) {
+          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+          return Promise.reject({handled: true});
+        }
       });
   }
 

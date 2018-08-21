@@ -1,71 +1,55 @@
 {
-	"appliesToEverything": {
-		"message": "అన్నిటికీ",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"enableStyleLabel": {
-		"message": "చేతనించు",
-		"description": "Label for the button to enable a style"
-	},
-	"helpAlt": {
-		"message": "సహాయం",
-		"description": "Alternate text for help buttons"
-	},
-	"manageHeading": {
-		"message": "స్థాపిత శైలులు",
-		"description": "Heading for the manage page"
-	},
-	"styleSaveLabel": {
-		"message": "భద్రపరచు",
-		"description": "Label for save button for style editing"
-	},
-	"appliesAdd": {
-		"message": "చేర్చు",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"disableStyleLabel": {
-		"message": "అచేతనించు",
-		"description": "Label for the button to disable a style"
-	},
-	"deleteStyleConfirm": {
-		"message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?",
-		"description": "Confirmation before deleting a style"
-	},
-	"appliesDisplay": {
-		"message": "వేటికి వర్తిస్తుంది; $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleSectionsTitle": {
-		"message": "విభాగాలు",
-		"description": "Title for the style sections section"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "ఇంకా మరిన్ని",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "తొలగించు",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"manageTitle": {
-		"message": "స్టైలిష్",
-		"description": "Title for the manage page"
-	},
-	"deleteStyleLabel": {
-		"message": "తొలగించు",
-		"description": "Label for the button to delete a style"
-	},
-	"addStyleLabel": {
-		"message": "క్రొత్త స్టైల్ వ్రాయండి",
-		"description": "Label for the button to go to the add style page"
-	},
-	"editStyleLabel": {
-		"message": "మార్చు",
-		"description": "Label for the button to go to the edit style page"
-	}
+  "addStyleLabel": {
+    "message": "క్రొత్త స్టైల్ వ్రాయండి"
+  },
+  "appliesAdd": {
+    "message": "చేర్చు"
+  },
+  "appliesDisplay": {
+    "message": "వేటికి వర్తిస్తుంది; $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "ఇంకా మరిన్ని"
+  },
+  "appliesRemove": {
+    "message": "తొలగించు"
+  },
+  "appliesToEverything": {
+    "message": "అన్నిటికీ"
+  },
+  "deleteStyleConfirm": {
+    "message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?"
+  },
+  "deleteStyleLabel": {
+    "message": "తొలగించు"
+  },
+  "disableStyleLabel": {
+    "message": "అచేతనించు"
+  },
+  "editStyleLabel": {
+    "message": "మార్చు"
+  },
+  "enableStyleLabel": {
+    "message": "చేతనించు"
+  },
+  "helpAlt": {
+    "message": "సహాయం"
+  },
+  "manageHeading": {
+    "message": "స్థాపిత శైలులు"
+  },
+  "manageTitle": {
+    "message": "స్టైలిష్"
+  },
+  "styleSaveLabel": {
+    "message": "భద్రపరచు"
+  },
+  "styleSectionsTitle": {
+    "message": "విభాగాలు"
+  }
 }
