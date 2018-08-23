@@ -18,15 +18,17 @@ body.search-results-shown {
 
 #search-results {
   position: relative;
-  margin-top: -1em;
 }
 
 #search-results-error {
-  background-color: rgba(255, 0, 0, 0.4);
+  flex-basis: 100%;
+  background-color: hsla(0, 100%, 30%, .8);
+  color: #fff;
+  text-shadow: 2px 1px 1px #000;
   font-weight: bold;
   padding: 5px;
   text-align: center;
-  margin: 0 0 var(--outer-padding);
+  margin: 0 var(--outer-padding) var(--outer-padding);
 }
 
 #search-results-list {
@@ -47,6 +49,10 @@ body.search-results-shown {
   border: 1px solid #555;
   margin-bottom: 24px;
   background-color: #eee;
+}
+
+.search-result:last-of-type {
+  margin-bottom: 0;
 }
 
 .search-result:hover {
@@ -227,8 +233,7 @@ body.search-results-shown {
 }
 
 .search-results-nav[data-type="bottom"] {
-  margin-top: -1em;
-  margin-bottom: 1em;
+  margin: 1.25rem 0 .5rem;
 }
 
 #search-results .search-results-nav button {
@@ -250,11 +255,6 @@ body.search-results-shown {
 
 #search-results .search-results-nav button:not(:disabled):hover {
   text-shadow: 0 1px 4px rgba(0, 0, 0, .5);
-}
-
-#find-styles-inline-group label {
-  position: relative;
-  padding-left: 16px;
 }
 
 /* spinner: https://github.com/loadingio/css-spinner */

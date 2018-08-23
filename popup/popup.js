@@ -11,6 +11,22 @@ const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 toggleSideBorders();
 
+if (prefs.get('popupui') === 1) {
+  document.documentElement.classList.add('classicUI');
+} else {
+  document.documentElement.classList.add('iconUI');
+}
+
+if (prefs.get('popupclick') === 1) {
+  document.documentElement.classList.add('toggleUI');
+} else {
+  document.documentElement.classList.add('directLinkUI');
+}
+
+if (!prefs.get('popup.stylesFirst')) {
+  document.documentElement.classList.add('actions-top');
+}
+
 getActiveTab().then(tab =>
   FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
   ? getTabRealURLFirefox(tab)
@@ -81,8 +97,17 @@ function initPopup() {
 
   // action buttons
   $('#disableAll').onchange = function () {
-    installed.classList.toggle('disabled', this.checked);
+    document.body.classList.toggle('disabled', this.checked);
   };
+
+  $('#disable-all-icon').onclick = () => {
+    $('#disableAll').click();
+  };
+
+  $('#find-styles-icon').onclick = () => {
+    $('#find-styles-link').click();
+  };
+
   setupLivePrefs();
 
   Object.assign($('#popup-manage-button'), {
@@ -91,18 +116,35 @@ function initPopup() {
     oncontextmenu: handleEvent.openManager,
   });
 
+  Object.assign($('#popup-manage-icon'), {
+    onclick: handleEvent.openManager,
+    onmouseup: handleEvent.openManager,
+    oncontextmenu: handleEvent.openManager,
+  });
+
+  $('#find-external-icon').onclick = () => {
+    event.preventDefault();
+    $('input.toggle-inline').click()
+  };
+
+  $('#find-inline-icon').onclick = () => {
+    event.preventDefault();
+    $('input.toggle-inline').click()
+  };
+
   $('#popup-options-button').onclick = () => {
+    chrome.runtime.openOptionsPage();
+    window.close();
+  };
+
+  $('#popup-options-icon').onclick = () => {
     chrome.runtime.openOptionsPage();
     window.close();
   };
 
   $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
 
-  if (!prefs.get('popup.stylesFirst')) {
-    document.body.insertBefore(
-      $('body > .actions'),
-      installed);
-  }
+  $('#popup-wiki-icon').onclick = handleEvent.openURLandHide;
 
   if (!tabURL) {
     document.body.classList.add('blocked');
@@ -241,6 +283,11 @@ function showStyles(styles) {
     }
     window.dispatchEvent(new Event('showStyles:done'));
   });
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)');
+  if (typeof(reverseZebra) !== 'undefined' && reverseZebra !== null) {
+    $('#installed').classList.add('reverse-stripe');
+  }
 }
 
 
@@ -269,6 +316,12 @@ function createStyleElement({
   const editLink = $('.style-edit-link', entry);
   Object.assign(editLink, {
     href: editLink.getAttribute('href') + style.id,
+    onclick: handleEvent.openLink,
+  });
+
+  const editLinkAccess = $('.style-edit-link-accessibility', entry);
+  Object.assign(editLinkAccess, {
+    href: editLinkAccess.getAttribute('href') + style.id,
     onclick: handleEvent.openLink,
   });
 
@@ -323,7 +376,11 @@ Object.assign(handleEvent, {
   },
 
   name(event) {
-    this.checkbox.dispatchEvent(new MouseEvent('click'));
+    if (prefs.get('popupclick') === 1) {
+      this.checkbox.dispatchEvent(new MouseEvent('click'));
+    } else {
+      $('.style-edit-link').click();
+    }
     event.preventDefault();
   },
 
@@ -341,9 +398,12 @@ Object.assign(handleEvent, {
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = $('.style-name', entry).textContent;
-    $('[data-cmd="ok"]', box).focus();
-    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
-    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    $('button[data-cmd="ok"]', box).focus();
+    $('button[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('button[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    $('a[data-cmd="ok"]', box).focus();
+    $('a[data-cmd="ok"]', box).onclick = () => confirm(true); event.preventDefault();
+    $('a[data-cmd="cancel"]', box).onclick = () => confirm(false); event.preventDefault();
     window.onkeydown = event => {
       const keyCode = event.keyCode || event.which;
       if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
@@ -429,7 +489,7 @@ Object.assign(handleEvent, {
     event.preventDefault();
     getActiveTab()
       .then(activeTab => API.openURL({
-        url: this.href || this.dataset.href,
+        url: this.hasAttribute('href') && this.hasAttribute('data-href') === true ? this.dataset.href : this.href || this.dataset.href,
         index: activeTab.index + 1,
         message: tryJSONparse(this.dataset.sendMessage),
       }))
@@ -473,6 +533,13 @@ function handleDelete(id) {
   $.remove(ENTRY_ID_PREFIX + id);
   if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
+  }
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)');
+  if (typeof(reverseZebra) !== 'undefined' && reverseZebra !== null) {
+    $('#installed').classList.add('reverse-stripe');
+  } else {
+    $('#installed').classList.remove('reverse-stripe');
   }
 }
 

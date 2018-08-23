@@ -94,7 +94,9 @@ window.addEventListener('showStyles:done', function _() {
   function init() {
     setTimeout(() => document.body.classList.add(BODY_CLASS));
 
-    $('#find-styles-inline-group').classList.add('hidden');
+    if (prefs.get('popupui') === 1) {
+      $('#find-styles-inline-group').classList.add('hidden');
+    }
 
     dom.container = $('#search-results');
     dom.container.dataset.empty = '';
@@ -207,6 +209,7 @@ window.addEventListener('showStyles:done', function _() {
     dom.error.classList.remove('hidden');
     dom.container.classList.toggle('hidden', !processedResults.length);
     document.body.classList.toggle('search-results-shown', processedResults.length > 0);
+    document.documentElement.classList.add('error-shown');
     if (dom.error.getBoundingClientRect().bottom < 0) {
       dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
