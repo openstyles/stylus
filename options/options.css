@@ -18,6 +18,27 @@ body {
   max-width: 800px;
 }
 
+.radio-outer-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radio-inner-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radio-inner-wrapper label > :first-child {
+  margin-right: 4px;
+}
+
+.radio-title + label {
+  margin-left: auto;
+  margin-right: 1.25rem;
+}
+
 @supports (-moz-appearance:none) {
   body {
     --addons-page-left-padding: 6px;
@@ -86,13 +107,17 @@ label > :first-child {
   flex-grow: 1;
 }
 
-label:not([disabled]) > :first-child {
-  cursor: default;
+label:not([disabled]),
+label:not([disabled]) * {
+  cursor: pointer;
+}
+
+label:not([disabled]) input[type=number] {
+  cursor: auto;
 }
 
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
-  cursor: pointer;
 }
 
 input[type=number],
@@ -251,6 +276,64 @@ html:not(.firefox):not(.opera) #updates {
   transition: fill .5s;
   height: 16px;
   width: 16px;
+}
+
+.action-elements {
+  padding: 6px 0;
+}
+
+.icon-wrapper {
+  display: inline-flex;
+}
+
+.action-elements input,
+.style-name-action input {
+  margin: 0 3px -1px;
+}
+
+.icon-wrapper.use-text {
+  margin: 0 3px;
+}
+
+.icon-wrapper.use-edit {
+  margin: 0 5px 0 6px;
+}
+
+.action-elements label > :first-child,
+.style-name-action label > :first-child {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.action-elements label,
+.style-name-action label {
+  width: 56px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon-wrapper .svg-icon {
+  fill: #666;
+  transition: fill .5s;
+}
+
+label:hover .icon-wrapper .svg-icon {
+  fill: #000;
+}
+
+.svg-icon.text,
+.svg-icon.vector {
+  height: 16px;
+}
+
+.svg-icon.edit {
+  height: 18px;
+}
+
+.svg-icon.double-toggle {
+  height: 22px;
 }
 
 #advanced.collapsible.collapsed .collapsible-resizer .svg-icon,
