@@ -13,7 +13,7 @@ function createSourceEditor(style) {
   $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
   $('#save-button').onclick = save;
-  $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
+  $('#header').addEventListener('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
 
@@ -340,7 +340,7 @@ function createSourceEditor(style) {
     }
     cm.display.scroller.scrollTop +=
       // WheelEvent.DOM_DELTA_LINE
-      deltaMode === 1 ? deltaY * cm.display.cachedTextHeight :
+      deltaMode === 1 ? deltaY * cm.defaultTextHeight() :
       // WheelEvent.DOM_DELTA_PAGE
       deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
       // WheelEvent.DOM_DELTA_PIXEL
