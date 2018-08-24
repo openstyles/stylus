@@ -368,8 +368,12 @@
     "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
   },
   "findStylesInlineTooltip": {
-    "message": "Display search results inside this window.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "Display search results inside this window",
+    "description": "Text for a checkbox that displays search results within the Stylus popup"
+  },
+  "findStylesExternalTooltip": {
+    "message": "Display search results on an external website",
+    "description": "Text for a checkbox that displays search results on an external website"
   },
   "genericAdd": {
     "message": "Add",
@@ -767,6 +771,24 @@
   "optionsOpenManager": {
     "message": "Manage styles"
   },
+  "optionsPopupClassicUI": {
+    "message": "Text and buttons"
+  },
+  "optionsPopupIconUI": {
+    "message": "Vector icons"
+  },
+  "optionsPopupTitleClickAction": {
+    "message": "Style name click action"
+  },
+  "optionsPopupClickActionLink": {
+    "message": "Edit style"
+  },
+  "optionsPopupClickActionToggle": {
+    "message": "Toggle style"
+  },
+  "optionsPopupTitle": {
+    "message": "Action elements"
+  },
   "optionsPopupWidth": {
     "message": "Popup width (in pixels)"
   },
@@ -850,6 +872,10 @@
   "previewTooltip": {
     "message": "Temporarily applies the changes without saving.\nSave the style to make the changes permanent.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reEnableAllStyles": {
+    "message": "Turn all previously enabled styles back on",
+    "description": "Label for the element which turns all disabled styles back on."
   },
   "replace": {
     "message": "Replace",
@@ -1252,10 +1278,6 @@
     "message": "Updates installed:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
-  "usercssAvoidOverwriting": {
-    "message": "Please change the value of @name or @namespace to avoid overwriting an existing style.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
-  },
   "usercssConfigIncomplete": {
     "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
   },
@@ -1281,6 +1303,10 @@
   "writeStyleFor": {
     "message": "Write style for: ",
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
+  },
+  "writeStyleForInfo": {
+    "message": "Create a new style by specifying target URLs.\nAvailable options shown in hover tooltips.",
+    "description": "Style creation actions tooltip to accompany icon"
   },
   "writeStyleForURL": {
     "message": "this URL",
