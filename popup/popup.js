@@ -379,7 +379,8 @@ Object.assign(handleEvent, {
     if (prefs.get('popupclick') === 1) {
       this.checkbox.dispatchEvent(new MouseEvent('click'));
     } else {
-      $('.style-edit-link').click();
+      const entry = handleEvent.getClickedStyleElement(event);
+      $('.style-edit-link', entry).click();
     }
     event.preventDefault();
   },
@@ -489,7 +490,7 @@ Object.assign(handleEvent, {
     event.preventDefault();
     getActiveTab()
       .then(activeTab => API.openURL({
-        url: this.hasAttribute('href') && this.hasAttribute('data-href') === true ? this.dataset.href : this.href || this.dataset.href,
+        url: this.hasAttribute('data-href') ? this.dataset.href : this.href,
         index: activeTab.index + 1,
         message: tryJSONparse(this.dataset.sendMessage),
       }))
