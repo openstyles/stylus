@@ -60,10 +60,7 @@ function updateExisting(lib) {
       const folderRoot = `${vendorRoot}${folder}`;
       const entries = fs.readdirSync(folderRoot);
       entries.forEach(entry => {
-        // Remove $1 from "CodeMirror$1" in codemirror.js
-        if (entry === 'codemirror.js') {
-          renameCodeMirrorVariable(`${folderRoot}/${entry}`);
-        } else if (entry !== 'README.md' && entry !== 'LICENSE') {
+        if (entry !== 'README.md' && entry !== 'LICENSE') {
           // Ignore README.md & LICENSE files
           const entryPath = `${folderRoot}/${entry}`;
           try {
@@ -72,6 +69,10 @@ function updateExisting(lib) {
                 folders.push(`${folder}/${entry}`);
               } else {
                 fs.copySync(`${libRoot}${folder}/${entry}`, entryPath);
+                // Remove $1 from "CodeMirror$1" in codemirror.js
+                if (entry === 'codemirror.js') {
+                  renameCodeMirrorVariable(entryPath);
+                }
               }
             }
           } catch (err) {
