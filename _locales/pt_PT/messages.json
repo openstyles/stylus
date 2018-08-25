@@ -962,6 +962,9 @@
   "updatesCurrentlyInstalled": {
     "message": "Atualizações instaladas:"
   },
+  "usercssAvoidOverwriting": {
+    "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente."
+  },
   "usercssConfigIncomplete": {
     "message": "O estilo foi atualizado ou eliminado após a exibição do diálogo de configuração. Essas variáveis não foram guardadas para evitar corromper os metadados do estilo:"
   },

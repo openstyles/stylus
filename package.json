@@ -7,7 +7,11 @@
   "author": "Stylus Team",
   "devDependencies": {
     "archiver": "^3.0.0",
+<<<<<<< HEAD
     "codemirror": "^5.39.2",
+=======
+    "codemirror": "^5.40.0",
+>>>>>>> upstream/master
     "eslint": "^5.4.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
@@ -17,7 +21,11 @@
     "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
+<<<<<<< HEAD
     "updates": "^4.2.0"
+=======
+    "updates": "^4.2.1"
+>>>>>>> upstream/master
   },
   "scripts": {
     "lint": "eslint **/*.js || true",

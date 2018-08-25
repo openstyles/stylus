@@ -962,6 +962,9 @@
   "updatesCurrentlyInstalled": {
     "message": "Mises à jour installées :"
   },
+  "usercssAvoidOverwriting": {
+    "message": "Veuillez changer la valeur de @name ou @namespace afin d'éviter d'écraser un style pré-existant."
+  },
   "usercssConfigIncomplete": {
     "message": "Le style a été mis à jour ou supprimer après l’apparition du dialogue de confirmation. Ces variables n’ont pas été sauvegardées pour éviter de corrompre les métadonnées du style :"
   },

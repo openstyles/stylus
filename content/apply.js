@@ -299,18 +299,36 @@
         // HTML document style; also works on HTML-embedded SVG
         el = document.createElement('style');
       }
-      Object.assign(el, {
-        id,
-        type: 'text/css',
-        textContent: code,
-      });
+      el.id = id;
+      el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
+      if (!CHROME && (
+        // FF bug workaround, see https://github.com/openstyles/stylus/issues/461
+        location.hostname === 'www.barclaycardus.com' ||
+        location.hostname === 'www.icloud.com'
+      )) {
+        setContentsInPageContext(el, code);
+      } else {
+        el.textContent = code;
+      }
       addStyleElement(el);
     }
     styleElements.set(id, el);
     disabledElements.delete(Number(styleId));
     return el;
+  }
+
+  function setContentsInPageContext(el, code) {
+    const originalId = el.id;
+    el.id += performance.now();
+    // when adding to ROOT we don't want our observer to pop up so we use a DIV wrapper
+    (document.head || ROOT.appendChild(document.createElement('div'))).appendChild(el);
+    (document.head || ROOT).appendChild(document.createElement('script')).text = `
+      document.currentScript.remove();
+      document.getElementById('${el.id}').textContent = ${JSON.stringify(code)};`;
+    if (!document.head) el.parentNode.remove();
+    el.id = originalId;
   }
 
   function addStyleElement(newElement) {
@@ -443,7 +461,6 @@
   function initDocRootObserver() {
     let lastRestorationTime = 0;
     let restorationCounter = 0;
-    let scheduledSort = false;
     let observing = false;
     let sorting = false;
     let observer;
@@ -504,24 +521,13 @@
         return true;
       }
     }
-    function sortStyleElements({force} = {}) {
-      if (!observing ||
-          !force && scheduledSort) {
-        return;
-      }
-      scheduledSort = false;
+    function sortStyleElements() {
+      if (!observing) return;
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
       }
-      if (!prevExpected) {
-        return;
-      }
-      if (!CHROME && !force && window !== top) {
-        requestAnimationFrame(() => sortStyleElements({force: true}));
-        scheduledSort = true;
-        return;
-      }
+      if (!prevExpected) return;
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;

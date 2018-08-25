@@ -703,6 +703,9 @@
   "sectionRemove": {
     "message": "删除此部分"
   },
+  "sectionRestore": {
+    "message": "撤销删除"
+  },
   "shortcuts": {
     "message": "快捷键"
   },
