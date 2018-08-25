@@ -285,11 +285,7 @@ function showStyles(styles) {
   });
 
   var reverseZebra = $('.entry:last-child:nth-of-type(odd)') !== null;
-  if (reverseZebra) {
-    $('#installed').classList.add('reverse-stripe');
-  } else {
-    $('#installed').classList.remove('reverse-stripe');
-  }
+  $('#installed').classList.toggle('reverse-stripe', reverseZebra);
 }
 
 
@@ -539,11 +535,7 @@ function handleDelete(id) {
   }
 
   var reverseZebra = $('.entry:last-child:nth-of-type(odd)') !== null;
-  if (reverseZebra) {
-    $('#installed').classList.add('reverse-stripe');
-  } else {
-    $('#installed').classList.remove('reverse-stripe');
-  }
+  $('#installed').classList.toggle('reverse-stripe', reverseZebra);
 }
 
 
