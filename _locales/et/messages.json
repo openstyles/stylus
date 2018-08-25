@@ -394,6 +394,9 @@
   "installUpdateFromLabel": {
     "message": "Kontrolli uuendusi"
   },
+  "installUpdateUnavailable": {
+    "message": "Uuenduste kontrollimise lubamiseks lohista failid kaartide ribale või määratle stiili metaandmetes @updateURL."
+  },
   "license": {
     "message": "Litsents"
   },
@@ -405,6 +408,9 @@
   },
   "linkStylusWiki": {
     "message": "Viki"
+  },
+  "linkTranslate": {
+    "message": "Tõlgi"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint ei toeta eeltöötlejat $preprocessorname$",
@@ -967,6 +973,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Uuendused paigaldatud:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Olemasoleva stiili ülekirjutamise vältimiseks palun muuda @name või @namespace väärtused."
   },
   "usercssConfigIncomplete": {
     "message": "Stiili uuendati või eemaldati pärast seadistusdialoogi kuvamist. Neid muutujaid ei salvestatud, et vältida stiili metaandmete korrumpeerumist:"

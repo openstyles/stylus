@@ -106,6 +106,12 @@
   "cm_resizeGripHint": {
     "message": "Dublu click pentru a maximiza sau restaura înălțimea"
   },
+  "cm_selectByTokens": {
+    "message": "Dublu-click pentru a selecta simbolurile"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Exemple de simboluri: .foo-bar-2 #aabbcc 0.32 !important\nCand inactiv: cuvinte delimitate cu punctuatie sunt selectate."
+  },
   "cm_smartIndent": {
     "message": "Folosiți indentare inteligentă"
   },
@@ -236,6 +242,12 @@
   "findStylesInlineTooltip": {
     "message": "Arătați rezultatele căutării în această pagină."
   },
+  "genericAdd": {
+    "message": "Adaugă"
+  },
+  "genericClone": {
+    "message": "Clonează"
+  },
   "genericDisabledLabel": {
     "message": "Dezactivat"
   },
@@ -340,6 +352,9 @@
   "installUpdateFromLabel": {
     "message": "Verificați update-urile"
   },
+  "installUpdateUnavailable": {
+    "message": "Pentru a activa verificarea de updates. trage fișierul pe taburi (zona cu titluri) sau specifica @updateURL în metadata temei."
+  },
   "license": {
     "message": "Licență"
   },
@@ -348,6 +363,9 @@
   },
   "linkGetStyles": {
     "message": "Căutați teme"
+  },
+  "linkTranslate": {
+    "message": "Traduce"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint nu suportă preprocesorul $preprocessorname$ ",
@@ -393,6 +411,12 @@
   },
   "liveReloadError": {
     "message": "A avut loc o eroare în timpul monitorizării acestui fișier"
+  },
+  "liveReloadInstallHint": {
+    "message": "Reload automat este activat deci tema instalată va fi updatată automat când acest tab si fișierul surca sunt deschise."
+  },
+  "liveReloadUnavailable": {
+    "message": "Pentru a activa live reload (refresh automat), trage fișierul pe taburi (zona unde titlurile temelor sunt afișate) "
   },
   "manageFavicons": {
     "message": "Favicons în coloana 'se aplică la'"
@@ -468,6 +492,9 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Expuneți iframes via HTML[stylus-iframe]"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Expune domain-ul site-ului in fiecare iframe.\nActivează scrierea de CSS specific pentru iframe precum:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Scrieți temă nouă în formatul usercss"
@@ -568,6 +595,9 @@
   "prefShowBadge": {
     "message": "Numărul de teme active pentru site-ul curent"
   },
+  "previewTooltip": {
+    "message": "Aplică temporar modificările fără a salva.\nSalvează tema pentru a face schimbările permanente."
+  },
   "replace": {
     "message": "Înlocuiți"
   },
@@ -622,6 +652,9 @@
   "sectionRemove": {
     "message": "Ștergeți secțiunea"
   },
+  "sectionRestore": {
+    "message": "Restaurează o secțiune ștearsă"
+  },
   "shortcutsNote": {
     "message": "Creeați keyboard shortcuts"
   },
@@ -654,6 +687,9 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "Indentare @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Menține linii noi"
   },
   "styleCancelEditLabel": {
     "message": "Înapoi la manager"
@@ -810,6 +846,9 @@
   "unreachableAMOHint": {
     "message": "Pentru a permite accesul deschideți <about:config>, right-click pe listă, click 'New', apoi 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> și click OK, <true>, OK, reâncărcați pagina <addons.mozilla.org>."
   },
+  "unreachableAMOHintNewFF": {
+    "message": "În Firefox 60+ va trebui sa fie șters domain-ul AMO din <extensions.webextensions.restrictedDomains> din <about:config>."
+  },
   "unreachableAMOHintOldFF": {
     "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta."
   },
@@ -860,6 +899,9 @@
   "updatesCurrentlyInstalled": {
     "message": "Update-uri instalate:"
   },
+  "usercssAvoidOverwriting": {
+    "message": "Vă rugăm să modificați valoarea @name și @namespace pentru a împiedica scrierea peste o temă  existentă."
+  },
   "usercssConfigIncomplete": {
     "message": "Tema a fost updatată sau ștearsă după ce configurațiile au fost afișate. Aceste variabile nu au fost salvate pentru a nu corupe metadata temei."
   },
@@ -871,6 +913,9 @@
   },
   "usercssReplaceTemplateName": {
     "message": "@name este gol și înlocuiețte valoarea de bază"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Introduce cod aici..."
   },
   "versionInvalidOlder": {
     "message": "Versiunea este mai veche decât cea instalată."

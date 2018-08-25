@@ -2,9 +2,6 @@
   "appliesRemoveError": {
     "message": "Cannot remove last 'applies to' entry"
   },
-  "applyAllUpdates": {
-    "message": "Apply all updates"
-  },
   "checkAllUpdatesForce": {
     "message": "Check again—I didn't edit any styles!"
   },
@@ -20,17 +17,8 @@
   "colorpickerTooltip": {
     "message": "Open colour picker"
   },
-  "confirmDiscardChanges": {
-    "message": "Discard the changes?"
-  },
-  "deleteStyleConfirm": {
-    "message": "Are you sure you want to delete this style?"
-  },
   "description": {
     "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites."
-  },
-  "dragDropMessage": {
-    "message": "Drop your backup file anywhere on this page to import."
   },
   "editGotoLine": {
     "message": "Go to line (or line:col)"
