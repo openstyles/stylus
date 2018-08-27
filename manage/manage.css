@@ -71,6 +71,11 @@ a:hover {
   max-width: calc(100% - 30px);
 }
 
+#check-all-updates-force {
+  white-space: normal;
+  text-align: left;
+}
+
 #header h1 {
   margin-top: 0;
   margin-bottom: .3em;
