@@ -822,6 +822,15 @@ input[id^="manage.newUI"] {
   margin-top: 1ex;
 }
 
+#update-all-no-updates[data-skipped-edited="true"] {
+  font-weight: bold;
+}
+
+#update-all-no-updates[data-skipped-edited="true"]::after {
+  font-weight: normal;
+  display: block;
+}
+
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
