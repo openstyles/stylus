@@ -12,7 +12,7 @@
  * @returns {Boolean|undefined}
  */
 function styleSectionsEqual(a, b, {ignoreCode, checkSource} = {}) {
-  if (!checkSource &&
+  if (checkSource &&
       typeof a.sourceCode === 'string' &&
       typeof b.sourceCode === 'string') {
     return a.sourceCode === b.sourceCode;

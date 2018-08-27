@@ -185,7 +185,7 @@ global API_METHODS
         json.originalName = json.name;
       }
 
-      if (styleSectionsEqual(json, style)) {
+      if (styleSectionsEqual(json, style, {checkSource: true})) {
         // update digest even if save === false as there might be just a space added etc.
         json.reason = 'update-digest';
         return saveStyle(json)
