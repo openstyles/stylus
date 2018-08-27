@@ -106,10 +106,10 @@ function initGlobalEvents() {
     .disabled h2::after {
       content: "${t('genericDisabledLabel')}";
     }
-    #update-all-no-updates[data-skipped-edited="true"]:after {
+    #update-all-no-updates[data-skipped-edited="true"]::after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
-    body.all-styles-hidden-by-filters:after {
+    body.all-styles-hidden-by-filters::after {
       content: "${t('filteredStylesAllHidden')}";
     }
   `));
