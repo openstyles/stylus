@@ -1,7 +1,24 @@
 'use strict';
 
-// ignoreCode=true is used by invalidateCache to determine if cached filters should be cleared
-function styleSectionsEqual({sections: a}, {sections: b}, {ignoreCode = false} = {}) {
+/**
+ * @param {Style} a - first style object
+ * @param {Style} b - second style object
+ * @param {Object} options
+ * @param {Boolean=} options.ignoreCode -
+ *        true used by invalidateCache to determine if cached filters should be cleared
+ * @param {Boolean=} options.checkSource -
+ *        true used by update check to compare the server response
+ *        instead of sections that depend on @preprocessor
+ * @returns {Boolean|undefined}
+ */
+function styleSectionsEqual(a, b, {ignoreCode, checkSource} = {}) {
+  if (checkSource &&
+      typeof a.sourceCode === 'string' &&
+      typeof b.sourceCode === 'string') {
+    return a.sourceCode === b.sourceCode;
+  }
+  a = a.sections;
+  b = b.sections;
   if (!a || !b) {
     return undefined;
   }

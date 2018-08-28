@@ -155,6 +155,16 @@ function reportUpdateState({updated, style, error, STATES}) {
     $('.update-note', entry).textContent = message;
     $('.check-update', entry).title = newUI.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
+    // digest may change silently when forcing an update of a locally edited style
+    // so we need to update it in entry's styleMeta in all open manager tabs
+    if (error === STATES.SAME_CODE) {
+      for (const view of chrome.extension.getViews({type: 'tab'})) {
+        if (view.location.pathname === location.pathname) {
+          const entry = view.$(ENTRY_ID_PREFIX + style.id);
+          if (entry) entry.styleMeta.originalDigest = style.originalDigest;
+        }
+      }
+    }
     if (!isCheckAll) {
       renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
     }

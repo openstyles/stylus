@@ -153,9 +153,8 @@ global API_METHODS
           case 0:
             // re-install is invalid in a soft upgrade
             if (!ignoreDigest) {
-              return Promise.reject(STATES.SAME_VERSION);
-            } else if (text === style.sourceCode) {
-              return Promise.reject(STATES.SAME_CODE);
+              const sameCode = text === style.sourceCode;
+              return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
             }
             break;
           case 1:
@@ -186,10 +185,14 @@ global API_METHODS
         json.originalName = json.name;
       }
 
-      if (styleSectionsEqual(json, style)) {
+      if (styleSectionsEqual(json, style, {checkSource: true})) {
         // update digest even if save === false as there might be just a space added etc.
-        saveStyle(Object.assign(json, {reason: 'update-digest'}));
-        return Promise.reject(STATES.SAME_CODE);
+        json.reason = 'update-digest';
+        return saveStyle(json)
+          .then(saved => {
+            style.originalDigest = saved.originalDigest;
+            return Promise.reject(STATES.SAME_CODE);
+          });
       }
 
       if (!style.originalDigest && !ignoreDigest) {

@@ -479,7 +479,7 @@ a:hover {
   cursor: pointer;
 }
 
-.newUI .entry .style-name::before {
+.newUI .entry .style-name:hover::before {
   content: "";
   position: absolute;
   top: 0;
@@ -488,13 +488,6 @@ a:hover {
   bottom: 0;
   background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
   pointer-events: none;
-  opacity: 0;
-  transition: opacity .1s;
-  will-change: opacity;
-}
-
-.newUI .entry .style-name:hover::before {
-  opacity: 1;
 }
 
 .newUI .entry.enabled .style-name:hover .style-name-link {
