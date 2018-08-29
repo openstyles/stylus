@@ -40,7 +40,8 @@ function beautify(event) {
         $create('.buttons', [
           $create('button', {
             attributes: {role: 'close'},
-            onclick: showHelp.close,
+            // showHelp.close will be defined after showHelp() is invoked
+            onclick: () => showHelp.close(),
           }, t('confirmClose')),
           $create('button', {
             attributes: {role: 'undo'},
