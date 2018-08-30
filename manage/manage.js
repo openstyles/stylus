@@ -658,8 +658,15 @@ function switchUI({styleOnly} = {}) {
 function onVisibilityChange() {
   switch (document.visibilityState) {
     // page restored without reloading via history navigation (currently only in FF)
+    // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
+    // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible':
-      highlightEditedStyle();
+      if (sessionStorage.justEditedStyleId) {
+        API.getStyles({id: sessionStorage.justEditedStyleId}).then(([style]) => {
+          handleUpdate(style, {method: 'styleUpdated'});
+        });
+        delete sessionStorage.justEditedStyleId;
+      }
       break;
     // going away
     case 'hidden':
