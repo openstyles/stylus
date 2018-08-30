@@ -59,6 +59,7 @@ self.parserlib = (() => {
     vmax: 'length',
     vmin: 'length',
     fr:   'length',
+    q:    'length',
 
     deg:  'angle',
     rad:  'angle',
