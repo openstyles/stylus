@@ -56,3 +56,7 @@ var linter = (() => { // eslint-disable-line no-var
       });
   }
 })();
+
+prefs.subscribe(['editor.linter'], () => {
+  linter.refresh();
+});
