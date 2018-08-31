@@ -19,8 +19,56 @@ createAPI({
     loadParserLib();
     loadScript(['/js/moz-parser.js']);
     return parseMozFormat(data);
-  }
+  },
+  getStylelintRules,
+  getCsslintRules
 });
+
+function getCsslintRules() {
+  loadScript(['/vendor-overwrites/csslint/csslint.js']);
+  return CSSLint.getRules().map(rule => {
+    delete rule.init;
+    return rule;
+  });
+}
+
+function getStylelintRules() {
+  loadScript(['/vendor/stylelint-bundle/stylelint-bundle.min.js']);
+  const stylelint = require('stylelint');
+  const options = {};
+  const rxPossible = /\bpossible:("(?:[^"]*?)"|\[(?:[^\]]*?)\]|\{(?:[^}]*?)\})/g;
+  const rxString = /"([-\w\s]{3,}?)"/g;
+  for (const id of Object.keys(stylelint.rules)) {
+    const ruleCode = String(stylelint.rules[id]);
+    const sets = [];
+    let m, mStr;
+    while ((m = rxPossible.exec(ruleCode))) {
+      const possible = m[1];
+      const set = [];
+      while ((mStr = rxString.exec(possible))) {
+        const s = mStr[1];
+        if (s.includes(' ')) {
+          set.push(...s.split(/\s+/));
+        } else {
+          set.push(s);
+        }
+      }
+      if (possible.includes('ignoreAtRules')) {
+        set.push('ignoreAtRules');
+      }
+      if (possible.includes('ignoreShorthands')) {
+        set.push('ignoreShorthands');
+      }
+      if (set.length) {
+        sets.push(set);
+      }
+    }
+    if (sets.length) {
+      options[id] = sets;
+    }
+  }
+  return options;
+}
 
 function createLoadParserLib() {
   let loaded = false;

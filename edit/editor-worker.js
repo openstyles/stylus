@@ -2,7 +2,7 @@
 
 var editorWorker = (() => { // eslint-disable-line no-var
   let worker;
-  return createAPI(['csslint', 'stylelint', 'parseMozFormat']);
+  return createAPI(['csslint', 'stylelint', 'parseMozFormat', 'getStylelintRules', 'getCsslintRules']);
 
   function createAPI(keys) {
     const output = {};
