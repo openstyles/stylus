@@ -1,10 +1,10 @@
 /*
 global editors styleId: true
 global CodeMirror dirtyReporter
-global updateLintReportIfEnabled initLint linterConfig updateLinter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
 global beforeUnload
+global createMetaCompiler linter
 */
 'use strict';
 
@@ -44,7 +44,6 @@ function createSourceEditor(style) {
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    updateLintReportIfEnabled(cm);
   });
 
   CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
@@ -55,9 +54,17 @@ function createSourceEditor(style) {
 
   cm.operation(initAppliesToLineWidget);
 
-  updateMeta().then(() => {
+  const metaCompiler = createMetaCompiler(cm);
+  metaCompiler.onSuccess(meta => {
+    style.usercssData = meta;
+    style.name = meta.name;
+    style.url = meta.homepageURL;
+    updateMeta();
+  });
 
-    initLint();
+  linter.hook(cm);
+
+  updateMeta().then(() => {
 
     let prevMode = NaN;
     cm.on('optionChange', (cm, option) => {
@@ -65,7 +72,7 @@ function createSourceEditor(style) {
       const mode = getModeName();
       if (mode === prevMode) return;
       prevMode = mode;
-      updateLinter();
+      linter.refresh();
       updateLinterSwitch();
     });
 
@@ -88,7 +95,7 @@ function createSourceEditor(style) {
 
   function updateLinterSwitch() {
     const el = $('#editor.linter');
-    el.value = linterConfig.getName();
+    el.value = getCurrentLinter();
     const cssLintOption = $('[value="csslint"]', el);
     const mode = getModeName();
     if (mode !== 'css') {
@@ -98,6 +105,14 @@ function createSourceEditor(style) {
       cssLintOption.disabled = false;
       cssLintOption.title = '';
     }
+  }
+
+  function getCurrentLinter() {
+    const name = prefs.get('editor.linter');
+    if (cm.getOption('mode') === 'stylus' && name === 'csslint') {
+      return 'stylelint';
+    }
+    return name;
   }
 
   function setupNewStyle(style) {
