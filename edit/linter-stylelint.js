@@ -175,10 +175,12 @@ var stylelint = (() => { // eslint-disable-line no-var
   let preparing;
 
   linter.register((text, options, cm) => {
-    if (prefs.get('editor.linter') !== 'stylelint' && cm.getOption('mode') !== 'stylus') {
+    if (
+      !prefs.get('editor.linter') ||
+      cm.getOption('mode') === 'css' && prefs.get('editor.linter') !== 'stylelint'
+    ) {
       return;
     }
-    debugger;
     return prepareConfig()
       .then(() => editorWorker.stylelint(text, config))
       .then(({results}) => {

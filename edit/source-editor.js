@@ -109,7 +109,7 @@ function createSourceEditor(style) {
 
   function getCurrentLinter() {
     const name = prefs.get('editor.linter');
-    if (cm.getOption('mode') === 'stylus' && name === 'csslint') {
+    if (cm.getOption('mode') !== 'css' && name === 'csslint') {
       return 'stylelint';
     }
     return name;
