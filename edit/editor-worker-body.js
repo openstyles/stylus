@@ -1,4 +1,4 @@
-/* global importScripts parseMozFormat parserlib CSSLint */
+/* global importScripts parseMozFormat parserlib CSSLint require */
 'use strict';
 
 const loadScript = createLoadScript();
@@ -11,8 +11,9 @@ createAPI({
     return CSSLint.verify(code, config).messages
       .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
   },
-  stylelint: () => {
-
+  stylelint: (code, config) => {
+    loadScript(['/vendor/stylelint-bundle/stylelint-bundle.min.js']);
+    return require('stylelint').lint({code, config});
   },
   parseMozFormat: data => {
     loadParserLib();
