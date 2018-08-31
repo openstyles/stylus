@@ -1,0 +1,2 @@
+/* global linter */
+'use strict';
