@@ -11,7 +11,7 @@ var linterReport = (() => { // eslint-disable-line no-var
       table = createTable(cm);
       cms.set(cm, table);
       const container = $('.lint-report-container');
-      if (typeof editor !== 'object') {
+      if (typeof editor === 'object') {
         container.append(table.element);
       } else {
         const nextSibling = findNextSibling(cms, cm);
@@ -57,7 +57,11 @@ var linterReport = (() => { // eslint-disable-line no-var
     }
   }
 
-  function refresh() {}
+  function refresh() {
+    for (const table of cms.values()) {
+      table.update();
+    }
+  }
 
   function createTable(cm) {
     const caption = $create('caption');
