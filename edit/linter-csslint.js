@@ -1,4 +1,4 @@
-/* global linter editorWorker */
+/* global linter editorWorker cacheFn */
 'use strict';
 
 var csslint = (() => { // eslint-disable-line
@@ -47,7 +47,23 @@ var csslint = (() => { // eslint-disable-line
     'zero-units': 0
   };
   let config;
-  let preparing;
+
+  const prepareConfig = cacheFn(() => {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'sync' || !changes.hasOwnProperty('editorCSSLintConfig')) {
+        return;
+      }
+      getNewValue().then(linter.refresh);
+    });
+    return getNewValue();
+
+    function getNewValue() {
+      return chromeSync.getLZValue('editorCSSLintConfig')
+        .then(newConfig => {
+          config = Object.assign({}, DEFAULT, newConfig);
+        });
+    }
+  });
 
   linter.register((text, options, cm) => {
     if (prefs.get('editor.linter') !== 'csslint' || cm.getOption('mode') !== 'css') {
@@ -69,27 +85,4 @@ var csslint = (() => { // eslint-disable-line
   });
 
   return {DEFAULT};
-
-  function prepareConfig() {
-    if (config) {
-      return Promise.resolve();
-    }
-    if (!preparing) {
-      chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== 'sync' || !changes.editorCSSLintConfig) {
-          return;
-        }
-        getNewValue().then(newConfig => {
-          config = newConfig;
-        });
-      });
-      preparing = getNewValue();
-    }
-    return preparing;
-  }
-
-  function getNewValue() {
-    return chromeSync.getLZValue('editorCSSLintConfig')
-      .then(newConfig => Object.assign({}, DEFAULT, newConfig));
-  }
 })();

@@ -1,4 +1,4 @@
-/* global linter editorWorker */
+/* global linter editorWorker cacheFn */
 'use strict';
 
 var stylelint = (() => { // eslint-disable-line no-var
@@ -6,7 +6,7 @@ var stylelint = (() => { // eslint-disable-line no-var
   const DEFAULT = {
     // 'sugarss' is a indent-based syntax like Sass or Stylus
     // ref: https://github.com/postcss/postcss#syntaxes
-    syntax: 'sugarss',
+    // syntax: 'sugarss',
     // ** recommended rules **
     // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
     rules: {
@@ -172,7 +172,26 @@ var stylelint = (() => { // eslint-disable-line no-var
     }
   };
   let config;
-  let preparing;
+
+  const prepareConfig = cacheFn(() => {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
+        return;
+      }
+      getNewValue().then(linter.refresh);
+    });
+    return getNewValue();
+
+    function getNewValue() {
+      return chromeSync.getLZValue('editorStylelintConfig')
+        .then(newConfig => {
+          const output = {};
+          output.rules = Object.assign({}, DEFAULT.rules, newConfig && newConfig.rules);
+          output.syntax = 'sugarss';
+          config = output;
+        });
+    }
+  });
 
   linter.register((text, options, cm) => {
     if (
@@ -207,32 +226,4 @@ var stylelint = (() => { // eslint-disable-line no-var
   });
 
   return {DEFAULT};
-
-  function prepareConfig() {
-    if (config) {
-      return Promise.resolve();
-    }
-    if (!preparing) {
-      chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== 'sync' || !changes.editorStylelintConfig) {
-          return;
-        }
-        getNewValue().then(newConfig => {
-          config = newConfig;
-        });
-      });
-      preparing = getNewValue();
-    }
-    return preparing;
-  }
-
-  function getNewValue() {
-    return chromeSync.getLZValue('editorStylelintConfig')
-      .then(newConfig => {
-        const output = {};
-        output.rules = Object.assign({}, DEFAULT.rules, newConfig && newConfig.rules);
-        output.syntax = 'sugarss';
-        config = output;
-      });
-  }
 })();
