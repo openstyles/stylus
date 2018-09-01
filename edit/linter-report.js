@@ -100,12 +100,12 @@ var linterReport = (() => { // eslint-disable-line no-var
       let i = 0;
       for (const anno of getAnnotations()) {
         let tr;
-        if (trs.length <= i) {
+        if (i < trs.length) {
+          tr = trs[i];
+        } else {
           tr = createTr();
           trs.push(tr);
           tbody.append(tr.element);
-        } else {
-          tr = trs[i];
         }
         tr.update(anno);
         i++;
