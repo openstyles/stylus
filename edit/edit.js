@@ -582,7 +582,6 @@ function showCodeMirrorPopup(title, html, options) {
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
-    // lint: linterConfig.getForCodeMirror(),
     styleActiveLine: true,
     theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap')
