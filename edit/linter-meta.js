@@ -4,6 +4,7 @@
 function createMetaCompiler(cm) {
   const successCallbacks = [];
   let meta = null;
+  let metaIndex = null;
   let cache = [];
 
   linter.register((text, options, _cm) => {
@@ -14,7 +15,7 @@ function createMetaCompiler(cm) {
     if (!match) {
       return [];
     }
-    if (match[0] === meta) {
+    if (match[0] === meta && match.index === metaIndex) {
       return cache;
     }
     return parseMeta(match[0])
@@ -23,10 +24,12 @@ function createMetaCompiler(cm) {
           cb(result);
         }
         meta = match[0];
+        metaIndex = match.index;
         cache = [];
         return cache;
       }, err => {
         meta = match[0];
+        metaIndex = match.index;
         cache = [{
           from: cm.posFromIndex((err.index || 0) + match.index),
           to: cm.posFromIndex((err.index || 0) + match.index),
