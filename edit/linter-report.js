@@ -3,16 +3,33 @@
 
 var linterReport = (() => { // eslint-disable-line no-var
   const cms = new Map();
+
   linter.onChange((annotationsNotSorted, annotations, cm) => {
-    if (!cms.has(cm)) {
-      cms.set(cm, createTable(cm));
+    let table = cms.get(cm);
+    if (!table) {
+      table = createTable(cm);
+      cms.set(cm, table);
+      const container = $('.lint-report-container');
+      if (typeof editor !== 'object') {
+        container.append(table.element);
+      } else {
+        const nextSibling = findNextSibling(cms, cm);
+        container.insertBefore(table.element, nextSibling && cms.get(nextSibling).element);
+      }
     }
-    const table = cms.get(cm);
     table.update();
     table.updateAnnotations(annotations);
-
     $('#lint').classList.toggle('hidden', Array.from(cms.values()).every(t => t.isEmpty()));
   });
+
+  linter.onUnhook(cm => {
+    const table = cms.get(cm);
+    if (table) {
+      table.element.remove();
+      cms.delete(cm);
+    }
+  });
+
   // document.addEventListener('DOMContentLoaded', () => {
     // $('#lint-help').addEventListener('click', showLintHelp);
     // $('#lint').addEventListener('click', gotoLintIssue);
@@ -20,17 +37,25 @@ var linterReport = (() => { // eslint-disable-line no-var
   // }, {once: true});
   return {refresh};
 
+  function findNextSibling(cms, cm) {
+    let i = editors.indexOf(cm) + 1;
+    while (i < editors.length) {
+      if (cms.has(editors[i])) {
+        return editors[i];
+      }
+      i++;
+    }
+  }
+
   function refresh() {}
 
   function createTable(cm) {
-    const container = $('.lint-report-container');
     const caption = $create('caption');
     const tbody = $create('tbody');
     const table = $create('table', [caption, tbody]);
     const trs = [];
     let empty = true;
-    container.append(table);
-    return {updateAnnotations, update, isEmpty};
+    return {updateAnnotations, update, isEmpty, element: table};
 
     function isEmpty() {
       return empty;
