@@ -1,4 +1,4 @@
-/* global linter editorWorker cacheFn */
+/* global linter editorWorker cacheFirstCall */
 'use strict';
 
 var stylelint = (() => { // eslint-disable-line no-var
@@ -173,7 +173,7 @@ var stylelint = (() => { // eslint-disable-line no-var
   };
   let config;
 
-  const prepareConfig = cacheFn(() => {
+  const prepareConfig = cacheFirstCall(() => {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
         return;

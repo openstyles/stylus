@@ -1,4 +1,4 @@
-/* global cacheFn editorWorker stylelint csslint showCodeMirrorPopup loadScript messageBox */
+/* global cacheFirstCall editorWorker stylelint csslint showCodeMirrorPopup loadScript messageBox */
 'use strict';
 
 (() => {
@@ -26,7 +26,7 @@
       return;
     }
     const storageName = linter === 'styleint' ? 'editorStylelintConfig' : 'editorCSSLintConfig';
-    const getRules = cacheFn(linter === 'stylelint' ?
+    const getRules = cacheFirstCall(linter === 'stylelint' ?
       editorWorker.getStylelintRules : editorWorker.getCsslintRules);
     const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
     const defaultConfig = stringifyConfig(

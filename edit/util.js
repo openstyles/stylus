@@ -122,8 +122,8 @@ function clipString(str, limit = 100) {
   return str.length <= limit ? str : str.substr(0, limit) + '...';
 }
 
-// cache the first call
-function cacheFn(fn) {
+// this is a decorator. Cache the first call
+function cacheFirstCall(fn) {
   let cached = false;
   let result;
   return (...args) => {
