@@ -33,7 +33,6 @@ var linterReport = (() => { // eslint-disable-line no-var
 
   document.addEventListener('DOMContentLoaded', () => {
     $('#lint-help').addEventListener('click', helpDialog.show);
-    $('#linter-settings').addEventListener('click', showLintConfig);
   }, {once: true});
 
   return {refresh};
@@ -152,6 +151,4 @@ var linterReport = (() => { // eslint-disable-line no-var
     cm.focus();
     cm.setSelection(anno.from);
   }
-
-  function showLintConfig() {}
 })();
