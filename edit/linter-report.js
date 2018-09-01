@@ -10,6 +10,8 @@ var linterReport = (() => { // eslint-disable-line no-var
     const table = cms.get(cm);
     table.update();
     table.updateAnnotations(annotations);
+
+    $('#lint').classList.toggle('hidden', Array.from(cms.values()).every(t => t.isEmpty()));
   });
   // document.addEventListener('DOMContentLoaded', () => {
     // $('#lint-help').addEventListener('click', showLintHelp);
@@ -26,8 +28,13 @@ var linterReport = (() => { // eslint-disable-line no-var
     const tbody = $create('tbody');
     const table = $create('table', [caption, tbody]);
     const trs = [];
+    let empty = true;
     container.append(table);
-    return {updateAnnotations, update};
+    return {updateAnnotations, update, isEmpty};
+
+    function isEmpty() {
+      return empty;
+    }
 
     function update() {
       caption.textContent = typeof editor === 'object' ?
@@ -51,7 +58,8 @@ var linterReport = (() => { // eslint-disable-line no-var
       while (trs.length > i) {
         trs.pop().element.remove();
       }
-      table.classList.toggle('empty', i > 0);
+      empty = i === 0;
+      table.classList.toggle('empty', empty);
 
       function *getAnnotations() {
         for (const line of lines.filter(Boolean)) {
