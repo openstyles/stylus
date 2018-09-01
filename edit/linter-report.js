@@ -30,11 +30,11 @@ var linterReport = (() => { // eslint-disable-line no-var
     }
   });
 
-  // document.addEventListener('DOMContentLoaded', () => {
-    // $('#lint-help').addEventListener('click', showLintHelp);
-    // $('#lint').addEventListener('click', gotoLintIssue);
-    // $('#linter-settings').addEventListener('click', showLintConfig);
-  // }, {once: true});
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#lint-help').addEventListener('click', showLintHelp);
+    $('#linter-settings').addEventListener('click', showLintConfig);
+  }, {once: true});
+
   return {refresh};
 
   function findNextSibling(cms, cm) {
@@ -102,7 +102,7 @@ var linterReport = (() => { // eslint-disable-line no-var
       const message = $create('td', {attributes: {role: 'message'}});
 
       const trElement = $create('tr', {
-        onclick: () => gotoLintIssue(anno)
+        onclick: () => gotoLintIssue(cm, anno)
       }, [
         severity,
         line,
@@ -129,9 +129,13 @@ var linterReport = (() => { // eslint-disable-line no-var
     }
   }
 
-  function showLintHelp() {}
+  function gotoLintIssue(cm, anno) {
+    makeSectionVisible(cm);
+    cm.focus();
+    cm.setSelection(anno.from);
+  }
 
-  function gotoLintIssue() {}
+  function showLintHelp() {}
 
   function showLintConfig() {}
 })();
