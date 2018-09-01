@@ -1,9 +1,14 @@
-/* global showHelp editorWorker */
+/* global showHelp editorWorker cacheFirstCall */
 'use strict';
 
 function createLinterHelpDialog(getIssues) {
   let csslintRules;
-  let preparing;
+  const prepareCsslintRules = cacheFirstCall(() =>
+    editorWorker.getCsslintRules()
+      .then(rules => {
+        csslintRules = rules;
+      })
+  );
   return {show};
 
   function show() {
@@ -42,15 +47,5 @@ function createLinterHelpDialog(getIssues) {
           ])
         )
       );
-  }
-
-  function prepareCsslintRules() {
-    if (!preparing) {
-      preparing = editorWorker.getCsslintRules()
-        .then(rules => {
-          csslintRules = rules;
-        });
-    }
-    return preparing;
   }
 }
