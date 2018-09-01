@@ -2,16 +2,22 @@
 
 var linter = (() => { // eslint-disable-line no-var
   const changeCallbacks = [];
+  const unhookCallbacks = [];
   const linters = [];
   const cms = new Set();
 
   return {
     register,
     refresh,
-    onChange,
     hook,
-    unhook
+    unhook,
+    onChange,
+    onUnhook
   };
+
+  function onUnhook(cb) {
+    unhookCallbacks.push(cb);
+  }
 
   function onChange(cb) {
     changeCallbacks.push(cb);
@@ -31,6 +37,9 @@ var linter = (() => { // eslint-disable-line no-var
   function unhook(cm) {
     cm.setOption('lint', false);
     cms.delete(cm);
+    for (const cb of unhookCallbacks) {
+      cb(cm);
+    }
   }
 
   function register(getAnnotations) {
@@ -57,6 +66,7 @@ var linter = (() => { // eslint-disable-line no-var
   }
 })();
 
+// FIXME: this should be put inside edit.js
 prefs.subscribe(['editor.linter'], () => {
   linter.refresh();
 });
