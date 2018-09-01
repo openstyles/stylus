@@ -78,18 +78,12 @@ var linterReport = (() => { // eslint-disable-line no-var
     const tbody = $create('tbody');
     const table = $create('table', [caption, tbody]);
     const trs = [];
-    let empty = true;
     return {
       element: table,
       trs,
       updateAnnotations,
-      update,
-      isEmpty
+      update
     };
-
-    function isEmpty() {
-      return empty;
-    }
 
     function update() {
       caption.textContent = typeof editor === 'object' ?
@@ -113,8 +107,7 @@ var linterReport = (() => { // eslint-disable-line no-var
       while (trs.length > i) {
         trs.pop().element.remove();
       }
-      empty = i === 0;
-      table.classList.toggle('empty', empty);
+      table.classList.toggle('empty', trs.length === 0);
 
       function *getAnnotations() {
         for (const line of lines.filter(Boolean)) {
