@@ -27,8 +27,13 @@ createAPI({
 function getCsslintRules() {
   loadScript(['/vendor-overwrites/csslint/csslint.js']);
   return CSSLint.getRules().map(rule => {
-    delete rule.init;
-    return rule;
+    const output = {};
+    for (const [key, value] of Object.entries(rule)) {
+      if (typeof value !== 'function') {
+        output[key] = value;
+      }
+    }
+    return output;
   });
 }
 
