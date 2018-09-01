@@ -20,7 +20,7 @@ var linterReport = (() => { // eslint-disable-line no-var
     }
     table.update();
     table.updateAnnotations(annotations);
-    $('#lint').classList.toggle('hidden', Array.from(cms.values()).every(t => t.isEmpty()));
+    updateCount();
   });
 
   linter.onUnhook(cm => {
@@ -29,6 +29,7 @@ var linterReport = (() => { // eslint-disable-line no-var
       table.element.remove();
       cms.delete(cm);
     }
+    updateCount();
   });
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -36,6 +37,15 @@ var linterReport = (() => { // eslint-disable-line no-var
   }, {once: true});
 
   return {refresh};
+
+  function updateCount() {
+    const issueCount = Array.from(cms.values()).reduce((sum, t) => {
+      sum += t.trs.length;
+      return sum;
+    }, 0);
+    $('#lint').classList.toggle('hidden', issueCount === 0);
+    $('#issue-count').textContent = issueCount;
+  }
 
   function getIssues() {
     const issues = new Set();
@@ -83,7 +93,7 @@ var linterReport = (() => { // eslint-disable-line no-var
 
     function update() {
       caption.textContent = typeof editor === 'object' ?
-        '' : editors.indexOf(cm) + 1;
+        '' : `${t('sectionCode')} ${editors.indexOf(cm) + 1}`;
     }
 
     function updateAnnotations(lines) {
