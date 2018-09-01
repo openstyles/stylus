@@ -1,8 +1,9 @@
-/* global linter editors clipString */
+/* global linter editors clipString createLinterHelpDialog makeSectionVisible */
 'use strict';
 
 var linterReport = (() => { // eslint-disable-line no-var
   const cms = new Map();
+  const helpDialog = createLinterHelpDialog(getIssues);
 
   linter.onChange((annotationsNotSorted, annotations, cm) => {
     let table = cms.get(cm);
@@ -31,11 +32,21 @@ var linterReport = (() => { // eslint-disable-line no-var
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-    $('#lint-help').addEventListener('click', showLintHelp);
+    $('#lint-help').addEventListener('click', helpDialog.show);
     $('#linter-settings').addEventListener('click', showLintConfig);
   }, {once: true});
 
   return {refresh};
+
+  function getIssues() {
+    const issues = new Set();
+    for (const table of cms.values()) {
+      for (const tr of table.trs) {
+        issues.add(tr.getAnnotation());
+      }
+    }
+    return issues;
+  }
 
   function findNextSibling(cms, cm) {
     let i = editors.indexOf(cm) + 1;
@@ -55,7 +66,13 @@ var linterReport = (() => { // eslint-disable-line no-var
     const table = $create('table', [caption, tbody]);
     const trs = [];
     let empty = true;
-    return {updateAnnotations, update, isEmpty, element: table};
+    return {
+      element: table,
+      trs,
+      updateAnnotations,
+      update,
+      isEmpty
+    };
 
     function isEmpty() {
       return empty;
@@ -112,7 +129,8 @@ var linterReport = (() => { // eslint-disable-line no-var
       ]);
       return {
         element: trElement,
-        update
+        update,
+        getAnnotation: () => anno
       };
 
       function update(_anno) {
@@ -134,8 +152,6 @@ var linterReport = (() => { // eslint-disable-line no-var
     cm.focus();
     cm.setSelection(anno.from);
   }
-
-  function showLintHelp() {}
 
   function showLintConfig() {}
 })();
