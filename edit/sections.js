@@ -3,7 +3,7 @@ global CodeMirror
 global editors propertyToCss CssToProperty
 global onChange indicateCodeChange initHooks setCleanGlobal
 global fromMozillaFormat maximizeCodeHeight toggleContextMenuDelete
-global setCleanItem updateTitle updateLintReportIfEnabled renderLintReport
+global setCleanItem updateTitle
 global showAppliesToHelp beautify regExpTester setGlobalProgress setCleanSection
 global clipString
 */

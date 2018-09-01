@@ -1,6 +1,5 @@
 /*
-global CodeMirror parserlib loadScript
-global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter
+global CodeMirror loadScript
 global createSourceEditor
 global closeCurrentTab regExpTester messageBox
 global setupCodeMirror
