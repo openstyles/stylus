@@ -92,20 +92,16 @@ function createAPI(methods) {
     const message = e.data;
     Promise.resolve()
       .then(() => methods[message.action](...message.args))
-      .then(result =>
-        ({
-          requestId: message.requestId,
-          error: false,
-          data: result
-        })
-      )
-      .catch(err =>
-        ({
-          requestId: message.requestId,
-          error: true,
-          data: cloneError(err)
-        })
-      )
+      .then(result => ({
+        requestId: message.requestId,
+        error: false,
+        data: result
+      }))
+      .catch(err => ({
+        requestId: message.requestId,
+        error: true,
+        data: cloneError(err)
+      }))
       .then(data => self.postMessage(data));
   };
 }
