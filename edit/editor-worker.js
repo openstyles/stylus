@@ -19,11 +19,7 @@ var editorWorker = (() => {
     const worker = new Worker('/edit/editor-worker-body.js');
     worker.onmessage = e => {
       const message = e.data;
-      if (message.error) {
-        pending.get(message.id).reject(message.data);
-      } else {
-        pending.get(message.id).resolve(message.data);
-      }
+      pending.get(message.id)[message.error ? 'reject' : 'resolve'](message.data);
       pending.delete(message.id);
     };
     return {invoke};
