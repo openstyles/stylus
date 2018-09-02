@@ -2,8 +2,8 @@
 
 // eslint-disable-next-line no-var
 var linter = (() => {
-  const changeCallbacks = [];
-  const unhookCallbacks = [];
+  const changeListeners = [];
+  const unhookListeners = [];
   const linters = [];
   const cms = new Set();
 
@@ -17,15 +17,15 @@ var linter = (() => {
   };
 
   function onUnhook(cb) {
-    unhookCallbacks.push(cb);
+    unhookListeners.push(cb);
   }
 
   function onChange(cb) {
-    changeCallbacks.push(cb);
+    changeListeners.push(cb);
   }
 
   function onUpdateLinting(...args) {
-    for (const cb of changeCallbacks) {
+    for (const cb of changeListeners) {
       cb(...args);
     }
   }
@@ -38,7 +38,7 @@ var linter = (() => {
   function disableForEditor(cm) {
     cm.setOption('lint', false);
     cms.delete(cm);
-    for (const cb of unhookCallbacks) {
+    for (const cb of unhookListeners) {
       cb(cm);
     }
   }

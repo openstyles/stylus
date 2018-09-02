@@ -2,7 +2,7 @@
 'use strict';
 
 function createMetaCompiler(cm) {
-  const updateCallbacks = [];
+  const updateListeners = [];
   let meta = null;
   let metaIndex = null;
   let cache = [];
@@ -21,7 +21,7 @@ function createMetaCompiler(cm) {
     return API.parseUsercss({sourceCode: match[0], metaOnly: true})
       .then(result => result.usercssData)
       .then(result => {
-        for (const cb of updateCallbacks) {
+        for (const cb of updateListeners) {
           cb(result);
         }
         meta = match[0];
@@ -42,6 +42,6 @@ function createMetaCompiler(cm) {
   });
 
   return {
-    onUpdated: cb => updateCallbacks.push(cb)
+    onUpdated: cb => updateListeners.push(cb)
   };
 }
