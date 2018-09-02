@@ -10,7 +10,7 @@ Object.assign(linter, (() => {
     $('#lint-help').addEventListener('click', helpDialog.show);
   }, {once: true});
 
-  linter.onChange((annotationsNotSorted, annotations, cm) => {
+  linter.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
     let table = cms.get(cm);
     if (!table) {
       table = createTable(cm);

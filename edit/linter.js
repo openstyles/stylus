@@ -2,7 +2,7 @@
 
 // eslint-disable-next-line no-var
 var linter = (() => {
-  const changeListeners = [];
+  const lintingUpdatedListeners = [];
   const unhookListeners = [];
   const linters = [];
   const cms = new Set();
@@ -12,7 +12,7 @@ var linter = (() => {
     run,
     enableForEditor,
     disableForEditor,
-    onChange,
+    onLintingUpdated,
     onUnhook
   };
 
@@ -20,12 +20,12 @@ var linter = (() => {
     unhookListeners.push(cb);
   }
 
-  function onChange(cb) {
-    changeListeners.push(cb);
+  function onLintingUpdated(cb) {
+    lintingUpdatedListeners.push(cb);
   }
 
   function onUpdateLinting(...args) {
-    for (const cb of changeListeners) {
+    for (const cb of lintingUpdatedListeners) {
       cb(...args);
     }
   }
