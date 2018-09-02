@@ -23,7 +23,7 @@ var linterReport = (() => {
         container.insertBefore(table.element, nextSibling && cms.get(nextSibling).element);
       }
     }
-    table.update();
+    table.updateCaption();
     table.updateAnnotations(annotations);
     updateCount();
   });
@@ -70,7 +70,7 @@ var linterReport = (() => {
 
   function refresh() {
     for (const table of cms.values()) {
-      table.update();
+      table.updateCaption();
     }
   }
 
@@ -83,10 +83,10 @@ var linterReport = (() => {
       element: table,
       trs,
       updateAnnotations,
-      update
+      updateCaption
     };
 
-    function update() {
+    function updateCaption() {
       caption.textContent = typeof editor === 'object' ?
         '' : `${t('sectionCode')} ${editors.indexOf(cm) + 1}`;
     }
