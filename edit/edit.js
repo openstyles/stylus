@@ -449,7 +449,7 @@ function fromMozillaFormat() {
 
   function doImport({replaceOldStyle = false}) {
     lockPageUI(true);
-    editorWorker.parseMozFormat(popup.codebox.getValue().trim())
+    editorWorker.parseMozFormat({code: popup.codebox.getValue().trim()})
       .then(({sections, errors}) => {
         // shouldn't happen but just in case
         if (!sections.length && errors.length) {
