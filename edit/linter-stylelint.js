@@ -179,7 +179,7 @@ var stylelint = (() => {
       if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
         return;
       }
-      getNewValue().then(linter.refresh);
+      getNewValue().then(linter.run);
     });
     return getNewValue();
 

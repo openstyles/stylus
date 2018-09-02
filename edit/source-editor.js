@@ -72,7 +72,7 @@ function createSourceEditor(style) {
       const mode = getModeName();
       if (mode === prevMode) return;
       prevMode = mode;
-      linter.refresh();
+      linter.run();
       updateLinterSwitch();
     });
 

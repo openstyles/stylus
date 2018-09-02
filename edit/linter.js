@@ -9,7 +9,7 @@ var linter = (() => {
 
   return {
     register,
-    refresh,
+    run,
     enableForEditor,
     disableForEditor,
     onChange,
@@ -47,7 +47,7 @@ var linter = (() => {
     linters.push(getAnnotations);
   }
 
-  function refresh() {
+  function run() {
     for (const cm of cms) {
       cm.performLint();
     }
@@ -69,5 +69,5 @@ var linter = (() => {
 
 // FIXME: this should be put inside edit.js
 prefs.subscribe(['editor.linter'], () => {
-  linter.refresh();
+  linter.run();
 });
