@@ -5,7 +5,7 @@ global onChange initHooks setCleanGlobal
 global fromMozillaFormat maximizeCodeHeight toggleContextMenuDelete
 global setCleanItem updateTitle
 global showAppliesToHelp beautify regExpTester setGlobalProgress setCleanSection
-global clipString linter linterReport
+global clipString linter
 */
 'use strict';
 
@@ -152,7 +152,7 @@ function addSection(event, section) {
     cm = setupCodeMirror(div, code);
   }
   linter.enableForEditor(cm);
-  linterReport.refresh();
+  linter.refreshReport();
   div.CodeMirror = cm;
   setCleanSection(div);
   return div;
@@ -482,7 +482,7 @@ function removeSection(event) {
       updateTitle();
       cm.focus();
       linter.enableForEditor(cm);
-      linterReport.refresh();
+      linter.refreshReport();
     };
     section.insertAdjacentElement('afterend', stub);
   }
@@ -490,7 +490,7 @@ function removeSection(event) {
   removeAreaAndSetDirty(section);
   editors.splice(editors.indexOf(cm), 1);
   linter.disableForEditor(cm);
-  linterReport.refresh();
+  linter.refreshReport();
 }
 
 function removeAreaAndSetDirty(area) {

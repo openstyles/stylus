@@ -2,7 +2,7 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var linterReport = (() => {
+Object.assign(linter, (() => {
   const cms = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);
 
@@ -37,7 +37,7 @@ var linterReport = (() => {
     updateCount();
   });
 
-  return {refresh};
+  return {refreshReport};
 
   function updateCount() {
     const issueCount = Array.from(cms.values())
@@ -66,7 +66,7 @@ var linterReport = (() => {
     }
   }
 
-  function refresh() {
+  function refreshReport() {
     for (const table of cms.values()) {
       table.updateCaption();
     }
@@ -162,4 +162,4 @@ var linterReport = (() => {
     cm.focus();
     cm.setSelection(anno.from);
   }
-})();
+})());
