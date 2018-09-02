@@ -123,7 +123,7 @@ function clipString(str, limit = 100) {
 }
 
 // this is a decorator. Cache the first call
-function cacheFirstCall(fn) {
+function memoize(fn) {
   let cached = false;
   let result;
   return (...args) => {

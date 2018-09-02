@@ -1,9 +1,9 @@
-/* global showHelp editorWorker cacheFirstCall */
+/* global showHelp editorWorker memoize */
 'use strict';
 
 function createLinterHelpDialog(getIssues) {
   let csslintRules;
-  const prepareCsslintRules = cacheFirstCall(() =>
+  const prepareCsslintRules = memoize(() =>
     editorWorker.getCsslintRules()
       .then(rules => {
         csslintRules = rules;

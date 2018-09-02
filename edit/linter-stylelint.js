@@ -1,4 +1,4 @@
-/* global linter editorWorker cacheFirstCall */
+/* global linter editorWorker memoize */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -174,7 +174,7 @@ var stylelint = (() => {
   };
   let config;
 
-  const prepareConfig = cacheFirstCall(() => {
+  const prepareConfig = memoize(() => {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
         return;
