@@ -2,20 +2,15 @@
 
 var editorWorker = (() => { // eslint-disable-line no-var
   let worker;
-  return createAPI(['csslint', 'stylelint', 'parseMozFormat', 'getStylelintRules', 'getCsslintRules']);
-
-  function createAPI(keys) {
-    const output = {};
-    for (const key of keys) {
-      output[key] = (...args) => {
+  return new Proxy({}, {
+    get: (target, prop) =>
+      (...args) => {
         if (!worker) {
           worker = createWorker();
         }
-        return worker.invoke(key, args);
-      };
-    }
-    return output;
-  }
+        return worker.invoke(prop, args);
+      }
+  });
 
   function createWorker() {
     let requestId = 0;
