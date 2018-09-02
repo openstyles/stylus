@@ -1,39 +1,38 @@
-/* global linter editorWorker memoize */
 'use strict';
 
 // eslint-disable-next-line no-var
-var stylelint = (() => {
-  const DEFAULT_SEVERITY = {severity: 'warning'};
-  const DEFAULT = {
+var LINTER_DEFAULTS = (() => {
+  const SEVERITY = {severity: 'warning'};
+  const STYLELINT = {
     // 'sugarss' is a indent-based syntax like Sass or Stylus
     // ref: https://github.com/postcss/postcss#syntaxes
     // syntax: 'sugarss',
     // ** recommended rules **
     // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
     rules: {
-      'at-rule-no-unknown': [true, DEFAULT_SEVERITY],
-      'block-no-empty': [true, DEFAULT_SEVERITY],
-      'color-no-invalid-hex': [true, DEFAULT_SEVERITY],
+      'at-rule-no-unknown': [true, SEVERITY],
+      'block-no-empty': [true, SEVERITY],
+      'color-no-invalid-hex': [true, SEVERITY],
       'declaration-block-no-duplicate-properties': [true, {
         'ignore': ['consecutive-duplicates-with-different-values'],
         'severity': 'warning'
       }],
-      'declaration-block-no-shorthand-property-overrides': [true, DEFAULT_SEVERITY],
-      'font-family-no-duplicate-names': [true, DEFAULT_SEVERITY],
-      'function-calc-no-unspaced-operator': [true, DEFAULT_SEVERITY],
-      'function-linear-gradient-no-nonstandard-direction': [true, DEFAULT_SEVERITY],
-      'keyframe-declaration-no-important': [true, DEFAULT_SEVERITY],
-      'media-feature-name-no-unknown': [true, DEFAULT_SEVERITY],
+      'declaration-block-no-shorthand-property-overrides': [true, SEVERITY],
+      'font-family-no-duplicate-names': [true, SEVERITY],
+      'function-calc-no-unspaced-operator': [true, SEVERITY],
+      'function-linear-gradient-no-nonstandard-direction': [true, SEVERITY],
+      'keyframe-declaration-no-important': [true, SEVERITY],
+      'media-feature-name-no-unknown': [true, SEVERITY],
       /* recommended true */
       'no-empty-source': false,
-      'no-extra-semicolons': [true, DEFAULT_SEVERITY],
-      'no-invalid-double-slash-comments': [true, DEFAULT_SEVERITY],
-      'property-no-unknown': [true, DEFAULT_SEVERITY],
-      'selector-pseudo-class-no-unknown': [true, DEFAULT_SEVERITY],
-      'selector-pseudo-element-no-unknown': [true, DEFAULT_SEVERITY],
+      'no-extra-semicolons': [true, SEVERITY],
+      'no-invalid-double-slash-comments': [true, SEVERITY],
+      'property-no-unknown': [true, SEVERITY],
+      'selector-pseudo-class-no-unknown': [true, SEVERITY],
+      'selector-pseudo-element-no-unknown': [true, SEVERITY],
       'selector-type-no-unknown': false, // for scss/less/stylus-lang
-      'string-no-newline': [true, DEFAULT_SEVERITY],
-      'unit-no-unknown': [true, DEFAULT_SEVERITY],
+      'string-no-newline': [true, SEVERITY],
+      'unit-no-unknown': [true, SEVERITY],
 
       // ** non-essential rules
       'comment-no-empty': false,
@@ -172,59 +171,49 @@ var stylelint = (() => {
       */
     }
   };
-  let config;
+  const CSSLINT = {
+    // Default warnings
+    'display-property-grouping': 1,
+    'duplicate-properties': 1,
+    'empty-rules': 1,
+    'errors': 1,
+    'warnings': 1,
+    'known-properties': 1,
 
-  const prepareConfig = memoize(() => {
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
-        return;
-      }
-      getNewValue().then(linter.run);
-    });
-    return getNewValue();
-
-    function getNewValue() {
-      return chromeSync.getLZValue('editorStylelintConfig')
-        .then(newConfig => {
-          const output = {};
-          output.rules = Object.assign({}, DEFAULT.rules, newConfig && newConfig.rules);
-          output.syntax = 'sugarss';
-          config = output;
-        });
-    }
-  });
-
-  linter.register((text, options, cm) => {
-    if (
-      !prefs.get('editor.linter') ||
-      cm.getOption('mode') === 'css' && prefs.get('editor.linter') !== 'stylelint'
-    ) {
-      return;
-    }
-    return prepareConfig()
-      .then(() => editorWorker.stylelint(text, config))
-      .then(({results}) => {
-        if (!results[0]) {
-          return [];
-        }
-        const output = results[0].warnings.map(({line, column: ch, text, severity}) =>
-          ({
-            from: {line: line - 1, ch: ch - 1},
-            to: {line: line - 1, ch},
-            message: text
-              .replace('Unexpected ', '')
-              .replace(/^./, firstLetter => firstLetter.toUpperCase())
-              .replace(/\s*\([^(]+\)$/, ''), // strip the rule,
-            rule: text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
-            severity,
-          })
-        );
-        return cm.doc.mode.name !== 'stylus' ?
-          output :
-          output.filter(({message}) =>
-            !message.includes('"@css"') || !message.includes('(at-rule-no-unknown)'));
-      });
-  });
-
-  return {DEFAULT};
+    // Default disabled
+    'adjoining-classes': 0,
+    'box-model': 0,
+    'box-sizing': 0,
+    'bulletproof-font-face': 0,
+    'compatible-vendor-prefixes': 0,
+    'duplicate-background-images': 0,
+    'fallback-colors': 0,
+    'floats': 0,
+    'font-faces': 0,
+    'font-sizes': 0,
+    'gradients': 0,
+    'ids': 0,
+    'import': 0,
+    'import-ie-limit': 0,
+    'important': 0,
+    'order-alphabetical': 0,
+    'outline-none': 0,
+    'overqualified-elements': 0,
+    'qualified-headings': 0,
+    'regex-selectors': 0,
+    'rules-count': 0,
+    'selector-max': 0,
+    'selector-max-approaching': 0,
+    'selector-newline': 0,
+    'shorthand': 0,
+    'star-property-hack': 0,
+    'text-indent': 0,
+    'underscore-property-hack': 0,
+    'unique-headings': 0,
+    'universal-selector': 0,
+    'unqualified-attributes': 0,
+    'vendor-prefix': 0,
+    'zero-units': 0
+  };
+  return {STYLELINT, CSSLINT, SEVERITY};
 })();
