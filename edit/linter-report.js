@@ -6,6 +6,10 @@ var linterReport = (() => {
   const cms = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);
 
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#lint-help').addEventListener('click', helpDialog.show);
+  }, {once: true});
+
   linter.onChange((annotationsNotSorted, annotations, cm) => {
     let table = cms.get(cm);
     if (!table) {
@@ -32,10 +36,6 @@ var linterReport = (() => {
     }
     updateCount();
   });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    $('#lint-help').addEventListener('click', helpDialog.show);
-  }, {once: true});
 
   return {refresh};
 
