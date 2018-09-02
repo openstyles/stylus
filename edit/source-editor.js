@@ -55,7 +55,7 @@ function createSourceEditor(style) {
   cm.operation(initAppliesToLineWidget);
 
   const metaCompiler = createMetaCompiler(cm);
-  metaCompiler.onSuccess(meta => {
+  metaCompiler.onUpdated(meta => {
     style.usercssData = meta;
     style.name = meta.name;
     style.url = meta.homepageURL;
