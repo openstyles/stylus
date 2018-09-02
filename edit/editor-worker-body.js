@@ -1,9 +1,6 @@
 /* global importScripts parseMozFormat parserlib CSSLint require */
 'use strict';
 
-const loadScript = createLoadScript();
-const loadParserLib = createLoadParserLib();
-
 createAPI({
   csslint: (code, config) => {
     loadParserLib();
@@ -75,25 +72,19 @@ function getStylelintRules() {
   return options;
 }
 
-function createLoadParserLib() {
-  let loaded = false;
-  return () => {
-    if (loaded) {
-      return;
-    }
-    importScripts('/vendor-overwrites/csslint/parserlib.js');
-    parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
-    loaded = true;
-  };
+function loadParserLib() {
+  if (typeof parserlib !== 'undefined') {
+    return;
+  }
+  importScripts('/vendor-overwrites/csslint/parserlib.js');
+  parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
 }
 
-function createLoadScript() {
-  const loaded = new Set();
-  return urls => {
-    urls = urls.filter(u => !loaded.has(u));
-    importScripts(...urls);
-    urls.forEach(u => loaded.add(u));
-  };
+const loadedUrls = new Set();
+function loadScript(urls) {
+  urls = urls.filter(u => !loadedUrls.has(u));
+  importScripts(...urls);
+  urls.forEach(u => loadedUrls.add(u));
 }
 
 function createAPI(methods) {
