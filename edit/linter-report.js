@@ -40,10 +40,8 @@ var linterReport = (() => {
   return {refresh};
 
   function updateCount() {
-    const issueCount = Array.from(cms.values()).reduce((sum, t) => {
-      sum += t.trs.length;
-      return sum;
-    }, 0);
+    const issueCount = Array.from(cms.values())
+      .reduce((sum, table) => sum + table.trs.length, 0);
     $('#lint').classList.toggle('hidden', issueCount === 0);
     $('#issue-count').textContent = issueCount;
   }
