@@ -599,7 +599,7 @@ var usercss = (() => {
 
   function invokeWorker(message) {
     if (!worker.queue) {
-      worker.instance = new Worker('/edit/csslint-loader.js');
+      worker.instance = new Worker('/background/csslint-loader.js');
       worker.queue = [];
       worker.instance.onmessage = ({data}) => {
         worker.queue.shift().resolve(data.__ERROR__ ? Promise.reject(data.__ERROR__) : data);
