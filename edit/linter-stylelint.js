@@ -1,7 +1,8 @@
 /* global linter editorWorker cacheFirstCall */
 'use strict';
 
-var stylelint = (() => { // eslint-disable-line no-var
+// eslint-disable-next-line no-var
+var stylelint = (() => {
   const DEFAULT_SEVERITY = {severity: 'warning'};
   const DEFAULT = {
     // 'sugarss' is a indent-based syntax like Sass or Stylus

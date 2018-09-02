@@ -1,7 +1,8 @@
 /* global linter editorWorker cacheFirstCall */
 'use strict';
 
-var csslint = (() => { // eslint-disable-line
+// eslint-disable-next-line no-var
+var csslint = (() => {
   const DEFAULT = {
     // Default warnings
     'display-property-grouping': 1,

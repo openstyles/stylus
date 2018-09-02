@@ -1,7 +1,8 @@
 /* global linter editors clipString createLinterHelpDialog makeSectionVisible */
 'use strict';
 
-var linterReport = (() => { // eslint-disable-line no-var
+// eslint-disable-next-line no-var
+var linterReport = (() => {
   const cms = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);
 

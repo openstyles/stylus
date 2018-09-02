@@ -1,6 +1,7 @@
 'use strict';
 
-var linter = (() => { // eslint-disable-line no-var
+// eslint-disable-next-line no-var
+var linter = (() => {
   const changeCallbacks = [];
   const unhookCallbacks = [];
   const linters = [];

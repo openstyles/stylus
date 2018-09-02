@@ -1,6 +1,7 @@
 'use strict';
 
-var editorWorker = (() => { // eslint-disable-line no-var
+// eslint-disable-next-line no-var
+var editorWorker = (() => {
   let worker;
   return new Proxy({}, {
     get: (target, prop) =>
