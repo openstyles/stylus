@@ -1,4 +1,4 @@
-/* global memoize editorWorker stylelint csslint showCodeMirrorPopup loadScript messageBox */
+/* global memoize editorWorker showCodeMirrorPopup loadScript messageBox LINTER_DEFAULTS*/
 'use strict';
 
 (() => {
@@ -30,7 +30,7 @@
       editorWorker.getStylelintRules : editorWorker.getCsslintRules);
     const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
     const defaultConfig = stringifyConfig(
-      linter === 'stylelint' ? stylelint.DEFAULT : csslint.DEFAULT
+      linter === 'stylelint' ? LINTER_DEFAULTS.STYLELINT : LINTER_DEFAULTS.CSSLINT
     );
     const title = t('linterConfigPopupTitle', linterTitle);
     const popup = showCodeMirrorPopup(title, null, {
