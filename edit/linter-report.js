@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line no-var
 Object.assign(linter, (() => {
-  const cms = new Map();
+  const tables = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -11,16 +11,16 @@ Object.assign(linter, (() => {
   }, {once: true});
 
   linter.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
-    let table = cms.get(cm);
+    let table = tables.get(cm);
     if (!table) {
       table = createTable(cm);
-      cms.set(cm, table);
+      tables.set(cm, table);
       const container = $('.lint-report-container');
       if (typeof editor === 'object') {
         container.append(table.element);
       } else {
-        const nextSibling = findNextSibling(cms, cm);
-        container.insertBefore(table.element, nextSibling && cms.get(nextSibling).element);
+        const nextSibling = findNextSibling(tables, cm);
+        container.insertBefore(table.element, nextSibling && tables.get(nextSibling).element);
       }
     }
     table.updateCaption();
@@ -29,10 +29,10 @@ Object.assign(linter, (() => {
   });
 
   linter.onUnhook(cm => {
-    const table = cms.get(cm);
+    const table = tables.get(cm);
     if (table) {
       table.element.remove();
-      cms.delete(cm);
+      tables.delete(cm);
     }
     updateCount();
   });
@@ -40,7 +40,7 @@ Object.assign(linter, (() => {
   return {refreshReport};
 
   function updateCount() {
-    const issueCount = Array.from(cms.values())
+    const issueCount = Array.from(tables.values())
       .reduce((sum, table) => sum + table.trs.length, 0);
     $('#lint').classList.toggle('hidden', issueCount === 0);
     $('#issue-count').textContent = issueCount;
@@ -48,7 +48,7 @@ Object.assign(linter, (() => {
 
   function getIssues() {
     const issues = new Set();
-    for (const table of cms.values()) {
+    for (const table of tables.values()) {
       for (const tr of table.trs) {
         issues.add(tr.getAnnotation());
       }
@@ -56,10 +56,10 @@ Object.assign(linter, (() => {
     return issues;
   }
 
-  function findNextSibling(cms, cm) {
+  function findNextSibling(tables, cm) {
     let i = editors.indexOf(cm) + 1;
     while (i < editors.length) {
-      if (cms.has(editors[i])) {
+      if (tables.has(editors[i])) {
         return editors[i];
       }
       i++;
@@ -67,7 +67,7 @@ Object.assign(linter, (() => {
   }
 
   function refreshReport() {
-    for (const table of cms.values()) {
+    for (const table of tables.values()) {
       table.updateCaption();
     }
   }
