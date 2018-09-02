@@ -93,12 +93,12 @@ function createAPI(methods) {
     Promise.resolve()
       .then(() => methods[message.action](...message.args))
       .then(result => ({
-        requestId: message.requestId,
+        id: message.id,
         error: false,
         data: result
       }))
       .catch(err => ({
-        requestId: message.requestId,
+        id: message.id,
         error: true,
         data: cloneError(err)
       }))

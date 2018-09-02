@@ -14,29 +14,29 @@ var editorWorker = (() => {
   });
 
   function createWorker() {
-    let requestId = 0;
+    let id = 0;
     const pending = new Map();
     const worker = new Worker('/edit/editor-worker-body.js');
     worker.onmessage = e => {
       const message = e.data;
       if (message.error) {
-        pending.get(message.requestId).reject(message.data);
+        pending.get(message.id).reject(message.data);
       } else {
-        pending.get(message.requestId).resolve(message.data);
+        pending.get(message.id).resolve(message.data);
       }
-      pending.delete(message.requestId);
+      pending.delete(message.id);
     };
     return {invoke};
 
     function invoke(action, args) {
       return new Promise((resolve, reject) => {
-        pending.set(requestId, {resolve, reject});
+        pending.set(id, {resolve, reject});
         worker.postMessage({
-          requestId,
+          id,
           action,
           args
         });
-        requestId++;
+        id++;
       });
     }
   }
