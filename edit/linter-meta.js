@@ -18,7 +18,8 @@ function createMetaCompiler(cm) {
     if (match[0] === meta && match.index === metaIndex) {
       return cache;
     }
-    return parseMeta(match[0])
+    return API.parseUsercss({sourceCode: match[0], metaOnly: true})
+      .then(result => result.usercssData)
       .then(result => {
         for (const cb of successCallbacks) {
           cb(result);
@@ -43,9 +44,4 @@ function createMetaCompiler(cm) {
   return {
     onSuccess: cb => successCallbacks.push(cb)
   };
-
-  function parseMeta(meta) {
-    return API.parseUsercss({sourceCode: meta, metaOnly: true})
-      .then(result => result.usercssData);
-  }
 }
