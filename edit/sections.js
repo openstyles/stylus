@@ -151,7 +151,7 @@ function addSection(event, section) {
     sections.appendChild(div);
     cm = setupCodeMirror(div, code);
   }
-  linter.hook(cm);
+  linter.enableForEditor(cm);
   linterReport.refresh();
   div.CodeMirror = cm;
   setCleanSection(div);
@@ -481,7 +481,7 @@ function removeSection(event) {
       setCleanItem(section, false);
       updateTitle();
       cm.focus();
-      linter.hook(cm);
+      linter.enableForEditor(cm);
       linterReport.refresh();
     };
     section.insertAdjacentElement('afterend', stub);
@@ -489,7 +489,7 @@ function removeSection(event) {
   setCleanItem($('#sections'), false);
   removeAreaAndSetDirty(section);
   editors.splice(editors.indexOf(cm), 1);
-  linter.unhook(cm);
+  linter.disableForEditor(cm);
   linterReport.refresh();
 }
 

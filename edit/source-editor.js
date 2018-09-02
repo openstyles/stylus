@@ -62,7 +62,7 @@ function createSourceEditor(style) {
     updateMeta();
   });
 
-  linter.hook(cm);
+  linter.enableForEditor(cm);
 
   updateMeta().then(() => {
 

@@ -10,8 +10,8 @@ var linter = (() => {
   return {
     register,
     refresh,
-    hook,
-    unhook,
+    enableForEditor,
+    disableForEditor,
     onChange,
     onUnhook
   };
@@ -30,12 +30,12 @@ var linter = (() => {
     }
   }
 
-  function hook(cm) {
+  function enableForEditor(cm) {
     cm.setOption('lint', {onUpdateLinting, getAnnotations});
     cms.add(cm);
   }
 
-  function unhook(cm) {
+  function disableForEditor(cm) {
     cm.setOption('lint', false);
     cms.delete(cm);
     for (const cb of unhookCallbacks) {
