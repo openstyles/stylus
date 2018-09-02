@@ -54,16 +54,8 @@ var linter = (() => {
   }
 
   function getAnnotations(...args) {
-    const result = [];
     return Promise.all(linters.map(fn => fn(...args)))
-      .then(results => {
-        for (const annotations of results) {
-          if (annotations) {
-            result.push(...annotations);
-          }
-        }
-        return result;
-      });
+      .then(results => [].concat(...results.filter(Boolean)));
   }
 })();
 
