@@ -105,8 +105,13 @@ var linterReport = (() => {
         tr.update(anno);
         i++;
       }
-      while (trs.length > i) {
-        trs.pop().element.remove();
+      if (i === 0) {
+        trs.length = 0;
+        tbody.textContent = '';
+      } else {
+        while (trs.length > i) {
+          trs.pop().element.remove();
+        }
       }
       table.classList.toggle('empty', trs.length === 0);
 
