@@ -84,10 +84,18 @@
         return;
       }
       const mode = cm.getOption('mode');
+      if (engines[selectedLinter].validMode(mode)) {
+        return runLint(selectedLinter);
+      }
       for (const [name, engine] of Object.entries(engines)) {
-        if (name === selectedLinter && engine.validMode(mode)) {
-          return getConfig(name).then(config => engine.lint(text, config, mode));
+        if (engine.validMode(mode)) {
+          return runLint(name);
         }
+      }
+
+      function runLint(name) {
+        return getConfig(name)
+          .then(config => engines[name].lint(text, config, mode));
       }
     });
 
