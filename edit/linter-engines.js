@@ -64,7 +64,7 @@
     const configs = new Map();
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync' || !changes.hasOwnProperty('editorStylelintConfig')) {
+      if (area !== 'sync') {
         return;
       }
       for (const [name, engine] of Object.entries(engines)) {
