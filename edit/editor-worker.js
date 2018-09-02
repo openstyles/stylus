@@ -15,18 +15,18 @@ var editorWorker = (() => {
 
   function createWorker() {
     let id = 0;
-    const pending = new Map();
+    const pendingResponse = new Map();
     const worker = new Worker('/edit/editor-worker-body.js');
     worker.onmessage = e => {
       const message = e.data;
-      pending.get(message.id)[message.error ? 'reject' : 'resolve'](message.data);
-      pending.delete(message.id);
+      pendingResponse.get(message.id)[message.error ? 'reject' : 'resolve'](message.data);
+      pendingResponse.delete(message.id);
     };
     return {invoke};
 
     function invoke(action, args) {
       return new Promise((resolve, reject) => {
-        pending.set(id, {resolve, reject});
+        pendingResponse.set(id, {resolve, reject});
         worker.postMessage({
           id,
           action,
