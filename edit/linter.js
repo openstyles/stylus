@@ -43,8 +43,8 @@ var linter = (() => {
     }
   }
 
-  function register(getAnnotations) {
-    linters.push(getAnnotations);
+  function register(linterFn) {
+    linters.push(linterFn);
   }
 
   function run() {
@@ -55,7 +55,7 @@ var linter = (() => {
 
   function getAnnotations(...args) {
     const result = [];
-    return Promise.all(linters.map(getAnnotations => getAnnotations(...args)))
+    return Promise.all(linters.map(fn => fn(...args)))
       .then(results => {
         for (const annotations of results) {
           if (annotations) {
