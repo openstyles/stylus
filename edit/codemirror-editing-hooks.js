@@ -43,6 +43,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   });
 
   CodeMirror.defineInitHook(cm => {
+    if (!cm.display.wrapper.closest('#sections')) {
+      return;
+    }
     if (prefs.get('editor.livePreview') && styleId) {
       cm.on('changes', updatePreview);
     }
