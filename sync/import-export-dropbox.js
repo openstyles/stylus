@@ -1,7 +1,7 @@
 /* global messageBox Dropbox createZipFileFromText readZipFileFromBlob launchWebAuthFlow getRedirectUrlAuthFlow importFromString resolve */
 'use strict';
 
-const DROPBOX_API_KEY = '';
+const DROPBOX_API_KEY = 'zg52vphuapvpng9';
 const FILENAME_ZIP_FILE = 'stylus.json';
 const DROPBOX_FILE = 'stylus.zip';
 const API_ERROR_STATUS_FILE_NOT_FOUND = 409;
