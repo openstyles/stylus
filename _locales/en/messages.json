@@ -1299,7 +1299,7 @@
     "message": "File saved with success"
   },
   "noFileToImport": {
-    "message": "You don't have a file to import."
+    "message": "To import your styles, you should export it first."
   },
   "connectingDropbox": {
     "message": "Connecting Dropbox..."
