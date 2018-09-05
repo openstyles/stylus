@@ -94,7 +94,8 @@
   flex-shrink: 0;
 }
 
-.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
+.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child),
+.current-value {
   margin-right: 4px;
 }
 

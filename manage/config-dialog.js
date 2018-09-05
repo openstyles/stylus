@@ -213,7 +213,7 @@ function configDialog(style) {
         ])
       ]);
     for (const va of vars) {
-      let children;
+      let children, options;
       switch (va.type) {
         case 'color':
           children = [
@@ -259,14 +259,27 @@ function configDialog(style) {
           break;
 
         default:
-          children = [
-            va.input = $create('input.config-value', {
-              va,
-              type: 'text',
-              onchange: updateVarOnChange,
-              oninput: updateVarOnInput,
-            }),
-          ];
+          options = {
+            va,
+            type: va.type,
+            onchange: updateVarOnChange,
+            oninput: updateVarOnInput,
+          };
+          if (va.type === 'range') {
+            options.min = va.range[0];
+            options.max = va.range[1];
+            options.step = va.range[2];
+            options.value = va.default;
+            children = [
+              $create('span.current-value', {textContent: va.value}),
+              va.input = $create('input.config-value', options),
+            ];
+          } else {
+            children = [
+              va.input = $create('input.config-value', options),
+            ];
+          }
+
           break;
       }
 
@@ -287,6 +300,9 @@ function configDialog(style) {
 
   function updateVarOnChange() {
     this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
+    if (this.type === 'range') {
+      $('.current-value', this.parentNode).textContent = this.va.value;
+    }
   }
 
   function updateVarOnInput(event, debounced = false) {
@@ -307,9 +323,14 @@ function configDialog(style) {
         }
       } else if (va.type === 'checkbox') {
         va.input.checked = Number(value);
-      } else {
-        va.input.value = value;
       }
+      if (va.type === 'range') {
+        const span = $('.current-value', va.input.parentNode);
+        if (span) {
+          span.textContent = value;
+        }
+      }
+      va.input.value = value;
       if (!prefs.get('config.autosave')) {
         renderValueState(va);
       }
