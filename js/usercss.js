@@ -198,7 +198,7 @@ var usercss = (() => {
         if (Array.isArray(state.value)) {
           result.options = state.value.map(text => {
             if (text.endsWith('*')) {
-              text = text.replace(/\*$/, '');
+              text = text.slice(0, -1);
               defaultValue = text;
             }
             return createOption(text);
@@ -206,8 +206,8 @@ var usercss = (() => {
         } else {
           result.options = Object.keys(state.value).map(k => {
             if (k.endsWith('*')) {
-              state.value[k] = state.value[k].replace(/\*$/, '');
-              k = k.replace(/\*$/, '');
+              state.value[k] = state.value[k].slice(0, -1);
+              k = k.slice(0, -1);
               defaultValue = k;
             }
             return createOption(k, state.value[k]);
