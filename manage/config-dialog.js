@@ -264,7 +264,7 @@ function configDialog(style) {
             type: va.type,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput,
-            onfocus: focusInput,
+            onfocus: selectAllOnFocus,
           };
           if (va.type === 'range') {
             options.min = va.range[0];
@@ -314,7 +314,7 @@ function configDialog(style) {
     }
   }
 
-  function focusInput(event) {
+  function selectAllOnFocus(event) {
     event.target.select();
   }
 
