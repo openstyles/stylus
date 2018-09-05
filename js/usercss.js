@@ -177,6 +177,7 @@ var usercss = (() => {
     result.label = state.value;
 
     const {re, type, text} = state;
+    let deflt;
 
     switch (type === 'image' && state.key === 'var' ? '@image@var' : type) {
       case 'checkbox': {
@@ -195,11 +196,24 @@ var usercss = (() => {
         parseJSONValue(state);
         state.errorPrefix = '';
         if (Array.isArray(state.value)) {
-          result.options = state.value.map(text => createOption(text));
+          result.options = state.value.map(text => {
+            if (text.endsWith('*')) {
+              text = text.replace(/\*$/, '');
+              deflt = text;
+            }
+            return createOption(text);
+          });
         } else {
-          result.options = Object.keys(state.value).map(k => createOption(k, state.value[k]));
+          result.options = Object.keys(state.value).map(k => {
+            if (k.endsWith('*')) {
+              state.value[k] = state.value[k].replace(/\*$/, '');
+              k = k.replace(/\*$/, '');
+              deflt = k;
+            }
+            return createOption(k, state.value[k]);
+          });
         }
-        result.default = (result.options[0] || {}).name || '';
+        result.default = typeof deflt !== 'undefined' ? deflt : (result.options[0] || {}).name || '';
         break;
       }
 
