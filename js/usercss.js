@@ -177,7 +177,7 @@ var usercss = (() => {
     result.label = state.value;
 
     const {re, type, text} = state;
-    let deflt;
+    let defaultValue;
 
     switch (type === 'image' && state.key === 'var' ? '@image@var' : type) {
       case 'checkbox': {
@@ -199,7 +199,7 @@ var usercss = (() => {
           result.options = state.value.map(text => {
             if (text.endsWith('*')) {
               text = text.replace(/\*$/, '');
-              deflt = text;
+              defaultValue = text;
             }
             return createOption(text);
           });
@@ -208,12 +208,12 @@ var usercss = (() => {
             if (k.endsWith('*')) {
               state.value[k] = state.value[k].replace(/\*$/, '');
               k = k.replace(/\*$/, '');
-              deflt = k;
+              defaultValue = k;
             }
             return createOption(k, state.value[k]);
           });
         }
-        result.default = typeof deflt !== 'undefined' ? deflt : (result.options[0] || {}).name || '';
+        result.default = typeof defaultValue !== 'undefined' ? defaultValue : (result.options[0] || {}).name || '';
         break;
       }
 
