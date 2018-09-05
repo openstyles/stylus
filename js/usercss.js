@@ -29,7 +29,7 @@ var usercss = (() => {
     ['version', 0],
   ]);
   const MANDATORY_META = ['name', 'namespace', 'version'];
-  const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image'];
+  const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image', 'number', 'range'];
   const META_URLS = [...KNOWN_META.keys()].filter(k => k.endsWith('URL'));
 
   const BUILDER = {
@@ -203,6 +203,22 @@ var usercss = (() => {
         break;
       }
 
+      case 'range': {
+        state.errorPrefix = 'Invalid JSON: ';
+        parseJSONValue(state);
+        state.errorPrefix = '';
+        // [ start, end, step, default ]
+        if (Array.isArray(state.value) && state.value.length === 4) {
+          result.range = state.value;
+          result.default = state.value[3];
+        } else {
+          // not a range, fallback to text
+          result.type = 'text';
+          result.default = state.value;
+        }
+        break;
+      }
+
       case 'dropdown':
       case 'image': {
         if (text[re.lastIndex] !== '{') {
@@ -235,7 +251,7 @@ var usercss = (() => {
       }
 
       default: {
-        // text, color
+        // text, color, number
         parseStringToEnd(state);
         result.default = state.value;
       }
