@@ -213,7 +213,7 @@ function configDialog(style) {
         ])
       ]);
     for (const va of vars) {
-      let children, options;
+      let children;
       switch (va.type) {
         case 'color':
           children = [
@@ -258,8 +258,8 @@ function configDialog(style) {
           ];
           break;
 
-        default:
-          options = {
+        default: {
+          const options = {
             va,
             type: va.type,
             onchange: updateVarOnChange,
@@ -280,8 +280,8 @@ function configDialog(style) {
               va.input = $create('input.config-value', options),
             ];
           }
+        }
 
-          break;
       }
 
       resetter = resetter.cloneNode(true);
