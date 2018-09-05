@@ -18,6 +18,13 @@
   var docRewriteObserver;
   var docRootObserver;
 
+  // FF59+ bug workaround
+  // See https://github.com/openstyles/stylus/issues/461
+  // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
+  // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
+  const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
+  const pageContextQueue = [];
+
   requestStyles();
   chrome.runtime.onMessage.addListener(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
@@ -262,6 +269,10 @@
       docRootObserver.firstStart();
     }
 
+    if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
+      setContentsInPageContext();
+    }
+
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
       initDocRewriteObserver();
     }
@@ -284,6 +295,8 @@
         // workaround for Chrome devtools bug fixed in v65
         el.remove();
         el = null;
+      } else if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
       } else {
         el.textContent = code;
       }
@@ -303,12 +316,8 @@
       el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
-      if (!CHROME && (
-        // FF bug workaround, see https://github.com/openstyles/stylus/issues/461
-        location.hostname === 'www.barclaycardus.com' ||
-        location.hostname === 'www.icloud.com'
-      )) {
-        setContentsInPageContext(el, code);
+      if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
       } else {
         el.textContent = code;
       }
@@ -319,16 +328,31 @@
     return el;
   }
 
-  function setContentsInPageContext(el, code) {
-    const originalId = el.id;
-    el.id += performance.now();
-    // when adding to ROOT we don't want our observer to pop up so we use a DIV wrapper
-    (document.head || ROOT.appendChild(document.createElement('div'))).appendChild(el);
-    (document.head || ROOT).appendChild(document.createElement('script')).text = `
-      document.currentScript.remove();
-      document.getElementById('${el.id}').textContent = ${JSON.stringify(code)};`;
-    if (!document.head) el.parentNode.remove();
-    el.id = originalId;
+  function setContentsInPageContext() {
+    try {
+      (document.head || ROOT).appendChild(document.createElement('script')).text = `
+        document.currentScript.remove();
+        for (const {id, code} of ${JSON.stringify(pageContextQueue)}) {
+          (
+            document.getElementById(id) ||
+            document.querySelector('style.stylus[id="' + id + '"]') ||
+            {}
+          ).textContent = code;
+        }
+      `;
+    } catch (e) {}
+    let failedSome;
+    for (const {el, code} of pageContextQueue) {
+      if (el.textContent !== code) {
+        el.textContent = code;
+        failedSome = true;
+      }
+    }
+    if (failedSome) {
+      console.debug('Could not set code of some styles in page context, ' +
+                    'see https://github.com/openstyles/stylus/issues/461');
+    }
+    pageContextQueue.length = 0;
   }
 
   function addStyleElement(newElement) {
