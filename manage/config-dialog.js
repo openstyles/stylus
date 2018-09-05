@@ -264,6 +264,7 @@ function configDialog(style) {
             type: va.type,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput,
+            onfocus: focusInput,
           };
           if (va.type === 'range') {
             options.min = va.range[0];
@@ -311,6 +312,10 @@ function configDialog(style) {
     } else {
       debounce(updateVarOnInput, AUTOSAVE_DELAY, event, true);
     }
+  }
+
+  function focusInput(event) {
+    event.target.select();
   }
 
   function renderValues(varsToRender = vars) {
