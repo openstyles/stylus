@@ -328,14 +328,15 @@ function configDialog(style) {
         }
       } else if (va.type === 'checkbox') {
         va.input.checked = Number(value);
-      }
-      if (va.type === 'range') {
+      } else if (va.type === 'range') {
         const span = $('.current-value', va.input.parentNode);
+        va.input.value = value;
         if (span) {
           span.textContent = value;
         }
+      } else {
+        va.input.value = value;
       }
-      va.input.value = value;
       if (!prefs.get('config.autosave')) {
         renderValueState(va);
       }
