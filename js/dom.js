@@ -372,18 +372,23 @@ function focusAccessibility() {
  * Switches to the next/previous keyboard-focusable element
  * @param {HTMLElement} rootElement
  * @param {Number} step - for exmaple 1 or -1
+ * @returns {HTMLElement|false|undefined} -
+ *   HTMLElement: focus changed,
+ *   false: focus unchanged,
+ *   undefined: nothing to focus
  */
 function moveFocus(rootElement, step) {
   const elements = [...rootElement.getElementsByTagName('*')];
   const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
   const num = elements.length;
+  const {activeElement} = document;
   for (let i = 1; i < num; i++) {
     const elementIndex = (activeIndex + i * step + num) % num;
     // we don't use positive tabindex so we stop at any valid value
     const el = elements[elementIndex];
     if (!el.disabled && el.tabIndex >= 0) {
       el.focus();
-      return;
+      return activeElement !== el && el;
     }
   }
 }

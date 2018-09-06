@@ -34,8 +34,9 @@ function messageBox({
   document.body.appendChild(messageBox.element);
 
   messageBox.originalFocus = document.activeElement;
-  moveFocus(messageBox.element, 1);
-
+  // skip external links like feedback
+  while ((moveFocus(messageBox.element, 1) || {}).target === '_blank') {/*NOP*/}
+  // suppress focus outline when invoked via click
   if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
     document.activeElement.dataset.focusedViaClick = '';
   }
