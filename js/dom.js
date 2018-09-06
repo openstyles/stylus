@@ -337,9 +337,9 @@ function focusAccessibility() {
   function suppressOutlineOnClick({target}) {
     for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
       if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+        focusAccessibility.lastFocusedViaClick = true;
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
-          focusAccessibility.lastFocusedViaClick = true;
         }
         return;
       }
