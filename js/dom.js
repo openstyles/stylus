@@ -313,20 +313,30 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
   }
 }
 
-
+// Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
 function focusAccessibility() {
-  // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
-  // Since we don't want full layout recalc, we modify only the closest focusable element,
-  // which we try to find in DOM for this many parentElement jumps:
-  const focusables = focusAccessibility.ELEMENTS =
-    ['a', 'button', 'input', 'textarea', 'label', 'select', 'summary'];
+  // last event's focusedViaClick
+  focusAccessibility.lastFocusedViaClick = false;
+  // tags of focusable elements;
+  // to avoid a full layout recalc we modify the closest one
+  focusAccessibility.ELEMENTS = [
+    'a',
+    'button',
+    'input',
+    'textarea',
+    'label',
+    'select',
+    'summary',
+  ];
+  // try to find a focusable parent for this many parentElement jumps:
   const GIVE_UP_DEPTH = 4;
+
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
 
   function suppressOutlineOnClick({target}) {
     for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
-      if (focusables.includes(el.localName)) {
+      if (focusAccessibility.ELEMENTS.includes(el.localName)) {
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
           focusAccessibility.lastFocusedViaClick = true;
@@ -345,7 +355,7 @@ function focusAccessibility() {
       return;
     }
     let el = document.activeElement;
-    if (!el || !focusables.includes(el.localName)) {
+    if (!el || !focusAccessibility.ELEMENTS.includes(el.localName)) {
       return;
     }
     if (el.dataset.focusedViaClick !== undefined) {
