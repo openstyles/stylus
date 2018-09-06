@@ -266,14 +266,23 @@ function configDialog(style) {
             oninput: updateVarOnInput,
             onfocus: selectAllOnFocus,
           };
+          const dataset = {};
           if (va.type === 'range') {
-            options.min = va.range[0];
-            options.max = va.range[1];
-            options.step = va.range[2];
             options.value = va.default;
+            if (typeof va.range[0] !== 'undefined') {
+              options.min = dataset.min = va.range[0];
+            }
+            if (typeof va.range[1] !== 'undefined') {
+              options.max = dataset.max = va.range[1];
+            }
+            if (va.range[2]) {
+              options.step = va.range[2];
+            }
             children = [
               $create('span.current-value', {textContent: va.value}),
-              va.input = $create('input.config-value', options),
+              $create('span.current-range', {dataset}, [
+                va.input = $create('input.config-value', options),
+              ])
             ];
           } else {
             children = [
@@ -302,7 +311,7 @@ function configDialog(style) {
   function updateVarOnChange() {
     this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     if (this.type === 'range') {
-      $('.current-value', this.parentNode).textContent = this.va.value;
+      $('.current-value', this.closest('.config-range')).textContent = this.va.value;
     }
   }
 
@@ -329,7 +338,7 @@ function configDialog(style) {
       } else if (va.type === 'checkbox') {
         va.input.checked = Number(value);
       } else if (va.type === 'range') {
-        const span = $('.current-value', va.input.parentNode);
+        const span = $('.current-value', va.input.closest('.config-range'));
         va.input.value = value;
         if (span) {
           span.textContent = value;

@@ -221,10 +221,10 @@ var usercss = (() => {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
         state.errorPrefix = '';
-        // [ start, end, step, default ]
-        if (Array.isArray(state.value) && state.value.length === 4) {
+        // [default, start, end, step] (start, end & step are optional)
+        if (Array.isArray(state.value) && state.value.length) {
+          result.default = state.value.shift();
           result.range = state.value;
-          result.default = state.value[3];
         } else {
           // not a range, fallback to text
           result.type = 'text';
