@@ -94,9 +94,28 @@
   flex-shrink: 0;
 }
 
-.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child),
-.current-value {
+.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
   margin-right: 4px;
+}
+
+.current-value {
+  outline: 1px solid rgba(128, 128, 128, 0.5);
+  padding: 2px 4px;
+  margin-right: 4px;
+}
+
+.config-range span {
+  line-height: 22px;
+}
+
+.current-range:before {
+  content: attr(data-min);
+  padding-right: .25em;
+}
+
+.current-range:after {
+  content: attr(data-max);
+  padding-left: .25em;
 }
 
 .config-body label:not(.nondefault) .config-reset-icon {
