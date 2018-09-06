@@ -329,6 +329,7 @@ function focusAccessibility() {
       if (focusables.includes(el.localName)) {
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
+          focusAccessibility.lastFocusedViaClick = true;
         }
         return;
       }
@@ -337,6 +338,7 @@ function focusAccessibility() {
 
   function keepOutlineOnTab(event) {
     if (event.which === 9) {
+      focusAccessibility.lastFocusedViaClick = false;
       setTimeout(keepOutlineOnTab, 0, true);
       return;
     } else if (event !== true) {
