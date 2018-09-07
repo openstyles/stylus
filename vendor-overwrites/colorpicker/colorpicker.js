@@ -222,11 +222,9 @@
     }
   }
 
-  function hide({notify = true} = {}) {
+  function hide() {
     if (shown) {
-      if (notify) {
-        colorpickerCallback('');
-      }
+      colorpickerCallback('');
       unregisterEvents();
       focusNoScroll(prevFocusedElement);
       $root.remove();
@@ -623,7 +621,7 @@
         case 27:
           e.preventDefault();
           e.stopPropagation();
-          hide({notify: false});
+          hide();
           break;
       }
     }
@@ -643,17 +641,20 @@
   //region Event utilities
 
   function colorpickerCallback(colorString = currentColorToString()) {
-    // Esc pressed?
-    if (!colorString) {
+    const isCallable = typeof options.callback === 'function';
+    // hiding
+    if (!colorString && isCallable) {
       options.callback('');
+      return;
     }
     if (
       userActivity &&
-      $inputs[currentFormat].every(el => el.checkValidity()) &&
-      typeof options.callback === 'function'
+      $inputs[currentFormat].every(el => el.checkValidity())
     ) {
       lastOutputColor = colorString.replace(/\b0\./g, '.');
-      options.callback(lastOutputColor);
+      if (isCallable) {
+        options.callback(lastOutputColor);
+      }
     }
   }
 
