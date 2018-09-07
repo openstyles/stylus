@@ -104,7 +104,7 @@
   margin-right: 4px;
 }
 
-.config-range span {
+.config-number span, .config-range span {
   line-height: 22px;
 }
 

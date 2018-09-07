@@ -217,6 +217,7 @@ var usercss = (() => {
         break;
       }
 
+      case 'number':
       case 'range': {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
