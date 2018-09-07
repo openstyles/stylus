@@ -267,7 +267,8 @@ function configDialog(style) {
             onfocus: selectAllOnFocus,
           };
           const dataset = {};
-          if (va.type === 'range') {
+          if (va.type === 'range' || va.type === 'number') {
+            children = va.type === 'range' ? [$create('span.current-value', {textContent: va.value})] : [];
             options.value = va.default;
             if (typeof va.range[0] !== 'undefined') {
               options.min = dataset.min = va.range[0];
@@ -278,12 +279,11 @@ function configDialog(style) {
             if (va.range[2]) {
               options.step = va.range[2];
             }
-            children = [
-              $create('span.current-value', {textContent: va.value}),
+            children.push(
               $create('span.current-range', {dataset}, [
                 va.input = $create('input.config-value', options),
               ])
-            ];
+            );
           } else {
             children = [
               va.input = $create('input.config-value', options),
