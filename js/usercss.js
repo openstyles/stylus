@@ -222,10 +222,15 @@ var usercss = (() => {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
         state.errorPrefix = '';
-        // [default, start, end, step] (start, end & step are optional)
+        // [default, start, end, step, units] (start, end, step & units are optional)
         if (Array.isArray(state.value) && state.value.length) {
           result.default = state.value.shift();
-          result.range = state.value;
+          const nonDigit = /[^\d.+-]/;
+          // label may be placed anywhere after default value
+          const labelIndex = state.value.findIndex(item => nonDigit.test(item));
+          // but should not contain any numbers '4px' => 'px'
+          result.units = labelIndex < 0 ? '' : state.value.splice(labelIndex, 1)[0].toString().replace(/[\d.+-]/g, '');
+          result.range = state.value.filter(item => !nonDigit.test(item));
         } else {
           // not a range, fallback to text
           result.type = 'text';
@@ -571,6 +576,9 @@ var usercss = (() => {
     if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
       // TODO: handle customized image
       return va.options.find(o => o.name === va[prop]).value;
+    }
+    if ((va.type === 'number' || va.type === 'range') && va.units) {
+      return va[prop] + va.units;
     }
     return va[prop];
   }
