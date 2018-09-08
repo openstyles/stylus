@@ -201,6 +201,27 @@ function configDialog(style) {
     return va.value === null || va.value === undefined || va.value === va.default;
   }
 
+  function handleRangeAndNumberInputs(va, options) {
+    const dataset = {};
+    options.value = va.default;
+    if (typeof va.range[0] !== 'undefined') {
+      options.min = dataset.min = va.range[0];
+    }
+    if (typeof va.range[1] !== 'undefined') {
+      options.max = dataset.max = va.range[1];
+    }
+    if (va.range[2]) {
+      options.step = va.range[2];
+    }
+    const children = va.type === 'range' ? [$create('span.current-value', {textContent: va.value + va.units})] : [];
+    children.push(
+      $create(`span.current-${va.type}`, {dataset}, [
+        va.input = $create('input.config-value', options),
+      ])
+    );
+    return children;
+  }
+
   function buildConfigForm() {
     let resetter =
       $create('a.config-reset-icon', {href: '#'}, [
@@ -266,24 +287,8 @@ function configDialog(style) {
             oninput: updateVarOnInput,
             onfocus: selectAllOnFocus,
           };
-          const dataset = {};
           if (va.type === 'range' || va.type === 'number') {
-            children = va.type === 'range' ? [$create('span.current-value', {textContent: va.value})] : [];
-            options.value = va.default;
-            if (typeof va.range[0] !== 'undefined') {
-              options.min = dataset.min = va.range[0];
-            }
-            if (typeof va.range[1] !== 'undefined') {
-              options.max = dataset.max = va.range[1];
-            }
-            if (va.range[2]) {
-              options.step = va.range[2];
-            }
-            children.push(
-              $create('span.current-range', {dataset}, [
-                va.input = $create('input.config-value', options),
-              ])
-            );
+            children = handleRangeAndNumberInputs(va, options);
           } else {
             children = [
               va.input = $create('input.config-value', options),
@@ -314,7 +319,7 @@ function configDialog(style) {
       this.value = this.va.value = clampValue(this.value, this.va.range);
     }
     if (this.type === 'range') {
-      $('.current-value', this.closest('.config-range')).textContent = this.va.value;
+      $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
     }
   }
 
@@ -356,7 +361,7 @@ function configDialog(style) {
         const span = $('.current-value', va.input.closest('.config-range'));
         va.input.value = value;
         if (span) {
-          span.textContent = value;
+          span.textContent = value + (va.units || '');
         }
       } else {
         va.input.value = value;
