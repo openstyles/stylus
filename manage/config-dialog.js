@@ -310,9 +310,24 @@ function configDialog(style) {
 
   function updateVarOnChange() {
     this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
+    if (this.type === 'number') {
+      this.value = this.va.value = clampValue(this.value, this.va.range);
+    }
     if (this.type === 'range') {
       $('.current-value', this.closest('.config-range')).textContent = this.va.value;
     }
+  }
+
+  // Clamp input[type=number] to a valid range
+  function clampValue(value, [min = 0, max = 100, step]) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    }
+    const remainder = value % (step || 1);
+    // Don't restrict to integer values if step is undefined.
+    return typeof step !== 'undefined' && remainder !== 0 ? value - remainder : value;
   }
 
   function updateVarOnInput(event, debounced = false) {
