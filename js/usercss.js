@@ -231,10 +231,6 @@ var usercss = (() => {
           // but should not contain any numbers '4px' => 'px'
           result.units = labelIndex < 0 ? '' : state.value.splice(labelIndex, 1)[0].toString().replace(/[\d.+-]/g, '');
           result.range = state.value.filter(item => !nonDigit.test(item));
-        } else {
-          // not a range, fallback to text
-          result.type = 'text';
-          result.default = state.value;
         }
         break;
       }
@@ -617,6 +613,11 @@ var usercss = (() => {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
       va[value] = colorConverter.format(colorConverter.parse(va[value]), 'rgb');
+    } else if (
+      (va.type === 'number' || va.type === 'range') &&
+      !(typeof va[value] === 'number' || Array.isArray(va.range))
+    ) {
+      throw new Error(chrome.i18n.getMessage('styleMetaErrorRangeOrNumber', va.type));
     }
   }
 
