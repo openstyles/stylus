@@ -314,12 +314,13 @@ function configDialog(style) {
   }
 
   function updateVarOnChange() {
-    this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     if (this.type === 'number') {
       this.value = this.va.value = clampValue(this.value, this.va.range);
-    }
-    if (this.type === 'range') {
+    } else if (this.type === 'range') {
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
+      this.va.value = parseFloat(this.value);
+    } else {
+      this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
   }
 

@@ -224,7 +224,7 @@ var usercss = (() => {
         state.errorPrefix = '';
         // [default, start, end, step, units] (start, end, step & units are optional)
         if (Array.isArray(state.value) && state.value.length) {
-          result.default = state.value.shift();
+          result.default = parseFloat(state.value.shift());
           const nonDigit = /[^\d.+-]/;
           // label may be placed anywhere after default value
           const labelIndex = state.value.findIndex(item => nonDigit.test(item));
