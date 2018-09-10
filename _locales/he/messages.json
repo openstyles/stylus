@@ -1,0 +1,767 @@
+{
+  "addStyleLabel": {
+    "message": "כתוב עיצוב חדש"
+  },
+  "addStyleTitle": {
+    "message": "הוספת עיצוב"
+  },
+  "alphaChannel": {
+    "message": "שקיפות"
+  },
+  "appliesAdd": {
+    "message": "הוספה"
+  },
+  "appliesDisplay": {
+    "message": "מוחל על: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "עוד"
+  },
+  "appliesDomainOption": {
+    "message": "קישורים תחת הדומיין"
+  },
+  "appliesLabel": {
+    "message": "מוחל על"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "הצג אינפורמציית 'חל על'"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "לא עובד עם CSS מוקטן (minified)"
+  },
+  "appliesRegexpOption": {
+    "message": "קישורים התואמים regexp"
+  },
+  "appliesRemove": {
+    "message": "הסרה"
+  },
+  "appliesRemoveError": {
+    "message": "לא ניתן להסיר את הערך 'חל על' האחרון"
+  },
+  "appliesSpecify": {
+    "message": "פרט"
+  },
+  "appliesToEverything": {
+    "message": "כל האתרים"
+  },
+  "appliesUrlOption": {
+    "message": "קישור (URL)"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "קישורים המתחילים ב"
+  },
+  "applyAllUpdates": {
+    "message": "החל את כל העדכונים"
+  },
+  "author": {
+    "message": "כותב"
+  },
+  "backupButtons": {
+    "message": "גיבוי"
+  },
+  "backupMessage": {
+    "message": "בחר קובץ או גרור ושחרר אותו בדף זה."
+  },
+  "bckpInstStyles": {
+    "message": "ייצא עיצובים"
+  },
+  "checkAllUpdates": {
+    "message": "בדוקים עדכונים עבור כל העיצובים"
+  },
+  "checkAllUpdatesForce": {
+    "message": "בדוק שוב, לא ערכתי אף עיצוב!"
+  },
+  "checkForUpdate": {
+    "message": "בדוק עדכונים"
+  },
+  "checkingForUpdate": {
+    "message": "בודק..."
+  },
+  "clickToUninstall": {
+    "message": "הקלק להסרה"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "סגור באופן אוטומטי סוגריים וגרשיים"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "הוסף סוגר באופן אוטומטי כשמקלידים את אחת מהפותחים של ()[]{}''\"\""
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "השלמה אוטומטית בזמן הכתיבה"
+  },
+  "cm_colorpicker": {
+    "message": "פלטות בחירת צבעים עבור צבעי CSS"
+  },
+  "cm_indentWithTabs": {
+    "message": "השתמש בטאבים יחד עם הזחה חכמה"
+  },
+  "cm_keyMap": {
+    "message": "מפת מקשים"
+  },
+  "cm_lineWrapping": {
+    "message": "עטיפת מילים"
+  },
+  "cm_matchHighlight": {
+    "message": "הדגש"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "בחירה בלבד"
+  },
+  "cm_resizeGripHint": {
+    "message": "דאבל קליק להגדלה מירבית/איפוס הגובה"
+  },
+  "cm_selectByTokens": {
+    "message": "דאבל קליק בוחר tokens"
+  },
+  "cm_smartIndent": {
+    "message": "השתמש בהזחה חכמה"
+  },
+  "cm_tabSize": {
+    "message": "גודל הכרטיסייה"
+  },
+  "cm_theme": {
+    "message": "ערכת נושא"
+  },
+  "colorpickerTooltip": {
+    "message": "פתח את פלטת בחירת הצבעים"
+  },
+  "configOnChange": {
+    "message": "בעת שינוי"
+  },
+  "configOnChangeTooltip": {
+    "message": "שמור והחל שינויים באופן אוטומטי"
+  },
+  "configureStyle": {
+    "message": "הגדר"
+  },
+  "configureStyleOnHomepage": {
+    "message": "הגדר בדף הבית"
+  },
+  "confirmCancel": {
+    "message": "ביטול"
+  },
+  "confirmClose": {
+    "message": "סגור"
+  },
+  "confirmDefault": {
+    "message": "השתמש בברירת מחדל"
+  },
+  "confirmDelete": {
+    "message": "מחיקה"
+  },
+  "confirmDiscardChanges": {
+    "message": "למחוק את השינויים?"
+  },
+  "confirmNo": {
+    "message": "לא"
+  },
+  "confirmOK": {
+    "message": "אוקיי"
+  },
+  "confirmSave": {
+    "message": "שמור"
+  },
+  "confirmStop": {
+    "message": "עצור"
+  },
+  "confirmYes": {
+    "message": "כן"
+  },
+  "dateInstalled": {
+    "message": "תאריך התקנה"
+  },
+  "dateUpdated": {
+    "message": "תאריך עדכון"
+  },
+  "defaultTheme": {
+    "message": "ברירת מחדל"
+  },
+  "deleteStyleConfirm": {
+    "message": "האם אתה בטוח שברצונך למחוק עיצוב זה?"
+  },
+  "deleteStyleLabel": {
+    "message": "מחק"
+  },
+  "disableAllStyles": {
+    "message": "השבת את כל העיצובים"
+  },
+  "disableStyleLabel": {
+    "message": "השבת"
+  },
+  "dragDropMessage": {
+    "message": "שחרר את קובץ הגיבוי שלך בכל מקום בדף זה על־מנת לייבא אותו."
+  },
+  "editDeleteText": {
+    "message": "מחק"
+  },
+  "editGotoLine": {
+    "message": "Goto לשורה (או line:col)"
+  },
+  "editStyleHeading": {
+    "message": "עריכת עיצוב"
+  },
+  "editStyleLabel": {
+    "message": "עריכה"
+  },
+  "editStyleTitle": {
+    "message": "עריכת העיצוב $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorStylesButton": {
+    "message": "מצא עיצובים לעורך"
+  },
+  "enableStyleLabel": {
+    "message": "אפשר"
+  },
+  "exportLabel": {
+    "message": "ייצא"
+  },
+  "externalFeedback": {
+    "message": "חוות דעת"
+  },
+  "externalHomepage": {
+    "message": "דף הבית"
+  },
+  "externalLink": {
+    "message": "קישור חיצוני"
+  },
+  "externalSupport": {
+    "message": "תמיכה"
+  },
+  "findStyles": {
+    "message": "מצא עיצובים"
+  },
+  "findStylesInline": {
+    "message": "מוטבע"
+  },
+  "genericAdd": {
+    "message": "הוספה"
+  },
+  "genericClone": {
+    "message": "שכפול"
+  },
+  "genericDisabledLabel": {
+    "message": "מושבת"
+  },
+  "genericEnabledLabel": {
+    "message": "מאופשר"
+  },
+  "genericError": {
+    "message": "שגיאה"
+  },
+  "genericHistoryLabel": {
+    "message": "היסטוריה"
+  },
+  "genericNext": {
+    "message": "הבא"
+  },
+  "genericPrevious": {
+    "message": "הקודם"
+  },
+  "genericResetLabel": {
+    "message": "איפוס"
+  },
+  "genericSavedMessage": {
+    "message": "נשמר"
+  },
+  "genericTitle": {
+    "message": "כותרת"
+  },
+  "genericUnknown": {
+    "message": "לא ידוע"
+  },
+  "helpAlt": {
+    "message": "עזרה"
+  },
+  "helpKeyMapCommand": {
+    "message": "הקלד שם פקודה"
+  },
+  "helpKeyMapHotkey": {
+    "message": "לחץ על המקש החם"
+  },
+  "importAppendLabel": {
+    "message": "צרף לעיצוב"
+  },
+  "importAppendTooltip": {
+    "message": "צרף את העיצוב המיובא לעיצוב הנוכחי"
+  },
+  "importLabel": {
+    "message": "ייבא"
+  },
+  "importReplaceLabel": {
+    "message": "דרוס עיצוב"
+  },
+  "importReportLegendAdded": {
+    "message": "נוספו"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "קודים עודכנו"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "מידע meta עודכנו"
+  },
+  "importReportTitle": {
+    "message": "סיום ייבוא עיצובים"
+  },
+  "importReportUnchanged": {
+    "message": "שום דבר לא השתנה."
+  },
+  "importReportUndone": {
+    "message": "עיצובים הוחזרו"
+  },
+  "importReportUndoneTitle": {
+    "message": "הייבוא בוטל"
+  },
+  "installButton": {
+    "message": "התקן עיצוב"
+  },
+  "installButtonInstalled": {
+    "message": "העיצוב הותקן בהצלחה"
+  },
+  "installButtonReinstall": {
+    "message": "התקן עיצוב מחדש"
+  },
+  "installButtonUpdate": {
+    "message": "עדכן עיצוב"
+  },
+  "installUpdate": {
+    "message": "התקן עדכון"
+  },
+  "installUpdateFromLabel": {
+    "message": "בדוק עדכונים"
+  },
+  "installUpdateUnavailable": {
+    "message": "על־מנת לאפשר בדיקת עדכונים, אנא שחרר את הקובץ על רצועת הכרטיסיות או ציין @updateURL ב־metadata של העיצוב."
+  },
+  "license": {
+    "message": "רישיון"
+  },
+  "linkGetHelp": {
+    "message": "קבל עזרה"
+  },
+  "linkGetStyles": {
+    "message": "מצא עיצובים"
+  },
+  "linkTranslate": {
+    "message": "תרגום"
+  },
+  "linterCSSLintSettings": {
+    "message": "(הגדר כלל כ: 0 = מושבת; 1 = אזהרה; 2 = שגיאה)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "הגדר $linter$ כללי תצורה",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "לחץ להגדרת linter זה"
+  },
+  "linterIssues": {
+    "message": "תקלות"
+  },
+  "linterIssuesHelp": {
+    "message": "התקלות האלו נמצאו על־ידי $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "פורמט JSON לא תקין"
+  },
+  "linterResetMessage": {
+    "message": "על־מנת לבטל איפוסים לא רצוניים, לחץ Ctrl-Z (או Cmd-Z) בתיבת הטקסט"
+  },
+  "linterRulesLink": {
+    "message": "ראה רשימת חוקים מלאה"
+  },
+  "liveReloadError": {
+    "message": "התרחשה שגיאה בזמן הצפייה בקובץ"
+  },
+  "liveReloadLabel": {
+    "message": "רענון לייב (live)"
+  },
+  "liveReloadUnavailable": {
+    "message": "על־מנת לאפשר רענון לייב (live), אנא שחרר את הקובץ על רצועת הכרטיסיות (האזור בו כותרות הכרטיסיות מוצגות)."
+  },
+  "manageFavicons": {
+    "message": "הצגת אייקונים בעמודת 'חל על'"
+  },
+  "manageFaviconsGray": {
+    "message": "האפרת האייקונים"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus משתמש בשירות חיצוני https://www.google.com/s2/favicons"
+  },
+  "manageFilters": {
+    "message": "מסננים"
+  },
+  "manageHeading": {
+    "message": "עיצובים מותקנים"
+  },
+  "manageMaxTargets": {
+    "message": "מספר הפריטים ה־'מוחלים על'"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "כ־Usercss"
+  },
+  "manageOnlyDisabled": {
+    "message": "רק עיצובים מושבתים"
+  },
+  "manageOnlyEnabled": {
+    "message": "רק עיצובים מאופשרים"
+  },
+  "manageOnlyExternal": {
+    "message": "רק עיצובים חיצוניים"
+  },
+  "manageOnlyLocal": {
+    "message": "רק עיצובים שנוצרו באופן מקומי"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "רק לא עיצובי Usercss"
+  },
+  "manageOnlyUpdates": {
+    "message": "רק עם עדכונים או תקלות"
+  },
+  "manageOnlyUsercss": {
+    "message": "רק עיצובי Usercss"
+  },
+  "menuShowBadge": {
+    "message": "הצג כמות עיצובים מאופשרים"
+  },
+  "noStylesForSite": {
+    "message": "לא הותקנו עיצובים עבור אתר זה."
+  },
+  "openManage": {
+    "message": "ניהול"
+  },
+  "openOptionsManage": {
+    "message": "אפשרויות UI"
+  },
+  "openOptionsPopup": {
+    "message": "אפשרויות"
+  },
+  "openStylesManager": {
+    "message": "פתח את מנהל העיצובים"
+  },
+  "optionsActions": {
+    "message": "פעולות"
+  },
+  "optionsAdvanced": {
+    "message": "מתקדם"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "הוספת 'מחיקה' בתפריט העורך"
+  },
+  "optionsBadgeDisabled": {
+    "message": "צבע רקע בעת השבתה"
+  },
+  "optionsBadgeNormal": {
+    "message": "צבע רקע"
+  },
+  "optionsCheck": {
+    "message": "עדכן עיצובים"
+  },
+  "optionsCheckUpdate": {
+    "message": "בדוק והתקן את כל העדכונים הזמינים"
+  },
+  "optionsCustomizeBadge": {
+    "message": "תג על האייקון בסרגל הכלים"
+  },
+  "optionsCustomizeIcon": {
+    "message": "אייקון בסרגל הכלים"
+  },
+  "optionsCustomizePopup": {
+    "message": "חלון קופץ"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "עדכונים"
+  },
+  "optionsHeading": {
+    "message": "אפשרויות"
+  },
+  "optionsIconDark": {
+    "message": "ערכות נושא כהות לדפדפן"
+  },
+  "optionsIconLight": {
+    "message": "ערכות נושא בהירות לדפדפן"
+  },
+  "optionsOpen": {
+    "message": "פתח"
+  },
+  "optionsOpenManager": {
+    "message": "נהל עיצובים"
+  },
+  "optionsPopupWidth": {
+    "message": "רוחב החלון הקופץ (בפיקסלים)"
+  },
+  "optionsReset": {
+    "message": "איפוס האפשרויות לערכי ברירת המחדל"
+  },
+  "optionsResetButton": {
+    "message": "איפוס האפשרויות"
+  },
+  "optionsSubheading": {
+    "message": "אפשרויות נוספות"
+  },
+  "optionsUpdateInterval": {
+    "message": "עדכון אוטומטי של Userstyle בשעות (הגדר 0 להשבתה)"
+  },
+  "paginationCurrent": {
+    "message": "הדף הנוכחי"
+  },
+  "paginationEstimated": {
+    "message": "מספר דפים משוער"
+  },
+  "paginationNext": {
+    "message": "הדף הבא"
+  },
+  "paginationPrevious": {
+    "message": "הדף הקודם"
+  },
+  "paginationTotal": {
+    "message": "סה״כ דפים"
+  },
+  "popupBorders": {
+    "message": "הוספת שוליים לבנים בצדדים"
+  },
+  "popupHotkeysTooltip": {
+    "message": "לחץ על־מנת לצפות במקשים החמים הזמינים"
+  },
+  "popupOpenEditInWindow": {
+    "message": "פתח את העורך בחלון חדש"
+  },
+  "popupStylesFirst": {
+    "message": "עיצובים לפני הפקודות"
+  },
+  "prefShowBadge": {
+    "message": "מֿמספר העיצובים המאופשרים באתר הנוכחי"
+  },
+  "previewLabel": {
+    "message": "תצוגת לייב (live)"
+  },
+  "previewTooltip": {
+    "message": "החלת השינויים באופן זמני ללא שמירה.\nשמור את העיצוב על־מנת להפוך את השינויים לקבועים."
+  },
+  "replace": {
+    "message": "החלף"
+  },
+  "replaceAll": {
+    "message": "החלף הכל"
+  },
+  "replaceWith": {
+    "message": "החלף עם"
+  },
+  "retrieveBckp": {
+    "message": "ייבוא עיצובים"
+  },
+  "search": {
+    "message": "חיפוש"
+  },
+  "searchCaseSensitive": {
+    "message": "רגיש לאותיות גדולות/קטנות"
+  },
+  "searchNumberOfResults": {
+    "message": "מספר ההתאמות"
+  },
+  "searchNumberOfResults2": {
+    "message": "מספר ההתאמות בקוד ובערכים ה'מוחלים על'"
+  },
+  "searchRegexp": {
+    "message": "השתמש ב־/re/ לחיפוש באמצעות ביטוי regexp"
+  },
+  "searchResultInstallCount": {
+    "message": "סה״כ התקנות"
+  },
+  "searchResultNoneFound": {
+    "message": "לא נמצאו עיצובים לאתר זה."
+  },
+  "searchResultRating": {
+    "message": "דירוג"
+  },
+  "searchResultUpdated": {
+    "message": "עודכן"
+  },
+  "searchResultWeeklyCount": {
+    "message": "התקנות שבועיות"
+  },
+  "sectionRemove": {
+    "message": "הסר סעיף"
+  },
+  "sectionRestore": {
+    "message": "שחזר סעיף שהוסר"
+  },
+  "shortcuts": {
+    "message": "קיצורי מקשים"
+  },
+  "shortcutsNote": {
+    "message": "הגדר קיצורי מקשים"
+  },
+  "sortDateNewestFirst": {
+    "message": "החדש ביותר ראשון"
+  },
+  "sortDateOldestFirst": {
+    "message": "הישן ביותר ראשון"
+  },
+  "sortLabel": {
+    "message": "בחר שיטת מיון להחלה על העיצובים המותקנים"
+  },
+  "styleBadRegexp": {
+    "message": "ביטוי ה־Regexp לא תקין."
+  },
+  "styleBeautify": {
+    "message": "ייפה CSS"
+  },
+  "styleCancelEditLabel": {
+    "message": "חזרה לניהול"
+  },
+  "styleEnabledLabel": {
+    "message": "מאופשר"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "הדבק את הקוד ב־Mozilla-format"
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ הוא צבע לא תקין",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorPreprocessor": {
+    "message": "@preprocessor לא נתמך: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelectValueMismatch": {
+    "message": "הערך @select: לא קיים ברשימה"
+  },
+  "styleMissingMeta": {
+    "message": "@$key$ metadata חסרים",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "אנא הזן שם"
+  },
+  "styleRegexpTestButton": {
+    "message": "בדוק RegExp"
+  },
+  "styleRegexpTestFull": {
+    "message": "כרטיסיות תואמות"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "ביטוי regrxp לא תקין"
+  },
+  "styleRegexpTestNone": {
+    "message": "לא תואם אף כרטיסייה"
+  },
+  "styleSaveLabel": {
+    "message": "שמור"
+  },
+  "styleSectionsTitle": {
+    "message": "סעיפים"
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "עיצוב ב־Mozilla format"
+  },
+  "styleUpdate": {
+    "message": "האם אתה בטוח שברצונך לעדכן את '$stylename$'?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus לא עובד על דפים כמו זה."
+  },
+  "syncStorageErrorSaving": {
+    "message": "הערך לא יכול להשמר. אנא נסה להקטין את גודל הטקסט."
+  },
+  "toggleStyle": {
+    "message": "אפשר או השבת עיצוב"
+  },
+  "undo": {
+    "message": "בטל"
+  },
+  "undoGlobal": {
+    "message": "בטל בכל הסעיפים"
+  },
+  "unreachableAMO": {
+    "message": "Firefox לא מאפשרת גישה לאתר זה."
+  },
+  "unreachableContentScript": {
+    "message": "לא ניתן לתקשר עם הדף. אנא טען מחדש את הכרטיסייה."
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "לא נמצאו עדכונים."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "העדכון נכשל: השרת החזיר תגובה עם הקוד $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "העדכון נכשל: השרת לא זמין."
+  },
+  "updateCheckHistory": {
+    "message": "היסטוריה של בדיקת עדכונים"
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "עיצוב זה נערך באופן מקומי."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "ייתכן כי עיצוב זה נערך באופן מקומי."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "העיצוב מעודכן."
+  },
+  "updateCompleted": {
+    "message": "העדכון הושלם."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "העדכונים הותקנו."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "אנא שנה את הערך של @name or @namespace על־מנת להמנע מדריסה של עיצוב קיים."
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "ציין @name בקוד"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "הכנס כאן קוד..."
+  },
+  "versionInvalidOlder": {
+    "message": "הגרסה ישנה יותר מהעיצוב המותקן."
+  },
+  "writeStyleFor": {
+    "message": "כתוב עיצוב עבור: "
+  },
+  "writeStyleForURL": {
+    "message": "הקישור הנוכחי"
+  }
+}
