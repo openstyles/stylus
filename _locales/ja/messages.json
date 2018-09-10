@@ -596,10 +596,10 @@
     "message": "ポップアップの幅（ピクセル単位）"
   },
   "optionsReset": {
-    "message": "設定をデフォルト値にリセットする"
+    "message": "オプションをデフォルト値にリセットする"
   },
   "optionsResetButton": {
-    "message": "設定をリセット"
+    "message": "オプションをリセット"
   },
   "optionsSubheading": {
     "message": "その他のオプション"

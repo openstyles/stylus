@@ -281,6 +281,9 @@
   "genericAdd": {
     "message": "Agregar"
   },
+  "genericClone": {
+    "message": "Clonar"
+  },
   "genericDisabledLabel": {
     "message": "Desactivado"
   },
@@ -388,6 +391,9 @@
   "installUpdateFromLabel": {
     "message": "Buscar actualizaciones"
   },
+  "installUpdateUnavailable": {
+    "message": "Para habilitar la búsqueda de actualizaciones, suelte el archivo en la pestaña o especifique @updateURL en los metadatos del estilo."
+  },
   "license": {
     "message": "Licencia"
   },
@@ -396,6 +402,9 @@
   },
   "linkGetStyles": {
     "message": "Obtener estilos"
+  },
+  "linkTranslate": {
+    "message": "Traducir"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint no soporta el preprocesador $preprocessorname$",
@@ -450,6 +459,9 @@
   },
   "liveReloadLabel": {
     "message": "Recarga en tiempo real"
+  },
+  "liveReloadUnavailable": {
+    "message": "Para habilitar la recarga en tiempo real, suelte el archivo en la pestaña (el área donde se muestran los títulos de las pestañas)."
   },
   "manageFavicons": {
     "message": "Favicons en la columna 'Se aplica a'"
@@ -742,6 +754,9 @@
   "styleBeautifyIndentConditional": {
     "message": "Sangrar @media, @supports"
   },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Conservar nuevas líneas"
+  },
   "styleCancelEditLabel": {
     "message": "Volver al administrador"
   },
@@ -955,6 +970,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Actualizaciones instaladas:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Por favor, cambie el valor de @name o @namespace para no sobrescribir un estilo existente."
   },
   "usercssConfigIncomplete": {
     "message": "El estilo se actualizó o borró después de que se mostrara el cuadro de diálogo de configuración. Estas variables no se guardaron para evitar corromper los metadatos del estilo:"

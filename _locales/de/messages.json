@@ -38,7 +38,7 @@
     "message": "Funktioniert nicht mit minified CSS"
   },
   "appliesRegexpOption": {
-    "message": "URLs, die mit dem Regulären Ausdruck übereinstimmen"
+    "message": "URLs, die mit der RegExp übereinstimmen"
   },
   "appliesRemove": {
     "message": "Löschen"
@@ -74,7 +74,7 @@
     "message": "Nach Updates suchen"
   },
   "checkAllUpdatesForce": {
-    "message": "Nochmals überprüfen, ich habe keine Styles bearbeitet!"
+    "message": "Nochmal prüfen, ich habe keine Styles bearbeitet!"
   },
   "checkForUpdate": {
     "message": "Nach Update suchen"
@@ -241,7 +241,7 @@
     "message": "zur Supportseite"
   },
   "externalUsercssDocument": {
-    "message": "Dokumentation für Usercss"
+    "message": "Dokumentation für UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ von $numTotal$ gesamt",
@@ -476,7 +476,7 @@
     "message": "Anzahl der \"Gilt für\" Elemente"
   },
   "manageNewStyleAsUsercss": {
-    "message": "als Usercss"
+    "message": "als UserCSS"
   },
   "manageNewUI": {
     "message": "Neues Verwaltungs-Layout"
@@ -497,13 +497,13 @@
     "message": "(Diese Styles wurden nicht durch userstyles.org installiert)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Keine Usercss Styles"
+    "message": "Keine UserCSS Styles"
   },
   "manageOnlyUpdates": {
     "message": "Nur mit Updates oder Problemen"
   },
   "manageOnlyUsercss": {
-    "message": "Nur Usercss Styles"
+    "message": "Nur UserCSS Styles"
   },
   "menuShowBadge": {
     "message": "Anzahl der aktiven Styles anzeigen"
@@ -539,7 +539,7 @@
     "message": "Style wirkt sich auch auf iframes der anvisierten Domain aus.\nIframe-spezifisches CSS ist dann möglich wie folgt:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Schreibe neuen Style als Usercss"
+    "message": "Schreibe neuen Style als UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Hintergrundfarbe wenn deaktiviert"
@@ -608,7 +608,7 @@
     "message": "Gesamtzahl der Seiten"
   },
   "parseUsercssError": {
-    "message": "Usercss parsen fehlgeschlagen:"
+    "message": "UserCSS parsen fehlgeschlagen:"
   },
   "popupBorders": {
     "message": "Weiße Rahmen an den Seiten hinzufügen"
@@ -668,7 +668,7 @@
     "message": "Trefferanzahl im Code und in \"Gilt für\" Feldern"
   },
   "searchRegexp": {
-    "message": "Verwende die /re/ Syntax zur Suche als Regulärer Ausdruck"
+    "message": "Verwende die /re/ Syntax zur Suche als RegExp"
   },
   "searchResultInstallCount": {
     "message": "Gesamte Installationen"
@@ -689,7 +689,7 @@
     "message": "Inhalte durchsuchen"
   },
   "searchStylesHelp": {
-    "message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nStyles, die auf eine URL passen: Stelle der Suche <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nReguläre Ausdrücke: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\"> "
+    "message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nStyles, die auf eine URL passen: Stelle der Suche <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nRegExp: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\"> "
   },
   "sectionAdd": {
     "message": "Weiteren Bereich hinzufügen"
@@ -731,7 +731,7 @@
     "message": "Inhalte sortieren"
   },
   "styleBadRegexp": {
-    "message": "Regulärer Ausdruck ist ungültig."
+    "message": "Regulärer Ausdruck (RegExp) ist ungültig."
   },
   "styleBeautify": {
     "message": "Code formatieren"
@@ -821,25 +821,25 @@
     "message": "Bitte Namen eingeben"
   },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "Der Style wurde aufgrund ungültiger Regulärer Ausdrücke nicht angewandt."
+    "message": "Der Style wurde aufgrund ungültiger RegExp nicht angewandt."
   },
   "styleRegexpInvalidExplanation": {
-    "message": "Einige Regeln der Regulären Ausdrücke konnten nicht überprüft werden."
+    "message": "Einige RegExp konnten nicht kompiliert werden."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Dieser Style verwendet teilweise Übereinstimmende Reguläre Ausdrücke unter Missachtung der <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document Spezifikationen</a>, welche eine vollständig Übereinstimmende URL benötigen. Der betroffene CSS Bereich wurde nicht auf die Website angewandt. Dieser Style wurde wahrscheinlich unter Stylish für Chrome erstellt, in der seit der ersten Version eine inkorrekte Überprüfung der Regulären Ausdrücke vorhanden ist (bekannter Fehler)."
+    "message": "Dieser Style verwendet nur teilweise übereinstimmende RegExp unter Missachtung der <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document Spezifikationen</a>, welche eine vollständig übereinstimmende URL benötigen. Die betroffenen CSS-Bereiche wurde nicht auf die Website angewandt. Dieser Style wurde wahrscheinlich unter Stylish für Chrome erstellt, in der seit der ersten Version eine fehlerhafte Überprüfung der RegExp besteht (bekannter Fehler)."
   },
   "styleRegexpProblemTooltip": {
-    "message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter Regulärer Ausdrücke nicht angewendet wurden."
+    "message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter RegExp nicht angewendet wurden"
   },
   "styleRegexpTestButton": {
-    "message": "Reguläre Ausdrücke testen"
+    "message": "RegExp testen"
   },
   "styleRegexpTestFull": {
     "message": "Zutreffende Tabs"
   },
   "styleRegexpTestInvalid": {
-    "message": "Ungültige Reguläre Ausdrücke übersprungen"
+    "message": "Übersprungene ungültige RegExp"
   },
   "styleRegexpTestNone": {
     "message": "Keine zutreffenden Tabs"
@@ -963,7 +963,7 @@
     "message": "Gib @name im Code an"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Ersetze das vorgegebene Template für neue Usercss styles mit dem vorliegenden Code?"
+    "message": "Ersetze das vorgegebene Template für neue UserCSS styles mit dem vorliegenden Code?"
   },
   "usercssReplaceTemplateName": {
     "message": "Ein leeres @name ersetzt das vorgegebene Template"
