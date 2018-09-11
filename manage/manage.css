@@ -1088,23 +1088,6 @@ input[id^="manage.newUI"] {
   /* background-color: #3e8e41; */
 }
 
-#backup-buttons i {
-  border: solid black;
-  border-width: 0 2px 2px 0;
-  display: inline-block;
-  padding: 3px;
-}
-
-#backup-buttons .up {
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-}
-
-#backup-buttons .down {
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
-
 /* sort font */
 @font-face {
   font-family: 'sorticon';
