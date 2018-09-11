@@ -333,11 +333,12 @@
       (document.head || ROOT).appendChild(document.createElement('script')).text = `
         document.currentScript.remove();
         for (const {id, code} of ${JSON.stringify(pageContextQueue)}) {
-          (
-            document.getElementById(id) ||
-            document.querySelector('style.stylus[id="' + id + '"]') ||
-            {}
-          ).textContent = code;
+          const el = document.getElementById(id) ||
+                     document.querySelector('style.stylus[id="' + id + '"]');
+          if (!el) continue;
+          const {disabled} = el.sheet;
+          el.textContent = code;
+          el.sheet.disabled = disabled;
         }
       `;
     } catch (e) {}
