@@ -71,6 +71,11 @@ a:hover {
   max-width: calc(100% - 30px);
 }
 
+#check-all-updates-force {
+  white-space: normal;
+  text-align: left;
+}
+
 #header h1 {
   margin-top: 0;
   margin-bottom: .3em;
@@ -474,7 +479,7 @@ a:hover {
   cursor: pointer;
 }
 
-.newUI .entry .style-name::before {
+.newUI .entry .style-name:hover::before {
   content: "";
   position: absolute;
   top: 0;
@@ -483,13 +488,6 @@ a:hover {
   bottom: 0;
   background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
   pointer-events: none;
-  opacity: 0;
-  transition: opacity .1s;
-  will-change: opacity;
-}
-
-.newUI .entry .style-name:hover::before {
-  opacity: 1;
 }
 
 .newUI .entry.enabled .style-name:hover .style-name-link {
@@ -815,6 +813,15 @@ input[id^="manage.newUI"] {
 
 #check-all-updates-force {
   margin-top: 1ex;
+}
+
+#update-all-no-updates[data-skipped-edited="true"] {
+  font-weight: bold;
+}
+
+#update-all-no-updates[data-skipped-edited="true"]::after {
+  font-weight: normal;
+  display: block;
 }
 
 /* highlight updated/added styles */

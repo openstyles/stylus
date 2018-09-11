@@ -18,6 +18,13 @@
   var docRewriteObserver;
   var docRootObserver;
 
+  // FF59+ bug workaround
+  // See https://github.com/openstyles/stylus/issues/461
+  // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
+  // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
+  const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
+  const pageContextQueue = [];
+
   requestStyles();
   chrome.runtime.onMessage.addListener(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
@@ -262,6 +269,10 @@
       docRootObserver.firstStart();
     }
 
+    if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
+      setContentsInPageContext();
+    }
+
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
       initDocRewriteObserver();
     }
@@ -284,6 +295,8 @@
         // workaround for Chrome devtools bug fixed in v65
         el.remove();
         el = null;
+      } else if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
       } else {
         el.textContent = code;
       }
@@ -299,18 +312,47 @@
         // HTML document style; also works on HTML-embedded SVG
         el = document.createElement('style');
       }
-      Object.assign(el, {
-        id,
-        type: 'text/css',
-        textContent: code,
-      });
+      el.id = id;
+      el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
+      if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
+      } else {
+        el.textContent = code;
+      }
       addStyleElement(el);
     }
     styleElements.set(id, el);
     disabledElements.delete(Number(styleId));
     return el;
+  }
+
+  function setContentsInPageContext() {
+    try {
+      (document.head || ROOT).appendChild(document.createElement('script')).text = `
+        document.currentScript.remove();
+        for (const {id, code} of ${JSON.stringify(pageContextQueue)}) {
+          (
+            document.getElementById(id) ||
+            document.querySelector('style.stylus[id="' + id + '"]') ||
+            {}
+          ).textContent = code;
+        }
+      `;
+    } catch (e) {}
+    let failedSome;
+    for (const {el, code} of pageContextQueue) {
+      if (el.textContent !== code) {
+        el.textContent = code;
+        failedSome = true;
+      }
+    }
+    if (failedSome) {
+      console.debug('Could not set code of some styles in page context, ' +
+                    'see https://github.com/openstyles/stylus/issues/461');
+    }
+    pageContextQueue.length = 0;
   }
 
   function addStyleElement(newElement) {
@@ -443,7 +485,6 @@
   function initDocRootObserver() {
     let lastRestorationTime = 0;
     let restorationCounter = 0;
-    let scheduledSort = false;
     let observing = false;
     let sorting = false;
     let observer;
@@ -504,24 +545,13 @@
         return true;
       }
     }
-    function sortStyleElements({force} = {}) {
-      if (!observing ||
-          !force && scheduledSort) {
-        return;
-      }
-      scheduledSort = false;
+    function sortStyleElements() {
+      if (!observing) return;
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
       }
-      if (!prevExpected) {
-        return;
-      }
-      if (!CHROME && !force && window !== top) {
-        requestAnimationFrame(() => sortStyleElements({force: true}));
-        scheduledSort = true;
-        return;
-      }
+      if (!prevExpected) return;
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;

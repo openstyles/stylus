@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
-// This is CodeMirror (http://codemirror.net), a code editor
+// This is CodeMirror (https://codemirror.net), a code editor
 // implemented in JavaScript on top of the browser's DOM.
 //
 // You can find some technical background for some of the code below
@@ -7734,6 +7734,7 @@ function defineOptions(CodeMirror) {
   option("tabindex", null, function (cm, val) { return cm.display.input.getField().tabIndex = val || ""; });
   option("autofocus", null);
   option("direction", "ltr", function (cm, val) { return cm.doc.setDirection(val); }, true);
+  option("phrases", null);
 }
 
 function guttersChanged(cm) {
@@ -8571,6 +8572,11 @@ var addEditorMethods = function(CodeMirror) {
       signalLater(this, "swapDoc", this, old);
       return old
     }),
+
+    phrase: function(phraseText) {
+      var phrases = this.options.phrases;
+      return phrases && Object.prototype.hasOwnProperty.call(phrases, phraseText) ? phrases[phraseText] : phraseText
+    },
 
     getInputField: function(){return this.display.input.getField()},
     getWrapperElement: function(){return this.display.wrapper},
@@ -9689,7 +9695,7 @@ CodeMirror.fromTextArea = fromTextArea;
 
 addLegacyProps(CodeMirror);
 
-CodeMirror.version = "5.39.2";
+CodeMirror.version = "5.40.0";
 
 return CodeMirror;
 

@@ -5,6 +5,9 @@
   "addStyleTitle": {
     "message": "Lägg till stil"
   },
+  "alphaChannel": {
+    "message": "Opacitet"
+  },
   "appliesAdd": {
     "message": "Lägg till"
   },
@@ -45,6 +48,9 @@
   },
   "applyAllUpdates": {
     "message": "Verkställ alla uppdateringar"
+  },
+  "bckpInstStyles": {
+    "message": "Exportera stilar"
   },
   "checkAllUpdates": {
     "message": "Sök efter uppdateringar"
@@ -129,8 +135,14 @@
   "externalUsercssDocument": {
     "message": "Dokumentation för Usercss"
   },
+  "findStyles": {
+    "message": "Hitta stilar"
+  },
   "findStylesForSite": {
     "message": "Hitta fler stilar för denna sida"
+  },
+  "genericAdd": {
+    "message": "Lägg till"
   },
   "genericDisabledLabel": {
     "message": "Inaktiverad"
@@ -140,6 +152,15 @@
   },
   "genericHistoryLabel": {
     "message": "Historik"
+  },
+  "genericNext": {
+    "message": "Nästa"
+  },
+  "genericPrevious": {
+    "message": "Föregående"
+  },
+  "genericResetLabel": {
+    "message": "Återställ"
   },
   "helpAlt": {
     "message": "Hjälp"
@@ -164,6 +185,18 @@
   },
   "linkGetStyles": {
     "message": "Skaffa stilar"
+  },
+  "linkTranslate": {
+    "message": "Översätt"
+  },
+  "manageFavicons": {
+    "message": "Ikoner i 'Gäller för' kolumnen"
+  },
+  "manageFaviconsGray": {
+    "message": "Nedtonade"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus använder en extern tjänst https://www.google.com/s2/favicons"
   },
   "manageFilters": {
     "message": "Filter"
@@ -201,11 +234,38 @@
   "openManage": {
     "message": "Hantera installerade stilar"
   },
+  "openOptionsPopup": {
+    "message": "Alternativ"
+  },
+  "openStylesManager": {
+    "message": "Öppna stilhanteraren"
+  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Skriv ny stil som Usercss"
   },
+  "optionsCheck": {
+    "message": "Uppdatera stilar"
+  },
+  "optionsCheckUpdate": {
+    "message": "Leta efter och installera alla tillgängliga uppdateringar"
+  },
   "optionsHeading": {
     "message": "Alternativ"
+  },
+  "optionsOpenManager": {
+    "message": "Hantera stilar"
+  },
+  "optionsReset": {
+    "message": "Återställ alternativen till standard"
+  },
+  "optionsResetButton": {
+    "message": "Återställ alternativ"
+  },
+  "paginationNext": {
+    "message": "Nästa sida"
+  },
+  "paginationPrevious": {
+    "message": "Föregående sida"
   },
   "popupStylesFirst": {
     "message": "Lista stilar före kommandon i verktygsfältets knappmeny"
@@ -221,6 +281,9 @@
   },
   "replaceWith": {
     "message": "Ersätt med"
+  },
+  "retrieveBckp": {
+    "message": "Importera stilar"
   },
   "search": {
     "message": "Sök"
@@ -242,6 +305,15 @@
   },
   "sectionRemove": {
     "message": "Ta bort sektion"
+  },
+  "sectionRestore": {
+    "message": "Återställ borttagen sektion"
+  },
+  "shortcuts": {
+    "message": "Genvägar"
+  },
+  "shortcutsNote": {
+    "message": "Ställ in tangentbordsgenvägar"
   },
   "styleBadRegexp": {
     "message": "Regexp:en är ogiltig"

@@ -203,7 +203,7 @@ function importFromString(jsonString, oldStyles) {
       messageBox({
         title: t('importReportTitle'),
         contents: report.length ? report : t('importReportUnchanged'),
-        buttons: [t('confirmOK'), numChanged && t('undo')],
+        buttons: [t('confirmClose'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button}) => {
         if (button === 1) {
@@ -241,7 +241,7 @@ function importFromString(jsonString, oldStyles) {
       .then(() => messageBox({
         title: t('importReportUndoneTitle'),
         contents: newIds.length + ' ' + t('importReportUndone'),
-        buttons: [t('confirmOK')],
+        buttons: [t('confirmClose')],
       }));
   }
 

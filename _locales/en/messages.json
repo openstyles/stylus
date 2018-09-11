@@ -1185,7 +1185,7 @@
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableAMOHintNewFF": {
-    "message": "In Firefox 60 and newer you'll also have to to remove AMO domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
+    "message": "In Firefox 60 and newer you'll also have to remove AMO domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableAMOHintOldFF": {

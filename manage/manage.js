@@ -106,10 +106,10 @@ function initGlobalEvents() {
     .disabled h2::after {
       content: "${t('genericDisabledLabel')}";
     }
-    #update-all-no-updates[data-skipped-edited="true"]:after {
+    #update-all-no-updates[data-skipped-edited="true"]::after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
-    body.all-styles-hidden-by-filters:after {
+    body.all-styles-hidden-by-filters::after {
       content: "${t('filteredStylesAllHidden')}";
     }
   `));
@@ -153,17 +153,16 @@ function showStyles(styles = [], matchUrlIds) {
     filterAndAppend({container: renderBin}).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
-      if (firstRun) setTimeout(recreateStyleTargets, 0, {styles, iconsOnly: true});
+      if (firstRun) setTimeout(getFaviconImgSrc);
       firstRun = false;
       return;
     }
-    if (newUI.enabled && newUI.favicons) {
-      setTimeout(recreateStyleTargets, 0, {iconsOnly: true});
-    }
-    if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
+    setTimeout(getFaviconImgSrc);
+    if (sessionStorage.justEditedStyleId) {
+      highlightEditedStyle();
+    } else if ('scrollY' in (history.state || {})) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
-    highlightEditedStyle();
   }
 }
 
@@ -238,10 +237,10 @@ function createStyleElement({style, name}) {
 }
 
 
-function createStyleTargetsElement({entry, style, iconsOnly}) {
+function createStyleTargetsElement({entry, style}) {
   const parts = createStyleElement.parts;
   const entryTargets = $('.targets', entry);
-  const targets = iconsOnly ? entryTargets : parts.targets.cloneNode(true);
+  const targets = parts.targets.cloneNode(true);
   let container = targets;
   let numTargets = 0;
   const displayed = new Set();
@@ -252,23 +251,21 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           continue;
         }
         displayed.add(targetValue);
-        const element = iconsOnly ? targets.children[numTargets] : template.appliesToTarget.cloneNode(true);
+        const element = template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets === 10) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
-          } else if (numTargets > 1) {
+          } else if (numTargets > 0) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
         }
-        if (!iconsOnly) {
-          element.dataset.type = type;
-          element.appendChild(
-            document.createTextNode(
-              (parts.decorations[type + 'Before'] || '') +
-              targetValue +
-              (parts.decorations[type + 'After'] || '')));
-          container.appendChild(element);
-        }
+        element.dataset.type = type;
+        element.appendChild(
+          document.createTextNode(
+            (parts.decorations[type + 'Before'] || '') +
+            targetValue +
+            (parts.decorations[type + 'After'] || '')));
+        container.appendChild(element);
         numTargets++;
       }
     }
@@ -279,9 +276,7 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
     }
   }
   if (numTargets) {
-    if (!iconsOnly) {
-      entryTargets.parentElement.replaceChild(targets, entryTargets);
-    }
+    entryTargets.parentElement.replaceChild(targets, entryTargets);
   } else if (!entry.classList.contains('global') ||
              !entryTargets.firstElementChild) {
     if (entryTargets.firstElementChild) {
@@ -293,25 +288,8 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
 }
 
 
-function recreateStyleTargets({styles, iconsOnly = false} = {}) {
-  Promise.resolve(styles || API.getStyles()).then(styles => {
-    for (const style of styles) {
-      const entry = $(ENTRY_ID_PREFIX + style.id);
-      if (entry) {
-        createStyleTargetsElement({
-          entry,
-          style,
-          iconsOnly,
-        });
-      }
-    }
-    if (newUI.enabled && newUI.favicons) {
-      debounce(getFaviconImgSrc);
-    }
-  });
-}
-
 function getFaviconImgSrc(container = installed) {
+  if (!newUI.enabled || !newUI.favicons) return;
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
@@ -557,9 +535,7 @@ function handleUpdate(style, {reason, method} = {}) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
-  if (newUI.enabled && newUI.favicons) {
-    getFaviconImgSrc(entry);
-  }
+  getFaviconImgSrc(entry);
 
   function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
@@ -673,7 +649,7 @@ function switchUI({styleOnly} = {}) {
     return;
   }
   if (missingFavicons) {
-    recreateStyleTargets();
+    debounce(getFaviconImgSrc);
     return;
   }
 }
@@ -682,8 +658,15 @@ function switchUI({styleOnly} = {}) {
 function onVisibilityChange() {
   switch (document.visibilityState) {
     // page restored without reloading via history navigation (currently only in FF)
+    // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
+    // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible':
-      highlightEditedStyle();
+      if (sessionStorage.justEditedStyleId) {
+        API.getStyles({id: sessionStorage.justEditedStyleId}).then(([style]) => {
+          handleUpdate(style, {method: 'styleUpdated'});
+        });
+        delete sessionStorage.justEditedStyleId;
+      }
       break;
     // going away
     case 'hidden':

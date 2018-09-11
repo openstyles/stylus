@@ -59,6 +59,7 @@ self.parserlib = (() => {
     vmax: 'length',
     vmin: 'length',
     fr:   'length',
+    q:    'length',
 
     deg:  'angle',
     rad:  'angle',
@@ -756,7 +757,7 @@ self.parserlib = (() => {
 
       '<gradient>': part =>
         part.type === 'function' &&
-        /^(?:-(?:ms|moz|o|webkit)-)?(?:repeating-)?(?:radial-|linear-)?gradient/i.test(part),
+        /^(?:-(?:ms|moz|o|webkit)-)?(?:repeating-)?(?:radial-|linear-|conic-)?gradient/i.test(part),
 
       //eslint-disable-next-line no-use-before-define
       '<hex-color>': part => part.tokenType === Tokens.HASH,

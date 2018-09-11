@@ -121,6 +121,12 @@
   "cm_resizeGripHint": {
     "message": "Dvojklikem maximalizujete/obnovíte výšku"
   },
+  "cm_selectByTokens": {
+    "message": "Poklepáním vybírat tokeny"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Příklad tokenů: .foo-bar-2 #aabbcc 0.32 !important\nJe-li vypnuto, jsou vybírána slova oddělená interpunkcí."
+  },
   "cm_smartIndent": {
     "message": "Použít chytré odsazení"
   },
@@ -275,6 +281,12 @@
   "findStylesInlineTooltip": {
     "message": "Zobrazit výsledky vyhledávání v tomto okně."
   },
+  "genericAdd": {
+    "message": "Přidat"
+  },
+  "genericClone": {
+    "message": "Duplikovat"
+  },
   "genericDisabledLabel": {
     "message": "Zakázáno"
   },
@@ -394,6 +406,9 @@
   "linkGetStyles": {
     "message": "Získat styly"
   },
+  "linkTranslate": {
+    "message": "Pomoci s překladem"
+  },
   "linterCSSLintIncompatible": {
     "message": "CSSLint nepodporuje předprocesor $preprocessorname$",
     "placeholders": {
@@ -441,6 +456,9 @@
   },
   "liveReloadError": {
     "message": "Při sledování souboru došlo k chybě"
+  },
+  "liveReloadInstallHint": {
+    "message": "Živá aktualizace je povolena, takže nainstalovaný styl bude automaticky aktualizován při externích změnách, dokud budou tento list a list zdrojového souboru otevřeny."
   },
   "liveReloadLabel": {
     "message": "Živá aktualizace"
@@ -625,6 +643,12 @@
   "prefShowBadge": {
     "message": "Počet aktivních stylů pro současnou stránku"
   },
+  "previewLabel": {
+    "message": "Živý náhled"
+  },
+  "previewTooltip": {
+    "message": "Dočasně použije změny bez uložení.\nUložte styl pro trvalé zachování změn."
+  },
   "replace": {
     "message": "Nahradit"
   },
@@ -681,6 +705,9 @@
   },
   "sectionRemove": {
     "message": "Odstranit sekci"
+  },
+  "sectionRestore": {
+    "message": "Obnovit odstraněnou sekci"
   },
   "shortcuts": {
     "message": "Zkratky"
@@ -937,6 +964,9 @@
   },
   "usercssReplaceTemplateName": {
     "message": "Prázdné @name nahrazuje výchozí šablonu"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Sem vložte kód…"
   },
   "versionInvalidOlder": {
     "message": "Tato verze je starší než verze nainstalovaného stylu."

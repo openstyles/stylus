@@ -406,6 +406,9 @@
   "linkGetStyles": {
     "message": "スタイルを取得"
   },
+  "linkStylusWiki": {
+    "message": "ウィキ"
+  },
   "linkTranslate": {
     "message": "翻訳"
   },
@@ -593,10 +596,10 @@
     "message": "ポップアップの幅（ピクセル単位）"
   },
   "optionsReset": {
-    "message": "設定をデフォルト値にリセットする"
+    "message": "オプションをデフォルト値にリセットする"
   },
   "optionsResetButton": {
-    "message": "設定をリセット"
+    "message": "オプションをリセット"
   },
   "optionsSubheading": {
     "message": "その他のオプション"
@@ -970,6 +973,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "更新がインストールされました:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "既存のスタイルの上書きを避けるために、@name または @namespace の値を変更してください。"
   },
   "usercssConfigIncomplete": {
     "message": "設定ダイアログの表示後に、スタイルが更新または削除されました。スタイルのメタデータの破損を避けるため、これらの変数は保存されませんでした:"

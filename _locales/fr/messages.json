@@ -44,7 +44,7 @@
     "message": "Supprimer"
   },
   "appliesRemoveError": {
-    "message": "Impossible de supprimer la dernière entrée « s’applique à »"
+    "message": "Impossible de supprimer la dernière entrée « s’applique à »"
   },
   "appliesSpecify": {
     "message": "Préciser"
@@ -62,7 +62,7 @@
     "message": "Auteur"
   },
   "backupButtons": {
-    "message": "Sauvergarde"
+    "message": "Sauvegarde"
   },
   "backupMessage": {
     "message": "Sélectionner un fichier ou le glisser-déposer sur cette page"
@@ -74,7 +74,7 @@
     "message": "Rechercher des mises à jour pour tous les styles"
   },
   "checkAllUpdatesForce": {
-    "message": "Vérifiez à nouveau, je n’ai modifié aucun style !"
+    "message": "Vérifiez à nouveau, je n’ai modifié aucun style !"
   },
   "checkForUpdate": {
     "message": "Rechercher des mises à jour"
@@ -241,7 +241,7 @@
     "message": "Activer"
   },
   "exportLabel": {
-    "message": "Exportez"
+    "message": "Exporter"
   },
   "externalFeedback": {
     "message": "Commentaires"
@@ -321,7 +321,7 @@
     "message": "Aide"
   },
   "helpKeyMapCommand": {
-    "message": "Tapez un nom de commande"
+    "message": "Saisissez un nom de commande"
   },
   "helpKeyMapHotkey": {
     "message": "Pressez un raccourci clavier"
@@ -336,10 +336,10 @@
     "message": "Importer"
   },
   "importReplaceLabel": {
-    "message": "Écraser le style"
+    "message": "Remplacer le style"
   },
   "importReplaceTooltip": {
-    "message": "Abandonner le contenu du style actuel et l’écraser avec le style importé"
+    "message": "Abandonner le contenu du style actuel et le remplacer par le style importé"
   },
   "importReportLegendAdded": {
     "message": "ajouté(s)"
@@ -357,7 +357,7 @@
     "message": "codes mis à jour"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "méta-informations mis à jour"
+    "message": "méta-informations mises à jour"
   },
   "importReportTitle": {
     "message": "Import des styles terminé"
@@ -599,7 +599,7 @@
     "message": "Quand vous importez des sauvegardes de style d’une ancienne version ou de Stylish, faites une vérification manuellement pour vous assurez que tous les styles sont à jour."
   },
   "optionsUpdateInterval": {
-    "message": "Intervalle de mise à jour automatique des Userstyles en heures (spécifier 0 pour désactiver)"
+    "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)"
   },
   "paginationCurrent": {
     "message": "Page courante"
@@ -775,7 +775,7 @@
     }
   },
   "styleInstallFailed": {
-    "message": "Échec de l’installation de l’userstyle\n$error$",
+    "message": "Échec de l’installation du style utilisateur !\n$error$",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -869,7 +869,7 @@
     "message": "Enregistrer"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
+    "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
   },
   "styleToMozillaFormatTitle": {
     "message": "Style au format Mozilla"
@@ -961,6 +961,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Mises à jour installées :"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Veuillez changer la valeur de @name ou @namespace afin d'éviter d'écraser un style pré-existant."
   },
   "usercssConfigIncomplete": {
     "message": "Le style a été mis à jour ou supprimer après l’apparition du dialogue de confirmation. Ces variables n’ont pas été sauvegardées pour éviter de corrompre les métadonnées du style :"

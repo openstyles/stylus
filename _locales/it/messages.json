@@ -3,7 +3,7 @@
     "message": "Scrivi nuovo stile"
   },
   "addStyleTitle": {
-    "message": "Aggiunta di stili"
+    "message": "Aggiungi stili"
   },
   "alphaChannel": {
     "message": "Opacità"
@@ -30,6 +30,9 @@
   },
   "appliesLabel": {
     "message": "Vale per"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Visualizza info 'Applica a'"
   },
   "appliesLineWidgetWarning": {
     "message": "Non funziona con CSS minificato"
@@ -88,6 +91,9 @@
   "cm_keyMap": {
     "message": "Mappa caratteri"
   },
+  "cm_matchHighlight": {
+    "message": "Evidenzia"
+  },
   "cm_matchHighlightSelection": {
     "message": "Solo selezione"
   },
@@ -103,8 +109,17 @@
   "colorpickerTooltip": {
     "message": "Apri selettore colore"
   },
+  "configOnChange": {
+    "message": "su modifica"
+  },
+  "configOnChangeTooltip": {
+    "message": "Salva e applica modifiche automaticamente"
+  },
   "configureStyle": {
     "message": "Configura"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Configura su homepage"
   },
   "confirmCancel": {
     "message": "Annulla"
@@ -129,6 +144,9 @@
   },
   "dateInstalled": {
     "message": "Data installazione"
+  },
+  "dateUpdated": {
+    "message": "Data aggiornata"
   },
   "dbError": {
     "message": "Si è verificato un errore durante l'utilizzo del database Stylus. Vuoi visitare una pagina web con le possibili soluzioni?"
@@ -183,6 +201,9 @@
   "externalSupport": {
     "message": "Supporto"
   },
+  "externalUsercssDocument": {
+    "message": "Documentazione per Usercss"
+  },
   "filteredStyles": {
     "message": "$numShown$ mostrati di $numTotal$ totali",
     "placeholders": {
@@ -202,6 +223,12 @@
   },
   "findStylesInlineTooltip": {
     "message": "Visualizza risultati in questa finestra."
+  },
+  "genericAdd": {
+    "message": "Aggiungi"
+  },
+  "genericClone": {
+    "message": "Clona"
   },
   "genericDisabledLabel": {
     "message": "Disattivato"
@@ -257,8 +284,20 @@
   "importReportLegendAdded": {
     "message": "aggiunto"
   },
+  "importReportLegendIdentical": {
+    "message": "identico saltato"
+  },
+  "importReportLegendInvalid": {
+    "message": "invalido saltato"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "info meta e codice aggiornati"
+  },
   "importReportLegendUpdatedCode": {
     "message": "codice aggiornato"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "info meta aggiornate"
   },
   "importReportTitle": {
     "message": "Importazione stili terminata"
@@ -307,6 +346,9 @@
   "linkGetStyles": {
     "message": "Ottieni stili"
   },
+  "linkTranslate": {
+    "message": "Traduci"
+  },
   "linterInvalidConfigError": {
     "message": "Non salvato a causa di queste impostazioni di configurazione non valide:"
   },
@@ -331,6 +373,9 @@
   "manageHeading": {
     "message": "Stili installati"
   },
+  "manageNewStyleAsUsercss": {
+    "message": "come Usercss"
+  },
   "manageNewUI": {
     "message": "Nuovo layout Gestione UI"
   },
@@ -346,8 +391,17 @@
   "manageOnlyLocal": {
     "message": "Solo stili creati localmente"
   },
+  "manageOnlyNonUsercss": {
+    "message": "Solo stili non-Usercss"
+  },
   "manageOnlyUpdates": {
     "message": "Solo con aggiornamenti o problemi"
+  },
+  "manageOnlyUsercss": {
+    "message": "Solo stili Usercss"
+  },
+  "menuShowBadge": {
+    "message": "Mostra contatore stili attivi"
   },
   "noStylesForSite": {
     "message": "Nessuno stile installato per questo sito."
@@ -420,6 +474,9 @@
   },
   "paginationCurrent": {
     "message": "Pagina corrente"
+  },
+  "paginationEstimated": {
+    "message": "Numero stimato di pagine"
   },
   "paginationNext": {
     "message": "Pagine successiva"
