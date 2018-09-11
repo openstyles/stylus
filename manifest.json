@@ -5,12 +5,6 @@
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
   "manifest_version": 2,
-  "applications": {
-    "gecko": {
-      "id": "{a9449967-86c7-4d0e-8285-322cef7c40f2}",
-      "strict_min_version": "42.0"
-    }
-  },
   "icons": {
     "16": "/images/icon/16.png",
     "32": "/images/icon/32.png",
