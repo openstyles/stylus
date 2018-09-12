@@ -330,16 +330,17 @@
 
   function setContentsInPageContext() {
     try {
-      (document.head || ROOT).appendChild(document.createElement('script')).text = `
+      (document.head || ROOT).appendChild(document.createElement('script')).text = `(${queue => {
         document.currentScript.remove();
-        for (const {id, code} of ${JSON.stringify(pageContextQueue)}) {
-          (
-            document.getElementById(id) ||
-            document.querySelector('style.stylus[id="' + id + '"]') ||
-            {}
-          ).textContent = code;
+        for (const {id, code} of queue) {
+          const el = document.getElementById(id) ||
+                     document.querySelector('style.stylus[id="' + id + '"]');
+          if (!el) continue;
+          const {disabled} = el.sheet;
+          el.textContent = code;
+          el.sheet.disabled = disabled;
         }
-      `;
+      }})(${JSON.stringify(pageContextQueue)})`;
     } catch (e) {}
     let failedSome;
     for (const {el, code} of pageContextQueue) {
