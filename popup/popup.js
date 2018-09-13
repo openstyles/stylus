@@ -304,7 +304,14 @@ function createStyleElement({
   if (check) detectSloppyRegexps([style]);
 
   const oldElement = $(ENTRY_ID_PREFIX + style.id);
-  if (oldElement) {
+  if (oldElement && oldElement.contains(document.activeElement)) {
+    // preserve the focused element inside
+    const {className} = document.activeElement;
+    oldElement.parentNode.replaceChild(entry, oldElement);
+    // we're not using $() since className may contain multiple tokens
+    const el = entry.getElementsByClassName(className)[0];
+    if (el) el.focus();
+  } else if (oldElement) {
     oldElement.parentNode.replaceChild(entry, oldElement);
   } else {
     container.appendChild(entry);
@@ -328,6 +335,8 @@ Object.assign(handleEvent, {
   },
 
   toggle(event) {
+    // when fired on checkbox, prevent the parent label from seeing the event, see #501
+    event.stopPropagation();
     API.saveStyle({
       id: handleEvent.getClickedStyleId(event),
       enabled: this.matches('.enable') || this.checked,
