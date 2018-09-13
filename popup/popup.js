@@ -328,6 +328,8 @@ Object.assign(handleEvent, {
   },
 
   toggle(event) {
+    // when fired on checkbox, prevent the parent label from seeing the event, see #501
+    event.stopPropagation();
     API.saveStyle({
       id: handleEvent.getClickedStyleId(event),
       enabled: this.matches('.enable') || this.checked,
