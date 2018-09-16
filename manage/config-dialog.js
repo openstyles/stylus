@@ -317,7 +317,6 @@ function configDialog(style) {
   }
 
   function updateVarOnChange() {
-    console.log('updateVar', this.type)
     if (this.type === 'number') {
       this.value = this.va.value = clampValue(this.value, this.va.range);
     } else if (this.type === 'range') {
@@ -326,7 +325,6 @@ function configDialog(style) {
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
-    console.log(this.va.value);
   }
 
   // Clamp input[type=number] to a valid range
