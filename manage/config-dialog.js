@@ -201,20 +201,6 @@ function configDialog(style) {
     return va.value === null || va.value === undefined || va.value === va.default;
   }
 
-  function rangeToProps(range = []) {
-    const dataset = {};
-    if (range.length > 0) {
-      dataset.min = range[0];
-    }
-    if (range.length > 1) {
-      dataset.max = range[1];
-    }
-    if (range[2]) {
-      dataset.step = range[2];
-    }
-    return dataset;
-  }
-
   function buildConfigForm() {
     let resetter =
       $create('a.config-reset-icon', {href: '#'}, [
@@ -280,7 +266,9 @@ function configDialog(style) {
               va,
               type: va.type,
               value: va.default,
-              ...rangeToProps(va.range),
+              min: va.min,
+              max: va.max,
+              step: va.step,
               onchange: updateVarOnChange
             })
           ];
@@ -318,7 +306,7 @@ function configDialog(style) {
 
   function updateVarOnChange() {
     if (this.type === 'number') {
-      this.value = this.va.value = clampValue(this.value, this.va.range);
+      this.value = this.va.value = clampValue(this.value, this.va);
     } else if (this.type === 'range') {
       this.va.value = parseFloat(this.value);
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
@@ -328,16 +316,16 @@ function configDialog(style) {
   }
 
   // Clamp input[type=number] to a valid range
-  function clampValue(value, [min = 0, max = 100, step]) {
-    if (value < min) {
-      return min;
+  function clampValue(value, va) {
+    if (value < (va.min || 0)) {
+      return va.min;
     }
-    if (value > max) {
-      return max;
+    if (value > (va.max || 100)) {
+      return va.max;
     }
-    const inv = 1 / (step || 1);
+    const inv = 1 / (va.step || 1);
     // Don't restrict to integer values if step is undefined.
-    return typeof step !== 'undefined' ? Math.floor(inv * value) / inv : value;
+    return typeof va.step !== 'undefined' ? Math.floor(inv * value) / inv : value;
   }
 
   function updateVarOnInput(event, debounced = false) {
