@@ -273,7 +273,7 @@ function configDialog(style) {
           break;
 
         case 'range':
-        case 'number': {
+        case 'number':
           children = [
             va.type === 'range' && $create('span.current-value', {textContent: va.value + va.units}),
             va.input = $create('input.config-value', {
@@ -285,7 +285,6 @@ function configDialog(style) {
             })
           ];
           break;
-        }
 
         default: {
           const options = {
