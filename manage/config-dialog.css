@@ -99,10 +99,9 @@
 }
 
 .current-value {
-  outline: 1px solid rgba(128, 128, 128, 0.5);
   padding: 2px 4px;
   margin-right: 4px;
-}
+ }
 
 .config-number span, .config-range span {
   line-height: 22px;

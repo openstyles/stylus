@@ -201,25 +201,18 @@ function configDialog(style) {
     return va.value === null || va.value === undefined || va.value === va.default;
   }
 
-  function handleRangeAndNumberInputs(va, options) {
+  function rangeToProps(range = []) {
     const dataset = {};
-    options.value = va.default;
-    if (typeof va.range[0] !== 'undefined') {
-      options.min = dataset.min = va.range[0];
+    if (range.length > 0) {
+      dataset.min = range[0];
     }
-    if (typeof va.range[1] !== 'undefined') {
-      options.max = dataset.max = va.range[1];
+    if (range.length > 1) {
+      dataset.max = range[1];
     }
-    if (va.range[2]) {
-      options.step = va.range[2];
+    if (range[2]) {
+      dataset.step = range[2];
     }
-    const children = va.type === 'range' ? [$create('span.current-value', {textContent: va.value + va.units})] : [];
-    children.push(
-      $create(`span.current-${va.type}`, {dataset}, [
-        va.input = $create('input.config-value', options),
-      ])
-    );
-    return children;
+    return dataset;
   }
 
   function buildConfigForm() {
@@ -279,6 +272,21 @@ function configDialog(style) {
           ];
           break;
 
+        case 'range':
+        case 'number': {
+          children = [
+            va.type === 'range' && $create('span.current-value', {textContent: va.value + va.units}),
+            va.input = $create('input.config-value', {
+              va,
+              type: va.type,
+              value: va.default,
+              ...rangeToProps(va.range),
+              onchange: updateVarOnChange
+            })
+          ];
+          break;
+        }
+
         default: {
           const options = {
             va,
@@ -287,13 +295,9 @@ function configDialog(style) {
             oninput: updateVarOnInput,
             onfocus: selectAllOnFocus,
           };
-          if (va.type === 'range' || va.type === 'number') {
-            children = handleRangeAndNumberInputs(va, options);
-          } else {
-            children = [
-              va.input = $create('input.config-value', options),
-            ];
-          }
+          children = [
+            va.input = $create('input.config-value', options),
+          ];
         }
 
       }
@@ -314,26 +318,29 @@ function configDialog(style) {
   }
 
   function updateVarOnChange() {
+    console.log('updateVar', this.type)
     if (this.type === 'number') {
       this.value = this.va.value = clampValue(this.value, this.va.range);
     } else if (this.type === 'range') {
-      $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
       this.va.value = parseFloat(this.value);
+      $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
+    console.log(this.va.value);
   }
 
   // Clamp input[type=number] to a valid range
   function clampValue(value, [min = 0, max = 100, step]) {
     if (value < min) {
       return min;
-    } else if (value > max) {
+    }
+    if (value > max) {
       return max;
     }
-    const remainder = value % (step || 1);
+    const inv = 1 / (step || 1);
     // Don't restrict to integer values if step is undefined.
-    return typeof step !== 'undefined' && remainder !== 0 ? value - remainder : value;
+    return typeof step !== 'undefined' ? Math.floor(inv * value) / inv : value;
   }
 
   function updateVarOnInput(event, debounced = false) {

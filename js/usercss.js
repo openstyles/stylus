@@ -177,7 +177,6 @@ var usercss = (() => {
     result.label = state.value;
 
     const {re, type, text} = state;
-    let defaultValue;
 
     switch (type === 'image' && state.key === 'var' ? '@image@var' : type) {
       case 'checkbox': {
@@ -195,25 +194,34 @@ var usercss = (() => {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
         state.errorPrefix = '';
+        const extractDefault = text => {
+          if (text.endsWith('*')) {
+            return text.slice(0, -1);
+          }
+          return false;
+        };
         if (Array.isArray(state.value)) {
           result.options = state.value.map(text => {
-            if (text.endsWith('*')) {
-              text = text.slice(0, -1);
-              defaultValue = text;
+            const isDefault = extractDefault(text);
+            if (isDefault) {
+              result.default = isDefault;
             }
-            return createOption(text);
+            return createOption(isDefault || text);
           });
         } else {
           result.options = Object.keys(state.value).map(k => {
-            if (k.endsWith('*')) {
-              state.value[k] = state.value[k].slice(0, -1);
-              k = k.slice(0, -1);
-              defaultValue = k;
+            const isDefault = extractDefault(k);
+            const value = state.value[k];
+            if (isDefault) {
+              k = isDefault;
+              result.default = k;
             }
-            return createOption(k, state.value[k]);
+            return createOption(k, value);
           });
         }
-        result.default = typeof defaultValue !== 'undefined' ? defaultValue : (result.options[0] || {}).name || '';
+        if (result.default === null) {
+          result.default = (result.options[0] || {}).name || '';
+        }
         break;
       }
 
@@ -224,13 +232,10 @@ var usercss = (() => {
         state.errorPrefix = '';
         // [default, start, end, step, units] (start, end, step & units are optional)
         if (Array.isArray(state.value) && state.value.length) {
-          result.default = parseFloat(state.value.shift());
-          const nonDigit = /[^\d.+-]/;
+          result.default = state.value.shift();
           // label may be placed anywhere after default value
-          const labelIndex = state.value.findIndex(item => nonDigit.test(item));
-          // but should not contain any numbers '4px' => 'px'
-          result.units = labelIndex < 0 ? '' : state.value.splice(labelIndex, 1)[0].toString().replace(/[\d.+-]/g, '');
-          result.range = state.value.filter(item => !nonDigit.test(item));
+          result.units = (state.value.find(i => typeof i === 'string') || '').replace(/[\d.+-]/g, '');
+          result.range = state.value.filter(i => typeof i === 'number');
         }
         break;
       }
@@ -615,7 +620,7 @@ var usercss = (() => {
       va[value] = colorConverter.format(colorConverter.parse(va[value]), 'rgb');
     } else if (
       (va.type === 'number' || va.type === 'range') &&
-      !(typeof va[value] === 'number' || Array.isArray(va.range))
+      (typeof va[value] !== 'number' || !Array.isArray(va.range))
     ) {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorRangeOrNumber', va.type));
     }
