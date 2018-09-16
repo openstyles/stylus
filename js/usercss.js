@@ -232,10 +232,13 @@ var usercss = (() => {
         state.errorPrefix = '';
         // [default, start, end, step, units] (start, end, step & units are optional)
         if (Array.isArray(state.value) && state.value.length) {
-          result.default = state.value.shift();
-          // label may be placed anywhere after default value
+          // label may be placed anywhere
           result.units = (state.value.find(i => typeof i === 'string') || '').replace(/[\d.+-]/g, '');
-          result.range = state.value.filter(i => typeof i === 'number');
+          const range = state.value.filter(i => typeof i === 'number');
+          result.default = range[0];
+          result.min = range[1];
+          result.max = range[2];
+          result.step = range[3];
         }
         break;
       }
@@ -618,10 +621,7 @@ var usercss = (() => {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
       va[value] = colorConverter.format(colorConverter.parse(va[value]), 'rgb');
-    } else if (
-      (va.type === 'number' || va.type === 'range') &&
-      (typeof va[value] !== 'number' || !Array.isArray(va.range))
-    ) {
+    } else if ((va.type === 'number' || va.type === 'range') && typeof va[value] !== 'number') {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorRangeOrNumber', va.type));
     }
   }
