@@ -328,12 +328,11 @@ function configDialog(style) {
 
   // Clamp input[type=number] to a valid range
   function clampValue(value, va, break = false) {
-    const max = isNumber(va.max) ? va.max : 100;
     if (isNumber(va.min) && value < va.min) {
-      return min;
+      return va.min;
     }
-    if (value > max) {
-      return max;
+    if (isNumber(va.max) && value > va.max) {
+      return va.max;
     }
     // Don't restrict to integer values if step is undefined.
     if (!isNumber(va.step) || break) {
