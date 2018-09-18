@@ -325,9 +325,15 @@ function configDialog(style) {
     if (value > max) {
       return max;
     }
-    const inv = 1 / (va.step || 1);
     // Don't restrict to integer values if step is undefined.
-    return typeof va.step !== 'undefined' ? Math.floor(inv * value) / inv : value;
+    if (typeof va.step === 'undefined') {
+      return value;
+    }
+    const step = va.step || 1;
+    const precision = (step.toString().split('.')[1] || 0).length + 1;
+    const inv = 1 / step;
+    // ECMA-262 only requires a precision of up to 21 significant digits
+    return Number((Math.floor(inv * value) / inv).toPrecision(precision > 21 ? 21 : precision));
   }
 
   function updateVarOnInput(event, debounced = false) {
