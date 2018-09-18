@@ -194,30 +194,18 @@ var usercss = (() => {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
         state.errorPrefix = '';
-        const extractDefault = text => {
-          if (text.endsWith('*')) {
-            return text.slice(0, -1);
+        const extractDefaultOption = (key, value) => {
+          if (key.endsWith('*')) {
+            const option = createOption(key.slice(0, -1), value);
+            result.default = option.name;
+            return option;
           }
-          return false;
+          return createOption(key, value);
         };
         if (Array.isArray(state.value)) {
-          result.options = state.value.map(text => {
-            const isDefault = extractDefault(text);
-            if (isDefault) {
-              result.default = isDefault;
-            }
-            return createOption(isDefault || text);
-          });
+          result.options = state.value.map(k => extractDefaultOption(k));
         } else {
-          result.options = Object.keys(state.value).map(k => {
-            const isDefault = extractDefault(k);
-            const value = state.value[k];
-            if (isDefault) {
-              k = isDefault;
-              result.default = k;
-            }
-            return createOption(k, value);
-          });
+          result.options = Object.keys(state.value).map(k => extractDefaultOption(k, state.value[k]));
         }
         if (result.default === null) {
           result.default = (result.options[0] || {}).name || '';
