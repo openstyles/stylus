@@ -107,16 +107,6 @@
   line-height: 22px;
 }
 
-.current-range:before {
-  content: attr(data-min);
-  padding-right: .25em;
-}
-
-.current-range:after {
-  content: attr(data-max);
-  padding-left: .25em;
-}
-
 .config-body label:not(.nondefault) .config-reset-icon {
   visibility: hidden;
 }
