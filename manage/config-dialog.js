@@ -317,8 +317,8 @@ function configDialog(style) {
 
   // Clamp input[type=number] to a valid range
   function clampValue(value, va) {
-    const min = va.min || 0;
-    const max = va.max || 100;
+    const min = typeof va.min === 'undefined' ? 0 : va.min;
+    const max = typeof va.max === 'undefined' ? 100 : va.max;
     if (value < min) {
       return min;
     }
