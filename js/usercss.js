@@ -226,7 +226,7 @@ var usercss = (() => {
           result.default = range[0];
           result.min = range[1];
           result.max = range[2];
-          result.step = range[3] || 1;
+          result.step = range[3] == 0 ? 1 : range[3];
         }
         break;
       }
