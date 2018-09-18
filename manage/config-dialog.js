@@ -336,7 +336,7 @@ function configDialog(style) {
       return max;
     }
     // Don't restrict to integer values if step is undefined.
-    if (typeof va.step === 'undefined') {
+    if (!isNumber(va.step)) {
       return value;
     }
     const step = va.step || 1;
