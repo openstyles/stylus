@@ -327,7 +327,7 @@ function configDialog(style) {
   }
 
   // Clamp input[type=number] to a valid range
-  function clampValue(value, va) {
+  function clampValue(value, va, break = false) {
     const max = isNumber(va.max) ? va.max : 100;
     if (isNumber(va.min) && value < va.min) {
       return min;
@@ -336,14 +336,14 @@ function configDialog(style) {
       return max;
     }
     // Don't restrict to integer values if step is undefined.
-    if (!isNumber(va.step)) {
+    if (!isNumber(va.step) || break) {
       return value;
     }
     const step = va.step || 1;
-    const precision = (step.toString().split('.')[1] || 0).length + 1;
-    const inv = 1 / step;
-    // ECMA-262 only requires a precision of up to 21 significant digits
-    return Number((Math.floor(inv * value) / inv).toPrecision(precision > 21 ? 21 : precision));
+    const scale = 10 ** (step.toString().split('.')[1] || '').length;
+    value = Math.round((value * scale) / (step * scale)) * (step * scale) / scale;
+    // clamp modified value; skip step check
+    return clampValue(value, va, true);
   }
 
   function updateVarOnInput(event, debounced = false) {
