@@ -197,12 +197,12 @@ function configDialog(style) {
     renderValues();
   }
 
-  function isNullOrUndefined(value) {
-    return value === null || value === undefined;
+  function isNumber(value) {
+    return value !== '' && !isNaN(Number(value));
   }
 
   function isDefault(va) {
-    return isNullOrUndefined(va.value) || va.value === va.default;
+    return va.value === null || va.value === undefined || va.value === va.default;
   }
 
   function buildConfigForm() {
@@ -271,13 +271,13 @@ function configDialog(style) {
             onchange: updateVarOnChange,
             oninput: updateVarOnInput
           };
-          if (!isNullOrUndefined(va.min)) {
+          if (isNumber(va.min)) {
             options.min = va.min;
           }
-          if (!isNullOrUndefined(va.max)) {
+          if (isNumber(va.max)) {
             options.max = va.max;
           }
-          if (!isNullOrUndefined(va.step)) {
+          if (isNumber(va.step) && isFinite(Number(va.step))) {
             options.step = va.step;
           }
           children = [
