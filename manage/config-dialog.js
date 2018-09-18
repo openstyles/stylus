@@ -197,8 +197,12 @@ function configDialog(style) {
     renderValues();
   }
 
+  function isNullOrUndefined(value) {
+    return value === null || value === undefined;
+  }
+
   function isDefault(va) {
-    return va.value === null || va.value === undefined || va.value === va.default;
+    return isNullOrUndefined(va.value) || va.value === va.default;
   }
 
   function buildConfigForm() {
@@ -259,33 +263,40 @@ function configDialog(style) {
           break;
 
         case 'range':
-        case 'number':
-          children = [
-            va.type === 'range' && $create('span.current-value', {textContent: va.value + va.units}),
-            va.input = $create('input.config-value', {
-              va,
-              type: va.type,
-              value: va.default,
-              min: va.min,
-              max: va.max,
-              step: va.step,
-              onchange: updateVarOnChange
-            })
-          ];
-          break;
-
-        default: {
+        case 'number': {
           const options = {
             va,
             type: va.type,
+            onfocus: va.type === 'number' ? selectAllOnFocus : null,
             onchange: updateVarOnChange,
-            oninput: updateVarOnInput,
-            onfocus: selectAllOnFocus,
+            oninput: updateVarOnInput
           };
+          if (!isNullOrUndefined(va.min)) {
+            options.min = va.min;
+          }
+          if (!isNullOrUndefined(va.max)) {
+            options.max = va.max;
+          }
+          if (!isNullOrUndefined(va.step)) {
+            options.step = va.step;
+          }
           children = [
-            va.input = $create('input.config-value', options),
+            va.type === 'range' && $create('span.current-value'),
+            va.input = $create('input.config-value', options)
           ];
+          break;
         }
+
+        default:
+          children = [
+            va.input = $create('input.config-value', {
+              va,
+              type: va.type,
+              onchange: updateVarOnChange,
+              oninput: updateVarOnInput,
+              onfocus: selectAllOnFocus,
+            }),
+          ];
 
       }
 
@@ -308,7 +319,7 @@ function configDialog(style) {
     if (this.type === 'number') {
       this.value = this.va.value = clampValue(this.value, this.va);
     } else if (this.type === 'range') {
-      this.va.value = parseFloat(this.value);
+      this.va.value = Number(this.value);
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
