@@ -222,7 +222,7 @@ var usercss = (() => {
         if (Array.isArray(state.value) && state.value.length) {
           // label may be placed anywhere
           result.units = (state.value.find(i => typeof i === 'string') || '').replace(/[\d.+-]/g, '');
-          const range = state.value.filter(i => typeof i === 'number');
+          const range = state.value.filter(i => typeof i === 'number' || i == null);
           result.default = range[0];
           result.min = range[1];
           result.max = range[2];
