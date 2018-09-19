@@ -264,7 +264,6 @@ function configDialog(style) {
             va,
             type: va.type,
             onfocus: va.type === 'number' ? selectAllOnFocus : null,
-            onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput
           };
@@ -317,17 +316,13 @@ function configDialog(style) {
       this.va.value = Number(this.value);
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
     } else if (this.type === 'number') {
-      // clamp stored value
-      this.va.value = clampValue(this.value, this.va);
+      const value = Number(this.value);
+      if (clampValue(value, this.va) === value) {
+        this.va.value = value;
+      }
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
-  }
-
-  // Applied to input[type=number]
-  function updateVarOnBlur() {
-    // clamp value visible to user
-    this.value = this.va.value = clampValue(this.value, this.va);
   }
 
   // Clamp input[type=number] to a valid range
