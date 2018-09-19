@@ -198,7 +198,7 @@ function configDialog(style) {
   }
 
   function isNumber(value) {
-    return value !== null && value !== '' && !isNaN(Number(value));
+    return typeof value === 'number';
   }
 
   function isDefault(va) {
