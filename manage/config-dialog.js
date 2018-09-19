@@ -316,6 +316,9 @@ function configDialog(style) {
     if (this.type === 'range') {
       this.va.value = Number(this.value);
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
+    } else if (this.type === 'number') {
+      // clamp stored value
+      this.va.value = clampValue(this.value, this.va);
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
@@ -323,6 +326,7 @@ function configDialog(style) {
 
   // Applied to input[type=number]
   function updateVarOnBlur() {
+    // clamp value visible to user
     this.value = this.va.value = clampValue(this.value, this.va);
   }
 
