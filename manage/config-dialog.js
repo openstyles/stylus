@@ -314,7 +314,7 @@ function configDialog(style) {
   function updateVarOnChange() {
     if (this.type === 'range') {
       this.va.value = Number(this.value);
-      $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
+      updateRangeCurrentValue(va, this.va.value);
     } else if (this.type === 'number') {
       const value = Number(this.value);
       if (clampValue(value, this.va) === value) {
@@ -342,6 +342,13 @@ function configDialog(style) {
     return value;
   }
 
+  function updateRangeCurrentValue(va, value) {
+    const span = $('.current-value', va.input.closest('.config-range'));
+    if (span) {
+      span.textContent = value + (va.units || '');
+    }
+  }
+
   function updateVarOnInput(event, debounced = false) {
     if (debounced) {
       event.target.dispatchEvent(new Event('change', {bubbles: true}));
@@ -365,11 +372,8 @@ function configDialog(style) {
       } else if (va.type === 'checkbox') {
         va.input.checked = Number(value);
       } else if (va.type === 'range') {
-        const span = $('.current-value', va.input.closest('.config-range'));
         va.input.value = value;
-        if (span) {
-          span.textContent = value + (va.units || '');
-        }
+        updateRangeCurrentValue(va, va.input.value);
       } else {
         va.input.value = value;
       }
