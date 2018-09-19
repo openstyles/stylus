@@ -263,7 +263,7 @@ var usercss = (() => {
       }
 
       default: {
-        // text, color, number
+        // text, color
         parseStringToEnd(state);
         result.default = state.value;
       }
