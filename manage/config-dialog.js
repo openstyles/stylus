@@ -268,6 +268,7 @@ function configDialog(style) {
             va,
             type: va.type,
             onfocus: va.type === 'number' ? selectAllOnFocus : null,
+            onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput
           };
@@ -316,9 +317,7 @@ function configDialog(style) {
   }
 
   function updateVarOnChange() {
-    if (this.type === 'number') {
-      this.value = this.va.value = clampValue(this.value, this.va);
-    } else if (this.type === 'range') {
+    if (this.type === 'range') {
       this.va.value = Number(this.value);
       $('.current-value', this.closest('.config-range')).textContent = this.va.value + (this.va.units || '');
     } else {
@@ -326,23 +325,26 @@ function configDialog(style) {
     }
   }
 
+  // Applied to input[type=number]
+  function updateVarOnBlur() {
+    this.value = this.va.value = clampValue(this.value, this.va);
+  }
+
   // Clamp input[type=number] to a valid range
-  function clampValue(value, va, break = false) {
+  function clampValue(value, va) {
+    // Don't restrict to integer values if step is undefined.
+    if (isNumber(va.step)) {
+      const step = va.step || 1;
+      const scale = 10 ** (step.toString().split('.')[1] || '').length;
+      value = Math.round((value * scale) / (step * scale)) * (step * scale) / scale;
+    }
     if (isNumber(va.min) && value < va.min) {
       return va.min;
     }
     if (isNumber(va.max) && value > va.max) {
       return va.max;
     }
-    // Don't restrict to integer values if step is undefined.
-    if (!isNumber(va.step) || break) {
-      return value;
-    }
-    const step = va.step || 1;
-    const scale = 10 ** (step.toString().split('.')[1] || '').length;
-    value = Math.round((value * scale) / (step * scale)) * (step * scale) / scale;
-    // clamp modified value; skip step check
-    return clampValue(value, va, true);
+    return value;
   }
 
   function updateVarOnInput(event, debounced = false) {
