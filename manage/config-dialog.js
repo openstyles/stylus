@@ -197,10 +197,6 @@ function configDialog(style) {
     renderValues();
   }
 
-  function isNumber(value) {
-    return typeof value === 'number';
-  }
-
   function isDefault(va) {
     return va.value === null || va.value === undefined || va.value === va.default;
   }
@@ -272,13 +268,13 @@ function configDialog(style) {
             onchange: updateVarOnChange,
             oninput: updateVarOnInput
           };
-          if (isNumber(va.min)) {
+          if (typeof va.min === 'number') {
             options.min = va.min;
           }
-          if (isNumber(va.max)) {
+          if (typeof va.max === 'number') {
             options.max = va.max;
           }
-          if (isNumber(va.step) && isFinite(Number(va.step))) {
+          if (typeof va.step === 'number' && isFinite(va.step)) {
             options.step = va.step;
           }
           children = [
@@ -333,15 +329,15 @@ function configDialog(style) {
   // Clamp input[type=number] to a valid range
   function clampValue(value, va) {
     // Don't restrict to integer values if step is undefined.
-    if (isNumber(va.step)) {
+    if (typeof va.step === 'number') {
       const step = va.step || 1;
       const scale = 10 ** (step.toString().split('.')[1] || '').length;
       value = Math.round((value * scale) / (step * scale)) * (step * scale) / scale;
     }
-    if (isNumber(va.min) && value < va.min) {
+    if (typeof va.min === 'number' && value < va.min) {
       return va.min;
     }
-    if (isNumber(va.max) && value > va.max) {
+    if (typeof va.max === 'number' && value > va.max) {
       return va.max;
     }
     return value;
