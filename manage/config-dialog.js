@@ -314,7 +314,7 @@ function configDialog(style) {
   function updateVarOnChange() {
     if (this.type === 'range') {
       this.va.value = Number(this.value);
-      updateRangeCurrentValue(va, this.va.value);
+      updateRangeCurrentValue(this.va, this.va.value);
     } else if (this.type === 'number') {
       const value = Number(this.value);
       if (clampValue(value, this.va) === value) {
