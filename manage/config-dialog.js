@@ -363,6 +363,9 @@ function configDialog(style) {
 
   function renderValues(varsToRender = vars) {
     for (const va of varsToRender) {
+      if (va.input === document.activeElement) {
+        continue;
+      }
       const value = isDefault(va) ? va.default : va.value;
       if (va.type === 'color') {
         va.input.style.backgroundColor = value;
