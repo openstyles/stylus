@@ -118,6 +118,12 @@
   "cm_resizeGripHint": {
     "message": "Kattints duplán a magasság maximalizálásához/visszaállításához"
   },
+  "cm_selectByTokens": {
+    "message": "Kifejezések kijelölése dupla kattintással"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Példák kifejezésekre: .valami-2 #aabbcc 0.32 !important\nAmikor ki van kapcsolva: a központosítással elválasztott szavak ki lesznek jelölve."
+  },
   "cm_smartIndent": {
     "message": "Intelligens behúzás használata"
   },
@@ -174,6 +180,9 @@
   },
   "dateInstalled": {
     "message": "Telepítés dátuma"
+  },
+  "dateUpdated": {
+    "message": "Frissítés dátuma"
   },
   "dbError": {
     "message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?"
@@ -269,6 +278,12 @@
   "findStylesInlineTooltip": {
     "message": "Keresési eredmények megjelenítése ebben az ablakban."
   },
+  "genericAdd": {
+    "message": "Hozzáadás"
+  },
+  "genericClone": {
+    "message": "Klónozás"
+  },
   "genericDisabledLabel": {
     "message": "Letiltott"
   },
@@ -292,6 +307,12 @@
   },
   "genericSavedMessage": {
     "message": "Mentve"
+  },
+  "genericTitle": {
+    "message": "Cím"
+  },
+  "genericUnknown": {
+    "message": "Ismeretlen"
   },
   "helpAlt": {
     "message": "Segítség"
@@ -381,6 +402,9 @@
   },
   "linkGetStyles": {
     "message": "Szerezz be stílusokat"
+  },
+  "linkTranslate": {
+    "message": "Fordítás"
   },
   "linterCSSLintIncompatible": {
     "message": "A CSSLint nem támogatja a(z) $preprocessorname$ nevű előfeldolgozót",
@@ -688,17 +712,35 @@
   "sectionRemove": {
     "message": "Szekció eltávolítása"
   },
+  "sectionRestore": {
+    "message": "Eltávolított szekció visszaállítása"
+  },
   "shortcuts": {
     "message": "Gyorsbillentyűk"
   },
   "shortcutsNote": {
     "message": "Gyorsbillentyűk megadása"
   },
+  "sortDateNewestFirst": {
+    "message": "a legújabb elöl"
+  },
   "sortDateOldestFirst": {
     "message": "a legrégebbi elöl"
   },
+  "sortLabel": {
+    "message": "Válaszd ki, hogyan szeretnéd sorba rendezni a telepített stílusokat"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Cím növekvő sorrendben"
+  },
   "sortLabelTitleDesc": {
     "message": "Cím csökkenő sorrendben"
+  },
+  "sortStylesHelp": {
+    "message": "A legördülő menüben válaszd ki, hogyan szeretnéd sorba rendezni a telepített bejegyzéseket. Az alapértelmezett beállítás növekvő sorrend (A-tól Z-ig) a bejegyzések címei szerint. A „Cím csökkenő sorrendben” csoportban megadott rendezési módok csökkenő sorrendet (Z-től A-ig) alkalmaznak a címre.\nMás beállítások azt is lehetővé teszik, hogy több szempont alapján rendezd a bejegyzéseket. Elképzelheted ezt úgy, mint egy többoszlopos rendezési táblázatot, amelyben minden egyes (a plusz jelek között) kiválasztott kategória egy oszlopot vagy egy csoportot jelképez.\nPéldául ha az van beállítva, hogy „Engedélyezve (első) + Cím”, az engedélyezett bejegyzések kerülnek a lista tetejére, aztán az engedélyezett és a letiltott bejegyzések címei külön-külön növekvő sorrendbe A-tól Z-ig) vannak rendezve."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Tartalom rendezése"
   },
   "styleBadRegexp": {
     "message": "Érvénytelen regexp."
@@ -708,6 +750,9 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "@media, @supports behúzása"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Új sorok megtartása"
   },
   "styleCancelEditLabel": {
     "message": "Vissza a kezeléshez"
@@ -859,10 +904,10 @@
     "message": "Stílus be-/kikapcsolása"
   },
   "undo": {
-    "message": "VIsszavonás"
+    "message": "Visszavonás"
   },
   "undoGlobal": {
-    "message": "VIsszavonás mindegyik szekcióban"
+    "message": "Visszavonás mindegyik szekcióban"
   },
   "unreachableAMO": {
     "message": "A Firefox megtiltja ennek az oldalnak az elérését."
@@ -922,6 +967,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Frissítve:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Kérlek, módosítsd a @name vagy a @namespace értékét, nehogy felül legyen írva az egyik létező stílus!"
   },
   "usercssConfigIncomplete": {
     "message": "A stílust frissítették vagy törölték, miután a beállítóablak megjelent. Ezek a változók nem kerültek mentésre, nehogy megsérüljön a stílus metaadata:"
