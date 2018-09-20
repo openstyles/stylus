@@ -266,7 +266,8 @@ function configDialog(style) {
             onfocus: va.type === 'number' ? selectAllOnFocus : null,
             onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
-            oninput: updateVarOnInput
+            oninput: updateVarOnInput,
+            required: true
           };
           if (typeof va.min === 'number') {
             options.min = va.min;
@@ -312,15 +313,8 @@ function configDialog(style) {
     }
   }
 
-  function updateVarOnBlur(e = {}) {
-    const value = Number(this.value);
-    const clamped = clampValue(value, this.va);
-    if (clamped === value) {
-      this.va.value = value;
-    }
-    if (e.type === 'blur') {
-      this.value = clamped;
-    }
+  function updateVarOnBlur() {
+    this.value = isDefault(this.va) ? this.va.default : this.va.value;
   }
 
   function updateVarOnChange() {
@@ -328,27 +322,12 @@ function configDialog(style) {
       this.va.value = Number(this.value);
       updateRangeCurrentValue(this.va, this.va.value);
     } else if (this.type === 'number') {
-      updateVarOnBlur.call(this);
+      if (this.reportValidity()) {
+        this.va.value = Number(this.value);
+      }
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
-  }
-
-  // Clamp input[type=number] to a valid range
-  function clampValue(value, va) {
-    // Don't restrict to integer values if step is undefined.
-    if (typeof va.step === 'number') {
-      const step = va.step || 1;
-      const scale = 10 ** (step.toString().split('.')[1] || '').length;
-      value = Math.round((value * scale) / (step * scale)) * (step * scale) / scale;
-    }
-    if (typeof va.min === 'number' && value < va.min) {
-      return va.min;
-    }
-    if (typeof va.max === 'number' && value > va.max) {
-      return va.max;
-    }
-    return value;
   }
 
   function updateRangeCurrentValue(va, value) {
