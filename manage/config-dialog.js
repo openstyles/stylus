@@ -264,6 +264,7 @@ function configDialog(style) {
             va,
             type: va.type,
             onfocus: va.type === 'number' ? selectAllOnFocus : null,
+            onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput
           };
@@ -311,15 +312,23 @@ function configDialog(style) {
     }
   }
 
+  function updateVarOnBlur(e = {}) {
+    const value = Number(this.value);
+    const clamped = clampValue(value, this.va);
+    if (clamped === value) {
+      this.va.value = value;
+    }
+    if (e.type === 'blur') {
+      this.value = clamped;
+    }
+  }
+
   function updateVarOnChange() {
     if (this.type === 'range') {
       this.va.value = Number(this.value);
       updateRangeCurrentValue(this.va, this.va.value);
     } else if (this.type === 'number') {
-      const value = Number(this.value);
-      if (clampValue(value, this.va) === value) {
-        this.va.value = value;
-      }
+      updateVarOnBlur.call(this);
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
     }
