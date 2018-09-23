@@ -228,7 +228,7 @@ function isUsercss(style) {
 function initStyleData() {
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
-  const id = params.get('id');
+  const id = Number(params.get('id'));
   const createEmptyStyle = () => ({
     id: null,
     name: params.get('domain') ||
@@ -244,8 +244,8 @@ function initStyleData() {
       )
     ],
   });
-  return API.getStyles({id: id || -1})
-    .then(([style = createEmptyStyle()]) => {
+  return fetchStyle()
+    .then(style => {
       styleId = style.id;
       if (styleId) sessionStorage.justEditedStyleId = styleId;
       // we set "usercss" class on <html> when <body> is empty
@@ -259,6 +259,13 @@ function initStyleData() {
       }
       return style;
     });
+
+  function fetchStyle() {
+    if (id) {
+      return API.getStyleFromDB(id);
+    }
+    return Promise.resolve(createEmptyStyle());
+  }
 }
 
 function initHooks() {

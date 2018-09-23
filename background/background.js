@@ -14,6 +14,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   saveStyle,
   deleteStyle,
 
+  getStyleFromDB: id =>
+    dbExec('get', id).then(event => event.target.result),
+
   download(msg) {
     delete msg.method;
     return download(msg.url, msg);
