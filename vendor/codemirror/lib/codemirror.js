@@ -1822,7 +1822,7 @@ function buildLineContent(cm, lineView) {
   var builder = {pre: eltP("pre", [content], "CodeMirror-line"), content: content,
                  col: 0, pos: 0, cm: cm,
                  trailingSpace: false,
-                 splitSpaces: (ie || webkit) && cm.getOption("lineWrapping")};
+                 splitSpaces: cm.getOption("lineWrapping")};
   lineView.measure = {};
 
   // Iterate over the logical lines that make up this visual line.
@@ -1943,6 +1943,8 @@ function buildToken(builder, text, style, startStyle, endStyle, title, css) {
   builder.content.appendChild(content);
 }
 
+// Change some spaces to NBSP to prevent the browser from collapsing
+// trailing spaces at the end of a line when rendering text (issue #1362).
 function splitSpaces(text, trailingBefore) {
   if (text.length > 1 && !/  /.test(text)) { return text }
   var spaceBefore = trailingBefore, result = "";
@@ -7254,8 +7256,9 @@ function onMouseDown(e) {
     }
     return
   }
-  if (clickInGutter(cm, e)) { return }
-  var pos = posFromMouse(cm, e), button = e_button(e), repeat = pos ? clickRepeat(pos, button) : "single";
+  var button = e_button(e);
+  if (button == 3 && captureRightClick ? contextMenuInGutter(cm, e) : clickInGutter(cm, e)) { return }
+  var pos = posFromMouse(cm, e), repeat = pos ? clickRepeat(pos, button) : "single";
   window.focus();
 
   // #3261: make sure, that we're not starting a second selection
@@ -9695,7 +9698,7 @@ CodeMirror.fromTextArea = fromTextArea;
 
 addLegacyProps(CodeMirror);
 
-CodeMirror.version = "5.40.0";
+CodeMirror.version = "5.40.2";
 
 return CodeMirror;
 
