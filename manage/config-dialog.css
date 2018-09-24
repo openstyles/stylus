@@ -98,6 +98,15 @@
   margin-right: 4px;
 }
 
+.current-value {
+  padding: 2px 4px;
+  margin-right: 4px;
+ }
+
+.config-number span, .config-range span {
+  line-height: 22px;
+}
+
 .config-body label:not(.nondefault) .config-reset-icon {
   visibility: hidden;
 }

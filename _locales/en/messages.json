@@ -1051,6 +1051,15 @@
     },
     "description": "Error displayed when the value of @var color is invalid"
   },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "Invalid @var $type$: value must be an array containing at least one number at index zero",
+    "description": "Error displayed when the value of @var number or @var range is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
   "styleMetaErrorPreprocessor": {
     "message": "Unsupported @preprocessor: $preprocessor$",
     "placeholders": {
