@@ -28,6 +28,9 @@ const files = {
   ],
   'stylus-lang-bundle': [
     'stylus.min.js'
+  ],
+  'usercss-meta': [
+    'dist/usercss-meta.min.js → usercss-meta.min.js'
   ]
 };
 

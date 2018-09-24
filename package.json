@@ -17,7 +17,8 @@
     "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^4.2.1"
+    "updates": "^4.2.1",
+    "usercss-meta": "^0.8.0"
   },
   "scripts": {
     "lint": "eslint **/*.js || true",
