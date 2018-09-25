@@ -2,9 +2,7 @@
 'use strict';
 
 importScripts('/js/worker-util.js');
-
 const {loadScript, createAPI} = workerUtil;
-const BUILDER = usercssBuilder();
 
 createAPI({
   parseMozFormat(arg) {
@@ -35,15 +33,7 @@ createAPI({
 
 function compileUsercss(preprocessor, code, vars) {
   loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
-  let builder;
-  if (preprocessor) {
-    if (!BUILDER[preprocessor]) {
-      throw new Error('unknwon preprocessor');
-    }
-    builder = BUILDER[preprocessor];
-  } else {
-    builder = BUILDER.default;
-  }
+  const builder = getUsercssCompiler(preprocessor);
   vars = simpleVars(vars);
   return Promise.resolve(builder.preprocess ? builder.preprocess(code, vars) : code)
     .then(code => parseMozFormat({code}))
@@ -55,6 +45,9 @@ function compileUsercss(preprocessor, code, vars) {
     });
 
   function simpleVars(vars) {
+    if (!vars) {
+      return {};
+    }
     // simplify vars by merging `va.default` to `va.value`, so BUILDER don't
     // need to test each va's default value.
     return Object.keys(vars).reduce((output, key) => {
@@ -79,9 +72,9 @@ function compileUsercss(preprocessor, code, vars) {
   }
 }
 
-function usercssBuilder() {
+function getUsercssCompiler(preprocessor) {
   /* global colorConverter styleCodeEmpty */
-  return {
+  const BUILDER = {
     default: {
       postprocess(sections, vars) {
         loadScript('/background/util.js');
@@ -166,4 +159,12 @@ function usercssBuilder() {
       }
     }
   };
+
+  if (preprocessor) {
+    if (!BUILDER[preprocessor]) {
+      throw new Error('unknwon preprocessor');
+    }
+    return BUILDER[preprocessor];
+  }
+  return BUILDER.default;
 }

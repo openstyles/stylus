@@ -64,6 +64,9 @@ var usercss = (() => {
   function assignVars(style, oldStyle) {
     const {usercssData: {vars}} = style;
     const {usercssData: {vars: oldVars}} = oldStyle;
+    if (!vars || !oldVars) {
+      return Promise.resolve();
+    }
     // The type of var might be changed during the update. Set value to null if the value is invalid.
     for (const key of Object.keys(vars)) {
       if (oldVars[key] && oldVars[key].value) {
