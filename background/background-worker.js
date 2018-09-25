@@ -94,7 +94,7 @@ function getUsercssCompiler(preprocessor) {
         return new Promise((resolve, reject) => {
           const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
           if (!Error.captureStackTrace) Error.captureStackTrace = () => {};
-          window.stylus(varDef + source).render((err, output) => {
+          self.stylus(varDef + source).render((err, output) => {
             if (err) {
               reject(err);
             } else {
@@ -106,15 +106,15 @@ function getUsercssCompiler(preprocessor) {
     },
     less: {
       preprocess(source, vars) {
-        if (!window.less) {
-          window.less = {
+        if (!self.less) {
+          self.less = {
             logLevel: 0,
             useFileCache: false,
           };
         }
         loadScript('/vendor/less/less.min.js');
         const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
-        return window.less.render(varDefs + source)
+        return self.less.render(varDefs + source)
           .then(({css}) => css);
       }
     },
