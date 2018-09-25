@@ -87,10 +87,7 @@ var workerUtil = (() => {
     }, err);
   }
 
-  function loadScript(scripts) {
-    if (!Array.isArray(scripts)) {
-      scripts = [scripts];
-    }
+  function loadScript(...scripts) {
     const urls = scripts.filter(u => !loadedScripts.has(u));
     if (!urls.length) {
       return;
