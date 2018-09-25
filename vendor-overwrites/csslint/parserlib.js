@@ -5505,3 +5505,5 @@ self.parserlib = (() => {
 
   //endregion
 })();
+
+self.parserlib.css.Tokens[self.parserlib.css.Tokens.COMMENT].hide = false;
