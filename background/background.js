@@ -8,6 +8,8 @@ global usercss
 */
 'use strict';
 
+var backgroundWorker = workerUtil.createWorker('/background/background-worker.js');
+
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   getStyles,
