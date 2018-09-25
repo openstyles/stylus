@@ -26,6 +26,8 @@
       "js/messaging.js",
       "js/storage-util.js",
       "js/sections-equal.js",
+      "js/worker-util.js",
+      "background/util.js",
       "background/storage-dummy.js",
       "background/storage.js",
       "js/prefs.js",
