@@ -195,7 +195,7 @@ function createStyleElement({style, name}) {
     };
   }
   const parts = createStyleElement.parts;
-  const configurable = style.usercssData && Object.keys(style.usercssData.vars).length > 0;
+  const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
   parts.checker.checked = style.enabled;
   parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
