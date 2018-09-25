@@ -689,13 +689,17 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }).then(() => {
       errors.classList.add('hidden');
     }).catch(err => {
-      if (Array.isArray(err)) err = err.join('\n');
-      if (err && editor && !isNaN(err.index)) {
+      let message;
+      if (Array.isArray(err)) {
+        message = err.join('\n');
+      } else if (err && editor && !isNaN(err.index)) {
         const pos = editors[0].posFromIndex(err.index);
-        err = `${pos.line}:${pos.ch} ${err}`;
+        message = `${pos.line}:${pos.ch} ${err.message || String(err)}`;
+      } else {
+        message = err.message || String(err);
       }
       errors.classList.remove('hidden');
-      errors.onclick = () => messageBox.alert(String(err), 'pre');
+      errors.onclick = () => messageBox.alert(message, 'pre');
     });
   }
 });
