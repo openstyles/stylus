@@ -12,7 +12,11 @@ var metaParser = (() => {
       },
       color: state => {
         if (state.value !== null) {
-          colorConverter.format(colorConverter.parse(state.value), 'rgb');
+          const color = colorConverter.parse(state.value);
+          if (!color) {
+            throw new Error(`invalid color: ${state.value}`);
+          }
+          state.value = colorConverter.format(color, 'rgb');
         }
       }
     }
