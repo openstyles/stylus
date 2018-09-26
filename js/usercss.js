@@ -49,8 +49,8 @@ var usercss = (() => {
       });
   }
 
-  function drawList(chars) {
-    return chars.map(c => c === '"' ? "'\"'" : `"${c}"`).join(', ');
+  function drawList(items) {
+    return items.map(i => i.length === 1 ? JSON.stringify(i) : i).join(', ');
   }
 
   /**
