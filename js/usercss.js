@@ -11,6 +11,7 @@ var usercss = (() => {
     name: undefined,
   };
   const RX_META = /\/\*\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
+  const ERR_ARGS_IS_LIST = new Set(['missingMandatory', 'missingChar']);
   return {buildMeta, buildCode, assignVars};
 
   function buildMeta(sourceCode) {
@@ -29,6 +30,16 @@ var usercss = (() => {
     }
 
     return backgroundWorker.parseUsercssMeta(match[0], match.index)
+      .catch(err => {
+        if (err.code) {
+          const args = ERR_ARGS_IS_LIST.has(err.code) ? err.args.join(', ') : err.args;
+          const message = chrome.i18n.getMessage(`meta_${err.code}`, args);
+          if (message) {
+            err.message = message;
+          }
+        }
+        throw err;
+      })
       .then(({metadata}) => {
         style.usercssData = metadata;
         for (const [key, value = key] of Object.entries(GLOBAL_METAS)) {

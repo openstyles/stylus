@@ -689,6 +689,194 @@
     "message": "Show active style count",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Invalid @var checkbox: value must be 0 or 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "Invalid @var color: $color$ is not a color",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "Invalid @var $type$: value must be a number or an array",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Invalid @var $type$: multiple units are defined",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Invalid @var $type$: the array contains too many items",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Invalid @var $type$: items in the array must be number, string, or null",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Invalid @var $type$: default value is null",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Invalid @var $type$: default value is lower than the minimum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Invalid @var $type$: default value is larger than the maximum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Invalid @var $type$: default value is not a mutiple of the step",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Invalid @var select: options list is empty",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Invalid @var select: multiple default options are defined",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Invalid @var select: value doesn't exist in the option list",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Invalid URL protocol. Only http and https are allowed: $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Invalid version number. The value doesn't match SemVer pattern: $version$",
+    "description": "Error displayed when @version is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Expect a number",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Expect a quoted string",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Expect a word",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Expect characters: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Expect EOT list",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
+  "meta_missingMandatory": {
+    "message": "Missing mandatory metadata: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Invalid JSON: $literal$ is not a valid JSON literal",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Unknown metadata: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Unknown @$varkey$ type: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Unknown @preprocessor: $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "noStylesForSite": {
     "message": "No styles installed for this site.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -1037,50 +1225,6 @@
       }
     },
     "description": "Confirmation when re-installing a style"
-  },
-  "styleMetaErrorCheckbox": {
-    "message": "Invalid @var checkbox: value must be 0 or 1",
-    "description": "Error displayed when the value of @var checkbox is invalid"
-  },
-  "styleMetaErrorColor": {
-    "message": "$color$ is not a valid color",
-    "placeholders": {
-      "color": {
-        "content": "$1"
-      }
-    },
-    "description": "Error displayed when the value of @var color is invalid"
-  },
-  "styleMetaErrorRangeOrNumber": {
-    "message": "Invalid @var $type$: value must be an array containing at least one number at index zero",
-    "description": "Error displayed when the value of @var number or @var range is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "styleMetaErrorPreprocessor": {
-    "message": "Unsupported @preprocessor: $preprocessor$",
-    "placeholders": {
-      "preprocessor": {
-        "content": "$1"
-      }
-    },
-    "description": "Error displayed when the value of @preprocessor is not supported"
-  },
-  "styleMetaErrorSelectValueMismatch": {
-    "message": "Invalid @select: value doesn't exist in the list",
-    "description": "Error displayed when the value of @select is invalid"
-  },
-  "styleMissingMeta": {
-    "message": "Missing metadata @$key$",
-    "placeholders": {
-      "key": {
-        "content": "$1"
-      }
-    },
-    "description": "Error displayed when a mandatory metadata is missing"
   },
   "styleMissingName": {
     "message": "Enter a name",

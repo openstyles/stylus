@@ -3,21 +3,39 @@
 
 // eslint-disable-next-line no-var
 var metaParser = (() => {
-  const parser = usercssMeta.createParser({
+  const {createParser, ParseError} = usercssMeta;
+  const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
+  const parser = createParser({
+    validateKey: {
+      preprocessor: state => {
+        if (!PREPROCESSORS.has(state.value)) {
+          throw new ParseError({
+            code: 'unknownPreprocessor',
+            args: [state.value],
+            index: state.valueIndex
+          });
+        }
+      }
+    },
     validateVar: {
       select: state => {
-        if (state.value !== null && state.varResult.options.every(o => o.name !== state.value)) {
-          throw new Error('select value mismatch');
+        if (state.varResult.options.every(o => o.name !== state.value)) {
+          throw new ParseError({
+            code: 'invalidSelectValueMismatch',
+            index: state.valueIndex
+          });
         }
       },
       color: state => {
-        if (state.value !== null) {
-          const color = colorConverter.parse(state.value);
-          if (!color) {
-            throw new Error(`invalid color: ${state.value}`);
-          }
-          state.value = colorConverter.format(color, 'rgb');
+        const color = colorConverter.parse(state.value);
+        if (!color) {
+          throw new ParseError({
+            code: 'invalidColor',
+            args: [state.value],
+            index: state.valueIndex
+          });
         }
+        state.value = colorConverter.format(color, 'rgb');
       }
     }
   });
