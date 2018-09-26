@@ -32,7 +32,7 @@ var usercss = (() => {
     return backgroundWorker.parseUsercssMeta(match[0], match.index)
       .catch(err => {
         if (err.code) {
-          const args = ERR_ARGS_IS_LIST.has(err.code) ? err.args.join(', ') : err.args;
+          const args = ERR_ARGS_IS_LIST.has(err.code) ? drawList(err.args) : err.args;
           const message = chrome.i18n.getMessage(`meta_${err.code}`, args);
           if (message) {
             err.message = message;
@@ -47,6 +47,10 @@ var usercss = (() => {
         }
         return style;
       });
+  }
+
+  function drawList(chars) {
+    return chars.map(c => c === '"' ? "'\"'" : `"${c}"`).join(', ');
   }
 
   /**
