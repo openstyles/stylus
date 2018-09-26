@@ -18,7 +18,7 @@
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "updates": "^4.2.1",
-    "usercss-meta": "^0.8.0"
+    "usercss-meta": "^0.8.1"
   },
   "scripts": {
     "lint": "eslint **/*.js || true",
