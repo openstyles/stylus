@@ -215,7 +215,7 @@ function createSourceEditor(style) {
       })
       .catch(err => {
         if (err.handled) return;
-        if (err.message === t('styleMissingMeta', 'name')) {
+        if (err.code === 'missingMandatory' && err.args.includes('name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
             chromeSync.setLZValue('usercssTemplate', code)
               .then(() => chromeSync.getLZValue('usercssTemplate'))
