@@ -40,8 +40,7 @@
       "background/update.js",
       "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
-      "vendor/semver-bundle/semver.js",
-      "vendor-overwrites/colorpicker/colorconverter.js"
+      "vendor/semver-bundle/semver.js"
     ]
   },
   "commands": {
