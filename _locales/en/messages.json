@@ -790,7 +790,7 @@
     "message": "Invalid URL protocol. Only http and https are allowed: $protocol$",
     "description": "Error displayed when the protocol of the URL is invalid",
     "placeholders": {
-      "type": {
+      "protocol": {
         "content": "$1"
       }
     }
@@ -799,7 +799,7 @@
     "message": "Invalid version number. The value doesn't match SemVer pattern: $version$",
     "description": "Error displayed when @version is invalid",
     "placeholders": {
-      "type": {
+      "version": {
         "content": "$1"
       }
     }
