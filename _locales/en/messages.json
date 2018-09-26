@@ -826,7 +826,7 @@
     }
   },
   "meta_missingEOT": {
-    "message": "Expect EOT list",
+    "message": "Expect EOT data",
     "description": "Error displayed when the value is expected to be an EOT list"
   },
   "meta_missingMandatory": {
