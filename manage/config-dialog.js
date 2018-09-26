@@ -182,7 +182,7 @@ function configDialog(style) {
       .catch(errors => {
         const el = $('.config-error', messageBox.element) ||
           $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
-        el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors;
+        el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors.message || String(errors);
       })
       .then(() => {
         saving = false;
