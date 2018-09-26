@@ -1,4 +1,4 @@
-/* global workerUtil importScripts */
+/* global workerUtil importScripts parseMozFormat metaParser styleCodeEmpty colorConverter */
 'use strict';
 
 importScripts('/js/worker-util.js');
@@ -6,13 +6,11 @@ const {loadScript, createAPI} = workerUtil;
 
 createAPI({
   parseMozFormat(arg) {
-    /* global parseMozFormat */
     loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
     return parseMozFormat(arg);
   },
   compileUsercss,
   parseUsercssMeta(text, indexOffset = 0) {
-    /* global metaParser */
     loadScript(
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
@@ -21,7 +19,6 @@ createAPI({
     return metaParser.parse(text, indexOffset);
   },
   nullifyInvalidVars(vars) {
-    /* global metaParser */
     loadScript(
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
@@ -73,11 +70,10 @@ function compileUsercss(preprocessor, code, vars) {
 }
 
 function getUsercssCompiler(preprocessor) {
-  /* global colorConverter styleCodeEmpty */
   const BUILDER = {
     default: {
       postprocess(sections, vars) {
-        loadScript('/background/util.js');
+        loadScript('/js/sections-util.js');
         let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
         if (!varDef) return;
         varDef = ':root {\n' + varDef + '}\n';
@@ -120,6 +116,7 @@ function getUsercssCompiler(preprocessor) {
     },
     uso: {
       preprocess(source, vars) {
+        loadScript('/vendor-overwrites/colorpicker/colorconverter.js');
         const pool = new Map();
         return Promise.resolve(doReplace(source));
 
