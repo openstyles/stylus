@@ -115,8 +115,7 @@ var prefs = new function Prefs() {
   let broadcastPrefs = {};
 
   Object.defineProperties(this, {
-    defaults: {value: deepCopy(defaults)},
-    readOnlyValues: {value: {}},
+    defaults: {value: deepCopy(defaults)}
   });
 
   Object.assign(Prefs.prototype, {
@@ -154,7 +153,6 @@ var prefs = new function Prefs() {
           break;
       }
       values[key] = value;
-      defineReadonlyProperty(this.readOnlyValues, key, value);
       const hasChanged = !equal(value, oldValue);
       if (!fromBroadcast || FIREFOX_NO_DOM_STORAGE) {
         localStorage[key] = typeof defaults[key] === 'object'
@@ -231,13 +229,9 @@ var prefs = new function Prefs() {
   {
     const importFromBG = () =>
       API.getPrefs().then(prefs => {
-        const props = {};
         for (const id in prefs) {
-          const value = prefs[id];
-          values[id] = value;
-          props[id] = {value: deepCopy(value)};
+          this.set(id, prefs[id], {fromBroadcast: true});
         }
-        Object.defineProperties(this.readOnlyValues, props);
       });
     // Unlike chrome.storage or messaging, HTML5 localStorage is synchronous and always ready,
     // so we'll mirror the prefs to avoid using the wrong defaults during the startup phase
@@ -270,7 +264,6 @@ var prefs = new function Prefs() {
           this.set(key, value, {broadcast: false, sync: false});
         } else {
           values[key] = value;
-          defineReadonlyProperty(this.readOnlyValues, key, value);
         }
       }
       return Promise.resolve();
@@ -404,7 +397,7 @@ var prefs = new function Prefs() {
 // Accepts an array of pref names (values are fetched via prefs.get)
 // and establishes a two-way connection between the document elements and the actual prefs
 function setupLivePrefs(
-  IDs = Object.getOwnPropertyNames(prefs.readOnlyValues)
+  IDs = Object.getOwnPropertyNames(prefs.defaults)
     .filter(id => $('#' + id))
 ) {
   const checkedProps = {};

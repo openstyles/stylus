@@ -97,7 +97,7 @@ if (!BG || BG !== window) {
   BG.API_METHODS = {};
 }
 
-const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage);
+const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage && localStorage._BG_ACCESS);
 if (FIREFOX_NO_DOM_STORAGE) {
   // may be disabled via dom.storage.enabled
   Object.defineProperty(window, 'localStorage', {value: {}});

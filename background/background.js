@@ -202,7 +202,7 @@ if (chrome.contextMenus) {
       }
       item = Object.assign({id}, item);
       delete item.presentIf;
-      const prefValue = prefs.readOnlyValues[id];
+      const prefValue = prefs.get(id);
       item.title = chrome.i18n.getMessage(item.title);
       if (!item.type && typeof prefValue === 'boolean') {
         item.type = 'checkbox';
@@ -230,7 +230,7 @@ if (chrome.contextMenus) {
   };
 
   const keys = Object.keys(contextMenus);
-  prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => typeof prefs.get(id) === 'boolean'), toggleCheckmark);
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
@@ -309,7 +309,7 @@ window.addEventListener('storageReady', function _() {
     window.API_METHODS.getStylesForFrame = enabled ? getStylesForFrame : getStyles;
   };
   prefs.subscribe(['exposeIframes'], updateAPI);
-  updateAPI(null, prefs.readOnlyValues.exposeIframes);
+  updateAPI(null, prefs.get('exposeIframes'));
 }
 
 // *************************************************************************
@@ -317,7 +317,7 @@ window.addEventListener('storageReady', function _() {
 function webNavigationListener(method, {url, tabId, frameId}) {
   Promise.all([
     getStyles({matchUrl: url, asHash: true}),
-    frameId && prefs.readOnlyValues.exposeIframes && getTab(tabId),
+    frameId && prefs.get('exposeIframes') && getTab(tabId),
   ]).then(([styles, tab]) => {
     if (method && URLS.supported(url) && tabId >= 0) {
       if (method === 'styleApply') {

@@ -688,8 +688,8 @@ function highlightEditedStyle() {
 
 
 function usePrefsDuringPageLoad() {
-  for (const id of Object.getOwnPropertyNames(prefs.readOnlyValues)) {
-    const value = prefs.readOnlyValues[id];
+  for (const id of Object.getOwnPropertyNames(prefs.defaults)) {
+    const value = prefs.get(id);
     if (value !== true) continue;
     const el = document.getElementById(id) ||
       id.includes('expanded') && $(`details[data-pref="${id}"]`);

@@ -17,7 +17,8 @@
     "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^4.2.1"
+    "updates": "^4.2.1",
+    "web-ext": "^2.9.1"
   },
   "scripts": {
     "lint": "eslint **/*.js || true",
@@ -27,6 +28,7 @@
     "update-node": "updates -u && node tools/remove-modules.js && npm install",
     "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "update-versions": "node tools/update-versions",
-    "zip": "npm run update-versions && node tools/zip.js"
+    "zip": "npm run update-versions && node tools/zip.js",
+    "start-firefox": "web-ext run"
   }
 }

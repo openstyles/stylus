@@ -114,7 +114,7 @@ onDOMready().then(() => {
       }
       if (value !== undefined) {
         el.lastValue = value;
-        if (el.id in prefs.readOnlyValues) {
+        if (el.id in prefs.defaults) {
           prefs.set(el.id, false);
         }
       }
