@@ -354,14 +354,6 @@ var prefs = new function Prefs() {
     if (Number(storage['editor.lintReportDelay']) === 4500) delete storage['editor.lintReportDelay'];
   }
 
-  function defineReadonlyProperty(obj, key, value) {
-    const copy = deepCopy(value);
-    if (typeof copy === 'object') {
-      Object.freeze(copy);
-    }
-    Object.defineProperty(obj, key, {value: copy, configurable: true});
-  }
-
   function equal(a, b) {
     if (!a || !b || typeof a !== 'object' || typeof b !== 'object') {
       return a === b;
