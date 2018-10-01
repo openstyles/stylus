@@ -425,7 +425,7 @@ CSSLint.addRule({
       }
     };
 
-    CSSLint.util.registerBlockEvents(parser, startRule, endRule, property);
+    CSSLint.Util.registerBlockEvents(parser, startRule, endRule, property);
   },
 });
 

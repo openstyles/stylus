@@ -1,11 +1,11 @@
 /*
 global CodeMirror
 global editors propertyToCss CssToProperty
-global onChange indicateCodeChange initHooks setCleanGlobal
+global onChange initHooks setCleanGlobal
 global fromMozillaFormat maximizeCodeHeight toggleContextMenuDelete
-global setCleanItem updateTitle updateLintReportIfEnabled renderLintReport
+global setCleanItem updateTitle
 global showAppliesToHelp beautify regExpTester setGlobalProgress setCleanSection
-global clipString
+global clipString linter
 */
 'use strict';
 
@@ -146,12 +146,13 @@ function addSection(event, section) {
     const newIndex = getSections().indexOf(clickedSection) + 1;
     cm = setupCodeMirror(div, code, newIndex);
     makeSectionVisible(cm);
-    renderLintReport();
     cm.focus();
   } else {
     sections.appendChild(div);
     cm = setupCodeMirror(div, code);
   }
+  linter.enableForEditor(cm);
+  linter.refreshReport();
   div.CodeMirror = cm;
   setCleanSection(div);
   return div;
@@ -308,7 +309,6 @@ function indicateCodeChange(cm) {
   const section = cm.getSection();
   setCleanItem(section, cm.isClean(section.savedValue));
   updateTitle();
-  updateLintReportIfEnabled(cm);
 }
 
 function setupAutocomplete(cm, enable = true) {
@@ -481,13 +481,16 @@ function removeSection(event) {
       setCleanItem(section, false);
       updateTitle();
       cm.focus();
+      linter.enableForEditor(cm);
+      linter.refreshReport();
     };
     section.insertAdjacentElement('afterend', stub);
   }
   setCleanItem($('#sections'), false);
   removeAreaAndSetDirty(section);
   editors.splice(editors.indexOf(cm), 1);
-  renderLintReport();
+  linter.disableForEditor(cm);
+  linter.refreshReport();
 }
 
 function removeAreaAndSetDirty(area) {
