@@ -1,4 +1,4 @@
-/* global importScripts workerUtil CSSLint require usercssMeta */
+/* global importScripts workerUtil CSSLint require metaParser */
 'use strict';
 
 importScripts('/js/worker-util.js');
@@ -15,12 +15,17 @@ createAPI({
     return require('stylelint').lint({code, config});
   },
   metalint: code => {
-    loadScript('/vendor/usercss-meta/usercss-meta.min.js');
-    const result = usercssMeta.parse(code, {allowErrors: true, unknownKey: 'throw'});
+    loadScript(
+      '/vendor/usercss-meta/usercss-meta.min.js',
+      '/vendor-overwrites/colorpicker/colorconverter.js',
+      '/js/meta-parser.js'
+    );
+    const result = metaParser.lint(code);
     // extract needed info
     result.errors = result.errors.map(err =>
       ({
         code: err.code,
+        args: err.args,
         message: err.message,
         index: err.index
       })

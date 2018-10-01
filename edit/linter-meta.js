@@ -29,7 +29,7 @@ function createMetaCompiler(cm) {
           ({
             from: cm.posFromIndex((err.index || 0) + match.index),
             to: cm.posFromIndex((err.index || 0) + match.index),
-            message: err.message,
+            message: err.code && chrome.i18n.getMessage(`meta_${err.code}`, err.args) || err.message,
             severity: err.code === 'unknownMeta' ? 'warning' : 'error'
           })
         );

@@ -5,7 +5,7 @@
 var metaParser = (() => {
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
-  const parser = createParser({
+  const options = {
     validateKey: {
       preprocessor: state => {
         if (!PREPROCESSORS.has(state.value)) {
@@ -38,8 +38,14 @@ var metaParser = (() => {
         state.value = colorConverter.format(color, 'rgb');
       }
     }
-  });
-  return {parse, nullifyInvalidVars};
+  };
+  const parser = createParser(options);
+  const looseParser = createParser(Object.assign({}, options, {allowErrors: true, unknownKey: 'throw'}));
+  return {
+    parse,
+    lint,
+    nullifyInvalidVars
+  };
 
   function parse(text, indexOffset) {
     try {
@@ -50,6 +56,10 @@ var metaParser = (() => {
       }
       throw err;
     }
+  }
+
+  function lint(text) {
+    return looseParser.parse(text);
   }
 
   function nullifyInvalidVars(vars) {
