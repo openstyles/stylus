@@ -20,7 +20,7 @@ function createMetaCompiler(cm) {
     }
     return editorWorker.metalint(match[0])
       .then(({metadata, errors}) => {
-        if (!errors.length) {
+        if (errors.every(err => err.code === 'unknownMeta')) {
           for (const cb of updateListeners) {
             cb(metadata);
           }
