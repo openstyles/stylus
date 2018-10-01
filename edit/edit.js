@@ -11,7 +11,7 @@ global moveFocus workerUtil
 'use strict';
 
 const editorWorker = workerUtil.createWorker({
-  url: '/edit/editor-worker-body.js'
+  url: '/edit/editor-worker.js'
 });
 
 let styleId = null;
