@@ -1,4 +1,4 @@
-/* global importScripts parseMozFormat parserlib CSSLint require workerUtil */
+/* global importScripts workerUtil CSSLint require usercssMeta */
 'use strict';
 
 importScripts('/js/worker-util.js');
@@ -13,6 +13,19 @@ createAPI({
   stylelint: (code, config) => {
     loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
     return require('stylelint').lint({code, config});
+  },
+  metalint: code => {
+    loadScript('/vendor/usercss-meta/usercss-meta.min.js');
+    const result = usercssMeta.parse(code, {allowErrors: true, unknownKey: 'throw'});
+    // extract needed info
+    result.errors = result.errors.map(err =>
+      ({
+        code: err.code,
+        message: err.message,
+        index: err.index
+      })
+    );
+    return result;
   },
   getStylelintRules,
   getCsslintRules
