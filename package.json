@@ -21,7 +21,7 @@
     "usercss-meta": "^0.8.1"
   },
   "scripts": {
-    "lint": "eslint **/*.js || true",
+    "lint": "eslint **/*.js --cache || exit 0",
     "update": "npm run update-node && npm run update-main",
     "update-quick": "updates -u && npm update && npm run update-main",
     "update-main": "npm run update-versions && npm run update-codemirror",
