@@ -6,9 +6,13 @@ global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
-global moveFocus editorWorker
+global moveFocus workerUtil
 */
 'use strict';
+
+const editorWorker = workerUtil.createWorker({
+  url: '/edit/editor-worker-body.js'
+});
 
 let styleId = null;
 // only the actually dirty items here
@@ -449,7 +453,7 @@ function fromMozillaFormat() {
 
   function doImport({replaceOldStyle = false}) {
     lockPageUI(true);
-    editorWorker.parseMozFormat({code: popup.codebox.getValue().trim()})
+    API.parseMozFormat({code: popup.codebox.getValue().trim()})
       .then(({sections, errors}) => {
         // shouldn't happen but just in case
         if (!sections.length && errors.length) {

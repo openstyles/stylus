@@ -1,28 +1,25 @@
-/* global importScripts parseMozFormat parserlib CSSLint require */
+/* global importScripts parseMozFormat parserlib CSSLint require workerUtil */
 'use strict';
+
+importScripts('/js/worker-util.js');
+const {createAPI, loadScript} = workerUtil;
 
 createAPI({
   csslint: (code, config) => {
-    loadParserLib();
-    loadScript(['/vendor-overwrites/csslint/csslint.js']);
+    loadScript('/vendor-overwrites/csslint/parserlib.js', '/vendor-overwrites/csslint/csslint.js');
     return CSSLint.verify(code, config).messages
       .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
   },
   stylelint: (code, config) => {
-    loadScript(['/vendor/stylelint-bundle/stylelint-bundle.min.js']);
+    loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
     return require('stylelint').lint({code, config});
-  },
-  parseMozFormat: data => {
-    loadParserLib();
-    loadScript(['/js/moz-parser.js']);
-    return parseMozFormat(data);
   },
   getStylelintRules,
   getCsslintRules
 });
 
 function getCsslintRules() {
-  loadScript(['/vendor-overwrites/csslint/csslint.js']);
+  loadScript('/vendor-overwrites/csslint/csslint.js');
   return CSSLint.getRules().map(rule => {
     const output = {};
     for (const [key, value] of Object.entries(rule)) {
@@ -35,7 +32,7 @@ function getCsslintRules() {
 }
 
 function getStylelintRules() {
-  loadScript(['/vendor/stylelint-bundle/stylelint-bundle.min.js']);
+  loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
   const stylelint = require('stylelint');
   const options = {};
   const rxPossible = /\bpossible:("(?:[^"]*?)"|\[(?:[^\]]*?)\]|\{(?:[^}]*?)\})/g;
@@ -70,49 +67,4 @@ function getStylelintRules() {
     }
   }
   return options;
-}
-
-function loadParserLib() {
-  if (typeof parserlib !== 'undefined') {
-    return;
-  }
-  importScripts('/vendor-overwrites/csslint/parserlib.js');
-  parserlib.css.Tokens[parserlib.css.Tokens.COMMENT].hide = false;
-}
-
-const loadedUrls = new Set();
-function loadScript(urls) {
-  urls = urls.filter(u => !loadedUrls.has(u));
-  importScripts(...urls);
-  urls.forEach(u => loadedUrls.add(u));
-}
-
-function createAPI(methods) {
-  self.onmessage = e => {
-    const message = e.data;
-    Promise.resolve()
-      .then(() => methods[message.action](...message.args))
-      .then(result => ({
-        id: message.id,
-        error: false,
-        data: result
-      }))
-      .catch(err => ({
-        id: message.id,
-        error: true,
-        data: cloneError(err)
-      }))
-      .then(data => self.postMessage(data));
-  };
-}
-
-function cloneError(err) {
-  return Object.assign({
-    name: err.name,
-    stack: err.stack,
-    message: err.message,
-    lineNumber: err.lineNumber,
-    columnNumber: err.columnNumber,
-    fileName: err.fileName
-  }, err);
 }
