@@ -371,8 +371,9 @@ CodeMirror.hint && (() => {
     }
 
     // USO vars in usercss mode editor
-    const list = Object.keys(editor.getStyle().usercssData.vars)
-      .filter(name => name.startsWith(leftPart));
+    const vars = editor.getStyle().usercssData.vars;
+    const list = vars ?
+      Object.keys(vars).filter(name => name.startsWith(leftPart)) : [];
     return {
       list,
       from: {line, ch: prev},

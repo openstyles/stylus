@@ -4,9 +4,14 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
-global usercss
+global usercss workerUtil
 */
 'use strict';
+
+// eslint-disable-next-line no-var
+var backgroundWorker = workerUtil.createWorker({
+  url: '/background/background-worker.js'
+});
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
@@ -22,7 +27,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     return download(msg.url, msg);
   },
   parseCss({code}) {
-    return usercss.invokeWorker({action: 'parse', code});
+    return backgroundWorker.parseMozFormat({code});
   },
   getPrefs: prefs.getAll,
   healthCheck: () => dbExec().then(() => true),
