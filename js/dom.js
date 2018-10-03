@@ -313,20 +313,31 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
   }
 }
 
-
+// Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
 function focusAccessibility() {
-  // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
-  // Since we don't want full layout recalc, we modify only the closest focusable element,
-  // which we try to find in DOM for this many parentElement jumps:
-  const focusables = focusAccessibility.ELEMENTS =
-    ['a', 'button', 'input', 'textarea', 'label', 'select', 'summary'];
+  // last event's focusedViaClick
+  focusAccessibility.lastFocusedViaClick = false;
+  // tags of focusable elements;
+  // to avoid a full layout recalc we modify the closest one
+  focusAccessibility.ELEMENTS = [
+    'a',
+    'button',
+    'input',
+    'textarea',
+    'label',
+    'select',
+    'summary',
+  ];
+  // try to find a focusable parent for this many parentElement jumps:
   const GIVE_UP_DEPTH = 4;
+
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
 
   function suppressOutlineOnClick({target}) {
     for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
-      if (focusables.includes(el.localName)) {
+      if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+        focusAccessibility.lastFocusedViaClick = true;
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
         }
@@ -337,13 +348,14 @@ function focusAccessibility() {
 
   function keepOutlineOnTab(event) {
     if (event.which === 9) {
+      focusAccessibility.lastFocusedViaClick = false;
       setTimeout(keepOutlineOnTab, 0, true);
       return;
     } else if (event !== true) {
       return;
     }
     let el = document.activeElement;
-    if (!el || !focusables.includes(el.localName)) {
+    if (!el || !focusAccessibility.ELEMENTS.includes(el.localName)) {
       return;
     }
     if (el.dataset.focusedViaClick !== undefined) {
@@ -352,6 +364,31 @@ function focusAccessibility() {
     el = el.closest('[data-focused-via-click]');
     if (el) {
       delete el.dataset.focusedViaClick;
+    }
+  }
+}
+
+/**
+ * Switches to the next/previous keyboard-focusable element
+ * @param {HTMLElement} rootElement
+ * @param {Number} step - for exmaple 1 or -1
+ * @returns {HTMLElement|false|undefined} -
+ *   HTMLElement: focus changed,
+ *   false: focus unchanged,
+ *   undefined: nothing to focus
+ */
+function moveFocus(rootElement, step) {
+  const elements = [...rootElement.getElementsByTagName('*')];
+  const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
+  const num = elements.length;
+  const {activeElement} = document;
+  for (let i = 1; i < num; i++) {
+    const elementIndex = (activeIndex + i * step + num) % num;
+    // we don't use positive tabindex so we stop at any valid value
+    const el = elements[elementIndex];
+    if (!el.disabled && el.tabIndex >= 0) {
+      el.focus();
+      return activeElement !== el && el;
     }
   }
 }

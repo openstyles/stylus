@@ -1,1150 +1,929 @@
 {
-	"appliesToEverything": {
-		"message": "Totul",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"linterIssues": {
-		"message": "Probleme",
-		"description": "Label for the CSS linter issues block on the style edit page"
-	},
-	"styleRegexpTestTitle": {
-		"message": "Listă cu taburi deschise care se potrivesc căutării (click URL pentru a activa tabul)",
-		"description": "RegExp test report: title of the report"
-	},
-	"bckpInstStyles": {
-		"message": "Exportați teme",
-		"description": ""
-	},
-	"sortStylesHelpTitle": {
-		"message": "Sortare conținut",
-		"description": "Label for the sort info popup on the Manage styles page"
-	},
-	"manageOnlyUsercss": {
-		"message": "Doar teme Usercss",
-		"description": "Checkbox to show only Usercss styles"
-	},
-	"sortStylesHelp": {
-		"message": "Alegeți ce fel de sortare doriți să fie aplicată temelor instalate, din cadrul meniului dropdown. În mod implicit se aplică sortare alfabetică (A la Z) titlurilor temelor. Sortarea de tip \"Titlu descrescător\" va aplica sortare descrescătoare (Z la A) titlurilor.\nSunt alte presets care permit sortări după mai multe criterii. Este ca și cum ați sorta un tabel cu mai multe coloane iar fiecare categorie (între semnele +) reprezintă o coloană, sau un grup..\nSpre exemplu, dacă se alege \"Activată (prima) + Titlu\", atunci toate temele vor fi grupate astfel încât cele active sunt cap de listă, iar apoi temele sunt sortate alfabetic.",
-		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
-	},
-	"sortLabelTitleAsc": {
-		"message": "Titlu crescător",
-		"description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
-	},
-	"optionsUpdateInterval": {
-		"message": "Intervalul de autoupdate în ore (0 pentru dezactivat)",
-		"description": ""
-	},
-	"sortDateOldestFirst": {
-		"message": "cel mai vechi la început",
-		"description": "Text added to indicate that sorting a date would add the oldest entries at the top"
-	},
-	"installButton": {
-		"message": "Instalați tema",
-		"description": "Label for install button"
-	},
-	"styleMetaErrorCheckbox": {
-		"message": "@var checkbox invalidă: valuarea trebuie să fie 0 sau 1",
-		"description": "Error displayed when the value of @var checkbox is invalid"
-	},
-	"popupHotkeysTooltip": {
-		"message": "Click pentru a vedea hotkeys avabile",
-		"description": "Tooltip displayed when hovering the right edge of the extension popup"
-	},
-	"optionsBadgeNormal": {
-		"message": "Culoare de fundal",
-		"description": ""
-	},
-	"updateCheckHistory": {
-		"message": "Historicul update-urilor",
-		"description": ""
-	},
-	"cm_tabSize": {
-		"message": "Mărimea tab-urilor",
-		"description": "Label for the text box controlling tab size option for the style editor."
-	},
-	"enableStyleLabel": {
-		"message": "Activați",
-		"description": "Label for the button to enable a style"
-	},
-	"styleMissingName": {
-		"message": "Introduceți un nume",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"genericHistoryLabel": {
-		"message": "Historic",
-		"description": "Used in various places to show a history log of something"
-	},
-	"shortcutsNote": {
-		"message": "Creeați keyboard shortcuts",
-		"description": ""
-	},
-	"appliesDomainOption": {
-		"message": "URLs din domain",
-		"description": "Option to make the style apply to the entered string as a domain"
-	},
-	"checkForUpdate": {
-		"message": "Verificați pentru update-uri",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"styleNotAppliedRegexpProblemTooltip": {
-		"message": "Tema nu a fost aplicată din cauza incorectei aplicări a 'regexp()'",
-		"description": "Tooltip in the popup for styles that were not applied at all"
-	},
-	"colorpickerSwitchFormatTooltip": {
-		"message": "Schimbați formatul: HEX -> RGB -> HSL.\nShift-click pentru inversarea direcției.\nDe asemenea cu PgUp (PageUp), PgDn (PageDown).",
-		"description": "Tooltip for the switch button in the color picker popup in the style editor."
-	},
-	"styleRegexpInvalidExplanation": {
-		"message": "Unele reguli 'regexp()' care nu au putut fi compilate.",
-		"description": ""
-	},
-	"optionsIconDark": {
-		"message": "Teme întunecate pentru browser",
-		"description": ""
-	},
-	"styleFromMozillaFormatError": {
-		"message": "Importul din formatul Mozilla eșuat",
-		"description": "Label for the import error"
-	},
-	"importAppendLabel": {
-		"message": "Concatenare la temă",
-		"description": "Label for the button to import a style and append to the existing sections"
-	},
-	"optionsOpenManager": {
-		"message": "Managerul de teme",
-		"description": ""
-	},
-	"updateAllCheckSucceededNoUpdate": {
-		"message": "Niciun update găsit.",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"importReportLegendAdded": {
-		"message": "adăugat",
-		"description": "Text after the number of styles added in the report shown after importing styles"
-	},
-	"styleFromMozillaFormatPrompt": {
-		"message": "Paste cod în format Mozilla",
-		"description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-	},
-	"dragDropMessage": {
-		"message": "Drag and drop backup-ul oriunde pentru import.",
-		"description": "Drag'n'drop message"
-	},
-	"styleRegexpTestNote": {
-		"message": "Notă: folosiți \\ pentru ignorarea caracterelor speciale în regexp, care va fi transformat automat în \\\\ în codul temei, urmând specificațiile pentru text citat în CSS.",
-		"description": "RegExp test report: a note displayed at the bottom of the dialog"
-	},
-	"helpAlt": {
-		"message": "Ajutor",
-		"description": "Alternate text for help buttons"
-	},
-	"search": {
-		"message": "Căutați",
-		"description": "Label before the search input field in the editor shown on Ctrl-F"
-	},
-	"genericEnabledLabel": {
-		"message": "Activat",
-		"description": "Used in various lists/options to indicate that something is enabled"
-	},
-	"manageFaviconsGray": {
-		"message": "Hașurat",
-		"description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
-	},
-	"versionInvalidOlder": {
-		"message": "Versiunea este mai veche decât cea instalată.",
-		"description": "Displayed when the version of style is older than the installed one"
-	},
-	"confirmYes": {
-		"message": "Da",
-		"description": "'Yes' button in a confirm dialog"
-	},
-	"findStylesForSite": {
-		"message": "Gasiți mai multe teme pentru acest site.",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"manageHeading": {
-		"message": "Teme instalate",
-		"description": "Heading for the manage page"
-	},
-	"styleBeautify": {
-		"message": "Înfrumusețați",
-		"description": "Label for the CSS-beautifier button on the edit style page"
-	},
-	"styleRegexpProblemTooltip": {
-		"message": " Numărul de secțiuni care nu au fost aplicate din cauza utilizării incorecte a 'regexp()'",
-		"description": "Tooltip in the popup for styles that were applied only partially"
-	},
-	"styleEnabledLabel": {
-		"message": "Activat",
-		"description": "Label for the enabled state of styles"
-	},
-	"configOnChange": {
-		"message": "la schimbare",
-		"description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
-	},
-	"linterConfigTooltip": {
-		"message": "Click pentru a configura linter-ul",
-		"description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "Formatul Mozilla al codului poate fi uploadat pe userstyles.org și folosit de clasicul Stylish pentru Firefox.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"sectionAdd": {
-		"message": "Adăugați o altă secțiune",
-		"description": "Label for the button to add a section"
-	},
-	"styleRegexpTestPartial": {
-		"message": "Potrivire parțială, deci ignorată",
-		"description": "RegExp test report: label for the partially matching expressions"
-	},
-	"styleSaveLabel": {
-		"message": "Salvați",
-		"description": "Label for save button for style editing"
-	},
-	"genericSavedMessage": {
-		"message": "Salvat",
-		"description": "Used in various parts of the UI to indicate that something was saved"
-	},
-	"confirmDelete": {
-		"message": "Ștergeți",
-		"description": ""
-	},
-	"confirmDefault": {
-		"message": "Folosiți default",
-		"description": "'Set to default' button in a confirm dialog"
-	},
-	"cm_autoCloseBracketsTooltip": {
-		"message": "Închideți automat când deschizideți una dintre ()[]{}''\"\"",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"retrieveBckp": {
-		"message": "Importați teme",
-		"description": ""
-	},
-	"writeStyleForURL": {
-		"message": "acest URL",
-		"description": "Text for link in toolbar pop-up to write a new style for the current URL"
-	},
-	"optionsSubheading": {
-		"message": "Mai multe opțiuni",
-		"description": "Subheading for options section on manage page."
-	},
-	"appliesAdd": {
-		"message": "Adăugați",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesRegexpOption": {
-		"message": "URLs găsite cu regexp",
-		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"importReportLegendUpdatedCode": {
-		"message": "cod updatat",
-		"description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
-	},
-	"styleInstall": {
-		"message": "Instalați '$stylename$' în Stylus?",
-		"description": "Confirmation when installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsBadgeDisabled": {
-		"message": "Culoare de fundal pentru modul inactiv",
-		"description": ""
-	},
-	"optionsCheck": {
-		"message": "Updatați temele",
-		"description": ""
-	},
-	"manageOnlyLocal": {
-		"message": "Doar temele create local",
-		"description": "Checkbox to show only locally created styles i.e. non-updatable"
-	},
-	"styleMetaErrorPreprocessor": {
-		"message": "@preprocessor nesuportat: $preprocessor$",
-		"description": "Error displayed when the value of @preprocessor is not supported",
-		"placeholders": {
-			"preprocessor": {
-				"content": "$1"
-			}
-		}
-	},
-	"searchNumberOfResults2": {
-		"message": "Număr de rezultate în cod și în 'aplicabil pentru'",
-		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
-	},
-	"linterIssuesHelp": {
-		"message": "Aceste probleme au fost găsite te $link$:",
-		"description": "Help popup message for the selected CSS linter issues block on the style edit page",
-		"placeholders": {
-			"link": {
-				"content": "$1"
-			}
-		}
-	},
-	"parseUsercssError": {
-		"message": "Stylus nu a putut analiza usercss-ul",
-		"description": "The error message to show when stylus failed to parse usercss"
-	},
-	"searchStyles": {
-		"message": "Conținutul căutării",
-		"description": "Label for the search filter textbox on the Manage styles page"
-	},
-	"optionsUpdateImportNote": {
-		"message": "Atunci când sunt importate teme din backup-uri din versiuni mai vechi sau din Stylish, verifică upate-urile manual pentru a fi sigur că toate temele sunt la zi.",
-		"description": ""
-	},
-	"checkAllUpdatesForce": {
-		"message": "Verifică iar, nu am modificat temele!",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"manageOnlyNonUsercss": {
-		"message": "Doar teme non-Usercss",
-		"description": "Checkbox to show only non-Usercss (standard) styles"
-	},
-	"linkGetStyles": {
-		"message": "Căutați teme",
-		"description": "Help link text on the manage page e.g. https://userstyles.org"
-	},
-	"unreachableFileHint": {
-		"message": "Stylus poate accesa file:// URLs doar când este activată opțiunea respectivă din pagina cu setări chrome://extensions",
-		"description": "Note in the toolbar popup for file:// URLs"
-	},
-	"sortLabel": {
-		"message": "Alegeți o sortare care să fie aplicată temelor instalate",
-		"description": "Title on the sort select to indicate it is used for sorting entries"
-	},
-	"disableStyleLabel": {
-		"message": "Dezactivați",
-		"description": "Label for the button to disable a style"
-	},
-	"prefShowBadge": {
-		"message": "Numărul de teme active pentru site-ul curent",
-		"description": "Label for the checkbox controlling toolbar badge text."
-	},
-	"manageFavicons": {
-		"message": "Favicons în coloana 'se aplică la'",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
-	},
-	"paginationCurrent": {
-		"message": "Pagina curentă",
-		"description": "Tooltip for the current page index in search results"
-	},
-	"menuShowBadge": {
-		"message": "Afișați numărul temelor active",
-		"description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
-	},
-	"popupHotkeysInfo": {
-		"message": "<1>-<9>, <0>, de asemenea îm numpad - activează/dezactivează tema numărul N (0 este 10)\n<A>-<Z> activează/dezactivează prima temă cu un nume care începe cu o litera\n<Shift> deschide editorul și nu activează/dezactivează ceva\n<Numpad +> activează temele listate\n<Numpad –> dezactiveaza temele listate\n<Numpad *> și <`> (backtick) - activează/dezactivează temele activate inițial; nu se aplică altor teme activate când popup-ul este deschid pentru a permite restaurarea seleției inițiale pentru a permite testări; dezactivează tot, apoi activează/dezactivează, spre exemplu<Numpad –> <Numpad *>\nMai multe informații sunt avabile în wiki",
-		"description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
-	},
-	"styleCancelEditLabel": {
-		"message": "Înapoi la manager",
-		"description": "Label for cancel button for style editing"
-	},
-	"styleChangesNotSaved": {
-		"message": "Ați modificat tema fără a o salva.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"updateCheckFailServerUnreachable": {
-		"message": "Update eșuat: server-ul nu este avabil.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"genericError": {
-		"message": "Eroare",
-		"description": "Used in various places to indicate some error occurred."
-	},
-	"manageFilters": {
-		"message": "Filtre",
-		"description": "Label for filters container"
-	},
-	"applyAllUpdates": {
-		"message": "Aplicați toate update-urile",
-		"description": "Label for the button to apply all detected updates"
-	},
-	"optionsReset": {
-		"message": "Resetați opțiunile",
-		"description": ""
-	},
-	"optionsCustomizeUpdate": {
-		"message": "Update-uri",
-		"description": ""
-	},
-	"deleteStyleConfirm": {
-		"message": "Sunteți sigur că doriți să ștergeți această temă?",
-		"description": "Confirmation before deleting a style"
-	},
-	"styleBadRegexp": {
-		"message": "Regexp invalid.",
-		"description": "Validation message for a bad regexp in a style"
-	},
-	"license": {
-		"message": "Licență",
-		"description": "Label for the license"
-	},
-	"optionsHeading": {
-		"message": "Opțiuni",
-		"description": "Heading for options section on manage page."
-	},
-	"appliesDisplay": {
-		"message": "Aplicabil pentru: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsIconLight": {
-		"message": "Teme albe pentru browser",
-		"description": ""
-	},
-	"openStylesManager": {
-		"message": "Deschideți managerul de teme",
-		"description": "Label for the style maanger opener in the browser action context menu."
-	},
-	"styleUpdate": {
-		"message": "Sunteți sigur că doriți să faceți update la '$stylename$'?",
-		"description": "Confirmation when updating a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleSectionsTitle": {
-		"message": "Secțiuni",
-		"description": "Title for the style sections section"
-	},
-	"importReportLegendInvalid": {
-		"message": "cele invalide au fost ignorate",
-		"description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
-	},
-	"optionsAdvancedNewStyleAsUsercss": {
-		"message": "Scrieți temă nouă în formatul usercss",
-		"description": ""
-	},
-	"genericResetLabel": {
-		"message": "Resetați",
-		"description": "Used in various parts of UI to indicate that something may be reset to its original state"
-	},
-	"editStyleTitle": {
-		"message": "Modificați tema $stylename$",
-		"description": "Title of the page for editing styles",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"updateCheckSucceededNoUpdate": {
-		"message": "Tema este cu update-urile la zi.",
-		"description": "Text that displays when an update check completed and no update is available"
-	},
-	"appliesUrlPrefixOption": {
-		"message": "URL-uri începănd cu",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"cm_matchHighlightToken": {
-		"message": "Token-ul de sub cursor",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
-	},
-	"searchRegexp": {
-		"message": "Folosiți sintaxă /re/ pentru căutare tip regexp",
-		"description": "Label after the search input field in the editor shown on Ctrl-F"
-	},
-	"popupBordersTooltip": {
-		"message": "Folositor pentru teme întunecate in noul Chrome deoarece nu mai colorează bordurile",
-		"description": ""
-	},
-	"updateCheckManualUpdateHint": {
-		"message": "Update-ul forțat va șterge toate modificările locale.",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"toggleStyle": {
-		"message": "Activați/Dezactivați tema",
-		"description": "Label for the checkbox to enable/disable a style"
-	},
-	"searchNumberOfResults": {
-		"message": "Număr de rezultate",
-		"description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
-	},
-	"importReplaceTooltip": {
-		"message": "Scrieți peste tema curentă conținutul temei importate",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"installUpdateFromLabel": {
-		"message": "Verificați update-urile",
-		"description": "Label for the checkbox to save current URL for update check"
-	},
-	"cm_resizeGripHint": {
-		"message": "Dublu click pentru a maximiza sau restaura înălțimea",
-		"description": "Tooltip for the resize grip in style editor"
-	},
-	"popupStylesFirst": {
-		"message": "Temele înaintea comenzilor",
-		"description": "Label for the checkbox controlling section order in the popup."
-	},
-	"sectionHelp": {
-		"message": "Secțiunile permit definirea de bucăți de cod aplicabile la URL diferite, în cadrul aceleași teme. Spre exemplu, o singură temă poate modifica pagina de pornire a unui site într-un mod diferit de restul site-ului.",
-		"description": "Help text for sections"
-	},
-	"noStylesForSite": {
-		"message": "Nicio temă instalată pentru acest site.",
-		"description": "Text displayed when no styles are installed for the current site"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "mai mult",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "Ștergeți",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"updatesCurrentlyInstalled": {
-		"message": "Update-uri instalate:",
-		"description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-	},
-	"styleToMozillaFormatTitle": {
-		"message": "Scrieți în format Mozilla",
-		"description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
-	},
-	"cm_colorpicker": {
-		"message": "Alegere de culori pentru CSS",
-		"description": "Label for the checkbox controlling colorpicker option for the style editor."
-	},
-	"filteredStylesAllHidden": {
-		"message": "Filtrele aplicate nu au găsit nicio temă",
-		"description": "Text shown when no styles match currently applied filter in the style manager"
-	},
-	"writeStyleFor": {
-		"message": "Scrieți temă pentru: ",
-		"description": "Label for toolbar pop-up that precedes the links to write a new style"
-	},
-	"replace": {
-		"message": "Înlocuiți",
-		"description": "Label before the replace input field in the editor shown on Ctrl-H"
-	},
-	"styleRegexpTestNone": {
-		"message": "Niciun tab nu se potrivește căutării",
-		"description": "RegExp test report: label for expressions that didn't match any tabs"
-	},
-	"importReportLegendUpdatedMeta": {
-		"message": "meta info updatată",
-		"description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
-	},
-	"appliesLabel": {
-		"message": "Aplicabil pentru",
-		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"sortLabelTitleDesc": {
-		"message": "Titlu descrescător",
-		"description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
-	},
-	"openOptionsPopup": {
-		"message": "Opțiuni",
-		"description": "Go to Options UI"
-	},
-	"usercssConfigIncomplete": {
-		"message": "Tema a fost updatată sau ștearsă după ce configurațiile au fost afișate. Aceste variabile nu au fost salvate pentru a nu corupe metadata temei.",
-		"description": ""
-	},
-	"openManage": {
-		"message": "Managerul",
-		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "Update eșuat: server-ul a răspuns cu acest cod $code$.",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesSpecify": {
-		"message": "Specificați",
-		"description": "Label for the button to make a style apply only to specific sites"
-	},
-	"installUpdate": {
-		"message": "Instalați update-uri",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"syncStorageErrorSaving": {
-		"message": "Valoarea nu a putut fi salvată. Încercați să reduceți dimensiunea textului.",
-		"description": "Displayed when trying to save an excessively big value via storage.sync API"
-	},
-	"optionsCheckUpdate": {
-		"message": "Verificați și instalează toate update-urile",
-		"description": ""
-	},
-	"clickToUninstall": {
-		"message": "Click pentru dezinstalare",
-		"description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
-	},
-	"filteredStyles": {
-		"message": "$numShown$ vizualizabile din $numTotal$ ",
-		"description": "TL note - make this message short",
-		"placeholders": {
-			"numTotal": {
-				"content": "$2"
-			},
-			"numShown": {
-				"content": "$1"
-			}
-		}
-	},
-	"importReportTitle": {
-		"message": "Importul temelor finalizat",
-		"description": "Title of the report shown after importing styles"
-	},
-	"unreachableAMOHint": {
-		"message": "Pentru a permite accesul deschideți <about:config>, right-click pe listă, click 'New', apoi 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> și click OK, <true>, OK, reâncărcați pagina <addons.mozilla.org>.",
-		"description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-	},
-	"styleMozillaFormatHeading": {
-		"message": "Format Mozilla",
-		"description": "Heading for the section with buttons to import/export Mozilla format of the style"
-	},
-	"styleRegexpPartialExplanation": {
-		"message": "Această temă folosește regexp parțiale care încalcă <a href='https://developer.mozilla.org/docs/Web/CSS/@document'> specificațiile CSS4 @document</a> care are nevoie de o potrivire regexp exactă. Părțile afectate de CSS nu au fost aplicate paginii. Cel mai probabil tema a fost creată în Stylish-for-Chrome care verifică incorect 'regexp()' de la prima sa versiune (bug cunoscut).",
-		"description": ""
-	},
-	"linterCSSLintSettings": {
-		"message": "(Setați regula ca: 0 = dezactivat; 1 = avertisment; 2 = eroare)",
-		"description": "CSSLint rule config values"
-	},
-	"searchResultNoneFound": {
-		"message": "Nicio tema găsită pentru acest site.",
-		"description": "Error text in the popup when inline search didn't find any site-specific styles"
-	},
-	"styleBeautifyIndentConditional": {
-		"message": "Indentare @media, @supports",
-		"description": "CSS-beautifier option"
-	},
-	"unreachableContentScript": {
-		"message": "Nu s-a putut comunica cu pagina. Reîncărcați tabul.",
-		"description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
-	},
-	"sectionRemove": {
-		"message": "Ștergeți secțiunea",
-		"description": "Label for the button to remove a section"
-	},
-	"disableAllStyles": {
-		"message": "Dezactivați toate temele",
-		"description": "Label for the checkbox that turns all enabled styles off."
-	},
-	"appliesLineWidgetLabel": {
-		"message": "Arată informații despre 'Aplicabil pentru'",
-		"description": "Label for the checkbox to display applies-to information in the single editor"
-	},
-	"updateCheckSkippedMaybeLocallyEdited": {
-		"message": "Tema poate a fost modificată local.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
-	},
-	"undoGlobal": {
-		"message": "Undo în toate secțiunile",
-		"description": "CSS-beautify global Undo button label"
-	},
-	"genericTitle": {
-		"message": "Titlu",
-		"description": "Used in various parts of the UI to indicate the title of something"
-	},
-	"updateCompleted": {
-		"message": "Update realizat.",
-		"description": "Text that displays when an update completed"
-	},
-	"paginationTotal": {
-		"message": "Număr total de pagini",
-		"description": ""
-	},
-	"checkingForUpdate": {
-		"message": "Verficare...",
-		"description": "Text to display when checking a style for an update"
-	},
-	"styleRegexpTestFull": {
-		"message": "Taburi găsite",
-		"description": "RegExp test report: label for the fully matching expressions"
-	},
-	"manageMaxTargets": {
-		"message": "Numărul obiectelor la care se aplică",
-		"description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
-	},
-	"genericUnknown": {
-		"message": "Necunoscut",
-		"description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
-	},
-	"popupManageTooltip": {
-		"message": "Shift-click sau right-click pentru a deschide managerurl cu teme aplicabile site-ului curent",
-		"description": "Tooltip for the 'Manage' button in the popup."
-	},
-	"manageFaviconsHelp": {
-		"message": "Stylus folosește un serviciu extern https://www.google.com/s2/favicons",
-		"description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
-	},
-	"paginationEstimated": {
-		"message": "Număr estimat de pagini",
-		"description": "Tooltip for the total page count in search results"
-	},
-	"styleInstallOverwrite": {
-		"message": "'$stylename$' este deja instalată. Scrieți peste?\nVersiune: $oldVersion$ -> $newVersion$",
-		"description": "Confirmation when re-installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			},
-			"newVersion": {
-				"content": "$3"
-			},
-			"oldVersion": {
-				"content": "$2"
-			}
-		}
-	},
-	"updateCheckSkippedLocallyEdited": {
-		"message": "Tema a fost editată local.",
-		"description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"linterRulesLink": {
-		"message": "Vizualizați lista completă de reguli",
-		"description": "Stylelint or CSSLint rules label added immediately before a link"
-	},
-	"styleUpdateDiscardChanges": {
-		"message": "Tema a fost modificată în afara editorului. Doriți să reâncărcați tema?",
-		"description": "Confirmation to update the style in the editor"
-	},
-	"optionsResetButton": {
-		"message": "Resetați opțiunile",
-		"description": ""
-	},
-	"paginationNext": {
-		"message": "Pagina următoare",
-		"description": "Tooltip for the '->' (next page) button in search results"
-	},
-	"searchResultInstallCount": {
-		"message": "Număr total de instalări",
-		"description": "Text for label that shows the number of times a search result was installed"
-	},
-	"sectionCode": {
-		"message": "Cod",
-		"description": "Label for the code for a section"
-	},
-	"externalUsercssDocument": {
-		"message": "Documentație pentru Usercss",
-		"description": "Label for the external link to usercss documentation"
-	},
-	"optionsAdvancedContextDelete": {
-		"message": "Adaugați 'Ștergeți' în meniul de click dreapta",
-		"description": ""
-	},
-	"linterConfigPopupTitle": {
-		"message": "Setați $linter$ pentru configurarea regulilor",
-		"description": "Stylelint or CSSLint popup header",
-		"placeholders": {
-			"linter": {
-				"content": "$1"
-			}
-		}
-	},
-	"configureStyle": {
-		"message": "Modificați",
-		"description": "Label for the button to configure usercss userstyle"
-	},
-	"importReportLegendUpdatedBoth": {
-		"message": "meta info și codul au fost updatate",
-		"description": "Text after the number of styles updated entirely in the report shown after importing styles"
-	},
-	"cm_smartIndent": {
-		"message": "Folosiți indentare inteligentă",
-		"description": "Label for the checkbox controlling smart indentation option for the style editor."
-	},
-	"appliesHelp": {
-		"message": "Folosiți 'Aplicabil pentru' pentru a limita pe ce URLs va fi aplicată temă.",
-		"description": "Help text for 'applies to' section"
-	},
-	"linkGetHelp": {
-		"message": "Găsiți ajutor",
-		"description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
-	},
-	"searchStylesHelp": {
-		"message": "</> aduce în focus bara de căutare.\nText simplu: caută în nume, cod, homepage URL și site-uri la care se aplică tema. Cuvinte cu mai puțin de 3 litere sunt ignorate.\nURL găsit: adaugă căutarea ca prefix <url:>, ex. <url:https://github.com/openstyles/stylus>\nExpresii obișnuite: include slashes și flags, ex. </body.*?\\ba\\b/simguy>\nCuvinte exacte: introduceți între ghilimele, ex. <\".header ~ div\">",
-		"description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-	},
-	"findStyles": {
-		"message": "Găsiți teme",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"editStyleHeading": {
-		"message": "Modificați tema",
-		"description": "Title of the page for editing styles"
-	},
-	"editDeleteText": {
-		"message": "Ștergeți",
-		"description": "Label for the context menu item in the editor to delete selected text"
-	},
-	"cm_autocompleteOnTyping": {
-		"message": "Autocompletare în timpul scrierii",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"unreachableAMO": {
-		"message": "Firefox împiedică accesul la site.",
-		"description": "Note in the popup displayed when opened on addons.mozilla.org"
-	},
-	"linterCSSLintIncompatible": {
-		"message": "CSSLint nu suportă preprocesorul $preprocessorname$ ",
-		"description": "The label to display when the preprocessor isn't compatible with CSSLint",
-		"placeholders": {
-			"preprocessorname": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleMetaErrorSelectValueMismatch": {
-		"message": "Valoare @select invalidă: valoarea nu există în listă",
-		"description": "Error displayed when the value of @select is invalid"
-	},
-	"styleMetaErrorColor": {
-		"message": "$color$ nu este o culoare validă",
-		"description": "Error displayed when the value of @var color is invalid",
-		"placeholders": {
-			"color": {
-				"content": "$1"
-			}
-		}
-	},
-	"genericPrevious": {
-		"message": "Precedent",
-		"description": "Used in various places to select/perform the previous step/action"
-	},
-	"manageOnlyDisabled": {
-		"message": "Doar teme dezactivate",
-		"description": "Checkbox to show only disabled styles"
-	},
-	"stylusUnavailableForURLdetails": {
-		"message": "Ca o măsură de securitate, browser-ul împiedică extensiile să afecteze paginile corespunzătoare browser-ului (precum chrome://version, adresa unui nou tab începând cu Chrome 61, about:addons, în Firefox etc) și de asemenea paginile altor extensii. De asemenea este restricționat accesul la galeriile de extensii (Chrome Web Store sau AMO).",
-		"description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"cm_matchHighlightSelection": {
-		"message": "Doar selecție",
-		"description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
-	},
-	"updateAllCheckSucceededSomeEdited": {
-		"message": "Unele teme care au update-uri nu au fost updatate pentru a nu pierde modificări locale. Update-urile pot fi forțate individual sau prin a reverifica update-urile pentru toate temele (modificările locale vor fi pierdute).",
-		"description": "Text that displays when an update all check completed and no updates are available"
-	},
-	"stylusUnavailableForURL": {
-		"message": "Stylus nu funcționează în astfel de pagini.",
-		"description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
-	},
-	"popupBorders": {
-		"message": "Adăugați bordură albă pe margini",
-		"description": ""
-	},
-	"manageOnlyUpdates": {
-		"message": "Doar cu update-uri sau erori",
-		"description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
-	},
-	"addStyleTitle": {
-		"message": "Adăugați o temă",
-		"description": "Title of the page for adding styles"
-	},
-	"externalLink": {
-		"message": "Link extern",
-		"description": "Label for external links"
-	},
-	"importReplaceLabel": {
-		"message": "Scrieți peste tema curentă",
-		"description": "Label for the button to import and overwrite current style"
-	},
-	"genericNext": {
-		"message": "Următor",
-		"description": "Used in various places to select/perform the next step/action"
-	},
-	"popupOpenEditInWindowTooltip": {
-		"message": "Activ când tabul editorului este detașat de browser,\nși dezactivat când un singur tab cu editor este atașat la alt window.",
-		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
-	},
-	"dbError": {
-		"message": "O eroare în baza de date a apărut. Doriți să vizitați pagina web pentru o soluție?",
-		"description": "Prompt when a DB error is encountered"
-	},
-	"dateInstalled": {
-		"message": "Data instalării",
-		"description": "Option text for the user to sort the style by install date"
-	},
-	"optionsAdvanced": {
-		"message": "Avansat",
-		"description": ""
-	},
-	"alphaChannel": {
-		"message": "Opacitate",
-		"description": "Label of color's opacity"
-	},
-	"importAppendTooltip": {
-		"message": "Concatenați tema importată la cea curentă",
-		"description": "Tooltip for the button to import a style and append to the existing sections"
-	},
-	"editorStylesButton": {
-		"message": "Găsiți teme pentru editor",
-		"description": "Find styles for the editor"
-	},
-	"optionsOpen": {
-		"message": "Deschideți",
-		"description": ""
-	},
-	"helpKeyMapHotkey": {
-		"message": "Tastați o hotkey",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"styleRegexpTestInvalid": {
-		"message": "Invalid regexps au fost sărite",
-		"description": "RegExp test report: label for the invalid expressions"
-	},
-	"dateUpdated": {
-		"message": "Data updatării",
-		"description": "Option text for the user to sort the style by last update date"
-	},
-	"manageOnlyExternal": {
-		"message": "Doar teme externe",
-		"description": "Checkbox to show only externally installed styles i.e. updatable"
-	},
-	"searchResultWeeklyCount": {
-		"message": "Instalări săptămânale",
-		"description": "Text for label that shows the number of times a search result was installed during last week"
-	},
-	"replaceAll": {
-		"message": "Înlocuiți tot",
-		"description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
-	},
-	"importReportUnchanged": {
-		"message": "Nimic nu a fost schimbat.",
-		"description": "Message in the report shown after importing styles"
-	},
-	"confirmDiscardChanges": {
-		"message": "Pierdeți modificările?",
-		"description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
-	},
-	"searchResultUpdated": {
-		"message": "Updatate",
-		"description": "Text for label that shows the search result's last update date"
-	},
-	"configOnChangeTooltip": {
-		"message": "Autosalvare și aplicare a modificărilor automată",
-		"description": ""
-	},
-	"optionsActions": {
-		"message": "Acțiuni",
-		"description": ""
-	},
-	"editGotoLine": {
-		"message": "Mergeți la linia",
-		"description": "Go to line or line:column on Ctrl-G in style code editor"
-	},
-	"manageOnlyLocalTooltip": {
-		"message": "(temele neinstalate prin userstyles.org)",
-		"description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
-	},
-	"checkAllUpdates": {
-		"message": "Verificați toate temele pentru update-uri",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"openOptionsManage": {
-		"message": "UI cu opțiuni",
-		"description": "Go to Options UI"
-	},
-	"colorpickerTooltip": {
-		"message": "Deschideți color picker",
-		"description": "Tooltip for the colored squares shown before CSS colors in the style editor."
-	},
-	"optionsCustomizeBadge": {
-		"message": "Bulinuța de pe iconița din toolbar",
-		"description": ""
-	},
-	"sortDateNewestFirst": {
-		"message": "cele mai noi la început",
-		"description": "Text added to indicate that sorting a date would add the newest entries at the top"
-	},
-	"paginationPrevious": {
-		"message": "Pagina precedentă",
-		"description": "Tooltip for the '<-' button in search results"
-	},
-	"installUpdateFrom": {
-		"message": "Tema este updatată de la $url$",
-		"description": "Label to describe where the style gets update",
-		"placeholders": {
-			"url": {
-				"content": "$1"
-			}
-		}
-	},
-	"importReportLegendIdentical": {
-		"message": "cele identice au fost sărite",
-		"description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
-	},
-	"optionsPopupWidth": {
-		"message": "Mărimea ferestrei popup (în pixeli)",
-		"description": ""
-	},
-	"cm_autoCloseBrackets": {
-		"message": "Închideți automat parantezele și ghilimelele",
-		"description": "Label for the checkbox in the style editor."
-	},
-	"installButtonReinstall": {
-		"message": "Reinstalați tema",
-		"description": "Label for reinstall button"
-	},
-	"linterInvalidConfigError": {
-		"message": "Nu a fost salvat din cauza acestor setări invalide:",
-		"description": "Invalid linter config will show a message followed by a list of invalid entries"
-	},
-	"confirmNo": {
-		"message": "Nu",
-		"description": "'No' button in a confirm dialog"
-	},
-	"styleMissingMeta": {
-		"message": "Metadata nu a fost găsită @$key$",
-		"description": "Error displayed when a mandatory metadata is missing",
-		"placeholders": {
-			"key": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesLineWidgetWarning": {
-		"message": "Nu funcționează cu CSS minimizat",
-		"description": "A warning that applies-to information won't show properly with minified CSS"
-	},
-	"configureStyleOnHomepage": {
-		"message": "Modificați pe pagina homepage",
-		"description": "Label for the button to configure userstyles.org userstyle"
-	},
-	"usercssReplaceTemplateConfirmation": {
-		"message": "Înlocuiți tema de bază a formatului Usercss cu acest cod?",
-		"description": ""
-	},
-	"externalSupport": {
-		"message": "Suport",
-		"description": "Label for the external link to style's support site"
-	},
-	"confirmSave": {
-		"message": "Salvați",
-		"description": "'Save' button in a confirm dialog"
-	},
-	"manageNewUI": {
-		"message": "UI layout pentru mesajele noi",
-		"description": "Label for the checkbox that toggles the new UI on manage page"
-	},
-	"unreachableAMOHintOldFF": {
-		"message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta.",
-		"description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
-	},
-	"importReportUndoneTitle": {
-		"message": "Importarea a fost anulată",
-		"description": "Title of the message box shown after undoing the import of styles"
-	},
-	"genericDisabledLabel": {
-		"message": "Dezactivat",
-		"description": "Used in various lists/options to indicate that something is disabled"
-	},
-	"cm_indentWithTabs": {
-		"message": "Folosiți tab-uri cu autoindentare",
-		"description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
-	},
-	"replaceWith": {
-		"message": "Înlocuiți cu",
-		"description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
-	},
-	"liveReloadError": {
-		"message": "A avut loc o eroare în timpul monitorizării acestui fișier",
-		"description": "The label of live-reload error"
-	},
-	"deleteStyleLabel": {
-		"message": "Ștergeți",
-		"description": "Label for the button to delete a style"
-	},
-	"updateCheckManualUpdateForce": {
-		"message": "Instalați update-urile (modificările locale vor fi șterse)",
-		"description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
-	},
-	"styleInstallFailed": {
-		"message": "Instalarea temei eșuată!\n$error$",
-		"description": "Warning when installation failed",
-		"placeholders": {
-			"error": {
-				"content": "$1"
-			}
-		}
-	},
-	"optionsAdvancedExposeIframes": {
-		"message": "Expuneți iframes via HTML[stylus-iframe]",
-		"description": ""
-	},
-	"usercssEditorNamePlaceholder": {
-		"message": "Specificați @name",
-		"description": "Placeholder text for the empty name input field when creating a new Usercss style"
-	},
-	"addStyleLabel": {
-		"message": "Scrieți o temă nouă",
-		"description": "Label for the button to go to the add style page"
-	},
-	"manageOnlyEnabled": {
-		"message": "Doar temele activate",
-		"description": "Checkbox to show only enabled styles"
-	},
-	"editStyleLabel": {
-		"message": "Modificați",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"installButtonInstalled": {
-		"message": "Tema a fost instalată",
-		"description": "Text displayed when the style is successfully installed"
-	},
-	"author": {
-		"message": "Autor",
-		"description": "Label for the style author"
-	},
-	"cm_theme": {
-		"message": "Temă pentru cod",
-		"description": "Label for the style editor's CSS theme."
-	},
-	"findStylesInlineTooltip": {
-		"message": "Arătați rezultatele căutării în această pagină.",
-		"description": "Text for a checkbox that displays search results within the Stylus popup."
-	},
-	"popupOpenEditInWindow": {
-		"message": "Deschide editorul în alt window",
-		"description": "Label for the checkbox controlling 'edit' action behavior in the popup."
-	},
-	"appliesRemoveError": {
-		"message": "Nu se poate șterge 'aplicabil pentru'",
-		"description": "Error displayed when the last 'applies' is going to be removed"
-	},
-	"backupMessage": {
-		"message": "Selectați un fișier sau drag-and-drop aici",
-		"description": "Message for backup"
-	},
-	"importReportUndone": {
-		"message": "temele au fost înlocuite cu variantele precedente",
-		"description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
-	},
-	"helpKeyMapCommand": {
-		"message": "Tastați un nume de comandă",
-		"description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-	},
-	"linterResetMessage": {
-		"message": "Pentru a reveni la varianta precedentă, apăsați Ctrl-Z (sau Cmd-Z) în text box",
-		"description": "Reset button tooltip to inform user on how to undo an accidental reset"
-	},
-	"description": {
-		"message": "Stilizați internetul cu Stylus, un manager de teme. Stylus vă permite să instalați cu ușurință teme pentru multe site-uri populare.",
-		"description": "Extension description"
-	},
-	"usercssReplaceTemplateName": {
-		"message": "@name este gol și înlocuiețte valoarea de bază",
-		"description": "The text shown after @name when creating a new Usercss style"
-	}
+  "addStyleLabel": {
+    "message": "Scrieți o temă nouă"
+  },
+  "addStyleTitle": {
+    "message": "Adăugați o temă"
+  },
+  "alphaChannel": {
+    "message": "Opacitate"
+  },
+  "appliesAdd": {
+    "message": "Adăugați"
+  },
+  "appliesDisplay": {
+    "message": "Aplicabil pentru: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "mai mult"
+  },
+  "appliesDomainOption": {
+    "message": "URLs din domain"
+  },
+  "appliesHelp": {
+    "message": "Folosiți 'Aplicabil pentru' pentru a limita pe ce URLs va fi aplicată temă."
+  },
+  "appliesLabel": {
+    "message": "Aplicabil pentru"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Arată informații despre 'Aplicabil pentru'"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Nu funcționează cu CSS minimizat"
+  },
+  "appliesRegexpOption": {
+    "message": "URLs găsite cu regexp"
+  },
+  "appliesRemove": {
+    "message": "Ștergeți"
+  },
+  "appliesRemoveError": {
+    "message": "Nu se poate șterge 'aplicabil pentru'"
+  },
+  "appliesSpecify": {
+    "message": "Specificați"
+  },
+  "appliesToEverything": {
+    "message": "Totul"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL-uri începănd cu"
+  },
+  "applyAllUpdates": {
+    "message": "Aplicați toate update-urile"
+  },
+  "author": {
+    "message": "Autor"
+  },
+  "backupMessage": {
+    "message": "Selectați un fișier sau drag-and-drop aici"
+  },
+  "bckpInstStyles": {
+    "message": "Exportați teme"
+  },
+  "checkAllUpdates": {
+    "message": "Verificați toate temele pentru update-uri"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Verifică iar, nu am modificat temele!"
+  },
+  "checkForUpdate": {
+    "message": "Verificați pentru update-uri"
+  },
+  "checkingForUpdate": {
+    "message": "Verficare..."
+  },
+  "clickToUninstall": {
+    "message": "Click pentru dezinstalare"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Închideți automat parantezele și ghilimelele"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Închideți automat când deschizideți una dintre ()[]{}''\"\""
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Autocompletare în timpul scrierii"
+  },
+  "cm_colorpicker": {
+    "message": "Alegere de culori pentru CSS"
+  },
+  "cm_indentWithTabs": {
+    "message": "Folosiți tab-uri cu autoindentare"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Doar selecție"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token-ul de sub cursor"
+  },
+  "cm_resizeGripHint": {
+    "message": "Dublu click pentru a maximiza sau restaura înălțimea"
+  },
+  "cm_selectByTokens": {
+    "message": "Dublu-click pentru a selecta simbolurile"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Exemple de simboluri: .foo-bar-2 #aabbcc 0.32 !important\nCand inactiv: cuvinte delimitate cu punctuatie sunt selectate."
+  },
+  "cm_smartIndent": {
+    "message": "Folosiți indentare inteligentă"
+  },
+  "cm_tabSize": {
+    "message": "Mărimea tab-urilor"
+  },
+  "cm_theme": {
+    "message": "Temă pentru cod"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Schimbați formatul: HEX -> RGB -> HSL.\nShift-click pentru inversarea direcției.\nDe asemenea cu PgUp (PageUp), PgDn (PageDown)."
+  },
+  "colorpickerTooltip": {
+    "message": "Deschideți color picker"
+  },
+  "configOnChange": {
+    "message": "la schimbare"
+  },
+  "configOnChangeTooltip": {
+    "message": "Autosalvare și aplicare a modificărilor automată"
+  },
+  "configureStyle": {
+    "message": "Modificați"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Modificați pe pagina homepage"
+  },
+  "confirmDefault": {
+    "message": "Folosiți default"
+  },
+  "confirmDelete": {
+    "message": "Ștergeți"
+  },
+  "confirmDiscardChanges": {
+    "message": "Pierdeți modificările?"
+  },
+  "confirmNo": {
+    "message": "Nu"
+  },
+  "confirmSave": {
+    "message": "Salvați"
+  },
+  "confirmYes": {
+    "message": "Da"
+  },
+  "dateInstalled": {
+    "message": "Data instalării"
+  },
+  "dateUpdated": {
+    "message": "Data updatării"
+  },
+  "dbError": {
+    "message": "O eroare în baza de date a apărut. Doriți să vizitați pagina web pentru o soluție?"
+  },
+  "deleteStyleConfirm": {
+    "message": "Sunteți sigur că doriți să ștergeți această temă?"
+  },
+  "deleteStyleLabel": {
+    "message": "Ștergeți"
+  },
+  "description": {
+    "message": "Stilizați internetul cu Stylus, un manager de teme. Stylus vă permite să instalați cu ușurință teme pentru multe site-uri populare."
+  },
+  "disableAllStyles": {
+    "message": "Dezactivați toate temele"
+  },
+  "disableStyleLabel": {
+    "message": "Dezactivați"
+  },
+  "dragDropMessage": {
+    "message": "Drag and drop backup-ul oriunde pentru import."
+  },
+  "editDeleteText": {
+    "message": "Ștergeți"
+  },
+  "editGotoLine": {
+    "message": "Mergeți la linia"
+  },
+  "editStyleHeading": {
+    "message": "Modificați tema"
+  },
+  "editStyleLabel": {
+    "message": "Modificați"
+  },
+  "editStyleTitle": {
+    "message": "Modificați tema $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorStylesButton": {
+    "message": "Găsiți teme pentru editor"
+  },
+  "enableStyleLabel": {
+    "message": "Activați"
+  },
+  "externalLink": {
+    "message": "Link extern"
+  },
+  "externalSupport": {
+    "message": "Suport"
+  },
+  "externalUsercssDocument": {
+    "message": "Documentație pentru Usercss"
+  },
+  "filteredStyles": {
+    "message": "$numShown$ vizualizabile din $numTotal$ ",
+    "placeholders": {
+      "numShown": {
+        "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Filtrele aplicate nu au găsit nicio temă"
+  },
+  "findStyles": {
+    "message": "Găsiți teme"
+  },
+  "findStylesForSite": {
+    "message": "Gasiți mai multe teme pentru acest site."
+  },
+  "findStylesInlineTooltip": {
+    "message": "Arătați rezultatele căutării în această pagină."
+  },
+  "genericAdd": {
+    "message": "Adaugă"
+  },
+  "genericClone": {
+    "message": "Clonează"
+  },
+  "genericDisabledLabel": {
+    "message": "Dezactivat"
+  },
+  "genericEnabledLabel": {
+    "message": "Activat"
+  },
+  "genericError": {
+    "message": "Eroare"
+  },
+  "genericHistoryLabel": {
+    "message": "Historic"
+  },
+  "genericNext": {
+    "message": "Următor"
+  },
+  "genericPrevious": {
+    "message": "Precedent"
+  },
+  "genericResetLabel": {
+    "message": "Resetați"
+  },
+  "genericSavedMessage": {
+    "message": "Salvat"
+  },
+  "genericTitle": {
+    "message": "Titlu"
+  },
+  "genericUnknown": {
+    "message": "Necunoscut"
+  },
+  "helpAlt": {
+    "message": "Ajutor"
+  },
+  "helpKeyMapCommand": {
+    "message": "Tastați un nume de comandă"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Tastați o hotkey"
+  },
+  "importAppendLabel": {
+    "message": "Concatenare la temă"
+  },
+  "importAppendTooltip": {
+    "message": "Concatenați tema importată la cea curentă"
+  },
+  "importReplaceLabel": {
+    "message": "Scrieți peste tema curentă"
+  },
+  "importReplaceTooltip": {
+    "message": "Scrieți peste tema curentă conținutul temei importate"
+  },
+  "importReportLegendAdded": {
+    "message": "adăugat"
+  },
+  "importReportLegendIdentical": {
+    "message": "cele identice au fost sărite"
+  },
+  "importReportLegendInvalid": {
+    "message": "cele invalide au fost ignorate"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "meta info și codul au fost updatate"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "cod updatat"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "meta info updatată"
+  },
+  "importReportTitle": {
+    "message": "Importul temelor finalizat"
+  },
+  "importReportUnchanged": {
+    "message": "Nimic nu a fost schimbat."
+  },
+  "importReportUndone": {
+    "message": "temele au fost înlocuite cu variantele precedente"
+  },
+  "importReportUndoneTitle": {
+    "message": "Importarea a fost anulată"
+  },
+  "installButton": {
+    "message": "Instalați tema"
+  },
+  "installButtonInstalled": {
+    "message": "Tema a fost instalată"
+  },
+  "installButtonReinstall": {
+    "message": "Reinstalați tema"
+  },
+  "installUpdate": {
+    "message": "Instalați update-uri"
+  },
+  "installUpdateFrom": {
+    "message": "Tema este updatată de la $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Verificați update-urile"
+  },
+  "installUpdateUnavailable": {
+    "message": "Pentru a activa verificarea de updates. trage fișierul pe taburi (zona cu titluri) sau specifica @updateURL în metadata temei."
+  },
+  "license": {
+    "message": "Licență"
+  },
+  "linkGetHelp": {
+    "message": "Găsiți ajutor"
+  },
+  "linkGetStyles": {
+    "message": "Căutați teme"
+  },
+  "linkTranslate": {
+    "message": "Traduce"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint nu suportă preprocesorul $preprocessorname$ ",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Setați regula ca: 0 = dezactivat; 1 = avertisment; 2 = eroare)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Setați $linter$ pentru configurarea regulilor",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Click pentru a configura linter-ul"
+  },
+  "linterInvalidConfigError": {
+    "message": "Nu a fost salvat din cauza acestor setări invalide:"
+  },
+  "linterIssues": {
+    "message": "Probleme"
+  },
+  "linterIssuesHelp": {
+    "message": "Aceste probleme au fost găsite te $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterResetMessage": {
+    "message": "Pentru a reveni la varianta precedentă, apăsați Ctrl-Z (sau Cmd-Z) în text box"
+  },
+  "linterRulesLink": {
+    "message": "Vizualizați lista completă de reguli"
+  },
+  "liveReloadError": {
+    "message": "A avut loc o eroare în timpul monitorizării acestui fișier"
+  },
+  "liveReloadInstallHint": {
+    "message": "Reload automat este activat deci tema instalată va fi updatată automat când acest tab si fișierul surca sunt deschise."
+  },
+  "liveReloadUnavailable": {
+    "message": "Pentru a activa live reload (refresh automat), trage fișierul pe taburi (zona unde titlurile temelor sunt afișate) "
+  },
+  "manageFavicons": {
+    "message": "Favicons în coloana 'se aplică la'"
+  },
+  "manageFaviconsGray": {
+    "message": "Hașurat"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus folosește un serviciu extern https://www.google.com/s2/favicons"
+  },
+  "manageFilters": {
+    "message": "Filtre"
+  },
+  "manageHeading": {
+    "message": "Teme instalate"
+  },
+  "manageMaxTargets": {
+    "message": "Numărul obiectelor la care se aplică"
+  },
+  "manageNewUI": {
+    "message": "UI layout pentru mesajele noi"
+  },
+  "manageOnlyDisabled": {
+    "message": "Doar teme dezactivate"
+  },
+  "manageOnlyEnabled": {
+    "message": "Doar temele activate"
+  },
+  "manageOnlyExternal": {
+    "message": "Doar teme externe"
+  },
+  "manageOnlyLocal": {
+    "message": "Doar temele create local"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(temele neinstalate prin userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Doar teme non-Usercss"
+  },
+  "manageOnlyUpdates": {
+    "message": "Doar cu update-uri sau erori"
+  },
+  "manageOnlyUsercss": {
+    "message": "Doar teme Usercss"
+  },
+  "menuShowBadge": {
+    "message": "Afișați numărul temelor active"
+  },
+  "noStylesForSite": {
+    "message": "Nicio temă instalată pentru acest site."
+  },
+  "openManage": {
+    "message": "Managerul"
+  },
+  "openOptionsManage": {
+    "message": "UI cu opțiuni"
+  },
+  "openOptionsPopup": {
+    "message": "Opțiuni"
+  },
+  "openStylesManager": {
+    "message": "Deschideți managerul de teme"
+  },
+  "optionsActions": {
+    "message": "Acțiuni"
+  },
+  "optionsAdvanced": {
+    "message": "Avansat"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Adaugați 'Ștergeți' în meniul de click dreapta"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Expuneți iframes via HTML[stylus-iframe]"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Expune domain-ul site-ului in fiecare iframe.\nActivează scrierea de CSS specific pentru iframe precum:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Scrieți temă nouă în formatul usercss"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Culoare de fundal pentru modul inactiv"
+  },
+  "optionsBadgeNormal": {
+    "message": "Culoare de fundal"
+  },
+  "optionsCheck": {
+    "message": "Updatați temele"
+  },
+  "optionsCheckUpdate": {
+    "message": "Verificați și instalează toate update-urile"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Bulinuța de pe iconița din toolbar"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Update-uri"
+  },
+  "optionsHeading": {
+    "message": "Opțiuni"
+  },
+  "optionsIconDark": {
+    "message": "Teme întunecate pentru browser"
+  },
+  "optionsIconLight": {
+    "message": "Teme albe pentru browser"
+  },
+  "optionsOpen": {
+    "message": "Deschideți"
+  },
+  "optionsOpenManager": {
+    "message": "Managerul de teme"
+  },
+  "optionsPopupWidth": {
+    "message": "Mărimea ferestrei popup (în pixeli)"
+  },
+  "optionsReset": {
+    "message": "Resetați opțiunile"
+  },
+  "optionsResetButton": {
+    "message": "Resetați opțiunile"
+  },
+  "optionsSubheading": {
+    "message": "Mai multe opțiuni"
+  },
+  "optionsUpdateImportNote": {
+    "message": "Atunci când sunt importate teme din backup-uri din versiuni mai vechi sau din Stylish, verifică upate-urile manual pentru a fi sigur că toate temele sunt la zi."
+  },
+  "optionsUpdateInterval": {
+    "message": "Intervalul de autoupdate în ore (0 pentru dezactivat)"
+  },
+  "paginationCurrent": {
+    "message": "Pagina curentă"
+  },
+  "paginationEstimated": {
+    "message": "Număr estimat de pagini"
+  },
+  "paginationNext": {
+    "message": "Pagina următoare"
+  },
+  "paginationPrevious": {
+    "message": "Pagina precedentă"
+  },
+  "paginationTotal": {
+    "message": "Număr total de pagini"
+  },
+  "parseUsercssError": {
+    "message": "Stylus nu a putut analiza usercss-ul"
+  },
+  "popupBorders": {
+    "message": "Adăugați bordură albă pe margini"
+  },
+  "popupBordersTooltip": {
+    "message": "Folositor pentru teme întunecate in noul Chrome deoarece nu mai colorează bordurile"
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>-<9>, <0>, de asemenea îm numpad - activează/dezactivează tema numărul N (0 este 10)\n<A>-<Z> activează/dezactivează prima temă cu un nume care începe cu o litera\n<Shift> deschide editorul și nu activează/dezactivează ceva\n<Numpad +> activează temele listate\n<Numpad –> dezactiveaza temele listate\n<Numpad *> și <`> (backtick) - activează/dezactivează temele activate inițial; nu se aplică altor teme activate când popup-ul este deschid pentru a permite restaurarea seleției inițiale pentru a permite testări; dezactivează tot, apoi activează/dezactivează, spre exemplu<Numpad –> <Numpad *>\nMai multe informații sunt avabile în wiki"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Click pentru a vedea hotkeys avabile"
+  },
+  "popupManageTooltip": {
+    "message": "Shift-click sau right-click pentru a deschide managerurl cu teme aplicabile site-ului curent"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Deschide editorul în alt window"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Activ când tabul editorului este detașat de browser,\nși dezactivat când un singur tab cu editor este atașat la alt window."
+  },
+  "popupStylesFirst": {
+    "message": "Temele înaintea comenzilor"
+  },
+  "prefShowBadge": {
+    "message": "Numărul de teme active pentru site-ul curent"
+  },
+  "previewTooltip": {
+    "message": "Aplică temporar modificările fără a salva.\nSalvează tema pentru a face schimbările permanente."
+  },
+  "replace": {
+    "message": "Înlocuiți"
+  },
+  "replaceAll": {
+    "message": "Înlocuiți tot"
+  },
+  "replaceWith": {
+    "message": "Înlocuiți cu"
+  },
+  "retrieveBckp": {
+    "message": "Importați teme"
+  },
+  "search": {
+    "message": "Căutați"
+  },
+  "searchNumberOfResults": {
+    "message": "Număr de rezultate"
+  },
+  "searchNumberOfResults2": {
+    "message": "Număr de rezultate în cod și în 'aplicabil pentru'"
+  },
+  "searchRegexp": {
+    "message": "Folosiți sintaxă /re/ pentru căutare tip regexp"
+  },
+  "searchResultInstallCount": {
+    "message": "Număr total de instalări"
+  },
+  "searchResultNoneFound": {
+    "message": "Nicio tema găsită pentru acest site."
+  },
+  "searchResultUpdated": {
+    "message": "Updatate"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Instalări săptămânale"
+  },
+  "searchStyles": {
+    "message": "Conținutul căutării"
+  },
+  "searchStylesHelp": {
+    "message": "</> aduce în focus bara de căutare.\nText simplu: caută în nume, cod, homepage URL și site-uri la care se aplică tema. Cuvinte cu mai puțin de 3 litere sunt ignorate.\nURL găsit: adaugă căutarea ca prefix <url:>, ex. <url:https://github.com/openstyles/stylus>\nExpresii obișnuite: include slashes și flags, ex. </body.*?\\ba\\b/simguy>\nCuvinte exacte: introduceți între ghilimele, ex. <\".header ~ div\">"
+  },
+  "sectionAdd": {
+    "message": "Adăugați o altă secțiune"
+  },
+  "sectionCode": {
+    "message": "Cod"
+  },
+  "sectionHelp": {
+    "message": "Secțiunile permit definirea de bucăți de cod aplicabile la URL diferite, în cadrul aceleași teme. Spre exemplu, o singură temă poate modifica pagina de pornire a unui site într-un mod diferit de restul site-ului."
+  },
+  "sectionRemove": {
+    "message": "Ștergeți secțiunea"
+  },
+  "sectionRestore": {
+    "message": "Restaurează o secțiune ștearsă"
+  },
+  "shortcutsNote": {
+    "message": "Creeați keyboard shortcuts"
+  },
+  "sortDateNewestFirst": {
+    "message": "cele mai noi la început"
+  },
+  "sortDateOldestFirst": {
+    "message": "cel mai vechi la început"
+  },
+  "sortLabel": {
+    "message": "Alegeți o sortare care să fie aplicată temelor instalate"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Titlu crescător"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Titlu descrescător"
+  },
+  "sortStylesHelp": {
+    "message": "Alegeți ce fel de sortare doriți să fie aplicată temelor instalate, din cadrul meniului dropdown. În mod implicit se aplică sortare alfabetică (A la Z) titlurilor temelor. Sortarea de tip \"Titlu descrescător\" va aplica sortare descrescătoare (Z la A) titlurilor.\nSunt alte presets care permit sortări după mai multe criterii. Este ca și cum ați sorta un tabel cu mai multe coloane iar fiecare categorie (între semnele +) reprezintă o coloană, sau un grup..\nSpre exemplu, dacă se alege \"Activată (prima) + Titlu\", atunci toate temele vor fi grupate astfel încât cele active sunt cap de listă, iar apoi temele sunt sortate alfabetic."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Sortare conținut"
+  },
+  "styleBadRegexp": {
+    "message": "Regexp invalid."
+  },
+  "styleBeautify": {
+    "message": "Înfrumusețați"
+  },
+  "styleBeautifyIndentConditional": {
+    "message": "Indentare @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Menține linii noi"
+  },
+  "styleCancelEditLabel": {
+    "message": "Înapoi la manager"
+  },
+  "styleChangesNotSaved": {
+    "message": "Ați modificat tema fără a o salva."
+  },
+  "styleEnabledLabel": {
+    "message": "Activat"
+  },
+  "styleFromMozillaFormatError": {
+    "message": "Importul din formatul Mozilla eșuat"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Paste cod în format Mozilla"
+  },
+  "styleInstall": {
+    "message": "Instalați '$stylename$' în Stylus?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Instalarea temei eșuată!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "'$stylename$' este deja instalată. Scrieți peste?\nVersiune: $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorCheckbox": {
+    "message": "@var checkbox invalidă: valuarea trebuie să fie 0 sau 1"
+  },
+  "styleMetaErrorColor": {
+    "message": "$color$ nu este o culoare validă",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorPreprocessor": {
+    "message": "@preprocessor nesuportat: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorSelectValueMismatch": {
+    "message": "Valoare @select invalidă: valoarea nu există în listă"
+  },
+  "styleMissingMeta": {
+    "message": "Metadata nu a fost găsită @$key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "Introduceți un nume"
+  },
+  "styleMozillaFormatHeading": {
+    "message": "Format Mozilla"
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Tema nu a fost aplicată din cauza incorectei aplicări a 'regexp()'"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Unele reguli 'regexp()' care nu au putut fi compilate."
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "Această temă folosește regexp parțiale care încalcă <a href='https://developer.mozilla.org/docs/Web/CSS/@document'> specificațiile CSS4 @document</a> care are nevoie de o potrivire regexp exactă. Părțile afectate de CSS nu au fost aplicate paginii. Cel mai probabil tema a fost creată în Stylish-for-Chrome care verifică incorect 'regexp()' de la prima sa versiune (bug cunoscut)."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": " Numărul de secțiuni care nu au fost aplicate din cauza utilizării incorecte a 'regexp()'"
+  },
+  "styleRegexpTestFull": {
+    "message": "Taburi găsite"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Invalid regexps au fost sărite"
+  },
+  "styleRegexpTestNone": {
+    "message": "Niciun tab nu se potrivește căutării"
+  },
+  "styleRegexpTestNote": {
+    "message": "Notă: folosiți \\ pentru ignorarea caracterelor speciale în regexp, care va fi transformat automat în \\\\ în codul temei, urmând specificațiile pentru text citat în CSS."
+  },
+  "styleRegexpTestPartial": {
+    "message": "Potrivire parțială, deci ignorată"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Listă cu taburi deschise care se potrivesc căutării (click URL pentru a activa tabul)"
+  },
+  "styleSaveLabel": {
+    "message": "Salvați"
+  },
+  "styleSectionsTitle": {
+    "message": "Secțiuni"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "Formatul Mozilla al codului poate fi uploadat pe userstyles.org și folosit de clasicul Stylish pentru Firefox."
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Scrieți în format Mozilla"
+  },
+  "styleUpdate": {
+    "message": "Sunteți sigur că doriți să faceți update la '$stylename$'?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "Tema a fost modificată în afara editorului. Doriți să reâncărcați tema?"
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus nu funcționează în astfel de pagini."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Ca o măsură de securitate, browser-ul împiedică extensiile să afecteze paginile corespunzătoare browser-ului (precum chrome://version, adresa unui nou tab începând cu Chrome 61, about:addons, în Firefox etc) și de asemenea paginile altor extensii. De asemenea este restricționat accesul la galeriile de extensii (Chrome Web Store sau AMO)."
+  },
+  "syncStorageErrorSaving": {
+    "message": "Valoarea nu a putut fi salvată. Încercați să reduceți dimensiunea textului."
+  },
+  "toggleStyle": {
+    "message": "Activați/Dezactivați tema"
+  },
+  "undoGlobal": {
+    "message": "Undo în toate secțiunile"
+  },
+  "unreachableAMO": {
+    "message": "Firefox împiedică accesul la site."
+  },
+  "unreachableAMOHint": {
+    "message": "Pentru a permite accesul deschideți <about:config>, right-click pe listă, click 'New', apoi 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> și click OK, <true>, OK, reâncărcați pagina <addons.mozilla.org>."
+  },
+  "unreachableAMOHintNewFF": {
+    "message": "În Firefox 60+ va trebui sa fie șters domain-ul AMO din <extensions.webextensions.restrictedDomains> din <about:config>."
+  },
+  "unreachableAMOHintOldFF": {
+    "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta."
+  },
+  "unreachableContentScript": {
+    "message": "Nu s-a putut comunica cu pagina. Reîncărcați tabul."
+  },
+  "unreachableFileHint": {
+    "message": "Stylus poate accesa file:// URLs doar când este activată opțiunea respectivă din pagina cu setări chrome://extensions"
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "Niciun update găsit."
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Unele teme care au update-uri nu au fost updatate pentru a nu pierde modificări locale. Update-urile pot fi forțate individual sau prin a reverifica update-urile pentru toate temele (modificările locale vor fi pierdute)."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Update eșuat: server-ul a răspuns cu acest cod $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Update eșuat: server-ul nu este avabil."
+  },
+  "updateCheckHistory": {
+    "message": "Historicul update-urilor"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Instalați update-urile (modificările locale vor fi șterse)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Update-ul forțat va șterge toate modificările locale."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Tema a fost editată local."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Tema poate a fost modificată local."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "Tema este cu update-urile la zi."
+  },
+  "updateCompleted": {
+    "message": "Update realizat."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Update-uri instalate:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Vă rugăm să modificați valoarea @name și @namespace pentru a împiedica scrierea peste o temă  existentă."
+  },
+  "usercssConfigIncomplete": {
+    "message": "Tema a fost updatată sau ștearsă după ce configurațiile au fost afișate. Aceste variabile nu au fost salvate pentru a nu corupe metadata temei."
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Specificați @name"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Înlocuiți tema de bază a formatului Usercss cu acest cod?"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "@name este gol și înlocuiețte valoarea de bază"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Introduce cod aici..."
+  },
+  "versionInvalidOlder": {
+    "message": "Versiunea este mai veche decât cea instalată."
+  },
+  "writeStyleFor": {
+    "message": "Scrieți temă pentru: "
+  },
+  "writeStyleForURL": {
+    "message": "acest URL"
+  }
 }

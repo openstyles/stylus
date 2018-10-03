@@ -14,6 +14,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   saveStyle,
   deleteStyle,
 
+  getStyleFromDB: id =>
+    dbExec('get', id).then(event => event.target.result),
+
   download(msg) {
     delete msg.method;
     return download(msg.url, msg);
@@ -55,6 +58,32 @@ var browserCommands, contextMenus;
 // *************************************************************************
 // register all listeners
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+if (FIREFOX) {
+  // see notes in apply.js for getStylesFallback
+  const MSG_GET_STYLES = 'getStyles:';
+  const MSG_GET_STYLES_LEN = MSG_GET_STYLES.length;
+  chrome.runtime.onConnect.addListener(port => {
+    if (!port.name.startsWith(MSG_GET_STYLES)) return;
+    const tabId = port.sender.tab.id;
+    const frameId = port.sender.frameId;
+    const options = tryJSONparse(port.name.slice(MSG_GET_STYLES_LEN));
+    port.disconnect();
+    getStyles(options).then(styles => {
+      if (!styles.length) return;
+      chrome.tabs.executeScript(tabId, {
+        code: `
+          applyOnMessage({
+            method: 'styleApply',
+            styles: ${JSON.stringify(styles)},
+          })
+        `,
+        runAt: 'document_start',
+        frameId,
+      });
+    });
+  });
+}
 
 {
   const listener =
@@ -119,22 +148,15 @@ prefs.subscribe(['iconset'], () =>
   }));
 
 // *************************************************************************
-{
-  const onInstall = ({reason}) => {
-    chrome.runtime.onInstalled.removeListener(onInstall);
-    if (reason === 'update') {
-      // translations may change
-      localStorage.L10N = JSON.stringify({
-        browserUIlanguage: chrome.i18n.getUILanguage(),
-      });
-      // themes may change
-      delete localStorage.codeMirrorThemes;
-    }
-  };
-  // bind for 60 seconds max and auto-unbind if it's a normal run
-  chrome.runtime.onInstalled.addListener(onInstall);
-  setTimeout(onInstall, 60e3, {reason: 'unbindme'});
-}
+chrome.runtime.onInstalled.addListener(({reason}) => {
+  if (reason !== 'update') return;
+  // translations may change
+  localStorage.L10N = JSON.stringify({
+    browserUIlanguage: chrome.i18n.getUILanguage(),
+  });
+  // themes may change
+  delete localStorage.codeMirrorThemes;
+});
 
 // *************************************************************************
 // browser commands

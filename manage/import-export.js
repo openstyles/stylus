@@ -203,7 +203,7 @@ function importFromString(jsonString, oldStyles) {
       messageBox({
         title: t('importReportTitle'),
         contents: report.length ? report : t('importReportUnchanged'),
-        buttons: [t('confirmOK'), numChanged && t('undo')],
+        buttons: [t('confirmClose'), numChanged && t('undo')],
         onshow:  bindClick,
       }).then(({button}) => {
         if (button === 1) {
@@ -241,7 +241,7 @@ function importFromString(jsonString, oldStyles) {
       .then(() => messageBox({
         title: t('importReportUndoneTitle'),
         contents: newIds.length + ' ' + t('importReportUndone'),
-        buttons: [t('confirmOK')],
+        buttons: [t('confirmClose')],
       }));
   }
 
@@ -275,38 +275,36 @@ function importFromString(jsonString, oldStyles) {
 
 $('#file-all-styles').onclick = () => {
   API.getStyles().then(styles => {
-    const text = JSON.stringify(styles, null, '\t');
-    const blob = new Blob([text], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    let link = $create('a', {
-      href: url,
-      type: 'application/json',
-      download: generateFileName(),
-    });
     // https://crbug.com/714373
-    if (!FIREFOX && !(CHROME > 3310 && CHROME < Infinity)) {
-      link.dispatchEvent(new MouseEvent('click'));
-      return doTimeout()
-        .then(() => URL.revokeObjectURL(url));
-    }
-    const iframe = document.body.appendChild($create('iframe', {
-      style: 'width: 0; height: 0; position: fixed; opacity: 0;'.replace(/;/g, '!important;'),
-    }));
-    return doTimeout()
-      .then(() => {
-        link = iframe.contentDocument.importNode(link, true);
-        iframe.contentDocument.body.appendChild(link);
+    document.documentElement.appendChild(
+      $create('iframe', {
+        onload() {
+          const text = JSON.stringify(styles, null, '\t');
+          const type = 'application/json';
+          this.onload = null;
+          this.contentDocument.body.appendChild(
+            $create('a', {
+              href: URL.createObjectURL(new Blob([text], {type})),
+              download: generateFileName(),
+              type,
+            })
+          ).dispatchEvent(new MouseEvent('click'));
+        },
+        // we can't use display:none as some browsers are ignoring such iframes
+        style: `
+          all: unset;
+          width: 0;
+          height: 0;
+          position: fixed;
+          opacity: 0;
+          border: none;
+          `.replace(/;/g, '!important;'),
       })
-      .then(() => doTimeout())
-      .then(() => link.dispatchEvent(new MouseEvent('click')))
-      .then(() => doTimeout(1000))
-      .then(() => URL.revokeObjectURL(url))
-      .then(() => iframe.remove());
+    );
+    // we don't remove the iframe or the object URL because the browser may show
+    // a download dialog and we don't know how long it'll take until the user confirms it
+    // (some browsers like Vivaldi can't download if we revoke the URL)
   });
-
-  function doTimeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
   function generateFileName() {
     const today = new Date();

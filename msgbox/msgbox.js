@@ -1,4 +1,5 @@
 /* global focusAccessibility */
+/* global moveFocus */
 'use strict';
 
 /**
@@ -33,10 +34,20 @@ function messageBox({
   document.body.appendChild(messageBox.element);
 
   messageBox.originalFocus = document.activeElement;
-  moveFocus(1);
+  // skip external links like feedback
+  while ((moveFocus(messageBox.element, 1) || {}).target === '_blank') {/*NOP*/}
+  // suppress focus outline when invoked via click
+  if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
+    document.activeElement.dataset.focusedViaClick = '';
+  }
 
   if (typeof onshow === 'function') {
     onshow(messageBox.element);
+  }
+
+  if (!$('#message-box-title').textContent) {
+    $('#message-box-title').hidden = true;
+    $('#message-box-close-icon').hidden = true;
   }
 
   return new Promise(_resolve => {
@@ -67,7 +78,7 @@ function messageBox({
             event.stopPropagation();
             break;
           case 9:
-            moveFocus(shiftKey ? -1 : 1);
+            moveFocus(messageBox.element, shiftKey ? -1 : 1);
             event.preventDefault();
             return;
           default:
@@ -139,30 +150,17 @@ function messageBox({
     messageBox.element = null;
     messageBox.resolve = null;
   }
-
-  function moveFocus(dir) {
-    const elements = [...messageBox.element.getElementsByTagName('*')];
-    const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
-    const num = elements.length;
-    for (let i = 1; i < num; i++) {
-      const elementIndex = (activeIndex + i * dir + num) % num;
-      // we don't use positive tabindex so we stop at any valid value
-      const el = elements[elementIndex];
-      if (!el.disabled && el.tabIndex >= 0) {
-        el.focus();
-        return;
-      }
-    }
-  }
 }
 
 /**
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
+ * @param {String} [title]
  * @returns {Promise<Boolean>} same as messageBox
  */
-messageBox.alert = (contents, className) =>
+messageBox.alert = (contents, className, title) =>
   messageBox({
+    title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmClose')]

@@ -1,210 +1,163 @@
 {
-	"appliesToEverything": {
-		"message": "كل شيء",
-		"description": "Text displayed for styles that apply to all sites"
-	},
-	"enableStyleLabel": {
-		"message": "تمكين",
-		"description": "Label for the button to enable a style"
-	},
-	"styleMissingName": {
-		"message": "أدخل اسمًا",
-		"description": "Error displayed when user saves without providing a name"
-	},
-	"appliesDomainOption": {
-		"message": "عناوين URL في النطاق",
-		"description": "Option to make the style apply to the entered string as a domain"
-	},
-	"checkForUpdate": {
-		"message": "البحث عن تحديث",
-		"description": "Label for the button to check a single style for an update"
-	},
-	"helpAlt": {
-		"message": "مساعدة",
-		"description": "Alternate text for help buttons"
-	},
-	"findStylesForSite": {
-		"message": "البحث عن المزيد من الأنماط لموقع الويب هذا",
-		"description": "Text for a link that gets a list of styles for the current site"
-	},
-	"manageHeading": {
-		"message": "الأنماط المثبتة",
-		"description": "Heading for the manage page"
-	},
-	"styleEnabledLabel": {
-		"message": "ممكّن",
-		"description": "Label for the enabled state of styles"
-	},
-	"styleToMozillaFormatHelp": {
-		"message": "يمكن استخدام تنسيق موزيلا للرمز باستخدام Stylus للمتصفح فايرفوكس ويمكن إرساله إلى userstyles.org.",
-		"description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
-	},
-	"sectionAdd": {
-		"message": "إضافة قسم آخر",
-		"description": "Label for the button to add a section"
-	},
-	"styleSaveLabel": {
-		"message": "حفظ",
-		"description": "Label for save button for style editing"
-	},
-	"appliesAdd": {
-		"message": "إضافة",
-		"description": "Label for the button to add an 'applies' entry"
-	},
-	"appliesRegexpOption": {
-		"message": "عناوين URL التي تطابق regexp",
-		"description": "Option to make the style apply to the entered string as a regular expression"
-	},
-	"styleInstall": {
-		"message": "هل تريد تثبيت '$stylename$' في Stylus؟",
-		"description": "Confirmation when installing a style",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"disableStyleLabel": {
-		"message": "تعطيل",
-		"description": "Label for the button to disable a style"
-	},
-	"styleCancelEditLabel": {
-		"message": "رجوع للإدارة",
-		"description": "Label for cancel button for style editing"
-	},
-	"styleChangesNotSaved": {
-		"message": "لقد أجريت تغييرات على هذا النمط بدون حفظها.",
-		"description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
-	},
-	"updateCheckFailServerUnreachable": {
-		"message": "أخفق التحديث - الخادم يتعذر الوصول إليه.",
-		"description": "Text that displays when an update check failed because the update server is unreachable"
-	},
-	"deleteStyleConfirm": {
-		"message": "هل تريد بالتأكيد حذف هذا النمط؟",
-		"description": "Confirmation before deleting a style"
-	},
-	"appliesDisplay": {
-		"message": "ينطبق على: $applies$",
-		"description": "Text on the manage screen to describe what the style applies to",
-		"placeholders": {
-			"applies": {
-				"content": "$1"
-			}
-		}
-	},
-	"styleSectionsTitle": {
-		"message": "الأقسام",
-		"description": "Title for the style sections section"
-	},
-	"editStyleTitle": {
-		"message": "تعديل النمط $stylename$",
-		"description": "Title of the page for editing styles",
-		"placeholders": {
-			"stylename": {
-				"content": "$1"
-			}
-		}
-	},
-	"updateCheckSucceededNoUpdate": {
-		"message": "النمط محدّث.",
-		"description": "Text that displays when an update check completed and no update is available"
-	},
-	"appliesUrlPrefixOption": {
-		"message": "عناوين URL البادئة بـ",
-		"description": "Option to make the style apply to the entered string as a URL prefix"
-	},
-	"sectionHelp": {
-		"message": "تتيح لك الأقسام تحديد أجزاء مختلفة من الرمز لتطبيقها على مجموعات مختلفة من عناوين URL بالنمط نفسه. فعلى سبيل المثال، يمكن لنمط مفرد تغيير الصفحة الرئيسية لموقع ويب بطريقة، مع تغيير بقية أجزاء موقع الويب بطريقة أخرى.",
-		"description": "Help text for sections"
-	},
-	"noStylesForSite": {
-		"message": "لم يتم تثبيت أي أنماط لموقع الويب هذا.",
-		"description": "Text displayed when no styles are installed for the current site"
-	},
-	"appliesDisplayTruncatedSuffix": {
-		"message": "والمزيد",
-		"description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-	},
-	"appliesRemove": {
-		"message": "إزالة",
-		"description": "Label for the button to remove an 'applies' entry"
-	},
-	"appliesLabel": {
-		"message": "ينطبق على",
-		"description": "Label for 'applies to' fields on the edit/add screen"
-	},
-	"openManage": {
-		"message": "إدارة الأنماط المثبتة",
-		"description": "Link to open the manage page."
-	},
-	"updateCheckFailBadResponseCode": {
-		"message": "أخفق التحديث - استجاب الخادم بالرمز $code$",
-		"description": "Text that displays when an update check failed because the response code indicates an error",
-		"placeholders": {
-			"code": {
-				"content": "$1"
-			}
-		}
-	},
-	"appliesSpecify": {
-		"message": "تحديد",
-		"description": "Label for the button to make a style apply only to specific sites"
-	},
-	"installUpdate": {
-		"message": "تثبيت التحديث",
-		"description": "Label for the button to install an update for a single style"
-	},
-	"sectionRemove": {
-		"message": "إزالة القسم",
-		"description": "Label for the button to remove a section"
-	},
-	"updateCompleted": {
-		"message": "اكتمل التحديث.",
-		"description": "Text that displays when an update completed"
-	},
-	"checkingForUpdate": {
-		"message": "جارٍ البحث...",
-		"description": "Text to display when checking a style for an update"
-	},
-	"sectionCode": {
-		"message": "الرمز",
-		"description": "Label for the code for a section"
-	},
-	"appliesHelp": {
-		"message": "استخدم عناصر تحكم 'ينطبق على' لتقييد عناوين URL التي ينطبق عليها الرمز في هذا القسم.",
-		"description": "Help text for 'applies to' section"
-	},
-	"editStyleHeading": {
-		"message": "تعديل النمط",
-		"description": "Title of the page for editing styles"
-	},
-	"appliesUrlOption": {
-		"message": "عنوان URL",
-		"description": "Option to make the style apply to the entered string as a URL"
-	},
-	"addStyleTitle": {
-		"message": "إضافة نمط",
-		"description": "Title of the page for adding styles"
-	},
-	"checkAllUpdates": {
-		"message": "البحث عن تحديثات لكل الأنماط",
-		"description": "Label for the button to check all styles for updates"
-	},
-	"deleteStyleLabel": {
-		"message": "حذف",
-		"description": "Label for the button to delete a style"
-	},
-	"addStyleLabel": {
-		"message": "كتابة نمط جديد",
-		"description": "Label for the button to go to the add style page"
-	},
-	"editStyleLabel": {
-		"message": "تعديل",
-		"description": "Label for the button to go to the edit style page"
-	},
-	"description": {
-		"message": "يمكنك تغيير نمط الويب باستخدام Stylus، وهي أداة لإدارة أنماط المستخدم. وتتيح Stylus لك بسهولة تثبيت المظاهر والأشكال الخارجية لكل من Google، وFacebook وYouTube وOrkut فضلاً عن الكثير جدًا من مواقع الويب الأخرى.",
-		"description": "Extension description"
-	}
+  "addStyleLabel": {
+    "message": "كتابة نمط جديد"
+  },
+  "addStyleTitle": {
+    "message": "إضافة نمط"
+  },
+  "appliesAdd": {
+    "message": "إضافة"
+  },
+  "appliesDisplay": {
+    "message": "ينطبق على: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "والمزيد"
+  },
+  "appliesDomainOption": {
+    "message": "عناوين URL في النطاق"
+  },
+  "appliesHelp": {
+    "message": "استخدم عناصر تحكم 'ينطبق على' لتقييد عناوين URL التي ينطبق عليها الرمز في هذا القسم."
+  },
+  "appliesLabel": {
+    "message": "ينطبق على"
+  },
+  "appliesRegexpOption": {
+    "message": "عناوين URL التي تطابق regexp"
+  },
+  "appliesRemove": {
+    "message": "إزالة"
+  },
+  "appliesSpecify": {
+    "message": "تحديد"
+  },
+  "appliesToEverything": {
+    "message": "كل شيء"
+  },
+  "appliesUrlOption": {
+    "message": "عنوان URL"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "عناوين URL البادئة بـ"
+  },
+  "checkAllUpdates": {
+    "message": "البحث عن تحديثات لكل الأنماط"
+  },
+  "checkForUpdate": {
+    "message": "البحث عن تحديث"
+  },
+  "checkingForUpdate": {
+    "message": "جارٍ البحث..."
+  },
+  "deleteStyleConfirm": {
+    "message": "هل تريد بالتأكيد حذف هذا النمط؟"
+  },
+  "deleteStyleLabel": {
+    "message": "حذف"
+  },
+  "description": {
+    "message": "يمكنك تغيير نمط الويب باستخدام Stylus، وهي أداة لإدارة أنماط المستخدم. وتتيح Stylus لك بسهولة تثبيت المظاهر والأشكال الخارجية لكل من Google، وFacebook وYouTube وOrkut فضلاً عن الكثير جدًا من مواقع الويب الأخرى."
+  },
+  "disableStyleLabel": {
+    "message": "تعطيل"
+  },
+  "editStyleHeading": {
+    "message": "تعديل النمط"
+  },
+  "editStyleLabel": {
+    "message": "تعديل"
+  },
+  "editStyleTitle": {
+    "message": "تعديل النمط $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "enableStyleLabel": {
+    "message": "تمكين"
+  },
+  "findStylesForSite": {
+    "message": "البحث عن المزيد من الأنماط لموقع الويب هذا"
+  },
+  "helpAlt": {
+    "message": "مساعدة"
+  },
+  "installUpdate": {
+    "message": "تثبيت التحديث"
+  },
+  "manageHeading": {
+    "message": "الأنماط المثبتة"
+  },
+  "noStylesForSite": {
+    "message": "لم يتم تثبيت أي أنماط لموقع الويب هذا."
+  },
+  "openManage": {
+    "message": "إدارة الأنماط المثبتة"
+  },
+  "sectionAdd": {
+    "message": "إضافة قسم آخر"
+  },
+  "sectionCode": {
+    "message": "الرمز"
+  },
+  "sectionHelp": {
+    "message": "تتيح لك الأقسام تحديد أجزاء مختلفة من الرمز لتطبيقها على مجموعات مختلفة من عناوين URL بالنمط نفسه. فعلى سبيل المثال، يمكن لنمط مفرد تغيير الصفحة الرئيسية لموقع ويب بطريقة، مع تغيير بقية أجزاء موقع الويب بطريقة أخرى."
+  },
+  "sectionRemove": {
+    "message": "إزالة القسم"
+  },
+  "styleCancelEditLabel": {
+    "message": "رجوع للإدارة"
+  },
+  "styleChangesNotSaved": {
+    "message": "لقد أجريت تغييرات على هذا النمط بدون حفظها."
+  },
+  "styleEnabledLabel": {
+    "message": "ممكّن"
+  },
+  "styleInstall": {
+    "message": "هل تريد تثبيت '$stylename$' في Stylus؟",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "أدخل اسمًا"
+  },
+  "styleSaveLabel": {
+    "message": "حفظ"
+  },
+  "styleSectionsTitle": {
+    "message": "الأقسام"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "يمكن استخدام تنسيق موزيلا للرمز باستخدام Stylus للمتصفح فايرفوكس ويمكن إرساله إلى userstyles.org."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "أخفق التحديث - استجاب الخادم بالرمز $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "أخفق التحديث - الخادم يتعذر الوصول إليه."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "النمط محدّث."
+  },
+  "updateCompleted": {
+    "message": "اكتمل التحديث."
+  }
 }

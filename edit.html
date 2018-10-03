@@ -26,7 +26,6 @@
     <script src="js/storage-util.js"></script>
     <script src="js/exclusions.js"></script>
     <script src="content/apply.js"></script>
-    <script src="edit/lint.js"></script>
     <script src="edit/util.js"></script>
     <script src="edit/regexp-tester.js"></script>
     <script src="edit/applies-to-line-widget.js"></script>
@@ -66,6 +65,8 @@
     <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
 
     <link  href="vendor/codemirror/addon/lint/lint.css" rel="stylesheet" />
+    <script src="vendor/codemirror/addon/lint/lint.js"></script>
+
 
     <link  href="vendor/codemirror/addon/hint/show-hint.css" rel="stylesheet" />
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
@@ -87,6 +88,16 @@
 
     <link  href="edit/codemirror-default.css" rel="stylesheet">
     <script src="edit/codemirror-default.js"></script>
+
+    <script src="edit/linter.js"></script>
+    <script src="edit/linter-defaults.js"></script>
+    <script src="edit/linter-engines.js"></script>
+    <script src="edit/linter-meta.js"></script>
+    <script src="edit/linter-help-dialog.js"></script>
+    <script src="edit/linter-report.js"></script>
+    <script src="edit/linter-config-dialog.js"></script>
+
+    <script src="edit/editor-worker.js"></script>
 
     <link id="cm-theme" rel="stylesheet">
 
@@ -122,7 +133,7 @@
     </template>
 
     <template data-id="section">
-      <div>
+      <div class="section">
         <label i18n-text="sectionCode" class="code-label"></label>
         <br>
         <div class="applies-to">
@@ -135,11 +146,21 @@
         </div>
         <div class="edit-actions">
           <button class="remove-section" i18n-text="sectionRemove"></button>
-          <button class="add-section" i18n-text="sectionAdd"></button>
+          <button class="add-section" i18n-long-text="sectionAdd" i18n-short-text="genericAdd"></button>
+          <button class="clone-section" i18n-text="genericClone"></button>
+          <button class="move-section-up"></button>
+          <button class="move-section-down"></button>
           <button class="beautify-section" i18n-text="styleBeautify"></button>
           <button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
         </div>
       </div>
+    </template>
+
+    <!-- not using DIV to make our CSS work for #sections > div:only-of-type .remove-section -->
+    <template data-id="deletedSection">
+      <p class="deleted-section">
+        <button class="restore-section" i18n-text="sectionRestore"></button>
+      </p>
     </template>
 
     <template data-id="searchReplaceDialog">
@@ -428,7 +449,7 @@
             </a>
           </h2>
         </summary>
-        <div></div>
+        <div class="lint-report-container"></div>
       </details>
       <div id="footer" class="hidden">
         <a href="https://github.com/openstyles/stylus/wiki/Usercss"

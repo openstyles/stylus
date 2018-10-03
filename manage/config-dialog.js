@@ -258,16 +258,44 @@ function configDialog(style) {
           ];
           break;
 
+        case 'range':
+        case 'number': {
+          const options = {
+            va,
+            type: va.type,
+            onfocus: va.type === 'number' ? selectAllOnFocus : null,
+            onblur: va.type === 'number' ? updateVarOnBlur : null,
+            onchange: updateVarOnChange,
+            oninput: updateVarOnInput,
+            required: true
+          };
+          if (typeof va.min === 'number') {
+            options.min = va.min;
+          }
+          if (typeof va.max === 'number') {
+            options.max = va.max;
+          }
+          if (typeof va.step === 'number' && isFinite(va.step)) {
+            options.step = va.step;
+          }
+          children = [
+            va.type === 'range' && $create('span.current-value'),
+            va.input = $create('input.config-value', options)
+          ];
+          break;
+        }
+
         default:
           children = [
             va.input = $create('input.config-value', {
               va,
-              type: 'text',
+              type: va.type,
               onchange: updateVarOnChange,
               oninput: updateVarOnInput,
+              onfocus: selectAllOnFocus,
             }),
           ];
-          break;
+
       }
 
       resetter = resetter.cloneNode(true);
@@ -285,8 +313,28 @@ function configDialog(style) {
     }
   }
 
+  function updateVarOnBlur() {
+    this.value = isDefault(this.va) ? this.va.default : this.va.value;
+  }
+
   function updateVarOnChange() {
-    this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
+    if (this.type === 'range') {
+      this.va.value = Number(this.value);
+      updateRangeCurrentValue(this.va, this.va.value);
+    } else if (this.type === 'number') {
+      if (this.reportValidity()) {
+        this.va.value = Number(this.value);
+      }
+    } else {
+      this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
+    }
+  }
+
+  function updateRangeCurrentValue(va, value) {
+    const span = $('.current-value', va.input.closest('.config-range'));
+    if (span) {
+      span.textContent = value + (va.units || '');
+    }
   }
 
   function updateVarOnInput(event, debounced = false) {
@@ -297,8 +345,15 @@ function configDialog(style) {
     }
   }
 
+  function selectAllOnFocus(event) {
+    event.target.select();
+  }
+
   function renderValues(varsToRender = vars) {
     for (const va of varsToRender) {
+      if (va.input === document.activeElement) {
+        continue;
+      }
       const value = isDefault(va) ? va.default : va.value;
       if (va.type === 'color') {
         va.input.style.backgroundColor = value;
@@ -307,6 +362,9 @@ function configDialog(style) {
         }
       } else if (va.type === 'checkbox') {
         va.input.checked = Number(value);
+      } else if (va.type === 'range') {
+        va.input.value = value;
+        updateRangeCurrentValue(va, va.input.value);
       } else {
         va.input.value = value;
       }

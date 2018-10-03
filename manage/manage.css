@@ -9,10 +9,13 @@
 
 body {
   margin: 0;
-  font: 12px arial, sans-serif;
   /* Firefox: fill the entire page for drag'n'drop to work */
   display: flex;
   height: 100%;
+}
+
+#header:lang(ja) h1 {
+  font-weight: normal;
 }
 
 body.all-styles-hidden-by-filters:before,
@@ -45,10 +48,6 @@ a:hover {
   color: #666;
 }
 
-select {
-  font-size: 12px;
-}
-
 #header {
   width: var(--header-width);
   height: 100vh;
@@ -70,6 +69,11 @@ select {
 
 #check-all-updates {
   max-width: calc(100% - 30px);
+}
+
+#check-all-updates-force {
+  white-space: normal;
+  text-align: left;
 }
 
 #header h1 {
@@ -241,6 +245,8 @@ select {
   border-radius: 4px;
   margin-left: 1ex;
   white-space: nowrap;
+  position: relative;
+  top: 2px;
 }
 
 .entry.usercss .style-name-link::after {
@@ -446,6 +452,7 @@ select {
 
 #manage-text {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   padding-top: .35rem;
 }
@@ -466,7 +473,6 @@ select {
 
 .newUI .style-name {
   font-size: 14px;
-  font-family: sans-serif;
   text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
   padding-left: var(--name-padding-left);
   padding-right: var(--name-padding-right);
@@ -474,7 +480,7 @@ select {
   cursor: pointer;
 }
 
-.newUI .entry .style-name::before {
+.newUI .entry .style-name:hover::before {
   content: "";
   position: absolute;
   top: 0;
@@ -483,13 +489,6 @@ select {
   bottom: 0;
   background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
   pointer-events: none;
-  opacity: 0;
-  transition: opacity .1s;
-  will-change: opacity;
-}
-
-.newUI .entry .style-name:hover::before {
-  opacity: 1;
 }
 
 .newUI .entry.enabled .style-name:hover .style-name-link {
@@ -825,6 +824,15 @@ input[id^="manage.newUI"] {
   margin-top: 1ex;
 }
 
+#update-all-no-updates[data-skipped-edited="true"] {
+  font-weight: bold;
+}
+
+#update-all-no-updates[data-skipped-edited="true"]::after {
+  font-weight: normal;
+  display: block;
+}
+
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
@@ -941,7 +949,6 @@ input[id^="manage.newUI"] {
   height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
-  font: 400 12px Arial;
   color: #000;
   border: 1px solid hsl(0, 0%, 66%);
 }

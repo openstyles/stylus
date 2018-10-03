@@ -565,6 +565,7 @@ onDOMready().then(() => {
     Object.assign(dialog, DIALOG_PROPS.dialog);
     dialog.addEventListener('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
+    dialog.style.pointerEvents = 'auto';
 
     const content = $('[data-type="content"]', dialog);
     content.parentNode.replaceChild(template[type].cloneNode(true), content);
@@ -881,7 +882,7 @@ onDOMready().then(() => {
   function restoreWindowScrollPos({immediately = true} = {}) {
     if (!immediately) {
       // run in the next microtask cycle
-      new Promise(() => restoreWindowScrollPos({immediately: true}));
+      Promise.resolve().then(restoreWindowScrollPos);
       return;
     }
     if (window.scrollX !== state.scrollX || window.scrollY !== state.scrollY) {

@@ -66,7 +66,6 @@ function checkUpdateAll() {
     if (info.updated) {
       if (++updated === 1) {
         btnApply.disabled = true;
-        btnApply.classList.remove('hidden');
       }
       btnApply.dataset.value = updated;
     }
@@ -156,6 +155,16 @@ function reportUpdateState({updated, style, error, STATES}) {
     $('.update-note', entry).textContent = message;
     $('.check-update', entry).title = newUI.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
+    // digest may change silently when forcing an update of a locally edited style
+    // so we need to update it in entry's styleMeta in all open manager tabs
+    if (error === STATES.SAME_CODE) {
+      for (const view of chrome.extension.getViews({type: 'tab'})) {
+        if (view.location.pathname === location.pathname) {
+          const entry = view.$(ENTRY_ID_PREFIX + style.id);
+          if (entry) entry.styleMeta.originalDigest = style.originalDigest;
+        }
+      }
+    }
     if (!isCheckAll) {
       renderUpdatesOnlyFilter({show: $('.can-update, .update-problem')});
     }
@@ -179,6 +188,8 @@ function reportUpdateState({updated, style, error, STATES}) {
 
   if (filtersSelector.hide && isCheckAll) {
     filterAndAppend({entry}).then(sorter.updateStripes);
+  } else if (updated && !isCheckAll) {
+    renderUpdatesOnlyFilter();
   }
 }
 
@@ -195,13 +206,8 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   checkbox.dispatchEvent(new Event('change'));
 
   const btnApply = $('#apply-all-updates');
-  if (!btnApply.matches('.hidden')) {
-    if (numUpdatable > 0) {
-      btnApply.dataset.value = numUpdatable;
-    } else {
-      btnApply.classList.add('hidden');
-    }
-  }
+  btnApply.classList.toggle('hidden', !numUpdatable);
+  btnApply.dataset.value = numUpdatable;
 }
 
 

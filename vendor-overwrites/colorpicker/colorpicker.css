@@ -6,8 +6,7 @@
   display: inline-block;
 }
 
-.colorview-swatch::before,
-.colorview-swatch::after {
+.colorview-swatch::before {
   content: "";
   position: absolute;
   display: inline-block;
@@ -18,21 +17,14 @@
   width: 10px;
   height: 10px;
   box-sizing: border-box;
-}
-
-.colorview-swatch::before {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
+  background: linear-gradient(var(--colorview-swatch), var(--colorview-swatch)), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
   background-repeat: repeat;
   background-position: center;
-}
-
-.colorview-swatch::after {
   border: 1px solid #8e8e8e;
   cursor: pointer;
-  background-color: var(--colorview-swatch);
 }
 
-.colorview-swatch:hover::after {
+.colorview-swatch:hover::before {
   border-color: #494949;
 }
 

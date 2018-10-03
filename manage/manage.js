@@ -73,8 +73,7 @@ function initGlobalEvents() {
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
   installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
-  // remember scroll position on normal history navigation
-  window.onbeforeunload = rememberScrollPosition;
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
@@ -107,15 +106,14 @@ function initGlobalEvents() {
     .disabled h2::after {
       content: "${t('genericDisabledLabel')}";
     }
-    #update-all-no-updates[data-skipped-edited="true"]:after {
+    #update-all-no-updates[data-skipped-edited="true"]::after {
       content: " ${t('updateAllCheckSucceededSomeEdited')}";
     }
-    body.all-styles-hidden-by-filters:after {
+    body.all-styles-hidden-by-filters::after {
       content: "${t('filteredStylesAllHidden')}";
     }
   `));
 }
-
 
 function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
@@ -155,23 +153,15 @@ function showStyles(styles = [], matchUrlIds) {
     filterAndAppend({container: renderBin}).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
-      if (firstRun) setTimeout(recreateStyleTargets, 0, {styles, iconsOnly: true});
+      if (firstRun) setTimeout(getFaviconImgSrc);
       firstRun = false;
       return;
     }
-    if (newUI.enabled && newUI.favicons) {
-      setTimeout(recreateStyleTargets, 0, {iconsOnly: true});
-    }
-    if ('scrollY' in (history.state || {}) && !sessionStorage.justEditedStyleId) {
-      setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
-    }
+    setTimeout(getFaviconImgSrc);
     if (sessionStorage.justEditedStyleId) {
-      const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
-      delete sessionStorage.justEditedStyleId;
-      if (entry) {
-        animateElement(entry);
-        requestAnimationFrame(() => scrollElementIntoView(entry));
-      }
+      highlightEditedStyle();
+    } else if ('scrollY' in (history.state || {})) {
+      setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
   }
 }
@@ -247,10 +237,10 @@ function createStyleElement({style, name}) {
 }
 
 
-function createStyleTargetsElement({entry, style, iconsOnly}) {
+function createStyleTargetsElement({entry, style}) {
   const parts = createStyleElement.parts;
   const entryTargets = $('.targets', entry);
-  const targets = iconsOnly ? entryTargets : parts.targets.cloneNode(true);
+  const targets = parts.targets.cloneNode(true);
   let container = targets;
   let numTargets = 0;
   const displayed = new Set();
@@ -269,23 +259,21 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
           continue;
         }
         displayed.add(targetValue);
-        const element = iconsOnly ? targets.children[numTargets] : template.appliesToTarget.cloneNode(true);
+        const element = template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets === 10) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
-          } else if (numTargets > 1) {
+          } else if (numTargets > 0) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
         }
-        if (!iconsOnly) {
-          element.dataset.type = type;
-          element.appendChild(
-            document.createTextNode(
-              (parts.decorations[type + 'Before'] || '') +
-              targetValue +
-              (parts.decorations[type + 'After'] || '')));
-          container.appendChild(element);
-        }
+        element.dataset.type = type;
+        element.appendChild(
+          document.createTextNode(
+            (parts.decorations[type + 'Before'] || '') +
+            targetValue +
+            (parts.decorations[type + 'After'] || '')));
+        container.appendChild(element);
         numTargets++;
       }
     }
@@ -296,9 +284,7 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
     }
   }
   if (numTargets) {
-    if (!iconsOnly) {
-      entryTargets.parentElement.replaceChild(targets, entryTargets);
-    }
+    entryTargets.parentElement.replaceChild(targets, entryTargets);
   } else if (!entry.classList.contains('global') ||
              !entryTargets.firstElementChild) {
     if (entryTargets.firstElementChild) {
@@ -310,35 +296,17 @@ function createStyleTargetsElement({entry, style, iconsOnly}) {
 }
 
 
-function recreateStyleTargets({styles, iconsOnly = false} = {}) {
-  Promise.resolve(styles || API.getStyles()).then(styles => {
-    for (const style of styles) {
-      const entry = $(ENTRY_ID_PREFIX + style.id);
-      if (entry) {
-        createStyleTargetsElement({
-          entry,
-          style,
-          iconsOnly,
-        });
-      }
-    }
-    if (newUI.enabled && newUI.favicons) {
-      debounce(getFaviconImgSrc);
-    }
-  });
-}
-
 function getFaviconImgSrc(container = installed) {
-  const targets = $$('.target', container);
+  if (!newUI.enabled || !newUI.favicons) return;
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
-  const domainExt = 'com,org,co,net,im,io,edu,gov,biz,info,de,cn,uk,nl,eu,ru'.split(',');
-  const regexpMatchRegExp = new RegExp(`[\\w-]+[\\.(]+(${domainExt.join('|')})\\b`, 'g');
+  const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
   const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
-  for (const target of targets) {
+  for (const target of $$('.target', container)) {
     const type = target.dataset.type;
     const targetValue = target.textContent;
+    if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
       favicon = GET_FAVICON_URL + targetValue;
@@ -426,7 +394,7 @@ Object.assign(handleEvent, {
         });
       }
     } else {
-      rememberScrollPosition();
+      onVisibilityChange();
       getActiveTab().then(tab => {
         sessionStorageHash('manageStylesHistory').set(tab.id, url);
         location.href = url;
@@ -575,9 +543,7 @@ function handleUpdate(style, {reason, method} = {}) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
-  if (newUI.enabled && newUI.favicons) {
-    getFaviconImgSrc(entry);
-  }
+  getFaviconImgSrc(entry);
 
   function handleToggledOrCodeOnly() {
     const newStyleMeta = getStyleWithNoCode(style);
@@ -694,14 +660,41 @@ function switchUI({styleOnly} = {}) {
     return;
   }
   if (missingFavicons) {
-    recreateStyleTargets();
+    debounce(getFaviconImgSrc);
     return;
   }
 }
 
 
-function rememberScrollPosition() {
-  history.replaceState({scrollY: window.scrollY}, document.title);
+function onVisibilityChange() {
+  switch (document.visibilityState) {
+    // page restored without reloading via history navigation (currently only in FF)
+    // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
+    // assuming other changes aren't important enough to justify making a complicated DOM sync
+    case 'visible':
+      if (sessionStorage.justEditedStyleId) {
+        API.getStyles({id: sessionStorage.justEditedStyleId}).then(([style]) => {
+          handleUpdate(style, {method: 'styleUpdated'});
+        });
+        delete sessionStorage.justEditedStyleId;
+      }
+      break;
+    // going away
+    case 'hidden':
+      history.replaceState({scrollY: window.scrollY}, document.title);
+      break;
+  }
+}
+
+
+function highlightEditedStyle() {
+  if (!sessionStorage.justEditedStyleId) return;
+  const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
+  delete sessionStorage.justEditedStyleId;
+  if (entry) {
+    animateElement(entry);
+    requestAnimationFrame(() => scrollElementIntoView(entry));
+  }
 }
 
 

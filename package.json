@@ -1,28 +1,31 @@
 {
   "name": "Stylus",
-  "version": "1.4.16",
+  "version": "1.4.22",
   "description": "Redesign the web with Stylus, a user styles manager",
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
   "devDependencies": {
-    "archiver": "^2.1.1",
-    "codemirror": "^5.39.2",
-    "eslint": "^5.2.0",
+    "archiver": "^3.0.0",
+    "codemirror": "^5.40.0",
+    "eslint": "^5.4.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
-    "less": "^3.7.1",
-    "lz-string-unsafe": "^1.4.4-beta",
-    "semver-bundle": "^0.1.0",
+    "less": "^3.8.1",
+    "lz-string-unsafe": "^1.4.4-fork-1",
+    "rimraf": "^2.6.2",
+    "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^4.0.1"
+    "updates": "^4.2.1"
   },
   "scripts": {
-    "lint": "eslint **/*.js || true",
-    "update": "npm run update-node && npm run update-versions && npm run update-codemirror",
+    "lint": "eslint **/*.js --cache || exit 0",
+    "update": "npm run update-node && npm run update-main",
+    "update-quick": "updates -u && npm update && npm run update-main",
+    "update-main": "npm run update-versions && npm run update-codemirror",
+    "update-node": "updates -u && node tools/remove-modules.js && npm install",
     "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
-    "update-node": "updates -u && npm update",
     "update-versions": "node tools/update-versions",
     "zip": "npm run update-versions && node tools/zip.js"
   }

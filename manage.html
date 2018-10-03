@@ -254,7 +254,9 @@
         <label id="only-updates" class="hidden">
           <input type="checkbox"
                  data-filter=".can-update, .update-problem, .update-done"
-                 data-filter-hide=":not(.updatable):not(.update-done), .no-update:not(.update-problem)">
+                 data-filter-hide=":not(.updatable):not(.update-done),
+                                   .no-update:not(.update-problem),
+                                   .updatable:not(.can-update):not(.update-problem):not(.update-done)">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           <span i18n-text="manageOnlyUpdates"></span>
         </label>
@@ -378,6 +380,7 @@
         <span><a href="https://userstyles.org" target="_blank" i18n-text="linkGetStyles"></a></span>
         <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n-text="linkGetHelp"></a></span>
         <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n-text="linkStylusWiki"></a></span>
+        <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n-text="linkTranslate"></a></span>
       </div>
     </div>
   </div>

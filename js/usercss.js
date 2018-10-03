@@ -29,7 +29,7 @@ var usercss = (() => {
     ['version', 0],
   ]);
   const MANDATORY_META = ['name', 'namespace', 'version'];
-  const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image'];
+  const META_VARS = ['text', 'color', 'checkbox', 'select', 'dropdown', 'image', 'number', 'range'];
   const META_URLS = [...KNOWN_META.keys()].filter(k => k.endsWith('URL'));
 
   const BUILDER = {
@@ -194,12 +194,40 @@ var usercss = (() => {
         state.errorPrefix = 'Invalid JSON: ';
         parseJSONValue(state);
         state.errorPrefix = '';
+        const extractDefaultOption = (key, value) => {
+          if (key.endsWith('*')) {
+            const option = createOption(key.slice(0, -1), value);
+            result.default = option.name;
+            return option;
+          }
+          return createOption(key, value);
+        };
         if (Array.isArray(state.value)) {
-          result.options = state.value.map(text => createOption(text));
+          result.options = state.value.map(k => extractDefaultOption(k));
         } else {
-          result.options = Object.keys(state.value).map(k => createOption(k, state.value[k]));
+          result.options = Object.keys(state.value).map(k => extractDefaultOption(k, state.value[k]));
         }
-        result.default = (result.options[0] || {}).name || '';
+        if (result.default === null) {
+          result.default = (result.options[0] || {}).name || '';
+        }
+        break;
+      }
+
+      case 'number':
+      case 'range': {
+        state.errorPrefix = 'Invalid JSON: ';
+        parseJSONValue(state);
+        state.errorPrefix = '';
+        // [default, start, end, step, units] (start, end, step & units are optional)
+        if (Array.isArray(state.value) && state.value.length) {
+          // label may be placed anywhere
+          result.units = (state.value.find(i => typeof i === 'string') || '').replace(/[\d.+-]/g, '');
+          const range = state.value.filter(i => typeof i === 'number' || i === null);
+          result.default = range[0];
+          result.min = range[1];
+          result.max = range[2];
+          result.step = range[3] === 0 ? 1 : range[3];
+        }
         break;
       }
 
@@ -541,6 +569,9 @@ var usercss = (() => {
       // TODO: handle customized image
       return va.options.find(o => o.name === va[prop]).value;
     }
+    if ((va.type === 'number' || va.type === 'range') && va.units) {
+      return va[prop] + va.units;
+    }
     return va[prop];
   }
 
@@ -578,6 +609,8 @@ var usercss = (() => {
       throw new Error(chrome.i18n.getMessage('styleMetaErrorCheckbox'));
     } else if (va.type === 'color') {
       va[value] = colorConverter.format(colorConverter.parse(va[value]), 'rgb');
+    } else if ((va.type === 'number' || va.type === 'range') && typeof va[value] !== 'number') {
+      throw new Error(chrome.i18n.getMessage('styleMetaErrorRangeOrNumber', va.type));
     }
   }
 
@@ -599,7 +632,7 @@ var usercss = (() => {
 
   function invokeWorker(message) {
     if (!worker.queue) {
-      worker.instance = new Worker('/edit/csslint-loader.js');
+      worker.instance = new Worker('/background/parserlib-loader.js');
       worker.queue = [];
       worker.instance.onmessage = ({data}) => {
         worker.queue.shift().resolve(data.__ERROR__ ? Promise.reject(data.__ERROR__) : data);

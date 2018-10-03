@@ -40,6 +40,9 @@
       !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
     ].filter(Boolean).map(rx => rx.source).join('|') || '^$', 'i'),
   };
+  if (RX_COLOR.unsupported.source === '^$') {
+    RX_COLOR.unsupported = null;
+  }
   const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
     '(' +
       RX_COLOR.hex.source + '|' +
@@ -100,7 +103,7 @@
       if (!this.popup) {
         delete CM_EVENTS.mousedown;
         document.head.appendChild(document.createElement('style')).textContent = `
-          .colorview-swatch::after {
+          .colorview-swatch::before {
             cursor: auto;
           }
         `;
@@ -418,7 +421,7 @@
 
     function getSafeColorValue() {
       if (isHex && color.length !== 5 && color.length !== 9) return color;
-      if (!isFunc || !RX_COLOR.unsupported.test(color)) return color;
+      if (!RX_COLOR.unsupported || !RX_COLOR.unsupported.test(color)) return color;
       const value = colorConverter.parse(color);
       return colorConverter.format(value, 'rgb');
     }
@@ -691,7 +694,7 @@
     if (button) return;
     const swatch = target.closest('.' + COLORVIEW_CLASS);
     if (!swatch) return;
-    const {left, width, height} = getComputedStyle(swatch, '::after');
+    const {left, width, height} = getComputedStyle(swatch, '::before');
     const bounds = swatch.getBoundingClientRect();
     const swatchClicked =
       offsetX >= parseFloat(left) - 1 &&

@@ -43,6 +43,12 @@ function isFolder(fileOrFolder) {
   return stat.isDirectory();
 }
 
+// Rename CodeMirror$1 -> CodeMirror for development purposes
+function renameCodeMirrorVariable(filePath) {
+  const file = fs.readFileSync(filePath, 'utf8');
+  fs.writeFileSync(filePath, file.replace(/CodeMirror\$1/g, 'CodeMirror'));
+}
+
 function updateExisting(lib) {
   const libRoot = `${root}/node_modules/`;
   const vendorRoot = `${root}/vendor/`;
@@ -54,8 +60,8 @@ function updateExisting(lib) {
       const folderRoot = `${vendorRoot}${folder}`;
       const entries = fs.readdirSync(folderRoot);
       entries.forEach(entry => {
-        // Ignore README.md & LICENSE files
         if (entry !== 'README.md' && entry !== 'LICENSE') {
+          // Ignore README.md & LICENSE files
           const entryPath = `${folderRoot}/${entry}`;
           try {
             if (fs.existsSync(entryPath)) {
@@ -63,6 +69,10 @@ function updateExisting(lib) {
                 folders.push(`${folder}/${entry}`);
               } else {
                 fs.copySync(`${libRoot}${folder}/${entry}`, entryPath);
+                // Remove $1 from "CodeMirror$1" in codemirror.js
+                if (entry === 'codemirror.js') {
+                  renameCodeMirrorVariable(entryPath);
+                }
               }
             }
           } catch (err) {

@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
-// This is CodeMirror (http://codemirror.net), a code editor
+// This is CodeMirror (https://codemirror.net), a code editor
 // implemented in JavaScript on top of the browser's DOM.
 //
 // You can find some technical background for some of the code below
@@ -6408,7 +6408,7 @@ Doc.prototype = createObj(BranchChunk.prototype, {
   unlinkDoc: function(other) {
     var this$1 = this;
 
-    if (other instanceof CodeMirror$1) { other = other.doc; }
+    if (other instanceof CodeMirror) { other = other.doc; }
     if (this.linked) { for (var i = 0; i < this.linked.length; ++i) {
       var link = this$1.linked[i];
       if (link.doc != other) { continue }
@@ -7734,6 +7734,7 @@ function defineOptions(CodeMirror) {
   option("tabindex", null, function (cm, val) { return cm.display.input.getField().tabIndex = val || ""; });
   option("autofocus", null);
   option("direction", "ltr", function (cm, val) { return cm.doc.setDirection(val); }, true);
+  option("phrases", null);
 }
 
 function guttersChanged(cm) {
@@ -7773,10 +7774,10 @@ function wrappingChanged(cm) {
 // A CodeMirror instance represents an editor. This is the object
 // that user code is usually dealing with.
 
-function CodeMirror$1(place, options) {
+function CodeMirror(place, options) {
   var this$1 = this;
 
-  if (!(this instanceof CodeMirror$1)) { return new CodeMirror$1(place, options) }
+  if (!(this instanceof CodeMirror)) { return new CodeMirror(place, options) }
 
   this.options = options = options ? copyObj(options) : {};
   // Determine effective options based on given values and defaults.
@@ -7788,7 +7789,7 @@ function CodeMirror$1(place, options) {
   else if (options.mode) { doc.modeOption = options.mode; }
   this.doc = doc;
 
-  var input = new CodeMirror$1.inputStyles[options.inputStyle](this);
+  var input = new CodeMirror.inputStyles[options.inputStyle](this);
   var display = this.display = new Display(place, doc, input);
   display.wrapper.CodeMirror = this;
   updateGutters(this);
@@ -7845,9 +7846,9 @@ function CodeMirror$1(place, options) {
 }
 
 // The default configuration options.
-CodeMirror$1.defaults = defaults;
+CodeMirror.defaults = defaults;
 // Functions to run when options are changed.
-CodeMirror$1.optionHandlers = optionHandlers;
+CodeMirror.optionHandlers = optionHandlers;
 
 // Attach the necessary event handlers when initializing the editor
 function registerEventHandlers(cm) {
@@ -7958,7 +7959,7 @@ function registerEventHandlers(cm) {
 }
 
 var initHooks = [];
-CodeMirror$1.defineInitHook = function (f) { return initHooks.push(f); };
+CodeMirror.defineInitHook = function (f) { return initHooks.push(f); };
 
 // Indent the given line. The how parameter can be "smart",
 // "add"/null, "subtract", or "prev". When aggressive is false
@@ -8571,6 +8572,11 @@ var addEditorMethods = function(CodeMirror) {
       signalLater(this, "swapDoc", this, old);
       return old
     }),
+
+    phrase: function(phraseText) {
+      var phrases = this.options.phrases;
+      return phrases && Object.prototype.hasOwnProperty.call(phrases, phraseText) ? phrases[phraseText] : phraseText
+    },
 
     getInputField: function(){return this.display.input.getField()},
     getWrapperElement: function(){return this.display.wrapper},
@@ -9592,7 +9598,7 @@ function fromTextArea(textarea, options) {
   };
 
   textarea.style.display = "none";
-  var cm = CodeMirror$1(function (node) { return textarea.parentNode.insertBefore(node, textarea.nextSibling); },
+  var cm = CodeMirror(function (node) { return textarea.parentNode.insertBefore(node, textarea.nextSibling); },
     options);
   return cm
 }
@@ -9643,14 +9649,14 @@ function addLegacyProps(CodeMirror) {
 
 // EDITOR CONSTRUCTOR
 
-defineOptions(CodeMirror$1);
+defineOptions(CodeMirror);
 
-addEditorMethods(CodeMirror$1);
+addEditorMethods(CodeMirror);
 
 // Set up methods on CodeMirror's prototype to redirect to the editor's document.
 var dontDelegate = "iter insert remove copy getEditor constructor".split(" ");
 for (var prop in Doc.prototype) { if (Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0)
-  { CodeMirror$1.prototype[prop] = (function(method) {
+  { CodeMirror.prototype[prop] = (function(method) {
     return function() {return method.apply(this.doc, arguments)}
   })(Doc.prototype[prop]); } }
 
@@ -9658,39 +9664,39 @@ eventMixin(Doc);
 
 // INPUT HANDLING
 
-CodeMirror$1.inputStyles = {"textarea": TextareaInput, "contenteditable": ContentEditableInput};
+CodeMirror.inputStyles = {"textarea": TextareaInput, "contenteditable": ContentEditableInput};
 
 // MODE DEFINITION AND QUERYING
 
 // Extra arguments are stored as the mode's dependencies, which is
 // used by (legacy) mechanisms like loadmode.js to automatically
 // load a mode. (Preferred mechanism is the require/define calls.)
-CodeMirror$1.defineMode = function(name/*, mode, …*/) {
-  if (!CodeMirror$1.defaults.mode && name != "null") { CodeMirror$1.defaults.mode = name; }
+CodeMirror.defineMode = function(name/*, mode, …*/) {
+  if (!CodeMirror.defaults.mode && name != "null") { CodeMirror.defaults.mode = name; }
   defineMode.apply(this, arguments);
 };
 
-CodeMirror$1.defineMIME = defineMIME;
+CodeMirror.defineMIME = defineMIME;
 
 // Minimal default mode.
-CodeMirror$1.defineMode("null", function () { return ({token: function (stream) { return stream.skipToEnd(); }}); });
-CodeMirror$1.defineMIME("text/plain", "null");
+CodeMirror.defineMode("null", function () { return ({token: function (stream) { return stream.skipToEnd(); }}); });
+CodeMirror.defineMIME("text/plain", "null");
 
 // EXTENSIONS
 
-CodeMirror$1.defineExtension = function (name, func) {
-  CodeMirror$1.prototype[name] = func;
+CodeMirror.defineExtension = function (name, func) {
+  CodeMirror.prototype[name] = func;
 };
-CodeMirror$1.defineDocExtension = function (name, func) {
+CodeMirror.defineDocExtension = function (name, func) {
   Doc.prototype[name] = func;
 };
 
-CodeMirror$1.fromTextArea = fromTextArea;
+CodeMirror.fromTextArea = fromTextArea;
 
-addLegacyProps(CodeMirror$1);
+addLegacyProps(CodeMirror);
 
-CodeMirror$1.version = "5.39.2";
+CodeMirror.version = "5.40.0";
 
-return CodeMirror$1;
+return CodeMirror;
 
 })));

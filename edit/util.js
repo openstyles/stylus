@@ -116,3 +116,21 @@ function sectionsToMozFormat(style) {
       section.code;
   }).join('\n\n');
 }
+
+
+function clipString(str, limit = 100) {
+  return str.length <= limit ? str : str.substr(0, limit) + '...';
+}
+
+// this is a decorator. Cache the first call
+function memoize(fn) {
+  let cached = false;
+  let result;
+  return (...args) => {
+    if (!cached) {
+      result = fn(...args);
+      cached = true;
+    }
+    return result;
+  };
+}

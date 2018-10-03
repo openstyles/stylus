@@ -133,7 +133,7 @@ function initPopup() {
         $('label', info).textContent = t('unreachableAMO');
         const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                      (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-        const renderToken = s => s[0] === '<' ? $create('b', s.slice(1, -1)) : s;
+        const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
         const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
         const noteNode = $create('fragment', note.split('\n').map(renderLine));
         const target = $('p', info);
@@ -314,7 +314,14 @@ function createStyleElement({
   if (check) detectSloppyRegexps([style]);
 
   const oldElement = $(ENTRY_ID_PREFIX + style.id);
-  if (oldElement) {
+  if (oldElement && oldElement.contains(document.activeElement)) {
+    // preserve the focused element inside
+    const {className} = document.activeElement;
+    oldElement.parentNode.replaceChild(entry, oldElement);
+    // we're not using $() since className may contain multiple tokens
+    const el = entry.getElementsByClassName(className)[0];
+    if (el) el.focus();
+  } else if (oldElement) {
     oldElement.parentNode.replaceChild(entry, oldElement);
   } else {
     container.appendChild(entry);
@@ -338,6 +345,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event) {
+    // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
     API.saveStyle({
       id: handleEvent.getClickedStyleId(event),

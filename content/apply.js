@@ -18,6 +18,13 @@
   var docRewriteObserver;
   var docRootObserver;
 
+  // FF59+ bug workaround
+  // See https://github.com/openstyles/stylus/issues/461
+  // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
+  // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
+  const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
+  const pageContextQueue = [];
+
   requestStyles();
   chrome.runtime.onMessage.addListener(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
@@ -50,8 +57,32 @@
     // On own pages we request the styles directly to minimize delay and flicker
     if (typeof API === 'function') {
       API.getStyles(request).then(callback);
+    } else if (!CHROME && getStylesFallback(request)) {
+      // NOP
     } else {
       chrome.runtime.sendMessage(request, callback);
+    }
+  }
+
+  /**
+   * TODO: remove when FF fixes the bug.
+   * Firefox borks sendMessage in same-origin iframes that have 'src' with a real path on the site.
+   * We implement a workaround for the initial styleApply case only.
+   * Everything else (like toggling of styles) is still buggy.
+   * @param {Object} msg
+   * @param {Function} callback
+   * @returns {Boolean|undefined}
+   */
+  function getStylesFallback(msg) {
+    if (window !== parent &&
+        location.href !== 'about:blank') {
+      try {
+        if (parent.location.origin === location.origin &&
+            parent.location.href !== location.href) {
+          chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
+          return true;
+        }
+      } catch (e) {}
     }
   }
 
@@ -235,7 +266,11 @@
         if (!Array.isArray(sections)) continue;
         applySections(id, sections.map(({code}) => code).join('\n'));
       }
-      docRootObserver.start({sort: true});
+      docRootObserver.firstStart();
+    }
+
+    if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
+      setContentsInPageContext();
     }
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
@@ -260,6 +295,8 @@
         // workaround for Chrome devtools bug fixed in v65
         el.remove();
         el = null;
+      } else if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
       } else {
         el.textContent = code;
       }
@@ -275,18 +312,48 @@
         // HTML document style; also works on HTML-embedded SVG
         el = document.createElement('style');
       }
-      Object.assign(el, {
-        id,
-        type: 'text/css',
-        textContent: code,
-      });
+      el.id = id;
+      el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
+      if (FF_BUG461) {
+        pageContextQueue.push({id: el.id, el, code});
+      } else {
+        el.textContent = code;
+      }
       addStyleElement(el);
     }
     styleElements.set(id, el);
     disabledElements.delete(Number(styleId));
     return el;
+  }
+
+  function setContentsInPageContext() {
+    try {
+      (document.head || ROOT).appendChild(document.createElement('script')).text = `(${queue => {
+        document.currentScript.remove();
+        for (const {id, code} of queue) {
+          const el = document.getElementById(id) ||
+                     document.querySelector('style.stylus[id="' + id + '"]');
+          if (!el) continue;
+          const {disabled} = el.sheet;
+          el.textContent = code;
+          el.sheet.disabled = disabled;
+        }
+      }})(${JSON.stringify(pageContextQueue)})`;
+    } catch (e) {}
+    let failedSome;
+    for (const {el, code} of pageContextQueue) {
+      if (el.textContent !== code) {
+        el.textContent = code;
+        failedSome = true;
+      }
+    }
+    if (failedSome) {
+      console.debug('Could not set code of some styles in page context, ' +
+                    'see https://github.com/openstyles/stylus/issues/461');
+    }
+    pageContextQueue.length = 0;
   }
 
   function addStyleElement(newElement) {
@@ -430,13 +497,16 @@
 
     function init() {
       observer = new MutationObserver(sortStyleElements);
-      docRootObserver = {start, stop, evade, disconnect: stop};
+      docRootObserver = {firstStart, start, stop, evade, disconnect: stop};
       setTimeout(sortStyleElements);
     }
-    function start({sort = false} = {}) {
-      if (sort && sortStyleMap()) {
+    function firstStart() {
+      if (sortStyleMap()) {
         sortStyleElements();
       }
+      start();
+    }
+    function start() {
       if (!observing && ROOT && observer) {
         observer.observe(ROOT, {childList: true});
         observing = true;
@@ -477,16 +547,12 @@
       }
     }
     function sortStyleElements() {
-      if (!observing) {
-        return;
-      }
+      if (!observing) return;
       let prevExpected = document.documentElement.lastElementChild;
       while (prevExpected && isSkippable(prevExpected, true)) {
         prevExpected = prevExpected.previousElementSibling;
       }
-      if (!prevExpected) {
-        return;
-      }
+      if (!prevExpected) return;
       for (const el of styleElements.values()) {
         if (!isMovable(el)) {
           continue;

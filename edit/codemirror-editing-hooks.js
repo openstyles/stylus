@@ -1,5 +1,5 @@
 /*
-global CodeMirror linterConfig loadScript
+global CodeMirror loadScript
 global editors editor styleId ownTabId
 global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
 global getSectionsHashes
@@ -8,9 +8,6 @@ global messageBox
 'use strict';
 
 onDOMscriptReady('/codemirror.js').then(() => {
-
-  CodeMirror.defaults.lint = linterConfig.getForCodeMirror();
-
   const COMMANDS = {
     save,
     toggleStyle,
@@ -43,6 +40,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   });
 
   CodeMirror.defineInitHook(cm => {
+    if (!cm.display.wrapper.closest('#sections')) {
+      return;
+    }
     if (prefs.get('editor.livePreview') && styleId) {
       cm.on('changes', updatePreview);
     }
@@ -618,11 +618,53 @@ onDOMscriptReady('/codemirror.js').then(() => {
     const me = this instanceof Node ? this : $('#editor.livePreview');
     const previewing = me.checked;
     editors.forEach(cm => cm[previewing ? 'on' : 'off']('changes', updatePreview));
-    const addRemove = previewing ? 'addEventListener' : 'removeEventListener';
-    $('#enabled')[addRemove]('change', updatePreview);
-    $('#sections')[addRemove]('change', updatePreview);
+    const addRemove = EventTarget.prototype[previewing ? 'addEventListener' : 'removeEventListener'];
+    addRemove.call($('#enabled'), 'change', updatePreview);
+    if (!editor) {
+      for (const el of $$('#sections .applies-to')) {
+        addRemove.call(el, 'input', updatePreview);
+      }
+      toggleLivePreviewSectionsObserver(previewing);
+    }
     if (!previewing || document.body.classList.contains('dirty')) {
       updatePreview(null, previewing);
+    }
+  }
+
+  /**
+   * Observes newly added section elements, and sets these event listeners:
+   *   1. 'changes' on CodeMirror inside
+   *   2. 'input' on .applies-to inside
+   * The goal is to avoid listening to 'input' on the entire #sections tree,
+   * which would trigger updatePreview() twice on any keystroke -
+   * both for the synthetic event from CodeMirror and the original event.
+   * Side effects:
+   *   two expando properties on #sections
+   *   1. __livePreviewObserver
+   *   2. __livePreviewObserverEnabled
+   * @param {Boolean} enable
+   */
+  function toggleLivePreviewSectionsObserver(enable) {
+    const sections = $('#sections');
+    const observing = sections.__livePreviewObserverEnabled;
+    let mo = sections.__livePreviewObserver;
+    if (enable && !mo) {
+      sections.__livePreviewObserver = mo = new MutationObserver(mutations => {
+        for (const {addedNodes} of mutations) {
+          for (const node of addedNodes) {
+            const el = node.children && $('.applies-to', node);
+            if (el) el.addEventListener('input', updatePreview);
+            if (node.CodeMirror) node.CodeMirror.on('changes', updatePreview);
+          }
+        }
+      });
+    }
+    if (enable && !observing) {
+      mo.observe(sections, {childList: true});
+      sections.__livePreviewObserverEnabled = true;
+    } else if (!enable && observing) {
+      mo.disconnect();
+      sections.__livePreviewObserverEnabled = false;
     }
   }
 
@@ -644,7 +686,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }).then(() => {
       errors.classList.add('hidden');
     }).catch(err => {
-      if (err && editor && !Number.isNaN(err.index)) {
+      if (Array.isArray(err)) err = err.join('\n');
+      if (err && editor && !isNaN(err.index)) {
         const pos = editors[0].posFromIndex(err.index);
         err = `${pos.line}:${pos.ch} ${err}`;
       }

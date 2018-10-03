@@ -24,3 +24,16 @@ The following changes are made:
 * `lz-string-unsafe`: The compressed `lz-string-unsafe.min.js` file is copied directly into `vendor/lz-string-unsafe`.
 * `semver-bundle`: The `dist/semver.js` file is copied directly into `vendor/semver`.
 * `stylus-lang-bundle`: The `stylus.min.js` file is copied directly into `vendor/stylus-lang-bundle`.
+
+## Creating the ZIP
+
+Use `npm run zip`.
+
+This command creates a zip file that includes all the files from the repository **except**:
+
+* All dot files (e.g. `.eslintrc` & `.gitignore`).
+* `node_modules` folder.
+* `tools` folder.
+* `package.json` file.
+* `package-lock.json` and/or `yarn.lock` file(s).
+* `vendor/codemirror/lib` files. This path is excluded because it contains a file modified for development purposes only. Instead, the CodeMirror files are copied directly from `node_modules/codemirror/lib`.

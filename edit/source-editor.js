@@ -1,10 +1,11 @@
 /*
 global editors styleId: true
 global CodeMirror dirtyReporter
-global updateLintReportIfEnabled initLint linterConfig updateLinter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
 global exclusions
+global beforeUnload
+global createMetaCompiler linter
 */
 'use strict';
 
@@ -13,14 +14,16 @@ function createSourceEditor(style) {
   $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
   $('#save-button').onclick = save;
-  $('#header').addEventListener('wheel', headerOnScroll, {passive: true});
+  $('#header').addEventListener('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
 
   const dirty = dirtyReporter();
   dirty.onChange(() => {
-    document.body.classList.toggle('dirty', dirty.isDirty());
-    $('#save-button').disabled = !dirty.isDirty();
+    const isDirty = dirty.isDirty();
+    window.onbeforeunload = isDirty ? beforeUnload : null;
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
     updateTitle();
   });
 
@@ -42,7 +45,6 @@ function createSourceEditor(style) {
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    updateLintReportIfEnabled(cm);
   });
 
   CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
@@ -53,9 +55,17 @@ function createSourceEditor(style) {
 
   cm.operation(initAppliesToLineWidget);
 
-  updateMeta().then(() => {
+  const metaCompiler = createMetaCompiler(cm);
+  metaCompiler.onUpdated(meta => {
+    style.usercssData = meta;
+    style.name = meta.name;
+    style.url = meta.homepageURL;
+    updateMeta();
+  });
 
-    initLint();
+  linter.enableForEditor(cm);
+
+  updateMeta().then(() => {
 
     let prevMode = NaN;
     cm.on('optionChange', (cm, option) => {
@@ -63,7 +73,7 @@ function createSourceEditor(style) {
       const mode = getModeName();
       if (mode === prevMode) return;
       prevMode = mode;
-      updateLinter();
+      linter.run();
       updateLinterSwitch();
     });
 
@@ -86,7 +96,7 @@ function createSourceEditor(style) {
 
   function updateLinterSwitch() {
     const el = $('#editor.linter');
-    el.value = linterConfig.getName();
+    el.value = getCurrentLinter();
     const cssLintOption = $('[value="csslint"]', el);
     const mode = getModeName();
     if (mode !== 'css') {
@@ -96,6 +106,14 @@ function createSourceEditor(style) {
       cssLintOption.disabled = false;
       cssLintOption.title = '';
     }
+  }
+
+  function getCurrentLinter() {
+    const name = prefs.get('editor.linter');
+    if (cm.getOption('mode') !== 'css' && name === 'csslint') {
+      return 'stylelint';
+    }
+    return name;
   }
 
   function setupNewStyle(style) {
@@ -108,12 +126,9 @@ function createSourceEditor(style) {
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
-      @name           ${
-        style.name ||
-        t('usercssReplaceTemplateName') + ' - ' + new Date().toLocaleString()
-      }
+      @name           ${''/* a trick to preserve the trailing spaces */}
       @namespace      github.com/openstyles/stylus
-      @version        0.1.0
+      @version        1.0.0
       @description    A new userstyle
       @author         Me
       ==/UserStyle== */
@@ -123,9 +138,13 @@ function createSourceEditor(style) {
     style.sourceCode = '';
 
     chromeSync.getLZValue('usercssTemplate').then(code => {
+      const name = style.name || t('usercssReplaceTemplateName');
+      const date = new Date().toLocaleString();
       code = code || DEFAULT_CODE;
+      code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
+        `${str}${space ? '' : ' '}${name} - ${date}`);
       // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
+      style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
       cm.startOperation();
       cm.setValue(style.sourceCode);
       cm.clearHistory();
@@ -146,7 +165,7 @@ function createSourceEditor(style) {
 
   function updateTitle() {
     const newTitle = (dirty.isDirty() ? '* ' : '') +
-      (style.id ? t('editStyleTitle', [style.name]) : t('addStyleTitle'));
+      (style.id ? style.name : t('addStyleTitle'));
     if (document.title !== newTitle) {
       document.title = newTitle;
     }
@@ -204,8 +223,8 @@ function createSourceEditor(style) {
       id: style.id,
       exclusionList
     });
-    return (
-      API.saveUsercssUnsafe({
+    return ensureUniqueStyle(code)
+      .then(() => API.saveUsercssUnsafe({
         id: style.id,
         reason: 'editSave',
         enabled: style.enabled,
@@ -217,6 +236,7 @@ function createSourceEditor(style) {
         if (errors) return Promise.reject(errors);
       })
       .catch(err => {
+        if (err.handled) return;
         if (err.message === t('styleMissingMeta', 'name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
             chromeSync.setLZValue('usercssTemplate', code)
@@ -233,6 +253,20 @@ function createSourceEditor(style) {
           contents.push($create('pre', drawLinePointer(pos)));
         }
         messageBox.alert(contents, 'pre');
+      });
+  }
+
+  function ensureUniqueStyle(code) {
+    return style.id ? Promise.resolve() :
+      API.buildUsercss({
+        sourceCode: code,
+        checkDup: true,
+        metaOnly: true,
+      }).then(({dup}) => {
+        if (dup) {
+          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+          return Promise.reject({handled: true});
+        }
       });
   }
 
@@ -328,7 +362,7 @@ function createSourceEditor(style) {
     }
     cm.display.scroller.scrollTop +=
       // WheelEvent.DOM_DELTA_LINE
-      deltaMode === 1 ? deltaY * cm.display.cachedTextHeight :
+      deltaMode === 1 ? deltaY * cm.defaultTextHeight() :
       // WheelEvent.DOM_DELTA_PAGE
       deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
       // WheelEvent.DOM_DELTA_PIXEL
