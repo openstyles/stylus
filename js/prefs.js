@@ -392,17 +392,15 @@ function setupLivePrefs(
   IDs = Object.getOwnPropertyNames(prefs.defaults)
     .filter(id => $('#' + id))
 ) {
-  const checkedProps = {};
   for (const id of IDs) {
     const element = $('#' + id);
-    checkedProps[id] = element.type === 'checkbox' ? 'checked' : 'value';
     updateElement({id, element, force: true});
     element.addEventListener('change', onChange);
   }
   prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 
   function onChange() {
-    const value = this[checkedProps[this.id]];
+    const value = getInputValue(this);
     if (prefs.get(this.id) !== value) {
       prefs.set(this.id, value);
     }
@@ -417,10 +415,25 @@ function setupLivePrefs(
       prefs.unsubscribe(IDs, updateElement);
       return;
     }
-    const prop = checkedProps[id];
-    if (force || element[prop] !== value) {
-      element[prop] = value;
-      element.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+    setInputValue(element, value, force);
+  }
+  function getInputValue(input) {
+    if (input.type === 'checkbox') {
+      return input.checked;
+    }
+    if (input.type === 'number') {
+      return Number(input.value);
+    }
+    return input.value;
+  }
+  function setInputValue(input, value, force = false) {
+    if (force || getInputValue(input) !== value) {
+      if (input.type === 'checkbox') {
+        input.checked = value;
+      } else {
+        input.value = value;
+      }
+      input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     }
   }
 }
