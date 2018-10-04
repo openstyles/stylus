@@ -144,6 +144,18 @@ prefs.subscribe(['iconset'], () =>
     styles: {},
   }));
 
+prefs.subscribe([
+  'show-badge',
+  'disableAll',
+  'badgeDisabled',
+  'badgeNormal',
+  'iconset',
+], () =>
+  queryTabs().then(tabs =>
+    tabs.map(t => updateIcon({tab: t}))
+  )
+)
+
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
   if (reason !== 'update') return;
