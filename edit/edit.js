@@ -55,6 +55,9 @@ Promise.all([
   }
 });
 
+prefs.subscribe(['editor.smartIndent'], (key, value) =>
+  CodeMirror.setOption('smartIndent', value));
+
 function preinit() {
   // make querySelectorAll enumeration code readable
   ['forEach', 'some', 'indexOf', 'map'].forEach(method => {
@@ -181,11 +184,6 @@ function onRuntimeMessage(request) {
         window.onbeforeunload = null;
         closeCurrentTab();
         break;
-      }
-      break;
-    case 'prefChanged':
-      if ('editor.smartIndent' in request.prefs) {
-        CodeMirror.setOption('smartIndent', request.prefs['editor.smartIndent']);
       }
       break;
     case 'editDeleteText':

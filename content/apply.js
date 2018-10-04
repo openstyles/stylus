@@ -34,6 +34,9 @@
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
+  prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
+  prefs.subscribe(['exposeIframes'], (key, value) => doExposeIframes(value));
+
   function requestStyles(options, callback = applyStyles) {
     if (!chrome.app && document instanceof XMLDocument) {
       chrome.runtime.sendMessage({method: 'styleViaAPI', action: 'styleApply'});
@@ -138,15 +141,6 @@
 
       case 'styleReplaceAll':
         replaceAll(request.styles);
-        break;
-
-      case 'prefChanged':
-        if ('disableAll' in request.prefs) {
-          doDisableAll(request.prefs.disableAll);
-        }
-        if ('exposeIframes' in request.prefs) {
-          doExposeIframes(request.prefs.exposeIframes);
-        }
         break;
 
       case 'ping':
