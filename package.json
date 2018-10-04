@@ -29,6 +29,6 @@
     "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "update-versions": "node tools/update-versions",
     "zip": "npm run update-versions && node tools/zip.js",
-    "start-firefox": "web-ext run"
+    "start": "web-ext run"
   }
 }
