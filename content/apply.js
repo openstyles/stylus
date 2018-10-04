@@ -34,6 +34,7 @@
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
+  // FIXME: does it work with styleViaAPI?
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
   prefs.subscribe(['exposeIframes'], (key, value) => doExposeIframes(value));
 
