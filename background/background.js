@@ -150,11 +150,7 @@ prefs.subscribe([
   'badgeDisabled',
   'badgeNormal',
   'iconset',
-], () =>
-  queryTabs().then(tabs =>
-    tabs.map(t => updateIcon({tab: t}))
-  )
-);
+], () => debounce(updateAllTabsIcon));
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -533,4 +529,10 @@ function onRuntimeMessage(msg, sender, sendResponse) {
   } else if (result !== undefined) {
     respond(result);
   }
+}
+
+function updateAllTabsIcon() {
+  return queryTabs().then(tabs =>
+    tabs.map(t => updateIcon({tab: t}))
+  );
 }
