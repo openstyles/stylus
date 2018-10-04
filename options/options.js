@@ -57,7 +57,7 @@ document.onclick = e => {
 
     case 'reset':
       $$('input')
-        .filter(input => input.id in prefs.readOnlyValues)
+        .filter(input => input.id in prefs.defaults)
         .forEach(input => prefs.reset(input.id));
       break;
 
