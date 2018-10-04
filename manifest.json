@@ -23,7 +23,6 @@
   ],
   "background": {
     "scripts": [
-      "background/util.js",
       "js/messaging.js",
       "js/storage-util.js",
       "js/sections-equal.js",
