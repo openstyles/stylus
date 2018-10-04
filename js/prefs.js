@@ -1,4 +1,3 @@
-/* global prefs: true, contextMenus, FIREFOX_NO_DOM_STORAGE */
 'use strict';
 
 // eslint-disable-next-line no-var
