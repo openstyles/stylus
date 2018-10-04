@@ -154,7 +154,7 @@ prefs.subscribe([
   queryTabs().then(tabs =>
     tabs.map(t => updateIcon({tab: t}))
   )
-)
+);
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
