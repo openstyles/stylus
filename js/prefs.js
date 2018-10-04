@@ -319,13 +319,13 @@ var prefs = new function Prefs() {
   return;
 
   function doBroadcast() {
-    if (BG && BG === window && !BG.dbExec.initialized) {
-      window.addEventListener('storageReady', function _() {
-        window.removeEventListener('storageReady', _);
-        doBroadcast();
-      });
-      return;
-    }
+    // if (BG && BG === window && !BG.dbExec.initialized) {
+      // window.addEventListener('storageReady', function _() {
+        // window.removeEventListener('storageReady', _);
+        // doBroadcast();
+      // });
+      // return;
+    // }
     const affects = {
       all: 'disableAll' in broadcastPrefs
         || 'exposeIframes' in broadcastPrefs,
