@@ -314,7 +314,7 @@ window.addEventListener('storageReady', function _() {
 // register hotkeys
 if (FIREFOX && browser.commands && browser.commands.update) {
   const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
-  this.subscribe(hotkeyPrefs, (name, value) => {
+  prefs.subscribe(hotkeyPrefs, (name, value) => {
     try {
       name = name.split('.')[1];
       if (value.trim()) {
