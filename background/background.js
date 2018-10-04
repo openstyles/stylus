@@ -13,6 +13,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   // getStyles,
   getSectionsByUrl: styleManager.getSectionsByUrl,
   getSectionsById: styleManager.getSectionsById,
+  getStylesInfo: styleManager.getStylesInfo,
   // saveStyle,
   // deleteStyle,
 

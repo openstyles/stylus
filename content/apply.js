@@ -116,7 +116,7 @@
         break;
 
       case 'styleUpdated':
-        if (request.codeIsUpdated === false) {
+        if (!request.codeIsUpdated) {
           applyStyleState(request.style);
           break;
         }

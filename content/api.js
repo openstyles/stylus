@@ -1,3 +1,4 @@
+/* global promisify */
 'use strict';
 
 const API = (() => {
@@ -12,26 +13,10 @@ const API = (() => {
   function sendMessage(msg) {
     return runtimeSendMessage(msg)
       .then(result => {
-        if (result.__ERROR__) {
+        if (result && result.__ERROR__) {
           throw new Error(result.__ERROR__);
         }
         return result;
-      });
-  }
-
-  function promisify(fn) {
-    return (...args) =>
-      new Promise((resolve, reject) => {
-        fn(...args, (...result) => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-            return;
-          }
-          resolve(
-            result.length === 0 ? undefined :
-            result.length === 1 ? result[1] : result
-          );
-        });
       });
   }
 
@@ -48,7 +33,11 @@ const API = (() => {
       if (BG !== window) {
         args = BG.deepCopy(args);
       }
-      return BG.API_METHODS[name](...args)
+      const fn = BG.API_METHODS[name];
+      if (!fn) {
+        throw new Error(`unknown API method: ${name}`);
+      }
+      return Promise.resolve(fn(...args))
         .then(BG.deepCopy);
     });
   }

@@ -23,6 +23,7 @@
   ],
   "background": {
     "scripts": [
+      "js/promisify.js",
       "js/messaging.js",
       "js/storage-util.js",
       "js/sections-equal.js",
@@ -60,7 +61,7 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["content/api.js", "content/apply.js"]
+      "js": ["js/promisify.js", "content/api.js", "content/apply.js"]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],

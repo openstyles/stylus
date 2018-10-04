@@ -1,4 +1,4 @@
-/* global createCache db calcStyleDigest normalizeStyleSections db */
+/* global createCache db calcStyleDigest normalizeStyleSections db promisify */
 'use strict';
 
 const styleManager = (() => {
@@ -8,17 +8,36 @@ const styleManager = (() => {
   const compiledRe = createCache();
   const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
+  const tabQuery = promisify(chrome.tabs.query.bind(chrome.tabs));
+  const tabSendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
+  const runtimeSendMessage = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
 
   // FIXME: do we have to prepare `styles` map for all methods?
   return ensurePrepared({
-    getSectionsForURL,
+    styles,
+    cachedStyleForUrl,
+    getStylesInfo,
+    getSectionsByUrl,
     installStyle,
     deleteStyle,
     setStyleExclusions,
-    editSave
+    editSave,
+    toggleStyle
     // TODO: get all styles API?
     // TODO: get style by ID?
   });
+
+  function toggleStyle(id, enabled) {
+    const style = styles.get(id);
+    style.enabled = enabled;
+    return saveStyle(style)
+      .then(() => broadcastMessage('styleUpdated', {id, enabled}));
+  }
+
+  function getStylesInfo() {
+    // FIXME: remove code?
+    return [...styles.values()];
+  }
 
   function editSave() {}
 
@@ -105,14 +124,14 @@ const styleManager = (() => {
     }
   }
 
-  function getSectionsForURL(url) {
+  function getSectionsByUrl(url) {
     // if (!URLS.supported(url) || prefs.get('disableAll')) {
       // return [];
     // }
     let result = cachedStyleForUrl.get(url);
     if (!result) {
       result = [];
-      for (const style of styles) {
+      for (const style of styles.values()) {
         if (!urlMatchStyle(url, style)) {
           continue;
         }
@@ -212,5 +231,82 @@ const styleManager = (() => {
 
   function getUrlNoHash(url) {
     return url.split('#')[0];
+  }
+
+  function cleanData(method, data) {
+    if (
+      (method === 'styleUpdated' || method === 'styleAdded') &&
+      (data.sections || data.sourceCode)
+    ) {
+      // apply/popup/manage use only meta for these two methods,
+      // editor may need the full code but can fetch it directly,
+      // so we send just the meta to avoid spamming lots of tabs with huge styles
+      return getStyleWithNoCode(data);
+    }
+    return output;
+  }
+
+  function isExtensionStyle(id) {
+    // TODO
+    // const style = styles.get(id);
+    // if (!style)
+    return false;
+  }
+
+  function broadcastMessage(method, data) {
+    const pendingPrivilage = runtimeSendMessage({method, cleanData(method, data)});
+    // const affectsAll = !msg.affects || msg.affects.all;
+    // const affectsOwnOriginOnly =
+    // !affectsAll && (msg.affects.editor || msg.affects.manager);
+    // const affectsTabs = affectsAll || affectsOwnOriginOnly;
+    // const affectsIcon = affectsAll || msg.affects.icon;
+    // const affectsPopup = affectsAll || msg.affects.popup;
+    // const affectsSelf = affectsPopup || msg.prefs;
+    // notify all open extension pages and popups
+    // if (affectsSelf) {
+      // msg.tabId = undefined;
+      // sendMessage(msg, ignoreChromeError);
+    // }
+    // notify tabs
+    if (affectsTabs || affectsIcon) {
+      const notifyTab = tab => {
+        if (!styleUpdated
+        && (affectsTabs || URLS.optionsUI.includes(tab.url))
+        // own pages are already notified via sendMessage
+        && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
+        // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
+        && (!FIREFOX || tab.width)) {
+          msg.tabId = tab.id;
+          sendMessage(msg, ignoreChromeError);
+        }
+        if (affectsIcon) {
+          // eslint-disable-next-line no-use-before-define
+          // debounce(API.updateIcon, 0, {tab});
+        }
+      };
+      // list all tabs including chrome-extension:// which can be ours
+      Promise.all([
+        queryTabs(isExtensionStyle(data.id) ? {url: URLS.ownOrigin + '*'} : {}),
+        getActiveTab(),
+      ]).then(([tabs, activeTab]) => {
+        const activeTabId = activeTab && activeTab.id;
+        for (const tab of tabs) {
+          invokeOrPostpone(tab.id === activeTabId, notifyTab, tab);
+        }
+      });
+    }
+    // notify self: the message no longer is sent to the origin in new Chrome
+    if (typeof onRuntimeMessage !== 'undefined') {
+      onRuntimeMessage(originalMessage);
+    }
+    // notify apply.js on own pages
+    if (typeof applyOnMessage !== 'undefined') {
+      applyOnMessage(originalMessage);
+    }
+    // propagate saved style state/code efficiently
+    if (styleUpdated) {
+      msg.refreshOwnTabs = false;
+      API.refreshAllTabs(msg);
+    }
   }
 })();

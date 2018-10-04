@@ -32,7 +32,7 @@ const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const handleEvent = {};
 
 Promise.all([
-  API.getStyles({omitCode: !BG}),
+  API.getStylesInfo(),
   urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
   onDOMready().then(initGlobalEvents),
 ]).then(args => {
@@ -195,7 +195,7 @@ function createStyleElement({style, name}) {
     };
   }
   const parts = createStyleElement.parts;
-  const configurable = style.usercssData && Object.keys(style.usercssData.vars).length > 0;
+  const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
   parts.checker.checked = style.enabled;
   parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
@@ -403,10 +403,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    API.saveStyle({
-      id: entry.styleId,
-      enabled: this.matches('.enable') || this.checked,
-    });
+    API.toggleStyle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
   check(event, entry) {
