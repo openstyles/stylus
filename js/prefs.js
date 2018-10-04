@@ -103,7 +103,11 @@ var prefs = (() => {
   };
 
   const initializing = promisify(chrome.storage.sync.get.bind(chrome.storage.sync))('settings')
-    .then(result => setAll(result.settings, true));
+    .then(result => {
+      if (result.settings) {
+        setAll(result.settings, true);
+      }
+    });
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync' || !changes.settings || !changes.settings.newValue) {
