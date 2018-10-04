@@ -1,3 +1,5 @@
+'use strict';
+
 const db = (() => {
   let exec;
   const preparing = prepare();
@@ -103,9 +105,9 @@ const db = (() => {
 
       case 'put':
         if (!data.id) {
-          return getStyles().then(() => {
+          return getAllStyles().then(styles => {
             data.id = 1;
-            for (const style of cachedStyles.list) {
+            for (const style of styles) {
               data.id = Math.max(data.id, style.id + 1);
             }
             return dbExecChromeStorage('put', data);
@@ -118,17 +120,22 @@ const db = (() => {
         return chromeLocal.remove(STYLE_KEY_PREFIX + data);
 
       case 'getAll':
-        return chromeLocal.get(null).then(storage => {
-          const styles = [];
-          for (const key in storage) {
-            if (key.startsWith(STYLE_KEY_PREFIX) &&
-                Number(key.substr(STYLE_KEY_PREFIX.length))) {
-              styles.push(storage[key]);
-            }
-          }
-          return {target: {result: styles}};
-        });
+        return getAllStyles()
+          .then(styles => ({target: {result: styles}}));
     }
     return Promise.reject();
+
+    function getAllStyles() {
+      return chromeLocal.get(null).then(storage => {
+        const styles = [];
+        for (const key in storage) {
+          if (key.startsWith(STYLE_KEY_PREFIX) &&
+              Number(key.substr(STYLE_KEY_PREFIX.length))) {
+            styles.push(storage[key]);
+          }
+        }
+        return styles;
+      });
+    }
   }
 })();

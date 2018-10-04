@@ -57,7 +57,7 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["content/apply.js"]
+      "js": ["content/api.js", "content/apply.js"]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],

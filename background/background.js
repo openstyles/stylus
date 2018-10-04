@@ -4,15 +4,17 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
-global usercss
+global usercss styleManager
 */
 'use strict';
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
-  getStyles,
-  saveStyle,
-  deleteStyle,
+  // getStyles,
+  getSectionsByUrl: styleManager.getSectionsByUrl,
+  getSectionsById: styleManager.getSectionsById,
+  // saveStyle,
+  // deleteStyle,
 
   getStyleFromDB: id =>
     dbExec('get', id).then(event => event.target.result),
@@ -495,25 +497,33 @@ function updateIcon({tab, styles}) {
 
 
 function onRuntimeMessage(msg, sender, sendResponse) {
-  const fn = window.API_METHODS[msg.method];
-  if (!fn) return;
+  if (msg.method !== 'invokeAPI') {
+    // FIXME: switch everything to api.js then throw an error when msg.method is unknown.
+    return;
+  }
+  invoke()
+    .catch(err =>
+      // wrap 'Error' object instance as {__ERROR__: message},
+      // which will be unwrapped by api.js,
+      ({
+        __ERROR__: err.message || String(err)
+      })
+    )
+    // prevent exceptions on sending to a closed tab
+    .then(output => tryCatch(sendResponse, output));
+  // keep channel open
+  return true;
 
-  // wrap 'Error' object instance as {__ERROR__: message},
-  // which will be unwrapped by sendMessage,
-  // and prevent exceptions on sending to a closed tab
-  const respond = data =>
-    tryCatch(sendResponse,
-      data instanceof Error ? {__ERROR__: data.message} : data);
-
-  const result = fn(msg, sender, respond);
-  if (result instanceof Promise) {
-    result
-      .catch(e => ({__ERROR__: e instanceof Error ? e.message : e}))
-      .then(respond);
-    return KEEP_CHANNEL_OPEN;
-  } else if (result === KEEP_CHANNEL_OPEN) {
-    return KEEP_CHANNEL_OPEN;
-  } else if (result !== undefined) {
-    respond(result);
+  function invoke() {
+    try {
+      const fn = window.API_METHODS[msg.name];
+      if (!fn) {
+        throw new Error(`unknown API: ${msg.name}`);
+      }
+      const context = {msg, sender};
+      return Promise.resolve(fn.apply(context, msg.args));
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 }

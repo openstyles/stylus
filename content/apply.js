@@ -25,7 +25,13 @@
   const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
   const pageContextQueue = [];
 
-  requestStyles();
+  requestStyles({}, styles => {
+    // FIXME: need transition patch?
+    // if (needTransitionPatch(styles)) {
+      // applyTransitionPatch();
+    // }
+    applyStyles(styles);
+  });
   chrome.runtime.onMessage.addListener(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
 
@@ -36,7 +42,7 @@
 
   function requestStyles(options, callback = applyStyles) {
     if (!chrome.app && document instanceof XMLDocument) {
-      chrome.runtime.sendMessage({method: 'styleViaAPI', action: 'styleApply'});
+      API.styleViaAPI({action: 'styleApply'});
       return;
     }
     var matchUrl = location.href;
@@ -49,19 +55,15 @@
         }
       } catch (e) {}
     }
-    const request = Object.assign({
-      method: 'getStylesForFrame',
-      asHash: true,
-      matchUrl,
-    }, options);
-    // On own pages we request the styles directly to minimize delay and flicker
-    if (typeof API === 'function') {
-      API.getStyles(request).then(callback);
-    } else if (!CHROME && getStylesFallback(request)) {
-      // NOP
-    } else {
-      chrome.runtime.sendMessage(request, callback);
-    }
+    // const request = Object.assign({
+      // method: 'getStylesForFrame',
+      // asHash: true,
+      // matchUrl,
+    // }, options);
+    // FIXME: options?
+    // FIXME: getStylesFallback?
+    API.getSectionsByUrl(matchUrl)
+      .then(callback);
   }
 
   /**
@@ -99,12 +101,12 @@
 
     if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
       request.action = request.method;
-      request.method = 'styleViaAPI';
+      request.method = null;
       request.styles = null;
       if (request.style) {
         request.style.sections = null;
       }
-      chrome.runtime.sendMessage(request);
+      API.styleViaAPI(request);
       return;
     }
 
@@ -120,7 +122,7 @@
         }
         if (request.style.enabled) {
           removeStyle({id: request.style.id, retire: true});
-          requestStyles({id: request.style.id});
+          API.getSectionsById(request.style.id).then(applyStyles);
         } else {
           removeStyle(request.style);
         }
@@ -128,7 +130,7 @@
 
       case 'styleAdded':
         if (request.style.enabled) {
-          requestStyles({id: request.style.id});
+          API.getSectionsById(request.style.id).then(applyStyles);
         }
         break;
 
@@ -193,7 +195,7 @@
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        requestStyles({id});
+        API.getSectionsById(id).then(applyStyles);
       }
     } else {
       if (inDoc) {
@@ -224,11 +226,11 @@
   }
 
   function applyStyles(styles) {
-    if (!styles) {
+    // if (!styles) {
       // Chrome is starting up
-      requestStyles();
-      return;
-    }
+      // requestStyles();
+      // return;
+    // }
 
     if (!document.documentElement) {
       new MutationObserver((mutations, observer) => {
@@ -240,12 +242,13 @@
       return;
     }
 
-    if ('disableAll' in styles) {
-      doDisableAll(styles.disableAll);
-    }
-    if ('exposeIframes' in styles) {
-      doExposeIframes(styles.exposeIframes);
-    }
+    // FIXME: switch to prefs
+    // if ('disableAll' in styles) {
+      // doDisableAll(styles.disableAll);
+    // }
+    // if ('exposeIframes' in styles) {
+      // doExposeIframes(styles.exposeIframes);
+    // }
 
     const gotNewStyles = styles.length || styles.needTransitionPatch;
     if (gotNewStyles) {
@@ -256,22 +259,17 @@
       }
     }
 
-    if (styles.needTransitionPatch) {
-      applyTransitionPatch();
-    }
-
     if (gotNewStyles) {
-      for (const id in styles) {
-        const sections = styles[id];
-        if (!Array.isArray(sections)) continue;
-        applySections(id, sections.map(({code}) => code).join('\n'));
+      for (const section of styles) {
+        applySections(section.id, section.code);
       }
       docRootObserver.firstStart();
     }
 
-    if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
-      setContentsInPageContext();
-    }
+    // FIXME
+    // if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
+      // setContentsInPageContext();
+    // }
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
       initDocRewriteObserver();

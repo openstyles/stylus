@@ -1,5 +1,7 @@
+'use strict';
+
 function createCache(size = 1000) {
-  const map = new Map;
+  const map = new Map();
   const buffer = Array(size);
   let index = 0;
   let lastIndex = 0;
@@ -9,7 +11,9 @@ function createCache(size = 1000) {
     delete: delete_,
     clear,
     has: id => map.has(id),
-    get size: () => map.size
+    get size() {
+      return map.size;
+    }
   };
 
   function get(id) {

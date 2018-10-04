@@ -104,61 +104,6 @@ if (FIREFOX_NO_DOM_STORAGE) {
   Object.defineProperty(window, 'sessionStorage', {value: {}});
 }
 
-// eslint-disable-next-line no-var
-var API = (() => {
-  return new Proxy(() => {}, {
-    get: (target, name) =>
-      name === 'remoteCall' ?
-        remoteCall :
-        arg => invokeBG(name, arg),
-  });
-
-  function remoteCall(name, arg, remoteWindow) {
-    let thing = window[name] || window.API_METHODS[name];
-    if (typeof thing === 'function') {
-      thing = thing(arg);
-    }
-    if (!thing || typeof thing !== 'object') {
-      return thing;
-    } else if (thing instanceof Promise) {
-      return thing.then(product => remoteWindow.deepCopy(product));
-    } else {
-      return remoteWindow.deepCopy(thing);
-    }
-  }
-
-  function invokeBG(name, arg = {}) {
-    if (BG && (name in BG || name in BG.API_METHODS)) {
-      const call = BG !== window ?
-        BG.API.remoteCall(name, BG.deepCopy(arg), window) :
-        remoteCall(name, arg, BG);
-      return Promise.resolve(call);
-    }
-    if (BG && BG.getStyles) {
-      throw new Error('Bad API method', name, arg);
-    }
-    if (FIREFOX) {
-      arg.method = name;
-      return sendMessage(arg);
-    }
-    return onBackgroundReady().then(() => invokeBG(name, arg));
-  }
-
-  function onBackgroundReady() {
-    return BG && BG.getStyles ? Promise.resolve() : new Promise(function ping(resolve) {
-      sendMessage({method: 'healthCheck'}, health => {
-        if (health !== undefined) {
-          BG = chrome.extension.getBackgroundPage();
-          resolve();
-        } else {
-          setTimeout(ping, 0, resolve);
-        }
-      });
-    });
-  }
-})();
-
-
 function notifyAllTabs(msg) {
   const originalMessage = msg;
   const styleUpdated = msg.method === 'styleUpdated' || msg.method === 'exclusionsUpdated';
@@ -223,7 +168,6 @@ function notifyAllTabs(msg) {
     API.refreshAllTabs(msg);
   }
 }
-
 
 function sendMessage(msg, callback) {
   /*

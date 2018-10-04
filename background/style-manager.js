@@ -1,6 +1,9 @@
+/* global createCache db calcStyleDigest normalizeStyleSections db */
+'use strict';
+
 const styleManager = (() => {
   const preparing = prepare();
-  const styles = new Map;
+  const styles = new Map();
   const cachedStyleForUrl = createCache();
   const compiledRe = createCache();
   const compiledExclusion = createCache();
@@ -50,6 +53,7 @@ const styleManager = (() => {
         cachedStyleForUrl.clear();
         // FIXME: invalid signature
         notifyAllTabs();
+        return style;
       });
   }
 
@@ -68,7 +72,7 @@ const styleManager = (() => {
         // FIXME: update installDate?
         style = Object.assign(oldStyle, style);
         style.sections = normalizeStyleSections(style);
-        return dbExec('put', style);
+        return db.exec('put', style);
       })
       .then(event => {
         if (style.id == null) {
@@ -142,7 +146,7 @@ const styleManager = (() => {
   }
 
   function urlMatchStyle(url, style) {
-    if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url)) {
+    if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url))) {
       return false;
     }
     return true;

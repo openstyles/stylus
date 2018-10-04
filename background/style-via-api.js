@@ -22,10 +22,10 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
 
   let observingTabs = false;
 
-  return (request, sender) => {
+  return function (request) {
     const action = ACTIONS[request.action];
     return !action ? NOP :
-      action(request, sender)
+      action(request, this.sender)
         .catch(onError)
         .then(maybeToggleObserver);
   };
