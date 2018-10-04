@@ -240,7 +240,7 @@ var prefs = (() => {
 
   function syncPrefs() {
     // FIXME: we always set the entire object? Ideally, this should only use `changes`.
-    chrome.sync.set('settings', values);
+    chrome.storage.sync.set({settings: values});
   }
 
   function equal(a, b) {
