@@ -2,7 +2,7 @@
 'use strict';
 
 // eslint-disable-next-line no-var
-var prefs = new function Prefs() {
+var prefs = (() => {
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'windowPosition': {},           // detached window position
@@ -98,28 +98,27 @@ var prefs = new function Prefs() {
   };
   const values = deepCopy(defaults);
 
-  const affectsIcon = [
-    'show-badge',
-    'disableAll',
-    'badgeDisabled',
-    'badgeNormal',
-    'iconset',
-  ];
-
   const onChange = {
     any: new Set(),
     specific: new Map(),
   };
 
-  // coalesce multiple pref changes in broadcast
-  let broadcastPrefs = {};
+  const initializing = promisify(chrome.storage.sync.get.bind(chrome.storage.sync))('settings')
+    .then(result => setAll(result.settings, true));
 
-  Object.defineProperties(this, {
-    defaults: {value: deepCopy(defaults)}
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'sync' || !changes.settings || !changes.settings.newValue) {
+      return;
+    }
+    initializing.then(() => setAll(changes.settings.newValue, true));
   });
 
-  Object.assign(Prefs.prototype, {
+  // coalesce multiple pref changes in broadcast
+  // let changes = {};
 
+  return {
+    initializing,
+    defaults,
     get(key, defaultValue) {
       if (key in values) {
         return values[key];
@@ -132,61 +131,11 @@ var prefs = new function Prefs() {
       }
       console.warn("No default preference for '%s'", key);
     },
-
     getAll() {
       return deepCopy(values);
     },
-
-    set(key, value, {broadcast = true, sync = true, fromBroadcast} = {}) {
-      const oldValue = values[key];
-      switch (typeof defaults[key]) {
-        case typeof value:
-          break;
-        case 'string':
-          value = String(value);
-          break;
-        case 'number':
-          value |= 0;
-          break;
-        case 'boolean':
-          value = value === true || value === 'true';
-          break;
-      }
-      values[key] = value;
-      const hasChanged = !equal(value, oldValue);
-      if (!fromBroadcast || FIREFOX_NO_DOM_STORAGE) {
-        localStorage[key] = typeof defaults[key] === 'object'
-          ? JSON.stringify(value)
-          : value;
-      }
-      if (!fromBroadcast && broadcast && hasChanged) {
-        this.broadcast(key, value, {sync});
-      }
-      if (hasChanged) {
-        const specific = onChange.specific.get(key);
-        if (typeof specific === 'function') {
-          specific(key, value);
-        } else if (specific instanceof Set) {
-          for (const listener of specific.values()) {
-            listener(key, value);
-          }
-        }
-        for (const listener of onChange.any.values()) {
-          listener(key, value);
-        }
-      }
-    },
-
-    reset: key => this.set(key, deepCopy(defaults[key])),
-
-    broadcast(key, value, {sync = true} = {}) {
-      broadcastPrefs[key] = value;
-      debounce(doBroadcast);
-      if (sync) {
-        debounce(doSyncSet);
-      }
-    },
-
+    set,
+    reset: key => set(key, deepCopy(defaults[key])),
     subscribe(keys, listener) {
       // keys:     string[] ids
       //           or a falsy value to subscribe to everything
@@ -206,7 +155,6 @@ var prefs = new function Prefs() {
         onChange.any.add(listener);
       }
     },
-
     unsubscribe(keys, listener) {
       if (keys) {
         for (const key of keys) {
@@ -224,134 +172,75 @@ var prefs = new function Prefs() {
         onChange.all.remove(listener);
       }
     },
-  });
+  };
 
-  {
-    const importFromBG = () =>
-      API.getPrefs().then(prefs => {
-        for (const id in prefs) {
-          this.set(id, prefs[id], {fromBroadcast: true});
-        }
-      });
-    // Unlike chrome.storage or messaging, HTML5 localStorage is synchronous and always ready,
-    // so we'll mirror the prefs to avoid using the wrong defaults during the startup phase
-    const importFromLocalStorage = () => {
-      forgetOutdatedDefaults(localStorage);
-      for (const key in defaults) {
-        const defaultValue = defaults[key];
-        let value = localStorage[key];
-        if (typeof value === 'string') {
-          switch (typeof defaultValue) {
-            case 'boolean':
-              value = value.toLowerCase() === 'true';
-              break;
-            case 'number':
-              value |= 0;
-              break;
-            case 'object':
-              value = tryJSONparse(value) || defaultValue;
-              break;
+  function promisify(fn) {
+    return (...args) =>
+      new Promise((resolve, reject) => {
+        fn(...args, (...result) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else if (result.length === 0) {
+            resolve(undefined);
+          } else if (result.length === 1) {
+            resolve(result[0]);
+          } else {
+            resolve(result);
           }
-        } else if (FIREFOX_NO_DOM_STORAGE && BG) {
-          value = BG.localStorage[key];
-          value = value === undefined ? defaultValue : value;
-          localStorage[key] = value;
-        } else {
-          value = defaultValue;
-        }
-        if (BG === window) {
-          // when in bg page, .set() will write to localStorage
-          this.set(key, value, {broadcast: false, sync: false});
-        } else {
-          values[key] = value;
-        }
-      }
-      return Promise.resolve();
-    };
-    (FIREFOX_NO_DOM_STORAGE && !BG ? importFromBG() : importFromLocalStorage()).then(() => {
-      if (BG && BG !== window) return;
-      if (BG === window) {
-        affectsIcon.forEach(key => this.broadcast(key, values[key], {sync: false}));
-        chromeSync.getValue('settings').then(settings => importFromSync.call(this, settings));
-      }
-      chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'sync' && 'settings' in changes) {
-          importFromSync.call(this, changes.settings.newValue);
-        }
+        });
       });
-    });
   }
 
-  // any access to chrome API takes time due to initialization of bindings
-  window.addEventListener('load', function _() {
-    window.removeEventListener('load', _);
-    chrome.runtime.onMessage.addListener(msg => {
-      if (msg.prefs) {
-        for (const id in msg.prefs) {
-          prefs.set(id, msg.prefs[id], {fromBroadcast: true});
-        }
-      }
-    });
-  });
-
-  // register hotkeys
-  if (FIREFOX && (browser.commands || {}).update) {
-    const hotkeyPrefs = Object.keys(values).filter(k => k.startsWith('hotkey.'));
-    this.subscribe(hotkeyPrefs, (name, value) => {
-      try {
-        name = name.split('.')[1];
-        if (value.trim()) {
-          browser.commands.update({name, shortcut: value}).catch(ignoreChromeError);
-        } else {
-          browser.commands.reset(name).catch(ignoreChromeError);
-        }
-      } catch (e) {}
-    });
+  function setAll(settings, synced) {
+    for (const [key, value] of Object.entries(settings)) {
+      set(key, value, synced);
+    }
   }
 
-  return;
-
-  function doBroadcast() {
-    if (BG && BG === window && !BG.dbExec.initialized) {
-      window.addEventListener('storageReady', function _() {
-        window.removeEventListener('storageReady', _);
-        doBroadcast();
-      });
+  function set(key, value, synced = false) {
+    const oldValue = values[key];
+    switch (typeof defaults[key]) {
+      case typeof value:
+        break;
+      case 'string':
+        value = String(value);
+        break;
+      case 'number':
+        value |= 0;
+        break;
+      case 'boolean':
+        value = value === true || value === 'true';
+        break;
+    }
+    if (equal(value, oldValue)) {
       return;
     }
-    const affects = {
-      all: 'disableAll' in broadcastPrefs
-        || 'exposeIframes' in broadcastPrefs,
-    };
-    if (!affects.all) {
-      for (const key in broadcastPrefs) {
-        affects.icon = affects.icon || affectsIcon.includes(key);
-        affects.popup = affects.popup || key.startsWith('popup');
-        affects.editor = affects.editor || key.startsWith('editor');
-        affects.manager = affects.manager || key.startsWith('manage');
+    values[key] = value;
+    emitChange(key, value);
+    if (synced) {
+      return;
+    }
+    // changes[key] = value;
+    debounce(syncPrefs);
+  }
+
+  function emitChange(key, value) {
+    const specific = onChange.specific.get(key);
+    if (typeof specific === 'function') {
+      specific(key, value);
+    } else if (specific instanceof Set) {
+      for (const listener of specific.values()) {
+        listener(key, value);
       }
     }
-    notifyAllTabs({method: 'prefChanged', prefs: broadcastPrefs, affects});
-    broadcastPrefs = {};
-  }
-
-  function doSyncSet() {
-    chromeSync.setValue('settings', values);
-  }
-
-  function importFromSync(synced = {}) {
-    forgetOutdatedDefaults(synced);
-    for (const key in defaults) {
-      if (key in synced) {
-        this.set(key, synced[key], {sync: false});
-      }
+    for (const listener of onChange.any.values()) {
+      listener(key, value);
     }
   }
 
-  function forgetOutdatedDefaults(storage) {
-    // our linter runs as a worker so we can reduce the delay and forget the old default values
-    if (Number(storage['editor.lintDelay']) === 500) delete storage['editor.lintDelay'];
-    if (Number(storage['editor.lintReportDelay']) === 4500) delete storage['editor.lintReportDelay'];
+  function syncPrefs() {
+    // FIXME: we always set the entire object? Ideally, this should only use `changes`.
+    chrome.sync.set('settings', values);
   }
 
   function equal(a, b) {
@@ -383,7 +272,7 @@ var prefs = new function Prefs() {
       !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')
     );
   }
-}();
+})();
 
 
 // Accepts an array of pref names (values are fetched via prefs.get)

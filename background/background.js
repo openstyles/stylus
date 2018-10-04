@@ -312,6 +312,21 @@ window.addEventListener('storageReady', function _() {
   updateAPI(null, prefs.get('exposeIframes'));
 }
 
+// register hotkeys
+if (FIREFOX && browser.commands && browser.commands.update) {
+  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
+  this.subscribe(hotkeyPrefs, (name, value) => {
+    try {
+      name = name.split('.')[1];
+      if (value.trim()) {
+        browser.commands.update({name, shortcut: value}).catch(ignoreChromeError);
+      } else {
+        browser.commands.reset(name).catch(ignoreChromeError);
+      }
+    } catch (e) {}
+  });
+}
+
 // *************************************************************************
 
 function webNavigationListener(method, {url, tabId, frameId}) {
