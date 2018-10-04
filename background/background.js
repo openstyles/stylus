@@ -202,11 +202,10 @@ if (chrome.contextMenus) {
       }
       item = Object.assign({id}, item);
       delete item.presentIf;
-      const prefValue = prefs.get(id);
       item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefValue === 'boolean') {
+      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
         item.type = 'checkbox';
-        item.checked = prefValue;
+        item.checked = prefs.get(id);
       }
       if (!item.contexts) {
         item.contexts = ['browser_action'];
@@ -230,7 +229,7 @@ if (chrome.contextMenus) {
   };
 
   const keys = Object.keys(contextMenus);
-  prefs.subscribe(keys.filter(id => typeof prefs.get(id) === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'), toggleCheckmark);
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
