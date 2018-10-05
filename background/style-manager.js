@@ -32,13 +32,6 @@ const styleManager = (() => {
     // TODO: get style by ID?
   });
 
-  function countStyles(filter) {
-    if (!filter) {
-      return styles.size;
-    }
-    // TODO
-  }
-
   function getAllStyles() {
     return [...styles.values()].map(s => s.data);
   }
@@ -58,23 +51,38 @@ const styleManager = (() => {
       .then(() => id);
   }
 
+  function emitChangesToTabs(getMessage, appliesTo, ignoreExtension = false) {
+    // FIXME: does `discarded` work in old browsers?
+    // TODO: send to activated tabs first?
+    return tabQuery({discarded: false})
+      .then(tabs => {
+        const pending = [];
+        for (const tab of tabs) {
+          if (
+            !URLS.supported(tab.url) ||
+            ignoreExtension && isExtensionUrl(tab.url) ||
+            appliesTo && !appliesTo.has(tab.url)
+          ) {
+            continue;
+          }
+          const message = typeof getMessage === 'function' ? getMessage(tab) : getMessage;
+          if (message) {
+            pending.push(tabSendMessage(tab.id, message));
+          }
+        }
+        return Promise.all(pending);
+      });
+  }
+
   function emitChanges(message, appliesTo) {
     const pending = runtimeSendMessage(message);
     if (appliesTo && [...appliesTo].every(isExtensionUrl)) {
       return pending;
     }
-    // FIXME: does `discared` work in old browsers?
-    // TODO: send to activated tabs first?
-    const pendingTabs = tabQuery({discared: false})
-      .then(tabs => tabs
-        .filter(t =>
-          URLS.supported(t.url) &&
-          !isExtensionUrl(t.url) &&
-          (!appliesTo || appliesTo.has(t.url))
-        )
-        .map(t => tabSendMessage(t.id, message))
-      );
-    return Promise.all([pending, pendingTabs]);
+    return Promise.all([
+      pending,
+      emitChangesToTabs(message, appliesTo, true),
+    ]);
   }
 
   function isExtensionUrl(url) {
@@ -90,6 +98,18 @@ const styleManager = (() => {
       .map(s => getStyleWithNoCode(s.data));
   }
 
+  function countStyles(filter) {
+    if (!filter) {
+      return styles.size;
+    }
+    if (filter.id) {
+      return styles.has(filter.id) ? 1 : 0;
+    }
+    return [...styles.values()]
+      .filter(s => filterMatchStyle(filter, s.data))
+      .length;
+  }
+
   function filterMatchStyle(filter, style) {
     for (const key of Object.keys(filter)) {
       if (filter[key] !== style[key]) {
@@ -99,7 +119,9 @@ const styleManager = (() => {
     return true;
   }
 
-  function editSave() {}
+  function editSave(style) {
+    return saveStyle(style);
+  }
 
   function setStyleExclusions() {}
 
@@ -128,15 +150,64 @@ const styleManager = (() => {
       .then(() => id);
   }
 
-  function installStyle(style) {
-    return calcStyleDigest(style)
+  function createNewStyle() {
+    return {
+      enabled: true,
+      updateUrl: null,
+      md5Url: null,
+      url: null,
+      originalMd5: null,
+      installDate: Date.now()
+    };
+  }
+
+  function installStyle(data) {
+    let style = styles.get(style.id);
+    if (!style) {
+      data = Object.assign(createNewStyle(), data);
+    } else {
+      data = Object.assign({}, style.data, data);
+    }
+    // FIXME: update installDate?
+    return calcStyleDigest(data)
       .then(digest => {
-        style.originalDigest = digest;
-        return saveStyle(style);
+        data.originalDigest = digest;
+        return saveStyle(data);
       })
-      .then(style => {
+      .then(newData => {
         // FIXME: do we really need to clear the entire cache?
-        cachedStyleForUrl.clear();
+        // cachedStyleForUrl.clear();
+        if (!style) {
+          const appliesTo = new Set();
+          styles.set(newData.id, {
+            appliesTo,
+            data: newData
+          });
+          // update cache
+          tabQuery()
+            .then(tabs => {
+              for (const tab of tabs) {
+                // FIXME: switch to something like `shouldApplyTo` that doesn't use code
+                const code = getAppliedCode(tab.url, newData);
+                if (!code) {
+                  continue;
+                }
+                const cache = cachedStyleForUrl.get(tab.url);
+                if (!cache) {
+                  continue;
+                }
+                cache[newData.id] = code;
+                appliesTo.add(tab.url);
+              }
+              return emitChanges()
+            })
+        }
+        const appliesTo = style.appliesTo;
+        style.appliesTo = new Set;
+        for (const url of style.appliesTo) {
+          cachedStyleForUrl.delete(url);
+        }
+        emitChanges()
         // FIXME: invalid signature
         notifyAllTabs();
         return style;
@@ -155,7 +226,6 @@ const styleManager = (() => {
   function saveStyle(style) {
     return (style.id == null ? getNewStyle() : getOldStyle())
       .then(oldStyle => {
-        // FIXME: update installDate?
         style = Object.assign(oldStyle, style);
         // FIXME: why we always run `normalizeStyleSections` at each `saveStyle`?
         style.sections = normalizeStyleSections(style);
@@ -181,14 +251,7 @@ const styleManager = (() => {
     // FIXME: don't overwrite style name when the name is empty
 
     function getNewStyle() {
-      return Promise.resolve({
-        enabled: true,
-        updateUrl: null,
-        md5Url: null,
-        url: null,
-        originalMd5: null,
-        installDate: Date.now()
-      });
+      return Promise.resolve();
     }
   }
 
@@ -201,16 +264,7 @@ const styleManager = (() => {
     if (!result) {
       result = {};
       for (const {appliesTo, data} of styles.values()) {
-        if (!urlMatchStyle(url, data)) {
-          continue;
-        }
-        let code = '';
-        // result[id] = '';
-        for (const section of data.sections) {
-          if (urlMatchSection(url, section)) {
-            code += section.code;
-          }
-        }
+        const code = getAppliedCode(url, data);
         if (code) {
           result[data.id] = code;
           appliesTo.add(url);
@@ -222,6 +276,19 @@ const styleManager = (() => {
       return {[filterId]: result[filterId]};
     }
     return result;
+  }
+
+  function getAppliedCode(url, data) {
+    if (!urlMatchStyle(url, data)) {
+      return;
+    }
+    let code = '';
+    for (const section of data.sections) {
+      if (urlMatchSection(url, section)) {
+        code += section.code;
+      }
+    }
+    return code;
   }
 
   function prepare() {
