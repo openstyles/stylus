@@ -1,4 +1,4 @@
-/* global promisify */
+/* global promisify deepCopy */
 'use strict';
 
 const msg = (() => {
@@ -174,7 +174,9 @@ const msg = (() => {
       return preparing.then(() => exchangeGet(message, keepStorage));
     }
     message.data = bg._msg.storage.get(message.id);
-    if (!keepStorage) {
+    if (keepStorage) {
+      message.data = deepCopy(data);
+    } else {
       bg._msg.storage.delete(message.id);
     }
   }
