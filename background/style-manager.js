@@ -1,4 +1,6 @@
-/* global createCache db calcStyleDigest normalizeStyleSections db promisify */
+/* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
+/* global createCache db calcStyleDigest normalizeStyleSections db promisify
+    getStyleWithNoCode */
 'use strict';
 
 const styleManager = (() => {
@@ -14,29 +16,87 @@ const styleManager = (() => {
 
   // FIXME: do we have to prepare `styles` map for all methods?
   return ensurePrepared({
-    styles,
-    cachedStyleForUrl,
+    // styles,
+    // cachedStyleForUrl,
     getStylesInfo,
     getSectionsByUrl,
     installStyle,
     deleteStyle,
     setStyleExclusions,
     editSave,
-    toggleStyle
+    toggleStyle,
+    getAllStyles, // used by import-export
+    getStylesInfoForUrl, // used by popup
+    countStyles,
     // TODO: get all styles API?
     // TODO: get style by ID?
   });
 
-  function toggleStyle(id, enabled) {
-    const style = styles.get(id);
-    style.enabled = enabled;
-    return saveStyle(style)
-      .then(() => broadcastMessage('styleUpdated', {id, enabled}));
+  function countStyles(filter) {
+    if (!filter) {
+      return styles.size;
+    }
+    // TODO
   }
 
-  function getStylesInfo() {
-    // FIXME: remove code?
-    return [...styles.values()];
+  function getAllStyles() {
+    return [...styles.values()].map(s => s.data);
+  }
+
+  function toggleStyle(id, enabled) {
+    const style = styles.get(id);
+    const newData = Object.assign({}, style.data, {enabled});
+    return saveStyle(newData)
+      .then(newData => {
+        style.data = newData;
+        return emitChanges({
+          method: 'styleUpdated',
+          codeIsUpdated: false,
+          style: {id, enabled}
+        }, style.appliesTo);
+      })
+      .then(() => id);
+  }
+
+  function emitChanges(message, appliesTo) {
+    const pending = runtimeSendMessage(message);
+    if (appliesTo && [...appliesTo].every(isExtensionUrl)) {
+      return pending;
+    }
+    // FIXME: does `discared` work in old browsers?
+    // TODO: send to activated tabs first?
+    const pendingTabs = tabQuery({discared: false})
+      .then(tabs => tabs
+        .filter(t =>
+          URLS.supported(t.url) &&
+          !isExtensionUrl(t.url) &&
+          (!appliesTo || appliesTo.has(t.url))
+        )
+        .map(t => tabSendMessage(t.id, message))
+      );
+    return Promise.all([pending, pendingTabs]);
+  }
+
+  function isExtensionUrl(url) {
+    return /^\w+?-extension:\/\//.test(url);
+  }
+
+  function getStylesInfo(filter) {
+    if (filter && filter.id) {
+      return [getStyleWithNoCode(styles.get(filter.id).data)];
+    }
+    return [...styles.values()]
+      .filter(s => !filter || filterMatchStyle(filter, s.data))
+      .map(s => getStyleWithNoCode(s.data));
+  }
+
+  function filterMatchStyle(filter, style) {
+    for (const key of Object.keys(filter)) {
+      if (filter[key] !== style[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function editSave() {}
@@ -52,13 +112,20 @@ const styleManager = (() => {
   }
 
   function deleteStyle(id) {
+    const style = styles.get(id);
     return db.exec('delete', id)
       .then(() => {
-        // FIXME: do we really need to clear the entire cache?
-        cachedStyleForUrl.clear();
-        notifyAllTabs({method: 'styleDeleted', id});
-        return id;
-      });
+        for (const url of style.appliesTo) {
+          const cache = cachedStyleForUrl.get(url);
+          delete cache[id];
+        }
+        styles.delete(id);
+        return emitChanges({
+          method: 'styleDeleted',
+          data: {id}
+        });
+      })
+      .then(() => id);
   }
 
   function installStyle(style) {
@@ -90,6 +157,7 @@ const styleManager = (() => {
       .then(oldStyle => {
         // FIXME: update installDate?
         style = Object.assign(oldStyle, style);
+        // FIXME: why we always run `normalizeStyleSections` at each `saveStyle`?
         style.sections = normalizeStyleSections(style);
         return db.exec('put', style);
       })
@@ -124,39 +192,49 @@ const styleManager = (() => {
     }
   }
 
-  function getSectionsByUrl(url) {
-    // if (!URLS.supported(url) || prefs.get('disableAll')) {
-      // return [];
-    // }
+  function getStylesInfoForUrl(url) {
+
+  }
+
+  function getSectionsByUrl(url, filterId) {
     let result = cachedStyleForUrl.get(url);
     if (!result) {
-      result = [];
-      for (const style of styles.values()) {
-        if (!urlMatchStyle(url, style)) {
+      result = {};
+      for (const {appliesTo, data} of styles.values()) {
+        if (!urlMatchStyle(url, data)) {
           continue;
         }
-        const item = {
-          id: style.id,
-          code: ''
-        };
-        for (const section of style.sections) {
+        let code = '';
+        // result[id] = '';
+        for (const section of data.sections) {
           if (urlMatchSection(url, section)) {
-            item.code += section.code;
+            code += section.code;
           }
         }
-        if (item.code) {
-          result.push(item);
+        if (code) {
+          result[data.id] = code;
+          appliesTo.add(url);
         }
       }
+      cachedStyleForUrl.set(url, result);
+    }
+    if (filterId) {
+      return {[filterId]: result[filterId]};
     }
     return result;
   }
 
   function prepare() {
     return db.exec('getAll').then(event => {
-      const styleList = event.target.result || [];
+      const styleList = event.target.result;
+      if (!styleList) {
+        return;
+      }
       for (const style of styleList) {
-        styles.set(style.id, style);
+        styles.set(style.id, {
+          appliesTo: new Set(),
+          data: style
+        });
         if (!style.name) {
           style.name = 'ID: ' + style.id;
         }
@@ -233,18 +311,18 @@ const styleManager = (() => {
     return url.split('#')[0];
   }
 
-  function cleanData(method, data) {
-    if (
-      (method === 'styleUpdated' || method === 'styleAdded') &&
-      (data.sections || data.sourceCode)
-    ) {
+  // function cleanData(method, data) {
+    // if (
+      // (method === 'styleUpdated' || method === 'styleAdded') &&
+      // (data.sections || data.sourceCode)
+    // ) {
       // apply/popup/manage use only meta for these two methods,
       // editor may need the full code but can fetch it directly,
       // so we send just the meta to avoid spamming lots of tabs with huge styles
-      return getStyleWithNoCode(data);
-    }
-    return output;
-  }
+      // return getStyleWithNoCode(data);
+    // }
+    // return data;
+  // }
 
   function isExtensionStyle(id) {
     // TODO
@@ -253,8 +331,8 @@ const styleManager = (() => {
     return false;
   }
 
-  function broadcastMessage(method, data) {
-    const pendingPrivilage = runtimeSendMessage({method, cleanData(method, data)});
+  // function emitChanges(method, data) {
+    // const pendingPrivilage = runtimeSendMessage({method, cleanData(method, data)});
     // const affectsAll = !msg.affects || msg.affects.all;
     // const affectsOwnOriginOnly =
     // !affectsAll && (msg.affects.editor || msg.affects.manager);
@@ -268,45 +346,47 @@ const styleManager = (() => {
       // sendMessage(msg, ignoreChromeError);
     // }
     // notify tabs
-    if (affectsTabs || affectsIcon) {
-      const notifyTab = tab => {
-        if (!styleUpdated
-        && (affectsTabs || URLS.optionsUI.includes(tab.url))
+    // if (affectsTabs || affectsIcon) {
+      // const notifyTab = tab => {
+        // if (!styleUpdated
+        // && (affectsTabs || URLS.optionsUI.includes(tab.url))
         // own pages are already notified via sendMessage
-        && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
+        // && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
         // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-        && (!FIREFOX || tab.width)) {
-          msg.tabId = tab.id;
-          sendMessage(msg, ignoreChromeError);
-        }
-        if (affectsIcon) {
+        // && (!FIREFOX || tab.width)) {
+          // msg.tabId = tab.id;
+          // sendMessage(msg, ignoreChromeError);
+        // }
+        // if (affectsIcon) {
           // eslint-disable-next-line no-use-before-define
           // debounce(API.updateIcon, 0, {tab});
-        }
-      };
+        // }
+      // };
       // list all tabs including chrome-extension:// which can be ours
-      Promise.all([
-        queryTabs(isExtensionStyle(data.id) ? {url: URLS.ownOrigin + '*'} : {}),
-        getActiveTab(),
-      ]).then(([tabs, activeTab]) => {
-        const activeTabId = activeTab && activeTab.id;
-        for (const tab of tabs) {
-          invokeOrPostpone(tab.id === activeTabId, notifyTab, tab);
-        }
-      });
-    }
+      // Promise.all([
+        // queryTabs(isExtensionStyle(data.id) ? {url: URLS.ownOrigin + '*'} : {}),
+        // getActiveTab(),
+      // ]).then(([tabs, activeTab]) => {
+        // const activeTabId = activeTab && activeTab.id;
+        // for (const tab of tabs) {
+          // invokeOrPostpone(tab.id === activeTabId, notifyTab, tab);
+        // }
+      // });
+    // }
     // notify self: the message no longer is sent to the origin in new Chrome
-    if (typeof onRuntimeMessage !== 'undefined') {
-      onRuntimeMessage(originalMessage);
-    }
+    // if (typeof onRuntimeMessage !== 'undefined') {
+      // onRuntimeMessage(originalMessage);
+    // }
     // notify apply.js on own pages
-    if (typeof applyOnMessage !== 'undefined') {
-      applyOnMessage(originalMessage);
-    }
+    // if (typeof applyOnMessage !== 'undefined') {
+      // applyOnMessage(originalMessage);
+    // }
     // propagate saved style state/code efficiently
-    if (styleUpdated) {
-      msg.refreshOwnTabs = false;
-      API.refreshAllTabs(msg);
-    }
-  }
+    // if (styleUpdated) {
+      // msg.refreshOwnTabs = false;
+      // API.refreshAllTabs(msg);
+    // }
+  // }
 })();
+
+function notifyAllTabs() {}

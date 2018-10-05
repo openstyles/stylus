@@ -30,10 +30,9 @@
       gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      chrome.runtime.sendMessage({
-        method: 'getStyles',
+      API.getStylesInfo({
         md5Url: getMeta('stylish-md5-url') || location.href
-      }, checkUpdatability);
+      }).then(checkUpdatability);
     }
     if (document.getElementById('install_button')) {
       onDOMready().then(() => {
@@ -148,10 +147,9 @@
 
   function onUpdate() {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({
-        method: 'getStyles',
-        md5Url: getMeta('stylish-md5-url') || location.href,
-      }, ([style]) => {
+      API.getStylesInfo({
+        md5Url: getMeta('stylish-md5-url') || location.href
+      }).then(([style]) => {
         saveStyleCode('styleUpdate', style.name, {id: style.id})
           .then(resolve, reject);
       });
@@ -160,36 +158,27 @@
 
 
   function saveStyleCode(message, name, addProps) {
-    return new Promise((resolve, reject) => {
-      const isNew = message === 'styleInstall';
-      const needsConfirmation = isNew || !saveStyleCode.confirmed;
-      if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
-        reject();
+    const isNew = message === 'styleInstall';
+    const needsConfirmation = isNew || !saveStyleCode.confirmed;
+    if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
+      return Promise.reject();
+    }
+    saveStyleCode.confirmed = true;
+    enableUpdateButton(false);
+    return getStyleJson().then(json => {
+      if (!json) {
+        prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
+          'https://github.com/openstyles/stylus/issues/195');
         return;
       }
-      saveStyleCode.confirmed = true;
-      enableUpdateButton(false);
-      getStyleJson().then(json => {
-        if (!json) {
-          prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
-            'https://github.com/openstyles/stylus/issues/195');
-          return;
-        }
-        chrome.runtime.sendMessage(
-          Object.assign(json, addProps, {
-            method: 'saveStyle',
-            reason: isNew ? 'install' : 'update',
-          }),
-          style => {
-            if (!isNew && style.updateUrl.includes('?')) {
-              enableUpdateButton(true);
-            } else {
-              sendEvent({type: 'styleInstalledChrome'});
-            }
+      return API.installStyle(Object.assign(json, addProps))
+        .then(style => {
+          if (!isNew && style.updateUrl.includes('?')) {
+            enableUpdateButton(true);
+          } else {
+            sendEvent({type: 'styleInstalledChrome'});
           }
-        );
-        resolve();
-      });
+        });
     });
 
     function enableUpdateButton(state) {
@@ -220,13 +209,12 @@
       if (url.startsWith('#')) {
         resolve(document.getElementById(url.slice(1)).textContent);
       } else {
-        chrome.runtime.sendMessage(Object.assign({
+        API.download(Object.assign({
           url,
-          method: 'download',
           timeout: 60e3,
           // USO can't handle POST requests for style json
           body: null,
-        }, options), result => {
+        }, options)).then(result => {
           const error = result && result.__ERROR__;
           if (error) {
             alert('Error' + (error ? '\n' + error : ''));
@@ -249,12 +237,12 @@
         if (codeElement && !codeElement.textContent.trim()) {
           return style;
         }
-        return getResource(getMeta('stylish-update-url')).then(code => new Promise(resolve => {
-          chrome.runtime.sendMessage({method: 'parseCss', code}, ({sections}) => {
-            style.sections = sections;
-            resolve(style);
+        return getResource(getMeta('stylish-update-url'))
+          .then(code => API.parseCss({code}))
+          .then(result => {
+            style.sections = result.sections;
+            return style;
           });
-        }));
       })
       .catch(() => null);
   }

@@ -1,6 +1,6 @@
 /*
 global configDialog hotkeys
-global popupExclusions
+global popupExclusions promisify onTabReady
 */
 
 'use strict';
@@ -20,10 +20,7 @@ getActiveTab().then(tab =>
   : getTabRealURL(tab)
 ).then(url => Promise.all([
   (tabURL = URLS.supported(url) ? url : '') &&
-  API.getStyles({
-    matchUrl: tabURL,
-    omitCode: !BG,
-  }),
+  API.getStylesInfoForUrl(tabURL),
   onDOMready().then(initPopup),
 ])).then(([styles]) => {
   showStyles(styles);
@@ -115,7 +112,8 @@ function initPopup() {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
+    const sendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
+    sendMessage(tab.id, {method: 'ping'}, {frameId: 0}).then(pong => {
       if (pong) {
         return;
       }
@@ -233,18 +231,19 @@ function showStyles(styles) {
   installed.appendChild(container);
   setTimeout(detectSloppyRegexps, 100, styles);
 
-  API.getStyles({
-    matchUrl: tabURL,
-    strictRegexp: false,
-    omitCode: true,
-  }).then(unscreenedStyles => {
-    for (const style of unscreenedStyles) {
-      if (!styles.find(({id}) => id === style.id)) {
-        createStyleElement({style, check: true});
-      }
-    }
-    window.dispatchEvent(new Event('showStyles:done'));
-  });
+  // FIXME: detect sloppy regexp?
+  // API.getStyles({
+    // matchUrl: tabURL,
+    // strictRegexp: false,
+    // omitCode: true,
+  // }).then(unscreenedStyles => {
+    // for (const style of unscreenedStyles) {
+      // if (!styles.find(({id}) => id === style.id)) {
+        // createStyleElement({style, check: true});
+      // }
+    // }
+  window.dispatchEvent(new Event('showStyles:done'));
+  // });
 }
 
 
@@ -347,10 +346,10 @@ Object.assign(handleEvent, {
   toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API.saveStyle({
-      id: handleEvent.getClickedStyleId(event),
-      enabled: this.matches('.enable') || this.checked,
-    });
+    API.toggleStyle(
+      handleEvent.getClickedStyleId(event),
+      this.matches('.enable') || this.checked
+    );
   },
 
   delete(event) {
@@ -377,14 +376,14 @@ Object.assign(handleEvent, {
         className: 'lights-on',
         onComplete: () => (box.dataset.display = false),
       });
-      if (ok) API.deleteStyle({id});
+      if (ok) API.deleteStyle(id);
     }
   },
 
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      API.getStyles({id: styleId}).then(([style]) => {
+      API.getStylesInfo({id: styleId}).then(([style]) => {
         hotkeys.setState(false);
         configDialog(style).then(() => {
           hotkeys.setState(true);
@@ -452,12 +451,19 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
+    const message = tryJSONparse(this.dataset.sendMessage);
     getActiveTab()
       .then(activeTab => API.openURL({
         url: this.href || this.dataset.href,
-        index: activeTab.index + 1,
-        message: tryJSONparse(this.dataset.sendMessage),
+        index: activeTab.index + 1
       }))
+      .then(tab => {
+        if (message) {
+          const sendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs.sendMessage));
+          return onTabReady(tab)
+            .then(() => sendMessage(tab.id, message));
+        }
+      })
       .then(window.close);
   },
 
@@ -495,17 +501,18 @@ function handleUpdate(style) {
   }
   if (!tabURL) return;
   // Add an entry when a new style for the current url is installed
-  API.getStyles({
-    matchUrl: tabURL,
-    stopOnFirst: true,
-    omitCode: true,
-  }).then(([style]) => {
-    if (style) {
-      document.body.classList.remove('blocked');
-      $$.remove('.blocked-info, #no-styles');
-      createStyleElement({style, check: true});
-    }
-  });
+  // FIXME: what does this do?
+  // API.getStyles({
+    // matchUrl: tabURL,
+    // stopOnFirst: true,
+    // omitCode: true,
+  // }).then(([style]) => {
+    // if (style) {
+      // document.body.classList.remove('blocked');
+      // $$.remove('.blocked-info, #no-styles');
+      // createStyleElement({style, check: true});
+    // }
+  // });
 }
 
 

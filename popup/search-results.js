@@ -287,7 +287,7 @@ window.addEventListener('showStyles:done', function _() {
       return;
     }
     const md5Url = UPDATE_URL.replace('%', result.id);
-    API.getStyles({md5Url}).then(([installedStyle]) => {
+    API.countStyles({md5Url}).then(installedStyle => {
       if (installedStyle) {
         totalResults = Math.max(0, totalResults - 1);
       } else {
@@ -529,7 +529,7 @@ window.addEventListener('showStyles:done', function _() {
     event.stopPropagation();
     const entry = this.closest('.search-result');
     saveScrollPosition(entry);
-    API.deleteStyle({id: entry._result.installedStyleId})
+    API.deleteStyle(entry._result.installedStyleId)
       .then(restoreScrollPosition);
   }
 

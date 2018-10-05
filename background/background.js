@@ -4,7 +4,7 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
-global usercss styleManager
+global usercss styleManager db
 */
 'use strict';
 
@@ -14,11 +14,13 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getSectionsByUrl: styleManager.getSectionsByUrl,
   getSectionsById: styleManager.getSectionsById,
   getStylesInfo: styleManager.getStylesInfo,
+  toggleStyle: styleManager.toggleStyle,
+  deleteStyle: styleManager.deleteStyle,
   // saveStyle,
   // deleteStyle,
 
   getStyleFromDB: id =>
-    dbExec('get', id).then(event => event.target.result),
+    db.exec('get', id).then(event => event.target.result),
 
   download(msg) {
     delete msg.method;

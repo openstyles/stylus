@@ -431,7 +431,7 @@ Object.assign(handleEvent, {
     })
     .then(({button}) => {
       if (button === 0) {
-        API.deleteStyle({id});
+        API.deleteStyle(id);
       }
     });
   },
@@ -646,7 +646,7 @@ function switchUI({styleOnly} = {}) {
   const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
   if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getStyles().then(showStyles);
+    API.getStylesInfo().then(showStyles);
     return;
   }
   if (changed.targets) {
@@ -670,7 +670,9 @@ function onVisibilityChange() {
     // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible':
       if (sessionStorage.justEditedStyleId) {
-        API.getStyles({id: sessionStorage.justEditedStyleId}).then(([style]) => {
+        API.getStylesInfo({
+          id: sessionStorage.justEditedStyleId
+        }).then(([style]) => {
           handleUpdate(style, {method: 'styleUpdated'});
         });
         delete sessionStorage.justEditedStyleId;

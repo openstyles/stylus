@@ -2,8 +2,10 @@
 'use strict';
 
 const API = (() => {
-  const preparing = promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
-    .catch(() => null);
+  const preparing = chrome.runtime.getBackgroundPage ?
+    promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
+      .catch(() => null) :
+    Promise.resolve(null);
   const runtimeSendMessage = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
   return new Proxy(() => {}, {
     get: (target, name) =>

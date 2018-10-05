@@ -165,7 +165,7 @@ function onRuntimeMessage(request) {
         // code-less style from notifyAllTabs
         const {sections, id} = request.style;
         ((sections && sections[0] || {}).code === null
-          ? API.getStyles({id})
+          ? API.getStyleFromDB(id)
           : Promise.resolve([request.style])
         ).then(([style]) => {
           if (isUsercss(style)) {
@@ -372,11 +372,10 @@ function save() {
     return;
   }
 
-  API.saveStyle({
+  API.editSave({
     id: styleId,
     name: $('#name').value.trim(),
     enabled: $('#enabled').checked,
-    reason: 'editSave',
     sections: getSectionsHashes(),
     exclusions: exclusions.get()
   })

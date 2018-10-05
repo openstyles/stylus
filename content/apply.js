@@ -45,6 +45,14 @@
       API.styleViaAPI({action: 'styleApply'});
       return;
     }
+    // FIXME: options?
+    // FIXME: getStylesFallback?
+    API.getSectionsByUrl(getMatchUrl())
+      .then(buildSections)
+      .then(callback);
+  }
+
+  function getMatchUrl() {
     var matchUrl = location.href;
     if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
       // dynamic about: and javascript: iframes don't have an URL yet
@@ -55,15 +63,11 @@
         }
       } catch (e) {}
     }
-    // const request = Object.assign({
-      // method: 'getStylesForFrame',
-      // asHash: true,
-      // matchUrl,
-    // }, options);
-    // FIXME: options?
-    // FIXME: getStylesFallback?
-    API.getSectionsByUrl(matchUrl)
-      .then(callback);
+    return matchUrl;
+  }
+
+  function buildSections(result) {
+    return Object.entries(result).map(([id, code]) => ({id: +id, code}));
   }
 
   /**
@@ -122,7 +126,9 @@
         }
         if (request.style.enabled) {
           removeStyle({id: request.style.id, retire: true});
-          API.getSectionsById(request.style.id).then(applyStyles);
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+            .then(buildSections)
+            .then(applyStyles);
         } else {
           removeStyle(request.style);
         }
@@ -130,7 +136,9 @@
 
       case 'styleAdded':
         if (request.style.enabled) {
-          API.getSectionsById(request.style.id).then(applyStyles);
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+            .then(buildSections)
+            .then(applyStyles);
         }
         break;
 
@@ -195,7 +203,9 @@
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        API.getSectionsById(id).then(applyStyles);
+        API.getSectionsByUrl(getMatchUrl(), id)
+          .then(buildSections)
+          .then(applyStyles);
       }
     } else {
       if (inDoc) {

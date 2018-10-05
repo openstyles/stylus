@@ -67,13 +67,13 @@
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
       "all_frames": true,
-      "js": ["content/install-hook-userstyles.js"]
+      "js": ["js/promisify.js", "content/api.js", "content/install-hook-userstyles.js"]
     },
     {
       "matches": ["https://openusercss.org/*", "https://openusercss.com/*"],
       "run_at": "document_start",
       "all_frames": false,
-      "js": ["content/install-hook-openusercss.js"]
+      "js": ["js/promisify.js", "content/api.js", "content/install-hook-openusercss.js"]
     },
     {
       "matches": [
@@ -97,7 +97,7 @@
       ],
       "run_at": "document_idle",
       "all_frames": false,
-      "js": ["content/install-hook-usercss.js"]
+      "js": ["js/promisify.js", "content/api.js", "content/install-hook-usercss.js"]
     }
   ],
   "browser_action": {

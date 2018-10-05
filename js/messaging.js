@@ -264,7 +264,6 @@ function openURL({
   index,
   active,
   currentWindow = true,
-  message,
 }) {
   url = url.includes('://') ? url : chrome.runtime.getURL(url);
   // [some] chromium forks don't handle their fake branded protocols
@@ -280,15 +279,7 @@ function openURL({
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
 
-  const task = queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
-  if (!message) {
-    return task;
-  } else {
-    return task.then(onTabReady).then(tab => {
-      message.tabId = tab.id;
-      return sendMessage(message).then(() => tab);
-    });
-  }
+  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
 
   function maybeSwitch(tabs = []) {
     const urlWithSlash = url + '/';

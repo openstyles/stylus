@@ -58,7 +58,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 function importFromString(jsonString, oldStyles) {
   if (!oldStyles) {
-    return API.getStyles().then(styles => importFromString(jsonString, styles));
+    return API.getStylesInfo().then(styles => importFromString(jsonString, styles));
   }
   const json = tryJSONparse(jsonString) || [];
   if (typeof json.slice !== 'function') {
@@ -93,8 +93,9 @@ function importFromString(jsonString, oldStyles) {
       const info = analyze(item);
       if (info) {
         // using saveStyle directly since json was parsed in background page context
-        return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
-          .then(style => account({style, info, resolve}));
+        // FIXME: rewrite importStyle
+        // return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
+          // .then(style => account({style, info, resolve}));
       }
     }
     renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
@@ -224,12 +225,13 @@ function importFromString(jsonString, oldStyles) {
     let tasks = Promise.resolve();
     let tasksUI = Promise.resolve();
     for (const id of newIds) {
-      tasks = tasks.then(() => API.deleteStyle({id, notify: false}));
+      tasks = tasks.then(() => API.deleteStyle(id));
       tasksUI = tasksUI.then(() => handleDelete(id));
       const oldStyle = oldStylesById.get(id);
       if (oldStyle) {
         Object.assign(oldStyle, SAVE_OPTIONS);
-        tasks = tasks.then(() => API.saveStyle(oldStyle));
+        // FIXME: import undo
+        // tasks = tasks.then(() => API.saveStyle(oldStyle));
         tasksUI = tasksUI.then(() => handleUpdate(oldStyle, {reason: 'import'}));
       }
     }
@@ -274,7 +276,7 @@ function importFromString(jsonString, oldStyles) {
 
 
 $('#file-all-styles').onclick = () => {
-  API.getStyles().then(styles => {
+  API.getAllStyles().then(styles => {
     // https://crbug.com/714373
     document.documentElement.appendChild(
       $create('iframe', {
