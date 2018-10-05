@@ -1,4 +1,5 @@
 /* global promisify deepCopy */
+// deepCopy is only used if the script is executed in extension pages.
 'use strict';
 
 const msg = (() => {
@@ -119,54 +120,56 @@ const msg = (() => {
       tab: [],
       extension: []
     };
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      const handlers = message.target === 'tab' ?
-        handler.tab.concat(handler.both) : message.target === 'extension' ?
-        handler.extension.concat(handler.both) :
-        handler.both.concat(handler.extension, handler.tab);
-      if (!handlers.length) {
-        return;
-      }
-      if (message.type === 'exchange') {
-        const pending = exchangeGet(message, true);
-        if (pending) {
-          pending.then(response);
-          return true;
-        }
-      }
-      return response();
+    chrome.runtime.onMessage.addListener(handleMessage);
+  }
 
-      function response() {
-        let result;
-        for (const handle of handlers) {
-          const data = handle(message.data, sender);
-          if (data !== undefined && result === undefined) {
-            result = data;
-          }
-        }
-        if (result === undefined) {
-          return;
-        }
-        Promise.resolve(result)
-          .then(
-            data => ({error: false, data}),
-            err => ({error: true, data: err.message || String(err)})
-          )
-          .then(function doResponse(responseMessage) {
-            if (message.from === 'extension' && bg === undefined) {
-              return preparing.then(() => doResponse(responseMessage));
-            }
-            if (message.from === 'extension' && bg) {
-              exchangeSet(responseMessage);
-            } else {
-              responseMessage.type = 'direct';
-            }
-            return responseMessage;
-          })
-          .then(sendResponse);
+  function handleMessage(message, sender, sendResponse) {
+    const handlers = message.target === 'tab' ?
+      handler.tab.concat(handler.both) : message.target === 'extension' ?
+      handler.extension.concat(handler.both) :
+      handler.both.concat(handler.extension, handler.tab);
+    if (!handlers.length) {
+      return;
+    }
+    if (message.type === 'exchange') {
+      const pending = exchangeGet(message, true);
+      if (pending) {
+        pending.then(response);
         return true;
       }
-    });
+    }
+    return response();
+
+    function response() {
+      let result;
+      for (const handle of handlers) {
+        const data = withPromiseError(handle, message.data, sender);
+        if (data !== undefined && result === undefined) {
+          result = data;
+        }
+      }
+      if (result === undefined) {
+        return;
+      }
+      Promise.resolve(result)
+        .then(
+          data => ({error: false, data}),
+          err => ({error: true, data: err.message || String(err)})
+        )
+        .then(function doResponse(responseMessage) {
+          if (message.from === 'extension' && bg === undefined) {
+            return preparing.then(() => doResponse(responseMessage));
+          }
+          if (message.from === 'extension' && bg) {
+            exchangeSet(responseMessage);
+          } else {
+            responseMessage.type = 'direct';
+          }
+          return responseMessage;
+        })
+        .then(sendResponse);
+      return true;
+    }
   }
 
   function exchangeGet(message, keepStorage = false) {
@@ -175,7 +178,7 @@ const msg = (() => {
     }
     message.data = bg._msg.storage.get(message.id);
     if (keepStorage) {
-      message.data = deepCopy(data);
+      message.data = deepCopy(message.data);
     } else {
       bg._msg.storage.delete(message.id);
     }
@@ -188,6 +191,14 @@ const msg = (() => {
     message.type = 'exchange';
     message.id = id;
     delete message.data;
+  }
+
+  function withPromiseError(fn, ...args) {
+    try {
+      return fn(...args);
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 
   function withCleanup(p, fn) {
@@ -229,3 +240,12 @@ const msg = (() => {
     }
   }
 })();
+
+const API = new Proxy({}, {
+  get: (target, name) =>
+    (...args) => msg.send({
+      method: 'invokeAPI',
+      name,
+      args
+    })
+});
