@@ -175,41 +175,58 @@ const styleManager = (() => {
         return saveStyle(data);
       })
       .then(newData => {
-        // FIXME: do we really need to clear the entire cache?
-        // cachedStyleForUrl.clear();
         if (!style) {
+          // new style
           const appliesTo = new Set();
           styles.set(newData.id, {
             appliesTo,
             data: newData
           });
-          // update cache
-          tabQuery()
-            .then(tabs => {
-              for (const tab of tabs) {
-                // FIXME: switch to something like `shouldApplyTo` that doesn't use code
-                const code = getAppliedCode(tab.url, newData);
-                if (!code) {
-                  continue;
-                }
-                const cache = cachedStyleForUrl.get(tab.url);
-                if (!cache) {
-                  continue;
-                }
-                cache[newData.id] = code;
-                appliesTo.add(tab.url);
+          return Promise.all([
+            // manager and editor might be notified twice...
+            runtimeSendMessage({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
+            emitChangesToTabs(tab => {
+              const code = getAppliedCode(tab.url, newData);
+              if (!code) {
+                return;
               }
-              return emitChanges()
+              const cache = cachedStyleForUrl.get(tab.url);
+              if (cache) {
+                cache[newData.id] = code;
+              }
+              appliesTo.add(tab.url);
+              return {
+                method: 'styleAdded',
+                style: {
+                  id: newData.id,
+                  enabled: newData.enabled,
+                  sections: code
+                }
+              };
             })
+          ]);
+        } else {
+          const excluded = new Set();
+          const updated = new Map();
+          for (const url of style.appliesTo) {
+            const code = getAppliedCode(url, newData);
+            const cache = cachedStyleForUrl.get(url);
+            if (!code) {
+              excluded.add(url);
+              if (cache) {
+                delete cache[newData.id];
+              }
+            } else {
+              updated.set(url, code);
+              cache[newData.id] = code;
+            }
+          }
+          style.appliesTo = new Set(updated.keys());
+          return Promise.all([
+            // FIXME: don't sendMessage
+            runtimeSendMessage({method: 'styleUpdated', })
+          ])
         }
-        const appliesTo = style.appliesTo;
-        style.appliesTo = new Set;
-        for (const url of style.appliesTo) {
-          cachedStyleForUrl.delete(url);
-        }
-        emitChanges()
-        // FIXME: invalid signature
-        notifyAllTabs();
         return style;
       });
   }
