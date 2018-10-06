@@ -301,10 +301,12 @@ const styleManager = (() => {
     let code = '';
     for (const section of data.sections) {
       if (urlMatchSection(url, section)) {
-        code += section.code;
+        if (!isCodeEmpty(section.code)) {
+          code += section.code;
+        }
       }
     }
-    return isCodeEmpty(code) ? null : code;
+    return code;
   }
 
   function isCodeEmpty(code) {
