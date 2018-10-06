@@ -87,7 +87,7 @@ const msg = (() => {
   }
 
   function broadcastTab(data, filter, options, ignoreExtension = false, target = 'tab') {
-    return tabQuery()
+    return tabQuery({})
       // TODO: send to activated tabs first?
       .then(tabs => {
         const requests = [];
@@ -100,7 +100,7 @@ const msg = (() => {
             !tab.url.startsWith('chrome://newtab/') &&
             !isExtension ||
             isExtension && ignoreExtension ||
-            !filter(tab.url)
+            !filter(tab)
           ) {
             continue;
           }

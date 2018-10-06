@@ -112,34 +112,36 @@ function initPopup() {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).then(pong => {
-      if (pong) {
-        return;
-      }
-      ignoreChromeError();
-      // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
-      // so we'll wait a bit to handle popup being invoked right after switching
-      if (retryCountdown > 0 && (
-          tab.status !== 'complete' ||
-          FIREFOX && tab.url === 'about:blank')) {
-        setTimeout(ping, 100, tab, --retryCountdown);
-        return;
-      }
-      const info = template.unreachableInfo;
-      if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
-        $('label', info).textContent = t('unreachableAMO');
-        const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
-                     (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-        const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
-        const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-        const noteNode = $create('fragment', note.split('\n').map(renderLine));
-        const target = $('p', info);
-        target.parentNode.insertBefore(noteNode, target);
-        target.remove();
-      }
-      document.body.classList.add('unreachable');
-      document.body.insertBefore(info, document.body.firstChild);
-    });
+    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
+      .catch(() => false)
+      .then(pong => {
+        if (pong) {
+          return;
+        }
+        ignoreChromeError();
+        // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
+        // so we'll wait a bit to handle popup being invoked right after switching
+        if (retryCountdown > 0 && (
+            tab.status !== 'complete' ||
+            FIREFOX && tab.url === 'about:blank')) {
+          setTimeout(ping, 100, tab, --retryCountdown);
+          return;
+        }
+        const info = template.unreachableInfo;
+        if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
+          $('label', info).textContent = t('unreachableAMO');
+          const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
+                       (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
+          const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
+          const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
+          const noteNode = $create('fragment', note.split('\n').map(renderLine));
+          const target = $('p', info);
+          target.parentNode.insertBefore(noteNode, target);
+          target.remove();
+        }
+        document.body.classList.add('unreachable');
+        document.body.insertBefore(info, document.body.firstChild);
+      });
   });
 
   // Write new style links
@@ -251,77 +253,86 @@ function createStyleElement({
   check = false,
   container = installed,
 }) {
-  const entry = template.style.cloneNode(true);
+  let entry = $(ENTRY_ID_PREFIX + style.id);
+  if (!entry) {
+    entry = template.style.cloneNode(true);
+    entry.setAttribute('style-id', style.id);
+    Object.assign(entry, {
+      id: ENTRY_ID_PREFIX_RAW + style.id,
+      styleId: style.id,
+      styleIsUsercss: Boolean(style.usercssData),
+      onmousedown: handleEvent.maybeEdit,
+      styleMeta: style
+    });
+    const checkbox = $('.checker', entry);
+    Object.assign(checkbox, {
+      id: ENTRY_ID_PREFIX_RAW + style.id,
+      title: t('exclusionsPopupTip'),
+      onclick: handleEvent.toggle,
+      oncontextmenu: handleEvent.openExcludeMenu
+    });
+    const editLink = $('.style-edit-link', entry);
+    Object.assign(editLink, {
+      href: editLink.getAttribute('href') + style.id,
+      onclick: handleEvent.openLink,
+    });
+    const styleName = $('.style-name', entry);
+    Object.assign(styleName, {
+      htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
+      onclick: handleEvent.name,
+    });
+    styleName.checkbox = checkbox;
+    styleName.appendChild(document.createTextNode(' '));
+    const config = $('.configure', entry);
+    if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
+      config.target = '_blank';
+      config.title = t('configureStyleOnHomepage');
+      config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+      $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+    }
+    $('.enable', entry).onclick = handleEvent.toggle;
+    $('.disable', entry).onclick = handleEvent.toggle;
+    $('.delete', entry).onclick = handleEvent.delete;
+    $('.configure', entry).onclick = handleEvent.configure;
+  }
+
+  style = Object.assign(entry.styleMeta, style);
+
+  if (style.enabled) {
+    entry.classList.remove('disabled');
+    entry.classList.add('enabled');
+    $('.checker', entry).checked = true;
+  } else {
+    entry.classList.add('disabled');
+    entry.classList.remove('enabled');
+    $('.checker', entry).checked = false;
+  }
+
   const excluded = popupExclusions.isExcluded(tabURL, style.exclusions);
-  entry.setAttribute('style-id', style.id);
-  Object.assign(entry, {
-    id: ENTRY_ID_PREFIX_RAW + style.id,
-    styleId: style.id,
-    styleIsUsercss: Boolean(style.usercssData),
-    className: entry.className + ' ' +
-      (style.enabled ? 'enabled' : 'disabled') +
-      (excluded ? ' excluded' : ''),
-    onmousedown: handleEvent.maybeEdit,
-    styleMeta: style
-  });
-
-  const checkbox = $('.checker', entry);
-  Object.assign(checkbox, {
-    id: ENTRY_ID_PREFIX_RAW + style.id,
-    title: t('exclusionsPopupTip'),
-    checked: style.enabled,
-    onclick: handleEvent.toggle,
-    oncontextmenu: handleEvent.openExcludeMenu
-  });
-
-  const editLink = $('.style-edit-link', entry);
-  Object.assign(editLink, {
-    href: editLink.getAttribute('href') + style.id,
-    onclick: handleEvent.openLink,
-  });
+  entry.classList.toggle('excluded', excluded);
 
   const styleName = $('.style-name', entry);
-  Object.assign(styleName, {
-    htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
-    onclick: handleEvent.name,
-  });
-  styleName.checkbox = checkbox;
-  styleName.appendChild(document.createTextNode(style.name));
-  setTimeout((el = styleName) => {
-    if (el.scrollWidth > el.clientWidth + 1) {
-      el.title = el.textContent;
+  styleName.lastChild.textContent = style.name;
+  setTimeout(() => {
+    if (styleName.scrollWidth > styleName.clientWidth + 1) {
+      styleName.title = styleName.textContent;
     }
   });
 
   const config = $('.configure', entry);
   if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
     config.href = style.url;
-    config.target = '_blank';
-    config.title = t('configureStyleOnHomepage');
-    config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
-    $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
-  } else if (!style.usercssData || !Object.keys(style.usercssData.vars || {}).length) {
-    config.style.display = 'none';
+  } else {
+    config.href = '';
   }
-
-  $('.enable', entry).onclick = handleEvent.toggle;
-  $('.disable', entry).onclick = handleEvent.toggle;
-  $('.delete', entry).onclick = handleEvent.delete;
-  $('.configure', entry).onclick = handleEvent.configure;
+  config.style.display =
+    !style.usercssData && config.href ||
+    style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
+      '' : 'none';
 
   if (check) detectSloppyRegexps([style]);
 
-  const oldElement = $(ENTRY_ID_PREFIX + style.id);
-  if (oldElement && oldElement.contains(document.activeElement)) {
-    // preserve the focused element inside
-    const {className} = document.activeElement;
-    oldElement.parentNode.replaceChild(entry, oldElement);
-    // we're not using $() since className may contain multiple tokens
-    const el = entry.getElementsByClassName(className)[0];
-    if (el) el.focus();
-  } else if (oldElement) {
-    oldElement.parentNode.replaceChild(entry, oldElement);
-  } else {
+  if (entry.parentNode !== container) {
     container.appendChild(entry);
   }
 }

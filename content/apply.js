@@ -31,7 +31,7 @@
     // if (needTransitionPatch(styles)) {
       // applyTransitionPatch();
     // }
-    applyStyles(styles);
+    applyStyles(styles.filter(s => s.enabled));
   });
   msg.onTab(applyOnMessage);
   window.applyOnMessage = applyOnMessage;

@@ -372,8 +372,7 @@ const styleManager = (() => {
   function compileRe(text) {
     let re = compiledRe.get(text);
     if (!re) {
-      // FIXME: it should be `$({text})$` but we don't use the standard for compatibility
-      re = tryRegExp(`^${text}$`);
+      re = tryRegExp(`^(${text})$`);
       if (!re) {
         re = BAD_MATCHER;
       }
