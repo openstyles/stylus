@@ -1,7 +1,7 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /*
   global createCache db calcStyleDigest normalizeStyleSections db promisify
-  getStyleWithNoCode msg
+  getStyleWithNoCode msg styleCodeEmpty
 */
 'use strict';
 
@@ -281,7 +281,7 @@ const styleManager = (() => {
           cache[data.id] = {
             id: data.id,
             enabled: data.enabled,
-            sections: code
+            code
           };
           appliesTo.add(url);
         }
@@ -304,8 +304,7 @@ const styleManager = (() => {
         code += section.code;
       }
     }
-    // FIXME: trim comment?
-    return code;
+    return styleCodeEmpty(code) ? null : code;
   }
 
   function prepare() {
