@@ -28,12 +28,13 @@ const msg = (() => {
   return {
     send,
     sendTab,
+    sendBg,
     broadcast,
     broadcastTab,
     broadcastExtension: send, // alias of send
-    onMessage,
-    onTabMessage,
-    onExtensionMessage
+    on,
+    onTab,
+    onExtension
   };
 
   function send(data, target = 'extension') {
@@ -54,6 +55,23 @@ const msg = (() => {
   function sendTab(tabId, data, options, target = 'tab') {
     return tabSend(tabId, {type: 'direct', data, target, from: from_}, options)
       .then(unwrapData);
+  }
+
+  function sendBg(data) {
+    // always wrap doSend in promise
+    return preparing.then(doSend);
+
+    function doSend() {
+      if (bg) {
+        if (!bg._msg.handler) {
+          throw new Error('there is no bg handler');
+        }
+        const handlers = bg._msg.handler.extension.concat(bg._msg.handler.both);
+        return Promise.resolve(executeCallbacks(handlers, data, {url: location.href}))
+          .then(deepCopy);
+      }
+      return send(data);
+    }
   }
 
   function broadcast(data, filter) {
@@ -96,17 +114,17 @@ const msg = (() => {
       });
   }
 
-  function onMessage(fn) {
+  function on(fn) {
     initHandler();
     handler.both.push(fn);
   }
 
-  function onTabMessage(fn) {
+  function onTab(fn) {
     initHandler();
     handler.tab.push(fn);
   }
 
-  function onExtensionMessage(fn) {
+  function onExtension(fn) {
     initHandler();
     handler.extension.push(fn);
   }
@@ -115,12 +133,23 @@ const msg = (() => {
     if (handler) {
       return;
     }
-    handler = {
+    bg._msg.handler = handler = {
       both: [],
       tab: [],
       extension: []
     };
     chrome.runtime.onMessage.addListener(handleMessage);
+  }
+
+  function executeCallbacks(callbacks, ...args) {
+    let result;
+    for (const fn of callbacks) {
+      const data = withPromiseError(fn, ...args);
+      if (data !== undefined && result === undefined) {
+        result = data;
+      }
+    }
+    return result;
   }
 
   function handleMessage(message, sender, sendResponse) {
@@ -141,13 +170,7 @@ const msg = (() => {
     return response();
 
     function response() {
-      let result;
-      for (const handle of handlers) {
-        const data = withPromiseError(handle, message.data, sender);
-        if (data !== undefined && result === undefined) {
-          result = data;
-        }
-      }
+      const result = executeCallbacks(handlers, message.data, sender);
       if (result === undefined) {
         return;
       }
