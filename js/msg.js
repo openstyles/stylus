@@ -8,7 +8,8 @@ const msg = (() => {
     isBg = true;
     window._msg = {
       id: 1,
-      storage: new Map()
+      storage: new Map(),
+      handler: null
     };
   }
   const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
@@ -59,8 +60,11 @@ const msg = (() => {
   }
 
   function sendBg(data) {
-    // always wrap doSend in promise
-    return preparing.then(doSend);
+    if (bg === undefined) {
+      // always wrap doSend in promise
+      return preparing.then(doSend);
+    }
+    return withPromiseError(doSend);
 
     function doSend() {
       if (bg) {
@@ -147,11 +151,14 @@ const msg = (() => {
     if (handler) {
       return;
     }
-    bg._msg.handler = handler = {
+    handler = {
       both: [],
       tab: [],
       extension: []
     };
+    if (isBg) {
+      bg._msg.handler = handler;
+    }
     chrome.runtime.onMessage.addListener(handleMessage);
   }
 
