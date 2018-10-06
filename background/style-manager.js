@@ -13,10 +13,7 @@ const styleManager = (() => {
   const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
 
-  // FIXME: do we have to prepare `styles` map for all methods?
   return ensurePrepared({
-    // styles,
-    // cachedStyleForUrl,
     getStylesInfo,
     getSectionsByUrl,
     installStyle,
@@ -26,9 +23,7 @@ const styleManager = (() => {
     toggleStyle,
     getAllStyles, // used by import-export
     getStylesInfoByUrl, // used by popup
-    countStyles,
-    // TODO: get all styles API?
-    // TODO: get style by ID?
+    countStyles
   });
 
   function getAllStyles() {
@@ -37,25 +32,28 @@ const styleManager = (() => {
 
   function toggleStyle(id, enabled) {
     const style = styles.get(id);
-    const newData = Object.assign({}, style.data, {enabled});
-    return saveStyle(newData)
+    const data = Object.assign({}, style.data, {enabled});
+    return saveStyle(data)
       .then(newData => {
         style.data = newData;
         for (const url of style.appliesTo) {
           const cache = cachedStyleForUrl.get(url);
           if (cache) {
-            cache[newData.id].enabled = newData.enabled;
+            cache.sections[newData.id].enabled = newData.enabled;
           }
         }
         const message = {
           method: 'styleUpdated',
+          reason: 'toggle',
           codeIsUpdated: false,
           style: {id, enabled}
         };
         if ([...style.appliesTo].every(isExtensionUrl)) {
           return msg.broadcastExtension(message, 'both');
         }
-        return msg.broadcast(message, tab => style.appliesTo.has(tab.url));
+        // FIXME: this won't work with iframes
+        // return msg.broadcast(message, tab => style.appliesTo.has(tab.url));
+        return msg.broadcast(message);
       })
       .then(() => id);
   }
@@ -69,7 +67,7 @@ const styleManager = (() => {
       return [getStyleWithNoCode(styles.get(filter.id).data)];
     }
     return [...styles.values()]
-      .filter(s => !filter || filterMatchStyle(filter, s.data))
+      .filter(s => !filter || filterMatch(filter, s.data))
       .map(s => getStyleWithNoCode(s.data));
   }
 
@@ -81,73 +79,17 @@ const styleManager = (() => {
       return styles.has(filter.id) ? 1 : 0;
     }
     return [...styles.values()]
-      .filter(s => filterMatchStyle(filter, s.data))
+      .filter(s => filterMatch(filter, s.data))
       .length;
   }
 
-  function filterMatchStyle(filter, style) {
+  function filterMatch(filter, target) {
     for (const key of Object.keys(filter)) {
-      if (filter[key] !== style[key]) {
+      if (filter[key] !== target[key]) {
         return false;
       }
     }
     return true;
-  }
-
-  function editSave(data) {
-    data = Object.assign({}, styles.get(data.id).data, data);
-    return saveStyle(data)
-      .then(newData =>
-        broadcastStyleUpdated(newData)
-          .then(() => newData)
-      );
-  }
-
-  function setStyleExclusions(id, exclusions) {
-    const data = Object.assign({}, styles.get(id), {exclusions});
-    return saveStyle(data)
-      .then(newData =>
-        broadcastStyleUpdated(newData)
-          .then(() => newData)
-      );
-  }
-
-  function ensurePrepared(methods) {
-    for (const [name, fn] in Object.entries(methods)) {
-      methods[name] = (...args) =>
-        preparing.then(() => fn(...args));
-    }
-    return methods;
-  }
-
-  function deleteStyle(id) {
-    const style = styles.get(id);
-    return db.exec('delete', id)
-      .then(() => {
-        for (const url of style.appliesTo) {
-          const cache = cachedStyleForUrl.get(url);
-          if (cache) {
-            delete cache[id];
-          }
-        }
-        styles.delete(id);
-        return msg.broadcast({
-          method: 'styleDeleted',
-          style: {id}
-        }, tab => style.appliesTo.has(tab.url));
-      })
-      .then(() => id);
-  }
-
-  function createNewStyle() {
-    return {
-      enabled: true,
-      updateUrl: null,
-      md5Url: null,
-      url: null,
-      originalMd5: null,
-      installDate: Date.now()
-    };
   }
 
   function installStyle(data) {
@@ -164,99 +106,130 @@ const styleManager = (() => {
         return saveStyle(data);
       })
       .then(newData =>
-        broadcastStyleUpdated(newData)
+        broadcastStyleUpdated(newData, style ? 'update' : 'install')
           .then(() => newData)
       );
   }
 
-  function broadcastStyleUpdated(newData) {
-    const style = styles.get(newData.id);
-    if (!style) {
-      // new style
-      const appliesTo = new Set();
-      styles.set(newData.id, {
-        appliesTo,
-        data: newData
-      });
-      return Promise.all([
-        msg.broadcastExtension({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
-        msg.broadcastTab(tab => getStyleAddedMessage(tab, newData, appliesTo))
-      ]);
+  function editSave(data) {
+    const style = styles.get(data.id);
+    if (style) {
+      data = Object.assign({}, style.data, data);
+    } else {
+      data = Object.assign(createNewStyle(), data);
     }
-    const excluded = new Set();
-    const updated = new Map();
-    for (const url of style.appliesTo) {
-      const code = getAppliedCode(url, newData);
-      const cache = cachedStyleForUrl.get(url);
-      if (!code) {
-        excluded.add(url);
-        if (cache) {
-          delete cache[newData.id];
-        }
-      } else {
-        updated.set(url, code);
-        if (cache) {
-          cache[newData.id] = {
-            id: newData.id,
-            enabled: newData.enabled,
-            code
-          };
-        }
-      }
-    }
-    style.appliesTo = new Set(updated.keys());
-    return Promise.all([
-      msg.broadcastExtension({method: 'styleUpdated', style: getStyleWithNoCode(newData)}),
-      msg.broadcastTab(tab => {
-        if (excluded.has(tab.url)) {
-          return {
-            method: 'styleDeleted',
-            style: {id: newData.id}
-          };
-        }
-        if (updated.has(tab.url)) {
-          return {
-            method: 'styleUpdated',
-            style: {id: newData.id, sections: updated.get(tab.url)}
-          };
-        }
-        return getStyleAddedMessage(tab, newData, style.appliesTo);
-      })
-    ]);
+    return saveStyle(data)
+      .then(newData =>
+        broadcastStyleUpdated(newData, 'editSave')
+          .then(() => newData)
+      );
   }
 
-  function getStyleAddedMessage(tab, data, appliesTo) {
-    const code = getAppliedCode(tab.url, data);
-    if (!code) {
-      return;
+  function setStyleExclusions(id, exclusions) {
+    const data = Object.assign({}, styles.get(id), {exclusions});
+    return saveStyle(data)
+      .then(newData =>
+        broadcastStyleUpdated(newData, 'exclusions')
+          .then(() => newData)
+      );
+  }
+
+  function deleteStyle(id) {
+    const style = styles.get(id);
+    return db.exec('delete', id)
+      .then(() => {
+        for (const url of style.appliesTo) {
+          const cache = cachedStyleForUrl.get(url);
+          if (cache) {
+            delete cache.sections[id];
+          }
+        }
+        styles.delete(id);
+        return msg.broadcast({
+          method: 'styleDeleted',
+          style: {id}
+        });
+      })
+      .then(() => id);
+  }
+
+  function ensurePrepared(methods) {
+    for (const [name, fn] in Object.entries(methods)) {
+      methods[name] = (...args) =>
+        preparing.then(() => fn(...args));
     }
-    const cache = cachedStyleForUrl.get(tab.url);
-    if (cache) {
-      cache[data.id] = {
-        id: data.id,
-        enabled: data.enabled,
-        code
-      };
-    }
-    appliesTo.add(tab.url);
+    return methods;
+  }
+
+  function createNewStyle() {
     return {
-      method: 'styleAdded',
-      style: {
-        id: data.id,
-        enabled: data.enabled,
-        sections: code
-      }
+      enabled: true,
+      updateUrl: null,
+      md5Url: null,
+      url: null,
+      originalMd5: null,
+      installDate: Date.now()
     };
   }
 
-  function importStyle(style) {
+  function broadcastStyleUpdated(data, reason) {
+    const style = styles.get(data.id);
+    if (!style) {
+      // new style
+      const appliesTo = new Set();
+      styles.set(data.id, {
+        appliesTo,
+        data
+      });
+      for (const cache of cachedStyleForUrl.values()) {
+        cache.maybeMatch.add(data.id);
+      }
+      return msg.broadcast({
+        method: 'styleAdded',
+        style: {id: data.id, enabled: data.enabled},
+        reason
+      });
+    }
+    const excluded = new Set();
+    const updated = new Set();
+    for (const [url, cache] of cachedStyleForUrl.entries()) {
+      if (!style.appliesTo.has(url)) {
+        cache.maybeMatch.add(data.id);
+        continue;
+      }
+      const code = getAppliedCode(url, data);
+      if (!code) {
+        excluded.add(url);
+        delete cache.sections[data.id];
+      } else {
+        updated.add(url);
+        cache.sections[data.id] = {
+          id: data.id,
+          enabled: data.enabled,
+          code
+        };
+      }
+    }
+    style.data = data;
+    style.appliesTo = updated;
+    return msg.broadcast({
+      method: 'styleUpdated',
+      style: {
+        id: data.id,
+        enabled: data.enabled
+      },
+      reason
+    });
+  }
+
+  // function importStyle(style) {
     // FIXME: move this to importer
     // style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
     // delete style.styleDigest; // TODO: remove in the future
     // if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
       // delete style.originalDigest;
     // }
-  }
+  // }
 
   function saveStyle(style) {
     if (!style.name) {
@@ -280,11 +253,40 @@ const styleManager = (() => {
   function getSectionsByUrl(url, filter) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
-      cache = {};
-      for (const {appliesTo, data} of styles.values()) {
+      cache = {
+        sections: {},
+        maybeMatch: new Set()
+      };
+      buildCache(styles.values());
+      cachedStyleForUrl.set(url, cache);
+    } else if (cache.maybeMatch.size) {
+      buildCache(
+        [...cache.maybeMatch]
+          .filter(i => styles.has(i))
+          .map(i => styles.get(i))
+      );
+    }
+    // if (filter && filter.id) {
+      // if (!cache.sections[filter.id]) {
+        // return {};
+      // }
+      // return {[filter.id]: cache.sections[filter.id]};
+    // }
+    if (filter) {
+      return Object.values(cache.sections)
+        .filter(s => filterMatch(filter, s))
+        .reduce((o, v) => {
+          o[v.id] = v;
+          return o;
+        }, {});
+    }
+    return cache.sections;
+
+    function buildCache(styleList) {
+      for (const {appliesTo, data} of styleList) {
         const code = getAppliedCode(url, data);
         if (code) {
-          cache[data.id] = {
+          cache.sections[data.id] = {
             id: data.id,
             enabled: data.enabled,
             code
@@ -292,20 +294,7 @@ const styleManager = (() => {
           appliesTo.add(url);
         }
       }
-      cachedStyleForUrl.set(url, cache);
     }
-    if (filter && filter.id) {
-      return {[filter.id]: cache[filter.id]};
-    }
-    if (filter) {
-      return Object.values(cache)
-        .filter(s => filterMatchStyle(filter, s))
-        .reduce((o, v) => {
-          o[v.id] = v;
-          return o;
-        }, {});
-    }
-    return cache;
   }
 
   function getAppliedCode(url, data) {

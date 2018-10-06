@@ -11,6 +11,8 @@ function createCache(size = 1000) {
     delete: delete_,
     clear,
     has: id => map.has(id),
+    entries: () => map.entries(),
+    values: () => map.values(),
     get size() {
       return map.size;
     }

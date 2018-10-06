@@ -27,6 +27,7 @@
   const pageContextQueue = [];
 
   // FIXME: styleViaAPI
+  // FIXME: getStylesFallback?
   if (!chrome.app && document instanceof XMLDocument) {
     API.styleViaAPI({action: 'styleApply'});
   } else {
@@ -46,15 +47,6 @@
     window.dispatchEvent(new CustomEvent(chrome.runtime.id));
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
-
-  // function requestStyles(options, callback = applyStyles) {
-    // FIXME: options?
-    // FIXME: getStylesFallback?
-    // API.getSectionsByUrl(getMatchUrl(), {enabled: true})
-      // .then(Object.values);
-      // .then(buildSections)
-      // .then(callback);
-  // }
 
   function getMatchUrl() {
     var matchUrl = location.href;
@@ -97,16 +89,6 @@
   }
 
   function applyOnMessage(request) {
-    // if (request.styles === 'DIY') {
-      // Do-It-Yourself tells our built-in pages to fetch the styles directly
-      // which is faster because IPC messaging JSON-ifies everything internally
-      // requestStyles({}, styles => {
-        // request.styles = styles;
-        // applyOnMessage(request);
-      // });
-      // return;
-    // }
-
     if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
       request.action = request.method;
       request.method = null;
@@ -124,15 +106,17 @@
         break;
 
       case 'styleUpdated':
-        if (!request.codeIsUpdated) {
+        if (request.codeIsUpdated === false) {
           applyStyleState(request.style);
-          break;
-        }
-        if (request.style.enabled) {
-          removeStyle({id: request.style.id, retire: true});
+        } else if (request.style.enabled) {
           API.getSectionsByUrl(getMatchUrl(), {id: request.style.id})
-            .then(buildSections)
-            .then(applyStyles);
+            .then(sections => {
+              if (!sections[request.style.id]) {
+                removeStyle(request.style);
+              } else {
+                applyStyles(buildSections(sections));
+              }
+            });
         } else {
           removeStyle(request.style);
         }

@@ -9,16 +9,12 @@ global usercss styleManager db msg
 'use strict';
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
-
-  // getStyles,
   getSectionsByUrl: styleManager.getSectionsByUrl,
   getSectionsById: styleManager.getSectionsById,
   getStylesInfo: styleManager.getStylesInfo,
   toggleStyle: styleManager.toggleStyle,
   deleteStyle: styleManager.deleteStyle,
   getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
-  // saveStyle,
-  // deleteStyle,
 
   getStyleFromDB: id =>
     db.exec('get', id).then(event => event.target.result),
