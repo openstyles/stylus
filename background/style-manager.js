@@ -331,6 +331,12 @@ const styleManager = (() => {
     if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {
       return true;
     }
+    if (
+      (!section.regexps || !section.regexps.length) &&
+      (!section.urlPrefixes || !section.urlPrefixes.length) &&
+      (!section.urls || !section.urls.length) &&
+      (!section.domains || !section.domains.length)
+    )
     return false;
   }
 
