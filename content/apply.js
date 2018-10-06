@@ -67,8 +67,8 @@
     return matchUrl;
   }
 
-  function buildSections(result) {
-    return Object.entries(result).map(([id, code]) => ({id: +id, code}));
+  function buildSections(cache) {
+    return Object.values(cache);
   }
 
   /**
