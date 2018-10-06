@@ -16,6 +16,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getStylesInfo: styleManager.getStylesInfo,
   toggleStyle: styleManager.toggleStyle,
   deleteStyle: styleManager.deleteStyle,
+  getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
   // saveStyle,
   // deleteStyle,
 

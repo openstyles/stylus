@@ -20,7 +20,7 @@ getActiveTab().then(tab =>
   : getTabRealURL(tab)
 ).then(url => Promise.all([
   (tabURL = URLS.supported(url) ? url : '') &&
-  API.getStylesInfoForUrl(tabURL),
+  API.getStylesInfoByUrl(tabURL),
   onDOMready().then(initPopup),
 ])).then(([styles]) => {
   showStyles(styles);
