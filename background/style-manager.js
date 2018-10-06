@@ -41,13 +41,19 @@ const styleManager = (() => {
     return saveStyle(newData)
       .then(newData => {
         style.data = newData;
+        for (const url of style.appliesTo) {
+          const cache = cachedStyleForUrl.get(url);
+          if (cache) {
+            cache[newData.id].enabled = newData.enabled;
+          }
+        }
         const message = {
           method: 'styleUpdated',
           codeIsUpdated: false,
           style: {id, enabled}
         };
         if ([...style.appliesTo].every(isExtensionUrl)) {
-          return msg.broadcastExtension(message);
+          return msg.broadcastExtension(message, 'both');
         }
         return msg.broadcast(message, tab => style.appliesTo.has(tab.url));
       })
@@ -271,7 +277,7 @@ const styleManager = (() => {
       .map(k => getStyleWithNoCode(styles.get(Number(k)).data));
   }
 
-  function getSectionsByUrl(url, filterId) {
+  function getSectionsByUrl(url, filter) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
       cache = {};
@@ -288,8 +294,16 @@ const styleManager = (() => {
       }
       cachedStyleForUrl.set(url, cache);
     }
-    if (filterId) {
-      return {[filterId]: cache[filterId]};
+    if (filter && filter.id) {
+      return {[filter.id]: cache[filter.id]};
+    }
+    if (filter) {
+      return Object.values(cache)
+        .filter(s => filterMatchStyle(filter, s))
+        .reduce((o, v) => {
+          o[v.id] = v;
+          return o;
+        }, {});
     }
     return cache;
   }

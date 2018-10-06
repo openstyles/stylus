@@ -26,13 +26,19 @@
   const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
   const pageContextQueue = [];
 
-  requestStyles({}, styles => {
-    // FIXME: need transition patch?
-    // if (needTransitionPatch(styles)) {
-      // applyTransitionPatch();
-    // }
-    applyStyles(styles.filter(s => s.enabled));
-  });
+  // FIXME: styleViaAPI
+  if (!chrome.app && document instanceof XMLDocument) {
+    API.styleViaAPI({action: 'styleApply'});
+  } else {
+    API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+      .then(result => {
+        const styles = Object.values(result);
+        if (styles.some(s => s.code.includes('transition'))) {
+          applyTransitionPatch();
+        }
+        applyStyles(styles);
+      });
+  }
   msg.onTab(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
 
@@ -41,17 +47,14 @@
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
-  function requestStyles(options, callback = applyStyles) {
-    if (!chrome.app && document instanceof XMLDocument) {
-      API.styleViaAPI({action: 'styleApply'});
-      return;
-    }
+  // function requestStyles(options, callback = applyStyles) {
     // FIXME: options?
     // FIXME: getStylesFallback?
-    API.getSectionsByUrl(getMatchUrl())
-      .then(buildSections)
-      .then(callback);
-  }
+    // API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+      // .then(Object.values);
+      // .then(buildSections)
+      // .then(callback);
+  // }
 
   function getMatchUrl() {
     var matchUrl = location.href;
@@ -94,15 +97,15 @@
   }
 
   function applyOnMessage(request) {
-    if (request.styles === 'DIY') {
+    // if (request.styles === 'DIY') {
       // Do-It-Yourself tells our built-in pages to fetch the styles directly
       // which is faster because IPC messaging JSON-ifies everything internally
-      requestStyles({}, styles => {
-        request.styles = styles;
-        applyOnMessage(request);
-      });
-      return;
-    }
+      // requestStyles({}, styles => {
+        // request.styles = styles;
+        // applyOnMessage(request);
+      // });
+      // return;
+    // }
 
     if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
       request.action = request.method;
@@ -127,7 +130,7 @@
         }
         if (request.style.enabled) {
           removeStyle({id: request.style.id, retire: true});
-          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+          API.getSectionsByUrl(getMatchUrl(), {id: request.style.id})
             .then(buildSections)
             .then(applyStyles);
         } else {
@@ -137,7 +140,7 @@
 
       case 'styleAdded':
         if (request.style.enabled) {
-          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+          API.getSectionsByUrl(getMatchUrl(), {id: request.style.id})
             .then(buildSections)
             .then(applyStyles);
         }
@@ -203,7 +206,7 @@
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        API.getSectionsByUrl(getMatchUrl(), id)
+        API.getSectionsByUrl(getMatchUrl(), {id})
           .then(buildSections)
           .then(applyStyles);
       }
