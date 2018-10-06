@@ -26,7 +26,7 @@ getActiveTab().then(tab =>
   showStyles(styles);
 });
 
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -112,8 +112,7 @@ function initPopup() {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    const sendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
-    sendMessage(tab.id, {method: 'ping'}, {frameId: 0}).then(pong => {
+    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).then(pong => {
       if (pong) {
         return;
       }
@@ -459,9 +458,8 @@ Object.assign(handleEvent, {
       }))
       .then(tab => {
         if (message) {
-          const sendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs.sendMessage));
           return onTabReady(tab)
-            .then(() => sendMessage(tab.id, message));
+            .then(() => msg.sendTab(tab.id, message));
         }
       })
       .then(window.close);

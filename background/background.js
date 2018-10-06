@@ -53,7 +53,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   optionsCustomizeHotkeys() {
     return browser.runtime.openOptionsPage()
       .then(() => new Promise(resolve => setTimeout(resolve, 100)))
-      .then(() => sendMessage({method: 'optionsCustomizeHotkeys'}));
+      .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
   },
 });
 
@@ -62,7 +62,7 @@ var browserCommands, contextMenus;
 
 // *************************************************************************
 // register all listeners
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.on(onRuntimeMessage);
 
 if (FIREFOX) {
   // see notes in apply.js for getStylesFallback
@@ -196,7 +196,7 @@ contextMenus = {
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      sendMessage({tabId: tab.id, method: 'editDeleteText'});
+      msg.sendTab(tab.id, {method: 'editDeleteText'});
     },
   }
 };
@@ -280,11 +280,12 @@ window.addEventListener('storageReady', function _() {
   };
 
   const pingCS = (cs, {id, url}) => {
-    const maybeInject = pong => !pong && injectCS(cs, id);
+    const maybeInject = ;
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {
-        sendMessage({method: 'ping', tabId: id}, maybeInject);
+        msg.sendTab(id, {method: 'ping'})
+          .then(pong => !pong && injectCS(cs, id));
         return true;
       }
     });
@@ -332,13 +333,15 @@ function webNavigationListener(method, {url, tabId, frameId}) {
         handleCssTransitionBug({tabId, frameId, url, styles});
       }
       if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
-      sendMessage({
+      msg.sendTab(
         tabId,
-        frameId,
-        method,
-        // ping own page so it retrieves the styles directly
-        styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
-      });
+        {
+          method,
+          // ping own page so it retrieves the styles directly
+          styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
+        },
+        {frameId}
+      );
     }
     // main page frame id is 0
     if (frameId === 0) {
@@ -370,7 +373,7 @@ function webNavigationListenerChrome(method, data) {
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
   Promise.all([
-    sendMessage({tabId, method: 'ping'}),
+    msg.sendTab(tabId, {method: 'ping'}),
     // we need tab index to open the installer next to the original one
     // and also to skip the double-invocation in FF which assigns tab url later
     getTab(tabId),
@@ -384,15 +387,15 @@ function webNavUsercssInstallerFF(data) {
 
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
-  sendMessage({method: 'ping', tabId, frameId}, pong => {
-    ignoreChromeError();
-    if (pong) return;
-    chrome.tabs.executeScript(tabId, {
-      frameId,
-      file: '/content/apply.js',
-      matchAboutBlank: true,
-    }, ignoreChromeError);
-  });
+  msg.sendTab(tabId, {method: 'ping'}, {frameId})
+    .then(pong => {
+      if (pong) return;
+      chrome.tabs.executeScript(tabId, {
+        frameId,
+        file: '/content/apply.js',
+        matchAboutBlank: true,
+      }, ignoreChromeError);
+    });
 }
 
 
@@ -498,35 +501,14 @@ function updateIcon({tab, styles}) {
   }
 }
 
-
-function onRuntimeMessage(msg, sender, sendResponse) {
+function onRuntimeMessage(msg, sender) {
   if (msg.method !== 'invokeAPI') {
-    // FIXME: switch everything to api.js then throw an error when msg.method is unknown.
     return;
   }
-  invoke()
-    .catch(err =>
-      // wrap 'Error' object instance as {__ERROR__: message},
-      // which will be unwrapped by api.js,
-      ({
-        __ERROR__: err.message || String(err)
-      })
-    )
-    // prevent exceptions on sending to a closed tab
-    .then(output => tryCatch(sendResponse, output));
-  // keep channel open
-  return true;
-
-  function invoke() {
-    try {
-      const fn = window.API_METHODS[msg.name];
-      if (!fn) {
-        throw new Error(`unknown API: ${msg.name}`);
-      }
-      const context = {msg, sender};
-      return Promise.resolve(fn.apply(context, msg.args));
-    } catch (err) {
-      return Promise.reject(err);
-    }
+  const fn = window.API_METHODS[msg.name];
+  if (!fn) {
+    throw new Error(`unknown API: ${msg.name}`);
   }
+  const context = {msg, sender};
+  return fn.apply(context, msg.args);
 }

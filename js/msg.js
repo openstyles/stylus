@@ -34,7 +34,8 @@ const msg = (() => {
     broadcastExtension: send, // alias of send
     on,
     onTab,
-    onExtension
+    onExtension,
+    off
   };
 
   function send(data, target = 'extension') {
@@ -67,6 +68,7 @@ const msg = (() => {
           throw new Error('there is no bg handler');
         }
         const handlers = bg._msg.handler.extension.concat(bg._msg.handler.both);
+        // FIXME: do we want to deepCopy `data`?
         return Promise.resolve(executeCallbacks(handlers, data, {url: location.href}))
           .then(deepCopy);
       }
@@ -88,6 +90,7 @@ const msg = (() => {
         for (const tab of tabs) {
           const isExtension = tab.url.startsWith(EXTENSION_URL);
           if (
+            tab.discarded ||
             !/^(http|ftp|file)/.test(tab.url) &&
             !tab.url.startsWith('chrome://newtab/') &&
             !isExtension ||
@@ -127,6 +130,15 @@ const msg = (() => {
   function onExtension(fn) {
     initHandler();
     handler.extension.push(fn);
+  }
+
+  function off(fn) {
+    for (const type of ['both', 'tab', 'extension']) {
+      const index = handler[type].indexOf(fn);
+      if (index >= 0) {
+        handler[type].splice(index, 1);
+      }
+    }
   }
 
   function initHandler() {
@@ -266,7 +278,7 @@ const msg = (() => {
 
 const API = new Proxy({}, {
   get: (target, name) =>
-    (...args) => msg.send({
+    (...args) => msg.sendBg({
       method: 'invokeAPI',
       name,
       args

@@ -32,7 +32,7 @@
     // }
     applyStyles(styles);
   });
-  chrome.runtime.onMessage.addListener(applyOnMessage);
+  msg.onTab(applyOnMessage);
   window.applyOnMessage = applyOnMessage;
 
   if (!isOwnPage) {
@@ -92,7 +92,7 @@
     }
   }
 
-  function applyOnMessage(request, sender, sendResponse) {
+  function applyOnMessage(request) {
     if (request.styles === 'DIY') {
       // Do-It-Yourself tells our built-in pages to fetch the styles directly
       // which is faster because IPC messaging JSON-ifies everything internally
@@ -160,8 +160,7 @@
         break;
 
       case 'ping':
-        sendResponse(true);
-        break;
+        return true;
     }
   }
 
@@ -447,7 +446,7 @@
     [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.disconnect());
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
-      chrome.runtime.onMessage.removeListener(applyOnMessage);
+      msg.off(applyOnMessage);
     } catch (e) {}
   }
 

@@ -39,7 +39,7 @@ Promise.all([
   showStyles(...args);
 });
 
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {

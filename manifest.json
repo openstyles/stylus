@@ -25,6 +25,7 @@
     "scripts": [
       "js/promisify.js",
       "js/messaging.js",
+      "js/msg.js",
       "js/storage-util.js",
       "js/sections-equal.js",
       "background/storage-dummy.js",

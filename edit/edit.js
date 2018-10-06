@@ -27,7 +27,7 @@ let editor;
 
 
 document.addEventListener('visibilitychange', beforeUnload);
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.on(onRuntimeMessage);
 
 preinit();
 

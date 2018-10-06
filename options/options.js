@@ -21,7 +21,7 @@ if (!FIREFOX && !OPERA && CHROME < 3343) {
 
 if (FIREFOX && 'update' in (chrome.commands || {})) {
   $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
-  chrome.runtime.onMessage.addListener(msg => {
+  msg.onExtension(msg => {
     if (msg.method === 'optionsCustomizeHotkeys') {
       customizeHotkeys();
     }

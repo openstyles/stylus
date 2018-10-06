@@ -8,7 +8,7 @@
   document.addEventListener('stylishInstallChrome', onClick);
   document.addEventListener('stylishUpdateChrome', onClick);
 
-  chrome.runtime.onMessage.addListener(onMessage);
+  msg.on(onMessage);
 
   onDOMready().then(() => {
     window.postMessage({
@@ -43,16 +43,14 @@
     }
   }
 
-  function onMessage(msg, sender, sendResponse) {
+  function onMessage(msg) {
     switch (msg.method) {
       case 'ping':
         // orphaned content script check
-        sendResponse(true);
-        break;
+        return true;
       case 'openSettings':
         openSettings();
-        sendResponse(true);
-        break;
+        return true;
     }
   }
 
@@ -328,7 +326,7 @@
     document.removeEventListener('stylishInstallChrome', onClick);
     document.removeEventListener('stylishUpdateChrome', onClick);
     try {
-      chrome.runtime.onMessage.removeListener(onMessage);
+      msg.off(onMessage);
     } catch (e) {}
   }
 })();

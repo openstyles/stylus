@@ -1,6 +1,8 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest normalizeStyleSections db promisify
-    getStyleWithNoCode */
+/*
+  global createCache db calcStyleDigest normalizeStyleSections db promisify
+  getStyleWithNoCode msg
+*/
 'use strict';
 
 const styleManager = (() => {
@@ -10,9 +12,6 @@ const styleManager = (() => {
   const compiledRe = createCache();
   const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
-  const tabQuery = promisify(chrome.tabs.query.bind(chrome.tabs));
-  const tabSendMessage = promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
-  const runtimeSendMessage = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
 
   // FIXME: do we have to prepare `styles` map for all methods?
   return ensurePrepared({
@@ -42,11 +41,15 @@ const styleManager = (() => {
     return saveStyle(newData)
       .then(newData => {
         style.data = newData;
-        return emitChanges({
+        const message = {
           method: 'styleUpdated',
           codeIsUpdated: false,
           style: {id, enabled}
-        }, style.appliesTo);
+        };
+        if ([...style.appliesTo].every(isExtensionUrl)) {
+          return msg.broadcastExtension(message);
+        }
+        return msg.broadcast(message);
       })
       .then(() => id);
   }
@@ -120,6 +123,7 @@ const styleManager = (() => {
   }
 
   function editSave(style) {
+    // const style =
     return saveStyle(style);
   }
 
@@ -142,9 +146,9 @@ const styleManager = (() => {
           delete cache[id];
         }
         styles.delete(id);
-        return emitChanges({
+        return msg.broadcast({
           method: 'styleDeleted',
-          data: {id}
+          style: {id}
         });
       })
       .then(() => id);
@@ -182,28 +186,9 @@ const styleManager = (() => {
             appliesTo,
             data: newData
           });
-          return Promise.all([
-            // manager and editor might be notified twice...
-            runtimeSendMessage({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
-            emitChangesToTabs(tab => {
-              const code = getAppliedCode(tab.url, newData);
-              if (!code) {
-                return;
-              }
-              const cache = cachedStyleForUrl.get(tab.url);
-              if (cache) {
-                cache[newData.id] = code;
-              }
-              appliesTo.add(tab.url);
-              return {
-                method: 'styleAdded',
-                style: {
-                  id: newData.id,
-                  enabled: newData.enabled,
-                  sections: code
-                }
-              };
-            })
+          return Promis.all([
+            msg.broadcastExtension({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
+            msg.broadcastTab(tab => emitStyleAdded(tab, newData, appliesTo))
           ]);
         } else {
           const excluded = new Set();
@@ -223,12 +208,49 @@ const styleManager = (() => {
           }
           style.appliesTo = new Set(updated.keys());
           return Promise.all([
-            // FIXME: don't sendMessage
-            runtimeSendMessage({method: 'styleUpdated', })
+            msg.broadcastExtension({method: 'styleUpdated', style: getStyleWithNoCode(newData)})
+            msg.broadcastTab(tab => {
+              if (excluded.has(tab.url)) {
+                return {
+                  method: 'styleDeleted',
+                  style: {id: newData.id}
+                };
+              }
+              if (updated.has(tab.url)) {
+                return {
+                  method: 'styleUpdated',
+                  style: {
+                    id: newData.id,
+                    sections: updated.get(tab.url)
+                  };
+                };
+              }
+              return emitStyleAdded(tab, newData, style.appliesTo);
+            })
           ])
         }
         return style;
       });
+  }
+
+  function emitStyleAdded(tab, data, appliesTo) {
+    const code = getAppliedCode(tab.url, data);
+    if (!code) {
+      return;
+    }
+    const cache = cachedStyleForUrl.get(tab.url);
+    if (cache) {
+      cache[data.id] = code;
+    }
+    appliesTo.add(tab.url);
+    return {
+      method: 'styleAdded',
+      style: {
+        id: data.id,
+        enabled: data.enabled,
+        sections: code
+      }
+    };
   }
 
   function importStyle(style) {
@@ -241,35 +263,16 @@ const styleManager = (() => {
   }
 
   function saveStyle(style) {
-    return (style.id == null ? getNewStyle() : getOldStyle())
-      .then(oldStyle => {
-        style = Object.assign(oldStyle, style);
-        // FIXME: why we always run `normalizeStyleSections` at each `saveStyle`?
-        style.sections = normalizeStyleSections(style);
-        return db.exec('put', style);
-      })
+    if (!style.name) {
+      throw new Error('style name is empty');
+    }
+    return db.exec('put', style);
       .then(event => {
         if (style.id == null) {
           style.id = event.target.result;
         }
         return style;
       });
-
-    function getOldStyle() {
-      return db.exec('get', style.id)
-        .then((event, store) => {
-          if (!event.target.result) {
-            throw new Error(`Unknown style id: ${style.id}`);
-          }
-          return event.target.result;
-        });
-    }
-
-    // FIXME: don't overwrite style name when the name is empty
-
-    function getNewStyle() {
-      return Promise.resolve();
-    }
   }
 
   function getStylesInfoForUrl(url) {
