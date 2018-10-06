@@ -323,7 +323,7 @@ function createStyleElement({
   if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
     config.href = style.url;
   } else {
-    config.href = '';
+    config.removeAttribute('href');
   }
   config.style.display =
     !style.usercssData && config.href ||

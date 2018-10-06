@@ -382,12 +382,17 @@
     if (next === newElement.nextElementSibling) {
       return;
     }
-    docRootObserver.evade(() => {
+    const insert = () => {
       ROOT.insertBefore(newElement, next || null);
       if (disableAll) {
         newElement.disabled = true;
       }
-    });
+    };
+    if (docRootObserver) {
+      docRootObserver.evade(insert);
+    } else {
+      insert();
+    }
   }
 
   function replaceAll(newStyles) {

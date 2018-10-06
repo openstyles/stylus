@@ -32,7 +32,7 @@ const msg = (() => {
     sendBg,
     broadcast,
     broadcastTab,
-    broadcastExtension: send, // alias of send
+    broadcastExtension,
     on,
     onTab,
     onExtension,
@@ -120,6 +120,10 @@ const msg = (() => {
         }
         return Promise.all(requests);
       });
+  }
+
+  function broadcastExtension(...args) {
+    return send(...args).catch(console.warn);
   }
 
   function on(fn) {
