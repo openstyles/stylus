@@ -1,4 +1,4 @@
-/* global regExpTester debounce messageBox CodeMirror template colorMimicry */
+/* global regExpTester debounce messageBox CodeMirror template colorMimicry msg */
 'use strict';
 
 function createAppliesToLineWidget(cm) {

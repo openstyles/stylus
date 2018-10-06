@@ -1,4 +1,4 @@
-/* global messageBox */
+/* global messageBox msg */
 'use strict';
 
 setupLivePrefs();

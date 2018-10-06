@@ -4,7 +4,7 @@ global filtersSelector filterAndAppend urlFilterParam showFiltersStats
 global checkUpdate handleUpdateInstalled
 global objectDiff
 global configDialog
-global sorter
+global sorter msg
 */
 'use strict';
 

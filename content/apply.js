@@ -1,4 +1,5 @@
 /* eslint no-var: 0 */
+/* global msg */
 'use strict';
 
 (() => {

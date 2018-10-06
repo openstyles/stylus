@@ -1,4 +1,4 @@
-/* global cloneInto */
+/* global cloneInto msg */
 'use strict';
 
 (() => {

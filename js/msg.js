@@ -85,12 +85,14 @@ const msg = (() => {
 
   function broadcastTab(data, filter, options, ignoreExtension = false, target = 'tab') {
     return tabQuery()
+      // TODO: send to activated tabs first?
       .then(tabs => {
         const requests = [];
         for (const tab of tabs) {
           const isExtension = tab.url.startsWith(EXTENSION_URL);
           if (
             tab.discarded ||
+            // FIXME: use `URLS.supported`?
             !/^(http|ftp|file)/.test(tab.url) &&
             !tab.url.startsWith('chrome://newtab/') &&
             !isExtension ||

@@ -1,6 +1,6 @@
 /*
 global configDialog hotkeys
-global popupExclusions promisify onTabReady
+global popupExclusions promisify onTabReady msg
 */
 
 'use strict';

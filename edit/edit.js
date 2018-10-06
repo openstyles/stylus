@@ -7,7 +7,7 @@ global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
 global exclusions
-global moveFocus editorWorker
+global moveFocus editorWorker msg
 */
 'use strict';
 
@@ -27,7 +27,7 @@ let editor;
 
 
 document.addEventListener('visibilitychange', beforeUnload);
-msg.on(onRuntimeMessage);
+msg.onExtension(onRuntimeMessage);
 
 preinit();
 

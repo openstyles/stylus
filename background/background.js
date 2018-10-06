@@ -4,7 +4,7 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
-global usercss styleManager db
+global usercss styleManager db msg
 */
 'use strict';
 
@@ -280,7 +280,6 @@ window.addEventListener('storageReady', function _() {
   };
 
   const pingCS = (cs, {id, url}) => {
-    const maybeInject = ;
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {

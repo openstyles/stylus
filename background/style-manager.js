@@ -54,40 +54,6 @@ const styleManager = (() => {
       .then(() => id);
   }
 
-  function emitChangesToTabs(getMessage, appliesTo, ignoreExtension = false) {
-    // FIXME: does `discarded` work in old browsers?
-    // TODO: send to activated tabs first?
-    return tabQuery({discarded: false})
-      .then(tabs => {
-        const pending = [];
-        for (const tab of tabs) {
-          if (
-            !URLS.supported(tab.url) ||
-            ignoreExtension && isExtensionUrl(tab.url) ||
-            appliesTo && !appliesTo.has(tab.url)
-          ) {
-            continue;
-          }
-          const message = typeof getMessage === 'function' ? getMessage(tab) : getMessage;
-          if (message) {
-            pending.push(tabSendMessage(tab.id, message));
-          }
-        }
-        return Promise.all(pending);
-      });
-  }
-
-  function emitChanges(message, appliesTo) {
-    const pending = runtimeSendMessage(message);
-    if (appliesTo && [...appliesTo].every(isExtensionUrl)) {
-      return pending;
-    }
-    return Promise.all([
-      pending,
-      emitChangesToTabs(message, appliesTo, true),
-    ]);
-  }
-
   function isExtensionUrl(url) {
     return /^\w+?-extension:\/\//.test(url);
   }
@@ -166,7 +132,7 @@ const styleManager = (() => {
   }
 
   function installStyle(data) {
-    let style = styles.get(style.id);
+    const style = styles.get(data.id);
     if (!style) {
       data = Object.assign(createNewStyle(), data);
     } else {
@@ -178,62 +144,64 @@ const styleManager = (() => {
         data.originalDigest = digest;
         return saveStyle(data);
       })
-      .then(newData => {
-        if (!style) {
-          // new style
-          const appliesTo = new Set();
-          styles.set(newData.id, {
-            appliesTo,
-            data: newData
-          });
-          return Promis.all([
-            msg.broadcastExtension({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
-            msg.broadcastTab(tab => emitStyleAdded(tab, newData, appliesTo))
-          ]);
-        } else {
-          const excluded = new Set();
-          const updated = new Map();
-          for (const url of style.appliesTo) {
-            const code = getAppliedCode(url, newData);
-            const cache = cachedStyleForUrl.get(url);
-            if (!code) {
-              excluded.add(url);
-              if (cache) {
-                delete cache[newData.id];
-              }
-            } else {
-              updated.set(url, code);
-              cache[newData.id] = code;
-            }
-          }
-          style.appliesTo = new Set(updated.keys());
-          return Promise.all([
-            msg.broadcastExtension({method: 'styleUpdated', style: getStyleWithNoCode(newData)})
-            msg.broadcastTab(tab => {
-              if (excluded.has(tab.url)) {
-                return {
-                  method: 'styleDeleted',
-                  style: {id: newData.id}
-                };
-              }
-              if (updated.has(tab.url)) {
-                return {
-                  method: 'styleUpdated',
-                  style: {
-                    id: newData.id,
-                    sections: updated.get(tab.url)
-                  };
-                };
-              }
-              return emitStyleAdded(tab, newData, style.appliesTo);
-            })
-          ])
-        }
-        return style;
-      });
+      .then(newData =>
+        broadcastStyleUpdated(newData)
+          .then(() => newData)
+      );
   }
 
-  function emitStyleAdded(tab, data, appliesTo) {
+  function broadcastStyleUpdated(newData) {
+    const style = styles.get(newData.id);
+    if (!style) {
+      // new style
+      const appliesTo = new Set();
+      styles.set(newData.id, {
+        appliesTo,
+        data: newData
+      });
+      return Promise.all([
+        msg.broadcastExtension({method: 'styleAdded', style: getStyleWithNoCode(newData)}),
+        msg.broadcastTab(tab => getStyleAddedMessage(tab, newData, appliesTo))
+      ]);
+    } else {
+      const excluded = new Set();
+      const updated = new Map();
+      for (const url of style.appliesTo) {
+        const code = getAppliedCode(url, newData);
+        const cache = cachedStyleForUrl.get(url);
+        if (!code) {
+          excluded.add(url);
+          if (cache) {
+            delete cache[newData.id];
+          }
+        } else {
+          updated.set(url, code);
+          cache[newData.id] = code;
+        }
+      }
+      style.appliesTo = new Set(updated.keys());
+      return Promise.all([
+        msg.broadcastExtension({method: 'styleUpdated', style: getStyleWithNoCode(newData)}),
+        msg.broadcastTab(tab => {
+          if (excluded.has(tab.url)) {
+            return {
+              method: 'styleDeleted',
+              style: {id: newData.id}
+            };
+          }
+          if (updated.has(tab.url)) {
+            return {
+              method: 'styleUpdated',
+              style: {id: newData.id, sections: updated.get(tab.url)}
+            };
+          }
+          return getStyleAddedMessage(tab, newData, style.appliesTo);
+        })
+      ]);
+    }
+  }
+
+  function getStyleAddedMessage(tab, data, appliesTo) {
     const code = getAppliedCode(tab.url, data);
     if (!code) {
       return;
@@ -266,7 +234,7 @@ const styleManager = (() => {
     if (!style.name) {
       throw new Error('style name is empty');
     }
-    return db.exec('put', style);
+    return db.exec('put', style)
       .then(event => {
         if (style.id == null) {
           style.id = event.target.result;
