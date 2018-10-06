@@ -1,7 +1,7 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /*
   global createCache db calcStyleDigest normalizeStyleSections db promisify
-  getStyleWithNoCode msg styleCodeEmpty
+  getStyleWithNoCode msg
 */
 'use strict';
 
@@ -304,7 +304,17 @@ const styleManager = (() => {
         code += section.code;
       }
     }
-    return styleCodeEmpty(code) ? null : code;
+    return isCodeEmpty(code) ? null : code;
+  }
+
+  function isCodeEmpty(code) {
+    const rx = /\s+|\/\*[\s\S]*?\*\/|@namespace[^;]+;|@charset[^;]+;/giy;
+    while (rx.exec(code)) {
+      if (rx.lastIndex === code.length) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function prepare() {
