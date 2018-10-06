@@ -61,7 +61,6 @@ const msg = (() => {
 
   function sendBg(data) {
     if (bg === undefined) {
-      // always wrap doSend in promise
       return preparing.then(doSend);
     }
     return withPromiseError(doSend);
@@ -287,9 +286,9 @@ const msg = (() => {
 
 const API = new Proxy({}, {
   get: (target, name) =>
-    (...args) => msg.sendBg({
+    (...args) => Promise.resolve(msg.sendBg({
       method: 'invokeAPI',
       name,
       args
-    })
+    }))
 });
