@@ -556,8 +556,8 @@ window.addEventListener('showStyles:done', function _() {
       // show a 'config-on-homepage' icon in the popup
       style.updateUrl += settings.length ? '?' : '';
       // show a 'style installed' tooltip in the manager
-      style.reason = 'install';
-      return API.saveStyle(style);
+      // style.reason = 'install';
+      return API.installStyle(style);
     })
     .catch(reason => {
       const usoId = result.id;
