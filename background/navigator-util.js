@@ -1,10 +1,10 @@
+/* global promisify */
 'use strict';
 
 const navigatorUtil = (() => {
   const handler = {
     urlChange: null
   };
-  let listeners;
   const tabGet = promisify(chrome.tabs.get.bind(chrome.tabs));
   return extendNative({onUrlChange});
 
@@ -21,15 +21,18 @@ const navigatorUtil = (() => {
 
     chrome.webNavigation.onCommitted.addListener(data =>
       fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'committed'));
+        .then(() => executeCallbacks(handler.urlChange, data, 'committed'))
+    );
 
     chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
       fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'historyStateUpdated'));
+        .then(() => executeCallbacks(handler.urlChange, data, 'historyStateUpdated'))
+    );
 
     chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
       fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'referenceFragmentUpdated'));
+        .then(() => executeCallbacks(handler.urlChange, data, 'referenceFragmentUpdated'))
+    );
   }
 
   function fixNTPUrl(data) {

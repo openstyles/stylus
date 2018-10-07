@@ -4,7 +4,7 @@ global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
 global loadScript
-global usercss styleManager db msg
+global usercss styleManager db msg navigatorUtil
 */
 'use strict';
 
@@ -140,7 +140,12 @@ prefs.subscribe(['iconset'], () =>
     styles: {},
   }));
 
-chrome.navigator.
+navigatorUtil.onUrlChange(({url, tabId, frameId}) => {
+  if (frameId === 0) {
+    tabIcons.delete(tabId);
+    updateIcon({tab: {id: tabId, url}});
+  }
+});
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {

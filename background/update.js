@@ -2,7 +2,7 @@
 global getStyles saveStyle styleSectionsEqual
 global calcStyleDigest cachedStyles getStyleWithNoCode
 global usercss semverCompare
-global API_METHODS
+global API_METHODS styleManager
 */
 'use strict';
 

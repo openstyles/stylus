@@ -1,4 +1,4 @@
-/* global getStyles API_METHODS */
+/* global getStyles API_METHODS styleManager */
 'use strict';
 
 API_METHODS.styleViaAPI = !CHROME && (() => {
@@ -45,6 +45,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     return styleManager.getSectionsByUrl(url, filter).then(sections => {
       const tasks = [];
       for (const section of Object.values(sections)) {
+        const styleId = section.id;
         const code = section.code;
         if (!code) {
           delete frameStyles[styleId];
