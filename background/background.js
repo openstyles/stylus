@@ -27,7 +27,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     return usercss.invokeWorker({action: 'parse', code});
   },
   getPrefs: prefs.getAll,
-  healthCheck: () => dbExec().then(() => true),
+
+  // FIXME: who uses this?
+  healthCheck: () => db.exec().then(() => true),
 
   detectSloppyRegexps,
   openEditor,

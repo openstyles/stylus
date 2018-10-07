@@ -1,17 +1,14 @@
-/* global API_METHODS usercss chromeLocal */
+/* global API_METHODS usercss chromeLocal styleManager */
 'use strict';
 
 (() => {
-
-  // API_METHODS.saveUsercss = style => save(style, false);
-  // API_METHODS.saveUsercssUnsafe = style => save(style, true);
-  API_METHODS.installUsercss
-  API_METHODS.editSaveUsercss
-  API_METHODS.configUsercssVars = (id, vars) => newVars
+  API_METHODS.installUsercss = installUsercss;
+  API_METHODS.editSaveUsercss = editSaveUsercss;
+  API_METHODS.configUsercssVars = configUsercssVars;
 
   API_METHODS.buildUsercss = build;
-  API_METHODS.openUsercssInstallPage
-  // API_METHODS.installUsercss = install;
+  API_METHODS.openUsercssInstallPage = install;
+
   API_METHODS.parseUsercss = parse;
   API_METHODS.findUsercss = find;
 
@@ -59,15 +56,17 @@
     if (style.reason === 'config' && style.id) {
       return style;
     }
-    const dup = find(style);
-    if (dup) {
-      style.id = dup.id;
-      if (style.reason !== 'config') {
-        // preserve style.vars during update
-        usercss.assignVars(style, dup);
-      }
-    }
-    return style;
+    return find(style)
+      .then(dup => {
+        if (dup) {
+          style.id = dup.id;
+          if (style.reason !== 'config') {
+            // preserve style.vars during update
+            usercss.assignVars(style, dup);
+          }
+        }
+        return style;
+      });
   }
 
   /**
@@ -85,29 +84,54 @@
   }) {
     const task = buildMeta({sourceCode});
     return (metaOnly ? task : task.then(usercss.buildCode))
-      .then(style => ({
-        style,
-        dup: checkDup && find(style),
-      }));
+      .then(style => {
+        if (!checkDup) {
+          return {style};
+        }
+        return find(style)
+          .then(dup => ({style, dup}));
+      });
   }
 
   // Parse the source, apply customizations, report fatal/syntax errors
-  function parse(style, allowErrors = false) {
-    // restore if stripped by getStyleWithNoCode
-    if (typeof style.sourceCode !== 'string') {
-      style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
-    }
-    return buildMeta(style)
+  function parse(style) {
+    return fetchStyle()
+      .then(buildMeta)
       .then(assignVars)
-      .then(style => usercss.buildCode(style, allowErrors));
+      .then(usercss.buildCode);
+
+    function fetchStyle() {
+      // restore if stripped by getStyleWithNoCode
+      if (typeof style.sourceCode !== 'string') {
+        return styleManager.get(style.id)
+          .then(oldStyle => {
+            style.sourceCode = oldStyle.sourceCode;
+            return style;
+          });
+      }
+      return Promise.resolve(style);
+    }
   }
 
-  function save(style, allowErrors = false) {
-    return parse(style, allowErrors)
-      .then(result =>
-        allowErrors ?
-          saveStyle(result.style).then(style => ({style, errors: result.errors})) :
-          saveStyle(result));
+  function installUsercss(style) {
+    return parse(style)
+      .then(styleManager.installStyle);
+  }
+
+  function editSaveUsercss(style) {
+    return parse(style)
+      .then(styleManager.editSave);
+  }
+
+  function configUsercssVars(id, vars) {
+    return styleManager.get(id)
+      .then(style => {
+        const newStyle = deepCopy(style);
+        newStyle.usercssData.vars = vars;
+        return usercss.buildCode(newStyle);
+      })
+      .then(style => styleManager.installStyle(style, 'config'))
+      .then(style => style.usercssData.vars);
   }
 
   /**
@@ -115,16 +139,20 @@
    * @returns {Style}
    */
   function find(styleOrData) {
-    if (styleOrData.id) return cachedStyles.byId.get(styleOrData.id);
-    const {name, namespace} = styleOrData.usercssData || styleOrData;
-    for (const dup of cachedStyles.list) {
-      const data = dup.usercssData;
-      if (!data) continue;
-      if (data.name === name &&
-          data.namespace === namespace) {
-        return dup;
-      }
+    if (styleOrData.id) {
+      return styleManager.get(styleOrData.id);
     }
+    const {name, namespace} = styleOrData.usercssData || styleOrData;
+    return styleManager.getAllStyles(styleList => {
+      for (const dup of styleList) {
+        const data = dup.usercssData;
+        if (!data) continue;
+        if (data.name === name &&
+            data.namespace === namespace) {
+          return dup;
+        }
+      }
+    });
   }
 
   function install({url, direct, downloaded, tab}, sender) {

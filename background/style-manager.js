@@ -14,6 +14,7 @@ const styleManager = (() => {
   const BAD_MATCHER = {test: () => false};
 
   return ensurePrepared({
+    get,
     getStylesInfo,
     getSectionsByUrl,
     installStyle,
@@ -26,6 +27,10 @@ const styleManager = (() => {
     countStyles,
     countStylesByUrl, // used by icon badge
   });
+
+  function get(id) {
+    return styles.get(id).data;
+  }
 
   function getAllStyles() {
     return [...styles.values()].map(s => s.data);
