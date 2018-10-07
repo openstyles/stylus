@@ -149,18 +149,6 @@ function filterStylesInternal({
     : filtered;
 }
 
-function deleteStyle({id, notify = true}) {
-  id = Number(id);
-  return dbExec('delete', id).then(() => {
-    invalidateCache({deletedId: id});
-    if (notify) {
-      notifyAllTabs({method: 'styleDeleted', id});
-    }
-    return id;
-  });
-}
-
-
 function compileExclusionRegexps(exclusions) {
   exclusions.forEach(exclusion => {
     if (!cachedStyles.exclusions.get(exclusion)) {

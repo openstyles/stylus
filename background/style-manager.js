@@ -303,6 +303,7 @@ const styleManager = (() => {
             enabled: data.enabled,
             code
           };
+          // FIXME: memory leak
           appliesTo.add(url);
         }
       }
