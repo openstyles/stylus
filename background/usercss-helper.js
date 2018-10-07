@@ -1,12 +1,17 @@
-/* global API_METHODS usercss saveStyle getStyles chromeLocal cachedStyles */
+/* global API_METHODS usercss chromeLocal */
 'use strict';
 
 (() => {
 
-  API_METHODS.saveUsercss = style => save(style, false);
-  API_METHODS.saveUsercssUnsafe = style => save(style, true);
+  // API_METHODS.saveUsercss = style => save(style, false);
+  // API_METHODS.saveUsercssUnsafe = style => save(style, true);
+  API_METHODS.installUsercss
+  API_METHODS.editSaveUsercss
+  API_METHODS.configUsercssVars = (id, vars) => newVars
+
   API_METHODS.buildUsercss = build;
-  API_METHODS.installUsercss = install;
+  API_METHODS.openUsercssInstallPage
+  // API_METHODS.installUsercss = install;
   API_METHODS.parseUsercss = parse;
   API_METHODS.findUsercss = find;
 

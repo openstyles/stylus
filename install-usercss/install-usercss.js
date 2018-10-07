@@ -86,13 +86,12 @@
       cm.setCursor(cursor);
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
-      API.saveUsercssUnsafe({
+      API.installUsercss({
         id: (installed || installedDup).id,
         reason: 'update',
         sourceCode
-      }).then(({style, errors}) => {
+      }).then(style => {
         updateMeta(style);
-        if (errors) return Promise.reject(errors);
       }).catch(showError);
     });
   }
@@ -301,7 +300,7 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        API.saveUsercss(Object.assign(style, dup && {reason: 'update'}))
+        API.installUsercss(style)
           .then(install)
           .catch(err => messageBox.alert(t('styleInstallFailed', err), 'pre'))
       );

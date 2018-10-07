@@ -224,17 +224,13 @@ function createSourceEditor(style) {
       exclusionList
     });
     return ensureUniqueStyle(code)
-      .then(() => API.saveUsercssUnsafe({
+      .then(() => API.editSaveUsercss({
         id: style.id,
-        reason: 'editSave',
         enabled: style.enabled,
         sourceCode: code,
         exclusions: exclusionList
       }))
-      .then(({style, errors}) => {
-        replaceStyle(style);
-        if (errors) return Promise.reject(errors);
-      })
+      .then(replaceStyle)
       .catch(err => {
         if (err.handled) return;
         if (err.message === t('styleMissingMeta', 'name')) {

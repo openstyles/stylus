@@ -41,7 +41,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
             importFromString(text) :
             getOwnTab().then(tab => {
               tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-              return API.installUsercss({direct: true, tab})
+              return API.openUsercssInstallPage({direct: true, tab})
                 .then(() => URL.revokeObjectURL(tab.url));
             })
           ).then(numStyles => {

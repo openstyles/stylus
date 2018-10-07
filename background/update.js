@@ -1,5 +1,5 @@
 /*
-global getStyles saveStyle styleSectionsEqual
+global styleSectionsEqual
 global calcStyleDigest cachedStyles getStyleWithNoCode
 global usercss semverCompare
 global API_METHODS styleManager
@@ -173,7 +173,7 @@ global API_METHODS styleManager
 
       json.id = style.id;
       json.updateDate = Date.now();
-      json.reason = 'update';
+      // json.reason = 'update';
 
       // keep current state
       delete json.enabled;
@@ -185,10 +185,11 @@ global API_METHODS styleManager
         json.originalName = json.name;
       }
 
+      const newStyle = Object.assign({}, style, json);
       if (styleSectionsEqual(json, style, {checkSource: true})) {
         // update digest even if save === false as there might be just a space added etc.
-        json.reason = 'update-digest';
-        return saveStyle(json)
+        // json.reason = 'update-digest';
+        return styleManager.installStyle(newStyle)
           .then(saved => {
             style.originalDigest = saved.originalDigest;
             return Promise.reject(STATES.SAME_CODE);
@@ -200,8 +201,8 @@ global API_METHODS styleManager
       }
 
       return save ?
-        API_METHODS[json.usercssData ? 'saveUsercss' : 'saveStyle'](json) :
-        json;
+        API_METHODS[json.usercssData ? 'installUsercss' : 'installStyle'](newStyle) :
+        newStyle;
     }
 
     function styleJSONseemsValid(json) {

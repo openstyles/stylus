@@ -1,5 +1,4 @@
 /*
-global dbExec getStyles saveStyle deleteStyle
 global handleCssTransitionBug detectSloppyRegexps
 global openEditor
 global styleViaAPI
@@ -15,6 +14,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   toggleStyle: styleManager.toggleStyle,
   deleteStyle: styleManager.deleteStyle,
   getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
+  installStyle: styleManager.installStyle,
 
   getStyleFromDB: id =>
     db.exec('get', id).then(event => event.target.result),
@@ -306,7 +306,7 @@ function webNavUsercssInstallerFF(data) {
     getTab(tabId),
   ]).then(([pong, tab]) => {
     if (pong !== true && tab.url !== 'about:blank') {
-      window.API_METHODS.installUsercss({direct: true}, {tab});
+      window.API_METHODS.openUsercssInstallPage({direct: true}, {tab});
     }
   });
 }

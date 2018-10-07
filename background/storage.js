@@ -149,11 +149,6 @@ function filterStylesInternal({
     : filtered;
 }
 
-
-function saveStyle(style) {
-}
-
-
 function deleteStyle({id, notify = true}) {
   id = Number(id);
   return dbExec('delete', id).then(() => {

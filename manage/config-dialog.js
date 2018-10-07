@@ -171,9 +171,9 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return API.saveUsercss(style)
-      .then(saved => {
-        varsInitial = getInitialValues(saved.usercssData.vars);
+    return API.configUsercssVar(style.id, style.usercssData.vars)
+      .then(newVars => {
+        varsInitial = getInitialValues(newVars);
         vars.forEach(va => onchange({target: va.input, justSaved: true}));
         renderValues();
         updateButtons();

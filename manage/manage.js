@@ -415,8 +415,8 @@ Object.assign(handleEvent, {
     event.preventDefault();
     const json = entry.updatedCode;
     json.id = entry.styleId;
-    json.reason = 'update';
-    API[json.usercssData ? 'saveUsercss' : 'saveStyle'](json);
+    // json.reason = 'update';
+    API[json.usercssData ? 'installUsercss' : 'installStyle'](json);
   },
 
   delete(event, entry) {

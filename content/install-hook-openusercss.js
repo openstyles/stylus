@@ -128,8 +128,7 @@
     && event.data.type === 'ouc-install-usercss'
     && allowedOrigins.includes(event.origin)
     ) {
-      API.saveUsercss({
-        reason: 'install',
+      API.installUsercss({
         name: event.data.title,
         sourceCode: event.data.code,
       }).then(style => {
