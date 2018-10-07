@@ -38,13 +38,14 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   // in the foreground thus auto-closing the popup (in Chrome)
   openURL,
 
+  // FIXME: who use this?
   closeTab: (msg, sender, respond) => {
     chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
       if (chrome.runtime.lastError && msg.tabId !== sender.tab.id) {
         respond(new Error(chrome.runtime.lastError.message));
       }
     });
-    return KEEP_CHANNEL_OPEN;
+    return true;
   },
 
   optionsCustomizeHotkeys() {
@@ -71,6 +72,7 @@ if (FIREFOX) {
     const frameId = port.sender.frameId;
     const options = tryJSONparse(port.name.slice(MSG_GET_STYLES_LEN));
     port.disconnect();
+    // FIXME: getStylesFallback?
     getStyles(options).then(styles => {
       if (!styles.length) return;
       chrome.tabs.executeScript(tabId, {
@@ -87,39 +89,28 @@ if (FIREFOX) {
   });
 }
 
-{
-  const listener =
-    URLS.chromeProtectsNTP
-      ? webNavigationListenerChrome
-      : webNavigationListener;
-
-  chrome.webNavigation.onBeforeNavigate.addListener(data =>
-    listener(null, data));
-
-  chrome.webNavigation.onCommitted.addListener(data =>
-    listener('styleApply', data));
-
-  chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
-    listener('styleReplaceAll', data));
-
-  chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
-    listener('styleReplaceAll', data));
-
-  if (FIREFOX) {
-    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
-    chrome.webNavigation.onCommitted.addListener(webNavUsercssInstallerFF, {
-      url: [
-        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
-        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
-      ]
-    });
-    // FF misses some about:blank iframes so we inject our content script explicitly
-    chrome.webNavigation.onDOMContentLoaded.addListener(webNavIframeHelperFF, {
-      url: [
-        {urlEquals: 'about:blank'},
-      ]
-    });
+navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
+  if (type === 'committed') {
+    // styles would be updated when content script is injected.
+    return;
   }
+  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId});
+});
+
+if (FIREFOX) {
+  // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+  navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
+    url: [
+      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
+      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
+    ]
+  });
+  // FF misses some about:blank iframes so we inject our content script explicitly
+  navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
+    url: [
+      {urlEquals: 'about:blank'},
+    ]
+  });
 }
 
 if (chrome.contextMenus) {
@@ -148,6 +139,8 @@ prefs.subscribe(['iconset'], () =>
     tab: {id: undefined},
     styles: {},
   }));
+
+chrome.navigator.
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -297,74 +290,7 @@ window.addEventListener('storageReady', function _() {
     }));
 });
 
-// *************************************************************************
-{
-  const getStylesForFrame = (msg, sender) => {
-    const stylesTask = getStyles(msg);
-    if (!sender || !sender.frameId) return stylesTask;
-    return Promise.all([
-      stylesTask,
-      getTab(sender.tab.id),
-    ]).then(([styles, tab]) => {
-      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
-      return styles;
-    });
-  };
-  const updateAPI = (_, enabled) => {
-    window.API_METHODS.getStylesForFrame = enabled ? getStylesForFrame : getStyles;
-  };
-  prefs.subscribe(['exposeIframes'], updateAPI);
-  updateAPI(null, prefs.readOnlyValues.exposeIframes);
-}
-
-// *************************************************************************
-
-function webNavigationListener(method, {url, tabId, frameId}) {
-  Promise.all([
-    getStyles({matchUrl: url, asHash: true}),
-    frameId && prefs.readOnlyValues.exposeIframes && getTab(tabId),
-  ]).then(([styles, tab]) => {
-    if (method && URLS.supported(url) && tabId >= 0) {
-      if (method === 'styleApply') {
-        handleCssTransitionBug({tabId, frameId, url, styles});
-      }
-      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
-      msg.sendTab(
-        tabId,
-        {
-          method,
-          // ping own page so it retrieves the styles directly
-          styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
-        },
-        {frameId}
-      );
-    }
-    // main page frame id is 0
-    if (frameId === 0) {
-      tabIcons.delete(tabId);
-      updateIcon({tab: {id: tabId, url}, styles});
-    }
-  });
-}
-
-
-function webNavigationListenerChrome(method, data) {
-  // Chrome 61.0.3161+ doesn't run content scripts on NTP
-  if (
-    !data.url.startsWith('https://www.google.') ||
-    !data.url.includes('/_/chrome/newtab?')
-  ) {
-    webNavigationListener(method, data);
-    return;
-  }
-  getTab(data.tabId).then(tab => {
-    if (tab.url === 'chrome://newtab/') {
-      data.url = tab.url;
-    }
-    webNavigationListener(method, data);
-  });
-}
-
+// FIXME: implement exposeIframes in apply.js
 
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;

@@ -154,11 +154,12 @@ const styleManager = (() => {
   }
 
   function ensurePrepared(methods) {
-    for (const [name, fn] in Object.entries(methods)) {
-      methods[name] = (...args) =>
+    const prepared = {};
+    for (const [name, fn] of Object.entries(methods)) {
+      prepared[name] = (...args) =>
         preparing.then(() => fn(...args));
     }
-    return methods;
+    return prepared;
   }
 
   function createNewStyle() {

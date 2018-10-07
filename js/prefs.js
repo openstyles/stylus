@@ -3,6 +3,7 @@
 
 // eslint-disable-next-line no-var
 var prefs = new function Prefs() {
+  const BG = undefined;
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'windowPosition': {},           // detached window position

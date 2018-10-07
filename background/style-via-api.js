@@ -38,16 +38,14 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    return getStyles({id, matchUrl: url, asHash: true}).then(styles => {
+    const filter = {enabled: true};
+    if (id !== null) {
+      filter.id = id;
+    }
+    return styleManager.getSectionsByUrl(url, filter).then(sections => {
       const tasks = [];
-      for (const styleId in styles) {
-        if (isNaN(parseInt(styleId))) {
-          continue;
-        }
-        // shallow-extract code from the sections array in order to reuse references
-        // in other places whereas the combined string gets garbage-collected
-        const styleSections = styles[styleId].map(section => section.code);
-        const code = styleSections.join('\n');
+      for (const section of Object.values(sections)) {
+        const code = section.code;
         if (!code) {
           delete frameStyles[styleId];
           continue;
@@ -55,7 +53,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
         if (code === (frameStyles[styleId] || []).join('\n')) {
           continue;
         }
-        frameStyles[styleId] = styleSections;
+        frameStyles[styleId] = [code];
         tasks.push(
           browser.tabs.insertCSS(tab.id, {
             code,

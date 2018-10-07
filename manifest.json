@@ -36,12 +36,12 @@
       "js/cache.js",
       "background/db.js",
       "background/style-manager.js",
+      "background/navigator-util.js",
       "background/background.js",
       "background/usercss-helper.js",
       "background/style-via-api.js",
       "background/search-db.js",
       "background/update.js",
-      "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
       "vendor/semver-bundle/semver.js",
       "vendor-overwrites/colorpicker/colorconverter.js"

@@ -147,6 +147,10 @@
         }
         break;
 
+      case 'urlChanged':
+        // TODO
+        break;
+
       case 'ping':
         return true;
     }

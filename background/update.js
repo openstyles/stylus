@@ -51,7 +51,7 @@ global API_METHODS
     checkingAll = true;
     retrying.clear();
     const port = observe && chrome.runtime.connect({name: 'updater'});
-    return getStyles({}).then(styles => {
+    return styleManager.getAllStyles().then(styles => {
       styles = styles.filter(style => style.updateUrl);
       if (port) port.postMessage({count: styles.length});
       log('');
