@@ -29,19 +29,6 @@ var cachedStyles = {
   },
 };
 
-function getStyles(options) {
-  if (cachedStyles.list) {
-    return Promise.resolve(filterStyles(options));
-  }
-  if (cachedStyles.mutex.inProgress) {
-    return new Promise(resolve => {
-      cachedStyles.mutex.onDone.push({options, resolve});
-    });
-  }
-  cachedStyles.mutex.inProgress = true;
-}
-
-
 function filterStyles({
   enabled = null,
   id = null,

@@ -117,7 +117,7 @@ function configDialog(style) {
       return;
     }
     if (!bgStyle) {
-      API.getStyles({id: style.id, omitCode: !BG})
+      API.getStylesInfo({id: style.id})
         .then(([bgStyle]) => save({anyChangeIsDirty}, bgStyle || {}));
       return;
     }

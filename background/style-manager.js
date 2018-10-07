@@ -23,7 +23,8 @@ const styleManager = (() => {
     toggleStyle,
     getAllStyles, // used by import-export
     getStylesInfoByUrl, // used by popup
-    countStyles
+    countStyles,
+    countStylesByUrl, // used by icon badge
   });
 
   function getAllStyles() {
@@ -249,6 +250,11 @@ const styleManager = (() => {
     const sections = getSectionsByUrl(url);
     return Object.keys(sections)
       .map(k => getStyleWithNoCode(styles.get(Number(k)).data));
+  }
+
+  function countStylesByUrl(url, filter) {
+    const sections = getSectionsByUrl(url, filter);
+    return Object.keys(sections).length;
   }
 
   function getSectionsByUrl(url, filter) {
