@@ -13,6 +13,30 @@ const styleManager = (() => {
   const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
 
+  // setup live preview
+  chrome.runtime.onConnect(port => {
+    if (port.name !== 'livePreview') {
+      return;
+    }
+    let id;
+    port.onMessage.addListener(data => {
+      if (!id) {
+        id = data.id;
+      }
+      const style = styles.get(id);
+      style.preview = data;
+      broadcastStyleUpdated(data, 'editPreview');
+    });
+    port.onDisconnect.addListener(() => {
+      port = null;
+      if (id) {
+        const style = styles.get(id);
+        style.preview = null;
+        broadcastStyleUpdated(style.data, 'editPreview');
+      }
+    });
+  });
+
   return ensurePrepared({
     get,
     getStylesInfo,
@@ -111,10 +135,11 @@ const styleManager = (() => {
         data.originalDigest = digest;
         return saveStyle(data);
       })
-      .then(newData =>
-        broadcastStyleUpdated(newData, style ? 'update' : 'install')
-          .then(() => newData)
-      );
+      .then(newData => handleSave(
+        newData,
+        style ? 'update' : 'install',
+        style ? 'styleUpdated' : 'styleAdded'
+      ));
   }
 
   function editSave(data) {
@@ -125,19 +150,17 @@ const styleManager = (() => {
       data = Object.assign(createNewStyle(), data);
     }
     return saveStyle(data)
-      .then(newData =>
-        broadcastStyleUpdated(newData, 'editSave')
-          .then(() => newData)
-      );
+      .then(newData => handleSave(
+        newData,
+        'editSave',
+        style ? 'styleUpdated' : 'styleAdded'
+      ));
   }
 
   function setStyleExclusions(id, exclusions) {
     const data = Object.assign({}, styles.get(id), {exclusions});
     return saveStyle(data)
-      .then(newData =>
-        broadcastStyleUpdated(newData, 'exclusions')
-          .then(() => newData)
-      );
+      .then(newData => handleSave(newData, 'exclusions', 'styleUpdated'));
   }
 
   function deleteStyle(id) {
@@ -179,24 +202,8 @@ const styleManager = (() => {
     };
   }
 
-  function broadcastStyleUpdated(data, reason) {
+  function broadcastStyleUpdated(data, reason, method = 'styleUpdated') {
     const style = styles.get(data.id);
-    if (!style) {
-      // new style
-      const appliesTo = new Set();
-      styles.set(data.id, {
-        appliesTo,
-        data
-      });
-      for (const cache of cachedStyleForUrl.values()) {
-        cache.maybeMatch.add(data.id);
-      }
-      return msg.broadcast({
-        method: 'styleAdded',
-        style: {id: data.id, enabled: data.enabled},
-        reason
-      });
-    }
     const excluded = new Set();
     const updated = new Set();
     for (const [url, cache] of cachedStyleForUrl.entries()) {
@@ -217,10 +224,9 @@ const styleManager = (() => {
         };
       }
     }
-    style.data = data;
     style.appliesTo = updated;
     return msg.broadcast({
-      method: 'styleUpdated',
+      method,
       style: {
         id: data.id,
         enabled: data.enabled
@@ -249,6 +255,20 @@ const styleManager = (() => {
         }
         return style;
       });
+  }
+
+  function handleSave(data, reason, method) {
+    const style = styles.get(data.id);
+    if (!style) {
+      styles.set(data.id, {
+        appliesTo: new Set(),
+        data
+      });
+    } else {
+      style.data = data;
+    }
+    return broadcastStyleUpdated(data, reason, method)
+      .then(() => data);
   }
 
   function getStylesInfoByUrl(url) {
@@ -295,8 +315,8 @@ const styleManager = (() => {
     return cache.sections;
 
     function buildCache(styleList) {
-      for (const {appliesTo, data} of styleList) {
-        const code = getAppliedCode(url, data);
+      for (const {appliesTo, data, preview} of styleList) {
+        const code = getAppliedCode(url, preview || data);
         if (code) {
           cache.sections[data.id] = {
             id: data.id,
