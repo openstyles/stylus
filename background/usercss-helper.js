@@ -81,16 +81,24 @@
     sourceCode,
     checkDup,
     metaOnly,
+    vars,
   }) {
-    const task = buildMeta({sourceCode});
-    return (metaOnly ? task : task.then(usercss.buildCode))
-      .then(style => {
-        if (!checkDup) {
-          return {style};
-        }
-        return find(style)
-          .then(dup => ({style, dup}));
-      });
+    return usercss.buildMeta(sourceCode)
+      .then(style =>
+        Promise.all([
+          metaOnly ? style : doBuild(style),
+          checkDup ? find(style) : undefined
+        ])
+      )
+      .then(([style, dup]) => ({style, dup}));
+
+    function doBuild(style) {
+      if (vars) {
+        const oldStyle = {usercssData: {vars}};
+        usercss.assignVars(style, oldStyle);
+      }
+      return usercss.buildCode(style);
+    }
   }
 
   // Parse the source, apply customizations, report fatal/syntax errors

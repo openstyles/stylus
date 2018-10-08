@@ -4,7 +4,6 @@ function createLivePreview() {
   let previewer;
   return {update};
 
-  // {id, enabled, sourceCode, sections}
   function update(data) {
     if (!previewer) {
       if (!data.id || !data.enabled) {

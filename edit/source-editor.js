@@ -5,7 +5,7 @@ global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
 global exclusions
 global beforeUnload
-global createMetaCompiler linter
+global createMetaCompiler linter createLivePreview
 */
 'use strict';
 
@@ -37,14 +37,19 @@ function createSourceEditor(style) {
 
   editors.push(cm);
 
+  const livePreview = createLivePreview();
+  livePreview.enable(Boolean(style.id));
+
   $('#enabled').onchange = function () {
     const value = this.checked;
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
+    updateLivePreview();
   };
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
+    updateLivePreview();
   });
 
   CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
@@ -86,6 +91,20 @@ function createSourceEditor(style) {
       }
     });
   });
+
+  function updateLivePreview() {
+    if (!style.id) {
+      return;
+    }
+    API.buildUsercss({
+      sourceCode: cm.getValue(),
+      vars: style.usercssData.vars
+    })
+      .then(newStyle => {
+        delete newStyle.enabled;
+        livePreview.update(Object.assign({}, style, newStyle));
+      });
+  }
 
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
@@ -204,6 +223,7 @@ function createSourceEditor(style) {
       styleId = style.id;
       $('#preview-label').classList.remove('hidden');
       updateMeta();
+      livePreview.enable(Boolean(style.id));
     }
   }
 
