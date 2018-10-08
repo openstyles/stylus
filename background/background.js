@@ -268,12 +268,14 @@ window.addEventListener('storageReady', function _() {
 
   const injectCS = (cs, tabId) => {
     ignoreChromeError();
-    chrome.tabs.executeScript(tabId, {
-      file: cs.js[0],
-      runAt: cs.run_at,
-      allFrames: cs.all_frames,
-      matchAboutBlank: cs.match_about_blank,
-    }, ignoreChromeError);
+    for (const file of cs.js) {
+      chrome.tabs.executeScript(tabId, {
+        file,
+        runAt: cs.run_at,
+        allFrames: cs.all_frames,
+        matchAboutBlank: cs.match_about_blank,
+      }, ignoreChromeError);
+    }
   };
 
   const pingCS = (cs, {id, url}) => {
