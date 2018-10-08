@@ -1,10 +1,16 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/*
-  global createCache db calcStyleDigest normalizeStyleSections db promisify
-  getStyleWithNoCode msg
-*/
+/* global createCache db calcStyleDigest normalizeStyleSections db promisify
+  getStyleWithNoCode msg */
 'use strict';
 
+/*
+This style manager is a layer between content script and the DB. When a style
+is added/updated, it broadcast a message to content script and the content
+script would try to fetch the new code.
+
+The live preview feature relies on `runtime.connect` and `port.onDisconnect`
+to cleanup the temporary code. See /edit/live-preview.js.
+*/
 const styleManager = (() => {
   const preparing = prepare();
   const styles = new Map();
@@ -13,29 +19,7 @@ const styleManager = (() => {
   const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
 
-  // setup live preview
-  chrome.runtime.onConnect(port => {
-    if (port.name !== 'livePreview') {
-      return;
-    }
-    let id;
-    port.onMessage.addListener(data => {
-      if (!id) {
-        id = data.id;
-      }
-      const style = styles.get(id);
-      style.preview = data;
-      broadcastStyleUpdated(data, 'editPreview');
-    });
-    port.onDisconnect.addListener(() => {
-      port = null;
-      if (id) {
-        const style = styles.get(id);
-        style.preview = null;
-        broadcastStyleUpdated(style.data, 'editPreview');
-      }
-    });
-  });
+  handleLivePreviewConnections();
 
   return ensurePrepared({
     get,
@@ -51,6 +35,31 @@ const styleManager = (() => {
     countStyles,
     countStylesByUrl, // used by icon badge
   });
+
+  function handleLivePreviewConnections() {
+    chrome.runtime.onConnect(port => {
+      if (port.name !== 'livePreview') {
+        return;
+      }
+      let id;
+      port.onMessage.addListener(data => {
+        if (!id) {
+          id = data.id;
+        }
+        const style = styles.get(id);
+        style.preview = data;
+        broadcastStyleUpdated(style.preview, 'editPreview');
+      });
+      port.onDisconnect.addListener(() => {
+        port = null;
+        if (id) {
+          const style = styles.get(id);
+          style.preview = null;
+          broadcastStyleUpdated(style.data, 'editPreview');
+        }
+      });
+    });
+  }
 
   function get(id) {
     return styles.get(id).data;

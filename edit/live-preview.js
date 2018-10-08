@@ -1,16 +1,13 @@
+/* global editors messageBox */
 'use strict';
 
-function createLivePreview() {
+function createLivePreview(preprocess) {
   let data;
   let previewer;
-  let hidden;
-  let node;
-  document.addEventListener('DOMContentLoaded', () => {
-    node = $('#preview-label');
-    if (hidden !== undefined) {
-      node.classList.toggle('hidden', hidden);
-    }
-  }, {once: true});
+  let enabled = prefs.get('editor.livePreview');
+  const label = $('#preview-label');
+  const errorContainer = $('#preview-errors');
+
   prefs.subscribe(['editor.livePreview'], (key, value) => {
     if (value && data && data.id && data.enabled) {
       previewer = createPreviewer;
@@ -20,23 +17,18 @@ function createLivePreview() {
       previewer.disconnect();
       previewer = null;
     }
+    enabled = value;
   });
   return {update, show};
 
   function show(state) {
-    if (hidden === !state) {
-      return;
-    }
-    hidden = !state;
-    if (node) {
-      node.classList.toggle('hidden', hidden);
-    }
+    label.classList.toggle('hidden', !state);
   }
 
   function update(_data) {
     data = _data;
     if (!previewer) {
-      if (!data.id || !data.enabled) {
+      if (!data.id || !data.enabled || !enabled) {
         return;
       }
       previewer = createPreviewer();
@@ -54,7 +46,23 @@ function createLivePreview() {
     return {update, disconnect};
 
     function update(data) {
-      port.postMessage(data);
+      Promise.resolve()
+        .then(() => preprocess ? preprocess(data) : data)
+        .then(data => port.postMessage(data))
+        .then(
+          () => errorContainer.classList.add('hidden'),
+          err => {
+            if (Array.isArray(err)) {
+              err = err.join('\n');
+            } else if (err && err.index !== undefined) {
+              // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
+              const pos = editors[0].posFromIndex(err.index);
+              err.message = `${pos.line}:${pos.ch} ${err.message || String(err)}`;
+            }
+            errorContainer.classList.remove('hidden');
+            errorContainer.onclick = () => messageBox.alert(err.message || String(err), 'pre');
+          }
+        );
     }
 
     function disconnect() {

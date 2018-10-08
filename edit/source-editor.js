@@ -37,7 +37,7 @@ function createSourceEditor(style) {
 
   editors.push(cm);
 
-  const livePreview = createLivePreview();
+  const livePreview = createLivePreview(preprocess);
   livePreview.show(Boolean(style.id));
 
   $('#enabled').onchange = function () {
@@ -92,18 +92,22 @@ function createSourceEditor(style) {
     });
   });
 
-  function updateLivePreview() {
-    if (!style.id) {
-      return;
-    }
-    API.buildUsercss({
-      sourceCode: cm.getValue(),
+  function preprocess(style) {
+    return API.buildUsercss({
+      sourceCode: style.sourceCode,
       vars: style.usercssData.vars
     })
       .then(newStyle => {
         delete newStyle.enabled;
-        livePreview.update(Object.assign({}, style, newStyle));
+        return Object.assign(style, newStyle);
       });
+  }
+
+  function updateLivePreview() {
+    if (!style.id) {
+      return;
+    }
+    livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
   }
 
   function initAppliesToLineWidget() {
