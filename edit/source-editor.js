@@ -38,7 +38,7 @@ function createSourceEditor(style) {
   editors.push(cm);
 
   const livePreview = createLivePreview();
-  livePreview.enable(Boolean(style.id));
+  livePreview.show(Boolean(style.id));
 
   $('#enabled').onchange = function () {
     const value = this.checked;
@@ -199,6 +199,7 @@ function createSourceEditor(style) {
     if (codeIsUpdated === false || sameCode) {
       updateEnvironment();
       dirty.clear('enabled');
+      updateLivePreview();
       return;
     }
 
@@ -210,6 +211,10 @@ function createSourceEditor(style) {
         cm.setValue(style.sourceCode);
         cm.setCursor(cursor);
         savedGeneration = cm.changeGeneration();
+      }
+      if (sameCode) {
+        // the code is same but the environment is changed
+        updateLivePreview();
       }
       dirty.clear();
     });
@@ -223,7 +228,7 @@ function createSourceEditor(style) {
       styleId = style.id;
       $('#preview-label').classList.remove('hidden');
       updateMeta();
-      livePreview.enable(Boolean(style.id));
+      livePreview.show(Boolean(style.id));
     }
   }
 

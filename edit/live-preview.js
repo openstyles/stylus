@@ -1,10 +1,40 @@
 'use strict';
 
 function createLivePreview() {
+  let data;
   let previewer;
-  return {update};
+  let hidden;
+  let node;
+  document.addEventListener('DOMContentLoaded', () => {
+    node = $('#preview-label');
+    if (hidden !== undefined) {
+      node.classList.toggle('hidden', hidden);
+    }
+  }, {once: true});
+  prefs.subscribe(['editor.livePreview'], (key, value) => {
+    if (value && data && data.id && data.enabled) {
+      previewer = createPreviewer;
+      previewer.update(data);
+    }
+    if (!value && previewer) {
+      previewer.disconnect();
+      previewer = null;
+    }
+  });
+  return {update, show};
 
-  function update(data) {
+  function show(state) {
+    if (hidden === !state) {
+      return;
+    }
+    hidden = !state;
+    if (node) {
+      node.classList.toggle('hidden', hidden);
+    }
+  }
+
+  function update(_data) {
+    data = _data;
     if (!previewer) {
       if (!data.id || !data.enabled) {
         return;
@@ -21,10 +51,14 @@ function createLivePreview() {
     port.onDisconnet.addListener(err => {
       throw err;
     });
-    return {update};
+    return {update, disconnect};
 
     function update(data) {
       port.postMessage(data);
+    }
+
+    function disconnect() {
+      port.disconnect();
     }
   }
 }
