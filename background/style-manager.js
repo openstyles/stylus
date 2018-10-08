@@ -429,5 +429,3 @@ const styleManager = (() => {
     return url.split('#')[0];
   }
 })();
-
-function notifyAllTabs() {}

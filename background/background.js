@@ -282,7 +282,9 @@ window.addEventListener('storageReady', function _() {
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {
+        // TODO: add a `msg.pingTab` API?
         msg.sendTab(id, {method: 'ping'})
+          .catch(() => false)
           .then(pong => !pong && injectCS(cs, id));
         return true;
       }
@@ -304,7 +306,8 @@ window.addEventListener('storageReady', function _() {
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
   Promise.all([
-    msg.sendTab(tabId, {method: 'ping'}),
+    msg.sendTab(tabId, {method: 'ping'})
+      .catch(() => false),
     // we need tab index to open the installer next to the original one
     // and also to skip the double-invocation in FF which assigns tab url later
     getTab(tabId),
@@ -319,6 +322,7 @@ function webNavUsercssInstallerFF(data) {
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
   msg.sendTab(tabId, {method: 'ping'}, {frameId})
+    .catch(() => false)
     .then(pong => {
       if (pong) return;
       chrome.tabs.executeScript(tabId, {

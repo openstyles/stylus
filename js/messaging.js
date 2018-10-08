@@ -519,3 +519,6 @@ function closeCurrentTab() {
     }
   });
 }
+
+// FIXME: remove this when #510 is merged
+function notifyAllTabs() {}
