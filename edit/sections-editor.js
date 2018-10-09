@@ -3,6 +3,7 @@
   CodeMirror nextPrevEditorOnKeydown showAppliesToHelp propertyToCss
   regExpTester linter cssToProperty createLivePreview showCodeMirrorPopup
   sectionsToMozFormat editorWorker messageBox clipString beautify
+  rerouteHotkeys
 */
 'use strict';
 
@@ -110,15 +111,16 @@ function createSectionsEditor(style) {
   }
 
   let sectionOrder = '';
-  initSection({
+  const initializing = new Promise(resolve => initSection({
     sections: style.sections.slice(),
     done:() => {
       // FIXME: implement this with CSS?
       // https://github.com/openstyles/stylus/commit/2895ce11e271788df0e4f7314b3b981fde086574
-      // maximizeCodeHeight(sections[sections.length - 1], true);
       dirty.clear();
+      rerouteHotkeys(true);
+      resolve();
     }
-  });
+  }));
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -126,19 +128,50 @@ function createSectionsEditor(style) {
   updateHeader();
 
   return {
+    ready: () => initializing,
     replaceStyle,
     isDirty: dirty.isDirty,
     getStyle: () => style,
-    getEditors: () =>
-      sections.filter(s => !s.isRemoved()).map(s => s.cm),
+    getEditors,
     getLastActivatedEditor,
     scrollToEditor,
     getStyleId: () => style.id,
     getEditorTitle: cm => {
       const index = sections.filter(s => !s.isRemoved()).findIndex(s => s.cm === cm) + 1;
       return `${t('sectionCode')} ${index + 1}`;
-    }
+    },
+    save: saveStyle,
+    toggleStyle,
+    nextEditor,
+    prevEditor
   };
+
+  function getEditors() {
+    return sections.filter(s => !s.isRemoved()).map(s => s.cm);
+  }
+
+  function toggleStyle() {
+    const newValue = !style.enabled;
+    dirty.modify('enabled', style.enabled, newValue);
+    style.enabled = newValue;
+    enabledEl.checked = newValue;
+  }
+
+  function nextEditor(cm) {
+    return nextPrevEditor(cm, 1);
+  }
+
+  function prevEditor(cm) {
+    return nextPrevEditor(cm, -1);
+  }
+
+  function nextPrevEditor(cm, direction) {
+    const editors = getEditors();
+    cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
+    scrollToEditor(cm);
+    cm.focus();
+    return cm;
+  }
 
   function scrollToEditor(cm) {
     const section = sections.find(s => s.cm === cm);
@@ -188,7 +221,7 @@ function createSectionsEditor(style) {
         }
         event.preventDefault();
         event.stopPropagation();
-        cm = CodeMirror.commands.prevEditor(cm);
+        cm = prevEditor(cm);
         cm.setCursor(cm.doc.size - 1, key === 37 ? 1e20 : ch);
         break;
       case 39:
@@ -204,7 +237,7 @@ function createSectionsEditor(style) {
         }
         event.preventDefault();
         event.stopPropagation();
-        cm = CodeMirror.commands.nextEditor(cm);
+        cm = nextEditor(cm);
         cm.setCursor(0, 0);
         break;
     }

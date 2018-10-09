@@ -1,7 +1,6 @@
 /*
 global CodeMirror loadScript
 global editor ownTabId
-global save toggleStyle makeSectionVisible
 global messageBox
 */
 'use strict';
@@ -37,6 +36,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     getSection,
     rerouteHotkeys,
   });
+  Object.assign(CodeMirror.commands, COMMANDS);
+  rerouteHotkeys(true);
 
   CodeMirror.defineInitHook(cm => {
     if (!cm.display.wrapper.closest('#sections')) {
@@ -58,27 +59,10 @@ onDOMscriptReady('/codemirror.js').then(() => {
     });
   });
 
-  new MutationObserver((mutations, observer) => {
-    if (!$('#sections')) {
-      return;
-    }
-    observer.disconnect();
+  // FIXME: pull this into a module
+  window.rerouteHotkeys = rerouteHotkeys;
 
-    prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
-    addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
-    showHotkeyInTooltip();
-
-    // N.B. the onchange event listeners should be registered before setupLivePrefs()
-    $('#options').addEventListener('change', onOptionElementChanged);
-    buildThemeElement();
-    buildKeymapElement();
-    setupLivePrefs();
-
-    Object.assign(CodeMirror.commands, COMMANDS);
-    rerouteHotkeys(true);
-  }).observe(document, {childList: true, subtree: true});
-
-  return;
+  prefs.subscribe(null, onPrefChanged);
 
   ////////////////////////////////////////////////
 
@@ -88,6 +72,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function setOption(o, v) {
     CodeMirror.defaults[o] = v;
+    if (!editor) {
+      return;
+    }
     const editors = editor.getEditors();
     if (editors.length > 4 && (o === 'theme' || o === 'lineWrapping')) {
       throttleSetOption({key: o, value: v, index: 0});
@@ -178,19 +165,11 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   function nextEditor(cm) {
-    return nextPrevEditor(cm, 1);
+    return editor.nextEditor(cm);
   }
 
   function prevEditor(cm) {
-    return nextPrevEditor(cm, -1);
-  }
-
-  function nextPrevEditor(cm, direction) {
-    const editors = editor.getEditors();
-    cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
-    editor.scrollToEditor(cm);
-    cm.focus();
-    return cm;
+    return editor.prevEditor(cm);
   }
 
   function jumpToLine(cm) {
@@ -230,14 +209,12 @@ onDOMscriptReady('/codemirror.js').then(() => {
     });
   }
 
-  function onOptionElementChanged(event) {
-    const el = event.target;
-    let option = el.id.replace(/^editor\./, '');
+  function onPrefChanged(key, value) {
+    let option = key.replace(/^editor\./, '');
     if (!option) {
-      console.error('no "cm_option"', el);
+      console.error('no "cm_option"', key);
       return;
     }
-    let value = el.type === 'checkbox' ? el.checked : el.value;
     switch (option) {
       case 'tabSize':
         value = Number(value);
@@ -255,11 +232,11 @@ onDOMscriptReady('/codemirror.js').then(() => {
         // use non-localized 'default' internally
         if (!value || value === 'default' || value === t('defaultTheme')) {
           value = 'default';
-          if (prefs.get(el.id) !== value) {
-            prefs.set(el.id, value);
+          if (prefs.get(key) !== value) {
+            prefs.set(key, value);
           }
           themeLink.href = '';
-          el.selectedIndex = 0;
+          $('#editor.theme').value = value;
           break;
         }
         const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
@@ -278,7 +255,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
 
       case 'autocompleteOnTyping':
-        editor.getEditors().forEach(cm => setupAutocomplete(cm, el.checked));
+        if (editor) {
+          editor.getEditors().forEach(cm => setupAutocomplete(cm, value));
+        }
         return;
 
       case 'autoCloseBrackets':
@@ -304,62 +283,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
         return;
     }
     CodeMirror.setOption(option, value);
-  }
-
-  function buildThemeElement() {
-    const themeElement = $('#editor.theme');
-    const themeList = localStorage.codeMirrorThemes;
-
-    const optionsFromArray = options => {
-      const fragment = document.createDocumentFragment();
-      options.forEach(opt => fragment.appendChild($create('option', opt)));
-      themeElement.appendChild(fragment);
-    };
-
-    if (themeList) {
-      optionsFromArray(themeList.split(/\s+/));
-    } else {
-      // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-      const theme = prefs.get('editor.theme');
-      optionsFromArray([theme === 'default' ? t('defaultTheme') : theme]);
-      getCodeMirrorThemes().then(() => {
-        const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
-        optionsFromArray(themes);
-        themeElement.selectedIndex = Math.max(0, themes.indexOf(theme));
-      });
-    }
-  }
-
-  function buildKeymapElement() {
-    // move 'pc' or 'mac' prefix to the end of the displayed label
-    const maps = Object.keys(CodeMirror.keyMap)
-      .map(name => ({
-        value: name,
-        name: name.replace(/^(pc|mac)(.+)/, (s, arch, baseName) =>
-          baseName.toLowerCase() + '-' + (arch === 'mac' ? 'Mac' : 'PC')),
-      }))
-      .sort((a, b) => a.name < b.name && -1 || a.name > b.name && 1);
-
-    const fragment = document.createDocumentFragment();
-    let bin = fragment;
-    let groupName;
-    // group suffixed maps in <optgroup>
-    maps.forEach(({value, name}, i) => {
-      groupName = !name.includes('-') ? name : groupName;
-      const groupWithNext = maps[i + 1] && maps[i + 1].name.startsWith(groupName);
-      if (groupWithNext) {
-        if (bin === fragment) {
-          bin = fragment.appendChild($create('optgroup', {label: name.split('-')[0]}));
-        }
-      }
-      const el = bin.appendChild($create('option', {value}, name));
-      if (value === prefs.defaults['editor.keyMap']) {
-        el.dataset.default = '';
-        el.title = t('defaultTheme');
-      }
-      if (!groupWithNext) bin = fragment;
-    });
-    $('#editor.keyMap').appendChild(fragment);
   }
 
   ////////////////////////////////////////////////
@@ -477,121 +400,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   ////////////////////////////////////////////////
 
-  function getCodeMirrorThemes() {
-    if (!chrome.runtime.getPackageDirectoryEntry) {
-      const themes = [
-        chrome.i18n.getMessage('defaultTheme'),
-        /* populate-theme-start */
-        '3024-day',
-        '3024-night',
-        'abcdef',
-        'ambiance',
-        'ambiance-mobile',
-        'base16-dark',
-        'base16-light',
-        'bespin',
-        'blackboard',
-        'cobalt',
-        'colorforth',
-        'darcula',
-        'dracula',
-        'duotone-dark',
-        'duotone-light',
-        'eclipse',
-        'elegant',
-        'erlang-dark',
-        'gruvbox-dark',
-        'hopscotch',
-        'icecoder',
-        'idea',
-        'isotope',
-        'lesser-dark',
-        'liquibyte',
-        'lucario',
-        'material',
-        'mbo',
-        'mdn-like',
-        'midnight',
-        'monokai',
-        'neat',
-        'neo',
-        'night',
-        'oceanic-next',
-        'panda-syntax',
-        'paraiso-dark',
-        'paraiso-light',
-        'pastel-on-dark',
-        'railscasts',
-        'rubyblue',
-        'seti',
-        'shadowfox',
-        'solarized',
-        'ssms',
-        'the-matrix',
-        'tomorrow-night-bright',
-        'tomorrow-night-eighties',
-        'ttcn',
-        'twilight',
-        'vibrant-ink',
-        'xq-dark',
-        'xq-light',
-        'yeti',
-        'zenburn',
-        /* populate-theme-end */
-      ];
-      localStorage.codeMirrorThemes = themes.join(' ');
-      return Promise.resolve(themes);
-    }
-    return new Promise(resolve => {
-      chrome.runtime.getPackageDirectoryEntry(rootDir => {
-        rootDir.getDirectory('vendor/codemirror/theme', {create: false}, themeDir => {
-          themeDir.createReader().readEntries(entries => {
-            const themes = [
-              chrome.i18n.getMessage('defaultTheme')
-            ].concat(
-              entries.filter(entry => entry.isFile)
-                .sort((a, b) => (a.name < b.name ? -1 : 1))
-                .map(entry => entry.name.replace(/\.css$/, ''))
-            );
-            localStorage.codeMirrorThemes = themes.join(' ');
-            resolve(themes);
-          });
-        });
-      });
-    });
-  }
-
-  function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
-    const extraKeys = CodeMirror.defaults.extraKeys;
-    for (const el of $$('[data-hotkey-tooltip]')) {
-      if (el._hotkeyTooltipKeyMap !== mapName) {
-        el._hotkeyTooltipKeyMap = mapName;
-        const title = el._hotkeyTooltipTitle = el._hotkeyTooltipTitle || el.title;
-        const cmd = el.dataset.hotkeyTooltip;
-        const key = cmd[0] === '=' ? cmd.slice(1) :
-          findKeyForCommand(cmd, mapName) ||
-          extraKeys && findKeyForCommand(cmd, extraKeys);
-        const newTitle = title + (title && key ? '\n' : '') + (key || '');
-        if (el.title !== newTitle) el.title = newTitle;
-      }
-    }
-  }
-
-  function findKeyForCommand(command, map) {
-    if (typeof map === 'string') map = CodeMirror.keyMap[map];
-    let key = Object.keys(map).find(k => map[k] === command);
-    if (key) {
-      return key;
-    }
-    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
-      key = ft && findKeyForCommand(command, ft);
-      if (key) {
-        return key;
-      }
-    }
-    return '';
-  }
-
   function setupAutocomplete(cm, enable = true) {
     const onOff = enable ? 'on' : 'off';
     cm[onOff]('changes', autocompleteOnTyping);
@@ -626,5 +434,13 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function autocompletePicked(cm) {
     cm.state.autocompletePicked = true;
+  }
+
+  function save() {
+    editor.save();
+  }
+
+  function toggleStyle() {
+    editor.toggleStyle();
   }
 });

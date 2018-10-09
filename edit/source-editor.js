@@ -52,10 +52,6 @@ function createSourceEditor(style) {
     updateLivePreview();
   });
 
-  CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
-  CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
-  CodeMirror.commands.toggleStyle = toggleStyle;
-  CodeMirror.commands.save = save;
   CodeMirror.closestVisible = () => cm;
 
   cm.operation(initAppliesToLineWidget);
@@ -409,6 +405,10 @@ function createSourceEditor(style) {
     getLastActivatedEditor: () => cm,
     scrollToEditor: () => {},
     getStyleId: () => style.id,
-    getEditorTitle: () => ''
+    getEditorTitle: () => '',
+    save,
+    toggleStyle,
+    prevEditor: cm => nextPrevMozDocument(cm, -1),
+    nextEditor: cm => nextPrevMozDocument(cm, 1)
   };
 }
