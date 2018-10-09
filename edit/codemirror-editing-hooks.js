@@ -47,7 +47,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
     const wrapper = cm.display.wrapper;
     cm.on('blur', () => {
-      editors.lastActive = cm;
       cm.rerouteHotkeys(true);
       setTimeout(() => {
         wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
@@ -89,6 +88,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
   function setOption(o, v) {
     CodeMirror.defaults[o] = v;
+    const editors = editor.getEditors();
     if (editors.length > 4 && (o === 'theme' || o === 'lineWrapping')) {
       throttleSetOption({key: o, value: v, index: 0});
       return;
@@ -103,8 +103,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     value,
     index,
     timeStart = performance.now(),
-    cmStart = editors.lastActive || editors[0],
-    editorsCopy = editors.slice(),
+    cmStart = editor.getLastActivatedEditor(),
+    editorsCopy = editor.getEditors().slice(),
     progress,
   }) {
     if (index === 0) {
@@ -119,6 +119,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
     const t0 = performance.now();
     const total = editorsCopy.length;
+    const editors = editor.getEditors();
     while (index < total) {
       const cm = editorsCopy[index++];
       if (cm === cmStart ||
@@ -185,7 +186,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   function nextPrevEditor(cm, direction) {
-    const editors = style.getEditors();
+    const editors = editor.getEditors();
     cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
     editor.scrollToEditor(cm);
     cm.focus();
@@ -277,7 +278,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
 
       case 'autocompleteOnTyping':
-        editors.forEach(cm => setupAutocomplete(cm, el.checked));
+        editor.getEditors().forEach(cm => setupAutocomplete(cm, el.checked));
         return;
 
       case 'autoCloseBrackets':
@@ -412,7 +413,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
     }
     // closest editor should have at least 2 lines visible
-    const lineHeight = editors[0].defaultTextHeight();
+    const lineHeight = editor.getEditors()[0].defaultTextHeight();
     const scrollY = window.scrollY;
     const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
     const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
@@ -424,7 +425,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
       if (index >= 0 && distances[index] !== undefined) {
         return distances[index];
       }
-      const section = (cm || editors[index]).getSection();
+      const section = cm.display.wrapper.closest('.section');
       if (!section) {
         return 1e9;
       }
@@ -443,6 +444,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
 
     function findClosest() {
+      const editors = editor.getEditors();
       const last = editors.length - 1;
       let a = 0;
       let b = last;

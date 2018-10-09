@@ -37,7 +37,7 @@ function onRuntimeMessage(msg) {
       handleUpdate(msg.style);
       break;
     case 'styleDeleted':
-      handleDelete(msg.id);
+      handleDelete(msg.style.id);
       break;
     case 'prefChanged':
       if ('popup.stylesFirst' in msg.prefs) {

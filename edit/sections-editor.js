@@ -1,7 +1,8 @@
 /* global dirtyReporter showToMozillaHelp
   showSectionHelp toggleContextMenuDelete setGlobalProgress maximizeCodeHeight
   CodeMirror nextPrevEditorOnKeydown showAppliesToHelp propertyToCss
-  regExpTester linter cssToProperty
+  regExpTester linter cssToProperty createLivePreview showCodeMirrorPopup
+  sectionsToMozFormat editorWorker messageBox clipString beautify
 */
 'use strict';
 
@@ -131,7 +132,12 @@ function createSectionsEditor(style) {
     getEditors: () =>
       sections.filter(s => !s.isRemoved()).map(s => s.cm),
     getLastActivatedEditor,
-    scrollToEditor
+    scrollToEditor,
+    getStyleId: () => style.id,
+    getEditorTitle: cm => {
+      const index = sections.filter(s => !s.isRemoved()).findIndex(s => s.cm === cm) + 1;
+      return `${t('sectionCode')} ${index + 1}`;
+    }
   };
 
   function scrollToEditor(cm) {
@@ -177,7 +183,7 @@ function createSectionsEditor(style) {
       // fallthrough to arrow Up
       case 38:
         // arrow Up
-        if (line > 0 || cm === editors[0]) {
+        if (line > 0 || cm === sections[0].cm) {
           return;
         }
         event.preventDefault();
@@ -193,7 +199,7 @@ function createSectionsEditor(style) {
       // fallthrough to arrow Down
       case 40:
         // arrow Down
-        if (line < cm.doc.size - 1 || cm === editors.last) {
+        if (line < cm.doc.size - 1 || cm === sections[sections.length - 1].cm) {
           return;
         }
         event.preventDefault();
@@ -331,7 +337,7 @@ function createSectionsEditor(style) {
     return true;
   }
 
-  function save() {
+  function saveStyle() {
     const newStyle = getModel();
     if (!validate(newStyle)) {
       return;
@@ -507,7 +513,6 @@ function createSectionsEditor(style) {
       el,
       cm,
       render,
-      destroy,
       getCode,
       getModel,
       remove,
@@ -580,7 +585,9 @@ function createSectionsEditor(style) {
       if (!FIREFOX) {
         cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
       }
-      cm.on('focus', () => lastActive = Date.now());
+      cm.on('focus', () => {
+        lastActive = Date.now();
+      });
 
       cm.display.wrapper.addEventListener('keydown', event =>
         nextPrevEditorOnKeydown(cm, event), true);

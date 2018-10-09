@@ -1,6 +1,6 @@
 /* global CodeMirror editors makeSectionVisible */
 /* global focusAccessibility */
-/* global colorMimicry */
+/* global colorMimicry editor */
 'use strict';
 
 onDOMready().then(() => {

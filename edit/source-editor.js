@@ -407,6 +407,8 @@ function createSourceEditor(style) {
     getStyle: () => style,
     getEditors: () => [cm],
     getLastActivatedEditor: () => cm,
-    scrollToEditor: () => {}
+    scrollToEditor: () => {},
+    getStyleId: () => style.id,
+    getEditorTitle: () => ''
   };
 }

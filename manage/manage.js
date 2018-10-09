@@ -48,7 +48,7 @@ function onRuntimeMessage(msg) {
       handleUpdate(msg.style, msg);
       break;
     case 'styleDeleted':
-      handleDelete(msg.id);
+      handleDelete(msg.style.id);
       break;
     case 'styleApply':
     case 'styleReplaceAll':

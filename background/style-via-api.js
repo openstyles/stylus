@@ -72,7 +72,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     });
   }
 
-  function styleDeleted({id}, {tab, frameId}) {
+  function styleDeleted({style: {id}}, {tab, frameId}) {
     const {tabFrames, frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
     const code = styleSections.join('\n');
     if (code && !duplicateCodeExists({frameStyles, id, code})) {
@@ -86,7 +86,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
 
   function styleUpdated({style}, sender) {
     if (!style.enabled) {
-      return styleDeleted(style, sender);
+      return styleDeleted({style}, sender);
     }
     const {tab, frameId} = sender;
     const {frameStyles, styleSections} = getCachedData(tab.id, frameId, style.id);

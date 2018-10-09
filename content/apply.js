@@ -102,7 +102,7 @@
 
     switch (request.method) {
       case 'styleDeleted':
-        removeStyle(request);
+        removeStyle(request.style);
         break;
 
       case 'styleUpdated':

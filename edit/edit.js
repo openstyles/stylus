@@ -7,7 +7,7 @@ global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
 global exclusions
-global moveFocus editorWorker msg
+global moveFocus editorWorker msg createSectionEditor
 */
 'use strict';
 
@@ -35,17 +35,16 @@ Promise.all([
 ])
 .then(([style]) => {
   const usercss = isUsercss(style);
-  $('#heading').textContent = t(styleId ? 'editStyleHeading' : 'addStyleTitle');
+  $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
   $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
   $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
 
-  $('#preview-label').classList.toggle('hidden', !styleId);
+  $('#preview-label').classList.toggle('hidden', !style.id);
 
   $('#beautify').onclick = () => beautify(editor.getEditors());
   $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
   window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
 
-  exclusions.init(style);
   editor = usercss ? createSourceEditor(style) : createSectionEditor(style);
 });
 
@@ -152,7 +151,7 @@ function preinit() {
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (styleId && styleId === request.style.id &&
+      if (editor.getStyleId() === request.style.id &&
           request.reason !== 'editPreview' &&
           request.reason !== 'editSave' &&
           request.reason !== 'config') {
@@ -167,7 +166,7 @@ function onRuntimeMessage(request) {
       }
       break;
     case 'styleDeleted':
-      if (styleId === request.id || editor && editor.getStyle().id === request.id) {
+      if (editor.getStyleId() === request.style.id) {
         document.removeEventListener('visibilitychange', beforeUnload);
         window.onbeforeunload = null;
         closeCurrentTab();
@@ -235,15 +234,14 @@ function initStyleData() {
   });
   return fetchStyle()
     .then(style => {
-      styleId = style.id;
-      if (styleId) sessionStorage.justEditedStyleId = styleId;
+      if (style.id) sessionStorage.justEditedStyleId = style.id;
       // we set "usercss" class on <html> when <body> is empty
       // so there'll be no flickering of the elements that depend on it
       if (isUsercss(style)) {
         document.documentElement.classList.add('usercss');
       }
       // strip URL parameters when invoked for a non-existent id
-      if (!styleId) {
+      if (!style.id) {
         history.replaceState({}, document.title, location.pathname);
       }
       return style;
