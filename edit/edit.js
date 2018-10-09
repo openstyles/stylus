@@ -11,20 +11,18 @@ global moveFocus editorWorker msg
 */
 'use strict';
 
-let styleId = null;
-// only the actually dirty items here
-let dirty = {};
-// array of all CodeMirror instances
-const editors = [];
 let saveSizeOnClose;
 let ownTabId;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
-const CssToProperty = {'url': 'urls', 'url-prefix': 'urlPrefixes', 'domain': 'domains', 'regexp': 'regexps'};
+const CssToProperty = Object.entries(propertyToCss)
+  .reduce((o, v) => {
+    o[v[1]] = v[0];
+    return o;
+  }, {});
 
 let editor;
-
 
 document.addEventListener('visibilitychange', beforeUnload);
 msg.onExtension(onRuntimeMessage);
@@ -43,21 +41,17 @@ Promise.all([
 
   $('#preview-label').classList.toggle('hidden', !styleId);
 
-  $('#beautify').onclick = beautify;
+  $('#beautify').onclick = () => beautify(editor.getEditors());
   $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
   window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
 
   exclusions.init(style);
-  if (usercss) {
-    editor = createSourceEditor(style);
-  } else {
-    initWithSectionStyle(style);
-    document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
-  }
+  editor = usercss ? createSourceEditor(style) : createSectionEditor(style);
 });
 
 function preinit() {
   // make querySelectorAll enumeration code readable
+  // FIXME: don't extend native
   ['forEach', 'some', 'indexOf', 'map'].forEach(method => {
     NodeList.prototype[method] = Array.prototype[method];
   });
@@ -168,11 +162,7 @@ function onRuntimeMessage(request) {
           ? API.getStyleFromDB(id)
           : Promise.resolve([request.style])
         ).then(([style]) => {
-          if (isUsercss(style)) {
-            editor.replaceStyle(style, request.codeIsUpdated);
-          } else {
-            initWithSectionStyle(style, request.codeIsUpdated);
-          }
+          editor.replaceStyle(style, request.codeIsUpdated);
         });
       }
       break;
@@ -191,12 +181,6 @@ function onRuntimeMessage(request) {
       break;
     case 'editDeleteText':
       document.execCommand('delete');
-      break;
-    case 'exclusionsUpdated':
-      debounce(() => exclusions.update({
-        list: Object.keys(request.style.exclusions),
-        isUpdating: false
-      }), 100);
       break;
   }
 }
@@ -217,8 +201,7 @@ function beforeUnload() {
     // refocus if unloading was canceled
     setTimeout(() => activeElement.focus());
   }
-  const isDirty = editor ? editor.isDirty() : !isCleanGlobal();
-  if (isDirty) {
+  if (editor.isDirty()) {
     // neither confirm() nor custom messages work in modern browsers but just in case
     return t('styleChangesNotSaved');
   }
@@ -271,252 +254,6 @@ function initStyleData() {
       return API.getStyleFromDB(id);
     }
     return Promise.resolve(createEmptyStyle());
-  }
-}
-
-function initHooks() {
-  if (initHooks.alreadyDone) {
-    return;
-  }
-  initHooks.alreadyDone = true;
-  $$('#header .style-contributor').forEach(node => {
-    node.addEventListener('change', onChange);
-    node.addEventListener('input', onChange);
-  });
-  $('#to-mozilla').addEventListener('click', showMozillaFormat, false);
-  $('#to-mozilla-help').addEventListener('click', showToMozillaHelp, false);
-  $('#from-mozilla').addEventListener('click', fromMozillaFormat);
-  $('#save-button').addEventListener('click', save, false);
-  $('#sections-help').addEventListener('click', showSectionHelp, false);
-
-  if (!FIREFOX) {
-    $$([
-      'input:not([type])',
-      'input[type="text"]',
-      'input[type="search"]',
-      'input[type="number"]',
-    ].join(','))
-      .forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
-  }
-}
-
-function getNodeValue(node) {
-  // return length of exclusions; or the node value
-  return node.id === 'excluded-list' ? node.children.length.toString() : node.value;
-}
-
-function onChange(event) {
-  const node = event.target;
-  if ('savedValue' in node) {
-    const currentValue = node.type === 'checkbox' ? node.checked : getNodeValue(node);
-    setCleanItem(node, node.savedValue === currentValue);
-  } else {
-    // the manually added section's applies-to is dirty only when the value is non-empty
-    setCleanItem(node, node.localName !== 'input' || !getNodeValue(node).trim());
-    // only valid when actually saved
-    delete node.savedValue;
-  }
-  updateTitle();
-}
-
-// Set .dirty on stylesheet contributors that have changed
-function setDirtyClass(node, isDirty) {
-  node.classList.toggle('dirty', isDirty);
-}
-
-function setCleanItem(node, isClean) {
-  if (!node.id) {
-    node.id = Date.now().toString(32).substr(-6);
-  }
-
-  if (isClean) {
-    delete dirty[node.id];
-    // code sections have .CodeMirror property
-    if (node.CodeMirror) {
-      node.savedValue = node.CodeMirror.changeGeneration();
-    } else {
-      node.savedValue = node.type === 'checkbox' ? node.checked : getNodeValue(node);
-    }
-  } else {
-    dirty[node.id] = true;
-  }
-
-  setDirtyClass(node, !isClean);
-}
-
-function isCleanGlobal() {
-  const clean = Object.keys(dirty).length === 0;
-  setDirtyClass(document.body, !clean);
-  return clean;
-}
-
-function setCleanGlobal() {
-  setCleanItem($('#sections'), true);
-  $$('#header, #sections > .section').forEach(setCleanSection);
-  // forget the dirty applies-to ids from a deleted section after the style was saved
-  dirty = {};
-}
-
-function setCleanSection(section) {
-  $$('.style-contributor', section).forEach(node => setCleanItem(node, true));
-  setCleanItem(section, true);
-  updateTitle();
-}
-
-function toggleStyle() {
-  $('#enabled').dispatchEvent(new MouseEvent('click', {bubbles: true}));
-}
-
-function save() {
-  if (!validate()) {
-    return;
-  }
-
-  API.editSave({
-    id: styleId,
-    name: $('#name').value.trim(),
-    enabled: $('#enabled').checked,
-    sections: getSectionsHashes(),
-    exclusions: exclusions.get()
-  })
-  .then(style => {
-    styleId = style.id;
-    sessionStorage.justEditedStyleId = styleId;
-    setCleanGlobal();
-    // Go from new style URL to edit style URL
-    if (location.href.indexOf('id=') === -1) {
-      history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-      $('#heading').textContent = t('editStyleHeading');
-    }
-    updateTitle();
-    $('#preview-label').classList.remove('hidden');
-  });
-}
-
-function validate() {
-  const name = $('#name').value.trim();
-  if (!name) {
-    $('#name').focus();
-    messageBox.alert(t('styleMissingName'));
-    return false;
-  }
-
-  if ($$('.applies-to-list li:not(.applies-to-everything)')
-    .some(li => {
-      const type = $('[name=applies-type]', li).value;
-      const value = $('[name=applies-value]', li);
-      const rx = value.value.trim();
-      if (type === 'regexp' && rx && !tryRegExp(rx)) {
-        value.focus();
-        value.select();
-        return true;
-      }
-    })) {
-    messageBox.alert(t('styleBadRegexp'));
-    return false;
-  }
-
-  return true;
-}
-
-function updateTitle() {
-  const name = $('#name').savedValue;
-  const clean = isCleanGlobal();
-  const title = styleId === null ? t('addStyleTitle') : name;
-  document.title = (clean ? '' : '* ') + title;
-  window.onbeforeunload = clean ? null : beforeUnload;
-  $('#save-button').disabled = clean;
-}
-
-function showMozillaFormat() {
-  const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
-  popup.codebox.setValue(toMozillaFormat());
-  popup.codebox.execCommand('selectAll');
-}
-
-function toMozillaFormat() {
-  return sectionsToMozFormat({sections: getSectionsHashes()});
-}
-
-function fromMozillaFormat() {
-  const popup = showCodeMirrorPopup(t('styleFromMozillaFormatPrompt'),
-    $create('.buttons', [
-      $create('button', {
-        name: 'import-replace',
-        textContent: t('importReplaceLabel'),
-        title: 'Ctrl-Shift-Enter:\n' + t('importReplaceTooltip'),
-        onclick: () => doImport({replaceOldStyle: true}),
-      }),
-      $create('button', {
-        name: 'import-append',
-        textContent: t('importAppendLabel'),
-        title: 'Ctrl-Enter:\n' + t('importAppendTooltip'),
-        onclick: doImport,
-      }),
-    ]));
-  const contents = $('.contents', popup);
-  contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
-  popup.codebox.focus();
-  popup.codebox.on('changes', cm => {
-    popup.classList.toggle('ready', !cm.isBlank());
-    cm.markClean();
-  });
-  // overwrite default extraKeys as those are inapplicable in popup context
-  popup.codebox.options.extraKeys = {
-    'Ctrl-Enter': doImport,
-    'Shift-Ctrl-Enter': () => doImport({replaceOldStyle: true}),
-  };
-
-  function doImport({replaceOldStyle = false}) {
-    lockPageUI(true);
-    editorWorker.parseMozFormat({code: popup.codebox.getValue().trim()})
-      .then(({sections, errors}) => {
-        // shouldn't happen but just in case
-        if (!sections.length && errors.length) {
-          return Promise.reject(errors);
-        }
-        // show the errors in case linting is disabled or stylelint misses what csslint has found
-        if (errors.length && prefs.get('editor.linter') !== 'csslint') {
-          showError(errors);
-        }
-        removeOldSections(replaceOldStyle);
-        return addSections(sections, div => setCleanItem(div, false));
-      })
-      .then(() => {
-        $('.dismiss').dispatchEvent(new Event('click'));
-      })
-      .catch(showError)
-      .then(() => lockPageUI(false));
-  }
-
-  function removeOldSections(removeAll) {
-    let toRemove;
-    if (removeAll) {
-      toRemove = editors.slice().reverse();
-    } else if (editors.last.isBlank() && $('.applies-to-everything', editors.last.getSection())) {
-      toRemove = [editors.last];
-    } else {
-      return;
-    }
-    toRemove.forEach(cm => removeSection({target: cm.getSection()}));
-  }
-
-  function lockPageUI(locked) {
-    document.documentElement.style.pointerEvents = locked ? 'none' : '';
-    if (popup.codebox) {
-      popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
-      popup.codebox.options.readOnly = locked;
-      popup.codebox.display.wrapper.style.opacity = locked ? '.5' : '';
-    }
-  }
-
-  function showError(errors) {
-    messageBox({
-      className: 'center danger',
-      title: t('styleFromMozillaFormatError'),
-      contents: $create('pre', Array.isArray(errors) ? errors.join('\n') : errors),
-      buttons: [t('confirmClose')],
-    });
   }
 }
 
@@ -644,15 +381,6 @@ function setGlobalProgress(done, total) {
     });
   } else {
     $.remove(progressElement);
-  }
-}
-
-function scrollEntirePageOnCtrlShift(event) {
-  // make Shift-Ctrl-Wheel scroll entire page even when mouse is over a code editor
-  if (event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
-    // Chrome scrolls horizontally when Shift is pressed but on some PCs this might be different
-    window.scrollBy(0, event.deltaX || event.deltaY);
-    event.preventDefault();
   }
 }
 

@@ -349,6 +349,18 @@ input:invalid {
 .section:only-of-type .move-section-down {
   display: none;
 }
+/* deleted section */
+.section .deleted-section {
+  display: none;
+}
+.section.removed .deleted-section {
+  display: block;
+}
+.section.removed .code-label,
+.section.removed .applies-to,
+.section.removed .edit-actions {
+  display: none;
+}
 .move-section-up:after {
   content: "";
   display: block;

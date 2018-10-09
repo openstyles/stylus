@@ -1,8 +1,7 @@
 /*
 global CodeMirror loadScript
-global editors editor styleId ownTabId
-global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
-global getSectionsHashes
+global editor ownTabId
+global save toggleStyle makeSectionVisible
 global messageBox
 */
 'use strict';
@@ -186,8 +185,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   function nextPrevEditor(cm, direction) {
+    const editors = style.getEditors();
     cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
-    makeSectionVisible(cm);
+    editor.scrollToEditor(cm);
     cm.focus();
     return cm;
   }
@@ -400,8 +400,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   function closestVisible(nearbyElement) {
     const cm =
       nearbyElement instanceof CodeMirror ? nearbyElement :
-      nearbyElement instanceof Node && (getSectionForChild(nearbyElement) || {}).CodeMirror ||
-      editors.lastActive;
+      nearbyElement instanceof Node &&
+        (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
+      editor.getLastActivatedEditor();
     if (nearbyElement instanceof Node && cm) {
       const {left, top} = nearbyElement.getBoundingClientRect();
       const bounds = cm.display.wrapper.getBoundingClientRect();
@@ -466,7 +467,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
       const cm = editors[b];
       if (distances[b] > 0) {
-        makeSectionVisible(cm);
+        editor.scrollToEditor(cm);
       }
       return cm;
     }
@@ -587,5 +588,41 @@ onDOMscriptReady('/codemirror.js').then(() => {
       }
     }
     return '';
+  }
+
+  function setupAutocomplete(cm, enable = true) {
+    const onOff = enable ? 'on' : 'off';
+    cm[onOff]('changes', autocompleteOnTyping);
+    cm[onOff]('pick', autocompletePicked);
+  }
+
+  function autocompleteOnTyping(cm, [info], debounced) {
+    if (
+      cm.state.completionActive ||
+      info.origin && !info.origin.includes('input') ||
+      !info.text.last
+    ) {
+      return;
+    }
+    if (cm.state.autocompletePicked) {
+      cm.state.autocompletePicked = false;
+      return;
+    }
+    if (!debounced) {
+      debounce(autocompleteOnTyping, 100, cm, [info], true);
+      return;
+    }
+    if (info.text.last.match(/[-a-z!]+$/i)) {
+      cm.state.autocompletePicked = false;
+      cm.options.hintOptions.completeSingle = false;
+      cm.execCommand('autocomplete');
+      setTimeout(() => {
+        cm.options.hintOptions.completeSingle = true;
+      });
+    }
+  }
+
+  function autocompletePicked(cm) {
+    cm.state.autocompletePicked = true;
   }
 });

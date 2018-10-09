@@ -314,7 +314,7 @@ onDOMready().then(() => {
       });
       const canFocus = !state.dialog || !state.dialog.contains(document.activeElement);
       makeTargetVisible(!canFocus && input);
-      makeSectionVisible(cm);
+      editor.scrollToEditor(cm);
       if (canFocus) input.focus();
       state.cm = cm;
       clearMarker();
@@ -778,7 +778,7 @@ onDOMready().then(() => {
     cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
 
     // scroll to the editor itself
-    makeSectionVisible(cm);
+    editor.scrollToEditor(cm);
 
     // focus or expose as the current search target
     clearMarker();

@@ -37,7 +37,7 @@ const styleManager = (() => {
   });
 
   function handleLivePreviewConnections() {
-    chrome.runtime.onConnect(port => {
+    chrome.runtime.onConnect.addListener(port => {
       if (port.name !== 'livePreview') {
         return;
       }

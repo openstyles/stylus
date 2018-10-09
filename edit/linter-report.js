@@ -158,7 +158,7 @@ Object.assign(linter, (() => {
   }
 
   function gotoLintIssue(cm, anno) {
-    makeSectionVisible(cm);
+    editor.scrollToEditor(cm);
     cm.focus();
     cm.setSelection(anno.from);
   }

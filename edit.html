@@ -137,8 +137,11 @@
 
     <template data-id="section">
       <div class="section">
+        <!-- not using DIV to make our CSS work for #sections > div:only-of-type .remove-section -->
+        <p class="deleted-section">
+          <button class="restore-section" i18n-text="sectionRestore"></button>
+        </p>
         <label i18n-text="sectionCode" class="code-label"></label>
-        <br>
         <div class="applies-to">
           <label i18n-text="appliesLabel">
             <a href="#" class="svg-inline-wrapper applies-to-help" tabindex="0">
@@ -157,13 +160,6 @@
           <button class="test-regexp" i18n-text="styleRegexpTestButton"></button>
         </div>
       </div>
-    </template>
-
-    <!-- not using DIV to make our CSS work for #sections > div:only-of-type .remove-section -->
-    <template data-id="deletedSection">
-      <p class="deleted-section">
-        <button class="restore-section" i18n-text="sectionRestore"></button>
-      </p>
     </template>
 
     <template data-id="searchReplaceDialog">
@@ -291,7 +287,7 @@
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" spellcheck="false">
+          <input id="name" class="style-contributor" spellcheck="false" required>
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">

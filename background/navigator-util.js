@@ -14,7 +14,7 @@ const navigatorUtil = (() => {
   }
 
   function initUrlChange() {
-    if (!handler.urlChange) {
+    if (handler.urlChange) {
       return;
     }
     handler.urlChange = [];
