@@ -171,14 +171,14 @@
     if (parentDomain) {
       return Promise.resolve();
     }
-    return API.getTabDomain()
+    return API.getTabUrlPrefix()
       .then(newDomain => {
         parentDomain = newDomain;
       });
   }
 
   function updateExposeIframes() {
-    if (!prefs.get('exposeIframes') || window !== parent || !styleElements.size) {
+    if (!prefs.get('exposeIframes') || window === parent || !styleElements.size) {
       document.documentElement.removeAttribute('stylus-iframe');
     } else {
       fetchParentDomain().then(() => {

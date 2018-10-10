@@ -34,6 +34,7 @@ const msg = (() => {
     broadcast,
     broadcastTab,
     broadcastExtension,
+    broadcastError,
     on,
     onTab,
     onExtension,
@@ -211,8 +212,18 @@ const msg = (() => {
       }
       Promise.resolve(result)
         .then(
-          data => ({error: false, data}),
-          err => ({error: true, data: err.message || String(err)})
+          data => ({
+            error: false,
+            data
+          }),
+          err => ({
+            error: true,
+            data: Object.assign({
+              message: err.message || String(err),
+              // FIXME: do we want to pass the entire stack?
+              stack: err.stack
+            }, err) // this allows us to pass custom properties e.g. `err.index`
+          })
         )
         .then(function doResponse(responseMessage) {
           if (message.from === 'extension' && bg === undefined) {
@@ -292,7 +303,7 @@ const msg = (() => {
 
     function unwrap() {
       if (result.error) {
-        throw new Error(result.data);
+        throw Object.assign(new Error(result.data.message), result.data);
       }
       return result.data;
     }

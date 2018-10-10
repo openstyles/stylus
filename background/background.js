@@ -14,9 +14,8 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   installStyle: styleManager.installStyle,
   editSave: styleManager.editSave,
 
-  getTabDomain() {
-    return getTab(this.sender.tabId)
-      .then(tab => tab.url.match(/^[\w-]+:\/\/(?:[\w:-]+@)?([^:/#]+)/)[1]);
+  getTabUrlPrefix() {
+    return this.sender.tab.url.match(/^([\w-]+:\/\/[^/#]+)/)[1];
   },
 
   getStyleFromDB: id =>
@@ -100,9 +99,7 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
     return;
   }
   msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
-    .catch(err => {
-      console.warn(tabId, frameId, err);
-    });
+    .catch(msg.broadcastError);
 });
 
 if (FIREFOX) {
