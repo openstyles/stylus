@@ -37,11 +37,15 @@ var loadScript = (() => {
     });
   }
 
-  return files => {
+  return (files, noCache = false) => {
     if (!Array.isArray(files)) {
       files = [files];
     }
-    return Promise.all(files.map(f => (typeof f === 'string' ? inject(f) : f)));
+    return Promise.all(files.map(f =>
+      typeof f !== 'string' ? f :
+        noCache ? doInject(f) :
+        inject(f)
+    ));
   };
 })();
 

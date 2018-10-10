@@ -70,14 +70,10 @@ const cmFactory = (() => {
         const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
         if (themeLink.href !== url) {
           // avoid flicker: wait for the second stylesheet to load, then apply the theme
-          return loadScript(url).then(([newThemeLink]) => {
+          return loadScript(url, true).then(([newThemeLink]) => {
             setOption(option, value);
             themeLink.remove();
             newThemeLink.id = 'cm-theme';
-            // already loaded but is removed.
-            if (!newThemeLink.parentNode) {
-              document.head.appendChild(newThemeLink);
-            }
           });
         }
       }
@@ -214,8 +210,8 @@ const cmFactory = (() => {
       throttleSetOption({key, value, index: 0});
       return;
     }
-    for (const editor of editors) {
-      editor.setOption(key, value);
+    for (const cm of editors) {
+      cm.setOption(key, value);
     }
   }
 
