@@ -58,11 +58,6 @@ const cmFactory = (() => {
     if (option === 'colorpicker') {
       return;
     }
-    // FIXME: is this an overhead?
-    if (option === 'autoCloseBrackets' && value) {
-      return loadScript('/vendor/codemirror/addon/edit/closebrackets.js')
-        .then(() => setOption(option, value));
-    }
     if (option === 'theme') {
       const themeLink = $('#cm-theme');
       // use non-localized 'default' internally

@@ -9,6 +9,7 @@
   }
 
   const defaults = {
+    autoCloseBrackets: prefs.get('editor.autoCloseBrackets'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
       'Alt-Enter': 'toggleStyle',
