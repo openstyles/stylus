@@ -1,5 +1,4 @@
 /*
-global editors styleId: true
 global CodeMirror dirtyReporter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
@@ -33,8 +32,6 @@ function createSourceEditor(style) {
     value: style.sourceCode,
   });
   let savedGeneration = cm.changeGeneration();
-
-  editors.push(cm);
 
   const livePreview = createLivePreview(preprocess);
   livePreview.show(Boolean(style.id));
@@ -222,7 +219,6 @@ function createSourceEditor(style) {
       }
       sessionStorage.justEditedStyleId = newStyle.id;
       style = newStyle;
-      styleId = style.id;
       $('#preview-label').classList.remove('hidden');
       updateMeta();
       livePreview.show(Boolean(style.id));

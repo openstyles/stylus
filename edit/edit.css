@@ -349,6 +349,9 @@ input:invalid {
 .section:only-of-type .move-section-down {
   display: none;
 }
+.section .CodeMirror {
+  margin: .5rem 0;
+}
 /* deleted section */
 .section .deleted-section {
   display: none;

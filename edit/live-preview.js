@@ -1,4 +1,4 @@
-/* global editors messageBox */
+/* global messageBox editor */
 'use strict';
 
 function createLivePreview(preprocess) {
@@ -56,7 +56,7 @@ function createLivePreview(preprocess) {
               err = err.join('\n');
             } else if (err && err.index !== undefined) {
               // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
-              const pos = editors[0].posFromIndex(err.index);
+              const pos = editor.getEditors()[0].posFromIndex(err.index);
               err.message = `${pos.line}:${pos.ch} ${err.message || String(err)}`;
             }
             errorContainer.classList.remove('hidden');

@@ -96,7 +96,7 @@ function createSectionsEditor(style) {
 
   $('#to-mozilla').addEventListener('click', showMozillaFormat);
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
-  $('#from-mozilla').addEventListener('click', fromMozillaFormat);
+  $('#from-mozilla').addEventListener('click', () => fromMozillaFormat());
   $('#save-button').addEventListener('click', saveStyle);
   $('#sections-help').addEventListener('click', showSectionHelp);
 
@@ -262,7 +262,7 @@ function createSectionsEditor(style) {
   }
 
   function scrollToEditor(cm) {
-    const section = sections.find(s => s.cm === cm);
+    const section = sections.find(s => s.cm === cm).el;
     const bounds = section.getBoundingClientRect();
     if (
       (bounds.bottom > window.innerHeight && bounds.top > 0) ||
@@ -462,6 +462,9 @@ function createSectionsEditor(style) {
   }
 
   function saveStyle() {
+    if (!dirty.isDirty()) {
+      return;
+    }
     const newStyle = getModel();
     if (!validate(newStyle)) {
       return;
@@ -844,10 +847,15 @@ function createSectionsEditor(style) {
 
       const removeButton = $('.remove-applies-to', el);
       if (removeButton) {
-        removeButton.addEventListener('click', () => removeApply(apply));
+        removeButton.addEventListener('click', e => {
+          e.preventDefault();
+          removeApply(apply);
+        });
       }
-      $('.add-applies-to', el).addEventListener('click', () =>
-        insertApplyAfter({type, value: ''}, apply));
+      $('.add-applies-to', el).addEventListener('click', e => {
+        e.preventDefault();
+        insertApplyAfter({type, value: ''}, apply);
+      });
 
       return apply;
 

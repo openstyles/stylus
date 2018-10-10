@@ -1,6 +1,6 @@
 /*
 global CodeMirror loadScript css_beautify
-global editors getSectionForChild showHelp
+global getSectionForChild showHelp
 */
 'use strict';
 
