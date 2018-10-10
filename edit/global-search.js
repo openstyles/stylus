@@ -212,7 +212,7 @@ onDOMready().then(() => {
       state.activeAppliesTo ||
       state.cm);
     const cmExtra = $('body > :not(#sections) .CodeMirror');
-    state.editors = cmExtra ? [cmExtra.CodeMirror] : editors;
+    state.editors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
   }
 
 

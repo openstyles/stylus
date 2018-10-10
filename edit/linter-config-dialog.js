@@ -1,4 +1,5 @@
-/* global memoize editorWorker showCodeMirrorPopup loadScript messageBox LINTER_DEFAULTS*/
+/* global memoize editorWorker showCodeMirrorPopup loadScript messageBox
+  LINTER_DEFAULTS rerouteHotkeys */
 'use strict';
 
 (() => {
@@ -50,10 +51,10 @@
     });
     cm.on('changes', updateButtonState);
 
-    cm.rerouteHotkeys(false);
+    rerouteHotkeys(false);
     window.addEventListener('closeHelp', function _() {
       window.removeEventListener('closeHelp', _);
-      cm.rerouteHotkeys(true);
+      rerouteHotkeys(true);
       cm = null;
     });
 

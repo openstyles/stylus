@@ -400,7 +400,6 @@ function createSourceEditor(style) {
     isDirty: dirty.isDirty,
     getStyle: () => style,
     getEditors: () => [cm],
-    getLastActivatedEditor: () => cm,
     scrollToEditor: () => {},
     getStyleId: () => style.id,
     getEditorTitle: () => '',

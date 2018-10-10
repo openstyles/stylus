@@ -5,7 +5,7 @@ global closeCurrentTab regExpTester messageBox
 global setupCodeMirror
 global beautify
 global sectionsToMozFormat
-global moveFocus editorWorker msg createSectionEditor
+global moveFocus editorWorker msg createSectionsEditor rerouteHotkeys
 */
 'use strict';
 
@@ -229,7 +229,7 @@ preinit();
         $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
         window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
 
-        editor = usercss ? createSourceEditor(style) : createSectionEditor(style);
+        editor = usercss ? createSourceEditor(style) : createSectionsEditor(style);
         if (editor.ready) {
           return editor.ready();
         }
@@ -360,11 +360,6 @@ function onRuntimeMessage(request) {
         window.onbeforeunload = null;
         closeCurrentTab();
         break;
-      }
-      break;
-    case 'prefChanged':
-      if ('editor.smartIndent' in request.prefs) {
-        CodeMirror.setOption('smartIndent', request.prefs['editor.smartIndent']);
       }
       break;
     case 'editDeleteText':
@@ -531,7 +526,7 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap')
   }, options));
   cm.focus();
-  cm.rerouteHotkeys(false);
+  rerouteHotkeys(false);
 
   document.documentElement.style.pointerEvents = 'none';
   popup.style.pointerEvents = 'auto';
@@ -550,7 +545,7 @@ function showCodeMirrorPopup(title, html, options) {
     window.removeEventListener('closeHelp', _);
     window.removeEventListener('keydown', onKeyDown, true);
     document.documentElement.style.removeProperty('pointer-events');
-    cm.rerouteHotkeys(true);
+    rerouteHotkeys(true);
     cm = popup.codebox = null;
   });
 

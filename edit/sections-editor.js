@@ -134,7 +134,6 @@ function createSectionsEditor(style) {
     isDirty: dirty.isDirty,
     getStyle: () => style,
     getEditors,
-    getLastActivatedEditor,
     scrollToEditor,
     getStyleId: () => style.id,
     getEditorTitle: cm => {
@@ -162,7 +161,7 @@ function createSectionsEditor(style) {
       nearbyElement instanceof CodeMirror ? nearbyElement :
       nearbyElement instanceof Node &&
         (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
-      editor.getLastActivatedEditor();
+      getLastActivatedEditor();
     if (nearbyElement instanceof Node && cm) {
       const {left, top} = nearbyElement.getBoundingClientRect();
       const bounds = cm.display.wrapper.getBoundingClientRect();
@@ -172,7 +171,7 @@ function createSectionsEditor(style) {
       }
     }
     // closest editor should have at least 2 lines visible
-    const lineHeight = editor.getEditors()[0].defaultTextHeight();
+    const lineHeight = sections[0].cm.defaultTextHeight();
     const scrollY = window.scrollY;
     const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
     const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
@@ -203,7 +202,7 @@ function createSectionsEditor(style) {
     }
 
     function findClosest() {
-      const editors = editor.getEditors();
+      const editors = getEditors();
       const last = editors.length - 1;
       let a = 0;
       let b = last;
@@ -228,7 +227,7 @@ function createSectionsEditor(style) {
       }
       const cm = editors[b];
       if (distances[b] > 0) {
-        editor.scrollToEditor(cm);
+        scrollToEditor(cm);
       }
       return cm;
     }
