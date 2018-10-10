@@ -1,3 +1,5 @@
+/* global tryCatch chromeLocal ignoreChromeError */
+/* exported db */
 'use strict';
 
 const db = (() => {

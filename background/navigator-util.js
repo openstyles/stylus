@@ -1,4 +1,5 @@
-/* global promisify */
+/* global promisify CHROME URLS */
+/* exported navigatorUtil */
 'use strict';
 
 const navigatorUtil = (() => {

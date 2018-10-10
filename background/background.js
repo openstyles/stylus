@@ -1,9 +1,6 @@
-/*
-global handleCssTransitionBug detectSloppyRegexps
-global openEditor
-global styleViaAPI
-global loadScript
-global usercss styleManager db msg navigatorUtil
+/* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
+  openEditor debounce URLS ignoreChromeError queryTabs getTab
+  usercss styleManager db msg navigatorUtil
 */
 'use strict';
 
@@ -65,32 +62,32 @@ var browserCommands, contextMenus;
 // register all listeners
 msg.on(onRuntimeMessage);
 
-if (FIREFOX) {
+// if (FIREFOX) {
   // see notes in apply.js for getStylesFallback
-  const MSG_GET_STYLES = 'getStyles:';
-  const MSG_GET_STYLES_LEN = MSG_GET_STYLES.length;
-  chrome.runtime.onConnect.addListener(port => {
-    if (!port.name.startsWith(MSG_GET_STYLES)) return;
-    const tabId = port.sender.tab.id;
-    const frameId = port.sender.frameId;
-    const options = tryJSONparse(port.name.slice(MSG_GET_STYLES_LEN));
-    port.disconnect();
+  // const MSG_GET_STYLES = 'getStyles:';
+  // const MSG_GET_STYLES_LEN = MSG_GET_STYLES.length;
+  // chrome.runtime.onConnect.addListener(port => {
+    // if (!port.name.startsWith(MSG_GET_STYLES)) return;
+    // const tabId = port.sender.tab.id;
+    // const frameId = port.sender.frameId;
+    // const options = tryJSONparse(port.name.slice(MSG_GET_STYLES_LEN));
+    // port.disconnect();
     // FIXME: getStylesFallback?
-    getStyles(options).then(styles => {
-      if (!styles.length) return;
-      chrome.tabs.executeScript(tabId, {
-        code: `
-          applyOnMessage({
-            method: 'styleApply',
-            styles: ${JSON.stringify(styles)},
-          })
-        `,
-        runAt: 'document_start',
-        frameId,
-      });
-    });
-  });
-}
+    // getStyles(options).then(styles => {
+      // if (!styles.length) return;
+      // chrome.tabs.executeScript(tabId, {
+        // code: `
+          // applyOnMessage({
+            // method: 'styleApply',
+            // styles: ${JSON.stringify(styles)},
+          // })
+        // `,
+        // runAt: 'document_start',
+        // frameId,
+      // });
+    // });
+  // });
+// }
 
 navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
   if (type === 'committed') {

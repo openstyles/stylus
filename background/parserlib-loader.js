@@ -1,4 +1,4 @@
-/* global importScripts parserlib CSSLint parseMozFormat */
+/* global importScripts parserlib parseMozFormat */
 'use strict';
 
 importScripts('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
