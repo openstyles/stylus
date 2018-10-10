@@ -1,3 +1,4 @@
+/* exported objectDiff */
 'use strict';
 
 function objectDiff(first, second, path = '') {

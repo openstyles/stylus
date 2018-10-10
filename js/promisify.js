@@ -1,5 +1,12 @@
+/* exported promisify */
 'use strict';
+/*
+Convert chrome APIs into promises. Example:
 
+  const storageSyncGet = promisify(chrome.storage.sync.get.bind(chrome.storage.sync));
+  storageSyncGet(['key']).then(result => {...});
+
+*/
 function promisify(fn) {
   return (...args) =>
     new Promise((resolve, reject) => {

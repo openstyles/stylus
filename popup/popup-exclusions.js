@@ -1,9 +1,9 @@
 /*
-global messageBox
-global exclusions
+global messageBox t $create getActiveTab tryRegExp animateElement $ API
 */
 'use strict';
 
+/* exported popupExclusions */
 const popupExclusions = (() => {
 
   // return matches on url ending to prevent duplicates in the exclusion list
@@ -163,45 +163,29 @@ const popupExclusions = (() => {
         entry.styleMeta = style;
         entry.classList.toggle('excluded', excluded);
       }
-      notifyAllTabs({method: 'exclusionsUpdated', style, id: entry.styleId, affects: true, excluded});
     }
     return Promise.resolve();
   }
 
   function handlePopupSave(style) {
-    if (typeof style.exclusions === 'undefined') {
-      style.exclusions = {};
+    if (!Array.isArray(style.exclusions)) {
+      style.exclusions = [];
     }
-    const current = Object.keys(style.exclusions);
+    const current = new Set(style.exclusions);
     const select = $('#popup-exclusions', messageBox.element);
     const all = getMultiOptions({select});
-    const selected = getMultiOptions({select, selectedOnly: true});
-    // Add exclusions
-    selected.forEach(value => {
-      let exists = exclusionExists(current, value);
-      if (!exists.length) {
-        style.exclusions[value] = exclusions.createRegExp(value);
-        exists = [''];
+    const selected = new Set(getMultiOptions({select, selectedOnly: true}));
+    for (const value of all) {
+      if (current.has(value) && !selected.has(value)) {
+        const index = style.exclusions.indexOf(value);
+        style.exclusions.splice(index, 1);
       }
-      exists.forEach(ending => {
-        const index = all.indexOf(value + ending);
-        if (index > -1) {
-          all.splice(index, 1);
-        }
-      });
-    });
-    // Remove exclusions (unselected in popup modal)
-    all.forEach(value => {
-      exclusionExists(current, value).forEach(ending => {
-        delete style.exclusions[value + ending];
-      });
-    });
-    exclusions.save({
-      id: style.id,
-      exclusionList: style.exclusions
-    });
+      if (!current.has(value) && selected.has(value)) {
+        style.exclusions.push(value);
+      }
+    }
+    API.setStyleExclusions(style.id, style.exclusions);
   }
 
   return {openPopupDialog, selectExclusions, isExcluded};
-
 })();

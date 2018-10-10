@@ -1,4 +1,6 @@
-/* global tabURL handleEvent */
+/* global tabURL handleEvent $ $$ prefs template FIREFOX chromeLocal debounce
+  $create t API tWordBreak formatDate tryCatch tryJSONparse LZString
+  ignoreChromeError */
 'use strict';
 
 window.addEventListener('showStyles:done', function _() {
@@ -135,7 +137,7 @@ window.addEventListener('showStyles:done', function _() {
       if (result) {
         result.installed = false;
         result.installedStyleId = -1;
-        (BG || window).clearTimeout(result.pingbackTimer);
+        window.clearTimeout(result.pingbackTimer);
         renderActionButtons($('#' + RESULT_ID_PREFIX + result.id));
       }
     });
@@ -581,7 +583,8 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function pingback(result) {
-    const wnd = BG || window;
+    const wnd = window;
+    // FIXME: move this to background page and create an API like installUSOStyle
     result.pingbackTimer = wnd.setTimeout(wnd.download, PINGBACK_DELAY,
       BASE_URL + '/styles/install/' + result.id + '?source=stylish-ch');
   }

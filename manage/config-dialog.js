@@ -1,4 +1,6 @@
-/* global messageBox */
+/* global messageBox deepCopy $create $createLink $ t tWordBreak
+  prefs setupLivePrefs debounce API */
+/* exported configDialog */
 'use strict';
 
 function configDialog(style) {
@@ -171,7 +173,7 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return API.configUsercssVar(style.id, style.usercssData.vars)
+    return API.configUsercssVars(style.id, style.usercssData.vars)
       .then(newVars => {
         varsInitial = getInitialValues(newVars);
         vars.forEach(va => onchange({target: va.input, justSaved: true}));

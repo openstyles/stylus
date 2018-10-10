@@ -1,5 +1,5 @@
-/* global installed messageBox */
-/* global sorter */
+/* global installed messageBox sorter $ $$ $create t debounce prefs API onDOMready */
+/* exported filterAndAppend */
 'use strict';
 
 const filtersSelector = {

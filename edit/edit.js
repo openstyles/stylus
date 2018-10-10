@@ -407,7 +407,6 @@ function initStyleData() {
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   const id = Number(params.get('id'));
   const createEmptyStyle = () => ({
-    id: null,
     name: params.get('domain') ||
           tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
           '',

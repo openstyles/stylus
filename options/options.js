@@ -1,4 +1,6 @@
-/* global messageBox msg */
+/* global messageBox msg setupLivePrefs enforceInputRange
+  $ $$ $create $createLink
+  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError */
 'use strict';
 
 setupLivePrefs();

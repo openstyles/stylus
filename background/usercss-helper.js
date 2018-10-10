@@ -82,7 +82,7 @@
     metaOnly,
     vars,
   }) {
-    return usercss.buildMeta(sourceCode)
+    return Promise.resolve(usercss.buildMeta(sourceCode))
       .then(style =>
         Promise.all([
           metaOnly ? style : doBuild(style),
@@ -150,7 +150,7 @@
       return styleManager.get(styleOrData.id);
     }
     const {name, namespace} = styleOrData.usercssData || styleOrData;
-    return styleManager.getAllStyles(styleList => {
+    return styleManager.getAllStyles().then(styleList => {
       for (const dup of styleList) {
         const data = dup.usercssData;
         if (!data) continue;

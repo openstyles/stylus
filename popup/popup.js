@@ -1,6 +1,9 @@
 /*
 global configDialog hotkeys
-global popupExclusions promisify onTabReady msg
+popupExclusions onTabReady msg
+getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+setupLivePrefs template ignoreChromeError t $create tWordBreak animateElement
+tryJSONparse debounce
 */
 
 'use strict';
@@ -308,8 +311,8 @@ function createStyleElement({
     $('.checker', entry).checked = false;
   }
 
-  const excluded = popupExclusions.isExcluded(tabURL, style.exclusions);
-  entry.classList.toggle('excluded', excluded);
+  // const excluded = popupExclusions.isExcluded(tabURL, style.exclusions);
+  // entry.classList.toggle('excluded', excluded);
 
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.name;

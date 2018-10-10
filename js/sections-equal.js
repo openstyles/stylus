@@ -1,3 +1,4 @@
+/* exported styleSectionsEqual */
 'use strict';
 
 /**

@@ -329,11 +329,15 @@ function webNavIframeHelperFF({tabId, frameId}) {
     .catch(() => false)
     .then(pong => {
       if (pong) return;
-      chrome.tabs.executeScript(tabId, {
-        frameId,
-        file: '/content/apply.js',
-        matchAboutBlank: true,
-      }, ignoreChromeError);
+      // insert apply.js to iframe
+      const files = chrome.runtime.getManifest().content_scripts[0].js;
+      for (const file of files) {
+        chrome.tabs.executeScript(tabId, {
+          frameId,
+          file,
+          matchAboutBlank: true,
+        }, ignoreChromeError);
+      }
     });
 }
 

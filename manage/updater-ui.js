@@ -1,6 +1,6 @@
-/* global messageBox */
-/* global ENTRY_ID_PREFIX, newUI */
-/* global filtersSelector, filterAndAppend, sorter */
+/* global messageBox ENTRY_ID_PREFIX newUI filtersSelector filterAndAppend
+  sorter $ $$ $create API onDOMready scrollElementIntoView t chromeLocal */
+/* exported handleUpdateInstalled */
 'use strict';
 
 onDOMready().then(() => {

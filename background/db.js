@@ -74,10 +74,14 @@ const db = (() => {
           } else {
             const transaction = database.transaction(['styles'], 'readwrite');
             const store = transaction.objectStore('styles');
-            Object.assign(store[method](...args), {
-              onsuccess: event => resolve(event, store, transaction, database),
-              onerror: reject,
-            });
+            try {
+              Object.assign(store[method](...args), {
+                onsuccess: event => resolve(event, store, transaction, database),
+                onerror: reject,
+              });
+            } catch (err) {
+              reject(err);
+            }
           }
         },
         onerror(event) {

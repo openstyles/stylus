@@ -134,21 +134,11 @@
         applyStyles(request.styles);
         break;
 
-      case 'styleReplaceAll':
-        replaceAll(request.styles);
-        break;
-
-      case 'prefChanged':
-        if ('disableAll' in request.prefs) {
-          doDisableAll(request.prefs.disableAll);
-        }
-        if ('exposeIframes' in request.prefs) {
-          doExposeIframes(request.prefs.exposeIframes);
-        }
-        break;
-
       case 'urlChanged':
-        // TODO
+        console.log('url changed', location.href);
+        API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+          .then(buildSections)
+          .then(replaceAll);
         break;
 
       case 'ping':
@@ -384,15 +374,6 @@
   }
 
   function replaceAll(newStyles) {
-    if ('disableAll' in newStyles &&
-        disableAll === newStyles.disableAll &&
-        styleElements.size === countStylesInHash(newStyles) &&
-        [...styleElements.values()].every(el =>
-          el.disabled === disableAll &&
-          el.parentNode === ROOT &&
-          el.textContent === (newStyles[getStyleId(el)] || []).map(({code}) => code).join('\n'))) {
-      return;
-    }
     const oldStyles = Array.prototype.slice.call(
       document.querySelectorAll(`style.stylus[id^="${ID_PREFIX}"]`));
     oldStyles.forEach(el => (el.id += '-ghost'));
@@ -401,8 +382,10 @@
     [...retiredStyleTimers.values()].forEach(clearTimeout);
     retiredStyleTimers.clear();
     applyStyles(newStyles);
-    docRootObserver.evade(() =>
-      oldStyles.forEach(el => el.remove()));
+    if (docRewriteObserver) {
+      docRootObserver.evade(() =>
+        oldStyles.forEach(el => el.remove()));
+    }
   }
 
   function applyTransitionPatch() {

@@ -28,7 +28,7 @@ const rerouteHotkeys = (() => {
   }
 
   function rerouteHandler(event) {
-    if (!editor) {
+    if (typeof editor === 'undefined') {
       return;
     }
     const keyName = CodeMirror.keyName(event);

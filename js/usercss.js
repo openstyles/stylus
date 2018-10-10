@@ -1,8 +1,8 @@
 /* global loadScript semverCompare colorConverter styleCodeEmpty */
+/* exported usercss */
 'use strict';
 
-// eslint-disable-next-line no-var
-var usercss = (() => {
+const usercss = (() => {
   // true = global
   // false or 0 = private
   // <string> = global key name

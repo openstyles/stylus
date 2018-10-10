@@ -1,4 +1,5 @@
-/* global messageBox handleUpdate handleDelete applyOnMessage styleSectionsEqual */
+/* global messageBox handleUpdate handleDelete styleSectionsEqual getOwnTab API
+  tryJSONparse scrollElementIntoView $ $$ API $create t animateElement */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -94,8 +95,8 @@ function importFromString(jsonString, oldStyles) {
       if (info) {
         // using saveStyle directly since json was parsed in background page context
         // FIXME: rewrite importStyle
-        // return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
-          // .then(style => account({style, info, resolve}));
+        return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
+          .then(style => account({style, info, resolve}));
       }
     }
     renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));

@@ -43,6 +43,7 @@ const styleManager = (() => {
       }
       let id;
       port.onMessage.addListener(data => {
+        console.log(data);
         if (!id) {
           id = data.id;
         }
@@ -167,7 +168,7 @@ const styleManager = (() => {
   }
 
   function setStyleExclusions(id, exclusions) {
-    const data = Object.assign({}, styles.get(id), {exclusions});
+    const data = Object.assign({}, styles.get(id).data, {exclusions});
     return saveStyle(data)
       .then(newData => handleSave(newData, 'exclusions', 'styleUpdated'));
   }
@@ -256,6 +257,9 @@ const styleManager = (() => {
   function saveStyle(style) {
     if (!style.name) {
       throw new Error('style name is empty');
+    }
+    if (style.id == null) {
+      delete style.id;
     }
     return db.exec('put', style)
       .then(event => {

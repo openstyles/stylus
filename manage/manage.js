@@ -1,10 +1,13 @@
 /*
-global messageBox getStyleWithNoCode retranslateCSS
-global filtersSelector filterAndAppend urlFilterParam showFiltersStats
-global checkUpdate handleUpdateInstalled
-global objectDiff
-global configDialog
-global sorter msg
+global messageBox getStyleWithNoCode
+  filterAndAppend urlFilterParam showFiltersStats
+  checkUpdate handleUpdateInstalled
+  objectDiff
+  configDialog
+  sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
+  URLS enforceInputRange t tWordBreak formatDate
+  getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
+  scrollElementIntoView CHROME VIVALDI FIREFOX
 */
 'use strict';
 

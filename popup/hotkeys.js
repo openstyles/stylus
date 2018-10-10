@@ -1,8 +1,8 @@
-/* global applyOnMessage installed */
+/* global $ $$ API debounce $create t */
 'use strict';
 
-// eslint-disable-next-line no-var
-var hotkeys = (() => {
+/* exported hotkeys */
+const hotkeys = (() => {
   const entries = document.getElementsByClassName('entry');
   let togglablesShown;
   let togglables;

@@ -79,9 +79,19 @@ const msg = (() => {
     }
   }
 
+  function broadcastError(err) {
+    if (err.message && (
+      /Receiving end does not exist/.test(err.message) ||
+      /The message port closed before a response was received/.test(err.message)
+    )) {
+      return;
+    }
+    console.warn(err);
+  }
+
   function broadcast(data, filter) {
     return Promise.all([
-      send(data, 'both').catch(console.warn),
+      send(data, 'both').catch(broadcastError),
       broadcastTab(data, filter, null, true, 'both')
     ]);
   }
@@ -116,14 +126,14 @@ const msg = (() => {
           if (message.id) {
             request = withCleanup(request, () => bg._msg.storage.delete(message.id));
           }
-          requests.push(request.catch(console.warn));
+          requests.push(request.catch(broadcastError));
         }
         return Promise.all(requests);
       });
   }
 
   function broadcastExtension(...args) {
-    return send(...args).catch(console.warn);
+    return send(...args).catch(broadcastError);
   }
 
   function on(fn) {

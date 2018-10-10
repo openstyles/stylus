@@ -85,7 +85,7 @@ function createSourceEditor(style) {
       sourceCode: style.sourceCode,
       vars: style.usercssData.vars
     })
-      .then(newStyle => {
+      .then(({style: newStyle}) => {
         delete newStyle.enabled;
         return Object.assign(style, newStyle);
       });
@@ -234,17 +234,17 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
-    const exclusionList = exclusions.get();
-    exclusions.save({
-      id: style.id,
-      exclusionList
-    });
+    // const exclusionList = exclusions.get();
+    // exclusions.save({
+      // id: style.id,
+      // exclusionList
+    // });
     return ensureUniqueStyle(code)
       .then(() => API.editSaveUsercss({
         id: style.id,
         enabled: style.enabled,
         sourceCode: code,
-        exclusions: exclusionList
+        // exclusions: exclusionList
       }))
       .then(replaceStyle)
       .catch(err => {

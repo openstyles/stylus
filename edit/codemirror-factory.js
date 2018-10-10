@@ -11,8 +11,6 @@ const cmFactory = (() => {
   const INSERT_TAB_COMMAND = CodeMirror.commands.insertTab;
   const INSERT_SOFT_TAB_COMMAND = CodeMirror.commands.insertSoftTab;
 
-  console.log(INSERT_SOFT_TAB_COMMAND, INSERT_TAB_COMMAND);
-
   CodeMirror.defineOption('tabSize', prefs.get('editor.tabSize'), (cm, value) => {
     cm.setOption('indentUnit', Number(value));
   });

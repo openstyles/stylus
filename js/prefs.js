@@ -1,8 +1,8 @@
-/* global prefs: true, contextMenus, FIREFOX_NO_DOM_STORAGE */
+/* global deepCopy debounce API tryJSONparse chromeSync FIREFOX CHROME */
+/* exported prefs */
 'use strict';
 
-// eslint-disable-next-line no-var
-var prefs = new function Prefs() {
+const prefs = new function Prefs() {
   const BG = undefined;
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
