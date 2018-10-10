@@ -302,13 +302,10 @@ input:invalid {
 }
 /************ content ***********/
 #sections > * {
-  margin: 0.7rem;
-  padding: 1rem 1rem .3rem;
+  padding: 1rem 1rem;
+  margin: 0 0.7rem;
 }
-#sections > *:first-child {
-  padding: 0 1rem .3rem;
-}
-#sections > *:not(:first-child) {
+#sections > :not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
 .add-section:after {
@@ -325,7 +322,7 @@ input:invalid {
   flex-wrap: wrap;
 }
 .edit-actions button {
-  margin: 0 .2rem .5rem 0;
+  margin-right: .2rem;
 }
 .dirty > label::before {
   content: "*";
@@ -350,9 +347,12 @@ input:invalid {
   display: none;
 }
 .section .CodeMirror {
-  margin: .5rem 0;
+  margin-bottom: .875rem;
 }
 /* deleted section */
+.deleted-section {
+  margin: 0;
+}
 .section .deleted-section {
   display: none;
 }
