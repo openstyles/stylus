@@ -1,4 +1,4 @@
-/* global CodeMirror editors makeSectionVisible */
+/* global CodeMirror */
 /* global focusAccessibility */
 /* global colorMimicry editor */
 'use strict';
@@ -207,7 +207,7 @@ onDOMready().then(() => {
     }
     const cmFocused = document.activeElement && document.activeElement.closest('.CodeMirror');
     state.activeAppliesTo = $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
-    state.cmStart = CodeMirror.closestVisible(
+    state.cmStart = editor.closestVisible(
       cmFocused && document.activeElement ||
       state.activeAppliesTo ||
       state.cm);
@@ -291,7 +291,7 @@ onDOMready().then(() => {
 
   function doSearchInApplies(cm, canAdvance) {
     if (!state.searchInApplies) return;
-    const inputs = [...cm.getSection().getElementsByClassName(APPLIES_VALUE_CLASS)];
+    const inputs = editor.getSearchableInputs(cm);
     if (state.reverse) inputs.reverse();
     inputs.splice(0, inputs.indexOf(state.activeAppliesTo));
     for (const input of inputs) {

@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript editor editors */
+/* global CodeMirror prefs loadScript editor */
 
 'use strict';
 

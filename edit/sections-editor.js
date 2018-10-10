@@ -61,10 +61,11 @@ function createResizeGrip(cm) {
       const allBounds = $('#sections').getBoundingClientRect();
       const pageExtrasHeight = allBounds.top + window.scrollY +
         parseFloat(getComputedStyle($('#sections')).paddingBottom);
-      const sectionExtrasHeight = cm.getSection().clientHeight - wrapper.offsetHeight;
+      const sectionEl = wrapper.parentNode;
+      const sectionExtrasHeight = sectionEl.clientHeight - wrapper.offsetHeight;
       cm.state.toggleHeightSaved = wrapper.clientHeight;
       cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight);
-      const bounds = cm.getSection().getBoundingClientRect();
+      const bounds = sectionEl.getBoundingClientRect();
       if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
         window.scrollBy(0, bounds.top);
       }
@@ -143,8 +144,95 @@ function createSectionsEditor(style) {
     save: saveStyle,
     toggleStyle,
     nextEditor,
-    prevEditor
+    prevEditor,
+    closestVisible,
+    getSearchableInputs,
   };
+
+  function getSearchableInputs(cm) {
+    return sections.find(s => s.cm === cm).appliesTo.map(a => a.valueEl).filter(Boolean);
+  }
+
+  // priority:
+  // 1. associated CM for applies-to element
+  // 2. last active if visible
+  // 3. first visible
+  function closestVisible(nearbyElement) {
+    const cm =
+      nearbyElement instanceof CodeMirror ? nearbyElement :
+      nearbyElement instanceof Node &&
+        (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
+      editor.getLastActivatedEditor();
+    if (nearbyElement instanceof Node && cm) {
+      const {left, top} = nearbyElement.getBoundingClientRect();
+      const bounds = cm.display.wrapper.getBoundingClientRect();
+      if (top >= 0 && top >= bounds.top &&
+          left >= 0 && left >= bounds.left) {
+        return cm;
+      }
+    }
+    // closest editor should have at least 2 lines visible
+    const lineHeight = editor.getEditors()[0].defaultTextHeight();
+    const scrollY = window.scrollY;
+    const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
+    const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
+    const distances = [];
+    const alreadyInView = cm && offscreenDistance(null, cm) === 0;
+    return alreadyInView ? cm : findClosest();
+
+    function offscreenDistance(index, cm) {
+      if (index >= 0 && distances[index] !== undefined) {
+        return distances[index];
+      }
+      const section = cm.display.wrapper.closest('.section');
+      if (!section) {
+        return 1e9;
+      }
+      const top = allSectionsContainerTop + section.offsetTop;
+      if (top < scrollY + lineHeight) {
+        return Math.max(0, scrollY - top - lineHeight);
+      }
+      if (top < windowBottom) {
+        return 0;
+      }
+      const distance = top - windowBottom + section.offsetHeight;
+      if (index >= 0) {
+        distances[index] = distance;
+      }
+      return distance;
+    }
+
+    function findClosest() {
+      const editors = editor.getEditors();
+      const last = editors.length - 1;
+      let a = 0;
+      let b = last;
+      let c;
+      let distance;
+      while (a < b - 1) {
+        c = (a + b) / 2 | 0;
+        distance = offscreenDistance(c);
+        if (!distance || !c) {
+          break;
+        }
+        const distancePrev = offscreenDistance(c - 1);
+        const distanceNext = c < last ? offscreenDistance(c + 1) : 1e20;
+        if (distancePrev <= distance && distance <= distanceNext) {
+          b = c;
+        } else {
+          a = c;
+        }
+      }
+      while (b && offscreenDistance(b - 1) <= offscreenDistance(b)) {
+        b--;
+      }
+      const cm = editors[b];
+      if (distances[b] > 0) {
+        editor.scrollToEditor(cm);
+      }
+      return cm;
+    }
+  }
 
   function getEditors() {
     return sections.filter(s => !s.isRemoved()).map(s => s.cm);
@@ -241,12 +329,13 @@ function createSectionsEditor(style) {
         cm.setCursor(0, 0);
         break;
     }
-    const animation = (cm.getSection().firstElementChild.getAnimations() || [])[0];
-    if (animation) {
-      animation.playbackRate = -1;
-      animation.currentTime = 2000;
-      animation.play();
-    }
+    // FIXME: what is this?
+    // const animation = (cm.getSection().firstElementChild.getAnimations() || [])[0];
+    // if (animation) {
+      // animation.playbackRate = -1;
+      // animation.currentTime = 2000;
+      // animation.play();
+    // }
   }
 
   function scrollEntirePageOnCtrlShift(event) {

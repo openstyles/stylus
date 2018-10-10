@@ -52,8 +52,6 @@ function createSourceEditor(style) {
     updateLivePreview();
   });
 
-  CodeMirror.closestVisible = () => cm;
-
   cm.operation(initAppliesToLineWidget);
 
   const metaCompiler = createMetaCompiler(cm);
@@ -409,6 +407,7 @@ function createSourceEditor(style) {
     save,
     toggleStyle,
     prevEditor: cm => nextPrevMozDocument(cm, -1),
-    nextEditor: cm => nextPrevMozDocument(cm, 1)
+    nextEditor: cm => nextPrevMozDocument(cm, 1),
+    closestVisible: () => cm
   };
 }

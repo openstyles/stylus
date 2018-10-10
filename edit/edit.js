@@ -4,9 +4,7 @@ global createSourceEditor
 global closeCurrentTab regExpTester messageBox
 global setupCodeMirror
 global beautify
-global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
-global exclusions
 global moveFocus editorWorker msg createSectionEditor
 */
 'use strict';

@@ -27,13 +27,8 @@ onDOMscriptReady('/codemirror.js').then(() => {
     'find', 'findNext', 'findPrev', 'replace', 'replaceAll',
     'colorpicker',
   ]);
-  Object.assign(CodeMirror, {
-    getOption,
-    setOption,
-    closestVisible,
-  });
   Object.assign(CodeMirror.prototype, {
-    getSection,
+    // getSection,
     rerouteHotkeys,
   });
   Object.assign(CodeMirror.commands, COMMANDS);
@@ -256,6 +251,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
 
       case 'autocompleteOnTyping':
         if (editor) {
+          // FIXME: this won't work with removed sections
           editor.getEditors().forEach(cm => setupAutocomplete(cm, value));
         }
         return;
@@ -304,7 +300,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
     }
     const rerouteCommand = name => {
       if (REROUTED.has(name)) {
-        CodeMirror.commands[name](closestVisible(event.target));
+        CodeMirror.commands[name](editor.closestVisible(event.target));
         return true;
       }
     };
@@ -316,87 +312,6 @@ onDOMscriptReady('/codemirror.js').then(() => {
   }
 
   ////////////////////////////////////////////////
-
-  // priority:
-  // 1. associated CM for applies-to element
-  // 2. last active if visible
-  // 3. first visible
-  function closestVisible(nearbyElement) {
-    const cm =
-      nearbyElement instanceof CodeMirror ? nearbyElement :
-      nearbyElement instanceof Node &&
-        (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
-      editor.getLastActivatedEditor();
-    if (nearbyElement instanceof Node && cm) {
-      const {left, top} = nearbyElement.getBoundingClientRect();
-      const bounds = cm.display.wrapper.getBoundingClientRect();
-      if (top >= 0 && top >= bounds.top &&
-          left >= 0 && left >= bounds.left) {
-        return cm;
-      }
-    }
-    // closest editor should have at least 2 lines visible
-    const lineHeight = editor.getEditors()[0].defaultTextHeight();
-    const scrollY = window.scrollY;
-    const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
-    const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
-    const distances = [];
-    const alreadyInView = cm && offscreenDistance(null, cm) === 0;
-    return alreadyInView ? cm : findClosest();
-
-    function offscreenDistance(index, cm) {
-      if (index >= 0 && distances[index] !== undefined) {
-        return distances[index];
-      }
-      const section = cm.display.wrapper.closest('.section');
-      if (!section) {
-        return 1e9;
-      }
-      const top = allSectionsContainerTop + section.offsetTop;
-      if (top < scrollY + lineHeight) {
-        return Math.max(0, scrollY - top - lineHeight);
-      }
-      if (top < windowBottom) {
-        return 0;
-      }
-      const distance = top - windowBottom + section.offsetHeight;
-      if (index >= 0) {
-        distances[index] = distance;
-      }
-      return distance;
-    }
-
-    function findClosest() {
-      const editors = editor.getEditors();
-      const last = editors.length - 1;
-      let a = 0;
-      let b = last;
-      let c;
-      let distance;
-      while (a < b - 1) {
-        c = (a + b) / 2 | 0;
-        distance = offscreenDistance(c);
-        if (!distance || !c) {
-          break;
-        }
-        const distancePrev = offscreenDistance(c - 1);
-        const distanceNext = c < last ? offscreenDistance(c + 1) : 1e20;
-        if (distancePrev <= distance && distance <= distanceNext) {
-          b = c;
-        } else {
-          a = c;
-        }
-      }
-      while (b && offscreenDistance(b - 1) <= offscreenDistance(b)) {
-        b--;
-      }
-      const cm = editors[b];
-      if (distances[b] > 0) {
-        editor.scrollToEditor(cm);
-      }
-      return cm;
-    }
-  }
 
   ////////////////////////////////////////////////
 
