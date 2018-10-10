@@ -15,6 +15,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   deleteStyle: styleManager.deleteStyle,
   getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
   installStyle: styleManager.installStyle,
+  editSave: styleManager.editSave,
 
   getStyleFromDB: id =>
     db.exec('get', id).then(event => event.target.result),
@@ -96,7 +97,10 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
     // styles would be updated when content script is injected.
     return;
   }
-  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId});
+  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
+    .catch(err => {
+      console.warn(tabId, frameId, err);
+    });
 });
 
 if (FIREFOX) {

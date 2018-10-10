@@ -11,8 +11,16 @@ function createCache(size = 1000) {
     delete: delete_,
     clear,
     has: id => map.has(id),
-    entries: () => map.entries(),
-    values: () => map.values(),
+    entries: function *() {
+      for (const [id, item] of map) {
+        yield [id, item.data];
+      }
+    },
+    values: function *() {
+      for (const item of map.values()) {
+        yield item.data;
+      }
+    },
     get size() {
       return map.size;
     }

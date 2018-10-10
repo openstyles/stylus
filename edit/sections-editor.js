@@ -1,9 +1,9 @@
 /* global dirtyReporter showToMozillaHelp
   showSectionHelp toggleContextMenuDelete setGlobalProgress maximizeCodeHeight
   CodeMirror nextPrevEditorOnKeydown showAppliesToHelp propertyToCss
-  regExpTester linter cssToProperty createLivePreview showCodeMirrorPopup
+  regExpTester linter createLivePreview showCodeMirrorPopup
   sectionsToMozFormat editorWorker messageBox clipString beautify
-  rerouteHotkeys cmFactory
+  rerouteHotkeys cmFactory CssToProperty
 */
 'use strict';
 
@@ -76,7 +76,7 @@ function createResizeGrip(cm) {
 function createSectionsEditor(style) {
   let INC_ID = 0; // an increment id that is used by various object to track the order
   const dirty = dirtyReporter();
-  dirty.onChange(() => updateTitle);
+  dirty.onChange(updateTitle);
 
   const container = $('#sections');
   const sections = [];
@@ -91,6 +91,7 @@ function createSectionsEditor(style) {
   enabledEl.addEventListener('change', () => {
     dirty.modify('enabled', style.enabled, enabledEl.checked);
     style.enabled = enabledEl.checked;
+    updateLivePreview();
   });
 
   $('#to-mozilla').addEventListener('click', showMozillaFormat);
@@ -120,13 +121,12 @@ function createSectionsEditor(style) {
       dirty.clear();
       rerouteHotkeys(true);
       resolve();
+      updateHeader();
     }
   }));
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
-
-  updateHeader();
 
   return {
     ready: () => initializing,
@@ -137,7 +137,7 @@ function createSectionsEditor(style) {
     scrollToEditor,
     getStyleId: () => style.id,
     getEditorTitle: cm => {
-      const index = sections.filter(s => !s.isRemoved()).findIndex(s => s.cm === cm) + 1;
+      const index = sections.filter(s => !s.isRemoved()).findIndex(s => s.cm === cm);
       return `${t('sectionCode')} ${index + 1}`;
     },
     save: saveStyle,
@@ -162,6 +162,7 @@ function createSectionsEditor(style) {
       nearbyElement instanceof Node &&
         (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
       getLastActivatedEditor();
+    console.log(cm);
     if (nearbyElement instanceof Node && cm) {
       const {left, top} = nearbyElement.getBoundingClientRect();
       const bounds = cm.display.wrapper.getBoundingClientRect();
@@ -281,8 +282,9 @@ function createSectionsEditor(style) {
       if (section.isRemoved()) {
         continue;
       }
-      if (!result || section.getLastActive() > result.getLastActive) {
-        result = section;
+      // .lastActive is initiated by codemirror-factory
+      if (!result || section.cm.lastActive > result.lastActive) {
+        result = section.cm;
       }
     }
     return result;
@@ -431,11 +433,12 @@ function createSectionsEditor(style) {
     sectionOrder = validSections.map(s => s.id).join(',');
     dirty.modify('sectionOrder', oldOrder, sectionOrder);
     container.dataset.sectionCount = validSections.length;
+    linter.refreshReport();
   }
 
   function getModel() {
     return Object.assign({}, style, {
-      sections: sections.map(s => s.getModel())
+      sections: sections.filter(s => !s.isRemoved()).map(s => s.getModel())
     });
   }
 
@@ -557,12 +560,13 @@ function createSectionsEditor(style) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
     const section = createSection(init);
-    container.appendChild(section.el);
     if (base) {
       const index = sections.indexOf(base);
-      sections.splice(index, 0, section);
+      sections.splice(index + 1, 0, section);
+      container.insertBefore(section.el, base.el.nextSibling);
     } else {
       sections.push(section);
+      container.appendChild(section.el);
     }
     section.render();
     // maximizeCodeHeight(section.el);
@@ -623,7 +627,6 @@ function createSectionsEditor(style) {
     createResizeGrip(cm);
 
     linter.enableForEditor(cm);
-    linter.refreshReport();
 
     let lastActive = 0;
 
@@ -640,6 +643,7 @@ function createSectionsEditor(style) {
       onChange,
       off,
       getLastActive: () => lastActive,
+      appliesTo
     };
     return section;
 
@@ -665,7 +669,7 @@ function createSectionsEditor(style) {
         if (apply.all) {
           continue;
         }
-        const key = cssToProperty(apply.getType());
+        const key = CssToProperty[apply.getType()];
         if (!section[key]) {
           section[key] = [];
         }
@@ -767,7 +771,7 @@ function createSectionsEditor(style) {
       const apply = createApply(init);
       if (base) {
         const index = appliesTo.indexOf(base);
-        appliesTo.splice(index, 0, apply);
+        appliesTo.splice(index + 1, 0, apply);
         appliesToContainer.insertBefore(apply.el, base.el.nextSibling);
       } else {
         appliesTo.push(apply);
@@ -792,7 +796,7 @@ function createSectionsEditor(style) {
       emitSectionChange();
     }
 
-    function createApply({type, value, all}) {
+    function createApply({type = 'url', value, all = false}) {
       const applyId = INC_ID++;
       const dirtyPrefix = `section.${sectionId}.apply.${applyId}`;
       const el = all ? template.appliesToEverything.cloneNode(true) :
@@ -834,7 +838,8 @@ function createSectionsEditor(style) {
         restore,
         el,
         getType: () => type,
-        getValue: () => value
+        getValue: () => value,
+        valueEl
       };
 
       const removeButton = $('.remove-applies-to', el);
@@ -867,13 +872,13 @@ function createSectionsEditor(style) {
     }
   }
 
-  function replaceSections(sections) {
+  function replaceSections(originalSections) {
     for (const section of sections) {
       section.remove(true);
     }
     sections.length = 0;
     container.textContent = '';
-    return new Promise(resolve => initSection({sections, done: resolve}));
+    return new Promise(resolve => initSection({sections: originalSections, done: resolve}));
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {

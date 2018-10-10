@@ -65,7 +65,10 @@ var loadScript = (() => {
         subscribers.set(srcSuffix, [resolve]);
       }
       // a resolved Promise won't reject anymore
-      setTimeout(() => emptyAfterCleanup(srcSuffix) + reject(), timeout);
+      setTimeout(() => {
+        emptyAfterCleanup(srcSuffix);
+        reject(new Error('Timeout'));
+      }, timeout);
     });
   };
 

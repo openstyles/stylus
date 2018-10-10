@@ -10,7 +10,7 @@ function createLivePreview(preprocess) {
 
   prefs.subscribe(['editor.livePreview'], (key, value) => {
     if (value && data && data.id && data.enabled) {
-      previewer = createPreviewer;
+      previewer = createPreviewer();
       previewer.update(data);
     }
     if (!value && previewer) {

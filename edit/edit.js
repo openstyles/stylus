@@ -23,6 +23,7 @@ const CssToProperty = Object.entries(propertyToCss)
 let editor;
 
 document.addEventListener('visibilitychange', beforeUnload);
+window.addEventListener('beforeunload', beforeUnload);
 msg.onExtension(onRuntimeMessage);
 
 preinit();
@@ -375,7 +376,7 @@ function onRuntimeMessage(request) {
  *   > Never add a beforeunload listener unconditionally or use it as an end-of-session signal.
  *   > Only add it when a user has unsaved work, and remove it as soon as that work has been saved.
  */
-function beforeUnload() {
+function beforeUnload(e) {
   if (saveSizeOnClose) rememberWindowSize();
   const activeElement = document.activeElement;
   if (activeElement) {
@@ -384,9 +385,13 @@ function beforeUnload() {
     // refocus if unloading was canceled
     setTimeout(() => activeElement.focus());
   }
-  if (editor.isDirty()) {
+  if (editor && editor.isDirty()) {
     // neither confirm() nor custom messages work in modern browsers but just in case
-    return t('styleChangesNotSaved');
+    if (e) {
+      e.returnValue = t('styleChangesNotSaved');
+    } else {
+      return t('styleChangesNotSaved');
+    }
   }
 }
 

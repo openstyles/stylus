@@ -1,7 +1,7 @@
 /* global CodeMirror loadScript showHelp cmFactory */
 'use strict';
 
-onDOMscriptReady('/colorview.js').then(() => {
+(() => {
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
@@ -112,4 +112,4 @@ onDOMscriptReady('/colorview.js').then(() => {
     }
     input.focus();
   }
-});
+})();

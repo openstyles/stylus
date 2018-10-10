@@ -21,7 +21,6 @@ function createSourceEditor(style) {
   const dirty = dirtyReporter();
   dirty.onChange(() => {
     const isDirty = dirty.isDirty();
-    window.onbeforeunload = isDirty ? beforeUnload : null;
     document.body.classList.toggle('dirty', isDirty);
     $('#save-button').disabled = !isDirty;
     updateTitle();

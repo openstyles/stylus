@@ -100,7 +100,7 @@ const msg = (() => {
             !tab.url.startsWith('chrome://newtab/') &&
             !isExtension ||
             isExtension && ignoreExtension ||
-            !filter(tab)
+            filter && !filter(tab)
           ) {
             continue;
           }
