@@ -11,23 +11,25 @@ const cmFactory = (() => {
   const INSERT_TAB_COMMAND = CodeMirror.commands.insertTab;
   const INSERT_SOFT_TAB_COMMAND = CodeMirror.commands.insertSoftTab;
 
-  CodeMirror.defineOption('tabSize', (cm, value) => {
+  console.log(INSERT_SOFT_TAB_COMMAND, INSERT_TAB_COMMAND);
+
+  CodeMirror.defineOption('tabSize', prefs.get('editor.tabSize'), (cm, value) => {
     cm.setOption('indentUnit', Number(value));
   });
 
-  CodeMirror.defineOption('indentWithTabs', (cm, value) => {
+  CodeMirror.defineOption('indentWithTabs', prefs.get('editor.indentWithTabs'), (cm, value) => {
     CodeMirror.commands.insertTab = value ?
       INSERT_TAB_COMMAND :
       INSERT_SOFT_TAB_COMMAND;
   });
 
-  CodeMirror.defineOption('autocompleteOnTyping', (cm, value) => {
+  CodeMirror.defineOption('autocompleteOnTyping', prefs.get('editor.autocompleteOnTyping'), (cm, value) => {
     const onOff = value ? 'on' : 'off';
     cm[onOff]('changes', autocompleteOnTyping);
     cm[onOff]('pick', autocompletePicked);
   });
 
-  CodeMirror.defineOption('matchHighlight', (cm, value) => {
+  CodeMirror.defineOption('matchHighlight', prefs.get('editor.matchHighlight'), (cm, value) => {
     if (value === 'token') {
       cm.setOption('highlightSelectionMatches', {
         showToken: /[#.\-\w]/,
@@ -43,7 +45,7 @@ const cmFactory = (() => {
     }
   });
 
-  CodeMirror.defineOption('selectByTokens', (cm, value) => {
+  CodeMirror.defineOption('selectByTokens', prefs.get('editor.selectByTokens'), (cm, value) => {
     cm.setOption('configureMouse', value ? configureMouseFn : null);
   });
 
@@ -59,7 +61,8 @@ const cmFactory = (() => {
     }
     // FIXME: is this an overhead?
     if (option === 'autoCloseBrackets' && value) {
-      loadScript('/vendor/codemirror/addon/edit/closebrackets.js');
+      return loadScript('/vendor/codemirror/addon/edit/closebrackets.js')
+        .then(() => setOption(option, value));
     }
     if (option === 'theme') {
       const themeLink = $('#cm-theme');
