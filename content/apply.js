@@ -12,7 +12,6 @@
   var ROOT = document.documentElement;
   var isOwnPage = location.protocol.endsWith('-extension:');
   var disableAll = false;
-  var exposeIframes = false;
   var styleElements = new Map();
   var disabledElements = new Map();
   var retiredStyleTimers = new Map();
@@ -50,9 +49,13 @@
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
+  let parentDomain;
+
   // FIXME: does it work with styleViaAPI?
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
-  prefs.subscribe(['exposeIframes'], (key, value) => doExposeIframes(value));
+  if (window !== parent) {
+    prefs.subscribe(['exposeIframes'], updateExposeIframes);
+  }
 
   function getMatchUrl() {
     var matchUrl = location.href;
@@ -164,18 +167,23 @@
     });
   }
 
-  function doExposeIframes(state = exposeIframes) {
-    if (state === exposeIframes ||
-        state === true && typeof exposeIframes === 'string' ||
-        window === parent) {
-      return;
+  function fetchParentDomain() {
+    if (parentDomain) {
+      return Promise.resolve();
     }
-    exposeIframes = state;
-    const attr = document.documentElement.getAttribute('stylus-iframe');
-    if (state && state !== attr) {
-      document.documentElement.setAttribute('stylus-iframe', state);
-    } else if (!state && attr !== undefined) {
+    return API.getTabDomain()
+      .then(newDomain => {
+        parentDomain = newDomain;
+      });
+  }
+
+  function updateExposeIframes() {
+    if (!prefs.get('exposeIframes') || window !== parent || !styleElements.size) {
       document.documentElement.removeAttribute('stylus-iframe');
+    } else {
+      fetchParentDomain().then(() => {
+        document.documentElement.setAttribute('stylus-iframe', parentDomain);
+      });
     }
   }
 
@@ -222,12 +230,6 @@
   }
 
   function applyStyles(styles) {
-    // if (!styles) {
-      // Chrome is starting up
-      // requestStyles();
-      // return;
-    // }
-
     if (!document.documentElement) {
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
@@ -237,14 +239,6 @@
       }).observe(document, {childList: true});
       return;
     }
-
-    // FIXME: switch to prefs
-    // if ('disableAll' in styles) {
-      // doDisableAll(styles.disableAll);
-    // }
-    // if ('exposeIframes' in styles) {
-      // doExposeIframes(styles.exposeIframes);
-    // }
 
     const gotNewStyles = styles.length || styles.needTransitionPatch;
     if (gotNewStyles) {
@@ -279,6 +273,8 @@
         }
       });
     }
+
+    updateExposeIframes();
   }
 
   function applySections(styleId, code) {

@@ -14,6 +14,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   installStyle: styleManager.installStyle,
   editSave: styleManager.editSave,
 
+  getTabDomain() {
+    return getTab(this.sender.tabId)
+      .then(tab => tab.url.match(/^[\w-]+:\/\/(?:[\w:-]+@)?([^:/#]+)/)[1]);
+  },
+
   getStyleFromDB: id =>
     db.exec('get', id).then(event => event.target.result),
 

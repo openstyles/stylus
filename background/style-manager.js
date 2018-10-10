@@ -464,7 +464,6 @@ const styleManager = (() => {
   }
 
   function getDomain(url) {
-    // FIXME: use a naive regexp
     return url.match(/^[\w-]+:\/\/(?:[\w:-]+@)?([^:/#]+)/)[1];
   }
 
