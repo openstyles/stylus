@@ -214,6 +214,7 @@ preinit();
     return Promise.all([
       initStyleData(),
       onDOMready(),
+      prefs.initializing,
     ])
       .then(([style]) => {
         const usercss = isUsercss(style);
@@ -226,7 +227,6 @@ preinit();
         $('#beautify').onclick = () => beautify(editor.getEditors());
         $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
         window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-
         editor = usercss ? createSourceEditor(style) : createSectionsEditor(style);
         if (editor.ready) {
           return editor.ready();
@@ -408,6 +408,7 @@ function initStyleData() {
       // strip URL parameters when invoked for a non-existent id
       if (!style.id) {
         history.replaceState({}, document.title, location.pathname);
+        // FIXME: add style -> edit style
       }
       return style;
     });
