@@ -31,6 +31,14 @@ getActiveTab().then(tab =>
 
 msg.onExtension(onRuntimeMessage);
 
+prefs.subscribe(['popup.stylesFirst'], (key, stylesFirst) => {
+  const actions = $('body > .actions');
+  const before = stylesFirst ? actions : actions.nextSibling;
+  document.body.insertBefore(installed, before);
+});
+prefs.subscribe(['popupWidth'], (key, value) => setPopupWidth(value));
+prefs.subscribe(['popup.borders'], (key, value) => toggleSideBorders(value));
+
 function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
@@ -41,18 +49,6 @@ function onRuntimeMessage(msg) {
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
-      break;
-    case 'prefChanged':
-      if ('popup.stylesFirst' in msg.prefs) {
-        const stylesFirst = msg.prefs['popup.stylesFirst'];
-        const actions = $('body > .actions');
-        const before = stylesFirst ? actions : actions.nextSibling;
-        document.body.insertBefore(installed, before);
-      } else if ('popupWidth' in msg.prefs) {
-        setPopupWidth(msg.prefs.popupWidth);
-      } else if ('popup.borders' in msg.prefs) {
-        toggleSideBorders(msg.prefs['popup.borders']);
-      }
       break;
   }
   dispatchEvent(new CustomEvent(msg.method, {detail: msg}));

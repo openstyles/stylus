@@ -91,12 +91,9 @@ if (IS_BG) {
   window.API_METHODS = {};
 }
 
-const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage);
-if (FIREFOX_NO_DOM_STORAGE) {
-  // may be disabled via dom.storage.enabled
-  Object.defineProperty(window, 'localStorage', {value: {}});
-  Object.defineProperty(window, 'sessionStorage', {value: {}});
-}
+// FIXME: `localStorage` and `sessionStorage` may be disabled via dom.storage.enabled
+// Object.defineProperty(window, 'localStorage', {value: {}});
+// Object.defineProperty(window, 'sessionStorage', {value: {}});
 
 function queryTabs(options = {}) {
   return new Promise(resolve =>

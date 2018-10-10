@@ -48,6 +48,10 @@
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
+  // FIXME: does it work with styleViaAPI?
+  prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
+  prefs.subscribe(['exposeIframes'], (key, value) => doExposeIframes(value));
+
   function getMatchUrl() {
     var matchUrl = location.href;
     if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
@@ -135,7 +139,6 @@
         break;
 
       case 'urlChanged':
-        console.log('url changed', location.href);
         API.getSectionsByUrl(getMatchUrl(), {enabled: true})
           .then(buildSections)
           .then(replaceAll);

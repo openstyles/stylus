@@ -238,6 +238,9 @@ preinit();
   }
 })();
 
+prefs.subscribe(['editor.smartIndent'], (key, value) =>
+  CodeMirror.setOption('smartIndent', value));
+
 function preinit() {
   // make querySelectorAll enumeration code readable
   // FIXME: don't extend native

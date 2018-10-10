@@ -153,6 +153,14 @@ navigatorUtil.onUrlChange(({url, tabId, frameId}) => {
   }
 });
 
+prefs.subscribe([
+  'show-badge',
+  'disableAll',
+  'badgeDisabled',
+  'badgeNormal',
+  'iconset',
+], () => debounce(updateAllTabsIcon));
+
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
   if (reason !== 'update') return;
@@ -211,11 +219,10 @@ if (chrome.contextMenus) {
       }
       item = Object.assign({id}, item);
       delete item.presentIf;
-      const prefValue = prefs.readOnlyValues[id];
       item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefValue === 'boolean') {
+      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
         item.type = 'checkbox';
-        item.checked = prefValue;
+        item.checked = prefs.get(id);
       }
       if (!item.contexts) {
         item.contexts = ['browser_action'];
@@ -239,7 +246,7 @@ if (chrome.contextMenus) {
   };
 
   const keys = Object.keys(contextMenus);
-  prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'), toggleCheckmark);
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
@@ -306,6 +313,21 @@ window.addEventListener('storageReady', function _() {
 });
 
 // FIXME: implement exposeIframes in apply.js
+
+// register hotkeys
+if (FIREFOX && browser.commands && browser.commands.update) {
+  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
+  prefs.subscribe(hotkeyPrefs, (name, value) => {
+    try {
+      name = name.split('.')[1];
+      if (value.trim()) {
+        browser.commands.update({name, shortcut: value});
+      } else {
+        browser.commands.reset(name);
+      }
+    } catch (e) {}
+  });
+}
 
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
@@ -446,4 +468,10 @@ function onRuntimeMessage(msg, sender) {
   }
   const context = {msg, sender};
   return fn.apply(context, msg.args);
+}
+
+function updateAllTabsIcon() {
+  return queryTabs().then(tabs =>
+    tabs.map(t => updateIcon({tab: t}))
+  );
 }

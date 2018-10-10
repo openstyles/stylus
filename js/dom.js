@@ -392,3 +392,55 @@ function moveFocus(rootElement, step) {
     }
   }
 }
+
+// Accepts an array of pref names (values are fetched via prefs.get)
+// and establishes a two-way connection between the document elements and the actual prefs
+function setupLivePrefs(
+  IDs = Object.getOwnPropertyNames(prefs.defaults)
+    .filter(id => $('#' + id))
+) {
+  for (const id of IDs) {
+    const element = $('#' + id);
+    updateElement({id, element, force: true});
+    element.addEventListener('change', onChange);
+  }
+  prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
+
+  function onChange() {
+    const value = getInputValue(this);
+    if (prefs.get(this.id) !== value) {
+      prefs.set(this.id, value);
+    }
+  }
+  function updateElement({
+    id,
+    value = prefs.get(id),
+    element = $('#' + id),
+    force,
+  }) {
+    if (!element) {
+      prefs.unsubscribe(IDs, updateElement);
+      return;
+    }
+    setInputValue(element, value, force);
+  }
+  function getInputValue(input) {
+    if (input.type === 'checkbox') {
+      return input.checked;
+    }
+    if (input.type === 'number') {
+      return Number(input.value);
+    }
+    return input.value;
+  }
+  function setInputValue(input, value, force = false) {
+    if (force || getInputValue(input) !== value) {
+      if (input.type === 'checkbox') {
+        input.checked = value;
+      } else {
+        input.value = value;
+      }
+      input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+    }
+  }
+}

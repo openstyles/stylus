@@ -62,7 +62,7 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["js/promisify.js", "js/msg.js", "content/apply.js"]
+      "js": ["js/promisify.js", "js/msg.js", "js/prefs.js", "content/apply.js"]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
@@ -115,5 +115,11 @@
   "options_ui": {
     "page": "options.html",
     "chrome_style": false
+  },
+  "applications": {
+    "gecko": {
+      "id": "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}",
+      "strict_min_version": "53"
+    }
   }
 }
