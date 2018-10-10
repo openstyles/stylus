@@ -475,3 +475,15 @@ function updateAllTabsIcon() {
     tabs.map(t => updateIcon({tab: t}))
   );
 }
+
+function openEditor({id}) {
+  let url = '/edit.html';
+  if (id) {
+    url += `?id=${id}`;
+  }
+  if (chrome.windows && prefs.get('openEditInWindow')) {
+    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
+  } else {
+    openURL({url});
+  }
+}

@@ -1,4 +1,4 @@
-/* global getStyles API_METHODS styleManager */
+/* global API_METHODS styleManager CHROME prefs */
 'use strict';
 
 API_METHODS.styleViaAPI = !CHROME && (() => {

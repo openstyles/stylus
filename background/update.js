@@ -1,9 +1,7 @@
-/*
-global styleSectionsEqual
-global calcStyleDigest cachedStyles getStyleWithNoCode
-global usercss semverCompare
-global API_METHODS styleManager
-*/
+/* global styleSectionsEqual prefs download tryJSONparse ignoreChromeError
+  calcStyleDigest getStyleWithNoCode debounce chromeLocal
+  usercss semverCompare
+  API_METHODS styleManager */
 'use strict';
 
 (() => {
@@ -70,7 +68,7 @@ global API_METHODS styleManager
 
   function checkStyle({
     id,
-    style = cachedStyles.byId.get(id),
+    style,
     port,
     save = true,
     ignoreDigest,
@@ -89,13 +87,23 @@ global API_METHODS styleManager
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    return Promise.resolve(style)
+    return fetchStyle()
       .then([calcStyleDigest][!ignoreDigest ? 0 : 'skip'])
       .then([checkIfEdited][!ignoreDigest ? 0 : 'skip'])
       .then([maybeUpdateUSO, maybeUpdateUsercss][style.usercssData ? 1 : 0])
       .then(maybeSave)
       .then(reportSuccess)
       .catch(reportFailure);
+
+    function fetchStyle() {
+      if (style) {
+        return Promise.resolve();
+      }
+      return styleManager.get(id)
+        .then(_style => {
+          style = _style;
+        });
+    }
 
     function reportSuccess(saved) {
       log(STATES.UPDATED + ` #${style.id} ${style.name}`);

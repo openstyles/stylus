@@ -1,4 +1,5 @@
 /* global promisify deepCopy */
+/* exported msg API */
 // deepCopy is only used if the script is executed in extension pages.
 'use strict';
 

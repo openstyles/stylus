@@ -1,8 +1,34 @@
+/* global prefs */
+/* exported scrollElementIntoView animateElement enforceInputRange $createLink
+  setupLivePrefs moveFocus */
 'use strict';
 
 if (!/^Win\d+/.test(navigator.platform)) {
   document.documentElement.classList.add('non-windows');
 }
+
+// make querySelectorAll enumeration code readable
+// FIXME: avoid extending native?
+['forEach', 'some', 'indexOf', 'map'].forEach(method => {
+  NodeList.prototype[method] = Array.prototype[method];
+});
+
+// eslint-disable-next-line no-extend-native
+Object.defineProperties(Array.prototype, {
+  last: {
+    get() {
+      return this[this.length - 1];
+    },
+  },
+  rotate: {
+    value: function (amount) {
+      // negative amount == rotate left
+      const r = this.slice(-amount, this.length);
+      Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
+      return r;
+    },
+  },
+});
 
 // polyfill for old browsers to enable [...results] and for-of
 for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) {

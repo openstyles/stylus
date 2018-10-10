@@ -1,7 +1,5 @@
-/*
-global CodeMirror loadScript css_beautify
-global getSectionForChild showHelp
-*/
+/* global loadScript css_beautify showHelp prefs t $ $create */
+/* exported beautify */
 'use strict';
 
 function beautify(scope) {

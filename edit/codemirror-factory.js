@@ -1,4 +1,5 @@
-/* global CodeMirror loadScript rerouteHotkeys */
+/* global CodeMirror loadScript rerouteHotkeys prefs $ debounce $create */
+/* exported cmFactory */
 'use strict';
 /*
 All cm instances created by this module are collected so we can broadcast prefs

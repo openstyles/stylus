@@ -1,3 +1,4 @@
+/* global API */
 'use strict';
 
 (() => {

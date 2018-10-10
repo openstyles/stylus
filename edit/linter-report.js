@@ -1,7 +1,6 @@
-/* global linter editor clipString createLinterHelpDialog makeSectionVisible */
+/* global linter editor clipString createLinterHelpDialog $ $create */
 'use strict';
 
-// eslint-disable-next-line no-var
 Object.assign(linter, (() => {
   const tables = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);

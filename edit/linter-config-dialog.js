@@ -1,5 +1,6 @@
 /* global memoize editorWorker showCodeMirrorPopup loadScript messageBox
-  LINTER_DEFAULTS rerouteHotkeys */
+  LINTER_DEFAULTS rerouteHotkeys $ $create $createLink tryJSONparse t
+  chromeSync */
 'use strict';
 
 (() => {

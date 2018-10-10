@@ -1,4 +1,4 @@
-/* global loadScript tryJSONparse API */
+/* global loadScript tryJSONparse */
 /* exported chromeLocal chromeSync */
 'use strict';
 

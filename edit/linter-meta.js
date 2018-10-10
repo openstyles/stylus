@@ -1,4 +1,5 @@
-/* global linter */
+/* global linter API */
+/* exported createMetaCompiler */
 'use strict';
 
 function createMetaCompiler(cm) {

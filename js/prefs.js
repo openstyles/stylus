@@ -1,4 +1,3 @@
-/* global deepCopy debounce API tryJSONparse chromeSync FIREFOX CHROME */
 /* exported prefs */
 'use strict';
 

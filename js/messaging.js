@@ -1,14 +1,13 @@
-/*
-global BG: true
-global FIREFOX: true
-global onRuntimeMessage applyOnMessage
-*/
+/* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
+  getStyleWithNoCode tryRegExp sessionStorageHash download
+  closeCurrentTab */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
 const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
-const ANDROID = !chrome.windows;
+// FIXME: who use this?
+// const ANDROID = !chrome.windows;
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
 if (!CHROME && !chrome.browserAction.openPopup) {
@@ -119,13 +118,6 @@ function getActiveTab() {
   return queryTabs({currentWindow: true, active: true})
     .then(tabs => tabs[0]);
 }
-
-
-function getActiveTabRealURL() {
-  return getActiveTab()
-    .then(getTabRealURL);
-}
-
 
 function getTabRealURL(tab) {
   return new Promise(resolve => {
@@ -487,27 +479,6 @@ function download(url, {
   }
 }
 
-
-function invokeOrPostpone(isInvoke, fn, ...args) {
-  return isInvoke
-    ? fn(...args)
-    : setTimeout(invokeOrPostpone, 0, true, fn, ...args);
-}
-
-
-function openEditor({id}) {
-  let url = '/edit.html';
-  if (id) {
-    url += `?id=${id}`;
-  }
-  if (chrome.windows && prefs.get('openEditInWindow')) {
-    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
-  } else {
-    openURL({url});
-  }
-}
-
-
 function closeCurrentTab() {
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1409375
   getOwnTab().then(tab => {
@@ -516,6 +487,3 @@ function closeCurrentTab() {
     }
   });
 }
-
-// FIXME: remove this when #510 is merged
-function notifyAllTabs() {}

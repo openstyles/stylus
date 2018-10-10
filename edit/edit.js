@@ -1,16 +1,13 @@
-/*
-global CodeMirror loadScript
-global createSourceEditor
-global closeCurrentTab regExpTester messageBox
-global setupCodeMirror
-global beautify
-global sectionsToMozFormat
-global moveFocus editorWorker msg createSectionsEditor rerouteHotkeys
+/* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
+  createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
+  closeCurrentTab messageBox debounce
+  beautify
+  moveFocus msg createSectionsEditor rerouteHotkeys
 */
+/* exported showCodeMirrorPopup */
 'use strict';
 
 let saveSizeOnClose;
-let ownTabId;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -242,29 +239,6 @@ prefs.subscribe(['editor.smartIndent'], (key, value) =>
   CodeMirror.setOption('smartIndent', value));
 
 function preinit() {
-  // make querySelectorAll enumeration code readable
-  // FIXME: don't extend native
-  ['forEach', 'some', 'indexOf', 'map'].forEach(method => {
-    NodeList.prototype[method] = Array.prototype[method];
-  });
-
-  // eslint-disable-next-line no-extend-native
-  Object.defineProperties(Array.prototype, {
-    last: {
-      get() {
-        return this[this.length - 1];
-      },
-    },
-    rotate: {
-      value: function (amount) {
-        // negative amount == rotate left
-        const r = this.slice(-amount, this.length);
-        Array.prototype.push.apply(r, this.slice(0, this.length - r.length));
-        return r;
-      },
-    },
-  });
-
   // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
   new MutationObserver((mutations, observer) => {
     const themeElement = $('#cm-theme');
@@ -302,7 +276,7 @@ function preinit() {
   }
 
   getOwnTab().then(tab => {
-    ownTabId = tab.id;
+    const ownTabId = tab.id;
 
     // use browser history back when 'back to manage' is clicked
     if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
@@ -446,21 +420,6 @@ function initStyleData() {
   }
 }
 
-function showSectionHelp(event) {
-  event.preventDefault();
-  showHelp(t('styleSectionsTitle'), t('sectionHelp'));
-}
-
-function showAppliesToHelp(event) {
-  event.preventDefault();
-  showHelp(t('appliesLabel'), t('appliesHelp'));
-}
-
-function showToMozillaHelp(event) {
-  event.preventDefault();
-  showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
-}
-
 function showHelp(title = '', body) {
   const div = $('#help-popup');
   div.className = '';
@@ -559,20 +518,6 @@ function showCodeMirrorPopup(title, html, options) {
   return popup;
 }
 
-function setGlobalProgress(done, total) {
-  const progressElement = $('#global-progress') ||
-    total && document.body.appendChild($create('#global-progress'));
-  if (total) {
-    const progress = (done / Math.max(done, total) * 100).toFixed(1);
-    progressElement.style.borderLeftWidth = progress + 'vw';
-    setTimeout(() => {
-      progressElement.title = progress + '%';
-    });
-  } else {
-    $.remove(progressElement);
-  }
-}
-
 function hideLintHeaderOnScroll() {
   // workaround part2 for the <details> not showing its toggle icon: hide <summary> on scroll
   const newOpacity = this.scrollTop === 0 ? '' : '0';
@@ -609,15 +554,4 @@ function isWindowMaximized() {
     window.outerWidth < screen.availWidth + 10 &&
     window.outerHeight < screen.availHeight + 10
   );
-}
-
-function toggleContextMenuDelete(event) {
-  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
-    chrome.contextMenus.update('editor.contextDelete', {
-      enabled: Boolean(
-        this.selectionStart !== this.selectionEnd ||
-        this.somethingSelected && this.somethingSelected()
-      ),
-    }, ignoreChromeError);
-  }
 }

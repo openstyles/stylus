@@ -1,6 +1,5 @@
-/* global CodeMirror */
-/* global focusAccessibility */
-/* global colorMimicry editor */
+/* global CodeMirror focusAccessibility colorMimicry editor
+  onDOMready $ $$ $create t debounce tryRegExp stringAsRegExp template */
 'use strict';
 
 onDOMready().then(() => {

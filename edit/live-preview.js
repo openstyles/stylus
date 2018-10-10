@@ -1,4 +1,5 @@
-/* global messageBox editor */
+/* global messageBox editor $ prefs */
+/* exported createLivePreview */
 'use strict';
 
 function createLivePreview(preprocess) {

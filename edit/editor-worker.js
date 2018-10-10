@@ -1,3 +1,4 @@
+/* exported editorWorker */
 'use strict';
 
 // eslint-disable-next-line no-var

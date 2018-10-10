@@ -1,8 +1,4 @@
-/*
-global messageBox resolveWith
-gloabl editor showHelp getSectionsHashes
-global popupExclusions
-*/
+/* global showHelp $ $$ debounce API template t */
 'use strict';
 
 const exclusions = (() => {
@@ -142,9 +138,9 @@ const exclusions = (() => {
     if (msg.method === 'exclusionsUpdated' && msg.style && msg.style.exclusions) {
       update({list: Object.keys(msg.style.exclusions), isUpdating: true});
       // update popup, if loaded
-      if (typeof popupExclusions !== 'undefined') {
-        popupExclusions.selectExclusions(msg.style.exclusions);
-      }
+      // if (typeof popupExclusions !== 'undefined') {
+        // popupExclusions.selectExclusions(msg.style.exclusions);
+      // }
     }
   }
 
@@ -162,7 +158,6 @@ const exclusions = (() => {
       style.exclusions = exclusionList;
       style.reason = 'exclusionsUpdated';
       API.saveStyle(style);
-      notifyAllTabs({method: 'exclusionsUpdated', style, id, excluded: exclusionList});
     });
   }
 

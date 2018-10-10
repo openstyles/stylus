@@ -1,4 +1,4 @@
-/* global CodeMirror loadScript showHelp cmFactory */
+/* global CodeMirror showHelp cmFactory onDOMready $ $create prefs t */
 'use strict';
 
 (() => {

@@ -1,4 +1,5 @@
-/* global CodeMirror editor */
+/* global CodeMirror editor debounce */
+/* exported rerouteHotkeys */
 'use strict';
 
 const rerouteHotkeys = (() => {

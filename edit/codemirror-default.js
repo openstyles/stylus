@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript editor */
+/* global CodeMirror prefs loadScript editor $ template */
 
 'use strict';
 

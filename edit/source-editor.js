@@ -1,9 +1,9 @@
-/*
-global CodeMirror dirtyReporter
-global createAppliesToLineWidget messageBox
-global sectionsToMozFormat
-global createMetaCompiler linter createLivePreview cmFactory
-*/
+/* global dirtyReporter
+  createAppliesToLineWidget messageBox
+  sectionsToMozFormat
+  createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
+  chromeSync */
+/* exported createSourceEditor */
 'use strict';
 
 function createSourceEditor(style) {

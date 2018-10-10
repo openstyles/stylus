@@ -1,5 +1,5 @@
-/* global CodeMirror semverCompare closeCurrentTab */
-/* global messageBox download chromeLocal */
+/* global CodeMirror semverCompare closeCurrentTab messageBox download
+  $ $$ $create $createLink t prefs API getTab */
 'use strict';
 
 (() => {

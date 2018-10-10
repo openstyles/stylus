@@ -1,5 +1,5 @@
 /* eslint no-var: 0 */
-/* global msg */
+/* global msg API prefs */
 'use strict';
 
 (() => {
@@ -79,18 +79,18 @@
    * @param {Function} callback
    * @returns {Boolean|undefined}
    */
-  function getStylesFallback(msg) {
-    if (window !== parent &&
-        location.href !== 'about:blank') {
-      try {
-        if (parent.location.origin === location.origin &&
-            parent.location.href !== location.href) {
-          chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
-          return true;
-        }
-      } catch (e) {}
-    }
-  }
+  // function getStylesFallback(msg) {
+    // if (window !== parent &&
+        // location.href !== 'about:blank') {
+      // try {
+        // if (parent.location.origin === location.origin &&
+            // parent.location.href !== location.href) {
+          // chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
+          // return true;
+        // }
+      // } catch (e) {}
+    // }
+  // }
 
   function applyOnMessage(request) {
     if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
@@ -320,34 +320,6 @@
     return el;
   }
 
-  function setContentsInPageContext() {
-    try {
-      (document.head || ROOT).appendChild(document.createElement('script')).text = `(${queue => {
-        document.currentScript.remove();
-        for (const {id, code} of queue) {
-          const el = document.getElementById(id) ||
-                     document.querySelector('style.stylus[id="' + id + '"]');
-          if (!el) continue;
-          const {disabled} = el.sheet;
-          el.textContent = code;
-          el.sheet.disabled = disabled;
-        }
-      }})(${JSON.stringify(pageContextQueue)})`;
-    } catch (e) {}
-    let failedSome;
-    for (const {el, code} of pageContextQueue) {
-      if (el.textContent !== code) {
-        el.textContent = code;
-        failedSome = true;
-      }
-    }
-    if (failedSome) {
-      console.debug('Could not set code of some styles in page context, ' +
-                    'see https://github.com/openstyles/stylus/issues/461');
-    }
-    pageContextQueue.length = 0;
-  }
-
   function addStyleElement(newElement) {
     if (!ROOT) {
       return;
@@ -410,14 +382,6 @@
 
   function getStyleId(el) {
     return parseInt(el.id.substr(ID_PREFIX.length));
-  }
-
-  function countStylesInHash(styleHash) {
-    let num = 0;
-    for (const k in styleHash) {
-      num += !isNaN(parseInt(k)) ? 1 : 0;
-    }
-    return num;
   }
 
   function orphanCheck() {

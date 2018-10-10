@@ -1,4 +1,6 @@
-/* global regExpTester debounce messageBox CodeMirror template colorMimicry msg */
+/* global regExpTester debounce messageBox CodeMirror template colorMimicry msg
+  $ $create t prefs tryCatch */
+/* exported createAppliesToLineWidget */
 'use strict';
 
 function createAppliesToLineWidget(cm) {

@@ -1,4 +1,5 @@
-/* global API_METHODS usercss chromeLocal styleManager */
+/* global API_METHODS usercss chromeLocal styleManager FIREFOX deepCopy openURL
+  download */
 'use strict';
 
 (() => {

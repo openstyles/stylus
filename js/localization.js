@@ -1,3 +1,5 @@
+/* global tryCatch */
+/* exported tHTML formatDate */
 'use strict';
 
 const template = {};

@@ -1,5 +1,7 @@
+/* exported createCache */
 'use strict';
 
+// create a FIFO limit-size map.
 function createCache(size = 1000) {
   const map = new Map();
   const buffer = Array(size);

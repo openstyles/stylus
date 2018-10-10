@@ -1,6 +1,7 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest normalizeStyleSections db promisify
+/* global createCache db calcStyleDigest db tryRegExp
   getStyleWithNoCode msg */
+/* exported styleManager */
 'use strict';
 
 /*

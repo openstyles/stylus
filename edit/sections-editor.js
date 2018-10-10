@@ -1,10 +1,11 @@
-/* global dirtyReporter showToMozillaHelp
-  showSectionHelp toggleContextMenuDelete setGlobalProgress maximizeCodeHeight
-  CodeMirror nextPrevEditorOnKeydown showAppliesToHelp propertyToCss
+/* global dirtyReporter showHelp prefs ignoreChromeError
+  CodeMirror propertyToCss
   regExpTester linter createLivePreview showCodeMirrorPopup
   sectionsToMozFormat editorWorker messageBox clipString beautify
-  rerouteHotkeys cmFactory CssToProperty
+  rerouteHotkeys cmFactory CssToProperty template $ $$ $create t FIREFOX API
+  debounce tryRegExp
 */
+/* exported createSectionsEditor */
 'use strict';
 
 function createResizeGrip(cm) {
@@ -98,6 +99,7 @@ function createSectionsEditor(style) {
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
   $('#from-mozilla').addEventListener('click', () => fromMozillaFormat());
   $('#save-button').addEventListener('click', saveStyle);
+  // FIXME: this element doesn't exist?
   $('#sections-help').addEventListener('click', showSectionHelp);
 
   document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
@@ -147,6 +149,46 @@ function createSectionsEditor(style) {
     closestVisible,
     getSearchableInputs,
   };
+
+  function toggleContextMenuDelete(event) {
+    if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
+      chrome.contextMenus.update('editor.contextDelete', {
+        enabled: Boolean(
+          this.selectionStart !== this.selectionEnd ||
+          this.somethingSelected && this.somethingSelected()
+        ),
+      }, ignoreChromeError);
+    }
+  }
+
+  function setGlobalProgress(done, total) {
+    const progressElement = $('#global-progress') ||
+      total && document.body.appendChild($create('#global-progress'));
+    if (total) {
+      const progress = (done / Math.max(done, total) * 100).toFixed(1);
+      progressElement.style.borderLeftWidth = progress + 'vw';
+      setTimeout(() => {
+        progressElement.title = progress + '%';
+      });
+    } else {
+      $.remove(progressElement);
+    }
+  }
+
+  function showToMozillaHelp(event) {
+    event.preventDefault();
+    showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
+  }
+
+  function showAppliesToHelp(event) {
+    event.preventDefault();
+    showHelp(t('appliesLabel'), t('appliesHelp'));
+  }
+
+  function showSectionHelp(event) {
+    event.preventDefault();
+    showHelp(t('styleSectionsTitle'), t('sectionHelp'));
+  }
 
   function getSearchableInputs(cm) {
     return sections.find(s => s.cm === cm).appliesTo.map(a => a.valueEl).filter(Boolean);
