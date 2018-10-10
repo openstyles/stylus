@@ -10,90 +10,82 @@ const cmFactory = (() => {
   // used by `indentWithTabs` option
   const INSERT_TAB_COMMAND = CodeMirror.commands.insertTab;
   const INSERT_SOFT_TAB_COMMAND = CodeMirror.commands.insertSoftTab;
-  prefs.subscribe(null, onPrefChanged);
-  return {create, destroy, setOption};
 
-  function onPrefChanged(key, value) {
-    let option = key.replace(/^editor\./, '');
+  CodeMirror.defineOption('tabSize', (cm, value) => {
+    cm.setOption('indentUnit', Number(value));
+  });
+
+  CodeMirror.defineOption('indentWithTabs', (cm, value) => {
+    CodeMirror.commands.insertTab = value ?
+      INSERT_TAB_COMMAND :
+      INSERT_SOFT_TAB_COMMAND;
+  });
+
+  CodeMirror.defineOption('autocompleteOnTyping', (cm, value) => {
+    const onOff = value ? 'on' : 'off';
+    cm[onOff]('changes', autocompleteOnTyping);
+    cm[onOff]('pick', autocompletePicked);
+  });
+
+  CodeMirror.defineOption('matchHighlight', (cm, value) => {
+    if (value === 'token') {
+      cm.setOption('highlightSelectionMatches', {
+        showToken: /[#.\-\w]/,
+        annotateScrollbar: true
+      });
+    } else if (value === 'selection') {
+      cm.setOption('highlightSelectionMatches', {
+        showToken: false,
+        annotateScrollbar: true
+      });
+    } else {
+      cm.setOption('highlightSelectionMatches', null);
+    }
+  });
+
+  CodeMirror.defineOption('selectByTokens', (cm, value) => {
+    cm.setOption('configureMouse', value ? configureMouseFn : null);
+  });
+
+  prefs.subscribe(null, (key, value) => {
+    const option = key.replace(/^editor\./, '');
     if (!option) {
       console.error('no "cm_option"', key);
       return;
     }
-    switch (option) {
-      case 'tabSize':
-        value = Number(value);
-        setOption('indentUnit', value);
-        break;
-
-      case 'indentWithTabs':
-        CodeMirror.commands.insertTab = value ?
-          INSERT_TAB_COMMAND :
-          INSERT_SOFT_TAB_COMMAND;
-        break;
-
-      case 'theme': {
-        const themeLink = $('#cm-theme');
-        // use non-localized 'default' internally
-        if (!value || value === 'default' || value === t('defaultTheme')) {
-          value = 'default';
-          if (prefs.get(key) !== value) {
-            prefs.set(key, value);
-          }
-          themeLink.href = '';
-          $('#editor.theme').value = value;
-          break;
-        }
-        const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
-        if (themeLink.href === url) {
-          // preloaded in initCodeMirror()
-          break;
-        }
-        // avoid flicker: wait for the second stylesheet to load, then apply the theme
-        document.head.appendChild($create('link#cm-theme2', {rel: 'stylesheet', href: url}));
-        setTimeout(() => {
-          setOption(option, value);
-          themeLink.remove();
-          $('#cm-theme2').id = 'cm-theme';
-        }, 100);
-        return;
-      }
-
-      case 'autocompleteOnTyping':
-        for (const cm of editors) {
-          setupAutocomplete(cm, value);
-        }
-        return;
-
-      case 'autoCloseBrackets':
-        Promise.resolve(value && loadScript('/vendor/codemirror/addon/edit/closebrackets.js')).then(() => {
-          setOption(option, value);
-        });
-        return;
-
-      case 'matchHighlight':
-        switch (value) {
-          case 'token':
-          case 'selection':
-            document.body.dataset[option] = value;
-            value = {showToken: value === 'token' && /[#.\-\w]/, annotateScrollbar: true};
-            break;
-          default:
-            value = null;
-        }
-        option = 'highlightSelectionMatches';
-        break;
-
-      case 'colorpicker':
-        // FIXME: this is implemented in `colorpicker-helper.js`.
-        return;
-
-      case 'selectByTokens':
-        option = 'configureMouse';
-        value = value ? configureMouseFn : null;
-        break;
+    // FIXME: this is implemented in `colorpicker-helper.js`.
+    if (option === 'colorpicker') {
+      return;
     }
+    // FIXME: is this an overhead?
+    if (option === 'autoCloseBrackets' && value) {
+      loadScript('/vendor/codemirror/addon/edit/closebrackets.js');
+    }
+    if (option === 'theme') {
+      const themeLink = $('#cm-theme');
+      // use non-localized 'default' internally
+      if (value === 'default') {
+        themeLink.href = '';
+      } else {
+        const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
+        if (themeLink.href !== url) {
+          // avoid flicker: wait for the second stylesheet to load, then apply the theme
+          return loadScript(url).then(([newThemeLink]) => {
+            setOption(option, value);
+            themeLink.remove();
+            newThemeLink.id = 'cm-theme';
+            // already loaded but is removed.
+            if (!newThemeLink.parentNode) {
+              document.head.appendChild(newThemeLink);
+            }
+          });
+        }
+      }
+    }
+    // broadcast option
     setOption(option, value);
-  }
+  });
+  return {create, destroy, setOption};
 
   function configureMouseFn(cm, repeat) {
     return repeat === 'double' ?
@@ -152,12 +144,6 @@ const cmFactory = (() => {
     };
   }
 
-  function setupAutocomplete(cm, enable = true) {
-    const onOff = enable ? 'on' : 'off';
-    cm[onOff]('changes', autocompleteOnTyping);
-    cm[onOff]('pick', autocompletePicked);
-  }
-
   function autocompleteOnTyping(cm, [info], debounced) {
     if (
       cm.state.completionActive ||
@@ -194,9 +180,6 @@ const cmFactory = (() => {
 
   function create(init, options) {
     const cm = CodeMirror(init, options);
-    if (prefs.get('editor.autocompleteOnTyping')) {
-      setupAutocomplete(cm);
-    }
     cm.lastActive = 0;
     const wrapper = cm.display.wrapper;
     cm.on('blur', () => {

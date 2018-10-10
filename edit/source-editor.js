@@ -2,8 +2,6 @@
 global CodeMirror dirtyReporter
 global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
-global exclusions
-global beforeUnload
 global createMetaCompiler linter createLivePreview cmFactory
 */
 'use strict';
@@ -402,6 +400,7 @@ function createSourceEditor(style) {
     toggleStyle,
     prevEditor: cm => nextPrevMozDocument(cm, -1),
     nextEditor: cm => nextPrevMozDocument(cm, 1),
-    closestVisible: () => cm
+    closestVisible: () => cm,
+    getSearchableInputs: () => []
   };
 }

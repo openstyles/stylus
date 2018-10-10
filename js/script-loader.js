@@ -26,7 +26,7 @@ var loadScript = (() => {
       el.onload = () => {
         el.onload = null;
         el.onerror = null;
-        resolve();
+        resolve(el);
       };
       el.onerror = () => {
         el.onload = null;

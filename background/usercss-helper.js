@@ -9,7 +9,6 @@
   API_METHODS.buildUsercss = build;
   API_METHODS.openUsercssInstallPage = install;
 
-  API_METHODS.parseUsercss = parse;
   API_METHODS.findUsercss = find;
 
   const TEMP_CODE_PREFIX = 'tempUsercssCode';

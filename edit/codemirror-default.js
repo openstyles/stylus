@@ -9,6 +9,7 @@
   }
 
   const defaults = {
+    autocompleteOnTyping: prefs.get('editor.autocompleteOnTyping'),
     mode: 'css',
     lineNumbers: true,
     lineWrapping: prefs.get('editor.lineWrapping'),
