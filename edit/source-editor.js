@@ -5,7 +5,7 @@ global createAppliesToLineWidget messageBox
 global sectionsToMozFormat
 global exclusions
 global beforeUnload
-global createMetaCompiler linter createLivePreview
+global createMetaCompiler linter createLivePreview cmFactory
 */
 'use strict';
 
@@ -30,7 +30,7 @@ function createSourceEditor(style) {
   // normalize style
   if (!style.id) setupNewStyle(style);
 
-  const cm = CodeMirror($('.single-editor'), {
+  const cm = cmFactory.create($('.single-editor'), {
     value: style.sourceCode,
   });
   let savedGeneration = cm.changeGeneration();

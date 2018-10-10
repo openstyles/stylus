@@ -3,7 +3,7 @@
   CodeMirror nextPrevEditorOnKeydown showAppliesToHelp propertyToCss
   regExpTester linter cssToProperty createLivePreview showCodeMirrorPopup
   sectionsToMozFormat editorWorker messageBox clipString beautify
-  rerouteHotkeys
+  rerouteHotkeys cmFactory
 */
 'use strict';
 
@@ -523,11 +523,11 @@ function createSectionsEditor(style) {
     if (sections.every(s => s.isRemoved() || s === section)) {
       throw new Error('Cannot remove last section');
     }
-    section.remove();
     if (!section.getCode()) {
       const index = sections.indexOf(section);
       sections.splice(index, 1);
       section.el.remove();
+      section.remove(true);
     } else {
       const lines = [];
       const MAX_LINES = 10;
@@ -537,6 +537,7 @@ function createSectionsEditor(style) {
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
       $('.deleted-section', section.el).title = title;
+      section.remove(false);
     }
     dirty.remove(section, section);
     updateSectionOrder();
@@ -595,9 +596,11 @@ function createSectionsEditor(style) {
   function createSection(originalSection) {
     const sectionId = INC_ID++;
     const el = template.section.cloneNode(true);
-    const cm = CodeMirror(wrapper => {
+    const cm = cmFactory.create(wrapper => {
       el.insertBefore(wrapper, $('.code-label', el).nextSibling);
     }, {value: originalSection.code});
+
+    const changeListeners = new Set();
 
     const appliesToContainer = $('.applies-to-list', el);
     const appliesTo = [];
@@ -609,10 +612,7 @@ function createSectionsEditor(style) {
       }
     }
     if (!appliesTo.length) {
-      const apply = createApply({all: true});
-      appliesTo.push(apply);
-      appliesToContainer.appendChild(apply.el);
-      dirty.addChild(apply.dirty);
+      insertApplyAfter({all: true});
     }
 
     let changeGeneration = cm.changeGeneration();
@@ -624,8 +624,6 @@ function createSectionsEditor(style) {
 
     linter.enableForEditor(cm);
     linter.refreshReport();
-
-    const changeListeners = new Set();
 
     let lastActive = 0;
 
@@ -731,11 +729,14 @@ function createSectionsEditor(style) {
       return cm.getValue();
     }
 
-    function remove() {
+    function remove(destroy = false) {
       linter.disableForEditor(cm);
       el.classList.add('removed');
       removed = true;
       appliesTo.forEach(a => a.remove());
+      if (destroy) {
+        cmFactory.destroy(cm);
+      }
     }
 
     function restore() {
@@ -751,7 +752,7 @@ function createSectionsEditor(style) {
     }
 
     function updateRegexpTester() {
-      const regexps = appliesTo.filter(a => a.getKey() === 'regexp')
+      const regexps = appliesTo.filter(a => a.getType() === 'regexp')
         .map(a => a.getValue());
       if (regexps.length) {
         el.classList.add('has-regexp');
@@ -773,7 +774,7 @@ function createSectionsEditor(style) {
         appliesToContainer.appendChild(apply.el);
       }
       dirty.add(apply, apply);
-      if (appliesTo.length && appliesTo[0].all) {
+      if (appliesTo.length > 1 && appliesTo[0].all) {
         removeApply(appliesTo[0]);
       }
       emitSectionChange();
@@ -868,7 +869,7 @@ function createSectionsEditor(style) {
 
   function replaceSections(sections) {
     for (const section of sections) {
-      section.remove();
+      section.remove(true);
     }
     sections.length = 0;
     container.textContent = '';

@@ -40,7 +40,7 @@ function createLivePreview(preprocess) {
     const port = chrome.runtime.connect({
       name: 'livePreview'
     });
-    port.onDisconnet.addListener(err => {
+    port.onDisconnect.addListener(err => {
       throw err;
     });
     return {update, disconnect};
