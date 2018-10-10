@@ -344,6 +344,7 @@ const styleManager = (() => {
     }
   }
 
+  // TODO: report excluded styles and sloppy regexps?
   function getAppliedCode(url, data) {
     if (!urlMatchStyle(url, data)) {
       return;
@@ -388,6 +389,7 @@ const styleManager = (() => {
   }
 
   function urlMatchStyle(url, style) {
+    // TODO: show excluded style in popup?
     if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url))) {
       return false;
     }
@@ -402,7 +404,14 @@ const styleManager = (() => {
     if (section.urlPrefixes && section.urlPrefixes.some(p => url.startsWith(p))) {
       return true;
     }
-    if (section.urls && section.urls.includes(getUrlNoHash(url))) {
+    // as per spec the fragment portion is ignored in @-moz-document:
+    // https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
+    // but the spec is outdated and doesn't account for SPA sites
+    // so we only respect it for `url()` function
+    if (section.urls && (
+      section.urls.includes(url) ||
+      section.urls.includes(getUrlNoHash(url))
+    )) {
       return true;
     }
     if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {

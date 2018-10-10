@@ -34,6 +34,8 @@
     API.getSectionsByUrl(getMatchUrl(), {enabled: true})
       .then(result => {
         const styles = Object.values(result);
+        // CSS transition bug workaround: since we insert styles asynchronously,
+        // the browsers, especially Firefox, may apply all transitions on page load
         if (styles.some(s => s.code.includes('transition'))) {
           applyTransitionPatch();
         }

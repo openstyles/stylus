@@ -1,4 +1,4 @@
-/* global API_METHODS styleManager */
+/* global API_METHODS styleManager tryRegExp debounce */
 'use strict';
 
 (() => {
