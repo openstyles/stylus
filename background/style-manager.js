@@ -16,9 +16,10 @@ const styleManager = (() => {
   const preparing = prepare();
   const styles = new Map();
   const cachedStyleForUrl = createCache();
-  const compiledRe = createCache();
-  const compiledExclusion = createCache();
   const BAD_MATCHER = {test: () => false};
+  const compileRe = createCompiler(text => `^(${text})$`);
+  const compileSloppyRe = createCompiler(text => `^${text}$`);
+  const compileExclusion = createCompiler(buildGlob);
 
   handleLivePreviewConnections();
 
@@ -345,15 +346,13 @@ const styleManager = (() => {
 
   // TODO: report excluded styles and sloppy regexps?
   function getAppliedCode(url, data) {
-    if (!urlMatchStyle(url, data)) {
+    if (urlMatchStyle(url, data) !== true) {
       return;
     }
     let code = '';
     for (const section of data.sections) {
-      if (urlMatchSection(url, section)) {
-        if (!styleCodeEmpty(section.code)) {
-          code += section.code;
-        }
+      if (urlMatchSection(url, section) === true && !styleCodeEmpty(section.code)) {
+        code += section.code;
       }
     }
     return code;
@@ -378,9 +377,8 @@ const styleManager = (() => {
   }
 
   function urlMatchStyle(url, style) {
-    // TODO: show excluded style in popup?
     if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url))) {
-      return false;
+      return 'excluded';
     }
     return true;
   }
@@ -406,6 +404,9 @@ const styleManager = (() => {
     if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {
       return true;
     }
+    if (section.regexps && section.regexps.some(r => compileSloppyRe(r).test(url))) {
+      return 'sloppy';
+    }
     if (
       (!section.regexps || !section.regexps.length) &&
       (!section.urlPrefixes || !section.urlPrefixes.length) &&
@@ -417,28 +418,19 @@ const styleManager = (() => {
     return false;
   }
 
-  function compileRe(text) {
-    let re = compiledRe.get(text);
-    if (!re) {
-      re = tryRegExp(`^(${text})$`);
+  function createCompiler(compile) {
+    const cache = createCache();
+    return text => {
+      let re = cache.get(text);
       if (!re) {
-        re = BAD_MATCHER;
+        re = tryRegExp(compile(text));
+        if (!re) {
+          re = BAD_MATCHER;
+        }
+        cache.set(text, re);
       }
-      compiledRe.set(text, re);
-    }
-    return re;
-  }
-
-  function compileExclusion(text) {
-    let re = compiledExclusion.get(text);
-    if (!re) {
-      re = tryRegExp(buildGlob(text));
-      if (!re) {
-        re = BAD_MATCHER;
-      }
-      compiledExclusion.set(text, re);
-    }
-    return re;
+      return re;
+    };
   }
 
   function buildGlob(text) {
