@@ -463,7 +463,7 @@ const styleManager = (() => {
   }
 
   function getDomain(url) {
-    return url.match(/^[\w-]+:\/\/(?:[\w:-]+@)?([^:/#]+)/)[1];
+    return url.match(/^[\w-]+:\/+(?:[\w:-]+@)?([^:/#]+)/)[1];
   }
 
   function getUrlNoHash(url) {

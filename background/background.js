@@ -15,7 +15,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   editSave: styleManager.editSave,
 
   getTabUrlPrefix() {
-    return this.sender.tab.url.match(/^([\w-]+:\/\/[^/#]+)/)[1];
+    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
 
   getStyleFromDB: id =>
@@ -254,11 +254,11 @@ if (chrome.contextMenus) {
   createContextMenus(keys);
 }
 
+// reinject content scripts when the extension is reloaded/updated. Firefox
+// would handle this automatically.
 if (!FIREFOX) {
   reinjectContentScripts();
 }
-
-// FIXME: implement exposeIframes in apply.js
 
 // register hotkeys
 if (FIREFOX && browser.commands && browser.commands.update) {
@@ -305,7 +305,6 @@ function reinjectContentScripts() {
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {
-        // TODO: add a `msg.pingTab` API?
         msg.sendTab(id, {method: 'ping'})
           .catch(() => false)
           .then(pong => !pong && injectCS(cs, id));

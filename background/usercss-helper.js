@@ -163,7 +163,7 @@
     });
   }
 
-  function install({url, direct, downloaded, tab}, sender) {
+  function install({url, direct, downloaded, tab}, sender = this.sender) {
     tab = tab !== undefined ? tab : sender.tab;
     url = url || tab.url;
     if (direct && !downloaded) {
