@@ -1,6 +1,6 @@
 /* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
   openEditor debounce URLS ignoreChromeError queryTabs getTab
-  styleManager db msg navigatorUtil iconUtil workerUtil */
+  styleManager msg navigatorUtil iconUtil workerUtil */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -32,9 +32,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   },
   getPrefs: prefs.getAll,
 
-  // FIXME: who uses this?
-  healthCheck: () => db.exec().then(() => true),
-
   detectSloppyRegexps,
   openEditor,
 
@@ -46,16 +43,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   // that would fail otherwise if another extension forced the tab to open
   // in the foreground thus auto-closing the popup (in Chrome)
   openURL,
-
-  // FIXME: who use this?
-  closeTab: (msg, sender, respond) => {
-    chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
-      if (chrome.runtime.lastError && msg.tabId !== sender.tab.id) {
-        respond(new Error(chrome.runtime.lastError.message));
-      }
-    });
-    return true;
-  },
 
   optionsCustomizeHotkeys() {
     return browser.runtime.openOptionsPage()
