@@ -1,6 +1,6 @@
 /* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
   openEditor debounce URLS ignoreChromeError queryTabs getTab
-  usercss styleManager db msg navigatorUtil
+  usercss styleManager db msg navigatorUtil iconUtil
 */
 'use strict';
 
@@ -35,7 +35,10 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   detectSloppyRegexps,
   openEditor,
-  updateIcon,
+
+  updateIconBadge(count) {
+    return updateIconBadge(this.sender.tab.id, count);
+  },
 
   // exposed for stuff that requires followup sendMessage() like popup::openSettings
   // that would fail otherwise if another extension forced the tab to open
@@ -128,37 +131,20 @@ if (chrome.commands) {
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
 
-if (!chrome.browserAction ||
-    !['setIcon', 'setBadgeBackgroundColor', 'setBadgeText'].every(name => chrome.browserAction[name])) {
-  window.updateIcon = () => {};
-}
-
 const tabIcons = new Map();
 chrome.tabs.onRemoved.addListener(tabId => tabIcons.delete(tabId));
 chrome.tabs.onReplaced.addListener((added, removed) => tabIcons.delete(removed));
 
-// *************************************************************************
-// set the default icon displayed after a tab is created until webNavigation kicks in
-prefs.subscribe(['iconset'], () =>
-  updateIcon({
-    tab: {id: undefined},
-    styles: {},
-  }));
-
-navigatorUtil.onUrlChange(({url, tabId, frameId}) => {
-  if (frameId === 0) {
-    tabIcons.delete(tabId);
-    updateIcon({tab: {id: tabId, url}});
-  }
-});
-
 prefs.subscribe([
-  'show-badge',
   'disableAll',
   'badgeDisabled',
   'badgeNormal',
+], () => debounce(refreshIconBadgeColor));
+
+prefs.subscribe([
+  'show-badge',
   'iconset',
-], () => debounce(updateAllTabsIcon));
+], () => debounce(refreshAllIcons));
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -250,19 +236,28 @@ if (chrome.contextMenus) {
   createContextMenus(keys);
 }
 
-// *************************************************************************
-// [re]inject content scripts
-window.addEventListener('storageReady', function _() {
-  window.removeEventListener('storageReady', _);
+if (!FIREFOX) {
+  reinjectContentScripts();
+}
 
-  updateIcon({
-    tab: {id: undefined},
-    styles: {},
+// FIXME: implement exposeIframes in apply.js
+
+// register hotkeys
+if (FIREFOX && browser.commands && browser.commands.update) {
+  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
+  prefs.subscribe(hotkeyPrefs, (name, value) => {
+    try {
+      name = name.split('.')[1];
+      if (value.trim()) {
+        browser.commands.update({name, shortcut: value});
+      } else {
+        browser.commands.reset(name);
+      }
+    } catch (e) {}
   });
+}
 
-  // Firefox injects content script automatically
-  if (FIREFOX) return;
-
+function reinjectContentScripts() {
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
@@ -309,23 +304,6 @@ window.addEventListener('storageReady', function _() {
           setTimeout(pingCS, 0, cs, tab));
       }
     }));
-});
-
-// FIXME: implement exposeIframes in apply.js
-
-// register hotkeys
-if (FIREFOX && browser.commands && browser.commands.update) {
-  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
-  prefs.subscribe(hotkeyPrefs, (name, value) => {
-    try {
-      name = name.split('.')[1];
-      if (value.trim()) {
-        browser.commands.update({name, shortcut: value});
-      } else {
-        browser.commands.reset(name);
-      }
-    } catch (e) {}
-  });
 }
 
 function webNavUsercssInstallerFF(data) {
@@ -362,98 +340,55 @@ function webNavIframeHelperFF({tabId, frameId}) {
     });
 }
 
-
-function updateIcon({tab, styles}) {
-  if (tab.id < 0) {
+function updateIconBadge(tabId, count) {
+  let tabIcon = tabIcons.get(tabId);
+  if (!tabIcon) tabIcons.set(tabId, (tabIcon = {}));
+  if (tabIcon.count === count) {
     return;
   }
-  if (URLS.chromeProtectsNTP && tab.url === 'chrome://newtab/') {
-    styles = {};
+  tabIcon.count = count;
+  iconUtil.setBadgeText({
+    text: prefs.get('show-badge') && count ? String(count) : '',
+    tabId
+  });
+  if (!count) {
+    refreshIcon(tabId, tabIcon);
   }
-  if (styles) {
-    stylesReceived(styles);
+}
+
+function refreshIcon(tabId, icon) {
+  const disableAll = prefs.get('disableAll');
+  const iconset = prefs.get('iconset') === 1 ? 'light/' : '';
+  const postfix = disableAll ? 'x' : !icon.count ? 'w' : '';
+  const iconType = iconset + postfix;
+
+  if (icon.iconType === iconType) {
     return;
   }
-  styleManager.countStylesByUrl(tab.url, {enabled: true})
-    .then(count => stylesReceived({length: count}));
+  icon.iconType = iconset + postfix;
+  const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+  iconUtil.setIcon({
+    path: sizes.reduce(
+      (obj, size) => {
+        obj[size] = `/images/icon/${iconset}${size}${postfix}.png`;
+        return obj;
+      },
+      {}
+    ),
+    tabId
+  });
+}
 
-  function stylesReceived(styles) {
-    const disableAll = prefs.get('disableAll');
-    const postfix = disableAll ? 'x' : !styles.length ? 'w' : '';
-    const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
-    const text = prefs.get('show-badge') && styles.length ? String(styles.length) : '';
-    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-    let tabIcon = tabIcons.get(tab.id);
-    if (!tabIcon) tabIcons.set(tab.id, (tabIcon = {}));
+function refreshIconBadgeColor() {
+  const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
+  iconUtil.setBadgeBackgroundColor({
+    color
+  });
+}
 
-    if (tabIcon.iconType !== iconset + postfix) {
-      tabIcon.iconType = iconset + postfix;
-      const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
-      const usePath = tabIcons.get('usePath');
-      Promise.all(sizes.map(size => {
-        const src = `/images/icon/${iconset}${size}${postfix}.png`;
-        return usePath ? src : tabIcons.get(src) || loadIcon(src);
-      })).then(data => {
-        const imageKey = typeof data[0] === 'string' ? 'path' : 'imageData';
-        const imageData = {};
-        sizes.forEach((size, i) => (imageData[size] = data[i]));
-        chrome.browserAction.setIcon({
-          tabId: tab.id,
-          [imageKey]: imageData,
-        }, ignoreChromeError);
-      });
-    }
-    if (tab.id === undefined) return;
-
-    let defaultIcon = tabIcons.get(undefined);
-    if (!defaultIcon) tabIcons.set(undefined, (defaultIcon = {}));
-    if (defaultIcon.color !== color) {
-      defaultIcon.color = color;
-      chrome.browserAction.setBadgeBackgroundColor({color});
-    }
-
-    if (tabIcon.text === text) return;
-    tabIcon.text = text;
-    try {
-      // Chrome supports the callback since 67.0.3381.0, see https://crbug.com/451320
-      chrome.browserAction.setBadgeText({text, tabId: tab.id}, ignoreChromeError);
-    } catch (e) {
-      setTimeout(() => {
-        getTab(tab.id).then(realTab => {
-          // skip pre-rendered tabs
-          if (realTab.index >= 0) {
-            chrome.browserAction.setBadgeText({text, tabId: tab.id});
-          }
-        });
-      });
-    }
-  }
-
-  function loadIcon(src, resolve) {
-    if (!resolve) return new Promise(resolve => loadIcon(src, resolve));
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.src = src;
-    img.onload = () => {
-      const w = canvas.width = img.width;
-      const h = canvas.height = img.height;
-      ctx.clearRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
-      const data = ctx.getImageData(0, 0, w, h);
-      // Firefox breaks Canvas when privacy.resistFingerprinting=true, https://bugzil.la/1412961
-      let usePath = tabIcons.get('usePath');
-      if (usePath === undefined) {
-        usePath = data.data.every(b => b === 255);
-        tabIcons.set('usePath', usePath);
-      }
-      if (usePath) {
-        resolve(src);
-        return;
-      }
-      tabIcons.set(src, data);
-      resolve(data);
-    };
+function refreshAllIcons() {
+  for (const [tabId, icon] of tabIcons) {
+    refreshIcon(tabId, icon);
   }
 }
 
@@ -467,12 +402,6 @@ function onRuntimeMessage(msg, sender) {
   }
   const context = {msg, sender};
   return fn.apply(context, msg.args);
-}
-
-function updateAllTabsIcon() {
-  return queryTabs().then(tabs =>
-    tabs.map(t => updateIcon({tab: t}))
-  );
 }
 
 function openEditor({id}) {

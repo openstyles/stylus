@@ -2,11 +2,9 @@
 /* global msg API prefs */
 'use strict';
 
-(() => {
-  if (typeof window.applyOnMessage === 'function') {
-    // some weird bug in new Chrome: the content script gets injected multiple times
-    return;
-  }
+// some weird bug in new Chrome: the content script gets injected multiple times
+// define a constant so it throws when redefined
+const APPLY = (() => {
   const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
   var ID_PREFIX = 'stylus-';
   var ROOT = document.documentElement;
@@ -42,7 +40,6 @@
       });
   }
   msg.onTab(applyOnMessage);
-  window.applyOnMessage = applyOnMessage;
 
   if (!isOwnPage) {
     window.dispatchEvent(new CustomEvent(chrome.runtime.id));
@@ -139,10 +136,6 @@
         }
         break;
 
-      case 'styleApply':
-        applyStyles(request.styles);
-        break;
-
       case 'urlChanged':
         API.getSectionsByUrl(getMatchUrl(), {enabled: true})
           .then(buildSections)
@@ -187,6 +180,25 @@
     }
   }
 
+  function updateCount() {
+    if (window !== parent) {
+      // we don't care about iframes
+      return;
+    }
+    let count = 0;
+    for (const id of styleElements.keys()) {
+      if (!disabledElements.has(id)) {
+        count++;
+      }
+    }
+    // we have to send the tabId so we can't use `sendBg` that is used by `API`
+    msg.send({
+      method: 'invokeAPI',
+      name: 'updateIconBadge',
+      args: [count]
+    });
+  }
+
   function applyStyleState({id, enabled}) {
     const inCache = disabledElements.get(id) || styleElements.get(id);
     const inDoc = document.getElementById(ID_PREFIX + id);
@@ -197,7 +209,7 @@
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        API.getSectionsByUrl(getMatchUrl(), {id})
+        return API.getSectionsByUrl(getMatchUrl(), {id})
           .then(buildSections)
           .then(applyStyles);
       }
@@ -207,6 +219,7 @@
         docRootObserver.evade(() => inDoc.remove());
       }
     }
+    updateCount();
   }
 
   function removeStyle({id, retire = false}) {
@@ -224,12 +237,18 @@
         docRootObserver.evade(() => el.remove());
       }
     }
-    styleElements.delete(ID_PREFIX + id);
     disabledElements.delete(id);
     retiredStyleTimers.delete(id);
+    if (styleElements.delete(ID_PREFIX + id)) {
+      updateCount();
+    }
   }
 
   function applyStyles(styles) {
+    if (!styles.length) {
+      return;
+    }
+
     if (!document.documentElement) {
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
@@ -240,16 +259,12 @@
       return;
     }
 
-    const gotNewStyles = styles.length || styles.needTransitionPatch;
-    if (gotNewStyles) {
+    if (styles.length) {
       if (docRootObserver) {
         docRootObserver.stop();
       } else {
         initDocRootObserver();
       }
-    }
-
-    if (gotNewStyles) {
       for (const section of styles) {
         applySections(section.id, section.code);
       }
@@ -275,6 +290,9 @@
     }
 
     updateExposeIframes();
+    if (styles.length) {
+      updateCount();
+    }
   }
 
   function applySections(styleId, code) {

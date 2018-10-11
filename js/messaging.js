@@ -78,12 +78,6 @@ if (!IS_BG) {
   } else {
     if (VIVALDI) document.documentElement.classList.add('vivaldi');
   }
-  // TODO: remove once our manifest's minimum_chrome_version is 50+
-  // Chrome 49 doesn't report own extension pages in webNavigation apparently
-  if (CHROME && CHROME < 2661) {
-    getActiveTab().then(tab =>
-      window.API.updateIcon({tab}));
-  }
 }
 
 if (IS_BG) {
