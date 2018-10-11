@@ -279,6 +279,8 @@ if (FIREFOX && browser.commands && browser.commands.update) {
   });
 }
 
+msg.broadcastTab({method: 'backgroundReady'});
+
 function reinjectContentScripts() {
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';

@@ -15,24 +15,8 @@ const APPLY = (() => {
   var disabledElements = new Map();
   var docRewriteObserver;
   var docRootObserver;
+  const initializing = init();
 
-  // FIXME: styleViaAPI
-  // FIXME: getStylesFallback?
-  if (!chrome.app && document instanceof XMLDocument) {
-    API.styleViaAPI({action: 'styleApply'});
-  } else {
-    API.getSectionsByUrl(getMatchUrl(), {enabled: true})
-      .then(result => {
-        const styles = Object.values(result);
-        // CSS transition bug workaround: since we insert styles asynchronously,
-        // the browsers, especially Firefox, may apply all transitions on page load
-        applyStyles(styles, () => {
-          if (styles.some(s => s.code.includes('transition'))) {
-            applyTransitionPatch();
-          }
-        });
-      });
-  }
   msg.onTab(applyOnMessage);
 
   if (!isOwnPage) {
@@ -51,6 +35,25 @@ const APPLY = (() => {
   }
 
   const setStyleContent = createSetStyleContent();
+
+  function init() {
+    // FIXME: styleViaAPI
+    // FIXME: getStylesFallback?
+    if (!chrome.app && document instanceof XMLDocument) {
+      return API.styleViaAPI({action: 'styleApply'});
+    }
+    return API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+      .then(result => {
+        const styles = Object.values(result);
+        // CSS transition bug workaround: since we insert styles asynchronously,
+        // the browsers, especially Firefox, may apply all transitions on page load
+        applyStyles(styles, () => {
+          if (styles.some(s => s.code.includes('transition'))) {
+            applyTransitionPatch();
+          }
+        });
+      });
+  }
 
   function pageObject(target) {
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
@@ -209,6 +212,14 @@ const APPLY = (() => {
 
       case 'ping':
         return true;
+
+      case 'backgroundReady':
+        initializing.catch(err => {
+          if (msg.RX_NO_RECEIVER.test(err.message)) {
+            init();
+          }
+        });
+        break;
     }
   }
 

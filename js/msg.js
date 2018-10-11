@@ -27,6 +27,8 @@ const msg = (() => {
   const EXTENSION_URL = chrome.runtime.getURL('');
   let handler;
   const from_ = location.href.startsWith(EXTENSION_URL) ? 'extension' : 'content';
+  const RX_NO_RECEIVER = /Receiving end does not exist/;
+  const RX_PORT_CLOSED = /The message port closed before a response was received/;
   return {
     send,
     sendTab,
@@ -38,7 +40,9 @@ const msg = (() => {
     on,
     onTab,
     onExtension,
-    off
+    off,
+    RX_NO_RECEIVER,
+    RX_PORT_CLOSED
   };
 
   function send(data, target = 'extension') {
@@ -83,8 +87,8 @@ const msg = (() => {
 
   function broadcastError(err) {
     if (err.message && (
-      /Receiving end does not exist/.test(err.message) ||
-      /The message port closed before a response was received/.test(err.message)
+      RX_NO_RECEIVER.test(err.message) ||
+      RX_PORT_CLOSED.test(err.message)
     )) {
       return;
     }
