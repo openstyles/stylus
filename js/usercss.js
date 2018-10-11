@@ -18,7 +18,6 @@ const usercss = (() => {
     sourceCode = sourceCode.replace(/\r\n?/g, '\n');
 
     const style = {
-      reason: 'install',
       enabled: true,
       sourceCode,
       sections: []
