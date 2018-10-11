@@ -289,14 +289,14 @@ window.addEventListener('showStyles:done', function _() {
       return;
     }
     const md5Url = UPDATE_URL.replace('%', result.id);
-    API.countStyles({md5Url}).then(installedStyle => {
-      if (installedStyle) {
+    API.styleExists({md5Url}).then(exist => {
+      if (exist) {
         totalResults = Math.max(0, totalResults - 1);
       } else {
         processedResults.push(result);
         render();
       }
-      setTimeout(processNextResult, !installedStyle && DELAY_AFTER_FETCHING_STYLES);
+      setTimeout(processNextResult, !exist && DELAY_AFTER_FETCHING_STYLES);
     });
   }
 

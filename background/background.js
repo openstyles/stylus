@@ -10,13 +10,13 @@ var backgroundWorker = workerUtil.createWorker({
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getSectionsByUrl: styleManager.getSectionsByUrl,
-  getSectionsById: styleManager.getSectionsById,
   getStylesInfo: styleManager.getStylesInfo,
+  getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
   toggleStyle: styleManager.toggleStyle,
   deleteStyle: styleManager.deleteStyle,
-  getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
   installStyle: styleManager.installStyle,
   editSave: styleManager.editSave,
+  styleExists: styleManager.styleExists,
 
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];

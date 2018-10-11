@@ -34,8 +34,7 @@ const styleManager = (() => {
     toggleStyle,
     getAllStyles, // used by import-export
     getStylesInfoByUrl, // used by popup
-    countStyles,
-    countStylesByUrl, // used by icon badge
+    styleExists,
   });
 
   function handleLivePreviewConnections() {
@@ -112,16 +111,8 @@ const styleManager = (() => {
       .map(s => getStyleWithNoCode(s.data));
   }
 
-  function countStyles(filter) {
-    if (!filter) {
-      return styles.size;
-    }
-    if (filter.id) {
-      return styles.has(filter.id) ? 1 : 0;
-    }
-    return [...styles.values()]
-      .filter(s => filterMatch(filter, s.data))
-      .length;
+  function styleExists(filter) {
+    return [...styles.value()].some(s => filterMatch(filter, s.data));
   }
 
   function filterMatch(filter, target) {
@@ -289,11 +280,6 @@ const styleManager = (() => {
     const sections = getSectionsByUrl(url);
     return Object.keys(sections)
       .map(k => getStyleWithNoCode(styles.get(Number(k)).data));
-  }
-
-  function countStylesByUrl(url, filter) {
-    const sections = getSectionsByUrl(url, filter);
-    return Object.keys(sections).length;
   }
 
   function getSectionsByUrl(url, filter) {
