@@ -1,7 +1,7 @@
 /* global dirtyReporter showHelp prefs ignoreChromeError
   CodeMirror propertyToCss
   regExpTester linter createLivePreview showCodeMirrorPopup
-  sectionsToMozFormat editorWorker messageBox clipString beautify
+  sectionsToMozFormat messageBox clipString beautify
   rerouteHotkeys cmFactory CssToProperty template $ $$ $create t FIREFOX API
   debounce tryRegExp
 */

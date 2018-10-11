@@ -1,8 +1,8 @@
 /* global usercssMeta colorConverter */
+/* exported metaParser */
 'use strict';
 
-// eslint-disable-next-line no-var
-var metaParser = (() => {
+const metaParser = (() => {
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
   const options = {

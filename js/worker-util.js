@@ -1,8 +1,8 @@
 /* global importScripts */
+/* exported workerUtil */
 'use strict';
 
-// eslint-disable-next-line no-var
-var workerUtil = (() => {
+const workerUtil = (() => {
   const loadedScripts = new Set();
   return {createWorker, createAPI, loadScript, cloneError};
 

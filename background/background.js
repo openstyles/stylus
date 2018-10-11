@@ -1,6 +1,6 @@
 /* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
   openEditor debounce URLS ignoreChromeError queryTabs getTab
-  usercss styleManager db msg navigatorUtil iconUtil */
+  styleManager db msg navigatorUtil iconUtil workerUtil */
 'use strict';
 
 // eslint-disable-next-line no-var

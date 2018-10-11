@@ -1,4 +1,4 @@
-/* global loadScript semverCompare colorConverter styleCodeEmpty backgroundWorker */
+/* global backgroundWorker */
 /* exported usercss */
 'use strict';
 

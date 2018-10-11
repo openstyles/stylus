@@ -1,4 +1,4 @@
-/* global linter API editorWorker */
+/* global linter editorWorker */
 /* exported createMetaCompiler */
 'use strict';
 

@@ -1,9 +1,9 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
-  closeCurrentTab messageBox debounce
+  closeCurrentTab messageBox debounce workerUtil
   beautify
   moveFocus msg createSectionsEditor rerouteHotkeys */
-/* exported showCodeMirrorPopup */
+/* exported showCodeMirrorPopup editorWorker */
 'use strict';
 
 const editorWorker = workerUtil.createWorker({

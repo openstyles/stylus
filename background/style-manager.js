@@ -1,5 +1,5 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest db tryRegExp
+/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
   getStyleWithNoCode msg */
 /* exported styleManager */
 'use strict';
@@ -351,22 +351,12 @@ const styleManager = (() => {
     let code = '';
     for (const section of data.sections) {
       if (urlMatchSection(url, section)) {
-        if (!isCodeEmpty(section.code)) {
+        if (!styleCodeEmpty(section.code)) {
           code += section.code;
         }
       }
     }
     return code;
-  }
-
-  function isCodeEmpty(code) {
-    const rx = /\s+|\/\*[\s\S]*?\*\/|@namespace[^;]+;|@charset[^;]+;/giy;
-    while (rx.exec(code)) {
-      if (rx.lastIndex === code.length) {
-        return true;
-      }
-    }
-    return false;
   }
 
   function prepare() {
