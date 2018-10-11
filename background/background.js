@@ -146,6 +146,8 @@ prefs.subscribe([
   'iconset',
 ], () => debounce(refreshAllIcons));
 
+prefs.initializing.then(refreshIconBadgeColor);
+
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
   if (reason !== 'update') return;

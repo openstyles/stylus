@@ -1,5 +1,6 @@
 /* eslint no-var: 0 */
 /* global msg API prefs */
+/* exported APPLY */
 'use strict';
 
 // some weird bug in new Chrome: the content script gets injected multiple times
@@ -12,16 +13,8 @@ const APPLY = (() => {
   var disableAll = false;
   var styleElements = new Map();
   var disabledElements = new Map();
-  var retiredStyleTimers = new Map();
   var docRewriteObserver;
   var docRootObserver;
-
-  // FF59+ bug workaround
-  // See https://github.com/openstyles/stylus/issues/461
-  // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
-  // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
-  const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
-  const pageContextQueue = [];
 
   // FIXME: styleViaAPI
   // FIXME: getStylesFallback?
@@ -33,16 +26,19 @@ const APPLY = (() => {
         const styles = Object.values(result);
         // CSS transition bug workaround: since we insert styles asynchronously,
         // the browsers, especially Firefox, may apply all transitions on page load
-        if (styles.some(s => s.code.includes('transition'))) {
-          applyTransitionPatch();
-        }
-        applyStyles(styles);
+        applyStyles(styles, () => {
+          if (styles.some(s => s.code.includes('transition'))) {
+            applyTransitionPatch();
+          }
+        });
       });
   }
   msg.onTab(applyOnMessage);
 
   if (!isOwnPage) {
-    window.dispatchEvent(new CustomEvent(chrome.runtime.id));
+    window.dispatchEvent(new CustomEvent(chrome.runtime.id, {
+      detail: {method: 'orphan'}
+    }));
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
@@ -52,6 +48,66 @@ const APPLY = (() => {
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
   if (window !== parent) {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
+  }
+
+  const setStyleContent = createSetStyleContent();
+
+  function createSetStyleContent() {
+    // FF59+ bug workaround
+    // See https://github.com/openstyles/stylus/issues/461
+    // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
+    // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
+    // const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
+    const EVENT_NAME = chrome.runtime.id;
+    if (CHROME || isOwnPage || Event.prototype.getPreventDefault || !injectPageScript()) {
+      return (el, content) => {
+        // FIXME: do we have to keep el.sheet.disabled?
+        el.textContent = content;
+      };
+    }
+    return (el, content) => {
+      window.dispatchEvent(EVENT_NAME, new CustomEvent({detail: {
+        method: 'setStyleContent',
+        id: el.id,
+        content
+      }}));
+    };
+
+    function injectPageScript() {
+      const script = document.createElement('script');
+      const scriptContent = EVENT_NAME => {
+        document.currentScript.remove();
+        window.dispatchEvent(new CustomEvent(EVENT_NAME, {
+          detail: {method: 'pageScriptOK'}
+        }));
+        window.addEventListener(EVENT_NAME, function handler(e) {
+          const {method, id, content} = e.detail;
+          if (method === 'setStyleContent') {
+            const el = document.getElementById(id);
+            if (!el) {
+              return;
+            }
+            const disabled = el.sheet.disabled;
+            el.textContent = content;
+            el.sheet.disabled = disabled;
+          } else if (method === 'orphan') {
+            window.removeEventListener(EVENT_NAME, handler);
+          }
+        }, true);
+      };
+      script.text = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
+      let ok = false;
+      const check = e => {
+        if (e.detail.method === 'pageScriptOK') {
+          ok = true;
+        }
+      };
+      window.addEventListener(EVENT_NAME, check, true);
+      ROOT.appendChild(script);
+      window.removeEventListener(EVENT_NAME, check, true);
+      script.remove();
+      return ok;
+    }
   }
 
   function getMatchUrl() {
@@ -222,30 +278,20 @@ const APPLY = (() => {
     updateCount();
   }
 
-  function removeStyle({id, retire = false}) {
+  function removeStyle({id}) {
     const el = document.getElementById(ID_PREFIX + id);
     if (el) {
-      if (retire) {
-        // to avoid page flicker when the style is updated
-        // instead of removing it immediately we rename its ID and queue it
-        // to be deleted in applyStyles after a new version is fetched and applied
-        const deadID = id + '-ghost';
-        el.id = ID_PREFIX + deadID;
-        // in case something went wrong and new style was never applied
-        retiredStyleTimers.set(deadID, setTimeout(removeStyle, 1000, {id: deadID}));
-      } else {
-        docRootObserver.evade(() => el.remove());
-      }
+      docRootObserver.evade(() => el.remove());
     }
     disabledElements.delete(id);
-    retiredStyleTimers.delete(id);
-    if (styleElements.delete(ID_PREFIX + id)) {
+    if (styleElements.delete(id)) {
       updateCount();
     }
   }
 
-  function applyStyles(styles) {
+  function applyStyles(styles, done) {
     if (!styles.length) {
+      done();
       return;
     }
 
@@ -253,23 +299,21 @@ const APPLY = (() => {
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
           observer.disconnect();
-          applyStyles(styles);
+          applyStyles(styles, done);
         }
       }).observe(document, {childList: true});
       return;
     }
 
-    if (styles.length) {
-      if (docRootObserver) {
-        docRootObserver.stop();
-      } else {
-        initDocRootObserver();
-      }
-      for (const section of styles) {
-        applySections(section.id, section.code);
-      }
-      docRootObserver.firstStart();
+    if (docRootObserver) {
+      docRootObserver.stop();
+    } else {
+      initDocRootObserver();
     }
+    for (const section of styles) {
+      applySections(section.id, section.code);
+    }
+    docRootObserver.firstStart();
 
     // FIXME
     // if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
@@ -280,34 +324,17 @@ const APPLY = (() => {
       initDocRewriteObserver();
     }
 
-    if (retiredStyleTimers.size) {
-      setTimeout(() => {
-        for (const [id, timer] of retiredStyleTimers.entries()) {
-          removeStyle({id});
-          clearTimeout(timer);
-        }
-      });
-    }
-
     updateExposeIframes();
-    if (styles.length) {
-      updateCount();
-    }
+    updateCount();
+    done();
   }
 
-  function applySections(styleId, code) {
-    const id = ID_PREFIX + styleId;
-    let el = styleElements.get(id) || document.getElementById(id);
-    if (el && el.textContent !== code) {
-      if (CHROME < 3321) {
-        // workaround for Chrome devtools bug fixed in v65
-        el.remove();
-        el = null;
-      } else if (FF_BUG461) {
-        pageContextQueue.push({id: el.id, el, code});
-      } else {
-        el.textContent = code;
-      }
+  function applySections(id, code) {
+    let el = styleElements.get(id) || document.getElementById(ID_PREFIX + id);
+    if (el && CHROME < 3321) {
+      // workaround for Chrome devtools bug fixed in v65
+      el.remove();
+      el = null;
     }
     if (!el) {
       if (document.documentElement instanceof SVGSVGElement) {
@@ -320,19 +347,17 @@ const APPLY = (() => {
         // HTML document style; also works on HTML-embedded SVG
         el = document.createElement('style');
       }
-      el.id = id;
+      el.id = ID_PREFIX + id;
       el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
-      if (FF_BUG461) {
-        pageContextQueue.push({id: el.id, el, code});
-      } else {
-        el.textContent = code;
-      }
       addStyleElement(el);
     }
+    if (el.textContent !== code) {
+      setStyleContent(el, code);
+    }
     styleElements.set(id, el);
-    disabledElements.delete(Number(styleId));
+    disabledElements.delete(id);
     return el;
   }
 
@@ -370,12 +395,12 @@ const APPLY = (() => {
     oldStyles.forEach(el => (el.id += '-ghost'));
     styleElements.clear();
     disabledElements.clear();
-    [...retiredStyleTimers.values()].forEach(clearTimeout);
-    retiredStyleTimers.clear();
     applyStyles(newStyles);
+    const removeOld = () => oldStyles.forEach(el => el.remove());
     if (docRewriteObserver) {
-      docRootObserver.evade(() =>
-        oldStyles.forEach(el => el.remove()));
+      docRootObserver.evade(removeOld);
+    } else {
+      removeOld();
     }
   }
 
@@ -400,7 +425,10 @@ const APPLY = (() => {
     return parseInt(el.id.substr(ID_PREFIX.length));
   }
 
-  function orphanCheck() {
+  function orphanCheck(e) {
+    if (e && e.detail.method !== 'orphan') {
+      return;
+    }
     if (chrome.i18n && chrome.i18n.getUILanguage()) {
       return true;
     }
