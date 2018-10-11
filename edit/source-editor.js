@@ -249,7 +249,7 @@ function createSourceEditor(style) {
       .then(replaceStyle)
       .catch(err => {
         if (err.handled) return;
-        if (err.message === t('styleMissingMeta', 'name')) {
+        if (err.code === 'missingMandatory' && err.args.includes('name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
             chromeSync.setLZValue('usercssTemplate', code)
               .then(() => chromeSync.getLZValue('usercssTemplate'))
@@ -258,7 +258,7 @@ function createSourceEditor(style) {
         }
         const contents = Array.isArray(err) ?
           $create('pre', err.join('\n')) :
-          [String(err)];
+          [err.message || String(err)];
         if (Number.isInteger(err.index)) {
           const pos = cm.posFromIndex(err.index);
           contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;

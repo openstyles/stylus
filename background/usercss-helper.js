@@ -42,14 +42,13 @@
     if (style.usercssData) {
       return Promise.resolve(style);
     }
-    try {
-      const {sourceCode} = style;
-      // allow sourceCode to be normalized
-      delete style.sourceCode;
-      return Promise.resolve(Object.assign(usercss.buildMeta(sourceCode), style));
-    } catch (e) {
-      return Promise.reject(e);
-    }
+
+    // allow sourceCode to be normalized
+    const {sourceCode} = style;
+    delete style.sourceCode;
+
+    return usercss.buildMeta(sourceCode)
+      .then(newStyle => Object.assign(newStyle, style));
   }
 
   function assignVars(style) {
@@ -62,7 +61,8 @@
           style.id = dup.id;
           if (style.reason !== 'config') {
             // preserve style.vars during update
-            usercss.assignVars(style, dup);
+            return usercss.assignVars(style, dup)
+              .then(() => style);
           }
         }
         return style;
@@ -95,7 +95,8 @@
     function doBuild(style) {
       if (vars) {
         const oldStyle = {usercssData: {vars}};
-        usercss.assignVars(style, oldStyle);
+        return usercss.assignVars(style, oldStyle)
+          .then(() => usercss.buildCode(style));
       }
       return usercss.buildCode(style);
     }

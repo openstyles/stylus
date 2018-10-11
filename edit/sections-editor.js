@@ -432,7 +432,7 @@ function createSectionsEditor(style) {
 
     function doImport({replaceOldStyle = false}) {
       lockPageUI(true);
-      editorWorker.parseMozFormat({code: popup.codebox.getValue().trim()})
+      API.parseCss({code: popup.codebox.getValue().trim()})
         .then(({sections, errors}) => {
           // shouldn't happen but just in case
           if (!sections.length || errors.length) {

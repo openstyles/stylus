@@ -1,40 +1,89 @@
+/* global importScripts workerUtil CSSLint require metaParser */
 /* exported editorWorker */
 'use strict';
 
-// eslint-disable-next-line no-var
-var editorWorker = (() => {
-  let worker;
-  return new Proxy({}, {
-    get: (target, prop) =>
-      (...args) => {
-        if (!worker) {
-          worker = createWorker();
-        }
-        return worker.invoke(prop, args);
+importScripts('/js/worker-util.js');
+const {createAPI, loadScript} = workerUtil;
+
+createAPI({
+  csslint: (code, config) => {
+    loadScript('/vendor-overwrites/csslint/parserlib.js', '/vendor-overwrites/csslint/csslint.js');
+    return CSSLint.verify(code, config).messages
+      .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
+  },
+  stylelint: (code, config) => {
+    loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
+    return require('stylelint').lint({code, config});
+  },
+  metalint: code => {
+    loadScript(
+      '/vendor/usercss-meta/usercss-meta.min.js',
+      '/vendor-overwrites/colorpicker/colorconverter.js',
+      '/js/meta-parser.js'
+    );
+    const result = metaParser.lint(code);
+    // extract needed info
+    result.errors = result.errors.map(err =>
+      ({
+        code: err.code,
+        args: err.args,
+        message: err.message,
+        index: err.index
+      })
+    );
+    return result;
+  },
+  getStylelintRules,
+  getCsslintRules
+});
+
+function getCsslintRules() {
+  loadScript('/vendor-overwrites/csslint/csslint.js');
+  return CSSLint.getRules().map(rule => {
+    const output = {};
+    for (const [key, value] of Object.entries(rule)) {
+      if (typeof value !== 'function') {
+        output[key] = value;
       }
+    }
+    return output;
   });
+}
 
-  function createWorker() {
-    let id = 0;
-    const pendingResponse = new Map();
-    const worker = new Worker('/edit/editor-worker-body.js');
-    worker.onmessage = e => {
-      const message = e.data;
-      pendingResponse.get(message.id)[message.error ? 'reject' : 'resolve'](message.data);
-      pendingResponse.delete(message.id);
-    };
-    return {invoke};
-
-    function invoke(action, args) {
-      return new Promise((resolve, reject) => {
-        pendingResponse.set(id, {resolve, reject});
-        worker.postMessage({
-          id,
-          action,
-          args
-        });
-        id++;
-      });
+function getStylelintRules() {
+  loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
+  const stylelint = require('stylelint');
+  const options = {};
+  const rxPossible = /\bpossible:("(?:[^"]*?)"|\[(?:[^\]]*?)\]|\{(?:[^}]*?)\})/g;
+  const rxString = /"([-\w\s]{3,}?)"/g;
+  for (const id of Object.keys(stylelint.rules)) {
+    const ruleCode = String(stylelint.rules[id]);
+    const sets = [];
+    let m, mStr;
+    while ((m = rxPossible.exec(ruleCode))) {
+      const possible = m[1];
+      const set = [];
+      while ((mStr = rxString.exec(possible))) {
+        const s = mStr[1];
+        if (s.includes(' ')) {
+          set.push(...s.split(/\s+/));
+        } else {
+          set.push(s);
+        }
+      }
+      if (possible.includes('ignoreAtRules')) {
+        set.push('ignoreAtRules');
+      }
+      if (possible.includes('ignoreShorthands')) {
+        set.push('ignoreShorthands');
+      }
+      if (set.length) {
+        sets.push(set);
+      }
+    }
+    if (sets.length) {
+      options[id] = sets;
     }
   }
-})();
+  return options;
+}

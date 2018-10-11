@@ -1,8 +1,12 @@
 /* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
   openEditor debounce URLS ignoreChromeError queryTabs getTab
-  usercss styleManager db msg navigatorUtil iconUtil
-*/
+  usercss styleManager db msg navigatorUtil iconUtil */
 'use strict';
+
+// eslint-disable-next-line no-var
+var backgroundWorker = workerUtil.createWorker({
+  url: '/background/background-worker.js'
+});
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getSectionsByUrl: styleManager.getSectionsByUrl,
@@ -26,7 +30,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     return download(msg.url, msg);
   },
   parseCss({code}) {
-    return usercss.invokeWorker({action: 'parse', code});
+    return backgroundWorker.parseMozFormat({code});
   },
   getPrefs: prefs.getAll,
 

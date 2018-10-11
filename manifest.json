@@ -27,7 +27,8 @@
       "js/messaging.js",
       "js/msg.js",
       "js/storage-util.js",
-      "js/sections-equal.js",
+      "js/sections-util.js",
+      "js/worker-util.js",
       "background/storage.js",
       "js/prefs.js",
       "js/script-loader.js",
@@ -43,8 +44,7 @@
       "background/search-db.js",
       "background/update.js",
       "background/openusercss-api.js",
-      "vendor/semver-bundle/semver.js",
-      "vendor-overwrites/colorpicker/colorconverter.js"
+      "vendor/semver-bundle/semver.js"
     ]
   },
   "commands": {

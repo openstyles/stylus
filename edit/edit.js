@@ -2,10 +2,13 @@
   createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce
   beautify
-  moveFocus msg createSectionsEditor rerouteHotkeys
-*/
+  moveFocus msg createSectionsEditor rerouteHotkeys */
 /* exported showCodeMirrorPopup */
 'use strict';
+
+const editorWorker = workerUtil.createWorker({
+  url: '/edit/editor-worker.js'
+});
 
 let saveSizeOnClose;
 
