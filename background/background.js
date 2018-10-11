@@ -142,11 +142,27 @@ prefs.subscribe([
 ], () => debounce(refreshIconBadgeColor));
 
 prefs.subscribe([
-  'show-badge',
+  'show-badge'
+], () => debounce(refreshIconBadgeText));
+
+prefs.subscribe([
+  'disableAll',
   'iconset',
 ], () => debounce(refreshAllIcons));
 
-prefs.initializing.then(refreshIconBadgeColor);
+prefs.initializing.then(() => {
+  refreshIconBadgeColor();
+  refreshAllIconsBadgeText();
+  refreshAllIcons();
+});
+
+navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
+  if (type === 'committed' && !frameId) {
+    // it seems that the tab icon would be reset when pressing F5. We
+    // invalidate the cache here so it would be refreshed.
+    tabIcons.delete(tabId);
+  }
+});
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -348,14 +364,19 @@ function updateIconBadge(tabId, count) {
   if (tabIcon.count === count) {
     return;
   }
+  const oldCount = tabIcon.count;
   tabIcon.count = count;
-  iconUtil.setBadgeText({
-    text: prefs.get('show-badge') && count ? String(count) : '',
-    tabId
-  });
-  if (!count) {
+  refreshIconBadgeText(tabId, tabIcon);
+  if (Boolean(oldCount) !== Boolean(count)) {
     refreshIcon(tabId, tabIcon);
   }
+}
+
+function refreshIconBadgeText(tabId, icon) {
+  iconUtil.setBadgeText({
+    text: prefs.get('show-badge') && icon.count ? String(icon.count) : '',
+    tabId
+  });
 }
 
 function refreshIcon(tabId, icon) {
@@ -391,6 +412,13 @@ function refreshIconBadgeColor() {
 function refreshAllIcons() {
   for (const [tabId, icon] of tabIcons) {
     refreshIcon(tabId, icon);
+  }
+  refreshIcon(null, {}); // default icon
+}
+
+function refreshAllIconsBadgeText() {
+  for (const [tabId, icon] of tabIcons) {
+    refreshIconBadgeText(tabId, icon);
   }
 }
 

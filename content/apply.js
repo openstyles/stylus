@@ -74,6 +74,7 @@ const APPLY = (() => {
     };
 
     function injectPageScript() {
+      // FIXME: does it work with XML?
       const script = document.createElement('script');
       const scriptContent = EVENT_NAME => {
         document.currentScript.remove();
@@ -252,7 +253,7 @@ const APPLY = (() => {
       method: 'invokeAPI',
       name: 'updateIconBadge',
       args: [count]
-    });
+    }).catch(() => {});
   }
 
   function applyStyleState({id, enabled}) {
@@ -291,7 +292,9 @@ const APPLY = (() => {
 
   function applyStyles(styles, done) {
     if (!styles.length) {
-      done();
+      if (done) {
+        done();
+      }
       return;
     }
 
@@ -326,7 +329,9 @@ const APPLY = (() => {
 
     updateExposeIframes();
     updateCount();
-    done();
+    if (done) {
+      done();
+    }
   }
 
   function applySections(id, code) {
