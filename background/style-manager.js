@@ -386,7 +386,6 @@ const styleManager = (() => {
   }
 
   function urlMatchSection(url, section) {
-    // FIXME: match sub domains?
     const domain = getDomain(url);
     if (section.domains && section.domains.some(d => d === domain || domain.endsWith(`.${d}`))) {
       return true;
