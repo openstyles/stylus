@@ -293,6 +293,9 @@ const msg = (() => {
 
   // {type, error, data, id}
   function unwrapData(result) {
+    if (result === undefined) {
+      throw new Error('Receiving end does not exist');
+    }
     if (result.type === 'exchange') {
       const pending = exchangeGet(result);
       if (pending) {
