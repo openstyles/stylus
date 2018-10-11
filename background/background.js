@@ -17,13 +17,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   installStyle: styleManager.installStyle,
   editSave: styleManager.editSave,
   styleExists: styleManager.styleExists,
+  getStyle: styleManager.get,
 
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
-
-  getStyleFromDB: id =>
-    db.exec('get', id).then(event => event.target.result),
 
   download(msg) {
     delete msg.method;

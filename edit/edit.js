@@ -328,7 +328,7 @@ function onRuntimeMessage(request) {
         // code-less style from notifyAllTabs
         const {sections, id} = request.style;
         ((sections && sections[0] || {}).code === null
-          ? API.getStyleFromDB(id)
+          ? API.getStyle(id)
           : Promise.resolve([request.style])
         ).then(([style]) => {
           editor.replaceStyle(style, request.codeIsUpdated);
@@ -418,7 +418,7 @@ function initStyleData() {
 
   function fetchStyle() {
     if (id) {
-      return API.getStyleFromDB(id);
+      return API.getStyle(id);
     }
     return Promise.resolve(createEmptyStyle());
   }
