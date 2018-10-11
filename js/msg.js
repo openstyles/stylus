@@ -124,7 +124,7 @@ const msg = (() => {
           if (isExtension) {
             exchangeSet(message);
           }
-          let request = tabSend(tab.id, message, options);
+          let request = tabSend(tab.id, message, options).then(unwrapData);
           if (message.id) {
             request = withCleanup(request, () => bg._msg.storage.delete(message.id));
           }
