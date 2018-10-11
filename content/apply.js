@@ -37,7 +37,7 @@ const APPLY = (() => {
 
   if (!isOwnPage) {
     window.dispatchEvent(new CustomEvent(chrome.runtime.id, {
-      detail: {method: 'orphan'}
+      detail: pageObject({method: 'orphan'})
     }));
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
@@ -51,6 +51,13 @@ const APPLY = (() => {
   }
 
   const setStyleContent = createSetStyleContent();
+
+  function pageObject(target) {
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
+    const obj = new window.Object();
+    Object.assign(obj, target);
+    return obj;
+  }
 
   function createSetStyleContent() {
     // FF59+ bug workaround
@@ -66,11 +73,12 @@ const APPLY = (() => {
       };
     }
     return (el, content) => {
-      window.dispatchEvent(EVENT_NAME, new CustomEvent({detail: {
+      const detail = pageObject({
         method: 'setStyleContent',
         id: el.id,
         content
-      }}));
+      });
+      window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
     };
 
     function injectPageScript() {
@@ -416,14 +424,15 @@ const APPLY = (() => {
     const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
     document.documentElement.classList.add(className);
     applySections(0, `
-        ${docId}.${className}:root * {
-          transition: none !important;
-        }
-      `);
-    setTimeout(() => {
-      removeStyle({id: 0});
-      document.documentElement.classList.remove(className);
-    });
+      ${docId}.${CSS.escape(className)}:root * {
+        transition: none !important;
+      }
+    `);
+    // repaint
+    // eslint-disable-next-line no-unused-expressions
+    document.documentElement.offsetWidth;
+    removeStyle({id: 0});
+    document.documentElement.classList.remove(className);
   }
 
   function getStyleId(el) {
