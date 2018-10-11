@@ -1,5 +1,12 @@
 /* global tryCatch chromeLocal ignoreChromeError */
 /* exported db */
+/*
+Initialize a database. There are some problems using IndexedDB in Firefox:
+https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
+
+Some of them are fixed in FF59:
+https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
+*/
 'use strict';
 
 const db = (() => {
