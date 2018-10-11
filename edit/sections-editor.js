@@ -547,24 +547,32 @@ function createSectionsEditor(style) {
     focusOn = 0,
     done
   }) {
-    if (!originalSections.length) {
-      setGlobalProgress();
-      if (focusOn !== false) {
-        sections[focusOn].cm.focus();
+    let renderIndex = sections.length;
+    container.classList.add('hidden');
+    chunk();
+
+    function chunk() {
+      if (!originalSections.length) {
+        setGlobalProgress();
+        if (focusOn !== false) {
+          sections[focusOn].cm.focus();
+        }
+        container.classList.remove('hidden');
+        for (; renderIndex < sections.length; renderIndex++) {
+          sections[renderIndex].cm.refreshOnView();
+        }
+        if (done) {
+          done();
+        }
+        return;
       }
-      if (done) {
-        done();
+      const t0 = performance.now();
+      while (originalSections.length && performance.now() - t0 < 100) {
+        insertSectionAfter(originalSections.shift());
       }
-      return;
+      setGlobalProgress(total - originalSections.length, total);
+      setTimeout(chunk);
     }
-    insertSectionAfter(originalSections.shift());
-    setGlobalProgress(total - originalSections.length, total);
-    setTimeout(initSection, 0, {
-      sections: originalSections,
-      total,
-      focusOn,
-      done
-    });
   }
 
   function removeSection(section) {

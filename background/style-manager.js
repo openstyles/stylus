@@ -44,7 +44,6 @@ const styleManager = (() => {
       }
       let id;
       port.onMessage.addListener(data => {
-        console.log(data);
         if (!id) {
           id = data.id;
         }
