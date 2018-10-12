@@ -10,7 +10,8 @@ const msg = (() => {
     window._msg = {
       id: 1,
       storage: new Map(),
-      handler: null
+      handler: null,
+      clone: deepCopy
     };
   }
   const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
@@ -77,8 +78,9 @@ const msg = (() => {
           throw new Error('there is no bg handler');
         }
         const handlers = bg._msg.handler.extension.concat(bg._msg.handler.both);
-        // FIXME: do we want to deepCopy `data`?
-        return Promise.resolve(executeCallbacks(handlers, data, {url: location.href}))
+        // in FF, the object would become a dead object when the window
+        // is closed, so we have to clone the object into background.
+        return Promise.resolve(executeCallbacks(handlers, bg._msg.clone(data), {url: location.href}))
           .then(deepCopy);
       }
       return send(data);
