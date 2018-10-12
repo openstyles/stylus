@@ -1,10 +1,9 @@
-/* global messageBox handleUpdate handleDelete styleSectionsEqual getOwnTab API
+/* global messageBox styleSectionsEqual getOwnTab API
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
-
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -61,9 +60,9 @@ function importFromString(jsonString, oldStyles) {
   if (!oldStyles) {
     return API.getStylesInfo().then(styles => importFromString(jsonString, styles));
   }
-  const json = tryJSONparse(jsonString) || [];
-  if (typeof json.slice !== 'function') {
-    json.length = 0;
+  const json = tryJSONparse(jsonString);
+  if (!Array.isArray(json)) {
+    return Promise.reject(new Error('the backup is not a valid JSON file'));
   }
   const oldStylesById = new Map(
     oldStyles.map(style => [style.id, style]));
@@ -84,24 +83,19 @@ function importFromString(jsonString, oldStyles) {
   const renderQueue = [];
   const RENDER_NAP_TIME_MAX = 1000; // ms
   const RENDER_QUEUE_MAX = 50; // number of styles
-  const SAVE_OPTIONS = {reason: 'import', notify: false};
+  return proceed();
 
-  return new Promise(proceed);
-
-  function proceed(resolve) {
+  function proceed() {
     while (index < json.length) {
       const item = json[index++];
       const info = analyze(item);
-      if (info) {
-        // using saveStyle directly since json was parsed in background page context
-        // FIXME: rewrite importStyle
-        return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
-          .then(style => account({style, info, resolve}));
+      if (!info) {
+        continue;
       }
+      return API.importStyle(item)
+        .then(style => account({style, info}));
     }
-    renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
-    renderQueue.length = 0;
-    done(resolve);
+    return done();
   }
 
   function analyze(item) {
@@ -148,17 +142,19 @@ function importFromString(jsonString, oldStyles) {
         .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
   }
 
-  function account({style, info, resolve}) {
+  function account({style, info}) {
     renderQueue.push(style);
     if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
     || renderQueue.length > RENDER_QUEUE_MAX) {
-      renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
       setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
       renderQueue.length = 0;
       lastRenderTime = performance.now();
     }
-    setTimeout(proceed, 0, resolve);
-    const {oldStyle, metaEqual, codeEqual} = info;
+    updateStats(style, info);
+    return proceed();
+  }
+
+  function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
     if (!oldStyle) {
       stats.added.names.push(style.name);
       stats.added.ids.push(style.id);
@@ -178,42 +174,41 @@ function importFromString(jsonString, oldStyles) {
     stats.metaOnly.ids.push(style.id);
   }
 
-  function done(resolve) {
+  function done() {
     const numChanged = stats.metaAndCode.names.length +
       stats.metaOnly.names.length +
       stats.codeOnly.names.length +
       stats.added.names.length;
-    Promise.resolve(numChanged && API.refreshAllTabs()).then(() => {
-      const report = Object.keys(stats)
-        .filter(kind => stats[kind].names.length)
-        .map(kind => {
-          const {ids, names, legend} = stats[kind];
-          const listItemsWithId = (name, i) =>
-            $create('div', {dataset: {id: ids[i]}}, name);
-          const listItems = name =>
-            $create('div', name);
-          const block =
-            $create('details', {dataset: {id: kind}}, [
-              $create('summary',
-                $create('b', names.length + ' ' + t(legend))),
-              $create('small',
-                names.map(ids ? listItemsWithId : listItems)),
-            ]);
-          return block;
-        });
-      scrollTo(0, 0);
-      messageBox({
-        title: t('importReportTitle'),
-        contents: report.length ? report : t('importReportUnchanged'),
-        buttons: [t('confirmClose'), numChanged && t('undo')],
-        onshow:  bindClick,
-      }).then(({button}) => {
+    const report = Object.keys(stats)
+      .filter(kind => stats[kind].names.length)
+      .map(kind => {
+        const {ids, names, legend} = stats[kind];
+        const listItemsWithId = (name, i) =>
+          $create('div', {dataset: {id: ids[i]}}, name);
+        const listItems = name =>
+          $create('div', name);
+        const block =
+          $create('details', {dataset: {id: kind}}, [
+            $create('summary',
+              $create('b', names.length + ' ' + t(legend))),
+            $create('small',
+              names.map(ids ? listItemsWithId : listItems)),
+          ]);
+        return block;
+      });
+    scrollTo(0, 0);
+    messageBox({
+      title: t('importReportTitle'),
+      contents: report.length ? report : t('importReportUnchanged'),
+      buttons: [t('confirmClose'), numChanged && t('undo')],
+      onshow: bindClick,
+    })
+      .then(({button}) => {
         if (button === 1) {
           undo();
         }
       });
-      resolve(numChanged);
-    });
+    return Promise.resolve(numChanged);
   }
 
   function undo() {
@@ -224,28 +219,20 @@ function importFromString(jsonString, oldStyles) {
       ...stats.added.ids,
     ];
     let tasks = Promise.resolve();
-    let tasksUI = Promise.resolve();
     for (const id of newIds) {
       tasks = tasks.then(() => API.deleteStyle(id));
-      tasksUI = tasksUI.then(() => handleDelete(id));
       const oldStyle = oldStylesById.get(id);
       if (oldStyle) {
-        Object.assign(oldStyle, SAVE_OPTIONS);
-        // FIXME: import undo
-        // tasks = tasks.then(() => API.saveStyle(oldStyle));
-        tasksUI = tasksUI.then(() => handleUpdate(oldStyle, {reason: 'import'}));
+        tasks = tasks.then(() => API.importStyle(oldStyle));
       }
     }
     // taskUI is superfast and updates style list only in this page,
     // which should account for 99.99999999% of cases, supposedly
-    return tasks
-      .then(tasksUI)
-      .then(API.refreshAllTabs)
-      .then(() => messageBox({
-        title: t('importReportUndoneTitle'),
-        contents: newIds.length + ' ' + t('importReportUndone'),
-        buttons: [t('confirmClose')],
-      }));
+    return tasks.then(() => messageBox({
+      title: t('importReportUndoneTitle'),
+      contents: newIds.length + ' ' + t('importReportUndone'),
+      buttons: [t('confirmClose')],
+    }));
   }
 
   function bindClick() {
