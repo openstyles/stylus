@@ -167,9 +167,9 @@
   <script src="js/storage-util.js" async></script>
 </head>
 
-<body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
+<body id="stylus-manage" class="truegray-alpha-15" i18n-dragndrop-hint="dragDropMessage">
 
-<div id="header">
+<div id="header" class="truegray-alpha-06">
   <h1 id="manage-heading" i18n-text="manageHeading"></h1>
 
   <div id="manage-settings">
@@ -325,16 +325,18 @@
 
         <div id="newUIoptions">
           <div>
-            <label for="manage.newUI.favicons" i18n-text="manageFavicons">
-              <input id="manage.newUI.favicons" type="checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            <div class="favicon-label-wrapper">
+              <label for="manage.newUI.favicons" i18n-text="manageFavicons">
+                <input id="manage.newUI.favicons" type="checkbox">
+                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+              </label>
               <a href="#" data-toggle-on-click="#faviconsHelp" tabindex="0">
                 <svg class="svg-icon select-arrow">
                   <title i18n-text="optionsSubheading"></title>
                   <use xlink:href="#svg-icon-select-arrow"/>
                 </svg>
               </a>
-            </label>
+            </div>
             <div id="faviconsHelp" class="hidden" i18n-text="manageFaviconsHelp">
               <div>
                 <label for="manage.newUI.faviconsGray" i18n-text="manageFaviconsGray">

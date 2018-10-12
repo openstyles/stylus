@@ -25,6 +25,7 @@
     <script src="js/script-loader.js"></script>
     <script src="js/storage-util.js"></script>
     <script src="content/apply.js"></script>
+    <script src="edit/lint.js"></script>
     <script src="edit/util.js"></script>
     <script src="edit/regexp-tester.js"></script>
     <script src="edit/applies-to-line-widget.js"></script>
@@ -64,8 +65,6 @@
     <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
 
     <link  href="vendor/codemirror/addon/lint/lint.css" rel="stylesheet" />
-    <script src="vendor/codemirror/addon/lint/lint.js"></script>
-
 
     <link  href="vendor/codemirror/addon/hint/show-hint.css" rel="stylesheet" />
     <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
@@ -87,16 +86,6 @@
 
     <link  href="edit/codemirror-default.css" rel="stylesheet">
     <script src="edit/codemirror-default.js"></script>
-
-    <script src="edit/linter.js"></script>
-    <script src="edit/linter-defaults.js"></script>
-    <script src="edit/linter-engines.js"></script>
-    <script src="edit/linter-meta.js"></script>
-    <script src="edit/linter-help-dialog.js"></script>
-    <script src="edit/linter-report.js"></script>
-    <script src="edit/linter-config-dialog.js"></script>
-
-    <script src="edit/editor-worker.js"></script>
 
     <link id="cm-theme" rel="stylesheet">
 
@@ -272,7 +261,7 @@
     </template>
   </head>
 
-  <body id="stylus-edit">
+  <body id="stylus-edit" class="truegray-alpha-2">
     <div id="header">
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
@@ -428,7 +417,7 @@
             </a>
           </h2>
         </summary>
-        <div class="lint-report-container"></div>
+        <div></div>
       </details>
       <div id="footer" class="hidden">
         <a href="https://github.com/openstyles/stylus/wiki/Usercss"

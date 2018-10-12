@@ -28,7 +28,7 @@
   <script src="content/apply.js"></script>
 </head>
 
-<body id="stylus-options">
+<body id="stylus-options" class="truegray-alpha-2">
   <div id="options">
 
     <div class="block">
@@ -105,6 +105,57 @@
             <span></span>
           </span>
         </label>
+        <div class="radio-outer-wrapper action-elements">
+          <div class="radio-title" i18n-text="optionsPopupTitle"></div>
+          <div class="radio-inner-wrapper">
+            <label i18n-title="optionsPopupIconUI">
+              <div class="popupui">
+                <input type="radio" name="popupui">
+                <div class="icon-wrapper use-svg">
+                  <svg class="svg-icon vector" viewBox="0 0 40 22">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="m 36.9,0.95 c -1.2,0 -2.4,0.8 -2.9,1.9 H 23.8 v -2.5 h -7.5 v 2.5 H 6 C 5.5,1.75 4.4,0.95 3.1,0.95 1.3,0.95 0,2.35 0,4.05 c 0,1.7 1.4,3.1 3.1,3.1 1.2,0 2.4,-0.8 2.9,-1.9 h 6.4 c -3,2 -5.2,5.1 -6.2,8.8 H 3.8 v 7.6 h 7.5 v -7.5 H 8.8 c 1.1,-3.6 4,-6.6 7.5,-7.9 v 1.6 h 7.5 v -1.6 c 3.6,1.4 6.4,4.2 7.5,7.9 h -2.5 v 7.5 h 7.5 v -7.5 h -2.4 c -1,-3.6 -3.2,-6.8 -6.2,-8.8 H 34 c 0.5,1.1 1.6,1.9 2.9,1.9 1.8,0 3.1,-1.4 3.1,-3.1 0,-1.8 -1.4,-3.2 -3.1,-3.2 z"/>
+                  </svg>
+                </div>
+              </div>
+            </label>
+            <label i18n-title="optionsPopupClassicUI">
+              <div class="popupui">
+                <input type="radio" name="popupui">
+                <div class="icon-wrapper use-text">
+                  <svg class="svg-icon text" viewBox="0 0 8 8">
+                    <path d="M0 0v2h.5c0-.55.45-1 1-1h1.5v5.5c0 .28-.22.5-.5.5h-.5v1h4v-1h-.5c-.28 0-.5-.22-.5-.5v-5.5h1.5c.55 0 1 .45 1 1h.5v-2h-8z"/>
+                  </svg>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="radio-outer-wrapper style-name-action">
+          <div class="radio-title" i18n-text="optionsPopupTitleClickAction"></div>
+          <div class="radio-inner-wrapper">
+            <label i18n-title="optionsPopupClickActionLink">
+              <div class="popupclick ">
+                <input type="radio" name="popupclick">
+                <div class="icon-wrapper use-edit">
+                  <svg class="svg-icon edit" viewBox="0 0 1024 1024">
+                    <path d="M 920,920 H 104 V 104 l 344,0 V 0 H 0 V 1024 H 1024 V 576 H 920 Z"/>
+                    <path d="M1088 448M256 593.152 256 768l179.712 0L1024 182.784l-180.352-179.456L256 593.152zM843.008 276.352l-407.296 407.296L345.152 593.152l407.296-407.296L843.008 276.352zM933.504 185.856l-45.248 45.248-90.496-90.496 45.248-45.248L933.504 185.856z"/>
+                  </svg>
+                </div>
+              </div>
+            </label>
+            <label i18n-title="optionsPopupClickActionToggle">
+              <div class="popupclick">
+                <input type="radio" name="popupclick">
+                <div class="icon-wrapper use-toggle">
+                  <svg class="svg-icon double-toggle" viewBox="0 0 1024 1024">
+                    <path d="M692.053333 474.502095 331.897905 474.502095c-119.369143 0-216.088381-100.766476-216.088381-225.060571S212.528762 24.380952 331.897905 24.380952l360.131048 0c119.369143 0 216.137143 100.766476 216.137143 225.060571S811.398095 474.502095 692.053333 474.502095zM692.053333 61.878857 331.897905 61.878857c-99.449905 0-180.077714 83.992381-180.077714 187.562667s80.62781 187.562667 180.077714 187.562667l360.131048 0c99.474286 0 180.077714-83.992381 180.077714-187.562667S791.527619 61.878857 692.053333 61.878857zM331.897905 399.433143c-79.579429 0-144.067048-67.145143-144.067048-149.991619s64.512-150.064762 144.067048-150.064762c79.555048 0 144.042667 67.193905 144.042667 150.064762S411.452952 399.433143 331.897905 399.433143zM331.897905 549.497905l360.131048 0c119.369143 0 216.137143 100.790857 216.137143 225.060571S811.398095 999.619048 692.053333 999.619048L331.897905 999.619048c-119.369143 0-216.088381-100.766476-216.088381-225.03619S212.528762 549.497905 331.897905 549.497905zM692.053333 924.623238c79.60381 0 144.11581-67.193905 144.11581-150.040381s-64.512-150.064762-144.11581-150.064762c-79.579429 0-144.042667 67.218286-144.042667 150.064762S612.473905 924.623238 692.053333 924.623238z"/>
+                  </svg>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -167,7 +218,7 @@
       </div>
     </div>
 
-    <div class="block" id="actions">
+    <div class="block truegray-alpha-2" id="actions">
       <button data-cmd="reset" i18n-text="optionsResetButton" i18n-title="optionsReset"></button>
       <button data-cmd="open-manage" i18n-text="optionsOpenManager"></button>
       <div data-cmd="check-updates">

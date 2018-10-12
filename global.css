@@ -1,3 +1,124 @@
+:root {
+  --white: hsl(0, 0%, 100%);
+  --white-alpha-75: hsla(0, 0%, 100%, 0.75);
+  --gray-lightness-10: hsl(0, 0%, 10%);
+  --gray-lightness-20: hsl(0, 0%, 20%);
+  --gray-lightness-24: hsl(0, 0%, 24%);
+  --gray-lightness-25: hsl(0, 0%, 25%);
+  --gray-lightness-27: hsl(0, 0%, 27%);
+  --gray-lightness-30: hsl(0, 0%, 30%);
+  --gray-lightness-33: hsl(0, 0%, 33%);
+  --gray-lightness-38: hsl(0, 0%, 38%);
+  --gray-lightness-40: hsl(0, 0%, 40%);
+  --gray-lightness-45: hsl(0, 0%, 45%);
+  --gray-lightness-46: hsl(0, 0%, 46%);
+  --truegray: hsl(0, 0%, 50%);
+  --gray-lightness-60: hsl(0, 0%, 60%);
+  --gray-lightness-65: hsl(0, 0%, 65%);
+  --gray-lightness-66: hsl(0, 0%, 66%);
+  --gray-lightness-73: hsl(0, 0%, 73%);
+  --gray-lightness-76: hsl(0, 0%, 76%);
+  --gray-lightness-80: hsl(0, 0%, 80%);
+  --gray-lightness-84: hsl(0, 0%, 84%);
+  --gray-lightness-85: hsl(0, 0%, 85%);
+  --gray-lightness-86: hsl(0, 0%, 86%);
+  --gray-lightness-87: hsl(0, 0%, 87%);
+  --gray-lightness-88: hsl(0, 0%, 88%);
+  --gray-lightness-90: hsl(0, 0%, 90%);
+  --main-bg: hsl(0, 0%, 90%);
+  --gray-lightness-92: hsl(0, 0%, 92%);
+  --gray-lightness-93: hsl(0, 0%, 93%);
+  --gray-lightness-95: hsl(0, 0%, 95%);
+  --truegray-alpha-05: hsla(0, 0%, 50%, .05);
+  --truegray-alpha-06: hsla(0, 0%, 50%, .06);
+  --truegray-alpha-07: hsla(0, 0%, 50%, .07);
+  --truegray-alpha-1: hsla(0, 0%, 50%, .1);
+  --truegray-alpha-15: hsla(0, 0%, 50%, .15);
+  --truegray-alpha-2: hsla(0, 0%, 50%, .2);
+  --truegray-alpha-25: hsla(0, 0%, 50%, .25);
+  --truegray-alpha-3: hsla(0, 0%, 50%, .3);
+  --truegray-alpha-4: hsla(0, 0%, 50%, .4);
+  --truegray-alpha-5: hsla(0, 0%, 50%, .5);
+  --truegray-alpha-6: hsla(0, 0%, 50%, .6);
+  --truegray-alpha-7: hsla(0, 0%, 50%, .7);
+  --black: hsl(0, 0%, 0%);
+  --black-alpha-05: hsla(0, 0%, 0%, .05);
+  --black-alpha-1: hsla(0, 0%, 0%, .1);
+  --black-alpha-15: hsla(0, 0%, 0%, .15);
+  --black-alpha-25: hsla(0, 0%, 0%, .25);
+  --black-alpha-3: hsla(0, 0%, 0%, .3);
+  --black-alpha-4: hsla(0, 0%, 0%, .4);
+  --black-alpha-45: hsla(0, 0%, 0%, .45);
+  --black-alpha-5: hsla(0, 0%, 0%, .5);
+  --black-alpha-7: hsla(0, 0%, 0%, .7);
+  --black-alpha-75: hsla(0, 0%, 0%, .75);
+  --darker-red: hsl(0, 100%, 42%);
+  --darkred: hsl(0, 100%, 27%);
+  --maroon: hsl(0, 100%, 25%);
+  --darker-maroon: hsl(0, 100%, 20%);
+  --red-alpha-05: hsla(0, 100%, 50%, .05);
+  --red-alpha-1: hsla(0, 100%, 50%, .1);
+  --darkgreen: hsl(120, 100%, 20%);
+  --darkcyan: hsl(180, 100%, 27%);
+  --darkcyan-alpha-5: hsla(180, 100%, 27%, .5);
+  --darkcyan-alpha-75: hsla(180, 100%, 27%, .75);
+  --focus-outline: hsl(180, 100%, 34%);
+  --selection: hsl(180, 50%, 34%);
+}
+
+/* in case custom browser bg is specified */
+html {
+  background-color: var(--white);
+}
+
+a, .disabled a:hover {
+  color: var(--black);
+  transition: color .5s;
+  text-decoration-skip: ink;
+}
+
+a:hover {
+  color: var(--gray-lightness-40);
+}
+
+.main-bg {
+  background-color: var(--main-bg);
+}
+
+.truegray-alpha-05 {
+  background-color: var(--truegray-alpha-05);
+}
+
+.truegray-alpha-06 {
+  background-color: var(--truegray-alpha-06);
+}
+
+.truegray-alpha-1 {
+  background-color: var(--truegray-alpha-1);
+}
+
+.truegray-alpha-15 {
+  background-color: var(--truegray-alpha-15);
+}
+
+.truegray-alpha-2 {
+  background-color: var(--truegray-alpha-2);
+}
+
+* {
+  outline-color: var(--focus-outline);
+}
+
+::selection {
+  color: var(--white);
+  background-color: var(--selection);
+}
+
+::-moz-selection {
+  color: var(--white);
+  background-color: var(--selection);
+}
+
 body {
   font: normal 12px Arial, system-ui, sans-serif;
 }
@@ -24,49 +145,66 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 2px 7px;
-  border: 1px solid hsl(0, 0%, 62%);
+  border: 1px solid var(--gray-lightness-60);
   font: inherit;
   font-size: 13px;
-  color: #000;
-  background-color: hsl(0, 0%, 100%);
+  color: var(--gray-lightness-10);
+  background-color: var(--gray-lightness-95);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
   background-repeat: repeat-x;
-  background-size: 100% 100%;
-  transition: background-color .25s, border-color .25s;
+  background-size: auto 100%;
+  transition: color .25s, background-color .25s, border-color .25s;
 }
 
 button:not(:disabled):hover {
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  color: var(--black);
+  background-color: var(--gray-lightness-90);
+  border-color: var(--truegray);
 }
 
 button:active {
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  background-color: var(--gray-lightness-90);
+  border-color: var(--truegray);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
   background-repeat: repeat-x;
   background-size: 100% 100%;
-}
-
-/* For some odd reason these hovers appear lighter than all other button hovers in every browser */
-#message-box-buttons button:not(:disabled):hover {
-  background-color: hsl(0, 0%, 90%);
-  border-color: hsl(0, 0%, 50%);
 }
 
 input  {
   font: inherit;
 }
 
-input:not([type]) {
-  background: #fff;
-  color: #000;
+input:not([type]),
+input[type="text"],
+input[type="search"] {
+  color: var(--black);
+  background: var(--gray-lightness-93);
   height: 22px;
-  min-height: 22px!important;
   line-height: 22px;
   padding: 0 3px;
   font: inherit;
-  border: 1px solid hsl(0, 0%, 66%);
+  border: 1px solid var(--gray-lightness-66);
+  transition: border-color .25s;
+}
+
+input[data-focused-via-click]:not([type]):focus,
+input[data-focused-via-click][type="number"]:focus,
+input[data-focused-via-click][type="search"]:focus,
+label[data-focused-via-click] input[type="number"]:focus,
+label[data-focused-via-click] + input[type="number"]:focus,
+input[data-focused-via-click].config-value:focus,
+label[data-focused-via-click] input.config-value:focus {
+  outline: none;
+  border-color: var(--focus-outline);
+}
+
+input[type="number"] {
+  height: 22px;
+  color: var(--black);
+  background: var(--gray-lightness-93);
+  border: 1px solid var(--gray-lightness-66);
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .svg-icon.checked {
@@ -74,7 +212,7 @@ input:not([type]) {
   height: 8px;
   width: 8px;
   display: none;
-  fill: #000;
+  fill: var(--gray-lightness-20);
   margin: 2px 0 0 2px;
 }
 
@@ -89,19 +227,19 @@ input[type="checkbox"]:not(.slider) {
   position: absolute;
   left: 0;
   top: 0;
-  border: 1px solid hsl(0, 0%, 46%);
+  border: 1px solid var(--gray-lightness-46);
   height: 12px;
   width: 12px;
   display: inline-flex;
   border-radius: 2px;
-  background-color: hsla(0, 0%, 0%, .1);
+  background-color: var(--truegray-alpha-15);
   margin: 0;
   transition: background-color .1s, border-color .1s;
 }
 
 input[type="checkbox"]:not(.slider):hover {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
+  border-color: var(--black);
+  background-color: var(--truegray-alpha-25);
 }
 
 input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
@@ -113,31 +251,46 @@ input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
 
 input[type="checkbox"]:not(.slider):disabled {
   background-color: transparent;
-  border-color: hsl(0, 0%, 50%);
+  border-color: var(--truegray);
 }
 
 input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked {
-  fill: hsl(0, 0%, 50%);
+  fill: var(--truegray);
 }
 
 input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
-  color: hsl(0, 0%, 50%);
+  color: var(--truegray);
 }
 
 label {
+  color: var(--gray-lightness-20);
   transition: color .1s;
+}
+
+label:hover {
+  color: var(--black)
 }
 
 select {
   -moz-appearance: none;
   -webkit-appearance: none;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAMAAADaS4T1AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAMUExURQAAAIGBgYGAgIGBgSS07UcAAAAEdFJOUwAiFQpfOvseAAAAFklEQVQI12NgZGBkwA+YoZAJDhkhEAACSgAd0bXODAAAAABJRU5ErkJggg==);
+  background-repeat: repeat-x;
+  background-size: 100% 100%;
   height: 22px;
   font: inherit;
-  color: #000;
-  background-color: transparent;
-  border: 1px solid hsl(0, 0%, 66%);
+  color: var(--gray-lightness-20);
+  background-color: var(--gray-lightness-88);
+  border: 1px solid var(--gray-lightness-60);
   padding: 0 20px 0 6px;
-  transition: color .5s;
+  transition: color .5s, background-color .5s, border-color .5s;
+}
+
+select:hover,
+select:focus {
+  color: var(--black);
+  background-color: var(--main-bg);
+  border-color: var(--truegray);
 }
 
 .select-resizer {
@@ -152,19 +305,24 @@ select {
   display: inline-flex;
   height: 14px;
   width: 14px;
-  fill: #000;
+  fill: var(--gray-lightness-30);
   position: absolute;
   top: 4px;
   right: 4px;
   transition: fill .5s;
 }
 
+select:hover + .svg-icon.select-arrow,
+select:focus + .svg-icon.select-arrow {
+  fill: var(--black);
+}
+
 input[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: hsl(0, 0%, 88%);
+  background: var(--gray-lightness-88);
   border-radius: 50%;
-  border: 1px solid hsl(0, 0%, 60%);
+  border: 1px solid var(--gray-lightness-60);
   cursor: default;
   height: 13px;
   width: 13px;
@@ -186,7 +344,7 @@ input[type="radio"]:after {
 }
 
 input[type="radio"]:checked:after {
-  background-color: hsl(0, 0%, 30%);
+  background-color: var(--gray-lightness-30);
   transform: scale(1);
 }
 
@@ -235,9 +393,6 @@ select[disabled] > option {
 /* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
   .firefox.non-windows input[type="number"] {
     -moz-appearance: textfield;
-    background: #fff;
-    color: #000;
-    border: 1px solid hsl(0, 0%, 66%);
   }
 
   .firefox.non-windows input[type="number"]:not(:disabled):hover,
@@ -246,8 +401,7 @@ select[disabled] > option {
   }
 
   .firefox.non-windows input[type="color"] {
-    background: #fff;
-    border: 1px solid hsl(0, 0%, 66%);
+    border: 1px solid var(--gray-lightness-66);
     padding: 4px;
   }
 
