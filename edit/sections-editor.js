@@ -406,9 +406,22 @@ function createSectionsEditor(style) {
     }
     API.editSave(newStyle)
       .then(newStyle => {
+        destroyRemovedSections();
         sessionStorage.justEditedStyleId = newStyle.id;
-        replaceStyle(newStyle);
+        replaceStyle(newStyle, false);
       });
+  }
+
+  function destroyRemovedSections() {
+    for (let i = 0; i < sections.length;) {
+      if (!sections[i].isRemoved()) {
+        i++;
+        continue;
+      }
+      sections[i].destroy();
+      sections[i].el.remove();
+      sections.splice(i, 1);
+    }
   }
 
   function updateHeader() {
@@ -476,7 +489,8 @@ function createSectionsEditor(style) {
       const index = sections.indexOf(section);
       sections.splice(index, 1);
       section.el.remove();
-      section.remove(true);
+      section.remove();
+      section.destroy();
     } else {
       const lines = [];
       const MAX_LINES = 10;
@@ -486,7 +500,7 @@ function createSectionsEditor(style) {
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
       $('.deleted-section', section.el).title = title;
-      section.remove(false);
+      section.remove();
     }
     dirty.remove(section, section);
     updateSectionOrder();

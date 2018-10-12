@@ -122,6 +122,7 @@ function createSection({
     getCode,
     getModel,
     remove,
+    destroy,
     restore,
     isRemoved: () => removed,
     onChange,
@@ -271,14 +272,15 @@ function createSection({
     return cm.getValue();
   }
 
-  function remove(destroy = false) {
+  function remove() {
     linter.disableForEditor(cm);
     el.classList.add('removed');
     removed = true;
     appliesTo.forEach(a => a.remove());
-    if (destroy) {
-      cmFactory.destroy(cm);
-    }
+  }
+
+  function destroy() {
+    cmFactory.destroy(cm);
   }
 
   function restore() {
