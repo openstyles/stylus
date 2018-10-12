@@ -40,8 +40,7 @@ function beautify(event) {
         $create('.buttons', [
           $create('button', {
             attributes: {role: 'close'},
-            // showHelp.close will be defined after showHelp() is invoked
-            onclick: () => showHelp.close(),
+            onclick: showHelp.close,
           }, t('confirmClose')),
           $create('button', {
             attributes: {role: 'undo'},
@@ -63,7 +62,7 @@ function beautify(event) {
         ]),
       ]));
 
-    $('#help-popup').className = 'wide';
+    $('#help-popup').className = 'main-bg wide';
 
     scope.forEach(cm => {
       setTimeout(() => {
