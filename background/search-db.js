@@ -26,7 +26,7 @@
       matchUrl = query.slice(query.indexOf(':') + 1).trim();
       if (matchUrl) {
         return styleManager.getStylesInfoByUrl(matchUrl)
-          .then(styles => styles.map(style => style.id));
+          .then(results => results.map(r => r.data.id));
       }
     }
     if (query.startsWith('/') && /^\/(.+?)\/([gimsuy]*)$/.test(query)) {

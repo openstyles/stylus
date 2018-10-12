@@ -25,9 +25,10 @@ getActiveTab().then(tab =>
   (tabURL = URLS.supported(url) ? url : '') &&
   API.getStylesInfoByUrl(tabURL),
   onDOMready().then(initPopup),
-])).then(([styles]) => {
-  showStyles(styles);
-});
+])).then(([results]) => {
+  console.log(results);
+  showStyles(results.map(r => Object.assign(r.data, r)));
+}).catch(console.error);
 
 msg.onExtension(onRuntimeMessage);
 

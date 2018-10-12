@@ -277,9 +277,42 @@ const styleManager = (() => {
   }
 
   function getStylesInfoByUrl(url) {
-    const sections = getSectionsByUrl(url);
-    return Object.keys(sections)
-      .map(k => getStyleWithNoCode(styles.get(Number(k)).data));
+    // FIXME: do we want to cache this? Who would like  to rapidly using popup
+    // or searching the DB with the same URL?
+    const result = [];
+    for (const style of styles.values()) {
+      let excluded = false;
+      let sloppy = false;
+      let sectionMatched = false;
+      const match = urlMatchStyle(url, style.data);
+      if (match === false) {
+        continue;
+      }
+      if (match === 'excluded') {
+        excluded = true;
+      }
+      for (const section of style.data.sections) {
+        if (styleCodeEmpty(section.code)) {
+          continue;
+        }
+        const match = urlMatchSection(url, section);
+        if (match) {
+          if (match === 'sloppy') {
+            sloppy = true;
+          }
+          sectionMatched = true;
+          break;
+        }
+      }
+      if (sectionMatched) {
+        result.push({
+          data: getStyleWithNoCode(style.data),
+          excluded,
+          sloppy
+        });
+      }
+    }
+    return result;
   }
 
   function getSectionsByUrl(url, filter) {
