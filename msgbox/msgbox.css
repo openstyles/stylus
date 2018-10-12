@@ -1,3 +1,8 @@
+:root {
+  --message-box-title: hsl(170, 40%, 69%);
+  --firebrick: hsl(0, 68%, 42%);
+}
+
 #message-box {
   top: 0;
   left: 0;
@@ -5,7 +10,7 @@
   bottom: 0;
   display: flex;
   position: fixed;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--black-alpha-45);
   animation: fadein .25s ease-in-out;
   z-index: 9999990;
   -moz-user-select: none;
@@ -21,8 +26,7 @@
   position: fixed;
   display: flex;
   flex-direction: column;
-  background-color: white;
-  box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.225);
+  box-shadow: 5px 5px 50px var(--black-alpha-25);
   z-index: 9999991;
   -moz-user-select: text;
 }
@@ -57,7 +61,7 @@
 
 #message-box-title {
   font-weight: bold;
-  background-color: rgb(145, 208, 198);
+  background-color: var(--message-box-title);
   padding: .75rem 24px .75rem 52px;
   font-size: 1rem;
   position: relative;
@@ -79,8 +83,8 @@
 }
 
 #message-box.danger #message-box-title {
-  background-color: firebrick;
-  color: white;
+  background-color: var(--firebrick);
+  color: var(--white);
 }
 
 #message-box.danger #message-box-title::before {
@@ -92,11 +96,11 @@
 }
 
 #message-box.danger #message-box-close-icon svg {
-  fill: maroon;
+  fill: var(--maroon);
 }
 
 #message-box.danger #message-box-close-icon svg:hover {
-  fill: #600;
+  fill: var(--darker-maroon);
 }
 
 #message-box-close-icon {
@@ -117,6 +121,7 @@
   position: relative;
   flex-grow: 9;
   overflow-wrap: break-word;
+  outline: none;
 }
 
 #message-box-contents p:first-child {
@@ -129,7 +134,6 @@
 
 #message-box-buttons {
   padding: .75rem .375rem;
-  background-color: #f0f0f0;
   text-align: center;
 }
 
