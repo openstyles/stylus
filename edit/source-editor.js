@@ -216,7 +216,7 @@ function createSourceEditor(style) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
       sessionStorage.justEditedStyleId = newStyle.id;
-      style = newStyle;
+      Object.assign(style, newStyle);
       $('#preview-label').classList.remove('hidden');
       updateMeta();
       livePreview.show(Boolean(style.id));

@@ -942,7 +942,7 @@ function createSectionsEditor(style) {
   function replaceStyle(newStyle, codeIsUpdated) {
     // FIXME: avoid recreating all editors?
     reinit().then(() => {
-      style = newStyle;
+      Object.assign(style, newStyle);
       updateHeader();
       dirty.clear();
       // Go from new style URL to edit style URL

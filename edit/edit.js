@@ -325,14 +325,12 @@ function onRuntimeMessage(request) {
           request.reason !== 'editPreview' &&
           request.reason !== 'editSave' &&
           request.reason !== 'config') {
-        // code-less style from notifyAllTabs
-        const {sections, id} = request.style;
-        ((sections && sections[0] || {}).code === null
-          ? API.getStyle(id)
-          : Promise.resolve([request.style])
-        ).then(([style]) => {
-          editor.replaceStyle(style, request.codeIsUpdated);
-        });
+        Promise.resolve(request.codeIsUpdated === false ?
+          request.style : API.getStyle(request.style.id)
+        )
+          .then(newStyle => {
+            editor.replaceStyle(newStyle, request.codeIsUpdated);
+          });
       }
       break;
     case 'styleDeleted':
