@@ -110,8 +110,12 @@ const APPLY = (() => {
         }
       };
       window.addEventListener(EVENT_NAME, check, true);
-      // eslint-disable-next-line no-eval
-      window.eval(`(${scriptContent})(${JSON.stringify(EVENT_NAME)})`);
+      try {
+        // eslint-disable-next-line no-eval
+        window.eval(`(${scriptContent})(${JSON.stringify(EVENT_NAME)})`);
+      } catch (err) {
+        // csp error
+      }
       window.removeEventListener(EVENT_NAME, check, true);
       return ok;
     }
