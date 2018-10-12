@@ -29,9 +29,10 @@ const styleManager = (() => {
     getSectionsByUrl,
     installStyle,
     deleteStyle,
-    setStyleExclusions,
     editSave,
+    importStyle,
     toggleStyle,
+    setStyleExclusions,
     getAllStyles, // used by import-export
     getStylesInfoByUrl, // used by popup
     styleExists,
@@ -124,6 +125,12 @@ const styleManager = (() => {
     return true;
   }
 
+  function importStyle(data) {
+    // FIXME: is it a good idea to save the data directly?
+    return saveStyle(data)
+      .then(newData => handleSave(newData));
+  }
+
   function installStyle(data) {
     const style = styles.get(data.id);
     if (!style) {
@@ -137,11 +144,7 @@ const styleManager = (() => {
         data.originalDigest = digest;
         return saveStyle(data);
       })
-      .then(newData => handleSave(
-        newData,
-        style ? 'update' : 'install',
-        style ? 'styleUpdated' : 'styleAdded'
-      ));
+      .then(newData => handleSave(newData, style ? 'update' : 'install'));
   }
 
   function editSave(data) {
@@ -152,17 +155,13 @@ const styleManager = (() => {
       data = Object.assign(createNewStyle(), data);
     }
     return saveStyle(data)
-      .then(newData => handleSave(
-        newData,
-        'editSave',
-        style ? 'styleUpdated' : 'styleAdded'
-      ));
+      .then(newData => handleSave(newData, 'editSave'));
   }
 
   function setStyleExclusions(id, exclusions) {
     const data = Object.assign({}, styles.get(id).data, {exclusions});
     return saveStyle(data)
-      .then(newData => handleSave(newData, 'exclusions', 'styleUpdated'));
+      .then(newData => handleSave(newData, 'exclusions'));
   }
 
   function deleteStyle(id) {
@@ -237,15 +236,6 @@ const styleManager = (() => {
     });
   }
 
-  // function importStyle(style) {
-    // FIXME: move this to importer
-    // style.originalDigest = style.originalDigest || style.styleDigest; // TODO: remove in the future
-    // delete style.styleDigest; // TODO: remove in the future
-    // if (typeof style.originalDigest !== 'string' || style.originalDigest.length !== 40) {
-      // delete style.originalDigest;
-    // }
-  // }
-
   function saveStyle(style) {
     if (!style.name) {
       throw new Error('style name is empty');
@@ -262,15 +252,18 @@ const styleManager = (() => {
       });
   }
 
-  function handleSave(data, reason, method) {
+  function handleSave(data, reason) {
     const style = styles.get(data.id);
+    let method;
     if (!style) {
       styles.set(data.id, {
         appliesTo: new Set(),
         data
       });
+      method = 'styleAdded';
     } else {
       style.data = data;
+      method = 'styleUpdated';
     }
     return broadcastStyleUpdated(data, reason, method)
       .then(() => data);
