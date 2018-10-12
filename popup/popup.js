@@ -17,18 +17,21 @@ const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 toggleSideBorders();
 
-getActiveTab().then(tab =>
-  FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
-  ? getTabRealURLFirefox(tab)
-  : getTabRealURL(tab)
-).then(url => Promise.all([
-  (tabURL = URLS.supported(url) ? url : '') &&
-  API.getStylesInfoByUrl(tabURL),
-  onDOMready().then(initPopup),
-])).then(([results]) => {
-  console.log(results);
-  showStyles(results.map(r => Object.assign(r.data, r)));
-}).catch(console.error);
+getActiveTab()
+  .then(tab =>
+    FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
+    ? getTabRealURLFirefox(tab)
+    : getTabRealURL(tab)
+  )
+  .then(url => Promise.all([
+    (tabURL = URLS.supported(url) ? url : '') &&
+    API.getStylesInfoByUrl(tabURL),
+    onDOMready().then(initPopup),
+  ]))
+  .then(([results]) => {
+    showStyles(results.map(r => Object.assign(r.data, r)));
+  })
+  .catch(console.error);
 
 msg.onExtension(onRuntimeMessage);
 
@@ -230,27 +233,12 @@ function showStyles(styles) {
   const container = document.createDocumentFragment();
   styles.forEach(style => createStyleElement({style, container}));
   installed.appendChild(container);
-  setTimeout(detectSloppyRegexps, 100, styles);
-
-  // FIXME: detect sloppy regexp?
-  // API.getStyles({
-    // matchUrl: tabURL,
-    // strictRegexp: false,
-    // omitCode: true,
-  // }).then(unscreenedStyles => {
-    // for (const style of unscreenedStyles) {
-      // if (!styles.find(({id}) => id === style.id)) {
-        // createStyleElement({style, check: true});
-      // }
-    // }
   window.dispatchEvent(new Event('showStyles:done'));
-  // });
 }
 
 
 function createStyleElement({
   style,
-  check = false,
   container = installed,
 }) {
   let entry = $(ENTRY_ID_PREFIX + style.id);
@@ -294,6 +282,11 @@ function createStyleElement({
     $('.disable', entry).onclick = handleEvent.toggle;
     $('.delete', entry).onclick = handleEvent.delete;
     $('.configure', entry).onclick = handleEvent.configure;
+
+    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    indicator.appendChild(document.createTextNode('!'));
+    indicator.onclick = handleEvent.indicator;
+    $('.main-controls', entry).appendChild(indicator);
   }
 
   style = Object.assign(entry.styleMeta, style);
@@ -314,9 +307,10 @@ function createStyleElement({
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.name;
   setTimeout(() => {
-    if (styleName.scrollWidth > styleName.clientWidth + 1) {
-      styleName.title = styleName.textContent;
-    }
+    styleName.title = entry.styleMeta.sloppy ?
+      t('styleNotAppliedRegexpProblemTooltip') :
+        styleName.scrollWidth > styleName.clientWidth + 1 ?
+          styleName.textContent : '';
   });
 
   const config = $('.configure', entry);
@@ -330,7 +324,8 @@ function createStyleElement({
     style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
       '' : 'none';
 
-  if (check) detectSloppyRegexps([style]);
+  entry.classList.toggle('not-applied', style.excluded || style.sloppy);
+  entry.classList.toggle('regexp-partial', style.sloppy);
 
   if (entry.parentNode !== container) {
     container.appendChild(entry);
@@ -531,32 +526,6 @@ function handleDelete(id) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
 }
-
-
-function detectSloppyRegexps(styles) {
-  API.detectSloppyRegexps({
-    matchUrl: tabURL,
-    ids: styles.map(({id}) => id),
-  }).then(results => {
-    for (const {id, applied, skipped, hasInvalidRegexps} of results) {
-      const entry = $(ENTRY_ID_PREFIX + id);
-      if (!entry) continue;
-      if (!applied) {
-        entry.classList.add('not-applied');
-        $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
-      }
-      if (skipped || hasInvalidRegexps) {
-        entry.classList.toggle('regexp-partial', Boolean(skipped));
-        entry.classList.toggle('regexp-invalid', Boolean(hasInvalidRegexps));
-        const indicator = template.regexpProblemIndicator.cloneNode(true);
-        indicator.appendChild(document.createTextNode(entry.skipped || '!'));
-        indicator.onclick = handleEvent.indicator;
-        $('.main-controls', entry).appendChild(indicator);
-      }
-    }
-  });
-}
-
 
 function getTabRealURLFirefox(tab) {
   // wait for FF tab-on-demand to get a real URL (initially about:blank), 5 sec max
