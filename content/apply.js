@@ -15,6 +15,7 @@ const APPLY = (() => {
   var disabledElements = new Map();
   var docRewriteObserver;
   var docRootObserver;
+  const setStyleContent = createSetStyleContent();
   const initializing = init();
 
   msg.onTab(applyOnMessage);
@@ -33,8 +34,6 @@ const APPLY = (() => {
   if (window !== parent) {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
   }
-
-  const setStyleContent = createSetStyleContent();
 
   function init() {
     // FIXME: styleViaAPI
@@ -67,7 +66,6 @@ const APPLY = (() => {
     // See https://github.com/openstyles/stylus/issues/461
     // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
-    // const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
     const EVENT_NAME = chrome.runtime.id;
     if (CHROME || isOwnPage || Event.prototype.getPreventDefault || !injectPageScript()) {
       return (el, content) => {
@@ -86,9 +84,7 @@ const APPLY = (() => {
 
     function injectPageScript() {
       // FIXME: does it work with XML?
-      const script = document.createElement('script');
       const scriptContent = EVENT_NAME => {
-        document.currentScript.remove();
         window.dispatchEvent(new CustomEvent(EVENT_NAME, {
           detail: {method: 'pageScriptOK'}
         }));
@@ -107,7 +103,6 @@ const APPLY = (() => {
           }
         }, true);
       };
-      script.text = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
       let ok = false;
       const check = e => {
         if (e.detail.method === 'pageScriptOK') {
@@ -115,9 +110,9 @@ const APPLY = (() => {
         }
       };
       window.addEventListener(EVENT_NAME, check, true);
-      ROOT.appendChild(script);
+      // eslint-disable-next-line no-eval
+      window.eval(`(${scriptContent})(${JSON.stringify(EVENT_NAME)})`);
       window.removeEventListener(EVENT_NAME, check, true);
-      script.remove();
       return ok;
     }
   }
