@@ -1,9 +1,9 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce workerUtil
-  beautify
+  beautify ignoreChromeError
   moveFocus msg createSectionsEditor rerouteHotkeys */
-/* exported showCodeMirrorPopup editorWorker */
+/* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
 
 const editorWorker = workerUtil.createWorker({
@@ -556,4 +556,15 @@ function isWindowMaximized() {
     window.outerWidth < screen.availWidth + 10 &&
     window.outerHeight < screen.availHeight + 10
   );
+}
+
+function toggleContextMenuDelete(event) {
+  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
+    chrome.contextMenus.update('editor.contextDelete', {
+      enabled: Boolean(
+        this.selectionStart !== this.selectionEnd ||
+        this.somethingSelected && this.somethingSelected()
+      ),
+    }, ignoreChromeError);
+  }
 }
