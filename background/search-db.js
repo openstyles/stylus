@@ -45,13 +45,14 @@
     }
 
     const results = [];
-    return styleManager.getAllStyles(styles => {
-      if (ids) {
-        const idSet = new Set(ids);
-        return styles.filter(s => idSet.has(s.id));
-      }
-      return styles;
-    })
+    return styleManager.getAllStyles()
+      .then(styles => {
+        if (ids) {
+          const idSet = new Set(ids);
+          return styles.filter(s => idSet.has(s.id));
+        }
+        return styles;
+      })
       .then(styles => {
         for (const style of styles) {
           const id = style.id;
