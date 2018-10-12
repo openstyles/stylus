@@ -10,7 +10,7 @@ html.opera body {
 }
 
 body {
-  background: #fff;
+  background: var(--main-bg);
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
@@ -18,13 +18,35 @@ body {
   max-width: 800px;
 }
 
+.radio-outer-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radio-inner-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radio-inner-wrapper label > :first-child {
+  margin-right: 4px;
+}
+
+.radio-title + label {
+  margin-left: auto;
+  margin-right: 1.25rem;
+}
+
 @supports (-moz-appearance:none) {
   body {
     --addons-page-left-padding: 6px;
+    --match-ff-bg: hsl(240, 9%, 98%);
     /* compensate 'html.firefox .block' padding-left */
     width: calc(100% - var(--addons-page-left-padding));
     /* match the default FF theme */
-    background-color: #f9f9fa;
+    background-color: var(--match-ff-bg)
   }
   html.firefox .block {
     padding-left: var(--addons-page-left-padding);
@@ -39,7 +61,7 @@ body {
   display: flex;
   align-items: center;
   margin: 1em 0;
-  border-bottom: 1px dotted #ccc;
+  border-bottom: 1px dotted var(--gray-lightness-80);
   padding: 0 16px .75em;
   position: relative;
 }
@@ -86,13 +108,17 @@ label > :first-child {
   flex-grow: 1;
 }
 
-label:not([disabled]) > :first-child {
-  cursor: default;
+label:not([disabled]),
+label:not([disabled]) * {
+  cursor: pointer;
+}
+
+label:not([disabled]) input[type=number] {
+  cursor: auto;
 }
 
 label:not([disabled]):hover > :first-child {
-  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
-  cursor: pointer;
+  text-shadow: 0 0 0.01px var(--black-alpha-25);
 }
 
 input[type=number],
@@ -117,8 +143,8 @@ input[type=number] {
 }
 
 input[type=number]:invalid {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: darkred;
+  background-color: var(--red-alpha-1);
+  color: var(--darkred);
 }
 
 input[type="color"] {
@@ -143,7 +169,6 @@ input[type="color"] {
   align-items: stretch;
   padding: 1em;
   white-space: nowrap;
-  background-color: rgba(0, 0, 0, .05);
   margin: 0;
 }
 
@@ -221,7 +246,7 @@ html:not(.firefox):not(.opera) #updates {
 #advanced.collapsible h1 {
   width: unset;
   padding: 0;
-  color: #333;
+  color: var(--gray-lightness-20);
   transition: color .5s;
   display: inline-flex;
   align-items: center;
@@ -234,32 +259,91 @@ html:not(.firefox):not(.opera) #updates {
 }
 
 #advanced.collapsible:not(.collapsed) h1:hover {
-  color: #666;
+  color: var(--gray-lightness-40);
 }
 
 #advanced.collapsible.collapsed h1 {
   padding: 0;
-  color: #666;
+  color: var(--gray-lightness-40);
 }
 
 #advanced.collapsible.collapsed:hover h1 {
-  color: #333;
+  color: var(--gray-lightness-20);
 }
 
 .collapsible-resizer .svg-icon {
-  fill: #333;
+  fill: var(--gray-lightness-20);
   transition: fill .5s;
   height: 16px;
   width: 16px;
 }
 
+.action-elements {
+  padding: 6px 0;
+}
+
+.icon-wrapper {
+  display: inline-flex;
+}
+
+.action-elements input,
+.style-name-action input {
+  margin: 0 3px -1px;
+}
+
+.icon-wrapper.use-text {
+  margin: 0 3px;
+}
+
+.icon-wrapper.use-edit {
+  margin: 0 5px 0 6px;
+}
+
+.action-elements label > :first-child,
+.style-name-action label > :first-child {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.action-elements label,
+.style-name-action label {
+  width: 56px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon-wrapper .svg-icon {
+  fill: var(--gray-lightness-40);
+  transition: fill .5s;
+}
+
+label:hover .icon-wrapper .svg-icon,
+input:checked + .icon-wrapper .svg-icon {
+  fill: var(--black);
+}
+
+.svg-icon.text,
+.svg-icon.vector {
+  height: 16px;
+}
+
+.svg-icon.edit {
+  height: 18px;
+}
+
+.svg-icon.double-toggle {
+  height: 22px;
+}
+
 #advanced.collapsible.collapsed .collapsible-resizer .svg-icon,
 #advanced.collapsible:not(.collapsed) .collapsible-resizer h1:hover .svg-icon {
-  fill: #666;
+  fill: var(--gray-lightness-40);
 }
 
 #advanced.collapsible.collapsed:hover .collapsible-resizer .svg-icon {
-  fill: #333;
+  fill: var(--gray-lightness-20);
 }
 
 #advanced.collapsible h1 .svg-icon {
@@ -278,12 +362,12 @@ html:not(.firefox):not(.opera) #updates {
 .svg-inline-wrapper .svg-icon {
   width: 16px;
   height: 16px;
-  fill: #666;
+  fill: var(--gray-lightness-40);
   vertical-align: sub;
 }
 
 .svg-inline-wrapper:hover .svg-icon {
-  fill: #000;
+  fill: var(--black);
 }
 
 #message-box.note > div {
@@ -306,7 +390,7 @@ html:not(.firefox):not(.opera) #updates {
   .expanded-note {
     font-size: 90%;
     white-space: normal;
-    color: #666;
+    color: var(--gray-lightness-40);
     margin-top: .5em;
     hyphens: auto;
   }
