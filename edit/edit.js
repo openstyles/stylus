@@ -1,13 +1,12 @@
 /*
-global CodeMirror parserlib loadScript
-global CSSLint initLint linterConfig updateLintReport renderLintReport updateLinter
+global CodeMirror loadScript
 global createSourceEditor
 global closeCurrentTab regExpTester messageBox
 global setupCodeMirror
 global beautify
 global initWithSectionStyle addSections removeSection getSectionsHashes
 global sectionsToMozFormat
-global moveFocus
+global moveFocus editorWorker
 */
 'use strict';
 
@@ -212,7 +211,6 @@ function beforeUnload() {
   }
   const isDirty = editor ? editor.isDirty() : !isCleanGlobal();
   if (isDirty) {
-    updateLintReportIfEnabled(null, 0);
     // neither confirm() nor custom messages work in modern browsers but just in case
     return t('styleChangesNotSaved');
   }
@@ -228,7 +226,7 @@ function isUsercss(style) {
 function initStyleData() {
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
-  const id = params.get('id');
+  const id = Number(params.get('id'));
   const createEmptyStyle = () => ({
     id: null,
     name: params.get('domain') ||
@@ -244,8 +242,8 @@ function initStyleData() {
       )
     ],
   });
-  return API.getStyles({id: id || -1})
-    .then(([style = createEmptyStyle()]) => {
+  return fetchStyle()
+    .then(style => {
       styleId = style.id;
       if (styleId) sessionStorage.justEditedStyleId = styleId;
       // we set "usercss" class on <html> when <body> is empty
@@ -259,6 +257,13 @@ function initStyleData() {
       }
       return style;
     });
+
+  function fetchStyle() {
+    if (id) {
+      return API.getStyleFromDB(id);
+    }
+    return Promise.resolve(createEmptyStyle());
+  }
 }
 
 function initHooks() {
@@ -275,9 +280,6 @@ function initHooks() {
   $('#from-mozilla').addEventListener('click', fromMozillaFormat);
   $('#save-button').addEventListener('click', save, false);
   $('#sections-help').addEventListener('click', showSectionHelp, false);
-
-  // TODO: investigate why FF needs this delay
-  debounce(initLint, FIREFOX ? 100 : 0);
 
   if (!FIREFOX) {
     $$([
@@ -353,7 +355,6 @@ function toggleStyle() {
 }
 
 function save() {
-  updateLintReportIfEnabled(null, 0);
   if (!validate()) {
     return;
   }
@@ -414,12 +415,6 @@ function updateTitle() {
   $('#save-button').disabled = clean;
 }
 
-function updateLintReportIfEnabled(...args) {
-  if (CodeMirror.defaults.lint) {
-    updateLintReport(...args);
-  }
-}
-
 function showMozillaFormat() {
   const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
   popup.codebox.setValue(toMozillaFormat());
@@ -461,16 +456,7 @@ function fromMozillaFormat() {
 
   function doImport({replaceOldStyle = false}) {
     lockPageUI(true);
-    new Promise(setTimeout)
-      .then(() => {
-        const worker = linterConfig.worker.csslint;
-        if (!worker.instance) worker.instance = new Worker(worker.path);
-      })
-      .then(() => linterConfig.invokeWorker({
-        linter: 'csslint',
-        action: 'parse',
-        code: popup.codebox.getValue().trim(),
-      }))
+    editorWorker.parseMozFormat({code: popup.codebox.getValue().trim()})
       .then(({sections, errors}) => {
         // shouldn't happen but just in case
         if (!sections.length && errors.length) {
@@ -483,8 +469,7 @@ function fromMozillaFormat() {
         removeOldSections(replaceOldStyle);
         return addSections(sections, div => setCleanItem(div, false));
       })
-      .then(sectionDivs => {
-        sectionDivs.forEach(div => updateLintReportIfEnabled(div.CodeMirror, 1));
+      .then(() => {
         $('.dismiss').dispatchEvent(new Event('click'));
       })
       .catch(showError)
@@ -604,7 +589,6 @@ function showCodeMirrorPopup(title, html, options) {
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
-    lint: linterConfig.getForCodeMirror(),
     styleActiveLine: true,
     theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap')
