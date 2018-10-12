@@ -1,5 +1,5 @@
 /*
-global CodeMirror linterConfig loadScript
+global CodeMirror loadScript
 global editors editor styleId ownTabId
 global save toggleStyle setupAutocomplete makeSectionVisible getSectionForChild
 global getSectionsHashes
@@ -8,9 +8,6 @@ global messageBox
 'use strict';
 
 onDOMscriptReady('/codemirror.js').then(() => {
-
-  CodeMirror.defaults.lint = linterConfig.getForCodeMirror();
-
   const COMMANDS = {
     save,
     toggleStyle,
@@ -43,6 +40,9 @@ onDOMscriptReady('/codemirror.js').then(() => {
   });
 
   CodeMirror.defineInitHook(cm => {
+    if (!cm.display.wrapper.closest('#sections')) {
+      return;
+    }
     if (prefs.get('editor.livePreview') && styleId) {
       cm.on('changes', updatePreview);
     }
