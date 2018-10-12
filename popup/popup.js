@@ -301,9 +301,6 @@ function createStyleElement({
     $('.checker', entry).checked = false;
   }
 
-  // const excluded = popupExclusions.isExcluded(tabURL, style.exclusions);
-  // entry.classList.toggle('excluded', excluded);
-
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.name;
   setTimeout(() => {
@@ -324,6 +321,7 @@ function createStyleElement({
     style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
       '' : 'none';
 
+  // entry.classList.toggle('excluded', style.excluded);
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
