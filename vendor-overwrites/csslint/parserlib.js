@@ -885,12 +885,15 @@ self.parserlib = (() => {
         if (part.tokenType === Tokens.USO_VAR) return true;
         if (part.type !== 'function' || !part.expr) return false;
         const subparts = part.expr.parts;
-        return subparts.length &&
-          lower(part.name) === 'var' &&
-          subparts[0].type === 'custom-property' && (
-            subparts.length === 1 ||
-            subparts[1].text === ','
-          );
+        if (!subparts.length) return false;
+        const name = lower(part.name);
+        return (
+          name === 'var' && subparts[0].type === 'custom-property' ||
+          name === 'env' && subparts[0].type === 'identifier'
+        ) && (
+          subparts.length === 1 ||
+          subparts[1].text === ','
+        );
       },
 
       '<width>': '<length> | <percentage> | auto',
@@ -2666,7 +2669,7 @@ self.parserlib = (() => {
     known.add(value.text);
 
     function throwEndExpected(token, force) {
-      if (force || token.name !== 'var' || token.type !== 'function') {
+      if (force || (token.name !== 'var' && token.name !== 'env') || token.type !== 'function') {
         throw new ValidationError(`Expected end of value but found '${token.text}'.`, token);
       }
     }
