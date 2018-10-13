@@ -162,6 +162,12 @@
     'isolation': true,
     'zoom': true,
 
+    // https://www.w3.org/TR/css-round-display-1/
+    'border-boundary': true,
+    'shape': true,
+    'shape-inside': true,
+    'viewport-fit': true,
+
     // nonstandard https://compat.spec.whatwg.org/
     'box-reflect': true,
     'text-fill-color': true,
@@ -172,6 +178,7 @@
   });
   Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
     'isolate': true,
+    'rect': true,
     'recto': true,
     'verso': true,
   });
