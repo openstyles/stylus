@@ -302,8 +302,8 @@ input:invalid {
 }
 /************ content ***********/
 #sections > * {
-  padding: 1rem 1rem;
   margin: 0 0.7rem;
+  padding: 1rem;
 }
 #sections > :not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
