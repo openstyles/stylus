@@ -203,11 +203,13 @@ const APPLY = (() => {
         break;
 
       case 'backgroundReady':
-        initializing.catch(err => {
-          if (msg.RX_NO_RECEIVER.test(err.message)) {
-            init();
-          }
-        });
+        initializing
+          .catch(err => {
+            if (msg.RX_NO_RECEIVER.test(err.message)) {
+              return init();
+            }
+          })
+          .catch(console.error);
         break;
 
       case 'updateCount':
@@ -258,8 +260,12 @@ const APPLY = (() => {
       // we don't care about iframes
       return;
     }
+    if (/^\w+?-extension:\/\/.+(popup|options)\.html$/.test(location.href)) {
+      // popup and the option page are not tabs
+      return;
+    }
     if (STYLE_VIA_API) {
-      API.styleViaAPI({method: 'updateCount'});
+      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
       return;
     }
     let count = 0;
