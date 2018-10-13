@@ -58,7 +58,7 @@ const regExpTester = (() => {
       const rxData = Object.assign({text}, cachedRegexps.get(text));
       if (!rxData.urls) {
         cachedRegexps.set(text, Object.assign(rxData, {
-          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
+          // imitate buggy Stylish-for-chrome
           rx: tryRegExp('^' + text + '$'),
           urls: new Map(),
         }));

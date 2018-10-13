@@ -1,4 +1,4 @@
-/* global detectSloppyRegexps download prefs openURL FIREFOX CHROME VIVALDI
+/* global download prefs openURL FIREFOX CHROME VIVALDI
   openEditor debounce URLS ignoreChromeError queryTabs getTab
   styleManager msg navigatorUtil iconUtil workerUtil */
 'use strict';
@@ -34,7 +34,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   },
   getPrefs: prefs.getAll,
 
-  detectSloppyRegexps,
   openEditor,
 
   updateIconBadge(count) {

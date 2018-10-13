@@ -358,12 +358,6 @@ const styleManager = (() => {
           .map(i => styles.get(i))
       );
     }
-    // if (filter && filter.id) {
-      // if (!cache.sections[filter.id]) {
-        // return {};
-      // }
-      // return {[filter.id]: cache.sections[filter.id]};
-    // }
     if (filter) {
       const sections = !filter.id ? Object.values(cache.sections) :
         cache.sections[filter.id] ? [cache.sections[filter.id]] :
