@@ -93,23 +93,9 @@ function initPopup() {
     document.body.classList.toggle('disabled', this.checked);
   };
 
-  $('#disable-all-icon').onclick = () => {
-    $('#disableAll').click();
-  };
-
-  $('#find-styles-icon').onclick = () => {
-    $('#find-styles-link').click();
-  };
-
   setupLivePrefs();
 
   Object.assign($('#popup-manage-button'), {
-    onclick: handleEvent.openManager,
-    onmouseup: handleEvent.openManager,
-    oncontextmenu: handleEvent.openManager,
-  });
-
-  Object.assign($('#popup-manage-icon'), {
     onclick: handleEvent.openManager,
     onmouseup: handleEvent.openManager,
     oncontextmenu: handleEvent.openManager,
@@ -130,15 +116,7 @@ function initPopup() {
     window.close();
   };
 
-  $('#popup-options-icon').onclick = event => {
-    event.preventDefault();
-    chrome.runtime.openOptionsPage();
-    window.close();
-  };
-
   $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
-
-  $('#popup-wiki-icon').onclick = handleEvent.openURLandHide;
 
   if (!tabURL) {
     document.body.classList.add('blocked');
