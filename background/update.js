@@ -153,27 +153,25 @@
 
     function maybeUpdateUsercss() {
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
-      return download(style.updateUrl)
-        .then(text =>
-          usercss.buildMeta(text)
-            .then(json => {
-              const {usercssData: {version}} = style;
-              const {usercssData: {version: newVersion}} = json;
-              switch (Math.sign(semverCompare(version, newVersion))) {
-                case 0:
-                  // re-install is invalid in a soft upgrade
-                  if (!ignoreDigest) {
-                    const sameCode = text === style.sourceCode;
-                    return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
-                  }
-                  break;
-                case 1:
-                  // downgrade is always invalid
-                  return Promise.reject(STATES.ERROR_VERSION);
+      return download(style.updateUrl).then(text =>
+        usercss.buildMeta(text).then(json => {
+          const {usercssData: {version}} = style;
+          const {usercssData: {version: newVersion}} = json;
+          switch (Math.sign(semverCompare(version, newVersion))) {
+            case 0:
+              // re-install is invalid in a soft upgrade
+              if (!ignoreDigest) {
+                const sameCode = text === style.sourceCode;
+                return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
               }
-              return usercss.buildCode(json);
-            })
-        );
+              break;
+            case 1:
+              // downgrade is always invalid
+              return Promise.reject(STATES.ERROR_VERSION);
+          }
+          return usercss.buildCode(json);
+        })
+      );
     }
 
     function maybeSave(json = {}) {
