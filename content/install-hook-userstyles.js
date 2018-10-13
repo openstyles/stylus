@@ -30,7 +30,7 @@
       gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      API.getStylesInfo({
+      API.findStyle({
         md5Url: getMeta('stylish-md5-url') || location.href
       }).then(checkUpdatability);
     }
@@ -66,7 +66,7 @@
     return jsonUrl + (paramsMissing ? textUrl.replace(/^[^?]+/, '') : '');
   }
 
-  function checkUpdatability([installedStyle]) {
+  function checkUpdatability(installedStyle) {
     // TODO: remove the following statement when USO is fixed
     document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
       detail: installedStyle && installedStyle.updateUrl,

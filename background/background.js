@@ -9,17 +9,18 @@ var backgroundWorker = workerUtil.createWorker({
 });
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
+  deleteStyle: styleManager.deleteStyle,
+  editSave: styleManager.editSave,
+  findStyle: styleManager.findStyle,
+  getAllStyles: styleManager.getAllStyles, // used by importer
   getSectionsByUrl: styleManager.getSectionsByUrl,
+  getStyle: styleManager.get,
   getStylesInfo: styleManager.getStylesInfo,
   getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
-  toggleStyle: styleManager.toggleStyle,
-  deleteStyle: styleManager.deleteStyle,
-  installStyle: styleManager.installStyle,
-  editSave: styleManager.editSave,
   importStyle: styleManager.importStyle,
+  installStyle: styleManager.installStyle,
   styleExists: styleManager.styleExists,
-  getStyle: styleManager.get,
-  getAllStyles: styleManager.getAllStyles, // used by importer
+  toggleStyle: styleManager.toggleStyle,
 
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];

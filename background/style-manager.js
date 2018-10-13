@@ -54,6 +54,7 @@ const styleManager = (() => {
     installStyle,
     deleteStyle,
     editSave,
+    findStyle,
     importStyle,
     toggleStyle,
     setStyleExclusions,
@@ -114,6 +115,16 @@ const styleManager = (() => {
     return [...styles.values()]
       .filter(s => !filter || filterMatch(filter, s.data))
       .map(s => getStyleWithNoCode(s.data));
+  }
+
+  // used by install-hook-userstyles.js
+  function findStyle(filter) {
+    for (const style of styles.values()) {
+      if (filterMatch(filter, style.data)) {
+        return style.data;
+      }
+    }
+    return null;
   }
 
   function styleExists(filter) {
