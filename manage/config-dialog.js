@@ -125,7 +125,6 @@ function configDialog(style) {
     }
     style = style.sections ? Object.assign({}, style) : style;
     style.enabled = true;
-    style.reason = 'config';
     style.sourceCode = null;
     style.sections = null;
     const styleVars = style.usercssData.vars;

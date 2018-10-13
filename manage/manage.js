@@ -419,7 +419,6 @@ Object.assign(handleEvent, {
     event.preventDefault();
     const json = entry.updatedCode;
     json.id = entry.styleId;
-    // json.reason = 'update';
     API[json.usercssData ? 'installUsercss' : 'installStyle'](json);
   },
 
@@ -519,10 +518,7 @@ Object.assign(handleEvent, {
 
 
 function handleUpdate(style, {reason, method} = {}) {
-  if (reason === 'editPreview') return;
-  // the style was toggled and refreshAllTabs() sent a mini-notification,
-  // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()
-  // if (!style.sections) return;
+  if (reason === 'editPreview' || reason === 'editPreviewEnd') return;
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method === 'styleUpdated') {

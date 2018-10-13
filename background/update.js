@@ -182,7 +182,6 @@
 
       json.id = style.id;
       json.updateDate = Date.now();
-      // json.reason = 'update';
 
       // keep current state
       delete json.enabled;
@@ -197,7 +196,6 @@
       const newStyle = Object.assign({}, style, json);
       if (styleSectionsEqual(json, style, {checkSource: true})) {
         // update digest even if save === false as there might be just a space added etc.
-        // json.reason = 'update-digest';
         return styleManager.installStyle(newStyle)
           .then(saved => {
             style.originalDigest = saved.originalDigest;

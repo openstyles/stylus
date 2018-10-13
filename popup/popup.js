@@ -52,7 +52,7 @@ function onRuntimeMessage(msg) {
     case 'styleAdded':
     case 'styleUpdated':
     case 'exclusionsUpdated':
-      if (msg.reason === 'editPreview') return;
+      if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
       handleUpdate(msg.style);
       break;
     case 'styleDeleted':

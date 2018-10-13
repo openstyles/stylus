@@ -52,18 +52,13 @@
   }
 
   function assignVars(style) {
-    if (style.reason === 'config' && style.id) {
-      return style;
-    }
     return find(style)
       .then(dup => {
         if (dup) {
           style.id = dup.id;
-          if (style.reason !== 'config') {
-            // preserve style.vars during update
-            return usercss.assignVars(style, dup)
-              .then(() => style);
-          }
+          // preserve style.vars during update
+          return usercss.assignVars(style, dup)
+            .then(() => style);
         }
         return style;
       });

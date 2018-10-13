@@ -321,12 +321,14 @@ function preinit() {
 function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
-      if (editor.getStyleId() === request.style.id &&
-          request.reason !== 'editPreview' &&
-          request.reason !== 'editSave' &&
-          request.reason !== 'config') {
-        Promise.resolve(request.codeIsUpdated === false ?
-          request.style : API.getStyle(request.style.id)
+      if (
+        editor.getStyleId() === request.style.id &&
+        !['editPreview', 'editPreviewEnd', 'editSave', 'config']
+          .includes(request.reason)
+      ) {
+        Promise.resolve(
+          request.codeIsUpdated === false ?
+            request.style : API.getStyle(request.style.id)
         )
           .then(newStyle => {
             editor.replaceStyle(newStyle, request.codeIsUpdated);

@@ -88,7 +88,6 @@
 
       API.installUsercss({
         id: (installed || installedDup).id,
-        reason: 'update',
         sourceCode
       }).then(style => {
         updateMeta(style);
