@@ -207,7 +207,7 @@ const styleManager = (() => {
     };
   }
 
-  function broadcastStyleUpdated(data, reason, method, codeIsUpdated = true) {
+  function broadcastStyleUpdated(data, reason, method = 'styleUpdated', codeIsUpdated = true) {
     const style = styles.get(data.id);
     const excluded = new Set();
     const updated = new Set();
@@ -433,7 +433,10 @@ const styleManager = (() => {
   }
 
   function createCompiler(compile) {
-    const cache = createCache();
+    // FIXME: FIFO cache doesn't work well here, if we want to match many
+    // regexps more than the cache size, we will never hit the cache because
+    // the first cache is deleted. So we use a simple map but it leaks memory.
+    const cache = new Map();
     return text => {
       let re = cache.get(text);
       if (!re) {
