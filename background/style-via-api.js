@@ -1,4 +1,4 @@
-/* global API_METHODS styleManager CHROME prefs */
+/* global API_METHODS styleManager CHROME prefs updateIconBadge */
 'use strict';
 
 API_METHODS.styleViaAPI = !CHROME && (() => {
@@ -9,6 +9,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     styleAdded,
     styleReplaceAll,
     prefChanged,
+    updateCount,
   };
   const NOP = Promise.resolve(new Error('NOP'));
   const onError = () => {};
@@ -29,6 +30,14 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
         .catch(onError)
         .then(maybeToggleObserver);
   };
+
+  function updateCount(request, {tab, frameId}) {
+    if (frameId) {
+      throw new Error('we do not count styles for frames');
+    }
+    const {frameStyles} = getCachedData(tab.id, frameId);
+    updateIconBadge(tab.id, Object.keys(frameStyles).length);
+  }
 
   function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
     if (prefs.get('disableAll')) {
