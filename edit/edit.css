@@ -667,6 +667,9 @@ body[data-match-highlight="selection"]:not(.find-open) .CodeMirror-selection-hig
 #lint table:last-child {
   margin-bottom: 0;
 }
+#lint table.empty {
+  display: none;
+}
 #lint caption {
   text-align: left;
   font-weight: bold;

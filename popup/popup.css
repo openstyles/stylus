@@ -210,8 +210,8 @@ body:not(.disabled) .toggle-all-on {
 
 #popup-wiki-icon .svg-icon,
 #find-styles-icon .svg-icon {
-  height: 22px;
-  width: 22px;
+  height: 20px;
+  width: 20px;
 }
 
 #find-inline-icon {

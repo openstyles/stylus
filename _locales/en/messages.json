@@ -771,23 +771,29 @@
   "optionsOpenManager": {
     "message": "Manage styles"
   },
+  "optionsPopupActionElements": {
+    "message": "Action elements",
+    "description": "Label in the options page to alter the popup action elements to show either text or icons"
+  },
   "optionsPopupClassicUI": {
-    "message": "Text and buttons"
+    "message": "Text and buttons",
+    "description": "Tooltip displayed when hovering the popup action elements option to choose the classic text & button format"
   },
   "optionsPopupIconUI": {
-    "message": "Vector icons"
+    "message": "Vector icons",
+    "description": "Tooltip displayed when hovering the popup action elements option to choose displaying vector icons instead of text"
   },
-  "optionsPopupTitleClickAction": {
-    "message": "Style name click action"
+  "optionsPopupClickAction": {
+    "message": "Style name click action",
+    "description": "Label in the options page for the action performed when clicking on a style name in the popup"
   },
   "optionsPopupClickActionLink": {
-    "message": "Edit style"
+    "message": "Edit style",
+    "description": "Tooltip displayed when hovering the popup click action option to choose to edit the style when clicking on the style name in the popup"
   },
   "optionsPopupClickActionToggle": {
-    "message": "Toggle style"
-  },
-  "optionsPopupTitle": {
-    "message": "Action elements"
+    "message": "Toggle style",
+    "description": "Tooltip displayed when hovering the popup click action option to choose to toggle a style (on or off) when clicking the style name in the popup"
   },
   "optionsPopupWidth": {
     "message": "Popup width (in pixels)"
@@ -1211,7 +1217,7 @@
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableAMOHintNewFF": {
-    "message": "In Firefox 60 and newer you'll also have to to remove AMO domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
+    "message": "In Firefox 60 and newer you'll also have to remove AMO domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableAMOHintOldFF": {
@@ -1305,8 +1311,8 @@
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
   },
   "writeStyleForInfo": {
-    "message": "Create a new style by specifying target URLs.\nAvailable options shown in hover tooltips.",
-    "description": "Style creation actions tooltip to accompany icon"
+    "message": "Create a new style by selecting a target URL.\nAvailable options shown in hover tooltips.",
+    "description": "Popup style creation actions tooltip to accompany icon"
   },
   "writeStyleForURL": {
     "message": "this URL",
