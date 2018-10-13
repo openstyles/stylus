@@ -29,7 +29,6 @@
       "js/storage-util.js",
       "js/sections-util.js",
       "js/worker-util.js",
-      "background/storage.js",
       "js/prefs.js",
       "js/script-loader.js",
       "js/usercss.js",

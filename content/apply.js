@@ -8,7 +8,7 @@
 const APPLY = (() => {
   const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
   var ID_PREFIX = 'stylus-';
-  var ROOT = document.documentElement;
+  var ROOT;
   var isOwnPage = location.protocol.endsWith('-extension:');
   var disableAll = false;
   var styleElements = new Map();
@@ -43,6 +43,7 @@ const APPLY = (() => {
     }
     return API.getSectionsByUrl(getMatchUrl())
       .then(result => {
+        ROOT = document.documentElement;
         const styles = Object.values(result);
         // CSS transition bug workaround: since we insert styles asynchronously,
         // the browsers, especially Firefox, may apply all transitions on page load
