@@ -7,6 +7,7 @@
 // define a constant so it throws when redefined
 const APPLY = (() => {
   const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
+  const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
   var ID_PREFIX = 'stylus-';
   var ROOT;
   var isOwnPage = location.protocol.endsWith('-extension:');
@@ -29,26 +30,23 @@ const APPLY = (() => {
 
   let parentDomain;
 
-  // FIXME: does it work with styleViaAPI?
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
   if (window !== parent) {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
   }
 
   function init() {
-    // FIXME: styleViaAPI
     // FIXME: getStylesFallback?
-    if (!chrome.app && document instanceof XMLDocument) {
-      return API.styleViaAPI({action: 'styleApply'});
+    if (STYLE_VIA_API) {
+      return API.styleViaAPI({method: 'styleApply'});
     }
     return API.getSectionsByUrl(getMatchUrl())
       .then(result => {
         ROOT = document.documentElement;
-        const styles = Object.values(result);
-        // CSS transition bug workaround: since we insert styles asynchronously,
-        // the browsers, especially Firefox, may apply all transitions on page load
-        applyStyles(styles, () => {
-          if (styles.some(s => s.code.includes('transition'))) {
+        applyStyles(result, () => {
+          // CSS transition bug workaround: since we insert styles asynchronously,
+          // the browsers, especially Firefox, may apply all transitions on page load
+          if ([...styleElements.values()].some(n => n.textContent.includes('transition'))) {
             applyTransitionPatch();
           }
         });
@@ -136,10 +134,6 @@ const APPLY = (() => {
     return matchUrl;
   }
 
-  function buildSections(cache) {
-    return Object.values(cache);
-  }
-
   /**
    * TODO: remove when FF fixes the bug.
    * Firefox borks sendMessage in same-origin iframes that have 'src' with a real path on the site.
@@ -163,12 +157,12 @@ const APPLY = (() => {
   // }
 
   function applyOnMessage(request) {
-    if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
-      request.action = request.method;
-      request.method = null;
-      request.styles = null;
-      if (request.style) {
-        request.style.sections = null;
+    if (request.method === 'ping') {
+      return true;
+    }
+    if (STYLE_VIA_API) {
+      if (request.method === 'urlChanged') {
+        request.method = 'styleReplaceAll';
       }
       API.styleViaAPI(request);
       return;
@@ -188,7 +182,7 @@ const APPLY = (() => {
               if (!sections[request.style.id]) {
                 removeStyle(request.style);
               } else {
-                applyStyles(buildSections(sections));
+                applyStyles(sections);
               }
             });
         } else {
@@ -199,19 +193,14 @@ const APPLY = (() => {
       case 'styleAdded':
         if (request.style.enabled) {
           API.getSectionsByUrl(getMatchUrl(), request.style.id)
-            .then(buildSections)
             .then(applyStyles);
         }
         break;
 
       case 'urlChanged':
         API.getSectionsByUrl(getMatchUrl())
-          .then(buildSections)
           .then(replaceAll);
         break;
-
-      case 'ping':
-        return true;
 
       case 'backgroundReady':
         initializing.catch(err => {
@@ -232,12 +221,16 @@ const APPLY = (() => {
       return;
     }
     disableAll = disable;
-    Array.prototype.forEach.call(document.styleSheets, stylesheet => {
-      if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
-      && stylesheet.disabled !== disable) {
-        stylesheet.disabled = disable;
-      }
-    });
+    if (STYLE_VIA_API) {
+      API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
+    } else {
+      Array.prototype.forEach.call(document.styleSheets, stylesheet => {
+        if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
+        && stylesheet.disabled !== disable) {
+          stylesheet.disabled = disable;
+        }
+      });
+    }
   }
 
   function fetchParentDomain() {
@@ -290,7 +283,6 @@ const APPLY = (() => {
         disabledElements.delete(id);
       } else {
         return API.getSectionsByUrl(getMatchUrl(), id)
-          .then(buildSections)
           .then(applyStyles);
       }
     } else {
@@ -313,8 +305,8 @@ const APPLY = (() => {
     }
   }
 
-  function applyStyles(styles, done) {
-    if (!styles.length) {
+  function applyStyles(sections, done) {
+    if (!Object.keys(sections).length) {
       if (done) {
         done();
       }
@@ -325,7 +317,7 @@ const APPLY = (() => {
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
           observer.disconnect();
-          applyStyles(styles, done);
+          applyStyles(sections, done);
         }
       }).observe(document, {childList: true});
       return;
@@ -336,8 +328,8 @@ const APPLY = (() => {
     } else {
       initDocRootObserver();
     }
-    for (const section of styles) {
-      applySections(section.id, section.code);
+    for (const section of Object.values(sections)) {
+      applySections(section.id, section.code.join(''));
     }
     docRootObserver.firstStart();
 

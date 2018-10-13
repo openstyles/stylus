@@ -26,7 +26,7 @@ const styleManager = (() => {
     maybeMatch: Set<styleId>,
     sections: Object<styleId => {
       id: styleId,
-      code: String
+      code: Array<String>
     }>
   } */
   const cachedStyleForUrl = createCache({
@@ -353,13 +353,13 @@ const styleManager = (() => {
     if (urlMatchStyle(url, data) !== true) {
       return;
     }
-    let code = '';
+    const code = [];
     for (const section of data.sections) {
       if (urlMatchSection(url, section) === true && !styleCodeEmpty(section.code)) {
-        code += section.code;
+        code.push(section.code);
       }
     }
-    return code;
+    return code.length && code;
   }
 
   function prepare() {

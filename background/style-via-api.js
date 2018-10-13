@@ -23,14 +23,14 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
   let observingTabs = false;
 
   return function (request) {
-    const action = ACTIONS[request.action];
+    const action = ACTIONS[request.method];
     return !action ? NOP :
       action(request, this.sender)
         .catch(onError)
         .then(maybeToggleObserver);
   };
 
-  function styleApply({id = null, ignoreUrlCheck}, {tab, frameId, url}) {
+  function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
     if (prefs.get('disableAll')) {
       return NOP;
     }
@@ -42,15 +42,11 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       const tasks = [];
       for (const section of Object.values(sections)) {
         const styleId = section.id;
-        const code = section.code;
-        if (!code) {
-          delete frameStyles[styleId];
-          continue;
-        }
+        const code = section.code.join('\n');
         if (code === (frameStyles[styleId] || []).join('\n')) {
           continue;
         }
-        frameStyles[styleId] = [code];
+        frameStyles[styleId] = section.code;
         tasks.push(
           browser.tabs.insertCSS(tab.id, {
             code,
