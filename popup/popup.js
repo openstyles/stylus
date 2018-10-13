@@ -25,10 +25,14 @@ getActiveTab()
   )
   .then(url => Promise.all([
     (tabURL = URLS.supported(url) ? url : '') &&
-    API.getStylesInfoByUrl(tabURL),
+      API.getStylesInfoByUrl(tabURL),
     onDOMready().then(initPopup),
   ]))
   .then(([results]) => {
+    if (!results) {
+      // unsupported URL;
+      return;
+    }
     showStyles(results.map(r => Object.assign(r.data, r)));
   })
   .catch(console.error);

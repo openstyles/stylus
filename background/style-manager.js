@@ -56,8 +56,12 @@ const styleManager = (() => {
         port = null;
         if (id) {
           const style = styles.get(id);
+          if (!style) {
+            // maybe deleted
+            return;
+          }
           style.preview = null;
-          broadcastStyleUpdated(style.data, 'editPreview');
+          broadcastStyleUpdated(style.data, 'editPreviewEnd');
         }
       });
     });
@@ -128,7 +132,7 @@ const styleManager = (() => {
   function importStyle(data) {
     // FIXME: is it a good idea to save the data directly?
     return saveStyle(data)
-      .then(newData => handleSave(newData));
+      .then(newData => handleSave(newData, 'import'));
   }
 
   function installStyle(data) {

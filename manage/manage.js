@@ -48,7 +48,8 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
-      handleUpdate(msg.style, msg);
+      API.getStylesInfo({id: msg.style.id})
+        .then(([style]) => handleUpdate(style, msg));
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
@@ -521,7 +522,7 @@ function handleUpdate(style, {reason, method} = {}) {
   if (reason === 'editPreview') return;
   // the style was toggled and refreshAllTabs() sent a mini-notification,
   // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()
-  if (!style.sections) return;
+  // if (!style.sections) return;
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method === 'styleUpdated') {

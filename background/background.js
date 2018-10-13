@@ -19,6 +19,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   importStyle: styleManager.importStyle,
   styleExists: styleManager.styleExists,
   getStyle: styleManager.get,
+  getAllStyles: styleManager.getAllStyles, // used by importer
 
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];

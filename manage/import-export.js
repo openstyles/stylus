@@ -56,19 +56,14 @@ function importFromFile({fileTypeFilter, file} = {}) {
 }
 
 
-function importFromString(jsonString, oldStyles) {
-  if (!oldStyles) {
-    return API.getStylesInfo().then(styles => importFromString(jsonString, styles));
-  }
+function importFromString(jsonString) {
   const json = tryJSONparse(jsonString);
   if (!Array.isArray(json)) {
     return Promise.reject(new Error('the backup is not a valid JSON file'));
   }
-  const oldStylesById = new Map(
-    oldStyles.map(style => [style.id, style]));
-  const oldStylesByName = json.length && new Map(
-    oldStyles.map(style => [style.name.trim(), style]));
-
+  let oldStyles;
+  let oldStylesById;
+  let oldStylesByName;
   const stats = {
     added:       {names: [], ids: [], legend: 'importReportLegendAdded'},
     unchanged:   {names: [], ids: [], legend: 'importReportLegendIdentical'},
@@ -78,27 +73,25 @@ function importFromString(jsonString, oldStyles) {
     invalid:     {names: [], legend: 'importReportLegendInvalid'},
   };
 
-  let index = 0;
-  let lastRenderTime = performance.now();
-  const renderQueue = [];
-  const RENDER_NAP_TIME_MAX = 1000; // ms
-  const RENDER_QUEUE_MAX = 50; // number of styles
-  return proceed();
-
-  function proceed() {
-    while (index < json.length) {
-      const item = json[index++];
-      const info = analyze(item);
-      if (!info) {
-        continue;
+  return API.getAllStyles().then(styles => {
+    // make a copy of the current database, that may be used when we want to
+    // undo
+    oldStyles = styles;
+    oldStylesById = new Map(
+      oldStyles.map(style => [style.id, style]));
+    oldStylesByName = json.length && new Map(
+      oldStyles.map(style => [style.name.trim(), style]));
+    return Promise.all(json.map((item, i) => {
+      const info = analyze(item, i);
+      if (info) {
+        return API.importStyle(item)
+          .then(style => updateStats(style, info));
       }
-      return API.importStyle(item)
-        .then(style => account({style, info}));
-    }
-    return done();
-  }
+    }));
+  })
+    .then(done);
 
-  function analyze(item) {
+  function analyze(item, index) {
     if (typeof item !== 'object' ||
         !item ||
         !item.name ||
@@ -140,18 +133,6 @@ function importFromString(jsonString, oldStyles) {
     return oldStyle.name.trim() === newStyle.name.trim() ||
       ['updateUrl', 'originalMd5', 'originalDigest']
         .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
-  }
-
-  function account({style, info}) {
-    renderQueue.push(style);
-    if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
-    || renderQueue.length > RENDER_QUEUE_MAX) {
-      setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
-      renderQueue.length = 0;
-      lastRenderTime = performance.now();
-    }
-    updateStats(style, info);
-    return proceed();
   }
 
   function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
