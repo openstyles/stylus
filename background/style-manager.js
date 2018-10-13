@@ -14,8 +14,24 @@ to cleanup the temporary code. See /edit/live-preview.js.
 */
 const styleManager = (() => {
   const preparing = prepare();
+
+  /* styleId => {
+    data: styleData,
+    preview: styleData,
+    appliesTo: Set<url>
+  } */
   const styles = new Map();
+
+  /* url => {
+    maybeMatch: Set<styleId>,
+    sections: Object<styleId => {
+      id: styleId,
+      enabled: Boolean,
+      code: String
+    }>
+  } */
   const cachedStyleForUrl = createCache();
+
   const BAD_MATCHER = {test: () => false};
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
