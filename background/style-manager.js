@@ -26,7 +26,6 @@ const styleManager = (() => {
     maybeMatch: Set<styleId>,
     sections: Object<styleId => {
       id: styleId,
-      enabled: Boolean,
       code: String
     }>
   } */
@@ -104,36 +103,8 @@ const styleManager = (() => {
     const style = styles.get(id);
     const data = Object.assign({}, style.data, {enabled});
     return saveStyle(data)
-      .then(newData => {
-        style.data = newData;
-        for (const url of style.appliesTo) {
-          const cache = cachedStyleForUrl.get(url);
-          if (cache) {
-            cache.sections[newData.id].enabled = newData.enabled;
-          }
-        }
-        const message = {
-          method: 'styleUpdated',
-          reason: 'toggle',
-          codeIsUpdated: false,
-          style: {id, enabled}
-        };
-        // FIXME: is this faster?
-        if (isAllExtensionUrl(style.appliesTo)) {
-          return msg.broadcastExtension(message, 'both');
-        }
-        return msg.broadcast(message);
-      })
+      .then(newData => handleSave(newData, 'toggle', false))
       .then(() => id);
-  }
-
-  function isAllExtensionUrl(urls) {
-    for (const url of urls) {
-      if (!/^\w+?-extension:\/\//.test(url)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   function getStylesInfo(filter) {
@@ -236,7 +207,7 @@ const styleManager = (() => {
     };
   }
 
-  function broadcastStyleUpdated(data, reason, method) {
+  function broadcastStyleUpdated(data, reason, method, codeIsUpdated = true) {
     const style = styles.get(data.id);
     const excluded = new Set();
     const updated = new Set();
@@ -253,7 +224,6 @@ const styleManager = (() => {
         updated.add(url);
         cache.sections[data.id] = {
           id: data.id,
-          enabled: data.enabled,
           code
         };
       }
@@ -265,7 +235,8 @@ const styleManager = (() => {
         id: data.id,
         enabled: data.enabled
       },
-      reason
+      reason,
+      codeIsUpdated
     });
   }
 
@@ -285,7 +256,7 @@ const styleManager = (() => {
       });
   }
 
-  function handleSave(data, reason) {
+  function handleSave(data, reason, codeIsUpdated) {
     const style = styles.get(data.id);
     let method;
     if (!style) {
@@ -298,7 +269,7 @@ const styleManager = (() => {
       style.data = data;
       method = 'styleUpdated';
     }
-    return broadcastStyleUpdated(data, reason, method)
+    return broadcastStyleUpdated(data, reason, method, codeIsUpdated)
       .then(() => data);
   }
 
@@ -343,7 +314,7 @@ const styleManager = (() => {
     return result;
   }
 
-  function getSectionsByUrl(url, filter) {
+  function getSectionsByUrl(url, id) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
       cache = {
@@ -359,15 +330,8 @@ const styleManager = (() => {
           .map(i => styles.get(i))
       );
     }
-    if (filter) {
-      const sections = !filter.id ? Object.values(cache.sections) :
-        cache.sections[filter.id] ? [cache.sections[filter.id]] :
-        [];
-      return sections.filter(s => filterMatch(filter, s))
-        .reduce((o, v) => {
-          o[v.id] = v;
-          return o;
-        }, {});
+    if (id) {
+      return {[id]: cache.sections[id]};
     }
     return cache.sections;
 
@@ -377,10 +341,8 @@ const styleManager = (() => {
         if (code) {
           cache.sections[data.id] = {
             id: data.id,
-            enabled: data.enabled,
             code
           };
-          // FIXME: memory leak
           appliesTo.add(url);
         }
       }
@@ -421,6 +383,9 @@ const styleManager = (() => {
   function urlMatchStyle(url, style) {
     if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url))) {
       return 'excluded';
+    }
+    if (!style.enabled) {
+      return 'disabled';
     }
     return true;
   }

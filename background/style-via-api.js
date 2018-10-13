@@ -38,11 +38,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    const filter = {enabled: true};
-    if (id !== null) {
-      filter.id = id;
-    }
-    return styleManager.getSectionsByUrl(url, filter).then(sections => {
+    return styleManager.getSectionsByUrl(url, id).then(sections => {
       const tasks = [];
       for (const section of Object.values(sections)) {
         const styleId = section.id;

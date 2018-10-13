@@ -41,7 +41,7 @@ const APPLY = (() => {
     if (!chrome.app && document instanceof XMLDocument) {
       return API.styleViaAPI({action: 'styleApply'});
     }
-    return API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+    return API.getSectionsByUrl(getMatchUrl())
       .then(result => {
         const styles = Object.values(result);
         // CSS transition bug workaround: since we insert styles asynchronously,
@@ -182,7 +182,7 @@ const APPLY = (() => {
         if (request.codeIsUpdated === false) {
           applyStyleState(request.style);
         } else if (request.style.enabled) {
-          API.getSectionsByUrl(getMatchUrl(), {id: request.style.id})
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(sections => {
               if (!sections[request.style.id]) {
                 removeStyle(request.style);
@@ -197,14 +197,14 @@ const APPLY = (() => {
 
       case 'styleAdded':
         if (request.style.enabled) {
-          API.getSectionsByUrl(getMatchUrl(), {id: request.style.id})
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(buildSections)
             .then(applyStyles);
         }
         break;
 
       case 'urlChanged':
-        API.getSectionsByUrl(getMatchUrl(), {enabled: true})
+        API.getSectionsByUrl(getMatchUrl())
           .then(buildSections)
           .then(replaceAll);
         break;
@@ -288,7 +288,7 @@ const APPLY = (() => {
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        return API.getSectionsByUrl(getMatchUrl(), {id})
+        return API.getSectionsByUrl(getMatchUrl(), id)
           .then(buildSections)
           .then(applyStyles);
       }
