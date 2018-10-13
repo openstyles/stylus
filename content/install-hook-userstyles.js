@@ -145,9 +145,9 @@
 
   function onUpdate() {
     return new Promise((resolve, reject) => {
-      API.getStylesInfo({
+      API.findStyle({
         md5Url: getMeta('stylish-md5-url') || location.href
-      }).then(([style]) => {
+      }, true).then(style => {
         saveStyleCode('styleUpdate', style.name, {id: style.id})
           .then(resolve, reject);
       });

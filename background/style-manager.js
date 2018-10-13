@@ -118,10 +118,10 @@ const styleManager = (() => {
   }
 
   // used by install-hook-userstyles.js
-  function findStyle(filter) {
+  function findStyle(filter, noCode = false) {
     for (const style of styles.values()) {
       if (filterMatch(filter, style.data)) {
-        return style.data;
+        return noCode ? getStyleWithNoCode(style.data) : style.data;
       }
     }
     return null;
