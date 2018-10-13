@@ -157,6 +157,7 @@
     'text-align-all': true,
 
     'contain': true,
+    'mask-image': true,
     'mix-blend-mode': true,
     'isolation': true,
     'zoom': true,
