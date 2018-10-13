@@ -30,7 +30,16 @@ const styleManager = (() => {
       code: String
     }>
   } */
-  const cachedStyleForUrl = createCache();
+  const cachedStyleForUrl = createCache({
+    onDeleted: (url, cache) => {
+      for (const section of Object.values(cache.sections)) {
+        const style = styles.get(section.id);
+        if (style) {
+          style.appliesTo.delete(url);
+        }
+      }
+    }
+  });
 
   const BAD_MATCHER = {test: () => false};
   const compileRe = createCompiler(text => `^(${text})$`);
@@ -109,18 +118,22 @@ const styleManager = (() => {
           codeIsUpdated: false,
           style: {id, enabled}
         };
-        if ([...style.appliesTo].every(isExtensionUrl)) {
+        // FIXME: is this faster?
+        if (isAllExtensionUrl(style.appliesTo)) {
           return msg.broadcastExtension(message, 'both');
         }
-        // FIXME: this won't work with iframes
-        // return msg.broadcast(message, tab => style.appliesTo.has(tab.url));
         return msg.broadcast(message);
       })
       .then(() => id);
   }
 
-  function isExtensionUrl(url) {
-    return /^\w+?-extension:\/\//.test(url);
+  function isAllExtensionUrl(urls) {
+    for (const url of urls) {
+      if (!/^\w+?-extension:\/\//.test(url)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function getStylesInfo(filter) {
@@ -223,7 +236,7 @@ const styleManager = (() => {
     };
   }
 
-  function broadcastStyleUpdated(data, reason, method = 'styleUpdated') {
+  function broadcastStyleUpdated(data, reason, method) {
     const style = styles.get(data.id);
     const excluded = new Set();
     const updated = new Set();
@@ -289,9 +302,10 @@ const styleManager = (() => {
       .then(() => data);
   }
 
+  // get styles matching a URL, including sloppy regexps and excluded items.
   function getStylesInfoByUrl(url) {
-    // FIXME: do we want to cache this? Who would like  to rapidly using popup
-    // or searching the DB with the same URL?
+    // FIXME: do we want to cache this? Who would like to open popup rapidly
+    // or search the DB with the same URL?
     const result = [];
     for (const style of styles.values()) {
       let excluded = false;
@@ -351,8 +365,10 @@ const styleManager = (() => {
       // return {[filter.id]: cache.sections[filter.id]};
     // }
     if (filter) {
-      return Object.values(cache.sections)
-        .filter(s => filterMatch(filter, s))
+      const sections = !filter.id ? Object.values(cache.sections) :
+        cache.sections[filter.id] ? [cache.sections[filter.id]] :
+        [];
+      return sections.filter(s => filterMatch(filter, s))
         .reduce((o, v) => {
           o[v.id] = v;
           return o;
