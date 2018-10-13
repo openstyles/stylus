@@ -44,34 +44,29 @@
       icase = words.some(w => w === lower(w));
     }
 
-    const results = [];
-    return styleManager.getAllStyles()
-      .then(styles => {
-        if (ids) {
-          const idSet = new Set(ids);
-          return styles.filter(s => idSet.has(s.id));
+    return styleManager.getAllStyles().then(styles => {
+      if (ids) {
+        const idSet = new Set(ids);
+        styles = styles.filter(s => idSet.has(s.id));
+      }
+      const results = [];
+      for (const style of styles) {
+        const id = style.id;
+        if (!query || words && !words.length) {
+          results.push(id);
+          continue;
         }
-        return styles;
-      })
-      .then(styles => {
-        for (const style of styles) {
-          const id = style.id;
-          if (!query || words && !words.length) {
+        for (const part in PARTS) {
+          const text = style[part];
+          if (text && PARTS[part](text, rx, words, icase)) {
             results.push(id);
-            continue;
-          }
-          for (const part in PARTS) {
-            const text = style[part];
-            if (text && PARTS[part](text, rx, words, icase)) {
-              results.push(id);
-              break;
-            }
+            break;
           }
         }
-
-        if (cache.size) debounce(clearCache, 60e3);
-        return results;
-      });
+      }
+      if (cache.size) debounce(clearCache, 60e3);
+      return results;
+    });
   };
 
   function searchText(text, rx, words, icase) {
