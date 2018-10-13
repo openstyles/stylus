@@ -65,11 +65,12 @@
   }
 
   /**
-   * Parse the source and find the duplication
+   * Parse the source, find the duplication, and build sections with variables
    * @param _
    * @param {String} _.sourceCode
    * @param {Boolean=} _.checkDup
    * @param {Boolean=} _.metaOnly
+   * @param {Object} _.vars
    * @returns {Promise<{style, dup:Boolean?}>}
    */
   function build({
