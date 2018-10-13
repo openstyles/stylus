@@ -238,9 +238,6 @@ preinit();
   }
 })();
 
-prefs.subscribe(['editor.smartIndent'], (key, value) =>
-  CodeMirror.setOption('smartIndent', value));
-
 function preinit() {
   // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
   new MutationObserver((mutations, observer) => {
