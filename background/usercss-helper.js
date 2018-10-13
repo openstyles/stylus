@@ -79,7 +79,7 @@
     metaOnly,
     vars,
   }) {
-    return Promise.resolve(usercss.buildMeta(sourceCode))
+    return usercss.buildMeta(sourceCode)
       .then(style =>
         Promise.all([
           metaOnly ? style : doBuild(style),
@@ -98,31 +98,22 @@
     }
   }
 
-  // Parse the source, apply customizations, report fatal/syntax errors
+  // Build the style within aditional properties then inherit variable values
+  // from the old style.
   function parse(style) {
-    return fetchStyle()
+    return buildMeta(style)
       .then(buildMeta)
       .then(assignVars)
       .then(usercss.buildCode);
-
-    function fetchStyle() {
-      // restore if stripped by getStyleWithNoCode
-      if (typeof style.sourceCode !== 'string') {
-        return styleManager.get(style.id)
-          .then(oldStyle => {
-            style.sourceCode = oldStyle.sourceCode;
-            return style;
-          });
-      }
-      return Promise.resolve(style);
-    }
   }
 
+  // FIXME: simplify this to `installUsercss(sourceCode)`?
   function installUsercss(style) {
     return parse(style)
       .then(styleManager.installStyle);
   }
 
+  // FIXME: simplify this to `editSaveUsercss({sourceCode, exclusions})`?
   function editSaveUsercss(style) {
     return parse(style)
       .then(styleManager.editSave);
