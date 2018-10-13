@@ -690,7 +690,7 @@ self.parserlib = (() => {
 
       '<basic-shape>': 'inset() | circle() | ellipse() | polygon()',
 
-      '<bg-image>': '<image> | <gradient> | none',
+      '<bg-image>': '<image> | none',
 
       '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
                       'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
@@ -774,7 +774,7 @@ self.parserlib = (() => {
         return this['<ident>'](part) && !this['<generic-family>'](part);
       },
 
-      '<image>': '<uri>',
+      '<image>': '<uri> | <gradient> | cross-fade()',
 
       '<inflexible-breadth>': '<length-percentage> | min-content | max-content | auto',
 
