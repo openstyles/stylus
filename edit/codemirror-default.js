@@ -10,6 +10,21 @@
 
   const defaults = {
     autoCloseBrackets: prefs.get('editor.autoCloseBrackets'),
+    mode: 'css',
+    lineNumbers: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
+    foldGutter: true,
+    gutters: [
+      'CodeMirror-linenumbers',
+      'CodeMirror-foldgutter',
+      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
+    ],
+    matchBrackets: true,
+    hintOptions: {},
+    lintReportDelay: prefs.get('editor.lintReportDelay'),
+    styleActiveLine: true,
+    theme: prefs.get('editor.theme'),
+    keyMap: prefs.get('editor.keyMap'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
       'Alt-Enter': 'toggleStyle',
@@ -17,23 +32,7 @@
       'Alt-PageUp': 'prevEditor',
       'Ctrl-Pause': 'toggleEditorFocus',
     }),
-    foldGutter: true,
-    gutters: [
-      'CodeMirror-linenumbers',
-      'CodeMirror-foldgutter',
-      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
-    ],
-    // highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
-    hintOptions: {},
-    keyMap: prefs.get('editor.keyMap'),
-    lintReportDelay: prefs.get('editor.lintReportDelay'),
-    lineNumbers: true,
-    lineWrapping: prefs.get('editor.lineWrapping'),
-    matchBrackets: true,
     maxHighlightLength: 100e3,
-    mode: 'css',
-    styleActiveLine: true,
-    theme: prefs.get('editor.theme'),
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
