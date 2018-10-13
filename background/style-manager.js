@@ -142,7 +142,7 @@ const styleManager = (() => {
     } else {
       data = Object.assign({}, style.data, data);
     }
-    // FIXME: update installDate?
+    // FIXME: update updateDate? what about usercss config?
     return calcStyleDigest(data)
       .then(digest => {
         data.originalDigest = digest;
@@ -420,9 +420,16 @@ const styleManager = (() => {
     if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {
       return true;
     }
+    /*
+    According to CSS4 @document specification the entire URL must match.
+    Stylish-for-Chrome implemented it incorrectly since the very beginning.
+    We'll detect styles that abuse the bug by finding the sections that
+    would have been applied by Stylish but not by us as we follow the spec.
+    */
     if (section.regexps && section.regexps.some(r => compileSloppyRe(r).test(url))) {
       return 'sloppy';
     }
+    // TODO: check for invalid regexps?
     if (
       (!section.regexps || !section.regexps.length) &&
       (!section.urlPrefixes || !section.urlPrefixes.length) &&

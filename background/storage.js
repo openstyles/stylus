@@ -28,14 +28,3 @@ function calcStyleDigest(style) {
     return parts.join('');
   }
 }
-
-/*
-  According to CSS4 @document specification the entire URL must match.
-  Stylish-for-Chrome implemented it incorrectly since the very beginning.
-  We'll detect styles that abuse the bug by finding the sections that
-  would have been applied by Stylish but not by us as we follow the spec.
-  Additionally we'll check for invalid regexps.
-*/
-function detectSloppyRegexps({matchUrl, ids}) {
-  // TODO
-}
