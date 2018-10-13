@@ -331,7 +331,10 @@ const styleManager = (() => {
       );
     }
     if (id) {
-      return {[id]: cache.sections[id]};
+      if (cache.sections[id]) {
+        return {[id]: cache.sections[id]};
+      }
+      return {};
     }
     return cache.sections;
 
