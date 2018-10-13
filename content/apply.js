@@ -66,27 +66,27 @@ const APPLY = (() => {
     // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
-    if (CHROME || isOwnPage || Event.prototype.getPreventDefault || !injectPageScript()) {
-      return (el, content) => {
-        // FIXME: do we have to keep el.sheet.disabled?
-        el.textContent = content;
-      };
-    }
+    const usePageScript = CHROME || isOwnPage || Event.prototype.getPreventDefault ?
+      Promise.resolve(false) : injectPageScript();
     return (el, content) => {
-      const detail = pageObject({
-        method: 'setStyleContent',
-        id: el.id,
-        content
+      usePageScript.then(ok => {
+        if (!ok) {
+          // FIXME: do we have to keep el.sheet.disabled?
+          el.textContent = content;
+        } else {
+          const detail = pageObject({
+            method: 'setStyleContent',
+            id: el.id,
+            content
+          });
+          window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
+        }
       });
-      window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
     };
 
     function injectPageScript() {
-      // FIXME: does it work with XML?
       const scriptContent = EVENT_NAME => {
-        window.dispatchEvent(new CustomEvent(EVENT_NAME, {
-          detail: {method: 'pageScriptOK'}
-        }));
+        document.currentScript.remove();
         window.addEventListener(EVENT_NAME, function handler(e) {
           const {method, id, content} = e.detail;
           if (method === 'setStyleContent') {
@@ -102,22 +102,25 @@ const APPLY = (() => {
           }
         }, true);
       };
-      let ok = false;
-      const check = e => {
-        if (e.detail.method === 'pageScriptOK') {
-          ok = true;
-        }
-      };
-      window.addEventListener(EVENT_NAME, check, true);
-      try {
-        // eslint-disable-next-line no-eval
-        window.eval(`(${scriptContent})(${JSON.stringify(EVENT_NAME)})`);
-      } catch (err) {
-        // csp error
-      }
-      window.removeEventListener(EVENT_NAME, check, true);
-      return ok;
+      const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
+      const src = `data:application/javascript;base64,${btoa(code)}`;
+      const script = document.createElement('script');
+      const {resolve, promise} = deferred();
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.documentElement.appendChild(script);
+      return promise;
     }
+  }
+
+  function deferred() {
+    const o = {};
+    o.promise = new Promise((resolve, reject) => {
+      o.resolve = resolve;
+      o.reject = reject;
+    });
+    return o;
   }
 
   function getMatchUrl() {
