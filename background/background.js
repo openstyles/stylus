@@ -92,7 +92,7 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
     return;
   }
   msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
-    .catch(msg.broadcastError);
+    .catch(msg.ignoreError);
 });
 
 if (FIREFOX) {
@@ -156,7 +156,7 @@ navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
     // `apply.js` doesn't notify the background to update the icon,
     // so we have to refresh it manually.
     if (transitionQualifiers.includes('forward_back')) {
-      msg.sendTab(tabId, {method: 'updateCount'}).catch(msg.broadcastError);
+      msg.sendTab(tabId, {method: 'updateCount'}).catch(msg.ignoreError);
     }
   }
 });

@@ -37,7 +37,7 @@ const msg = (() => {
     broadcast,
     broadcastTab,
     broadcastExtension,
-    broadcastError,
+    ignoreError,
     on,
     onTab,
     onExtension,
@@ -87,7 +87,7 @@ const msg = (() => {
     }
   }
 
-  function broadcastError(err) {
+  function ignoreError(err) {
     if (err.message && (
       RX_NO_RECEIVER.test(err.message) ||
       RX_PORT_CLOSED.test(err.message)
@@ -99,7 +99,7 @@ const msg = (() => {
 
   function broadcast(data, filter) {
     return Promise.all([
-      send(data, 'both').catch(broadcastError),
+      send(data, 'both').catch(ignoreError),
       broadcastTab(data, filter, null, true, 'both')
     ]);
   }
@@ -134,14 +134,14 @@ const msg = (() => {
           if (message.id) {
             request = withCleanup(request, () => bg._msg.storage.delete(message.id));
           }
-          requests.push(request.catch(broadcastError));
+          requests.push(request.catch(ignoreError));
         }
         return Promise.all(requests);
       });
   }
 
   function broadcastExtension(...args) {
-    return send(...args).catch(broadcastError);
+    return send(...args).catch(ignoreError);
   }
 
   function on(fn) {

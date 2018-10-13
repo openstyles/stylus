@@ -258,6 +258,10 @@ const APPLY = (() => {
       // we don't care about iframes
       return;
     }
+    if (STYLE_VIA_API) {
+      API.styleViaAPI({method: 'updateCount'});
+      return;
+    }
     let count = 0;
     for (const id of styleElements.keys()) {
       if (!disabledElements.has(id)) {
@@ -269,7 +273,7 @@ const APPLY = (() => {
       method: 'invokeAPI',
       name: 'updateIconBadge',
       args: [count]
-    }).catch(() => {});
+    }).catch(msg.ignoreError);
   }
 
   function applyStyleState({id, enabled}) {
