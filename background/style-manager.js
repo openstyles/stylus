@@ -312,9 +312,10 @@ const styleManager = (() => {
       let sloppy = false;
       let sectionMatched = false;
       const match = urlMatchStyle(url, style.data);
-      if (match === false) {
-        continue;
-      }
+      // TODO: enable this when the function starts returning false
+      // if (match === false) {
+        // continue;
+      // }
       if (match === 'excluded') {
         excluded = true;
       }
@@ -386,7 +387,6 @@ const styleManager = (() => {
     }
   }
 
-  // TODO: report excluded styles and sloppy regexps?
   function getAppliedCode(url, data) {
     if (urlMatchStyle(url, data) !== true) {
       return;
