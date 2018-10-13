@@ -36,7 +36,6 @@ const APPLY = (() => {
   }
 
   function init() {
-    // FIXME: getStylesFallback?
     if (STYLE_VIA_API) {
       return API.styleViaAPI({method: 'styleApply'});
     }
@@ -136,28 +135,6 @@ const APPLY = (() => {
     }
     return matchUrl;
   }
-
-  /**
-   * TODO: remove when FF fixes the bug.
-   * Firefox borks sendMessage in same-origin iframes that have 'src' with a real path on the site.
-   * We implement a workaround for the initial styleApply case only.
-   * Everything else (like toggling of styles) is still buggy.
-   * @param {Object} msg
-   * @param {Function} callback
-   * @returns {Boolean|undefined}
-   */
-  // function getStylesFallback(msg) {
-    // if (window !== parent &&
-        // location.href !== 'about:blank') {
-      // try {
-        // if (parent.location.origin === location.origin &&
-            // parent.location.href !== location.href) {
-          // chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
-          // return true;
-        // }
-      // } catch (e) {}
-    // }
-  // }
 
   function applyOnMessage(request) {
     if (request.method === 'ping') {
