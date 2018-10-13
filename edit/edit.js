@@ -335,7 +335,7 @@ function onRuntimeMessage(request) {
     case 'styleDeleted':
       if (editor.getStyleId() === request.style.id) {
         document.removeEventListener('visibilitychange', beforeUnload);
-        window.onbeforeunload = null;
+        document.removeEventListener('beforeunload', beforeUnload);
         closeCurrentTab();
         break;
       }
@@ -364,11 +364,7 @@ function beforeUnload(e) {
   }
   if (editor && editor.isDirty()) {
     // neither confirm() nor custom messages work in modern browsers but just in case
-    if (e) {
-      e.returnValue = t('styleChangesNotSaved');
-    } else {
-      return t('styleChangesNotSaved');
-    }
+    e.returnValue = t('styleChangesNotSaved');
   }
 }
 
