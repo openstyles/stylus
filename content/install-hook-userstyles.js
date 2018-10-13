@@ -203,25 +203,19 @@
 
 
   function getResource(url, options) {
-    return new Promise(resolve => {
-      if (url.startsWith('#')) {
-        resolve(document.getElementById(url.slice(1)).textContent);
-      } else {
-        API.download(Object.assign({
-          url,
-          timeout: 60e3,
-          // USO can't handle POST requests for style json
-          body: null,
-        }, options)).then(result => {
-          const error = result && result.__ERROR__;
-          if (error) {
-            alert('Error' + (error ? '\n' + error : ''));
-          } else {
-            resolve(result);
-          }
-        });
-      }
-    });
+    if (url.startsWith('#')) {
+      return Promise.resolve(document.getElementById(url.slice(1)).textContent);
+    }
+    return API.download(Object.assign({
+      url,
+      timeout: 60e3,
+      // USO can't handle POST requests for style json
+      body: null,
+    }, options))
+      .catch(error => {
+        alert('Error' + (error ? '\n' + error : ''));
+        throw error;
+      });
   }
 
 
