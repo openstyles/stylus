@@ -23,16 +23,19 @@ const navigatorUtil = (() => {
     chrome.webNavigation.onCommitted.addListener(data =>
       fixNTPUrl(data)
         .then(() => executeCallbacks(handler.urlChange, data, 'committed'))
+        .catch(console.error)
     );
 
     chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
       fixNTPUrl(data)
         .then(() => executeCallbacks(handler.urlChange, data, 'historyStateUpdated'))
+        .catch(console.error)
     );
 
     chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
       fixNTPUrl(data)
         .then(() => executeCallbacks(handler.urlChange, data, 'referenceFragmentUpdated'))
+        .catch(console.error)
     );
   }
 

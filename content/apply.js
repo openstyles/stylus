@@ -219,6 +219,10 @@ const APPLY = (() => {
           }
         });
         break;
+
+      case 'updateCount':
+        updateCount();
+        break;
     }
   }
 
@@ -335,11 +339,6 @@ const APPLY = (() => {
       applySections(section.id, section.code);
     }
     docRootObserver.firstStart();
-
-    // FIXME
-    // if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
-      // setContentsInPageContext();
-    // }
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
       initDocRewriteObserver();

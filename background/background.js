@@ -147,11 +147,18 @@ prefs.initializing.then(() => {
   refreshAllIcons();
 });
 
-navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
+navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
   if (type === 'committed' && !frameId) {
-    // it seems that the tab icon would be reset when pressing F5. We
-    // invalidate the cache here so it would be refreshed.
+    // it seems that the tab icon would be reset by navigation. We
+    // invalidate the cache here so it would be refreshed by `apply.js`.
     tabIcons.delete(tabId);
+
+    // however, if the tab was swapped in by forward/backward buttons,
+    // `apply.js` doesn't notify the background to update the icon,
+    // so we have to refresh it manually.
+    if (transitionQualifiers.includes('forward_back')) {
+      msg.sendTab(tabId, {method: 'updateCount'}).catch(msg.broadcastError);
+    }
   }
 });
 
