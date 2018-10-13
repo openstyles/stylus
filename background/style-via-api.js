@@ -70,7 +70,8 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
         cache.set(tab.id, tabFrames);
       }
       return Promise.all(tasks);
-    });
+    })
+      .then(() => updateCount(null, {tab, frameId}));
   }
 
   function styleDeleted({style: {id}}, {tab, frameId}) {
@@ -79,7 +80,8 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (code && !duplicateCodeExists({frameStyles, id, code})) {
       delete frameStyles[id];
       removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles);
-      return removeCSS(tab.id, frameId, code);
+      return removeCSS(tab.id, frameId, code)
+        .then(() => updateCount(null, {tab, frameId}));
     } else {
       return NOP;
     }
