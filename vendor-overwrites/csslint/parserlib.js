@@ -194,6 +194,7 @@ self.parserlib = (() => {
     'border-bottom-right-radius': '<x-one-radius>',
     'border-bottom-style':        '<border-style>',
     'border-bottom-width':        '<border-width>',
+    'border-boundary':            'none | parent | display',
     'border-inline-color':        '<color>{1,2}',
     'border-inline-end':          '<border-shorthand>',
     'border-inline-end-color':    '<color>',
@@ -561,6 +562,7 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+    'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering':   'auto | optimizeSpeed | crispEdges | geometricPrecision',
     'size':              1,
     'speak':             'normal | none | spell-out',
@@ -4240,14 +4242,25 @@ self.parserlib = (() => {
 
     _viewport() {
       const stream = this._tokenStream;
-      stream.mustMatch(Tokens.VIEWPORT_SYM);
+      const start = stream.mustMatch(Tokens.VIEWPORT_SYM);
 
-      this.fire('startviewport');
+      // only viewport-fit is allowed but we're reusing MediaQuery syntax unit,
+      // and accept anything for the sake of simplicity since the spec isn't yet final:
+      // https://drafts.csswg.org/css-round-display/#extending-viewport-rule
+      const descriptors = this._mediaQueryList();
+
+      this.fire({
+        type: 'startviewport',
+        descriptors,
+      }, start);
 
       this._ws();
       this._readDeclarations();
 
-      this.fire('endviewport');
+      this.fire({
+        type: 'endviewport',
+        descriptors,
+      });
     }
 
     _document() {
@@ -5381,6 +5394,7 @@ self.parserlib = (() => {
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
+      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
     ]),
 
     media: new Map([
