@@ -467,6 +467,7 @@ self.parserlib = (() => {
     'marquee-speed':      1,
     'marquee-style':      1,
     'mask':               1,
+    'mask-image':         '[ none | <image> | <uri> ]#',
     'max-height':         'none | <width-height>',
     'max-width':          'none | <width-height>',
     'min-height':         'auto | <width-height>',
