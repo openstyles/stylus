@@ -125,7 +125,6 @@ function initPopup() {
         if (pong) {
           return;
         }
-        ignoreChromeError();
         // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
         // so we'll wait a bit to handle popup being invoked right after switching
         if (retryCountdown > 0 && (

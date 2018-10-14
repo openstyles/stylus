@@ -249,6 +249,7 @@ function createStyleTargetsElement({entry, style}) {
   let numTargets = 0;
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
+    // FIXME: what does it do?
     const isExcluded = type === 'exclusions';
     const sections = isExcluded ? [''] : style.sections;
     if (isExcluded && !newUI.enabled && Object.keys(style.exclusions || {}).length > 0) {
