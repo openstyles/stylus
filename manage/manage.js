@@ -100,8 +100,7 @@ function initGlobalEvents() {
   setupLivePrefs();
   sorter.init();
 
-  $$('[id^="manage.newUI"]')
-    .forEach(el => (el.oninput = (el.onchange = switchUI)));
+  prefs.subscribe(['manage.newUI'], () => switchUI());
 
   switchUI({styleOnly: true});
 
