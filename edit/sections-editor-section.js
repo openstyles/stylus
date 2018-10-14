@@ -116,8 +116,6 @@ function createSection({
 
   linter.enableForEditor(cm);
 
-  let lastActive = 0;
-
   const section = {
     id: sectionId,
     el,
@@ -131,7 +129,6 @@ function createSection({
     isRemoved: () => removed,
     onChange,
     off,
-    getLastActive: () => lastActive,
     appliesTo
   };
   return section;
@@ -197,10 +194,6 @@ function createSection({
     if (!FIREFOX) {
       cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
     }
-    cm.on('focus', () => {
-      lastActive = Date.now();
-    });
-
     cm.display.wrapper.addEventListener('keydown', event =>
       handleKeydown(cm, event), true);
 
