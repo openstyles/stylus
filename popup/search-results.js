@@ -94,7 +94,9 @@ window.addEventListener('showStyles:done', function _() {
   function init() {
     setTimeout(() => document.body.classList.add(BODY_CLASS));
 
-    $('#find-styles-inline-group').classList.add('hidden');
+    if(prefs.get('popupui') === 1) {
+      $('#find-styles-inline-group').classList.add('hidden');
+    }
 
     dom.container = $('#search-results');
     dom.container.dataset.empty = '';
