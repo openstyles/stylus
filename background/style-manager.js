@@ -281,7 +281,7 @@ const styleManager = (() => {
     // FIXME: do we want to cache this? Who would like to open popup rapidly
     // or search the DB with the same URL?
     const result = [];
-    const datas = !id ? styles.values.map(s => s.data) :
+    const datas = !id ? [...styles.values()].map(s => s.data) :
       styles.has(id) ? [styles.get(id).data] : [];
     for (const data of datas) {
       let excluded = false;

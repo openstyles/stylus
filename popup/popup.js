@@ -53,7 +53,7 @@ function onRuntimeMessage(msg) {
     case 'styleUpdated':
     case 'exclusionsUpdated':
       if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
-      handleUpdate(msg.style);
+      handleUpdate(msg);
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
@@ -499,20 +499,31 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate(style) {
-  if ($(ENTRY_ID_PREFIX + style.id)) {
-    createStyleElement({style, check: true});
-    return;
-  }
+function handleUpdate({style, reason}) {
   if (!tabURL) return;
-  // Add an entry when a new style for the current url is installed
-  API.getStylesByUrl(tabURL, style.id).then(([style]) => {
-    if (style) {
+
+  fetchStyle()
+    .then(style => {
+      if (!style) {
+        return;
+      }
+      if ($(ENTRY_ID_PREFIX + style.id)) {
+        createStyleElement({style});
+        return;
+      }
       document.body.classList.remove('blocked');
       $$.remove('.blocked-info, #no-styles');
-      createStyleElement({style, check: true});
+      createStyleElement({style});
+    })
+    .catch(console.error);
+
+  function fetchStyle() {
+    if (reason === 'toggle' && $(ENTRY_ID_PREFIX + style.id)) {
+      return Promise.resolve(style);
     }
-  });
+    return API.getStylesByUrl(tabURL, style.id)
+      .then(([style]) => style);
+  }
 }
 
 
