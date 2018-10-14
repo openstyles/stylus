@@ -406,6 +406,7 @@ function onRuntimeMessage(msg, sender) {
   return fn.apply(context, msg.args);
 }
 
+// FIXME: popup.js also open editor but it doesn't use this API.
 function openEditor({id}) {
   let url = '/edit.html';
   if (id) {

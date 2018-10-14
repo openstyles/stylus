@@ -1,3 +1,4 @@
+/* global promisify */
 /* exported prefs */
 'use strict';
 
@@ -178,23 +179,6 @@ const prefs = (() => {
       }
     },
   };
-
-  function promisify(fn) {
-    return (...args) =>
-      new Promise((resolve, reject) => {
-        fn(...args, (...result) => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-          } else if (result.length === 0) {
-            resolve(undefined);
-          } else if (result.length === 1) {
-            resolve(result[0]);
-          } else {
-            resolve(result);
-          }
-        });
-      });
-  }
 
   function setAll(settings, synced) {
     for (const [key, value] of Object.entries(settings)) {
