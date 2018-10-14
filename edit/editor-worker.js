@@ -1,5 +1,4 @@
 /* global importScripts workerUtil CSSLint require metaParser */
-/* exported editorWorker */
 'use strict';
 
 importScripts('/js/worker-util.js');

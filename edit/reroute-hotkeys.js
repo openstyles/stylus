@@ -14,10 +14,10 @@ const rerouteHotkeys = (() => {
     'colorpicker',
   ]);
 
-  rerouteHotkeys(true);
-
   return rerouteHotkeys;
 
+  // note that this function relies on `editor`. Calling this function before
+  // the editor is initialized may throw an error.
   function rerouteHotkeys(enable, immediately) {
     if (!immediately) {
       debounce(rerouteHotkeys, 0, enable, true);
@@ -29,9 +29,6 @@ const rerouteHotkeys = (() => {
   }
 
   function rerouteHandler(event) {
-    if (typeof editor === 'undefined') {
-      return;
-    }
     const keyName = CodeMirror.keyName(event);
     if (!keyName) {
       return;

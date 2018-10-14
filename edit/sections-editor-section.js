@@ -70,17 +70,21 @@ function createResizeGrip(cm) {
 }
 
 function createSection({
+  // data model
   originalSection,
-  genId,
   dirty,
+  // util
+  nextEditor,
+  prevEditor,
+  genId,
+  // emit events
+  // TODO: better names like `onRemoved`? Or make a real event emitter.
   showMozillaFormatImport,
   removeSection,
   insertSectionAfter,
   moveSectionUp,
   moveSectionDown,
   restoreSection,
-  nextEditor,
-  prevEditor
 }) {
   const sectionId = genId();
   const el = template.section.cloneNode(true);
