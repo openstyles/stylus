@@ -740,6 +740,7 @@ body.disabled #disable-all-icon {
   vertical-align: middle;
 }
 
+#find-styles.hidden,
 body.blocked #installed > *,
 body.blocked #find-styles-wrapper,
 body.blocked #write-style-wrapper {

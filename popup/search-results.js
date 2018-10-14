@@ -81,8 +81,8 @@ window.addEventListener('showStyles:done', function _() {
       }
       event.preventDefault();
 
-      this.textContent = this.title;
-      this.title = '';
+      // hide search link/icons
+      this.parentNode.classList.add('hidden'); 
 
       init();
       load();
