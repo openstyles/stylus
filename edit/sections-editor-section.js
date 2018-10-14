@@ -180,15 +180,6 @@ function createSection({
         event.preventDefault();
         showMozillaFormatImport(text);
       }
-      // FIXME: why?
-      // if (editors.length === 1) {
-        // setTimeout(() => {
-          // if (cm.display.sizer.clientHeight > cm.display.wrapper.clientHeight) {
-            // maximizeCodeHeight.stats = null;
-            // maximizeCodeHeight(cm.getSection(), true);
-          // }
-        // });
-      // }
     });
     if (!FIREFOX) {
       cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
