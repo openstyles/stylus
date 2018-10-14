@@ -404,7 +404,6 @@ function initStyleData() {
       // strip URL parameters when invoked for a non-existent id
       if (!style.id) {
         history.replaceState({}, document.title, location.pathname);
-        // FIXME: add style -> edit style
       }
       return style;
     });
