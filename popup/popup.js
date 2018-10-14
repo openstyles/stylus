@@ -25,7 +25,7 @@ getActiveTab()
   )
   .then(url => Promise.all([
     (tabURL = URLS.supported(url) ? url : '') &&
-      API.getStylesInfoByUrl(tabURL),
+      API.getStylesByUrl(tabURL, true),
     onDOMready().then(initPopup),
   ]))
   .then(([results]) => {

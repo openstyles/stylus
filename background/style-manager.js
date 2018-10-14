@@ -58,7 +58,7 @@ const styleManager = (() => {
     toggleStyle,
     setStyleExclusions,
     getAllStyles, // used by import-export
-    getStylesInfoByUrl, // used by popup
+    getStylesByUrl, // used by popup
     styleExists,
   });
 
@@ -277,7 +277,7 @@ const styleManager = (() => {
   }
 
   // get styles matching a URL, including sloppy regexps and excluded items.
-  function getStylesInfoByUrl(url) {
+  function getStylesByUrl(url, noCode = false) {
     // FIXME: do we want to cache this? Who would like to open popup rapidly
     // or search the DB with the same URL?
     const result = [];
@@ -308,7 +308,7 @@ const styleManager = (() => {
       }
       if (sectionMatched) {
         result.push({
-          data: getStyleWithNoCode(style.data),
+          data: noCode ? getStyleWithNoCode(style.data) : style.data,
           excluded,
           sloppy
         });
