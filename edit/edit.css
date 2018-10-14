@@ -76,48 +76,11 @@ label {
   min-height: 1.4rem;
 }
 
-#excluded-wrap {
-  align-items: center;
-}
-
-#exclusions h3 {
-  margin-top: 0;
-}
-
-#exclusions .exclusion-input {
-  flex: auto;
-}
-
-#exclusions button {
-  margin-left: 2px;
-}
-
-#exclusions .exclusion-input:invalid {
-  border-color: red;
-}
-
-#exclusions .exclusion-delete .svg-icon {
-  pointer-events: none;
-  vertical-align: text-top;
-  height: 15px;
-}
-
-#excluded-stats:not(:empty) {
-  background-color: darkcyan;
-  border-color: darkcyan;
-  color: white;
-  font-size: 0.7rem;
-  font-weight: normal;
-  padding: 2px 5px;
-  position: relative;
-  top: -2px;
-}
-
 /* basic info */
 #basic-info {
   margin-bottom: 1rem;
 }
-#name, #excluded-input {
+#name {
   width: 100%;
 }
 #basic-info-name {
@@ -478,7 +441,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin: 0;
   padding: 0;
 }
-.applies-to li, .exclusion-entry {
+.applies-to li {
   display: flex;
   flex-wrap: wrap;
   list-style-type: none;

@@ -315,55 +315,6 @@
     "message": "Enable",
     "description": "Label for the button to enable a style"
   },
-  "excludedDomain": {
-    "message": "Domain",
-    "description": "Label for a domain or subdomain portion of an URL used to exclude a style"
-  },
-  "excludedPrefix": {
-    "message": "Prefix",
-    "description": "Label for a full url with a subdirectory to be used as the beginning portion of a URL to match to exclude a style"
-  },
-  "exclusionsAddTitle": {
-    "message": "Add exclusion",
-    "description": "Title of popup to add an excluded site or page (URL)"
-  },
-  "exclusionsHeader": {
-    "message": "Excluded",
-    "description": "Title of user configurable lists of site urls to exclude per style"
-  },
-  "exclusionsHelp": {
-    "message": "Exclusion entries are only checked when a style is set to be applied to a page, and if an exclusion is found, the given style (and all internal sections) will not be applied to that page.\n\nThe list of exclusions is set separately from the userstyle so that it will not be effected when updating or editing the style itself. This is useful because you can exclude pages that would be otherwise be effected by a global style.\n\nAdd one or more exclusion entries for each style. An exclusion entry string contains a pattern that will match a web location (URL). This string may contain wildcards (\"*\") to match any portion of a URL, e.g. \"forum.*.com\" will exclude the forum sub-domains of all top level dot-com domains. Regular expressions are allowed, except `.` and `*` are altered, and are saved as a string so character classes must be doubly escaped (e.g. `\\\\w`).\n\nExcluded pages are automatically updated while typing; invalid entries will be removed on page reload!",
-    "description": "Help text for user set style exclusions"
-  },
-  "exclusionsHelpTitle": {
-    "message": "Set Style Exclusions",
-    "description": "Header text for help modal"
-  },
-  "exclusionsvalidateEntry": {
-    "message": "Enter a unique and valid URL",
-    "description": "Text for an alert notifying the user that an entered URL is not unique or invalid"
-  },
-  "exclusionsPopupTitle": {
-    "message": "Exclude the site or page",
-    "description": "Title of exclusion popup dialog within the extension popup"
-  },
-  "exclusionsPopupTip": {
-    "message": "Right-click to edit exclusions on this page",
-    "description": "Title on the checkbox in the popup to let the user know how to edit exclusions on the current page"
-  },
-  "exclusionsPrefix": {
-    "message": "Excluded on: ",
-    "description": "Prefix label added to the applies to column in the style manager"
-  },
-  "exclusionsStatus": {
-    "message": "$number$ pages",
-    "description": "Label added next to the Excluded Pages header when 'number' is not zero",
-    "placeholders": {
-      "number": {
-        "content": "$1"
-      }
-    }
-  },
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"

@@ -234,17 +234,11 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
-    // const exclusionList = exclusions.get();
-    // exclusions.save({
-      // id: style.id,
-      // exclusionList
-    // });
     return ensureUniqueStyle(code)
       .then(() => API.editSaveUsercss({
         id: style.id,
         enabled: style.enabled,
         sourceCode: code,
-        // exclusions: exclusionList
       }))
       .then(replaceStyle)
       .catch(err => {

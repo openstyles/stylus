@@ -51,7 +51,6 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
-    case 'exclusionsUpdated':
       if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
       handleUpdate(msg);
       break;
@@ -258,9 +257,9 @@ function createStyleElement({
     const checkbox = $('.checker', entry);
     Object.assign(checkbox, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
-      title: t('exclusionsPopupTip'),
+      // title: t('exclusionsPopupTip'),
       onclick: handleEvent.toggle,
-      oncontextmenu: handleEvent.openExcludeMenu
+      // oncontextmenu: handleEvent.openExcludeMenu
     });
     const editLink = $('.style-edit-link', entry);
     Object.assign(editLink, {
@@ -294,15 +293,9 @@ function createStyleElement({
 
   style = Object.assign(entry.styleMeta, style);
 
-  if (style.enabled) {
-    entry.classList.remove('disabled');
-    entry.classList.add('enabled');
-    $('.checker', entry).checked = true;
-  } else {
-    entry.classList.add('disabled');
-    entry.classList.remove('enabled');
-    $('.checker', entry).checked = false;
-  }
+  entry.classList.toggle('disabled', !style.enabled);
+  entry.classList.toggle('enabled', style.enabled);
+  $('.checker', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.name;
@@ -324,7 +317,6 @@ function createStyleElement({
     style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
       '' : 'none';
 
-  // entry.classList.toggle('excluded', style.excluded);
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
@@ -434,12 +426,6 @@ Object.assign(handleEvent, {
       event.button === 2)) {
       return;
     }
-    // open exclude page config dialog on right-click
-    if (event.target.classList.contains('checker')) {
-      this.oncontextmenu = handleEvent.openExcludeMenu;
-      event.preventDefault();
-      return;
-    }
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
@@ -481,21 +467,6 @@ Object.assign(handleEvent, {
       handleEvent.openURLandHide.call(this, event);
     }
   },
-
-  openExcludeMenu(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const chkbox = this;
-    const entry = event.target.closest('.entry');
-    if (!chkbox.eventHandled) {
-      chkbox.eventHandled = true;
-      popupExclusions
-        .openPopupDialog(entry, tabURL)
-        .then(() => {
-          chkbox.eventHandled = null;
-        });
-    }
-  }
 });
 
 
