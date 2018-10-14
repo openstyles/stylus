@@ -447,7 +447,6 @@ function createSectionsEditor(style) {
     focusOn = 0,
     done
   }) {
-    let renderIndex = sections.length;
     container.classList.add('hidden');
     chunk();
 
@@ -458,8 +457,8 @@ function createSectionsEditor(style) {
           sections[focusOn].cm.focus();
         }
         container.classList.remove('hidden');
-        for (; renderIndex < sections.length; renderIndex++) {
-          sections[renderIndex].cm.refreshOnView();
+        for (const section of sections) {
+          section.cm.refreshOnView();
         }
         if (done) {
           done();
