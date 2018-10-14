@@ -277,15 +277,17 @@ const styleManager = (() => {
   }
 
   // get styles matching a URL, including sloppy regexps and excluded items.
-  function getStylesByUrl(url, noCode = false) {
+  function getStylesByUrl(url, id = null) {
     // FIXME: do we want to cache this? Who would like to open popup rapidly
     // or search the DB with the same URL?
     const result = [];
-    for (const style of styles.values()) {
+    const datas = !id ? styles.values.map(s => s.data) :
+      styles.has(id) ? [styles.get(id).data] : [];
+    for (const data of datas) {
       let excluded = false;
       let sloppy = false;
       let sectionMatched = false;
-      const match = urlMatchStyle(url, style.data);
+      const match = urlMatchStyle(url, data);
       // TODO: enable this when the function starts returning false
       // if (match === false) {
         // continue;
@@ -293,7 +295,7 @@ const styleManager = (() => {
       if (match === 'excluded') {
         excluded = true;
       }
-      for (const section of style.data.sections) {
+      for (const section of data.sections) {
         if (styleCodeEmpty(section.code)) {
           continue;
         }
@@ -308,7 +310,7 @@ const styleManager = (() => {
       }
       if (sectionMatched) {
         result.push({
-          data: noCode ? getStyleWithNoCode(style.data) : style.data,
+          data: getStyleWithNoCode(data),
           excluded,
           sloppy
         });

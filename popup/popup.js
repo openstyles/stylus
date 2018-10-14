@@ -25,7 +25,7 @@ getActiveTab()
   )
   .then(url => Promise.all([
     (tabURL = URLS.supported(url) ? url : '') &&
-      API.getStylesByUrl(tabURL, true),
+      API.getStylesByUrl(tabURL),
     onDOMready().then(initPopup),
   ]))
   .then(([results]) => {
@@ -506,18 +506,13 @@ function handleUpdate(style) {
   }
   if (!tabURL) return;
   // Add an entry when a new style for the current url is installed
-  // FIXME: what does this do?
-  // API.getStyles({
-    // matchUrl: tabURL,
-    // stopOnFirst: true,
-    // omitCode: true,
-  // }).then(([style]) => {
-    // if (style) {
-      // document.body.classList.remove('blocked');
-      // $$.remove('.blocked-info, #no-styles');
-      // createStyleElement({style, check: true});
-    // }
-  // });
+  API.getStylesByUrl(tabURL, style.id).then(([style]) => {
+    if (style) {
+      document.body.classList.remove('blocked');
+      $$.remove('.blocked-info, #no-styles');
+      createStyleElement({style, check: true});
+    }
+  });
 }
 
 

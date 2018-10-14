@@ -25,7 +25,7 @@
     if (/^url:/i.test(query)) {
       matchUrl = query.slice(query.indexOf(':') + 1).trim();
       if (matchUrl) {
-        return styleManager.getStylesByUrl(matchUrl, true)
+        return styleManager.getStylesByUrl(matchUrl)
           .then(results => results.map(r => r.data.id));
       }
     }
