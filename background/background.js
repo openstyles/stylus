@@ -1,51 +1,54 @@
-/*
-global dbExec getStyles saveStyle deleteStyle
-global handleCssTransitionBug detectSloppyRegexps
-global openEditor
-global styleViaAPI
-global loadScript
-global usercss
-*/
+/* global download prefs openURL FIREFOX CHROME VIVALDI
+  openEditor debounce URLS ignoreChromeError queryTabs getTab
+  styleManager msg navigatorUtil iconUtil workerUtil */
 'use strict';
 
-window.API_METHODS = Object.assign(window.API_METHODS || {}, {
+// eslint-disable-next-line no-var
+var backgroundWorker = workerUtil.createWorker({
+  url: '/background/background-worker.js'
+});
 
-  getStyles,
-  saveStyle,
-  deleteStyle,
+window.API_METHODS = Object.assign(window.API_METHODS || {}, {
+  deleteStyle: styleManager.deleteStyle,
+  editSave: styleManager.editSave,
+  findStyle: styleManager.findStyle,
+  getAllStyles: styleManager.getAllStyles, // used by importer
+  getSectionsByUrl: styleManager.getSectionsByUrl,
+  getStyle: styleManager.get,
+  getStylesByUrl: styleManager.getStylesByUrl,
+  importStyle: styleManager.importStyle,
+  installStyle: styleManager.installStyle,
+  styleExists: styleManager.styleExists,
+  toggleStyle: styleManager.toggleStyle,
+
+  getTabUrlPrefix() {
+    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
+  },
 
   download(msg) {
     delete msg.method;
     return download(msg.url, msg);
   },
   parseCss({code}) {
-    return usercss.invokeWorker({action: 'parse', code});
+    return backgroundWorker.parseMozFormat({code});
   },
   getPrefs: prefs.getAll,
-  healthCheck: () => dbExec().then(() => true),
 
-  detectSloppyRegexps,
   openEditor,
-  updateIcon,
+
+  updateIconBadge(count) {
+    return updateIconBadge(this.sender.tab.id, count);
+  },
 
   // exposed for stuff that requires followup sendMessage() like popup::openSettings
   // that would fail otherwise if another extension forced the tab to open
   // in the foreground thus auto-closing the popup (in Chrome)
   openURL,
 
-  closeTab: (msg, sender, respond) => {
-    chrome.tabs.remove(msg.tabId || sender.tab.id, () => {
-      if (chrome.runtime.lastError && msg.tabId !== sender.tab.id) {
-        respond(new Error(chrome.runtime.lastError.message));
-      }
-    });
-    return KEEP_CHANNEL_OPEN;
-  },
-
   optionsCustomizeHotkeys() {
     return browser.runtime.openOptionsPage()
       .then(() => new Promise(resolve => setTimeout(resolve, 100)))
-      .then(() => sendMessage({method: 'optionsCustomizeHotkeys'}));
+      .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
   },
 });
 
@@ -54,67 +57,31 @@ var browserCommands, contextMenus;
 
 // *************************************************************************
 // register all listeners
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.on(onRuntimeMessage);
+
+navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
+  if (type === 'committed') {
+    // styles would be updated when content script is injected.
+    return;
+  }
+  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
+    .catch(msg.ignoreError);
+});
 
 if (FIREFOX) {
-  // see notes in apply.js for getStylesFallback
-  const MSG_GET_STYLES = 'getStyles:';
-  const MSG_GET_STYLES_LEN = MSG_GET_STYLES.length;
-  chrome.runtime.onConnect.addListener(port => {
-    if (!port.name.startsWith(MSG_GET_STYLES)) return;
-    const tabId = port.sender.tab.id;
-    const frameId = port.sender.frameId;
-    const options = tryJSONparse(port.name.slice(MSG_GET_STYLES_LEN));
-    port.disconnect();
-    getStyles(options).then(styles => {
-      if (!styles.length) return;
-      chrome.tabs.executeScript(tabId, {
-        code: `
-          applyOnMessage({
-            method: 'styleApply',
-            styles: ${JSON.stringify(styles)},
-          })
-        `,
-        runAt: 'document_start',
-        frameId,
-      });
-    });
+  // FF applies page CSP even to content scripts, https://bugzil.la/1267027
+  navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
+    url: [
+      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
+      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
+    ]
   });
-}
-
-{
-  const listener =
-    URLS.chromeProtectsNTP
-      ? webNavigationListenerChrome
-      : webNavigationListener;
-
-  chrome.webNavigation.onBeforeNavigate.addListener(data =>
-    listener(null, data));
-
-  chrome.webNavigation.onCommitted.addListener(data =>
-    listener('styleApply', data));
-
-  chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
-    listener('styleReplaceAll', data));
-
-  chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
-    listener('styleReplaceAll', data));
-
-  if (FIREFOX) {
-    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
-    chrome.webNavigation.onCommitted.addListener(webNavUsercssInstallerFF, {
-      url: [
-        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
-        {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
-      ]
-    });
-    // FF misses some about:blank iframes so we inject our content script explicitly
-    chrome.webNavigation.onDOMContentLoaded.addListener(webNavIframeHelperFF, {
-      url: [
-        {urlEquals: 'about:blank'},
-      ]
-    });
-  }
+  // FF misses some about:blank iframes so we inject our content script explicitly
+  navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
+    url: [
+      {urlEquals: 'about:blank'},
+    ]
+  });
 }
 
 if (chrome.contextMenus) {
@@ -127,22 +94,45 @@ if (chrome.commands) {
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
 
-if (!chrome.browserAction ||
-    !['setIcon', 'setBadgeBackgroundColor', 'setBadgeText'].every(name => chrome.browserAction[name])) {
-  window.updateIcon = () => {};
-}
-
 const tabIcons = new Map();
 chrome.tabs.onRemoved.addListener(tabId => tabIcons.delete(tabId));
 chrome.tabs.onReplaced.addListener((added, removed) => tabIcons.delete(removed));
 
-// *************************************************************************
-// set the default icon displayed after a tab is created until webNavigation kicks in
-prefs.subscribe(['iconset'], () =>
-  updateIcon({
-    tab: {id: undefined},
-    styles: {},
-  }));
+prefs.subscribe([
+  'disableAll',
+  'badgeDisabled',
+  'badgeNormal',
+], () => debounce(refreshIconBadgeColor));
+
+prefs.subscribe([
+  'show-badge'
+], () => debounce(refreshIconBadgeText));
+
+prefs.subscribe([
+  'disableAll',
+  'iconset',
+], () => debounce(refreshAllIcons));
+
+prefs.initializing.then(() => {
+  refreshIconBadgeColor();
+  refreshAllIconsBadgeText();
+  refreshAllIcons();
+});
+
+navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
+  if (type === 'committed' && !frameId) {
+    // it seems that the tab icon would be reset by navigation. We
+    // invalidate the cache here so it would be refreshed by `apply.js`.
+    tabIcons.delete(tabId);
+
+    // however, if the tab was swapped in by forward/backward buttons,
+    // `apply.js` doesn't notify the background to update the icon,
+    // so we have to refresh it manually.
+    if (transitionQualifiers.includes('forward_back')) {
+      msg.sendTab(tabId, {method: 'updateCount'}).catch(msg.ignoreError);
+    }
+  }
+});
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -188,7 +178,7 @@ contextMenus = {
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      sendMessage({tabId: tab.id, method: 'editDeleteText'});
+      msg.sendTab(tab.id, {method: 'editDeleteText'});
     },
   }
 };
@@ -202,11 +192,10 @@ if (chrome.contextMenus) {
       }
       item = Object.assign({id}, item);
       delete item.presentIf;
-      const prefValue = prefs.readOnlyValues[id];
       item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefValue === 'boolean') {
+      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
         item.type = 'checkbox';
-        item.checked = prefValue;
+        item.checked = prefs.get(id);
       }
       if (!item.contexts) {
         item.contexts = ['browser_action'];
@@ -230,24 +219,35 @@ if (chrome.contextMenus) {
   };
 
   const keys = Object.keys(contextMenus);
-  prefs.subscribe(keys.filter(id => typeof prefs.readOnlyValues[id] === 'boolean'), toggleCheckmark);
+  prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'), toggleCheckmark);
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
 
-// *************************************************************************
-// [re]inject content scripts
-window.addEventListener('storageReady', function _() {
-  window.removeEventListener('storageReady', _);
+// reinject content scripts when the extension is reloaded/updated. Firefox
+// would handle this automatically.
+if (!FIREFOX) {
+  reinjectContentScripts();
+}
 
-  updateIcon({
-    tab: {id: undefined},
-    styles: {},
+// register hotkeys
+if (FIREFOX && browser.commands && browser.commands.update) {
+  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
+  prefs.subscribe(hotkeyPrefs, (name, value) => {
+    try {
+      name = name.split('.')[1];
+      if (value.trim()) {
+        browser.commands.update({name, shortcut: value});
+      } else {
+        browser.commands.reset(name);
+      }
+    } catch (e) {}
   });
+}
 
-  // Firefox injects content script automatically
-  if (FIREFOX) return;
+msg.broadcastTab({method: 'backgroundReady'});
 
+function reinjectContentScripts() {
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const contentScripts = chrome.runtime.getManifest().content_scripts;
@@ -263,20 +263,23 @@ window.addEventListener('storageReady', function _() {
 
   const injectCS = (cs, tabId) => {
     ignoreChromeError();
-    chrome.tabs.executeScript(tabId, {
-      file: cs.js[0],
-      runAt: cs.run_at,
-      allFrames: cs.all_frames,
-      matchAboutBlank: cs.match_about_blank,
-    }, ignoreChromeError);
+    for (const file of cs.js) {
+      chrome.tabs.executeScript(tabId, {
+        file,
+        runAt: cs.run_at,
+        allFrames: cs.all_frames,
+        matchAboutBlank: cs.match_about_blank,
+      }, ignoreChromeError);
+    }
   };
 
   const pingCS = (cs, {id, url}) => {
-    const maybeInject = pong => !pong && injectCS(cs, id);
     cs.matches.some(match => {
       if ((match === ALL_URLS || url.match(match)) &&
           (!url.startsWith('chrome') || url === NTP)) {
-        sendMessage({method: 'ping', tabId: id}, maybeInject);
+        msg.sendTab(id, {method: 'ping'})
+          .catch(() => false)
+          .then(pong => !pong && injectCS(cs, id));
         return true;
       }
     });
@@ -290,85 +293,19 @@ window.addEventListener('storageReady', function _() {
           setTimeout(pingCS, 0, cs, tab));
       }
     }));
-});
-
-// *************************************************************************
-{
-  const getStylesForFrame = (msg, sender) => {
-    const stylesTask = getStyles(msg);
-    if (!sender || !sender.frameId) return stylesTask;
-    return Promise.all([
-      stylesTask,
-      getTab(sender.tab.id),
-    ]).then(([styles, tab]) => {
-      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
-      return styles;
-    });
-  };
-  const updateAPI = (_, enabled) => {
-    window.API_METHODS.getStylesForFrame = enabled ? getStylesForFrame : getStyles;
-  };
-  prefs.subscribe(['exposeIframes'], updateAPI);
-  updateAPI(null, prefs.readOnlyValues.exposeIframes);
 }
-
-// *************************************************************************
-
-function webNavigationListener(method, {url, tabId, frameId}) {
-  Promise.all([
-    getStyles({matchUrl: url, asHash: true}),
-    frameId && prefs.readOnlyValues.exposeIframes && getTab(tabId),
-  ]).then(([styles, tab]) => {
-    if (method && URLS.supported(url) && tabId >= 0) {
-      if (method === 'styleApply') {
-        handleCssTransitionBug({tabId, frameId, url, styles});
-      }
-      if (tab) styles.exposeIframes = tab.url.replace(/(\/\/[^/]*).*/, '$1');
-      sendMessage({
-        tabId,
-        frameId,
-        method,
-        // ping own page so it retrieves the styles directly
-        styles: url.startsWith(URLS.ownOrigin) ? 'DIY' : styles,
-      });
-    }
-    // main page frame id is 0
-    if (frameId === 0) {
-      tabIcons.delete(tabId);
-      updateIcon({tab: {id: tabId, url}, styles});
-    }
-  });
-}
-
-
-function webNavigationListenerChrome(method, data) {
-  // Chrome 61.0.3161+ doesn't run content scripts on NTP
-  if (
-    !data.url.startsWith('https://www.google.') ||
-    !data.url.includes('/_/chrome/newtab?')
-  ) {
-    webNavigationListener(method, data);
-    return;
-  }
-  getTab(data.tabId).then(tab => {
-    if (tab.url === 'chrome://newtab/') {
-      data.url = tab.url;
-    }
-    webNavigationListener(method, data);
-  });
-}
-
 
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
   Promise.all([
-    sendMessage({tabId, method: 'ping'}),
+    msg.sendTab(tabId, {method: 'ping'})
+      .catch(() => false),
     // we need tab index to open the installer next to the original one
     // and also to skip the double-invocation in FF which assigns tab url later
     getTab(tabId),
   ]).then(([pong, tab]) => {
     if (pong !== true && tab.url !== 'about:blank') {
-      window.API_METHODS.installUsercss({direct: true}, {tab});
+      window.API_METHODS.openUsercssInstallPage({direct: true}, {tab});
     }
   });
 }
@@ -376,135 +313,107 @@ function webNavUsercssInstallerFF(data) {
 
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
-  sendMessage({method: 'ping', tabId, frameId}, pong => {
-    ignoreChromeError();
-    if (pong) return;
-    chrome.tabs.executeScript(tabId, {
-      frameId,
-      file: '/content/apply.js',
-      matchAboutBlank: true,
-    }, ignoreChromeError);
+  msg.sendTab(tabId, {method: 'ping'}, {frameId})
+    .catch(() => false)
+    .then(pong => {
+      if (pong) return;
+      // insert apply.js to iframe
+      const files = chrome.runtime.getManifest().content_scripts[0].js;
+      for (const file of files) {
+        chrome.tabs.executeScript(tabId, {
+          frameId,
+          file,
+          matchAboutBlank: true,
+        }, ignoreChromeError);
+      }
+    });
+}
+
+function updateIconBadge(tabId, count) {
+  let tabIcon = tabIcons.get(tabId);
+  if (!tabIcon) tabIcons.set(tabId, (tabIcon = {}));
+  if (tabIcon.count === count) {
+    return;
+  }
+  const oldCount = tabIcon.count;
+  tabIcon.count = count;
+  refreshIconBadgeText(tabId, tabIcon);
+  if (Boolean(oldCount) !== Boolean(count)) {
+    refreshIcon(tabId, tabIcon);
+  }
+}
+
+function refreshIconBadgeText(tabId, icon) {
+  iconUtil.setBadgeText({
+    text: prefs.get('show-badge') && icon.count ? String(icon.count) : '',
+    tabId
   });
 }
 
+function refreshIcon(tabId, icon) {
+  const disableAll = prefs.get('disableAll');
+  const iconset = prefs.get('iconset') === 1 ? 'light/' : '';
+  const postfix = disableAll ? 'x' : !icon.count ? 'w' : '';
+  const iconType = iconset + postfix;
 
-function updateIcon({tab, styles}) {
-  if (tab.id < 0) {
+  if (icon.iconType === iconType) {
     return;
   }
-  if (URLS.chromeProtectsNTP && tab.url === 'chrome://newtab/') {
-    styles = {};
+  icon.iconType = iconset + postfix;
+  const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+  iconUtil.setIcon({
+    path: sizes.reduce(
+      (obj, size) => {
+        obj[size] = `/images/icon/${iconset}${size}${postfix}.png`;
+        return obj;
+      },
+      {}
+    ),
+    tabId
+  });
+}
+
+function refreshIconBadgeColor() {
+  const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
+  iconUtil.setBadgeBackgroundColor({
+    color
+  });
+}
+
+function refreshAllIcons() {
+  for (const [tabId, icon] of tabIcons) {
+    refreshIcon(tabId, icon);
   }
-  if (styles) {
-    stylesReceived(styles);
-    return;
-  }
-  getTabRealURL(tab)
-    .then(url => getStyles({matchUrl: url, asHash: true}))
-    .then(stylesReceived);
+  refreshIcon(null, {}); // default icon
+}
 
-  function stylesReceived(styles) {
-    const disableAll = 'disableAll' in styles ? styles.disableAll : prefs.get('disableAll');
-    const postfix = disableAll ? 'x' : !styles.length ? 'w' : '';
-    const color = prefs.get(disableAll ? 'badgeDisabled' : 'badgeNormal');
-    const text = prefs.get('show-badge') && styles.length ? String(styles.length) : '';
-    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-
-    let tabIcon = tabIcons.get(tab.id);
-    if (!tabIcon) tabIcons.set(tab.id, (tabIcon = {}));
-
-    if (tabIcon.iconType !== iconset + postfix) {
-      tabIcon.iconType = iconset + postfix;
-      const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
-      const usePath = tabIcons.get('usePath');
-      Promise.all(sizes.map(size => {
-        const src = `/images/icon/${iconset}${size}${postfix}.png`;
-        return usePath ? src : tabIcons.get(src) || loadIcon(src);
-      })).then(data => {
-        const imageKey = typeof data[0] === 'string' ? 'path' : 'imageData';
-        const imageData = {};
-        sizes.forEach((size, i) => (imageData[size] = data[i]));
-        chrome.browserAction.setIcon({
-          tabId: tab.id,
-          [imageKey]: imageData,
-        }, ignoreChromeError);
-      });
-    }
-    if (tab.id === undefined) return;
-
-    let defaultIcon = tabIcons.get(undefined);
-    if (!defaultIcon) tabIcons.set(undefined, (defaultIcon = {}));
-    if (defaultIcon.color !== color) {
-      defaultIcon.color = color;
-      chrome.browserAction.setBadgeBackgroundColor({color});
-    }
-
-    if (tabIcon.text === text) return;
-    tabIcon.text = text;
-    try {
-      // Chrome supports the callback since 67.0.3381.0, see https://crbug.com/451320
-      chrome.browserAction.setBadgeText({text, tabId: tab.id}, ignoreChromeError);
-    } catch (e) {
-      setTimeout(() => {
-        getTab(tab.id).then(realTab => {
-          // skip pre-rendered tabs
-          if (realTab.index >= 0) {
-            chrome.browserAction.setBadgeText({text, tabId: tab.id});
-          }
-        });
-      });
-    }
-  }
-
-  function loadIcon(src, resolve) {
-    if (!resolve) return new Promise(resolve => loadIcon(src, resolve));
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.src = src;
-    img.onload = () => {
-      const w = canvas.width = img.width;
-      const h = canvas.height = img.height;
-      ctx.clearRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
-      const data = ctx.getImageData(0, 0, w, h);
-      // Firefox breaks Canvas when privacy.resistFingerprinting=true, https://bugzil.la/1412961
-      let usePath = tabIcons.get('usePath');
-      if (usePath === undefined) {
-        usePath = data.data.every(b => b === 255);
-        tabIcons.set('usePath', usePath);
-      }
-      if (usePath) {
-        resolve(src);
-        return;
-      }
-      tabIcons.set(src, data);
-      resolve(data);
-    };
+function refreshAllIconsBadgeText() {
+  for (const [tabId, icon] of tabIcons) {
+    refreshIconBadgeText(tabId, icon);
   }
 }
 
+function onRuntimeMessage(msg, sender) {
+  if (msg.method !== 'invokeAPI') {
+    return;
+  }
+  const fn = window.API_METHODS[msg.name];
+  if (!fn) {
+    throw new Error(`unknown API: ${msg.name}`);
+  }
+  const context = {msg, sender};
+  return fn.apply(context, msg.args);
+}
 
-function onRuntimeMessage(msg, sender, sendResponse) {
-  const fn = window.API_METHODS[msg.method];
-  if (!fn) return;
-
-  // wrap 'Error' object instance as {__ERROR__: message},
-  // which will be unwrapped by sendMessage,
-  // and prevent exceptions on sending to a closed tab
-  const respond = data =>
-    tryCatch(sendResponse,
-      data instanceof Error ? {__ERROR__: data.message} : data);
-
-  const result = fn(msg, sender, respond);
-  if (result instanceof Promise) {
-    result
-      .catch(e => ({__ERROR__: e instanceof Error ? e.message : e}))
-      .then(respond);
-    return KEEP_CHANNEL_OPEN;
-  } else if (result === KEEP_CHANNEL_OPEN) {
-    return KEEP_CHANNEL_OPEN;
-  } else if (result !== undefined) {
-    respond(result);
+// FIXME: popup.js also open editor but it doesn't use this API.
+function openEditor({id}) {
+  let url = '/edit.html';
+  if (id) {
+    url += `?id=${id}`;
+  }
+  if (chrome.windows && prefs.get('openEditInWindow')) {
+    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
+  } else {
+    openURL({url});
   }
 }

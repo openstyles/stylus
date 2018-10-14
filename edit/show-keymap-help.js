@@ -1,4 +1,5 @@
-/* global CodeMirror showHelp */
+/* global CodeMirror showHelp onDOMready $ $$ $create template t
+  prefs stringAsRegExp */
 'use strict';
 
 onDOMready().then(() => {

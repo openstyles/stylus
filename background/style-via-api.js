@@ -1,4 +1,4 @@
-/* global getStyles API_METHODS */
+/* global API_METHODS styleManager CHROME prefs updateIconBadge */
 'use strict';
 
 API_METHODS.styleViaAPI = !CHROME && (() => {
@@ -9,6 +9,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     styleAdded,
     styleReplaceAll,
     prefChanged,
+    updateCount,
   };
   const NOP = Promise.resolve(new Error('NOP'));
   const onError = () => {};
@@ -22,15 +23,23 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
 
   let observingTabs = false;
 
-  return (request, sender) => {
-    const action = ACTIONS[request.action];
+  return function (request) {
+    const action = ACTIONS[request.method];
     return !action ? NOP :
-      action(request, sender)
+      action(request, this.sender)
         .catch(onError)
         .then(maybeToggleObserver);
   };
 
-  function styleApply({id = null, ignoreUrlCheck}, {tab, frameId, url}) {
+  function updateCount(request, {tab, frameId}) {
+    if (frameId) {
+      throw new Error('we do not count styles for frames');
+    }
+    const {frameStyles} = getCachedData(tab.id, frameId);
+    updateIconBadge(tab.id, Object.keys(frameStyles).length);
+  }
+
+  function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
     if (prefs.get('disableAll')) {
       return NOP;
     }
@@ -38,24 +47,15 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    return getStyles({id, matchUrl: url, asHash: true}).then(styles => {
+    return styleManager.getSectionsByUrl(url, id).then(sections => {
       const tasks = [];
-      for (const styleId in styles) {
-        if (isNaN(parseInt(styleId))) {
-          continue;
-        }
-        // shallow-extract code from the sections array in order to reuse references
-        // in other places whereas the combined string gets garbage-collected
-        const styleSections = styles[styleId].map(section => section.code);
-        const code = styleSections.join('\n');
-        if (!code) {
-          delete frameStyles[styleId];
-          continue;
-        }
+      for (const section of Object.values(sections)) {
+        const styleId = section.id;
+        const code = section.code.join('\n');
         if (code === (frameStyles[styleId] || []).join('\n')) {
           continue;
         }
-        frameStyles[styleId] = styleSections;
+        frameStyles[styleId] = section.code;
         tasks.push(
           browser.tabs.insertCSS(tab.id, {
             code,
@@ -70,16 +70,18 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
         cache.set(tab.id, tabFrames);
       }
       return Promise.all(tasks);
-    });
+    })
+      .then(() => updateCount(null, {tab, frameId}));
   }
 
-  function styleDeleted({id}, {tab, frameId}) {
+  function styleDeleted({style: {id}}, {tab, frameId}) {
     const {tabFrames, frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
     const code = styleSections.join('\n');
     if (code && !duplicateCodeExists({frameStyles, id, code})) {
       delete frameStyles[id];
       removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles);
-      return removeCSS(tab.id, frameId, code);
+      return removeCSS(tab.id, frameId, code)
+        .then(() => updateCount(null, {tab, frameId}));
     } else {
       return NOP;
     }
@@ -87,7 +89,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
 
   function styleUpdated({style}, sender) {
     if (!style.enabled) {
-      return styleDeleted(style, sender);
+      return styleDeleted({style}, sender);
     }
     const {tab, frameId} = sender;
     const {frameStyles, styleSections} = getCachedData(tab.id, frameId, style.id);

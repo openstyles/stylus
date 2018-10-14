@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript editor editors */
+/* global CodeMirror prefs loadScript editor $ template */
 
 'use strict';
 
@@ -9,6 +9,7 @@
   }
 
   const defaults = {
+    autoCloseBrackets: prefs.get('editor.autoCloseBrackets'),
     mode: 'css',
     lineNumbers: true,
     lineWrapping: prefs.get('editor.lineWrapping'),
@@ -19,11 +20,10 @@
       ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
     ],
     matchBrackets: true,
-    highlightSelectionMatches: {showToken: /[#.\-\w]/, annotateScrollbar: true},
     hintOptions: {},
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: true,
-    theme: 'default',
+    theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
       // independent of current keyMap
@@ -228,69 +228,48 @@
     return isBlank;
   });
 
-  // doubleclick option
-  if (typeof editors !== 'undefined') {
-    const fn = (cm, repeat) =>
-      repeat === 'double' ?
-        {unit: selectTokenOnDoubleclick} :
-        {};
-    const configure = (_, enabled) => {
-      editors.forEach(cm => cm.setOption('configureMouse', enabled ? fn : null));
-      CodeMirror.defaults.configureMouse = enabled ? fn : null;
-    };
-    configure(null, prefs.get('editor.selectByTokens'));
-    prefs.subscribe(['editor.selectByTokens'], configure);
+  // editor commands
+  for (const name of ['save', 'toggleStyle', 'nextEditor', 'prevEditor']) {
+    CodeMirror.commands[name] = () => editor[name]();
   }
 
-  function selectTokenOnDoubleclick(cm, pos) {
-    let {ch} = pos;
-    const {line, sticky} = pos;
-    const {text, styles} = cm.getLineHandle(line);
+  // CodeMirror convenience commands
+  Object.assign(CodeMirror.commands, {
+    toggleEditorFocus,
+    jumpToLine,
+    commentSelection,
+  });
 
-    const execAt = (rx, i) => (rx.lastIndex = i) && null || rx.exec(text);
-    const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
-    const atWord = ch => at(/\w/y, ch);
-    const atSpace = ch => at(/\s/y, ch);
-
-    const atTokenEnd = styles.indexOf(ch, 1);
-    ch += atTokenEnd < 0 ? 0 : sticky === 'before' && atWord(ch - 1) ? 0 : atSpace(ch + 1) ? 0 : 1;
-    ch = Math.min(text.length, ch);
-    const type = cm.getTokenTypeAt({line, ch: ch + (sticky === 'after' ? 1 : 0)});
-    if (atTokenEnd > 0) ch--;
-
-    const isCss = type && !/^(comment|string)/.test(type);
-    const isNumber = type === 'number';
-    const isSpace = atSpace(ch);
-    let wordChars =
-      isNumber ? /[-+\w.%]/y :
-      isCss ? /[-\w@]/y :
-      isSpace ? /\s/y :
-      atWord(ch) ? /\w/y : /[^\w\s]/y;
-
-    let a = ch;
-    while (a && at(wordChars, a)) a--;
-    a += !a && at(wordChars, a) || isCss && at(/[.!#@]/y, a) ? 0 : at(wordChars, a + 1);
-
-    let b, found;
-
-    if (isNumber) {
-      b = a + execAt(/[+-]?[\d.]+(e\d+)?|$/yi, a)[0].length;
-      found = b >= ch;
-      if (!found) {
-        a = b;
-        ch = a;
+  function jumpToLine(cm) {
+    const cur = cm.getCursor();
+    const oldDialog = $('.CodeMirror-dialog', cm.display.wrapper);
+    if (oldDialog) {
+      // close the currently opened minidialog
+      cm.focus();
+    }
+    // make sure to focus the input in newly opened minidialog
+    // setTimeout(() => {
+      // $('.CodeMirror-dialog', section).focus();
+    // });
+    cm.openDialog(template.jumpToLine.cloneNode(true), str => {
+      const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
+      if (m) {
+        cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);
       }
-    }
+    }, {value: cur.line + 1});
+  }
 
-    if (!found) {
-      wordChars = isCss ? /[-\w]*/y : new RegExp(wordChars.source + '*', 'uy');
-      b = ch + execAt(wordChars, ch)[0].length;
-    }
+  function commentSelection(cm) {
+    cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
+  }
 
-    return {
-      from: {line, ch: a},
-      to: {line, ch: b},
-    };
+  function toggleEditorFocus(cm) {
+    if (!cm) return;
+    if (cm.hasFocus()) {
+      setTimeout(() => cm.display.input.blur());
+    } else {
+      cm.focus();
+    }
   }
 })();
 
@@ -371,8 +350,9 @@ CodeMirror.hint && (() => {
     }
 
     // USO vars in usercss mode editor
-    const list = Object.keys(editor.getStyle().usercssData.vars)
-      .filter(name => name.startsWith(leftPart));
+    const vars = editor.getStyle().usercssData.vars;
+    const list = vars ?
+      Object.keys(vars).filter(name => name.startsWith(leftPart)) : [];
     return {
       list,
       from: {line, ch: prev},

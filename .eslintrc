@@ -8,64 +8,6 @@ env:
   es6: true
   webextensions: true
 
-globals:
-  # messaging.js
-  KEEP_CHANNEL_OPEN: false
-  CHROME: false
-  FIREFOX: false
-  VIVALDI: false
-  OPERA: false
-  URLS: false
-  BG: false
-  API: false
-  notifyAllTabs: false
-  sendMessage: false
-  queryTabs: false
-  getTab: false
-  getOwnTab: false
-  getActiveTab: false
-  getActiveTabRealURL: false
-  getTabRealURL: false
-  openURL: false
-  activateTab: false
-  stringAsRegExp: false
-  ignoreChromeError: false
-  tryCatch: false
-  tryRegExp: false
-  tryJSONparse: false
-  debounce: false
-  deepCopy: false
-  sessionStorageHash: false
-  download: false
-  invokeOrPostpone: false
-  # localization.js
-  template: false
-  t: false
-  o: false
-  tE: false
-  tHTML: false
-  tNodeList: false
-  tDocLoader: false
-  tWordBreak: false
-  formatDate: false
-  # dom.js
-  onDOMready: false
-  onDOMscriptReady: false
-  scrollElementIntoView: false
-  enforceInputRange: false
-  animateElement: false
-  $: false
-  $$: false
-  $create: false
-  $createLink: false
-  # prefs.js
-  prefs: false
-  setupLivePrefs: false
-  # storage-util.js
-  chromeLocal: false
-  chromeSync: false
-  LZString: false
-
 rules:
   accessor-pairs: [2]
   array-bracket-spacing: [2, never]
@@ -214,7 +156,6 @@ rules:
   no-trailing-spaces: [2]
   no-undef-init: [2]
   no-undef: [2]
-  no-undefined: [0]
   no-underscore-dangle: [0]
   no-unexpected-multiline: [2]
   no-unmodified-loop-condition: [0]
@@ -224,7 +165,7 @@ rules:
   no-unsafe-negation: [2]
   no-unused-expressions: [1]
   no-unused-labels: [0]
-  no-unused-vars: [1, {args: after-used, vars: local, argsIgnorePattern: ^_}]
+  no-unused-vars: [2, {args: after-used}]
   no-use-before-define: [2, nofunc]
   no-useless-call: [2]
   no-useless-computed-key: [2]

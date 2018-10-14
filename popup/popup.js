@@ -1,4 +1,10 @@
-/* global configDialog hotkeys */
+/*
+global configDialog hotkeys
+popupExclusions onTabReady msg
+getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+setupLivePrefs template t $create tWordBreak animateElement
+tryJSONparse debounce
+*/
 
 'use strict';
 
@@ -11,44 +17,46 @@ const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 toggleSideBorders();
 
-getActiveTab().then(tab =>
-  FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
-  ? getTabRealURLFirefox(tab)
-  : getTabRealURL(tab)
-).then(url => Promise.all([
-  (tabURL = URLS.supported(url) ? url : '') &&
-  API.getStyles({
-    matchUrl: tabURL,
-    omitCode: !BG,
-  }),
-  onDOMready().then(initPopup),
-])).then(([styles]) => {
-  showStyles(styles);
-});
+getActiveTab()
+  .then(tab =>
+    FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
+    ? getTabRealURLFirefox(tab)
+    : getTabRealURL(tab)
+  )
+  .then(url => Promise.all([
+    (tabURL = URLS.supported(url) ? url : '') &&
+      API.getStylesByUrl(tabURL),
+    onDOMready().then(initPopup),
+  ]))
+  .then(([results]) => {
+    if (!results) {
+      // unsupported URL;
+      return;
+    }
+    showStyles(results.map(r => Object.assign(r.data, r)));
+  })
+  .catch(console.error);
 
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.onExtension(onRuntimeMessage);
+
+prefs.subscribe(['popup.stylesFirst'], (key, stylesFirst) => {
+  const actions = $('body > .actions');
+  const before = stylesFirst ? actions : actions.nextSibling;
+  document.body.insertBefore(installed, before);
+});
+prefs.subscribe(['popupWidth'], (key, value) => setPopupWidth(value));
+prefs.subscribe(['popup.borders'], (key, value) => toggleSideBorders(value));
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
-      if (msg.reason === 'editPreview') return;
-      handleUpdate(msg.style);
+    case 'exclusionsUpdated':
+      if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
+      handleUpdate(msg);
       break;
     case 'styleDeleted':
-      handleDelete(msg.id);
-      break;
-    case 'prefChanged':
-      if ('popup.stylesFirst' in msg.prefs) {
-        const stylesFirst = msg.prefs['popup.stylesFirst'];
-        const actions = $('body > .actions');
-        const before = stylesFirst ? actions : actions.nextSibling;
-        document.body.insertBefore(installed, before);
-      } else if ('popupWidth' in msg.prefs) {
-        setPopupWidth(msg.prefs.popupWidth);
-      } else if ('popup.borders' in msg.prefs) {
-        toggleSideBorders(msg.prefs['popup.borders']);
-      }
+      handleDelete(msg.style.id);
       break;
   }
   dispatchEvent(new CustomEvent(msg.method, {detail: msg}));
@@ -111,34 +119,35 @@ function initPopup() {
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    sendMessage({tabId: tab.id, method: 'ping', frameId: 0}, pong => {
-      if (pong) {
-        return;
-      }
-      ignoreChromeError();
-      // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
-      // so we'll wait a bit to handle popup being invoked right after switching
-      if (retryCountdown > 0 && (
-          tab.status !== 'complete' ||
-          FIREFOX && tab.url === 'about:blank')) {
-        setTimeout(ping, 100, tab, --retryCountdown);
-        return;
-      }
-      const info = template.unreachableInfo;
-      if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
-        $('label', info).textContent = t('unreachableAMO');
-        const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
-                     (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-        const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
-        const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-        const noteNode = $create('fragment', note.split('\n').map(renderLine));
-        const target = $('p', info);
-        target.parentNode.insertBefore(noteNode, target);
-        target.remove();
-      }
-      document.body.classList.add('unreachable');
-      document.body.insertBefore(info, document.body.firstChild);
-    });
+    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
+      .catch(() => false)
+      .then(pong => {
+        if (pong) {
+          return;
+        }
+        // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
+        // so we'll wait a bit to handle popup being invoked right after switching
+        if (retryCountdown > 0 && (
+            tab.status !== 'complete' ||
+            FIREFOX && tab.url === 'about:blank')) {
+          setTimeout(ping, 100, tab, --retryCountdown);
+          return;
+        }
+        const info = template.unreachableInfo;
+        if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
+          $('label', info).textContent = t('unreachableAMO');
+          const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
+                       (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
+          const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
+          const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
+          const noteNode = $create('fragment', note.split('\n').map(renderLine));
+          const target = $('p', info);
+          target.parentNode.insertBefore(noteNode, target);
+          target.remove();
+        }
+        document.body.classList.add('unreachable');
+        document.body.insertBefore(info, document.body.firstChild);
+      });
   });
 
   // Write new style links
@@ -227,93 +236,99 @@ function showStyles(styles) {
   const container = document.createDocumentFragment();
   styles.forEach(style => createStyleElement({style, container}));
   installed.appendChild(container);
-  setTimeout(detectSloppyRegexps, 100, styles);
-
-  API.getStyles({
-    matchUrl: tabURL,
-    strictRegexp: false,
-    omitCode: true,
-  }).then(unscreenedStyles => {
-    for (const style of unscreenedStyles) {
-      if (!styles.find(({id}) => id === style.id)) {
-        createStyleElement({style, check: true});
-      }
-    }
-    window.dispatchEvent(new Event('showStyles:done'));
-  });
+  window.dispatchEvent(new Event('showStyles:done'));
 }
 
 
 function createStyleElement({
   style,
-  check = false,
   container = installed,
 }) {
-  const entry = template.style.cloneNode(true);
-  entry.setAttribute('style-id', style.id);
-  Object.assign(entry, {
-    id: ENTRY_ID_PREFIX_RAW + style.id,
-    styleId: style.id,
-    styleIsUsercss: Boolean(style.usercssData),
-    className: entry.className + ' ' + (style.enabled ? 'enabled' : 'disabled'),
-    onmousedown: handleEvent.maybeEdit,
-  });
+  let entry = $(ENTRY_ID_PREFIX + style.id);
+  if (!entry) {
+    entry = template.style.cloneNode(true);
+    entry.setAttribute('style-id', style.id);
+    Object.assign(entry, {
+      id: ENTRY_ID_PREFIX_RAW + style.id,
+      styleId: style.id,
+      styleIsUsercss: Boolean(style.usercssData),
+      onmousedown: handleEvent.maybeEdit,
+      styleMeta: style
+    });
+    const checkbox = $('.checker', entry);
+    Object.assign(checkbox, {
+      id: ENTRY_ID_PREFIX_RAW + style.id,
+      title: t('exclusionsPopupTip'),
+      onclick: handleEvent.toggle,
+      oncontextmenu: handleEvent.openExcludeMenu
+    });
+    const editLink = $('.style-edit-link', entry);
+    Object.assign(editLink, {
+      href: editLink.getAttribute('href') + style.id,
+      onclick: handleEvent.openLink,
+    });
+    const styleName = $('.style-name', entry);
+    Object.assign(styleName, {
+      htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
+      onclick: handleEvent.name,
+    });
+    styleName.checkbox = checkbox;
+    styleName.appendChild(document.createTextNode(' '));
+    const config = $('.configure', entry);
+    if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
+      config.target = '_blank';
+      config.title = t('configureStyleOnHomepage');
+      config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+      $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+    }
+    $('.enable', entry).onclick = handleEvent.toggle;
+    $('.disable', entry).onclick = handleEvent.toggle;
+    $('.delete', entry).onclick = handleEvent.delete;
+    $('.configure', entry).onclick = handleEvent.configure;
 
-  const checkbox = $('.checker', entry);
-  Object.assign(checkbox, {
-    id: ENTRY_ID_PREFIX_RAW + style.id,
-    checked: style.enabled,
-    onclick: handleEvent.toggle,
-  });
+    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    indicator.appendChild(document.createTextNode('!'));
+    indicator.onclick = handleEvent.indicator;
+    $('.main-controls', entry).appendChild(indicator);
+  }
 
-  const editLink = $('.style-edit-link', entry);
-  Object.assign(editLink, {
-    href: editLink.getAttribute('href') + style.id,
-    onclick: handleEvent.openLink,
-  });
+  style = Object.assign(entry.styleMeta, style);
+
+  if (style.enabled) {
+    entry.classList.remove('disabled');
+    entry.classList.add('enabled');
+    $('.checker', entry).checked = true;
+  } else {
+    entry.classList.add('disabled');
+    entry.classList.remove('enabled');
+    $('.checker', entry).checked = false;
+  }
 
   const styleName = $('.style-name', entry);
-  Object.assign(styleName, {
-    htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
-    onclick: handleEvent.name,
-  });
-  styleName.checkbox = checkbox;
-  styleName.appendChild(document.createTextNode(style.name));
-  setTimeout((el = styleName) => {
-    if (el.scrollWidth > el.clientWidth + 1) {
-      el.title = el.textContent;
-    }
+  styleName.lastChild.textContent = style.name;
+  setTimeout(() => {
+    styleName.title = entry.styleMeta.sloppy ?
+      t('styleNotAppliedRegexpProblemTooltip') :
+        styleName.scrollWidth > styleName.clientWidth + 1 ?
+          styleName.textContent : '';
   });
 
   const config = $('.configure', entry);
   if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
     config.href = style.url;
-    config.target = '_blank';
-    config.title = t('configureStyleOnHomepage');
-    config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
-    $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
-  } else if (!style.usercssData || !Object.keys(style.usercssData.vars || {}).length) {
-    config.style.display = 'none';
-  }
-
-  $('.enable', entry).onclick = handleEvent.toggle;
-  $('.disable', entry).onclick = handleEvent.toggle;
-  $('.delete', entry).onclick = handleEvent.delete;
-  $('.configure', entry).onclick = handleEvent.configure;
-
-  if (check) detectSloppyRegexps([style]);
-
-  const oldElement = $(ENTRY_ID_PREFIX + style.id);
-  if (oldElement && oldElement.contains(document.activeElement)) {
-    // preserve the focused element inside
-    const {className} = document.activeElement;
-    oldElement.parentNode.replaceChild(entry, oldElement);
-    // we're not using $() since className may contain multiple tokens
-    const el = entry.getElementsByClassName(className)[0];
-    if (el) el.focus();
-  } else if (oldElement) {
-    oldElement.parentNode.replaceChild(entry, oldElement);
   } else {
+    config.removeAttribute('href');
+  }
+  config.style.display =
+    !style.usercssData && config.href ||
+    style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
+      '' : 'none';
+
+  // entry.classList.toggle('excluded', style.excluded);
+  entry.classList.toggle('not-applied', style.excluded || style.sloppy);
+  entry.classList.toggle('regexp-partial', style.sloppy);
+
+  if (entry.parentNode !== container) {
     container.appendChild(entry);
   }
 }
@@ -337,10 +352,10 @@ Object.assign(handleEvent, {
   toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API.saveStyle({
-      id: handleEvent.getClickedStyleId(event),
-      enabled: this.matches('.enable') || this.checked,
-    });
+    API.toggleStyle(
+      handleEvent.getClickedStyleId(event),
+      this.matches('.enable') || this.checked
+    );
   },
 
   delete(event) {
@@ -367,14 +382,14 @@ Object.assign(handleEvent, {
         className: 'lights-on',
         onComplete: () => (box.dataset.display = false),
       });
-      if (ok) API.deleteStyle({id});
+      if (ok) API.deleteStyle(id);
     }
   },
 
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      API.getStyles({id: styleId}).then(([style]) => {
+      API.getStyle(styleId, true).then(style => {
         hotkeys.setState(false);
         configDialog(style).then(() => {
           hotkeys.setState(true);
@@ -419,6 +434,12 @@ Object.assign(handleEvent, {
       event.button === 2)) {
       return;
     }
+    // open exclude page config dialog on right-click
+    if (event.target.classList.contains('checker')) {
+      this.oncontextmenu = handleEvent.openExcludeMenu;
+      event.preventDefault();
+      return;
+    }
     // open an editor on middleclick
     if (event.target.matches('.entry, .style-name, .style-edit-link')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
@@ -436,12 +457,18 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
+    const message = tryJSONparse(this.dataset.sendMessage);
     getActiveTab()
       .then(activeTab => API.openURL({
         url: this.href || this.dataset.href,
-        index: activeTab.index + 1,
-        message: tryJSONparse(this.dataset.sendMessage),
+        index: activeTab.index + 1
       }))
+      .then(tab => {
+        if (message) {
+          return onTabReady(tab)
+            .then(() => msg.sendTab(tab.id, message));
+        }
+      })
       .then(window.close);
   },
 
@@ -454,27 +481,49 @@ Object.assign(handleEvent, {
       handleEvent.openURLandHide.call(this, event);
     }
   },
+
+  openExcludeMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const chkbox = this;
+    const entry = event.target.closest('.entry');
+    if (!chkbox.eventHandled) {
+      chkbox.eventHandled = true;
+      popupExclusions
+        .openPopupDialog(entry, tabURL)
+        .then(() => {
+          chkbox.eventHandled = null;
+        });
+    }
+  }
 });
 
 
-function handleUpdate(style) {
-  if ($(ENTRY_ID_PREFIX + style.id)) {
-    createStyleElement({style, check: true});
-    return;
-  }
+function handleUpdate({style, reason}) {
   if (!tabURL) return;
-  // Add an entry when a new style for the current url is installed
-  API.getStyles({
-    matchUrl: tabURL,
-    stopOnFirst: true,
-    omitCode: true,
-  }).then(([style]) => {
-    if (style) {
+
+  fetchStyle()
+    .then(style => {
+      if (!style) {
+        return;
+      }
+      if ($(ENTRY_ID_PREFIX + style.id)) {
+        createStyleElement({style});
+        return;
+      }
       document.body.classList.remove('blocked');
       $$.remove('.blocked-info, #no-styles');
-      createStyleElement({style, check: true});
+      createStyleElement({style});
+    })
+    .catch(console.error);
+
+  function fetchStyle() {
+    if (reason === 'toggle' && $(ENTRY_ID_PREFIX + style.id)) {
+      return Promise.resolve(style);
     }
-  });
+    return API.getStylesByUrl(tabURL, style.id)
+      .then(([style]) => style);
+  }
 }
 
 
@@ -484,32 +533,6 @@ function handleDelete(id) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
 }
-
-
-function detectSloppyRegexps(styles) {
-  API.detectSloppyRegexps({
-    matchUrl: tabURL,
-    ids: styles.map(({id}) => id),
-  }).then(results => {
-    for (const {id, applied, skipped, hasInvalidRegexps} of results) {
-      const entry = $(ENTRY_ID_PREFIX + id);
-      if (!entry) continue;
-      if (!applied) {
-        entry.classList.add('not-applied');
-        $('.style-name', entry).title = t('styleNotAppliedRegexpProblemTooltip');
-      }
-      if (skipped || hasInvalidRegexps) {
-        entry.classList.toggle('regexp-partial', Boolean(skipped));
-        entry.classList.toggle('regexp-invalid', Boolean(hasInvalidRegexps));
-        const indicator = template.regexpProblemIndicator.cloneNode(true);
-        indicator.appendChild(document.createTextNode(entry.skipped || '!'));
-        indicator.onclick = handleEvent.indicator;
-        $('.main-controls', entry).appendChild(indicator);
-      }
-    }
-  });
-}
-
 
 function getTabRealURLFirefox(tab) {
   // wait for FF tab-on-demand to get a real URL (initially about:blank), 5 sec max

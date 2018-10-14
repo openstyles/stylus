@@ -1,10 +1,13 @@
 /*
-global messageBox getStyleWithNoCode retranslateCSS
-global filtersSelector filterAndAppend urlFilterParam showFiltersStats
-global checkUpdate handleUpdateInstalled
-global objectDiff
-global configDialog
-global sorter
+global messageBox getStyleWithNoCode
+  filterAndAppend urlFilterParam showFiltersStats
+  checkUpdate handleUpdateInstalled
+  objectDiff
+  configDialog
+  sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
+  URLS enforceInputRange t tWordBreak formatDate
+  getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
+  scrollElementIntoView CHROME VIVALDI FIREFOX
 */
 'use strict';
 
@@ -25,30 +28,31 @@ const newUI = {
 newUI.renderClass();
 requestAnimationFrame(usePrefsDuringPageLoad);
 
-const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
+const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps', 'exclusions'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 
 const handleEvent = {};
 
 Promise.all([
-  API.getStyles({omitCode: !BG}),
+  API.getAllStyles(true),
   urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
   onDOMready().then(initGlobalEvents),
 ]).then(args => {
   showStyles(...args);
 });
 
-chrome.runtime.onMessage.addListener(onRuntimeMessage);
+msg.onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
-      handleUpdate(msg.style, msg);
+      API.getStyle(msg.style.id, true)
+        .then(style => handleUpdate(style, msg));
       break;
     case 'styleDeleted':
-      handleDelete(msg.id);
+      handleDelete(msg.style.id);
       break;
     case 'styleApply':
     case 'styleReplaceAll':
@@ -119,7 +123,7 @@ function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
     styles: styles.map(style => ({
       style,
-      name: style.name.toLocaleLowerCase() + '\n' + style.name,
+      name: (style.name || '').toLocaleLowerCase() + '\n' + style.name,
     })),
   });
   let index = 0;
@@ -195,7 +199,7 @@ function createStyleElement({style, name}) {
     };
   }
   const parts = createStyleElement.parts;
-  const configurable = style.usercssData && Object.keys(style.usercssData.vars).length > 0;
+  const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
   parts.checker.checked = style.enabled;
   parts.nameLink.textContent = tWordBreak(style.name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
@@ -245,8 +249,17 @@ function createStyleTargetsElement({entry, style}) {
   let numTargets = 0;
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
-    for (const section of style.sections) {
-      for (const targetValue of section[type] || []) {
+    // FIXME: what does it do?
+    const isExcluded = type === 'exclusions';
+    const sections = isExcluded ? [''] : style.sections;
+    if (isExcluded && !newUI.enabled && Object.keys(style.exclusions || {}).length > 0) {
+      $('.applies-to', entry).insertAdjacentElement('afterend', template.excludedOn.cloneNode(true));
+      container = $('.excluded-on .targets', entry);
+      numTargets = 1;
+    }
+    for (const section of sections) {
+      const target = isExcluded ? Object.keys(style.exclusions || {}) : section[type] || [];
+      for (const targetValue of target) {
         if (displayed.has(targetValue)) {
           continue;
         }
@@ -304,7 +317,7 @@ function getFaviconImgSrc(container = installed) {
       favicon = GET_FAVICON_URL + targetValue;
     } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
-    } else if (type === 'regexps') {
+    } else if (type === 'regexps' || type === 'exclusions') {
       favicon = targetValue
         .replace(regexpRemoveNegativeLookAhead, '')
         .replace(regexpReplaceExtraCharacters, '')
@@ -395,10 +408,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    API.saveStyle({
-      id: entry.styleId,
-      enabled: this.matches('.enable') || this.checked,
-    });
+    API.toggleStyle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
   check(event, entry) {
@@ -410,8 +420,7 @@ Object.assign(handleEvent, {
     event.preventDefault();
     const json = entry.updatedCode;
     json.id = entry.styleId;
-    json.reason = 'update';
-    API[json.usercssData ? 'saveUsercss' : 'saveStyle'](json);
+    API[json.usercssData ? 'installUsercss' : 'installStyle'](json);
   },
 
   delete(event, entry) {
@@ -426,7 +435,7 @@ Object.assign(handleEvent, {
     })
     .then(({button}) => {
       if (button === 0) {
-        API.deleteStyle({id});
+        API.deleteStyle(id);
       }
     });
   },
@@ -510,10 +519,7 @@ Object.assign(handleEvent, {
 
 
 function handleUpdate(style, {reason, method} = {}) {
-  if (reason === 'editPreview') return;
-  // the style was toggled and refreshAllTabs() sent a mini-notification,
-  // but we've already processed 'styleUpdated' sent directly from notifyAllTabs()
-  if (!style.sections) return;
+  if (reason === 'editPreview' || reason === 'editPreviewEnd') return;
   let entry;
   let oldEntry = $(ENTRY_ID_PREFIX + style.id);
   if (oldEntry && method === 'styleUpdated') {
@@ -596,6 +602,9 @@ function switchUI({styleOnly} = {}) {
     .newUI .targets {
       max-height: ${newUI.targets * 18}px;
     }
+    .newUI .target[data-type="exclusions"]:before {
+      content: '${t('exclusionsPrefix')}';
+    }
   ` + (newUI.faviconsGray ? `
     .newUI .target img {
       -webkit-filter: grayscale(1);
@@ -638,7 +647,7 @@ function switchUI({styleOnly} = {}) {
   const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
   if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getStyles().then(showStyles);
+    API.getAllStyles(true).then(showStyles);
     return;
   }
   if (changed.targets) {
@@ -662,9 +671,10 @@ function onVisibilityChange() {
     // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible':
       if (sessionStorage.justEditedStyleId) {
-        API.getStyles({id: sessionStorage.justEditedStyleId}).then(([style]) => {
-          handleUpdate(style, {method: 'styleUpdated'});
-        });
+        API.getStyle(Number(sessionStorage.justEditedStyleId), true)
+          .then(style => {
+            handleUpdate(style, {method: 'styleUpdated'});
+          });
         delete sessionStorage.justEditedStyleId;
       }
       break;
@@ -688,8 +698,8 @@ function highlightEditedStyle() {
 
 
 function usePrefsDuringPageLoad() {
-  for (const id of Object.getOwnPropertyNames(prefs.readOnlyValues)) {
-    const value = prefs.readOnlyValues[id];
+  for (const id of Object.getOwnPropertyNames(prefs.defaults)) {
+    const value = prefs.get(id);
     if (value !== true) continue;
     const el = document.getElementById(id) ||
       id.includes('expanded') && $(`details[data-pref="${id}"]`);

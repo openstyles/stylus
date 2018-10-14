@@ -1,10 +1,8 @@
-/*
-global CodeMirror loadScript css_beautify
-global editors getSectionForChild showHelp
-*/
+/* global loadScript css_beautify showHelp prefs t $ $create */
+/* exported beautify */
 'use strict';
 
-function beautify(event) {
+function beautify(scope) {
   loadScript('/vendor-overwrites/beautify/beautify-css-mod.js')
     .then(() => {
       if (!window.css_beautify && window.exports) {
@@ -21,9 +19,6 @@ function beautify(event) {
     }
     options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
     options.indent_char = tabs ? '\t' : ' ';
-
-    const section = getSectionForChild(event.target);
-    const scope = section ? [section.CodeMirror] : editors;
 
     showHelp(t('styleBeautify'),
       $create([

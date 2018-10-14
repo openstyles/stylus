@@ -1,7 +1,7 @@
-/* global CodeMirror loadScript editors showHelp */
+/* global CodeMirror showHelp cmFactory onDOMready $ $create prefs t */
 'use strict';
 
-onDOMscriptReady('/colorview.js').then(() => {
+(() => {
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
@@ -20,7 +20,8 @@ onDOMscriptReady('/colorview.js').then(() => {
         defaults.extraKeys[keyName] = 'colorpicker';
       }
       defaults.colorpicker = {
-        forceUpdate: editors.length > 0,
+        // FIXME: who uses this?
+        // forceUpdate: editor.getEditors().length > 0,
         tooltip: t('colorpickerTooltip'),
         popup: {
           tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
@@ -38,8 +39,7 @@ onDOMscriptReady('/colorview.js').then(() => {
         delete defaults.extraKeys[keyName];
       }
     }
-    // on page load runs before CodeMirror.setOption is defined
-    editors.forEach(cm => cm.setOption('colorpicker', defaults.colorpicker));
+    cmFactory.setOption('colorpicker', defaults.colorpicker);
   }
 
   function registerHotkey(id, hotkey) {
@@ -112,4 +112,4 @@ onDOMscriptReady('/colorview.js').then(() => {
     }
     input.focus();
   }
-});
+})();

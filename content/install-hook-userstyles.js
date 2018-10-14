@@ -1,4 +1,4 @@
-/* global cloneInto */
+/* global cloneInto msg API */
 'use strict';
 
 (() => {
@@ -8,7 +8,7 @@
   document.addEventListener('stylishInstallChrome', onClick);
   document.addEventListener('stylishUpdateChrome', onClick);
 
-  chrome.runtime.onMessage.addListener(onMessage);
+  msg.on(onMessage);
 
   onDOMready().then(() => {
     window.postMessage({
@@ -30,10 +30,9 @@
       gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      chrome.runtime.sendMessage({
-        method: 'getStyles',
+      API.findStyle({
         md5Url: getMeta('stylish-md5-url') || location.href
-      }, checkUpdatability);
+      }).then(checkUpdatability);
     }
     if (document.getElementById('install_button')) {
       onDOMready().then(() => {
@@ -44,16 +43,14 @@
     }
   }
 
-  function onMessage(msg, sender, sendResponse) {
+  function onMessage(msg) {
     switch (msg.method) {
       case 'ping':
         // orphaned content script check
-        sendResponse(true);
-        break;
+        return true;
       case 'openSettings':
         openSettings();
-        sendResponse(true);
-        break;
+        return true;
     }
   }
 
@@ -69,7 +66,7 @@
     return jsonUrl + (paramsMissing ? textUrl.replace(/^[^?]+/, '') : '');
   }
 
-  function checkUpdatability([installedStyle]) {
+  function checkUpdatability(installedStyle) {
     // TODO: remove the following statement when USO is fixed
     document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
       detail: installedStyle && installedStyle.updateUrl,
@@ -148,10 +145,9 @@
 
   function onUpdate() {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({
-        method: 'getStyles',
-        md5Url: getMeta('stylish-md5-url') || location.href,
-      }, ([style]) => {
+      API.findStyle({
+        md5Url: getMeta('stylish-md5-url') || location.href
+      }, true).then(style => {
         saveStyleCode('styleUpdate', style.name, {id: style.id})
           .then(resolve, reject);
       });
@@ -160,36 +156,27 @@
 
 
   function saveStyleCode(message, name, addProps) {
-    return new Promise((resolve, reject) => {
-      const isNew = message === 'styleInstall';
-      const needsConfirmation = isNew || !saveStyleCode.confirmed;
-      if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
-        reject();
+    const isNew = message === 'styleInstall';
+    const needsConfirmation = isNew || !saveStyleCode.confirmed;
+    if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
+      return Promise.reject();
+    }
+    saveStyleCode.confirmed = true;
+    enableUpdateButton(false);
+    return getStyleJson().then(json => {
+      if (!json) {
+        prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
+          'https://github.com/openstyles/stylus/issues/195');
         return;
       }
-      saveStyleCode.confirmed = true;
-      enableUpdateButton(false);
-      getStyleJson().then(json => {
-        if (!json) {
-          prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
-            'https://github.com/openstyles/stylus/issues/195');
-          return;
-        }
-        chrome.runtime.sendMessage(
-          Object.assign(json, addProps, {
-            method: 'saveStyle',
-            reason: isNew ? 'install' : 'update',
-          }),
-          style => {
-            if (!isNew && style.updateUrl.includes('?')) {
-              enableUpdateButton(true);
-            } else {
-              sendEvent({type: 'styleInstalledChrome'});
-            }
+      return API.installStyle(Object.assign(json, addProps))
+        .then(style => {
+          if (!isNew && style.updateUrl.includes('?')) {
+            enableUpdateButton(true);
+          } else {
+            sendEvent({type: 'styleInstalledChrome'});
           }
-        );
-        resolve();
-      });
+        });
     });
 
     function enableUpdateButton(state) {
@@ -216,26 +203,19 @@
 
 
   function getResource(url, options) {
-    return new Promise(resolve => {
-      if (url.startsWith('#')) {
-        resolve(document.getElementById(url.slice(1)).textContent);
-      } else {
-        chrome.runtime.sendMessage(Object.assign({
-          url,
-          method: 'download',
-          timeout: 60e3,
-          // USO can't handle POST requests for style json
-          body: null,
-        }, options), result => {
-          const error = result && result.__ERROR__;
-          if (error) {
-            alert('Error' + (error ? '\n' + error : ''));
-          } else {
-            resolve(result);
-          }
-        });
-      }
-    });
+    if (url.startsWith('#')) {
+      return Promise.resolve(document.getElementById(url.slice(1)).textContent);
+    }
+    return API.download(Object.assign({
+      url,
+      timeout: 60e3,
+      // USO can't handle POST requests for style json
+      body: null,
+    }, options))
+      .catch(error => {
+        alert('Error' + (error ? '\n' + error : ''));
+        throw error;
+      });
   }
 
 
@@ -249,12 +229,12 @@
         if (codeElement && !codeElement.textContent.trim()) {
           return style;
         }
-        return getResource(getMeta('stylish-update-url')).then(code => new Promise(resolve => {
-          chrome.runtime.sendMessage({method: 'parseCss', code}, ({sections}) => {
-            style.sections = sections;
-            resolve(style);
+        return getResource(getMeta('stylish-update-url'))
+          .then(code => API.parseCss({code}))
+          .then(result => {
+            style.sections = result.sections;
+            return style;
           });
-        }));
       })
       .catch(() => null);
   }
@@ -340,7 +320,7 @@
     document.removeEventListener('stylishInstallChrome', onClick);
     document.removeEventListener('stylishUpdateChrome', onClick);
     try {
-      chrome.runtime.onMessage.removeListener(onMessage);
+      msg.off(onMessage);
     } catch (e) {}
   }
 })();

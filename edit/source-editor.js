@@ -1,11 +1,9 @@
-/*
-global editors styleId: true
-global CodeMirror dirtyReporter
-global createAppliesToLineWidget messageBox
-global sectionsToMozFormat
-global beforeUnload
-global createMetaCompiler linter
-*/
+/* global dirtyReporter
+  createAppliesToLineWidget messageBox
+  sectionsToMozFormat
+  createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
+  chromeSync */
+/* exported createSourceEditor */
 'use strict';
 
 function createSourceEditor(style) {
@@ -20,7 +18,6 @@ function createSourceEditor(style) {
   const dirty = dirtyReporter();
   dirty.onChange(() => {
     const isDirty = dirty.isDirty();
-    window.onbeforeunload = isDirty ? beforeUnload : null;
     document.body.classList.toggle('dirty', isDirty);
     $('#save-button').disabled = !isDirty;
     updateTitle();
@@ -29,28 +26,25 @@ function createSourceEditor(style) {
   // normalize style
   if (!style.id) setupNewStyle(style);
 
-  const cm = CodeMirror($('.single-editor'), {
+  const cm = cmFactory.create($('.single-editor'), {
     value: style.sourceCode,
   });
   let savedGeneration = cm.changeGeneration();
 
-  editors.push(cm);
+  const livePreview = createLivePreview(preprocess);
+  livePreview.show(Boolean(style.id));
 
   $('#enabled').onchange = function () {
     const value = this.checked;
     dirty.modify('enabled', style.enabled, value);
     style.enabled = value;
+    updateLivePreview();
   };
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
+    updateLivePreview();
   });
-
-  CodeMirror.commands.prevEditor = cm => nextPrevMozDocument(cm, -1);
-  CodeMirror.commands.nextEditor = cm => nextPrevMozDocument(cm, 1);
-  CodeMirror.commands.toggleStyle = toggleStyle;
-  CodeMirror.commands.save = save;
-  CodeMirror.closestVisible = () => cm;
 
   cm.operation(initAppliesToLineWidget);
 
@@ -85,6 +79,24 @@ function createSourceEditor(style) {
       }
     });
   });
+
+  function preprocess(style) {
+    return API.buildUsercss({
+      sourceCode: style.sourceCode,
+      vars: style.usercssData.vars
+    })
+      .then(({style: newStyle}) => {
+        delete newStyle.enabled;
+        return Object.assign(style, newStyle);
+      });
+  }
+
+  function updateLivePreview() {
+    if (!style.id) {
+      return;
+    }
+    livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
+  }
 
   function initAppliesToLineWidget() {
     const PREF_NAME = 'editor.appliesToLineWidget';
@@ -179,6 +191,7 @@ function createSourceEditor(style) {
     if (codeIsUpdated === false || sameCode) {
       updateEnvironment();
       dirty.clear('enabled');
+      updateLivePreview();
       return;
     }
 
@@ -191,6 +204,10 @@ function createSourceEditor(style) {
         cm.setCursor(cursor);
         savedGeneration = cm.changeGeneration();
       }
+      if (sameCode) {
+        // the code is same but the environment is changed
+        updateLivePreview();
+      }
       dirty.clear();
     });
 
@@ -199,10 +216,10 @@ function createSourceEditor(style) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
       sessionStorage.justEditedStyleId = newStyle.id;
-      style = newStyle;
-      styleId = style.id;
+      Object.assign(style, newStyle);
       $('#preview-label').classList.remove('hidden');
       updateMeta();
+      livePreview.show(Boolean(style.id));
     }
   }
 
@@ -217,20 +234,22 @@ function createSourceEditor(style) {
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
+    // const exclusionList = exclusions.get();
+    // exclusions.save({
+      // id: style.id,
+      // exclusionList
+    // });
     return ensureUniqueStyle(code)
-      .then(() => API.saveUsercssUnsafe({
+      .then(() => API.editSaveUsercss({
         id: style.id,
-        reason: 'editSave',
         enabled: style.enabled,
         sourceCode: code,
+        // exclusions: exclusionList
       }))
-      .then(({style, errors}) => {
-        replaceStyle(style);
-        if (errors) return Promise.reject(errors);
-      })
+      .then(replaceStyle)
       .catch(err => {
         if (err.handled) return;
-        if (err.message === t('styleMissingMeta', 'name')) {
+        if (err.code === 'missingMandatory' && err.args.includes('name')) {
           messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
             chromeSync.setLZValue('usercssTemplate', code)
               .then(() => chromeSync.getLZValue('usercssTemplate'))
@@ -239,7 +258,7 @@ function createSourceEditor(style) {
         }
         const contents = Array.isArray(err) ?
           $create('pre', err.join('\n')) :
-          [String(err)];
+          [err.message || String(err)];
         if (Number.isInteger(err.index)) {
           const pos = cm.posFromIndex(err.index);
           contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
@@ -373,5 +392,15 @@ function createSourceEditor(style) {
     replaceStyle,
     isDirty: dirty.isDirty,
     getStyle: () => style,
+    getEditors: () => [cm],
+    scrollToEditor: () => {},
+    getStyleId: () => style.id,
+    getEditorTitle: () => '',
+    save,
+    toggleStyle,
+    prevEditor: cm => nextPrevMozDocument(cm, -1),
+    nextEditor: cm => nextPrevMozDocument(cm, 1),
+    closestVisible: () => cm,
+    getSearchableInputs: () => []
   };
 }

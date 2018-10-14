@@ -1,8 +1,8 @@
+/* exported loadScript */
 'use strict';
 
 // loadScript(script: Array<Promise|string>|string): Promise
-// eslint-disable-next-line no-var
-var loadScript = (() => {
+const loadScript = (() => {
   const cache = new Map();
 
   function inject(file) {
@@ -26,7 +26,7 @@ var loadScript = (() => {
       el.onload = () => {
         el.onload = null;
         el.onerror = null;
-        resolve();
+        resolve(el);
       };
       el.onerror = () => {
         el.onload = null;
@@ -37,11 +37,15 @@ var loadScript = (() => {
     });
   }
 
-  return files => {
+  return (files, noCache = false) => {
     if (!Array.isArray(files)) {
       files = [files];
     }
-    return Promise.all(files.map(f => (typeof f === 'string' ? inject(f) : f)));
+    return Promise.all(files.map(f =>
+      typeof f !== 'string' ? f :
+        noCache ? doInject(f) :
+        inject(f)
+    ));
   };
 })();
 
@@ -65,7 +69,10 @@ var loadScript = (() => {
         subscribers.set(srcSuffix, [resolve]);
       }
       // a resolved Promise won't reject anymore
-      setTimeout(() => emptyAfterCleanup(srcSuffix) + reject(), timeout);
+      setTimeout(() => {
+        emptyAfterCleanup(srcSuffix);
+        reject(new Error('Timeout'));
+      }, timeout);
     });
   };
 

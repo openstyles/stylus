@@ -1,9 +1,7 @@
-/*
-global getStyles saveStyle styleSectionsEqual
-global calcStyleDigest cachedStyles getStyleWithNoCode
-global usercss semverCompare
-global API_METHODS
-*/
+/* global styleSectionsEqual prefs download tryJSONparse ignoreChromeError
+  calcStyleDigest getStyleWithNoCode debounce chromeLocal
+  usercss semverCompare
+  API_METHODS styleManager */
 'use strict';
 
 (() => {
@@ -51,7 +49,7 @@ global API_METHODS
     checkingAll = true;
     retrying.clear();
     const port = observe && chrome.runtime.connect({name: 'updater'});
-    return getStyles({}).then(styles => {
+    return styleManager.getAllStyles().then(styles => {
       styles = styles.filter(style => style.updateUrl);
       if (port) port.postMessage({count: styles.length});
       log('');
@@ -70,7 +68,7 @@ global API_METHODS
 
   function checkStyle({
     id,
-    style = cachedStyles.byId.get(id),
+    style,
     port,
     save = true,
     ignoreDigest,
@@ -89,13 +87,23 @@ global API_METHODS
 
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
-    return Promise.resolve(style)
+    return fetchStyle()
       .then([calcStyleDigest][!ignoreDigest ? 0 : 'skip'])
       .then([checkIfEdited][!ignoreDigest ? 0 : 'skip'])
       .then([maybeUpdateUSO, maybeUpdateUsercss][style.usercssData ? 1 : 0])
       .then(maybeSave)
       .then(reportSuccess)
       .catch(reportFailure);
+
+    function fetchStyle() {
+      if (style) {
+        return Promise.resolve();
+      }
+      return styleManager.get(id)
+        .then(_style => {
+          style = _style;
+        });
+    }
 
     function reportSuccess(saved) {
       log(STATES.UPDATED + ` #${style.id} ${style.name}`);
@@ -145,24 +153,25 @@ global API_METHODS
 
     function maybeUpdateUsercss() {
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
-      return download(style.updateUrl).then(text => {
-        const json = usercss.buildMeta(text);
-        const {usercssData: {version}} = style;
-        const {usercssData: {version: newVersion}} = json;
-        switch (Math.sign(semverCompare(version, newVersion))) {
-          case 0:
-            // re-install is invalid in a soft upgrade
-            if (!ignoreDigest) {
-              const sameCode = text === style.sourceCode;
-              return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
-            }
-            break;
-          case 1:
-            // downgrade is always invalid
-            return Promise.reject(STATES.ERROR_VERSION);
-        }
-        return usercss.buildCode(json);
-      });
+      return download(style.updateUrl).then(text =>
+        usercss.buildMeta(text).then(json => {
+          const {usercssData: {version}} = style;
+          const {usercssData: {version: newVersion}} = json;
+          switch (Math.sign(semverCompare(version, newVersion))) {
+            case 0:
+              // re-install is invalid in a soft upgrade
+              if (!ignoreDigest) {
+                const sameCode = text === style.sourceCode;
+                return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
+              }
+              break;
+            case 1:
+              // downgrade is always invalid
+              return Promise.reject(STATES.ERROR_VERSION);
+          }
+          return usercss.buildCode(json);
+        })
+      );
     }
 
     function maybeSave(json = {}) {
@@ -173,7 +182,6 @@ global API_METHODS
 
       json.id = style.id;
       json.updateDate = Date.now();
-      json.reason = 'update';
 
       // keep current state
       delete json.enabled;
@@ -185,10 +193,10 @@ global API_METHODS
         json.originalName = json.name;
       }
 
+      const newStyle = Object.assign({}, style, json);
       if (styleSectionsEqual(json, style, {checkSource: true})) {
         // update digest even if save === false as there might be just a space added etc.
-        json.reason = 'update-digest';
-        return saveStyle(json)
+        return styleManager.installStyle(newStyle)
           .then(saved => {
             style.originalDigest = saved.originalDigest;
             return Promise.reject(STATES.SAME_CODE);
@@ -200,8 +208,8 @@ global API_METHODS
       }
 
       return save ?
-        API_METHODS[json.usercssData ? 'saveUsercss' : 'saveStyle'](json) :
-        json;
+        API_METHODS[json.usercssData ? 'installUsercss' : 'installStyle'](newStyle) :
+        newStyle;
     }
 
     function styleJSONseemsValid(json) {

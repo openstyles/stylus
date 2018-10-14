@@ -1,44 +1,128 @@
 /* eslint no-var: 0 */
+/* global msg API prefs */
+/* exported APPLY */
 'use strict';
 
-(() => {
-  if (typeof window.applyOnMessage === 'function') {
-    // some weird bug in new Chrome: the content script gets injected multiple times
-    return;
-  }
+// some weird bug in new Chrome: the content script gets injected multiple times
+// define a constant so it throws when redefined
+const APPLY = (() => {
   const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
+  const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
   var ID_PREFIX = 'stylus-';
-  var ROOT = document.documentElement;
+  var ROOT;
   var isOwnPage = location.protocol.endsWith('-extension:');
   var disableAll = false;
-  var exposeIframes = false;
   var styleElements = new Map();
   var disabledElements = new Map();
-  var retiredStyleTimers = new Map();
   var docRewriteObserver;
   var docRootObserver;
+  const setStyleContent = createSetStyleContent();
+  const initializing = init();
 
-  // FF59+ bug workaround
-  // See https://github.com/openstyles/stylus/issues/461
-  // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
-  // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
-  const FF_BUG461 = !CHROME && !isOwnPage && !Event.prototype.getPreventDefault;
-  const pageContextQueue = [];
-
-  requestStyles();
-  chrome.runtime.onMessage.addListener(applyOnMessage);
-  window.applyOnMessage = applyOnMessage;
+  msg.onTab(applyOnMessage);
 
   if (!isOwnPage) {
-    window.dispatchEvent(new CustomEvent(chrome.runtime.id));
+    window.dispatchEvent(new CustomEvent(chrome.runtime.id, {
+      detail: pageObject({method: 'orphan'})
+    }));
     window.addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
-  function requestStyles(options, callback = applyStyles) {
-    if (!chrome.app && document instanceof XMLDocument) {
-      chrome.runtime.sendMessage({method: 'styleViaAPI', action: 'styleApply'});
-      return;
+  let parentDomain;
+
+  prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
+  if (window !== parent) {
+    prefs.subscribe(['exposeIframes'], updateExposeIframes);
+  }
+
+  function init() {
+    if (STYLE_VIA_API) {
+      return API.styleViaAPI({method: 'styleApply'});
     }
+    return API.getSectionsByUrl(getMatchUrl())
+      .then(result => {
+        ROOT = document.documentElement;
+        applyStyles(result, () => {
+          // CSS transition bug workaround: since we insert styles asynchronously,
+          // the browsers, especially Firefox, may apply all transitions on page load
+          if ([...styleElements.values()].some(n => n.textContent.includes('transition'))) {
+            applyTransitionPatch();
+          }
+        });
+      });
+  }
+
+  function pageObject(target) {
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
+    const obj = new window.Object();
+    Object.assign(obj, target);
+    return obj;
+  }
+
+  function createSetStyleContent() {
+    // FF59+ bug workaround
+    // See https://github.com/openstyles/stylus/issues/461
+    // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
+    // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
+    const EVENT_NAME = chrome.runtime.id;
+    const usePageScript = CHROME || isOwnPage || Event.prototype.getPreventDefault ?
+      Promise.resolve(false) : injectPageScript();
+    return (el, content) => {
+      usePageScript.then(ok => {
+        if (!ok) {
+          // FIXME: do we have to keep el.sheet.disabled?
+          el.textContent = content;
+        } else {
+          const detail = pageObject({
+            method: 'setStyleContent',
+            id: el.id,
+            content
+          });
+          window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
+        }
+      });
+    };
+
+    function injectPageScript() {
+      const scriptContent = EVENT_NAME => {
+        document.currentScript.remove();
+        window.addEventListener(EVENT_NAME, function handler(e) {
+          const {method, id, content} = e.detail;
+          if (method === 'setStyleContent') {
+            const el = document.getElementById(id);
+            if (!el) {
+              return;
+            }
+            const disabled = el.sheet.disabled;
+            el.textContent = content;
+            el.sheet.disabled = disabled;
+          } else if (method === 'orphan') {
+            window.removeEventListener(EVENT_NAME, handler);
+          }
+        }, true);
+      };
+      const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
+      const src = `data:application/javascript;base64,${btoa(code)}`;
+      const script = document.createElement('script');
+      const {resolve, promise} = deferred();
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.documentElement.appendChild(script);
+      return promise;
+    }
+  }
+
+  function deferred() {
+    const o = {};
+    o.promise = new Promise((resolve, reject) => {
+      o.resolve = resolve;
+      o.reject = reject;
+    });
+    return o;
+  }
+
+  function getMatchUrl() {
     var matchUrl = location.href;
     if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
       // dynamic about: and javascript: iframes don't have an URL yet
@@ -49,78 +133,38 @@
         }
       } catch (e) {}
     }
-    const request = Object.assign({
-      method: 'getStylesForFrame',
-      asHash: true,
-      matchUrl,
-    }, options);
-    // On own pages we request the styles directly to minimize delay and flicker
-    if (typeof API === 'function') {
-      API.getStyles(request).then(callback);
-    } else if (!CHROME && getStylesFallback(request)) {
-      // NOP
-    } else {
-      chrome.runtime.sendMessage(request, callback);
-    }
+    return matchUrl;
   }
 
-  /**
-   * TODO: remove when FF fixes the bug.
-   * Firefox borks sendMessage in same-origin iframes that have 'src' with a real path on the site.
-   * We implement a workaround for the initial styleApply case only.
-   * Everything else (like toggling of styles) is still buggy.
-   * @param {Object} msg
-   * @param {Function} callback
-   * @returns {Boolean|undefined}
-   */
-  function getStylesFallback(msg) {
-    if (window !== parent &&
-        location.href !== 'about:blank') {
-      try {
-        if (parent.location.origin === location.origin &&
-            parent.location.href !== location.href) {
-          chrome.runtime.connect({name: 'getStyles:' + JSON.stringify(msg)});
-          return true;
-        }
-      } catch (e) {}
+  function applyOnMessage(request) {
+    if (request.method === 'ping') {
+      return true;
     }
-  }
-
-  function applyOnMessage(request, sender, sendResponse) {
-    if (request.styles === 'DIY') {
-      // Do-It-Yourself tells our built-in pages to fetch the styles directly
-      // which is faster because IPC messaging JSON-ifies everything internally
-      requestStyles({}, styles => {
-        request.styles = styles;
-        applyOnMessage(request);
-      });
-      return;
-    }
-
-    if (!chrome.app && document instanceof XMLDocument && request.method !== 'ping') {
-      request.action = request.method;
-      request.method = 'styleViaAPI';
-      request.styles = null;
-      if (request.style) {
-        request.style.sections = null;
+    if (STYLE_VIA_API) {
+      if (request.method === 'urlChanged') {
+        request.method = 'styleReplaceAll';
       }
-      chrome.runtime.sendMessage(request);
+      API.styleViaAPI(request);
       return;
     }
 
     switch (request.method) {
       case 'styleDeleted':
-        removeStyle(request);
+        removeStyle(request.style);
         break;
 
       case 'styleUpdated':
         if (request.codeIsUpdated === false) {
           applyStyleState(request.style);
-          break;
-        }
-        if (request.style.enabled) {
-          removeStyle({id: request.style.id, retire: true});
-          requestStyles({id: request.style.id});
+        } else if (request.style.enabled) {
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+            .then(sections => {
+              if (!sections[request.style.id]) {
+                removeStyle(request.style);
+              } else {
+                applyStyles(sections);
+              }
+            });
         } else {
           removeStyle(request.style);
         }
@@ -128,29 +172,28 @@
 
       case 'styleAdded':
         if (request.style.enabled) {
-          requestStyles({id: request.style.id});
+          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+            .then(applyStyles);
         }
         break;
 
-      case 'styleApply':
-        applyStyles(request.styles);
+      case 'urlChanged':
+        API.getSectionsByUrl(getMatchUrl())
+          .then(replaceAll);
         break;
 
-      case 'styleReplaceAll':
-        replaceAll(request.styles);
+      case 'backgroundReady':
+        initializing
+          .catch(err => {
+            if (msg.RX_NO_RECEIVER.test(err.message)) {
+              return init();
+            }
+          })
+          .catch(console.error);
         break;
 
-      case 'prefChanged':
-        if ('disableAll' in request.prefs) {
-          doDisableAll(request.prefs.disableAll);
-        }
-        if ('exposeIframes' in request.prefs) {
-          doExposeIframes(request.prefs.exposeIframes);
-        }
-        break;
-
-      case 'ping':
-        sendResponse(true);
+      case 'updateCount':
+        updateCount();
         break;
     }
   }
@@ -160,27 +203,63 @@
       return;
     }
     disableAll = disable;
-    Array.prototype.forEach.call(document.styleSheets, stylesheet => {
-      if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
-      && stylesheet.disabled !== disable) {
-        stylesheet.disabled = disable;
-      }
-    });
+    if (STYLE_VIA_API) {
+      API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
+    } else {
+      Array.prototype.forEach.call(document.styleSheets, stylesheet => {
+        if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
+        && stylesheet.disabled !== disable) {
+          stylesheet.disabled = disable;
+        }
+      });
+    }
   }
 
-  function doExposeIframes(state = exposeIframes) {
-    if (state === exposeIframes ||
-        state === true && typeof exposeIframes === 'string' ||
-        window === parent) {
+  function fetchParentDomain() {
+    if (parentDomain) {
+      return Promise.resolve();
+    }
+    return API.getTabUrlPrefix()
+      .then(newDomain => {
+        parentDomain = newDomain;
+      });
+  }
+
+  function updateExposeIframes() {
+    if (!prefs.get('exposeIframes') || window === parent || !styleElements.size) {
+      document.documentElement.removeAttribute('stylus-iframe');
+    } else {
+      fetchParentDomain().then(() => {
+        document.documentElement.setAttribute('stylus-iframe', parentDomain);
+      });
+    }
+  }
+
+  function updateCount() {
+    if (window !== parent) {
+      // we don't care about iframes
       return;
     }
-    exposeIframes = state;
-    const attr = document.documentElement.getAttribute('stylus-iframe');
-    if (state && state !== attr) {
-      document.documentElement.setAttribute('stylus-iframe', state);
-    } else if (!state && attr !== undefined) {
-      document.documentElement.removeAttribute('stylus-iframe');
+    if (/^\w+?-extension:\/\/.+(popup|options)\.html$/.test(location.href)) {
+      // popup and the option page are not tabs
+      return;
     }
+    if (STYLE_VIA_API) {
+      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
+      return;
+    }
+    let count = 0;
+    for (const id of styleElements.keys()) {
+      if (!disabledElements.has(id)) {
+        count++;
+      }
+    }
+    // we have to send the tabId so we can't use `sendBg` that is used by `API`
+    msg.send({
+      method: 'invokeAPI',
+      name: 'updateIconBadge',
+      args: [count]
+    }).catch(msg.ignoreError);
   }
 
   function applyStyleState({id, enabled}) {
@@ -193,7 +272,8 @@
         addStyleElement(inCache);
         disabledElements.delete(id);
       } else {
-        requestStyles({id});
+        return API.getSectionsByUrl(getMatchUrl(), id)
+          .then(applyStyles);
       }
     } else {
       if (inDoc) {
@@ -201,32 +281,25 @@
         docRootObserver.evade(() => inDoc.remove());
       }
     }
+    updateCount();
   }
 
-  function removeStyle({id, retire = false}) {
+  function removeStyle({id}) {
     const el = document.getElementById(ID_PREFIX + id);
     if (el) {
-      if (retire) {
-        // to avoid page flicker when the style is updated
-        // instead of removing it immediately we rename its ID and queue it
-        // to be deleted in applyStyles after a new version is fetched and applied
-        const deadID = id + '-ghost';
-        el.id = ID_PREFIX + deadID;
-        // in case something went wrong and new style was never applied
-        retiredStyleTimers.set(deadID, setTimeout(removeStyle, 1000, {id: deadID}));
-      } else {
-        docRootObserver.evade(() => el.remove());
-      }
+      docRootObserver.evade(() => el.remove());
     }
-    styleElements.delete(ID_PREFIX + id);
     disabledElements.delete(id);
-    retiredStyleTimers.delete(id);
+    if (styleElements.delete(id)) {
+      updateCount();
+    }
   }
 
-  function applyStyles(styles) {
-    if (!styles) {
-      // Chrome is starting up
-      requestStyles();
+  function applyStyles(sections, done) {
+    if (!Object.keys(sections).length) {
+      if (done) {
+        done();
+      }
       return;
     }
 
@@ -234,72 +307,39 @@
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
           observer.disconnect();
-          applyStyles(styles);
+          applyStyles(sections, done);
         }
       }).observe(document, {childList: true});
       return;
     }
 
-    if ('disableAll' in styles) {
-      doDisableAll(styles.disableAll);
+    if (docRootObserver) {
+      docRootObserver.stop();
+    } else {
+      initDocRootObserver();
     }
-    if ('exposeIframes' in styles) {
-      doExposeIframes(styles.exposeIframes);
+    for (const section of Object.values(sections)) {
+      applySections(section.id, section.code.join(''));
     }
-
-    const gotNewStyles = styles.length || styles.needTransitionPatch;
-    if (gotNewStyles) {
-      if (docRootObserver) {
-        docRootObserver.stop();
-      } else {
-        initDocRootObserver();
-      }
-    }
-
-    if (styles.needTransitionPatch) {
-      applyTransitionPatch();
-    }
-
-    if (gotNewStyles) {
-      for (const id in styles) {
-        const sections = styles[id];
-        if (!Array.isArray(sections)) continue;
-        applySections(id, sections.map(({code}) => code).join('\n'));
-      }
-      docRootObserver.firstStart();
-    }
-
-    if (FF_BUG461 && (gotNewStyles || styles.needTransitionPatch)) {
-      setContentsInPageContext();
-    }
+    docRootObserver.firstStart();
 
     if (!isOwnPage && !docRewriteObserver && styleElements.size) {
       initDocRewriteObserver();
     }
 
-    if (retiredStyleTimers.size) {
-      setTimeout(() => {
-        for (const [id, timer] of retiredStyleTimers.entries()) {
-          removeStyle({id});
-          clearTimeout(timer);
-        }
-      });
+    updateExposeIframes();
+    updateCount();
+    if (done) {
+      done();
     }
   }
 
-  function applySections(styleId, code) {
-    const id = ID_PREFIX + styleId;
-    let el = styleElements.get(id) || document.getElementById(id);
-    if (el && el.textContent !== code) {
-      if (CHROME < 3321) {
-        // workaround for Chrome devtools bug fixed in v65
-        el.remove();
-        el = null;
-      } else if (FF_BUG461) {
-        pageContextQueue.push({id: el.id, el, code});
-      } else {
-        el.textContent = code;
-      }
+  function applySections(id, code) {
+    let el = styleElements.get(id) || document.getElementById(ID_PREFIX + id);
+    if (el && CHROME < 3321) {
+      // workaround for Chrome devtools bug fixed in v65
+      el.remove();
+      el = null;
     }
     if (!el) {
       if (document.documentElement instanceof SVGSVGElement) {
@@ -312,48 +352,18 @@
         // HTML document style; also works on HTML-embedded SVG
         el = document.createElement('style');
       }
-      el.id = id;
+      el.id = ID_PREFIX + id;
       el.type = 'text/css';
       // SVG className is not a string, but an instance of SVGAnimatedString
       el.classList.add('stylus');
-      if (FF_BUG461) {
-        pageContextQueue.push({id: el.id, el, code});
-      } else {
-        el.textContent = code;
-      }
       addStyleElement(el);
     }
+    if (el.textContent !== code) {
+      setStyleContent(el, code);
+    }
     styleElements.set(id, el);
-    disabledElements.delete(Number(styleId));
+    disabledElements.delete(id);
     return el;
-  }
-
-  function setContentsInPageContext() {
-    try {
-      (document.head || ROOT).appendChild(document.createElement('script')).text = `(${queue => {
-        document.currentScript.remove();
-        for (const {id, code} of queue) {
-          const el = document.getElementById(id) ||
-                     document.querySelector('style.stylus[id="' + id + '"]');
-          if (!el) continue;
-          const {disabled} = el.sheet;
-          el.textContent = code;
-          el.sheet.disabled = disabled;
-        }
-      }})(${JSON.stringify(pageContextQueue)})`;
-    } catch (e) {}
-    let failedSome;
-    for (const {el, code} of pageContextQueue) {
-      if (el.textContent !== code) {
-        el.textContent = code;
-        failedSome = true;
-      }
-    }
-    if (failedSome) {
-      console.debug('Could not set code of some styles in page context, ' +
-                    'see https://github.com/openstyles/stylus/issues/461');
-    }
-    pageContextQueue.length = 0;
   }
 
   function addStyleElement(newElement) {
@@ -371,34 +381,32 @@
     if (next === newElement.nextElementSibling) {
       return;
     }
-    docRootObserver.evade(() => {
+    const insert = () => {
       ROOT.insertBefore(newElement, next || null);
       if (disableAll) {
         newElement.disabled = true;
       }
-    });
+    };
+    if (docRootObserver) {
+      docRootObserver.evade(insert);
+    } else {
+      insert();
+    }
   }
 
   function replaceAll(newStyles) {
-    if ('disableAll' in newStyles &&
-        disableAll === newStyles.disableAll &&
-        styleElements.size === countStylesInHash(newStyles) &&
-        [...styleElements.values()].every(el =>
-          el.disabled === disableAll &&
-          el.parentNode === ROOT &&
-          el.textContent === (newStyles[getStyleId(el)] || []).map(({code}) => code).join('\n'))) {
-      return;
-    }
     const oldStyles = Array.prototype.slice.call(
       document.querySelectorAll(`style.stylus[id^="${ID_PREFIX}"]`));
     oldStyles.forEach(el => (el.id += '-ghost'));
     styleElements.clear();
     disabledElements.clear();
-    [...retiredStyleTimers.values()].forEach(clearTimeout);
-    retiredStyleTimers.clear();
     applyStyles(newStyles);
-    docRootObserver.evade(() =>
-      oldStyles.forEach(el => el.remove()));
+    const removeOld = () => oldStyles.forEach(el => el.remove());
+    if (docRewriteObserver) {
+      docRootObserver.evade(removeOld);
+    } else {
+      removeOld();
+    }
   }
 
   function applyTransitionPatch() {
@@ -408,29 +416,25 @@
     const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
     document.documentElement.classList.add(className);
     applySections(0, `
-        ${docId}.${className}:root * {
-          transition: none !important;
-        }
-      `);
-    setTimeout(() => {
-      removeStyle({id: 0});
-      document.documentElement.classList.remove(className);
-    });
+      ${docId}.${CSS.escape(className)}:root * {
+        transition: none !important;
+      }
+    `);
+    // repaint
+    // eslint-disable-next-line no-unused-expressions
+    document.documentElement.offsetWidth;
+    removeStyle({id: 0});
+    document.documentElement.classList.remove(className);
   }
 
   function getStyleId(el) {
     return parseInt(el.id.substr(ID_PREFIX.length));
   }
 
-  function countStylesInHash(styleHash) {
-    let num = 0;
-    for (const k in styleHash) {
-      num += !isNaN(parseInt(k)) ? 1 : 0;
+  function orphanCheck(e) {
+    if (e && e.detail.method !== 'orphan') {
+      return;
     }
-    return num;
-  }
-
-  function orphanCheck() {
     if (chrome.i18n && chrome.i18n.getUILanguage()) {
       return true;
     }
@@ -439,7 +443,7 @@
     [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.disconnect());
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
-      chrome.runtime.onMessage.removeListener(applyOnMessage);
+      msg.off(applyOnMessage);
     } catch (e) {}
   }
 

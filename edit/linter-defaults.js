@@ -1,7 +1,7 @@
+/* exported LINTER_DEFAULTS */
 'use strict';
 
-// eslint-disable-next-line no-var
-var LINTER_DEFAULTS = (() => {
+const LINTER_DEFAULTS = (() => {
   const SEVERITY = {severity: 'warning'};
   const STYLELINT = {
     // 'sugarss' is a indent-based syntax like Sass or Stylus

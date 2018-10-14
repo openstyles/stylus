@@ -1,4 +1,6 @@
-/* global regExpTester debounce messageBox CodeMirror template colorMimicry */
+/* global regExpTester debounce messageBox CodeMirror template colorMimicry msg
+  $ $create t prefs tryCatch */
+/* exported createAppliesToLineWidget */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
@@ -131,7 +133,7 @@ function createAppliesToLineWidget(cm) {
     cm.on('change', onChange);
     cm.on('optionChange', onOptionChange);
 
-    chrome.runtime.onMessage.addListener(onRuntimeMessage);
+    msg.onExtension(onRuntimeMessage);
 
     requestAnimationFrame(updateWidgetStyle);
     update();
@@ -144,7 +146,7 @@ function createAppliesToLineWidget(cm) {
     widgets.length = 0;
     cm.off('change', onChange);
     cm.off('optionChange', onOptionChange);
-    chrome.runtime.onMessage.removeListener(onRuntimeMessage);
+    msg.off(onRuntimeMessage);
     actualStyle.remove();
   }
 

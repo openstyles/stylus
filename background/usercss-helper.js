@@ -1,13 +1,15 @@
-/* global API_METHODS usercss saveStyle getStyles chromeLocal cachedStyles */
+/* global API_METHODS usercss chromeLocal styleManager FIREFOX deepCopy openURL
+  download */
 'use strict';
 
 (() => {
+  API_METHODS.installUsercss = installUsercss;
+  API_METHODS.editSaveUsercss = editSaveUsercss;
+  API_METHODS.configUsercssVars = configUsercssVars;
 
-  API_METHODS.saveUsercss = style => save(style, false);
-  API_METHODS.saveUsercssUnsafe = style => save(style, true);
   API_METHODS.buildUsercss = build;
-  API_METHODS.installUsercss = install;
-  API_METHODS.parseUsercss = parse;
+  API_METHODS.openUsercssInstallPage = install;
+
   API_METHODS.findUsercss = find;
 
   const TEMP_CODE_PREFIX = 'tempUsercssCode';
@@ -40,69 +42,92 @@
     if (style.usercssData) {
       return Promise.resolve(style);
     }
-    try {
-      const {sourceCode} = style;
-      // allow sourceCode to be normalized
-      delete style.sourceCode;
-      return Promise.resolve(Object.assign(usercss.buildMeta(sourceCode), style));
-    } catch (e) {
-      return Promise.reject(e);
-    }
+
+    // allow sourceCode to be normalized
+    const {sourceCode} = style;
+    delete style.sourceCode;
+
+    return usercss.buildMeta(sourceCode)
+      .then(newStyle => Object.assign(newStyle, style));
   }
 
   function assignVars(style) {
-    if (style.reason === 'config' && style.id) {
-      return style;
-    }
-    const dup = find(style);
-    if (dup) {
-      style.id = dup.id;
-      if (style.reason !== 'config') {
-        // preserve style.vars during update
-        usercss.assignVars(style, dup);
-      }
-    }
-    return style;
+    return find(style)
+      .then(dup => {
+        if (dup) {
+          style.id = dup.id;
+          // preserve style.vars during update
+          return usercss.assignVars(style, dup)
+            .then(() => style);
+        }
+        return style;
+      });
   }
 
   /**
-   * Parse the source and find the duplication
+   * Parse the source, find the duplication, and build sections with variables
    * @param _
    * @param {String} _.sourceCode
    * @param {Boolean=} _.checkDup
    * @param {Boolean=} _.metaOnly
+   * @param {Object} _.vars
    * @returns {Promise<{style, dup:Boolean?}>}
    */
   function build({
     sourceCode,
     checkDup,
     metaOnly,
+    vars,
   }) {
-    const task = buildMeta({sourceCode});
-    return (metaOnly ? task : task.then(usercss.buildCode))
-      .then(style => ({
-        style,
-        dup: checkDup && find(style),
-      }));
-  }
+    return usercss.buildMeta(sourceCode)
+      .then(style =>
+        Promise.all([
+          metaOnly ? style : doBuild(style),
+          checkDup ? find(style) : undefined
+        ])
+      )
+      .then(([style, dup]) => ({style, dup}));
 
-  // Parse the source, apply customizations, report fatal/syntax errors
-  function parse(style, allowErrors = false) {
-    // restore if stripped by getStyleWithNoCode
-    if (typeof style.sourceCode !== 'string') {
-      style.sourceCode = cachedStyles.byId.get(style.id).sourceCode;
+    function doBuild(style) {
+      if (vars) {
+        const oldStyle = {usercssData: {vars}};
+        return usercss.assignVars(style, oldStyle)
+          .then(() => usercss.buildCode(style));
+      }
+      return usercss.buildCode(style);
     }
-    return buildMeta(style)
-      .then(assignVars)
-      .then(style => usercss.buildCode(style, allowErrors));
   }
 
-  function save(style, allowErrors = false) {
-    return parse(style, allowErrors)
-      .then(result =>
-        allowErrors ?
-          saveStyle(result.style).then(style => ({style, errors: result.errors})) :
-          saveStyle(result));
+  // Build the style within aditional properties then inherit variable values
+  // from the old style.
+  function parse(style) {
+    return buildMeta(style)
+      .then(buildMeta)
+      .then(assignVars)
+      .then(usercss.buildCode);
+  }
+
+  // FIXME: simplify this to `installUsercss(sourceCode)`?
+  function installUsercss(style) {
+    return parse(style)
+      .then(styleManager.installStyle);
+  }
+
+  // FIXME: simplify this to `editSaveUsercss({sourceCode, exclusions})`?
+  function editSaveUsercss(style) {
+    return parse(style)
+      .then(styleManager.editSave);
+  }
+
+  function configUsercssVars(id, vars) {
+    return styleManager.get(id)
+      .then(style => {
+        const newStyle = deepCopy(style);
+        newStyle.usercssData.vars = vars;
+        return usercss.buildCode(newStyle);
+      })
+      .then(style => styleManager.installStyle(style, 'config'))
+      .then(style => style.usercssData.vars);
   }
 
   /**
@@ -110,19 +135,23 @@
    * @returns {Style}
    */
   function find(styleOrData) {
-    if (styleOrData.id) return cachedStyles.byId.get(styleOrData.id);
-    const {name, namespace} = styleOrData.usercssData || styleOrData;
-    for (const dup of cachedStyles.list) {
-      const data = dup.usercssData;
-      if (!data) continue;
-      if (data.name === name &&
-          data.namespace === namespace) {
-        return dup;
-      }
+    if (styleOrData.id) {
+      return styleManager.get(styleOrData.id);
     }
+    const {name, namespace} = styleOrData.usercssData || styleOrData;
+    return styleManager.getAllStyles().then(styleList => {
+      for (const dup of styleList) {
+        const data = dup.usercssData;
+        if (!data) continue;
+        if (data.name === name &&
+            data.namespace === namespace) {
+          return dup;
+        }
+      }
+    });
   }
 
-  function install({url, direct, downloaded, tab}, sender) {
+  function install({url, direct, downloaded, tab}, sender = this.sender) {
     tab = tab !== undefined ? tab : sender.tab;
     url = url || tab.url;
     if (direct && !downloaded) {

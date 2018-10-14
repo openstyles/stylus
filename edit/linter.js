@@ -1,7 +1,8 @@
+/* global prefs */
 'use strict';
 
-// eslint-disable-next-line no-var
-var linter = (() => {
+/* exported linter */
+const linter = (() => {
   const lintingUpdatedListeners = [];
   const unhookListeners = [];
   const linters = [];

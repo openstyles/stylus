@@ -1,4 +1,6 @@
-/* global tabURL handleEvent */
+/* global tabURL handleEvent $ $$ prefs template FIREFOX chromeLocal debounce
+  $create t API tWordBreak formatDate tryCatch tryJSONparse LZString
+  ignoreChromeError */
 'use strict';
 
 window.addEventListener('showStyles:done', function _() {
@@ -135,7 +137,7 @@ window.addEventListener('showStyles:done', function _() {
       if (result) {
         result.installed = false;
         result.installedStyleId = -1;
-        (BG || window).clearTimeout(result.pingbackTimer);
+        window.clearTimeout(result.pingbackTimer);
         renderActionButtons($('#' + RESULT_ID_PREFIX + result.id));
       }
     });
@@ -287,14 +289,14 @@ window.addEventListener('showStyles:done', function _() {
       return;
     }
     const md5Url = UPDATE_URL.replace('%', result.id);
-    API.getStyles({md5Url}).then(([installedStyle]) => {
-      if (installedStyle) {
+    API.styleExists({md5Url}).then(exist => {
+      if (exist) {
         totalResults = Math.max(0, totalResults - 1);
       } else {
         processedResults.push(result);
         render();
       }
-      setTimeout(processNextResult, !installedStyle && DELAY_AFTER_FETCHING_STYLES);
+      setTimeout(processNextResult, !exist && DELAY_AFTER_FETCHING_STYLES);
     });
   }
 
@@ -529,7 +531,7 @@ window.addEventListener('showStyles:done', function _() {
     event.stopPropagation();
     const entry = this.closest('.search-result');
     saveScrollPosition(entry);
-    API.deleteStyle({id: entry._result.installedStyleId})
+    API.deleteStyle(entry._result.installedStyleId)
       .then(restoreScrollPosition);
   }
 
@@ -555,9 +557,7 @@ window.addEventListener('showStyles:done', function _() {
       pingback(result);
       // show a 'config-on-homepage' icon in the popup
       style.updateUrl += settings.length ? '?' : '';
-      // show a 'style installed' tooltip in the manager
-      style.reason = 'install';
-      return API.saveStyle(style);
+      return API.installStyle(style);
     })
     .catch(reason => {
       const usoId = result.id;
@@ -581,7 +581,8 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   function pingback(result) {
-    const wnd = BG || window;
+    const wnd = window;
+    // FIXME: move this to background page and create an API like installUSOStyle
     result.pingbackTimer = wnd.setTimeout(wnd.download, PINGBACK_DELAY,
       BASE_URL + '/styles/install/' + result.id + '?source=stylish-ch');
   }

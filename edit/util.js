@@ -1,3 +1,4 @@
+/* exported dirtyReporter memoize clipString sectionsToMozFormat */
 'use strict';
 
 function dirtyReporter() {
