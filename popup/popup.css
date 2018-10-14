@@ -483,7 +483,7 @@ html[style] .entry {
   color: var(--stylename-popup-hover-text);
 }
 
-.entry .style-name::before {
+.entry .style-name:hover::before {
   content: "";
   position: absolute;
   top: 0;
@@ -492,10 +492,7 @@ html[style] .entry {
   bottom: 0;
   background: linear-gradient(to right, var(--stylename-hover-garadient-left), var(--stylename-hover-garadient-middle) 50%, transparent);
   pointer-events: none;
-  opacity: 0;
   z-index: -1;
-  transition: opacity .1s;
-  will-change: opacity;
 }
 
 .entry .style-name:hover::before {
