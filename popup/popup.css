@@ -154,6 +154,10 @@ body:not(.disabled) .toggle-all-on {
   display: none;
 }
 
+svg.svg-icon.toggle-all-on {
+  margin-top: 4px;
+}
+
 #popup-write-style-icon {
   display: inline-flex;
 }
@@ -210,6 +214,10 @@ body:not(.disabled) .toggle-all-on {
 
 .iconUI button:hover .svg-icon {
   fill: var(--black);
+}
+
+.iconUI #popup-manage-button:hover .svg-icon {
+  stroke: var(--black);
 }
 
 #popup-confirm-icon {
@@ -292,7 +300,8 @@ a[target="_blank"] .svg-icon.config {
 }
 
 #find-styles-inline-group,
-#find-inline-icon {
+#find-inline-icon,
+#find-external-icon {
   display: inline-flex;
   height: min-content;
 }
@@ -403,7 +412,7 @@ a:hover .svg-icon.toggled-off path:nth-child(3) {
 }
 
 .iconUI #disable-all-wrapper {
-  padding: 0;
+  padding: 0 5px 0 0;
 }
 
 .iconUI button {

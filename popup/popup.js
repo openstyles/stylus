@@ -93,6 +93,10 @@ function initPopup() {
     document.body.classList.toggle('disabled', this.checked);
   };
 
+  $('#disable-all-icon').onclick = () => {
+    $('#disableAll').click();
+  };
+
   setupLivePrefs();
 
   Object.assign($('#popup-manage-button'), {
