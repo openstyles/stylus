@@ -329,10 +329,10 @@ function createSection({
     if (selectEl) {
       selectEl.value = type;
       selectEl.addEventListener('change', () => {
-        const oldKey = type;
+        const oldType = type;
         dirty.modify(`${dirtyPrefix}.type`, type, selectEl.value);
         type = selectEl.value;
-        if (oldKey === 'regexp' || type === 'regexp') {
+        if (oldType === 'regexp' || type === 'regexp') {
           updateRegexpTester();
         }
         emitSectionChange();
@@ -354,6 +354,8 @@ function createSection({
       valueEl.addEventListener('change', validate);
     }
 
+    restore();
+
     const apply = {
       id: applyId,
       all,
@@ -362,7 +364,7 @@ function createSection({
       el,
       getType: () => type,
       getValue: () => value,
-      valueEl
+      valueEl // used by validator
     };
 
     const removeButton = $('.remove-applies-to', el);
@@ -389,11 +391,17 @@ function createSection({
     }
 
     function remove() {
+      if (all) {
+        return;
+      }
       dirty.remove(`${dirtyPrefix}.type`, type);
       dirty.remove(`${dirtyPrefix}.value`, value);
     }
 
     function restore() {
+      if (all) {
+        return;
+      }
       dirty.add(`${dirtyPrefix}.type`, type);
       dirty.add(`${dirtyPrefix}.value`, value);
     }
