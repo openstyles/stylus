@@ -18,6 +18,7 @@ function createSectionsEditor(style) {
   nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
     style.name = nameEl.value;
+    updateTitle();
   });
 
   const enabledEl = $('#enabled');
