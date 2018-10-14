@@ -15,7 +15,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getAllStyles: styleManager.getAllStyles, // used by importer
   getSectionsByUrl: styleManager.getSectionsByUrl,
   getStyle: styleManager.get,
-  getStylesInfo: styleManager.getStylesInfo,
   getStylesInfoByUrl: styleManager.getStylesInfoByUrl,
   importStyle: styleManager.importStyle,
   installStyle: styleManager.installStyle,

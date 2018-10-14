@@ -2,7 +2,7 @@
 global configDialog hotkeys
 popupExclusions onTabReady msg
 getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
-setupLivePrefs template ignoreChromeError t $create tWordBreak animateElement
+setupLivePrefs template t $create tWordBreak animateElement
 tryJSONparse debounce
 */
 
@@ -389,7 +389,7 @@ Object.assign(handleEvent, {
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      API.getStylesInfo({id: styleId}).then(([style]) => {
+      API.getStyle(styleId, true).then(style => {
         hotkeys.setState(false);
         configDialog(style).then(() => {
           hotkeys.setState(true);

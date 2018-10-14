@@ -49,7 +49,6 @@ const styleManager = (() => {
 
   return ensurePrepared({
     get,
-    getStylesInfo,
     getSectionsByUrl,
     installStyle,
     deleteStyle,
@@ -92,12 +91,14 @@ const styleManager = (() => {
     });
   }
 
-  function get(id) {
-    return styles.get(id).data;
+  function get(id, noCode = false) {
+    const data = styles.get(id).data;
+    return noCode ? getStyleWithNoCode(data) : data;
   }
 
-  function getAllStyles() {
-    return [...styles.values()].map(s => s.data);
+  function getAllStyles(noCode = false) {
+    const datas = [...styles.values()].map(s => s.data);
+    return noCode ? datas.map(getStyleWithNoCode) : datas;
   }
 
   function toggleStyle(id, enabled) {
@@ -106,15 +107,6 @@ const styleManager = (() => {
     return saveStyle(data)
       .then(newData => handleSave(newData, 'toggle', false))
       .then(() => id);
-  }
-
-  function getStylesInfo(filter) {
-    if (filter && filter.id) {
-      return [getStyleWithNoCode(styles.get(filter.id).data)];
-    }
-    return [...styles.values()]
-      .filter(s => !filter || filterMatch(filter, s.data))
-      .map(s => getStyleWithNoCode(s.data));
   }
 
   // used by install-hook-userstyles.js

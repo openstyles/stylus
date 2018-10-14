@@ -119,7 +119,7 @@ function configDialog(style) {
       return;
     }
     if (!bgStyle) {
-      API.getStylesInfo({id: style.id})
+      API.getStyle(style.id, true)
         .then(([bgStyle]) => save({anyChangeIsDirty}, bgStyle || {}));
       return;
     }

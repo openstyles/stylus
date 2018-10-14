@@ -35,7 +35,7 @@ const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const handleEvent = {};
 
 Promise.all([
-  API.getStylesInfo(),
+  API.getAllStyles(true),
   urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
   onDOMready().then(initGlobalEvents),
 ]).then(args => {
@@ -48,8 +48,8 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
-      API.getStylesInfo({id: msg.style.id})
-        .then(([style]) => handleUpdate(style, msg));
+      API.getStyle(msg.style.id, true)
+        .then(style => handleUpdate(style, msg));
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
@@ -647,7 +647,7 @@ function switchUI({styleOnly} = {}) {
   const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
   if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getStylesInfo().then(showStyles);
+    API.getAllStyles(true).then(showStyles);
     return;
   }
   if (changed.targets) {
@@ -671,11 +671,10 @@ function onVisibilityChange() {
     // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible':
       if (sessionStorage.justEditedStyleId) {
-        API.getStylesInfo({
-          id: sessionStorage.justEditedStyleId
-        }).then(([style]) => {
-          handleUpdate(style, {method: 'styleUpdated'});
-        });
+        API.getStyle(Number(sessionStorage.justEditedStyleId), true)
+          .then(style => {
+            handleUpdate(style, {method: 'styleUpdated'});
+          });
         delete sessionStorage.justEditedStyleId;
       }
       break;
