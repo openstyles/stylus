@@ -250,7 +250,7 @@ function createStyleTargetsElement({entry, style}) {
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
-      for (const targetValue of target[type] || []) {
+      for (const targetValue of section[type] || []) {
         if (displayed.has(targetValue)) {
           continue;
         }

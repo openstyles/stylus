@@ -1,10 +1,7 @@
-/*
-global configDialog hotkeys
-popupExclusions onTabReady msg
-getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
-setupLivePrefs template t $create tWordBreak animateElement
-tryJSONparse debounce
-*/
+/* global configDialog hotkeys onTabReady msg
+  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+  setupLivePrefs template t $create tWordBreak animateElement
+  tryJSONparse debounce */
 
 'use strict';
 
