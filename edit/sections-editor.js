@@ -15,7 +15,7 @@ function createSectionsEditor(style) {
   const sections = [];
 
   const nameEl = $('#name');
-  nameEl.addEventListener('change', () => {
+  nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
     style.name = nameEl.value;
   });
@@ -31,8 +31,6 @@ function createSectionsEditor(style) {
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
   $('#save-button').addEventListener('click', saveStyle);
-  // FIXME: this element doesn't exist?
-  $('#sections-help').addEventListener('click', showSectionHelp);
 
   document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
 
@@ -103,11 +101,6 @@ function createSectionsEditor(style) {
   function showToMozillaHelp(event) {
     event.preventDefault();
     showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
-  }
-
-  function showSectionHelp(event) {
-    event.preventDefault();
-    showHelp(t('styleSectionsTitle'), t('sectionHelp'));
   }
 
   function getSearchableInputs(cm) {

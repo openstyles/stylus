@@ -1159,10 +1159,6 @@
     "message": "Code",
     "description": "Label for the code for a section"
   },
-  "sectionHelp": {
-    "message": "Sections let you define different pieces of code to apply to different sets of URLs in the same style. For example, a single style could change the homepage of a site one way, while changing the rest of a site another way.",
-    "description": "Help text for sections"
-  },
   "sectionRemove": {
     "message": "Remove section",
     "description": "Label for the button to remove a section"
@@ -1328,10 +1324,6 @@
   "styleSaveLabel": {
     "message": "Save",
     "description": "Label for save button for style editing"
-  },
-  "styleSectionsTitle": {
-    "message": "Sections",
-    "description": "Title for the style sections section"
   },
   "styleToMozillaFormatHelp": {
     "message": "The Mozilla format of the code can be submitted to userstyles.org and used with the classic Stylish for Firefox",
