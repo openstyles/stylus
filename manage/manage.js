@@ -26,7 +26,6 @@ const newUI = {
   },
 };
 newUI.renderClass();
-requestAnimationFrame(usePrefsDuringPageLoad);
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
@@ -37,7 +36,21 @@ const handleEvent = {};
 Promise.all([
   API.getAllStyles(true),
   urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
-  onDOMready().then(initGlobalEvents),
+  Promise.all([
+    onDOMready(),
+    prefs.initializing,
+  ])
+    .then(() => {
+      initGlobalEvents();
+      if (!VIVALDI) {
+        $$('#header select').forEach(el => el.adjustWidth());
+      }
+      if (FIREFOX && 'update' in (chrome.commands || {})) {
+        const btn = $('#manage-shortcuts-button');
+        btn.classList.remove('chromium-only');
+        btn.onclick = API.optionsCustomizeHotkeys;
+      }
+    }),
 ]).then(args => {
   showStyles(...args);
 });
@@ -680,32 +693,5 @@ function highlightEditedStyle() {
   if (entry) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
-  }
-}
-
-
-function usePrefsDuringPageLoad() {
-  for (const id of Object.getOwnPropertyNames(prefs.defaults)) {
-    const value = prefs.get(id);
-    if (value !== true) continue;
-    const el = document.getElementById(id) ||
-      id.includes('expanded') && $(`details[data-pref="${id}"]`);
-    if (!el) continue;
-    if (el.type === 'checkbox') {
-      el.checked = value;
-    } else if (el.localName === 'details') {
-      el.open = value;
-    } else {
-      el.value = value;
-    }
-  }
-  if (!VIVALDI) {
-    $$('#header select').forEach(el => el.adjustWidth());
-  }
-
-  if (FIREFOX && 'update' in (chrome.commands || {})) {
-    const btn = $('#manage-shortcuts-button');
-    btn.classList.remove('chromium-only');
-    btn.onclick = API.optionsCustomizeHotkeys;
   }
 }

@@ -1,9 +1,54 @@
-/* global messageBox styleSectionsEqual getOwnTab API
+/* global messageBox styleSectionsEqual getOwnTab API onDOMready
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
+
+onDOMready().then(() => {
+  $('#file-all-styles').onclick = exportToFile;
+  $('#unfile-all-styles').onclick = () => {
+    importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
+  };
+
+  Object.assign(document.body, {
+    ondragover(event) {
+      const hasFiles = event.dataTransfer.types.includes('Files');
+      event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
+      this.classList.toggle('dropzone', hasFiles);
+      if (hasFiles) {
+        event.preventDefault();
+        clearTimeout(this.fadeoutTimer);
+        this.classList.remove('fadeout');
+      }
+    },
+    ondragend() {
+      animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
+        this.style.animationDuration = '';
+      });
+    },
+    ondragleave(event) {
+      try {
+        // in Firefox event.target could be XUL browser and hence there is no permission to access it
+        if (event.target === this) {
+          this.ondragend();
+        }
+      } catch (e) {
+        this.ondragend();
+      }
+    },
+    ondrop(event) {
+      this.ondragend();
+      if (event.dataTransfer.files.length) {
+        event.preventDefault();
+        if ($('#only-updates input').checked) {
+          $('#only-updates input').click();
+        }
+        importFromFile({file: event.dataTransfer.files[0]});
+      }
+    },
+  });
+});
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -244,7 +289,7 @@ function importFromString(jsonString) {
 }
 
 
-$('#file-all-styles').onclick = () => {
+function exportToFile() {
   API.getAllStyles().then(styles => {
     // https://crbug.com/714373
     document.documentElement.appendChild(
@@ -284,47 +329,4 @@ $('#file-all-styles').onclick = () => {
     const yyyy = today.getFullYear();
     return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
   }
-};
-
-
-$('#unfile-all-styles').onclick = () => {
-  importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
-};
-
-Object.assign(document.body, {
-  ondragover(event) {
-    const hasFiles = event.dataTransfer.types.includes('Files');
-    event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
-    this.classList.toggle('dropzone', hasFiles);
-    if (hasFiles) {
-      event.preventDefault();
-      clearTimeout(this.fadeoutTimer);
-      this.classList.remove('fadeout');
-    }
-  },
-  ondragend() {
-    animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
-      this.style.animationDuration = '';
-    });
-  },
-  ondragleave(event) {
-    try {
-      // in Firefox event.target could be XUL browser and hence there is no permission to access it
-      if (event.target === this) {
-        this.ondragend();
-      }
-    } catch (e) {
-      this.ondragend();
-    }
-  },
-  ondrop(event) {
-    this.ondragend();
-    if (event.dataTransfer.files.length) {
-      event.preventDefault();
-      if ($('#only-updates input').checked) {
-        $('#only-updates input').click();
-      }
-      importFromFile({file: event.dataTransfer.files[0]});
-    }
-  },
-});
+}
