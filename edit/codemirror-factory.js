@@ -138,10 +138,11 @@ const cmFactory = (() => {
   }
 
   function autocompleteOnTyping(cm, [info], debounced) {
+    const lastLine = info.text[info.text.length - 1];
     if (
       cm.state.completionActive ||
       info.origin && !info.origin.includes('input') ||
-      !info.text.last
+      !lastLine
     ) {
       return;
     }
@@ -153,7 +154,7 @@ const cmFactory = (() => {
       debounce(autocompleteOnTyping, 100, cm, [info], true);
       return;
     }
-    if (info.text.last.match(/[-a-z!]+$/i)) {
+    if (lastLine.match(/[-a-z!]+$/i)) {
       cm.state.autocompletePicked = false;
       cm.options.hintOptions.completeSingle = false;
       cm.execCommand('autocomplete');

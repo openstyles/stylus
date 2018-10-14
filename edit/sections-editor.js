@@ -476,6 +476,7 @@ function createSectionsEditor(style) {
 
   function removeSection(section) {
     if (sections.every(s => s.isRemoved() || s === section)) {
+      // TODO: hide remove button when `#sections[data-section-count=1]`
       throw new Error('Cannot remove last section');
     }
     if (section.cm.isBlank()) {
@@ -534,7 +535,6 @@ function createSectionsEditor(style) {
       container.appendChild(section.el);
     }
     section.render();
-    // maximizeCodeHeight(section.el);
     updateSectionOrder();
     section.onChange(updateLivePreview);
     updateLivePreview();
