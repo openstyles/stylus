@@ -485,7 +485,7 @@ function createSectionsEditor(style) {
     if (sections.every(s => s.isRemoved() || s === section)) {
       throw new Error('Cannot remove last section');
     }
-    if (!section.getCode()) {
+    if (section.cm.isBlank()) {
       const index = sections.indexOf(section);
       sections.splice(index, 1);
       section.el.remove();

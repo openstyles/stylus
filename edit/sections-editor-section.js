@@ -121,7 +121,6 @@ function createSection({
     el,
     cm,
     render,
-    getCode,
     getModel,
     remove,
     destroy,
@@ -263,10 +262,6 @@ function createSection({
   function showAppliesToHelp(event) {
     event.preventDefault();
     showHelp(t('appliesLabel'), t('appliesHelp'));
-  }
-
-  function getCode() {
-    return cm.getValue();
   }
 
   function remove() {
