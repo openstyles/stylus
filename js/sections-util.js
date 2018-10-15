@@ -2,6 +2,9 @@
 'use strict';
 
 function styleCodeEmpty(code) {
+  if (!code) {
+    return true;
+  }
   const rx = /\s+|\/\*[\s\S]*?\*\/|@namespace[^;]+;|@charset[^;]+;/giy;
   while (rx.exec(code)) {
     if (rx.lastIndex === code.length) {

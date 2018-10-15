@@ -118,7 +118,6 @@ function createSectionsEditor(style) {
       nearbyElement instanceof Node &&
         (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
       getLastActivatedEditor();
-    console.log(cm);
     if (nearbyElement instanceof Node && cm) {
       const {left, top} = nearbyElement.getBoundingClientRect();
       const bounds = cm.display.wrapper.getBoundingClientRect();
