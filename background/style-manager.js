@@ -138,12 +138,15 @@ const styleManager = (() => {
       .then(newData => handleSave(newData, 'import'));
   }
 
-  function installStyle(data) {
+  function installStyle(data, reason = null) {
     const style = styles.get(data.id);
     if (!style) {
       data = Object.assign(createNewStyle(), data);
     } else {
       data = Object.assign({}, style.data, data);
+    }
+    if (!reason) {
+      reason = style ? 'update' : 'install';
     }
     // FIXME: update updateDate? what about usercss config?
     return calcStyleDigest(data)
@@ -151,7 +154,7 @@ const styleManager = (() => {
         data.originalDigest = digest;
         return saveStyle(data);
       })
-      .then(newData => handleSave(newData, style ? 'update' : 'install'));
+      .then(newData => handleSave(newData, reason));
   }
 
   function editSave(data) {

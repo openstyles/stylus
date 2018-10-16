@@ -490,7 +490,7 @@ function handleUpdate({style, reason}) {
       return Promise.resolve(style);
     }
     return API.getStylesByUrl(tabURL, style.id)
-      .then(([style]) => style);
+      .then(([result]) => result && Object.assign(result.data, result));
   }
 }
 
