@@ -88,9 +88,18 @@
     'ignoreDigest' option is set on the second manual individual update check on the manage page.
     */
     return fetchStyle()
-      .then([calcStyleDigest][!ignoreDigest ? 0 : 'skip'])
-      .then([checkIfEdited][!ignoreDigest ? 0 : 'skip'])
-      .then([maybeUpdateUSO, maybeUpdateUsercss][style.usercssData ? 1 : 0])
+      .then(() => {
+        if (!ignoreDigest) {
+          return calcStyleDigest(style)
+            .then(checkIfEdited);
+        }
+      })
+      .then(() => {
+        if (style.usercssData) {
+          return maybeUpdateUsercss();
+        }
+        return maybeUpdateUSO();
+      })
       .then(maybeSave)
       .then(reportSuccess)
       .catch(reportFailure);
@@ -100,8 +109,8 @@
         return Promise.resolve();
       }
       return styleManager.get(id)
-        .then(_style => {
-          style = _style;
+        .then(style_ => {
+          style = style_;
         });
     }
 
