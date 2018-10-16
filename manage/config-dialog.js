@@ -120,7 +120,8 @@ function configDialog(style) {
     }
     if (!bgStyle) {
       API.getStyle(style.id, true)
-        .then(([bgStyle]) => save({anyChangeIsDirty}, bgStyle || {}));
+        .catch(() => ({}))
+        .then(bgStyle => save({anyChangeIsDirty}, bgStyle));
       return;
     }
     style = style.sections ? Object.assign({}, style) : style;
