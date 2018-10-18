@@ -25,6 +25,7 @@ html, body {
 }
 
 body {
+  background-color: var(--truegray-alpha-15);
   width: 252px;
   font-size: 12px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -154,10 +155,6 @@ body:not(.disabled) .toggle-all-on {
   display: none;
 }
 
-svg.svg-icon.toggle-all-on {
-  margin-top: 4px;
-}
-
 #popup-write-style-icon {
   display: inline-flex;
 }
@@ -170,6 +167,31 @@ svg.svg-icon.toggle-all-on {
   display: inline-flex;
   flex-shrink: 1;
   align-items: center;
+}
+
+.iconUI body > .action-wrapper button,
+#disable-all-icon,
+#popup-confirm-icon {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+#disable-all-icon > div {
+  display: inline-flex;
+}
+
+body:not(.disabled) #disable-all-icon > div:nth-child(2),
+body.disabled #disable-all-icon > div:first-child {
+  display: none;
+}
+
+body > .action-wrapper,
+#write-style-wrapper,
+#search-results {
+  background-color: var(--truegray-alpha-1);
 }
 
 #popup-manage-wrapper {
@@ -200,24 +222,12 @@ svg.svg-icon.toggle-all-on {
   opacity: 1 !important;
 }
 
-.iconUI button {
-  cursor: pointer;
-}
-
 .iconUI button .svg-icon {
   display: inline-flex;
   height: 20px;
   width: 20px;
   align-items: center;
   justify-content: center;
-}
-
-.iconUI button:hover .svg-icon {
-  fill: var(--black);
-}
-
-.iconUI #popup-manage-button:hover .svg-icon {
-  stroke: var(--black);
 }
 
 #popup-confirm-icon {
@@ -230,9 +240,20 @@ svg.svg-icon.toggle-all-on {
   width: 20px;
 }
 
+.iconUI #popup-options-button .svg-icon,
+#popup-confirm-icon .svg-icon {
+  height: 18px;
+  width: 18px;
+}
+
 #write-style-for .svg-icon {
   height: 16px;
   width: 16px;
+}
+
+#find-styles-icon .svg-icon {
+  height: 22px;
+  width: 22px;
 }
 
 #find-external-icon,
@@ -244,7 +265,6 @@ svg.svg-icon.toggle-all-on {
   box-sizing: border-box;
 }
 
-#popup-manage-icon .svg-icon,
 #find-external-icon .svg-icon,
 #find-external-icon-noclick .svg-icon,
 #find-inline-icon .svg-icon,
@@ -253,13 +273,12 @@ a[target="_blank"] .svg-icon.config {
   width: 20px;
 }
 
-#popup-manage-icon .svg-icon {
+#popup-manage-button .svg-icon {
   stroke: var(--gray-lightness-40);
-  fill: transparent;
-  transition: stroke .5s;
+  fill: transparent !important;
 }
 
-#popup-manage-icon:hover .svg-icon {
+#popup-manage-button:hover .svg-icon {
   stroke: var(--black);
 }
 
@@ -294,8 +313,7 @@ a[target="_blank"] .svg-icon.config {
 
 .search-results-shown #find-external-icon,
 .search-results-shown #find-inline-icon,
-.error-shown #find-external-icon,
-.error-shown #find-inline-icon {
+.error-shown #find-styles-wrapper {
   display: none !important;
 }
 
@@ -331,8 +349,6 @@ a[target="_blank"] .svg-icon.config {
 .svg-icon.toggled-on path,
 .svg-icon.toggled-off path {
   transition: fill .5s, stroke .5s;
-  height: 22px;
-  width: 22px;
 }
 
 .svg-icon.toggled-on path:first-child,
@@ -415,13 +431,16 @@ a:hover .svg-icon.toggled-off path:nth-child(3) {
   padding: 0 5px 0 0;
 }
 
-.iconUI button {
+.iconUI .action-wrapper button {
+  display: inline-flex;
   border: 0;
   background: none;
+  padding: 0;
+  cursor: pointer;
 }
-.iconUI button:hover {
-  background: none;
 
+.iconUI .action-wrapper button:hover {
+  background: none;
 }
 
 body.disabled .style-name {
@@ -685,7 +704,7 @@ html[style*="border"] .entry:nth-child(11):before {
 
 .svg-icon {
   pointer-events: none;
-  transition: fill .5s;
+  transition: fill .5s, stroke .5s;
   width: 16px;
   height: 16px;
   fill: var(--gray-lightness-40);
@@ -693,26 +712,29 @@ html[style*="border"] .entry:nth-child(11):before {
 
 a:hover .svg-icon,
 .actions a:hover .svg-icon,
-#find-styles:hover a:hover .svg-icon.external:not(.noclick),
-#find-styles:hover a:hover .svg-icon.inline,
-a:hover .svg-icon.search {
+.iconUI button:hover .svg-icon,
+.iconUI #popup-options-button:hover .svg-icon,
+#find-inline-icon:hover .svg-icon,
+#find-external-icon:hover .svg-icon,
+#find-styles-icon:hover .svg-icon,
+#popup-wiki-button:hover .svg-icon {
   fill: var(--black);
 }
 
-.svg-icon.external,
-.svg-icon.inline {
-  fill: var(--gray-lightness-65);
-}
-
 .actions .svg-icon,
-.svg-icon.options {
+.iconUI #popup-options-button .svg-icon,
+#find-inline-icon .svg-icon,
+#find-external-icon .svg-icon {
   fill: var(--truegray);
 }
 
-.svg-icon.search,
-#find-styles:hover .svg-icon.external:not(.noclick),
-#find-styles:hover .svg-icon.inline {
+#find-styles-icon .svg-icon,
+#popup-wiki-button .svg-icon {
   fill: var(--gray-lightness-45);
+}
+
+.svg-icon.external.noclick {
+  fill: var(--gray-lightness-65);
 }
 
 .svg-icon.remove {
@@ -747,18 +769,19 @@ body.blocked #write-style-wrapper {
   display: none;
 }
 
-.iconUI body.blocked #popup-options-wrapper {
+.iconUI body.blocked #popup-options-wrapper,
+.iconUI body.error-shown #popup-options-wrapper {
   flex-grow: 1;
   justify-content: flex-start;
 }
 
-.iconUI body.blocked #popup-wiki-wrapper {
+.iconUI body.blocked #popup-wiki-wrapper,
+.iconUI body.error-shown #popup-wiki-wrapper {
   flex-grow: 1;
   justify-content: flex-end;
 }
 
 /* 'New style' links */
-
 #write-style {
   display: flex;
   flex-direction: row;
@@ -846,9 +869,9 @@ body.blocked #write-style-wrapper {
 
 /* action buttons */
 
-#popup-manage-wrapper button,
-#popup-options-wrapper button,
-#popup-wiki-wrapper button {
+.classicUI #popup-manage-wrapper button,
+.classicUI #popup-options-wrapper button,
+.classicUI #popup-wiki-wrapper button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -950,6 +973,7 @@ body.blocked #write-style-wrapper {
 }
 
 .blocked-info {
+  background-color: var(--truegray-alpha-1);
   hyphens: auto;
 }
 

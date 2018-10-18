@@ -120,7 +120,7 @@ var hotkeys = (() => {
     const container = $('#hotkey-info');
     let title;
     container.onclick = ({target}) => {
-      if (target.localName === 'button') {
+      if (target.localName === 'button' || target.id === 'popup-confirm-icon') {
         close();
       } else if (!container.dataset.active) {
         open();
@@ -174,10 +174,11 @@ var hotkeys = (() => {
             }));
       [
         linesToElements(t('popupHotkeysInfo')),
-        $create('button', t('confirmOK')),
+        $create('button', {className: 'classicUI-el', id: 'confirm-button'}, t('confirmOK')),
       ].forEach(child => {
         container.appendChild($create('div', child));
       });
+      $('#confirm-button').insertAdjacentElement('afterend', template.confirmHotkey);
     }
   }
 

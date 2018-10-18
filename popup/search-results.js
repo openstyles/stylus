@@ -81,8 +81,8 @@ window.addEventListener('showStyles:done', function _() {
       }
       event.preventDefault();
 
-      // hide search link/icons
-      this.parentNode.classList.add('hidden'); 
+      this.textContent = this.title;
+      this.title = '';
 
       init();
       load();
@@ -209,6 +209,7 @@ window.addEventListener('showStyles:done', function _() {
     dom.error.classList.remove('hidden');
     dom.container.classList.toggle('hidden', !processedResults.length);
     document.body.classList.toggle('search-results-shown', processedResults.length > 0);
+    document.body.classList.add('error-shown');
     if (dom.error.getBoundingClientRect().bottom < 0) {
       dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
     }

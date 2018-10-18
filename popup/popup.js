@@ -93,6 +93,10 @@ function initPopup() {
     document.body.classList.toggle('disabled', this.checked);
   };
 
+  $('#find-styles-icon').onclick = () => {
+    $('#find-styles-link').click();
+  };
+
   $('#disable-all-icon').onclick = () => {
     $('#disableAll').click();
   };
@@ -383,7 +387,7 @@ Object.assign(handleEvent, {
     $('button[data-cmd="ok"]', box).focus();
     $('button[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('button[data-cmd="cancel"]', box).onclick = () => confirm(false);
-    $('.iconUI a[data-cmd="ok"]', box).focus();
+    $('a[data-cmd="ok"]', box).focus();
     $('a[data-cmd="ok"]', box).onclick = () => confirm(true);
     $('a[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
