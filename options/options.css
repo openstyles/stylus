@@ -10,6 +10,7 @@ html.opera body {
 }
 
 body {
+  display: flex;
   background: var(--main-bg);
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
