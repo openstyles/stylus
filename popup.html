@@ -92,14 +92,14 @@
   </template>
 
   <template data-id="unavailableInfo">
-    <div class="blocked-info truegray-alpha-1">
+    <div class="blocked-info">
       <label i18n-text="stylusUnavailableForURL"></label>
       <p i18n-text="stylusUnavailableForURLdetails"></p>
     </div>
   </template>
 
   <template data-id="unreachableInfo">
-    <div class="blocked-info truegray-alpha-1">
+    <div class="blocked-info">
       <label i18n-text="unreachableContentScript"></label>
       <p i18n-text="unreachableFileHint"></p>
     </div>
@@ -187,7 +187,7 @@
   <script src="js/storage-util.js" async></script>
 </head>
 
-<body id="stylus-popup" class="truegray-alpha-15">
+<body id="stylus-popup">
 
   <div id="confirm">
     <div class="main-bg">
@@ -216,7 +216,7 @@
     <aside id="hotkey-info" i18n-title="popupHotkeysTooltip"></aside>
   </div>
 
-  <div id="popup-manage-wrapper" class="action-wrapper truegray-alpha-1">
+  <div id="popup-manage-wrapper" class="action-wrapper">
     <button id="popup-manage-button" data-href="manage.html" i18n-title="popupManageTooltip">
       <span class="classicUI-el" i18n-text="openManage"></span>
       <svg class="iconUI-el svg-icon manager" viewBox="0 0 24 24" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -224,7 +224,7 @@
       </svg>
     </button>
   </div>
-  <div id="popup-options-wrapper" class="action-wrapper truegray-alpha-1">
+  <div id="popup-options-wrapper" class="action-wrapper">
     <button id="popup-options-button" i18n-title="openOptionsPopup">
       <span class="classicUI-el" i18n-text="openOptionsPopup"></span>
       <svg class="iconUI-el svg-icon options" viewBox="0 0 16 16">
@@ -234,9 +234,9 @@
   </div>
   <div id="find-styles-wrapper" class="action-wrapper truegray-alpha-1">
     <div id="find-styles">
-      <a id="find-styles-link" i18n-title="findStylesForSite" tabindex="0">
-        <span class="classicUI-el" i18n-text="findStyles"></span>
-        <svg  class="iconUI-el svg-icon search" viewBox="0 0 24 24">
+      <a id="find-styles-link" class="classicUI-el" i18n-text="findStyles" i18n-title="findStylesForSite" tabindex="0"></a>
+      <a id="find-styles-icon" href="#" class="iconUI-el" i18n-title="findStylesForSite" tabindex="0">
+        <svg  class="svg-icon search" viewBox="0 0 24 24">
           <path d="M18,13v7H4V6h5.02C9.07,5.29,9.24,4.62,9.5,4H2v18h18v-7L18,13z M16.5,18h-11l2.75-3.53l1.96,2.36l2.75-3.54L16.5,18z    M19.3,8.89C19.74,8.19,20,7.38,20,6.5C20,4.01,17.99,2,15.5,2S11,4.01,11,6.5s2.01,4.5,4.49,4.5c0.88,0,1.7-0.26,2.39-0.7   L21,13.42L22.42,12L19.3,8.89z M15.5,9C14.12,9,13,7.88,13,6.5S14.12,4,15.5,4S18,5.12,18,6.5S16.88,9,15.5,9z"/>
         </svg>
       </a>
@@ -264,18 +264,15 @@
       </span>
     </div>
   </div>
-  <div id="popup-wiki-wrapper" class="action-wrapper truegray-alpha-1">
+  <div id="popup-wiki-wrapper" class="action-wrapper">
     <button id="popup-wiki-button" i18n-title="linkGetHelp" data-href="https://github.com/openstyles/stylus/wiki">
       <span class="classicUI-el" i18n-text="linkStylusWiki"></span>
       <svg class="iconUI-el svg-icon wiki" viewBox="0 0 24 24">
-        <g fill-rule="evenodd" clip-rule="evenodd">
-          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
-          <path d="M11.8 6.7a3.4 3.4 0 0 0-3.3 2.2l1.5.8s.3-.8.9-1.2c.5-.4 1.6-.6 2.2.1.7 1-.2 1.6-1.1 2.7-1 1.2-1 3.7-1 3.7h2s.1-2.3 1-3.4c.6-.7 1.5-1.3 1.5-2.5s-1.2-2.4-3.7-2.4zM11 16h2v2h-2z"/>
-        </g>
+        <path d="M 4.2,2.4916695 C 3.097,2.4916461 3,2.5827014 3,3.748 v 16.504 c 0,1.165299 0.097,1.256331 1.2,1.256331 h 15.3 c 1.103,0 1.5,-0.09103 1.5,-1.256331 V 3.748 C 21,2.5827014 20.903,2.4920234 19.8,2.492 Z M 4.7,4.405 h 14.5 l 0.002,15.19 H 4.8 Z m 6.1,2.513 v 2.313 h 2.4 V 6.918 Z m 0,4.826 v 5.338 h 2.4 l 0.1,-5.338 z"/>
       </svg>
     </button>
   </div>
-  <div id="disable-all-wrapper" class="action-wrapper truegray-alpha-1">
+  <div id="disable-all-wrapper" class="action-wrapper">
     <div class="main-controls">
       <label id="disableAll-label" class="classicUI-el" i18n-text="disableAllStyles">
         <input id="disableAll" type="checkbox">
@@ -298,7 +295,7 @@
     </a>
   </div>
 
-  <div id="write-style-wrapper" class="truegray-alpha-1">
+  <div id="write-style-wrapper">
     <div id="write-style">
       <span id="write-style-for" i18n-text="writeStyleFor">
         <div id="popup-write-style-icon" i18n-title="writeStyleForInfo">
@@ -312,7 +309,7 @@
   </div>
 
   <div id="search-results-error" class="hidden"></div>
-  <div id="search-results" class="hidden truegray-alpha-1">
+  <div id="search-results" class="hidden">
     <div class="search-results-nav" data-type="top"></div>
     <div id="search-results-list"></div>
     <div class="search-results-nav" data-type="bottom"></div>
