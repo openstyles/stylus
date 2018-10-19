@@ -273,15 +273,6 @@ a[target="_blank"] .svg-icon.config {
   width: 20px;
 }
 
-#popup-manage-button .svg-icon {
-  stroke: var(--gray-lightness-40);
-  fill: transparent !important;
-}
-
-#popup-manage-button:hover .svg-icon {
-  stroke: var(--black);
-}
-
 #find-styles-link,
 #write-style-for {
   font-size: 0;
