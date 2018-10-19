@@ -157,7 +157,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       return;
     }
     const tabFrames = cache.get(tabId);
-    if (frameId in tabFrames) {
+    if (tabFrames && frameId in tabFrames) {
       delete tabFrames[frameId];
       if (isEmpty(tabFrames)) {
         onTabRemoved(tabId);
