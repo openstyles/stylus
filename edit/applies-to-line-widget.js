@@ -222,56 +222,61 @@ function createAppliesToLineWidget(cm) {
       requestAnimationFrame(updateWidgetStyle);
       return;
     }
-    const MIN_LUMA = .05;
-    const MIN_LUMA_DIFF = .4;
-    const color = {
-      wrapper: colorMimicry.get(cm.display.wrapper),
-      gutter: colorMimicry.get(cm.display.gutters, {
-        bg: 'backgroundColor',
-        border: 'borderRightColor',
-      }),
-      line: colorMimicry.get('.CodeMirror-linenumber', null, cm.display.lineDiv),
-      comment: colorMimicry.get('span.cm-comment', null, cm.display.lineDiv),
-    };
-    const hasBorder =
-      color.gutter.style.borderRightWidth !== '0px' &&
-      !/transparent|\b0\)/g.test(color.gutter.style.borderRightColor);
-    const diff = {
-      wrapper: Math.abs(color.gutter.bgLuma - color.wrapper.foreLuma),
-      border: hasBorder ? Math.abs(color.gutter.bgLuma - color.gutter.borderLuma) : 0,
-      line: Math.abs(color.gutter.bgLuma - color.line.foreLuma),
-    };
-    const preferLine = diff.line > diff.wrapper || diff.line > MIN_LUMA_DIFF;
-    const fore = preferLine ? color.line.fore : color.wrapper.fore;
+    if (prefs.get('editor.theme') !== 'default') {
+      const MIN_LUMA = .05;
+      const MIN_LUMA_DIFF = .4;
+      const color = {
+        wrapper: colorMimicry.get(cm.display.wrapper),
+        gutter: colorMimicry.get(cm.display.gutters, {
+          bg: 'backgroundColor',
+          border: 'borderRightColor',
+        }),
+        line: colorMimicry.get('.CodeMirror-linenumber', null, cm.display.lineDiv),
+        comment: colorMimicry.get('span.cm-comment', null, cm.display.lineDiv),
+      };
+      const hasBorder =
+        color.gutter.style.borderRightWidth !== '0px' &&
+        !/transparent|\b0\)/g.test(color.gutter.style.borderRightColor);
+      const diff = {
+        wrapper: Math.abs(color.gutter.bgLuma - color.wrapper.foreLuma),
+        border: hasBorder ? Math.abs(color.gutter.bgLuma - color.gutter.borderLuma) : 0,
+        line: Math.abs(color.gutter.bgLuma - color.line.foreLuma),
+      };
+      const preferLine = diff.line > diff.wrapper || diff.line > MIN_LUMA_DIFF;
+      const fore = preferLine ? color.line.fore : color.wrapper.fore;
 
-    const border = fore.replace(/[\d.]+(?=\))/, MIN_LUMA_DIFF / 2);
-    const borderStyleForced = `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
+      const border = fore.replace(/[\d.]+(?=\))/, MIN_LUMA_DIFF / 2);
+      const borderStyleForced = `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
 
-    actualStyle.textContent = `
-      .applies-to {
-        background-color: ${color.gutter.bg};
-        border-top: ${borderStyleForced};
-        border-bottom: ${borderStyleForced};
-      }
-      .applies-to label {
-        color: ${fore};
-      }
-      .applies-to input,
-      .applies-to button,
-      .applies-to select {
-        background: rgba(255, 255, 255, ${
-          Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
-        });
-        border: ${borderStyleForced};
-        transition: none;
-        color: ${fore};
-      }
-      .applies-to .svg-icon.select-arrow {
-        fill: ${fore};
-        transition: none;
-      }
-    `;
-    document.documentElement.appendChild(actualStyle);
+      actualStyle.textContent = `
+        .applies-to {
+          background-color: ${color.gutter.bg};
+          border-top: ${borderStyleForced};
+          border-bottom: ${borderStyleForced};
+        }
+        .applies-to label {
+          color: ${fore};
+        }
+        .applies-to input,
+        .applies-to select {
+          background-color: rgba(255, 255, 255, ${
+            Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
+          });
+          border: ${borderStyleForced};
+          transition: none;
+          color: ${fore};
+        }
+        .applies-to .svg-icon.select-arrow {
+          fill: ${fore} !important;
+        }
+        .applies-to select option {
+          background-color: ${color.gutter.bg};
+        }
+      `;
+      document.documentElement.appendChild(actualStyle);
+    } else if (prefs.get('editor.theme') === 'default') {
+      actualStyle.textContent = '';
+    }
   }
 
   function doUpdate() {
@@ -283,7 +288,7 @@ function createAppliesToLineWidget(cm) {
     if (i === -2) {
       i = widgets.length - 1;
     }
-    if (j < 0) {
+    if (j < 0) {actualStyle
       j = widgets.length;
     }
 
