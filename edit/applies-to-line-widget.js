@@ -288,7 +288,7 @@ function createAppliesToLineWidget(cm) {
     if (i === -2) {
       i = widgets.length - 1;
     }
-    if (j < 0) {actualStyle
+    if (j < 0) {
       j = widgets.length;
     }
 
