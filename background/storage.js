@@ -264,6 +264,15 @@ function filterStyles({
 }
 
 
+// The md5Url provided by USO includes a duplicate "update" subdomain (see #523),
+// This fixes any already installed styles containing this error
+function fixUsoMd5Issue(style) {
+  if (style && style.md5Url && style.md5Url.includes('update.update.userstyles')) {
+    style.md5Url = style.md5Url.replace('update.update.userstyles', 'update.userstyles');
+  }
+  return style;
+}
+
 function filterStylesInternal({
   // js engines don't like big functions (V8 often deoptimized the original filterStyles)
   // it also makes sense to extract the less frequently executed code
@@ -297,7 +306,7 @@ function filterStylesInternal({
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
   let style;
-  for (let i = 0; (style = styles[i]); i++) {
+  for (let i = 0; (style = fixUsoMd5Issue(styles[i])); i++) {
     if ((enabled === null || style.enabled === enabled)
     && (md5Url === null || style.md5Url === md5Url)
     && (id === null || style.id === id)) {
@@ -349,6 +358,8 @@ function saveStyle(style) {
   }
   let existed;
   let codeIsUpdated;
+
+  style = fixUsoMd5Issue(style);
 
   return maybeCalcDigest()
     .then(maybeImportFix)
