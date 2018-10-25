@@ -70,8 +70,9 @@ const APPLY = (() => {
     return (el, content) => {
       usePageScript.then(ok => {
         if (!ok) {
-          // FIXME: do we have to keep el.sheet.disabled?
+          const disabled = el.disabled;
           el.textContent = content;
+          el.disabled = disabled;
         } else {
           const detail = pageObject({
             method: 'setStyleContent',
@@ -93,9 +94,9 @@ const APPLY = (() => {
             if (!el) {
               return;
             }
-            const disabled = el.sheet.disabled;
+            const disabled = el.disabled;
             el.textContent = content;
-            el.sheet.disabled = disabled;
+            el.disabled = disabled;
           } else if (method === 'orphan') {
             window.removeEventListener(EVENT_NAME, handler);
           }
