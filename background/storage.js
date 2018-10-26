@@ -174,6 +174,7 @@ function getStyles(options) {
 
   return dbExec('getAll').then(event => {
     cachedStyles.list = event.target.result || [];
+    cachedStyles.list.forEach(fixUsoMd5Issue);
     cachedStyles.byId.clear();
     for (const style of cachedStyles.list) {
       cachedStyles.byId.set(style.id, style);
@@ -306,7 +307,7 @@ function filterStylesInternal({
   const matchUrlBase = matchUrl && matchUrl.includes('#') && matchUrl.split('#', 1)[0];
 
   let style;
-  for (let i = 0; (style = fixUsoMd5Issue(styles[i])); i++) {
+  for (let i = 0; (style = styles[i]); i++) {
     if ((enabled === null || style.enabled === enabled)
     && (md5Url === null || style.md5Url === md5Url)
     && (id === null || style.id === id)) {
