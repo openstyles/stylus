@@ -116,11 +116,13 @@ function initGlobalEvents() {
 }
 
 function showStyles(styles = [], matchUrlIds) {
-  const sorted = sorter.sort({
-    styles: styles.map(style => ({
-      style,
-      name: style.name.toLocaleLowerCase() + '\n' + style.name,
-    })),
+  const sorted = styles.length
+    ? sorter.sort({
+      styles: styles.map(style => ({
+        style,
+        name: style.name.toLocaleLowerCase() + '\n' + style.name,
+      }))
+    : styles,
   });
   let index = 0;
   let firstRun = true;

@@ -176,9 +176,11 @@ function getStyles(options) {
     cachedStyles.list = event.target.result || [];
     cachedStyles.byId.clear();
     for (const style of cachedStyles.list) {
-      cachedStyles.byId.set(style.id, style);
-      if (!style.name) {
-        style.name = 'ID: ' + style.id;
+      if (style) {
+        cachedStyles.byId.set(style.id, style);
+        if (!style.name) {
+          style.name = 'ID: ' + style.id;
+        }
       }
     }
 
