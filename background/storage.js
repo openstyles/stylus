@@ -271,7 +271,6 @@ function fixUsoMd5Issue(style) {
   if (style && style.md5Url && style.md5Url.includes('update.update.userstyles')) {
     style.md5Url = style.md5Url.replace('update.update.userstyles', 'update.userstyles');
   }
-  return style;
 }
 
 function filterStylesInternal({
@@ -360,7 +359,7 @@ function saveStyle(style) {
   let existed;
   let codeIsUpdated;
 
-  style = fixUsoMd5Issue(style);
+  fixUsoMd5Issue(style);
 
   return maybeCalcDigest()
     .then(maybeImportFix)
