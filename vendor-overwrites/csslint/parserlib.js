@@ -498,7 +498,9 @@ self.parserlib = (() => {
     'outline-offset':  '<length>',
     'outline-style':   '<border-style> | auto',
     'outline-width':   '<border-width>',
-    'overflow':        '<overflow>',
+    'overflow':        '<overflow>{1,2}',
+    'overflow-block':  '<overflow>',
+    'overflow-inline': '<overflow>',
     'overflow-style':  1,
     'overflow-wrap':   'normal | break-word',
     'overflow-x':      '<overflow>',
@@ -835,7 +837,7 @@ self.parserlib = (() => {
         return this['<number>'](part) && part.value >= 0 && part.value <= 1;
       },
 
-      '<overflow>': 'visible | hidden | scroll | auto',
+      '<overflow>': 'visible | hidden | clip | scroll | auto',
 
       '<overflow-position>': 'unsafe | safe',
 
