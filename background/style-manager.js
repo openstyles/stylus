@@ -253,6 +253,7 @@ const styleManager = (() => {
     if (style.id == null) {
       delete style.id;
     }
+    fixUsoMd5Issue(style);
     return db.exec('put', style)
       .then(event => {
         if (style.id == null) {
@@ -380,6 +381,7 @@ const styleManager = (() => {
         return;
       }
       for (const style of styleList) {
+        fixUsoMd5Issue(style);
         styles.set(style.id, {
           appliesTo: new Set(),
           data: style
@@ -478,5 +480,13 @@ const styleManager = (() => {
 
   function getUrlNoHash(url) {
     return url.split('#')[0];
+  }
+
+  // The md5Url provided by USO includes a duplicate "update" subdomain (see #523),
+  // This fixes any already installed styles containing this error
+  function fixUsoMd5Issue(style) {
+    if (style && style.md5Url && style.md5Url.includes('update.update.userstyles')) {
+      style.md5Url = style.md5Url.replace('update.update.userstyles', 'update.userstyles');
+    }
   }
 })();

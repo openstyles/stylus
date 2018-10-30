@@ -218,6 +218,14 @@
       });
   }
 
+  // USO providing md5Url as "https://update.update.userstyles.org/#####.md5"
+  // instead of "https://update.userstyles.org/#####.md5"
+  function tryFixMd5(style) {
+    if (style && style.md5Url && style.md5Url.includes('update.update')) {
+      style.md5Url = style.md5Url.replace('update.update', 'update');
+    }
+    return style;
+  }
 
   function getStyleJson() {
     return getResource(getStyleURL(), {responseType: 'json'})
@@ -236,6 +244,7 @@
             return style;
           });
       })
+      .then(tryFixMd5)
       .catch(() => null);
   }
 
