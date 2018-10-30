@@ -83,7 +83,7 @@ function createSourceEditor(style) {
   function preprocess(style) {
     return API.buildUsercss({
       sourceCode: style.sourceCode,
-      vars: style.usercssData.vars
+      assignVars: true
     })
       .then(({style: newStyle}) => {
         delete newStyle.enabled;

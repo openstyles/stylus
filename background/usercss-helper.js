@@ -71,6 +71,7 @@
    * @param {Boolean=} _.checkDup
    * @param {Boolean=} _.metaOnly
    * @param {Object} _.vars
+   * @param {Boolean=} _.assignVars
    * @returns {Promise<{style, dup:Boolean?}>}
    */
   function build({
@@ -78,20 +79,23 @@
     checkDup,
     metaOnly,
     vars,
+    assignVars = false,
   }) {
     return usercss.buildMeta(sourceCode)
-      .then(style =>
-        Promise.all([
-          metaOnly ? style : doBuild(style),
-          checkDup ? find(style) : undefined
-        ])
-      )
+      .then(style => {
+        const findDup = checkDup || assignVars ? find(style) : null;
+        return Promise.all([
+          metaOnly ? style : doBuild(style, findDup),
+          findDup
+        ]);
+      })
       .then(([style, dup]) => ({style, dup}));
 
-    function doBuild(style) {
-      if (vars) {
-        const oldStyle = {usercssData: {vars}};
-        return usercss.assignVars(style, oldStyle)
+    function doBuild(style, findDup) {
+      if (vars || assignVars) {
+        const getOld = vars ? Promise.resolve({usercssData: {vars}}) : findDup;
+        return getOld
+          .then(oldStyle => usercss.assignVars(style, oldStyle))
           .then(() => usercss.buildCode(style));
       }
       return usercss.buildCode(style);
