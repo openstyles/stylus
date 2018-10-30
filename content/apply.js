@@ -67,7 +67,7 @@ const APPLY = (() => {
     const EVENT_NAME = chrome.runtime.id;
     const usePageScript = CHROME || isOwnPage || Event.prototype.getPreventDefault ?
       Promise.resolve(false) : injectPageScript();
-    return (el, content) => {
+    return (el, content) =>
       usePageScript.then(ok => {
         if (!ok) {
           const disabled = el.disabled;
@@ -82,7 +82,6 @@ const APPLY = (() => {
           window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
         }
       });
-    };
 
     function injectPageScript() {
       const scriptContent = EVENT_NAME => {
@@ -319,8 +318,9 @@ const APPLY = (() => {
     } else {
       initDocRootObserver();
     }
+    const pending = [];
     for (const section of Object.values(sections)) {
-      applySections(section.id, section.code.join(''));
+      pending.push(applySections(section.id, section.code.join('')));
     }
     docRootObserver.firstStart();
 
@@ -331,7 +331,7 @@ const APPLY = (() => {
     updateExposeIframes();
     updateCount();
     if (done) {
-      done();
+      Promise.all(pending).then(done);
     }
   }
 
@@ -359,12 +359,13 @@ const APPLY = (() => {
       el.classList.add('stylus');
       addStyleElement(el);
     }
+    let settingStyle;
     if (el.textContent !== code) {
-      setStyleContent(el, code);
+      settingStyle = setStyleContent(el, code);
     }
     styleElements.set(id, el);
     disabledElements.delete(id);
-    return el;
+    return Promise.resolve(settingStyle);
   }
 
   function addStyleElement(newElement) {
@@ -420,12 +421,14 @@ const APPLY = (() => {
       ${docId}.${CSS.escape(className)}:root * {
         transition: none !important;
       }
-    `);
-    // repaint
-    // eslint-disable-next-line no-unused-expressions
-    document.documentElement.offsetWidth;
-    removeStyle({id: 0});
-    document.documentElement.classList.remove(className);
+    `)
+      .then(() => {
+        // repaint
+        // eslint-disable-next-line no-unused-expressions
+        document.documentElement.offsetWidth;
+        removeStyle({id: 0});
+        document.documentElement.classList.remove(className);
+      });
   }
 
   function getStyleId(el) {
