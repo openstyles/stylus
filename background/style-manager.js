@@ -120,7 +120,7 @@ const styleManager = (() => {
   }
 
   function styleExists(filter) {
-    return [...styles.value()].some(s => filterMatch(filter, s.data));
+    return [...styles.values()].some(s => filterMatch(filter, s.data));
   }
 
   function filterMatch(filter, target) {
