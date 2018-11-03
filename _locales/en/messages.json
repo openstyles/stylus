@@ -1294,5 +1294,38 @@
   "writeStyleForURL": {
     "message": "this URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxStyles": {
+    "message": "Dropbox Export"
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropbox Import"
+  },
+  "overwriteFileExport": {
+    "message": "Do you want to overwrite an existing file?"
+  },
+  "exportSavedSuccess": {
+    "message": "File saved with success"
+  },
+  "noFileToImport": {
+    "message": "To import your styles, you should export it first."
+  },
+  "connectingDropbox": {
+    "message": "Connecting Dropbox..."
+  },
+  "gettingStyles": {
+    "message": "Getting all styles..."
+  },
+  "zipStyles": {
+    "message": "Zipping styles..."
+  },
+  "unzipStyles": {
+    "message": "Unzipping styles..."
+  },
+  "readingStyles": {
+    "message": "Reading styles..."
+  },
+  "uploadingFile": {
+    "message": "Uploading File..."
   }
 }

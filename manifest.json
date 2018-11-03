@@ -19,6 +19,7 @@
     "contextMenus",
     "storage",
     "alarms",
+    "identity",
     "<all_urls>"
   ],
   "background": {
