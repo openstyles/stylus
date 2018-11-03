@@ -524,7 +524,7 @@ function showToMozillaHelp(event) {
 
 function showHelp(title = '', body) {
   const div = $('#help-popup');
-  div.className = '';
+  div.className = 'main-bg';
 
   const contents = $('.contents', div);
   contents.textContent = '';

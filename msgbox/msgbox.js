@@ -112,7 +112,7 @@ function messageBox({
     const id = 'message-box';
     messageBox.element =
       $create({id, className}, [
-        $create([
+        $create('div.main-bg', [
           $create(`#${id}-title`, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
             $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
@@ -120,7 +120,7 @@ function messageBox({
                 '5.45,16.23,3.77,14.55,8.31,10,3.77,5.45,5.45,3.77,10,8.31l4.55-4.55,1.69,1.69Z',
               }))),
           $create(`#${id}-contents`, tHTML(contents)),
-          $create(`#${id}-buttons`,
+          $create(`#${id}-buttons.truegray-alpha-2`,
             buttons.map((content, buttonIndex) => content &&
               $create('button', Object.assign({
                 buttonIndex,

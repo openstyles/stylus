@@ -89,6 +89,12 @@ var prefs = new function Prefs() {
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 
+    'popupui': 0,                   // 0 = new UI
+                                    // 1 = classic UI
+
+    'popupclick': 0,                // 0 = edit
+                                    // 1 = toggle
+
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
 

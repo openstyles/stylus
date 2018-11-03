@@ -299,6 +299,7 @@ onDOMscriptReady('/codemirror.js').then(() => {
             break;
           default:
             value = null;
+            document.body.removeAttribute('data-match-highlight');
         }
         option = 'highlightSelectionMatches';
         break;

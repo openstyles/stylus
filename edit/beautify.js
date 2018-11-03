@@ -63,7 +63,7 @@ function beautify(event) {
         ]),
       ]));
 
-    $('#help-popup').className = 'wide';
+    $('#help-popup').className = 'main-bg wide';
 
     scope.forEach(cm => {
       setTimeout(() => {

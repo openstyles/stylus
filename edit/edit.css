@@ -1,8 +1,17 @@
 :root {
   --header-narrow-min-height: 12em;
+  --match-highlighter-alpha-15: hsla(193, 99%, 38%, .15);
+  --regexp-report-mark-alpha-5: hsla(60, 100%, 50%, .5);
+  --section-label-highlight: hsl(60, 100%, 80%);
+  --cm-activeline-bg: hsl(180, 22%, 88%);
+  --darkgreen: hsl(120, 100%, 20%);
+  --global-progress: hsla(180, 66%, 36%, .25);
+  --beautify-select-gradient-left: hsla(0, 0%, 0%, .07);
+  --beautify-select-gradient-right: hsla(0, 0%, 0%, .05);
 }
 
 body {
+  display: flex;
   margin: 0;
   font: 12px arial,sans-serif;
 }
@@ -13,8 +22,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background-color: hsla(180, 66%, 36%, .25);
-  border-left: 0 solid darkcyan;
+  background-color: var(--global-progress);
+  border-left: 0 solid var(--darkcyan);
   z-index: 2147483647;
   opacity: 0;
   transition: opacity 2s;
@@ -27,7 +36,7 @@ body {
   display: none !important;
 }
 
-/************ checkbox & select************/
+/************ checkbox & select ************/
 .options-column > div[class="option"] {
   margin-bottom: 4px;
 }
@@ -49,9 +58,9 @@ label {
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
-  -webkit-box-shadow: 0 0 3rem -1.2rem black;
-  box-shadow: 0 0 3rem -1.2rem black;
+  border-right: 1px dashed var(--gray-lightness-66);
+  -webkit-box-shadow: 0 0 3rem -1.2rem var(--black);
+  box-shadow: 0 0 3rem -1.2rem var(--black);
   box-sizing: border-box;
   z-index: 10;
   display: flex;
@@ -61,6 +70,7 @@ label {
   margin-top: 0;
 }
 #sections {
+  flex-grow: 1;
   padding-left: 280px;
 }
 #sections h2 {
@@ -122,7 +132,7 @@ label {
 
 #preview-errors {
   background-color: red;
-  color: white;
+  color: var(--white);
   padding: 0 6px;
   border-radius: 9px;
   margin-left: -.5em;
@@ -164,19 +174,19 @@ label {
 .svg-icon:hover,
 .svg-icon.info,
 .svg-icon.settings {
-  fill: #666;
+  fill: var(--gray-lightness-40);
 }
 .svg-icon,
 .svg-icon.info:hover,
 .svg-icon.settings:hover {
-  fill: #000;
+  fill: var(--black);
 }
 #options span .svg-icon {
   margin-top: -3px; /* inline info and config icons */
 }
 input:invalid {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: darkred;
+  background-color: var(--truegray-alpha-05);
+  color: var(--darkred);
 }
 #enabled {
   margin-left: 0;
@@ -198,7 +208,7 @@ input:invalid {
 }
 
 #header summary:hover h2 {
-  border-color: #bbb;
+  border-color: var(--truegray-alpha-7);
 }
 
 #header summary svg {
@@ -272,7 +282,7 @@ input:invalid {
   padding: 0 1rem .3rem;
 }
 #sections > *:not(:first-child) {
-  border-top: 2px solid hsl(0, 0%, 80%);
+  border-top: 2px solid var(--truegray-alpha-3);
 }
 .add-section:after {
   content: attr(short-text);
@@ -348,18 +358,23 @@ input:invalid {
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
-body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
-body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar {
+  outline: 0;
+}
+body[data-match-highlight="token"]:not(.find-open) .cm-matchhighlight-approved .cm-matchhighlight,
+body[data-match-highlight="token"]:not(.find-open) .cm-matchhighlight-approved .CodeMirror-selection-highlight-scrollbar {
   animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
   animation-fill-mode: both;
 }
-body[data-match-highlight="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
-body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar {
-  background-color: rgba(1, 151, 193, 0.1);
+body[data-match-highlight="selection"]:not(.find-open) .cm-matchhighlight,
+body[data-match-highlight="selection"]:not(.find-open) .CodeMirror-selection-highlight-scrollbar {
+  background-color: var(--match-highlighter-alpha-15);
 }
+
 @-webkit-keyframes highlight {
   from {
-    background-color: #ff9;
+    background-color: var(--section-label-highlight);
   }
   to {
     background-color: inherit;
@@ -375,7 +390,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 @keyframes fadein-match-highlighter {
   from { background-color: transparent; }
-  to   { background-color: rgba(1, 151, 193, 0.1); }
+  to   { background-color: var(--match-highlighter-alpha-15); }
 }
 .resize-grip {
   position: absolute;
@@ -416,7 +431,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   padding: 0;
   height: 22px;
   align-items: center;
-  margin: 0 .2em 0 0;
+  margin: 0 .35em 0 0;
   white-space: nowrap;
 }
 .applies-to ul {
@@ -468,14 +483,14 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 .add-applies-to .svg-icon,
 .remove-applies-to .svg-icon {
   pointer-events: none;
-  fill: hsl(0, 0%, 60%);
+  fill: var(--gray-lightness-60);
   height: 12px;
   width: 12px;
 }
 .add-applies-to:hover .svg-icon,
 .remove-applies-to:hover .svg-icon {
   pointer-events: none;
-  fill: hsl(0, 0%, 0%);
+  fill: var(--black);
 }
 .test-regexp {
   display: none;
@@ -487,7 +502,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   cursor: pointer;
 }
 .regexp-report mark {
-  background-color: rgba(255, 255, 0, .5);
+  background-color: var(--regexp-report-mark-alpha-5);
 }
 .regexp-report details {
   margin-left: 1rem;
@@ -504,10 +519,10 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   overflow-wrap: break-word;
 }
 .regexp-report details[data-type="full"] {
-  color: darkgreen;
+  color: var(--darkgreen);
 }
 .regexp-report details[data-type="partial"] {
-  color: darkgray;
+  color: var(--truegray-alpha-6);
 }
 .regexp-report details[data-type="invalid"] {
   color: maroon;
@@ -538,7 +553,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   margin-top: -1px;
 }
 .regexp-report-note {
-  color: #999;
+  color: var(--truegray);
   position: absolute;
   margin: 0 0.5rem 0 0;
   hyphens: auto;
@@ -550,8 +565,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-width: 50vw;
   position: fixed;
   display: none;
-  background-color: white;
-  box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 3px 3px 30px var(--black-alpha-5);
   padding: 0.5rem;
   z-index: 99;
 }
@@ -560,7 +574,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   max-width: 100%;
 }
 #help-popup.big {
-  box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
+  box-shadow: var(--black-alpha-5) 0px 0px 0px 100000px !important;
   left: calc(280px - 3rem);
 }
 #help-popup.big .CodeMirror {
@@ -569,7 +583,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 #help-popup .title {
   font-weight: bold;
-  background-color: rgba(0,0,0,0.05);
+  background-color: var(--truegray-alpha-15);
   margin: -0.5rem -0.5rem 0.5rem;
   padding: .5rem 32px .5rem .5rem;
 }
@@ -594,10 +608,12 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   word-break: break-all;
 }
 .keymap-list input {
+  background-color: var(--main-bg);
+  border: 1px solid var(--truegray-alpha-6);
   width: 100%;
 }
 .keymap-list tr:nth-child(odd) {
-  background-color: rgba(0, 0, 0, 0.07);
+  background-color: var(--truegray-alpha-1);
 }
 .keymap-list td:first-child {
   white-space: nowrap;
@@ -663,7 +679,7 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
   cursor: pointer;
 }
 #lint tr:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--black-alpha-1);
 }
 #lint td[role="severity"] {
   font-size: 0;
@@ -716,11 +732,14 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 .beautify-options select {
   border: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, .05) 18px, rgba(0, 0, 0, .02) 24px);
+  background: linear-gradient(90deg, var(--beautify-select-gradient-left) 18px, var(--beautify-select-gradient-right) 24px);
   font-family: monospace;
   font-weight: bold;
   padding-left: 4px;
   margin-left: 4px;
+}
+.beautify-options select option{
+  background-color: var(--truegray-alpha-2)
 }
 
 /************ single editor **************/
@@ -751,8 +770,9 @@ html:not(.usercss) .usercss-only,
 }
 
 .usercss #name {
-  background-color: #eee;
-  color: #888;
+  background-color: var(--truegray-alpha-07);
+  color: var(--truegray);
+  cursor: not-allowed;
 }
 
 #sections .single-editor,
@@ -770,14 +790,8 @@ html:not(.usercss) .usercss-only,
   outline: none;
 }
 
-#footer a {
-  color: #333;
-  transition: color .5s;
-  text-decoration-skip: ink;
-}
-
-#footer a:hover {
-  color: #666;
+.single-editor .CodeMirror.cm-s-default {
+  outline: none !important;
 }
 
 .usercss.firefox #sections,
@@ -788,9 +802,16 @@ html:not(.usercss) .usercss-only,
 
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
+  font: normal 12px Arial, system-ui, sans-serif;
   margin: 1em 0;
   padding: .75rem .75rem .25rem;
   padding-right: calc(1em + 20px);
+}
+
+.CodeMirror.cm-s-default .CodeMirror-linewidget .applies-to {
+  background-color: var(--gray-lightness-90);
+  border-top: 1px solid var(--truegray-alpha-3);
+  border-bottom: 1px solid var(--truegray-alpha-3);
 }
 
 .CodeMirror-linewidget .applies-to li {
@@ -821,7 +842,7 @@ html:not(.usercss) .usercss-only,
     width: unset;
     position: inherit;
     border-right: none;
-    border-bottom: 1px dashed #AAA;
+    border-bottom: 1px dashed var(--gray-lightness-66);
     padding: 0;
   }
   #actions {
@@ -933,7 +954,7 @@ html:not(.usercss) .usercss-only,
     padding-left: 0;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
   }
   #sections > * {
     margin: 0 .5rem .5rem;

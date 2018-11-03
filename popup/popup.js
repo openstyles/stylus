@@ -5,11 +5,20 @@
 let installed;
 let tabURL;
 const handleEvent = {};
+const doc = document.documentElement;
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 toggleSideBorders();
+
+doc.classList.add(prefs.get('popupui') === 1 ? 'classicUI' : 'iconUI');
+
+doc.classList.add(prefs.get('popupclick') === 1 ? 'toggleUI' : 'directLinkUI');
+
+if (!prefs.get('popup.stylesFirst')) {
+  doc.classList.add('actions-top');
+}
 
 getActiveTab().then(tab =>
   FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
@@ -81,8 +90,17 @@ function initPopup() {
 
   // action buttons
   $('#disableAll').onchange = function () {
-    installed.classList.toggle('disabled', this.checked);
+    document.body.classList.toggle('disabled', this.checked);
   };
+
+  $('#find-styles-icon').onclick = () => {
+    $('#find-styles-link').click();
+  };
+
+  $('#disable-all-icon').onclick = () => {
+    $('#disableAll').click();
+  };
+
   setupLivePrefs();
 
   Object.assign($('#popup-manage-button'), {
@@ -91,18 +109,22 @@ function initPopup() {
     oncontextmenu: handleEvent.openManager,
   });
 
+  $('#find-external-icon').onclick = event => {
+    event.preventDefault();
+    $('input.toggle-inline').click()
+  };
+
+  $('#find-inline-icon').onclick = event => {
+    event.preventDefault();
+    $('input.toggle-inline').click()
+  };
+
   $('#popup-options-button').onclick = () => {
     chrome.runtime.openOptionsPage();
     window.close();
   };
 
   $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
-
-  if (!prefs.get('popup.stylesFirst')) {
-    document.body.insertBefore(
-      $('body > .actions'),
-      installed);
-  }
 
   if (!tabURL) {
     document.body.classList.add('blocked');
@@ -241,6 +263,9 @@ function showStyles(styles) {
     }
     window.dispatchEvent(new Event('showStyles:done'));
   });
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)') !== null;
+  installed.classList.toggle('reverse-stripe', reverseZebra);
 }
 
 
@@ -269,6 +294,12 @@ function createStyleElement({
   const editLink = $('.style-edit-link', entry);
   Object.assign(editLink, {
     href: editLink.getAttribute('href') + style.id,
+    onclick: handleEvent.openLink,
+  });
+
+  const editLinkAccess = $('.style-edit-link-accessibility', entry);
+  Object.assign(editLinkAccess, {
+    href: editLinkAccess.getAttribute('href') + style.id,
     onclick: handleEvent.openLink,
   });
 
@@ -330,13 +361,16 @@ Object.assign(handleEvent, {
   },
 
   name(event) {
-    this.checkbox.dispatchEvent(new MouseEvent('click'));
+    if (prefs.get('popupclick') === 1) {
+      this.checkbox.dispatchEvent(new MouseEvent('click'));
+    } else {
+      const entry = handleEvent.getClickedStyleElement(event);
+      $('.style-edit-link', entry).click();
+    }
     event.preventDefault();
   },
 
   toggle(event) {
-    // when fired on checkbox, prevent the parent label from seeing the event, see #501
-    event.stopPropagation();
     API.saveStyle({
       id: handleEvent.getClickedStyleId(event),
       enabled: this.matches('.enable') || this.checked,
@@ -350,9 +384,12 @@ Object.assign(handleEvent, {
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = $('.style-name', entry).textContent;
-    $('[data-cmd="ok"]', box).focus();
-    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
-    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    $('button[data-cmd="ok"]', box).focus();
+    $('button[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('button[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    $('a[data-cmd="ok"]', box).focus();
+    $('a[data-cmd="ok"]', box).onclick = () => confirm(true);
+    $('a[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
       const keyCode = event.keyCode || event.which;
       if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
@@ -438,7 +475,7 @@ Object.assign(handleEvent, {
     event.preventDefault();
     getActiveTab()
       .then(activeTab => API.openURL({
-        url: this.href || this.dataset.href,
+        url: this.hasAttribute('data-href') ? this.dataset.href : this.href,
         index: activeTab.index + 1,
         message: tryJSONparse(this.dataset.sendMessage),
       }))
@@ -483,6 +520,9 @@ function handleDelete(id) {
   if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
+
+  var reverseZebra = $('.entry:last-child:nth-of-type(odd)') !== null;
+  installed.classList.toggle('reverse-stripe', reverseZebra);
 }
 
 

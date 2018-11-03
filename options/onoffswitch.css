@@ -1,5 +1,11 @@
 /* On/Off FlipSwitch https://proto.io/freebies/onoff/ */
 
+:root {
+  --slider-enabled-bg: hsl(165, 45%, 84%);
+  --slider-enabled-border: hsl(165, 45%, 82%);
+  --slider-enabled-circle: hsl(171, 96%, 37%);
+}
+
 .onoffswitch {
   position: relative;
   margin: 1ex 0;
@@ -33,10 +39,10 @@
   height: 12px;
   padding: 0;
   line-height: 12px;
-  border: 0 solid #E3E3E3;
+  border: 1px solid var(--gray-lightness-84);
   border-radius: 12px;
-  background-color: #E0E0E0;
-  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+  background-color: var(--gray-lightness-87);
+  box-shadow: inset 2px 2px 4px var(--black-alpha-15);
 }
 
 .onoffswitch span::before {
@@ -45,21 +51,21 @@
   width: 18px;
   height: 18px;
   margin: -3px;
-  background: #efefef;
+  background: var(--gray-lightness-92);
   position: absolute;
   top: 0;
   bottom: 0;
   right: 46px;
   border-radius: 18px;
-  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 13px 0 var(--black-alpha-45);
 }
 
 .onoffswitch input:checked + span {
-  background-color: #CAEBE3;
+  background-color: var(--slider-enabled-bg);
 }
 
 .onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
-  border-color: #CAEBE3;
+  border-color: var(--slider-enabled-border);
 }
 
 .onoffswitch input:checked + span .onoffswitch-inner {
@@ -69,5 +75,5 @@
 .onoffswitch input:checked + span::before {
   right: 0;
   background-color: #04BA9F;
-  box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 6px 18px 0 var(--black-alpha-25);
 }

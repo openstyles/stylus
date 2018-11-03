@@ -368,8 +368,12 @@
     "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
   },
   "findStylesInlineTooltip": {
-    "message": "Display search results inside this window.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "Display search results inside this window",
+    "description": "Text for a checkbox that displays search results within the Stylus popup"
+  },
+  "findStylesExternalTooltip": {
+    "message": "Display search results on an external website",
+    "description": "Text for a checkbox that displays search results on an external website"
   },
   "genericAdd": {
     "message": "Add",
@@ -767,6 +771,30 @@
   "optionsOpenManager": {
     "message": "Manage styles"
   },
+  "optionsPopupActionElements": {
+    "message": "Action elements",
+    "description": "Label in the options page to alter the popup action elements to show either text or icons"
+  },
+  "optionsPopupClassicUI": {
+    "message": "Text and buttons",
+    "description": "Tooltip displayed when hovering the popup action elements option to choose the classic text & button format"
+  },
+  "optionsPopupIconUI": {
+    "message": "Vector icons",
+    "description": "Tooltip displayed when hovering the popup action elements option to choose displaying vector icons instead of text"
+  },
+  "optionsPopupClickAction": {
+    "message": "Style name click action",
+    "description": "Label in the options page for the action performed when clicking on a style name in the popup"
+  },
+  "optionsPopupClickActionLink": {
+    "message": "Edit style",
+    "description": "Tooltip displayed when hovering the popup click action option to choose to edit the style when clicking on the style name in the popup"
+  },
+  "optionsPopupClickActionToggle": {
+    "message": "Toggle style",
+    "description": "Tooltip displayed when hovering the popup click action option to choose to toggle a style (on or off) when clicking the style name in the popup"
+  },
   "optionsPopupWidth": {
     "message": "Popup width (in pixels)"
   },
@@ -850,6 +878,10 @@
   "previewTooltip": {
     "message": "Temporarily applies the changes without saving.\nSave the style to make the changes permanent.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reEnableAllStyles": {
+    "message": "Turn all previously enabled styles back on",
+    "description": "Label for the element which turns all disabled styles back on."
   },
   "replace": {
     "message": "Replace",
@@ -1050,15 +1082,6 @@
       }
     },
     "description": "Error displayed when the value of @var color is invalid"
-  },
-  "styleMetaErrorRangeOrNumber": {
-    "message": "Invalid @var $type$: value must be an array containing at least one number at index zero",
-    "description": "Error displayed when the value of @var number or @var range is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
   },
   "styleMetaErrorPreprocessor": {
     "message": "Unsupported @preprocessor: $preprocessor$",
@@ -1261,10 +1284,6 @@
     "message": "Updates installed:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
-  "usercssAvoidOverwriting": {
-    "message": "Please change the value of @name or @namespace to avoid overwriting an existing style.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
-  },
   "usercssConfigIncomplete": {
     "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
   },
@@ -1290,6 +1309,10 @@
   "writeStyleFor": {
     "message": "Write style for: ",
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
+  },
+  "writeStyleForInfo": {
+    "message": "Create a new style by selecting a target URL.\nAvailable options shown in hover tooltips.",
+    "description": "Popup style creation actions tooltip to accompany icon"
   },
   "writeStyleForURL": {
     "message": "this URL",
