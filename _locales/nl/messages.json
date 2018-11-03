@@ -255,11 +255,11 @@
   "filteredStyles": {
     "message": "$numShown$ van de $numTotal$ getoond",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -782,14 +782,14 @@
   "styleInstallOverwrite": {
     "message": "‘$stylename$’ is al geïnstalleerd. Overschrijven?\nVersie: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -800,6 +800,14 @@
     "message": "$color$ is geen geldige kleur",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "Ongeldige @var $type$: de waarde moet een reeks zijn die minimaal één getal bevat bij index nul",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }
