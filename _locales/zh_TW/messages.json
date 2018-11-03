@@ -206,7 +206,7 @@
     "message": "用Stylus（一個用戶樣式管理器）重塑網頁。 Stylus 讓你能為诸多主流網站輕鬆的安裝主題和皮膚。"
   },
   "disableAllStyles": {
-    "message": "禁用所有樣式"
+    "message": "停用所有樣式"
   },
   "disableStyleLabel": {
     "message": "停用"
@@ -261,11 +261,11 @@
   "filteredStyles": {
     "message": "$numShown$ 個已顯示，總共 $numTotal$ 個",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -800,14 +800,14 @@
   "styleInstallOverwrite": {
     "message": "「$stylename$」已安裝。要覆寫嗎？\n版本：$oldVersion$→$newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -818,6 +818,14 @@
     "message": "$color$是無效的色彩",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "無效的 @var $type$：值必須為在索引零處包含至少一個數字的陣列",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }

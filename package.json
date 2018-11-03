@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.4.22",
+  "version": "1.4.23",
   "description": "Redesign the web with Stylus, a user styles manager",
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
@@ -17,15 +17,18 @@
     "semver-bundle": "^0.1.1",
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
-    "updates": "^5.1.2"
+    "updates": "^5.1.2",
+    "webext-tx-fix": "^0.3.1"
   },
   "scripts": {
     "lint": "eslint **/*.js --cache || exit 0",
     "update": "npm run update-node && npm run update-main",
     "update-quick": "updates -u && npm update && npm run update-main",
-    "update-main": "npm run update-versions && npm run update-codemirror",
+    "update-locales": "tx pull --all && webext-tx-fix",
+    "update-main": "npm run update-versions && npm run update-vendor",
     "update-node": "updates -u && node tools/remove-modules.js && npm install",
-    "update-codemirror": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
+    "update-transifex": "tx push -s",
+    "update-vendor": "node tools/update-libraries.js && node tools/update-codemirror-themes.js",
     "update-versions": "node tools/update-versions",
     "zip": "npm run update-versions && node tools/zip.js"
   }

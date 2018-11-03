@@ -246,11 +246,11 @@
   "filteredStyles": {
     "message": "$numShown$ von $numTotal$ gesamt",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -776,14 +776,14 @@
   "styleInstallOverwrite": {
     "message": "\"$stylename$\" ist bereits installiert. Überschreiben?\nVersion: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -794,6 +794,14 @@
     "message": "$color$ist kein gültiger Farbcode",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "@var $type$ ungültig: Wert muss ein Array sein, welches mindestens eine Zahl an Index 0 enthält",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }

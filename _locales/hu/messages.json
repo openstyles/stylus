@@ -12,7 +12,7 @@
     "message": "Hozzáadás"
   },
   "appliesDisplay": {
-    "message": "A következőre érvényesül:$applies$",
+    "message": "Érvényes erre:$applies$",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -23,22 +23,22 @@
     "message": "és ennél is több"
   },
   "appliesDomainOption": {
-    "message": "URL-ek a doménon"
+    "message": "URL-ek a tartományban"
   },
   "appliesHelp": {
-    "message": "Használd az \"A következőre érvényesül\" részt, hogy korlátozd, milyen URL-ekre vonatkozzon az itt lévő kód!"
+    "message": "Az \"Érvényes erre\" beállítással korlártozható, hogy milyen URL-ekre vonatkozik az itt lévő kód."
   },
   "appliesLabel": {
-    "message": "Amire érvényesül"
+    "message": "Érvényes erre"
   },
   "appliesLineWidgetLabel": {
     "message": "Információ megjelenítése arról, hogy mire van alkalmazva"
   },
   "appliesLineWidgetWarning": {
-    "message": "Nem működik minimalizált CSS-szel"
+    "message": "Nem működik minimalizált CSS-sel"
   },
   "appliesRegexpOption": {
-    "message": "Reguláris kifejezésekre (regexp) illeszkedő URL-ek"
+    "message": "Reguláris kifejezésre (regexp) illeszkedő URL-ek"
   },
   "appliesRemove": {
     "message": "Eltávolítás"
@@ -71,7 +71,7 @@
     "message": "Stílusok exportálása"
   },
   "checkAllUpdates": {
-    "message": "Az összes stílus frissítésének ellenőrzése"
+    "message": "Összes stílus frissítésének ellenőrzése"
   },
   "checkAllUpdatesForce": {
     "message": "Ellenőrizd újra, nem módosítottam egy stílust sem!"
@@ -89,13 +89,13 @@
     "message": "Zárójelek és idézőjelek automatikus bezárása"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "Automatikusan legyen hozzáadva záró jelpár a következők gépelésekor: ()[]{}''\"\""
+    "message": "Nyitó '([{'zárójel gépelésekor lezáró ')]}' zárójel automatikus hozzáadása"
   },
   "cm_autocompleteOnTyping": {
     "message": "Automatikus kiegészítés gépeléskor"
   },
   "cm_colorpicker": {
-    "message": "Színválasztó CSS színekhez"
+    "message": "Színválasztó CSS-színekhez"
   },
   "cm_indentWithTabs": {
     "message": "Tabulátorok használata intelligens behúzásra"
@@ -107,7 +107,7 @@
     "message": "Automatikus sortörés"
   },
   "cm_matchHighlight": {
-    "message": "Kijelöl"
+    "message": "Kijelölés"
   },
   "cm_matchHighlightSelection": {
     "message": "Csak kiválasztás"
@@ -125,7 +125,7 @@
     "message": "Példák kifejezésekre: .valami-2 #aabbcc 0.32 !important\nAmikor ki van kapcsolva: a központosítással elválasztott szavak ki lesznek jelölve."
   },
   "cm_smartIndent": {
-    "message": "Intelligens behúzás használata"
+    "message": "Intelligens behúzás"
   },
   "cm_tabSize": {
     "message": "Tabulátorméret"
@@ -200,7 +200,7 @@
     "message": "Tervezd újra a webet a Stylus stíluskezelővel. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz."
   },
   "disableAllStyles": {
-    "message": "Az összes stílus kikapcsolása"
+    "message": "Összes stílus kikapcsolása"
   },
   "disableStyleLabel": {
     "message": "Letiltás"
@@ -255,11 +255,11 @@
   "filteredStyles": {
     "message": "$numShown$ mutatva $numTotal$-ból/-ből",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -321,10 +321,10 @@
     "message": "Írj be egy parancsot"
   },
   "helpKeyMapHotkey": {
-    "message": "Gyorsgomb"
+    "message": "Gyorsbillentyű"
   },
   "importAppendLabel": {
-    "message": "Hozzáadás stílushoz"
+    "message": "Hozzáfűzés stílushoz"
   },
   "importAppendTooltip": {
     "message": "Az importált stílus hozzáadása a jelenlegi stílushoz"
@@ -357,10 +357,10 @@
     "message": "metainfó frissítve"
   },
   "importReportTitle": {
-    "message": "A stílusok importálása befejeződött"
+    "message": "A stílusok importálása befejeződött."
   },
   "importReportUnchanged": {
-    "message": "Semmi sem változott."
+    "message": "Nincs változás."
   },
   "importReportUndone": {
     "message": "stílusok visszavonva"
@@ -384,7 +384,7 @@
     "message": "Frissítés telepítése"
   },
   "installUpdateFrom": {
-    "message": "A stílus most a következő helyről frissül: $url$",
+    "message": "A stílus jelenleg innen frissül: $url$",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -398,7 +398,7 @@
     "message": "Licenc"
   },
   "linkGetHelp": {
-    "message": "Kérj segítséget"
+    "message": "Segítség kérése"
   },
   "linkGetStyles": {
     "message": "Szerezz be stílusokat"
@@ -426,10 +426,10 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "Kattints ennek a linternek a beállításához"
+    "message": "Linter beállítása"
   },
   "linterInvalidConfigError": {
-    "message": "Nincs mentve ezek miatt az érvénytelen beállítások miatt:"
+    "message": "Nincs mentve a következő érvénytelen beállítások miatt:"
   },
   "linterIssues": {
     "message": "Problémák"
@@ -443,31 +443,31 @@
     }
   },
   "linterJSONError": {
-    "message": "Érvénytelen JSON formátum"
+    "message": "Érvénytelen JSON-formátum"
   },
   "linterResetMessage": {
     "message": "Egy véletlen visszaállítás visszavonásához nyomj Ctrl-Z-t (vagy Cmd-Z) a szövegdobozon belül)"
   },
   "linterRulesLink": {
-    "message": "Lista az összes stílusról"
+    "message": "Összes szabály listája"
   },
   "liveReloadError": {
     "message": "Hiba történt a fájl figyelése közben"
   },
   "liveReloadInstallHint": {
-    "message": "A valós idejű újratöltés engedélyezve van, így a telepített stílus automatikusan frissítve lesz kűlső változtatások során amíg ez a fül és a forrásfájlt tartalmazó fül nyitva van."
+    "message": "A valós idejű újratöltés engedélyezve van, így a telepített stílus automatikusan frissül külső változások során, amíg ez a fül és a forrásfájlt tartalmazó fül nyitva van."
   },
   "liveReloadLabel": {
     "message": "Valós idejű újratöltés"
   },
   "manageFavicons": {
-    "message": "Faviconok az alkalmazási oszlopban"
+    "message": "Faviconok az 'Érvényes erre' oszlopban"
   },
   "manageFaviconsGray": {
-    "message": "Szürke mód"
+    "message": "Megjelenítés szürkítve"
   },
   "manageFaviconsHelp": {
-    "message": "A Stylus egy külső szolgáltatást használ (https://www.google.com/s2/favicons)"
+    "message": "A Stylus külső szolgáltatást használ (https://www.google.com/s2/favicons)"
   },
   "manageFilters": {
     "message": "Szűrők"
@@ -476,13 +476,13 @@
     "message": "Telepített stílusok"
   },
   "manageMaxTargets": {
-    "message": "Megjelenítendő célok száma"
+    "message": "'Érvényes erre' elemek kijelzendő száma"
   },
   "manageNewStyleAsUsercss": {
     "message": "Usercss-ként"
   },
   "manageNewUI": {
-    "message": "Az új kezelési felületkiosztás"
+    "message": "Új kezelői felület"
   },
   "manageOnlyDisabled": {
     "message": "Csak letiltott stílusok"
@@ -497,13 +497,13 @@
     "message": "Csak helyileg létrehozott stílusok"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(a stílusok nem egy userstyles.org oldalon lettek telepítve)"
+    "message": "(a stílusok nem a userstyles.org egyik oldaláról települtek)"
   },
   "manageOnlyNonUsercss": {
     "message": "Csak nem Usercss stílusok"
   },
   "manageOnlyUpdates": {
-    "message": "Csak frissíthetőek vagy problémásak"
+    "message": "Csak a frissíthetők vagy problémásak"
   },
   "manageOnlyUsercss": {
     "message": "Csak Usercss stílusok"
@@ -524,7 +524,7 @@
     "message": "Beállítások"
   },
   "openStylesManager": {
-    "message": "A frissítéskezelő megnyitása"
+    "message": "Stíluskezelő megnyitása"
   },
   "optionsActions": {
     "message": "Műveletek"
@@ -533,13 +533,13 @@
     "message": "Haladó"
   },
   "optionsAdvancedContextDelete": {
-    "message": "Delete hozzáadása a gyorsmenühöz"
+    "message": "'Törlés' parancs a szerkesztő helyi menüjében"
   },
   "optionsAdvancedExposeIframes": {
     "message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Engedélyezi a legfelsőbb szintű domain elérését\nmindegyik iframe-ben. Lehetővé teszi az olyan\niframe-specifikus CSS írását, mint:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
+    "message": "A legfelsőbb szintű tartomány elérésének engedélyezése\nmindegyik iframe-ben. Lehetővé teszi az olyan\niframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Új stílus írása usercss-ként"
@@ -557,13 +557,13 @@
     "message": "Az összes frissítés ellenőrzése és telepítése"
   },
   "optionsCustomizeBadge": {
-    "message": "Jelvény az eszköztárikonon"
+    "message": "Ikon képe az eszköztáron"
   },
   "optionsCustomizeIcon": {
     "message": "Eszköztárikon"
   },
   "optionsCustomizePopup": {
-    "message": "Felugró"
+    "message": "Felugró ablak"
   },
   "optionsCustomizeUpdate": {
     "message": "Frissítések"
@@ -587,13 +587,13 @@
     "message": "Felugró ablak szélessége (pixelben)"
   },
   "optionsReset": {
-    "message": "Beállítások visszaállítása alapértelmezett értékekre."
+    "message": "Beállítások visszaállítása alapértelmezett értékre"
   },
   "optionsResetButton": {
-    "message": "Beállítások visszaállítása alapra"
+    "message": "Alapértelmezés visszaállítása"
   },
   "optionsSubheading": {
-    "message": "Még több beállítás"
+    "message": "További beállítások"
   },
   "optionsUpdateImportNote": {
     "message": "Amikor régebbi verzióból vagy a Stylishból importálsz stílusokat, egyszer manuálisan frissítsd a stílusokat a stíluskezelőben, hogy megbizonyosodj afelől, hogy mindegyik frissítve van!"
@@ -620,19 +620,19 @@
     "message": "A Stylus nem tudta elemezni a usercss-t"
   },
   "popupBorders": {
-    "message": "Fehér szegélyek használata két oldalt"
+    "message": "Fehér szegély az oldalakon"
   },
   "popupBordersTooltip": {
-    "message": "Hasznos az új Chromehoz létrehozott sötét témákhoz, mert nem színezi át az oldalszegélyeket"
+    "message": "Hasznos az új Chrome sötét témáinál, mert nem színezi át az oldalszegélyeket"
   },
   "popupHotkeysInfo": {
     "message": "<1>-<9>, <0>, a numpaden is - be-/kikapcsolja az n-nedik stílust (a 0 10-et jelent)\n<A>-<Z> az adott betűvel kezdődő első stílust kapcsolja be/ki \n<Shift> kapcsolgatás helyett megnyitja a szerkesztőt\n<Numpad +> listázott stílusokat engedélyez\n<Numpad –> listázott stílusokat tilt le\n<Numpad *> és <`> (fordított félidézőjel) - kezdeti állapotban engedélyezett stílusokat kapcsol; nem vonatkozik azokra a stílusokra, amiket később engedélyeztél, mialatt a felugró ablakocska nyitva volt, hogy vissza tudd állítani a kezdeti kiválasztást tesztelés után: egyszerűen tilts le mindent, majd pl. <Numpad –> vagy <Numpad *>\nTovábbi információ a wikiben"
   },
   "popupHotkeysTooltip": {
-    "message": "Kattints az elérhető gyorsbillentyűk megtekintéséhez"
+    "message": "Elérhető gyorsbillentyűk megtekintése"
   },
   "popupManageTooltip": {
-    "message": "Shift-kattintás vagy jobb kattintás megnyitja a stíluskezelőt a jelenlegi oldalra érvényesülő stílusokkal"
+    "message": "Shift+kattintás vagy jobb kattintás: a stíluskezelő megnyitása a jelenlegi oldalra érvényes stílusokkal"
   },
   "popupOpenEditInWindow": {
     "message": "Szerkesztő megnyitása új ablakban"
@@ -641,7 +641,7 @@
     "message": "A fül a böngésző ablakától történő leválasztásával is engedélyezhető, és letiltható a fül egy másik ablakhoz való hozzácsatolásával."
   },
   "popupStylesFirst": {
-    "message": "Parancsok előtti stílusok"
+    "message": "Stílusnevek a parancsok előtt"
   },
   "prefShowBadge": {
     "message": "A jelenlegi oldalon aktív stílusok száma"
@@ -722,28 +722,28 @@
     "message": "Gyorsbillentyűk megadása"
   },
   "sortDateNewestFirst": {
-    "message": "a legújabb elöl"
+    "message": "újabb elöl"
   },
   "sortDateOldestFirst": {
-    "message": "a legrégebbi elöl"
+    "message": "régebbi elöl"
   },
   "sortLabel": {
-    "message": "Válaszd ki, hogyan szeretnéd sorba rendezni a telepített stílusokat"
+    "message": "Telepített stílusok sorbarendezésének módja"
   },
   "sortLabelTitleAsc": {
-    "message": "Cím növekvő sorrendben"
+    "message": "Cím - növekvő sorrend"
   },
   "sortLabelTitleDesc": {
-    "message": "Cím csökkenő sorrendben"
+    "message": "Cím - csökkenő sorrend"
   },
   "sortStylesHelp": {
-    "message": "A legördülő menüben válaszd ki, hogyan szeretnéd sorba rendezni a telepített bejegyzéseket. Az alapértelmezett beállítás növekvő sorrend (A-tól Z-ig) a bejegyzések címei szerint. A „Cím csökkenő sorrendben” csoportban megadott rendezési módok csökkenő sorrendet (Z-től A-ig) alkalmaznak a címre.\nMás beállítások azt is lehetővé teszik, hogy több szempont alapján rendezd a bejegyzéseket. Elképzelheted ezt úgy, mint egy többoszlopos rendezési táblázatot, amelyben minden egyes (a plusz jelek között) kiválasztott kategória egy oszlopot vagy egy csoportot jelképez.\nPéldául ha az van beállítva, hogy „Engedélyezve (első) + Cím”, az engedélyezett bejegyzések kerülnek a lista tetejére, aztán az engedélyezett és a letiltott bejegyzések címei külön-külön növekvő sorrendbe A-tól Z-ig) vannak rendezve."
+    "message": "A legördülő menüben válaszhatjuk ki, hogyan szeretnénk sorbarendezni a telepített stílusok bejegyzéseit. Az alapértelmezett beállítás a bejegyzések címei szerinti növekvő (A-tól Z-ig) sorrend. A „Cím - csökkenő sorrend” csoportban megadott rendezési módok csökkenő (Z-től A-ig) sorrendben  rendezik a címeket.\nEgyéb beállításokkal több szempont alapján is rendezhetők a bejegyzések. Tekintsünk erre úgy, mint egy többoszlopos, rendezhető táblázatra, amelyben minden egyes (a plusz jelek között) kiválasztott kategória egy oszlopot vagy egy csoportot jelképez.\nPéldául, ha az van beállítva, hogy „Engedélyezve (első) + Cím”, az engedélyezett bejegyzések kerülnek a lista tetejére, majd az engedélyezett és a letiltott bejegyzések címei külön-külön, növekvő (A-tól Z-ig) sorrendben jelennek meg."
   },
   "sortStylesHelpTitle": {
     "message": "Tartalom rendezése"
   },
   "styleBadRegexp": {
-    "message": "Érvénytelen regexp."
+    "message": "Érvénytelen reguláris kifejezés."
   },
   "styleBeautify": {
     "message": "Csinosít"
@@ -788,14 +788,14 @@
   "styleInstallOverwrite": {
     "message": "„$stylename$” már telepítve van. Felülírod?\nVerzió: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -833,28 +833,28 @@
     "message": "Írj be egy nevet!"
   },
   "styleMozillaFormatHeading": {
-    "message": "Mozilla formátum"
+    "message": "Mozilla-formátum"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "A stílus nem lett alkalmazva a „regexp()” helytelen használata miatt"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "Egyes „regexp()” szabályokat nem lehetett lefordítani."
+    "message": "Néhány „regexp()” szabály nem lefordítható."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Ez a stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, melyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, mely szerint egy teljes URL-illeszkedésre van szükség. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. Ez a stílus valószínűleg a Stylish Chrome-kiegészítőben lett létrehozva, amely helytelenül ellenőrzi a „regexp()” szabályokat az első verziótól fogva (ismert hiba)."
+    "message": "A stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, amelyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, amely megköveteli az URL teljes illeszkedését. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. A stílus valószínűleg a Stylish-for-Chrome  kiegészítőben készült, amely helytelenül ellenőrzi a „regexp()” szabályokat a legelső verziótól fogva (ismert hiba)."
   },
   "styleRegexpProblemTooltip": {
     "message": "A nem alkalmazott szeckiók száma helytelen 'regexp()' használat miatt"
   },
   "styleRegexpTestButton": {
-    "message": "RegExp teszt"
+    "message": "RegExp tesztelése"
   },
   "styleRegexpTestFull": {
     "message": "Illeszkedő fülek"
   },
   "styleRegexpTestInvalid": {
-    "message": "Kihagyott érvénytelen reguláris kifejezések"
+    "message": "Kihagyott, érvénytelen reguláris kifejezések"
   },
   "styleRegexpTestNone": {
     "message": "Nincs illeszkedő fül"
