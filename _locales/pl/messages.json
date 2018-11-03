@@ -261,11 +261,11 @@
   "filteredStyles": {
     "message": "Pokazano $numShown$ z sumy $numTotal$",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -800,14 +800,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' jest już zainstalowany. Zastąpić?\nWersja: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -818,6 +818,14 @@
     "message": "$color$ nie jest prawidłowym kolorem",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "Nieprawidłowa wartość @var $type$: musi być tablicą zawierającą co najmniej jedną liczbę w punkcie zerowym",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }

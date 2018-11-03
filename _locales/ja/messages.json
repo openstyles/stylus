@@ -255,11 +255,11 @@
   "filteredStyles": {
     "message": "$numTotal$ 件中の $numShown$ 件を表示",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -797,14 +797,14 @@
   "styleInstallOverwrite": {
     "message": "「$stylename$」はすでにインストール済みです。上書きしますか？\nバージョン: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -815,6 +815,14 @@
     "message": "$color$ は有効な色ではありません",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "不正な @var $type$: 最低でも1個の数値を持つ配列である必要があります",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }

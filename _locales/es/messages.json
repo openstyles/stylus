@@ -255,11 +255,11 @@
   "filteredStyles": {
     "message": "$numShown$ mostrados de $numTotal$ en total",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -791,14 +791,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' ya está instalado ¿Sobrescribirlo?\nVersión: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },

@@ -258,11 +258,11 @@
   "filteredStyles": {
     "message": "zobrazeno $numShown$ z $numTotal$",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -742,6 +742,9 @@
   "styleBeautifyIndentConditional": {
     "message": "Odsadit @media, @supports"
   },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Zachovat nové řádky"
+  },
   "styleCancelEditLabel": {
     "message": "Zpět ke správě"
   },
@@ -776,14 +779,14 @@
   "styleInstallOverwrite": {
     "message": "Styl „$stylename$“ je již nainstalován. Přepsat?\nVerze: $oldVersion$ → $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },
@@ -794,6 +797,14 @@
     "message": "$color$je neplatná barva",
     "placeholders": {
       "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMetaErrorRangeOrNumber": {
+    "message": "Neplatná @var $type$: hodnota musí být pole obsahující alespoň jedno číslo na nulové pozici",
+    "placeholders": {
+      "type": {
         "content": "$1"
       }
     }
@@ -952,6 +963,9 @@
   },
   "updatesCurrentlyInstalled": {
     "message": "Instalované aktualizace:"
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Prosím, změňte hodnotu @name nebo @namespace ať nedojde k přepsání existujícího stylu."
   },
   "usercssConfigIncomplete": {
     "message": "Styl byl aktualizován nebo smazán po zobrazení dialogu konfigurace. Tyto proměnné nebyly uloženy aby se předešlo poškození metadat stylu."
