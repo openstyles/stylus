@@ -146,7 +146,8 @@ Object.assign(linter, (() => {
         severityIcon.textContent = anno.severity;
         line.textContent = anno.from.line + 1;
         col.textContent = anno.from.ch + 1;
-        message.title = clipString(anno.message, 1000) + `\n(${anno.rule})`;
+        message.title = clipString(anno.message, 1000) +
+          anno.rule ? `\n(${anno.rule})` : '';
         message.textContent = clipString(anno.message, 100);
       }
     }
