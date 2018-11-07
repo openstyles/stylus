@@ -1,3 +1,4 @@
+/* exported getRedirectUrlAuthFlow launchWebAuthFlow */
 'use strict';
 
 /**

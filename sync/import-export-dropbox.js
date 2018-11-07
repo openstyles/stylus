@@ -1,6 +1,6 @@
 /* global messageBox Dropbox createZipFileFromText readZipFileFromBlob
   launchWebAuthFlow getRedirectUrlAuthFlow importFromString resolve
-  $ $create t chromeLocal API */
+  $ $create t chromeLocal API getOwnTab */
 'use strict';
 
 const DROPBOX_API_KEY = 'zg52vphuapvpng9';
