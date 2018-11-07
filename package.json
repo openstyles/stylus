@@ -8,6 +8,7 @@
   "devDependencies": {
     "archiver": "^3.0.0",
     "codemirror": "^5.41.0",
+    "endent": "^1.2.0",
     "eslint": "^5.8.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
@@ -18,8 +19,8 @@
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "updates": "^5.1.2",
-    "web-ext": "^2.9.1",
     "usercss-meta": "^0.8.1",
+    "web-ext": "^2.9.1",
     "webext-tx-fix": "^0.3.1"
   },
   "scripts": {
