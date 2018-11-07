@@ -79,6 +79,9 @@
   "clickToUninstall": {
     "message": "Clica per disinstallare"
   },
+  "cm_autoCloseBrackets": {
+    "message": "Chiudi automaticamente parentesi e virgolette"
+  },
   "cm_autocompleteOnTyping": {
     "message": "Completamento automatico durante digitazione"
   },
@@ -86,7 +89,7 @@
     "message": "Selezionatore colore per colori CSS"
   },
   "cm_indentWithTabs": {
-    "message": "Usa schede con indentazione intellingente"
+    "message": "Usa tabulazioni con indentazione intellingente"
   },
   "cm_keyMap": {
     "message": "Mappa caratteri"
@@ -101,7 +104,7 @@
     "message": "Usa indentazione intelligente"
   },
   "cm_tabSize": {
-    "message": "Dimensione scheda"
+    "message": "Dimensione tabulazione"
   },
   "cm_theme": {
     "message": "Tema"
@@ -207,11 +210,11 @@
   "filteredStyles": {
     "message": "$numShown$ mostrati di $numTotal$ totali",
     "placeholders": {
-      "numShown": {
-        "content": "$1"
-      },
       "numTotal": {
         "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
       }
     }
   },
@@ -523,6 +526,9 @@
   "search": {
     "message": "Cerca"
   },
+  "searchNumberOfResults": {
+    "message": "Numero di occorrenze"
+  },
   "searchResultInstallCount": {
     "message": "Installazioni totali"
   },
@@ -611,14 +617,14 @@
   "styleInstallOverwrite": {
     "message": "'$stylename$' è già installato. Vuoi sovrascriverlo?\nVersione: $oldVersion$ -> $newVersion$",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
-      },
-      "stylename": {
-        "content": "$1"
       }
     }
   },

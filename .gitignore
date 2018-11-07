@@ -6,3 +6,4 @@ package-lock.json
 yarn.lock
 *.zip
 .eslintcache
+.transifexrc
