@@ -13,6 +13,15 @@ const msg = (() => {
       handler: null,
       clone: deepCopy
     };
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message._msg === 'getMsg') {
+        const data = window._msg.storage.get(message.id);
+        if (!message.keepStorage) {
+          window._msg.storage.delete(message.id);
+        }
+        sendResponse(data);
+      }
+    });
   }
   const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
   const tabSend = chrome.tabs && promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
@@ -195,6 +204,10 @@ const msg = (() => {
   }
 
   function handleMessage(message, sender, sendResponse) {
+    if (message._msg) {
+      // internal message
+      return;
+    }
     const handlers = message.target === 'tab' ?
       handler.tab.concat(handler.both) : message.target === 'extension' ?
       handler.extension.concat(handler.both) :
@@ -251,11 +264,21 @@ const msg = (() => {
     if (bg === undefined) {
       return preparing.then(() => exchangeGet(message, keepStorage));
     }
-    message.data = bg._msg.storage.get(message.id);
+    if (!bg) {
+      // FF's private window
+      return runtimeSend({_msg: 'getMsg', id: message.id, keepStorage})
+        .then(exchange);
+    }
+    let data = bg._msg.storage.get(message.id);
     if (keepStorage) {
-      message.data = deepCopy(message.data);
+      data = deepCopy(message.data);
     } else {
       bg._msg.storage.delete(message.id);
+    }
+    exchange(data);
+
+    function exchange(newData) {
+      message.data = newData;
     }
   }
 
