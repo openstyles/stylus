@@ -158,7 +158,7 @@
       const end = ch + queryLen;
       const string = this.getLine(line);
       const area = string.slice(start, end);
-      const i = area.indexOf(query);
+      const i = matchIndex(area, query);
       const startInArea = i < 0 ? NaN : i;
       if (isNaN(startInArea) || start + startInArea > ch ||
           state.options.showToken.test(string[start + startInArea - 1] || '') ||
@@ -219,5 +219,13 @@
     } else {
       return originalMatchesOnScrollbar.call(this, query, ...args);
     }
+  }
+
+  function matchIndex(s, needle) {
+    if (typeof needle === 'string') {
+      return s.indexOf(needle);
+    }
+    const match = s.match(needle);
+    return match ? match.index + match[1].length : -1;
   }
 })();
