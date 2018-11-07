@@ -1,3 +1,4 @@
+/* global API */
 'use strict';
 
 (() => {
@@ -33,11 +34,10 @@
     && event.data.type === 'ouc-is-installed'
     && allowedOrigins.includes(event.origin)
     ) {
-      chrome.runtime.sendMessage({
-        method: 'findUsercss',
+      API.findUsercss({
         name: event.data.name,
         namespace: event.data.namespace
-      }, style => {
+      }).then(style => {
         const data = {event};
         const callbackObject = {
           installed: Boolean(style),
@@ -129,12 +129,10 @@
     && event.data.type === 'ouc-install-usercss'
     && allowedOrigins.includes(event.origin)
     ) {
-      chrome.runtime.sendMessage({
-        method: 'saveUsercss',
-        reason: 'install',
+      API.installUsercss({
         name: event.data.title,
         sourceCode: event.data.code,
-      }, style => {
+      }).then(style => {
         sendInstallCallback({
           enabled: style.enabled,
           key: event.data.key

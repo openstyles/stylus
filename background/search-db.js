@@ -1,4 +1,4 @@
-/* global API_METHODS filterStyles cachedStyles */
+/* global API_METHODS styleManager tryRegExp debounce */
 'use strict';
 
 (() => {
@@ -25,7 +25,8 @@
     if (/^url:/i.test(query)) {
       matchUrl = query.slice(query.indexOf(':') + 1).trim();
       if (matchUrl) {
-        return filterStyles({matchUrl}).map(style => style.id);
+        return styleManager.getStylesByUrl(matchUrl)
+          .then(results => results.map(r => r.data.id));
       }
     }
     if (query.startsWith('/') && /^\/(.+?)\/([gimsuy]*)$/.test(query)) {
@@ -43,26 +44,29 @@
       icase = words.some(w => w === lower(w));
     }
 
-    const results = [];
-    for (const item of ids || cachedStyles.list) {
-      const id = isNaN(item) ? item.id : item;
-      if (!query || words && !words.length) {
-        results.push(id);
-        continue;
+    return styleManager.getAllStyles().then(styles => {
+      if (ids) {
+        const idSet = new Set(ids);
+        styles = styles.filter(s => idSet.has(s.id));
       }
-      const style = isNaN(item) ? item : cachedStyles.byId.get(item);
-      if (!style) continue;
-      for (const part in PARTS) {
-        const text = style[part];
-        if (text && PARTS[part](text, rx, words, icase)) {
+      const results = [];
+      for (const style of styles) {
+        const id = style.id;
+        if (!query || words && !words.length) {
           results.push(id);
-          break;
+          continue;
+        }
+        for (const part in PARTS) {
+          const text = style[part];
+          if (text && PARTS[part](text, rx, words, icase)) {
+            results.push(id);
+            break;
+          }
         }
       }
-    }
-
-    if (cache.size) debounce(clearCache, 60e3);
-    return results;
+      if (cache.size) debounce(clearCache, 60e3);
+      return results;
+    });
   };
 
   function searchText(text, rx, words, icase) {

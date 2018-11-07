@@ -1,5 +1,4 @@
-/* global focusAccessibility */
-/* global moveFocus */
+/* global focusAccessibility moveFocus $ $create t tHTML animateElement */
 'use strict';
 
 /**

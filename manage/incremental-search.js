@@ -1,4 +1,5 @@
-/* global installed */
+/* global installed onDOMready $create debounce $ scrollElementIntoView
+  animateElement */
 'use strict';
 
 onDOMready().then(() => {

@@ -1,5 +1,5 @@
-/* global CodeMirror semverCompare closeCurrentTab */
-/* global messageBox download chromeLocal */
+/* global CodeMirror semverCompare closeCurrentTab messageBox download
+  $ $$ $create $createLink t prefs API getTab */
 'use strict';
 
 (() => {
@@ -86,13 +86,11 @@
       cm.setCursor(cursor);
       cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
-      API.saveUsercssUnsafe({
+      API.installUsercss({
         id: (installed || installedDup).id,
-        reason: 'update',
         sourceCode
-      }).then(({style, errors}) => {
+      }).then(style => {
         updateMeta(style);
-        if (errors) return Promise.reject(errors);
       }).catch(showError);
     });
   }
@@ -242,7 +240,7 @@
     const contents = Array.isArray(err) ?
       [$create('pre', err.join('\n'))] :
       [err && err.message && $create('pre', err.message) || err || 'Unknown error'];
-    if (Number.isInteger(err.index)) {
+    if (Number.isInteger(err.index) && typeof contents[0] === 'string') {
       const pos = cm.posFromIndex(err.index);
       contents[0] = `${pos.line + 1}:${pos.ch + 1} ` + contents[0];
       contents.push($create('pre', drawLinePointer(pos)));
@@ -301,7 +299,7 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        API.saveUsercss(Object.assign(style, dup && {reason: 'update'}))
+        API.installUsercss(style)
           .then(install)
           .catch(err => messageBox.alert(t('styleInstallFailed', err), 'pre'))
       );

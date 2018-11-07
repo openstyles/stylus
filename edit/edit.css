@@ -265,13 +265,10 @@ input:invalid {
 }
 /************ content ***********/
 #sections > * {
-  margin: 0.7rem;
-  padding: 1rem 1rem .3rem;
+  margin: 0 0.7rem;
+  padding: 1rem;
 }
-#sections > *:first-child {
-  padding: 0 1rem .3rem;
-}
-#sections > *:not(:first-child) {
+#sections > :not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
 .add-section:after {
@@ -288,7 +285,7 @@ input:invalid {
   flex-wrap: wrap;
 }
 .edit-actions button {
-  margin: 0 .2rem .5rem 0;
+  margin-right: .2rem;
 }
 .dirty > label::before {
   content: "*";
@@ -310,6 +307,25 @@ input:invalid {
 }
 .section:only-of-type .move-section-up,
 .section:only-of-type .move-section-down {
+  display: none;
+}
+.section .CodeMirror {
+  margin-bottom: .875rem;
+}
+/* deleted section */
+.deleted-section {
+  margin: 0;
+}
+.section .deleted-section {
+  display: none;
+}
+.section.removed .deleted-section {
+  display: block;
+}
+.section.removed .code-label,
+.section.removed .applies-to,
+.section.removed .edit-actions,
+.section.removed .CodeMirror {
   display: none;
 }
 .move-section-up:after {

@@ -1,4 +1,5 @@
 /* global parserlib */
+/* exported parseMozFormat */
 'use strict';
 
 /**

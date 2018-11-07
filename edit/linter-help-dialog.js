@@ -1,4 +1,5 @@
-/* global showHelp editorWorker memoize */
+/* global showHelp editorWorker memoize $ $create $createLink t */
+/* exported createLinterHelpDialog */
 'use strict';
 
 function createLinterHelpDialog(getIssues) {

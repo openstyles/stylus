@@ -1,3 +1,4 @@
+/* global API */
 'use strict';
 
 (() => {
@@ -16,8 +17,8 @@
   let sourceCode, port, timer;
 
   chrome.runtime.onConnect.addListener(onConnected);
-  chrome.runtime.sendMessage({method: 'installUsercss', url}, r =>
-    r && r.__ERROR__ && alert(r.__ERROR__));
+  API.openUsercssInstallPage({url})
+    .catch(err => alert(err));
 
   function onConnected(newPort) {
     port = newPort;

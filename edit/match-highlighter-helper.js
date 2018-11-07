@@ -1,4 +1,4 @@
-/* global CodeMirror */
+/* global CodeMirror prefs */
 'use strict';
 
 (() => {
