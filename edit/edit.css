@@ -364,7 +364,8 @@ input:invalid {
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
-.cm-matchhighlight-approved .cm-matchhighlight,
+[data-match-highlight=token].cm-matchhighlight-approved .cm-matchhighlight,
+[data-match-highlight=selection] .cm-matchhighlight,
 .CodeMirror-selection-highlight-scrollbar {
   animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
   animation-fill-mode: both;

@@ -42,6 +42,11 @@ const cmFactory = (() => {
     } else {
       cm.setOption('highlightSelectionMatches', null);
     }
+    if (value) {
+      cm.display.wrapper.dataset.matchHighlight = value;
+    } else {
+      delete cm.display.wrapper.dataset.matchHighlight;
+    }
   });
 
   CodeMirror.defineOption('selectByTokens', prefs.get('editor.selectByTokens'), (cm, value) => {
