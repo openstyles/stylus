@@ -1,5 +1,5 @@
-/* global installed messageBox */
-/* global sorter */
+/* global installed messageBox sorter $ $$ $create t debounce prefs API onDOMready */
+/* exported filterAndAppend */
 'use strict';
 
 const filtersSelector = {
@@ -114,7 +114,7 @@ onDOMready().then(() => {
       }
       if (value !== undefined) {
         el.lastValue = value;
-        if (el.id in prefs.readOnlyValues) {
+        if (el.id in prefs.defaults) {
           prefs.set(el.id, false);
         }
       }

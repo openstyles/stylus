@@ -1,8 +1,8 @@
-/* global applyOnMessage installed */
+/* global $ $$ API debounce $create t */
 'use strict';
 
-// eslint-disable-next-line no-var
-var hotkeys = (() => {
+/* exported hotkeys */
+const hotkeys = (() => {
   const entries = document.getElementsByClassName('entry');
   let togglablesShown;
   let togglables;
@@ -101,15 +101,13 @@ var hotkeys = (() => {
       entry = typeof entry === 'string' ? $('#' + entry) : entry;
       if (!match && $('.checker', entry).checked !== enable || entry.classList.contains(match)) {
         results.push(entry.id);
-        task = task.then(() => API.saveStyle({
-          id: entry.styleId,
-          enabled: enable,
-          notify: false,
-        })).then(() => {
-          entry.classList.toggle('enabled', enable);
-          entry.classList.toggle('disabled', !enable);
-          $('.checker', entry).checked = enable;
-        });
+        task = task
+          .then(() => API.toggleStyle(entry.styleId, enable))
+          .then(() => {
+            entry.classList.toggle('enabled', enable);
+            entry.classList.toggle('disabled', !enable);
+            $('.checker', entry).checked = enable;
+          });
       }
     }
     if (results.length) task.then(API.refreshAllTabs);

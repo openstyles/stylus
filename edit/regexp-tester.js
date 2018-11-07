@@ -1,8 +1,8 @@
-/* global showHelp */
+/* global showHelp $ $create tryRegExp queryTabs URLS t template openURL */
+/* exported regExpTester */
 'use strict';
 
-// eslint-disable-next-line no-var
-var regExpTester = (() => {
+const regExpTester = (() => {
   const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
@@ -58,7 +58,7 @@ var regExpTester = (() => {
       const rxData = Object.assign({text}, cachedRegexps.get(text));
       if (!rxData.urls) {
         cachedRegexps.set(text, Object.assign(rxData, {
-          // imitate buggy Stylish-for-chrome, see detectSloppyRegexps()
+          // imitate buggy Stylish-for-chrome
           rx: tryRegExp('^' + text + '$'),
           urls: new Map(),
         }));

@@ -1,7 +1,6 @@
-/* global linter editors clipString createLinterHelpDialog makeSectionVisible */
+/* global linter editor clipString createLinterHelpDialog $ $create */
 'use strict';
 
-// eslint-disable-next-line no-var
 Object.assign(linter, (() => {
   const tables = new Map();
   const helpDialog = createLinterHelpDialog(getIssues);
@@ -16,12 +15,8 @@ Object.assign(linter, (() => {
       table = createTable(cm);
       tables.set(cm, table);
       const container = $('.lint-report-container');
-      if (typeof editor === 'object') {
-        container.append(table.element);
-      } else {
-        const nextSibling = findNextSibling(tables, cm);
-        container.insertBefore(table.element, nextSibling && tables.get(nextSibling).element);
-      }
+      const nextSibling = findNextSibling(tables, cm);
+      container.insertBefore(table.element, nextSibling && tables.get(nextSibling).element);
     }
     table.updateCaption();
     table.updateAnnotations(annotations);
@@ -57,6 +52,7 @@ Object.assign(linter, (() => {
   }
 
   function findNextSibling(tables, cm) {
+    const editors = editor.getEditors();
     let i = editors.indexOf(cm) + 1;
     while (i < editors.length) {
       if (tables.has(editors[i])) {
@@ -85,8 +81,7 @@ Object.assign(linter, (() => {
     };
 
     function updateCaption() {
-      caption.textContent = typeof editor === 'object' ?
-        '' : `${t('sectionCode')} ${editors.indexOf(cm) + 1}`;
+      caption.textContent = editor.getEditorTitle(cm);
     }
 
     function updateAnnotations(lines) {
@@ -158,7 +153,7 @@ Object.assign(linter, (() => {
   }
 
   function gotoLintIssue(cm, anno) {
-    makeSectionVisible(cm);
+    editor.scrollToEditor(cm);
     cm.focus();
     cm.setSelection(anno.from);
   }

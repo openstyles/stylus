@@ -1,5 +1,5 @@
-/* global messageBox */
-/* global zip */
+/* global zip onDOMready */
+/* exported createZipFileFromText readZipFileFromBlob */
 'use strict';
 
 onDOMready().then(() => {

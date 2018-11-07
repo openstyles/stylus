@@ -1,9 +1,54 @@
-/* global messageBox handleUpdate handleDelete applyOnMessage styleSectionsEqual */
+/* global messageBox styleSectionsEqual getOwnTab API onDOMready
+  tryJSONparse scrollElementIntoView $ $$ API $create t animateElement */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
 
+onDOMready().then(() => {
+  $('#file-all-styles').onclick = exportToFile;
+  $('#unfile-all-styles').onclick = () => {
+    importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
+  };
+
+  Object.assign(document.body, {
+    ondragover(event) {
+      const hasFiles = event.dataTransfer.types.includes('Files');
+      event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
+      this.classList.toggle('dropzone', hasFiles);
+      if (hasFiles) {
+        event.preventDefault();
+        clearTimeout(this.fadeoutTimer);
+        this.classList.remove('fadeout');
+      }
+    },
+    ondragend() {
+      animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
+        this.style.animationDuration = '';
+      });
+    },
+    ondragleave(event) {
+      try {
+        // in Firefox event.target could be XUL browser and hence there is no permission to access it
+        if (event.target === this) {
+          this.ondragend();
+        }
+      } catch (e) {
+        this.ondragend();
+      }
+    },
+    ondrop(event) {
+      this.ondragend();
+      if (event.dataTransfer.files.length) {
+        event.preventDefault();
+        if ($('#only-updates input').checked) {
+          $('#only-updates input').click();
+        }
+        importFromFile({file: event.dataTransfer.files[0]});
+      }
+    },
+  });
+});
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -41,7 +86,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
             importFromString(text) :
             getOwnTab().then(tab => {
               tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-              return API.installUsercss({direct: true, tab})
+              return API.openUsercssInstallPage({direct: true, tab})
                 .then(() => URL.revokeObjectURL(tab.url));
             })
           ).then(numStyles => {
@@ -56,19 +101,14 @@ function importFromFile({fileTypeFilter, file} = {}) {
 }
 
 
-function importFromString(jsonString, oldStyles) {
-  if (!oldStyles) {
-    return API.getStyles().then(styles => importFromString(jsonString, styles));
+function importFromString(jsonString) {
+  const json = tryJSONparse(jsonString);
+  if (!Array.isArray(json)) {
+    return Promise.reject(new Error('the backup is not a valid JSON file'));
   }
-  const json = tryJSONparse(jsonString) || [];
-  if (typeof json.slice !== 'function') {
-    json.length = 0;
-  }
-  const oldStylesById = new Map(
-    oldStyles.map(style => [style.id, style]));
-  const oldStylesByName = json.length && new Map(
-    oldStyles.map(style => [style.name.trim(), style]));
-
+  let oldStyles;
+  let oldStylesById;
+  let oldStylesByName;
   const stats = {
     added:       {names: [], ids: [], legend: 'importReportLegendAdded'},
     unchanged:   {names: [], ids: [], legend: 'importReportLegendIdentical'},
@@ -78,31 +118,25 @@ function importFromString(jsonString, oldStyles) {
     invalid:     {names: [], legend: 'importReportLegendInvalid'},
   };
 
-  let index = 0;
-  let lastRenderTime = performance.now();
-  const renderQueue = [];
-  const RENDER_NAP_TIME_MAX = 1000; // ms
-  const RENDER_QUEUE_MAX = 50; // number of styles
-  const SAVE_OPTIONS = {reason: 'import', notify: false};
-
-  return new Promise(proceed);
-
-  function proceed(resolve) {
-    while (index < json.length) {
-      const item = json[index++];
-      const info = analyze(item);
+  return API.getAllStyles().then(styles => {
+    // make a copy of the current database, that may be used when we want to
+    // undo
+    oldStyles = styles;
+    oldStylesById = new Map(
+      oldStyles.map(style => [style.id, style]));
+    oldStylesByName = json.length && new Map(
+      oldStyles.map(style => [style.name.trim(), style]));
+    return Promise.all(json.map((item, i) => {
+      const info = analyze(item, i);
       if (info) {
-        // using saveStyle directly since json was parsed in background page context
-        return API.saveStyle(Object.assign(item, SAVE_OPTIONS))
-          .then(style => account({style, info, resolve}));
+        return API.importStyle(item)
+          .then(style => updateStats(style, info));
       }
-    }
-    renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
-    renderQueue.length = 0;
-    done(resolve);
-  }
+    }));
+  })
+    .then(done);
 
-  function analyze(item) {
+  function analyze(item, index) {
     if (typeof item !== 'object' ||
         !item ||
         !item.name ||
@@ -146,17 +180,7 @@ function importFromString(jsonString, oldStyles) {
         .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
   }
 
-  function account({style, info, resolve}) {
-    renderQueue.push(style);
-    if (performance.now() - lastRenderTime > RENDER_NAP_TIME_MAX
-    || renderQueue.length > RENDER_QUEUE_MAX) {
-      renderQueue.forEach(style => handleUpdate(style, {reason: 'import'}));
-      setTimeout(scrollElementIntoView, 0, $('#style-' + renderQueue.pop().id));
-      renderQueue.length = 0;
-      lastRenderTime = performance.now();
-    }
-    setTimeout(proceed, 0, resolve);
-    const {oldStyle, metaEqual, codeEqual} = info;
+  function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
     if (!oldStyle) {
       stats.added.names.push(style.name);
       stats.added.ids.push(style.id);
@@ -176,42 +200,41 @@ function importFromString(jsonString, oldStyles) {
     stats.metaOnly.ids.push(style.id);
   }
 
-  function done(resolve) {
+  function done() {
     const numChanged = stats.metaAndCode.names.length +
       stats.metaOnly.names.length +
       stats.codeOnly.names.length +
       stats.added.names.length;
-    Promise.resolve(numChanged && API.refreshAllTabs()).then(() => {
-      const report = Object.keys(stats)
-        .filter(kind => stats[kind].names.length)
-        .map(kind => {
-          const {ids, names, legend} = stats[kind];
-          const listItemsWithId = (name, i) =>
-            $create('div', {dataset: {id: ids[i]}}, name);
-          const listItems = name =>
-            $create('div', name);
-          const block =
-            $create('details', {dataset: {id: kind}}, [
-              $create('summary',
-                $create('b', names.length + ' ' + t(legend))),
-              $create('small',
-                names.map(ids ? listItemsWithId : listItems)),
-            ]);
-          return block;
-        });
-      scrollTo(0, 0);
-      messageBox({
-        title: t('importReportTitle'),
-        contents: report.length ? report : t('importReportUnchanged'),
-        buttons: [t('confirmClose'), numChanged && t('undo')],
-        onshow:  bindClick,
-      }).then(({button}) => {
+    const report = Object.keys(stats)
+      .filter(kind => stats[kind].names.length)
+      .map(kind => {
+        const {ids, names, legend} = stats[kind];
+        const listItemsWithId = (name, i) =>
+          $create('div', {dataset: {id: ids[i]}}, name);
+        const listItems = name =>
+          $create('div', name);
+        const block =
+          $create('details', {dataset: {id: kind}}, [
+            $create('summary',
+              $create('b', names.length + ' ' + t(legend))),
+            $create('small',
+              names.map(ids ? listItemsWithId : listItems)),
+          ]);
+        return block;
+      });
+    scrollTo(0, 0);
+    messageBox({
+      title: t('importReportTitle'),
+      contents: report.length ? report : t('importReportUnchanged'),
+      buttons: [t('confirmClose'), numChanged && t('undo')],
+      onshow: bindClick,
+    })
+      .then(({button}) => {
         if (button === 1) {
           undo();
         }
       });
-      resolve(numChanged);
-    });
+    return Promise.resolve(numChanged);
   }
 
   function undo() {
@@ -222,27 +245,20 @@ function importFromString(jsonString, oldStyles) {
       ...stats.added.ids,
     ];
     let tasks = Promise.resolve();
-    let tasksUI = Promise.resolve();
     for (const id of newIds) {
-      tasks = tasks.then(() => API.deleteStyle({id, notify: false}));
-      tasksUI = tasksUI.then(() => handleDelete(id));
+      tasks = tasks.then(() => API.deleteStyle(id));
       const oldStyle = oldStylesById.get(id);
       if (oldStyle) {
-        Object.assign(oldStyle, SAVE_OPTIONS);
-        tasks = tasks.then(() => API.saveStyle(oldStyle));
-        tasksUI = tasksUI.then(() => handleUpdate(oldStyle, {reason: 'import'}));
+        tasks = tasks.then(() => API.importStyle(oldStyle));
       }
     }
     // taskUI is superfast and updates style list only in this page,
     // which should account for 99.99999999% of cases, supposedly
-    return tasks
-      .then(tasksUI)
-      .then(API.refreshAllTabs)
-      .then(() => messageBox({
-        title: t('importReportUndoneTitle'),
-        contents: newIds.length + ' ' + t('importReportUndone'),
-        buttons: [t('confirmClose')],
-      }));
+    return tasks.then(() => messageBox({
+      title: t('importReportUndoneTitle'),
+      contents: newIds.length + ' ' + t('importReportUndone'),
+      buttons: [t('confirmClose')],
+    }));
   }
 
   function bindClick() {
@@ -273,8 +289,8 @@ function importFromString(jsonString, oldStyles) {
 }
 
 
-$('#file-all-styles').onclick = () => {
-  API.getStyles().then(styles => {
+function exportToFile() {
+  API.getAllStyles().then(styles => {
     // https://crbug.com/714373
     document.documentElement.appendChild(
       $create('iframe', {
@@ -313,47 +329,4 @@ $('#file-all-styles').onclick = () => {
     const yyyy = today.getFullYear();
     return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
   }
-};
-
-
-$('#unfile-all-styles').onclick = () => {
-  importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
-};
-
-Object.assign(document.body, {
-  ondragover(event) {
-    const hasFiles = event.dataTransfer.types.includes('Files');
-    event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
-    this.classList.toggle('dropzone', hasFiles);
-    if (hasFiles) {
-      event.preventDefault();
-      clearTimeout(this.fadeoutTimer);
-      this.classList.remove('fadeout');
-    }
-  },
-  ondragend() {
-    animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
-      this.style.animationDuration = '';
-    });
-  },
-  ondragleave(event) {
-    try {
-      // in Firefox event.target could be XUL browser and hence there is no permission to access it
-      if (event.target === this) {
-        this.ondragend();
-      }
-    } catch (e) {
-      this.ondragend();
-    }
-  },
-  ondrop(event) {
-    this.ondragend();
-    if (event.dataTransfer.files.length) {
-      event.preventDefault();
-      if ($('#only-updates input').checked) {
-        $('#only-updates input').click();
-      }
-      importFromFile({file: event.dataTransfer.files[0]});
-    }
-  },
-});
+}
