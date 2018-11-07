@@ -108,7 +108,7 @@ function getUsercssCompiler(preprocessor) {
             useFileCache: false,
           };
         }
-        loadScript('/vendor/less/less.min.js');
+        loadScript('/vendor/less-bundle/less.min.js');
         const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
         return self.less.render(varDefs + source)
           .then(({css}) => css);
