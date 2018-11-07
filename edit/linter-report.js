@@ -147,7 +147,7 @@ Object.assign(linter, (() => {
         line.textContent = anno.from.line + 1;
         col.textContent = anno.from.ch + 1;
         message.title = clipString(anno.message, 1000) +
-          anno.rule ? `\n(${anno.rule})` : '';
+          (anno.rule ? `\n(${anno.rule})` : '');
         message.textContent = clipString(anno.message, 100);
       }
     }
