@@ -1,4 +1,6 @@
-/* global messageBox Dropbox createZipFileFromText readZipFileFromBlob launchWebAuthFlow getRedirectUrlAuthFlow importFromString resolve */
+/* global messageBox Dropbox createZipFileFromText readZipFileFromBlob
+  launchWebAuthFlow getRedirectUrlAuthFlow importFromString resolve
+  $ $create t chromeLocal API */
 'use strict';
 
 const DROPBOX_API_KEY = 'zg52vphuapvpng9';
@@ -66,7 +68,7 @@ $('#sync-dropbox-export').onclick = () => {
     // file deleted with success, get styles and create a file
     .then(() => {
       messageProgressBar({title: title, text: t('gettingStyles')});
-      return API.getStyles().then(styles => JSON.stringify(styles, null, '\t'));
+      return API.getAllStyles().then(styles => JSON.stringify(styles, null, '\t'));
     })
     // create zip file
     .then(stylesText => {
@@ -85,7 +87,7 @@ $('#sync-dropbox-export').onclick = () => {
       console.log(error);
       // saving file first time
       if (error.status === API_ERROR_STATUS_FILE_NOT_FOUND) {
-        API.getStyles()
+        API.getAllStyles()
         .then(styles => {
           messageProgressBar({title: title, text: t('gettingStyles')});
           return JSON.stringify(styles, null, '\t');
@@ -141,7 +143,7 @@ $('#sync-dropbox-import').onclick = () => {
           importFromString(text) :
           getOwnTab().then(tab => {
             tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-            return API.installUsercss({direct: true, tab})
+            return API.openUsercssInstallPage({direct: true, tab})
               .then(() => URL.revokeObjectURL(tab.url));
           })
         ).then(numStyles => {
