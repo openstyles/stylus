@@ -301,6 +301,10 @@ html[style*="border"] .entry:nth-child(11):before {
   box-sizing: border-box;
   cursor: pointer;
   font-size: 90%;
+  display: none;
+}
+.regexp-partial .regexp-problem-indicator {
+  display: block;
 }
 
 .regexp-partial .actions,
@@ -311,6 +315,8 @@ html[style*="border"] .entry:nth-child(11):before {
 #regexp-explanation {
   position: fixed;
   background-color: white;
+  top: 50%;
+  transform: translateY(-50%);
   left: 0;
   right: 0;
   padding: .5rem;

@@ -1,4 +1,6 @@
-/* global messageBox */
+/* global messageBox deepCopy $create $createLink $ t tWordBreak
+  prefs setupLivePrefs debounce API */
+/* exported configDialog */
 'use strict';
 
 function configDialog(style) {
@@ -117,13 +119,13 @@ function configDialog(style) {
       return;
     }
     if (!bgStyle) {
-      API.getStyles({id: style.id, omitCode: !BG})
-        .then(([bgStyle]) => save({anyChangeIsDirty}, bgStyle || {}));
+      API.getStyle(style.id, true)
+        .catch(() => ({}))
+        .then(bgStyle => save({anyChangeIsDirty}, bgStyle));
       return;
     }
     style = style.sections ? Object.assign({}, style) : style;
     style.enabled = true;
-    style.reason = 'config';
     style.sourceCode = null;
     style.sections = null;
     const styleVars = style.usercssData.vars;
@@ -171,9 +173,9 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return API.saveUsercss(style)
-      .then(saved => {
-        varsInitial = getInitialValues(saved.usercssData.vars);
+    return API.configUsercssVars(style.id, style.usercssData.vars)
+      .then(newVars => {
+        varsInitial = getInitialValues(newVars);
         vars.forEach(va => onchange({target: va.input, justSaved: true}));
         renderValues();
         updateButtons();
@@ -182,7 +184,7 @@ function configDialog(style) {
       .catch(errors => {
         const el = $('.config-error', messageBox.element) ||
           $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
-        el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors;
+        el.textContent = el.title = Array.isArray(errors) ? errors.join('\n') : errors.message || String(errors);
       })
       .then(() => {
         saving = false;

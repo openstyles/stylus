@@ -1,4 +1,5 @@
-/* global CodeMirror colorConverter */
+/* global colorConverter $create debounce */
+/* exported colorMimicry */
 'use strict';
 
 (window.CodeMirror ? window.CodeMirror.prototype : window).colorpicker = function () {

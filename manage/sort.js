@@ -1,5 +1,5 @@
-/* global installed */
-/* global messageBox */
+/* global installed messageBox t $ $create prefs */
+/* exported sorter */
 'use strict';
 
 const sorter = (() => {

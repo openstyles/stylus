@@ -1,17 +1,13 @@
-/*
-global BG: true
-global FIREFOX: true
-global onRuntimeMessage applyOnMessage
-*/
+/* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
+  getStyleWithNoCode tryRegExp sessionStorageHash download
+  closeCurrentTab */
 'use strict';
-
-// keep message channel open for sendResponse in chrome.runtime.onMessage listener
-const KEEP_CHANNEL_OPEN = true;
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
 const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
-const ANDROID = !chrome.windows;
+// FIXME: who use this?
+// const ANDROID = !chrome.windows;
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
 if (!CHROME && !chrome.browserAction.openPopup) {
@@ -72,14 +68,9 @@ const URLS = {
   ),
 };
 
-let BG = chrome.extension.getBackgroundPage();
-if (BG && !BG.getStyles && BG !== window) {
-  // own page like editor/manage is being loaded on browser startup
-  // before the background page has been fully initialized;
-  // it'll be resolved in onBackgroundReady() instead
-  BG = null;
-}
-if (!BG || BG !== window) {
+const IS_BG = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
+
+if (!IS_BG) {
   if (FIREFOX) {
     document.documentElement.classList.add('firefox');
   } else if (OPERA) {
@@ -87,169 +78,15 @@ if (!BG || BG !== window) {
   } else {
     if (VIVALDI) document.documentElement.classList.add('vivaldi');
   }
-  // TODO: remove once our manifest's minimum_chrome_version is 50+
-  // Chrome 49 doesn't report own extension pages in webNavigation apparently
-  if (CHROME && CHROME < 2661) {
-    getActiveTab().then(tab =>
-      window.API.updateIcon({tab}));
-  }
-} else if (!BG.API_METHODS) {
-  BG.API_METHODS = {};
 }
 
-const FIREFOX_NO_DOM_STORAGE = FIREFOX && !tryCatch(() => localStorage);
-if (FIREFOX_NO_DOM_STORAGE) {
-  // may be disabled via dom.storage.enabled
-  Object.defineProperty(window, 'localStorage', {value: {}});
-  Object.defineProperty(window, 'sessionStorage', {value: {}});
+if (IS_BG) {
+  window.API_METHODS = {};
 }
 
-// eslint-disable-next-line no-var
-var API = (() => {
-  return new Proxy(() => {}, {
-    get: (target, name) =>
-      name === 'remoteCall' ?
-        remoteCall :
-        arg => invokeBG(name, arg),
-  });
-
-  function remoteCall(name, arg, remoteWindow) {
-    let thing = window[name] || window.API_METHODS[name];
-    if (typeof thing === 'function') {
-      thing = thing(arg);
-    }
-    if (!thing || typeof thing !== 'object') {
-      return thing;
-    } else if (thing instanceof Promise) {
-      return thing.then(product => remoteWindow.deepCopy(product));
-    } else {
-      return remoteWindow.deepCopy(thing);
-    }
-  }
-
-  function invokeBG(name, arg = {}) {
-    if (BG && (name in BG || name in BG.API_METHODS)) {
-      const call = BG !== window ?
-        BG.API.remoteCall(name, BG.deepCopy(arg), window) :
-        remoteCall(name, arg, BG);
-      return Promise.resolve(call);
-    }
-    if (BG && BG.getStyles) {
-      throw new Error('Bad API method', name, arg);
-    }
-    if (FIREFOX) {
-      arg.method = name;
-      return sendMessage(arg);
-    }
-    return onBackgroundReady().then(() => invokeBG(name, arg));
-  }
-
-  function onBackgroundReady() {
-    return BG && BG.getStyles ? Promise.resolve() : new Promise(function ping(resolve) {
-      sendMessage({method: 'healthCheck'}, health => {
-        if (health !== undefined) {
-          BG = chrome.extension.getBackgroundPage();
-          resolve();
-        } else {
-          setTimeout(ping, 0, resolve);
-        }
-      });
-    });
-  }
-})();
-
-
-function notifyAllTabs(msg) {
-  const originalMessage = msg;
-  const styleUpdated = msg.method === 'styleUpdated';
-  if (styleUpdated || msg.method === 'styleAdded') {
-    // apply/popup/manage use only meta for these two methods,
-    // editor may need the full code but can fetch it directly,
-    // so we send just the meta to avoid spamming lots of tabs with huge styles
-    msg = Object.assign({}, msg, {
-      style: getStyleWithNoCode(msg.style)
-    });
-  }
-  const affectsAll = !msg.affects || msg.affects.all;
-  const affectsOwnOriginOnly = !affectsAll && (msg.affects.editor || msg.affects.manager);
-  const affectsTabs = affectsAll || affectsOwnOriginOnly;
-  const affectsIcon = affectsAll || msg.affects.icon;
-  const affectsPopup = affectsAll || msg.affects.popup;
-  const affectsSelf = affectsPopup || msg.prefs;
-  // notify all open extension pages and popups
-  if (affectsSelf) {
-    msg.tabId = undefined;
-    sendMessage(msg, ignoreChromeError);
-  }
-  // notify tabs
-  if (affectsTabs || affectsIcon) {
-    const notifyTab = tab => {
-      if (!styleUpdated
-      && (affectsTabs || URLS.optionsUI.includes(tab.url))
-      // own pages are already notified via sendMessage
-      && !(affectsSelf && tab.url.startsWith(URLS.ownOrigin))
-      // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-      && (!FIREFOX || tab.width)) {
-        msg.tabId = tab.id;
-        sendMessage(msg, ignoreChromeError);
-      }
-      if (affectsIcon) {
-        // eslint-disable-next-line no-use-before-define
-        debounce(API.updateIcon, 0, {tab});
-      }
-    };
-    // list all tabs including chrome-extension:// which can be ours
-    Promise.all([
-      queryTabs(affectsOwnOriginOnly ? {url: URLS.ownOrigin + '*'} : {}),
-      getActiveTab(),
-    ]).then(([tabs, activeTab]) => {
-      const activeTabId = activeTab && activeTab.id;
-      for (const tab of tabs) {
-        invokeOrPostpone(tab.id === activeTabId, notifyTab, tab);
-      }
-    });
-  }
-  // notify self: the message no longer is sent to the origin in new Chrome
-  if (typeof onRuntimeMessage !== 'undefined') {
-    onRuntimeMessage(originalMessage);
-  }
-  // notify apply.js on own pages
-  if (typeof applyOnMessage !== 'undefined') {
-    applyOnMessage(originalMessage);
-  }
-  // propagate saved style state/code efficiently
-  if (styleUpdated) {
-    msg.refreshOwnTabs = false;
-    API.refreshAllTabs(msg);
-  }
-}
-
-
-function sendMessage(msg, callback) {
-  /*
-  Promise mode [default]:
-    - rejects on receiving {__ERROR__: message} created by background.js::onRuntimeMessage
-    - automatically suppresses chrome.runtime.lastError because it's autogenerated
-      by browserAction.setText which lacks a callback param in chrome API
-  Standard callback mode:
-    - enabled by passing a second param
-  */
-  const {tabId, frameId} = msg;
-  const fn = tabId >= 0 ? chrome.tabs.sendMessage : chrome.runtime.sendMessage;
-  const args = tabId >= 0 ? [tabId, msg, {frameId}] : [msg];
-  if (callback) {
-    fn(...args, callback);
-  } else {
-    return new Promise((resolve, reject) => {
-      fn(...args, r => {
-        const err = r && r.__ERROR__;
-        (err ? reject : resolve)(err || r);
-        ignoreChromeError();
-      });
-    });
-  }
-}
-
+// FIXME: `localStorage` and `sessionStorage` may be disabled via dom.storage.enabled
+// Object.defineProperty(window, 'localStorage', {value: {}});
+// Object.defineProperty(window, 'sessionStorage', {value: {}});
 
 function queryTabs(options = {}) {
   return new Promise(resolve =>
@@ -275,13 +112,6 @@ function getActiveTab() {
   return queryTabs({currentWindow: true, active: true})
     .then(tabs => tabs[0]);
 }
-
-
-function getActiveTabRealURL() {
-  return getActiveTab()
-    .then(getTabRealURL);
-}
-
 
 function getTabRealURL(tab) {
   return new Promise(resolve => {
@@ -385,7 +215,6 @@ function openURL({
   index,
   active,
   currentWindow = true,
-  message,
 }) {
   url = url.includes('://') ? url : chrome.runtime.getURL(url);
   // [some] chromium forks don't handle their fake branded protocols
@@ -401,15 +230,7 @@ function openURL({
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
 
-  const task = queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
-  if (!message) {
-    return task;
-  } else {
-    return task.then(onTabReady).then(tab => {
-      message.tabId = tab.id;
-      return sendMessage(message).then(() => tab);
-    });
-  }
+  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
 
   function maybeSwitch(tabs = []) {
     const urlWithSlash = url + '/';
@@ -651,27 +472,6 @@ function download(url, {
     return isText ? JSON.stringify(json) : json;
   }
 }
-
-
-function invokeOrPostpone(isInvoke, fn, ...args) {
-  return isInvoke
-    ? fn(...args)
-    : setTimeout(invokeOrPostpone, 0, true, fn, ...args);
-}
-
-
-function openEditor({id}) {
-  let url = '/edit.html';
-  if (id) {
-    url += `?id=${id}`;
-  }
-  if (chrome.windows && prefs.get('openEditInWindow')) {
-    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
-  } else {
-    openURL({url});
-  }
-}
-
 
 function closeCurrentTab() {
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1409375

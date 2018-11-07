@@ -1,4 +1,4 @@
-/* global LINTER_DEFAULTS linter editorWorker */
+/* global LINTER_DEFAULTS linter editorWorker prefs chromeSync */
 'use strict';
 
 (() => {

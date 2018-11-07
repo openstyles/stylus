@@ -1,4 +1,6 @@
-/* global messageBox */
+/* global messageBox msg setupLivePrefs enforceInputRange
+  $ $$ $create $createLink
+  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError */
 'use strict';
 
 setupLivePrefs();
@@ -21,7 +23,7 @@ if (!FIREFOX && !OPERA && CHROME < 3343) {
 
 if (FIREFOX && 'update' in (chrome.commands || {})) {
   $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
-  chrome.runtime.onMessage.addListener(msg => {
+  msg.onExtension(msg => {
     if (msg.method === 'optionsCustomizeHotkeys') {
       customizeHotkeys();
     }
@@ -57,7 +59,7 @@ document.onclick = e => {
 
     case 'reset':
       $$('input')
-        .filter(input => input.id in prefs.readOnlyValues)
+        .filter(input => input.id in prefs.defaults)
         .forEach(input => prefs.reset(input.id));
       break;
 

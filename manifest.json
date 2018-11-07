@@ -24,23 +24,27 @@
   ],
   "background": {
     "scripts": [
+      "js/promisify.js",
       "js/messaging.js",
+      "js/msg.js",
       "js/storage-util.js",
-      "js/sections-equal.js",
-      "background/storage-dummy.js",
-      "background/storage.js",
+      "js/sections-util.js",
+      "js/worker-util.js",
       "js/prefs.js",
       "js/script-loader.js",
       "js/usercss.js",
+      "js/cache.js",
+      "background/db.js",
+      "background/style-manager.js",
+      "background/navigator-util.js",
+      "background/icon-util.js",
       "background/background.js",
       "background/usercss-helper.js",
       "background/style-via-api.js",
       "background/search-db.js",
       "background/update.js",
-      "background/refresh-all-tabs.js",
       "background/openusercss-api.js",
-      "vendor/semver-bundle/semver.js",
-      "vendor-overwrites/colorpicker/colorconverter.js"
+      "vendor/semver-bundle/semver.js"
     ]
   },
   "commands": {
@@ -58,7 +62,7 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["content/apply.js"]
+      "js": ["js/promisify.js", "js/msg.js", "js/prefs.js", "content/apply.js"]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
@@ -111,5 +115,11 @@
   "options_ui": {
     "page": "options.html",
     "chrome_style": false
+  },
+  "applications": {
+    "gecko": {
+      "id": "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}",
+      "strict_min_version": "53"
+    }
   }
 }

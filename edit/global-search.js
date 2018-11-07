@@ -1,6 +1,5 @@
-/* global CodeMirror editors makeSectionVisible */
-/* global focusAccessibility */
-/* global colorMimicry */
+/* global CodeMirror focusAccessibility colorMimicry editor
+  onDOMready $ $$ $create t debounce tryRegExp stringAsRegExp template */
 'use strict';
 
 onDOMready().then(() => {
@@ -207,12 +206,12 @@ onDOMready().then(() => {
     }
     const cmFocused = document.activeElement && document.activeElement.closest('.CodeMirror');
     state.activeAppliesTo = $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
-    state.cmStart = CodeMirror.closestVisible(
+    state.cmStart = editor.closestVisible(
       cmFocused && document.activeElement ||
       state.activeAppliesTo ||
       state.cm);
     const cmExtra = $('body > :not(#sections) .CodeMirror');
-    state.editors = cmExtra ? [cmExtra.CodeMirror] : editors;
+    state.editors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
   }
 
 
@@ -291,7 +290,7 @@ onDOMready().then(() => {
 
   function doSearchInApplies(cm, canAdvance) {
     if (!state.searchInApplies) return;
-    const inputs = [...cm.getSection().getElementsByClassName(APPLIES_VALUE_CLASS)];
+    const inputs = editor.getSearchableInputs(cm);
     if (state.reverse) inputs.reverse();
     inputs.splice(0, inputs.indexOf(state.activeAppliesTo));
     for (const input of inputs) {
@@ -314,7 +313,7 @@ onDOMready().then(() => {
       });
       const canFocus = !state.dialog || !state.dialog.contains(document.activeElement);
       makeTargetVisible(!canFocus && input);
-      makeSectionVisible(cm);
+      editor.scrollToEditor(cm);
       if (canFocus) input.focus();
       state.cm = cm;
       clearMarker();
@@ -778,7 +777,7 @@ onDOMready().then(() => {
     cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
 
     // scroll to the editor itself
-    makeSectionVisible(cm);
+    editor.scrollToEditor(cm);
 
     // focus or expose as the current search target
     clearMarker();
