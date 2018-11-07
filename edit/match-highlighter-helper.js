@@ -225,6 +225,8 @@
     if (typeof needle === 'string') {
       return s.indexOf(needle);
     }
+    // FIXME: the current implementation will break when the highlighter addon
+    // is updated.
     const match = s.match(needle);
     return match ? match.index + match[1].length : -1;
   }
