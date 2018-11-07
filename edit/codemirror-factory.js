@@ -188,7 +188,6 @@ const cmFactory = (() => {
       cm.lastActive = Date.now();
     });
     editors.add(cm);
-    cm.distroy = () => editors.delete(cm);
     return cm;
   }
 
