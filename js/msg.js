@@ -4,39 +4,20 @@
 'use strict';
 
 const msg = (() => {
-  let isBg = false;
-  if (chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window) {
-    isBg = true;
-    window._msg = {
-      id: 1,
-      storage: new Map(),
-      handler: null,
-      clone: deepCopy
-    };
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message._msg === 'getMsg') {
-        const data = window._msg.storage.get(message.id);
-        if (!message.keepStorage) {
-          window._msg.storage.delete(message.id);
-        }
-        sendResponse(data);
-      }
-    });
-  }
   const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
   const tabSend = chrome.tabs && promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
   const tabQuery = chrome.tabs && promisify(chrome.tabs.query.bind(chrome.tabs));
-  let bg;
-  const preparing = !isBg && chrome.runtime.getBackgroundPage &&
-    promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
-      .catch(() => null)
-      .then(_bg => {
-        bg = _bg;
-      });
-  bg = isBg ? window : !preparing ? null : undefined;
+
+  const isBg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
+  if (isBg) {
+    window._msg = {
+      handler: null,
+      clone: deepCopy
+    };
+  }
+  const bgReady = getBg();
   const EXTENSION_URL = chrome.runtime.getURL('');
   let handler;
-  const from_ = location.href.startsWith(EXTENSION_URL) ? 'extension' : 'content';
   const RX_NO_RECEIVER = /Receiving end does not exist/;
   const RX_PORT_CLOSED = /The message port closed before a response was received/;
   return {
@@ -55,33 +36,29 @@ const msg = (() => {
     RX_PORT_CLOSED
   };
 
+  function getBg() {
+    if (isBg) {
+      return Promise.resolve(window);
+    }
+    if (!chrome.runtime.getBackgroundPage) {
+      return Promise.resolve();
+    }
+    return promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
+      .catch(() => null);
+  }
+
   function send(data, target = 'extension') {
-    if (bg === undefined) {
-      return preparing.then(() => send(data, target));
-    }
-    const message = {type: 'direct', data, target, from: from_};
-    if (bg) {
-      exchangeSet(message);
-    }
-    const request = runtimeSend(message).then(unwrapData);
-    if (message.id) {
-      return withCleanup(request, () => bg._msg.storage.delete(message.id));
-    }
-    return request;
+    const message = {data, target};
+    return runtimeSend(message).then(unwrapData);
   }
 
   function sendTab(tabId, data, options, target = 'tab') {
-    return tabSend(tabId, {type: 'direct', data, target, from: from_}, options)
+    return tabSend(tabId, {data, target}, options)
       .then(unwrapData);
   }
 
   function sendBg(data) {
-    if (bg === undefined) {
-      return preparing.then(doSend);
-    }
-    return withPromiseError(doSend);
-
-    function doSend() {
+    return bgReady.then(bg => {
       if (bg) {
         if (!bg._msg.handler) {
           throw new Error('there is no bg handler');
@@ -93,7 +70,7 @@ const msg = (() => {
           .then(deepCopy);
       }
       return send(data);
-    }
+    });
   }
 
   function ignoreError(err) {
@@ -135,15 +112,12 @@ const msg = (() => {
           if (!dataObj) {
             continue;
           }
-          const message = {type: 'direct', data: dataObj, target, from: from_};
-          if (isExtension) {
-            exchangeSet(message);
-          }
-          let request = tabSend(tab.id, message, options).then(unwrapData);
-          if (message.id) {
-            request = withCleanup(request, () => bg._msg.storage.delete(message.id));
-          }
-          requests.push(request.catch(ignoreError));
+          const message = {data: dataObj, target};
+          requests.push(
+            tabSend(tab.id, message, options)
+              .then(unwrapData)
+              .catch(ignoreError)
+          );
         }
         return Promise.all(requests);
       });
@@ -187,7 +161,7 @@ const msg = (() => {
       extension: []
     };
     if (isBg) {
-      bg._msg.handler = handler;
+      window._msg.handler = handler;
     }
     chrome.runtime.onMessage.addListener(handleMessage);
   }
@@ -204,10 +178,6 @@ const msg = (() => {
   }
 
   function handleMessage(message, sender, sendResponse) {
-    if (message._msg) {
-      // internal message
-      return;
-    }
     const handlers = message.target === 'tab' ?
       handler.tab.concat(handler.both) : message.target === 'extension' ?
       handler.extension.concat(handler.both) :
@@ -215,80 +185,27 @@ const msg = (() => {
     if (!handlers.length) {
       return;
     }
-    if (message.type === 'exchange') {
-      const pending = exchangeGet(message, true);
-      if (pending) {
-        pending.then(response);
-        return true;
-      }
+    const result = executeCallbacks(handlers, message.data, sender);
+    if (result === undefined) {
+      return;
     }
-    return response();
-
-    function response() {
-      const result = executeCallbacks(handlers, message.data, sender);
-      if (result === undefined) {
-        return;
-      }
-      Promise.resolve(result)
-        .then(
-          data => ({
-            error: false,
-            data
-          }),
-          err => ({
-            error: true,
-            data: Object.assign({
-              message: err.message || String(err),
-              // FIXME: do we want to pass the entire stack?
-              stack: err.stack
-            }, err) // this allows us to pass custom properties e.g. `err.index`
-          })
-        )
-        .then(function doResponse(responseMessage) {
-          if (message.from === 'extension' && bg === undefined) {
-            return preparing.then(() => doResponse(responseMessage));
-          }
-          if (message.from === 'extension' && bg) {
-            exchangeSet(responseMessage);
-          } else {
-            responseMessage.type = 'direct';
-          }
-          return responseMessage;
+    Promise.resolve(result)
+      .then(
+        data => ({
+          error: false,
+          data
+        }),
+        err => ({
+          error: true,
+          data: Object.assign({
+            message: err.message || String(err),
+            // FIXME: do we want to pass the entire stack?
+            stack: err.stack
+          }, err) // this allows us to pass custom properties e.g. `err.index`
         })
-        .then(sendResponse);
-      return true;
-    }
-  }
-
-  function exchangeGet(message, keepStorage = false) {
-    if (bg === undefined) {
-      return preparing.then(() => exchangeGet(message, keepStorage));
-    }
-    if (!bg) {
-      // FF's private window
-      return runtimeSend({_msg: 'getMsg', id: message.id, keepStorage})
-        .then(exchange);
-    }
-    let data = bg._msg.storage.get(message.id);
-    if (keepStorage) {
-      data = deepCopy(message.data);
-    } else {
-      bg._msg.storage.delete(message.id);
-    }
-    exchange(data);
-
-    function exchange(newData) {
-      message.data = newData;
-    }
-  }
-
-  function exchangeSet(message) {
-    const id = bg._msg.id;
-    bg._msg.storage.set(id, message.data);
-    bg._msg.id++;
-    message.type = 'exchange';
-    message.id = id;
-    delete message.data;
+      )
+      .then(sendResponse);
+    return true;
   }
 
   function withPromiseError(fn, ...args) {
@@ -299,46 +216,15 @@ const msg = (() => {
     }
   }
 
-  function withCleanup(p, fn) {
-    return p.then(
-      result => {
-        cleanup();
-        return result;
-      },
-      err => {
-        cleanup();
-        throw err;
-      }
-    );
-
-    function cleanup() {
-      try {
-        fn();
-      } catch (err) {
-        // pass
-      }
-    }
-  }
-
   // {type, error, data, id}
   function unwrapData(result) {
     if (result === undefined) {
       throw new Error('Receiving end does not exist');
     }
-    if (result.type === 'exchange') {
-      const pending = exchangeGet(result);
-      if (pending) {
-        return pending.then(unwrap);
-      }
+    if (result.error) {
+      throw Object.assign(new Error(result.data.message), result.data);
     }
-    return unwrap();
-
-    function unwrap() {
-      if (result.error) {
-        throw Object.assign(new Error(result.data.message), result.data);
-      }
-      return result.data;
-    }
+    return result.data;
   }
 })();
 
