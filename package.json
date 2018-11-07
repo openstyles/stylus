@@ -18,8 +18,8 @@
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "updates": "^5.1.2",
+    "usercss-meta": "^0.8.3",
     "web-ext": "^2.9.1",
-    "usercss-meta": "^0.8.1",
     "webext-tx-fix": "^0.3.1"
   },
   "scripts": {
