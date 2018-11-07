@@ -774,12 +774,40 @@
       }
     }
   },
+  "meta_invalidRangeUnits": {
+    "message": "Invalid @var $type$: '$units$' is not a valid unit",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Invalid @var select: the default value must be an array or an object",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Invalid @var select: values inside the array/object must be a string",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
   "meta_invalidSelectEmptyOptions": {
     "message": "Invalid @var select: options list is empty",
     "description": "Error displayed when the value of @var select is invalid"
   },
+  "meta_invalidSelectLabel": {
+    "message": "Invalid @var select: option label is empty",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
   "meta_invalidSelectMultipleDefaults": {
     "message": "Invalid @var select: multiple default options are defined",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Invalid @var select: option name is duplicated",
     "description": "Error displayed when the value of @var select is invalid"
   },
   "meta_invalidSelectValueMismatch": {
