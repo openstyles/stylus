@@ -799,7 +799,7 @@
     "description": "Error displayed when the value of @var select is invalid"
   },
   "meta_invalidSelectLabel": {
-    "message": "Invalid @var select: option label ie empty",
+    "message": "Invalid @var select: option label is empty",
     "description": "Error displayed when the value of @var select is invalid"
   },
   "meta_invalidSelectMultipleDefaults": {
