@@ -1,5 +1,6 @@
 * **Browser**:
 * **Operating System**:
+* **Stylus Version**:
 * **Screenshot**:
 
 <!--
