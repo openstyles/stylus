@@ -126,13 +126,20 @@ function importFromString(jsonString) {
       oldStyles.map(style => [style.id, style]));
     oldStylesByName = json.length && new Map(
       oldStyles.map(style => [style.name.trim(), style]));
-    return Promise.all(json.map((item, i) => {
+
+    const items = [];
+    json.forEach((item, i) => {
       const info = analyze(item, i);
       if (info) {
-        return API.importStyle(item)
-          .then(style => updateStats(style, info));
+        items.push({info, item});
       }
-    }));
+    });
+    return API.importManyStyles(items.map(i => i.item))
+      .then(styles => {
+        for (let i = 0; i < styles.length; i++) {
+          updateStats(styles[i], items[i].info);
+        }
+      });
   })
     .then(done);
 

@@ -55,6 +55,7 @@ const styleManager = (() => {
     editSave,
     findStyle,
     importStyle,
+    importMany,
     toggleStyle,
     setStyleExclusions,
     getAllStyles, // used by import-export
@@ -136,6 +137,13 @@ const styleManager = (() => {
     // FIXME: is it a good idea to save the data directly?
     return saveStyle(data)
       .then(newData => handleSave(newData, 'import'));
+  }
+
+  function importMany(datas) {
+    return db.exec('putMany', datas)
+      .then(events =>
+        Promise.all(events.map(event => handleSave(event.target.result, 'import')))
+      );
   }
 
   function installStyle(data, reason = null) {
