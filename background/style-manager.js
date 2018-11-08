@@ -139,11 +139,16 @@ const styleManager = (() => {
       .then(newData => handleSave(newData, 'import'));
   }
 
-  function importMany(datas) {
-    return db.exec('putMany', datas)
-      .then(events =>
-        Promise.all(events.map(event => handleSave(event.target.result, 'import')))
-      );
+  function importMany(items) {
+    return db.exec('putMany', items)
+      .then(events => {
+        for (let i = 0; i < items.length; i++) {
+          if (!items[i].id) {
+            items[i].id = events[i].target.result;
+          }
+        }
+        return Promise.all(items.map(i => handleSave(i, 'import')));
+      });
   }
 
   function installStyle(data, reason = null) {
