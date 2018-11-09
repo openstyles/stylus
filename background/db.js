@@ -88,7 +88,7 @@ const db = (() => {
     chromeLocal.set({dbInChromeStorage: true}, ignoreChromeError);
     if (err) {
       chromeLocal.setValue('dbInChromeStorageReason', workerUtil.cloneError(err));
-      console.warn(`Stylus failed to access indexedDB. Switched to storage API.`, err);
+      console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
     localStorage.dbInChromeStorage = 'true';
   }
