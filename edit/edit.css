@@ -544,7 +544,6 @@ body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar
 }
 .regexp-report details a:hover {
   text-decoration: underline;
-  text-decoration-skip: ink;
 }
 .regexp-report details a img {
   width: 16px;
@@ -789,7 +788,6 @@ html:not(.usercss) .usercss-only,
 #footer a {
   color: #333;
   transition: color .5s;
-  text-decoration-skip: ink;
 }
 
 #footer a:hover {
