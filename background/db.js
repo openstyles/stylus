@@ -1,4 +1,4 @@
-/* global tryCatch chromeLocal ignoreChromeError */
+/* global chromeLocal ignoreChromeError workerUtil */
 /* exported db */
 /*
 Initialize a database. There are some problems using IndexedDB in Firefox:
@@ -18,52 +18,78 @@ const db = (() => {
   };
 
   function prepare() {
-    // we use chrome.storage.local fallback if IndexedDB doesn't save data,
-    // which, once detected on the first run, is remembered in chrome.storage.local
-    // for reliablility and in localStorage for fast synchronous access
-    // (FF may block localStorage depending on its privacy options)
-
-    // test localStorage
-    const fallbackSet = localStorage.dbInChromeStorage;
-    if (fallbackSet === 'true' || !tryCatch(() => indexedDB)) {
-      useChromeStorage();
-      return Promise.resolve();
-    }
-    if (fallbackSet === 'false') {
-      useIndexedDB();
-      return Promise.resolve();
-    }
-    // test storage.local
-    return chromeLocal.get('dbInChromeStorage')
-      .then(data =>
-        data && data.dbInChromeStorage && Promise.reject())
-      .then(() =>
-        tryCatch(dbExecIndexedDB, 'getAllKeys', IDBKeyRange.lowerBound(1), 1) ||
-        Promise.reject())
-      .then(({target}) => (
-        (target.result || [])[0] ?
-          Promise.reject('ok') :
-          dbExecIndexedDB('put', {id: -1})))
-      .then(() =>
-        dbExecIndexedDB('get', -1))
-      .then(({target}) => (
-        (target.result || {}).id === -1 ?
-          dbExecIndexedDB('delete', -1) :
-          Promise.reject()))
-      .then(() =>
-        Promise.reject('ok'))
-      .catch(result => {
-        if (result === 'ok') {
+    return shouldUseIndexedDB().then(
+      ok => {
+        if (ok) {
           useIndexedDB();
         } else {
           useChromeStorage();
         }
+      },
+      err => {
+        useChromeStorage(err);
+      }
+    );
+  }
+
+  function shouldUseIndexedDB() {
+    // we use chrome.storage.local fallback if IndexedDB doesn't save data,
+    // which, once detected on the first run, is remembered in chrome.storage.local
+    // for reliablility and in localStorage for fast synchronous access
+    // (FF may block localStorage depending on its privacy options)
+    if (typeof indexedDB === 'undefined') {
+      return Promise.reject(new Error('indexedDB is undefined'));
+    }
+    // test localStorage
+    const fallbackSet = localStorage.dbInChromeStorage;
+    if (fallbackSet === 'true') {
+      return Promise.resolve(false);
+    }
+    if (fallbackSet === 'false') {
+      return Promise.resolve(true);
+    }
+    // test storage.local
+    return chromeLocal.get('dbInChromeStorage')
+      .then(data => {
+        if (data && data.dbInChromeStorage) {
+          return false;
+        }
+        return testDBSize()
+          .then(ok => ok || testDBMutation());
       });
   }
 
-  function useChromeStorage() {
+  function testDBSize() {
+    return dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1)
+      .then(event => (
+        event.target.result &&
+        event.target.result.length &&
+        event.target.result[0]
+      ));
+  }
+
+  function testDBMutation() {
+    return dbExecIndexedDB('put', {id: -1})
+      .then(() => dbExecIndexedDB('get', -1))
+      .then(event => {
+        if (!event.target.result) {
+          throw new Error('failed to get previously put item');
+        }
+        if (event.target.result.id !== -1) {
+          throw new Error('item id is wrong');
+        }
+        return dbExecIndexedDB('delete', -1);
+      })
+      .then(() => true);
+  }
+
+  function useChromeStorage(err) {
     exec = dbExecChromeStorage;
     chromeLocal.set({dbInChromeStorage: true}, ignoreChromeError);
+    if (err) {
+      chromeLocal.setValue('dbInChromeStorageReason', workerUtil.cloneError(err));
+      console.warn('Failed to access indexedDB. Switched to storage API.', err);
+    }
     localStorage.dbInChromeStorage = 'true';
   }
 
