@@ -12,7 +12,7 @@
     "eslint": "^5.8.0",
     "fs-extra": "^7.0.0",
     "jsonlint": "^1.6.3",
-    "less": "^3.8.1",
+    "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
     "rimraf": "^2.6.2",
     "semver-bundle": "^0.1.1",
