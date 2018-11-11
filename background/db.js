@@ -74,39 +74,48 @@ const db = (() => {
   }
 
   function dbExecIndexedDB(method, ...args) {
-    return new Promise((resolve, reject) => {
-      Object.assign(indexedDB.open('stylish', 2), {
-        onsuccess(event) {
-          const database = event.target.result;
-          if (!method) {
-            resolve(database);
-          } else {
-            const transaction = database.transaction(['styles'], 'readwrite');
-            const store = transaction.objectStore('styles');
-            try {
-              Object.assign(store[method](...args), {
-                onsuccess: event => resolve(event, store, transaction, database),
-                onerror: reject,
-              });
-            } catch (err) {
-              reject(err);
-            }
-          }
-        },
-        onerror(event) {
-          console.warn(event.target.error || event.target.errorCode);
-          reject(event);
-        },
-        onupgradeneeded(event) {
+    return open().then(database => {
+      if (!method) {
+        return database;
+      }
+      if (method === 'putMany') {
+        return putMany(database, ...args);
+      }
+      const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
+      const transaction = database.transaction(['styles'], mode);
+      const store = transaction.objectStore('styles');
+      return storeRequest(store, method, ...args);
+    });
+
+    function storeRequest(store, method, ...args) {
+      return new Promise((resolve, reject) => {
+        const request = store[method](...args);
+        request.onsuccess = resolve;
+        request.onerror = reject;
+      });
+    }
+
+    function open() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('stylish', 2);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = reject;
+        request.onupgradeneeded = event => {
           if (event.oldVersion === 0) {
             event.target.result.createObjectStore('styles', {
               keyPath: 'id',
               autoIncrement: true,
             });
           }
-        },
+        };
       });
-    });
+    }
+
+    function putMany(database, items) {
+      const transaction = database.transaction(['styles'], 'readwrite');
+      const store = transaction.objectStore('styles');
+      return Promise.all(items.map(item => storeRequest(store, 'put', item)));
+    }
   }
 
   function dbExecChromeStorage(method, data) {
@@ -118,16 +127,32 @@ const db = (() => {
 
       case 'put':
         if (!data.id) {
-          return getAllStyles().then(styles => {
-            data.id = 1;
-            for (const style of styles) {
-              data.id = Math.max(data.id, style.id + 1);
-            }
+          return getMaxId().then(id => {
+            data.id = id + 1;
             return dbExecChromeStorage('put', data);
           });
         }
         return chromeLocal.setValue(STYLE_KEY_PREFIX + data.id, data)
           .then(() => (chrome.runtime.lastError ? Promise.reject() : data.id));
+
+      case 'putMany': {
+        const newItems = data.filter(i => !i.id);
+        const doPut = () =>
+          chromeLocal.set(data.reduce((o, item) => {
+            o[STYLE_KEY_PREFIX + item.id] = item;
+            return o;
+          }, {}))
+            .then(() => data.map(d => ({target: {result: d.id}})));
+        if (newItems.length) {
+          return getMaxId().then(id => {
+            for (const item of newItems) {
+              item.id = ++id;
+            }
+            return doPut();
+          });
+        }
+        return doPut();
+      }
 
       case 'delete':
         return chromeLocal.remove(STYLE_KEY_PREFIX + data);
@@ -148,6 +173,18 @@ const db = (() => {
           }
         }
         return styles;
+      });
+    }
+
+    function getMaxId() {
+      return getAllStyles().then(styles => {
+        let result = 0;
+        for (const style of styles) {
+          if (style.id > result) {
+            result = style.id;
+          }
+        }
+        return result;
       });
     }
   }
