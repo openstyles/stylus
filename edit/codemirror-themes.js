@@ -12,6 +12,7 @@ const CODEMIRROR_THEMES = [
   'base16-light',
   'bespin',
   'blackboard',
+  'bloodshot',
   'cobalt',
   'colorforth',
   'darcula',
