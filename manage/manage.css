@@ -1055,7 +1055,7 @@ input[id^="manage.newUI"] {
 
 #backup-buttons .dropbtn span {
   display: inline-block;
-  margin-right: 7px;
+  margin-right: 12px;
 }
 
 #backup-buttons .dropdown {
@@ -1074,7 +1074,7 @@ input[id^="manage.newUI"] {
 
 #backup-buttons .dropdown-content a {
   color: black;
-  padding: 12px 16px;
+  padding: 8px;
   text-decoration: none;
   display: block;
 }
