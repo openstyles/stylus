@@ -104,10 +104,6 @@ select,
   flex-shrink: 0;
 }
 
-a {
-  text-decoration-skip: ink;
-}
-
 button {
   text-align: center;
 }

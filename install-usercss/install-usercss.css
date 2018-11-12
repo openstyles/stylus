@@ -8,7 +8,6 @@ body {
 a {
   color: #000;
   transition: color .5s;
-  text-decoration-skip: ink;
 }
 
 a:hover {

@@ -125,7 +125,6 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 a {
   color: #000;
   transition: color .5s;
-  text-decoration-skip: ink;
 }
 
 a:hover {
@@ -458,7 +457,6 @@ body.blocked .actions > .main-controls {
 .breadcrumbs > .write-style-link:focus ~ .write-style-link[subdomain] {
   color: inherit;
   text-decoration: underline;
-  text-decoration-skip: ink;
 }
 
 /* action buttons */
