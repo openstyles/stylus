@@ -18,6 +18,7 @@
   });
 
   let gotBody = false;
+  let currentMd5;
   new MutationObserver(observeDOM).observe(document.documentElement, {
     childList: true,
     subtree: true,
@@ -79,6 +80,7 @@
     const md5Url = getMeta('stylish-md5-url');
     if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
       getResource(md5Url).then(md5 => {
+        currentMd5 = md5;
         reportUpdatable(
           isCustomizable ||
           md5 !== installedStyle.originalMd5);
@@ -155,7 +157,7 @@
   }
 
 
-  function saveStyleCode(message, name, addProps) {
+  function saveStyleCode(message, name, addProps = {}) {
     const isNew = message === 'styleInstall';
     const needsConfirmation = isNew || !saveStyleCode.confirmed;
     if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
@@ -169,7 +171,8 @@
           'https://github.com/openstyles/stylus/issues/195');
         return;
       }
-      return API.installStyle(Object.assign(json, addProps))
+      // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
+      return API.installStyle(Object.assign(json, addProps, {originalMd5: currentMd5}))
         .then(style => {
           if (!isNew && style.updateUrl.includes('?')) {
             enableUpdateButton(true);
