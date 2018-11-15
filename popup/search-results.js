@@ -510,7 +510,6 @@ window.addEventListener('showStyles:done', function _() {
 
     const installButton = $('.search-result-install', entry);
     installButton.onclick = onInstallClicked;
-
     if ((result.style_settings || []).length > 0) {
       // Style has customizations
       installButton.classList.add('customize');
@@ -552,11 +551,13 @@ window.addEventListener('showStyles:done', function _() {
     Promise.all([
       fetchStyleJson(result),
       fetchStyleSettings(result),
+      fetchMd5(result)
     ])
-    .then(([style, settings]) => {
+    .then(([style, settings, md5]) => {
       pingback(result);
       // show a 'config-on-homepage' icon in the popup
       style.updateUrl += settings.length ? '?' : '';
+      style.originalMd5 = md5;
       return API.installStyle(style);
     })
     .catch(reason => {
@@ -577,6 +578,19 @@ window.addEventListener('showStyles:done', function _() {
           result.style_settings = style.style_settings || [];
           return result.style_settings;
         });
+    }
+
+    function fetchMd5(result) {
+      return API.download({
+        url: UPDATE_URL.replace('%', result.id),
+        timeout: 60e3,
+        // USO can't handle POST requests for style json
+        body: null,
+      })
+      .catch(error => {
+        alert('Error' + (error ? '\n' + error : ''));
+        throw error;
+      });
     }
   }
 
