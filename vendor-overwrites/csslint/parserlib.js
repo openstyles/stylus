@@ -1416,6 +1416,7 @@ self.parserlib = (() => {
     {name: 'NOT'},
     {name: 'ANY', text: ['any', '-webkit-any', '-moz-any']},
     {name: 'MATCHES'},
+    {name: 'IS'},
 
     /*
      * Defined in CSS3 Paged Media
@@ -3020,11 +3021,13 @@ self.parserlib = (() => {
         /*
          * Potential tokens:
          * - ANY
+         * - IS
+         * - MATCHES
          * - NOT
          * - CHAR
          */
         case ':':
-          return this.notOrAnyOrMatchesToken(c, pos);
+          return this.notOrIsToken(c, pos);
 
         /*
          * Potential tokens:
@@ -3232,16 +3235,20 @@ self.parserlib = (() => {
     }
 
     // NOT
+    // IS
     // ANY
     // MATCHES
     // CHAR
-    notOrAnyOrMatchesToken(first, pos) {
+    notOrIsToken(first, pos) {
+      // first is always ':'
       const reader = this._reader;
-      const func = reader.readMatch(/(not|(-(moz|webkit)-)?any|matches)\(/iy);
+      const func = reader.readMatch(/(not|is|(-(moz|webkit)-)?(any|matches))\(/iy);
       if (func) {
+        const lcase = func[0].toLowerCase();
         const type =
-          func.startsWith('n') || func.startsWith('N') ? Tokens.NOT :
-          func.startsWith('m') || func.startsWith('M') ? Tokens.MATCHES : Tokens.ANY;
+          lcase === 'n' ? Tokens.NOT :
+          lcase === 'i' ? Tokens.IS :
+          lcase === 'm' ? Tokens.MATCHES : Tokens.ANY;
         return this.createToken(type, first + func, pos);
       }
       return this.charToken(first, pos);
@@ -4683,13 +4690,13 @@ self.parserlib = (() => {
       return value.length ? value : null;
     }
 
-    _anyOrMatches() {
+    _is() {
       const stream = this._tokenStream;
-      if (!stream.match([Tokens.ANY, Tokens.MATCHES])) return null;
+      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.MATCHES])) return null;
 
       let arg;
       const start = stream._token;
-      const type = start.type === Tokens.ANY ? 'any' : 'matches';
+      const type = lower(Tokens[start.type].name);
       const value =
         start.value +
         this._ws() +
@@ -5416,8 +5423,9 @@ self.parserlib = (() => {
       [Tokens.DOT, Parser.prototype._class],
       [Tokens.LBRACKET, Parser.prototype._attrib],
       [Tokens.COLON, Parser.prototype._pseudo],
-      [Tokens.ANY, Parser.prototype._anyOrMatches],
-      [Tokens.MATCHES, Parser.prototype._anyOrMatches],
+      [Tokens.IS, Parser.prototype._is],
+      [Tokens.ANY, Parser.prototype._is],
+      [Tokens.MATCHES, Parser.prototype._is],
       [Tokens.NOT, Parser.prototype._negation],
     ]),
   };
