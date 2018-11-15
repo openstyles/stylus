@@ -252,6 +252,7 @@ const styleManager = (() => {
       method,
       style: {
         id: data.id,
+        md5Url: data.md5Url,
         enabled: data.enabled
       },
       reason,

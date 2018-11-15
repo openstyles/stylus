@@ -132,7 +132,7 @@ window.addEventListener('showStyles:done', function _() {
       }, {passive: true});
     }
 
-    addEventListener('styleDeleted', ({detail: {id}}) => {
+    addEventListener('styleDeleted', ({detail: {style: {id}}}) => {
       const result = processedResults.find(r => r.installedStyleId === id);
       if (result) {
         result.installed = false;
