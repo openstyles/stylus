@@ -31,9 +31,12 @@
       gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      API.findStyle({
-        md5Url: getMeta('stylish-md5-url') || location.href
-      }).then(checkUpdatability);
+      const md5Url = getMeta('stylish-md5-url') || location.href;
+      Promise.all([
+        API.findStyle({md5Url}),
+        getResource(md5Url)
+      ])
+      .then(checkUpdatability);
     }
     if (document.getElementById('install_button')) {
       onDOMready().then(() => {
@@ -67,7 +70,7 @@
     return jsonUrl + (paramsMissing ? textUrl.replace(/^[^?]+/, '') : '');
   }
 
-  function checkUpdatability(installedStyle) {
+  function checkUpdatability([installedStyle, md5]) {
     // TODO: remove the following statement when USO is fixed
     document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
       detail: installedStyle && installedStyle.updateUrl,
@@ -78,13 +81,9 @@
     }
     const isCustomizable = /\?/.test(installedStyle.updateUrl);
     const md5Url = getMeta('stylish-md5-url');
+    currentMd5 = md5;
     if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
-      getResource(md5Url).then(md5 => {
-        currentMd5 = md5;
-        reportUpdatable(
-          isCustomizable ||
-          md5 !== installedStyle.originalMd5);
-      });
+      reportUpdatable(isCustomizable || md5 !== installedStyle.originalMd5);
     } else {
       getStyleJson().then(json => {
         reportUpdatable(
