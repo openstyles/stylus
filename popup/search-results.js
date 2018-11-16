@@ -551,7 +551,7 @@ window.addEventListener('showStyles:done', function _() {
     Promise.all([
       fetchStyleJson(result),
       fetchStyleSettings(result),
-      fetchMd5(result)
+      API.download({url: UPDATE_URL.replace('%', result.id)})
     ])
     .then(([style, settings, md5]) => {
       pingback(result);
@@ -578,19 +578,6 @@ window.addEventListener('showStyles:done', function _() {
           result.style_settings = style.style_settings || [];
           return result.style_settings;
         });
-    }
-
-    function fetchMd5(result) {
-      return API.download({
-        url: UPDATE_URL.replace('%', result.id),
-        timeout: 60e3,
-        // USO can't handle POST requests for style json
-        body: null,
-      })
-      .catch(error => {
-        alert('Error' + (error ? '\n' + error : ''));
-        throw error;
-      });
     }
   }
 
