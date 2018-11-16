@@ -75,13 +75,13 @@
     document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
       detail: installedStyle && installedStyle.updateUrl,
     }));
+    currentMd5 = md5;
     if (!installedStyle) {
       sendEvent({type: 'styleCanBeInstalledChrome'});
       return;
     }
     const isCustomizable = /\?/.test(installedStyle.updateUrl);
     const md5Url = getMeta('stylish-md5-url');
-    currentMd5 = md5;
     if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
       reportUpdatable(isCustomizable || md5 !== installedStyle.originalMd5);
     } else {
@@ -94,14 +94,17 @@
     }
 
     function reportUpdatable(isUpdatable) {
-      sendEvent({
-        type: isUpdatable
-          ? 'styleCanBeUpdatedChrome'
-          : 'styleAlreadyInstalledChrome',
-        detail: {
-          updateUrl: installedStyle.updateUrl
-        },
-      });
+      // USO doesn't bind these listeners immediately
+      setTimeout(() => {
+        sendEvent({
+          type: isUpdatable
+            ? 'styleCanBeUpdatedChrome'
+            : 'styleAlreadyInstalledChrome',
+          detail: {
+            updateUrl: installedStyle.updateUrl
+          },
+        });
+      }, 300);
     }
   }
 
