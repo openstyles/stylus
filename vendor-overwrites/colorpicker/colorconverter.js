@@ -1,5 +1,12 @@
 'use strict';
 
+const hues = {
+  deg: 1,
+  grad: 360 / 400,
+  rad: 180 / Math.PI,
+  turn: 360
+};
+
 const colorConverter = (() => {
 
   return {
@@ -44,12 +51,9 @@ const colorConverter = (() => {
 
   // Copied from _hexcolor() in parserlib.js
   function validateHex(color) {
-    const len = color.length;
-    if (len !== 4 && len !== 5 && len !== 7 && len !== 9 ||
-      !/^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)$/i.test(color)) {
-      return null;
-    }
-    return color;
+    return (!/^#[a-f\d]+$/i.test(color) || [4, 5, 7, 9].every(n => color.length !== n))
+      ? false
+      : color;
   }
 
   // % converted before function call
@@ -72,6 +76,28 @@ const colorConverter = (() => {
     return num >= 0 && num <= 1;
   }
 
+  function parseNumber(value) {
+    return /[^\d]/.test(value) ? -1 : parseFloat(value);
+  }
+
+  function parsePercentage(value) {
+    const val = value.endsWith('%') && parseNumber(value.slice(0, -1));
+    return val >= 0 && val <= 100;
+  }
+
+  function parseHue(value) {
+    const raw = value.replace('.', '').replace(colorConverter.anglesRegexp, '');
+    let h = parseNumber(raw);
+    Object.keys(colorConverter.angles).some(angle => {
+      if (value.endsWith(angle)) {
+        h *= colorConverter.angles[angle];
+        return true;
+      }
+      return false;
+    });
+    return h < 0 ? h : h % 360;
+  }
+
   function parse(str) {
     if (typeof str !== 'string') return;
     str = str.trim();
@@ -88,13 +114,12 @@ const colorConverter = (() => {
         const [r, g, b, a = 255] = str.length <= 4 ?
           str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
           str.match(/(..)/g).map(c => parseInt(c, 16));
-        return validateRGB(r, g, b) ? {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255} : null;
+        return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
       }
       return null;
     }
 
     const [, type, value] = str.match(/^(rgb|hsl)a?\((.*?)\)|$/i);
-    const nonDigit = /[^\d]/;
     if (!type) return;
 
     const comma = value.includes(',') && !value.includes('/');
@@ -103,25 +128,24 @@ const colorConverter = (() => {
 
     let a = !num[3] ? 1 : parseFloat(num[3]) / (num[3].endsWith('%') ? 100 : 1);
     if (isNaN(a)) a = 1;
+    if (!validateAlpha(a)) return null;
 
     const first = num[0];
     if (/rgb/i.test(type)) {
-      const k = first.endsWith('%') ? 2.55 : 1;
+      const isPercent = first.endsWith('%');
+      const k = isPercent ? 2.55 : 1;
+      const parser = isPercent ? parsePercentage : parseNumber;
       const [r, g, b] = num.map(s => {
-        const val = nonDigit.test(s.replace('%', '')) ? -1 : parseFloat(s) * k;
+        const val = parser(s) * k;
         // Round the values when converting % to byte value or validation fails
-        return k === 1 ? val : Math.round(val);
+        return isPercent ? Math.round(val) : val;
       });
-      return validateRGB(r, g, b) && validateAlpha(a) ? {type: 'rgb', r, g, b, a} : null;
+      return validateRGB(r, g, b) ? {type: 'rgb', r, g, b, a} : null;
     } else {
-      let h = nonDigit.test(first.replace('.', '').replace(/(deg|grad|rad|turn)/, '')) ? -1 : parseFloat(first);
-      if (first.endsWith('grad')) h *= 360 / 400;
-      else if (first.endsWith('rad')) h *= 180 / Math.PI;
-      else if (first.endsWith('turn')) h *= 360;
-      h %= 360;
-      const s = num[1].includes('%') && parseFloat(num[1]);
-      const l = num[2].includes('%') && parseFloat(num[2]);
-      return validateHSL(h, s, l) && validateAlpha(a) ? {type: 'hsl', h, s, l, a} : null;
+      const h = parseHue(first);
+      const s = parsePercentage(num[1]);
+      const l = parsePercentage(num[2]);
+      return validateHSL(h, s, l) ? {type: 'hsl', h, s, l, a} : null;
     }
   }
 
@@ -206,6 +230,15 @@ const colorConverter = (() => {
     return Math.abs(int - num) < 1e-3 ? int : num;
   }
 })();
+
+colorConverter.angles = {
+  deg: 1,
+  grad: 360 / 400,
+  rad: 180 / Math.PI,
+  turn: 360
+};
+
+colorConverter.anglesRegexp = new RegExp(Object.keys(colorConverter.angles).join('|'));
 
 colorConverter.NAMED_COLORS = new Map([
   ['transparent', 'rgba(0, 0, 0, 0)'],
