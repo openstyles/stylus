@@ -156,7 +156,14 @@
         }
         // USO can't handle POST requests for style json
         return download(style.updateUrl, {body: null})
-          .then(text => tryJSONparse(text));
+          .then(text => {
+            const style = tryJSONparse(text);
+            if (style) {
+              // USO may not provide a correctly updated originalMd5 (#555)
+              style.originalMd5 = md5;
+            }
+            return style;
+          });
       });
     }
 

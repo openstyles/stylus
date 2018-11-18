@@ -18,6 +18,7 @@
   });
 
   let gotBody = false;
+  let currentMd5;
   new MutationObserver(observeDOM).observe(document.documentElement, {
     childList: true,
     subtree: true,
@@ -30,9 +31,12 @@
       gotBody = true;
       // TODO: remove the following statement when USO pagination title is fixed
       document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      API.findStyle({
-        md5Url: getMeta('stylish-md5-url') || location.href
-      }).then(checkUpdatability);
+      const md5Url = getMeta('stylish-md5-url') || location.href;
+      Promise.all([
+        API.findStyle({md5Url}),
+        getResource(md5Url)
+      ])
+      .then(checkUpdatability);
     }
     if (document.getElementById('install_button')) {
       onDOMready().then(() => {
@@ -66,11 +70,12 @@
     return jsonUrl + (paramsMissing ? textUrl.replace(/^[^?]+/, '') : '');
   }
 
-  function checkUpdatability(installedStyle) {
+  function checkUpdatability([installedStyle, md5]) {
     // TODO: remove the following statement when USO is fixed
     document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
       detail: installedStyle && installedStyle.updateUrl,
     }));
+    currentMd5 = md5;
     if (!installedStyle) {
       sendEvent({type: 'styleCanBeInstalledChrome'});
       return;
@@ -78,11 +83,7 @@
     const isCustomizable = /\?/.test(installedStyle.updateUrl);
     const md5Url = getMeta('stylish-md5-url');
     if (md5Url && installedStyle.md5Url && installedStyle.originalMd5) {
-      getResource(md5Url).then(md5 => {
-        reportUpdatable(
-          isCustomizable ||
-          md5 !== installedStyle.originalMd5);
-      });
+      reportUpdatable(isCustomizable || md5 !== installedStyle.originalMd5);
     } else {
       getStyleJson().then(json => {
         reportUpdatable(
@@ -93,14 +94,17 @@
     }
 
     function reportUpdatable(isUpdatable) {
-      sendEvent({
-        type: isUpdatable
-          ? 'styleCanBeUpdatedChrome'
-          : 'styleAlreadyInstalledChrome',
-        detail: {
-          updateUrl: installedStyle.updateUrl
-        },
-      });
+      // USO doesn't bind these listeners immediately
+      setTimeout(() => {
+        sendEvent({
+          type: isUpdatable
+            ? 'styleCanBeUpdatedChrome'
+            : 'styleAlreadyInstalledChrome',
+          detail: {
+            updateUrl: installedStyle.updateUrl
+          },
+        });
+      }, 300);
     }
   }
 
@@ -155,7 +159,7 @@
   }
 
 
-  function saveStyleCode(message, name, addProps) {
+  function saveStyleCode(message, name, addProps = {}) {
     const isNew = message === 'styleInstall';
     const needsConfirmation = isNew || !saveStyleCode.confirmed;
     if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
@@ -169,7 +173,8 @@
           'https://github.com/openstyles/stylus/issues/195');
         return;
       }
-      return API.installStyle(Object.assign(json, addProps))
+      // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
+      return API.installStyle(Object.assign(json, addProps, {originalMd5: currentMd5}))
         .then(style => {
           if (!isNew && style.updateUrl.includes('?')) {
             enableUpdateButton(true);

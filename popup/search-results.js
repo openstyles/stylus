@@ -510,7 +510,6 @@ window.addEventListener('showStyles:done', function _() {
 
     const installButton = $('.search-result-install', entry);
     installButton.onclick = onInstallClicked;
-
     if ((result.style_settings || []).length > 0) {
       // Style has customizations
       installButton.classList.add('customize');
@@ -552,11 +551,13 @@ window.addEventListener('showStyles:done', function _() {
     Promise.all([
       fetchStyleJson(result),
       fetchStyleSettings(result),
+      API.download({url: UPDATE_URL.replace('%', result.id)})
     ])
-    .then(([style, settings]) => {
+    .then(([style, settings, md5]) => {
       pingback(result);
       // show a 'config-on-homepage' icon in the popup
       style.updateUrl += settings.length ? '?' : '';
+      style.originalMd5 = md5;
       return API.installStyle(style);
     })
     .catch(reason => {
