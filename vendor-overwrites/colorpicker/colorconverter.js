@@ -70,7 +70,6 @@ const colorConverter = (() => {
     return /^-?(\d+|\d*\.\d+)(deg|grad|rad|turn)?$/i.test(s);
   }
 
-  // % converted before function call
   function validateAlpha(alpha) {
     if (alpha.endsWith('%')) {
       return validatePercentage(alpha);
