@@ -98,15 +98,16 @@ const colorConverter = (() => {
       str = colorConverter.NAMED_COLORS.get(str);
       if (!str) return;
     }
+
     if (str[0] === '#') {
-      if (validateHex(str)) {
-        str = str.slice(1);
-        const [r, g, b, a = 255] = str.length <= 4 ?
-          str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
-          str.match(/(..)/g).map(c => parseInt(c, 16));
-        return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
+      if (!validateHex(str)) {
+        return null;
       }
-      return null;
+      str = str.slice(1);
+      const [r, g, b, a = 255] = str.length <= 4 ?
+        str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
+        str.match(/(..)/g).map(c => parseInt(c, 16));
+      return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
     }
 
     const [, type, value] = str.match(/^(rgb|hsl)a?\((.*?)\)|$/i);
