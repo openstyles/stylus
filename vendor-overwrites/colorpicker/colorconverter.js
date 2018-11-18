@@ -82,7 +82,7 @@ const colorConverter = (() => {
 
   function parsePercentage(value) {
     const val = value.endsWith('%') && parseNumber(value.slice(0, -1));
-    return val >= 0 && val <= 100;
+    return val >= 0 && val <= 100 ? val : -1;
   }
 
   function parseHue(value) {
@@ -145,6 +145,7 @@ const colorConverter = (() => {
       const h = parseHue(first);
       const s = parsePercentage(num[1]);
       const l = parsePercentage(num[2]);
+      console.log(h, s, l, first, num);
       return validateHSL(h, s, l) ? {type: 'hsl', h, s, l, a} : null;
     }
   }
