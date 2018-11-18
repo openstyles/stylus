@@ -42,6 +42,36 @@ const colorConverter = (() => {
     }
   }
 
+  // Copied from _hexcolor() in parserlib.js
+  function validateHex(color) {
+    const len = color.length;
+    if (len !== 4 && len !== 5 && len !== 7 && len !== 9 ||
+      !/^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)$/i.test(color)) {
+      return null;
+    }
+    return color;
+  }
+
+  // % converted before function call
+  function validateRGB(r, g, b) {
+    return [r, g, b].every(n => {
+      const num = parseFloat(n);
+      return Number.isInteger(num) && num >= 0 && num <= 255;
+    });
+  }
+
+  // Mod 360 applied to h before function call
+  function validateHSL(h, s, l) {
+    const isPercent = v => v !== false && v >= 0 && v <= 100;
+    return h >= 0 && h <= 360 && isPercent(s) && isPercent(l);
+  }
+
+  // % converted before function call
+  function validateAlpha(alpha) {
+    const num = parseFloat(alpha);
+    return num >= 0 && num <= 1;
+  }
+
   function parse(str) {
     if (typeof str !== 'string') return;
     str = str.trim();
@@ -52,16 +82,19 @@ const colorConverter = (() => {
       str = colorConverter.NAMED_COLORS.get(str);
       if (!str) return;
     }
-
     if (str[0] === '#') {
-      str = str.slice(1);
-      const [r, g, b, a = 255] = str.length <= 4 ?
-        str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
-        str.match(/(..)/g).map(c => parseInt(c, 16));
-      return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
+      if (validateHex(str)) {
+        str = str.slice(1);
+        const [r, g, b, a = 255] = str.length <= 4 ?
+          str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
+          str.match(/(..)/g).map(c => parseInt(c, 16));
+        return validateRGB(r, g, b) ? {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255} : null;
+      }
+      return null;
     }
 
     const [, type, value] = str.match(/^(rgb|hsl)a?\((.*?)\)|$/i);
+    const nonDigit = /[^\d]/;
     if (!type) return;
 
     const comma = value.includes(',') && !value.includes('/');
@@ -74,16 +107,21 @@ const colorConverter = (() => {
     const first = num[0];
     if (/rgb/i.test(type)) {
       const k = first.endsWith('%') ? 2.55 : 1;
-      const [r, g, b] = num.map(s => parseFloat(s) * k);
-      return {type: 'rgb', r, g, b, a};
+      const [r, g, b] = num.map(s => {
+        const val = nonDigit.test(s.replace('%', '')) ? -1 : parseFloat(s) * k;
+        // Round the values when converting % to byte value or validation fails
+        return k === 1 ? val : Math.round(val);
+      });
+      return validateRGB(r, g, b) && validateAlpha(a) ? {type: 'rgb', r, g, b, a} : null;
     } else {
-      let h = parseFloat(first);
+      let h = nonDigit.test(first.replace('.', '').replace(/(deg|grad|rad|turn)/, '')) ? -1 : parseFloat(first);
       if (first.endsWith('grad')) h *= 360 / 400;
       else if (first.endsWith('rad')) h *= 180 / Math.PI;
       else if (first.endsWith('turn')) h *= 360;
-      const s = parseFloat(num[1]);
-      const l = parseFloat(num[2]);
-      return {type: 'hsl', h, s, l, a};
+      h %= 360;
+      const s = num[1].includes('%') && parseFloat(num[1]);
+      const l = num[2].includes('%') && parseFloat(num[2]);
+      return validateHSL(h, s, l) && validateAlpha(a) ? {type: 'hsl', h, s, l, a} : null;
     }
   }
 
