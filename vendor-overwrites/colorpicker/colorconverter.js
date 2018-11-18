@@ -47,12 +47,20 @@ const colorConverter = (() => {
     return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n));
   }
 
-  // % converted before function call
-  function validateRGB(r, g, b) {
-    return [r, g, b].every(n => {
-      const num = parseFloat(n);
-      return Number.isInteger(num) && num >= 0 && num <= 255;
-    });
+  function validateRGB(nums) {
+    const isPercentage = nums[0].endsWith('%');
+    const valid = isPercentage ? validatePercentage : validateNum;
+    return nums.every(valid);
+  }
+
+  function validatePercentage(s) {
+    // FIXME: what about float?
+    const match = s.match(/^(\d+)%$/);
+    return match && Number(match[1]) >= 0 && Number(match[1]) <= 100;
+  }
+
+  function validateNum(s) {
+    return Number(s) >= 0 && Number(s) <= 255;
   }
 
   // Mod 360 applied to h before function call
@@ -123,15 +131,12 @@ const colorConverter = (() => {
 
     const first = num[0];
     if (/rgb/i.test(type)) {
-      const isPercent = first.endsWith('%');
-      const k = isPercent ? 2.55 : 1;
-      const parser = isPercent ? parsePercentage : parseNumber;
-      const [r, g, b] = num.map(s => {
-        const val = parser(s) * k;
-        // Round the values when converting % to byte value or validation fails
-        return isPercent ? Math.round(val) : val;
-      });
-      return validateRGB(r, g, b) ? {type: 'rgb', r, g, b, a} : null;
+      if (!validateRGB(num)) {
+        return null;
+      }
+      const k = first.endsWith('%') ? 2.55 : 1;
+      const [r, g, b] = num.map(s => Math.round(parseFloat(s) * k));
+      return {type: 'rgb', r, g, b, a} : null;
     } else {
       const h = parseHue(first);
       const s = parsePercentage(num[1]);
