@@ -947,7 +947,7 @@ self.parserlib = (() => {
                           'saturation() | lightness() | whiteness() | blackness() | ' +
                           'tint() | shade() | blend() | blenda() | contrast()',
 
-      '<content-list>': '[ <string> | <image> | attr() | content() | leader() | ' +
+      '<content-list>': '[ <string> | <image> | attr() | content() | counter() | counters() | leader() | ' +
                         '[ open-quote | close-quote | no-open-quote | no-close-quote ] | ' +
                         '[ target-counter() | target-counters() | target-text() ] ]+',
 
