@@ -44,18 +44,17 @@ const colorConverter = (() => {
 
   // Copied from _hexcolor() in parserlib.js
   function validateHex(color) {
-    return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n));
+    return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n);
   }
 
   function validateRGB(nums) {
     const isPercentage = nums[0].endsWith('%');
     const valid = isPercentage ? validatePercentage : validateNum;
-    return nums.every(valid);
+    return nums.slice(0, 3).every(valid);
   }
 
   function validatePercentage(s) {
-    // FIXME: what about float?
-    const match = s.match(/^(\d+)%$/);
+    const match = s.match(/^(\d+|\d*\.\d+)%$/);
     return match && Number(match[1]) >= 0 && Number(match[1]) <= 100;
   }
 
@@ -63,37 +62,18 @@ const colorConverter = (() => {
     return Number(s) >= 0 && Number(s) <= 255;
   }
 
-  // Mod 360 applied to h before function call
-  function validateHSL(h, s, l) {
-    return h >= 0 && h <= 360 && [s, l].every(v => v !== false && v >= 0 && v <= 100);
+  function validateHSL(nums) {
+    return validateAngle(nums[0]) && nums.slice(1, 3).every(validatePercentage);
+  }
+
+  function validateAngle(s) {
+    return /^-?(\d+|\d*\.\d+)(deg|grad|rad|turn)?$/i.test(s);
   }
 
   // % converted before function call
   function validateAlpha(alpha) {
     const num = parseFloat(alpha);
     return num >= 0 && num <= 1;
-  }
-
-  function parseNumber(value) {
-    return /[^\d]/.test(value) ? -1 : parseFloat(value);
-  }
-
-  function parsePercentage(value) {
-    const val = value.endsWith('%') && parseNumber(value.slice(0, -1));
-    return val >= 0 && val <= 100 ? val : -1;
-  }
-
-  function parseHue(value) {
-    const raw = value.replace('.', '').replace(colorConverter.anglesRegexp, '');
-    let h = parseNumber(raw);
-    Object.keys(colorConverter.angles).some(angle => {
-      if (value.endsWith(angle)) {
-        h *= colorConverter.angles[angle];
-        return true;
-      }
-      return false;
-    });
-    return h < 0 ? h : h % 360;
   }
 
   function parse(str) {
@@ -136,12 +116,18 @@ const colorConverter = (() => {
       }
       const k = first.endsWith('%') ? 2.55 : 1;
       const [r, g, b] = num.map(s => Math.round(parseFloat(s) * k));
-      return {type: 'rgb', r, g, b, a} : null;
+      return {type: 'rgb', r, g, b, a};
     } else {
-      const h = parseHue(first);
-      const s = parsePercentage(num[1]);
-      const l = parsePercentage(num[2]);
-      return validateHSL(h, s, l) ? {type: 'hsl', h, s, l, a} : null;
+      if (!validateHSL(num)) {
+        return null;
+      }
+      let h = parseFloat(first);
+      if (first.endsWith('grad')) h *= 360 / 400;
+      else if (first.endsWith('rad')) h *= 180 / Math.PI;
+      else if (first.endsWith('turn')) h *= 360;
+      const s = parseFloat(num[1]);
+      const l = parseFloat(num[2]);
+      return {type: 'hsl', h, s, l, a};
     }
   }
 
