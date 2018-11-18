@@ -215,15 +215,6 @@ const colorConverter = (() => {
   }
 })();
 
-colorConverter.angles = {
-  deg: 1,
-  grad: 360 / 400,
-  rad: 180 / Math.PI,
-  turn: 360
-};
-
-colorConverter.anglesRegexp = new RegExp(Object.keys(colorConverter.angles).join('|'));
-
 colorConverter.NAMED_COLORS = new Map([
   ['transparent', 'rgba(0, 0, 0, 0)'],
   // CSS4 named colors
