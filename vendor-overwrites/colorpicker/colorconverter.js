@@ -44,9 +44,7 @@ const colorConverter = (() => {
 
   // Copied from _hexcolor() in parserlib.js
   function validateHex(color) {
-    return (!/^#[a-f\d]+$/i.test(color) || [4, 5, 7, 9].every(n => color.length !== n))
-      ? false
-      : color;
+    return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n));
   }
 
   // % converted before function call
