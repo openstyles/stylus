@@ -66,8 +66,7 @@ const colorConverter = (() => {
 
   // Mod 360 applied to h before function call
   function validateHSL(h, s, l) {
-    const isPercent = v => v !== false && v >= 0 && v <= 100;
-    return h >= 0 && h <= 360 && isPercent(s) && isPercent(l);
+    return h >= 0 && h <= 360 && [s, l].every(v => v !== false && v >= 0 && v <= 100);
   }
 
   // % converted before function call
@@ -145,7 +144,6 @@ const colorConverter = (() => {
       const h = parseHue(first);
       const s = parsePercentage(num[1]);
       const l = parsePercentage(num[2]);
-      console.log(h, s, l, first, num);
       return validateHSL(h, s, l) ? {type: 'hsl', h, s, l, a} : null;
     }
   }
