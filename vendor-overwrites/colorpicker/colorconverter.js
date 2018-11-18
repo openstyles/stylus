@@ -1,12 +1,5 @@
 'use strict';
 
-const hues = {
-  deg: 1,
-  grad: 360 / 400,
-  rad: 180 / Math.PI,
-  turn: 360
-};
-
 const colorConverter = (() => {
 
   return {
