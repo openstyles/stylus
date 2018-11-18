@@ -72,8 +72,10 @@ const colorConverter = (() => {
 
   // % converted before function call
   function validateAlpha(alpha) {
-    const num = parseFloat(alpha);
-    return num >= 0 && num <= 1;
+    if (alpha.endsWith('%')) {
+      return validatePercentage(alpha);
+    }
+    return Number(alpha) >= 0 && Number(alpha) <= 1;
   }
 
   function parse(str) {
@@ -104,10 +106,10 @@ const colorConverter = (() => {
     const comma = value.includes(',') && !value.includes('/');
     const num = value.split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
     if (num.length < 3 || num.length > 4) return;
+    if (num[3] && !validateAlpha(num[3])) return null;
 
     let a = !num[3] ? 1 : parseFloat(num[3]) / (num[3].endsWith('%') ? 100 : 1);
     if (isNaN(a)) a = 1;
-    if (!validateAlpha(a)) return null;
 
     const first = num[0];
     if (/rgb/i.test(type)) {
