@@ -59,7 +59,7 @@ const colorConverter = (() => {
   }
 
   function validateNum(s) {
-    return Number(s) >= 0 && Number(s) <= 255;
+    return /^\d+$/.test(s) && Number(s) >= 0 && Number(s) <= 255;
   }
 
   function validateHSL(nums) {
