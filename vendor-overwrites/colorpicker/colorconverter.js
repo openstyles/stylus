@@ -42,6 +42,41 @@ const colorConverter = (() => {
     }
   }
 
+  // Copied from _hexcolor() in parserlib.js
+  function validateHex(color) {
+    return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n);
+  }
+
+  function validateRGB(nums) {
+    const isPercentage = nums[0].endsWith('%');
+    const valid = isPercentage ? validatePercentage : validateNum;
+    return nums.slice(0, 3).every(valid);
+  }
+
+  function validatePercentage(s) {
+    const match = s.match(/^(\d+|\d*\.\d+)%$/);
+    return match && Number(match[1]) >= 0 && Number(match[1]) <= 100;
+  }
+
+  function validateNum(s) {
+    return /^\d+$/.test(s) && Number(s) >= 0 && Number(s) <= 255;
+  }
+
+  function validateHSL(nums) {
+    return validateAngle(nums[0]) && nums.slice(1, 3).every(validatePercentage);
+  }
+
+  function validateAngle(s) {
+    return /^-?(\d+|\d*\.\d+)(deg|grad|rad|turn)?$/i.test(s);
+  }
+
+  function validateAlpha(alpha) {
+    if (alpha.endsWith('%')) {
+      return validatePercentage(alpha);
+    }
+    return Number(alpha) >= 0 && Number(alpha) <= 1;
+  }
+
   function parse(str) {
     if (typeof str !== 'string') return;
     str = str.trim();
@@ -54,6 +89,9 @@ const colorConverter = (() => {
     }
 
     if (str[0] === '#') {
+      if (!validateHex(str)) {
+        return null;
+      }
       str = str.slice(1);
       const [r, g, b, a = 255] = str.length <= 4 ?
         str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
@@ -67,16 +105,23 @@ const colorConverter = (() => {
     const comma = value.includes(',') && !value.includes('/');
     const num = value.split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
     if (num.length < 3 || num.length > 4) return;
+    if (num[3] && !validateAlpha(num[3])) return null;
 
     let a = !num[3] ? 1 : parseFloat(num[3]) / (num[3].endsWith('%') ? 100 : 1);
     if (isNaN(a)) a = 1;
 
     const first = num[0];
     if (/rgb/i.test(type)) {
+      if (!validateRGB(num)) {
+        return null;
+      }
       const k = first.endsWith('%') ? 2.55 : 1;
-      const [r, g, b] = num.map(s => parseFloat(s) * k);
+      const [r, g, b] = num.map(s => Math.round(parseFloat(s) * k));
       return {type: 'rgb', r, g, b, a};
     } else {
+      if (!validateHSL(num)) {
+        return null;
+      }
       let h = parseFloat(first);
       if (first.endsWith('grad')) h *= 360 / 400;
       else if (first.endsWith('rad')) h *= 180 / Math.PI;
