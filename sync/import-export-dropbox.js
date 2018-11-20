@@ -46,8 +46,11 @@ function uploadFileDropbox(client, stylesText) {
 }
 
 $('#sync-dropbox-export').onclick = () => {
+  const mode = localStorage.installType;
   const title = t('syncDropboxStyles');
-  messageProgressBar({title: title, text: t('connectingDropbox')});
+  const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
+  messageProgressBar({title, text});
+  if (mode !== 'normal') return;
 
   hasDropboxAccessToken()
   .then(token => token || requestDropboxAccessToken())
@@ -116,8 +119,11 @@ $('#sync-dropbox-export').onclick = () => {
 };
 
 $('#sync-dropbox-import').onclick = () => {
+  const mode = localStorage.installType;
   const title = t('retrieveDropboxSync');
-  messageProgressBar({title: title, text: t('connectingDropbox')});
+  const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
+  messageProgressBar({title, text});
+  if (mode !== 'normal') return;
 
   hasDropboxAccessToken()
   .then(token => token || requestDropboxAccessToken())
