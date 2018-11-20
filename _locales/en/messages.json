@@ -1477,6 +1477,9 @@
   "connectingDropbox": {
     "message": "Connecting Dropbox..."
   },
+  "connectingDropboxNotAllowed": {
+    "message": "Connecting to Dropbox is only available in apps installed directly from the webstore"
+  },
   "gettingStyles": {
     "message": "Getting all styles..."
   },
