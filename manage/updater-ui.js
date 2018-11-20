@@ -127,6 +127,10 @@ function reportUpdateState({updated, style, error, STATES}) {
     ['no-update', 0],
     ['update-problem', 0],
   ]);
+  if (typeof error === 'object' && error.message) {
+    // UserCSS meta errors provide an object
+    error = error.message;
+  }
   if (updated) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
