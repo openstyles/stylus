@@ -402,10 +402,6 @@
             if (!ch) {
                 break;
             } else if (ch === '/' && peek() === '*') { /* css comment */
-                if (isAfterNewline) {
-                    print.newLine();
-                }
-
                 print.text(eatComment());
                 if (peek() !== ';') print.newLine();
             } else if (ch === '/' && peek() === '/') { // single line comment
