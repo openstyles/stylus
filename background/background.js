@@ -38,6 +38,12 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   openEditor,
 
   updateIconBadge(count) {
+    // TODO: remove once our manifest's minimum_chrome_version is 50+
+    // Chrome 49 doesn't report own extension pages in webNavigation apparently
+    // so we do a force update which doesn't use the cache.
+    if (CHROME && CHROME < 2661 && this.sender.tab.url.startsWith(URLS.ownOrigin)) {
+      return updateIconBadgeForce(this.sender.tab.id, count);
+    }
     return updateIconBadge(this.sender.tab.id, count);
   },
 
@@ -342,6 +348,11 @@ function updateIconBadge(tabId, count) {
   if (Boolean(oldCount) !== Boolean(count)) {
     refreshIcon(tabId, tabIcon);
   }
+}
+
+function updateIconBadgeForce(tabId, count) {
+  refreshIconBadgeText(tabId, {count});
+  refreshIcon(tabId, {count});
 }
 
 function refreshIconBadgeText(tabId, icon) {
