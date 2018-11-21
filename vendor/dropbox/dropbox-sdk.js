@@ -28,6 +28,27 @@ routes.authTokenRevoke = function (arg) {
 };
 
 /**
+ * Removes all manually added contacts. You'll still keep contacts who are on
+ * your team or who you imported. New contacts will be added when you share.
+ * @function Dropbox#contactsDeleteManualContacts
+ * @arg {void} arg - The request parameters.
+ * @returns {Promise.<void, Error.<void>>}
+ */
+routes.contactsDeleteManualContacts = function (arg) {
+  return this.request('contacts/delete_manual_contacts', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Removes manually added contacts from the given list.
+ * @function Dropbox#contactsDeleteManualContactsBatch
+ * @arg {ContactsDeleteManualContactsArg} arg - The request parameters.
+ * @returns {Promise.<void, Error.<ContactsDeleteManualContactsError>>}
+ */
+routes.contactsDeleteManualContactsBatch = function (arg) {
+  return this.request('contacts/delete_manual_contacts_batch', arg, 'user', 'api', 'rpc');
+};
+
+/**
  * Add property groups to a Dropbox file. See templates/add_for_user or
  * templates/add_for_team to create new templates.
  * @function Dropbox#filePropertiesPropertiesAdd
@@ -287,6 +308,17 @@ routes.filesAlphaUpload = function (arg) {
 /**
  * Copy a file or folder to a different location in the user's Dropbox. If the
  * source path is a folder all its contents will be copied.
+ * @function Dropbox#filesCopyV2
+ * @arg {FilesRelocationArg} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationResult, Error.<FilesRelocationError>>}
+ */
+routes.filesCopyV2 = function (arg) {
+  return this.request('files/copy_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Copy a file or folder to a different location in the user's Dropbox. If the
+ * source path is a folder all its contents will be copied.
  * @function Dropbox#filesCopy
  * @deprecated
  * @arg {FilesRelocationArg} arg - The request parameters.
@@ -299,9 +331,9 @@ routes.filesCopy = function (arg) {
 /**
  * Copy multiple files or folders to different locations at once in the user's
  * Dropbox. If RelocationBatchArg.allow_shared_folder is false, this route is
- * atomic. If on entry failes, the whole transaction will abort. If
- * RelocationBatchArg.allow_shared_folder is true, not atomicity is guaranteed,
- * but you will be able to copy the contents of shared folders to new locations.
+ * atomic. If one entry fails, the whole transaction will abort. If
+ * RelocationBatchArg.allow_shared_folder is true, atomicity is not guaranteed,
+ * but it allows you to copy the contents of shared folders to new locations.
  * This route will return job ID immediately and do the async copy job in
  * background. Please use copy_batch/check to check the job status.
  * @function Dropbox#filesCopyBatch
@@ -346,14 +378,13 @@ routes.filesCopyReferenceSave = function (arg) {
 };
 
 /**
- * Copy a file or folder to a different location in the user's Dropbox. If the
- * source path is a folder all its contents will be copied.
- * @function Dropbox#filesCopyV2
- * @arg {FilesRelocationArg} arg - The request parameters.
- * @returns {Promise.<FilesRelocationResult, Error.<FilesRelocationError>>}
+ * Create a folder at a given path.
+ * @function Dropbox#filesCreateFolderV2
+ * @arg {FilesCreateFolderArg} arg - The request parameters.
+ * @returns {Promise.<FilesCreateFolderResult, Error.<FilesCreateFolderError>>}
  */
-routes.filesCopyV2 = function (arg) {
-  return this.request('files/copy_v2', arg, 'user', 'api', 'rpc');
+routes.filesCreateFolderV2 = function (arg) {
+  return this.request('files/create_folder_v2', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -394,13 +425,17 @@ routes.filesCreateFolderBatchCheck = function (arg) {
 };
 
 /**
- * Create a folder at a given path.
- * @function Dropbox#filesCreateFolderV2
- * @arg {FilesCreateFolderArg} arg - The request parameters.
- * @returns {Promise.<FilesCreateFolderResult, Error.<FilesCreateFolderError>>}
+ * Delete the file or folder at a given path. If the path is a folder, all its
+ * contents will be deleted too. A successful response indicates that the file
+ * or folder was deleted. The returned metadata will be the corresponding
+ * FileMetadata or FolderMetadata for the item at time of deletion, and not a
+ * DeletedMetadata object.
+ * @function Dropbox#filesDeleteV2
+ * @arg {FilesDeleteArg} arg - The request parameters.
+ * @returns {Promise.<FilesDeleteResult, Error.<FilesDeleteError>>}
  */
-routes.filesCreateFolderV2 = function (arg) {
-  return this.request('files/create_folder_v2', arg, 'user', 'api', 'rpc');
+routes.filesDeleteV2 = function (arg) {
+  return this.request('files/delete_v2', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -442,20 +477,6 @@ routes.filesDeleteBatchCheck = function (arg) {
 };
 
 /**
- * Delete the file or folder at a given path. If the path is a folder, all its
- * contents will be deleted too. A successful response indicates that the file
- * or folder was deleted. The returned metadata will be the corresponding
- * FileMetadata or FolderMetadata for the item at time of deletion, and not a
- * DeletedMetadata object.
- * @function Dropbox#filesDeleteV2
- * @arg {FilesDeleteArg} arg - The request parameters.
- * @returns {Promise.<FilesDeleteResult, Error.<FilesDeleteError>>}
- */
-routes.filesDeleteV2 = function (arg) {
-  return this.request('files/delete_v2', arg, 'user', 'api', 'rpc');
-};
-
-/**
  * Download a file from a user's Dropbox.
  * @function Dropbox#filesDownload
  * @arg {FilesDownloadArg} arg - The request parameters.
@@ -467,8 +488,8 @@ routes.filesDownload = function (arg) {
 
 /**
  * Download a folder from the user's Dropbox, as a zip file. The folder must be
- * less than 1 GB in size and have fewer than 10,000 total files. The input
- * cannot be a single file.
+ * less than 20 GB in size and have fewer than 10,000 total files. The input
+ * cannot be a single file. Any single file must be less than 4GB in size.
  * @function Dropbox#filesDownloadZip
  * @arg {FilesDownloadZipArg} arg - The request parameters.
  * @returns {Promise.<FilesDownloadZipResult, Error.<FilesDownloadZipError>>}
@@ -504,7 +525,8 @@ routes.filesGetPreview = function (arg) {
 
 /**
  * Get a temporary link to stream content of a file. This link will expire in
- * four hours and afterwards you will get 410 Gone. Content-Type of the link is
+ * four hours and afterwards you will get 410 Gone. So this URL should not be
+ * used to display content directly in the browser.  Content-Type of the link is
  * determined automatically by the file's mime type.
  * @function Dropbox#filesGetTemporaryLink
  * @arg {FilesGetTemporaryLinkArg} arg - The request parameters.
@@ -512,6 +534,42 @@ routes.filesGetPreview = function (arg) {
  */
 routes.filesGetTemporaryLink = function (arg) {
   return this.request('files/get_temporary_link', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Get a one-time use temporary upload link to upload a file to a Dropbox
+ * location.  This endpoint acts as a delayed upload. The returned temporary
+ * upload link may be used to make a POST request with the data to be uploaded.
+ * The upload will then be perfomed with the CommitInfo previously provided to
+ * get_temporary_upload_link but evaluated only upon consumption. Hence, errors
+ * stemming from invalid CommitInfo with respect to the state of the user's
+ * Dropbox will only be communicated at consumption time. Additionally, these
+ * errors are surfaced as generic HTTP 409 Conflict responses, potentially
+ * hiding issue details. The maximum temporary upload link duration is 4 hours.
+ * Upon consumption or expiration, a new link will have to be generated.
+ * Multiple links may exist for a specific upload path at any given time.  The
+ * POST request on the temporary upload link must have its Content-Type set to
+ * "application/octet-stream".  Example temporary upload link consumption
+ * request:  curl -X POST
+ * https://dl.dropboxusercontent.com/apitul/1/bNi2uIYF51cVBND --header
+ * "Content-Type: application/octet-stream" --data-binary @local_file.txt  A
+ * successful temporary upload link consumption request returns the content hash
+ * of the uploaded data in JSON format.  Example succesful temporary upload link
+ * consumption response: {"content-hash":
+ * "599d71033d700ac892a0e48fa61b125d2f5994"}  An unsuccessful temporary upload
+ * link consumption request returns any of the following status codes:  HTTP 400
+ * Bad Request: Content-Type is not one of application/octet-stream and
+ * text/plain or request is invalid. HTTP 409 Conflict: The temporary upload
+ * link does not exist or is currently unavailable, the upload failed, or
+ * another error happened. HTTP 410 Gone: The temporary upload link is expired
+ * or consumed.  Example unsuccessful temporary upload link consumption
+ * response: Temporary upload link has been recently consumed.
+ * @function Dropbox#filesGetTemporaryUploadLink
+ * @arg {FilesGetTemporaryUploadLinkArg} arg - The request parameters.
+ * @returns {Promise.<FilesGetTemporaryUploadLinkResult, Error.<void>>}
+ */
+routes.filesGetTemporaryUploadLink = function (arg) {
+  return this.request('files/get_temporary_upload_link', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -628,6 +686,17 @@ routes.filesListRevisions = function (arg) {
 /**
  * Move a file or folder to a different location in the user's Dropbox. If the
  * source path is a folder all its contents will be moved.
+ * @function Dropbox#filesMoveV2
+ * @arg {FilesRelocationArg} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationResult, Error.<FilesRelocationError>>}
+ */
+routes.filesMoveV2 = function (arg) {
+  return this.request('files/move_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Move a file or folder to a different location in the user's Dropbox. If the
+ * source path is a folder all its contents will be moved.
  * @function Dropbox#filesMove
  * @deprecated
  * @arg {FilesRelocationArg} arg - The request parameters.
@@ -660,17 +729,6 @@ routes.filesMoveBatch = function (arg) {
  */
 routes.filesMoveBatchCheck = function (arg) {
   return this.request('files/move_batch/check', arg, 'user', 'api', 'rpc');
-};
-
-/**
- * Move a file or folder to a different location in the user's Dropbox. If the
- * source path is a folder all its contents will be moved.
- * @function Dropbox#filesMoveV2
- * @arg {FilesRelocationArg} arg - The request parameters.
- * @returns {Promise.<FilesRelocationResult, Error.<FilesRelocationError>>}
- */
-routes.filesMoveV2 = function (arg) {
-  return this.request('files/move_v2', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -746,7 +804,7 @@ routes.filesPropertiesUpdate = function (arg) {
 };
 
 /**
- * Restore a file to a specific revision.
+ * Restore a specific revision of a file to the given path.
  * @function Dropbox#filesRestore
  * @arg {FilesRestoreArg} arg - The request parameters.
  * @returns {Promise.<FilesFileMetadata, Error.<FilesRestoreError>>}
@@ -790,7 +848,11 @@ routes.filesSearch = function (arg) {
 /**
  * Create a new file with the contents provided in the request. Do not use this
  * to upload a file larger than 150 MB. Instead, create an upload session with
- * upload_session/start.
+ * upload_session/start. Calls to this endpoint will count as data transport
+ * calls for any Dropbox Business teams with a limit on the number of data
+ * transport calls allowed per month. For more information, see the Data
+ * transport limit page
+ * https://www.dropbox.com/developers/reference/data-transport-limit.
  * @function Dropbox#filesUpload
  * @arg {FilesCommitInfo} arg - The request parameters.
  * @returns {Promise.<FilesFileMetadata, Error.<FilesUploadError>>}
@@ -800,9 +862,28 @@ routes.filesUpload = function (arg) {
 };
 
 /**
+ * Append more data to an upload session. When the parameter close is set, this
+ * call will close the session. A single request should not upload more than 150
+ * MB. The maximum size of a file one can upload to an upload session is 350 GB.
+ * Calls to this endpoint will count as data transport calls for any Dropbox
+ * Business teams with a limit on the number of data transport calls allowed per
+ * month. For more information, see the Data transport limit page
+ * https://www.dropbox.com/developers/reference/data-transport-limit.
+ * @function Dropbox#filesUploadSessionAppendV2
+ * @arg {FilesUploadSessionAppendArg} arg - The request parameters.
+ * @returns {Promise.<void, Error.<FilesUploadSessionLookupError>>}
+ */
+routes.filesUploadSessionAppendV2 = function (arg) {
+  return this.request('files/upload_session/append_v2', arg, 'user', 'content', 'upload');
+};
+
+/**
  * Append more data to an upload session. A single request should not upload
  * more than 150 MB. The maximum size of a file one can upload to an upload
- * session is 350 GB.
+ * session is 350 GB. Calls to this endpoint will count as data transport calls
+ * for any Dropbox Business teams with a limit on the number of data transport
+ * calls allowed per month. For more information, see the Data transport limit
+ * page https://www.dropbox.com/developers/reference/data-transport-limit.
  * @function Dropbox#filesUploadSessionAppend
  * @deprecated
  * @arg {FilesUploadSessionCursor} arg - The request parameters.
@@ -813,21 +894,13 @@ routes.filesUploadSessionAppend = function (arg) {
 };
 
 /**
- * Append more data to an upload session. When the parameter close is set, this
- * call will close the session. A single request should not upload more than 150
- * MB. The maximum size of a file one can upload to an upload session is 350 GB.
- * @function Dropbox#filesUploadSessionAppendV2
- * @arg {FilesUploadSessionAppendArg} arg - The request parameters.
- * @returns {Promise.<void, Error.<FilesUploadSessionLookupError>>}
- */
-routes.filesUploadSessionAppendV2 = function (arg) {
-  return this.request('files/upload_session/append_v2', arg, 'user', 'content', 'upload');
-};
-
-/**
  * Finish an upload session and save the uploaded data to the given file path. A
  * single request should not upload more than 150 MB. The maximum size of a file
- * one can upload to an upload session is 350 GB.
+ * one can upload to an upload session is 350 GB. Calls to this endpoint will
+ * count as data transport calls for any Dropbox Business teams with a limit on
+ * the number of data transport calls allowed per month. For more information,
+ * see the Data transport limit page
+ * https://www.dropbox.com/developers/reference/data-transport-limit.
  * @function Dropbox#filesUploadSessionFinish
  * @arg {FilesUploadSessionFinishArg} arg - The request parameters.
  * @returns {Promise.<FilesFileMetadata, Error.<FilesUploadSessionFinishError>>}
@@ -849,7 +922,11 @@ routes.filesUploadSessionFinish = function (arg) {
  * background. Use upload_session/finish_batch/check to check the job status.
  * For the same account, this route should be executed serially. That means you
  * should not start the next job before current job finishes. We allow up to
- * 1000 entries in a single request.
+ * 1000 entries in a single request. Calls to this endpoint will count as data
+ * transport calls for any Dropbox Business teams with a limit on the number of
+ * data transport calls allowed per month. For more information, see the Data
+ * transport limit page
+ * https://www.dropbox.com/developers/reference/data-transport-limit.
  * @function Dropbox#filesUploadSessionFinishBatch
  * @arg {FilesUploadSessionFinishBatchArg} arg - The request parameters.
  * @returns {Promise.<FilesUploadSessionFinishBatchLaunch, Error.<void>>}
@@ -879,7 +956,11 @@ routes.filesUploadSessionFinishBatchCheck = function (arg) {
  * is 350 GB. An upload session can be used for a maximum of 48 hours.
  * Attempting to use an UploadSessionStartResult.session_id with
  * upload_session/append_v2 or upload_session/finish more than 48 hours after
- * its creation will return a UploadSessionLookupError.not_found.
+ * its creation will return a UploadSessionLookupError.not_found. Calls to this
+ * endpoint will count as data transport calls for any Dropbox Business teams
+ * with a limit on the number of data transport calls allowed per month. For
+ * more information, see the Data transport limit page
+ * https://www.dropbox.com/developers/reference/data-transport-limit.
  * @function Dropbox#filesUploadSessionStart
  * @arg {FilesUploadSessionStartArg} arg - The request parameters.
  * @returns {Promise.<FilesUploadSessionStartResult, Error.<void>>}
@@ -1818,39 +1899,41 @@ function responseHandler(res, data) {
   return result;
 }
 
-function downloadRequest(path, args, auth, host, accessToken, options) {
-  if (auth !== 'user') {
-    throw new Error('Unexpected auth type: ' + auth);
-  }
-
-  var fetchOptions = {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + accessToken,
-      'Dropbox-API-Arg': httpHeaderSafeJson(args)
+function downloadRequest(fetch) {
+  return function downloadRequestWithFetch(path, args, auth, host, accessToken, options) {
+    if (auth !== 'user') {
+      throw new Error('Unexpected auth type: ' + auth);
     }
-  };
 
-  if (options) {
-    if (options.selectUser) {
-      fetchOptions.headers['Dropbox-API-Select-User'] = options.selectUser;
-    }
-    if (options.selectAdmin) {
-      fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
-    }
-  }
+    var fetchOptions = {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+        'Dropbox-API-Arg': httpHeaderSafeJson(args)
+      }
+    };
 
-  return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
-    return getDataFromConsumer(res).then(function (data) {
-      return [res, data];
+    if (options) {
+      if (options.selectUser) {
+        fetchOptions.headers['Dropbox-API-Select-User'] = options.selectUser;
+      }
+      if (options.selectAdmin) {
+        fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
+      }
+    }
+
+    return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
+      return getDataFromConsumer(res).then(function (data) {
+        return [res, data];
+      });
+    }).then(function (_ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          res = _ref2[0],
+          data = _ref2[1];
+
+      return responseHandler(res, data);
     });
-  }).then(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        res = _ref2[0],
-        data = _ref2[1];
-
-    return responseHandler(res, data);
-  });
+  };
 }
 
 function parseBodyToType$1(res) {
@@ -1868,53 +1951,55 @@ function parseBodyToType$1(res) {
   });
 }
 
-function uploadRequest(path, args, auth, host, accessToken, options) {
-  if (auth !== 'user') {
-    throw new Error('Unexpected auth type: ' + auth);
-  }
-
-  var contents = args.contents;
-
-  delete args.contents;
-
-  var fetchOptions = {
-    body: contents,
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'application/octet-stream',
-      'Dropbox-API-Arg': httpHeaderSafeJson(args)
+function uploadRequest(fetch) {
+  return function uploadRequestWithFetch(path, args, auth, host, accessToken, options) {
+    if (auth !== 'user') {
+      throw new Error('Unexpected auth type: ' + auth);
     }
+
+    var contents = args.contents;
+
+    delete args.contents;
+
+    var fetchOptions = {
+      body: contents,
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+        'Content-Type': 'application/octet-stream',
+        'Dropbox-API-Arg': httpHeaderSafeJson(args)
+      }
+    };
+
+    if (options) {
+      if (options.selectUser) {
+        fetchOptions.headers['Dropbox-API-Select-User'] = options.selectUser;
+      }
+      if (options.selectAdmin) {
+        fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
+      }
+    }
+
+    return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
+      return parseBodyToType$1(res);
+    }).then(function (_ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          res = _ref2[0],
+          data = _ref2[1];
+
+      // maintaining existing API for error codes not equal to 200 range
+      if (!res.ok) {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          error: data,
+          response: res,
+          status: res.status
+        };
+      }
+
+      return data;
+    });
   };
-
-  if (options) {
-    if (options.selectUser) {
-      fetchOptions.headers['Dropbox-API-Select-User'] = options.selectUser;
-    }
-    if (options.selectAdmin) {
-      fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
-    }
-  }
-
-  return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
-    return parseBodyToType$1(res);
-  }).then(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        res = _ref2[0],
-        data = _ref2[1];
-
-    // maintaining existing API for error codes not equal to 200 range
-    if (!res.ok) {
-      // eslint-disable-next-line no-throw-literal
-      throw {
-        error: data,
-        response: res,
-        status: res.status
-      };
-    }
-
-    return data;
-  });
 }
 
 function createCommonjsModule(fn, module) {
@@ -3850,78 +3935,76 @@ function numberIsNaN (obj) {
 var buffer_1 = buffer.Buffer;
 
 function parseBodyToType$2(res) {
-  var clone = res.clone();
-  return new Promise(function (resolve) {
-    res.json().then(function (data) {
-      return resolve(data);
-    }).catch(function () {
-      return clone.text().then(function (data) {
-        return resolve(data);
-      });
+  if (res.headers.get('Content-Type') === 'application/json') {
+    return res.json().then(function (data) {
+      return [res, data];
     });
-  }).then(function (data) {
+  }
+  return res.text().then(function (data) {
     return [res, data];
   });
 }
 
-function rpcRequest(path, body, auth, host, accessToken, options) {
-  var fetchOptions = {
-    method: 'POST',
-    body: body ? JSON.stringify(body) : null
-  };
-  var headers = {};
-  if (body) {
-    headers['Content-Type'] = 'application/json';
-  }
-  var authHeader = '';
+function rpcRequest(fetch) {
+  return function rpcRequestWithFetch(path, body, auth, host, accessToken, options) {
+    var fetchOptions = {
+      method: 'POST',
+      body: body ? JSON.stringify(body) : null
+    };
+    var headers = {};
+    if (body) {
+      headers['Content-Type'] = 'application/json';
+    }
+    var authHeader = '';
 
-  switch (auth) {
-    case 'app':
-      if (!options.clientId || !options.clientSecret) {
-        throw new Error('A client id and secret is required for this function');
+    switch (auth) {
+      case 'app':
+        if (!options.clientId || !options.clientSecret) {
+          throw new Error('A client id and secret is required for this function');
+        }
+        authHeader = new buffer_1(options.clientId + ':' + options.clientSecret).toString('base64');
+        headers.Authorization = 'Basic ' + authHeader;
+        break;
+      case 'team':
+      case 'user':
+        headers.Authorization = 'Bearer ' + accessToken;
+        break;
+      case 'noauth':
+        break;
+      default:
+        throw new Error('Unhandled auth type: ' + auth);
+    }
+
+    if (options) {
+      if (options.selectUser) {
+        headers['Dropbox-API-Select-User'] = options.selectUser;
       }
-      authHeader = new buffer_1(options.clientId + ':' + options.clientSecret).toString('base64');
-      headers.Authorization = 'Basic ' + authHeader;
-      break;
-    case 'team':
-    case 'user':
-      headers.Authorization = 'Bearer ' + accessToken;
-      break;
-    case 'noauth':
-      break;
-    default:
-      throw new Error('Unhandled auth type: ' + auth);
-  }
-
-  if (options) {
-    if (options.selectUser) {
-      headers['Dropbox-API-Select-User'] = options.selectUser;
-    }
-    if (options.selectAdmin) {
-      headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
-    }
-  }
-
-  fetchOptions.headers = headers;
-  return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
-    return parseBodyToType$2(res);
-  }).then(function (_ref) {
-    var _ref2 = slicedToArray(_ref, 2),
-        res = _ref2[0],
-        data = _ref2[1];
-
-    // maintaining existing API for error codes not equal to 200 range
-    if (!res.ok) {
-      // eslint-disable-next-line no-throw-literal
-      throw {
-        error: data,
-        response: res,
-        status: res.status
-      };
+      if (options.selectAdmin) {
+        headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
+      }
     }
 
-    return data;
-  });
+    fetchOptions.headers = headers;
+    return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
+      return parseBodyToType$2(res);
+    }).then(function (_ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          res = _ref2[0],
+          data = _ref2[1];
+
+      // maintaining existing API for error codes not equal to 200 range
+      if (!res.ok) {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          error: data,
+          response: res,
+          status: res.status
+        };
+      }
+
+      return data;
+    });
+  };
 }
 
 /* eslint-disable */
@@ -4018,6 +4101,7 @@ if (!Array.prototype.includes) {
  * shared between Dropbox and DropboxTeam classes. It is marked as private so
  * that it doesn't show up in the docs because it is never used directly.
  * @arg {Object} options
+ * @arg {Function} [options.fetch] - fetch library for making requests.
  * @arg {String} [options.accessToken] - An access token for making authenticated
  * requests.
  * @arg {String} [options.clientId] - The client id for your app. Used to create
@@ -4054,6 +4138,10 @@ var DropboxBase = function () {
     this.clientSecret = options.clientSecret;
     this.selectUser = options.selectUser;
     this.selectAdmin = options.selectAdmin;
+    this.fetch = options.fetch || fetch;
+    if (!options.fetch) {
+      console.warn('Global fetch is deprecated and will be unsupported in a future version. Please pass fetch function as option when instantiating dropbox instance: new Dropbox({fetch})');
+    } // eslint-disable-line no-console
   }
 
   /**
@@ -4198,7 +4286,7 @@ var DropboxBase = function () {
         }
       };
 
-      return fetch(path, fetchOptions).then(function (res) {
+      return this.fetch(path, fetchOptions).then(function (res) {
         return parseBodyToType(res);
       }).then(function (_ref) {
         var _ref2 = slicedToArray(_ref, 2),
@@ -4327,7 +4415,7 @@ var DropboxBase = function () {
     key: 'getRpcRequest',
     value: function getRpcRequest() {
       if (this.rpcRequest === undefined) {
-        this.rpcRequest = rpcRequest;
+        this.rpcRequest = rpcRequest(this.fetch);
       }
       return this.rpcRequest;
     }
@@ -4340,7 +4428,7 @@ var DropboxBase = function () {
     key: 'getDownloadRequest',
     value: function getDownloadRequest() {
       if (this.downloadRequest === undefined) {
-        this.downloadRequest = downloadRequest;
+        this.downloadRequest = downloadRequest(this.fetch);
       }
       return this.downloadRequest;
     }
@@ -4353,7 +4441,7 @@ var DropboxBase = function () {
     key: 'getUploadRequest',
     value: function getUploadRequest() {
       if (this.uploadRequest === undefined) {
-        this.uploadRequest = uploadRequest;
+        this.uploadRequest = uploadRequest(this.fetch);
       }
       return this.uploadRequest;
     }
@@ -4367,6 +4455,7 @@ var DropboxBase = function () {
  * @classdesc The Dropbox SDK class that provides methods to read, write and
  * create files or folders in a user's Dropbox.
  * @arg {Object} options
+ * @arg {Function} [options.fetch] - fetch library for making requests.
  * @arg {String} [options.accessToken] - An access token for making authenticated
  * requests.
  * @arg {String} [options.clientId] - The client id for your app. Used to create
@@ -4808,6 +4897,31 @@ routes$1.teamMembersListContinue = function (arg) {
 };
 
 /**
+ * Moves removed member's files to a different member. This endpoint initiates
+ * an asynchronous job. To obtain the final result of the job, the client should
+ * periodically poll members/move_former_member_files/job_status/check.
+ * Permission : Team member management.
+ * @function DropboxTeam#teamMembersMoveFormerMemberFiles
+ * @arg {TeamMembersDataTransferArg} arg - The request parameters.
+ * @returns {Promise.<AsyncLaunchEmptyResult, Error.<TeamMembersTransferFormerMembersFilesError>>}
+ */
+routes$1.teamMembersMoveFormerMemberFiles = function (arg) {
+  return this.request('team/members/move_former_member_files', arg, 'team', 'api', 'rpc');
+};
+
+/**
+ * Once an async_job_id is returned from members/move_former_member_files , use
+ * this to poll the status of the asynchronous request. Permission : Team member
+ * management.
+ * @function DropboxTeam#teamMembersMoveFormerMemberFilesJobStatusCheck
+ * @arg {AsyncPollArg} arg - The request parameters.
+ * @returns {Promise.<AsyncPollEmptyResult, Error.<AsyncPollError>>}
+ */
+routes$1.teamMembersMoveFormerMemberFilesJobStatusCheck = function (arg) {
+  return this.request('team/members/move_former_member_files/job_status/check', arg, 'team', 'api', 'rpc');
+};
+
+/**
  * Recover a deleted member. Permission : Team member management Exactly one of
  * team_member_id, email, or external_id must be provided to identify the user
  * account.
@@ -4914,7 +5028,7 @@ routes$1.teamMembersUnsuspend = function (arg) {
  * be owned by other users or other teams. Duplicates may occur in the list.
  * @function DropboxTeam#teamNamespacesList
  * @arg {TeamTeamNamespacesListArg} arg - The request parameters.
- * @returns {Promise.<TeamTeamNamespacesListResult, Error.<void>>}
+ * @returns {Promise.<TeamTeamNamespacesListResult, Error.<TeamTeamNamespacesListError>>}
  */
 routes$1.teamNamespacesList = function (arg) {
   return this.request('team/namespaces/list', arg, 'team', 'api', 'rpc');
