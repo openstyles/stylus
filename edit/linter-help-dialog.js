@@ -33,18 +33,18 @@ function createLinterHelpDialog(getIssues) {
       };
     } else {
       headerLink = $createLink(baseUrl, 'stylelint');
-      template = ({rule}) =>
+      template = rule =>
         $create('li',
           rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));
     }
     const header = t('linterIssuesHelp', '\x01').split('\x01');
-    const activeRules = getIssues();
+    const activeRules = new Set([...getIssues()].map(issue => issue.rule));
     Promise.resolve(linter === 'csslint' && prepareCsslintRules())
       .then(() =>
         showHelp(t('linterIssues'),
           $create([
             header[0], headerLink, header[1],
-            $create('ul.rules', [...activeRules.values()].map(template)),
+            $create('ul.rules', [...activeRules].map(template)),
           ])
         )
       );
