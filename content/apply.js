@@ -86,30 +86,57 @@ const APPLY = (() => {
     function injectPageScript() {
       const scriptContent = EVENT_NAME => {
         document.currentScript.remove();
-        window.addEventListener(EVENT_NAME, function handler(e) {
-          const {method, id, content} = e.detail;
-          if (method === 'setStyleContent') {
-            const el = document.getElementById(id);
-            if (!el) {
-              return;
+        const available = checkStyleApplied();
+        if (available) {
+          window.addEventListener(EVENT_NAME, function handler(e) {
+            const {method, id, content} = e.detail;
+            if (method === 'setStyleContent') {
+              const el = document.getElementById(id);
+              if (!el) {
+                return;
+              }
+              const disabled = el.disabled;
+              el.textContent = content;
+              el.disabled = disabled;
+            } else if (method === 'orphan') {
+              window.removeEventListener(EVENT_NAME, handler);
             }
-            const disabled = el.disabled;
-            el.textContent = content;
-            el.disabled = disabled;
-          } else if (method === 'orphan') {
-            window.removeEventListener(EVENT_NAME, handler);
-          }
-        }, true);
+          }, true);
+        }
+        window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail: {
+          method: 'init',
+          available
+        }}));
+
+        function checkStyleApplied() {
+          const style = document.createElement('style');
+          style.textContent = ':root{--stylus-applied:1}';
+          document.documentElement.appendChild(style);
+          const applied = getComputedStyle(document.documentElement)
+            .getPropertyValue('--stylus-applied');
+          style.remove();
+          return Boolean(applied);
+        }
       };
       const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
       const src = `data:application/javascript;base64,${btoa(code)}`;
       const script = document.createElement('script');
       const {resolve, promise} = deferred();
       script.src = src;
-      script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
+      window.addEventListener(EVENT_NAME, handleInit);
       document.documentElement.appendChild(script);
-      return promise;
+      return promise.then(result => {
+        script.remove();
+        window.removeEventListener(EVENT_NAME, handleInit);
+        return result;
+      });
+
+      function handleInit(e) {
+        if (e.detail.method === 'init') {
+          resolve(e.detail.available);
+        }
+      }
     }
   }
 
