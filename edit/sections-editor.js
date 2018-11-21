@@ -201,33 +201,25 @@ function createSectionsEditor(style) {
   }
 
   function nextEditor(cm, cycle = true) {
-    if (!cycle) {
-      for (const section of sections) {
-        if (section.isRemoved()) {
-          continue;
-        }
-        if (cm === section.cm) {
-          return;
-        }
-        break;
-      }
+    if (!cycle && findLast(sections, s => !s.isRemoved()).cm === cm) {
+      return;
     }
     return nextPrevEditor(cm, 1);
   }
 
   function prevEditor(cm, cycle = true) {
-    if (!cycle) {
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (sections[i].isRemoved()) {
-          continue;
-        }
-        if (cm === sections[i].cm) {
-          return;
-        }
-        break;
-      }
+    if (!cycle && sections.find(s => !s.isRemoved()).cm === cm) {
+      return;
     }
     return nextPrevEditor(cm, -1);
+  }
+
+  function findLast(arr, match) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (match(arr[i])) {
+        return arr[i];
+      }
+    }
   }
 
   function nextPrevEditor(cm, direction) {
