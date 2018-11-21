@@ -19,7 +19,8 @@ const msg = (() => {
   const EXTENSION_URL = chrome.runtime.getURL('');
   let handler;
   const RX_NO_RECEIVER = /Receiving end does not exist/;
-  const RX_PORT_CLOSED = /The message port closed before a response was received/;
+  // typo in Chrome 49
+  const RX_PORT_CLOSED = /The message port closed before a res?ponse was received/;
   return {
     send,
     sendTab,
