@@ -232,6 +232,7 @@
       .then(init)
       .catch(err => {
         $('#header').classList.add('meta-init-error');
+        console.error(err);
         showError(err);
       });
   }
