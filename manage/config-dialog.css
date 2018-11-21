@@ -7,7 +7,7 @@
 }
 
 #stylus-popup .config-dialog > div {
-  position: static;
+  position: relative;
 }
 
 #stylus-popup .config-body label {
