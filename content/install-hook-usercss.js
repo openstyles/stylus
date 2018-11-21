@@ -72,7 +72,7 @@
 
   function getChromeVersion() {
     const match = navigator.userAgent.match(/chrome\/(\d+)/i);
-    return match && Number(match[1]);
+    return match ? Number(match[1]) : undefined;
   }
 
   function start() {
