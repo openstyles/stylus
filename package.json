@@ -8,6 +8,7 @@
   "devDependencies": {
     "archiver": "^3.0.0",
     "codemirror": "^5.41.0",
+    "dropbox": "^4.0.13",
     "endent": "^1.2.0",
     "eslint": "^5.9.0",
     "fs-extra": "^7.0.1",
@@ -21,7 +22,8 @@
     "updates": "^5.1.2",
     "usercss-meta": "^0.8.3",
     "web-ext": "^2.9.2",
-    "webext-tx-fix": "^0.3.1"
+    "webext-tx-fix": "^0.3.1",
+    "zipjs-browserify": "^1.0.1"
   },
   "scripts": {
     "lint": "eslint **/*.js --cache || exit 0",
