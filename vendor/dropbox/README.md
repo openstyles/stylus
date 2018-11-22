@@ -1,6 +1,6 @@
 ## Dropbox SDK v4.0.13
 
-Dropbox DSK JS installed via npm - source repo:
+Dropbox SDK JS installed via npm - source repo:
 
 https://github.com/dropbox/dropbox-sdk-js/tree/v4.0.13
 
