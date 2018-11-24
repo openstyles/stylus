@@ -58,8 +58,14 @@
     // FIXME: choose a correct version
     // https://github.com/openstyles/stylus/issues/560
     if (getChromeVersion() <= 49) {
-      return fetch(url).then(r => r.text());
+      return fetch(url)
+        .then(r => r.text())
+        .catch(() => fetchTextXHR(url));
     }
+    return fetchTextXHR(url);
+  }
+
+  function fetchTextXHR(url) {
     return new Promise((resolve, reject) => {
       // you can't use fetch in Chrome under 'file:' protocol
       const xhr = new XMLHttpRequest();
