@@ -1374,8 +1374,8 @@
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "InaccessibleFileHint": {
-    "message": "Stylus can not access all locally loaded file types (e.g. pdf & json files).",
-    "description": "Note in the toolbar popup for file:// URLs and certain file types"
+    "message": "Stylus can not access some file types (e.g. pdf & json files).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No updates found.",
