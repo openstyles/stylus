@@ -1373,6 +1373,10 @@
     "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus can not access some file types (e.g. pdf & json files).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No updates found.",
     "description": "Text that displays when an update all check completed and no updates are available"
