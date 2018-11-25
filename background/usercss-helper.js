@@ -75,6 +75,7 @@
    * @returns {Promise<{style, dup:Boolean?}>}
    */
   function build({
+    styleId,
     sourceCode,
     checkDup,
     metaOnly,
@@ -83,7 +84,8 @@
   }) {
     return usercss.buildMeta(sourceCode)
       .then(style => {
-        const findDup = checkDup || assignVars ? find(style) : null;
+        const findDup = checkDup || assignVars ?
+          find(styleId ? {id: styleId} : style) : Promise.resolve();
         return Promise.all([
           metaOnly ? style : doBuild(style, findDup),
           findDup
