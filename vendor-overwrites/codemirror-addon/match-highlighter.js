@@ -97,7 +97,13 @@
     state.query = query;
     cm.addOverlay(state.overlay = makeOverlay(query, hasBoundary, style));
     if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
-      var searchFor = hasBoundary ? new RegExp("\\b" + query.replace(/[\\\[.+*?(){|^$]/g, "\\$&") + "\\b") : query;
+      var searchFor = hasBoundary ?
+        new RegExp(
+          (/[a-z]/i.test(query[0]) ? "\\b" : "") +
+            query.replace(/[\\\[.+*?(){|^$]/g, "\\$&") +
+            (/[a-z]/i.test(query[query.length - 1]) ? "\\b" : ""),
+          "m"
+        ) : query;
       state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false,
         {className: "CodeMirror-selection-highlight-scrollbar"});
     }
