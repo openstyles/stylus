@@ -32,12 +32,14 @@ const cmFactory = (() => {
     if (value === 'token') {
       cm.setOption('highlightSelectionMatches', {
         showToken: /[#.\-\w]/,
-        annotateScrollbar: true
+        annotateScrollbar: true,
+        onUpdate: updateMatchHighlightCount
       });
     } else if (value === 'selection') {
       cm.setOption('highlightSelectionMatches', {
         showToken: false,
-        annotateScrollbar: true
+        annotateScrollbar: true,
+        onUpdate: updateMatchHighlightCount
       });
     } else {
       cm.setOption('highlightSelectionMatches', null);
@@ -79,6 +81,10 @@ const cmFactory = (() => {
     setOption(option, value);
   });
   return {create, destroy, setOption};
+
+  function updateMatchHighlightCount(cm, state) {
+    cm.display.wrapper.dataset.matchHighlightCount = state.matchesonscroll.matches.length;
+  }
 
   function configureMouseFn(cm, repeat) {
     return repeat === 'double' ?

@@ -36,7 +36,8 @@
     wordsOnly: false,
     annotateScrollbar: false,
     showToken: false,
-    trim: true
+    trim: true,
+    onUpdate: () => {}
   }
 
   function State(options) {
@@ -46,6 +47,7 @@
     this.overlay = this.timeout = null;
     this.matchesonscroll = null;
     this.active = false;
+    this.query = null;
   }
 
   CodeMirror.defineOption("highlightSelectionMatches", false, function(cm, val, old) {
@@ -88,12 +90,24 @@
 
   function addOverlay(cm, query, hasBoundary, style) {
     var state = cm.state.matchHighlighter;
+    if (state.query === query) {
+      return;
+    }
+    removeOverlay(cm);
+    state.query = query;
     cm.addOverlay(state.overlay = makeOverlay(query, hasBoundary, style));
     if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
-      var searchFor = hasBoundary ? new RegExp("\\b" + query.replace(/[\\\[.+*?(){|^$]/g, "\\$&") + "\\b") : query;
+      var searchFor = hasBoundary ?
+        new RegExp(
+          (/[a-z]/i.test(query[0]) ? "\\b" : "") +
+            query.replace(/[\\\[.+*?(){|^$]/g, "\\$&") +
+            (/[a-z]/i.test(query[query.length - 1]) ? "\\b" : ""),
+          "m"
+        ) : query;
       state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false,
         {className: "CodeMirror-selection-highlight-scrollbar"});
     }
+    state.options.onUpdate(cm, state);
   }
 
   function removeOverlay(cm) {
@@ -106,19 +120,22 @@
         state.matchesonscroll = null;
       }
     }
+    state.query = null;
   }
 
   function highlightMatches(cm) {
     cm.operation(function() {
       var state = cm.state.matchHighlighter;
-      removeOverlay(cm);
       if (!cm.somethingSelected() && state.options.showToken) {
         var re = state.options.showToken === true ? /[\w$]/ : state.options.showToken;
         var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
         while (start && re.test(line.charAt(start - 1))) --start;
         while (end < line.length && re.test(line.charAt(end))) ++end;
-        if (start < end)
+        if (start < end) {
           addOverlay(cm, line.slice(start, end), re, state.options.style);
+        } else {
+          removeOverlay(cm);
+        }
         return;
       }
       var from = cm.getCursor("from"), to = cm.getCursor("to");
@@ -126,8 +143,11 @@
       if (state.options.wordsOnly && !isWord(cm, from, to)) return;
       var selection = cm.getRange(from, to)
       if (state.options.trim) selection = selection.replace(/^\s+|\s+$/g, "")
-      if (selection.length >= state.options.minChars)
+      if (selection.length >= state.options.minChars) {
         addOverlay(cm, selection, false, state.options.style);
+      } else {
+        removeOverlay(cm);
+      }
     });
   }
 
