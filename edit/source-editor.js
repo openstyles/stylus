@@ -82,6 +82,7 @@ function createSourceEditor(style) {
 
   function preprocess(style) {
     return API.buildUsercss({
+      styleId: style.id,
       sourceCode: style.sourceCode,
       assignVars: true
     })
