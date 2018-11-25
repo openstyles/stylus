@@ -148,7 +148,7 @@ const sorter = (() => {
     let isOdd = false;
     const flipRows = columns % 2 === 0;
     for (const {classList} of installed.children) {
-      if (classList.contains('hidden')) continue;
+      if (classList.contains('hidden') || classList.contains('entry-header')) continue;
       classList.toggle('odd', isOdd);
       classList.toggle('even', !isOdd);
       if (flipRows && ++index >= columns) {

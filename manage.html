@@ -1,4 +1,4 @@
-<html id="stylus">
+<html id="stylus" class="newUI">
 
 <head>
   <meta charset="UTF-8">
@@ -10,8 +10,6 @@
   <link rel="stylesheet" href="msgbox/msgbox.css">
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
-
-  <style id="style-overrides"></style>
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -29,83 +27,116 @@
     * i18n-anything attribute automatically creates "anything" attribute
   -->
 
-  <template data-id="style">
-    <div class="entry">
-      <h2 class="style-name">
-        <a class="style-name-link"></a>
-        <a target="_blank" class="homepage"></a>
-      </h2>
-      <p class="applies-to">
-        <label i18n-text="appliesDisplay"></label>
-        <span class="targets"></span>
-      </p>
-      <p class="actions">
-        <a class="style-edit-link">
-          <button i18n-text="editStyleLabel" tabindex="-1"></button>
-        </a>
-        <button class="enable" i18n-text="enableStyleLabel"></button>
-        <button class="disable" i18n-text="disableStyleLabel"></button>
-        <button class="delete" i18n-text="deleteStyleLabel"></button>
-        <button class="check-update" i18n-text="checkForUpdate"></button>
-        <button class="update" i18n-text="installUpdate"></button>
-        <button class="configure-usercss" i18n-text="configureStyle"></button>
-        <span class="update-note"></span>
-      </p>
-    </div>
-  </template>
-
-  <template data-id="styleCompact">
-    <div class="entry">
-      <h2 class="style-name">
-      <div class="checkmate">
-        <input class="checker" type="checkbox" i18n-title="toggleStyle">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-      </div>
-        <a class="style-name-link"></a>
-      </h2>
-      <p class="actions">
-        <a target="_blank" class="homepage" tabindex="0"></a>
-        <a href="#" class="delete" i18n-title="deleteStyleLabel" tabindex="0">
-          <svg class="svg-icon" viewBox="0 0 20 20">
-            <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-                             5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+  <template data-id="style-header">
+    <div class="entry-header">
+      <div class="entry-col header-filter center-text">
+        <a href="#" id="toggle-all">
+          <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
+            <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
           </svg>
         </a>
-      </p>
-      <div class="applies-to">
-        <div class="targets"></div>
-        <a href="#" class="expander" tabindex="0">...</a>
       </div>
+      <div class="entry-col header-id">#</div>
+      <div class="entry-col header-state center-text" i18n-text="genericEnabledLabel"></div>
+      <div class="entry-col header-name" i18n-text="genericName"></div>
+      <div class="entry-col header-actions" i18n-text="optionsActions"></div>
+      <div class="entry-col header-sort center-text" i18n-text="sortHeader"></div>
+      <div class="entry-col header-version">v#</div>
+      <div class="entry-col header-last-update center-text" i18n-text="searchResultUpdated"></div>
+      <div class="entry-col header-applies-to" i18n-text="appliesLabel"></div>
     </div>
   </template>
 
-  <template data-id="homepageIconBig">
-    <svg class="svg-icon" viewBox="0 0 20 20">
-      <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
-      <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
-    </svg>
-  </template>
-
-  <template data-id="homepageIconSmall">
-    <svg class="svg-icon" viewBox="0 0 20 20">
-      <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-    </svg>
-  </template>
-
-  <template data-id="configureIcon">
-    <a href="#" class="configure-usercss" i18n-title="configureStyle" tabindex="0">
-      <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
-    </a>
+  <template data-id="style">
+    <div class="entry">
+      <div class="entry-col entry-filter">
+        <label>
+          <input class="entry-filter" type="checkbox">
+          <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+            <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+            <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+          </svg>
+        </label>
+      </div>
+      <div class="entry-col entry-id"></div>
+      <div class="entry-col entry-state">
+        <label>
+          <input class="entry-state-toggle" type="checkbox">
+          <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+            <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+            <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+          </svg>
+        </label>
+      </div>
+      <div class="entry-col entry-name">
+        <a class="entry-name"></a>
+      </div>
+      <div class="entry-col entry-actions">
+        <a class="entry-homepage">
+          <svg class="svg-icon home" viewBox="0 0 24 24">
+            <path d="M20 21h-7v-6h-2v6H4v-8H0L12 2l12 11h-4v8zm-5-2h3v-8h1l-7-6-7 6h1v8h3v-6h6v6z"/>
+          </svg>
+        </a>
+        <a class="entry-support">
+          <svg class="svg-icon help" viewBox="0 0 24 24">
+            <path d="M11 18h2v-2h-2v2zm1-16a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1
+              0-16 8.01 8.01 0 0 1 0 16zm0-14a4 4 0 0 0-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3
+              5h2c0-2.25 3-2.5 3-5a4 4 0 0 0-4-4z"/>
+          </svg>
+        </a>
+        <a class="entry-configure-usercss" i18n-title="configureStyle">
+          <svg class="svg-icon config" viewBox="0 0 24 24">
+              <path d="M19.43 12.98a7.8 7.8 0 0 0 0-1.96l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5
+                0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49
+                0 0 0-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.57.57 0 0 0-.18-.03.5.5 0 0
+                0-.43.25l-2 3.46a.5.5 0 0 0 .12.64l2.11 1.65a7.93 7.93 0 0 0 0 1.96l-2.11 1.65a.5.5
+                0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38
+                2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65a7.68 7.68 0 0 0 1.69-.98l2.49
+                1 .18.03a.5.5 0 0 0 .43-.25l2-3.46a.5.5 0 0 0-.12-.64l-2.11-1.65zm-1.98-1.71a5.34
+                5.34 0 0 1 0 1.46l-.14 1.13.89.7 1.08.84-.7
+                1.21-1.27-.51-1.04-.42-.9.68c-.43.32-.84.56-1.25.73l-1.06.43-.16 1.13-.2
+                1.35h-1.4l-.19-1.35-.16-1.13-1.06-.43a5.67 5.67 0 0
+                1-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21
+                1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7-1.08-.84.7-1.21
+                1.27.51 1.04.42.9-.68c.43-.32.84-.56 1.25-.73l1.06-.43.16-1.13.2-1.35h1.39l.19 1.35.16
+                1.13 1.06.43c.43.18.83.41 1.23.71l.91.7 1.06-.43 1.27-.51.7 1.21-1.07.85-.89.7.14
+                1.13zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+          </svg>
+        </a>
+        <a class="entry-edit" i18n-title="editStyleLabel">
+          <svg class="svg-icon edit" viewBox="0 0 24 24">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM5.92 19H5v-.92l9.06-9.06.92.92L5.92
+              19zM20.71 5.63l-2.34-2.34c-.2-.2-.45-.29-.71-.29s-.51.1-.7.29l-1.83 1.83 3.75 3.75
+              1.83-1.83a1 1 0 0 0 0-1.41z"/>
+          </svg>
+        </a>
+        <a class="entry-delete" i18n-title="deleteStyleLabel">
+          <svg class="svg-icon remove" viewBox="0 0 24 24">
+            <path d="M6 19c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="entry-col entry-sort" draggable="true">
+        <svg class="svg-icon sort" viewBox="0 0 24 24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </div>
+      <div class="entry-col entry-version"></div>
+      <div class="entry-col entry-last-update"></div>
+      <div class="entry-col entry-applies-to">
+        <div class="targets"></div>
+      </div>
+    </div>
   </template>
 
   <template data-id="updaterIcons">
-    <span class="updater-icons">
+    <span class="updater-icons entry-col entry-update-state">
       <a href="#" class="check-update" i18n-title="checkForUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
-                   L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
+            L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
           <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
-                   C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
+            C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
         </svg>
       </a>
       <a href="#" class="update" i18n-title="installUpdate" tabindex="0">
@@ -129,20 +160,22 @@
   </template>
 
   <template data-id="appliesToTarget">
-    <span class="target"></span>
-  </template>
-
-  <template data-id="appliesToSeparator">
-    <span class="sep">, </span>
+    <img class="target" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23666' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7 6h-3l-1-4 4 4zm-7-4l2 4h-4l2-4zM4 14a8 8 0 0 1 0-4h4a17 17 0 0 0 0 4H4zm1 2h3l1 4-4-4zm3-8H5l4-4-1 4zm4 12l-2-4h4l-2 4zm2-6h-4a15 15 0 0 1 0-4h4a15 15 0 0 1 0 4zm1 6l1-4h3l-4 4zm1-6a17 17 0 0 0 0-4h4a8 8 0 0 1 0 4h-4z'/></svg>" async="true"/>
   </template>
 
   <template data-id="appliesToEverything">
-    <span class="target" i18n-text="appliesToEverything"></span>
+    <span class="target" i18n-title="appliesToEverything">
+      <svg class="svg-icon world" viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4 12c0-.61.08-1.21.21-1.78L8.99 15v1c0
+          1.1.9 2 2 2v1.93A8.01 8.01 0 0 1 4 12zm13.89 5.4a2 2 0 0 0-1.9-1.4h-1v-3a1 1 0 0
+          0-1-1h-6v-2h2a1 1 0 0 0 1-1V7h2a2 2 0 0 0 2-2v-.41a8 8 0 0 1 2.9 12.81z"/>
+      </svg>
+    </span>
   </template>
 
   <template data-id="extraAppliesTo">
     <details class="applies-to-extra">
-      <summary class="applies-to-extra-expander" i18n-text="appliesDisplayTruncatedSuffix"></summary>
+      <summary class="applies-to-extra-expander">&nbsp;</summary>
     </details>
   </template>
 
@@ -158,7 +191,9 @@
   <script src="js/localization.js"></script>
   <script src="manage/filters.js"></script>
   <script src="manage/sort.js"></script>
-  <script src="manage/manage.js"></script>
+  <script src="manage/manage-ui.js"></script>
+  <script src="manage/manage-actions.js"></script>
+  <script src="manage/draggable.js"></script>
 
   <script src="vendor-overwrites/colorpicker/colorconverter.js"></script>
   <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
@@ -174,12 +209,46 @@
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
 
-<div id="header">
-  <h1 id="manage-heading" i18n-text="manageHeading"></h1>
+<h1 id="header">
+  <svg width="32" height="32" viewBox="0 0 48 48">
+    <path fill="#285959" d="M44.59 20.14c-.02-.86 0-13.6 0-13.6-.02-4.13-2.5-5.62-6.6-5.64H11.28C7.17.92 4.59 2.44 4.65 6.54v14.2c0 1.64-3.02 1.55-3.02 1.55v3.48s3.05.03 3.02 1.97v13.88c0 4.15 2.5 5.63 6.63 5.63h26.71c4.13.02 6.6-1.45 6.6-5.63V27.35c0-1.54 2.98-1.57 2.98-1.57l.04-3.84s-3-.07-3.02-1.8z"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" fill="#28FEFE" d="M46 20.98V5.62A5.72 5.72 0 0 0 40.22.03H8.66a5.63 5.63 0 0 0-5.68 5.59v15.37H0v6h2.98v15.4a5.67 5.67 0 0 0 5.68 5.64h31.56A5.76 5.76 0 0 0 46 42.39V26.94h2.03v-5.98l-2.03.02zm-2 5.65v13.76c0 4.19-2.43 5.65-6.56 5.64H10.66c-4.13 0-5.69-1.48-5.69-5.64V27.1c.04-1.94-2.93-1.97-2.93-1.97v-2.21s2.93.09 2.93-1.54c.05-.52 0-13.84 0-13.84-.05-4.1 1.57-5.57 5.68-5.59h26.79c4.1.02 6.54 1.46 6.56 5.59 0 0 .08 12.87 0 13.4.02 1.73 1.98 1.94 1.98 1.94v2.19S44 25.09 44 26.63zm-16.76-6.2c-4.56-1.71-6.47-2.7-6.47-4.92 0-1.77 1.65-3.37 5.07-3.37 3.37 0 5.9.98 7.26 1.66l1.76-6.33c-2.08-.98-4.92-1.76-8.91-1.76-8.19 0-13.22 4.51-13.22 10.47 0 5.08 3.84 8.29 9.64 10.36 4.2 1.45 5.86 2.7 5.86 4.87 0 2.28-1.92 3.78-5.55 3.78-3.37 0-6.68-1.09-8.75-2.17l-1.61 6.47c1.97 1.1 5.9 2.18 9.9 2.18 9.58 0 14.04-4.98 14.04-10.83 0-4.92-2.85-8.13-9.02-10.41z"/>
+  </svg>
+  <span class="ext-name">Stylus</span>
+  <span class="ext-version"></span>
+  <span class="tabs">
+    <a href="#" class="active">Manage</a>
+    <a href="#">Options</a>
+    <a href="#">Backup</a>
+  </span>
+</h1>
 
-  <div id="manage-settings">
+<div id="manage-bulk-actions" style="display: none">
+  <input id="search" type="search">
+  <button id="search-help"></button>
+  <!-- <button id="reset-filters"></button> -->
+  <button id="apply-all-updates"></button>
+  <button id="check-all-updates"></button>
+  <button id="check-all-updates-force"></button>
+  <button id="update-history"></button>
+  <button id="file-all-styles"></button>
+  <button id="unfile-all-styles"></button>
+  <button id="manage-options-button"></button>
+  <button id="manage-shortcuts-button"></button>
+  <button id="sorter-help"></button>
+  <input id="manage.newUI" type="checkbox">
+  <select id="manage.newUI.sort"></select>
+  <input id="manage.newUI.faviconsGray" type="checkbox">
+  <input id="manage.newUI.targets" type="number" min="1" max="100" value="3">
+  <input id="manage.newUI.favicons" type="checkbox">
+</div>
+
+<div id="installed" class="manage-col-entries"></div>
+
+  <!-- <div id="manage-settings">
     <div class="settings-column">
-      <details id="filters" data-pref="manage.filters.expanded">
+-->
+      <details id="filters" data-pref="manage.filters.expanded" style="display: none">
         <summary>
           <h2 i18n-text="manageFilters">:
             <div class="filter-stats-wrapper">
@@ -270,6 +339,7 @@
 
       </details>
 
+      <!--
       <div id="sort-wrapper">
         <div class="sorter-selection" i18n-title="sortLabel">
           <select id="manage.newUI.sort"></select>
@@ -407,7 +477,7 @@
 
 </div>
 
-<div id="installed"></div>
+<div id="installed"></div> -->
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
   <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
@@ -421,10 +491,6 @@
   <symbol id="svg-icon-help" viewBox="0 0 14 16">
     <title i18n-text="helpAlt"></title>
     <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
-  </symbol>
-
-  <symbol id="svg-icon-config" viewBox="0 0 14 14">
-    <path d="M6.2,0C5.8,0,5.4,0.4,5.4,0.8v0.7C5,1.7,4.6,1.8,4.3,2L3.8,1.5C3.6,1.4,3.4,1.3,3.2,1.3S2.7,1.4,2.6,1.5L1.5,2.6c-0.3,0.3-0.3,0.9,0,1.2L2,4.3C1.8,4.6,1.7,5,1.5,5.4H0.8C0.4,5.4,0,5.8,0,6.2v1.5c0,0.5,0.4,0.8,0.8,0.8h0.7C1.7,9,1.8,9.4,2,9.7l-0.5,0.5c-0.3,0.3-0.3,0.8,0,1.2l1.1,1.1c0.3,0.3,0.9,0.3,1.2,0L4.3,12c0.4,0.2,0.8,0.4,1.2,0.5v0.7c0,0.5,0.4,0.8,0.8,0.8h1.5c0.5,0,0.8-0.4,0.8-0.8v-0.7C9,12.3,9.4,12.2,9.7,12l0.5,0.5c0.3,0.3,0.9,0.3,1.2,0l1.1-1.1c0.3-0.3,0.3-0.8,0-1.2L12,9.7c0.2-0.4,0.4-0.8,0.5-1.2h0.7c0.5,0,0.8-0.4,0.8-0.8V6.2c0-0.5-0.4-0.8-0.8-0.8h-0.7C12.3,5,12.2,4.6,12,4.3l0.5-0.5c0.3-0.3,0.3-0.9,0-1.2l-1.1-1.1c-0.2-0.2-0.4-0.2-0.6-0.2s-0.4,0.1-0.6,0.2L9.7,2C9.4,1.8,9,1.7,8.6,1.5V0.8C8.6,0.4,8.2,0,7.8,0L6.2,0z M6.8,0.8h0.4c0.2,0,0.4,0.2,0.4,0.4v1.2c0.8,0.1,1.6,0.4,2.3,0.9l0.8-0.8c0.2-0.2,0.4-0.2,0.6,0l0.3,0.3c0.2,0.2,0.2,0.4,0,0.6l-0.8,0.8c0.5,0.7,0.8,1.4,0.9,2.3h1.2c0.2,0,0.4,0.2,0.4,0.4v0.4c0,0.2-0.2,0.4-0.4,0.4h-1.2c-0.1,0.8-0.4,1.6-0.9,2.3l0.8,0.8c0.2,0.2,0.2,0.4,0,0.6l-0.3,0.3c-0.2,0.2-0.4,0.2-0.6,0l-0.8-0.8c-0.7,0.5-1.4,0.8-2.3,0.9v1.2c0,0.2-0.2,0.4-0.4,0.4H6.8c-0.2,0-0.4-0.2-0.4-0.4v-1.2c-0.8-0.1-1.6-0.4-2.3-0.9l-0.8,0.8c-0.2,0.2-0.4,0.2-0.6,0l-0.3-0.3c-0.2-0.2-0.2-0.4,0-0.6l0.8-0.8C2.8,9.2,2.5,8.4,2.4,7.6H1.2C1,7.6,0.8,7.4,0.8,7.2V6.8c0-0.2,0.2-0.4,0.4-0.4h1.2c0.1-0.8,0.4-1.6,0.9-2.3L2.5,3.3c-0.2-0.2-0.2-0.4,0-0.6l0.3-0.3c0.2-0.2,0.4-0.2,0.6,0l0.8,0.8c0.7-0.5,1.4-0.8,2.3-0.9V1.2C6.4,1,6.6,0.8,6.8,0.8L6.8,0.8z M7,3.6C5.1,3.6,3.6,5.1,3.6,7c0,0,0,0,0,0c0,1.9,1.5,3.4,3.4,3.4c1.9,0,3.4-1.5,3.4-3.4C10.4,5.1,8.9,3.6,7,3.6C7,3.6,7,3.6,7,3.6z M7,4.8c1.2,0,2.2,1,2.2,2.2c0,1.2-1,2.2-2.2,2.2c-1.2,0-2.2-1-2.2-2.2C4.8,5.8,5.8,4.8,7,4.8z"/>
   </symbol>
 </svg>
 

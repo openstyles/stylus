@@ -1,4 +1,4 @@
-/* global messageBox ENTRY_ID_PREFIX newUI filtersSelector filterAndAppend
+/* global messageBox UI filtersSelector filterAndAppend
   sorter $ $$ $create API onDOMready scrollElementIntoView t chromeLocal */
 /* exported handleUpdateInstalled */
 'use strict';
@@ -111,7 +111,7 @@ function checkUpdate(entry, {single} = {}) {
 
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
-  const entry = $(ENTRY_ID_PREFIX + style.id);
+  const entry = $(UI.ENTRY_ID_PREFIX + style.id);
   const newClasses = new Map([
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
@@ -156,14 +156,14 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses.set('no-update', true);
     newClasses.set('update-problem', !same);
     $('.update-note', entry).textContent = message;
-    $('.check-update', entry).title = newUI.enabled ? message : '';
+    $('.check-update', entry).title = UI.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
     // digest may change silently when forcing an update of a locally edited style
     // so we need to update it in entry's styleMeta in all open manager tabs
     if (error === STATES.SAME_CODE) {
       for (const view of chrome.extension.getViews({type: 'tab'})) {
         if (view.location.pathname === location.pathname) {
-          const entry = view.$(ENTRY_ID_PREFIX + style.id);
+          const entry = view.$(UI.ENTRY_ID_PREFIX + style.id);
           if (entry) entry.styleMeta.originalDigest = style.originalDigest;
         }
       }

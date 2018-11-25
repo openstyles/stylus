@@ -24,10 +24,6 @@
     },
     "description": "Text on the manage screen to describe what the style applies to"
   },
-  "appliesDisplayTruncatedSuffix": {
-    "message": "and more",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
-  },
   "appliesDomainOption": {
     "message": "URLs on the domain",
     "description": "Option to make the style apply to the entered string as a domain"
@@ -412,6 +408,10 @@
   "genericHistoryLabel": {
     "message": "History",
     "description": "Used in various places to show a history log of something"
+  },
+  "genericName": {
+    "message": "Name",
+    "description": "Used in various places to indicate the style name"
   },
   "genericNext": {
     "message": "Next",
@@ -1244,6 +1244,10 @@
   "sortDateOldestFirst": {
     "message": "oldest first",
     "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+  },
+  "sortHeader": {
+    "message": "Sort",
+    "description": "Title of sort column, indicating that the style can be manually sorted by dragging & dropping"
   },
   "sortLabel": {
     "message": "Select a sort to apply to the installed styles",
