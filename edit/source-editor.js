@@ -16,12 +16,7 @@ function createSourceEditor(style) {
   $('#sections').appendChild($create('.single-editor'));
 
   const dirty = dirtyReporter();
-  dirty.onChange(() => {
-    const isDirty = dirty.isDirty();
-    document.body.classList.toggle('dirty', isDirty);
-    $('#save-button').disabled = !isDirty;
-    updateTitle();
-  });
+  dirty.onChange(updateDirty);
 
   // normalize style
   if (!style.id) setupNewStyle(style);
@@ -171,16 +166,16 @@ function createSourceEditor(style) {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    updateTitle();
+    updateDirty();
     return cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
-  function updateTitle() {
-    const newTitle = (dirty.isDirty() ? '* ' : '') +
-      (style.id ? style.name : t('addStyleTitle'));
-    if (document.title !== newTitle) {
-      document.title = newTitle;
-    }
+  function updateDirty() {
+    const isDirty = dirty.isDirty();
+    const name = style.id ? style.name : t('addStyleTitle');
+    document.title = (isDirty ? '* ' : '') + name;
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {

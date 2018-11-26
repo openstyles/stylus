@@ -9,7 +9,7 @@
 function createSectionsEditor(style) {
   let INC_ID = 0; // an increment id that is used by various object to track the order
   const dirty = dirtyReporter();
-  dirty.onChange(updateTitle);
+  dirty.onChange(updateDirty);
 
   const container = $('#sections');
   const sections = [];
@@ -18,7 +18,7 @@ function createSectionsEditor(style) {
   nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
     style.name = nameEl.value;
-    updateTitle();
+    updateDirty();
   });
 
   const enabledEl = $('#enabled');
@@ -413,7 +413,7 @@ function createSectionsEditor(style) {
     nameEl.value = style.name || '';
     enabledEl.checked = style.enabled !== false;
     $('#url').href = style.url || '';
-    updateTitle();
+    updateDirty();
   }
 
   function updateLivePreview() {
@@ -424,12 +424,12 @@ function createSectionsEditor(style) {
     livePreview.update(getModel());
   }
 
-  function updateTitle() {
-    const name = style.name;
-    const clean = !dirty.isDirty();
-    const title = !style.id ? t('addStyleTitle') : name;
-    document.title = (clean ? '' : '* ') + title;
-    $('#save-button').disabled = clean;
+  function updateDirty() {
+    const isDirty = dirty.isDirty();
+    const name = style.id ? style.name : t('addStyleTitle');
+    document.title = (isDirty ? '* ' : '') + name;
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
   }
 
   function initSection({
