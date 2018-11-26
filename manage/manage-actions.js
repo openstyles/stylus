@@ -33,6 +33,7 @@ Promise.all([
 ]).then(args => {
   UI.init();
   UI.showStyles(...args);
+  lazyLoad();
 });
 
 msg.onExtension(onRuntimeMessage);
@@ -406,4 +407,17 @@ function onVisibilityChange() {
       history.replaceState({scrollY: window.scrollY}, document.title);
       break;
   }
+}
+
+function lazyLoad() {
+  setTimeout(() => {
+    $$('link[data-href]').forEach(link => {
+      link.href = link.dataset.href;
+      link.removeAttribute('data-href');
+    });
+    $$('script[data-src]').forEach(script => {
+      script.src = script.dataset.src;
+      script.removeAttribute('data-src');
+    });
+  }, 500);
 }
