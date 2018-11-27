@@ -2,6 +2,7 @@
   --icon-size: 20px;
   --narrow-column: 60px;
   --header-height: 40px;
+  --bulk-action-height: 60px;
   --entry-header-height: 25px;
   --onoffswitch-width: 60px;
 }
@@ -121,17 +122,17 @@ a:hover {
   justify-content: center;
 }
 
-.entry-header {
-  margin: 0;
-  padding: 0 4px;
-}
-
-#installed .entry:nth-child(2) {
+#installed {
   margin-top: calc(var(--header-height) + var(--entry-header-height));
 }
 
 #installed .entry:last-child {
   margin-bottom: 10px;
+}
+
+.entry-header {
+  margin: 0;
+  padding: 0 4px;
 }
 
 .entry {
@@ -284,23 +285,18 @@ a svg, .svg-icon.sort {
 }
 
 /* Checkbox */
-input.entry-filter:checked + svg.checkbox,
-input.entry-state-toggle:checked + svg.checkbox {
+.checkmate input:checked + svg.checkbox {
   background: #66bb6a;
   border-radius: var(--icon-size);
 }
 
-input[type="checkbox"].entry-filter,
-input[type="checkbox"].entry-state-toggle,
-input.entry-filter:checked + svg.checkbox .circle,
-input.entry-state-toggle:checked + svg.checkbox .circle,
-input.entry-filter:not(:checked) + svg .checkmark,
-input.entry-state-toggle:not(:checked) + svg .checkmark {
+.checkmate input[type="checkbox"],
+.checkmate input:checked + svg.checkbox .circle,
+.checkmate input:not(:checked) + svg .checkmark {
   display: none;
 }
 
-input.entry-filter:checked + svg.checkbox .checkmark,
-input.entry-state-toggle:checked + svg.checkbox .checkmark {
+.checkmate input:checked + svg.checkbox .checkmark {
   fill: white;
 }
 
@@ -310,6 +306,7 @@ input.entry-state-toggle:checked + svg.checkbox .checkmark {
   pointer-events: none;
 }
 
+/* Update icons */
 .can-update .update,
 .no-update:not(.update-problem):not(.update-done) .up-to-date,
 .no-update.update-problem .check-update,
@@ -508,6 +505,29 @@ details.applies-to-extra[open] {
   display: block;
 }
 
+/* bulk actions */
+#manage-bulk-actions {
+  background: #ddd;
+  width: 100vw;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  height: var(--bulk-action-height);
+  padding: 4px 16px;
+  z-index: 100;
+}
+
+#manage-bulk-actions:not(.hidden) + #installed {
+  margin-top: calc(var(--header-height) + var(--bulk-action-height) + var(--entry-header-height));
+}
+#manage-bulk-actions:not(.hidden) + #installed .entry-header {
+  top: calc(var(--header-height) + var(--bulk-action-height));
+}
+
+.manage-row {
+  padding-left: 10px;
+}
+
 /* highlight updated/added styles */
 .highlight {
   animation: highlight 10s cubic-bezier(0,.82,.47,.98);
@@ -528,6 +548,61 @@ details.applies-to-extra[open] {
 .hidden {
   display: none !important;
 }
+
+
+#filters > label {
+  display: flex;
+  align-items: center;
+  left: -9px;
+  padding: 2px 0 2px 24px;
+}
+
+#filters > label input[type="checkbox"]:not(.slider),
+#filters > label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
+  top: 2px;
+  left: 8px;
+}
+
+#filters > label:hover {
+  background-color: hsla(0, 0%, 50%, .4);
+}
+
+#filters {
+  border: 1px solid transparent;
+}
+
+.active #filters-stats {
+  background-color: darkcyan;
+  border-color: darkcyan;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: normal;
+  padding: 2px 5px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.filter-stats-wrapper {
+  margin-left: .2rem;
+}
+
+#reset-filters svg {
+  fill: hsla(180, 50%, 27%, .5);
+  width: 24px; /* widen the click area a bit */
+  height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+#reset-filters:hover svg {
+  fill: hsla(180, 50%, 27%, 1);
+}
+
+.filter-stats-wrapper:not(.active) #reset-filters,
+.filter-stats-wrapper:not(.active) #filters-stats {
+  display: none;
+}
+
 
 /* drag-n-drop on import button */
 .dropzone:after {

@@ -30,7 +30,7 @@
   <template data-id="style-header">
     <div class="entry-header">
       <div class="entry-col header-filter center-text">
-        <a href="#" id="toggle-all">
+        <a href="#" id="toggle-actions">
           <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
             <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
           </svg>
@@ -50,7 +50,7 @@
   <template data-id="style">
     <div class="entry">
       <div class="entry-col entry-filter">
-        <label>
+        <label class="checkmate" tabindex="0">
           <input class="entry-filter" type="checkbox">
           <svg class="svg-icon checkbox" viewBox="0 0 24 24">
             <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
@@ -60,7 +60,7 @@
       </div>
       <div class="entry-col entry-id"></div>
       <div class="entry-col entry-state">
-        <label>
+        <label class="checkmate" tabindex="0">
           <input class="entry-state-toggle" type="checkbox">
           <svg class="svg-icon checkbox" viewBox="0 0 24 24">
             <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
@@ -216,6 +216,16 @@
   </svg>
   <span class="ext-name">Stylus</span>
   <span class="ext-version"></span>
+  <span class="filter-stats-wrapper">
+    <span id="filters-stats"></span>
+    <a id="reset-filters" href="#" tabindex="0">
+      <svg class="svg-icon" viewBox="0 0 20 20">
+        <title i18n-text="genericResetLabel"></title>
+        <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+          5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+      </svg>
+    </a>
+  </span>
   <span class="tabs">
     <a href="#" class="active">Manage</a>
     <a href="#">Options</a>
@@ -223,123 +233,127 @@
   </span>
 </h1>
 
-<div id="manage-bulk-actions" style="display: none">
-  <input id="search" type="search">
-  <button id="search-help"></button>
-  <!-- <button id="reset-filters"></button> -->
-  <button id="apply-all-updates"></button>
-  <button id="check-all-updates"></button>
-  <button id="check-all-updates-force"></button>
-  <button id="update-history"></button>
-  <button id="file-all-styles"></button>
-  <button id="unfile-all-styles"></button>
-  <button id="manage-options-button"></button>
-  <button id="manage-shortcuts-button"></button>
-  <button id="sorter-help"></button>
-  <input id="manage.newUI" type="checkbox">
-  <select id="manage.newUI.sort"></select>
-  <input id="manage.newUI.faviconsGray" type="checkbox">
-  <input id="manage.newUI.targets" type="number" min="1" max="100" value="3">
-  <input id="manage.newUI.favicons" type="checkbox">
+<div id="manage-bulk-actions" class="hidden">
+  <div id="filters" class="manage-row">
+    <span id="search-wrapper">
+      <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+        data-filter=":not(.not-matching)"
+        data-filter-hide=".not-matching">
+      <a href="#" id="search-help" tabindex="0">
+        <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+      </a>
+    </span>
+    <strong i18n-text="manageFilters"></strong>
+    <span class="filter-selection">
+      <label class="checkmate" tabindex="0">
+          <input id="manage.onlyEnabled" type="checkbox"
+            data-filter=".enabled"
+            data-filter-hide=".disabled">
+          <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+        </svg>
+      </label>
+      <span class="select-resizer">
+        <select id="manage.onlyEnabled.invert">
+          <option i18n-text="manageOnlyEnabled" value="false"></option>
+          <option i18n-text="manageOnlyDisabled" value="true"></option>
+        </select>
+        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      </span>
+    </span>
+
+    <span class="filter-selection">
+      <label class="checkmate" tabindex="0">
+        <input id="manage.onlyLocal" type="checkbox"
+          data-filter=":not(.updatable):not(.update-done)"
+          data-filter-hide=".updatable, .update-done">
+        <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+        </svg>
+      </label>
+      <span class="select-resizer">
+        <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
+          <option i18n-text="manageOnlyLocal" value="false"></option>
+          <option i18n-text="manageOnlyExternal" value="true"></option>
+        </select>
+        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      </span>
+    </span>
+
+    <span class="filter-selection">
+      <label class="checkmate" tabindex="0">
+        <input id="manage.onlyUsercss" type="checkbox"
+          data-filter=".usercss"
+          data-filter-hide=":not(.usercss)">
+        <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+        </svg>
+      </label>
+      <span class="select-resizer">
+        <select id="manage.onlyUsercss.invert">
+          <option i18n-text="manageOnlyUsercss" value="false"></option>
+          <option i18n-text="manageOnlyNonUsercss" value="true"></option>
+        </select>
+        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      </span>
+    </span>
+
+    <label id="only-updates" class="hidden">
+      <label class="checkmate" tabindex="0">
+        <input type="checkbox"
+          data-filter=".can-update, .update-problem, .update-done"
+          data-filter-hide=":not(.updatable):not(.update-done),
+                            .no-update:not(.update-problem),
+                            .updatable:not(.can-update):not(.update-problem):not(.update-done)">
+        <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+        </svg>
+        <span i18n-text="manageOnlyUpdates"></span>
+      </label>
+  </div>
+
+  <div class="manage-row">
+    <label class="checkmate" tabindex="0">
+      <input class="toggle-all-filters" type="checkbox">
+      <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+        <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+        <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+      </svg>
+    </label>
+  </div>
+
+  <div style="display: none">
+    <!-- placeholders -->
+    <input id="search" type="search">
+    <button id="search-help"></button>
+    <!-- <button id="reset-filters"></button> -->
+    <button id="apply-all-updates"></button>
+    <button id="check-all-updates"></button>
+    <button id="check-all-updates-force"></button>
+    <button id="update-history"></button>
+    <button id="file-all-styles"></button>
+    <button id="unfile-all-styles"></button>
+    <button id="manage-options-button"></button>
+    <button id="manage-shortcuts-button"></button>
+    <button id="sorter-help"></button>
+    <input id="manage.newUI" type="checkbox">
+    <select id="manage.newUI.sort"></select>
+    <input id="manage.newUI.faviconsGray" type="checkbox">
+    <input id="manage.newUI.targets" type="number" min="1" max="100" value="3">
+    <input id="manage.newUI.favicons" type="checkbox">
+  </div>
+
 </div>
 
 <div id="installed" class="manage-col-entries"></div>
 
   <!-- <div id="manage-settings">
     <div class="settings-column">
--->
-      <details id="filters" data-pref="manage.filters.expanded" style="display: none">
-        <summary>
-          <h2 i18n-text="manageFilters">:
-            <div class="filter-stats-wrapper">
-              <span id="filters-stats"></span>
-              <a id="reset-filters" href="#" tabindex="0">
-                <svg class="svg-icon" viewBox="0 0 20 20">
-                  <title i18n-text="genericResetLabel"></title>
-                  <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-                                   5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
-                </svg>
-              </a>
-            </div>
-          </h2>
-        </summary>
 
-        <div class="filter-selection">
-          <label>
-            <div class="checkmate">
-              <input id="manage.onlyEnabled" type="checkbox"
-                     data-filter=".enabled"
-                     data-filter-hide=".disabled">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
-          </label>
-          <div class="select-resizer">
-            <select id="manage.onlyEnabled.invert">
-              <option i18n-text="manageOnlyEnabled" value="false"></option>
-              <option i18n-text="manageOnlyDisabled" value="true"></option>
-            </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-          </div>
-        </div>
-
-        <div class="filter-selection">
-          <label>
-            <div class="checkmate">
-              <input id="manage.onlyLocal" type="checkbox"
-                     data-filter=":not(.updatable):not(.update-done)"
-                     data-filter-hide=".updatable, .update-done">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
-          </label>
-          <div class="select-resizer">
-            <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
-              <option i18n-text="manageOnlyLocal" value="false"></option>
-              <option i18n-text="manageOnlyExternal" value="true"></option>
-            </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-          </div>
-        </div>
-
-        <div class="filter-selection">
-          <label>
-            <div class="checkmate">
-              <input id="manage.onlyUsercss" type="checkbox"
-                     data-filter=".usercss"
-                     data-filter-hide=":not(.usercss)">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
-          </label>
-          <div class="select-resizer">
-            <select id="manage.onlyUsercss.invert">
-              <option i18n-text="manageOnlyUsercss" value="false"></option>
-              <option i18n-text="manageOnlyNonUsercss" value="true"></option>
-            </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-          </div>
-        </div>
-
-        <label id="only-updates" class="hidden">
-          <input type="checkbox"
-                 data-filter=".can-update, .update-problem, .update-done"
-                 data-filter-hide=":not(.updatable):not(.update-done),
-                                   .no-update:not(.update-problem),
-                                   .updatable:not(.can-update):not(.update-problem):not(.update-done)">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n-text="manageOnlyUpdates"></span>
-        </label>
-
-        <div id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
-                 data-filter=":not(.not-matching)"
-                 data-filter-hide=".not-matching">
-          <a href="#" id="search-help" tabindex="0">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </a>
-        </div>
-
-      </details>
-
-      <!--
       <div id="sort-wrapper">
         <div class="sorter-selection" i18n-title="sortLabel">
           <select id="manage.newUI.sort"></select>

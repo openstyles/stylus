@@ -101,9 +101,6 @@ function init() {
 
   $$('[data-filter]').forEach(el => {
     el.onchange = filterOnChange;
-    if (el.closest('.hidden')) {
-      el.checked = false;
-    }
   });
 
   $('#reset-filters').onclick = event => {
@@ -150,7 +147,7 @@ function filterOnChange({target: el, forceRefilter}) {
     }
     el.lastValue = value;
   }
-  const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
+  const enabledFilters = $$('#filters [data-filter]').filter(el => getValue(el));
   const buildFilter = hide =>
     (hide ? '' : '.entry.hidden') +
     [...enabledFilters.map(el =>
@@ -262,9 +259,9 @@ function reapplyFilter(container = installed, alreadySearched) {
 
 function showFiltersStats() {
   const active = filtersSelector.hide !== '';
-  $('#filters summary').classList.toggle('active', active);
+  $('.filter-stats-wrapper').classList.toggle('active', active);
   $('#reset-filters').disabled = !active;
-  const numTotal = installed.children.length;
+  const numTotal = installed.children.length - 1; // Don't include the header
   const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = numTotal - numHidden;
   if (filtersSelector.numShown !== numShown ||

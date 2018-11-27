@@ -74,12 +74,17 @@ function initGlobalEvents() {
 
   document.addEventListener('keydown', event => {
     if (event.which === 27) {
-      // close all open applies-to details
+      // close all open "applies-to" details
       $$('.applies-to-extra[open]').forEach(el => {
         el.removeAttribute('open');
       });
+      // Close bulk actions
+      $('#manage-bulk-actions').classList.add('hidden');
+    } else if (event.which === 32 && event.target.classList.contains('checkmate')) {
+      // pressing space toggles the containing checkbox
+      $('input[type="checkbox"]', event.target).click();
     }
-  })
+  });
 
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
@@ -123,7 +128,8 @@ Object.assign(handleEvent, {
     '.check-update': 'check',
     '.update': 'update',
     '.entry-delete': 'delete',
-    '.entry-configure-usercss': 'config'
+    '.entry-configure-usercss': 'config',
+    '#toggle-actions': 'toggleBulkActions'
   },
 
   entryClicked(event) {
@@ -180,6 +186,10 @@ Object.assign(handleEvent, {
 
   toggle(event, entry) {
     API.toggleStyle(entry.styleId, this.matches('.enable') || this.checked);
+  },
+
+  toggleBulkActions() {
+    $('#manage-bulk-actions').classList.toggle('hidden');
   },
 
   check(event, entry) {
