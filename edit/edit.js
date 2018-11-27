@@ -174,11 +174,30 @@ preinit();
         $('#beautify').onclick = () => beautify(editor.getEditors());
         $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
         window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
-        editor = usercss ? createSourceEditor(style) : createSectionsEditor(style);
+        editor = (usercss ? createSourceEditor : createSectionsEditor)({
+          style,
+          onTitleChanged: updateTitle
+        });
+        editor.dirty.onChange(updateDirty);
         if (editor.ready) {
           return editor.ready();
         }
       });
+  }
+
+  function updateTitle() {
+    if (editor) {
+      const styleName = editor.getStyle().name;
+      const isDirty = editor.dirty.isDirty();
+      document.title = (isDirty ? '* ' : '') + styleName;
+    }
+  }
+
+  function updateDirty() {
+    const isDirty = editor.dirty.isDirty();
+    document.body.classList.toggle('dirty', isDirty);
+    $('#save-button').disabled = !isDirty;
+    updateTitle();
   }
 })();
 
@@ -306,7 +325,7 @@ function beforeUnload(e) {
     // refocus if unloading was canceled
     setTimeout(() => activeElement.focus());
   }
-  if (editor && editor.isDirty()) {
+  if (editor && editor.dirty.isDirty()) {
     // neither confirm() nor custom messages work in modern browsers but just in case
     e.returnValue = t('styleChangesNotSaved');
   }

@@ -6,7 +6,7 @@
 /* exported createSourceEditor */
 'use strict';
 
-function createSourceEditor(style) {
+function createSourceEditor({style, onTitleChanged}) {
   $('#name').disabled = true;
   $('#save-button').disabled = true;
   $('#mozilla-format-container').remove();
@@ -16,7 +16,6 @@ function createSourceEditor(style) {
   $('#sections').appendChild($create('.single-editor'));
 
   const dirty = dirtyReporter();
-  dirty.onChange(updateDirty);
 
   // normalize style
   if (!style.id) setupNewStyle(style);
@@ -166,16 +165,8 @@ function createSourceEditor(style) {
     $('#name').value = style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    updateDirty();
+    onTitleChanged();
     return cm.setPreprocessor((style.usercssData || {}).preprocessor);
-  }
-
-  function updateDirty() {
-    const isDirty = dirty.isDirty();
-    const name = style.id ? style.name : t('addStyleTitle');
-    document.title = (isDirty ? '* ' : '') + name;
-    document.body.classList.toggle('dirty', isDirty);
-    $('#save-button').disabled = !isDirty;
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
@@ -380,7 +371,7 @@ function createSourceEditor(style) {
 
   return {
     replaceStyle,
-    isDirty: dirty.isDirty,
+    dirty,
     getStyle: () => style,
     getEditors: () => [cm],
     scrollToEditor: () => {},
