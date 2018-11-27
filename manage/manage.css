@@ -55,7 +55,9 @@ a:hover {
   fill: #666;
 }
 
-.entry-actions > a {
+.entry-actions > a,
+.bulk-actions-select,
+#bulk-actions-apply {
   margin-left: 2px;
 }
 
@@ -292,7 +294,8 @@ a svg, .svg-icon.sort {
 
 .checkmate input[type="checkbox"],
 .checkmate input:checked + svg.checkbox .circle,
-.checkmate input:not(:checked) + svg .checkmark {
+.checkmate input:not(:checked) + svg .checkmark,
+.checkmate input:not(:indeterminate) + svg .indeterminate {
   display: none;
 }
 
@@ -524,8 +527,27 @@ details.applies-to-extra[open] {
   top: calc(var(--header-height) + var(--bulk-action-height));
 }
 
+#manage-bulk-actions .select-resizer {
+  background: #fff;
+}
+
 .manage-row {
-  padding-left: 10px;
+  padding: 2px 10px;
+  display: flex;
+  align-items: center;
+}
+
+#filters,
+.toggle-all {
+  margin-right: 20px;
+}
+
+#search {
+  width: 15vw;
+}
+
+#search-help {
+  text-decoration: none;
 }
 
 /* highlight updated/added styles */

@@ -127,6 +127,7 @@ const sorter = (() => {
   function update() {
     if (!installed) return;
     const current = [...installed.children];
+    current.shift(); // remove header
     const sorted = sort({
       styles: current.map(entry => ({
         entry,

@@ -38,6 +38,7 @@ onDOMready().then(() => {
     let textAtPos = 1e6;
     let rotated;
     const entries = [...installed.children];
+    entries.shift(); // remove header
     const focusedIndex = entries.indexOf(focusedEntry);
     if (focusedIndex > 0) {
       if (direction > 0) {
@@ -63,7 +64,7 @@ onDOMready().then(() => {
     }
     if (found && found !== focusedEntry) {
       focusedEntry = found;
-      focusedLink = $('.style-name-link', found);
+      focusedLink = $('.entry-name', found);
       focusedName = found.styleNameLowerCase;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
       animateElement(found, {className: 'highlight-quick'});

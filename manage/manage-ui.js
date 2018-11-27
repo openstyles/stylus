@@ -269,18 +269,19 @@ const UI = {
   },
 
   addLabels: ({entry, style}) => {
-    const container = $('div.entry-name', entry);
+    const container = $('.entry-labels', entry);
     const label = document.createElement('span');
-    const fragment = document.createDocumentFragment();
+    const labels = document.createElement('span');
+    labels.className = 'entry-labels';
     label.className = 'entry-label ';
     Object.keys(UI.labels).forEach(item => {
       if (UI.labels[item].is(style)) {
         const newLabel = label.cloneNode(true);
         newLabel.className += item;
         newLabel.textContent = UI.labels[item].text;
-        fragment.appendChild(newLabel);
+        labels.appendChild(newLabel);
       }
     });
-    container.appendChild(fragment);
+    container.replaceWith(labels);
   }
 };

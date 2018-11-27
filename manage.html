@@ -30,7 +30,7 @@
   <template data-id="style-header">
     <div class="entry-header">
       <div class="entry-col header-filter center-text">
-        <a href="#" id="toggle-actions">
+        <a href="#" id="toggle-actions" i18n-title="bulkActionsTooltip">
           <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
             <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
           </svg>
@@ -51,7 +51,7 @@
     <div class="entry">
       <div class="entry-col entry-filter">
         <label class="checkmate" tabindex="0">
-          <input class="entry-filter" type="checkbox">
+          <input class="entry-filter-toggle" type="checkbox">
           <svg class="svg-icon checkbox" viewBox="0 0 24 24">
             <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
             <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
@@ -70,6 +70,7 @@
       </div>
       <div class="entry-col entry-name">
         <a class="entry-name"></a>
+        <span class="entry-labels"></span>
       </div>
       <div class="entry-col entry-actions">
         <a class="entry-homepage">
@@ -210,9 +211,20 @@
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
 
 <h1 id="header">
-  <svg width="32" height="32" viewBox="0 0 48 48">
-    <path fill="#285959" d="M44.59 20.14c-.02-.86 0-13.6 0-13.6-.02-4.13-2.5-5.62-6.6-5.64H11.28C7.17.92 4.59 2.44 4.65 6.54v14.2c0 1.64-3.02 1.55-3.02 1.55v3.48s3.05.03 3.02 1.97v13.88c0 4.15 2.5 5.63 6.63 5.63h26.71c4.13.02 6.6-1.45 6.6-5.63V27.35c0-1.54 2.98-1.57 2.98-1.57l.04-3.84s-3-.07-3.02-1.8z"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" fill="#28FEFE" d="M46 20.98V5.62A5.72 5.72 0 0 0 40.22.03H8.66a5.63 5.63 0 0 0-5.68 5.59v15.37H0v6h2.98v15.4a5.67 5.67 0 0 0 5.68 5.64h31.56A5.76 5.76 0 0 0 46 42.39V26.94h2.03v-5.98l-2.03.02zm-2 5.65v13.76c0 4.19-2.43 5.65-6.56 5.64H10.66c-4.13 0-5.69-1.48-5.69-5.64V27.1c.04-1.94-2.93-1.97-2.93-1.97v-2.21s2.93.09 2.93-1.54c.05-.52 0-13.84 0-13.84-.05-4.1 1.57-5.57 5.68-5.59h26.79c4.1.02 6.54 1.46 6.56 5.59 0 0 .08 12.87 0 13.4.02 1.73 1.98 1.94 1.98 1.94v2.19S44 25.09 44 26.63zm-16.76-6.2c-4.56-1.71-6.47-2.7-6.47-4.92 0-1.77 1.65-3.37 5.07-3.37 3.37 0 5.9.98 7.26 1.66l1.76-6.33c-2.08-.98-4.92-1.76-8.91-1.76-8.19 0-13.22 4.51-13.22 10.47 0 5.08 3.84 8.29 9.64 10.36 4.2 1.45 5.86 2.7 5.86 4.87 0 2.28-1.92 3.78-5.55 3.78-3.37 0-6.68-1.09-8.75-2.17l-1.61 6.47c1.97 1.1 5.9 2.18 9.9 2.18 9.58 0 14.04-4.98 14.04-10.83 0-4.92-2.85-8.13-9.02-10.41z"/>
+  <svg id="stylus-logo" width="32" height="32" viewBox="0 0 48 48">
+    <path fill="#285959" d="M44.59 20.14c-.02-.86 0-13.6 0-13.6-.02-4.13-2.5-5.62-6.6-5.64H11.28C7.17.92
+      4.59 2.44 4.65 6.54v14.2c0 1.64-3.02 1.55-3.02 1.55v3.48s3.05.03 3.02 1.97v13.88c0 4.15 2.5 5.63
+      6.63 5.63h26.71c4.13.02 6.6-1.45 6.6-5.63V27.35c0-1.54 2.98-1.57 2.98-1.57l.04-3.84s-3-.07-3.02-1.8z"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" fill="#28FEFE" d="M46 20.98V5.62A5.72 5.72 0 0 0
+      40.22.03H8.66a5.63 5.63 0 0 0-5.68 5.59v15.37H0v6h2.98v15.4a5.67 5.67 0 0 0 5.68 5.64h31.56A5.76
+      5.76 0 0 0 46 42.39V26.94h2.03v-5.98l-2.03.02zm-2 5.65v13.76c0 4.19-2.43 5.65-6.56 5.64H10.66c-4.13
+      0-5.69-1.48-5.69-5.64V27.1c.04-1.94-2.93-1.97-2.93-1.97v-2.21s2.93.09 2.93-1.54c.05-.52 0-13.84
+      0-13.84-.05-4.1 1.57-5.57 5.68-5.59h26.79c4.1.02 6.54 1.46 6.56 5.59 0 0 .08 12.87 0 13.4.02 1.73
+      1.98 1.94 1.98 1.94v2.19S44 25.09 44 26.63zm-16.76-6.2c-4.56-1.71-6.47-2.7-6.47-4.92 0-1.77 1.65-3.37
+      5.07-3.37 3.37 0 5.9.98 7.26 1.66l1.76-6.33c-2.08-.98-4.92-1.76-8.91-1.76-8.19 0-13.22 4.51-13.22
+      10.47 0 5.08 3.84 8.29 9.64 10.36 4.2 1.45 5.86 2.7 5.86 4.87 0 2.28-1.92 3.78-5.55 3.78-3.37
+      0-6.68-1.09-8.75-2.17l-1.61 6.47c1.97 1.1 5.9 2.18 9.9 2.18 9.58 0 14.04-4.98 14.04-10.83
+      0-4.92-2.85-8.13-9.02-10.41z"/>
   </svg>
   <span class="ext-name">Stylus</span>
   <span class="ext-version"></span>
@@ -234,75 +246,68 @@
 </h1>
 
 <div id="manage-bulk-actions" class="hidden">
-  <div id="filters" class="manage-row">
-    <span id="search-wrapper">
-      <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
-        data-filter=":not(.not-matching)"
-        data-filter-hide=".not-matching">
-      <a href="#" id="search-help" tabindex="0">
-        <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-      </a>
-    </span>
-    <strong i18n-text="manageFilters"></strong>
-    <span class="filter-selection">
-      <label class="checkmate" tabindex="0">
-          <input id="manage.onlyEnabled" type="checkbox"
-            data-filter=".enabled"
-            data-filter-hide=".disabled">
+
+  <div class="manage-row">
+    <span id="filters">
+      <strong i18n-text="manageFilters"></strong>
+      <span class="filter-selection">
+        <label class="checkmate" tabindex="0">
+            <input id="manage.onlyEnabled" type="checkbox"
+              data-filter=".enabled"
+              data-filter-hide=".disabled">
+            <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+            <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+            <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+          </svg>
+        </label>
+        <span class="select-resizer">
+          <select id="manage.onlyEnabled.invert">
+            <option i18n-text="manageOnlyEnabled" value="false"></option>
+            <option i18n-text="manageOnlyDisabled" value="true"></option>
+          </select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </span>
+      </span>
+
+      <span class="filter-selection">
+        <label class="checkmate" tabindex="0">
+          <input id="manage.onlyLocal" type="checkbox"
+            data-filter=":not(.updatable):not(.update-done)"
+            data-filter-hide=".updatable, .update-done">
           <svg class="svg-icon checkbox" viewBox="0 0 24 24">
-          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
-          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
-        </svg>
-      </label>
-      <span class="select-resizer">
-        <select id="manage.onlyEnabled.invert">
-          <option i18n-text="manageOnlyEnabled" value="false"></option>
-          <option i18n-text="manageOnlyDisabled" value="true"></option>
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+            <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+            <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+          </svg>
+        </label>
+        <span class="select-resizer">
+          <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
+            <option i18n-text="manageOnlyLocal" value="false"></option>
+            <option i18n-text="manageOnlyExternal" value="true"></option>
+          </select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </span>
       </span>
-    </span>
 
-    <span class="filter-selection">
-      <label class="checkmate" tabindex="0">
-        <input id="manage.onlyLocal" type="checkbox"
-          data-filter=":not(.updatable):not(.update-done)"
-          data-filter-hide=".updatable, .update-done">
-        <svg class="svg-icon checkbox" viewBox="0 0 24 24">
-          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
-          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
-        </svg>
-      </label>
-      <span class="select-resizer">
-        <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
-          <option i18n-text="manageOnlyLocal" value="false"></option>
-          <option i18n-text="manageOnlyExternal" value="true"></option>
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      <span class="filter-selection">
+        <label class="checkmate" tabindex="0">
+          <input id="manage.onlyUsercss" type="checkbox"
+            data-filter=".usercss"
+            data-filter-hide=":not(.usercss)">
+          <svg class="svg-icon checkbox" viewBox="0 0 24 24">
+            <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
+            <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+          </svg>
+        </label>
+        <span class="select-resizer">
+          <select id="manage.onlyUsercss.invert">
+            <option i18n-text="manageOnlyUsercss" value="false"></option>
+            <option i18n-text="manageOnlyNonUsercss" value="true"></option>
+          </select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </span>
       </span>
-    </span>
 
-    <span class="filter-selection">
-      <label class="checkmate" tabindex="0">
-        <input id="manage.onlyUsercss" type="checkbox"
-          data-filter=".usercss"
-          data-filter-hide=":not(.usercss)">
-        <svg class="svg-icon checkbox" viewBox="0 0 24 24">
-          <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
-          <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
-        </svg>
-      </label>
-      <span class="select-resizer">
-        <select id="manage.onlyUsercss.invert">
-          <option i18n-text="manageOnlyUsercss" value="false"></option>
-          <option i18n-text="manageOnlyNonUsercss" value="true"></option>
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-      </span>
-    </span>
-
-    <label id="only-updates" class="hidden">
-      <label class="checkmate" tabindex="0">
+      <label id="only-updates" class="hidden checkmate" tabindex="0">
         <input type="checkbox"
           data-filter=".can-update, .update-problem, .update-done"
           data-filter-hide=":not(.updatable):not(.update-done),
@@ -314,16 +319,41 @@
         </svg>
         <span i18n-text="manageOnlyUpdates"></span>
       </label>
+    </span>
+
+    <span id="search-wrapper">
+      <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+        data-filter=":not(.not-matching)"
+        data-filter-hide=".not-matching">
+      <a href="#" id="search-help" tabindex="0">
+        <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+      </a>
+    </span>
   </div>
 
   <div class="manage-row">
-    <label class="checkmate" tabindex="0">
-      <input class="toggle-all-filters" type="checkbox">
-      <svg class="svg-icon checkbox" viewBox="0 0 24 24">
-        <path class="circle" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8.01 8.01 0 0 1 0-16 8.01 8.01 0 0 1 0 16z"/>
-        <path class="checkmark" d="M16.59 7.52L10 14.11l-2.59-2.58L6 12.94l4 4 8-8z"/>
+    <label class="checkmate toggle-all" tabindex="0">
+      <input id="toggle-all-filters" type="checkbox">
+      <svg class="svg-icon checkbox" viewBox="0 0 14 14">
+        <path class="circle" d="M7 1.2a5.8 5.8 0 1 0 0 11.6A5.8 5.8 0 0 0 7 1.2zm0 10.5a4.7 4.7 0 0 1 0-9.4 4.7 4.7 0 0 1 0 9.4z"/>
+        <path class="checkmark" d="M9.6 4.5L5.8 8.3 4.3 6.8l-.8.8L5.8 10l4.7-4.7-.9-.8z"/>
+        <path class="indeterminate" d="M3.5 6.3h7v1.4h-7z"/>
       </svg>
     </label>
+    <span i18n-text="bulkActions"></span>
+    <span class="select-resizer bulk-actions-select">
+      <select id="bulk-actions" i18n-title="manageOnlyLocalTooltip">
+        <option i18n-text="bulkActionsSelect" value=""></option>
+        <option i18n-text="enableStyleLabel" value="enable"></option>
+        <option i18n-text="disableStyleLabel" value="disable"></option>
+        <option i18n-text="exportLabel" value="export"></option>
+        <option i18n-text="checkForUpdate" value="update"></option>
+        <option i18n-text="genericResetLabel" value="reset"></option>
+        <option i18n-text="deleteStyleLabel" value="delete"></option>
+      </select>
+      <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+    </span>
+    <button id="bulk-actions-apply"i18n-text="bulkActionsApply"></button>
   </div>
 
   <div style="display: none">

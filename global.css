@@ -136,6 +136,7 @@ select {
   color: #000;
   background-color: transparent;
   border: 1px solid hsl(0, 0%, 66%);
+  border-radius: 2px;
   padding: 0 20px 0 6px;
   transition: color .5s;
 }

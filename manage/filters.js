@@ -101,6 +101,9 @@ function init() {
 
   $$('[data-filter]').forEach(el => {
     el.onchange = filterOnChange;
+    if (el.closest('.hidden')) {
+      el.checked = false;
+    }
   });
 
   $('#reset-filters').onclick = event => {
@@ -108,7 +111,7 @@ function init() {
     if (!filtersSelector.hide) {
       return;
     }
-    for (const el of $$('#filters [data-filter]')) {
+    for (const el of $$('#manage-bulk-actions [data-filter]')) {
       let value;
       if (el.type === 'checkbox' && el.checked) {
         value = el.checked = false;
@@ -126,14 +129,6 @@ function init() {
     router.updateSearch('search', '');
   };
 
-  // Adjust width after selects are visible
-  prefs.subscribe(['manage.filters.expanded'], () => {
-    const el = $('#filters');
-    if (el.open) {
-      $$('select', el).forEach(select => select.adjustWidth());
-    }
-  });
-
   filterOnChange({forceRefilter: true});
 }
 
@@ -147,7 +142,7 @@ function filterOnChange({target: el, forceRefilter}) {
     }
     el.lastValue = value;
   }
-  const enabledFilters = $$('#filters [data-filter]').filter(el => getValue(el));
+  const enabledFilters = $$('#manage-bulk-actions [data-filter]').filter(el => getValue(el));
   const buildFilter = hide =>
     (hide ? '' : '.entry.hidden') +
     [...enabledFilters.map(el =>

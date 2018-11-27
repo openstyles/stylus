@@ -1214,6 +1214,22 @@
     "message": "</> key focuses the search field.\nPlain text: search within the name, code, homepage URL and sites it is applied to. Words with less than 3 letters are ignored.\nStyles matching a full URL: prefix the search with <url:>, e.g. <url:https://github.com/openstyles/stylus>\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/simguy>\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
+  "bulkActions": {
+    "message": "Apply actions to selected styles",
+    "description": "Label for bulk actions select dropdown"
+  },
+  "bulkActionsSelect": {
+    "message": "Choose a bulk action",
+    "description": "Placeholder text in dropdown to tell the user to choose an action to apply to all selected styles"
+  },
+  "bulkActionsApply": {
+    "message": "Apply",
+    "description": "Text for button to apply the selected action"
+  },
+  "bulkActionsTooltip": {
+    "message": "Click to open the filter, search and bulk actions panel",
+    "description": "Text for button to apply the selected action"
+  },
   "sectionAdd": {
     "message": "Add another section",
     "description": "Label for the button to add a section"
