@@ -148,6 +148,9 @@ function reportUpdateState({updated, style, error, STATES}) {
       error = t('updateCheckSkippedLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
     } else if (error === STATES.MAYBE_EDITED) {
       error = t('updateCheckSkippedMaybeLocallyEdited') + '\n' + t('updateCheckManualUpdateHint');
+    } else if (typeof error === 'object' && error.message) {
+      // UserCSS meta errors provide an object
+      error = error.message;
     }
     const message = same ? t('updateCheckSucceededNoUpdate') : error;
     newClasses.set('no-update', true);

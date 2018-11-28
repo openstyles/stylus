@@ -130,6 +130,10 @@ function initPopup() {
           return;
         }
         const info = template.unreachableInfo;
+        if (!FIREFOX) {
+          // Chrome "Allow access to file URLs" in chrome://extensions message
+          info.appendChild($create('p', t('unreachableFileHint')));
+        }
         if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
           $('label', info).textContent = t('unreachableAMO');
           const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
@@ -137,9 +141,11 @@ function initPopup() {
           const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
           const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
           const noteNode = $create('fragment', note.split('\n').map(renderLine));
-          const target = $('p', info);
-          target.parentNode.insertBefore(noteNode, target);
-          target.remove();
+          info.appendChild(noteNode);
+        }
+        // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
+        if (tabURL.length - tabURL.lastIndexOf(".") <= 5) {
+          info.appendChild($create('p', t('InaccessibleFileHint')));
         }
         document.body.classList.add('unreachable');
         document.body.insertBefore(info, document.body.firstChild);

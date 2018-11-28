@@ -230,7 +230,7 @@
 
   // editor commands
   for (const name of ['save', 'toggleStyle', 'nextEditor', 'prevEditor']) {
-    CodeMirror.commands[name] = () => editor[name]();
+    CodeMirror.commands[name] = (...args) => editor[name](...args);
   }
 
   // CodeMirror convenience commands

@@ -364,14 +364,14 @@ input:invalid {
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
-body[data-match-highlight="token"] .cm-matchhighlight-approved .cm-matchhighlight,
-body[data-match-highlight="token"] .CodeMirror-selection-highlight-scrollbar {
+body:not(.find-open) .cm-matchhighlight,
+body:not(.find-open) .CodeMirror-selection-highlight-scrollbar {
   animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
   animation-fill-mode: both;
 }
-body[data-match-highlight="selection"] .cm-matchhighlight-approved .cm-matchhighlight,
-body[data-match-highlight="selection"] .CodeMirror-selection-highlight-scrollbar {
-  background-color: rgba(1, 151, 193, 0.1);
+body:not(.find-open) [data-match-highlight-count="1"] .cm-matchhighlight,
+body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
+  animation: none;
 }
 @-webkit-keyframes highlight {
   from {

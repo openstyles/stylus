@@ -554,7 +554,8 @@ body.blocked .actions > .main-controls {
 }
 
 .blocked-info {
-  hyphens: auto;
+  hyphens: none;
+  word-wrap: break-word;
 }
 
 .blocked-info label {

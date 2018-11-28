@@ -56,7 +56,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     return browser.runtime.openOptionsPage()
       .then(() => new Promise(resolve => setTimeout(resolve, 100)))
       .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
-  },
+  }
 });
 
 // eslint-disable-next-line no-var
@@ -150,6 +150,9 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   });
   // themes may change
   delete localStorage.codeMirrorThemes;
+  // save install type: "admin", "development", "normal", "sideload" or "other"
+  // "normal" = addon installed from webstore
+  chrome.management.getSelf(info => localStorage.installType = info.installType);
 });
 
 // *************************************************************************

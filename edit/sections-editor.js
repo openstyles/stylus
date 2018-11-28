@@ -6,10 +6,9 @@
 /* exported createSectionsEditor */
 'use strict';
 
-function createSectionsEditor(style) {
+function createSectionsEditor({style, onTitleChanged}) {
   let INC_ID = 0; // an increment id that is used by various object to track the order
   const dirty = dirtyReporter();
-  dirty.onChange(updateTitle);
 
   const container = $('#sections');
   const sections = [];
@@ -18,7 +17,7 @@ function createSectionsEditor(style) {
   nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
     style.name = nameEl.value;
-    updateTitle();
+    onTitleChanged();
   });
 
   const enabledEl = $('#enabled');
@@ -64,7 +63,7 @@ function createSectionsEditor(style) {
   return {
     ready: () => initializing,
     replaceStyle,
-    isDirty: dirty.isDirty,
+    dirty,
     getStyle: () => style,
     getEditors,
     scrollToEditor,
@@ -201,33 +200,25 @@ function createSectionsEditor(style) {
   }
 
   function nextEditor(cm, cycle = true) {
-    if (!cycle) {
-      for (const section of sections) {
-        if (section.isRemoved()) {
-          continue;
-        }
-        if (cm === section.cm) {
-          return;
-        }
-        break;
-      }
+    if (!cycle && findLast(sections, s => !s.isRemoved()).cm === cm) {
+      return;
     }
     return nextPrevEditor(cm, 1);
   }
 
   function prevEditor(cm, cycle = true) {
-    if (!cycle) {
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (sections[i].isRemoved()) {
-          continue;
-        }
-        if (cm === sections[i].cm) {
-          return;
-        }
-        break;
-      }
+    if (!cycle && sections.find(s => !s.isRemoved()).cm === cm) {
+      return;
     }
     return nextPrevEditor(cm, -1);
+  }
+
+  function findLast(arr, match) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (match(arr[i])) {
+        return arr[i];
+      }
+    }
   }
 
   function nextPrevEditor(cm, direction) {
@@ -421,7 +412,7 @@ function createSectionsEditor(style) {
     nameEl.value = style.name || '';
     enabledEl.checked = style.enabled !== false;
     $('#url').href = style.url || '';
-    updateTitle();
+    onTitleChanged();
   }
 
   function updateLivePreview() {
@@ -430,14 +421,6 @@ function createSectionsEditor(style) {
 
   function _updateLivePreview() {
     livePreview.update(getModel());
-  }
-
-  function updateTitle() {
-    const name = style.name;
-    const clean = !dirty.isDirty();
-    const title = !style.id ? t('addStyleTitle') : name;
-    document.title = (clean ? '' : '* ') + title;
-    $('#save-button').disabled = clean;
   }
 
   function initSection({
