@@ -27,26 +27,6 @@
     * i18n-anything attribute automatically creates "anything" attribute
   -->
 
-  <template data-id="style-header">
-    <div class="entry-header">
-      <div class="entry-col header-filter center-text">
-        <a href="#" id="toggle-actions" i18n-title="bulkActionsTooltip">
-          <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
-            <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
-          </svg>
-        </a>
-      </div>
-      <div class="entry-col header-id">#</div>
-      <div class="entry-col header-state center-text" i18n-text="genericEnabledLabel"></div>
-      <div class="entry-col header-name" i18n-text="genericName"></div>
-      <div class="entry-col header-actions" i18n-text="optionsActions"></div>
-      <div class="entry-col header-sort center-text" i18n-text="sortHeader"></div>
-      <div class="entry-col header-version">v#</div>
-      <div class="entry-col header-last-update center-text" i18n-text="searchResultUpdated"></div>
-      <div class="entry-col header-applies-to" i18n-text="appliesLabel"></div>
-    </div>
-  </template>
-
   <template data-id="style">
     <div class="entry">
       <div class="entry-col entry-filter">
@@ -379,7 +359,25 @@
 
 </div>
 
-<div id="installed" class="manage-col-entries"></div>
+<div id="installed" class="manage-col-entries">
+  <header class="entry-header">
+    <div class="entry-col header-filter center-text">
+      <a href="#" id="toggle-actions" i18n-title="bulkActionsTooltip">
+        <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
+          <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
+        </svg>
+      </a>
+    </div>
+    <div class="entry-col header-id">#</div>
+    <div class="entry-col header-state center-text" i18n-text="genericEnabledLabel"></div>
+    <div class="entry-col header-name" i18n-text="genericName"></div>
+    <div class="entry-col header-actions" i18n-text="optionsActions"></div>
+    <div class="entry-col header-sort center-text" i18n-text="sortHeader"></div>
+    <div class="entry-col header-version">v#</div>
+    <div class="entry-col header-last-update center-text" i18n-text="searchResultUpdated"></div>
+    <div class="entry-col header-applies-to" i18n-text="appliesLabel"></div>
+  </header>
+</div>
 
   <!-- <div id="manage-settings">
     <div class="settings-column">

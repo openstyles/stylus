@@ -66,10 +66,6 @@ const UI = {
     function renderStyles() {
       const t0 = performance.now();
       let rendered = 0;
-      if (!$('.entry-header', installed)) {
-        const header = template['style-header'].cloneNode(true);
-        installed.appendChild(header);
-      }
       while (
         index < sorted.length &&
         // eslint-disable-next-line no-unmodified-loop-condition
