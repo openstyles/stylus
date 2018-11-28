@@ -6,10 +6,9 @@
 /* exported createSectionsEditor */
 'use strict';
 
-function createSectionsEditor(style) {
+function createSectionsEditor({style, onTitleChanged}) {
   let INC_ID = 0; // an increment id that is used by various object to track the order
   const dirty = dirtyReporter();
-  dirty.onChange(updateTitle);
 
   const container = $('#sections');
   const sections = [];
@@ -18,7 +17,7 @@ function createSectionsEditor(style) {
   nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
     style.name = nameEl.value;
-    updateTitle();
+    onTitleChanged();
   });
 
   const enabledEl = $('#enabled');
@@ -64,7 +63,7 @@ function createSectionsEditor(style) {
   return {
     ready: () => initializing,
     replaceStyle,
-    isDirty: dirty.isDirty,
+    dirty,
     getStyle: () => style,
     getEditors,
     scrollToEditor,
@@ -413,7 +412,7 @@ function createSectionsEditor(style) {
     nameEl.value = style.name || '';
     enabledEl.checked = style.enabled !== false;
     $('#url').href = style.url || '';
-    updateTitle();
+    onTitleChanged();
   }
 
   function updateLivePreview() {
@@ -422,14 +421,6 @@ function createSectionsEditor(style) {
 
   function _updateLivePreview() {
     livePreview.update(getModel());
-  }
-
-  function updateTitle() {
-    const name = style.name;
-    const clean = !dirty.isDirty();
-    const title = !style.id ? t('addStyleTitle') : name;
-    document.title = (clean ? '' : '* ') + title;
-    $('#save-button').disabled = clean;
   }
 
   function initSection({
