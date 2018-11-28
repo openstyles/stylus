@@ -752,8 +752,14 @@ onDOMready().then(() => {
   function makeTargetVisible(element) {
     const old = $('.' + TARGET_CLASS);
     if (old !== element) {
-      if (old) old.classList.remove(TARGET_CLASS);
-      if (element) element.classList.add(TARGET_CLASS);
+      if (old) {
+        old.classList.remove(TARGET_CLASS);
+        document.body.classList.remove('find-open');
+      }
+      if (element) {
+        element.classList.add(TARGET_CLASS);
+        document.body.classList.add('find-open');
+      }
     }
   }
 

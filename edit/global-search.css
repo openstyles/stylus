@@ -181,15 +181,31 @@
   opacity: 1;
 }
 
-/*********** CodeMirror ****************/
-
-.search-target-editor {
-  outline: 1px solid darkorange;
+/*********** CM search highlight restyling, which shouldn't need color variables ****************/
+body.find-open .search-target-editor {
+  outline-color: darkorange !important;
 }
 
-#stylus .search-target-match {
+body.find-open .cm-searching {
+  background-color: rgba(255, 255, 0, .4);
+}
+
+body.find-open .cm-searching.search-target-match {
   background-color: darkorange;
   color: black;
+}
+
+body.find-open .CodeMirror-search-match {
+  background: gold;
+  border-top: 1px solid orange;
+  border-bottom: 1px solid orange;
+}
+
+/* hide default CM search highlight styling */
+body .cm-searching,
+body .CodeMirror-search-match {
+  background-color: transparent;
+  border-color: transparent;
 }
 
 @media (max-width: 500px) {
