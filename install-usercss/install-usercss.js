@@ -16,7 +16,8 @@
   let port;
 
   if (params.has('direct')) {
-    $('.live-reload').textContent = t('liveReloadUnavailable');
+    $('.live-reload input').classList.add('hidden');
+    $('.live-reload span').textContent = t('liveReloadUnavailable');
     $('.live-reload').classList.add('unavailable');
     getCodeDirectly();
   } else {
@@ -317,7 +318,8 @@
       checker.disabled = true;
     } else if (updateUrl.href === DUMMY_URL) {
       // drag'n'dropped on the manage page and the style doesn't have @updateURL
-      $('.set-update-url').textContent = t('installUpdateUnavailable');
+      $('.set-update-url input').classList.add('hidden')
+      $('.set-update-url span').textContent = t('installUpdateUnavailable');
       $('.set-update-url').classList.add('unavailable');
       return;
     } else if (updateUrl.protocol !== 'file:') {
