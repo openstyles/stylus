@@ -179,9 +179,8 @@ preinit();
           onTitleChanged: updateTitle
         });
         editor.dirty.onChange(updateDirty);
-        if (editor.ready) {
-          return editor.ready();
-        }
+        return Promise.resolve(editor.ready && editor.ready())
+          .then(updateDirty);
       });
   }
 
