@@ -364,13 +364,13 @@ input:invalid {
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
-.cm-matchhighlight,
-.CodeMirror-selection-highlight-scrollbar {
+body:not(.find-open) .cm-matchhighlight,
+body:not(.find-open) .CodeMirror-selection-highlight-scrollbar {
   animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
   animation-fill-mode: both;
 }
-[data-match-highlight-count="1"] .cm-matchhighlight,
-[data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
+body:not(.find-open) [data-match-highlight-count="1"] .cm-matchhighlight,
+body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
   animation: none;
 }
 @-webkit-keyframes highlight {
