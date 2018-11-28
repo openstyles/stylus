@@ -689,6 +689,7 @@ window.addEventListener('showStyles:done', function _() {
       '/api/v1/styles/subcategory' +
       '?search=' + encodeURIComponent(category) +
       '&page=' + searchCurrentPage +
+      '&per_page=10' +
       '&country=NA';
 
     const cacheKey = category + '/' + searchCurrentPage;
