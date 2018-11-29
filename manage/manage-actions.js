@@ -188,6 +188,7 @@ Object.assign(handleEvent, {
 
   toggle(event, entry) {
     API.toggleStyle(entry.styleId, this.matches('.enable') || this.checked);
+    UI.addLabels(entry);
   },
 
   toggleBulkActions() {

@@ -18,11 +18,11 @@ const UI = {
 
   labels: {
     'usercss': {
-      is: style => typeof style.usercssData !== 'undefined',
+      is: ({style}) => typeof style.usercssData !== 'undefined',
       text: 'usercss'
     },
     'disabled': {
-      is: style => !style.enabled,
+      is: ({entry}) => !$('.entry-state-toggle', entry).checked,
       text: t('genericDisabledLabel')
     }
   },
@@ -164,7 +164,7 @@ const UI = {
     $('.entry-last-update', entry).title = lastUpdate;
 
     UI.createStyleTargetsElement({entry, style});
-    UI.addLabels({entry, style});
+    UI.addLabels(entry);
 
     return entry;
   },
@@ -264,16 +264,17 @@ const UI = {
     }
   },
 
-  addLabels: ({entry, style}) => {
+  addLabels: entry => {
+    const style = entry.styleMeta;
     const container = $('.entry-labels', entry);
     const label = document.createElement('span');
     const labels = document.createElement('span');
     labels.className = 'entry-labels';
     label.className = 'entry-label ';
     Object.keys(UI.labels).forEach(item => {
-      if (UI.labels[item].is(style)) {
+      if (UI.labels[item].is({entry, style})) {
         const newLabel = label.cloneNode(true);
-        newLabel.className += item;
+        newLabel.dataset.label = item;
         newLabel.textContent = UI.labels[item].text;
         labels.appendChild(newLabel);
       }
