@@ -16,7 +16,7 @@
   let port;
 
   if (params.has('direct')) {
-    $('.live-reload').classList.add('unavailable');
+    setUnavailable('.live-reload');
     getCodeDirectly();
   } else {
     port = chrome.tabs.connect(tabId);
@@ -315,7 +315,7 @@
       checker.disabled = true;
     } else if (updateUrl.href === DUMMY_URL) {
       // drag'n'dropped on the manage page and the style doesn't have @updateURL
-      $('.set-update-url').classList.add('unavailable');
+      setUnavailable('.set-update-url');
       return;
     } else if (updateUrl.protocol !== 'file:') {
       checker.checked = true;
@@ -352,6 +352,14 @@
         }
       });
     }
+  }
+
+  function setUnavailable(label) {
+    const el = $(label);
+    el.classList.add('unavailable');
+    const input = $('input', el);
+    input.disabled = true;
+    input.checked = false;
   }
 
   function getAppliesTo(style) {

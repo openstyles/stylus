@@ -248,6 +248,7 @@ h2.installed.active {
 
 .unavailable-message,
 .unavailable .available-message,
+.unavailable .svg-icon,
 .live-reload.unavailable input,
 .set-update-url.unavailable input {
 	display: none;
