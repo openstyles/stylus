@@ -79,7 +79,7 @@ function initGlobalEvents() {
         el.removeAttribute('open');
       });
       // Close bulk actions
-      $('#manage-bulk-actions').classList.add('hidden');
+      $('#tools-wrapper').classList.add('hidden');
     } else if (event.which === 32 && event.target.classList.contains('checkmate')) {
       // pressing space toggles the containing checkbox
       $('input[type="checkbox"]', event.target).click();
@@ -191,7 +191,7 @@ Object.assign(handleEvent, {
   },
 
   toggleBulkActions() {
-    $('#manage-bulk-actions').classList.toggle('hidden');
+    $('#tools-wrapper').classList.toggle('hidden');
   },
 
   check(event, entry) {
@@ -426,7 +426,7 @@ function updateBulkFilters({target}) {
   if (!installed.dataset.total) return;
   // ignore filter checkboxes
   if (target.type === 'checkbox' && !target.dataset.filter) {
-    $('#manage-bulk-actions').classList.remove('hidden');
+    $('#tools-wrapper').classList.remove('hidden');
     const bulk = $('#toggle-all-filters');
     const state = target.checked;
     const visibleEntries = $$('.entry-filter-toggle')

@@ -2,7 +2,7 @@
   --icon-size: 20px;
   --narrow-column: 60px;
   --header-height: 40px;
-  --bulk-action-height: 60px;
+  --toolbar-height: 35px;
   --entry-header-height: 25px;
   --onoffswitch-width: 60px;
 }
@@ -251,15 +251,16 @@ body.dragging .entry:not(.dragging) .entry-name:before {
   margin-left: 2px;
   border-radius: 4px;
   font-size: .8em;
+  text-transform: lowercase;
 }
 
-.entry-label.usercss {
+.entry-label[data-label="usercss"] {
   background-color: hsla(180, 100%, 20%, 1);
   color: white;
   text-transform: lowercase;
 }
 
-.entry-label.disabled {
+.entry-label[data-label="disabled"] {
   background: rgba(128, 128, 128, .2);
   color: #222;
 }
@@ -509,25 +510,25 @@ details.applies-to-extra[open] {
 }
 
 /* bulk actions */
-#manage-bulk-actions {
+#tools-wrapper {
   background: #ddd;
   width: 100vw;
   position: fixed;
   top: var(--header-height);
   left: 0;
-  height: var(--bulk-action-height);
+  height: var(--toolbar-height);
   padding: 4px 16px;
   z-index: 100;
 }
 
-#manage-bulk-actions:not(.hidden) + #installed {
-  margin-top: calc(var(--header-height) + var(--bulk-action-height) + var(--entry-header-height));
+#tools-wrapper:not(.hidden) + #installed {
+  margin-top: calc(var(--header-height) + var(--toolbar-height) + var(--entry-header-height));
 }
-#manage-bulk-actions:not(.hidden) + #installed .entry-header {
-  top: calc(var(--header-height) + var(--bulk-action-height));
+#tools-wrapper:not(.hidden) + #installed .entry-header {
+  top: calc(var(--header-height) + var(--toolbar-height));
 }
 
-#manage-bulk-actions .select-resizer {
+#tools-wrapper .select-resizer {
   background: #fff;
 }
 
@@ -535,9 +536,10 @@ details.applies-to-extra[open] {
   padding: 2px 10px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
-#filters,
+#filters-wrapper,
 #bulk-filter-count {
   margin-right: 20px;
 }
@@ -572,25 +574,9 @@ details.applies-to-extra[open] {
 }
 
 
-#filters > label {
+#filters-wrapper filter-selection {
   display: flex;
   align-items: center;
-  left: -9px;
-  padding: 2px 0 2px 24px;
-}
-
-#filters > label input[type="checkbox"]:not(.slider),
-#filters > label input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  top: 2px;
-  left: 8px;
-}
-
-#filters > label:hover {
-  background-color: hsla(0, 0%, 50%, .4);
-}
-
-#filters {
-  border: 1px solid transparent;
 }
 
 .active #filters-stats,

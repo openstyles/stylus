@@ -111,7 +111,7 @@ function init() {
     if (!filtersSelector.hide) {
       return;
     }
-    for (const el of $$('#manage-bulk-actions [data-filter]')) {
+    for (const el of $$('#tools-wrapper [data-filter]')) {
       let value;
       if (el.type === 'checkbox' && el.checked) {
         value = el.checked = false;
@@ -142,7 +142,7 @@ function filterOnChange({target: el, forceRefilter}) {
     }
     el.lastValue = value;
   }
-  const enabledFilters = $$('#manage-bulk-actions [data-filter]').filter(el => getValue(el));
+  const enabledFilters = $$('#tools-wrapper [data-filter]').filter(el => getValue(el));
   const buildFilter = hide =>
     (hide ? '' : '.entry.hidden') +
     [...enabledFilters.map(el =>

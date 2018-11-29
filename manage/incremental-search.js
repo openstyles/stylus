@@ -83,7 +83,7 @@ onDOMready().then(() => {
     // focus search field on "/" key
     if (key === '/' || !key && k === 191 && !event.shiftKey) {
       event.preventDefault();
-      $('#manage-bulk-actions').classList.remove('hidden');
+      $('#tools-wrapper').classList.remove('hidden');
       $('#search').focus();
       return;
     }
