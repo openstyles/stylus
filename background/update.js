@@ -134,6 +134,10 @@
         });
       }
       error = error === 0 ? 'server unreachable' : error;
+      // UserCSS metadata error returns an object; e.g. "Invalid @var color..."
+      if (typeof error === 'object' && error.message) {
+        error = error.message;
+      }
       log(STATES.SKIPPED + ` (${error}) #${style.id} ${style.name}`);
       const info = {error, STATES, style: getStyleWithNoCode(style)};
       if (port) port.postMessage(info);
