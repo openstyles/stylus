@@ -3,7 +3,7 @@
 'use strict';
 
 onDOMready().then(() => {
-  zip.workerScriptsPath = '/sync/vendor/zipjs/';
+  zip.workerScriptsPath = '../vendor/zipjs-browserify/';
 });
 
 /**
