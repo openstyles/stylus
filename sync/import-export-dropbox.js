@@ -31,7 +31,10 @@ function hasDropboxAccessToken() {
 }
 
 function requestDropboxAccessToken() {
-  const client = new Dropbox.Dropbox({clientId: DROPBOX_API_KEY});
+  const client = new Dropbox.Dropbox({
+    clientId: DROPBOX_API_KEY,
+    fetch
+  });
   const authUrl = client.getAuthenticationUrl(getRedirectUrlAuthFlow());
   return launchWebAuthFlow({url: authUrl, interactive: true})
   .then(urlReturned => {
@@ -57,7 +60,8 @@ $('#sync-dropbox-export').onclick = () => {
   .then(token => {
     const client = new Dropbox.Dropbox({
       clientId: DROPBOX_API_KEY,
-      accessToken: token
+      accessToken: token,
+      fetch
     });
     return client.filesDownload({path: '/' + DROPBOX_FILE})
     .then(() => messageBox.confirm(t('overwriteFileExport')))
@@ -130,7 +134,8 @@ $('#sync-dropbox-import').onclick = () => {
   .then(token => {
     const client = new Dropbox.Dropbox({
       clientId: DROPBOX_API_KEY,
-      accessToken: token
+      accessToken: token,
+      fetch
     });
     return client.filesDownload({path: '/' + DROPBOX_FILE})
     .then(response => {
