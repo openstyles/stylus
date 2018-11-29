@@ -117,7 +117,6 @@ function initGlobalEvents() {
     'manage.newUI',
     'manage.newUI.favicons',
     'manage.newUI.faviconsGray',
-    'manage.newUI.sort',
     'manage.newUI.targets',
   ], () => switchUI());
 
