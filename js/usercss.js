@@ -41,8 +41,9 @@ const usercss = (() => {
       })
       .then(({metadata}) => {
         style.usercssData = metadata;
-        for (const [key, value = key] of Object.entries(GLOBAL_METAS)) {
-          style[value] = metadata[key];
+        // https://github.com/openstyles/stylus/issues/560#issuecomment-440561196
+        for (const [key, value] of Object.entries(GLOBAL_METAS)) {
+          style[value || key] = metadata[key];
         }
         return style;
       });

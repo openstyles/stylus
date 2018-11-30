@@ -20,7 +20,7 @@
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "updates": "^5.1.2",
-    "usercss-meta": "^0.8.3",
+    "usercss-meta": "^0.8.4",
     "web-ext": "^2.9.2",
     "webext-tx-fix": "^0.3.1",
     "zipjs-browserify": "^1.0.1"
