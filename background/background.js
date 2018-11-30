@@ -143,6 +143,10 @@ navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
+  // save install type: "admin", "development", "normal", "sideload" or "other"
+  // "normal" = addon installed from webstore
+  chrome.management.getSelf(info => localStorage.installType = info.installType);
+
   if (reason !== 'update') return;
   // translations may change
   localStorage.L10N = JSON.stringify({
@@ -150,9 +154,6 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   });
   // themes may change
   delete localStorage.codeMirrorThemes;
-  // save install type: "admin", "development", "normal", "sideload" or "other"
-  // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => localStorage.installType = info.installType);
 });
 
 // *************************************************************************
