@@ -1,15 +1,19 @@
 {
   "addStyleLabel": {
-    "message": "Yeni stil oluşturun"
+    "message": "Yeni stil oluşturun",
+    "description": "Label for the button to go to the add style page"
   },
   "addStyleTitle": {
-    "message": "Stil Ekleyin"
+    "message": "Stil Ekleyin",
+    "description": "Title of the page for adding styles"
   },
   "appliesAdd": {
-    "message": "Ekleyin"
+    "message": "Ekleyin",
+    "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
     "message": "Şuraya uygulanır: $applies$",
+    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -17,61 +21,80 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "ve diğerleri"
+    "message": "ve diğerleri",
+    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption": {
-    "message": "Alan adındaki URLler"
+    "message": "Alan adındaki URLler",
+    "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp": {
-    "message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın."
+    "message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın.",
+    "description": "Help text for 'applies to' section"
   },
   "appliesLabel": {
-    "message": "Şuraya uygulanır"
+    "message": "Şuraya uygulanır",
+    "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesRegexpOption": {
-    "message": "regexp ile eşleşen URL'ler"
+    "message": "regexp ile eşleşen URL'ler",
+    "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
-    "message": "Kaldır"
+    "message": "Kaldır",
+    "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesSpecify": {
-    "message": "Belirt"
+    "message": "Belirt",
+    "description": "Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything": {
-    "message": "Her şey"
+    "message": "Her şey",
+    "description": "Text displayed for styles that apply to all sites"
   },
   "appliesUrlPrefixOption": {
-    "message": "Şununla başlayan URL'ler:"
+    "message": "Şununla başlayan URL'ler:",
+    "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "checkAllUpdates": {
-    "message": "Tüm stiller için güncellemeleri denetle"
+    "message": "Tüm stiller için güncellemeleri denetle",
+    "description": "Label for the button to check all styles for updates"
   },
   "checkForUpdate": {
-    "message": "Güncellemeleri denetle"
+    "message": "Güncellemeleri denetle",
+    "description": "Label for the button to check a single style for an update"
   },
   "checkingForUpdate": {
-    "message": "Kontrol ediliyor..."
+    "message": "Kontrol ediliyor...",
+    "description": "Text to display when checking a style for an update"
   },
   "deleteStyleConfirm": {
-    "message": "Bu stili silmek istediğinizden emin misiniz?"
+    "message": "Bu stili silmek istediğinizden emin misiniz?",
+    "description": "Confirmation before deleting a style"
   },
   "deleteStyleLabel": {
-    "message": "Sil"
+    "message": "Sil",
+    "description": "Label for the button to delete a style"
   },
   "description": {
-    "message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır."
+    "message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır.",
+    "description": "Extension description"
   },
   "disableStyleLabel": {
-    "message": "Devre dışı bırak"
+    "message": "Devre dışı bırak",
+    "description": "Label for the button to disable a style"
   },
   "editStyleHeading": {
-    "message": "Stili Düzenle"
+    "message": "Stili Düzenle",
+    "description": "Title of the page for editing styles"
   },
   "editStyleLabel": {
-    "message": "Düzenle"
+    "message": "Düzenle",
+    "description": "Label for the button to go to the edit style page"
   },
   "editStyleTitle": {
     "message": "$stylename$ Stilini Düzenleyin",
+    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -79,49 +102,60 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Etkinleştir"
+    "message": "Etkinleştir",
+    "description": "Label for the button to enable a style"
   },
   "findStylesForSite": {
-    "message": "Bu site için başka stiller bul"
+    "message": "Bu site için başka stiller bul",
+    "description": "Text for a link that gets a list of styles for the current site"
   },
   "helpAlt": {
-    "message": "Yardım"
+    "message": "Yardım",
+    "description": "Alternate text for help buttons"
   },
   "installUpdate": {
-    "message": "Güncellemeyi yükle"
+    "message": "Güncellemeyi yükle",
+    "description": "Label for the button to install an update for a single style"
   },
   "manageHeading": {
-    "message": "Yüklü Stiller"
+    "message": "Yüklü Stiller",
+    "description": "Heading for the manage page"
   },
   "noStylesForSite": {
-    "message": "Bu site için hiçbir stil yüklenmedi."
+    "message": "Bu site için hiçbir stil yüklenmedi.",
+    "description": "Text displayed when no styles are installed for the current site"
   },
   "openManage": {
-    "message": "Yüklü stilleri yönet"
+    "message": "Yüklü stilleri yönet",
+    "description": "Link to open the manage page."
   },
   "sectionAdd": {
-    "message": "Başka bölüm ekle"
+    "message": "Başka bölüm ekle",
+    "description": "Label for the button to add a section"
   },
   "sectionCode": {
-    "message": "Kod"
-  },
-  "sectionHelp": {
-    "message": "Bölümler, aynı stil içindeki farklı URL kümelerine uygulanacak farklı kod parçaları tanımlamanıza olanak sağlar. Örneğin, tek bir stil bir sitenin ana sayfasını belirli bir şekilde değiştirirken, sayfanın kalan kısmını farklı bir şekilde değiştirebilir."
+    "message": "Kod",
+    "description": "Label for the code for a section"
   },
   "sectionRemove": {
-    "message": "Bölümü kaldır"
+    "message": "Bölümü kaldır",
+    "description": "Label for the button to remove a section"
   },
   "styleCancelEditLabel": {
-    "message": "Yönetim sayfasına dön"
+    "message": "Yönetim sayfasına dön",
+    "description": "Label for cancel button for style editing"
   },
   "styleChangesNotSaved": {
-    "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var."
+    "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var.",
+    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleEnabledLabel": {
-    "message": "Etkin"
+    "message": "Etkin",
+    "description": "Label for the enabled state of styles"
   },
   "styleInstall": {
     "message": "'$stylename$' Stylus'e yüklensin mi?",
+    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -129,19 +163,20 @@
     }
   },
   "styleMissingName": {
-    "message": "Bir ad girin"
+    "message": "Bir ad girin",
+    "description": "Error displayed when user saves without providing a name"
   },
   "styleSaveLabel": {
-    "message": "Kaydet"
-  },
-  "styleSectionsTitle": {
-    "message": "Bölümler"
+    "message": "Kaydet",
+    "description": "Label for save button for style editing"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir."
+    "message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir.",
+    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
   },
   "updateCheckFailBadResponseCode": {
     "message": "Güncellenemedi: sunucu yanıt olarak $code$ kodunu gönderdi.",
+    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -149,12 +184,15 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Güncellenemedi: sunucuya erişilemiyor."
+    "message": "Güncellenemedi: sunucuya erişilemiyor.",
+    "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "Stil güncel."
+    "message": "Stil güncel.",
+    "description": "Text that displays when an update check completed and no update is available"
   },
   "updateCompleted": {
-    "message": "Güncelleme tamamlandı."
+    "message": "Güncelleme tamamlandı.",
+    "description": "Text that displays when an update completed"
   }
 }

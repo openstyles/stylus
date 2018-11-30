@@ -1,18 +1,23 @@
 {
   "addStyleLabel": {
-    "message": "כתוב עיצוב חדש"
+    "message": "כתוב עיצוב חדש",
+    "description": "Label for the button to go to the add style page"
   },
   "addStyleTitle": {
-    "message": "הוספת עיצוב"
+    "message": "הוספת עיצוב",
+    "description": "Title of the page for adding styles"
   },
   "alphaChannel": {
-    "message": "שקיפות"
+    "message": "שקיפות",
+    "description": "Label of color's opacity"
   },
   "appliesAdd": {
-    "message": "הוספה"
+    "message": "הוספה",
+    "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
     "message": "מוחל על: $applies$",
+    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -20,196 +25,260 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "עוד"
+    "message": "עוד",
+    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption": {
-    "message": "קישורים תחת הדומיין"
+    "message": "קישורים תחת הדומיין",
+    "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesLabel": {
-    "message": "מוחל על"
+    "message": "מוחל על",
+    "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesLineWidgetLabel": {
-    "message": "הצג אינפורמציית 'חל על'"
+    "message": "הצג אינפורמציית 'חל על'",
+    "description": "Label for the checkbox to display applies-to information in the single editor"
   },
   "appliesLineWidgetWarning": {
-    "message": "לא עובד עם CSS מוקטן (minified)"
+    "message": "לא עובד עם CSS מוקטן (minified)",
+    "description": "A warning that applies-to information won't show properly with minified CSS"
   },
   "appliesRegexpOption": {
-    "message": "קישורים התואמים regexp"
+    "message": "קישורים התואמים regexp",
+    "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
-    "message": "הסרה"
+    "message": "הסרה",
+    "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesRemoveError": {
-    "message": "לא ניתן להסיר את הערך 'חל על' האחרון"
+    "message": "לא ניתן להסיר את הערך 'חל על' האחרון",
+    "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "appliesSpecify": {
-    "message": "פרט"
+    "message": "פרט",
+    "description": "Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything": {
-    "message": "כל האתרים"
+    "message": "כל האתרים",
+    "description": "Text displayed for styles that apply to all sites"
   },
   "appliesUrlOption": {
-    "message": "קישור (URL)"
+    "message": "קישור (URL)",
+    "description": "Option to make the style apply to the entered string as a URL"
   },
   "appliesUrlPrefixOption": {
-    "message": "קישורים המתחילים ב"
+    "message": "קישורים המתחילים ב",
+    "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "applyAllUpdates": {
-    "message": "החל את כל העדכונים"
+    "message": "החל את כל העדכונים",
+    "description": "Label for the button to apply all detected updates"
   },
   "author": {
-    "message": "כותב"
+    "message": "כותב",
+    "description": "Label for the style author"
   },
   "backupButtons": {
-    "message": "גיבוי"
+    "message": "גיבוי",
+    "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "בחר קובץ או גרור ושחרר אותו בדף זה."
+    "message": "בחר קובץ או גרור ושחרר אותו בדף זה.",
+    "description": "Message for backup"
   },
   "bckpInstStyles": {
-    "message": "ייצא עיצובים"
+    "message": "ייצא עיצובים",
+    "description": ""
   },
   "checkAllUpdates": {
-    "message": "בדוקים עדכונים עבור כל העיצובים"
+    "message": "בדוקים עדכונים עבור כל העיצובים",
+    "description": "Label for the button to check all styles for updates"
   },
   "checkAllUpdatesForce": {
-    "message": "בדוק שוב, לא ערכתי אף עיצוב!"
+    "message": "בדוק שוב, לא ערכתי אף עיצוב!",
+    "description": "Label for the button to apply all detected updates"
   },
   "checkForUpdate": {
-    "message": "בדוק עדכונים"
+    "message": "בדוק עדכונים",
+    "description": "Label for the button to check a single style for an update"
   },
   "checkingForUpdate": {
-    "message": "בודק..."
+    "message": "בודק...",
+    "description": "Text to display when checking a style for an update"
   },
   "clickToUninstall": {
-    "message": "הקלק להסרה"
+    "message": "הקלק להסרה",
+    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
   },
   "cm_autoCloseBrackets": {
-    "message": "סגור באופן אוטומטי סוגריים וגרשיים"
+    "message": "סגור באופן אוטומטי סוגריים וגרשיים",
+    "description": "Label for the checkbox in the style editor."
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "הוסף סוגר באופן אוטומטי כשמקלידים את אחת מהפותחים של ()[]{}''\"\""
+    "message": "הוסף סוגר באופן אוטומטי כשמקלידים את אחת מהפותחים של ()[]{}''\"\"",
+    "description": "Label for the checkbox in the style editor."
   },
   "cm_autocompleteOnTyping": {
-    "message": "השלמה אוטומטית בזמן הכתיבה"
+    "message": "השלמה אוטומטית בזמן הכתיבה",
+    "description": "Label for the checkbox in the style editor."
   },
   "cm_colorpicker": {
-    "message": "פלטות בחירת צבעים עבור צבעי CSS"
+    "message": "פלטות בחירת צבעים עבור צבעי CSS",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
   "cm_indentWithTabs": {
-    "message": "השתמש בטאבים יחד עם הזחה חכמה"
+    "message": "השתמש בטאבים יחד עם הזחה חכמה",
+    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
   "cm_keyMap": {
-    "message": "מפת מקשים"
+    "message": "מפת מקשים",
+    "description": "Label for the drop-down list controlling the keymap for the style editor."
   },
   "cm_lineWrapping": {
-    "message": "עטיפת מילים"
+    "message": "עטיפת מילים",
+    "description": "Label for the checkbox controlling word wrap option for the style editor."
   },
   "cm_matchHighlight": {
-    "message": "הדגש"
+    "message": "הדגש",
+    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
   },
   "cm_matchHighlightSelection": {
-    "message": "בחירה בלבד"
+    "message": "בחירה בלבד",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
   },
   "cm_resizeGripHint": {
-    "message": "דאבל קליק להגדלה מירבית/איפוס הגובה"
+    "message": "דאבל קליק להגדלה מירבית/איפוס הגובה",
+    "description": "Tooltip for the resize grip in style editor"
   },
   "cm_selectByTokens": {
-    "message": "דאבל קליק בוחר tokens"
+    "message": "דאבל קליק בוחר tokens",
+    "description": "Label for the checkbox in the editor."
   },
   "cm_smartIndent": {
-    "message": "השתמש בהזחה חכמה"
+    "message": "השתמש בהזחה חכמה",
+    "description": "Label for the checkbox controlling smart indentation option for the style editor."
   },
   "cm_tabSize": {
-    "message": "גודל הכרטיסייה"
+    "message": "גודל הכרטיסייה",
+    "description": "Label for the text box controlling tab size option for the style editor."
   },
   "cm_theme": {
-    "message": "ערכת נושא"
+    "message": "ערכת נושא",
+    "description": "Label for the style editor's CSS theme."
   },
   "colorpickerTooltip": {
-    "message": "פתח את פלטת בחירת הצבעים"
+    "message": "פתח את פלטת בחירת הצבעים",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
   },
   "configOnChange": {
-    "message": "בעת שינוי"
+    "message": "בעת שינוי",
+    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
   },
   "configOnChangeTooltip": {
-    "message": "שמור והחל שינויים באופן אוטומטי"
+    "message": "שמור והחל שינויים באופן אוטומטי",
+    "description": ""
   },
   "configureStyle": {
-    "message": "הגדר"
+    "message": "הגדר",
+    "description": "Label for the button to configure usercss userstyle"
   },
   "configureStyleOnHomepage": {
-    "message": "הגדר בדף הבית"
+    "message": "הגדר בדף הבית",
+    "description": "Label for the button to configure userstyles.org userstyle"
   },
   "confirmCancel": {
-    "message": "ביטול"
+    "message": "ביטול",
+    "description": ""
   },
   "confirmClose": {
-    "message": "סגור"
+    "message": "סגור",
+    "description": "'Close' button in a confirm dialog"
   },
   "confirmDefault": {
-    "message": "השתמש בברירת מחדל"
+    "message": "השתמש בברירת מחדל",
+    "description": "'Set to default' button in a confirm dialog"
   },
   "confirmDelete": {
-    "message": "מחיקה"
+    "message": "מחיקה",
+    "description": ""
   },
   "confirmDiscardChanges": {
-    "message": "למחוק את השינויים?"
+    "message": "למחוק את השינויים?",
+    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
   },
   "confirmNo": {
-    "message": "לא"
+    "message": "לא",
+    "description": "'No' button in a confirm dialog"
   },
   "confirmOK": {
-    "message": "אוקיי"
+    "message": "אוקיי",
+    "description": ""
   },
   "confirmSave": {
-    "message": "שמור"
+    "message": "שמור",
+    "description": "'Save' button in a confirm dialog"
   },
   "confirmStop": {
-    "message": "עצור"
+    "message": "עצור",
+    "description": "'Stop' button in a confirm dialog"
   },
   "confirmYes": {
-    "message": "כן"
+    "message": "כן",
+    "description": "'Yes' button in a confirm dialog"
   },
   "dateInstalled": {
-    "message": "תאריך התקנה"
+    "message": "תאריך התקנה",
+    "description": "Option text for the user to sort the style by install date"
   },
   "dateUpdated": {
-    "message": "תאריך עדכון"
+    "message": "תאריך עדכון",
+    "description": "Option text for the user to sort the style by last update date"
   },
   "defaultTheme": {
-    "message": "ברירת מחדל"
+    "message": "ברירת מחדל",
+    "description": "Default CodeMirror CSS theme option on the edit style page"
   },
   "deleteStyleConfirm": {
-    "message": "האם אתה בטוח שברצונך למחוק עיצוב זה?"
+    "message": "האם אתה בטוח שברצונך למחוק עיצוב זה?",
+    "description": "Confirmation before deleting a style"
   },
   "deleteStyleLabel": {
-    "message": "מחק"
+    "message": "מחק",
+    "description": "Label for the button to delete a style"
   },
   "disableAllStyles": {
-    "message": "השבת את כל העיצובים"
+    "message": "השבת את כל העיצובים",
+    "description": "Label for the checkbox that turns all enabled styles off."
   },
   "disableStyleLabel": {
-    "message": "השבת"
+    "message": "השבת",
+    "description": "Label for the button to disable a style"
   },
   "dragDropMessage": {
-    "message": "שחרר את קובץ הגיבוי שלך בכל מקום בדף זה על־מנת לייבא אותו."
+    "message": "שחרר את קובץ הגיבוי שלך בכל מקום בדף זה על־מנת לייבא אותו.",
+    "description": "Drag'n'drop message"
   },
   "editDeleteText": {
-    "message": "מחק"
+    "message": "מחק",
+    "description": "Label for the context menu item in the editor to delete selected text"
   },
   "editGotoLine": {
-    "message": "Goto לשורה (או line:col)"
+    "message": "Goto לשורה (או line:col)",
+    "description": "Go to line or line:column on Ctrl-G in style code editor"
   },
   "editStyleHeading": {
-    "message": "עריכת עיצוב"
+    "message": "עריכת עיצוב",
+    "description": "Title of the page for editing styles"
   },
   "editStyleLabel": {
-    "message": "עריכה"
+    "message": "עריכה",
+    "description": "Label for the button to go to the edit style page"
   },
   "editStyleTitle": {
     "message": "עריכת העיצוב $stylename$",
+    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -217,148 +286,196 @@
     }
   },
   "editorStylesButton": {
-    "message": "מצא עיצובים לעורך"
+    "message": "מצא עיצובים לעורך",
+    "description": "Find styles for the editor"
   },
   "enableStyleLabel": {
-    "message": "אפשר"
+    "message": "אפשר",
+    "description": "Label for the button to enable a style"
   },
   "exportLabel": {
-    "message": "ייצא"
+    "message": "ייצא",
+    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
   "externalFeedback": {
-    "message": "חוות דעת"
+    "message": "חוות דעת",
+    "description": "Label for the external link to send feedback for the style"
   },
   "externalHomepage": {
-    "message": "דף הבית"
+    "message": "דף הבית",
+    "description": "Label for the external link to style's homepage"
   },
   "externalLink": {
-    "message": "קישור חיצוני"
+    "message": "קישור חיצוני",
+    "description": "Label for external links"
   },
   "externalSupport": {
-    "message": "תמיכה"
+    "message": "תמיכה",
+    "description": "Label for the external link to style's support site"
   },
   "findStyles": {
-    "message": "מצא עיצובים"
+    "message": "מצא עיצובים",
+    "description": "Text for a link that gets a list of styles for the current site"
   },
   "findStylesInline": {
-    "message": "מוטבע"
+    "message": "מוטבע",
+    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
   },
   "genericAdd": {
-    "message": "הוספה"
+    "message": "הוספה",
+    "description": "Used in various places for an action that adds something"
   },
   "genericClone": {
-    "message": "שכפול"
+    "message": "שכפול",
+    "description": "Used in various places for an action that clones something"
   },
   "genericDisabledLabel": {
-    "message": "מושבת"
+    "message": "מושבת",
+    "description": "Used in various lists/options to indicate that something is disabled"
   },
   "genericEnabledLabel": {
-    "message": "מאופשר"
+    "message": "מאופשר",
+    "description": "Used in various lists/options to indicate that something is enabled"
   },
   "genericError": {
-    "message": "שגיאה"
+    "message": "שגיאה",
+    "description": "Used in various places to indicate some error occurred."
   },
   "genericHistoryLabel": {
-    "message": "היסטוריה"
+    "message": "היסטוריה",
+    "description": "Used in various places to show a history log of something"
   },
   "genericNext": {
-    "message": "הבא"
+    "message": "הבא",
+    "description": "Used in various places to select/perform the next step/action"
   },
   "genericPrevious": {
-    "message": "הקודם"
+    "message": "הקודם",
+    "description": "Used in various places to select/perform the previous step/action"
   },
   "genericResetLabel": {
-    "message": "איפוס"
+    "message": "איפוס",
+    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
   },
   "genericSavedMessage": {
-    "message": "נשמר"
+    "message": "נשמר",
+    "description": "Used in various parts of the UI to indicate that something was saved"
   },
   "genericTitle": {
-    "message": "כותרת"
+    "message": "כותרת",
+    "description": "Used in various parts of the UI to indicate the title of something"
   },
   "genericUnknown": {
-    "message": "לא ידוע"
+    "message": "לא ידוע",
+    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
   },
   "helpAlt": {
-    "message": "עזרה"
+    "message": "עזרה",
+    "description": "Alternate text for help buttons"
   },
   "helpKeyMapCommand": {
-    "message": "הקלד שם פקודה"
+    "message": "הקלד שם פקודה",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "helpKeyMapHotkey": {
-    "message": "לחץ על המקש החם"
+    "message": "לחץ על המקש החם",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "importAppendLabel": {
-    "message": "צרף לעיצוב"
+    "message": "צרף לעיצוב",
+    "description": "Label for the button to import a style and append to the existing sections"
   },
   "importAppendTooltip": {
-    "message": "צרף את העיצוב המיובא לעיצוב הנוכחי"
+    "message": "צרף את העיצוב המיובא לעיצוב הנוכחי",
+    "description": "Tooltip for the button to import a style and append to the existing sections"
   },
   "importLabel": {
-    "message": "ייבא"
+    "message": "ייבא",
+    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
   },
   "importReplaceLabel": {
-    "message": "דרוס עיצוב"
+    "message": "דרוס עיצוב",
+    "description": "Label for the button to import and overwrite current style"
   },
   "importReportLegendAdded": {
-    "message": "נוספו"
+    "message": "נוספו",
+    "description": "Text after the number of styles added in the report shown after importing styles"
   },
   "importReportLegendUpdatedCode": {
-    "message": "קודים עודכנו"
+    "message": "קודים עודכנו",
+    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "מידע meta עודכנו"
+    "message": "מידע meta עודכנו",
+    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
   },
   "importReportTitle": {
-    "message": "סיום ייבוא עיצובים"
+    "message": "סיום ייבוא עיצובים",
+    "description": "Title of the report shown after importing styles"
   },
   "importReportUnchanged": {
-    "message": "שום דבר לא השתנה."
+    "message": "שום דבר לא השתנה.",
+    "description": "Message in the report shown after importing styles"
   },
   "importReportUndone": {
-    "message": "עיצובים הוחזרו"
+    "message": "עיצובים הוחזרו",
+    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
   },
   "importReportUndoneTitle": {
-    "message": "הייבוא בוטל"
+    "message": "הייבוא בוטל",
+    "description": "Title of the message box shown after undoing the import of styles"
   },
   "installButton": {
-    "message": "התקן עיצוב"
+    "message": "התקן עיצוב",
+    "description": "Label for install button"
   },
   "installButtonInstalled": {
-    "message": "העיצוב הותקן בהצלחה"
+    "message": "העיצוב הותקן בהצלחה",
+    "description": "Text displayed when the style is successfully installed"
   },
   "installButtonReinstall": {
-    "message": "התקן עיצוב מחדש"
+    "message": "התקן עיצוב מחדש",
+    "description": "Label for reinstall button"
   },
   "installButtonUpdate": {
-    "message": "עדכן עיצוב"
+    "message": "עדכן עיצוב",
+    "description": "Label for update button"
   },
   "installUpdate": {
-    "message": "התקן עדכון"
+    "message": "התקן עדכון",
+    "description": "Label for the button to install an update for a single style"
   },
   "installUpdateFromLabel": {
-    "message": "בדוק עדכונים"
+    "message": "בדוק עדכונים",
+    "description": "Label for the checkbox to save current URL for update check"
   },
   "installUpdateUnavailable": {
-    "message": "על־מנת לאפשר בדיקת עדכונים, אנא שחרר את הקובץ על רצועת הכרטיסיות או ציין @updateURL ב־metadata של העיצוב."
+    "message": "על־מנת לאפשר בדיקת עדכונים, אנא שחרר את הקובץ על רצועת הכרטיסיות או ציין @updateURL ב־metadata של העיצוב.",
+    "description": ""
   },
   "license": {
-    "message": "רישיון"
+    "message": "רישיון",
+    "description": "Label for the license"
   },
   "linkGetHelp": {
-    "message": "קבל עזרה"
+    "message": "קבל עזרה",
+    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
   },
   "linkGetStyles": {
-    "message": "מצא עיצובים"
+    "message": "מצא עיצובים",
+    "description": "Help link text on the manage page e.g. https://userstyles.org"
   },
   "linkTranslate": {
-    "message": "תרגום"
+    "message": "תרגום",
+    "description": "Transifex link text on the manage page"
   },
   "linterCSSLintSettings": {
-    "message": "(הגדר כלל כ: 0 = מושבת; 1 = אזהרה; 2 = שגיאה)"
+    "message": "(הגדר כלל כ: 0 = מושבת; 1 = אזהרה; 2 = שגיאה)",
+    "description": "CSSLint rule config values"
   },
   "linterConfigPopupTitle": {
     "message": "הגדר $linter$ כללי תצורה",
+    "description": "Stylelint or CSSLint popup header",
     "placeholders": {
       "linter": {
         "content": "$1"
@@ -366,13 +483,16 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "לחץ להגדרת linter זה"
+    "message": "לחץ להגדרת linter זה",
+    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
   },
   "linterIssues": {
-    "message": "תקלות"
+    "message": "תקלות",
+    "description": "Label for the CSS linter issues block on the style edit page"
   },
   "linterIssuesHelp": {
     "message": "התקלות האלו נמצאו על־ידי $link$:",
+    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -380,313 +500,376 @@
     }
   },
   "linterJSONError": {
-    "message": "פורמט JSON לא תקין"
+    "message": "פורמט JSON לא תקין",
+    "description": "Setting linter config with invalid JSON"
   },
   "linterResetMessage": {
-    "message": "על־מנת לבטל איפוסים לא רצוניים, לחץ Ctrl-Z (או Cmd-Z) בתיבת הטקסט"
+    "message": "על־מנת לבטל איפוסים לא רצוניים, לחץ Ctrl-Z (או Cmd-Z) בתיבת הטקסט",
+    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
   },
   "linterRulesLink": {
-    "message": "ראה רשימת חוקים מלאה"
+    "message": "ראה רשימת חוקים מלאה",
+    "description": "Stylelint or CSSLint rules label added immediately before a link"
   },
   "liveReloadError": {
-    "message": "התרחשה שגיאה בזמן הצפייה בקובץ"
+    "message": "התרחשה שגיאה בזמן הצפייה בקובץ",
+    "description": "The label of live-reload error"
   },
   "liveReloadLabel": {
-    "message": "רענון לייב (live)"
+    "message": "רענון לייב (live)",
+    "description": "The label of live-reload feature"
   },
   "liveReloadUnavailable": {
-    "message": "על־מנת לאפשר רענון לייב (live), אנא שחרר את הקובץ על רצועת הכרטיסיות (האזור בו כותרות הכרטיסיות מוצגות)."
+    "message": "על־מנת לאפשר רענון לייב (live), אנא שחרר את הקובץ על רצועת הכרטיסיות (האזור בו כותרות הכרטיסיות מוצגות).",
+    "description": ""
   },
   "manageFavicons": {
-    "message": "הצגת אייקונים בעמודת 'חל על'"
+    "message": "הצגת אייקונים בעמודת 'חל על'",
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsGray": {
-    "message": "האפרת האייקונים"
+    "message": "האפרת האייקונים",
+    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus משתמש בשירות חיצוני https://www.google.com/s2/favicons"
+    "message": "Stylus משתמש בשירות חיצוני https://www.google.com/s2/favicons",
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
   "manageFilters": {
-    "message": "מסננים"
+    "message": "מסננים",
+    "description": "Label for filters container"
   },
   "manageHeading": {
-    "message": "עיצובים מותקנים"
+    "message": "עיצובים מותקנים",
+    "description": "Heading for the manage page"
   },
   "manageMaxTargets": {
-    "message": "מספר הפריטים ה־'מוחלים על'"
+    "message": "מספר הפריטים ה־'מוחלים על'",
+    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
   },
   "manageNewStyleAsUsercss": {
-    "message": "כ־Usercss"
+    "message": "כ־Usercss",
+    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageOnlyDisabled": {
-    "message": "רק עיצובים מושבתים"
+    "message": "רק עיצובים מושבתים",
+    "description": "Checkbox to show only disabled styles"
   },
   "manageOnlyEnabled": {
-    "message": "רק עיצובים מאופשרים"
+    "message": "רק עיצובים מאופשרים",
+    "description": "Checkbox to show only enabled styles"
   },
   "manageOnlyExternal": {
-    "message": "רק עיצובים חיצוניים"
+    "message": "רק עיצובים חיצוניים",
+    "description": "Checkbox to show only externally installed styles i.e. updatable"
   },
   "manageOnlyLocal": {
-    "message": "רק עיצובים שנוצרו באופן מקומי"
+    "message": "רק עיצובים שנוצרו באופן מקומי",
+    "description": "Checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyNonUsercss": {
-    "message": "רק לא עיצובי Usercss"
+    "message": "רק לא עיצובי Usercss",
+    "description": "Checkbox to show only non-Usercss (standard) styles"
   },
   "manageOnlyUpdates": {
-    "message": "רק עם עדכונים או תקלות"
+    "message": "רק עם עדכונים או תקלות",
+    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "רק עיצובי Usercss"
+    "message": "רק עיצובי Usercss",
+    "description": "Checkbox to show only Usercss styles"
   },
   "menuShowBadge": {
-    "message": "הצג כמות עיצובים מאופשרים"
+    "message": "הצג כמות עיצובים מאופשרים",
+    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
   "noStylesForSite": {
-    "message": "לא הותקנו עיצובים עבור אתר זה."
+    "message": "לא הותקנו עיצובים עבור אתר זה.",
+    "description": "Text displayed when no styles are installed for the current site"
   },
   "openManage": {
-    "message": "ניהול"
+    "message": "ניהול",
+    "description": "Link to open the manage page."
   },
   "openOptionsManage": {
-    "message": "אפשרויות UI"
+    "message": "אפשרויות UI",
+    "description": "Go to Options UI"
   },
   "openOptionsPopup": {
-    "message": "אפשרויות"
+    "message": "אפשרויות",
+    "description": "Go to Options UI"
   },
   "openStylesManager": {
-    "message": "פתח את מנהל העיצובים"
+    "message": "פתח את מנהל העיצובים",
+    "description": "Label for the style maanger opener in the browser action context menu."
   },
   "optionsActions": {
-    "message": "פעולות"
+    "message": "פעולות",
+    "description": ""
   },
   "optionsAdvanced": {
-    "message": "מתקדם"
+    "message": "מתקדם",
+    "description": ""
   },
   "optionsAdvancedContextDelete": {
-    "message": "הוספת 'מחיקה' בתפריט העורך"
+    "message": "הוספת 'מחיקה' בתפריט העורך",
+    "description": ""
   },
   "optionsBadgeDisabled": {
-    "message": "צבע רקע בעת השבתה"
+    "message": "צבע רקע בעת השבתה",
+    "description": ""
   },
   "optionsBadgeNormal": {
-    "message": "צבע רקע"
+    "message": "צבע רקע",
+    "description": ""
   },
   "optionsCheck": {
-    "message": "עדכן עיצובים"
+    "message": "עדכן עיצובים",
+    "description": ""
   },
   "optionsCheckUpdate": {
-    "message": "בדוק והתקן את כל העדכונים הזמינים"
+    "message": "בדוק והתקן את כל העדכונים הזמינים",
+    "description": ""
   },
   "optionsCustomizeBadge": {
-    "message": "תג על האייקון בסרגל הכלים"
+    "message": "תג על האייקון בסרגל הכלים",
+    "description": ""
   },
   "optionsCustomizeIcon": {
-    "message": "אייקון בסרגל הכלים"
+    "message": "אייקון בסרגל הכלים",
+    "description": ""
   },
   "optionsCustomizePopup": {
-    "message": "חלון קופץ"
+    "message": "חלון קופץ",
+    "description": ""
   },
   "optionsCustomizeUpdate": {
-    "message": "עדכונים"
+    "message": "עדכונים",
+    "description": ""
   },
   "optionsHeading": {
-    "message": "אפשרויות"
+    "message": "אפשרויות",
+    "description": "Heading for options section on manage page."
   },
   "optionsIconDark": {
-    "message": "ערכות נושא כהות לדפדפן"
+    "message": "ערכות נושא כהות לדפדפן",
+    "description": ""
   },
   "optionsIconLight": {
-    "message": "ערכות נושא בהירות לדפדפן"
+    "message": "ערכות נושא בהירות לדפדפן",
+    "description": ""
   },
   "optionsOpen": {
-    "message": "פתח"
+    "message": "פתח",
+    "description": ""
   },
   "optionsOpenManager": {
-    "message": "נהל עיצובים"
+    "message": "נהל עיצובים",
+    "description": ""
   },
   "optionsPopupWidth": {
-    "message": "רוחב החלון הקופץ (בפיקסלים)"
+    "message": "רוחב החלון הקופץ (בפיקסלים)",
+    "description": ""
   },
   "optionsReset": {
-    "message": "איפוס האפשרויות לערכי ברירת המחדל"
+    "message": "איפוס האפשרויות לערכי ברירת המחדל",
+    "description": ""
   },
   "optionsResetButton": {
-    "message": "איפוס האפשרויות"
+    "message": "איפוס האפשרויות",
+    "description": ""
   },
   "optionsSubheading": {
-    "message": "אפשרויות נוספות"
+    "message": "אפשרויות נוספות",
+    "description": "Subheading for options section on manage page."
   },
   "optionsUpdateInterval": {
-    "message": "עדכון אוטומטי של Userstyle בשעות (הגדר 0 להשבתה)"
+    "message": "עדכון אוטומטי של Userstyle בשעות (הגדר 0 להשבתה)",
+    "description": ""
   },
   "paginationCurrent": {
-    "message": "הדף הנוכחי"
+    "message": "הדף הנוכחי",
+    "description": "Tooltip for the current page index in search results"
   },
   "paginationEstimated": {
-    "message": "מספר דפים משוער"
+    "message": "מספר דפים משוער",
+    "description": "Tooltip for the total page count in search results"
   },
   "paginationNext": {
-    "message": "הדף הבא"
+    "message": "הדף הבא",
+    "description": "Tooltip for the '->' (next page) button in search results"
   },
   "paginationPrevious": {
-    "message": "הדף הקודם"
+    "message": "הדף הקודם",
+    "description": "Tooltip for the '<-' button in search results"
   },
   "paginationTotal": {
-    "message": "סה״כ דפים"
+    "message": "סה״כ דפים",
+    "description": ""
   },
   "popupBorders": {
-    "message": "הוספת שוליים לבנים בצדדים"
+    "message": "הוספת שוליים לבנים בצדדים",
+    "description": ""
   },
   "popupHotkeysTooltip": {
-    "message": "לחץ על־מנת לצפות במקשים החמים הזמינים"
+    "message": "לחץ על־מנת לצפות במקשים החמים הזמינים",
+    "description": "Tooltip displayed when hovering the right edge of the extension popup"
   },
   "popupOpenEditInWindow": {
-    "message": "פתח את העורך בחלון חדש"
+    "message": "פתח את העורך בחלון חדש",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupStylesFirst": {
-    "message": "עיצובים לפני הפקודות"
+    "message": "עיצובים לפני הפקודות",
+    "description": "Label for the checkbox controlling section order in the popup."
   },
   "prefShowBadge": {
-    "message": "מֿמספר העיצובים המאופשרים באתר הנוכחי"
+    "message": "מֿמספר העיצובים המאופשרים באתר הנוכחי",
+    "description": "Label for the checkbox controlling toolbar badge text."
   },
   "previewLabel": {
-    "message": "תצוגת לייב (live)"
+    "message": "תצוגת לייב (live)",
+    "description": "Label for the checkbox in style editor to enable live preview while editing."
   },
   "previewTooltip": {
-    "message": "החלת השינויים באופן זמני ללא שמירה.\nשמור את העיצוב על־מנת להפוך את השינויים לקבועים."
+    "message": "החלת השינויים באופן זמני ללא שמירה.\nשמור את העיצוב על־מנת להפוך את השינויים לקבועים.",
+    "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
   },
   "replace": {
-    "message": "החלף"
+    "message": "החלף",
+    "description": "Label before the replace input field in the editor shown on Ctrl-H"
   },
   "replaceAll": {
-    "message": "החלף הכל"
+    "message": "החלף הכל",
+    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
   },
   "replaceWith": {
-    "message": "החלף עם"
+    "message": "החלף עם",
+    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
   },
   "retrieveBckp": {
-    "message": "ייבוא עיצובים"
+    "message": "ייבוא עיצובים",
+    "description": ""
   },
   "search": {
-    "message": "חיפוש"
+    "message": "חיפוש",
+    "description": "Label before the search input field in the editor shown on Ctrl-F"
   },
   "searchCaseSensitive": {
-    "message": "רגיש לאותיות גדולות/קטנות"
+    "message": "רגיש לאותיות גדולות/קטנות",
+    "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
   "searchNumberOfResults": {
-    "message": "מספר ההתאמות"
+    "message": "מספר ההתאמות",
+    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
   },
   "searchNumberOfResults2": {
-    "message": "מספר ההתאמות בקוד ובערכים ה'מוחלים על'"
+    "message": "מספר ההתאמות בקוד ובערכים ה'מוחלים על'",
+    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
   },
   "searchRegexp": {
-    "message": "השתמש ב־/re/ לחיפוש באמצעות ביטוי regexp"
+    "message": "השתמש ב־/re/ לחיפוש באמצעות ביטוי regexp",
+    "description": "Label after the search input field in the editor shown on Ctrl-F"
   },
   "searchResultInstallCount": {
-    "message": "סה״כ התקנות"
+    "message": "סה״כ התקנות",
+    "description": "Text for label that shows the number of times a search result was installed"
   },
   "searchResultNoneFound": {
-    "message": "לא נמצאו עיצובים לאתר זה."
+    "message": "לא נמצאו עיצובים לאתר זה.",
+    "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
   "searchResultRating": {
-    "message": "דירוג"
+    "message": "דירוג",
+    "description": "Text for label that shows the search result's rating"
   },
   "searchResultUpdated": {
-    "message": "עודכן"
+    "message": "עודכן",
+    "description": "Text for label that shows the search result's last update date"
   },
   "searchResultWeeklyCount": {
-    "message": "התקנות שבועיות"
+    "message": "התקנות שבועיות",
+    "description": "Text for label that shows the number of times a search result was installed during last week"
   },
   "sectionRemove": {
-    "message": "הסר סעיף"
+    "message": "הסר סעיף",
+    "description": "Label for the button to remove a section"
   },
   "sectionRestore": {
-    "message": "שחזר סעיף שהוסר"
+    "message": "שחזר סעיף שהוסר",
+    "description": "Label for the button to restore a removed section"
   },
   "shortcuts": {
-    "message": "קיצורי מקשים"
+    "message": "קיצורי מקשים",
+    "description": "Go to shortcut configuration"
   },
   "shortcutsNote": {
-    "message": "הגדר קיצורי מקשים"
+    "message": "הגדר קיצורי מקשים",
+    "description": ""
   },
   "sortDateNewestFirst": {
-    "message": "החדש ביותר ראשון"
+    "message": "החדש ביותר ראשון",
+    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
   },
   "sortDateOldestFirst": {
-    "message": "הישן ביותר ראשון"
+    "message": "הישן ביותר ראשון",
+    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
   },
   "sortLabel": {
-    "message": "בחר שיטת מיון להחלה על העיצובים המותקנים"
+    "message": "בחר שיטת מיון להחלה על העיצובים המותקנים",
+    "description": "Title on the sort select to indicate it is used for sorting entries"
   },
   "styleBadRegexp": {
-    "message": "ביטוי ה־Regexp לא תקין."
+    "message": "ביטוי ה־Regexp לא תקין.",
+    "description": "Validation message for a bad regexp in a style"
   },
   "styleBeautify": {
-    "message": "ייפה CSS"
+    "message": "ייפה CSS",
+    "description": "Label for the CSS-beautifier button on the edit style page"
   },
   "styleCancelEditLabel": {
-    "message": "חזרה לניהול"
+    "message": "חזרה לניהול",
+    "description": "Label for cancel button for style editing"
   },
   "styleEnabledLabel": {
-    "message": "מאופשר"
+    "message": "מאופשר",
+    "description": "Label for the enabled state of styles"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "הדבק את הקוד ב־Mozilla-format"
-  },
-  "styleMetaErrorColor": {
-    "message": "$color$ הוא צבע לא תקין",
-    "placeholders": {
-      "color": {
-        "content": "$1"
-      }
-    }
-  },
-  "styleMetaErrorPreprocessor": {
-    "message": "@preprocessor לא נתמך: $preprocessor$",
-    "placeholders": {
-      "preprocessor": {
-        "content": "$1"
-      }
-    }
-  },
-  "styleMetaErrorSelectValueMismatch": {
-    "message": "הערך @select: לא קיים ברשימה"
-  },
-  "styleMissingMeta": {
-    "message": "@$key$ metadata חסרים",
-    "placeholders": {
-      "key": {
-        "content": "$1"
-      }
-    }
+    "message": "הדבק את הקוד ב־Mozilla-format",
+    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
   },
   "styleMissingName": {
-    "message": "אנא הזן שם"
+    "message": "אנא הזן שם",
+    "description": "Error displayed when user saves without providing a name"
   },
   "styleRegexpTestButton": {
-    "message": "בדוק RegExp"
+    "message": "בדוק RegExp",
+    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
   },
   "styleRegexpTestFull": {
-    "message": "כרטיסיות תואמות"
+    "message": "כרטיסיות תואמות",
+    "description": "RegExp test report: label for the fully matching expressions"
   },
   "styleRegexpTestInvalid": {
-    "message": "ביטוי regrxp לא תקין"
+    "message": "ביטוי regrxp לא תקין",
+    "description": "RegExp test report: label for the invalid expressions"
   },
   "styleRegexpTestNone": {
-    "message": "לא תואם אף כרטיסייה"
+    "message": "לא תואם אף כרטיסייה",
+    "description": "RegExp test report: label for expressions that didn't match any tabs"
   },
   "styleSaveLabel": {
-    "message": "שמור"
-  },
-  "styleSectionsTitle": {
-    "message": "סעיפים"
+    "message": "שמור",
+    "description": "Label for save button for style editing"
   },
   "styleToMozillaFormatTitle": {
-    "message": "עיצוב ב־Mozilla format"
+    "message": "עיצוב ב־Mozilla format",
+    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
   },
   "styleUpdate": {
     "message": "האם אתה בטוח שברצונך לעדכן את '$stylename$'?",
+    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -694,31 +877,40 @@
     }
   },
   "stylusUnavailableForURL": {
-    "message": "Stylus לא עובד על דפים כמו זה."
+    "message": "Stylus לא עובד על דפים כמו זה.",
+    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
   },
   "syncStorageErrorSaving": {
-    "message": "הערך לא יכול להשמר. אנא נסה להקטין את גודל הטקסט."
+    "message": "הערך לא יכול להשמר. אנא נסה להקטין את גודל הטקסט.",
+    "description": "Displayed when trying to save an excessively big value via storage.sync API"
   },
   "toggleStyle": {
-    "message": "אפשר או השבת עיצוב"
+    "message": "אפשר או השבת עיצוב",
+    "description": "Label for the checkbox to enable/disable a style"
   },
   "undo": {
-    "message": "בטל"
+    "message": "בטל",
+    "description": "Button label"
   },
   "undoGlobal": {
-    "message": "בטל בכל הסעיפים"
+    "message": "בטל בכל הסעיפים",
+    "description": "CSS-beautify global Undo button label"
   },
   "unreachableAMO": {
-    "message": "Firefox לא מאפשרת גישה לאתר זה."
+    "message": "Firefox לא מאפשרת גישה לאתר זה.",
+    "description": "Note in the popup displayed when opened on addons.mozilla.org"
   },
   "unreachableContentScript": {
-    "message": "לא ניתן לתקשר עם הדף. אנא טען מחדש את הכרטיסייה."
+    "message": "לא ניתן לתקשר עם הדף. אנא טען מחדש את הכרטיסייה.",
+    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "לא נמצאו עדכונים."
+    "message": "לא נמצאו עדכונים.",
+    "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateCheckFailBadResponseCode": {
     "message": "העדכון נכשל: השרת החזיר תגובה עם הקוד $code$.",
+    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -726,42 +918,55 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "העדכון נכשל: השרת לא זמין."
+    "message": "העדכון נכשל: השרת לא זמין.",
+    "description": "Text that displays when an update check failed because the update server is unreachable"
   },
   "updateCheckHistory": {
-    "message": "היסטוריה של בדיקת עדכונים"
+    "message": "היסטוריה של בדיקת עדכונים",
+    "description": ""
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "עיצוב זה נערך באופן מקומי."
+    "message": "עיצוב זה נערך באופן מקומי.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "ייתכן כי עיצוב זה נערך באופן מקומי."
+    "message": "ייתכן כי עיצוב זה נערך באופן מקומי.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "העיצוב מעודכן."
+    "message": "העיצוב מעודכן.",
+    "description": "Text that displays when an update check completed and no update is available"
   },
   "updateCompleted": {
-    "message": "העדכון הושלם."
+    "message": "העדכון הושלם.",
+    "description": "Text that displays when an update completed"
   },
   "updatesCurrentlyInstalled": {
-    "message": "העדכונים הותקנו."
+    "message": "העדכונים הותקנו.",
+    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
   "usercssAvoidOverwriting": {
-    "message": "אנא שנה את הערך של @name or @namespace על־מנת להמנע מדריסה של עיצוב קיים."
+    "message": "אנא שנה את הערך של @name or @namespace על־מנת להמנע מדריסה של עיצוב קיים.",
+    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
   },
   "usercssEditorNamePlaceholder": {
-    "message": "ציין @name בקוד"
+    "message": "ציין @name בקוד",
+    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
   },
   "usercssReplaceTemplateSectionBody": {
-    "message": "הכנס כאן קוד..."
+    "message": "הכנס כאן קוד...",
+    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
   },
   "versionInvalidOlder": {
-    "message": "הגרסה ישנה יותר מהעיצוב המותקן."
+    "message": "הגרסה ישנה יותר מהעיצוב המותקן.",
+    "description": "Displayed when the version of style is older than the installed one"
   },
   "writeStyleFor": {
-    "message": "כתוב עיצוב עבור: "
+    "message": "כתוב עיצוב עבור: ",
+    "description": "Label for toolbar pop-up that precedes the links to write a new style"
   },
   "writeStyleForURL": {
-    "message": "הקישור הנוכחי"
+    "message": "הקישור הנוכחי",
+    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   }
 }

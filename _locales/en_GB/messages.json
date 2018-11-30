@@ -1,75 +1,87 @@
 {
   "appliesRemoveError": {
-    "message": "Cannot remove last 'applies to' entry"
+    "message": "Cannot remove last 'applies to' entry",
+    "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "checkAllUpdatesForce": {
-    "message": "Check again—I didn't edit any styles!"
+    "message": "Check again—I didn't edit any styles!",
+    "description": "Label for the button to apply all detected updates"
   },
   "cm_autoCloseBrackets": {
-    "message": "Auto-close brackets and quotes"
+    "message": "Auto-close brackets and quotes",
+    "description": "Label for the checkbox in the style editor."
   },
   "cm_colorpicker": {
-    "message": "Colour pickers for CSS colours"
+    "message": "Colour pickers for CSS colours",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
   "cm_resizeGripHint": {
-    "message": "Double-click to maximise/restore the height"
+    "message": "Double-click to maximise/restore the height",
+    "description": "Tooltip for the resize grip in style editor"
   },
   "colorpickerTooltip": {
-    "message": "Open colour picker"
+    "message": "Open colour picker",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
   },
   "description": {
-    "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites."
+    "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites.",
+    "description": "Extension description"
   },
   "editGotoLine": {
-    "message": "Go to line (or line:col)"
+    "message": "Go to line (or line:col)",
+    "description": "Go to line or line:column on Ctrl-G in style code editor"
   },
   "editStyleHeading": {
-    "message": "Edit style"
+    "message": "Edit style",
+    "description": "Title of the page for editing styles"
   },
   "installUpdateUnavailable": {
-    "message": "To enable checking for updates, drop the file on the tab strip or specify @updateURL in the style metadata."
+    "message": "To enable checking for updates, drop the file on the tab strip or specify @updateURL in the style metadata.",
+    "description": ""
   },
   "license": {
-    "message": "Licence"
+    "message": "Licence",
+    "description": "Label for the license"
   },
   "manageFaviconsGray": {
-    "message": "Greyed out"
+    "message": "Greyed out",
+    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
   },
   "optionsBadgeDisabled": {
-    "message": "Background colour when disabled"
+    "message": "Background colour when disabled",
+    "description": ""
   },
   "optionsBadgeNormal": {
-    "message": "Background colour"
+    "message": "Background colour",
+    "description": ""
   },
   "optionsUpdateImportNote": {
-    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
+    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated.",
+    "description": ""
   },
   "optionsUpdateInterval": {
-    "message": "Userstyle auto-update interval in hours (specify 0 to disable)"
+    "message": "Userstyle auto-update interval in hours (specify 0 to disable)",
+    "description": ""
   },
   "styleInstallFailed": {
     "message": "Failed to install userstyle\n$error$",
+    "description": "Warning when installation failed",
     "placeholders": {
       "error": {
         "content": "$1"
       }
     }
   },
-  "styleMetaErrorColor": {
-    "message": "$color$ is not a valid colour",
-    "placeholders": {
-      "color": {
-        "content": "$1"
-      }
-    }
-  },
   "styleRegexpPartialExplanation": {
-    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug)."
+    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug).",
+    "description": ""
   },
   "styleUpdateDiscardChanges": {
-    "message": "The style has been changed outside the editor. Would you like to reload the style?"
+    "message": "The style has been changed outside the editor. Would you like to reload the style?",
+    "description": "Confirmation to update the style in the editor"
   },
   "usercssConfigIncomplete": {
-    "message": "The style was updated or deleted after the configuration dialogue was shown. These variables were not saved to avoid corrupting the style's metadata:"
+    "message": "The style was updated or deleted after the configuration dialogue was shown. These variables were not saved to avoid corrupting the style's metadata:",
+    "description": ""
   }
 }

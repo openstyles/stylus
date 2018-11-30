@@ -1,12 +1,15 @@
 {
   "addStyleLabel": {
-    "message": "క్రొత్త స్టైల్ వ్రాయండి"
+    "message": "క్రొత్త స్టైల్ వ్రాయండి",
+    "description": "Label for the button to go to the add style page"
   },
   "appliesAdd": {
-    "message": "చేర్చు"
+    "message": "చేర్చు",
+    "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
     "message": "వేటికి వర్తిస్తుంది; $applies$",
+    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -14,42 +17,51 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "ఇంకా మరిన్ని"
+    "message": "ఇంకా మరిన్ని",
+    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesRemove": {
-    "message": "తొలగించు"
+    "message": "తొలగించు",
+    "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesToEverything": {
-    "message": "అన్నిటికీ"
+    "message": "అన్నిటికీ",
+    "description": "Text displayed for styles that apply to all sites"
   },
   "deleteStyleConfirm": {
-    "message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?"
+    "message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?",
+    "description": "Confirmation before deleting a style"
   },
   "deleteStyleLabel": {
-    "message": "తొలగించు"
+    "message": "తొలగించు",
+    "description": "Label for the button to delete a style"
   },
   "disableStyleLabel": {
-    "message": "అచేతనించు"
+    "message": "అచేతనించు",
+    "description": "Label for the button to disable a style"
   },
   "editStyleLabel": {
-    "message": "మార్చు"
+    "message": "మార్చు",
+    "description": "Label for the button to go to the edit style page"
   },
   "enableStyleLabel": {
-    "message": "చేతనించు"
+    "message": "చేతనించు",
+    "description": "Label for the button to enable a style"
   },
   "helpAlt": {
-    "message": "సహాయం"
+    "message": "సహాయం",
+    "description": "Alternate text for help buttons"
   },
   "manageHeading": {
-    "message": "స్థాపిత శైలులు"
+    "message": "స్థాపిత శైలులు",
+    "description": "Heading for the manage page"
   },
   "manageTitle": {
-    "message": "స్టైలిష్"
+    "message": "స్టైలిష్",
+    "description": "Title for the manage page"
   },
   "styleSaveLabel": {
-    "message": "భద్రపరచు"
-  },
-  "styleSectionsTitle": {
-    "message": "విభాగాలు"
+    "message": "భద్రపరచు",
+    "description": "Label for save button for style editing"
   }
 }

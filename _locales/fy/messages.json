@@ -1,15 +1,19 @@
 {
   "addStyleLabel": {
-    "message": "Nije styl skriuwe"
+    "message": "Nije styl skriuwe",
+    "description": "Label for the button to go to the add style page"
   },
   "addStyleTitle": {
-    "message": "Styl tafoegje"
+    "message": "Styl tafoegje",
+    "description": "Title of the page for adding styles"
   },
   "appliesAdd": {
-    "message": "Tafoegje"
+    "message": "Tafoegje",
+    "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
     "message": "Fan tapassing op: $applies$",
+    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -17,81 +21,107 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "en mear"
+    "message": "en mear",
+    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption": {
-    "message": "URL’s op it domein"
+    "message": "URL’s op it domein",
+    "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp": {
-    "message": "Brûk de ‘Fan tapassing op’-funksjes om de URL’s foar de koade yn dizze seksje te beheinen."
+    "message": "Brûk de ‘Fan tapassing op’-funksjes om de URL’s foar de koade yn dizze seksje te beheinen.",
+    "description": "Help text for 'applies to' section"
   },
   "appliesLabel": {
-    "message": "Fan tapassing op"
+    "message": "Fan tapassing op",
+    "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesRegexpOption": {
-    "message": "URL’s oerienkommend mei de regexp"
+    "message": "URL’s oerienkommend mei de regexp",
+    "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
-    "message": "Fuortsmite"
+    "message": "Fuortsmite",
+    "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesSpecify": {
-    "message": "Spesifisearje"
+    "message": "Spesifisearje",
+    "description": "Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything": {
-    "message": "Alles"
+    "message": "Alles",
+    "description": "Text displayed for styles that apply to all sites"
   },
   "appliesUrlPrefixOption": {
-    "message": "URL’s begjinnend mei"
+    "message": "URL’s begjinnend mei",
+    "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "applyAllUpdates": {
-    "message": "Alle fernijingen tapasse"
+    "message": "Alle fernijingen tapasse",
+    "description": "Label for the button to apply all detected updates"
   },
   "checkAllUpdates": {
-    "message": "Alle stilen kontrolearje op fernijingen"
+    "message": "Alle stilen kontrolearje op fernijingen",
+    "description": "Label for the button to check all styles for updates"
   },
   "checkForUpdate": {
-    "message": "Kontrolearje op fernijing"
+    "message": "Kontrolearje op fernijing",
+    "description": "Label for the button to check a single style for an update"
   },
   "checkingForUpdate": {
-    "message": "Kontrolearje..."
+    "message": "Kontrolearje...",
+    "description": "Text to display when checking a style for an update"
   },
   "cm_indentWithTabs": {
-    "message": "Ljepblêden mei tûke ynspringing brûke"
+    "message": "Ljepblêden mei tûke ynspringing brûke",
+    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
   "cm_keyMap": {
-    "message": "Toetseboerdyndieling"
+    "message": "Toetseboerdyndieling",
+    "description": "Label for the drop-down list controlling the keymap for the style editor."
   },
   "cm_lineWrapping": {
-    "message": "Teksttebekrin"
+    "message": "Teksttebekrin",
+    "description": "Label for the checkbox controlling word wrap option for the style editor."
   },
   "cm_smartIndent": {
-    "message": "Tûke ynspringing brûke"
+    "message": "Tûke ynspringing brûke",
+    "description": "Label for the checkbox controlling smart indentation option for the style editor."
   },
   "cm_tabSize": {
-    "message": "Ljepblêdgrutte"
+    "message": "Ljepblêdgrutte",
+    "description": "Label for the text box controlling tab size option for the style editor."
   },
   "cm_theme": {
-    "message": "Tema"
+    "message": "Tema",
+    "description": "Label for the style editor's CSS theme."
   },
   "confirmNo": {
-    "message": "Nee"
+    "message": "Nee",
+    "description": "'No' button in a confirm dialog"
   },
   "confirmStop": {
-    "message": "Stoppe"
+    "message": "Stoppe",
+    "description": "'Stop' button in a confirm dialog"
   },
   "confirmYes": {
-    "message": "Ja"
+    "message": "Ja",
+    "description": "'Yes' button in a confirm dialog"
   },
   "dbError": {
-    "message": "Der is in flater bard by it brûken fan de Stylus-database. Wolle jo in webside mei mooglike oplossingen besykje?"
+    "message": "Der is in flater bard by it brûken fan de Stylus-database. Wolle jo in webside mei mooglike oplossingen besykje?",
+    "description": "Prompt when a DB error is encountered"
   },
   "defaultTheme": {
-    "message": "standert"
+    "message": "standert",
+    "description": "Default CodeMirror CSS theme option on the edit style page"
   },
   "deleteStyleConfirm": {
-    "message": "Binne jo wis dat jo dizze styl fuortsmite wolle?"
+    "message": "Binne jo wis dat jo dizze styl fuortsmite wolle?",
+    "description": "Confirmation before deleting a style"
   },
   "deleteStyleLabel": {
-    "message": "Fuortsmite"
+    "message": "Fuortsmite",
+    "description": "Label for the button to delete a style"
   }
 }
