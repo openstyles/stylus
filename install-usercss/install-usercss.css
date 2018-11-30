@@ -246,6 +246,18 @@ h2.installed.active {
   min-width: 0;
 }
 
+.unavailable-message,
+.unavailable .available-message,
+.unavailable .svg-icon,
+.live-reload.unavailable input,
+.set-update-url.unavailable input {
+	display: none;
+}
+
+.unavailable .unavailable-message {
+	display: block;
+}
+
 .set-update-url {
   flex-wrap: wrap;
 }

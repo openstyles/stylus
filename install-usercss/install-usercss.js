@@ -16,8 +16,7 @@
   let port;
 
   if (params.has('direct')) {
-    $('.live-reload').textContent = t('liveReloadUnavailable');
-    $('.live-reload').classList.add('unavailable');
+    setUnavailable('.live-reload');
     getCodeDirectly();
   } else {
     port = chrome.tabs.connect(tabId);
@@ -310,15 +309,13 @@
     // prefer the installation URL unless drag'n'dropped on the manage page
     const installationUrl = (params.get('updateUrl') || '').replace(/^blob.+/, '');
     const updateUrl = new URL(installationUrl || style.updateUrl || DUMMY_URL);
-    $('.set-update-url > span').textContent = t('installUpdateFromLabel');
     if (dup && dup.updateUrl === updateUrl.href) {
       checker.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
       checker.disabled = true;
     } else if (updateUrl.href === DUMMY_URL) {
       // drag'n'dropped on the manage page and the style doesn't have @updateURL
-      $('.set-update-url').textContent = t('installUpdateUnavailable');
-      $('.set-update-url').classList.add('unavailable');
+      setUnavailable('.set-update-url');
       return;
     } else if (updateUrl.protocol !== 'file:') {
       checker.checked = true;
@@ -355,6 +352,14 @@
         }
       });
     }
+  }
+
+  function setUnavailable(label) {
+    const el = $(label);
+    el.classList.add('unavailable');
+    const input = $('input', el);
+    input.disabled = true;
+    input.checked = false;
   }
 
   function getAppliesTo(style) {
