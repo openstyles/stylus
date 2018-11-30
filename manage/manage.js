@@ -113,7 +113,12 @@ function initGlobalEvents() {
   setupLivePrefs();
   sorter.init();
 
-  prefs.subscribe(['manage.newUI'], () => switchUI());
+  prefs.subscribe([
+    'manage.newUI',
+    'manage.newUI.favicons',
+    'manage.newUI.faviconsGray',
+    'manage.newUI.targets',
+  ], () => switchUI());
 
   switchUI({styleOnly: true});
 
