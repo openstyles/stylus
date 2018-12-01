@@ -176,6 +176,11 @@ a:hover {
   padding: 0;
 }
 
+/* keep all icons on the same row */
+.entry-actions {
+  white-space: pre;
+}
+
 .header-version,
 .entry-version {
   max-width: var(--narrow-column);
@@ -781,7 +786,12 @@ details.applies-to-extra[open] {
 }
 
 @media (max-width: 1000px) {
-
+  .entry-actions {
+    white-space: normal;
+  }
+  .invisible {
+    display: none;
+  }
 }
 
 /* Deprecated dropbox backup (dropbox-sync) */
