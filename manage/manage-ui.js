@@ -1,6 +1,7 @@
 /*
-global prefs $ $$ $create template tWordBreak
-installed sorter filterAndAppend
+global prefs t $ $$ $create template tWordBreak
+installed sorter filterAndAppend handleEvent
+animateElement scrollElementIntoView formatDate
 */
 'use strict';
 
@@ -158,15 +159,25 @@ const UI = {
 
     $('.entry-version', entry).textContent = style.usercssData && style.usercssData.version || '';
 
-    let lastUpdate = style.updateDate ? new Date(style.updateDate) : '';
-    lastUpdate = lastUpdate instanceof Date && isFinite(lastUpdate) ? lastUpdate.toISOString() : '';
-    $('.entry-last-update', entry).textContent = lastUpdate.split('T')[0].replace(/-/g, '.');
-    $('.entry-last-update', entry).title = lastUpdate;
+    const lastUpdate = $('.entry-last-update', entry);
+    lastUpdate.textContent = UI.getDateString(style.updateDate);
+    // Show install & last update in title
+    lastUpdate.title = [
+      {prop: 'installDate', name: 'dateInstalled'},
+      {prop: 'updateDate', name: 'dateUpdated'},
+    ].map(({prop, name}) => t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
 
     UI.createStyleTargetsElement({entry, style});
     UI.addLabels(entry);
 
     return entry;
+  },
+
+  getDateString: date => {
+    const newDate = new Date(date);
+    return newDate instanceof Date && isFinite(newDate)
+      ? newDate.toISOString().split('T')[0].replace(/-/g, '.')
+      : '';
   },
 
 

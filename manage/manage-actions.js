@@ -66,9 +66,6 @@ function initGlobalEvents() {
   btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
 
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
-  // show date installed & last update on hover
-  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
-  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
 
   document.addEventListener('visibilitychange', onVisibilityChange);
 
@@ -272,28 +269,8 @@ Object.assign(handleEvent, {
   config(event, {styleMeta}) {
     event.preventDefault();
     configDialog(styleMeta);
-  },
-
-  lazyAddEntryTitle({type, target}) {
-    const cell = target.closest('h2.style-name');
-    if (cell) {
-      const link = $('.style-name-link', cell);
-      if (type === 'mouseover' && !link.title) {
-        debounce(handleEvent.addEntryTitle, 50, link);
-      } else {
-        debounce.unregister(handleEvent.addEntryTitle);
-      }
-    }
-  },
-
-  addEntryTitle(link) {
-    const entry = link.closest('.entry');
-    link.title = [
-      {prop: 'installDate', name: 'dateInstalled'},
-      {prop: 'updateDate', name: 'dateUpdated'},
-    ].map(({prop, name}) =>
-      t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
   }
+
 });
 
 function handleUpdate(style, {reason, method} = {}) {
