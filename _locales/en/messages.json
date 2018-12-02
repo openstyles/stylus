@@ -1253,37 +1253,13 @@
   "shortcutsNote": {
     "message": "Define keyboard shortcuts"
   },
-  "sortDateNewestFirst": {
-    "message": "newest first",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
-  },
-  "sortDateOldestFirst": {
-    "message": "oldest first",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
-  },
   "sortHeader": {
     "message": "Sort",
     "description": "Title of sort column, indicating that the style can be manually sorted by dragging & dropping"
   },
   "sortLabel": {
-    "message": "Select a sort to apply to the installed styles",
-    "description": "Title on the sort select to indicate it is used for sorting entries"
-  },
-  "sortLabelTitleAsc": {
-    "message": "Title Ascending",
-    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
-  },
-  "sortLabelTitleDesc": {
-    "message": "Title Descending",
-    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
-  },
-  "sortStylesHelp": {
-    "message": "Choose the type of sort to apply to the installed entries from within the sort dropdown. The default setting applies an ascending sort (A to Z) to the entry titles. Sorts within the \"Title Descending\" group will apply a descending sort (Z to A) to the title.\nThere are other presets that will allow sorting the entries by multiple criteria. Think of this like sorting a table with multiple columns and each category in a select (between the plus signs) represents a column, or group.\nFor example, if the setting is \"Enabled (first) + Title\", the entries would sort so that all the enabled entries are sorted to the top of the list, then an entry title ascending sort (A to Z) is applied to both the enabled and disabled entries separately.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
-  },
-  "sortStylesHelpTitle": {
-    "message": "Sort contents",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "Click to sort; Shift + click to sort multiple columns",
+    "description": "Title added to links in the manager page header to inform the user on how to sort the columns"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",

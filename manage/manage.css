@@ -211,6 +211,31 @@ a:hover {
   margin-right: 8px;
 }
 
+.entry-header:not(.sortable) {
+  cursor: default;
+}
+
+.sortable {
+  align-self: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sortable[data-sort-dir="asc"]:after,
+.sortable[data-sort-dir="desc"]:after {
+  font-size: 16px;
+  position: relative;
+  top: 2px;
+}
+
+.sortable[data-sort-dir="asc"]:after {
+  content: '▴';
+}
+
+.sortable[data-sort-dir="desc"]:after {
+  content: '▾';
+}
+
 .entry-sort {
   cursor: move;
 }
@@ -267,6 +292,12 @@ body.dragging .entry:not(.dragging) .entry-name:before {
   fill: #000;
 }
 
+.header-labels {
+  margin-left: 16px;
+  justify-content: center
+}
+
+.header-label,
 .entry-label {
   padding: 2px 4px;
   margin-left: 2px;
@@ -275,13 +306,15 @@ body.dragging .entry:not(.dragging) .entry-name:before {
   text-transform: lowercase;
 }
 
-.entry-label[data-label="usercss"] {
+.header-label[data-type="usercss"],
+.entry-label[data-type="usercss"] {
   background-color: hsla(180, 100%, 20%, 1);
   color: white;
   text-transform: lowercase;
 }
 
-.entry-label[data-label="disabled"] {
+.header-label[data-type="disabled"],
+.entry-label[data-type="disabled"] {
   background: rgba(128, 128, 128, .2);
   color: #222;
 }

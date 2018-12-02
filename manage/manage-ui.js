@@ -46,6 +46,7 @@ const UI = {
   },
 
   showStyles: (styles = [], matchUrlIds) => {
+    UI.addHeaderLabels();
     const sorted = sorter.sort({
       styles: styles.map(style => ({
         style,
@@ -275,17 +276,34 @@ const UI = {
     }
   },
 
+  addHeaderLabels: () => {
+    const header = $('.header-name');
+    const labels = document.createElement('span');
+    const label = document.createElement('a');
+    labels.className = 'header-labels';
+    label.className = 'header-label sortable';
+    label.title = t('sortLabel');
+    label.href = '#';
+    Object.keys(UI.labels).forEach(item => {
+      const newLabel = label.cloneNode(true);
+      newLabel.dataset.type = item;
+      newLabel.textContent = UI.labels[item].text;
+      labels.appendChild(newLabel);
+    });
+    header.appendChild(labels);
+  },
+
   addLabels: entry => {
     const style = entry.styleMeta;
     const container = $('.entry-labels', entry);
     const label = document.createElement('span');
     const labels = document.createElement('span');
     labels.className = 'entry-labels';
-    label.className = 'entry-label ';
+    label.className = 'entry-label';
     Object.keys(UI.labels).forEach(item => {
       if (UI.labels[item].is({entry, style})) {
         const newLabel = label.cloneNode(true);
-        newLabel.dataset.label = item;
+        newLabel.dataset.type = item;
         newLabel.textContent = UI.labels[item].text;
         labels.appendChild(newLabel);
       }

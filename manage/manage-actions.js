@@ -128,7 +128,8 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.entry-delete': 'delete',
     '.entry-configure-usercss': 'config',
-    '#toggle-actions': 'toggleBulkActions'
+    '#toggle-actions': 'toggleBulkActions',
+    '.sortable': 'updateSort'
   },
 
   entryClicked(event) {
@@ -202,6 +203,12 @@ Object.assign(handleEvent, {
     const json = entry.updatedCode;
     json.id = entry.styleId;
     API[json.usercssData ? 'installUsercss' : 'installStyle'](json);
+  },
+
+  updateSort(event) {
+    event.preventDefault();
+    sorter.updateSort(event);
+    removeSelection();
   },
 
   delete(event, entry) {
@@ -424,6 +431,17 @@ function updateBulkFilters({target}) {
     }
     const count = $$('.entry-filter-toggle').filter(entry => entry.checked).length;
     $('#bulk-filter-count').textContent = count || '';
+  }
+}
+
+function removeSelection() {
+  const sel = window.getSelection ? window.getSelection() : document.selection;
+  if (sel) {
+    if (sel.removeAllRanges) {
+      sel.removeAllRanges();
+    } else if (sel.empty) {
+      sel.empty();
+    }
   }
 }
 
