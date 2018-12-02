@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg */
+  getStyleWithNoCode msg domainInsensitive */
 /* exported styleManager */
 'use strict';
 
@@ -418,21 +418,26 @@ const styleManager = (() => {
   }
 
   function urlMatchSection(url, section) {
+    url = domainInsensitive(url);
     const domain = getDomain(url);
-    if (section.domains && section.domains.some(d => d === domain || domain.endsWith(`.${d}`))) {
+    if (
+      section.domains &&
+      section.domains.some(d => domainInsensitive(d) === domain || domain.endsWith(`.${d}`))
+    ) {
       return true;
     }
-    if (section.urlPrefixes && section.urlPrefixes.some(p => url.startsWith(p))) {
+    if (
+      section.urlPrefixes &&
+      section.urlPrefixes.some(p => domainInsensitive(url).startsWith(domainInsensitive(p)))
+    ) {
       return true;
     }
     // as per spec the fragment portion is ignored in @-moz-document:
     // https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
     // but the spec is outdated and doesn't account for SPA sites
     // so we only respect it for `url()` function
-    if (section.urls && (
-      section.urls.includes(url) ||
-      section.urls.includes(getUrlNoHash(url))
-    )) {
+    const urls = section.urls && section.urls.map(domainInsensitive);
+    if (urls && (urls.includes(url) || urls.includes(getUrlNoHash(url)))) {
       return true;
     }
     if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {

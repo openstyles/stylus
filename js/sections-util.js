@@ -69,11 +69,18 @@ function styleSectionsEqual(a, b, {ignoreCode, checkSource} = {}) {
   }
 }
 
+function domainInsensitive(url) {
+  const parts = url.split('/');
+  const domainIndex = url.indexOf('://') < 0 ? 0 : 2;
+  parts[domainIndex] = parts[domainIndex].toLowerCase();
+  return parts.join('/');
+}
+
 function normalizeStyleSections({sections}) {
   // retain known properties in an arbitrarily predefined order
   return (sections || []).map(section => ({
     code: section.code || '',
-    urls: section.urls || [],
+    urls: (section.urls || []).map(domainInsensitive),
     urlPrefixes: section.urlPrefixes || [],
     domains: section.domains || [],
     regexps: section.regexps || [],
