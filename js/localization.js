@@ -7,6 +7,9 @@ tDocLoader();
 
 
 function t(key, params) {
+  if (!params && key.includes(';')) {
+    [key, params] = key.split(';');
+  }
   const cache = !params && t.cache[key];
   const s = cache || chrome.i18n.getMessage(key, params);
   if (s === '') {
