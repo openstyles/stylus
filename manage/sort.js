@@ -1,4 +1,4 @@
-/* global installed t $ prefs */
+/* global installed t $ prefs semverCompare */
 /* exported sorter */
 'use strict';
 
@@ -16,6 +16,7 @@ const sorter = (() => {
   const sorterType = {
     alpha: (a, b) => a < b ? -1 : a === b ? 0 : 1,
     number: (a, b) => (a || 0) - (b || 0),
+    semver: (a, b) => semverCompare(a, b)
   };
 
   const tagData = {
@@ -41,12 +42,8 @@ const sorter = (() => {
     },
     version: {
       text: '#',
-      parse: ({style}) => (style.usercssData && style.usercssData.version || '')
-        .split(/[.-]/)
-        .splice(0, 3) // ignore extra labels; e.g. 1.2.3-beta.1
-        .map(n => n ? n.padStart(4, '0') : '')
-        .join(''),
-      sorter: sorterType.number
+      parse: ({style}) => (style.usercssData && style.usercssData.version || ''),
+      sorter: sorterType.semver
     },
     dateInstalled: {
       text: t('dateInstalled'),
