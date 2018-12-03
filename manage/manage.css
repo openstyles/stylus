@@ -81,7 +81,7 @@ a:hover {
   fill: #000;
 }
 
-#header {
+#main-header {
   background: #111;
   color: #ddd;
   position: fixed;
@@ -93,31 +93,31 @@ a:hover {
   margin: 0;
 }
 
-#header .ext-version {
+#main-header .ext-version {
   font-size: .5em;
 }
 
-#header svg {
+#main-header svg {
   vertical-align: bottom;
 }
 
-#header .tabs {
+#main-header .tabs {
   float: right;
   margin-right: 20px;
 }
 
-#header .tabs a {
+#main-header .tabs a {
   font-size: .7em;
   color: #aaa;
   text-decoration: none;
 }
 
-#header .tabs a.active,
-#header .tabs a:hover {
+#main-header .tabs a.active,
+#main-header .tabs a:hover {
   color: #c0fff0;
 }
 
-#header:lang(ja) {
+#main-header:lang(ja) {
   font-weight: normal;
 }
 
