@@ -5,11 +5,12 @@ global messageBox getStyleWithNoCode
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ setupLivePrefs
-  URLS enforceInputRange t formatDate
+  URLS enforceInputRange t
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
   scrollElementIntoView FIREFOX
   UI
 */
+/* exported updateInjectionOrder */
 'use strict';
 
 let installed;
@@ -443,6 +444,20 @@ function removeSelection() {
       sel.empty();
     }
   }
+}
+
+function updateInjectionOrder() {
+  const entries = [...installed.children];
+  entries.shift(); // remove header
+  console.log(entries[1].styleMeta.id, entries[1].styleMeta.injectionOrder)
+
+  entries.forEach((entry, index) => {
+    entry.styleMeta.injectionOrder = index + 1;
+    $('.entry-id', entry).textContent = index + 1;
+  });
+  sorter.update();
+
+  // TODO: Update database
 }
 
 function lazyLoad() {

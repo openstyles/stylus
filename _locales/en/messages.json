@@ -1258,8 +1258,16 @@
     "description": "Title of sort column, indicating that the style can be manually sorted by dragging & dropping"
   },
   "sortLabel": {
-    "message": "Click to sort; Shift + click to sort multiple columns",
+    "message": "Click to sort by \"$name$\";\nUse shift + click to sort by multiple items",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    },
     "description": "Title added to links in the manager page header to inform the user on how to sort the columns"
+  },
+  "sortHeaderOrderLabel": {
+    "message": "Click and drag the icon to change the style injection order"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",

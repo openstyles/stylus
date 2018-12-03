@@ -141,7 +141,7 @@ const UI = {
       (style.updateUrl ? ' updatable' : '') +
       (style.usercssData ? ' usercss' : '');
 
-    $('.entry-id', entry).textContent = style.sortOrder || style.id;
+    $('.entry-id', entry).textContent = style.injectionOrder || style.id;
     let el = $('.entry-homepage', entry);
     el.classList.toggle('invisible', !style.url);
     el.href = style.url || '';
@@ -282,12 +282,13 @@ const UI = {
     const label = document.createElement('a');
     labels.className = 'header-labels';
     label.className = 'header-label sortable';
-    label.title = t('sortLabel');
     label.href = '#';
     Object.keys(UI.labels).forEach(item => {
       const newLabel = label.cloneNode(true);
+      const text = UI.labels[item].text;
       newLabel.dataset.type = item;
-      newLabel.textContent = UI.labels[item].text;
+      newLabel.textContent = text;
+      newLabel.title = t('sortLabel', text);
       labels.appendChild(newLabel);
     });
     header.appendChild(labels);

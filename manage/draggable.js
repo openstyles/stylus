@@ -1,4 +1,4 @@
-/* global UI $$ */
+/* global UI $$ updateInjectionOrder */
 'use strict';
 
 // Polyfill for mobile? - https://caniuse.com/#feat=dragndrop
@@ -10,6 +10,7 @@
       el.classList.remove('dragging');
     });
     $('body').classList.remove('dragging');
+    updateInjectionOrder();
   }
 
   document.addEventListener('dragstart', event => {

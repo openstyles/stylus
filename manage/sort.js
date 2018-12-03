@@ -26,7 +26,7 @@ const sorter = (() => {
     },
     order: {
       text: '#',
-      parse: ({style}) => style.id,
+      parse: ({style}) => style.injectionOrder || style.id,
       sorter: sorterType.number,
     },
     usercss: {
