@@ -310,8 +310,6 @@ function createStyleElement({
   const config = $('.configure', entry);
   if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
     config.href = style.url;
-  } else {
-    config.removeAttribute('href');
   }
   config.style.display =
     !style.usercssData && config.href ||
