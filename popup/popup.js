@@ -283,8 +283,6 @@ function createStyleElement({
       config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
       $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
     }
-    $('.enable', entry).onclick = handleEvent.toggle;
-    $('.disable', entry).onclick = handleEvent.toggle;
     $('.delete', entry).onclick = handleEvent.delete;
     $('.configure', entry).onclick = handleEvent.configure;
 
@@ -347,10 +345,7 @@ Object.assign(handleEvent, {
   toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API.toggleStyle(
-      handleEvent.getClickedStyleId(event),
-      this.matches('.enable') || this.checked
-    );
+    API.toggleStyle(handleEvent.getClickedStyleId(event), this.checked);
   },
 
   delete(event) {
