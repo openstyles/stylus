@@ -318,7 +318,7 @@ function handleUpdate(style, {reason, method} = {}) {
     if (diff.length === 1 && diff[0].key === 'enabled') {
       oldEntry.classList.toggle('enabled', style.enabled);
       oldEntry.classList.toggle('disabled', !style.enabled);
-      $$('.checker', oldEntry).forEach(el => (el.checked = style.enabled));
+      $$('.entry-state-toggle', oldEntry).forEach(el => (el.checked = style.enabled));
       oldEntry.styleMeta = newStyleMeta;
       entry = oldEntry;
       oldEntry = null;
