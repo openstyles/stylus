@@ -603,15 +603,18 @@ self.parserlib = (() => {
     'text-decoration-skip':  'none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || ' +
                              'edges || box-decoration ]',
     'text-decoration-style': '<text-decoration-style>',
-    'text-emphasis':    1,
+    'text-emphasis':         '<text-emphasis-style> || <color>',
+    'text-emphasis-style':   '<text-emphasis-style>',
+    'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height':      1,
     'text-indent':      '<length> | <percentage>',
     'text-justify':     'auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida',
     'text-outline':     1,
     'text-overflow':    'clip | ellipsis',
     'text-rendering':   'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
-    'text-shadow':      'none | [ [ <color> && <length>{2,3} ] | <length>{2,3} ]#',
+    'text-shadow':      'none | [ <color>? && <length>{2,3} ]#',
     'text-transform':   'capitalize | uppercase | lowercase | none',
+    'text-underline-position': 'auto | [ under || [ left | right ] ]',
     'text-wrap':        'normal | none | avoid',
     'top':              '<width>',
     'touch-action':     'auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
@@ -1058,6 +1061,10 @@ self.parserlib = (() => {
       '<single-timing-function>': 'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames()',
 
       '<text-decoration-line>': 'none | [ underline || overline || line-through || blink ]',
+
+      '<text-emphasis-style>': 'none | ' +
+                               '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
+                               '<string>',
 
       '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
 
