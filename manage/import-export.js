@@ -161,7 +161,7 @@ function importFromString(jsonString) {
       if (sameStyle(byId, item)) {
         oldStyle = byId;
       } else {
-        item.id = null;
+        delete item.id;
       }
     }
     if (!oldStyle && byName) {
