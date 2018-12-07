@@ -279,13 +279,17 @@ function createStyleElement({
 
     const config = $('.configure', entry);
     config.onclick = handleEvent.configure;
-    if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
-      config.href = style.url;
-      config.target = '_blank';
-      config.title = t('configureStyleOnHomepage');
-      config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
-      $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
-    } else if (style.usercssData && Object.keys(style.usercssData.vars || {}).length === 0) {
+    if (!style.usercssData) {
+      if (style.updateUrl && style.updateUrl.includes('?') && style.url) {
+        config.href = style.url;
+        config.target = '_blank';
+        config.title = t('configureStyleOnHomepage');
+        config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+        $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+      } else {
+        config.classList.add('hidden');
+      }
+    } else if (Object.keys(style.usercssData.vars || {}).length === 0) {
       config.classList.add('hidden');
     }
 
