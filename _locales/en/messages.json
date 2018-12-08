@@ -1267,7 +1267,8 @@
     "description": "Title added to links in the manager page header to inform the user on how to sort the columns"
   },
   "sortHeaderOrderLabel": {
-    "message": "Click and drag the icon to change the style injection order"
+    "message": "Click and drag the icon to\nchange the style injection order",
+    "description": "Tooltip shown on manage page while hovering over the sort column header"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",

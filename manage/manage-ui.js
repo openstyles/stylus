@@ -145,13 +145,13 @@ const UI = {
     let el = $('.entry-homepage', entry);
     el.classList.toggle('invisible', !style.url);
     el.href = style.url || '';
-    el.title = style.url ? `${t('externalHomepage')}: ${style.url}` : '';
+    el.dataset.title = style.url ? `${t('externalHomepage')}: ${style.url}` : '';
 
     const support = style.usercssData && style.usercssData.supportURL || '';
     el = $('.entry-support', entry);
     el.classList.toggle('invisible', !support);
     el.href = support;
-    el.title = support ? `${t('externalSupport')}: ${support}` : '';
+    el.dataset.title = support ? `${t('externalSupport')}: ${support}` : '';
 
     $('.entry-configure-usercss', entry).classList.toggle('invisible', !configurable);
     if (style.updateUrl) {
@@ -163,7 +163,7 @@ const UI = {
     const lastUpdate = $('.entry-last-update', entry);
     lastUpdate.textContent = UI.getDateString(style.updateDate);
     // Show install & last update in title
-    lastUpdate.title = [
+    lastUpdate.dataset.title = [
       {prop: 'installDate', name: 'dateInstalled'},
       {prop: 'updateDate', name: 'dateUpdated'},
     ].map(({prop, name}) => t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
@@ -201,7 +201,7 @@ const UI = {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           }
           element.dataset.type = type;
-          element.title =
+          element.dataset.title =
             (parts.decorations[type + 'Before'] || '') +
             targetValue +
             (parts.decorations[type + 'After'] || '');
@@ -235,7 +235,7 @@ const UI = {
     const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
     for (const target of $$('.target', container)) {
       const type = target.dataset.type;
-      const targetValue = target.title;
+      const targetValue = target.dataset.title;
       if (!targetValue) continue;
       let favicon = '';
       if (type === 'domains') {
@@ -278,17 +278,19 @@ const UI = {
 
   addHeaderLabels: () => {
     const header = $('.header-name');
-    const labels = document.createElement('span');
+    const span = document.createElement('span');
+    const labels = span.cloneNode();
     const label = document.createElement('a');
     labels.className = 'header-labels';
-    label.className = 'header-label sortable';
+    label.className = 'header-label sortable tt-s';
     label.href = '#';
     Object.keys(UI.labels).forEach(item => {
       const newLabel = label.cloneNode(true);
       const text = UI.labels[item].text;
       newLabel.dataset.type = item;
       newLabel.textContent = text;
-      newLabel.title = t('sortLabel', text);
+      newLabel.appendChild(span.cloneNode());
+      newLabel.dataset.title = t('sortLabel', text);
       labels.appendChild(newLabel);
     });
     header.appendChild(labels);

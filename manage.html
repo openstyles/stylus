@@ -10,6 +10,7 @@
   <link rel="stylesheet" data-href="msgbox/msgbox.css">
   <link rel="stylesheet" data-href="options/onoffswitch.css">
   <link rel="stylesheet" data-href="vendor-overwrites/colorpicker/colorpicker.css">
+  <link rel="stylesheet" data-href="manage/tooltips.css">
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -65,7 +66,7 @@
               5h2c0-2.25 3-2.5 3-5a4 4 0 0 0-4-4z"/>
           </svg>
         </a>
-        <a href="#" class="entry-configure-usercss" i18n-title="configureStyle">
+        <a href="#" class="entry-configure-usercss" i18n-data-title="configureStyle">
           <svg class="svg-icon config" viewBox="0 0 24 24">
               <path d="M19.43 12.98a7.8 7.8 0 0 0 0-1.96l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5
                 0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49
@@ -84,14 +85,14 @@
                 1.13zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
           </svg>
         </a>
-        <a href="#" class="entry-edit" i18n-title="editStyleLabel">
+        <a href="#" class="entry-edit" i18n-data-title="editStyleLabel">
           <svg class="svg-icon edit" viewBox="0 0 24 24">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM5.92 19H5v-.92l9.06-9.06.92.92L5.92
               19zM20.71 5.63l-2.34-2.34c-.2-.2-.45-.29-.71-.29s-.51.1-.7.29l-1.83 1.83 3.75 3.75
               1.83-1.83a1 1 0 0 0 0-1.41z"/>
           </svg>
         </a>
-        <a href="#" class="entry-delete" i18n-title="deleteStyleLabel">
+        <a href="#" class="entry-delete" i18n-data-title="deleteStyleLabel">
           <svg class="svg-icon remove" viewBox="0 0 24 24">
             <path d="M6 19c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
           </svg>
@@ -112,7 +113,7 @@
 
   <template data-id="updaterIcons">
     <span class="updater-icons entry-col entry-update-state">
-      <a href="#" class="check-update" i18n-title="checkForUpdate" tabindex="0">
+      <a href="#" class="check-update" i18n-data-title="checkForUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
             L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
@@ -120,23 +121,22 @@
             C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
         </svg>
       </a>
-      <a href="#" class="update" i18n-title="installUpdate" tabindex="0">
+      <a href="#" class="update" i18n-data-title="installUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
           <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
         </svg>
       </a>
-      <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate">
+      <span class="up-to-date" i18n-data-title="updateCheckSucceededNoUpdate">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
         </svg>
       </span>
-      <span class="updated" i18n-title="updateCompleted">
+      <span class="updated" i18n-data-title="updateCompleted">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
         </svg>
       </span>
-      <span class="update-note"></span>
     </span>
   </template>
 
@@ -145,7 +145,7 @@
   </template>
 
   <template data-id="appliesToEverything">
-    <span class="target" i18n-title="appliesToEverything">
+    <span class="target" i18n-data-title="appliesToEverything">
       <svg class="svg-icon world" viewBox="0 0 24 24">
         <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4 12c0-.61.08-1.21.21-1.78L8.99 15v1c0
           1.1.9 2 2 2v1.93A8.01 8.01 0 0 1 4 12zm13.89 5.4a2 2 0 0 0-1.9-1.4h-1v-3a1 1 0 0
@@ -303,7 +303,7 @@
           </svg>
         </label>
         <span class="select-resizer">
-          <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
+          <select id="manage.onlyLocal.invert" i18n-data-title="manageOnlyLocalTooltip">
             <option i18n-text="manageOnlyLocal" value="false"></option>
             <option i18n-text="manageOnlyExternal" value="true"></option>
           </select>
@@ -351,9 +351,6 @@
 
 
   <div style="display: none">
-    <!-- placeholders -->
-    <input id="search" type="search">
-    <button id="search-help"></button>
     <!-- <button id="reset-filters"></button> -->
     <button id="apply-all-updates"></button>
     <button id="check-all-updates"></button>
@@ -375,21 +372,27 @@
 <div id="installed" class="manage-col-entries">
   <header class="entry-header">
     <div class="entry-col header-filter center-text">
-      <a href="#" id="toggle-actions" i18n-title="bulkActionsTooltip">
+      <a href="#" id="toggle-actions" class="tt-se" i18n-data-title="bulkActionsTooltip">
         <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
           <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
         </svg>
       </a>
     </div>
-    <a href="#" class="entry-col sortable header-id" data-type="order" i18n-title="sortLabel;injection order">#</a>
-    <a href="#" class="entry-col sortable header-state center-text" i18n-text="genericEnabledLabel" i18n-title="sortLabel;enabled styles" data-type="disabled"></a>
+    <div class="entry-col header-id">
+      <a href="#" class="sortable tt-se" data-type="order" i18n-data-title="sortLabel;injection order">#<span></span></a>
+    </div>
+    <a href="#" class="entry-col sortable header-state center-text tt-se" i18n-text="genericEnabledLabel" i18n-data-title="sortLabel;enabled styles" data-type="disabled"><span></span></a>
     <div class="entry-col header-name">
-      <a href="#" class="sortable" i18n-text="genericName" i18n-title="sortLabel;style name" data-type="title"></a>
+      <a href="#" class="sortable tt-se" i18n-text="genericName" i18n-data-title="sortLabel;style name" data-type="title"><span></span></a>
     </div>
     <div class="entry-col header-actions" i18n-text="optionsActions"></div>
-    <div class="entry-col header-sort center-text" i18n-text="sortHeader" i18n-title="sortHeaderOrderLabel"></div>
-    <a href="#" class="entry-col sortable header-version" i18n-title="sortLabel;style version" data-type="version">v#</a>
-    <a href="#" class="entry-col sortable header-last-update center-text" i18n-text="searchResultUpdated" i18n-title="sortLabel;last updated" data-type="dateUpdated"></a>
+    <div class="entry-col header-sort center-text tt-sw" i18n-text="sortHeader" i18n-data-title="sortHeaderOrderLabel"></div>
+    <div class="entry-col header-version">
+      <a href="#" class="sortable tt-sw" i18n-data-title="sortLabel;style version" data-type="version">v#<span></span></a>
+    </div>
+    <div class="entry-col header-last-update center-text">
+      <a href="#" class="entry-col sortable tt-sw" i18n-text="searchResultUpdated" i18n-data-title="sortLabel;last updated" data-type="dateUpdated"><span></span></a>
+    </div>
     <div class="entry-col header-applies-to" i18n-text="appliesLabel"></div>
   </header>
 </div>

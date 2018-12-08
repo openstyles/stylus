@@ -95,8 +95,7 @@ function checkUpdateAll() {
 
 
 function checkUpdate(entry, {single} = {}) {
-  $('.update-note', entry).textContent = t('checkingForUpdate');
-  $('.check-update', entry).title = '';
+  $('.check-update', entry).dataset.title = t('checkingForUpdate');
   if (single) {
     API.updateCheck({
       save: false,
@@ -130,7 +129,6 @@ function reportUpdateState({updated, style, error, STATES}) {
   if (updated) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
-    $('.update-note', entry).textContent = '';
     $('#only-updates').classList.remove('hidden');
   } else if (!entry.classList.contains('can-update')) {
     const same = (
@@ -155,9 +153,8 @@ function reportUpdateState({updated, style, error, STATES}) {
     const message = same ? t('updateCheckSucceededNoUpdate') : error;
     newClasses.set('no-update', true);
     newClasses.set('update-problem', !same);
-    $('.update-note', entry).textContent = message;
-    $('.check-update', entry).title = UI.enabled ? message : '';
-    $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
+    $('.check-update', entry).dataset.title = UI.enabled ? message : '';
+    $('.update', entry).dataset.title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
     // digest may change silently when forcing an update of a locally edited style
     // so we need to update it in entry's styleMeta in all open manager tabs
     if (error === STATES.SAME_CODE) {
@@ -296,7 +293,6 @@ function handleUpdateInstalled(entry, reason) {
   const note = t(isNew ? 'installButtonInstalled' : 'updateCompleted');
   entry.classList.add('update-done', ...(isNew ? ['install-done'] : []));
   entry.classList.remove('can-update', 'updatable');
-  $('.update-note', entry).textContent = note;
-  $('.updated', entry).title = note;
+  $('.updated', entry).dataset.title = note;
   renderUpdatesOnlyFilter();
 }

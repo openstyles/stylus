@@ -221,18 +221,18 @@ a:hover {
   text-decoration: none;
 }
 
-.sortable[data-sort-dir="asc"]:after,
-.sortable[data-sort-dir="desc"]:after {
+.sortable[data-sort-dir="asc"] span:after,
+.sortable[data-sort-dir="desc"] span:after {
   font-size: 16px;
   position: relative;
   top: 2px;
 }
 
-.sortable[data-sort-dir="asc"]:after {
+.sortable[data-sort-dir="asc"] span:after {
   content: '▴';
 }
 
-.sortable[data-sort-dir="desc"]:after {
+.sortable[data-sort-dir="desc"] span:after {
   content: '▾';
 }
 
@@ -406,34 +406,25 @@ a svg, .svg-icon.sort {
 }
 
 .updater-icons > :not(.check-update):after {
-  content: attr(title);
-  position: absolute;
-  margin-top: 18px;
-  margin-left: -36px;
-  padding: 1ex 1.5ex;
-  border: 1px solid #ded597;
-  background-color: #fffbd6;
-  border-radius: 4px;
-  box-shadow: 2px 3px 10px rgba(0,0,0,.25);
-  font-size: 90%;
-  animation: fadeout 10s;
-  animation-fill-mode: both;
+  content: attr(data-title);
+  border: 1px solid gold;
+  background-color: goldenrod;
 }
 
 .update-problem .check-update:after {
   background-color: red;
   border: 1px solid #d40000;
   color: white;
-  animation: none;
+}
+
+.update-problem.showTip {
+  animation: fadeout 10s;
+  animation-fill-mode: both;
+  display: inline;
 }
 
 .can-update .update:after {
   animation: none;
-}
-
-.can-update:not([data-details$="locally edited"]) .update:after {
-  background-color: #c0fff0;
-  border: 1px solid #89cac9;
 }
 
 .entry .svg-icon.world {

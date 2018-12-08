@@ -1,0 +1,145 @@
+:root {
+  --tooltip-bkgd: #333;
+  --tooltip-border: #555;
+  --tooltip-text: #fff;
+}
+
+[data-title] {
+  position: relative;
+}
+
+[data-title]:after {
+  -webkit-font-smoothing: subpixel-antialiased;
+  background: var(--tooltip-bkgd);
+  border: 1px solid var(--tooltip-border);
+  border-radius: 3px;
+  color: var(--tooltip-text);
+  content: attr(data-title);
+  font-size: 12px;
+  letter-spacing: normal;
+  padding: .5em .75em;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  white-space: pre;
+  word-wrap: break-word;
+  z-index: 1000000;
+}
+
+.entry-last-update[data-title]:after {
+  text-align: left;
+}
+
+[data-title]:after,
+[data-title]:before {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+[data-title]:before {
+  border: 6px solid transparent;
+  color: var(--tooltip-bkgd);
+  content: "";
+  height: 0;
+  width: 0;
+  z-index: 1000001;
+}
+
+[data-title]:hover:after,
+[data-title]:hover:before {
+  display: inline-block;
+  text-decoration: none;
+}
+
+[data-title].tt-s:after,
+[data-title].tt-se:after,
+[data-title].tt-sw:after {
+  margin-top: 6px;
+  right: 50%;
+  top: 100%
+}
+
+[data-title].tt-s:before,
+[data-title].tt-se:before,
+[data-title].tt-sw:before {
+  border-bottom-color: var(--tooltip-bkgd);
+  bottom: -7px;
+  margin-right: -6px;
+  right: 50%;
+  top: auto
+}
+
+[data-title].tt-se:after {
+  left: 50%;
+  margin-left: -16px;
+  right: auto
+}
+
+[data-title].tt-sw:after {
+  margin-right: -16px
+}
+
+[data-title].tt-n:after,
+[data-title].tt-ne:after,
+[data-title].tt-nw:after {
+  bottom: 100%;
+  margin-bottom: 6px;
+  right: 50%
+}
+
+[data-title].tt-n:before,
+[data-title].tt-ne:before,
+[data-title].tt-nw:before {
+  border-top-color: var(--tooltip-bkgd);
+  bottom: auto;
+  margin-right: -6px;
+  right: 50%;
+  top: -7px
+}
+
+[data-title].tt-ne:after {
+  left: 50%;
+  margin-left: -16px;
+  right: auto
+}
+
+[data-title].tt-nw:after {
+  margin-right: -16px
+}
+
+[data-title].tt-n:after,
+[data-title].tt-s:after {
+  transform: translateX(50%)
+}
+
+[data-title].tt-w:after {
+  bottom: 50%;
+  margin-right: 6px;
+  right: 100%;
+  transform: translateY(50%)
+}
+
+[data-title].tt-w:before {
+  border-left-color: var(--tooltip-bkgd);
+  bottom: 50%;
+  left: -7px;
+  margin-top: -6px;
+  top: 50%
+}
+
+[data-title].tt-e:after {
+  bottom: 50%;
+  left: 100%;
+  margin-left: 6px;
+  transform: translateY(50%)
+}
+
+[data-title].tt-e:before {
+  border-right-color: var(--tooltip-bkgd);
+  bottom: 50%;
+  margin-top: -6px;
+  right: -7px;
+  top: 50%
+}
