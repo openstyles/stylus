@@ -176,6 +176,12 @@ a:hover {
   padding: 0;
 }
 
+.header-last-update,
+.entry-last-update {
+  /* inlcude update history link */
+  max-width: calc(var(--narrow-column) + 20px);
+}
+
 /* keep all icons on the same row */
 .entry-actions {
   white-space: pre;
