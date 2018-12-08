@@ -436,7 +436,7 @@ function createSectionsEditor({style, onTitleChanged}) {
       if (!originalSections.length) {
         setGlobalProgress();
         if (focusOn !== false) {
-          sections[focusOn].cm.focus();
+          setTimeout(() => sections[focusOn].cm.focus());
         }
         container.classList.remove('hidden');
         for (const section of sections) {
