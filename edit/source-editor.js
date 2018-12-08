@@ -230,21 +230,25 @@ function createSourceEditor({style, onTitleChanged}) {
       .then(replaceStyle)
       .catch(err => {
         if (err.handled) return;
-        if (err.code === 'missingMandatory' && err.args.includes('name')) {
-          messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-            chromeSync.setLZValue('usercssTemplate', code)
-              .then(() => chromeSync.getLZValue('usercssTemplate'))
-              .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
-          return;
-        }
         const contents = Array.isArray(err) ?
           $create('pre', err.join('\n')) :
           [err.message || String(err)];
         if (Number.isInteger(err.index)) {
           const pos = cm.posFromIndex(err.index);
-          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-          contents.push($create('pre', drawLinePointer(pos)));
+          const meta = drawLinePointer(pos);
+
+          // save template
+          if (err.code === 'missingValue' && meta.includes('@name')) {
+            messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
+              chromeSync.setLZValue('usercssTemplate', code)
+                .then(() => chromeSync.getLZValue('usercssTemplate'))
+                .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
+            return;
+          }
         }
+
+        contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
+        contents.push($create('pre', meta));
         messageBox.alert(contents, 'pre');
       });
   }
