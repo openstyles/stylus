@@ -77,7 +77,7 @@ function initGlobalEvents() {
         el.removeAttribute('open');
       });
       // Close bulk actions
-      $('#tools-wrapper').classList.add('hidden');
+      handleEvent.toggleBulkActions({hidden: true});
     } else if (event.which === 32 && event.target.classList.contains('checkmate')) {
       // pressing space toggles the containing checkbox
       $('input[type="checkbox"]', event.target).click();
@@ -129,7 +129,7 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.entry-delete': 'delete',
     '.entry-configure-usercss': 'config',
-    '#toggle-actions': 'toggleBulkActions',
+    '.header-filter': 'toggleBulkActions',
     '.sortable': 'updateSort'
   },
 
@@ -190,8 +190,10 @@ Object.assign(handleEvent, {
     UI.addLabels(entry);
   },
 
-  toggleBulkActions() {
-    $('#tools-wrapper').classList.toggle('hidden');
+  toggleBulkActions({hidden}) {
+    const tools = $('#tools-wrapper');
+    tools.classList.toggle('hidden', hidden);
+    $('.header-filter').classList.toggle('active', !tools.classList.contains('hidden'));
   },
 
   check(event, entry) {
@@ -412,7 +414,7 @@ function updateBulkFilters({target}) {
   if (!installed.dataset.total) return;
   // ignore filter checkboxes
   if (target.type === 'checkbox' && !target.dataset.filter) {
-    $('#tools-wrapper').classList.remove('hidden');
+    handleEvent.toggleBulkActions({hidden: false});
     const bulk = $('#toggle-all-filters');
     const state = target.checked;
     const visibleEntries = $$('.entry-filter-toggle')

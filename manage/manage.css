@@ -242,6 +242,26 @@ a:hover {
   content: '▾';
 }
 
+.header-filter span:before {
+  content: '►';
+  color: #666;
+  position: relative;
+  left: 7px;
+}
+
+.header-filter:hover span:before,
+.header-filter:hover .svg-icon,
+.header-filter.active svg {
+  transition: all .5s;
+  color: #000;
+  fill: #000;
+}
+
+.header-filter.active span:before {
+  content: '▲';
+  color: #000;
+}
+
 .entry-sort {
   cursor: move;
 }
@@ -464,6 +484,7 @@ img.target {
 .targets details.applies-to-extra {
   margin-left: 4px;
   margin-top: 5px;
+  cursor: pointer;
 }
 
 details.applies-to-extra[open] {
