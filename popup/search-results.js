@@ -16,6 +16,8 @@ window.addEventListener('showStyles:done', function _() {
   const RESULT_ID_PREFIX = 'search-result-';
 
   const BASE_URL = 'https://userstyles.org';
+  const JSON_URL = BASE_URL + '/styles/chrome/';
+  const API_URL = BASE_URL + '/api/v1/styles/';
   const UPDATE_URL = 'https://update.userstyles.org/%.md5';
 
   // normal category is just one word like 'github' or 'google'
@@ -54,8 +56,10 @@ window.addEventListener('showStyles:done', function _() {
   let searchCurrentPage = 1;
   let searchExhausted = false;
 
-  let usoFrame;
-  let usoFrameQueue;
+  // currently active USO requests
+  const xhrSpoofIds = new Set();
+  // used as an HTTP header name to identify spoofed requests
+  const xhrSpoofTelltale = getRandomId();
 
   const processedResults = [];
   const unprocessedResults = [];
@@ -653,7 +657,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyleJson(result) {
     return Promise.resolve(
       result.json ||
-      downloadInFrame(BASE_URL + '/styles/chrome/' + result.id + '.json').then(json => {
+      downloadFromUSO(JSON_URL + result.id + '.json').then(json => {
         result.json = json;
         return json;
       }));
@@ -667,7 +671,7 @@ window.addEventListener('showStyles:done', function _() {
   function fetchStyle(userstylesId) {
     return readCache(userstylesId).then(json =>
       json ||
-      downloadInFrame(BASE_URL + '/api/v1/styles/' + userstylesId).then(writeCache));
+      downloadFromUSO(API_URL + userstylesId).then(writeCache));
   }
 
   /**
@@ -685,8 +689,7 @@ window.addEventListener('showStyles:done', function _() {
       return Promise.resolve({'data':[]});
     }
 
-    const searchURL = BASE_URL +
-      '/api/v1/styles/subcategory' +
+    const searchURL = API_URL + 'subcategory' +
       '?search=' + encodeURIComponent(category) +
       '&page=' + searchCurrentPage +
       '&per_page=10' +
@@ -697,7 +700,7 @@ window.addEventListener('showStyles:done', function _() {
     return readCache(cacheKey)
       .then(json =>
         json ||
-        downloadInFrame(searchURL).then(writeCache))
+        downloadFromUSO(searchURL).then(writeCache))
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
@@ -778,89 +781,74 @@ window.addEventListener('showStyles:done', function _() {
   }
 
   //endregion
-  //region USO referrer spoofing via iframe
+  //region USO referrer spoofing
 
-  function downloadInFrame(url) {
-    return usoFrame ? new Promise((resolve, reject) => {
-      const id = performance.now();
-      const timeout = setTimeout(() => {
-        const {reject} = usoFrameQueue.get(id) || {};
-        usoFrameQueue.delete(id);
-        if (reject) reject();
-      }, 10e3);
-      const data = {url, resolve, reject, timeout};
-      usoFrameQueue.set(id, data);
-      usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
-    }) : setupFrame().then(() => downloadInFrame(url));
+  function downloadFromUSO(url) {
+    const requestId = getRandomId();
+    xhrSpoofIds.add(requestId);
+    xhrSpoofStart();
+    return download(url, {
+      body: null,
+      responseType: 'json',
+      headers: {
+        'Referrer-Policy': 'origin-when-cross-origin',
+        [xhrSpoofTelltale]: requestId,
+      }
+    }).then(data => {
+      xhrSpoofDone(requestId);
+      return data;
+    }).catch(data => {
+      xhrSpoofDone(requestId);
+      return Promise.reject(data);
+    });
   }
 
-  function setupFrame() {
-    usoFrame = $create('iframe', {src: BASE_URL});
-    usoFrameQueue = new Map();
+  function xhrSpoofStart() {
+    if (chrome.webRequest.onBeforeSendHeaders.hasListener(xhrSpoof)) {
+      return;
+    }
+    const urls = [API_URL + '*', JSON_URL + '*'];
+    const types = ['xmlhttprequest'];
+    const options = ['blocking', 'requestHeaders'];
+    // spoofing Referer requires extraHeaders in Chrome 72+
+    if (chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS) {
+      options.push(chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS);
+    }
+    chrome.webRequest.onBeforeSendHeaders.addListener(xhrSpoof, {urls, types}, options);
+  }
 
-    const stripHeaders = info => ({
-      responseHeaders: info.responseHeaders.filter(({name}) => !/^X-Frame-Options$/i.test(name)),
-    });
-    chrome.webRequest.onHeadersReceived.addListener(stripHeaders, {
-      urls: [BASE_URL + '/'],
-      types: ['sub_frame'],
-    }, [
-      'blocking',
-      'responseHeaders',
-    ]);
+  function xhrSpoofDone(requestId) {
+    xhrSpoofIds.delete(requestId);
+    if (!xhrSpoofIds.size) {
+      chrome.webRequest.onBeforeSendHeaders.removeListener(xhrSpoof);
+    }
+  }
 
-    let frameId;
-    const stripResources = info => {
-      if (!frameId &&
-          info.frameId &&
-          info.type === 'sub_frame' &&
-          (info.initiator === location.origin || !info.initiator) && // Chrome 63+
-          (info.originUrl === location.href || !info.originUrl) && // FF 48+
-          info.url === BASE_URL + '/') {
-        frameId = info.frameId;
-      } else if (frameId === info.frameId && info.type !== 'xmlhttprequest') {
-        return {redirectUrl: 'data:,'};
+  function xhrSpoof({requestHeaders}) {
+    let referer, hasTelltale;
+    for (let i = requestHeaders.length; --i >= 0;) {
+      const header = requestHeaders[i];
+      if (header.name.toLowerCase() === 'referer') {
+        referer = header;
+      } else if (header.name === xhrSpoofTelltale) {
+        hasTelltale = xhrSpoofIds.has(header.value);
+        requestHeaders.splice(i, 1);
       }
-    };
-    chrome.webRequest.onBeforeRequest.addListener(stripResources, {
-      urls: ['<all_urls>'],
-    }, [
-      'blocking',
-    ]);
-    setTimeout(() => {
-      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
-    }, 10e3);
+    }
+    if (!hasTelltale) {
+      // not our request (unlikely but just in case)
+      return;
+    }
+    if (referer) {
+      referer.value = BASE_URL;
+    } else {
+      requestHeaders.push({name: 'Referer', value: BASE_URL});
+    }
+    return {requestHeaders};
+  }
 
-    window.addEventListener('message', ({data, origin}) => {
-      if (!data || origin !== BASE_URL) return;
-      const {resolve, reject, timeout} = usoFrameQueue.get(data.id) || {};
-      if (!resolve) return;
-      chrome.webRequest.onBeforeRequest.removeListener(stripResources);
-      usoFrameQueue.delete(data.id);
-      clearTimeout(timeout);
-      // [being overcautious] a string response is used instead of relying on responseType=json
-      // because it was invoked in a web page context so another extension may have incorrectly spoofed it
-      const json = tryJSONparse(data.response);
-      if (json && data.status < 400) {
-        resolve(json);
-      } else {
-        reject(data.status);
-      }
-    });
-
-    return new Promise((resolve, reject) => {
-      const done = event => {
-        chrome.webRequest.onHeadersReceived.removeListener(stripHeaders);
-        (event.type === 'load' ? resolve : reject)();
-        usoFrameQueue.forEach(({url}, id) => {
-          usoFrame.contentWindow.postMessage({xhr: {id, url}}, '*');
-        });
-      };
-      usoFrame.addEventListener('load', done, {once: true});
-      usoFrame.addEventListener('error', done, {once: true});
-      usoFrame.style.setProperty('display', 'none', 'important');
-      document.body.appendChild(usoFrame);
-    });
+  function getRandomId() {
+    return btoa(Math.random()).replace(/[^a-z]/gi, '');
   }
 
   //endregion
