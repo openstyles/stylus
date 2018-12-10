@@ -276,15 +276,24 @@ function createStyleElement({
     });
     styleName.checkbox = checkbox;
     styleName.appendChild(document.createTextNode(' '));
+
     const config = $('.configure', entry);
-    if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
-      config.target = '_blank';
-      config.title = t('configureStyleOnHomepage');
-      config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
-      $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+    config.onclick = handleEvent.configure;
+    if (!style.usercssData) {
+      if (style.updateUrl && style.updateUrl.includes('?') && style.url) {
+        config.href = style.url;
+        config.target = '_blank';
+        config.title = t('configureStyleOnHomepage');
+        config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+        $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+      } else {
+        config.classList.add('hidden');
+      }
+    } else if (Object.keys(style.usercssData.vars || {}).length === 0) {
+      config.classList.add('hidden');
     }
+
     $('.delete', entry).onclick = handleEvent.delete;
-    $('.configure', entry).onclick = handleEvent.configure;
 
     const indicator = template.regexpProblemIndicator.cloneNode(true);
     indicator.appendChild(document.createTextNode('!'));
@@ -306,15 +315,6 @@ function createStyleElement({
         styleName.scrollWidth > styleName.clientWidth + 1 ?
           styleName.textContent : '';
   });
-
-  const config = $('.configure', entry);
-  if (!style.usercssData && style.updateUrl && style.updateUrl.includes('?') && style.url) {
-    config.href = style.url;
-  }
-  config.style.display =
-    !style.usercssData && config.href ||
-    style.usercssData && Object.keys(style.usercssData.vars || {}).length ?
-      '' : 'none';
 
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
