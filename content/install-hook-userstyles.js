@@ -364,29 +364,6 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
       };
     }
 
-    // spoof USO referrer for style search in the popup
-    if (window !== top && location.pathname === '/') {
-      window.addEventListener('message', ({data, origin}) => {
-        if (!data ||
-            !data.xhr ||
-            origin !== EXTENSION_ORIGIN) {
-          return;
-        }
-        const xhr = new XMLHttpRequest();
-        xhr.onloadend = xhr.onerror = () => {
-          top.postMessage({
-            id: data.xhr.id,
-            status: xhr.status,
-            // [being overcautious] a string response is used instead of relying on responseType=json
-            // because it was invoked in a web page context so another extension may have incorrectly spoofed it
-            response: xhr.response,
-          }, EXTENSION_ORIGIN);
-        };
-        xhr.open('GET', data.xhr.url);
-        xhr.send();
-      });
-    }
-
     // USO bug workaround: use the actual style settings in API response
     let settings;
     const originalResponseJson = Response.prototype.json;
