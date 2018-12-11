@@ -673,6 +673,222 @@
     "message": "Mostrar número de estilos activos",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "@var checkbox no válida: el valor debe ser 0 o 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "@var color no válido: $color$ no es un color",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "@var $type$no válido: debe ser un número o un array",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "@var $type$ no válido: se han definido múltiples unidades",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "@var $type$ no válido: el array contiene demasiados elementos",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "@var $type$ no válido: los elementos en el array deben ser número, cadena o nulo",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "@var $type$ no válido: el valor por defecto es nulo",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "@var $type$ no válido: el valor por defecto es inferior al mínimo",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "@var $type$ no válido: el valor por defecto es mayor al máximo",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "@var $type$ no válido: el valor por defecto no es un múltiplo del intervalo",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "@var $type$ no válido: '$units$' no es una unidad válida",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "@var select no válido: el valor por defecto debe ser un array o un objeto",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValue": {
+    "message": "@var select no válido: los valores dentro del array/objeto deben ser una cadena",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "@var select no válido: la lista de opciones está vacía",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "@var select no válido: la etiqueta de opción está vacía",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "@var select no válido: se han definido múltiples opciones por defecto",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "@var select no válido: el nombre de la opción está duplicado",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "@var select no válido: no existe en la lista de opciones",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Protocolo URL no válido. Sólo se permiten http y https: $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Número de versión no válido. El valor no coincide con el patrón SemVer: $version$",
+    "description": "Error displayed when @version is invalid",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Se espera un número",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Se espera una cadena de texto entre comillas",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Se espera una palabra",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Se esperan caracteres: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Se esperan datos EOT",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
+  "meta_missingMandatory": {
+    "message": "Faltan metadatos obligatorios: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "JSON no válido: $literal$ no es un literal válido de JSON",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Metadatos desconocidos: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Tipo de @$varkey$ desconocido: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "@preprocessor desconocido: $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "noStylesForSite": {
     "message": "No hay estilos instalados para este sitio.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -1171,6 +1387,10 @@
     "message": "Stylus puede acceder a las URLs file:// sólo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus no puede acceder a algunos tipos de archivos (p. ej. archivos pdf y json).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No se encontraron actualizaciones.",
     "description": "Text that displays when an update all check completed and no updates are available"
@@ -1259,5 +1479,53 @@
   "writeStyleForURL": {
     "message": "este URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxStyles": {
+    "message": "Exportar a Dropbox",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Importar desde Dropbox",
+    "description": ""
+  },
+  "overwriteFileExport": {
+    "message": "¿Desea sobrescribir un archivo existente?",
+    "description": ""
+  },
+  "exportSavedSuccess": {
+    "message": "Archivo guardado correctamente",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "Para importar sus estilos, debe exportarlos primero.",
+    "description": ""
+  },
+  "connectingDropbox": {
+    "message": "Conectando a Dropbox....",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "La conexión a Dropbox sólo está disponible en aplicaciones instaladas directamente desde la tienda web.",
+    "description": ""
+  },
+  "gettingStyles": {
+    "message": "Obteniendo todos los estilos...",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Comprimiendo los estilos...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Descomprimiendo los estilos...",
+    "description": ""
+  },
+  "readingStyles": {
+    "message": "Leyendo los estilos...",
+    "description": ""
+  },
+  "uploadingFile": {
+    "message": "Subiendo el archivo....",
+    "description": ""
   }
 }

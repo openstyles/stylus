@@ -64,6 +64,14 @@
     "message": "Verkställ alla uppdateringar",
     "description": "Label for the button to apply all detected updates"
   },
+  "backupButtons": {
+    "message": "Säkerhetskopiera",
+    "description": "Heading for backup"
+  },
+  "backupMessage": {
+    "message": "Välj en fil eller dra och släpp till den här sidan.",
+    "description": "Message for backup"
+  },
   "bckpInstStyles": {
     "message": "Exportera stilar",
     "description": ""
@@ -79,6 +87,10 @@
   "checkingForUpdate": {
     "message": "Letar...",
     "description": "Text to display when checking a style for an update"
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Komplettera automatiskt när du skriver",
+    "description": "Label for the checkbox in the style editor."
   },
   "cm_indentWithTabs": {
     "message": "Använd tabbar med smart indrag",
@@ -104,9 +116,21 @@
     "message": "Tema",
     "description": "Label for the style editor's CSS theme."
   },
+  "confirmCancel": {
+    "message": "Avbryt",
+    "description": ""
+  },
   "confirmClose": {
     "message": "Stäng",
     "description": "'Close' button in a confirm dialog"
+  },
+  "confirmDefault": {
+    "message": "Använd standard",
+    "description": "'Set to default' button in a confirm dialog"
+  },
+  "confirmDelete": {
+    "message": "Ta bort",
+    "description": ""
   },
   "confirmNo": {
     "message": "Nej",
@@ -116,6 +140,10 @@
     "message": "Spara",
     "description": "'Save' button in a confirm dialog"
   },
+  "confirmStop": {
+    "message": "Stoppa",
+    "description": "'Stop' button in a confirm dialog"
+  },
   "confirmYes": {
     "message": "Ja",
     "description": "'Yes' button in a confirm dialog"
@@ -123,6 +151,10 @@
   "dbError": {
     "message": "Ett fel inträffades vid hanteringen av Stylus-databasen. Skulle du vilja besöka en sida med eventuella lösningar?",
     "description": "Prompt when a DB error is encountered"
+  },
+  "defaultTheme": {
+    "message": "standard",
+    "description": "Default CodeMirror CSS theme option on the edit style page"
   },
   "deleteStyleConfirm": {
     "message": "Är du säker på att du vill ta bort denna stil?",
@@ -143,6 +175,14 @@
   "disableStyleLabel": {
     "message": "Inaktivera",
     "description": "Label for the button to disable a style"
+  },
+  "dragDropMessage": {
+    "message": "Släpp din säkerhetskopieringsfil någonstans på den här sidan för att importera.",
+    "description": "Drag'n'drop message"
+  },
+  "editDeleteText": {
+    "message": "Ta bort",
+    "description": "Label for the context menu item in the editor to delete selected text"
   },
   "editGotoLine": {
     "message": "Gå till rad (eller rad:kol)",
@@ -172,6 +212,14 @@
   "exportLabel": {
     "message": "Exportera",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+  },
+  "externalFeedback": {
+    "message": "Återkoppling",
+    "description": "Label for the external link to send feedback for the style"
+  },
+  "externalHomepage": {
+    "message": "Webbplats",
+    "description": "Label for the external link to style's homepage"
   },
   "externalUsercssDocument": {
     "message": "Dokumentation för Usercss",
@@ -213,9 +261,21 @@
     "message": "Återställ",
     "description": "Used in various parts of UI to indicate that something may be reset to its original state"
   },
+  "genericSavedMessage": {
+    "message": "Sparad",
+    "description": "Used in various parts of the UI to indicate that something was saved"
+  },
   "helpAlt": {
     "message": "Hjälp",
     "description": "Alternate text for help buttons"
+  },
+  "helpKeyMapCommand": {
+    "message": "Skriv ett kommandonamn",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Tryck på en snabbtangent",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "importAppendLabel": {
     "message": "Lägg till i stil",
@@ -233,9 +293,33 @@
     "message": "Ersätt stil",
     "description": "Label for the button to import and overwrite current style"
   },
+  "importReportLegendAdded": {
+    "message": "tillagd",
+    "description": "Text after the number of styles added in the report shown after importing styles"
+  },
+  "importReportLegendIdentical": {
+    "message": "identisk hoppade över",
+    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "uppdaterad kod",
+    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+  },
+  "importReportUnchanged": {
+    "message": "Ingenting förändrades.",
+    "description": "Message in the report shown after importing styles"
+  },
   "installUpdate": {
     "message": "Installera uppdatering",
     "description": "Label for the button to install an update for a single style"
+  },
+  "installUpdateFromLabel": {
+    "message": "Sök efter uppdateringar",
+    "description": "Label for the checkbox to save current URL for update check"
+  },
+  "license": {
+    "message": "Licens",
+    "description": "Label for the license"
   },
   "linkGetHelp": {
     "message": "Hjälp",
@@ -248,6 +332,14 @@
   "linkTranslate": {
     "message": "Översätt",
     "description": "Transifex link text on the manage page"
+  },
+  "linterJSONError": {
+    "message": "Ogiltigt JSON-format",
+    "description": "Setting linter config with invalid JSON"
+  },
+  "linterRulesLink": {
+    "message": "Se en fullständig lista över regler",
+    "description": "Stylelint or CSSLint rules label added immediately before a link"
   },
   "manageFavicons": {
     "message": "Ikoner i 'Gäller för' kolumnen",
@@ -289,6 +381,10 @@
     "message": "Endast lokalt skapade stilar",
     "description": "Checkbox to show only locally created styles i.e. non-updatable"
   },
+  "manageOnlyLocalTooltip": {
+    "message": "(stilarna som inte är installerade via en userstyles.org sida)",
+    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+  },
   "manageOnlyNonUsercss": {
     "message": "Endast icke-Usercss stilar",
     "description": "Checkbox to show only non-Usercss (standard) styles"
@@ -309,6 +405,10 @@
     "message": "Hantera installerade stilar",
     "description": "Link to open the manage page."
   },
+  "openOptionsManage": {
+    "message": "Alternativ UI",
+    "description": "Go to Options UI"
+  },
   "openOptionsPopup": {
     "message": "Alternativ",
     "description": "Go to Options UI"
@@ -317,8 +417,32 @@
     "message": "Öppna stilhanteraren",
     "description": "Label for the style maanger opener in the browser action context menu."
   },
+  "optionsActions": {
+    "message": "Åtgärder",
+    "description": ""
+  },
+  "optionsAdvanced": {
+    "message": "Avancerat",
+    "description": ""
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Lägg till \"Ta bort\" i redigeringsmenyn",
+    "description": ""
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Exponera Iframes via HTML[stylus-iframe]",
+    "description": ""
+  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Skriv ny stil som Usercss",
+    "description": ""
+  },
+  "optionsBadgeDisabled": {
+    "message": "Bakgrundsfärg när inaktiverad",
+    "description": ""
+  },
+  "optionsBadgeNormal": {
+    "message": "Bakgrundsfärg",
     "description": ""
   },
   "optionsCheck": {
@@ -329,12 +453,28 @@
     "message": "Leta efter och installera alla tillgängliga uppdateringar",
     "description": ""
   },
+  "optionsCustomizePopup": {
+    "message": "Poppupp",
+    "description": ""
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Uppdateringar",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Alternativ",
     "description": "Heading for options section on manage page."
   },
+  "optionsOpen": {
+    "message": "Öppna",
+    "description": ""
+  },
   "optionsOpenManager": {
     "message": "Hantera stilar",
+    "description": ""
+  },
+  "optionsPopupWidth": {
+    "message": "Poppuppbredd (i pixlar)",
     "description": ""
   },
   "optionsReset": {
@@ -343,6 +483,14 @@
   },
   "optionsResetButton": {
     "message": "Återställ alternativ",
+    "description": ""
+  },
+  "optionsSubheading": {
+    "message": "Mer alternativ",
+    "description": "Subheading for options section on manage page."
+  },
+  "optionsUpdateInterval": {
+    "message": "Userstyle automatisk uppdateringsintervall i timmar (ange 0 för att inaktivera)",
     "description": ""
   },
   "paginationNext": {
@@ -417,6 +565,10 @@
     "message": "Regexp:en är ogiltig",
     "description": "Validation message for a bad regexp in a style"
   },
+  "styleBeautify": {
+    "message": "Försköna",
+    "description": "Label for the CSS-beautifier button on the edit style page"
+  },
   "styleCancelEditLabel": {
     "message": "Återgå till hantera",
     "description": "Label for cancel button for style editing"
@@ -454,6 +606,22 @@
     "message": "Mozilla-format",
     "description": "Heading for the section with buttons to import/export Mozilla format of the style"
   },
+  "styleRegexpInvalidExplanation": {
+    "message": "Några \"regexp()\"-regler som inte alls kunde sammanställas.",
+    "description": ""
+  },
+  "styleRegexpTestFull": {
+    "message": "Matchande flikar",
+    "description": "RegExp test report: label for the fully matching expressions"
+  },
+  "styleRegexpTestNone": {
+    "message": "Inga matchande flikar",
+    "description": "RegExp test report: label for expressions that didn't match any tabs"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Lista över matchande öppnade flikar (klicka på webbadressen för att fokusera på dess flik)",
+    "description": "RegExp test report: title of the report"
+  },
   "styleSaveLabel": {
     "message": "Spara",
     "description": "Label for save button for style editing"
@@ -478,6 +646,14 @@
   "stylusUnavailableForURL": {
     "message": "Stylus fungerar inte på sidor som denna.",
     "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Som en säkerhetsåtgärd förbjuder webbläsaren tillägg från att påverka dess inbyggda sidor (som chrome://version, den vanliga nya fliksidan från Chrome 61, about:addons och så vidare) samt andra tilläggssidor. Varje webbläsare begränsar också tillgången till sina egna tilläggsgalleri (som Chrome Web Store eller AMO).",
+    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+  },
+  "toggleStyle": {
+    "message": "Växla stil",
+    "description": "Label for the checkbox to enable/disable a style"
   },
   "undo": {
     "message": "Ångra",
@@ -504,6 +680,14 @@
     "message": "Uppdateringen misslyckades: server onåbar.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
   },
+  "updateCheckManualUpdateHint": {
+    "message": "Att tvinga en uppdatering kommer att skriva över alla lokala ändringar.",
+    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Denna stil redigerades lokalt.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+  },
   "updateCheckSucceededNoUpdate": {
     "message": "Stilen är fullt uppdaterad.",
     "description": "Text that displays when an update check completed and no update is available"
@@ -511,6 +695,10 @@
   "updateCompleted": {
     "message": "Uppdatering slutförd.",
     "description": "Text that displays when an update completed"
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Uppdateringar installerade:",
+    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
   "writeStyleFor": {
     "message": "Skriv stil för:",
