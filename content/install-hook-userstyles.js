@@ -341,7 +341,7 @@
 
 // run in page context
 document.documentElement.appendChild(document.createElement('script')).text = '(' + (
-  EXTENSION_ORIGIN => {
+  () => {
     document.currentScript.remove();
 
     // spoof Stylish extension presence in Chrome

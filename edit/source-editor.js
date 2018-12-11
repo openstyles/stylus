@@ -245,10 +245,9 @@ function createSourceEditor({style, onTitleChanged}) {
                 .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
             return;
           }
+          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
+          contents.push($create('pre', meta));
         }
-
-        contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-        contents.push($create('pre', meta));
         messageBox.alert(contents, 'pre');
       });
   }

@@ -1,6 +1,6 @@
 /* global tabURL handleEvent $ $$ prefs template FIREFOX chromeLocal debounce
   $create t API tWordBreak formatDate tryCatch tryJSONparse LZString
-  ignoreChromeError */
+  ignoreChromeError download */
 'use strict';
 
 window.addEventListener('showStyles:done', function _() {

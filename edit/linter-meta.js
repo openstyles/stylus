@@ -12,7 +12,7 @@ function createMetaCompiler(cm) {
     if (_cm !== cm) {
       return;
     }
-    const match = text.match(/\/\*\!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i);
+    const match = text.match(/\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i);
     if (!match) {
       return [];
     }

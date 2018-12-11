@@ -144,7 +144,7 @@ function initPopup() {
           info.appendChild(noteNode);
         }
         // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
-        if (tabURL.length - tabURL.lastIndexOf(".") <= 5) {
+        if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
           info.appendChild($create('p', t('InaccessibleFileHint')));
         }
         document.body.classList.add('unreachable');

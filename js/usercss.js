@@ -10,7 +10,7 @@ const usercss = (() => {
     // updateURL: 'updateUrl',
     name: undefined,
   };
-  const RX_META = /\/\*\!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
+  const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
   const ERR_ARGS_IS_LIST = new Set(['missingMandatory', 'missingChar']);
   return {buildMeta, buildCode, assignVars};
 
