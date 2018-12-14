@@ -554,6 +554,10 @@
     "message": "Get help",
     "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
   },
+  "linkChat": {
+    "message": "Chat with us",
+    "description": "Link to open a new browser tab to chat with users & developers on Discord"
+  },
   "linkGetStyles": {
     "message": "Get styles",
     "description": "Help link text on the manage page e.g. https://userstyles.org"

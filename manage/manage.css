@@ -55,6 +55,21 @@ a:hover {
   fill: #666;
 }
 
+#main-actions {
+  display: flex;
+  width: 200px;
+  height: 40px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spacer {
+  width: 10px;
+  height: 1em;
+  border-right: 1px solid #777;
+  margin-right: 10px;
+}
+
 .entry-actions > a,
 .bulk-actions-select-wrapper,
 #bulk-actions-apply {
@@ -86,11 +101,14 @@ a:hover {
   color: #ddd;
   position: fixed;
   top: 0;
-  width: 100vw;
+  width: 100%;
   height: var(--header-height);
   z-index: 100;
   padding: 2px 8px;
   margin: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 #main-header .ext-version {
@@ -101,20 +119,14 @@ a:hover {
   vertical-align: bottom;
 }
 
-#main-header .tabs {
-  float: right;
-  margin-right: 20px;
-}
-
-#main-header .tabs a {
+#main-header a {
   font-size: .7em;
-  color: #aaa;
+  color: #999;
   text-decoration: none;
 }
 
-#main-header .tabs a.active,
-#main-header .tabs a:hover {
-  color: #c0fff0;
+#main-header a:hover {
+  color: hsla(180, 50%, 50%, 1);
 }
 
 #main-header:lang(ja) {
@@ -140,7 +152,7 @@ a:hover {
   justify-content: center;
 }
 
-#installed {
+#installed, #options, #backup {
   margin-top: calc(var(--header-height) + var(--entry-header-height));
 }
 
@@ -271,17 +283,21 @@ a:hover {
 }
 
 .targets .target {
+  display: inline-block;
+  padding: 0 2px;
+}
+
+.targets .applies-to-extra .target {
+  padding: 2px;
+}
+
+.targets .target img {
   max-width: var(--icon-size);
   max-height: var(--icon-size);
   width: var(--icon-size);
-  margin-left: 2px;
 }
 
-.applies-to-extra img.target {
-  margin-bottom: 2px;
-}
-
-#installed.faviconsGray img.target {
+#installed.faviconsGray .target img {
   -webkit-filter: grayscale(1);
   filter: grayscale(1);
 }
@@ -457,11 +473,11 @@ a svg, .svg-icon.sort {
   fill: #ef6969;
 }
 
-img.target:hover {
+.target:hover img {
   background-color: inherit;
 }
 
-img.target {
+.target img{
   width: var(--icon-size);
   height: var(--icon-size);
   vertical-align: sub;
@@ -474,7 +490,7 @@ img.target {
   opacity: .5;
 }
 
-.entry:hover img.target {
+.entry:hover .target img {
   opacity: 1;
   /* unprefixed since Chrome 53 */
   -webkit-filter: grayscale(0);
@@ -669,7 +685,7 @@ details.applies-to-extra[open] {
 }
 
 #reset-filters svg {
-  fill: hsla(180, 50%, 27%, .5);
+  fill: hsla(180, 50%, 50%, .7);
   width: 24px; /* widen the click area a bit */
   height: 20px;
   padding: 2px;
@@ -677,7 +693,7 @@ details.applies-to-extra[open] {
 }
 
 #reset-filters:hover svg {
-  fill: hsla(180, 50%, 27%, 1);
+  fill: hsla(180, 50%, 50%, 1);
 }
 
 .filter-stats-wrapper:not(.active) #reset-filters,

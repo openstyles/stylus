@@ -215,8 +215,7 @@ const UI = {
     }
     if (numTargets) {
       entryTargets.parentElement.replaceChild(targets, entryTargets);
-    } else if (!entry.classList.contains('global') ||
-              !entryTargets.firstElementChild) {
+    } else if (!entry.classList.contains('global') || !entryTargets.firstElementChild) {
       if (entryTargets.firstElementChild) {
         entryTargets.textContent = '';
       }
@@ -233,6 +232,8 @@ const UI = {
     const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
     const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
     const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
+    const image = document.createElement('img');
+    image.async = true;
     for (const target of $$('.target', container)) {
       const type = target.dataset.type;
       const targetValue = target.dataset.title;
@@ -253,13 +254,16 @@ const UI = {
         favicon = favicon ? UI.GET_FAVICON_URL + favicon[1] : '';
       }
       if (favicon) {
-        const img = target.children[0];
-        if (!img || img.localName !== 'img') {
-          target.insertAdjacentElement('afterbegin', document.createElement('img'))
-            .dataset.src = favicon;
-        } else if ((img.dataset.src || img.src) !== favicon) {
-          img.src = '';
+        const el = $('img, svg', target);
+        if (!el || el.localName === 'svg') {
+          const img = image.cloneNode();
           img.dataset.src = favicon;
+          el.replaceWith(img);
+          //target.insertAdjacentElement('afterbegin', document.createElement('img'))
+            //.dataset.src = favicon;
+        } else if ((target.dataset.src || target.src) !== favicon) {
+          el.src = '';
+          el.dataset.src = favicon;
         }
       }
     }

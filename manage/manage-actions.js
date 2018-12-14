@@ -279,7 +279,7 @@ Object.assign(handleEvent, {
   config(event, {styleMeta}) {
     event.preventDefault();
     configDialog(styleMeta);
-  }
+  },
 
 });
 
