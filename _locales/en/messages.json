@@ -1257,12 +1257,32 @@
   "shortcutsNote": {
     "message": "Define keyboard shortcuts"
   },
+  "sortColumnInjection": {
+    "message": "injection order",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnEnabled": {
+    "message": "enabled styles",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnName": {
+    "message": "style name",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnVersion": {
+    "message": "style version",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnLastUpdate": {
+    "message": "last updated",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
   "sortHeader": {
     "message": "Sort",
     "description": "Title of sort column, indicating that the style can be manually sorted by dragging & dropping"
   },
   "sortLabel": {
-    "message": "Click to sort by \"$name$\";\nUse shift + click to sort by multiple items",
+    "message": "Click to sort the \"$name$\" column;\nUse shift + click to sort multiple columns",
     "placeholders": {
       "name": {
         "content": "$1"

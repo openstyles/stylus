@@ -9,6 +9,8 @@ tDocLoader();
 function t(key, params) {
   if (!params && key.includes(';')) {
     [key, params] = key.split(';');
+    // sometimes a param like "usercss" is passed; not defined in messages.json
+    params = params ? chrome.i18n.getMessage(params) || params : '';
   }
   const cache = !params && t.cache[key];
   const s = cache || chrome.i18n.getMessage(key, params);
