@@ -99,10 +99,10 @@ const UI = {
 
   createStyleElement: ({style, name}) => {
     // query the sub-elements just once, then reuse the references
-    if ((UI._parts || {}).UI !== UI.enabled) {
+    if (!(UI._parts || {}).UI) {
       const entry = template['style'];
       UI._parts = {
-        UI: UI.enabled,
+        UI: true,
         entry,
         entryClassBase: entry.className,
         checker: $('.entry-state-toggle', entry) || {},
@@ -199,8 +199,10 @@ const UI = {
           const element = template.appliesToTarget.cloneNode(true);
           if (numTargets === UI.targets) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
+            container.classList.remove('hidden');
           }
           element.dataset.type = type;
+          element.dataset.index = numTargets;
           element.dataset.title =
             (parts.decorations[type + 'Before'] || '') +
             targetValue +
@@ -210,8 +212,9 @@ const UI = {
         }
       }
     }
-    if (numTargets > UI.targets) {
-      $('.entry-applies-to', entry).classList.add('has-more');
+    if (numTargets <= UI.targets) {
+      // Include hidden expander in case user changes UI.targets
+      container.appendChild(template.extraAppliesTo.cloneNode(true));
     }
     if (numTargets) {
       entryTargets.parentElement.replaceChild(targets, entryTargets);
@@ -232,8 +235,6 @@ const UI = {
     const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
     const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
     const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
-    const image = document.createElement('img');
-    image.async = true;
     for (const target of $$('.target', container)) {
       const type = target.dataset.type;
       const targetValue = target.dataset.title;
@@ -254,15 +255,12 @@ const UI = {
         favicon = favicon ? UI.GET_FAVICON_URL + favicon[1] : '';
       }
       if (favicon) {
-        const el = $('img, svg', target);
+        const el = $('img[src], svg', target);
         if (!el || el.localName === 'svg') {
-          const img = image.cloneNode();
+          const img = $('img', target);
           img.dataset.src = favicon;
-          el.replaceWith(img);
-          //target.insertAdjacentElement('afterbegin', document.createElement('img'))
-            //.dataset.src = favicon;
         } else if ((target.dataset.src || target.src) !== favicon) {
-          el.src = '';
+          delete el.src;
           el.dataset.src = favicon;
         }
       }
@@ -283,7 +281,12 @@ const UI = {
   addHeaderLabels: () => {
     const header = $('.header-name');
     const span = document.createElement('span');
-    const labels = span.cloneNode();
+    let labels = $('.header-labels', header);
+    if (labels) {
+      labels.textContent = '';
+    } else {
+      labels = span.cloneNode();
+    }
     const label = document.createElement('a');
     labels.className = 'header-labels';
     label.className = 'header-label sortable tt-s';

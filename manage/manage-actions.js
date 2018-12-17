@@ -61,10 +61,15 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
+  $('#manage-options-button').onclick = event => {
+    event.preventDefault();
+    chrome.runtime.openOptionsPage();
+  };
 
-  const btn = $('#manage-shortcuts-button');
-  btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
+  $('#manage-shortcuts-button').onclick = event => {
+    event.preventDefault();
+    openURL({url: URLS.configureCommands});
+  };
 
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
@@ -108,7 +113,6 @@ function initGlobalEvents() {
   sorter.init();
 
   prefs.subscribe([
-    'manage.newUI',
     'manage.newUI.favicons',
     'manage.newUI.faviconsGray',
     'manage.newUI.targets',
@@ -130,7 +134,8 @@ Object.assign(handleEvent, {
     '.entry-delete': 'delete',
     '.entry-configure-usercss': 'config',
     '.header-filter': 'toggleBulkActions',
-    '.sortable': 'updateSort'
+    '.sortable': 'updateSort',
+    '#applies-to-config': 'appliesConfig',
   },
 
   entryClicked(event) {
@@ -281,6 +286,51 @@ Object.assign(handleEvent, {
     configDialog(styleMeta);
   },
 
+  appliesConfig() {
+    messageBox({
+      title: t('configureStyle'),
+      className: 'config-dialog',
+      contents: [
+        $('#appliesToConfig').cloneNode(true)
+      ],
+      buttons: [{
+        textContent: t('confirmClose'),
+        dataset: {cmd: 'close'},
+      }],
+      onshow: box => {
+        box.addEventListener('change', handleEvent.toggleFavicons);
+        $$('input', box).forEach(el => {
+          el.dataset.id = el.id;
+          el.id = null;
+        });
+      }
+    }).then(() => {
+      $('#message-box').removeEventListener('change', handleEvent.toggleFavicons);
+    });
+  },
+
+  toggleFavicons(event) {
+    event.stopPropagation();
+    const box = $('#message-box-contents');
+
+    let value = $('[data-id="manage.newUI.favicons"]', box).checked;
+    prefs.set('manage.newUI.favicons', value);
+    // UI.favicons = value;
+    // Updating the hidden inputs; not the inputs in the message box
+    $('#manage.newUI.favicons').checked = value;
+
+    value = $('[data-id="manage.newUI.faviconsGray"]', box).checked;
+    prefs.set('manage.newUI.faviconsGray', value);
+    // UI.faviconsGray = value;
+    $('#manage.newUI.faviconsGray').checked = value;
+
+    value = $('[data-id="manage.newUI.targets"]', box).value;
+    prefs.set('manage.newUI.targets', value);
+    // UI.targets = value;
+    //$('#manage.newUI.targets').value = value;
+
+  },
+
 });
 
 function handleUpdate(style, {reason, method} = {}) {
@@ -343,14 +393,14 @@ function handleDelete(id) {
 
 
 function switchUI({styleOnly} = {}) {
-  const current = {};
+  const current = {enabled: true};
   const changed = {};
   let someChanged = false;
   // ensure the global option is processed first
-  for (const el of [$('#manage.newUI'), ...$$('[id^="manage.newUI."]')]) {
-    const id = el.id.replace(/^manage\.newUI\.?/, '') || 'enabled';
+  for (const el of $$('[id^="manage.newUI."]')) {
+    const id = el.id.replace(/^manage\.newUI\.?/, '');
     const value = el.type === 'checkbox' ? el.checked : Number(el.value);
-    const valueChanged = value !== UI[id] && (id === 'enabled' || current.enabled);
+    const valueChanged = value !== UI[id];
     current[id] = value;
     changed[id] = valueChanged;
     someChanged |= valueChanged;
@@ -368,16 +418,36 @@ function switchUI({styleOnly} = {}) {
     return;
   }
 
-  const missingFavicons = UI.favicons && !$('.entry-applies-to img');
+
+  // TO DO: Fix switching `prefs.set('manage.newUI.favicons', true)`
+  const missingFavicons = UI.favicons && !$('.entry-applies-to img[src]');
   if (changed.enabled || (missingFavicons && !UI.createStyleElement.parts)) {
+    const header = document.createDocumentFragment().appendChild($('.entry-header'));
     installed.textContent = '';
+    installed.appendChild(header);
     API.getAllStyles(true).then(UI.showStyles);
     return;
   }
   if (changed.targets) {
     for (const targets of $$('.entry .targets')) {
-      const hasMore = targets.children.length > UI.targets;
-      targets.parentElement.classList.toggle('has-more', hasMore);
+      const items = $$('.target', targets);
+      const extra = $('.applies-to-extra', targets);
+      const x = items.length === 54;
+      items.splice(0, UI.targets).every(el => {
+        if (!el.parentElement.classList.contains('targets')) {
+          targets.insertBefore(el, extra);
+          return false;
+        }
+        return true;
+      });
+      extra.classList.toggle('hidden', items.length < 1);
+      items.some((el, indx) => {
+        if (!el.parentElement.classList.contains('applies-to-extra')) {
+          extra.prepend(el);
+          return false;
+        }
+        return true;
+      });
     }
     return;
   }
@@ -413,7 +483,7 @@ function updateBulkFilters({target}) {
   // total is undefined until initialized
   if (!installed.dataset.total) return;
   // ignore filter checkboxes
-  if (target.type === 'checkbox' && !target.dataset.filter) {
+  if (target.type === 'checkbox' && !target.dataset.filter && target.closest('#tools-wrapper, .entry')) {
     handleEvent.toggleBulkActions({hidden: false});
     const bulk = $('#toggle-all-filters');
     const state = target.checked;
@@ -451,7 +521,7 @@ function removeSelection() {
 function updateInjectionOrder() {
   const entries = [...installed.children];
   entries.shift(); // remove header
-  console.log(entries[1].styleMeta.id, entries[1].styleMeta.injectionOrder)
+  // console.log(entries[1].styleMeta.id, entries[1].styleMeta.injectionOrder)
 
   entries.forEach((entry, index) => {
     entry.styleMeta.injectionOrder = index + 1;

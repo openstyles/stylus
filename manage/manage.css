@@ -1,8 +1,8 @@
 :root {
   --icon-size: 20px;
-  --narrow-column: 60px;
+  --narrow-column: 75px;
   --header-height: 40px;
-  --toolbar-height: 35px;
+  --toolbar-height: 60px;
   --entry-header-height: 25px;
   --onoffswitch-width: 60px;
 }
@@ -119,19 +119,16 @@ a:hover {
   vertical-align: bottom;
 }
 
-#main-header a {
-  font-size: .7em;
-  color: #999;
-  text-decoration: none;
-}
-
-#main-header a:hover {
+#main-header a:hover,
+#main-actions a:hover svg {
   color: hsla(180, 50%, 50%, 1);
+  fill: hsla(180, 50%, 50%, 1);
 }
 
 #main-header:lang(ja) {
   font-weight: normal;
 }
+
 
 #installed .entry-header {
   background: #eee;
@@ -291,10 +288,16 @@ a:hover {
   padding: 2px;
 }
 
-.targets .target img {
+.targets .target img,
+.targets .target svg {
   max-width: var(--icon-size);
   max-height: var(--icon-size);
   width: var(--icon-size);
+}
+
+#installed:not(.has-favicons) .targets img,
+#installed.has-favicons .targets img[src] + svg {
+  display: none;
 }
 
 #installed.faviconsGray .target img {
@@ -632,8 +635,12 @@ details.applies-to-extra[open] {
   margin-right: 20px;
 }
 
+#search-wrapper {
+  width: 30%;
+}
+
 #search {
-  width: 15vw;
+  width: calc(100% - var(--icon-size) * 1.4);
 }
 
 #search-help {
@@ -852,7 +859,12 @@ details.applies-to-extra[open] {
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
+  #installed .entry,
+  #installed .entry-col,
+  #installed .entry-header {
+    display: block;
+  }
   .entry-actions {
     white-space: normal;
   }
