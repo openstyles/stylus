@@ -298,37 +298,35 @@ Object.assign(handleEvent, {
         dataset: {cmd: 'close'},
       }],
       onshow: box => {
-        box.addEventListener('change', handleEvent.toggleFavicons);
+        box.addEventListener('change', handleEvent.manageFavicons);
+        box.addEventListener('input', handleEvent.manageFavicons);
         $$('input', box).forEach(el => {
           el.dataset.id = el.id;
           el.id = null;
         });
       }
     }).then(() => {
-      $('#message-box').removeEventListener('change', handleEvent.toggleFavicons);
+      const box = $('#message-box')
+      box.removeEventListener('change', handleEvent.manageFavicons);
+      box.removeEventListener('input', handleEvent.manageFavicons);
     });
   },
 
-  toggleFavicons(event) {
+  manageFavicons(event) {
     event.stopPropagation();
     const box = $('#message-box-contents');
 
     let value = $('[data-id="manage.newUI.favicons"]', box).checked;
     prefs.set('manage.newUI.favicons', value);
-    // UI.favicons = value;
     // Updating the hidden inputs; not the inputs in the message box
     $('#manage.newUI.favicons').checked = value;
 
     value = $('[data-id="manage.newUI.faviconsGray"]', box).checked;
     prefs.set('manage.newUI.faviconsGray', value);
-    // UI.faviconsGray = value;
     $('#manage.newUI.faviconsGray').checked = value;
 
     value = $('[data-id="manage.newUI.targets"]', box).value;
     prefs.set('manage.newUI.targets', value);
-    // UI.targets = value;
-    //$('#manage.newUI.targets').value = value;
-
   },
 
 });
@@ -419,29 +417,19 @@ function switchUI({styleOnly} = {}) {
   }
 
 
-  // TO DO: Fix switching `prefs.set('manage.newUI.favicons', true)`
   const missingFavicons = UI.favicons && !$('.entry-applies-to img[src]');
-  if (changed.enabled || (missingFavicons && !UI.createStyleElement.parts)) {
-    const header = document.createDocumentFragment().appendChild($('.entry-header'));
-    installed.textContent = '';
-    installed.appendChild(header);
-    API.getAllStyles(true).then(UI.showStyles);
-    return;
-  }
   if (changed.targets) {
     for (const targets of $$('.entry .targets')) {
       const items = $$('.target', targets);
       const extra = $('.applies-to-extra', targets);
       const x = items.length === 54;
-      items.splice(0, UI.targets).every(el => {
+      items.splice(0, UI.targets).forEach(el => {
         if (!el.parentElement.classList.contains('targets')) {
           targets.insertBefore(el, extra);
-          return false;
         }
-        return true;
       });
       extra.classList.toggle('hidden', items.length < 1);
-      items.some((el, indx) => {
+      items.some(el => {
         if (!el.parentElement.classList.contains('applies-to-extra')) {
           extra.prepend(el);
           return false;

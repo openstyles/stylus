@@ -84,6 +84,10 @@
     "message": "Backup",
     "description": "Heading for backup"
   },
+  "backupImport": {
+    "message": "Import backup",
+    "description": "Tooltip for header import/restore backup icon"
+  },
   "backupMessage": {
     "message": "Select a file or drag and drop to this page.",
     "description": "Message for backup"

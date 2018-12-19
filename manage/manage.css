@@ -57,7 +57,7 @@ a:hover {
 
 #main-actions {
   display: flex;
-  width: 200px;
+  width: 260px;
   height: 40px;
   justify-content: space-between;
   align-items: center;
@@ -66,7 +66,7 @@ a:hover {
 .spacer {
   width: 10px;
   height: 1em;
-  border-right: 1px solid #777;
+  border-right: 1px solid rgba(119, 119, 119, .5);
   margin-right: 10px;
 }
 
@@ -296,6 +296,7 @@ a:hover {
 }
 
 #installed:not(.has-favicons) .targets img,
+#installed.has-favicons .targets img:not([src]),
 #installed.has-favicons .targets img[src] + svg {
   display: none;
 }
@@ -624,7 +625,7 @@ details.applies-to-extra[open] {
 }
 
 .manage-row {
-  padding: 2px 10px;
+  padding: 2px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;

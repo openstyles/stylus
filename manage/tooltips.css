@@ -23,8 +23,15 @@
   text-shadow: none;
   text-transform: none;
   white-space: pre;
-  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  max-width: 50vw;
   z-index: 1000000;
+}
+
+.targets [data-title]:after {
+  white-space: pre-wrap;
+  min-width: 240px;
 }
 
 .entry-last-update[data-title]:after {
