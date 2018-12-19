@@ -138,7 +138,7 @@ function createSectionsEditor({style, onTitleChanged}) {
       if (index >= 0 && distances[index] !== undefined) {
         return distances[index];
       }
-      const section = cm.display.wrapper.closest('.section');
+      const section = cm && cm.display.wrapper.closest('.section');
       if (!section) {
         return 1e9;
       }
