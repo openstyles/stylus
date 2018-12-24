@@ -1050,13 +1050,7 @@ self.parserlib = (() => {
       '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-number-or-percentage> ]? | ' +
                      '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-number-or-percentage> ]?',
 
-      // inset? && [ <length>{2,4} && <color>? ]
-      '<shadow>': Matcher =>
-        Matcher.many(
-          [true],
-          Matcher.cast('<length>').braces(2, 4),
-          'inset',
-          '<color>'),
+      '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
 
       '<single-timing-function>': 'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames()',
 
@@ -1897,7 +1891,8 @@ self.parserlib = (() => {
       const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
       const s = ms.map((m, i) => {
         if (required !== false && !required[i]) {
-          return m.toString(Matcher.prec.MOD) + '?';
+          const str = m.toString(Matcher.prec.MOD);
+          return str.endsWith('?') ? str : str + '?';
         }
         return m.toString(p);
       }).join(required === false ? ' || ' : ' && ');
@@ -1935,10 +1930,22 @@ self.parserlib = (() => {
     function andand() {
       // andand = seq ( " && " seq)*
       const m = [seq()];
+      let reqPrev = !isOptional(m[0]);
+      const required = [reqPrev];
       while (reader.readMatch(' && ')) {
-        m.push(seq());
+        const item = seq();
+        const req = !isOptional(item);
+        // Matcher.many apparently can't handle optional items first
+        if (req && !reqPrev) {
+          m.unshift(item);
+          required.unshift(req);
+        } else {
+          m.push(item);
+          required.push(req);
+          reqPrev = req;
+        }
       }
-      return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
+      return m.length === 1 ? m[0] : Matcher.many(required, ...m);
     }
 
     function seq() {
@@ -1992,6 +1999,10 @@ self.parserlib = (() => {
         throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
       }
       return result;
+    }
+
+    function isOptional(item) {
+      return !Array.isArray(item.options) && item.toString().endsWith('?');
     }
   })();
 
