@@ -553,7 +553,7 @@ self.parserlib = (() => {
     'rest-before':      1,
     'richness':         1,
     'right':            '<width>',
-    'rotate':           'none | <number>{3}? <angle>',
+    'rotate':           'none | [ <number>{3} ]? <angle>',
     'rotation':         1,
     'rotation-point':   1,
     'row-gap':          '<row-gap>',
