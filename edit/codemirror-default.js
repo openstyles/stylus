@@ -159,6 +159,7 @@
     'contain': true,
     'mask-image': true,
     'mix-blend-mode': true,
+    'rotate': true,
     'isolation': true,
     'zoom': true,
 
