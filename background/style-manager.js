@@ -290,8 +290,8 @@ const styleManager = (() => {
       style.data = data;
       method = 'styleUpdated';
     }
-    return broadcastStyleUpdated(data, reason, method, codeIsUpdated)
-      .then(() => data);
+    broadcastStyleUpdated(data, reason, method, codeIsUpdated);
+    return data;
   }
 
   // get styles matching a URL, including sloppy regexps and excluded items.
