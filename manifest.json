@@ -35,6 +35,7 @@
       "js/script-loader.js",
       "js/usercss.js",
       "js/cache.js",
+      "background/content-scripts.js",
       "background/db.js",
       "background/style-manager.js",
       "background/navigator-util.js",

@@ -1,6 +1,6 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
-  openEditor debounce URLS ignoreChromeError queryTabs getTab
-  styleManager msg navigatorUtil iconUtil workerUtil */
+  openEditor debounce URLS ignoreChromeError getTab
+  styleManager msg navigatorUtil iconUtil workerUtil contentScripts */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -145,7 +145,9 @@ navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
 chrome.runtime.onInstalled.addListener(({reason}) => {
   // save install type: "admin", "development", "normal", "sideload" or "other"
   // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => localStorage.installType = info.installType);
+  chrome.management.getSelf(info => {
+    localStorage.installType = info.installType;
+  });
 
   if (reason !== 'update') return;
   // translations may change
@@ -238,7 +240,7 @@ if (chrome.contextMenus) {
 // reinject content scripts when the extension is reloaded/updated. Firefox
 // would handle this automatically.
 if (!FIREFOX) {
-  reinjectContentScripts();
+  setTimeout(contentScripts.injectToAllTabs, 0);
 }
 
 // register hotkeys
@@ -257,54 +259,6 @@ if (FIREFOX && browser.commands && browser.commands.update) {
 }
 
 msg.broadcastTab({method: 'backgroundReady'});
-
-function reinjectContentScripts() {
-  const NTP = 'chrome://newtab/';
-  const ALL_URLS = '<all_urls>';
-  const contentScripts = chrome.runtime.getManifest().content_scripts;
-  // expand * as .*?
-  const wildcardAsRegExp = (s, flags) => new RegExp(
-      s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
-        .replace(/\*/g, '.*?'), flags);
-  for (const cs of contentScripts) {
-    cs.matches = cs.matches.map(m => (
-      m === ALL_URLS ? m : wildcardAsRegExp(m)
-    ));
-  }
-
-  const injectCS = (cs, tabId) => {
-    ignoreChromeError();
-    for (const file of cs.js) {
-      chrome.tabs.executeScript(tabId, {
-        file,
-        runAt: cs.run_at,
-        allFrames: cs.all_frames,
-        matchAboutBlank: cs.match_about_blank,
-      }, ignoreChromeError);
-    }
-  };
-
-  const pingCS = (cs, {id, url}) => {
-    cs.matches.some(match => {
-      if ((match === ALL_URLS || url.match(match)) &&
-          (!url.startsWith('chrome') || url === NTP)) {
-        msg.sendTab(id, {method: 'ping'})
-          .catch(() => false)
-          .then(pong => !pong && injectCS(cs, id));
-        return true;
-      }
-    });
-  };
-
-  queryTabs().then(tabs =>
-    tabs.forEach(tab => {
-      // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-      if (tab.width) {
-        contentScripts.forEach(cs =>
-          setTimeout(pingCS, 0, cs, tab));
-      }
-    }));
-}
 
 function webNavUsercssInstallerFF(data) {
   const {tabId} = data;
