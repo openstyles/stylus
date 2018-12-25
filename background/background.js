@@ -79,8 +79,8 @@ if (FIREFOX) {
   // FF applies page CSP even to content scripts, https://bugzil.la/1267027
   navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
     url: [
-      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
-      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
+      {pathSuffix: '.user.css'},
+      {pathSuffix: '.user.css'},
     ]
   });
   // FF misses some about:blank iframes so we inject our content script explicitly
