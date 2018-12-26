@@ -231,7 +231,7 @@ function showStyles(styles) {
   const enabledFirst = prefs.get('popup.enabledFirst');
   styles.sort((a, b) => (
     enabledFirst && a.enabled !== b.enabled
-      ? !(a.enabled < b.enabled) ? -1 : 1
+      ? a.enabled ? -1 : 1
       : a.name.localeCompare(b.name)
   ));
 
@@ -239,6 +239,20 @@ function showStyles(styles) {
   styles.forEach(style => createStyleElement({style, container}));
   installed.appendChild(container);
   window.dispatchEvent(new Event('showStyles:done'));
+}
+
+function sortStylesInPlace() {
+  const enabledFirst = prefs.get('popup.enabledFirst');
+  const styles = $$('.entry', installed);
+  if (styles.length) {
+    styles.sort((a, b) => {
+      const aEnabled = a.styleMeta.enabled;
+      return enabledFirst && aEnabled !== b.styleMeta.enabled
+        ? aEnabled ? -1 : 1
+        : a.styleMeta.name.localeCompare(b.styleMeta.name);
+    });
+    styles.forEach(style => installed.appendChild(style));
+  }
 }
 
 
@@ -343,7 +357,9 @@ Object.assign(handleEvent, {
   toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API.toggleStyle(handleEvent.getClickedStyleId(event), this.checked);
+    API
+      .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
+      .then(sortStylesInPlace);
   },
 
   delete(event) {
