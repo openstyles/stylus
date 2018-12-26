@@ -130,14 +130,20 @@ const APPLY = (() => {
       const script = document.createElement('script');
       const {resolve, promise} = deferred();
       script.src = src;
-      script.onerror = () => resolve(false);
+      script.onerror = resolveFalse;
+      window.addEventListener('error', resolveFalse);
       window.addEventListener(EVENT_NAME, handleInit);
       (document.head || document.documentElement).appendChild(script);
       return promise.then(result => {
         script.remove();
         window.removeEventListener(EVENT_NAME, handleInit);
+        window.removeEventListener('error', resolveFalse);
         return result;
       });
+
+      function resolveFalse() {
+        resolve(false);
+      }
 
       function handleInit(e) {
         if (e.detail.method === 'init') {
