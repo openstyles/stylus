@@ -1055,6 +1055,10 @@
     "message": "Styles before commands",
     "description": "Label for the checkbox controlling section order in the popup."
   },
+  "popupAutoResort": {
+    "message": "Resort styles in popup after toggling",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "prefShowBadge": {
     "message": "Number of styles active for the current site",
     "description": "Label for the checkbox controlling toolbar badge text."

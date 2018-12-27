@@ -242,16 +242,18 @@ function showStyles(styles) {
 }
 
 function sortStylesInPlace() {
-  const enabledFirst = prefs.get('popup.enabledFirst');
-  const styles = $$('.entry', installed);
-  if (styles.length) {
-    styles.sort((a, b) => {
-      const aEnabled = a.styleMeta.enabled;
-      return enabledFirst && aEnabled !== b.styleMeta.enabled
-        ? aEnabled ? -1 : 1
-        : a.styleMeta.name.localeCompare(b.styleMeta.name);
-    });
-    styles.forEach(style => installed.appendChild(style));
+  if (prefs.get('popup.autoResort')) {
+    const enabledFirst = prefs.get('popup.enabledFirst');
+    const styles = $$('.entry', installed);
+    if (styles.length) {
+      styles.sort((a, b) => {
+        const aEnabled = a.styleMeta.enabled;
+        return enabledFirst && aEnabled !== b.styleMeta.enabled
+          ? aEnabled ? -1 : 1
+          : a.styleMeta.name.localeCompare(b.styleMeta.name);
+      });
+      styles.forEach(style => installed.appendChild(style));
+    }
   }
 }
 
