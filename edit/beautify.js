@@ -13,7 +13,7 @@ function beautify(scope) {
 
   function doBeautify() {
     const tabs = prefs.get('editor.indentWithTabs');
-    const options = prefs.get('editor.beautify');
+    const options = Object.assign({}, prefs.get('editor.beautify'));
     for (const k of Object.keys(prefs.defaults['editor.beautify'])) {
       if (!(k in options)) options[k] = prefs.defaults['editor.beautify'][k];
     }
