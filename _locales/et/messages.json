@@ -714,7 +714,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {

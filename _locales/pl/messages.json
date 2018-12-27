@@ -938,7 +938,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Odsłania domenę najwyższego poziomu w każdym elemencie iframe.\nWłącza CSS specyficzny dla iframe jak to:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "Odsłania domenę najwyższego poziomu w każdym elemencie iframe.\nWłącza CSS specyficzny dla iframe jak to:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {

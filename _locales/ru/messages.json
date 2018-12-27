@@ -726,7 +726,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Делает адрес главного сайта известным во всех iframe.\nПозволяет писать CSS для iframe, например, так:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "Делает адрес главного сайта известным во всех iframe.\nПозволяет писать CSS для iframe, например, так:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {

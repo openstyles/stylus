@@ -714,7 +714,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Expose le domaine principal de chaque iframe.\nPermet d’écrire du CSS spécifique à une iframe tel que :\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "Expose le domaine principal de chaque iframe.\nPermet d’écrire du CSS spécifique à une iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {

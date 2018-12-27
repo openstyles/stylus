@@ -706,7 +706,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "A legfelsőbb szintű tartomány elérésének engedélyezése\nmindegyik iframe-ben. Lehetővé teszi az olyan\niframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "A legfelsőbb szintű tartomány elérésének engedélyezése\nmindegyik iframe-ben. Lehetővé teszi az olyan\niframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {

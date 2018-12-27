@@ -918,7 +918,7 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Style wirkt sich auch auf iframes der anvisierten Domain aus.\nIframe-spezifisches CSS ist dann möglich wie folgt:\nhtml[stylus-iframe$=\"twitter.com\"] h1 { display:none }",
+    "message": "Style wirkt sich auch auf iframes der anvisierten Domain aus.\nIframe-spezifisches CSS ist dann möglich wie folgt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {
