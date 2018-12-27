@@ -218,6 +218,16 @@ function initPopup() {
 }
 
 
+function sortStyles({styles, getEnabled, getName}) {
+  const enabledFirst = prefs.get('popup.enabledFirst');
+  return styles.sort((a, b) => {
+    const aEnabled = getEnabled(a);
+    return enabledFirst && aEnabled !== getEnabled(b)
+      ? aEnabled ? -1 : 1
+      : getName(a).localeCompare(getName(b));
+  });
+}
+
 function showStyles(styles) {
   if (!styles) {
     return;
@@ -228,31 +238,28 @@ function showStyles(styles) {
     return;
   }
 
-  const enabledFirst = prefs.get('popup.enabledFirst');
-  styles.sort((a, b) => (
-    enabledFirst && a.enabled !== b.enabled
-      ? a.enabled ? -1 : 1
-      : a.name.localeCompare(b.name)
-  ));
-
   const container = document.createDocumentFragment();
-  styles.forEach(style => createStyleElement({style, container}));
+  sortStyles({
+    styles,
+    getEnabled: entry => entry.enabled,
+    getName: entry => entry.name
+  })
+  .forEach(style => createStyleElement({style, container}));
+
   installed.appendChild(container);
   window.dispatchEvent(new Event('showStyles:done'));
 }
 
 function sortStylesInPlace() {
   if (prefs.get('popup.autoResort')) {
-    const enabledFirst = prefs.get('popup.enabledFirst');
     const styles = $$('.entry', installed);
     if (styles.length) {
-      styles.sort((a, b) => {
-        const aEnabled = a.styleMeta.enabled;
-        return enabledFirst && aEnabled !== b.styleMeta.enabled
-          ? aEnabled ? -1 : 1
-          : a.styleMeta.name.localeCompare(b.styleMeta.name);
-      });
-      styles.forEach(style => installed.appendChild(style));
+      sortStyles({
+        styles,
+        getEnabled: entry => entry.styleMeta.enabled,
+        getName: entry => entry.styleMeta.name
+      })
+      .forEach(style => installed.appendChild(style));
     }
   }
 }
