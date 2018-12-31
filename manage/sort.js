@@ -35,9 +35,14 @@ const sorter = (() => {
       parse: ({style}) => style.usercssData ? 0 : 1,
       sorter: sorterType.number
     },
-    disabled: {
-      text: t('genericDisabledLabel'), // added as either "enabled" or "disabled" by the addOptions function
+    enabled: {
+      text: t('genericEnabledLabel'),
       parse: ({style}) => style.enabled ? 0 : 1,
+      sorter: sorterType.number
+    },
+    disabled: {
+      text: t('genericDisabledLabel'),
+      parse: ({style}) => style.enabled ? 1 : 0,
       sorter: sorterType.number
     },
     version: {
@@ -69,10 +74,10 @@ const sorter = (() => {
       return styles;
     }
     sortBy = sortBy.split(splitRegex);
-    if (sortBy.join('') === '') {
-      sortBy = defaultSort.split(splitRegex);
-    }
     updateHeaders(sortBy);
+    // Always append an ascending title (default) sort to keep sorts consistent; but don't
+    // show it in the header
+    sortBy = sortBy.concat(defaultSort.split(splitRegex));
     const len = sortBy.length;
     return styles.sort((a, b) => {
       let types, direction, x, y;
@@ -81,17 +86,17 @@ const sorter = (() => {
       // multi-sort
       while (result === 0 && index < len) {
         types = tagData[sortBy[index++]];
+        direction = sortBy[index++] === 'asc' ? 1 : -1;
         x = types.parse(a);
-        y = types.parse(b);
         // sort empty values to the bottom
         if (x === '') {
-          result = 1;
-        } else if (y === '') {
-          result = -1;
-        } else {
-          direction = sortBy[index++] === 'asc' ? 1 : -1;
-          result = types.sorter(x, y) * direction;
+          return 1;
         }
+        y = types.parse(b);
+        if (y === '') {
+          return -1;
+        }
+        result = types.sorter(x, y) * direction;
       }
       return result;
     });
@@ -184,8 +189,9 @@ const sorter = (() => {
   function updateColumnCount() {
     let newValue = 1;
     for (let el = document.documentElement.lastElementChild;
-         el.localName === 'style';
-         el = el.previousElementSibling) {
+      el.localName === 'style';
+      el = el.previousElementSibling
+    ) {
       if (el.textContent.includes('--columns:')) {
         newValue = Math.max(1, getComputedStyle(document.documentElement).getPropertyValue('--columns') | 0);
         break;
@@ -199,7 +205,6 @@ const sorter = (() => {
 
   function init() {
     prefs.subscribe(['manage.newUI.sort'], update);
-    // addOptions();
     updateColumnCount();
   }
 
