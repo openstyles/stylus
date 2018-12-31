@@ -2,6 +2,8 @@
   --tooltip-bkgd: #333;
   --tooltip-border: #555;
   --tooltip-text: #fff;
+  --tooltip-error: #d40000;
+  --tooltip-warn: goldenrod;
 }
 
 [data-title] {
@@ -150,3 +152,13 @@
   right: -7px;
   top: 50%
 }
+
+.can-update .updater-icons .update:before {
+  border-right-color: var(--tooltip-warn);
+}
+
+.entry-actions .entry-delete:before,
+.update-problem .check-update:before {
+  border-right-color: var(--tooltip-error);
+}
+

@@ -195,6 +195,7 @@
   <script src="vendor/semver-bundle/semver.js"></script>
   <script src="manage/manage-ui.js"></script>
   <script src="manage/manage-actions.js"></script>
+  <script src="manage/bulk-actions.js"></script>
   <script data-src="manage/draggable.js"></script>
 
   <script data-src="vendor-overwrites/colorpicker/colorconverter.js"></script>
@@ -429,21 +430,32 @@
         </select>
         <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
       </span>
-      <button id="bulk-actions-apply" i18n-text="bulkActionsApply"></button>
+      <button id="bulk-actions-apply" i18n-text="bulkActionsApply">
+        <span id="update-progress"></span>
+      </button>
+      <span id="bulk-info">
+        <!-- Bulk update -->
+        <span data-bulk="update">
+          <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+          <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
+          <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
+        </span>
 
-      <div class="dropdown export hidden">
-        <button class="dropbtn">
-          <span>Export</span>
-          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-        </button>
+        <!-- Bulk export -->
+        <span data-bulk="export" class="dropdown export hidden">
+          Export to:
+          <span class="select-resizer">
+            <select id="manage.onlyEnabled.invert">
+              <option id="file-all-styles" i18n-text="bckpInstStyles"></option>
+              <option id="sync-dropbox-export" i18n-text="syncDropboxStyles"></option>
+            </select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </span>
+        </span>
 
-        <div class="dropdown-content">
-          <a href="#" id="file-all-styles" i18n-text="bckpInstStyles"></a>
-          <a href="#" id="sync-dropbox-export" i18n-text="syncDropboxStyles"></a>
-        </div>
-      </div>
+      </span>
 
-      <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+
       <svg class="svg-icon busy hidden" viewBox="0 0 24 24">
         <path d="M12 23h-1v-6.57A5.97 5.97 0 0 1 7 18c-3.25 0-6-2.75-6-6v-1h6.57A5.97 5.97 0 0 1 6
           7c0-3.25 2.75-6 6-6h1v6.57A5.97 5.97 0 0 1 17 6c3.25 0 6 2.75 6 6v1h-6.57A5.97 5.97 0 0 1
@@ -501,13 +513,6 @@
   </header>
 </div>
 
-<div style="display: none">
-  <button id="apply-all-updates"></button>
-  <button id="check-all-updates"></button>
-  <button id="check-all-updates-force"></button>
-  <button id="unfile-all-styles"></button>
-</div>
-
   <!-- Applies to config, can't put this in a template because these inputs are bound to subscribed prefs -->
   <div class="hidden">
     <div id="appliesToConfig">
@@ -543,20 +548,7 @@
     <div class="settings-column">
 
       <div id="style-actions">
-        <div id="update-check">
-          <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
-          <a href="#" id="update-history" i18n-title="genericHistoryLabel" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 20 20" i18n-alt="helpAlt">
-              <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
-            </svg>
-          </a>
-        </div>
 
-        <div id="update-all">
-          <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-          <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
-        </div>
 
         <div id="add-style-wrapper">
           <a href="edit.html">

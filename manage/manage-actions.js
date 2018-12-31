@@ -89,8 +89,6 @@ function initGlobalEvents() {
     }
   });
 
-  document.addEventListener('change', updateBulkFilters);
-
   $$('[data-toggle-on-click]').forEach(el => {
     // dataset on SVG doesn't work in Chrome 49-??, works in 57+
     const target = $(el.getAttribute('data-toggle-on-click'));
@@ -110,6 +108,7 @@ function initGlobalEvents() {
 
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
+  bulk.init();
   sorter.init();
 
   prefs.subscribe([
@@ -464,34 +463,6 @@ function onVisibilityChange() {
     case 'hidden':
       history.replaceState({scrollY: window.scrollY}, document.title);
       break;
-  }
-}
-
-function updateBulkFilters({target}) {
-  // total is undefined until initialized
-  if (!installed.dataset.total) return;
-  // ignore filter checkboxes
-  if (target.type === 'checkbox' && !target.dataset.filter && target.closest('#tools-wrapper, .entry')) {
-    handleEvent.toggleBulkActions({hidden: false});
-    const bulk = $('#toggle-all-filters');
-    const state = target.checked;
-    const visibleEntries = $$('.entry-filter-toggle')
-      .filter(entry => !entry.closest('.entry').classList.contains('hidden'));
-    bulk.indeterminate = false;
-    if (target === bulk) {
-      visibleEntries.forEach(entry => {
-        entry.checked = state;
-      });
-    } else {
-      if (visibleEntries.length === visibleEntries.filter(entry => entry.checked === state).length) {
-        bulk.checked = state;
-      } else {
-        bulk.checked = false;
-        bulk.indeterminate = true;
-      }
-    }
-    const count = $$('.entry-filter-toggle').filter(entry => entry.checked).length;
-    $('#bulk-filter-count').textContent = count || '';
   }
 }
 

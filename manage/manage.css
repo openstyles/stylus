@@ -73,6 +73,7 @@ a:hover {
 .entry-actions > a,
 .bulk-actions-select-wrapper,
 #bulk-actions-apply {
+  position: relative;
   margin-left: 2px;
 }
 
@@ -155,6 +156,13 @@ a:hover {
 
 #installed .entry:last-child {
   margin-bottom: 10px;
+}
+
+body.all-styles-hidden-by-filters #installed:after {
+  font-size: 20px;
+  position: relative;
+  top: 20px;
+  left: 30px;
 }
 
 .entry-header {
@@ -451,17 +459,19 @@ a svg, .svg-icon.sort {
   fill: red;
 }
 
-.updater-icons > :not(.check-update):after {
+.updater-icons > .update:after {
   content: attr(data-title);
   border: 1px solid gold;
   background-color: goldenrod;
 }
 
+.entry-actions .entry-delete:after,
 .update-problem .check-update:after {
-  background-color: red;
-  border: 1px solid #d40000;
+  background-color: #d40000;
+  border: 1px solid red;
   color: white;
 }
+
 
 .update-problem.showTip {
   animation: fadeout 10s;

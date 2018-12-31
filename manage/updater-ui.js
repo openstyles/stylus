@@ -4,7 +4,7 @@
 'use strict';
 
 onDOMready().then(() => {
-  $('#check-all-updates').onclick = checkUpdateAll;
+  // $('#check-all-updates').onclick = checkUpdateAll;
   $('#check-all-updates-force').onclick = checkUpdateAll;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#update-history').onclick = showUpdateHistory;
@@ -29,11 +29,11 @@ function applyUpdateAll() {
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
-  const btnCheck = $('#check-all-updates');
+  // const btnCheck = $('#check-all-updates');
   const btnCheckForce = $('#check-all-updates-force');
   const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
-  btnCheck.disabled = true;
+  // btnCheck.disabled = true;
   btnCheckForce.classList.add('hidden');
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
@@ -82,7 +82,7 @@ function checkUpdateAll() {
 
     port.onMessage.removeListener(observer);
     document.body.classList.remove('update-in-progress');
-    btnCheck.disabled = total === 0;
+    // btnCheck.disabled = total === 0;
     btnApply.disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
