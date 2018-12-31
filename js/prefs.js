@@ -18,7 +18,7 @@ const prefs = (() => {
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
-    'popup.autoResort': true,       // auto resort styles after toggling
+    'popup.autoResort': false,      // auto resort styles after toggling
     'popup.borders': false,         // add white borders on the sides
     'popup.findStylesInline': true, // use the inline style search
 
