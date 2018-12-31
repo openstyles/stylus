@@ -218,14 +218,13 @@ function initPopup() {
 }
 
 
-function sortStyles({styles, getEnabled, getName}) {
+function sortStyles(entries) {
   const enabledFirst = prefs.get('popup.enabledFirst');
-  return styles.sort((a, b) => {
-    const aEnabled = getEnabled(a);
-    return enabledFirst && aEnabled !== getEnabled(b)
-      ? aEnabled ? -1 : 1
-      : getName(a).localeCompare(getName(b));
-  });
+  entries.sort((a, b) =>
+    enabledFirst && a.styleMeta.enabled !== b.styleMeta.enabled ?
+      (a.styleMeta.enabled ? -1 : 1) :
+      a.styleMeta.name.localeCompare(b.styleMeta.name)
+  );
 }
 
 function showStyles(styles) {
@@ -237,38 +236,26 @@ function showStyles(styles) {
     window.dispatchEvent(new Event('showStyles:done'));
     return;
   }
-
-  const container = document.createDocumentFragment();
-  sortStyles({
-    styles,
-    getEnabled: entry => entry.enabled,
-    getName: entry => entry.name
-  })
-  .forEach(style => createStyleElement({style, container}));
-
-  installed.appendChild(container);
+  const entries = styles.map(createStyleElement);
+  sortStyles(entries);
+  entries.forEach(e => installed.appendChild(e));
   window.dispatchEvent(new Event('showStyles:done'));
 }
 
 function sortStylesInPlace() {
-  if (prefs.get('popup.autoResort')) {
-    const styles = $$('.entry', installed);
-    if (styles.length) {
-      sortStyles({
-        styles,
-        getEnabled: entry => entry.styleMeta.enabled,
-        getName: entry => entry.styleMeta.name
-      })
-      .forEach(style => installed.appendChild(style));
-    }
+  if (!prefs.get('popup.autoResort')) {
+    return;
   }
+  const entries = $$('.entry', installed);
+  if (!entries.length) {
+    return;
+  }
+  sortStyles(entries);
+  entries.forEach(e => installed.appendChild(e));
 }
 
 
-function createStyleElement({
-  style,
-  container = installed,
-}) {
+function createStyleElement(style) {
   let entry = $(ENTRY_ID_PREFIX + style.id);
   if (!entry) {
     entry = template.style.cloneNode(true);
@@ -342,9 +329,7 @@ function createStyleElement({
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
-  if (entry.parentNode !== container) {
-    container.appendChild(entry);
-  }
+  return entry;
 }
 
 
@@ -500,12 +485,12 @@ function handleUpdate({style, reason}) {
         return;
       }
       if ($(ENTRY_ID_PREFIX + style.id)) {
-        createStyleElement({style});
+        createStyleElement(style);
         return;
       }
       document.body.classList.remove('blocked');
       $$.remove('.blocked-info, #no-styles');
-      createStyleElement({style});
+      createStyleElement(style);
     })
     .catch(console.error);
 
