@@ -1173,7 +1173,8 @@
     "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
   },
   "retrieveBckp": {
-    "message": "Import styles"
+    "message": "Local source",
+    "description": "Selected option to get a backup of styles from a local device/drive"
   },
   "search": {
     "message": "Search",

@@ -165,21 +165,6 @@
     </details>
   </template>
 
-  <template data-id="export">
-    <span i18n-text="backupMessage"></span>
-    <div class="dropdown">
-      <button class="dropbtn">
-        <span>Import</span>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-      </button>
-
-      <div class="dropdown-content">
-        <a href="#" class="unfile-all-styles" i18n-text="retrieveBckp"></a>
-        <a href="#" class="sync-dropbox-import" i18n-text="syncDropboxStyles"></a>
-      </div>
-    </div>
-  </template>
-
   <script src="js/polyfill.js"></script>
   <script src="js/promisify.js"></script>
   <script src="js/dom.js"></script>
@@ -255,11 +240,15 @@
       <svg class="svg-icon ui-config" viewBox="0 0 24 24"><use xlink:href="#svg-icon-config"/></svg>
     </a>
 
-    <a href="#" id="manage-backups-button" i18n-data-title="backupImport" class="tt-w">
+    <div id="manage-backups" i18n-data-title="backupImport" class="tt-w">
       <svg class="svg-icon" viewBox="0 0 24 24">
         <path d="M20.5 5.2l-1.4-1.6C19 3.2 18.5 3 18 3H6c-.5 0-.9.2-1.2.6L3.5 5.2A2 2 0 0 0 3 6.5V19c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V6.5c0-.5-.2-1-.5-1.3zM6.2 5h11.6l.8 1H5.4l.8-1zM5 19V8h14v11H5zm3-5h2.5v3h3v-3H16l-4-4z"/>
       </svg>
-    </a>
+      <div class="dropdown">
+        <a href="#" id="unfile-all-styles" i18n-text="bckpInstStyles"></a>
+        <a href="#" id="sync-dropbox-import" i18n-text="syncDropboxStyles"></a>
+      </div>
+    </div>
 
     <a href="#" id="manage-shortcuts-button" class="chromium-only tt-w" i18n-data-title="shortcutsNote">
       <svg class="svg-icon" viewBox="0 0 24 24">
