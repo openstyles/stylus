@@ -218,6 +218,15 @@ function initPopup() {
 }
 
 
+function sortStyles(entries) {
+  const enabledFirst = prefs.get('popup.enabledFirst');
+  entries.sort((a, b) =>
+    enabledFirst && a.styleMeta.enabled !== b.styleMeta.enabled ?
+      (a.styleMeta.enabled ? -1 : 1) :
+      a.styleMeta.name.localeCompare(b.styleMeta.name)
+  );
+}
+
 function showStyles(styles) {
   if (!styles) {
     return;
@@ -227,25 +236,26 @@ function showStyles(styles) {
     window.dispatchEvent(new Event('showStyles:done'));
     return;
   }
-
-  const enabledFirst = prefs.get('popup.enabledFirst');
-  styles.sort((a, b) => (
-    enabledFirst && a.enabled !== b.enabled
-      ? !(a.enabled < b.enabled) ? -1 : 1
-      : a.name.localeCompare(b.name)
-  ));
-
-  const container = document.createDocumentFragment();
-  styles.forEach(style => createStyleElement({style, container}));
-  installed.appendChild(container);
+  const entries = styles.map(createStyleElement);
+  sortStyles(entries);
+  entries.forEach(e => installed.appendChild(e));
   window.dispatchEvent(new Event('showStyles:done'));
 }
 
+function sortStylesInPlace() {
+  if (!prefs.get('popup.autoResort')) {
+    return;
+  }
+  const entries = $$('.entry', installed);
+  if (!entries.length) {
+    return;
+  }
+  sortStyles(entries);
+  entries.forEach(e => installed.appendChild(e));
+}
 
-function createStyleElement({
-  style,
-  container = installed,
-}) {
+
+function createStyleElement(style) {
   let entry = $(ENTRY_ID_PREFIX + style.id);
   if (!entry) {
     entry = template.style.cloneNode(true);
@@ -319,9 +329,7 @@ function createStyleElement({
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
-  if (entry.parentNode !== container) {
-    container.appendChild(entry);
-  }
+  return entry;
 }
 
 
@@ -343,7 +351,9 @@ Object.assign(handleEvent, {
   toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API.toggleStyle(handleEvent.getClickedStyleId(event), this.checked);
+    API
+      .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
+      .then(sortStylesInPlace);
   },
 
   delete(event) {
@@ -475,12 +485,12 @@ function handleUpdate({style, reason}) {
         return;
       }
       if ($(ENTRY_ID_PREFIX + style.id)) {
-        createStyleElement({style});
+        createStyleElement(style);
         return;
       }
       document.body.classList.remove('blocked');
       $$.remove('.blocked-info, #no-styles');
-      createStyleElement({style});
+      createStyleElement(style);
     })
     .catch(console.error);
 
