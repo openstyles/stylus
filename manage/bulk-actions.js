@@ -1,4 +1,4 @@
-/* global $ $$ API t prefs handleEvent installed exportToFile checkUpdateAll exportDropbox
+/* global $ $$ API t prefs handleEvent installed exportToFile checkUpdate exportDropbox
    messageBox */
 /* exported bulk */
 'use strict';
@@ -26,8 +26,8 @@ const bulk = {
       case 'update':
         $('[data-bulk="update"]').classList.remove('hidden');
         break;
-      case 'reset':
-        break;
+      // case 'reset':
+      //   break;
       case 'delete':
         break;
     }
@@ -60,10 +60,11 @@ const bulk = {
         return exportToFile(styles);
       }
       case 'update':
-        checkUpdateAll(entries); // TO DO
+        styles = entries.map(entry => entry.styleMeta);
+        checkUpdate(styles); // TO DO: don't check all styles
         break;
-      case 'reset':
-        break;
+      // case 'reset':
+      //   break;
       case 'delete':
         styles = entries.reduce((acc, entry) => {
           const style = entry.styleMeta;
