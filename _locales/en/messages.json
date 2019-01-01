@@ -93,7 +93,8 @@
     "description": "Message for backup"
   },
   "bckpInstStyles": {
-    "message": "Export styles"
+    "message": "Local device",
+    "description": "Selected option to backup indicated styles to local device/drive"
   },
   "checkAllUpdates": {
     "message": "Check all styles for updates",
@@ -1237,6 +1238,10 @@
   "bulkActionsTooltip": {
     "message": "Click to open the filter, search and bulk actions panel",
     "description": "Text for button to apply the selected action"
+  },
+  "bulkActionsError": {
+    "message": "Choose at least one style",
+    "description": "Error displayed in a tooltip when the user attempts to apply an action with no styles selected"
   },
   "sectionAdd": {
     "message": "Add another section",

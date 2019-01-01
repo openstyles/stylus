@@ -27,6 +27,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'manage.onlyEnabled.invert': false, // display only disabled styles
     'manage.onlyLocal.invert': false,   // display only externally installed styles
     'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
+    'manage.export.destination': 'local', // default export destination (local or dropbox)
 
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons

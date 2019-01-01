@@ -175,7 +175,7 @@
 
       <div class="dropdown-content">
         <a href="#" class="unfile-all-styles" i18n-text="retrieveBckp"></a>
-        <a href="#" class="sync-dropbox-import" i18n-text="retrieveDropboxSync"></a>
+        <a href="#" class="sync-dropbox-import" i18n-text="syncDropboxStyles"></a>
       </div>
     </div>
   </template>
@@ -360,7 +360,7 @@
               </svg>
             </label>
             <span class="select-resizer">
-              <select id="manage.onlyLocal.invert" i18n-data-title="manageOnlyLocalTooltip">
+              <select id="manage.onlyLocal.invert" class="tt-s" i18n-data-title="manageOnlyLocalTooltip">
                 <option i18n-text="manageOnlyLocal" value="false"></option>
                 <option i18n-text="manageOnlyExternal" value="true"></option>
               </select>
@@ -430,7 +430,7 @@
         </select>
         <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
       </span>
-      <button id="bulk-actions-apply" i18n-text="bulkActionsApply">
+      <button id="bulk-actions-apply" i18n-text="bulkActionsApply" class="tt-e" disabled>
         <span id="update-progress"></span>
       </button>
       <span id="bulk-info">
@@ -445,9 +445,9 @@
         <span data-bulk="export" class="dropdown export hidden">
           Export to:
           <span class="select-resizer">
-            <select id="manage.onlyEnabled.invert">
-              <option id="file-all-styles" i18n-text="bckpInstStyles"></option>
-              <option id="sync-dropbox-export" i18n-text="syncDropboxStyles"></option>
+            <select id="manage.export.destination">
+              <option value="local" i18n-text="bckpInstStyles"></option>
+              <option value="dropbox" i18n-text="syncDropboxStyles"></option>
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </span>

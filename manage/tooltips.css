@@ -8,6 +8,7 @@
 
 [data-title] {
   position: relative;
+  overflow: visible;
 }
 
 [data-title]:after {
@@ -161,4 +162,3 @@
 .update-problem .check-update:before {
   border-right-color: var(--tooltip-error);
 }
-

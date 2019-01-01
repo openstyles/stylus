@@ -1,4 +1,5 @@
-/* global $ $$ handleEvent installed exportToFile checkUpdateAll */
+/* global $ $$ API t prefs handleEvent installed exportToFile checkUpdateAll exportDropbox
+   messageBox */
 /* exported bulk */
 'use strict';
 
@@ -13,14 +14,13 @@ const bulk = {
   handleSelect: event => {
     event.preventDefault();
     $$('[data-bulk]').forEach(el => el.classList.add('hidden'));
-console.log('select', this.value)
+
     switch (event.target.value) {
       case 'enable':
         break;
       case 'disable':
         break;
       case 'export':
-        console.log('got here')
         $('[data-bulk="export"]').classList.remove('hidden');
         break;
       case 'update':
@@ -51,10 +51,14 @@ console.log('select', this.value)
         });
         break;
       }
-      case 'export':
+      case 'export': {
         styles = entries.map(entry => entry.styleMeta);
-        exportToFile(styles);
-        break;
+        const destination = prefs.get('manage.export.destination');
+        if (destination === 'dropbox') {
+          return exportDropbox(styles);
+        }
+        return exportToFile(styles);
+      }
       case 'update':
         checkUpdateAll(entries); // TO DO
         break;
@@ -99,6 +103,12 @@ console.log('select', this.value)
       }
       const count = $$('.entry-filter-toggle').filter(entry => entry.checked).length;
       $('#bulk-filter-count').textContent = count || '';
+
+      if (count > 0 && $('#bulk-actions-select').value !== '') {
+        $('#bulk-actions-apply').removeAttribute('disabled');
+      } else {
+        $('#bulk-actions-apply').setAttribute('disabled', true);
+      }
     }
   },
 
@@ -118,4 +128,4 @@ console.log('select', this.value)
     });
   }
 
-}
+};
