@@ -187,7 +187,7 @@ function checkUpdates() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({observe: true});
+  API.updateCheckBulk({observe: true});
 
   function observer(info) {
     if ('count' in info) {

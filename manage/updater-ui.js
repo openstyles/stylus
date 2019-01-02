@@ -3,9 +3,10 @@
 /* exported handleUpdateInstalled */
 'use strict';
 
+let updateTimer;
+
 onDOMready().then(() => {
-  // $('#check-all-updates').onclick = checkUpdateAll;
-  $('#check-all-updates-force').onclick = checkUpdateAll;
+  $('#check-all-updates-force').onclick = checkUpdateBulk;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#update-history').onclick = showUpdateHistory;
 });
@@ -27,17 +28,18 @@ function applyUpdateAll() {
 }
 
 
-function checkUpdateAll() {
+function checkUpdateBulk() {
+  clearTimeout(updateTimer);
   document.body.classList.add('update-in-progress');
   // const btnCheck = $('#check-all-updates');
   const btnCheckForce = $('#check-all-updates-force');
   const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
+  const styleIds = $$('.entry-filter-toggle:checked').map(el => el.closest('.entry').styleMeta.id);
   // btnCheck.disabled = true;
   btnCheckForce.classList.add('hidden');
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
-
   const ignoreDigest = this && this.id === 'check-all-updates-force';
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
     .map(checkUpdate);
@@ -53,10 +55,11 @@ function checkUpdateAll() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({
+  API.updateCheckBulk({
     save: false,
     observe: true,
     ignoreDigest,
+    styleIds,
   });
 
   function observer(info, port) {
@@ -86,9 +89,15 @@ function checkUpdateAll() {
     btnApply.disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
-      noUpdates.dataset.skippedEdited = skippedEdited > 0;
+      if (skippedEdited > 0) {
+        noUpdates.dataset.title = t('updateAllCheckSucceededSomeEdited');
+      }
       noUpdates.classList.remove('hidden');
       btnCheckForce.classList.toggle('hidden', skippedEdited === 0);
+      updateTimer = setTimeout(() => {
+        noUpdates.classList.add('hidden');
+        noUpdates.dataset.title = '';
+      }, 1e4);
     }
   }
 }

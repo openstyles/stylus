@@ -8,7 +8,7 @@ global messageBox getStyleWithNoCode
   URLS enforceInputRange t
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
   scrollElementIntoView FIREFOX
-  UI
+  UI bulk
 */
 /* exported updateInjectionOrder */
 'use strict';
@@ -305,7 +305,7 @@ Object.assign(handleEvent, {
         });
       }
     }).then(() => {
-      const box = $('#message-box')
+      const box = $('#message-box');
       box.removeEventListener('change', handleEvent.manageFavicons);
       box.removeEventListener('input', handleEvent.manageFavicons);
     });
@@ -339,6 +339,8 @@ function handleUpdate(style, {reason, method} = {}) {
   }
   entry = entry || UI.createStyleElement({style});
   if (oldEntry) {
+    // Make sure to update the filter checkbox since it's state isn't saved to the style
+    $('.entry-filter-toggle', entry).checked = $('.entry-filter-toggle', oldEntry).checked;
     if (oldEntry.styleNameLowerCase === entry.styleNameLowerCase) {
       installed.replaceChild(entry, oldEntry);
     } else {
@@ -349,6 +351,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry}).then(sorter.update);
+
   if (!entry.matches('.hidden') && reason !== 'import') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
@@ -421,7 +424,6 @@ function switchUI({styleOnly} = {}) {
     for (const targets of $$('.entry .targets')) {
       const items = $$('.target', targets);
       const extra = $('.applies-to-extra', targets);
-      const x = items.length === 54;
       items.splice(0, UI.targets).forEach(el => {
         if (!el.parentElement.classList.contains('targets')) {
           targets.insertBefore(el, extra);

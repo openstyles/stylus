@@ -31,7 +31,7 @@
 
   const retrying = new Set();
 
-  API_METHODS.updateCheckAll = checkAllStyles;
+  API_METHODS.updateCheckBulk = checkBulkStyles;
   API_METHODS.updateCheck = checkStyle;
   API_METHODS.getUpdaterStates = () => STATES;
 
@@ -39,18 +39,22 @@
   schedule();
   chrome.alarms.onAlarm.addListener(onAlarm);
 
-  return {checkAllStyles, checkStyle, STATES};
+  return {checkBulkStyles, checkStyle, STATES};
 
-  function checkAllStyles({
+  function checkBulkStyles({
     save = true,
     ignoreDigest,
     observe,
+    styleIds = [],
   } = {}) {
     resetInterval();
     checkingAll = true;
     retrying.clear();
     const port = observe && chrome.runtime.connect({name: 'updater'});
     return styleManager.getAllStyles().then(styles => {
+      if (styleIds.length) {
+        styles = styles.filter(style => styleIds.includes(style.id));
+      }
       styles = styles.filter(style => style.updateUrl);
       if (port) port.postMessage({count: styles.length});
       log('');
@@ -247,7 +251,7 @@
   }
 
   function onAlarm({name}) {
-    if (name === ALARM_NAME) checkAllStyles();
+    if (name === ALARM_NAME) checkBulkStyles();
   }
 
   function resetInterval() {

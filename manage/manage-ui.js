@@ -32,12 +32,12 @@ const UI = {
     $('.ext-version').textContent = `v${chrome.runtime.getManifest().version}`;
 
     // translate CSS manually
+    // #update-all-no-updates[data-skipped-edited="true"]::after {
+    //   content: " ${t('updateAllCheckSucceededSomeEdited')}";
+    // }
     document.head.appendChild($create('style', `
       body.all-styles-hidden-by-filters #installed:after {
         content: "${t('filteredStylesAllHidden')}";
-      }
-      #update-all-no-updates[data-skipped-edited="true"]::after {
-        content: " ${t('updateAllCheckSucceededSomeEdited')}";
       }
     `));
   },

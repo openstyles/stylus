@@ -1,4 +1,4 @@
-/* global $ $$ API t prefs handleEvent installed exportToFile checkUpdate exportDropbox
+/* global $ $$ API t prefs handleEvent installed exportToFile checkUpdateBulk exportDropbox
    messageBox */
 /* exported bulk */
 'use strict';
@@ -9,6 +9,16 @@ const bulk = {
     document.addEventListener('change', bulk.updateBulkFilters);
     $('#bulk-actions-select').onchange = bulk.handleSelect;
     $('#bulk-actions-apply').onclick = bulk.handleApply;
+  },
+
+  checkApply: () => {
+    const checkedEntries = $$('.entry-filter-toggle').filter(entry => entry.checked);
+    if (checkedEntries.length > 0 && $('#bulk-actions-select').value !== '') {
+      $('#bulk-actions-apply').removeAttribute('disabled');
+    } else {
+      $('#bulk-actions-apply').setAttribute('disabled', true);
+    }
+    $('#bulk-filter-count').textContent = checkedEntries.length || '';
   },
 
   handleSelect: event => {
@@ -60,22 +70,25 @@ const bulk = {
         return exportToFile(styles);
       }
       case 'update':
-        styles = entries.map(entry => entry.styleMeta);
-        checkUpdate(styles); // TO DO: don't check all styles
+        checkUpdateBulk();
         break;
       // case 'reset':
       //   break;
-      case 'delete':
+      case 'delete': {
         styles = entries.reduce((acc, entry) => {
           const style = entry.styleMeta;
-          acc[style.name] = style.id;
+          acc[style.id] = style.name;
           return acc;
         }, {});
         bulk.deleteBulk(event, styles);
-        $('#toggle-all-filters').checked = false;
+        const toggle = $('#toggle-all-filters');
+        toggle.checked = false;
+        toggle.indeterminate = false;
         break;
+      }
     }
     $('#bulk-actions-select').value = '';
+    $('#bulk-actions-apply').setAttribute('disabled', true);
   },
 
   updateBulkFilters: ({target}) => {
@@ -102,27 +115,20 @@ const bulk = {
           }
         }
       }
-      const count = $$('.entry-filter-toggle').filter(entry => entry.checked).length;
-      $('#bulk-filter-count').textContent = count || '';
-
-      if (count > 0 && $('#bulk-actions-select').value !== '') {
-        $('#bulk-actions-apply').removeAttribute('disabled');
-      } else {
-        $('#bulk-actions-apply').setAttribute('disabled', true);
-      }
+      bulk.checkApply();
     }
   },
 
   deleteBulk: (event, styles) => {
     messageBox({
       title: t('deleteStyleConfirm'),
-      contents: Object.keys(styles).join(', '),
+      contents: Object.values(styles).join(', '),
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })
     .then(({button}) => {
       if (button === 0) {
-        Object.values(styles).forEach(id => API.deleteStyle(id));
+        Object.keys(styles).forEach(id => API.deleteStyle(Number(id)));
         installed.dataset.total -= Object.keys(styles).length;
         bulk.updateBulkFilters({target: $('#toggle-all-filters')});
       }
