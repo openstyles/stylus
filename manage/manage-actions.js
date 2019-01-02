@@ -373,6 +373,7 @@ function handleUpdate(style, {reason, method} = {}) {
       $$('.entry-state-toggle', oldEntry).forEach(el => (el.checked = style.enabled));
       oldEntry.styleMeta = newStyleMeta;
       entry = oldEntry;
+      UI.addLabels(entry);
       oldEntry = null;
     }
   }
