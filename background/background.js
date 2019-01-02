@@ -191,7 +191,7 @@ contextMenus = {
     contexts: ['editable'],
     documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
     click: (info, tab) => {
-      msg.sendTab(tab.id, {method: 'editDeleteText'});
+      msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
     },
   }
 };
