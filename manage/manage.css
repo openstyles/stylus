@@ -855,11 +855,42 @@ details.applies-to-extra[open] {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  body,
+  #main-header,
+  #tools-wrapper,
+  .manage-row {
+    position: static;
+    display: block;
+    height: auto;
+  }
+  #installed .entry-header {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+  #manage-backups {
+    display: inline-block;
+    vertical-align: center;
+  }
+  #manage-backups:hover .dropdown {
+    display: block;
+    left: -20px;
+    right: auto;
+    top: 99%;
+  }
+  #installed,
+  #tools-wrapper:not(.hidden) + #installed {
+    margin-top: 0;
+  }
   #installed .entry,
   #installed .entry-col,
   #installed .entry-header {
-    display: block;
+    flex-wrap: wrap;
+  }
+  .header-name,
+  .entry-name {
+    flex: 1;
   }
   .entry-actions {
     white-space: normal;
