@@ -152,7 +152,7 @@ const UI = {
 
     $('.entry-configure-usercss', entry).classList.toggle('invisible', !configurable);
     if (style.updateUrl) {
-      $('.entry-actions', entry).appendChild(template.updaterIcons.cloneNode(true));
+      $('.entry-updater-placeholder', entry).replaceWith(template.updaterIcons.cloneNode(true));
     }
 
     $('.entry-version', entry).textContent = style.usercssData && style.usercssData.version || '';
