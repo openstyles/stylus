@@ -1,10 +1,25 @@
 :root {
-  --icon-size: 20px;
+  --header-icon-size: 20px;
+  --entry-icon-size: 20px;
   --narrow-column: 75px;
   --header-height: 40px;
   --toolbar-height: 60px;
   --entry-header-height: 25px;
   --onoffswitch-width: 60px;
+
+  --header-bg-color: #333;
+  --header-text-color: #ddd;
+  --header-icon-color: #888;
+  --header-icon-hover-color: hsla(180, 99%, 58%, 1);
+
+  --entry-header-bg-color: #ddd;
+  --entry-header-text-color: #111;
+
+  --checked-bg-color: hsla(180, 38%, 25%, 1);
+  --checked-mark-color: #fff;
+  --entry-icon-color: #666;
+  --entry-icon-hover-color: hsla(180, 38%, 25%, 1);
+  --delete-icon-hover-color: #d40000;
 }
 
 html {
@@ -48,11 +63,17 @@ a:hover {
 
 .svg-icon {
   cursor: pointer;
+  width: var(--entry-icon-size);
+  height: var(--entry-icon-size);
   vertical-align: middle;
   transition: fill .5s;
-  width: var(--icon-size);
-  height: var(--icon-size);
-  fill: #666;
+  fill: var(--entry-icon-color);
+}
+
+#main-header .svg-icon {
+  width: var(--header-icon-size);
+  height: var(--header-icon-size);
+  fill: var(--header-icon-color);
 }
 
 #main-actions {
@@ -63,6 +84,7 @@ a:hover {
   align-items: center;
 }
 
+/* header vertical separator between icon groups */
 .spacer {
   width: 10px;
   height: 1em;
@@ -93,13 +115,18 @@ a:hover {
   100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
 }
 
+.entry a:hover .svg-icon,
 .svg-icon:hover {
-  fill: #000;
+  fill: var(--entry-icon-hover-color);
+}
+
+.entry .entry-delete:hover .svg-icon {
+  fill: var(--delete-icon-hover-color);
 }
 
 #main-header {
-  background: #111;
-  color: #ddd;
+  background: var(--header-bg-color);
+  color: var(--header-text-color);
   position: fixed;
   top: 0;
   width: 100%;
@@ -123,8 +150,8 @@ a:hover {
 #main-header a:hover,
 #main-actions a:hover svg,
 #manage-backups:hover svg {
-  color: hsla(180, 50%, 50%, 1);
-  fill: hsla(180, 50%, 50%, 1);
+  color: var(--header-icon-hover-color);
+  fill: var(--header-icon-hover-color);
 }
 
 #main-header:lang(ja) {
@@ -133,7 +160,8 @@ a:hover {
 
 
 #installed .entry-header {
-  background: #eee;
+  background: var(--entry-header-bg-color);
+  color: var(--entry-header-text-color);
   position: fixed;
   top: var(--header-height);
   height: var(--entry-header-height);
@@ -299,9 +327,9 @@ body.all-styles-hidden-by-filters #installed:after {
 
 .targets .target img,
 .targets .target svg {
-  max-width: var(--icon-size);
-  max-height: var(--icon-size);
-  width: var(--icon-size);
+  max-width: var(--entry-icon-size);
+  max-height: var(--entry-icon-size);
+  width: var(--entry-icon-size);
 }
 
 #installed:not(.has-favicons) .targets img,
@@ -398,8 +426,8 @@ a svg, .svg-icon.sort {
 
 /* Checkbox */
 .checkmate input:checked + svg.checkbox {
-  background: #66bb6a;
-  border-radius: var(--icon-size);
+  background: var(--checked-bg-color);
+  border-radius: var(--entry-icon-size);
 }
 
 .checkmate input[type="checkbox"],
@@ -410,7 +438,7 @@ a svg, .svg-icon.sort {
 }
 
 .checkmate input:checked + svg.checkbox .checkmark {
-  fill: white;
+  fill: var(--checked-mark-color);
 }
 
 .checking-update .check-update {
@@ -493,8 +521,8 @@ a svg, .svg-icon.sort {
 }
 
 .target img{
-  width: var(--icon-size);
-  height: var(--icon-size);
+  width: var(--entry-icon-size);
+  height: var(--entry-icon-size);
   vertical-align: sub;
   transition: opacity .5s, filter .5s;
   /* unprefixed since Chrome 53 */
@@ -652,7 +680,7 @@ details.applies-to-extra[open] {
 }
 
 #search {
-  width: calc(100% - var(--icon-size) * 1.4);
+  width: calc(100% - var(--entry-icon-size) * 1.4);
 }
 
 #search-help {
@@ -712,7 +740,7 @@ details.applies-to-extra[open] {
 }
 
 #reset-filters:hover svg {
-  fill: hsla(180, 50%, 50%, 1);
+  fill: var(--header-icon-hover-color);
 }
 
 .filter-stats-wrapper:not(.active) #reset-filters,
