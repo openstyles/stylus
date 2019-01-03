@@ -103,7 +103,7 @@ const UI = {
         entry,
         entryClassBase: entry.className,
         checker: $('.entry-state-toggle', entry) || {},
-        nameLink: $('a.entry-name', entry),
+        nameLink: $('.entry-name', entry),
         editLink: $('.entry-edit', entry) || {},
         editHrefBase: 'edit.html?id=',
         appliesTo: $('.entry-applies-to', entry),
@@ -120,7 +120,7 @@ const UI = {
 
     parts.checker.checked = style.enabled;
 
-    parts.nameLink.textContent = tWordBreak(style.name);
+    $('.entry-name-text', parts.nameLink).textContent = tWordBreak(style.name);
     parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
 
     // clear the code to free up some memory
