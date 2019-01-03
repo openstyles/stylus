@@ -12,13 +12,16 @@
   --header-icon-color: #888;
   --header-icon-hover-color: hsla(180, 99%, 58%, 1);
 
+  --tools-bg-color: #ccc;
+
   --entry-header-bg-color: #ddd;
   --entry-header-text-color: #111;
 
-  --checked-bg-color: hsla(180, 38%, 25%, 1);
+  --checked-count-bg-color: hsla(180, 100%, 20%, 1);
+  --checked-bg-color: hsla(180, 100%, 20%, 1);
   --checked-mark-color: #fff;
   --entry-icon-color: #666;
-  --entry-icon-hover-color: hsla(180, 38%, 25%, 1);
+  --entry-icon-hover-color: hsla(180, 100%, 20%, 1);
   --delete-icon-hover-color: #d40000;
 }
 
@@ -425,14 +428,15 @@ a svg, .svg-icon.sort {
 }
 
 /* Checkbox */
-.checkmate input:checked + svg.checkbox {
-  background: var(--checked-bg-color);
-  border-radius: var(--entry-icon-size);
+.checkmate input:checked + svg.checkbox .filled-circle {
+  fill: var(--checked-bg-color);
+  display: block;
 }
 
 .checkmate input[type="checkbox"],
 .checkmate input:checked + svg.checkbox .circle,
 .checkmate input:not(:checked) + svg .checkmark,
+.checkmate input:not(:checked) + svg.checkbox .filled-circle,
 .checkmate input:not(:indeterminate) + svg .indeterminate {
   display: none;
 }
@@ -642,7 +646,7 @@ details.applies-to-extra[open] {
 
 /* bulk actions */
 #tools-wrapper {
-  background: #ddd;
+  background: var(--tools-bg-color);
   width: 100vw;
   position: fixed;
   top: var(--header-height);
@@ -708,16 +712,10 @@ details.applies-to-extra[open] {
   display: none !important;
 }
 
-
-#filters-wrapper filter-selection {
-  display: flex;
-  align-items: center;
-}
-
 .active #filters-stats,
 #bulk-filter-count:not(:empty) {
-  background-color: darkcyan;
-  border-color: darkcyan;
+  background-color: var(--checked-count-bg-color);
+  border-color: var(--checked-count-bg-color);
   border-radius: 2px;
   color: white;
   font-size: 0.7rem;
