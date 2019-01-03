@@ -41,6 +41,11 @@
         </label>
       </div>
       <div class="entry-col entry-id"></div>
+      <div class="entry-col entry-sort" draggable="true">
+        <svg class="svg-icon sort" viewBox="0 0 24 24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </div>
       <div class="entry-col entry-state">
         <label class="checkmate" tabindex="0">
           <input class="entry-state-toggle" type="checkbox">
@@ -100,11 +105,6 @@
               5h2c0-2.25 3-2.5 3-5a4 4 0 0 0-4-4z"/>
           </svg>
         </a>
-      </div>
-      <div class="entry-col entry-sort" draggable="true">
-        <svg class="svg-icon sort" viewBox="0 0 24 24">
-          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-        </svg>
       </div>
       <div class="entry-col entry-version"></div>
       <div class="entry-col entry-last-update tt-w"></div>
@@ -479,12 +479,12 @@
     <div class="entry-col header-id">
       <a href="#" class="sortable tt-se" data-type="order" i18n-data-title="sortLabel;sortColumnInjection">#<span></span></a>
     </div>
+    <div class="entry-col header-sort center-text tt-se" i18n-text="sortHeader" i18n-data-title="sortHeaderOrderLabel"></div>
     <a href="#" class="entry-col sortable header-state center-text tt-se" i18n-text="genericEnabledLabel" i18n-data-title="sortLabel;sortColumnEnabled" data-type="enabled"><span></span></a>
     <div class="entry-col header-name">
       <a href="#" class="sortable tt-se" i18n-text="genericName" i18n-data-title="sortLabel;sortColumnName" data-type="title"><span></span></a>
     </div>
     <div class="entry-col header-actions" i18n-text="optionsActions"></div>
-    <div class="entry-col header-sort center-text tt-sw" i18n-text="sortHeader" i18n-data-title="sortHeaderOrderLabel"></div>
     <div class="entry-col header-version">
       <a href="#" class="sortable tt-sw" i18n-data-title="sortLabel;sortColumnVersion" data-type="version">v#<span></span></a>
     </div>

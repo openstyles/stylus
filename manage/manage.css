@@ -335,6 +335,8 @@ body.all-styles-hidden-by-filters #installed:after {
   width: var(--entry-icon-size);
 }
 
+.header-sort,
+.entry-sort,
 #installed:not(.has-favicons) .targets img,
 #installed.has-favicons .targets img:not([src]),
 #installed.has-favicons .targets img[src] + svg {
@@ -451,6 +453,8 @@ a svg, .svg-icon.sort {
   pointer-events: none;
 }
 
+#installed[data-sort="order"] .header-sort,
+#installed[data-sort="order"] .entry-sort,
 /* Update icons */
 .can-update .update,
 .no-update:not(.update-problem):not(.update-done) .up-to-date,

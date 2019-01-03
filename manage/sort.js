@@ -79,6 +79,10 @@ const sorter = (() => {
     // show it in the header
     sortBy = sortBy.concat(defaultSort.split(splitRegex));
     const len = sortBy.length;
+
+    // Add first column sort to #installed; show sortable column when id column sorted
+    installed.dataset.sort = sortBy[0];
+
     return styles.sort((a, b) => {
       let types, direction, x, y;
       let result = 0;
