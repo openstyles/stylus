@@ -31,7 +31,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
 
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
-    'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
+    'manage.newUI.targets': 6,      // max number of applies-to targets visible: 0 = none
     'manage.newUI.sort': 'title,asc',
 
     'editor.options': {},           // CodeMirror.defaults.*
