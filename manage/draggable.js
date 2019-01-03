@@ -1,4 +1,4 @@
-/* global UI $$ updateInjectionOrder */
+/* global $$ updateInjectionOrder */
 'use strict';
 
 // Polyfill for mobile? - https://caniuse.com/#feat=dragndrop
@@ -14,7 +14,7 @@
   }
 
   document.addEventListener('dragstart', event => {
-    const el = event.target.closest('.entry');
+    const el = event.target && event.target.closest('.entry');
     if (el) {
       dragged = el;
       el.classList.add('dragging');
@@ -27,7 +27,7 @@
   });
 
   document.addEventListener('dragenter', event => {
-    const el = event.target.closest('.entry, .entry-header');
+    const el = event.target && event.target.closest('.entry, .entry-header');
     if (el && dragged) {
       // Insert after the target; keeps header at top
       el.after(dragged);

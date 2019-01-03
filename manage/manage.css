@@ -336,7 +336,7 @@ body.dragging .entry:not(.dragging) .entry-name:before {
 }
 
 .entry.dragging {
-  background: linear-gradient(to right, hsla(350, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+  background: linear-gradient(to right, hsla(255, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
 }
 
 .entry.enabled .entry-name:hover .style-name {
