@@ -63,6 +63,7 @@ body {
 }
 
 h1 {
+  min-width: 30%;
   width: 30%;
   margin: 0;
   font-size: 120%;
@@ -73,6 +74,7 @@ h1 {
 }
 
 .items {
+  min-width: 70%;
   width: 70%;
 }
 
@@ -212,6 +214,7 @@ html:not(.firefox):not(.opera) #updates {
 #advanced:not(.collapsible) .collapsible-resizer {
   padding-right: 8px;
   box-sizing: border-box;
+  min-width: 30%;
   width: 30%;
 }
 
