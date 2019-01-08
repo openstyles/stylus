@@ -16,6 +16,7 @@ body {
   font-size: 12px;
   min-width: 480px;
   max-width: 800px;
+  width: max-content;
 }
 
 @supports (-moz-appearance:none) {
