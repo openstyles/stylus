@@ -8,7 +8,7 @@ const prefs = (() => {
     'windowPosition': {},           // detached window position
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
-    'exposeIframes': true,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+    'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'newStyleAsUsercss': false,     // create new style in usercss format
 
     // checkbox in style config dialog
