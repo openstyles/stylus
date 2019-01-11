@@ -34,11 +34,11 @@ class Reporter {
    * verification back to the main API.
    * @class Reporter
    * @constructor
-   * @param {String[]} lines The text lines of the source.
-   * @param {Object} ruleset The set of rules to work with, including if
+   * @param {String[]} lines - The text lines of the source.
+   * @param {Object} ruleset - The set of rules to work with, including if
    *      they are errors or warnings.
-   * @param {Object} explicitly allowed lines
-   * @param {[][]} ingore list of line ranges to be ignored
+   * @param {Object} allow - explicitly allowed lines
+   * @param {[][]} ingore - list of line ranges to be ignored
    */
   constructor(lines, ruleset, allow, ignore) {
     this.messages = [];
@@ -219,17 +219,51 @@ var CSSLint = (() => {
     },
   });
 
+  // Example 1:
+
+  /* csslint ignore:start */
+      // the chunk of code where errors won't be reported
+      // the chunk's start is hardwired to the next line after the opening comment
+      // the chunk's end is hardwired to the line of the closing comment
+  /* csslint ignore:end */
+
+  // Example 2:
+
+  /* csslint allow:rulename1,rulename2,... */
+      // allows to break the specified rules on the next single line of code
+
+  // Example 3:
+
+  /* csslint rulename1 */
+  /* csslint rulename2:N */
+  /* csslint rulename3:N, rulename4:N */
+
+      // entire code is affected;
+      // comments futher down the code extend/override previous comments of this kind
+      // values for N:
+      // "2" or "true" means "error"
+      // "1" or nothing means "warning" - note in this case ":" can also be omitted
+      // "0" or "false" means "ignore"
+      // (the quotes are added here for convenience, don't put them in the actual comments)
+
   function applyEmbeddedOverrides(text, ruleset, allow, ignore) {
     let ignoreStart = null;
     let ignoreEnd = null;
     let lineno = 0;
+    let eol = -1;
+    let m = RX_EMBEDDED.exec(text);
+    if (!m) return;
 
-    for (let eol = 0, m; (m = RX_EMBEDDED.exec(text)); lineno++) {
-      eol = (text.indexOf('\n', eol) + 1 || text.length + 1) - 1;
-      if (eol < m.index) continue;
+    const nextLine = () => {
+      eol = (text.indexOf('\n', eol + 1) + 1 || text.length + 1) - 1;
+      lineno++;
+    };
 
+    while (eol <= m.index) nextLine();
+
+    do {
       const ovr = m[1].toLowerCase();
-      const cmd = ovr.split(':', 1);
+      const cmd = ovr.split(':', 1)[0];
       const i = cmd.length + 1;
 
       switch (cmd.trim()) {
@@ -270,7 +304,9 @@ var CSSLint = (() => {
             ruleset[property.trim()] = mapped === undefined ? 1 : mapped;
           });
       }
-    }
+
+      nextLine();
+    } while ((m = RX_EMBEDDED.exec(text)));
 
     // Close remaining ignore block, if any
     if (ignoreStart !== null) {
