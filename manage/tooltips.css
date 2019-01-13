@@ -1,6 +1,6 @@
 :root {
-  --tooltip-bkgd: #333;
-  --tooltip-border: #555;
+  --tooltip-bkgd: #555;
+  --tooltip-border: #777;
   --tooltip-text: #fff;
   --tooltip-error: #d40000;
   --tooltip-warn: goldenrod;
