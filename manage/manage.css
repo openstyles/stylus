@@ -814,14 +814,16 @@ details.applies-to-extra[open] {
 
 .manage-backups .dropdown {
   display: none;
+  background: transparent;
+  padding-top: 10px;
   position: absolute;
-  background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 101;
 }
 
 .manage-backups .dropdown a {
+  background-color: #f9f9f9;
   color: black;
   padding: 8px;
   font-size: 12px;
@@ -838,7 +840,7 @@ details.applies-to-extra[open] {
 .manage-backups:hover .dropdown {
   display: block;
   right: -20px;
-  top: 99%;
+  top: 100%;
 }
 
 /* sort font */
