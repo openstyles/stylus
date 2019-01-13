@@ -20,10 +20,10 @@
   --entry-header-text-color: #111;
 
   --checked-count-bg-color: hsla(180, 100%, 20%, 1);
-  --checked-bg-color: hsla(180, 100%, 20%, 1);
+  --checked-bg-color: hsla(180, 100%, 24%, 1);
   --checked-mark-color: #fff;
   --entry-icon-color: #666;
-  --entry-icon-hover-color: hsla(180, 100%, 20%, 1);
+  --entry-icon-hover-color: hsla(180, 100%, 24%, 1);
   --delete-icon-hover-color: #d40000;
 }
 
