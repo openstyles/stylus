@@ -357,7 +357,7 @@ body.all-styles-hidden-by-filters #installed:after {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-.entry:hover div.entry-name:before {
+.entry:hover:before {
   content: "";
   position: absolute;
   top: 0;
