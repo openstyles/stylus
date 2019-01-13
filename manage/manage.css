@@ -1,6 +1,7 @@
 :root {
   --header-icon-size: 20px;
   --entry-icon-size: 20px;
+  --favicon-size: 14px;
   --narrow-column: 75px;
   --header-height: 40px;
   --toolbar-height: 60px;
@@ -331,9 +332,9 @@ body.all-styles-hidden-by-filters #installed:after {
 
 .targets .target img,
 .targets .target svg {
-  max-width: var(--entry-icon-size);
-  max-height: var(--entry-icon-size);
-  width: var(--entry-icon-size);
+  max-width: var(--favicon-size);
+  max-height: var(--favicon-size);
+  width: var(--favicon-size);
 }
 
 .header-sort,
