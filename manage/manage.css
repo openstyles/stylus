@@ -5,7 +5,7 @@
   --narrow-column: 75px;
   --header-height: 40px;
   --toolbar-height: 60px;
-  --entry-header-height: 25px;
+  --entry-height: 30px;
   --onoffswitch-width: 60px;
 
   --header-bg-color: #333;
@@ -169,13 +169,13 @@ a:hover {
   color: var(--entry-header-text-color);
   position: fixed;
   top: var(--header-height);
-  height: var(--entry-header-height);
   z-index: 100;
 }
 
 #installed .entry,
 #installed .entry-header {
   width: calc(100vw - 1.5em);
+  height: var(--entry-height);
   display: flex;
   flex: 0 0 var(--narrow-column);
   flex-flow: row nowrap;
@@ -183,11 +183,10 @@ a:hover {
   align-items: center;
   justify-content: center;
   padding: 0;
-  height: 30px;
 }
 
 #installed, #options, #backup {
-  margin-top: calc(var(--header-height) + var(--entry-header-height));
+  margin-top: calc(var(--header-height) + var(--entry-height));
 }
 
 #installed .entry:last-child {
@@ -269,6 +268,15 @@ body.all-styles-hidden-by-filters #installed:after {
   text-decoration: none;
   margin-right: 8px;
   padding: 8px 0;
+}
+
+.entry-name-text {
+  display: inline-block;
+  max-width: 30vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  white-space: nowrap;
 }
 
 .entry-header:not(.sortable) {
@@ -666,7 +674,7 @@ details.applies-to-extra[open] {
 }
 
 #tools-wrapper:not(.hidden) + #installed {
-  margin-top: calc(var(--header-height) + var(--toolbar-height) + var(--entry-header-height));
+  margin-top: calc(var(--header-height) + var(--toolbar-height) + var(--entry-height));
 }
 #tools-wrapper:not(.hidden) + #installed .entry-header {
   top: calc(var(--header-height) + var(--toolbar-height));
@@ -927,6 +935,9 @@ details.applies-to-extra[open] {
   .header-name,
   .entry-name {
     flex: 1;
+  }
+  .entry-name-text {
+    max-width: 10vw;
   }
   .entry-actions {
     white-space: normal;
