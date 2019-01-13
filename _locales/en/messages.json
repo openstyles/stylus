@@ -336,7 +336,11 @@
   },
   "exportLabel": {
     "message": "Export",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "description": "Label for the button to export a style ('edit' page) or bulk styles ('manage' page)"
+  },
+  "exportAllLabel": {
+    "message": "Export All",
+    "description": "Label for the button to export all styles ('manage' page)"
   },
   "externalFeedback": {
     "message": "Feedback",

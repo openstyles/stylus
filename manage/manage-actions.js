@@ -71,6 +71,12 @@ function initGlobalEvents() {
     openURL({url: URLS.configureCommands});
   };
 
+  $('#update-all').onclick = event => {
+    event.preventDefault();
+    handleEvent.toggleBulkActions({hidden: false});
+    bulk.updateAll();
+  }
+
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
 
   document.addEventListener('visibilitychange', onVisibilityChange);

@@ -11,6 +11,14 @@ const bulk = {
     $('#bulk-actions-apply').onclick = bulk.handleApply;
   },
 
+  // Update all button in header
+  updateAll: () => {
+    const toggle = $('#toggle-all-filters');
+    toggle.checked = false; // ensure click will check all styles
+    toggle.click();
+    checkUpdateBulk();
+  },
+
   checkApply: () => {
     const checkedEntries = $$('.entry-filter-toggle').filter(entry => entry.checked);
     if (checkedEntries.length > 0 && $('#bulk-actions-select').value !== '') {
