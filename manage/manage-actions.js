@@ -54,7 +54,10 @@ function onRuntimeMessage(msg) {
     default:
       return;
   }
-  setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
+  setTimeout(() => {
+    sorter.updateStripes({onlyWhenColumnsChanged: true});
+    updateInjectionOrder();
+  }, 0, );
 }
 
 
@@ -395,6 +398,7 @@ function handleDelete(id) {
       btnApply.dataset.value = Number(btnApply.dataset.value) - 1;
     }
     showFiltersStats();
+    updateInjectionOrder();
   }
 }
 
@@ -487,17 +491,17 @@ function removeSelection() {
 }
 
 function updateInjectionOrder() {
-  const entries = [...installed.children];
-  entries.shift(); // remove header
-  // console.log(entries[1].styleMeta.id, entries[1].styleMeta.injectionOrder)
-
-  entries.forEach((entry, index) => {
-    entry.styleMeta.injectionOrder = index + 1;
-    $('.entry-id', entry).textContent = index + 1;
-  });
-  sorter.update();
-
-  // TODO: Update database
+  if (installed.dataset.sort === 'order') {
+    const entries = [...installed.children];
+    entries.shift(); // remove header
+    entries.forEach((entry, index) => {
+      entry.styleMeta.injectionOrder = index + 1;
+      $('.entry-id', entry).textContent = index + 1;
+      UI.injectionXref[entry.styleMeta.id] = index + 1;
+    });
+    sorter.update();
+    // TODO: Update database
+  }
 }
 
 function lazyLoad() {

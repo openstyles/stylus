@@ -120,6 +120,7 @@ a:hover {
   100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
 }
 
+.entry-header a:hover .svg-icon,
 .entry a:hover .svg-icon,
 .svg-icon:hover {
   fill: var(--entry-icon-hover-color);

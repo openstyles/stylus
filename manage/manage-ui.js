@@ -17,6 +17,8 @@ const UI = {
   faviconsGray: prefs.get('manage.newUI.faviconsGray'),
   targets: prefs.get('manage.newUI.targets'),
 
+  injectionXref: {},
+
   labels: {
     'usercss': {
       is: ({style}) => typeof style.usercssData !== 'undefined',
@@ -44,6 +46,18 @@ const UI = {
 
   showStyles: (styles = [], matchUrlIds) => {
     UI.addHeaderLabels();
+
+    // map injection order of styles
+    if (styles && styles.length && !styles.every(s => s.injectionOrder)) {
+      UI.injectionXref = styles
+        .sort((a, b) => ((a.injectionOrder || a.id) - (b.injectionOrder || b.id)))
+        .map((s, index) => (s.injectionOrder = index + 1))
+        .reduce((acc, s) => {
+          acc[s.id] = s.injectionOrder;
+          return acc;
+        }, {});
+    }
+
     const sorted = sorter.sort({
       styles: styles.map(style => ({
         style,
@@ -138,7 +152,7 @@ const UI = {
       (style.updateUrl ? ' updatable' : '') +
       (style.usercssData ? ' usercss' : '');
 
-    $('.entry-id', entry).textContent = style.injectionOrder || style.id;
+    $('.entry-id', entry).textContent = style.injectionOrder ||  UI.injectionXref[style.id];
     let el = $('.entry-homepage', entry);
     el.classList.toggle('invisible', !style.url);
     el.href = style.url || '';
