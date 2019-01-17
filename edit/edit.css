@@ -820,7 +820,7 @@ html:not(.usercss) .usercss-only,
 }
 
 .CodeMirror-linewidget li.applies-to-everything {
-  margin-top: 0.2rem;
+  margin-left: 0.2rem;
 }
 
 /************ reponsive layouts ************/
