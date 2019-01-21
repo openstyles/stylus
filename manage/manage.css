@@ -83,10 +83,16 @@ a:hover {
 
 #main-actions {
   display: flex;
-  width: 260px;
+  width: 320px;
   height: 40px;
   justify-content: space-between;
   align-items: center;
+  margin-right: 10px;
+}
+
+#main-actions a,
+#main-actions div {
+  margin-right: 4px;
 }
 
 /* header vertical separator between icon groups */
@@ -138,10 +144,10 @@ a:hover {
   width: 100%;
   height: var(--header-height);
   z-index: 101;
-  padding: 2px 8px;
+  padding: 0 4px;
   margin: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -164,6 +170,10 @@ a:hover {
   font-weight: normal;
 }
 
+#installed, #options, #backup {
+  width: 100%;
+  margin-top: calc(var(--header-height) + var(--entry-height));
+}
 
 #installed .entry-header {
   background: var(--entry-header-bg-color);
@@ -175,7 +185,7 @@ a:hover {
 
 #installed .entry,
 #installed .entry-header {
-  width: calc(100vw - 1.5em);
+  width: 100%;
   height: var(--entry-height);
   display: flex;
   flex: 0 0 var(--narrow-column);
@@ -184,10 +194,6 @@ a:hover {
   align-items: center;
   justify-content: center;
   padding: 0;
-}
-
-#installed, #options, #backup {
-  margin-top: calc(var(--header-height) + var(--entry-height));
 }
 
 #installed .entry:last-child {
