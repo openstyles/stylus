@@ -126,6 +126,9 @@ var CSSLint = (() => {
   };
   const rules = [];
 
+  // previous CSSLint overrides are used to decide whether the parserlib's cache should be reset
+  let prevOverrides;
+
   return Object.assign(new parserlib.util.EventTarget(), {
 
     addRule(rule) {
@@ -193,8 +196,13 @@ var CSSLint = (() => {
         rules[id] &&
         rules[id].init(parser, reporter));
 
+      // TODO: when ruleset is unchanged we can try to invalidate only line ranges in 'allow' and 'ignore'
+      const newOvr = [ruleset, allow, ignore];
+      const reuseCache = !prevOverrides || JSON.stringify(prevOverrides) === JSON.stringify(newOvr);
+      prevOverrides = newOvr;
+
       try {
-        parser.parse(text, {reuseCache: true});
+        parser.parse(text, {reuseCache});
       } catch (ex) {
         reporter.error('Fatal error, cannot continue: ' + ex.message, ex.line, ex.col, {});
       }
