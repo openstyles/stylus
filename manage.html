@@ -411,68 +411,66 @@
   </div>
 
   <div id="bulk-actions" class="manage-row">
-    <div>
-      <label class="checkmate toggle-all" tabindex="0">
-        <input id="toggle-all-filters" type="checkbox">
-        <svg class="svg-icon checkbox"viewBox="0 0 10 10">
-          <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
-          <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
-          <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
-          <path class="indeterminate" d="M2.5 4.5h5v1h-5v-1z"/>
-        </svg>
-      </label>
-      <span id="bulk-filter-count"></span>
-      <span i18n-text="bulkActions"></span>
-      <span class="select-resizer bulk-actions-select-wrapper">
-        <select id="bulk-actions-select">
-          <option i18n-text="bulkActionsSelect" value=""></option>
-          <option i18n-text="enableStyleLabel" value="enable"></option>
-          <option i18n-text="disableStyleLabel" value="disable"></option>
-          <option i18n-text="exportLabel" value="export"></option>
-          <option i18n-text="checkForUpdate" value="update"></option>
-          <!-- Plan: Reset UserCSS variables -->
-          <!-- <option i18n-text="genericResetLabel" value="reset"></option> -->
-          <option i18n-text="deleteStyleLabel" value="delete"></option>
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-      </span>
-      <button id="bulk-actions-apply" i18n-text="bulkActionsApply" class="tt-e" disabled>
-        <span id="update-progress"></span>
-      </button>
-      <span id="bulk-info">
-        <!-- Bulk update -->
-        <span data-bulk="update">
-          <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-          <span id="update-all-no-updates" class="tt-e hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
-        </span>
-
-        <!-- Bulk export -->
-        <span data-bulk="export" class="dropdown export hidden">
-          Export to:
-          <span class="select-resizer">
-            <select id="manage.export.destination">
-              <option value="local" i18n-text="bckpInstStyles"></option>
-              <option value="dropbox" i18n-text="syncDropboxStyles"></option>
-            </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-          </span>
-        </span>
-
-      </span>
-
-      <svg class="svg-icon busy hidden" viewBox="0 0 24 24">
-        <path d="M12 23h-1v-6.57A5.97 5.97 0 0 1 7 18c-3.25 0-6-2.75-6-6v-1h6.57A5.97 5.97 0 0 1 6
-          7c0-3.25 2.75-6 6-6h1v6.57A5.97 5.97 0 0 1 17 6c3.25 0 6 2.75 6 6v1h-6.57A5.97 5.97 0 0 1
-          18 17c0 3.25-2.75 6-6 6zm1-9.87v7.74c1.7-.46 3-2.04 3-3.87s-1.3-3.41-3-3.87zM3.13 13c.46
-          1.7 2.04 3 3.87 3s3.41-1.3 3.87-3H3.13zm10-2h7.74c-.46-1.7-2.05-3-3.87-3s-3.41 1.3-3.87
-          3zM11 3.13C9.3 3.59 8 5.18 8 7s1.3 3.41 3 3.87V3.13z"/>
-        <!-- supported everwhere?
-          <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 0 0"
-            to="360 0 0" dur="1s" repeatCount="indefinite"/>
-        -->
+    <label class="checkmate toggle-all" tabindex="0">
+      <input id="toggle-all-filters" type="checkbox">
+      <svg class="svg-icon checkbox"viewBox="0 0 10 10">
+        <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
+        <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
+        <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
+        <path class="indeterminate" d="M2.5 4.5h5v1h-5v-1z"/>
       </svg>
-    </div>
+    </label>
+    <span id="bulk-filter-count"></span>
+    <span i18n-text="bulkActions"></span>
+    <span class="select-resizer bulk-actions-select-wrapper">
+      <select id="bulk-actions-select">
+        <option i18n-text="bulkActionsSelect" value=""></option>
+        <option i18n-text="enableStyleLabel" value="enable"></option>
+        <option i18n-text="disableStyleLabel" value="disable"></option>
+        <option i18n-text="exportLabel" value="export"></option>
+        <option i18n-text="checkForUpdate" value="update"></option>
+        <!-- Plan: Reset UserCSS variables -->
+        <!-- <option i18n-text="genericResetLabel" value="reset"></option> -->
+        <option i18n-text="deleteStyleLabel" value="delete"></option>
+      </select>
+      <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+    </span>
+    <button id="bulk-actions-apply" i18n-text="bulkActionsApply" class="tt-e" disabled>
+      <span id="update-progress"></span>
+    </button>
+    <span id="bulk-info">
+      <!-- Bulk update -->
+      <span data-bulk="update">
+        <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
+        <span id="update-all-no-updates" class="tt-e hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
+        <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
+      </span>
+
+      <!-- Bulk export -->
+      <span data-bulk="export" class="dropdown export hidden">
+        Export to:
+        <span class="select-resizer">
+          <select id="manage.export.destination">
+            <option value="local" i18n-text="bckpInstStyles"></option>
+            <option value="dropbox" i18n-text="syncDropboxStyles"></option>
+          </select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </span>
+      </span>
+
+    </span>
+
+    <svg class="svg-icon busy hidden" viewBox="0 0 24 24">
+      <path d="M12 23h-1v-6.57A5.97 5.97 0 0 1 7 18c-3.25 0-6-2.75-6-6v-1h6.57A5.97 5.97 0 0 1 6
+        7c0-3.25 2.75-6 6-6h1v6.57A5.97 5.97 0 0 1 17 6c3.25 0 6 2.75 6 6v1h-6.57A5.97 5.97 0 0 1
+        18 17c0 3.25-2.75 6-6 6zm1-9.87v7.74c1.7-.46 3-2.04 3-3.87s-1.3-3.41-3-3.87zM3.13 13c.46
+        1.7 2.04 3 3.87 3s3.41-1.3 3.87-3H3.13zm10-2h7.74c-.46-1.7-2.05-3-3.87-3s-3.41 1.3-3.87
+        3zM11 3.13C9.3 3.59 8 5.18 8 7s1.3 3.41 3 3.87V3.13z"/>
+      <!-- supported everwhere?
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 0 0"
+          to="360 0 0" dur="1s" repeatCount="indefinite"/>
+      -->
+    </svg>
   </div>
 
 </div>

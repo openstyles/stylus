@@ -19,6 +19,7 @@
   color: var(--tooltip-text);
   content: attr(data-title);
   font-size: 12px;
+  line-height: 1.5em;
   letter-spacing: normal;
   padding: .5em .75em;
   text-align: center;

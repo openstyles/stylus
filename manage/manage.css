@@ -49,7 +49,7 @@ body.dark {
 
 a,
 .disabled a:hover {
-  color: #000;
+  color: #3c3c3c;
   transition: color .5s;
 }
 
@@ -58,7 +58,7 @@ a {
 }
 
 a:hover {
-  color: #666;
+  color: #000;
 }
 
 .invisible {
@@ -108,6 +108,17 @@ a:hover {
 #bulk-actions-apply {
   position: relative;
   margin-left: 2px;
+}
+
+#bulk-actions {
+  justify-content: flex-start;
+}
+
+#bulk-info > span,
+#bulk-info button {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
 }
 
 #bulk-actions .svg-icon.busy:not(.hidden) {
@@ -186,7 +197,6 @@ a:hover {
 #installed .entry,
 #installed .entry-header {
   width: 100%;
-  line-height: var(--entry-height);
   display: flex;
   flex: 0 0 var(--narrow-column);
   flex-flow: row nowrap;
@@ -222,6 +232,7 @@ body.all-styles-hidden-by-filters #installed:after {
   padding-left: 4px;
   flex: 1;
   justify-content: space-evenly;
+  line-height: var(--entry-height);
 }
 
 .center-text,
@@ -237,7 +248,7 @@ body.all-styles-hidden-by-filters #installed:after {
 .header-last-update,
 .entry-last-update {
   /* inlcude update history link */
-  max-width: calc(var(--narrow-column) + 20px);
+  max-width: calc(var(--narrow-column) + 30px);
 }
 
 /* keep all icons on the same row */
@@ -272,8 +283,9 @@ body.all-styles-hidden-by-filters #installed:after {
   overflow-wrap: break-word;
   font-weight: 600;
   text-decoration: none;
-  margin-right: 8px;
-  padding: 8px 0;
+  margin: auto 8px auto 0;
+  padding: 0;
+  align-self: normal;
 }
 
 .entry-name-text {
@@ -346,7 +358,9 @@ body.all-styles-hidden-by-filters #installed:after {
 
 .applies-to-extra-expander {
   text-decoration: none;
-  font-size: 1.5em;
+  font-size: 1.3em;
+  font-weight: bold;
+  line-height: normal;
 }
 
 .targets .target img,
@@ -400,7 +414,7 @@ body.all-styles-hidden-by-filters #installed:after {
   padding: 2px 4px;
   margin-left: 2px;
   border-radius: 4px;
-  font-size: .8em;
+  font-size: .75em;
   text-transform: lowercase;
 }
 
@@ -640,10 +654,6 @@ a svg, .svg-icon.sort {
   opacity: .35;
 }
 
-#check-all-updates-force {
-  margin-top: 1ex;
-}
-
 #update-all-no-updates[data-skipped-edited="true"] {
   font-weight: bold;
 }
@@ -661,7 +671,7 @@ a svg, .svg-icon.sort {
   top: var(--header-height);
   left: 0;
   height: var(--toolbar-height);
-  padding: 4px 16px;
+  padding: 4px 0;
   z-index: 100;
 }
 
