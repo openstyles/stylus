@@ -25,11 +25,6 @@ const sorter = (() => {
       parse: ({name}) => name,
       sorter: sorterType.alpha
     },
-    order: {
-      text: '#',
-      parse: ({style}) => style.injectionOrder || style.id,
-      sorter: sorterType.number,
-    },
     usercss: {
       text: 'Usercss',
       parse: ({style}) => style.usercssData ? 0 : 1,

@@ -1271,10 +1271,6 @@
   "shortcutsNote": {
     "message": "Define keyboard shortcuts"
   },
-  "sortColumnInjection": {
-    "message": "injection order",
-    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
-  },
   "sortColumnEnabled": {
     "message": "enabled styles",
     "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
@@ -1303,10 +1299,6 @@
       }
     },
     "description": "Title added to links in the manager page header to inform the user on how to sort the columns"
-  },
-  "sortHeaderOrderLabel": {
-    "message": "Click and drag the icon to\nchange the style injection order",
-    "description": "Tooltip shown on manage page while hovering over the sort column header"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",

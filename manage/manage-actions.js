@@ -10,7 +10,6 @@ global messageBox getStyleWithNoCode
   scrollElementIntoView FIREFOX
   UI bulk
 */
-/* exported updateInjectionOrder */
 'use strict';
 
 let installed;
@@ -56,8 +55,7 @@ function onRuntimeMessage(msg) {
   }
   setTimeout(() => {
     sorter.updateStripes({onlyWhenColumnsChanged: true});
-    updateInjectionOrder();
-  }, 0, );
+  }, 0);
 }
 
 
@@ -408,7 +406,6 @@ function handleDelete(id) {
       btnApply.dataset.value = Number(btnApply.dataset.value) - 1;
     }
     showFiltersStats();
-    updateInjectionOrder();
   }
 }
 
@@ -442,10 +439,13 @@ function switchUI({styleOnly} = {}) {
 
   const missingFavicons = UI.favicons && !$('.entry-applies-to img[src]');
   if (changed.targets) {
-    for (const targets of $$('.entry .targets')) {
-      $$('.target', targets).forEach((el, indx) => {
-        el.classList.toggle('extra', indx >= UI.targets);
+    for (const targetWrapper of $$('.entry .targets')) {
+      const targets = $$('.target', targetWrapper);
+      targets.forEach((target, indx) => {
+        target.classList.toggle('extra', indx >= UI.targets);
       });
+      $('.applies-to-extra-expander', targetWrapper)
+        .classList.toggle('hidden', targets.length <= UI.targets);
     }
     return;
   }
@@ -485,20 +485,6 @@ function removeSelection() {
     } else if (sel.empty) {
       sel.empty();
     }
-  }
-}
-
-function updateInjectionOrder() {
-  if (installed.dataset.sort === 'order') {
-    const entries = [...installed.children];
-    entries.shift(); // remove header
-    entries.forEach((entry, index) => {
-      entry.styleMeta.injectionOrder = index + 1;
-      $('.entry-id', entry).textContent = index + 1;
-      UI.injectionXref[entry.styleMeta.id] = index + 1;
-    });
-    sorter.update();
-    // TODO: Update database
   }
 }
 

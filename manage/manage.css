@@ -2,7 +2,7 @@
   --header-icon-size: 20px;
   --entry-icon-size: 20px;
   --favicon-size: 16px;
-  --narrow-column: 75px;
+  --narrow-column: 60px;
   --header-height: 40px;
   --toolbar-height: 60px;
   --entry-height: 30px;
@@ -186,7 +186,7 @@ a:hover {
 #installed .entry,
 #installed .entry-header {
   width: 100%;
-  height: var(--entry-height);
+  line-height: var(--entry-height);
   display: flex;
   flex: 0 0 var(--narrow-column);
   flex-flow: row nowrap;
@@ -227,7 +227,6 @@ body.all-styles-hidden-by-filters #installed:after {
 .center-text,
 .entry-filter,
 .entry-state,
-.entry-sort,
 .entry-last-update {
   text-align: center;
   justify-content: center;
@@ -331,10 +330,6 @@ body.all-styles-hidden-by-filters #installed:after {
   color: #000;
 }
 
-.entry-sort {
-  cursor: move;
-}
-
 .targets {
   flex-wrap: wrap;
 }
@@ -361,8 +356,6 @@ body.all-styles-hidden-by-filters #installed:after {
   width: var(--favicon-size);
 }
 
-.header-sort,
-.entry-sort,
 #installed:not(.has-favicons) .targets img,
 #installed.has-favicons .targets img:not([src]),
 #installed.has-favicons .targets img[src] + svg {
@@ -387,15 +380,6 @@ body.all-styles-hidden-by-filters #installed:after {
   bottom: 0;
   background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
   pointer-events: none;
-}
-
-body.dragging .entry:not(.dragging) .entry-name:before {
-  /* hide the sustained hover */
-  background-image: none !important;
-}
-
-.entry.dragging {
-  background: linear-gradient(to right, hsla(255, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
 }
 
 .entry.enabled .entry-name:hover .style-name {
@@ -435,7 +419,6 @@ body.dragging .entry:not(.dragging) .entry-name:before {
 
 .disabled .entry-name,
 .disabled .entry-actions,
-.disabled .entry-sort,
 .disabled .entry-version,
 .disabled .entry-last-update {
   opacity: 0.6;
@@ -480,7 +463,6 @@ a svg, .svg-icon.sort {
 }
 
 #installed[data-sort="order"] .header-sort,
-#installed[data-sort="order"] .entry-sort,
 /* Update icons */
 .can-update .update,
 .no-update:not(.update-problem):not(.update-done) .up-to-date,
@@ -582,9 +564,6 @@ a svg, .svg-icon.sort {
 
 .entry.hide-extra .target.extra {
   display: none;
-}
-.entry:not(.hide-extra) {
-  height: auto !important;
 }
 
 #faviconsHelp {
