@@ -144,6 +144,7 @@ Object.assign(handleEvent, {
     '.header-filter': 'toggleBulkActions',
     '.sortable': 'updateSort',
     '#applies-to-config': 'appliesConfig',
+    '.applies-to-extra-expander': 'toggleExtraAppliesTo'
   },
 
   entryClicked(event) {
@@ -207,6 +208,15 @@ Object.assign(handleEvent, {
     const tools = $('#tools-wrapper');
     tools.classList.toggle('hidden', hidden);
     $('.header-filter').classList.toggle('active', !tools.classList.contains('hidden'));
+  },
+
+  toggleExtraAppliesTo(event, entry) {
+    event.preventDefault();
+    entry.classList.toggle('hide-extra');
+    if (event.shiftKey) {
+      const state = entry.classList.contains('hide-extra');
+      $$('.entry').forEach(entry => entry.classList.toggle('hide-extra', state));
+    }
   },
 
   check(event, entry) {
@@ -433,20 +443,8 @@ function switchUI({styleOnly} = {}) {
   const missingFavicons = UI.favicons && !$('.entry-applies-to img[src]');
   if (changed.targets) {
     for (const targets of $$('.entry .targets')) {
-      const items = $$('.target', targets);
-      const extra = $('.applies-to-extra', targets);
-      items.splice(0, UI.targets).forEach(el => {
-        if (!el.parentElement.classList.contains('targets')) {
-          targets.insertBefore(el, extra);
-        }
-      });
-      extra.classList.toggle('hidden', items.length < 1);
-      items.some(el => {
-        if (!el.parentElement.classList.contains('applies-to-extra')) {
-          extra.prepend(el);
-          return false;
-        }
-        return true;
+      $$('.target', targets).forEach((el, indx) => {
+        el.classList.toggle('extra', indx >= UI.targets);
       });
     }
     return;

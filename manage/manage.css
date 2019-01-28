@@ -341,11 +341,17 @@ body.all-styles-hidden-by-filters #installed:after {
 
 .targets .target {
   display: inline-block;
-  padding: 0 2px;
+  padding: 2px;
+  line-height: var(--favicon-size);
 }
 
 .targets .applies-to-extra .target {
   padding: 2px;
+}
+
+.applies-to-extra-expander {
+  text-decoration: none;
+  font-size: 1.5em;
 }
 
 .targets .target img,
@@ -568,17 +574,17 @@ a svg, .svg-icon.sort {
   filter: grayscale(0);
 }
 
-.targets details.applies-to-extra {
+.targets .applies-to-extra {
   margin-left: 4px;
   margin-top: 5px;
   cursor: pointer;
 }
 
-details.applies-to-extra[open] {
-  position: absolute;
-  background: #eee;
-  z-index: 90;
-  padding: 10px;
+.entry.hide-extra .target.extra {
+  display: none;
+}
+.entry:not(.hide-extra) {
+  height: auto !important;
 }
 
 #faviconsHelp {

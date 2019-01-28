@@ -199,6 +199,7 @@ const UI = {
     const targets = parts.targets.cloneNode(true);
     let container = targets;
     let numTargets = 0;
+    let extraClass = '';
     const displayed = new Set();
     for (const type of UI.TARGET_TYPES) {
       for (const section of style.sections) {
@@ -209,8 +210,7 @@ const UI = {
           displayed.add(targetValue);
           const element = template.appliesToTarget.cloneNode(true);
           if (numTargets === UI.targets) {
-            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
-            container.classList.remove('hidden');
+            extraClass = ' extra';
           }
           element.dataset.type = type;
           element.dataset.index = numTargets;
@@ -218,14 +218,16 @@ const UI = {
             (parts.decorations[type + 'Before'] || '') +
             targetValue +
             (parts.decorations[type + 'After'] || '');
+          element.className += extraClass;
           container.appendChild(element);
           numTargets++;
         }
       }
     }
+    // Include hidden expander in case user changes UI.targets
+    container.appendChild(template.extraAppliesTo.cloneNode(true));
     if (numTargets <= UI.targets) {
-      // Include hidden expander in case user changes UI.targets
-      container.appendChild(template.extraAppliesTo.cloneNode(true));
+      $('.applies-to-extra-expander', container).classList.add('hidden');
     }
     if (numTargets) {
       entryTargets.parentElement.replaceChild(targets, entryTargets);

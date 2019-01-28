@@ -29,7 +29,7 @@
   -->
 
   <template data-id="style">
-    <div class="entry">
+    <div class="entry hide-extra">
       <div class="entry-col entry-filter">
         <label class="checkmate" tabindex="0">
           <input class="entry-filter-toggle" type="checkbox">
@@ -163,9 +163,7 @@
   </template>
 
   <template data-id="extraAppliesTo">
-    <details class="applies-to-extra hidden">
-      <summary class="applies-to-extra-expander">&nbsp;</summary>
-    </details>
+    <a href="#" class="applies-to-extra-expander" tabindex="0">...</a>
   </template>
 
   <script src="js/polyfill.js"></script>
