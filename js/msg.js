@@ -114,11 +114,13 @@ const msg = (() => {
             continue;
           }
           const message = {data: dataObj, target};
-          requests.push(
-            tabSend(tab.id, message, options)
-              .then(unwrapData)
-              .catch(ignoreError)
-          );
+          if (tab && tab.id) {
+            requests.push(
+              tabSend(tab.id, message, options)
+                .then(unwrapData)
+                .catch(ignoreError)
+            );
+          }
         }
         return Promise.all(requests);
       });
