@@ -462,13 +462,10 @@ const APPLY = (() => {
         transition: none !important;
       }
     `)
-      .then(() => {
-        // repaint
-        // eslint-disable-next-line no-unused-expressions
-        document.documentElement.offsetWidth;
-        removeStyle({id: 0});
-        document.documentElement.classList.remove(className);
-      });
+    setTimeout(() => {
+      removeStyle({id: 0});
+      document.documentElement.classList.remove(className);
+    });
   }
 
   function getStyleId(el) {
