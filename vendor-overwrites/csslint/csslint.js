@@ -263,7 +263,8 @@ var CSSLint = (() => {
     if (!m) return;
 
     const nextLine = () => {
-      eol = (text.indexOf('\n', eol + 1) + 1 || text.length + 1) - 1;
+      eol = text.indexOf('\n', eol + 1);
+      if (eol < 0) eol = text.length;
       lineno++;
     };
 
