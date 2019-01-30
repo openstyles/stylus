@@ -462,10 +462,12 @@ const APPLY = (() => {
         transition: none !important;
       }
     `)
-    setTimeout(() => {
-      removeStyle({id: 0});
-      document.documentElement.classList.remove(className);
-    });
+      .then(() => {
+        setTimeout(() => {
+          removeStyle({id: 0});
+          document.documentElement.classList.remove(className);
+        });
+      });
   }
 
   function getStyleId(el) {
