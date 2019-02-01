@@ -358,6 +358,9 @@
     let spansZombies = markedSpans && markedSpans.length;
     const spanGeneration = state.now;
 
+    // all comments may get blanked out in the loop
+    const endsWithComment = text.endsWith('*/');
+
     for (let i = styleIndex; i + 1 < styles.length; i += 2) {
       style = styles[i + 1];
       const styleSupported = style && (style.includes('atom') || style.includes('keyword'));
@@ -390,7 +393,7 @@
 
     removeDeadSpans();
 
-    state.inComment = style && style.includes('comment') && !text.endsWith('*/');
+    state.inComment = style && style.includes('comment') && !endsWithComment;
     state.line++;
     return;
 
