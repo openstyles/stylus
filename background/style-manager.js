@@ -177,6 +177,7 @@ const styleManager = (() => {
     } else {
       data = Object.assign(createNewStyle(), data);
     }
+    data.updateDate = Date.now();
     return saveStyle(data)
       .then(newData => handleSave(newData, 'editSave'));
   }
