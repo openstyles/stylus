@@ -307,9 +307,9 @@
 
     // set updateUrl
     const checker = $('.set-update-url input[type=checkbox]');
-    // prefer the installation URL unless drag'n'dropped on the manage page
+    // only use the installation URL if not specified in usercss
     const installationUrl = (params.get('updateUrl') || '').replace(/^blob.+/, '');
-    const updateUrl = new URL(installationUrl || style.updateUrl || DUMMY_URL);
+    const updateUrl = new URL(style.updateUrl || installationUrl || DUMMY_URL);
     if (dup && dup.updateUrl === updateUrl.href) {
       checker.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
