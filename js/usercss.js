@@ -7,7 +7,7 @@ const usercss = (() => {
     author: undefined,
     description: undefined,
     homepageURL: 'url',
-    // updateURL: 'updateUrl',
+    updateURL: 'updateUrl',
     name: undefined,
   };
   const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
