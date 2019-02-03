@@ -1,5 +1,5 @@
 /* eslint no-var: 0 */
-/* global msg API prefs */
+/* global msg API prefs createStyleInjector */
 /* exported APPLY */
 'use strict';
 
@@ -8,20 +8,32 @@
 const APPLY = (() => {
   const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
-  var ID_PREFIX = 'stylus-';
-  var ROOT;
-  var isOwnPage = location.protocol.endsWith('-extension:');
-  var disableAll = false;
-  var styleElements = new Map();
-  var disabledElements = new Map();
-  var docRewriteObserver;
-  var docRootObserver;
+  const IS_OWN_PAGE = location.protocol.endsWith('-extension:');
   const setStyleContent = createSetStyleContent();
+  const styleInjector = createStyleInjector({
+    compare: (a, b) => a.id - b.id,
+    setStyleContent,
+    onUpdate: onInjectorUpdate
+  });
+  const docRootObserver = createDocRootObserver({
+    onChange: () => {
+      if (styleInjector.outOfOrder()) {
+        styleInjector.sort();
+      }
+    }
+  });
+  const docRewriteObserver = createDocRewriteObserver({
+    onChange: () => {
+      docRootObserver.stop();
+      styleInjector.sort();
+      docRootObserver.start();
+    }
+  });
   const initializing = init();
 
   msg.onTab(applyOnMessage);
 
-  if (!isOwnPage) {
+  if (!IS_OWN_PAGE) {
     window.dispatchEvent(new CustomEvent(chrome.runtime.id, {
       detail: pageObject({method: 'orphan'})
     }));
@@ -35,21 +47,33 @@ const APPLY = (() => {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
   }
 
+  function onInjectorUpdate() {
+    if (!IS_OWN_PAGE && styleInjector.list.length) {
+      docRewriteObserver.start();
+      docRootObserver.start();
+    } else {
+      docRewriteObserver.stop();
+      docRootObserver.stop();
+    }
+    updateCount();
+    updateExposeIframes();
+  }
+
   function init() {
     if (STYLE_VIA_API) {
       return API.styleViaAPI({method: 'styleApply'});
     }
     return API.getSectionsByUrl(getMatchUrl())
-      .then(result => {
-        ROOT = document.documentElement;
-        applyStyles(result, () => {
-          // CSS transition bug workaround: since we insert styles asynchronously,
-          // the browsers, especially Firefox, may apply all transitions on page load
-          if ([...styleElements.values()].some(n => n.textContent.includes('transition'))) {
-            applyTransitionPatch();
-          }
-        });
-      });
+      .then(result =>
+        applyStyles(result)
+          .then(() => {
+            // CSS transition bug workaround: since we insert styles asynchronously,
+            // the browsers, especially Firefox, may apply all transitions on page load
+            if (Object.values(result).some(s => s.code.includes('transition'))) {
+              applyTransitionPatch();
+            }
+          })
+      );
   }
 
   function pageObject(target) {
@@ -84,7 +108,7 @@ const APPLY = (() => {
 
     function checkPageScript() {
       if (!ready) {
-        ready = CHROME || isOwnPage || Event.prototype.getPreventDefault ?
+        ready = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
           Promise.resolve(false) : injectPageScript();
       }
       return ready;
@@ -190,23 +214,23 @@ const APPLY = (() => {
 
     switch (request.method) {
       case 'styleDeleted':
-        removeStyle(request.style);
+        styleInjector.remove(request.style.id);
         break;
 
       case 'styleUpdated':
-        if (request.codeIsUpdated === false) {
-          applyStyleState(request.style);
-        } else if (request.style.enabled) {
+        // FIXME: should we use `styleInjector.toggle` when
+        // `request.codeIsUpdated === false`?
+        if (request.style.enabled) {
           API.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(sections => {
               if (!sections[request.style.id]) {
-                removeStyle(request.style);
+                styleInjector.remove(request.style.id);
               } else {
                 applyStyles(sections);
               }
             });
         } else {
-          removeStyle(request.style);
+          styleInjector.remove(request.style.id);
         }
         break;
 
@@ -238,20 +262,11 @@ const APPLY = (() => {
     }
   }
 
-  function doDisableAll(disable = disableAll) {
-    if (!disable === !disableAll) {
-      return;
-    }
-    disableAll = disable;
+  function doDisableAll(disableAll) {
     if (STYLE_VIA_API) {
       API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
     } else {
-      Array.prototype.forEach.call(document.styleSheets, stylesheet => {
-        if (stylesheet.ownerNode.matches(`style.stylus[id^="${ID_PREFIX}"]`)
-        && stylesheet.disabled !== disable) {
-          stylesheet.disabled = disable;
-        }
-      });
+      styleInjector.toggle(!disableAll);
     }
   }
 
@@ -266,7 +281,7 @@ const APPLY = (() => {
   }
 
   function updateExposeIframes() {
-    if (!prefs.get('exposeIframes') || window === parent || !styleElements.size) {
+    if (!prefs.get('exposeIframes') || window === parent || !styleInjector.list.length) {
       document.documentElement.removeAttribute('stylus-iframe');
     } else {
       fetchParentDomain().then(() => {
@@ -288,167 +303,46 @@ const APPLY = (() => {
       API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
       return;
     }
-    let count = 0;
-    for (const id of styleElements.keys()) {
-      if (!disabledElements.has(id)) {
-        count++;
-      }
-    }
     // we have to send the tabId so we can't use `sendBg` that is used by `API`
     msg.send({
       method: 'invokeAPI',
       name: 'updateIconBadge',
-      args: [count]
+      args: [styleInjector.list.length]
     }).catch(msg.ignoreError);
   }
 
-  function applyStyleState({id, enabled}) {
-    const inCache = disabledElements.get(id) || styleElements.get(id);
-    const inDoc = document.getElementById(ID_PREFIX + id);
-    if (enabled) {
-      if (inDoc) {
-        return;
-      } else if (inCache) {
-        addStyleElement(inCache);
-        disabledElements.delete(id);
-      } else {
-        return API.getSectionsByUrl(getMatchUrl(), id)
-          .then(applyStyles);
-      }
-    } else {
-      if (inDoc) {
-        disabledElements.set(id, inDoc);
-        docRootObserver.evade(() => inDoc.remove());
-      }
+  function rootReady() {
+    if (document.documentElement) {
+      return Promise.resolve();
     }
-    updateCount();
-  }
-
-  function removeStyle({id}) {
-    const el = document.getElementById(ID_PREFIX + id);
-    if (el) {
-      docRootObserver.evade(() => el.remove());
-    }
-    disabledElements.delete(id);
-    if (styleElements.delete(id)) {
-      updateCount();
-    }
-  }
-
-  function applyStyles(sections, done) {
-    if (!Object.keys(sections).length) {
-      if (done) {
-        done();
-      }
-      return;
-    }
-
-    if (!document.documentElement) {
+    return new Promise(resolve => {
       new MutationObserver((mutations, observer) => {
         if (document.documentElement) {
           observer.disconnect();
-          applyStyles(sections, done);
+          resolve();
         }
       }).observe(document, {childList: true});
-      return;
-    }
-
-    if (docRootObserver) {
-      docRootObserver.stop();
-    } else {
-      initDocRootObserver();
-    }
-    const pending = [];
-    for (const section of Object.values(sections)) {
-      pending.push(applySections(section.id, section.code.join('')));
-    }
-    docRootObserver.firstStart();
-
-    if (!isOwnPage && !docRewriteObserver && styleElements.size) {
-      initDocRewriteObserver();
-    }
-
-    updateExposeIframes();
-    updateCount();
-    if (done) {
-      Promise.all(pending).then(done);
-    }
+    });
   }
 
-  function applySections(id, code) {
-    let el = styleElements.get(id) || document.getElementById(ID_PREFIX + id);
-    if (el && CHROME < 3321) {
-      // workaround for Chrome devtools bug fixed in v65
-      el.remove();
-      el = null;
+  function applyStyles(sections) {
+    if (!Object.keys(sections).length) {
+      return Promise.resolve();
     }
-    if (!el) {
-      if (document.documentElement instanceof SVGSVGElement) {
-        // SVG document style
-        el = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-      } else if (document instanceof XMLDocument) {
-        // XML document style
-        el = document.createElementNS('http://www.w3.org/1999/xhtml', 'style');
-      } else {
-        // HTML document style; also works on HTML-embedded SVG
-        el = document.createElement('style');
-      }
-      el.id = ID_PREFIX + id;
-      el.type = 'text/css';
-      // SVG className is not a string, but an instance of SVGAnimatedString
-      el.classList.add('stylus');
-      addStyleElement(el);
-    }
-    let settingStyle;
-    if (el.textContent !== code) {
-      settingStyle = setStyleContent(el, code);
-    }
-    styleElements.set(id, el);
-    disabledElements.delete(id);
-    return Promise.resolve(settingStyle);
-  }
-
-  function addStyleElement(newElement) {
-    if (!ROOT) {
-      return;
-    }
-    let next;
-    const newStyleId = getStyleId(newElement);
-    for (const el of styleElements.values()) {
-      if (el.parentNode && !el.id.endsWith('-ghost') && getStyleId(el) > newStyleId) {
-        next = el.parentNode === ROOT ? el : null;
-        break;
-      }
-    }
-    if (next === newElement.nextElementSibling) {
-      return;
-    }
-    const insert = () => {
-      ROOT.insertBefore(newElement, next || null);
-      if (disableAll) {
-        newElement.disabled = true;
-      }
-    };
-    if (docRootObserver) {
-      docRootObserver.evade(insert);
-    } else {
-      insert();
-    }
+    return rootReady().then(() =>
+      docRootObserver.evade(() =>
+        styleInjector.addMany(
+          Object.values.map(s => ({id: s.id, code: s.code.join('')}))
+        )
+      )
+    );
   }
 
   function replaceAll(newStyles) {
-    const oldStyles = Array.prototype.slice.call(
-      document.querySelectorAll(`style.stylus[id^="${ID_PREFIX}"]`));
-    oldStyles.forEach(el => (el.id += '-ghost'));
-    styleElements.clear();
-    disabledElements.clear();
-    applyStyles(newStyles);
-    const removeOld = () => oldStyles.forEach(el => el.remove());
-    if (docRewriteObserver) {
-      docRootObserver.evade(removeOld);
-    } else {
-      removeOld();
-    }
+    styleInjector.replaceAll(
+      Object.values(newStyles)
+        .map(s => ({id: s.id, code: s.code.join('')}))
+    );
   }
 
   function applyTransitionPatch() {
@@ -457,21 +351,19 @@ const APPLY = (() => {
     const className = chrome.runtime.id + '-transition-bug-fix';
     const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
     document.documentElement.classList.add(className);
-    applySections(0, `
+    const el = styleInjector.createStyle('transition-patch');
+    document.documentElement.appendChild(el);
+    setStyleContent(`
       ${docId}.${CSS.escape(className)}:root * {
         transition: none !important;
       }
     `)
       .then(() => {
         setTimeout(() => {
-          removeStyle({id: 0});
+          el.remove();
           document.documentElement.classList.remove(className);
         });
       });
-  }
-
-  function getStyleId(el) {
-    return parseInt(el.id.substr(ID_PREFIX.length));
   }
 
   function orphanCheck(e) {
@@ -483,181 +375,86 @@ const APPLY = (() => {
     }
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
-    [docRewriteObserver, docRootObserver].forEach(ob => ob && ob.disconnect());
+    docRewriteObserver.stop();
+    docRootObserver.stop();
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
       msg.off(applyOnMessage);
     } catch (e) {}
   }
 
-  function initDocRewriteObserver() {
+  function createDocRewriteObserver({onChange}) {
     // detect documentElement being rewritten from inside the script
-    docRewriteObserver = new MutationObserver(mutations => {
-      for (let m = mutations.length; --m >= 0;) {
-        const added = mutations[m].addedNodes;
-        for (let n = added.length; --n >= 0;) {
-          if (added[n].localName === 'html') {
-            reinjectStyles();
-            return;
-          }
-        }
+    let root;
+    let observing = false;
+    let timer;
+    const observer = new MutationObserver(check);
+    return {start, stop};
+
+    function start() {
+      if (observing) return;
+      // detect dynamic iframes rewritten after creation by the embedder i.e. externally
+      root = document.documentElement;
+      timer = setTimeout(check);
+      observer.observe(document, {childList: true});
+      observing = true;
+    }
+
+    function stop() {
+      if (!observing) return;
+      clearTimeout(timer);
+      observer.disconnect();
+      observing = false;
+    }
+
+    function check() {
+      if (root !== document.documentElement) {
+        root = document.documentElement;
+        onChange();
       }
-    });
-    docRewriteObserver.observe(document, {childList: true});
-    // detect dynamic iframes rewritten after creation by the embedder i.e. externally
-    setTimeout(() => {
-      if (document.documentElement !== ROOT) {
-        reinjectStyles();
-      }
-    });
-    // re-add styles if we detect documentElement being recreated
-    function reinjectStyles() {
-      if (!styleElements) {
-        orphanCheck();
-        return;
-      }
-      ROOT = document.documentElement;
-      docRootObserver.stop();
-      const imported = [];
-      for (const [id, el] of styleElements.entries()) {
-        const copy = document.importNode(el, true);
-        el.textContent += ' '; // invalidate CSSOM cache
-        imported.push([id, copy]);
-        addStyleElement(copy);
-      }
-      docRootObserver.start();
-      styleElements = new Map(imported);
     }
   }
 
-  function initDocRootObserver() {
-    let lastRestorationTime = 0;
-    let restorationCounter = 0;
+  function createDocRootObserver({onChange}) {
+    let lastCalledTime = performance.now();
+    let continuousCalledCount = 0;
     let observing = false;
-    let sorting = false;
-    let observer;
-    // allow any types of elements between ours, except for the following:
-    const ORDERED_TAGS = ['head', 'body', 'frameset', 'style', 'link'];
-
-    init();
-    return;
-
-    function init() {
-      observer = new MutationObserver(sortStyleElements);
-      docRootObserver = {firstStart, start, stop, evade, disconnect: stop};
-      setTimeout(sortStyleElements);
-    }
-    function firstStart() {
-      if (sortStyleMap()) {
-        sortStyleElements();
+    const observer = new MutationObserver(() => {
+      const now = performance.now();
+      if (now - lastCalledTime < 1000) {
+        if (continuousCalledCount >= 5) {
+          throw new Error('The page keep generating mutations, skip the event.');
+        }
+        continuousCalledCount++;
+      } else {
+        continuousCalledCount = 0;
       }
-      start();
-    }
+      lastCalledTime = now;
+      onChange();
+    });
+    return {start, stop, evade};
+
     function start() {
-      if (!observing && ROOT && observer) {
-        observer.observe(ROOT, {childList: true});
-        observing = true;
-      }
+      if (observing) return;
+      observer.observe(document.documentElement, {childList: true});
+      observing = true;
     }
+
     function stop() {
-      if (observing) {
-        observer.takeRecords();
-        observer.disconnect();
-        observing = false;
-      }
-    }
-    function evade(fn) {
-      const wasObserving = observing;
-      if (observing) {
-        stop();
-      }
-      fn();
-      if (wasObserving) {
-        start();
-      }
-    }
-    function sortStyleMap() {
-      const list = [];
-      let prevStyleId = 0;
-      let needsSorting = false;
-      for (const entry of styleElements.entries()) {
-        list.push(entry);
-        const el = entry[1];
-        const styleId = getStyleId(el);
-        el.styleId = styleId;
-        needsSorting |= styleId < prevStyleId;
-        prevStyleId = styleId;
-      }
-      if (needsSorting) {
-        styleElements = new Map(list.sort((a, b) => a[1].styleId - b[1].styleId));
-        return true;
-      }
-    }
-    function sortStyleElements() {
       if (!observing) return;
-      let prevExpected = document.documentElement.lastElementChild;
-      while (prevExpected && isSkippable(prevExpected, true)) {
-        prevExpected = prevExpected.previousElementSibling;
-      }
-      if (!prevExpected) return;
-      for (const el of styleElements.values()) {
-        if (!isMovable(el)) {
-          continue;
-        }
-        while (true) {
-          const next = prevExpected.nextElementSibling;
-          if (next && isSkippable(next)) {
-            prevExpected = next;
-          } else if (
-              next === el ||
-              next === el.previousElementSibling && next ||
-              moveAfter(el, next || prevExpected)) {
-            prevExpected = el;
-            break;
-          } else {
-            return;
-          }
-        }
-      }
-      if (sorting) {
-        sorting = false;
-        if (observer) observer.takeRecords();
-        if (!restorationLimitExceeded()) {
-          start();
-        } else {
-          setTimeout(start, 1000);
-        }
-      }
+      observer.takeRecords();
+      observer.disconnect();
+      observing = false;
     }
-    function isMovable(el) {
-      return el.parentNode || !disabledElements.has(getStyleId(el));
-    }
-    function isSkippable(el, skipOwnStyles) {
-      return !ORDERED_TAGS.includes(el.localName) ||
-        el.id.startsWith(ID_PREFIX) &&
-        (skipOwnStyles || el.id.endsWith('-ghost')) &&
-        el.localName === 'style' &&
-        el.className === 'stylus';
-    }
-    function moveAfter(el, expected) {
-      if (!sorting) {
-        sorting = true;
-        stop();
+
+    function evade(fn) {
+      if (!observing) {
+        return fn();
       }
-      expected.insertAdjacentElement('afterend', el);
-      if (el.disabled !== disableAll) {
-        // moving an element resets its 'disabled' state
-        el.disabled = disableAll;
-      }
-      return true;
-    }
-    function restorationLimitExceeded() {
-      const t = performance.now();
-      if (t - lastRestorationTime > 1000) {
-        restorationCounter = 0;
-      }
-      lastRestorationTime = t;
-      return ++restorationCounter > 5;
+      stop();
+      const r = fn();
+      start();
+      return r;
     }
   }
 })();
