@@ -69,10 +69,10 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     style.el = createStyle(style.id);
     const pending = setStyleContent(style.el, style.code);
     table.set(style.id, style);
-    const nextIndex = list.findIndex(i => compare(style, i) > 0);
+    const nextIndex = list.findIndex(i => compare(i, style) > 0);
     if (nextIndex < 0) {
       document.documentElement.appendChild(style.el);
-      list.push(nextIndex);
+      list.push(style);
     } else {
       document.documentElement.insertBefore(style.el, list[nextIndex].el);
       list.splice(nextIndex, 0, style);

@@ -332,7 +332,7 @@ const APPLY = (() => {
     return rootReady().then(() =>
       docRootObserver.evade(() =>
         styleInjector.addMany(
-          Object.values.map(s => ({id: s.id, code: s.code.join('')}))
+          Object.values(sections).map(s => ({id: s.id, code: s.code.join('')}))
         )
       )
     );
@@ -375,8 +375,7 @@ const APPLY = (() => {
     }
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
-    docRewriteObserver.stop();
-    docRootObserver.stop();
+    styleInjector.clear();
     window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
       msg.off(applyOnMessage);
