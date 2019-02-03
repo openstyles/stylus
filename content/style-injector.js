@@ -77,6 +77,8 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       document.documentElement.insertBefore(style.el, list[nextIndex].el);
       list.splice(nextIndex, 0, style);
     }
+    // disabled flag is read-only when not attached to a document
+    style.el.disabled = !enabled;
     return pending;
   }
 
@@ -104,6 +106,8 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       oldEl = style.el;
       oldEl.id = '';
       style.el = createStyle(id);
+      oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
+      style.el.disabled = !enabled;
     }
     return setStyleContent(style.el, code)
       .then(() => oldEl && oldEl.remove());
@@ -125,7 +129,6 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     el.type = 'text/css';
     // SVG className is not a string, but an instance of SVGAnimatedString
     el.classList.add('stylus');
-    el.disabled = !enabled;
     return el;
   }
 
