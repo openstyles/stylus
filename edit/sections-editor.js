@@ -197,6 +197,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     dirty.modify('enabled', style.enabled, newValue);
     style.enabled = newValue;
     enabledEl.checked = newValue;
+    updateLivePreview();
   }
 
   function nextEditor(cm, cycle = true) {
@@ -565,6 +566,7 @@ function createSectionsEditor({style, onTitleChanged}) {
         $('#heading').textContent = t('editStyleHeading');
       }
       livePreview.show(Boolean(style.id));
+      updateLivePreview();
     });
 
     function reinit() {
