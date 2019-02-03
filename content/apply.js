@@ -24,9 +24,7 @@ const APPLY = (() => {
   });
   const docRewriteObserver = createDocRewriteObserver({
     onChange: () => {
-      docRootObserver.stop();
-      styleInjector.sort();
-      docRootObserver.start();
+      docRootObserver.evade(styleInjector.sort);
     }
   });
   const initializing = init();
