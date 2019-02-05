@@ -67,7 +67,7 @@ const APPLY = (() => {
           .then(() => {
             // CSS transition bug workaround: since we insert styles asynchronously,
             // the browsers, especially Firefox, may apply all transitions on page load
-            if (Object.values(result).some(s => s.code.includes('transition'))) {
+            if (styleInjector.list.some(s => s.code.includes('transition'))) {
               applyTransitionPatch();
             }
           })
@@ -351,7 +351,7 @@ const APPLY = (() => {
     document.documentElement.classList.add(className);
     const el = styleInjector.createStyle('transition-patch');
     document.documentElement.appendChild(el);
-    setStyleContent(`
+    setStyleContent(el, `
       ${docId}.${CSS.escape(className)}:root * {
         transition: none !important;
       }
