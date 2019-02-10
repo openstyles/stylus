@@ -286,6 +286,50 @@ html[style*="border"] .entry:nth-child(11):before {
   color: darkred;
 }
 
+/* entry menu */
+.entry .menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 100%;
+  width: 100%;
+  z-index: 1;
+  box-sizing: border-box;
+  background-color: white;
+}
+.entry .menu-item {
+  display: flex;
+  border: none;
+  align-items: center;
+  padding: 0 0 0 20px;
+  cursor: pointer;
+  height: 25px;
+  background: unset;
+}
+.entry .menu-item:hover,
+.entry .menu-item:active {
+  background-color: hsl(0, 0%, 95%);
+  transition: background-color .25s;
+}
+.entry:not(.menu-active) .menu {
+  display: none;
+}
+.entry .menu-icon {
+  width: 26px;
+}
+.entry .menu-icon > * {
+  display: block;
+  margin: 0 auto;
+}
+
+/* checkbox */
+.checkbox-container {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
 .regexp-problem-indicator {
   background-color: #d00;
   width: 14px;

@@ -309,6 +309,8 @@ function createStyleElement(style) {
     indicator.appendChild(document.createTextNode('!'));
     indicator.onclick = handleEvent.indicator;
     $('.main-controls', entry).appendChild(indicator);
+
+    $('.menu-button', entry).onclick = handleEvent.toggleMenu;
   }
 
   style = Object.assign(entry.styleMeta, style);
@@ -354,6 +356,20 @@ Object.assign(handleEvent, {
     API
       .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
       .then(sortStylesInPlace);
+  },
+
+  toggleMenu(event) {
+    const entry = handleEvent.getClickedStyleElement(event);
+    entry.classList.toggle('menu-active');
+    if (entry.classList.contains('menu-active')) {
+      document.addEventListener('click', function handler(e) {
+        if ($('.menu', entry).contains(e.target)) {
+          return;
+        }
+        entry.classList.toggle('menu-active');
+        document.removeEventListener('click', handler);
+      });
+    }
   },
 
   delete(event) {
