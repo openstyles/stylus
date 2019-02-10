@@ -38,15 +38,16 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     if (el.parentNode !== document.documentElement) {
       return true;
     }
-    let i = 1;
-    while (el && i < list.length) {
-      if (el.nextSibling === list[i].el) {
+    let i = 0;
+    while (el) {
+      if (i < list.length && el === list[i].el) {
         i++;
       } else if (ORDERED_TAGS.has(el.localName)) {
-        break;
+        return true;
       }
       el = el.nextSibling;
     }
+    // some styles are not injected to the document
     return i < list.length;
   }
 
