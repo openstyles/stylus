@@ -57,10 +57,13 @@ const styleManager = (() => {
     importStyle,
     importMany,
     toggleStyle,
-    setStyleExclusions,
     getAllStyles, // used by import-export
     getStylesByUrl, // used by popup
     styleExists,
+    addExclusion,
+    removeExclusion,
+    addInclusion,
+    removeInclusion
   });
 
   function handleLivePreviewConnections() {
@@ -90,6 +93,11 @@ const styleManager = (() => {
         }
       });
     });
+  }
+
+  function escapeRegExp(text) {
+    // https://github.com/lodash/lodash/blob/0843bd46ef805dd03c0c8d804630804f3ba0ca3c/lodash.js#L152
+    return text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
   }
 
   function get(id, noCode = false) {
@@ -182,10 +190,47 @@ const styleManager = (() => {
       .then(newData => handleSave(newData, 'editSave'));
   }
 
-  function setStyleExclusions(id, exclusions) {
-    const data = Object.assign({}, styles.get(id).data, {exclusions});
+  function addIncludeExclude(id, rule, type) {
+    const data = Object.assign({}, styles.get(id).data);
+    if (!data[type]) {
+      data[type] = [];
+    }
+    if (data[type].includes(rule)) {
+      throw new Error('The rule already exists');
+    }
+    data[type].push(rule);
     return saveStyle(data)
-      .then(newData => handleSave(newData, 'exclusions'));
+      .then(newData => handleSave(newData, 'styleSettings'));
+  }
+
+  function removeIncludeExclude(id, rule, type) {
+    const data = Object.assign({}, styles.get(id).data);
+    if (!data[type]) {
+      return;
+    }
+    const index = data[type].indexOf(rule);
+    if (index < 0) {
+      return;
+    }
+    data[type].splice(index, 1);
+    return saveStyle(data)
+      .then(newData => handleSave(newData, 'styleSettings'));
+  }
+
+  function addExclusion(id, rule) {
+    return addIncludeExclude(id, rule, 'exclusions');
+  }
+
+  function removeExclusion(id, rule) {
+    return removeIncludeExclude(id, rule, 'exclusions');
+  }
+
+  function addInclusion(id, rule) {
+    return addIncludeExclude(id, rule, 'inclusions');
+  }
+
+  function removeInclusion(id, rule) {
+    return removeIncludeExclude(id, rule, 'inclusions');
   }
 
   function deleteStyle(id) {
@@ -479,14 +524,7 @@ const styleManager = (() => {
   }
 
   function buildGlob(text) {
-    const prefix = text[0] === '^' ? '' : '\\b';
-    const suffix = text[text.length - 1] === '$' ? '' : '\\b';
-    return `${prefix}${escape(text)}${suffix}`;
-
-    function escape(text) {
-      // FIXME: using .* everywhere is slow
-      return text.replace(/[.*]/g, m => m === '.' ? '\\.' : '.*');
-    }
+    return '^' + escapeRegExp(text).replace(/\\?\*/g, m => m.length > 1 ? m : '.*') + '$';
   }
 
   function getDomain(url) {

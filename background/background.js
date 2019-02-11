@@ -22,6 +22,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   styleExists: styleManager.styleExists,
   toggleStyle: styleManager.toggleStyle,
 
+  addInclusion: styleManager.addInclusion,
+  removeInclusion: styleManager.removeInclusion,
+  addExclusion: styleManager.addExclusion,
+  removeExclusion: styleManager.removeExclusion,
+
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
