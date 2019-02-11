@@ -198,7 +198,7 @@ const styleManager = (() => {
     if (data[type].includes(rule)) {
       throw new Error('The rule already exists');
     }
-    data[type].push(rule);
+    data[type] = data[type].concat([rule]);
     return saveStyle(data)
       .then(newData => handleSave(newData, 'styleSettings'));
   }
@@ -208,11 +208,10 @@ const styleManager = (() => {
     if (!data[type]) {
       return;
     }
-    const index = data[type].indexOf(rule);
-    if (index < 0) {
+    if (!data[type].includes(rule)) {
       return;
     }
-    data[type].splice(index, 1);
+    data[type] = data[type].filter(r => r !== rule);
     return saveStyle(data)
       .then(newData => handleSave(newData, 'styleSettings'));
   }
