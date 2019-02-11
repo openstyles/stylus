@@ -311,6 +311,9 @@ function createStyleElement(style) {
     $('.main-controls', entry).appendChild(indicator);
 
     $('.menu-button', entry).onclick = handleEvent.toggleMenu;
+
+    $('.exclude-by-domain-checkbox').onchange = e => handleEvent.toggleExclude(e, 'domain');
+    $('.exclude-by-url-checkbox').onchange = e => handleEvent.toggleExclude(e, 'url');
   }
 
   style = Object.assign(entry.styleMeta, style);
@@ -331,9 +334,26 @@ function createStyleElement(style) {
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
+  $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
+  $('.exclude-by-url-checkbox', entry).checked = styleExcluded(style, 'url');
+
   return entry;
 }
 
+function styleExcluded({exclusions}, type) {
+  if (!exclusions) {
+    return false;
+  }
+  const rule = getExcludeRule(type);
+  return exclusions.includes(rule);
+}
+
+function getExcludeRule(type) {
+  if (type === 'domain') {
+    return new URL(tabURL).origin + '/*';
+  }
+  return tabURL + '*';
+}
 
 Object.assign(handleEvent, {
 
@@ -356,6 +376,15 @@ Object.assign(handleEvent, {
     API
       .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
       .then(sortStylesInPlace);
+  },
+
+  toggleExclude(event, type) {
+    const entry = handleEvent.getClickedStyleElement(event);
+    if ($(`.exclude-by-${type}-checkbox`, entry).checked) {
+      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
+    } else {
+      API.addExclusion(entry.styleMeta.id, getExcludeRule(type));
+    }
   },
 
   toggleMenu(event) {
