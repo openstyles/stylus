@@ -361,15 +361,6 @@ Object.assign(handleEvent, {
   toggleMenu(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     entry.classList.toggle('menu-active');
-    if (entry.classList.contains('menu-active')) {
-      document.addEventListener('click', function handler(e) {
-        if ($('.menu', entry).contains(e.target)) {
-          return;
-        }
-        entry.classList.toggle('menu-active');
-        document.removeEventListener('click', handler);
-      });
-    }
   },
 
   delete(event) {

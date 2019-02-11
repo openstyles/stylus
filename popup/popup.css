@@ -173,16 +173,17 @@ body.blocked > DIV {
 }
 
 /* entry */
-
 .entry {
+  position: relative;
+}
+.entry-content {
   display: flex;
   align-items: center;
   height: 26px;
   padding: 0 14px 0 0;
-  position: relative;
 }
 
-html[style] .entry {
+html[style] .entry-content {
   padding: 0 16px 0 0;
 }
 
@@ -288,14 +289,19 @@ html[style*="border"] .entry:nth-child(11):before {
 
 /* entry menu */
 .entry .menu {
-  position: absolute;
   display: flex;
   flex-direction: column;
   top: 100%;
   width: 100%;
   z-index: 1;
   box-sizing: border-box;
-  background-color: white;
+  height: 0;
+  transition: height .25s ease-out;
+  overflow: hidden;
+}
+.entry.menu-active .menu {
+  /* FIXME: avoid hard coded height */
+  height: 75px;
 }
 .entry .menu-item {
   display: flex;
@@ -304,15 +310,12 @@ html[style*="border"] .entry:nth-child(11):before {
   padding: 0 0 0 20px;
   cursor: pointer;
   height: 25px;
-  background: unset;
+  background: none;
 }
 .entry .menu-item:hover,
 .entry .menu-item:active {
-  background-color: hsl(0, 0%, 95%);
+  background-color: rgba(0, 0, 0, 0.1);
   transition: background-color .25s;
-}
-.entry:not(.menu-active) .menu {
-  display: none;
 }
 .entry .menu-icon {
   width: 26px;
