@@ -312,8 +312,8 @@ function createStyleElement(style) {
 
     $('.menu-button', entry).onclick = handleEvent.toggleMenu;
 
-    $('.exclude-by-domain-checkbox').onchange = e => handleEvent.toggleExclude(e, 'domain');
-    $('.exclude-by-url-checkbox').onchange = e => handleEvent.toggleExclude(e, 'url');
+    $('.exclude-by-domain-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'domain');
+    $('.exclude-by-url-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'url');
   }
 
   style = Object.assign(entry.styleMeta, style);
@@ -380,10 +380,10 @@ Object.assign(handleEvent, {
 
   toggleExclude(event, type) {
     const entry = handleEvent.getClickedStyleElement(event);
-    if ($(`.exclude-by-${type}-checkbox`, entry).checked) {
-      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
-    } else {
+    if (event.target.checked) {
       API.addExclusion(entry.styleMeta.id, getExcludeRule(type));
+    } else {
+      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
     }
   },
 

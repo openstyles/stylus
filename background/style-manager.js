@@ -524,7 +524,7 @@ const styleManager = (() => {
   }
 
   function buildGlob(text) {
-    return '^' + escapeRegExp(text).replace(/\\?\*/g, m => m.length > 1 ? m : '.*') + '$';
+    return '^' + escapeRegExp(text).replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*') + '$';
   }
 
   function getDomain(url) {
