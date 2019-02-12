@@ -390,12 +390,17 @@ Object.assign(handleEvent, {
   toggleMenu(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     entry.classList.toggle('menu-active');
+    setTimeout(() => {
+      entry.classList.toggle('accessible-items');
+    }, 250);
+    event.preventDefault();
   },
 
   delete(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     const id = entry.styleId;
     const box = $('#confirm');
+    const cancel = $('[data-cmd="cancel"]');
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = $('.style-name', entry).textContent;
@@ -404,7 +409,7 @@ Object.assign(handleEvent, {
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
       const keyCode = event.keyCode || event.which;
-      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+      if (document.activeElement !== cancel && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
       && (keyCode === 13 || keyCode === 27)) {
         event.preventDefault();
         confirm(keyCode === 13);
