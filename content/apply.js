@@ -349,6 +349,8 @@ const APPLY = (() => {
     const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
     document.documentElement.classList.add(className);
     const el = styleInjector.createStyle('transition-patch');
+    // FIXME: this will trigger docRootObserver and cause a resort. We should
+    // move this function into style-injector.
     document.documentElement.appendChild(el);
     setStyleContent(el, `
       ${docId}.${CSS.escape(className)}:root * {
