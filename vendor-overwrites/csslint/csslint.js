@@ -231,7 +231,7 @@ var CSSLint = (() => {
 
   /* csslint ignore:start */
       // the chunk of code where errors won't be reported
-      // the chunk's start is hardwired to the next line after the opening comment
+      // the chunk's start is hardwired to the line of the opening comment
       // the chunk's end is hardwired to the line of the closing comment
   /* csslint ignore:end */
 
@@ -288,9 +288,7 @@ var CSSLint = (() => {
 
         case 'ignore':
           if (ovr.includes('start')) {
-            if (ignoreStart === null) {
-              ignoreStart = lineno + 1;
-            }
+            ignoreStart = ignoreStart || lineno;
             break;
           }
           if (ovr.includes('end')) {
