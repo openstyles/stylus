@@ -421,7 +421,7 @@ const APPLY = (() => {
       const now = performance.now();
       if (now - lastCalledTime < 1000) {
         if (continuousCalledCount >= 5) {
-          throw new Error('The page keep generating mutations, skip the event.');
+          throw new Error('The page keeps generating mutations. Skip the event.');
         }
         continuousCalledCount++;
       } else {
