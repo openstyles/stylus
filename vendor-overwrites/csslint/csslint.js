@@ -259,18 +259,15 @@ var CSSLint = (() => {
     let ignoreEnd = null;
     let lineno = 0;
     let eol = -1;
-    let m = RX_EMBEDDED.exec(text);
-    if (!m) return;
+    let m;
 
-    const nextLine = () => {
-      eol = text.indexOf('\n', eol + 1);
-      if (eol < 0) eol = text.length;
-      lineno++;
-    };
-
-    do {
+    while ((m = RX_EMBEDDED.exec(text))) {
       // account for the lines between the previous and current match
-      while (eol <= m.index) nextLine();
+      while (eol <= m.index) {
+        eol = text.indexOf('\n', eol + 1);
+        if (eol < 0) eol = text.length;
+        lineno++;
+      }
 
       const ovr = m[1].toLowerCase();
       const cmd = ovr.split(':', 1)[0];
@@ -314,10 +311,10 @@ var CSSLint = (() => {
             ruleset[property.trim()] = mapped === undefined ? 1 : mapped;
           });
       }
-    } while ((m = RX_EMBEDDED.exec(text)));
+    }
 
     // Close remaining ignore block, if any
-    if (ignoreStart !== null) {
+    if (ignoreStart) {
       ignore.push([ignoreStart, lineno]);
     }
   }
