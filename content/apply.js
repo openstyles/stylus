@@ -216,8 +216,6 @@ const APPLY = (() => {
         break;
 
       case 'styleUpdated':
-        // FIXME: should we use `styleInjector.toggle` when
-        // `request.codeIsUpdated === false`?
         if (request.style.enabled) {
           API.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(sections => {
