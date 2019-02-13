@@ -322,13 +322,14 @@ const APPLY = (() => {
   }
 
   function applyStyles(sections) {
-    if (!Object.keys(sections).length) {
+    const styles = Object.values(sections);
+    if (!styles.length) {
       return Promise.resolve();
     }
     return rootReady().then(() =>
       docRootObserver.evade(() =>
         styleInjector.addMany(
-          Object.values(sections).map(s => ({id: s.id, code: s.code.join('')}))
+          styles.map(s => ({id: s.id, code: s.code.join('')}))
         )
       )
     );
