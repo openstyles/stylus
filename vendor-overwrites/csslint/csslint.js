@@ -268,9 +268,10 @@ var CSSLint = (() => {
       lineno++;
     };
 
-    while (eol <= m.index) nextLine();
-
     do {
+      // account for the lines between the previous and current match
+      while (eol <= m.index) nextLine();
+
       const ovr = m[1].toLowerCase();
       const cmd = ovr.split(':', 1)[0];
       const i = cmd.length + 1;
@@ -289,15 +290,15 @@ var CSSLint = (() => {
         }
 
         case 'ignore':
-          if (ovr.lastIndexOf('start', i) > 0) {
+          if (ovr.includes('start')) {
             if (ignoreStart === null) {
-              ignoreStart = lineno;
+              ignoreStart = lineno + 1;
             }
             break;
           }
-          if (ovr.lastIndexOf('end', i) > 0) {
+          if (ovr.includes('end')) {
             ignoreEnd = lineno;
-            if (ignoreStart !== null && ignoreEnd !== null) {
+            if (ignoreStart && ignoreEnd) {
               ignore.push([ignoreStart, ignoreEnd]);
               ignoreStart = ignoreEnd = null;
             }
@@ -313,8 +314,6 @@ var CSSLint = (() => {
             ruleset[property.trim()] = mapped === undefined ? 1 : mapped;
           });
       }
-
-      nextLine();
     } while ((m = RX_EMBEDDED.exec(text)));
 
     // Close remaining ignore block, if any
