@@ -440,6 +440,7 @@ const APPLY = (() => {
 
     function stop() {
       if (!observing) return;
+      // FIXME: do we need this?
       observer.takeRecords();
       observer.disconnect();
       observing = false;
