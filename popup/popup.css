@@ -367,6 +367,10 @@ a.configure[target="_blank"] .svg-icon.config {
   display: block;
   margin: 0 auto;
 }
+.entry .menu-item.disabled {
+  opacity: 0.5;
+  background-color: transparent;
+}
 
 /* checkbox */
 .checkbox-container {
