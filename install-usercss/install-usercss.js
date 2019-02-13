@@ -335,7 +335,7 @@
 
     // live reload
     const setLiveReload = $('.live-reload input[type=checkbox]');
-    if (updateUrl.protocol !== 'file:') {
+    if (!installationUrl || !installationUrl.startsWith('file:')) {
       setLiveReload.parentNode.remove();
     } else {
       setLiveReload.addEventListener('change', () => {
