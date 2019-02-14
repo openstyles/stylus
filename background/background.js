@@ -42,9 +42,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     // Chrome 49 doesn't report own extension pages in webNavigation apparently
     // so we do a force update which doesn't use the cache.
     if (CHROME && CHROME < 2661 && this.sender.tab.url.startsWith(URLS.ownOrigin)) {
-      return updateIconBadgeForce(this.sender.tab.id, count);
+      updateIconBadgeForce(this.sender.tab.id, count);
+    } else {
+      updateIconBadge(this.sender.tab.id, count);
     }
-    return updateIconBadge(this.sender.tab.id, count);
+    return true;
   },
 
   // exposed for stuff that requires followup sendMessage() like popup::openSettings
