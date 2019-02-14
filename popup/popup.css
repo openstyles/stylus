@@ -296,10 +296,6 @@ a.configure[target="_blank"] .svg-icon.config {
   margin-top: 1px;
 }
 
-.svg-icon.config {
-  width: 16px;
-}
-
 .not-applied .checker,
 .not-applied .style-name,
 .not-applied .actions > * {
@@ -370,6 +366,7 @@ a.configure[target="_blank"] .svg-icon.config {
 .entry .menu-item.disabled {
   opacity: 0.5;
   background-color: transparent;
+  cursor: default;
 }
 
 /* checkbox */
