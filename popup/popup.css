@@ -337,7 +337,6 @@ a.configure[target="_blank"] .svg-icon.config {
   border: none;
   align-items: center;
   padding: 0 0 0 20px;
-  cursor: pointer;
   height: 24px;
   background: none;
   text-decoration: none;
@@ -345,10 +344,13 @@ a.configure[target="_blank"] .svg-icon.config {
 .entry.menu-active.accessible-items .menu-item {
   display: flex;
 }
+.entry .menu-item.delete {
+  cursor: pointer;
+}
 .entry .menu-item.delete:hover {
   color: #000;
 }
-.entry .menu-item.delete > span {
+.entry .menu-item > span {
   margin-top: 1px;
 }
 .entry .menu-item:hover,
@@ -366,7 +368,7 @@ a.configure[target="_blank"] .svg-icon.config {
 .entry .menu-item.disabled {
   opacity: 0.5;
   background-color: transparent;
-  cursor: default;
+  cursor: help;
 }
 
 /* checkbox */
