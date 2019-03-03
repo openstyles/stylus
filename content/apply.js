@@ -299,7 +299,7 @@ const APPLY = (() => {
       method: 'invokeAPI',
       name: 'updateIconBadge',
       args: [count]
-    }).catch(msg.ignoreError);
+    }).catch(console.error);
   }
 
   function applyStyleState({id, enabled}) {
