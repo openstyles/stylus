@@ -194,6 +194,7 @@ self.parserlib = (() => {
     'border-bottom-right-radius': '<x-one-radius>',
     'border-bottom-style':        '<border-style>',
     'border-bottom-width':        '<border-width>',
+    'border-boundary':            'none | parent | display',
     'border-inline-color':        '<color>{1,2}',
     'border-inline-end':          '<border-shorthand>',
     'border-inline-end-color':    '<color>',
@@ -467,6 +468,7 @@ self.parserlib = (() => {
     'marquee-speed':      1,
     'marquee-style':      1,
     'mask':               1,
+    'mask-image':         '[ none | <image> | <uri> ]#',
     'max-height':         'none | <width-height>',
     'max-width':          'none | <width-height>',
     'min-height':         'auto | <width-height>',
@@ -496,7 +498,9 @@ self.parserlib = (() => {
     'outline-offset':  '<length>',
     'outline-style':   '<border-style> | auto',
     'outline-width':   '<border-width>',
-    'overflow':        '<overflow>',
+    'overflow':        '<overflow>{1,2}',
+    'overflow-block':  '<overflow>',
+    'overflow-inline': '<overflow>',
     'overflow-style':  1,
     'overflow-wrap':   'normal | break-word',
     'overflow-x':      '<overflow>',
@@ -549,7 +553,7 @@ self.parserlib = (() => {
     'rest-before':      1,
     'richness':         1,
     'right':            '<width>',
-    'rotate':           'none | <number>{3}? <angle>',
+    'rotate':           'none | [ x | y | z | <number>{3} ]? && <angle>',
     'rotation':         1,
     'rotation-point':   1,
     'row-gap':          '<row-gap>',
@@ -560,6 +564,7 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+    'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering':   'auto | optimizeSpeed | crispEdges | geometricPrecision',
     'size':              1,
     'speak':             'normal | none | spell-out',
@@ -598,15 +603,18 @@ self.parserlib = (() => {
     'text-decoration-skip':  'none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || ' +
                              'edges || box-decoration ]',
     'text-decoration-style': '<text-decoration-style>',
-    'text-emphasis':    1,
+    'text-emphasis':         '<text-emphasis-style> || <color>',
+    'text-emphasis-style':   '<text-emphasis-style>',
+    'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height':      1,
     'text-indent':      '<length> | <percentage>',
     'text-justify':     'auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida',
     'text-outline':     1,
     'text-overflow':    'clip | ellipsis',
     'text-rendering':   'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
-    'text-shadow':      'none | [ [ <color> && <length>{2,3} ] | <length>{2,3} ]#',
+    'text-shadow':      'none | [ <color>? && <length>{2,3} ]#',
     'text-transform':   'capitalize | uppercase | lowercase | none',
+    'text-underline-position': 'auto | [ under || [ left | right ] ]',
     'text-wrap':        'normal | none | avoid',
     'top':              '<width>',
     'touch-action':     'auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
@@ -689,7 +697,7 @@ self.parserlib = (() => {
 
       '<basic-shape>': 'inset() | circle() | ellipse() | polygon()',
 
-      '<bg-image>': '<image> | <gradient> | none',
+      '<bg-image>': '<image> | none',
 
       '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
                       'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
@@ -773,7 +781,7 @@ self.parserlib = (() => {
         return this['<ident>'](part) && !this['<generic-family>'](part);
       },
 
-      '<image>': '<uri>',
+      '<image>': '<uri> | <gradient> | cross-fade()',
 
       '<inflexible-breadth>': '<length-percentage> | min-content | max-content | auto',
 
@@ -832,7 +840,7 @@ self.parserlib = (() => {
         return this['<number>'](part) && part.value >= 0 && part.value <= 1;
       },
 
-      '<overflow>': 'visible | hidden | scroll | auto',
+      '<overflow>': 'visible | hidden | clip | scroll | auto',
 
       '<overflow-position>': 'unsafe | safe',
 
@@ -882,12 +890,15 @@ self.parserlib = (() => {
         if (part.tokenType === Tokens.USO_VAR) return true;
         if (part.type !== 'function' || !part.expr) return false;
         const subparts = part.expr.parts;
-        return subparts.length &&
-          lower(part.name) === 'var' &&
-          subparts[0].type === 'custom-property' && (
-            subparts.length === 1 ||
-            subparts[1].text === ','
-          );
+        if (!subparts.length) return false;
+        const name = lower(part.name);
+        return (
+          name === 'var' && subparts[0].type === 'custom-property' ||
+          name === 'env' && subparts[0].type === 'identifier'
+        ) && (
+          subparts.length === 1 ||
+          subparts[1].text === ','
+        );
       },
 
       '<width>': '<length> | <percentage> | auto',
@@ -1039,17 +1050,15 @@ self.parserlib = (() => {
       '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-number-or-percentage> ]? | ' +
                      '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-number-or-percentage> ]?',
 
-      // inset? && [ <length>{2,4} && <color>? ]
-      '<shadow>': Matcher =>
-        Matcher.many(
-          [true],
-          Matcher.cast('<length>').braces(2, 4),
-          'inset',
-          '<color>'),
+      '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
 
       '<single-timing-function>': 'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames()',
 
       '<text-decoration-line>': 'none | [ underline || overline || line-through || blink ]',
+
+      '<text-emphasis-style>': 'none | ' +
+                               '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
+                               '<string>',
 
       '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
 
@@ -1408,6 +1417,7 @@ self.parserlib = (() => {
     {name: 'NOT'},
     {name: 'ANY', text: ['any', '-webkit-any', '-moz-any']},
     {name: 'MATCHES'},
+    {name: 'IS'},
 
     /*
      * Defined in CSS3 Paged Media
@@ -1881,7 +1891,8 @@ self.parserlib = (() => {
       const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
       const s = ms.map((m, i) => {
         if (required !== false && !required[i]) {
-          return m.toString(Matcher.prec.MOD) + '?';
+          const str = m.toString(Matcher.prec.MOD);
+          return str.endsWith('?') ? str : str + '?';
         }
         return m.toString(p);
       }).join(required === false ? ' || ' : ' && ');
@@ -1919,10 +1930,22 @@ self.parserlib = (() => {
     function andand() {
       // andand = seq ( " && " seq)*
       const m = [seq()];
+      let reqPrev = !isOptional(m[0]);
+      const required = [reqPrev];
       while (reader.readMatch(' && ')) {
-        m.push(seq());
+        const item = seq();
+        const req = !isOptional(item);
+        // Matcher.many apparently can't handle optional items first
+        if (req && !reqPrev) {
+          m.unshift(item);
+          required.unshift(req);
+        } else {
+          m.push(item);
+          required.push(req);
+          reqPrev = req;
+        }
       }
-      return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
+      return m.length === 1 ? m[0] : Matcher.many(required, ...m);
     }
 
     function seq() {
@@ -1976,6 +1999,10 @@ self.parserlib = (() => {
         throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
       }
       return result;
+    }
+
+    function isOptional(item) {
+      return !Array.isArray(item.options) && item.toString().endsWith('?');
     }
   })();
 
@@ -2663,7 +2690,7 @@ self.parserlib = (() => {
     known.add(value.text);
 
     function throwEndExpected(token, force) {
-      if (force || token.name !== 'var' || token.type !== 'function') {
+      if (force || (token.name !== 'var' && token.name !== 'env') || token.type !== 'function') {
         throw new ValidationError(`Expected end of value but found '${token.text}'.`, token);
       }
     }
@@ -3012,11 +3039,13 @@ self.parserlib = (() => {
         /*
          * Potential tokens:
          * - ANY
+         * - IS
+         * - MATCHES
          * - NOT
          * - CHAR
          */
         case ':':
-          return this.notOrAnyOrMatchesToken(c, pos);
+          return this.notOrIsToken(c, pos);
 
         /*
          * Potential tokens:
@@ -3224,16 +3253,20 @@ self.parserlib = (() => {
     }
 
     // NOT
+    // IS
     // ANY
     // MATCHES
     // CHAR
-    notOrAnyOrMatchesToken(first, pos) {
+    notOrIsToken(first, pos) {
+      // first is always ':'
       const reader = this._reader;
-      const func = reader.readMatch(/(not|(-(moz|webkit)-)?any|matches)\(/iy);
+      const func = reader.readMatch(/(not|is|(-(moz|webkit)-)?(any|matches))\(/iy);
       if (func) {
+        const lcase = func[0].toLowerCase();
         const type =
-          func.startsWith('n') || func.startsWith('N') ? Tokens.NOT :
-          func.startsWith('m') || func.startsWith('M') ? Tokens.MATCHES : Tokens.ANY;
+          lcase === 'n' ? Tokens.NOT :
+          lcase === 'i' ? Tokens.IS :
+          lcase === 'm' ? Tokens.MATCHES : Tokens.ANY;
         return this.createToken(type, first + func, pos);
       }
       return this.charToken(first, pos);
@@ -4239,14 +4272,25 @@ self.parserlib = (() => {
 
     _viewport() {
       const stream = this._tokenStream;
-      stream.mustMatch(Tokens.VIEWPORT_SYM);
+      const start = stream.mustMatch(Tokens.VIEWPORT_SYM);
 
-      this.fire('startviewport');
+      // only viewport-fit is allowed but we're reusing MediaQuery syntax unit,
+      // and accept anything for the sake of simplicity since the spec isn't yet final:
+      // https://drafts.csswg.org/css-round-display/#extending-viewport-rule
+      const descriptors = this._mediaQueryList();
+
+      this.fire({
+        type: 'startviewport',
+        descriptors,
+      }, start);
 
       this._ws();
       this._readDeclarations();
 
-      this.fire('endviewport');
+      this.fire({
+        type: 'endviewport',
+        descriptors,
+      });
     }
 
     _document() {
@@ -4664,13 +4708,13 @@ self.parserlib = (() => {
       return value.length ? value : null;
     }
 
-    _anyOrMatches() {
+    _is() {
       const stream = this._tokenStream;
-      if (!stream.match([Tokens.ANY, Tokens.MATCHES])) return null;
+      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.MATCHES])) return null;
 
       let arg;
       const start = stream._token;
-      const type = start.type === Tokens.ANY ? 'any' : 'matches';
+      const type = lower(Tokens[start.type].name);
       const value =
         start.value +
         this._ws() +
@@ -5380,6 +5424,7 @@ self.parserlib = (() => {
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
+      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
     ]),
 
     media: new Map([
@@ -5396,8 +5441,9 @@ self.parserlib = (() => {
       [Tokens.DOT, Parser.prototype._class],
       [Tokens.LBRACKET, Parser.prototype._attrib],
       [Tokens.COLON, Parser.prototype._pseudo],
-      [Tokens.ANY, Parser.prototype._anyOrMatches],
-      [Tokens.MATCHES, Parser.prototype._anyOrMatches],
+      [Tokens.IS, Parser.prototype._is],
+      [Tokens.ANY, Parser.prototype._is],
+      [Tokens.MATCHES, Parser.prototype._is],
       [Tokens.NOT, Parser.prototype._negation],
     ]),
   };

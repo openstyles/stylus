@@ -34,11 +34,11 @@ class Reporter {
    * verification back to the main API.
    * @class Reporter
    * @constructor
-   * @param {String[]} lines The text lines of the source.
-   * @param {Object} ruleset The set of rules to work with, including if
+   * @param {String[]} lines - The text lines of the source.
+   * @param {Object} ruleset - The set of rules to work with, including if
    *      they are errors or warnings.
-   * @param {Object} explicitly allowed lines
-   * @param {[][]} ingore list of line ranges to be ignored
+   * @param {Object} allow - explicitly allowed lines
+   * @param {[][]} ingore - list of line ranges to be ignored
    */
   constructor(lines, ruleset, allow, ignore) {
     this.messages = [];
@@ -126,6 +126,9 @@ var CSSLint = (() => {
   };
   const rules = [];
 
+  // previous CSSLint overrides are used to decide whether the parserlib's cache should be reset
+  let prevOverrides;
+
   return Object.assign(new parserlib.util.EventTarget(), {
 
     addRule(rule) {
@@ -193,8 +196,13 @@ var CSSLint = (() => {
         rules[id] &&
         rules[id].init(parser, reporter));
 
+      // TODO: when ruleset is unchanged we can try to invalidate only line ranges in 'allow' and 'ignore'
+      const newOvr = [ruleset, allow, ignore];
+      const reuseCache = !prevOverrides || JSON.stringify(prevOverrides) === JSON.stringify(newOvr);
+      prevOverrides = newOvr;
+
       try {
-        parser.parse(text, {reuseCache: true});
+        parser.parse(text, {reuseCache});
       } catch (ex) {
         reporter.error('Fatal error, cannot continue: ' + ex.message, ex.line, ex.col, {});
       }
@@ -219,17 +227,50 @@ var CSSLint = (() => {
     },
   });
 
+  // Example 1:
+
+  /* csslint ignore:start */
+      // the chunk of code where errors won't be reported
+      // the chunk's start is hardwired to the line of the opening comment
+      // the chunk's end is hardwired to the line of the closing comment
+  /* csslint ignore:end */
+
+  // Example 2:
+
+  /* csslint allow:rulename1,rulename2,... */
+      // allows to break the specified rules on the next single line of code
+
+  // Example 3:
+
+  /* csslint rulename1 */
+  /* csslint rulename2:N */
+  /* csslint rulename3:N, rulename4:N */
+
+      // entire code is affected;
+      // comments futher down the code extend/override previous comments of this kind
+      // values for N:
+      // "2" or "true" means "error"
+      // "1" or nothing means "warning" - note in this case ":" can also be omitted
+      // "0" or "false" means "ignore"
+      // (the quotes are added here for convenience, don't put them in the actual comments)
+
   function applyEmbeddedOverrides(text, ruleset, allow, ignore) {
     let ignoreStart = null;
     let ignoreEnd = null;
     let lineno = 0;
+    let eol = -1;
+    let m;
 
-    for (let eol = 0, m; (m = RX_EMBEDDED.exec(text)); lineno++) {
-      eol = (text.indexOf('\n', eol) + 1 || text.length + 1) - 1;
-      if (eol < m.index) continue;
+    while ((m = RX_EMBEDDED.exec(text))) {
+      // account for the lines between the previous and current match
+      while (eol <= m.index) {
+        eol = text.indexOf('\n', eol + 1);
+        if (eol < 0) eol = text.length;
+        lineno++;
+      }
 
       const ovr = m[1].toLowerCase();
-      const cmd = ovr.split(':', 1);
+      const cmd = ovr.split(':', 1)[0];
       const i = cmd.length + 1;
 
       switch (cmd.trim()) {
@@ -246,15 +287,13 @@ var CSSLint = (() => {
         }
 
         case 'ignore':
-          if (ovr.lastIndexOf('start', i) > 0) {
-            if (ignoreStart === null) {
-              ignoreStart = lineno;
-            }
+          if (ovr.includes('start')) {
+            ignoreStart = ignoreStart || lineno;
             break;
           }
-          if (ovr.lastIndexOf('end', i) > 0) {
+          if (ovr.includes('end')) {
             ignoreEnd = lineno;
-            if (ignoreStart !== null && ignoreEnd !== null) {
+            if (ignoreStart && ignoreEnd) {
               ignore.push([ignoreStart, ignoreEnd]);
               ignoreStart = ignoreEnd = null;
             }
@@ -273,7 +312,7 @@ var CSSLint = (() => {
     }
 
     // Close remaining ignore block, if any
-    if (ignoreStart !== null) {
+    if (ignoreStart) {
       ignore.push([ignoreStart, lineno]);
     }
   }

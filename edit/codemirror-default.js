@@ -157,9 +157,17 @@
     'text-align-all': true,
 
     'contain': true,
+    'mask-image': true,
     'mix-blend-mode': true,
+    'rotate': true,
     'isolation': true,
     'zoom': true,
+
+    // https://www.w3.org/TR/css-round-display-1/
+    'border-boundary': true,
+    'shape': true,
+    'shape-inside': true,
+    'viewport-fit': true,
 
     // nonstandard https://compat.spec.whatwg.org/
     'box-reflect': true,
@@ -171,6 +179,7 @@
   });
   Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
     'isolate': true,
+    'rect': true,
     'recto': true,
     'verso': true,
   });
