@@ -173,16 +173,17 @@ body.blocked > DIV {
 }
 
 /* entry */
-
 .entry {
+  position: relative;
+}
+.entry-content {
   display: flex;
   align-items: center;
   height: 26px;
   padding: 0 14px 0 0;
-  position: relative;
 }
 
-html[style] .entry {
+html[style] .entry-content {
   padding: 0 16px 0 0;
 }
 
@@ -192,6 +193,7 @@ html[style] .entry {
 
 .entry .actions {
   display: inline-flex;
+  align-items: center;
 }
 
 .style-name {
@@ -264,9 +266,34 @@ html[style*="border"] .entry:nth-child(11):before {
 }
 
 .entry .actions > * {
-  display: inline-block;
-  padding: 0 1px;
-  margin: 0 1px;
+  height: 26px;
+  width: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entry .actions > .menu-button {
+  width: 14px;
+}
+
+.entry .actions > a.configure {
+  padding-right: 2px;
+}
+
+.entry .actions > a.configure[target="_blank"] {
+  width: 20px;
+}
+
+.svg-icon.config {
+  height: 14px;
+  width: 14px;
+}
+
+a.configure[target="_blank"] .svg-icon.config {
+  height: 20px;
+  width: 20px;
+  margin-top: 1px;
 }
 
 .not-applied .checker,
@@ -284,6 +311,72 @@ html[style*="border"] .entry:nth-child(11):before {
 
 .not-applied:hover .style-name {
   color: darkred;
+}
+
+/* entry menu */
+.entry .menu {
+  display: flex;
+  flex-direction: column;
+  top: 100%;
+  width: 100%;
+  z-index: 1;
+  box-sizing: border-box;
+  height: 0;
+  transition: height .25s ease-out, opacity .5s ease-in;
+  overflow: hidden;
+  opacity: 0;
+}
+.entry.menu-active .menu {
+  /* FIXME: avoid hard coded height */
+  height: 72px;
+  opacity: 1;
+}
+/* accessibility */
+.menu-item {
+  display: none;
+  border: none;
+  align-items: center;
+  padding: 0 0 0 20px;
+  height: 24px;
+  background: none;
+  text-decoration: none;
+}
+.entry.menu-active.accessible-items .menu-item {
+  display: flex;
+}
+.entry .menu-item.delete {
+  cursor: pointer;
+}
+.entry .menu-item.delete:hover {
+  color: #000;
+}
+.entry .menu-item > span {
+  margin-top: 1px;
+}
+.entry .menu-item:hover,
+.entry .menu-item:active {
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color .25s;
+}
+.entry .menu-icon {
+  width: 26px;
+}
+.entry .menu-icon > * {
+  display: block;
+  margin: 0 auto;
+}
+.entry .menu-item.disabled {
+  opacity: 0.5;
+  background-color: transparent;
+  cursor: help;
+}
+
+/* checkbox */
+.checkbox-container {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
 }
 
 .regexp-problem-indicator {

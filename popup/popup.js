@@ -309,6 +309,11 @@ function createStyleElement(style) {
     indicator.appendChild(document.createTextNode('!'));
     indicator.onclick = handleEvent.indicator;
     $('.main-controls', entry).appendChild(indicator);
+
+    $('.menu-button', entry).onclick = handleEvent.toggleMenu;
+
+    $('.exclude-by-domain-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'domain');
+    $('.exclude-by-url-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'url');
   }
 
   style = Object.assign(entry.styleMeta, style);
@@ -329,9 +334,35 @@ function createStyleElement(style) {
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
+  $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
+
+  const excludeByUrlCheckbox = $('.exclude-by-url-checkbox', entry);
+  const isRedundant = getExcludeRule('domain') === getExcludeRule('url');
+  excludeByUrlCheckbox.checked = !isRedundant && styleExcluded(style, 'url');
+  excludeByUrlCheckbox.disabled = isRedundant;
+
+  const excludeByUrlLabel = $('.exclude-by-url', entry);
+  excludeByUrlLabel.classList.toggle('disabled', isRedundant);
+  excludeByUrlLabel.title = isRedundant ?
+    chrome.i18n.getMessage('excludeStyleByUrlRedundant') : '';
+
   return entry;
 }
 
+function styleExcluded({exclusions}, type) {
+  if (!exclusions) {
+    return false;
+  }
+  const rule = getExcludeRule(type);
+  return exclusions.includes(rule);
+}
+
+function getExcludeRule(type) {
+  if (type === 'domain') {
+    return new URL(tabURL).origin + '/*';
+  }
+  return tabURL + '*';
+}
 
 Object.assign(handleEvent, {
 
@@ -356,10 +387,29 @@ Object.assign(handleEvent, {
       .then(sortStylesInPlace);
   },
 
+  toggleExclude(event, type) {
+    const entry = handleEvent.getClickedStyleElement(event);
+    if (event.target.checked) {
+      API.addExclusion(entry.styleMeta.id, getExcludeRule(type));
+    } else {
+      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
+    }
+  },
+
+  toggleMenu(event) {
+    const entry = handleEvent.getClickedStyleElement(event);
+    entry.classList.toggle('menu-active');
+    setTimeout(() => {
+      entry.classList.toggle('accessible-items');
+    }, 250);
+    event.preventDefault();
+  },
+
   delete(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     const id = entry.styleId;
     const box = $('#confirm');
+    const cancel = $('[data-cmd="cancel"]');
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = $('.style-name', entry).textContent;
@@ -368,7 +418,7 @@ Object.assign(handleEvent, {
     $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
     window.onkeydown = event => {
       const keyCode = event.keyCode || event.which;
-      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+      if (document.activeElement !== cancel && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
       && (keyCode === 13 || keyCode === 27)) {
         event.preventDefault();
         confirm(keyCode === 13);
