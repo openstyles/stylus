@@ -80,7 +80,7 @@ if (FIREFOX) {
   navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
     url: [
       {pathSuffix: '.user.css'},
-      {pathSuffix: '.user.css'},
+      {pathSuffix: '.user.styl'},
     ]
   });
   // FF misses some about:blank iframes so we inject our content script explicitly
