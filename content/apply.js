@@ -304,7 +304,7 @@ const APPLY = (() => {
       method: 'invokeAPI',
       name: 'updateIconBadge',
       args: [styleInjector.list.length]
-    }).catch(msg.ignoreError);
+    }).catch(console.error);
   }
 
   function rootReady() {

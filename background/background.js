@@ -22,6 +22,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   styleExists: styleManager.styleExists,
   toggleStyle: styleManager.toggleStyle,
 
+  addInclusion: styleManager.addInclusion,
+  removeInclusion: styleManager.removeInclusion,
+  addExclusion: styleManager.addExclusion,
+  removeExclusion: styleManager.removeExclusion,
+
   getTabUrlPrefix() {
     return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
@@ -42,9 +47,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     // Chrome 49 doesn't report own extension pages in webNavigation apparently
     // so we do a force update which doesn't use the cache.
     if (CHROME && CHROME < 2661 && this.sender.tab.url.startsWith(URLS.ownOrigin)) {
-      return updateIconBadgeForce(this.sender.tab.id, count);
+      updateIconBadgeForce(this.sender.tab.id, count);
+    } else {
+      updateIconBadge(this.sender.tab.id, count);
     }
-    return updateIconBadge(this.sender.tab.id, count);
+    return true;
   },
 
   // exposed for stuff that requires followup sendMessage() like popup::openSettings
@@ -79,8 +86,8 @@ if (FIREFOX) {
   // FF applies page CSP even to content scripts, https://bugzil.la/1267027
   navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
     url: [
-      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.css'},
-      {hostSuffix: '.githubusercontent.com', urlSuffix: '.user.styl'},
+      {pathSuffix: '.user.css'},
+      {pathSuffix: '.user.styl'},
     ]
   });
   // FF misses some about:blank iframes so we inject our content script explicitly
