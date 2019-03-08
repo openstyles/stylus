@@ -359,9 +359,9 @@ function styleExcluded({exclusions}, type) {
 
 function getExcludeRule(type) {
   if (type === 'domain') {
-    return new URL(tabURL).origin + '/*';
+    return new URL(tabURL).origin + '*';
   }
-  return tabURL + '*';
+  return tabURL.split(/#|\?/)[0].replace(/\/$/, '') + '*';
 }
 
 Object.assign(handleEvent, {
