@@ -280,7 +280,7 @@ const styleManager = (() => {
         cache.maybeMatch.add(data.id);
         continue;
       }
-      const code = getAppliedCode(url, data);
+      const code = getAppliedCode(createMatchQuery(url), data);
       if (!code) {
         excluded.add(url);
         delete cache.sections[data.id];
@@ -346,11 +346,12 @@ const styleManager = (() => {
     const result = [];
     const datas = !id ? [...styles.values()].map(s => s.data) :
       styles.has(id) ? [styles.get(id).data] : [];
+    const query = createMatchQuery(url);
     for (const data of datas) {
       let excluded = false;
       let sloppy = false;
       let sectionMatched = false;
-      const match = urlMatchStyle(url, data);
+      const match = urlMatchStyle(query, data);
       // TODO: enable this when the function starts returning false
       // if (match === false) {
         // continue;
@@ -362,7 +363,7 @@ const styleManager = (() => {
         if (styleCodeEmpty(section.code)) {
           continue;
         }
-        const match = urlMatchSection(url, section);
+        const match = urlMatchSection(query, section);
         if (match) {
           if (match === 'sloppy') {
             sloppy = true;
@@ -407,8 +408,9 @@ const styleManager = (() => {
     return cache.sections;
 
     function buildCache(styleList) {
+      const query = createMatchQuery(url);
       for (const {appliesTo, data, preview} of styleList) {
-        const code = getAppliedCode(url, preview || data);
+        const code = getAppliedCode(query, preview || data);
         if (code) {
           cache.sections[data.id] = {
             id: data.id,
@@ -420,13 +422,13 @@ const styleManager = (() => {
     }
   }
 
-  function getAppliedCode(url, data) {
-    if (urlMatchStyle(url, data) !== true) {
+  function getAppliedCode(query, data) {
+    if (urlMatchStyle(query, data) !== true) {
       return;
     }
     const code = [];
     for (const section of data.sections) {
-      if (urlMatchSection(url, section) === true && !styleCodeEmpty(section.code)) {
+      if (urlMatchSection(query, section) === true && !styleCodeEmpty(section.code)) {
         code.push(section.code);
       }
     }
@@ -452,8 +454,11 @@ const styleManager = (() => {
     });
   }
 
-  function urlMatchStyle(url, style) {
-    if (style.exclusions && style.exclusions.some(e => compileExclusion(e).test(url))) {
+  function urlMatchStyle(query, style) {
+    if (
+      style.exclusions &&
+      style.exclusions.some(e => compileExclusion(e).test(query.urlWithoutParams))
+    ) {
       return 'excluded';
     }
     if (!style.enabled) {
@@ -462,12 +467,14 @@ const styleManager = (() => {
     return true;
   }
 
-  function urlMatchSection(url, section) {
-    const domain = getDomain(url);
-    if (section.domains && section.domains.some(d => d === domain || domain.endsWith(`.${d}`))) {
+  function urlMatchSection(query, section) {
+    if (
+      section.domains &&
+      section.domains.some(d => d === query.domain || query.domain.endsWith(`.${d}`))
+    ) {
       return true;
     }
-    if (section.urlPrefixes && section.urlPrefixes.some(p => url.startsWith(p))) {
+    if (section.urlPrefixes && section.urlPrefixes.some(p => query.url.startsWith(p))) {
       return true;
     }
     // as per spec the fragment portion is ignored in @-moz-document:
@@ -475,12 +482,12 @@ const styleManager = (() => {
     // but the spec is outdated and doesn't account for SPA sites
     // so we only respect it for `url()` function
     if (section.urls && (
-      section.urls.includes(url) ||
-      section.urls.includes(getUrlNoHash(url))
+      section.urls.includes(query.url) ||
+      section.urls.includes(query.urlWithoutHash)
     )) {
       return true;
     }
-    if (section.regexps && section.regexps.some(r => compileRe(r).test(url))) {
+    if (section.regexps && section.regexps.some(r => compileRe(r).test(query.url))) {
       return true;
     }
     /*
@@ -489,7 +496,7 @@ const styleManager = (() => {
     We'll detect styles that abuse the bug by finding the sections that
     would have been applied by Stylish but not by us as we follow the spec.
     */
-    if (section.regexps && section.regexps.some(r => compileSloppyRe(r).test(url))) {
+    if (section.regexps && section.regexps.some(r => compileSloppyRe(r).test(query.url))) {
       return 'sloppy';
     }
     // TODO: check for invalid regexps?
@@ -526,19 +533,40 @@ const styleManager = (() => {
     return '^' + escapeRegExp(text).replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*') + '$';
   }
 
-  function getDomain(url) {
-    return url.match(/^[\w-]+:\/+(?:[\w:-]+@)?([^:/#]+)/)[1];
-  }
-
-  function getUrlNoHash(url) {
-    return url.split('#')[0];
-  }
-
   // The md5Url provided by USO includes a duplicate "update" subdomain (see #523),
   // This fixes any already installed styles containing this error
   function fixUsoMd5Issue(style) {
     if (style && style.md5Url && style.md5Url.includes('update.update.userstyles')) {
       style.md5Url = style.md5Url.replace('update.update.userstyles', 'update.userstyles');
     }
+  }
+
+  function createMatchQuery(url) {
+    let urlWithoutHash;
+    let urlWithoutParams;
+    let domain;
+    return {
+      url,
+      get urlWithoutHash() {
+        if (!urlWithoutHash) {
+          urlWithoutHash = url.split('#')[0];
+        }
+        return urlWithoutHash;
+      },
+      get urlWithoutParams() {
+        if (!urlWithoutParams) {
+          const u = new URL(url);
+          urlWithoutParams = u.origin + u.pathname;
+        }
+        return urlWithoutParams;
+      },
+      get domain() {
+        if (!domain) {
+          const u = new URL(url);
+          domain = u.hostname;
+        }
+        return domain;
+      }
+    };
   }
 })();
