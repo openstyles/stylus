@@ -19,6 +19,7 @@ const APPLY = (() => {
     onChange: () => {
       if (styleInjector.outOfOrder()) {
         styleInjector.sort();
+        return true;
       }
     }
   });
@@ -414,21 +415,21 @@ const APPLY = (() => {
   }
 
   function createDocRootObserver({onChange}) {
-    let lastCalledTime = performance.now();
-    let continuousCalledCount = 0;
+    let digest = 0;
+    let lastCalledTime = NaN;
     let observing = false;
     const observer = new MutationObserver(() => {
-      const now = performance.now();
-      if (now - lastCalledTime < 1000) {
-        if (continuousCalledCount >= 5) {
+      if (digest) {
+        if (performance.now() - lastCalledTime > 1000) {
+          digest = 0;
+        } else if (digest > 5) {
           throw new Error('The page keeps generating mutations. Skip the event.');
         }
-        continuousCalledCount++;
-      } else {
-        continuousCalledCount = 0;
       }
-      lastCalledTime = now;
-      onChange();
+      if (onChange()) {
+        digest++;
+        lastCalledTime = performance.now();
+      }
     });
     return {start, stop, evade};
 
