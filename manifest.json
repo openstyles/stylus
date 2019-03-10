@@ -64,7 +64,14 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": true,
-      "js": ["js/polyfill.js", "js/promisify.js", "js/msg.js", "js/prefs.js", "content/apply.js"]
+      "js": [
+        "js/polyfill.js",
+        "js/promisify.js",
+        "js/msg.js",
+        "js/prefs.js",
+        "content/style-injector.js",
+        "content/apply.js"
+      ]
     },
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
