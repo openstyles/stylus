@@ -3,6 +3,14 @@
     "message": "Write new style",
     "description": "Label for the button to go to the add style page"
   },
+  "addPlainStyleLabel": {
+    "message": "New plain style",
+    "description": "Label for the button to go to the add style page"
+  },
+  "addUserCSSStyleLabel": {
+    "message": "New UserCSS style",
+    "description": "Label for the button to go to the add style page"
+  },
   "addStyleTitle": {
     "message": "Add Style",
     "description": "Title of the page for adding styles"

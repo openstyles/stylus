@@ -79,6 +79,7 @@ function initGlobalEvents() {
   }
 
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
+  $$('#add-usercss, #add-reg-css').forEach(a => (a.onclick = handleEvent.newStyle));
 
   document.addEventListener('visibilitychange', onVisibilityChange);
 
@@ -160,6 +161,12 @@ Object.assign(handleEvent, {
 
   name(event) {
     handleEvent.edit(event);
+  },
+
+  newStyle(event) {
+    event.preventDefault();
+    prefs.set('newStyleAsUsercss', event.target.id === 'add-usercss');
+    window.location.href = 'edit.html';
   },
 
   edit(event) {
