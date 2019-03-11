@@ -18,9 +18,9 @@ if (!CHROME && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
   // until we know for sure in the async getBrowserInfo()
   // (browserAction.openPopup was added in 57)
-  FIREFOX = browser.runtime.getBrowserInfo ? 51 : 50;
+  FIREFOX = browserApi.runtime.getBrowserInfo ? 51 : 50;
   // getBrowserInfo was added in FF 51
-  Promise.resolve(FIREFOX >= 51 ? browser.runtime.getBrowserInfo() : {version: 50}).then(info => {
+  Promise.resolve(FIREFOX >= 51 ? browserApi.runtime.getBrowserInfo() : {version: 50}).then(info => {
     FIREFOX = parseFloat(info.version);
     document.documentElement.classList.add('moz-appearance-bug', FIREFOX && FIREFOX < 54);
   });
