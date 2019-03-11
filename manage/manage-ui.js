@@ -155,9 +155,9 @@ const UI = {
       $('.entry-updater-placeholder', entry).replaceWith(template.updaterIcons.cloneNode(true));
     }
 
-    $('.entry-version', entry).textContent = style.usercssData && style.usercssData.version || '';
+    $('.entry-version-value', entry).textContent = style.usercssData && style.usercssData.version || '';
 
-    const lastUpdate = $('.entry-last-update', entry);
+    const lastUpdate = $('.entry-last-update-value', entry);
     lastUpdate.textContent = UI.getDateString(style.updateDate);
     // Show install & last update in title
     lastUpdate.dataset.title = [

@@ -235,6 +235,10 @@ body.all-styles-hidden-by-filters #installed:after {
   line-height: var(--entry-height);
 }
 
+.entry-col .col-label {
+  display: none;
+}
+
 .center-text,
 .entry-filter,
 .entry-state,
@@ -967,4 +971,31 @@ a svg, .svg-icon.sort {
 #backup-buttons .dropdown-content #sync-dropbox-export:hover,
 #backup-buttons .dropdown-content #sync-dropbox-import:hover {
   background: transparent;
+}
+
+@media (max-width: 768px) {
+  #installed .entry, #installed .entry-header {
+    display: block;
+  }
+  .entry-col {
+    width: 100%;
+    padding: 0;
+    margin-left: 4px;
+  }
+  .entry-name-text {
+    max-width: unset;
+  }
+  .entry-col .col-label {
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 6px;
+    padding: 0;
+  }
+  .center-text, .entry-filter, .entry-state, .entry-last-update {
+    text-align: left;
+    max-width: unset;
+  }
+  .targets {
+    display: inline-block;
+  }
 }

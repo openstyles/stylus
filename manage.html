@@ -31,6 +31,7 @@
   <template data-id="style">
     <div class="entry hide-extra">
       <div class="entry-col entry-filter">
+        <span class="col-label" i18n-text="genericFilterLabel"></span>
         <label class="checkmate" tabindex="0">
           <input class="entry-filter-toggle" type="checkbox">
           <svg class="svg-icon checkbox"viewBox="0 0 10 10">
@@ -41,6 +42,7 @@
         </label>
       </div>
       <div class="entry-col entry-state">
+        <span class="col-label" i18n-text="genericEnabledLabel"></span>
         <label class="checkmate" tabindex="0">
           <input class="entry-state-toggle" type="checkbox">
           <svg class="svg-icon checkbox"viewBox="0 0 10 10">
@@ -51,10 +53,12 @@
         </label>
       </div>
       <a href="#" class="entry-col entry-name">
+        <span class="col-label" i18n-text="genericName"></span>
         <span class="entry-name-text"></span>
         <span class="entry-labels"></span>
       </a>
       <div class="entry-col entry-actions">
+        <span class="col-label" i18n-text="optionsActions"></span>
         <a href="#" class="entry-configure-usercss tt-e" i18n-data-title="configureStyle">
           <svg class="svg-icon entry-config" viewBox="0 0 24 24">
             <path d="M19.43 12.98a7.8 7.8 0 0 0 0-1.96l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5
@@ -100,9 +104,16 @@
           </svg>
         </a>
       </div>
-      <div class="entry-col entry-version"></div>
-      <div class="entry-col entry-last-update tt-w"></div>
+      <div class="entry-col entry-version">
+        <span class="col-label">v#</span>
+        <span class="entry-version-value"></span>
+      </div>
+      <div class="entry-col entry-last-update tt-w">
+        <span class="col-label" i18n-text="searchResultUpdated"></span>
+        <span class="entry-last-update-value"></span>
+      </div>
       <div class="entry-col entry-applies-to">
+        <span class="col-label" i18n-text="appliesLabel"></span>
         <div class="targets"></div>
       </div>
     </div>
@@ -487,16 +498,24 @@
         <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
       </svg>
     </div>
-    <a href="#" class="entry-col sortable header-state center-text tt-se" i18n-text="genericEnabledLabel" i18n-data-title="sortLabel;sortColumnEnabled" data-type="enabled"><span></span></a>
+    <a href="#" class="entry-col sortable header-state center-text tt-se" i18n-text="genericEnabledLabel" i18n-data-title="sortLabel;sortColumnEnabled" data-type="enabled">
+      <span></span>
+    </a>
     <div class="entry-col header-name">
-      <a href="#" class="sortable tt-se" i18n-text="genericName" i18n-data-title="sortLabel;sortColumnName" data-type="title"><span></span></a>
+      <a href="#" class="sortable tt-se" i18n-text="genericName" i18n-data-title="sortLabel;sortColumnName" data-type="title">
+        <span></span>
+      </a>
     </div>
     <div class="entry-col header-actions" i18n-text="optionsActions"></div>
     <div class="entry-col header-version">
-      <a href="#" class="sortable tt-sw" i18n-data-title="sortLabel;sortColumnVersion" data-type="version">v#<span></span></a>
+      <a href="#" class="sortable tt-sw" i18n-data-title="sortLabel;sortColumnVersion" data-type="version">
+        v#<span></span>
+      </a>
     </div>
     <div class="entry-col header-last-update center-text">
-      <a href="#" class="entry-col sortable tt-sw" i18n-text="searchResultUpdated" i18n-data-title="sortLabel;sortColumnLastUpdate" data-type="dateUpdated"><span></span></a>
+      <a href="#" class="sortable tt-sw" i18n-text="searchResultUpdated" i18n-data-title="sortLabel;sortColumnLastUpdate" data-type="dateUpdated">
+        <span></span>
+      </a>
       <a href="#" id="update-history" class="tt-sw" i18n-data-title="genericHistoryLabel" tabindex="0">
         <svg class="svg-icon update-history" viewBox="0 0 24 24" i18n-alt="updateCheckHistory">
           <path d="M20.8 10.86a7 7 0 0 0-1.53-1.47V7.02L13.35 1H5.47c-1.08 0-1.96.9-1.96 2L3.5

@@ -418,6 +418,10 @@
     "message": "Enabled",
     "description": "Used in various lists/options to indicate that something is enabled"
   },
+  "genericFilterLabel": {
+    "message": "Filter",
+    "description": "Used in various lists/options to indicate that something is or will be filtered"
+  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."
