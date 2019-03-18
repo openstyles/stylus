@@ -3,7 +3,8 @@
   $ $create t chromeLocal API getOwnTab */
 'use strict';
 
-const DROPBOX_API_KEY = 'zg52vphuapvpng9';
+// const DROPBOX_API_KEY = 'zg52vphuapvpng9';
+const DROPBOX_API_KEY = 'uyfixgzre8v1bkg';
 const FILENAME_ZIP_FILE = 'stylus.json';
 const DROPBOX_FILE = 'stylus.zip';
 const API_ERROR_STATUS_FILE_NOT_FOUND = 409;
@@ -35,6 +36,11 @@ function requestDropboxAccessToken() {
     clientId: DROPBOX_API_KEY,
     fetch
   });
+  const isFirefoxAndroid = /Android/.test(navigator.userAgent) && /Mozilla/.test(navigator.userAgent);
+  if (isFirefoxAndroid) {
+    window.location.href = client.getAuthenticationUrl(window.location.origin + '/sync/dropbox-oauth.html');
+    return;
+  }
   const authUrl = client.getAuthenticationUrl(getRedirectUrlAuthFlow());
   return launchWebAuthFlow({url: authUrl, interactive: true})
   .then(urlReturned => {
@@ -51,9 +57,9 @@ function uploadFileDropbox(client, stylesText) {
 $('#sync-dropbox-export').onclick = () => {
   const mode = localStorage.installType;
   const title = t('syncDropboxStyles');
-  const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
-  messageProgressBar({title, text});
-  if (mode !== 'normal') return;
+  // const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
+  // messageProgressBar({title, text});
+  // if (mode !== 'normal') return;
 
   hasDropboxAccessToken()
   .then(token => token || requestDropboxAccessToken())
@@ -125,9 +131,9 @@ $('#sync-dropbox-export').onclick = () => {
 $('#sync-dropbox-import').onclick = () => {
   const mode = localStorage.installType;
   const title = t('retrieveDropboxSync');
-  const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
-  messageProgressBar({title, text});
-  if (mode !== 'normal') return;
+  // const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
+  // messageProgressBar({title, text});
+  // if (mode !== 'normal') return;
 
   hasDropboxAccessToken()
   .then(token => token || requestDropboxAccessToken())
