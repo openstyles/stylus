@@ -319,7 +319,7 @@
     "message": "Exclude the current domain"
   },
   "excludeStyleByUrlLabel": {
-    "message": "Exclude the current URL"
+    "message": "Exclude URLs starting with the current URL"
   },
   "excludeStyleByUrlRedundant": {
     "message": "The current URL is the domain page"
