@@ -335,7 +335,16 @@ function createStyleElement(style) {
   entry.classList.toggle('regexp-partial', style.sloppy);
 
   $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
-  $('.exclude-by-url-checkbox', entry).checked = styleExcluded(style, 'url');
+
+  const excludeByUrlCheckbox = $('.exclude-by-url-checkbox', entry);
+  const isRedundant = getExcludeRule('domain') === getExcludeRule('url');
+  excludeByUrlCheckbox.checked = !isRedundant && styleExcluded(style, 'url');
+  excludeByUrlCheckbox.disabled = isRedundant;
+
+  const excludeByUrlLabel = $('.exclude-by-url', entry);
+  excludeByUrlLabel.classList.toggle('disabled', isRedundant);
+  excludeByUrlLabel.title = isRedundant ?
+    chrome.i18n.getMessage('excludeStyleByUrlRedundant') : '';
 
   return entry;
 }
@@ -349,16 +358,10 @@ function styleExcluded({exclusions}, type) {
 }
 
 function getExcludeRule(type) {
-  const u = new URL(tabURL);
   if (type === 'domain') {
-    return u.origin + '/*';
+    return new URL(tabURL).origin + '/*';
   }
-  // current page
-  return escapeGlob(u.origin + u.pathname);
-}
-
-function escapeGlob(text) {
-  return text.replace(/\*/g, '\\*');
+  return tabURL + '*';
 }
 
 Object.assign(handleEvent, {
