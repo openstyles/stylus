@@ -45,6 +45,21 @@ const styleManager = (() => {
   const compileSloppyRe = createCompiler(text => `^${text}$`);
   const compileExclusion = createCompiler(buildGlob);
 
+  const DUMMY_URL = {
+    hash: '',
+    host: '',
+    hostname: '',
+    href: '',
+    origin: '',
+    password: '',
+    pathname: '',
+    port: '',
+    protocol: '',
+    search: '',
+    searchParams: new URLSearchParams(),
+    username: ''
+  };
+
   handleLivePreviewConnections();
 
   return ensurePrepared({
@@ -555,18 +570,26 @@ const styleManager = (() => {
       },
       get urlWithoutParams() {
         if (!urlWithoutParams) {
-          const u = new URL(url);
+          const u = createURL(url);
           urlWithoutParams = u.origin + u.pathname;
         }
         return urlWithoutParams;
       },
       get domain() {
         if (!domain) {
-          const u = new URL(url);
+          const u = createURL(url);
           domain = u.hostname;
         }
         return domain;
       }
     };
+  }
+
+  function createURL(url) {
+    try {
+      return new URL(url);
+    } catch (err) {
+      return DUMMY_URL;
+    }
   }
 })();
