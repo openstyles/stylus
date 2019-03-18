@@ -338,6 +338,7 @@ a.configure[target="_blank"] .svg-icon.config {
   padding: 3px 0 3px 20px;
   background: none;
   text-decoration: none;
+  flex: none;
 }
 .entry.menu-active .menu-item {
   display: flex;
