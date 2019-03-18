@@ -358,10 +358,15 @@ function styleExcluded({exclusions}, type) {
 }
 
 function getExcludeRule(type) {
+  const u = new URL(tabURL);
   if (type === 'domain') {
-    return new URL(tabURL).origin + '/*';
+    return u.origin + '/*';
   }
-  return tabURL + '*';
+  return escapeGlob(u.origin + u.pathname) + '*';
+}
+
+function escapeGlob(text) {
+  return text.replace(/\*/g, '\\*');
 }
 
 Object.assign(handleEvent, {
