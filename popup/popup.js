@@ -404,9 +404,8 @@ Object.assign(handleEvent, {
   toggleMenu(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     entry.classList.toggle('menu-active');
-    setTimeout(() => {
-      entry.classList.toggle('accessible-items');
-    }, 250);
+    const menu = entry.querySelector('.menu');
+    menu.style.setProperty('--menu-height', menu.scrollHeight + 'px');
     event.preventDefault();
   },
 
