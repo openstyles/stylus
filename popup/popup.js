@@ -335,6 +335,7 @@ function createStyleElement(style) {
   entry.classList.toggle('regexp-partial', style.sloppy);
 
   $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
+  $('.exclude-by-domain', entry).title = getExcludeRule('domain');
 
   const excludeByUrlCheckbox = $('.exclude-by-url-checkbox', entry);
   const isRedundant = getExcludeRule('domain') === getExcludeRule('url');
@@ -344,7 +345,7 @@ function createStyleElement(style) {
   const excludeByUrlLabel = $('.exclude-by-url', entry);
   excludeByUrlLabel.classList.toggle('disabled', isRedundant);
   excludeByUrlLabel.title = isRedundant ?
-    chrome.i18n.getMessage('excludeStyleByUrlRedundant') : '';
+    chrome.i18n.getMessage('excludeStyleByUrlRedundant') : getExcludeRule('url');
 
   return entry;
 }
