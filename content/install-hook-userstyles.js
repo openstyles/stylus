@@ -456,3 +456,15 @@ if (location.search.includes('category=')) {
     }).observe(document, {childList: true, subtree: true});
   });
 }
+
+if (/^https?:\/\/userstyles\.org\/styles\/\d{3,}/.test(location.href)) {
+  new MutationObserver((_, observer) => {
+    const cssButton = document.getElementsByClassName('css_button');
+    if (cssButton.length) {
+      // Click on the "Show CSS Code" button to workaround the JS error
+      cssButton[0].click();
+      cssButton[0].click();
+      observer.disconnect();
+    }
+  }).observe(document, {childList: true, subtree: true});
+}
