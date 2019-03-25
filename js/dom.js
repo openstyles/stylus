@@ -68,24 +68,23 @@ onDOMready().then(() => {
   $.remove('#firefox-transitions-bug-suppressor');
   initCollapsibles();
   focusAccessibility();
+  if (!chrome.app && chrome.windows) {
+    // add favicon in Firefox
+    setTimeout(() => {
+      if (!prefs) {
+        return;
+      }
+      const iconset = ['', 'light/'][prefs.get('iconset')] || '';
+      for (const size of [38, 32, 19, 16]) {
+        document.head.appendChild($create('link', {
+          rel: 'icon',
+          href: `/images/icon/${iconset}${size}.png`,
+          sizes: size + 'x' + size,
+        }));
+      }
+    });
+  }
 });
-
-if (!chrome.app && chrome.windows) {
-  // add favicon in Firefox
-  setTimeout(() => {
-    if (!window.prefs) {
-      return;
-    }
-    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-    for (const size of [38, 32, 19, 16]) {
-      document.head.appendChild($create('link', {
-        rel: 'icon',
-        href: `/images/icon/${iconset}${size}.png`,
-        sizes: size + 'x' + size,
-      }));
-    }
-  });
-}
 
 // set language for CSS :lang and [FF-only] hyphenation
 document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
