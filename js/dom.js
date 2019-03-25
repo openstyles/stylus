@@ -68,12 +68,9 @@ onDOMready().then(() => {
   $.remove('#firefox-transitions-bug-suppressor');
   initCollapsibles();
   focusAccessibility();
-  if (!chrome.app && chrome.windows) {
+  if (!chrome.app && chrome.windows && typeof prefs !== 'undefined') {
     // add favicon in Firefox
-    setTimeout(() => {
-      if (!prefs) {
-        return;
-      }
+    prefs.initializing.then(() => {
       const iconset = ['', 'light/'][prefs.get('iconset')] || '';
       for (const size of [38, 32, 19, 16]) {
         document.head.appendChild($create('link', {
