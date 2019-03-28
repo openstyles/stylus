@@ -361,7 +361,7 @@ function styleExcluded({exclusions}, type) {
 function getExcludeRule(type) {
   const u = new URL(tabURL);
   if (type === 'domain') {
-    return u.origin + '/*';
+    return u.protocol + '//*.' + u.host + '/*';
   }
   return escapeGlob(u.origin + u.pathname) + '*';
 }
