@@ -27,7 +27,7 @@
     if (!linter) {
       return;
     }
-    const storageName = linter === 'styleint' ? 'editorStylelintConfig' : 'editorCSSLintConfig';
+    const storageName = linter === 'stylelint' ? 'editorStylelintConfig' : 'editorCSSLintConfig';
     const getRules = memoize(linter === 'stylelint' ?
       editorWorker.getStylelintRules : editorWorker.getCsslintRules);
     const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';
@@ -72,7 +72,7 @@
       return getRules()
         .then(rules => {
           if (linter === 'stylelint') {
-            return Object.keys(config.rules).filter(k => !rules.hasOwnProperty(k));
+            return Object.keys(config.rules).filter(k => !config.rules.hasOwnProperty(k));
           }
           const ruleSet = new Set(rules.map(r => r.id));
           return Object.keys(config).filter(k => !ruleSet.has(k));
