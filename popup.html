@@ -48,6 +48,15 @@
         </div>
       </div>
       <div class="menu">
+        <label class="menu-item exclude-by-site button">
+          <div class="menu-icon">
+            <div class="checkbox-container">
+              <input type="checkbox" class="exclude-by-site-checkbox">
+              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            </div>
+          </div>
+          <span i18n-text="excludeStyleBySiteLabel"></span>
+        </label>
         <label class="menu-item exclude-by-domain button">
           <div class="menu-icon">
             <div class="checkbox-container">
@@ -170,6 +179,8 @@
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
   <script src="vendor-overwrites/colorpicker/colorconverter.js"></script>
   <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
+
+  <script src="vendor/psl/psl.min.js"></script>
 
   <link rel="stylesheet" href="msgbox/msgbox.css">
   <script src="msgbox/msgbox.js"></script>

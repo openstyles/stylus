@@ -316,7 +316,10 @@
     "description": "Label for the button to enable a style"
   },
   "excludeStyleByDomainLabel": {
-    "message": "Exclude this site"
+    "message": "Exclude by current domain"
+  },
+  "excludeStyleBySiteLabel": {
+    "message": "Exclude the entire site"
   },
   "excludeStyleByUrlLabel": {
     "message": "Exclude by current URL-prefix"

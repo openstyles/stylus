@@ -1,7 +1,7 @@
 /* global configDialog hotkeys onTabReady msg
   getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
   setupLivePrefs template t $create tWordBreak animateElement
-  tryJSONparse debounce */
+  tryJSONparse debounce psl */
 
 'use strict';
 
@@ -312,6 +312,7 @@ function createStyleElement(style) {
 
     $('.menu-button', entry).onclick = handleEvent.toggleMenu;
 
+    $('.exclude-by-site-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'site');
     $('.exclude-by-domain-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'domain');
     $('.exclude-by-url-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'url');
   }
@@ -337,6 +338,9 @@ function createStyleElement(style) {
   $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
   $('.exclude-by-domain', entry).title = getExcludeRule('domain');
 
+  $('.exclude-by-site-checkbox', entry).checked = styleExcluded(style, 'site');
+  $('.exclude-by-site', entry).title = getExcludeRule('site');
+
   const excludeByUrlCheckbox = $('.exclude-by-url-checkbox', entry);
   const isRedundant = getExcludeRule('domain') === getExcludeRule('url');
   excludeByUrlCheckbox.checked = !isRedundant && styleExcluded(style, 'url');
@@ -361,9 +365,17 @@ function styleExcluded({exclusions}, type) {
 function getExcludeRule(type) {
   const u = new URL(tabURL);
   if (type === 'domain') {
-    return u.protocol + '//*.' + u.host + '/*';
+    return u.protocol + '//' + u.host + '/*';
+  }
+  if (type === 'site') {
+    // FIXME: what should we do if `getRootDomain` return undefined?
+    return u.protocol + '//*.' + getRootDomain(u.host) + '/*';
   }
   return escapeGlob(u.origin + u.pathname) + '*';
+}
+
+function getRootDomain(domain) {
+  return psl.parse(domain).domain;
 }
 
 function escapeGlob(text) {
