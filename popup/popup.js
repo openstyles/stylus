@@ -335,21 +335,27 @@ function createStyleElement(style) {
   entry.classList.toggle('not-applied', style.excluded || style.sloppy);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
-  $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
-  $('.exclude-by-domain', entry).title = getExcludeRule('domain');
+  // setup exclude
+  for (const type of ['site', 'domain', 'url']) {
+    try {
+      $(`.exclude-by-${type}-checkbox`, entry).checked = styleExcluded(style, type);
+      $(`.exclude-by-${type}`, entry).title = getExcludeRule(type);
+    } catch (err) {
+      $(`.exclude-by-${type}-checkbox`, entry).disabled = true;
+      $(`.exclude-by-${type}`, entry).title = err.message || String(err);
+      $(`.exclude-by-${type}`, entry).classList.add('disabled');
+    }
+  }
 
-  $('.exclude-by-site-checkbox', entry).checked = styleExcluded(style, 'site');
-  $('.exclude-by-site', entry).title = getExcludeRule('site');
-
-  const excludeByUrlCheckbox = $('.exclude-by-url-checkbox', entry);
-  const isRedundant = getExcludeRule('domain') === getExcludeRule('url');
-  excludeByUrlCheckbox.checked = !isRedundant && styleExcluded(style, 'url');
-  excludeByUrlCheckbox.disabled = isRedundant;
-
-  const excludeByUrlLabel = $('.exclude-by-url', entry);
-  excludeByUrlLabel.classList.toggle('disabled', isRedundant);
-  excludeByUrlLabel.title = isRedundant ?
-    chrome.i18n.getMessage('excludeStyleByUrlRedundant') : getExcludeRule('url');
+  try {
+    if (getExcludeRule('domain') === getExcludeRule('url')) {
+      $('.exclude-by-url-checkbox', entry).disabled = true;
+      $('.exclude-by-url', entry).title = chrome.i18n.getMessage('excludeStyleByUrlRedundant');
+      $('.exclude-by-url', entry).classList.add('disabled');
+    }
+  } catch (err) {
+    // pass
+  }
 
   return entry;
 }
@@ -364,14 +370,20 @@ function styleExcluded({exclusions}, type) {
 
 function getExcludeRule(type) {
   const u = new URL(tabURL);
+  if (!u.host) {
+    throw new Error('current URL has no host');
+  }
   if (type === 'domain') {
     return u.protocol + '//' + u.host + '/*';
   }
   if (type === 'site') {
-    // FIXME: what should we do if `getRootDomain` return undefined?
-    return u.protocol + '//*.' + getRootDomain(u.host) + '/*';
+    const rootDomain = getRootDomain(u.host);
+    if (!rootDomain) {
+      throw new Error('current URL has no root domain');
+    }
+    return u.protocol + '//*.' + rootDomain + '/*';
   }
-  return escapeGlob(u.origin + u.pathname) + '*';
+  return u.protocol + '//' + u.host + escapeGlob(u.pathname) + '*';
 }
 
 function getRootDomain(domain) {
