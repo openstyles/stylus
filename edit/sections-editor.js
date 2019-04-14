@@ -46,7 +46,7 @@ function createSectionsEditor({style, onTitleChanged}) {
 
   let sectionOrder = '';
   const initializing = new Promise(resolve => initSection({
-    sections: style.sections.slice(),
+    sections: (style.sections || []).slice(),
     done:() => {
       // FIXME: implement this with CSS?
       // https://github.com/openstyles/stylus/commit/2895ce11e271788df0e4f7314b3b981fde086574
@@ -436,7 +436,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     function chunk() {
       if (!originalSections.length) {
         setGlobalProgress();
-        if (focusOn !== false) {
+        if (focusOn !== false && sections[focusOn]) {
           setTimeout(() => sections[focusOn].cm.focus());
         }
         container.classList.remove('hidden');
@@ -545,7 +545,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateSectionOrder();
   }
 
-  function replaceSections(originalSections) {
+  function replaceSections(originalSections = []) {
     for (const section of sections) {
       section.remove(true);
     }

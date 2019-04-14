@@ -71,7 +71,7 @@ const usercss = (() => {
         if (!sections.length || errors && !allowErrors) {
           throw errors;
         }
-        style.sections = sections;
+        style.sections = sections || [];
         return allowErrors ? {style, errors} : style;
       });
   }

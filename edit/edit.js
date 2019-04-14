@@ -170,7 +170,6 @@ preinit();
         $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
 
         $('#preview-label').classList.toggle('hidden', !style.id);
-
         $('#beautify').onclick = () => beautify(editor.getEditors());
         $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
         window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
@@ -341,19 +340,20 @@ function initStyleData() {
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   const id = Number(params.get('id'));
+  const createNewSection = () => [
+    Object.assign({code: ''},
+      ...Object.keys(CssToProperty)
+        .map(name => ({
+          [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
+        }))
+    )
+  ];
   const createEmptyStyle = () => ({
     name: params.get('domain') ||
           tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
           '',
     enabled: true,
-    sections: [
-      Object.assign({code: ''},
-        ...Object.keys(CssToProperty)
-          .map(name => ({
-            [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
-          }))
-      )
-    ],
+    sections: createNewSection(),
   });
   return fetchStyle()
     .then(style => {
@@ -372,7 +372,12 @@ function initStyleData() {
 
   function fetchStyle() {
     if (id) {
-      return API.getStyle(id);
+      return API.getStyle(id).then(style => {
+        if (!style.sections || !style.sections.length) {
+          style.sections = createNewSection();
+        }
+        return style;
+      });
     }
     return Promise.resolve(createEmptyStyle());
   }

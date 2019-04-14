@@ -230,7 +230,7 @@ function createStyleElement({style, name}) {
   // clear the code to free up some memory
   // (note, style is already a deep copy)
   style.sourceCode = null;
-  style.sections.forEach(section => (section.code = null));
+  (style.sections || []).forEach(section => (section.code = null));
 
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
@@ -266,7 +266,7 @@ function createStyleTargetsElement({entry, style}) {
   let numTargets = 0;
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
-    for (const section of style.sections) {
+    for (const section of (style.sections || [])) {
       for (const targetValue of section[type] || []) {
         if (displayed.has(targetValue)) {
           continue;

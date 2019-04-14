@@ -103,7 +103,7 @@ function sectionsToMozFormat(style) {
     domains:     'domain',
     regexps:     'regexp',
   };
-  return style.sections.map(section => {
+  return (style.sections || []).map(section => {
     let cssMds = [];
     for (const i in propertyToCss) {
       if (section[i]) {

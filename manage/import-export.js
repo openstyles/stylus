@@ -148,7 +148,9 @@ function importFromString(jsonString) {
         !item ||
         !item.name ||
         !item.name.trim() ||
-        (item.sections && !Array.isArray(item.sections))) {
+        !item.sections ||
+        !Array.isArray(item.sections)
+    ) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }

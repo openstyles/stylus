@@ -358,7 +358,7 @@ const styleManager = (() => {
       if (match === 'excluded') {
         excluded = true;
       }
-      for (const section of data.sections) {
+      for (const section of (data.sections || [])) {
         if (styleCodeEmpty(section.code)) {
           continue;
         }
