@@ -11,7 +11,7 @@ const LINTER_DEFAULTS = (() => {
     // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
     rules: {
       'at-rule-no-unknown': [true, {
-        'ignoreAtRules': ['extend','extends','css','block'],
+        'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
         'severity': 'warning'
       }],
       'block-no-empty': [true, SEVERITY],
