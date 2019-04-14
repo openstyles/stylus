@@ -10,7 +10,10 @@ const LINTER_DEFAULTS = (() => {
     // ** recommended rules **
     // ref: https://github.com/stylelint/stylelint-config-recommended/blob/master/index.js
     rules: {
-      'at-rule-no-unknown': [true, SEVERITY],
+      'at-rule-no-unknown': [true, {
+        'ignoreAtRules': ['extend','extends','css','block'],
+        'severity': 'warning'
+      }],
       'block-no-empty': [true, SEVERITY],
       'color-no-invalid-hex': [true, SEVERITY],
       'declaration-block-no-duplicate-properties': [true, {
