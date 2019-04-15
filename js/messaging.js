@@ -290,12 +290,8 @@ function ignoreChromeError() {
 
 function getStyleWithNoCode(style) {
   const stripped = deepCopy(style);
-  if (stripped.sections && stripped.sections.length) {
-    for (const section of stripped.sections) section.code = null;
-    stripped.sourceCode = null;
-  } else {
-    stripped.sections = []; // Fixes #687
-  }
+  for (const section of stripped.sections) section.code = null;
+  stripped.sourceCode = null;
   return stripped;
 }
 

@@ -365,7 +365,7 @@
 
   function getAppliesTo(style) {
     function *_gen() {
-      for (const section of (style.sections || [])) {
+      for (const section of style.sections) {
         for (const type of ['urls', 'urlPrefixes', 'domains', 'regexps']) {
           if (section[type]) {
             yield *section[type];

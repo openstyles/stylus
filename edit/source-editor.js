@@ -18,7 +18,7 @@ function createSourceEditor({style, onTitleChanged}) {
   const dirty = dirtyReporter();
 
   // normalize style
-  if (!style.id || !style.sections.length) setupNewStyle(style);
+  if (!style.id) setupNewStyle(style);
 
   const cm = cmFactory.create($('.single-editor'), {
     value: style.sourceCode,
@@ -123,7 +123,6 @@ function createSourceEditor({style, onTitleChanged}) {
   }
 
   function setupNewStyle(style) {
-    if (!style.sections) style.sections = [];
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     let section = sectionsToMozFormat(style);
