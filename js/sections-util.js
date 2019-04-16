@@ -96,3 +96,14 @@ function calcStyleDigest(style) {
     return parts.join('');
   }
 }
+
+function styleJSONseemsValid(json) {
+  return json
+    && json.name
+    && json.name.trim()
+    && Array.isArray(json.sections)
+    && json.sections
+    && json.sections.length
+    && typeof json.sections.every === 'function'
+    && typeof json.sections[0].code === 'string';
+}
