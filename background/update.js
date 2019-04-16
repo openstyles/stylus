@@ -231,14 +231,6 @@
         API_METHODS[json.usercssData ? 'installUsercss' : 'installStyle'](newStyle) :
         newStyle;
     }
-
-    function styleJSONseemsValid(json) {
-      return json
-        && json.sections
-        && json.sections.length
-        && typeof json.sections.every === 'function'
-        && typeof json.sections[0].code === 'string';
-    }
   }
 
   function schedule() {
