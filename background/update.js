@@ -1,6 +1,6 @@
 /* global styleSectionsEqual prefs download tryJSONparse ignoreChromeError
   calcStyleDigest getStyleWithNoCode debounce chromeLocal
-  usercss semverCompare
+  usercss semverCompare styleJSONseemsValid
   API_METHODS styleManager */
 'use strict';
 

@@ -1,4 +1,4 @@
-/* exported styleSectionsEqual styleCodeEmpty calcStyleDigest */
+/* exported styleSectionsEqual styleCodeEmpty calcStyleDigest styleJSONseemsValid */
 'use strict';
 
 function styleCodeEmpty(code) {
