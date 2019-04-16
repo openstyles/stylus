@@ -1,5 +1,6 @@
 /* global messageBox styleSectionsEqual getOwnTab API onDOMready
-  tryJSONparse scrollElementIntoView $ $$ API $create t animateElement */
+  tryJSONparse scrollElementIntoView $ $$ API $create t animateElement
+  styleJSONseemsValid */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
@@ -144,11 +145,7 @@ function importFromString(jsonString) {
     .then(done);
 
   function analyze(item, index) {
-    if (typeof item !== 'object' ||
-        !item ||
-        !item.name ||
-        !item.name.trim() ||
-        (item.sections && !Array.isArray(item.sections))) {
+    if (typeof item !== 'object' || !styleJSONseemsValid(item)) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }

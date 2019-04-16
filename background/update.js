@@ -1,6 +1,6 @@
 /* global styleSectionsEqual prefs download tryJSONparse ignoreChromeError
   calcStyleDigest getStyleWithNoCode debounce chromeLocal
-  usercss semverCompare
+  usercss semverCompare styleJSONseemsValid
   API_METHODS styleManager */
 'use strict';
 
@@ -230,14 +230,6 @@
       return save ?
         API_METHODS[json.usercssData ? 'installUsercss' : 'installStyle'](newStyle) :
         newStyle;
-    }
-
-    function styleJSONseemsValid(json) {
-      return json
-        && json.sections
-        && json.sections.length
-        && typeof json.sections.every === 'function'
-        && typeof json.sections[0].code === 'string';
     }
   }
 
