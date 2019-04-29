@@ -362,9 +362,8 @@ const APPLY = (() => {
       .then(() => {
         setTimeout(() => {
           el.remove();
-          if (docHadClass) {
-            document.documentElement.classList.remove(className);
-          } else {
+          document.documentElement.classList.remove(className);
+          if (!docHadClass && document.documentElement.classList.length === 0) {
             document.documentElement.removeAttribute('class');
           }
         });
