@@ -348,6 +348,7 @@ const APPLY = (() => {
     // the browsers, especially Firefox, may apply all transitions on page load
     const className = chrome.runtime.id + '-transition-bug-fix';
     const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
+    const docHadClass = document.documentElement.hasAttribute('class');
     document.documentElement.classList.add(className);
     const el = styleInjector.createStyle('transition-patch');
     // FIXME: this will trigger docRootObserver and cause a resort. We should
@@ -361,7 +362,11 @@ const APPLY = (() => {
       .then(() => {
         setTimeout(() => {
           el.remove();
-          document.documentElement.classList.remove(className);
+          if (docHadClass) {
+            document.documentElement.classList.remove(className);
+          } else {
+            document.documentElement.removeAttribute('class');
+          }
         });
       });
   }
