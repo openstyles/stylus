@@ -93,9 +93,26 @@
       });
     }
 
+    function prepareInstallButton() {
+      return new Promise(resolve => {
+        const observer = new MutationObserver(check);
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+        });
+        check();
+
+        function check() {
+          if (document.querySelector('#install_style_button')) {
+            resolve();
+            observer.disconnect();
+          }
+        }
+      });
+    }
+
     function reportUpdatable(isUpdatable) {
-      // USO doesn't bind these listeners immediately
-      setTimeout(() => {
+      prepareInstallButton().then(() => {
         sendEvent({
           type: isUpdatable
             ? 'styleCanBeUpdatedChrome'
@@ -104,7 +121,7 @@
             updateUrl: installedStyle.updateUrl
           },
         });
-      }, 300);
+      });
     }
   }
 
