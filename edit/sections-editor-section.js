@@ -60,11 +60,30 @@ function createResizeGrip(cm) {
       const sectionEl = wrapper.parentNode;
       const sectionExtrasHeight = sectionEl.clientHeight - wrapper.offsetHeight;
       cm.state.toggleHeightSaved = wrapper.clientHeight;
-      cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight);
+      cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight - 2);
       const bounds = sectionEl.getBoundingClientRect();
       if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
         window.scrollBy(0, bounds.top);
       }
+    }
+  }
+
+  document.onreadystatechange = () => {
+    if (document.readyState !== 'loading') {
+      new MutationObserver((_, observer) => {
+        const sections = document.getElementsByClassName('section');
+        if (sections) {
+          if (sections.length === 1) {
+            setTimeout(() => {
+              toggleSectionHeight(cm);
+              sections[0].classList.add('height-calculated');
+            });
+            observer.disconnect();
+          } else {
+            observer.disconnect();
+          }
+        }
+      }).observe(document, {childList: true, subtree: true});
     }
   }
 }
