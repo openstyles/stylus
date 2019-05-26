@@ -150,6 +150,7 @@
   justify-content: center;
 }
 #message-box.stylus-popup > div {
+  max-height: 570px;
   max-width: 90vw;
   top: auto;
   right: auto;
