@@ -346,24 +346,27 @@ const APPLY = (() => {
   function applyTransitionPatch() {
     // CSS transition bug workaround: since we insert styles asynchronously,
     // the browsers, especially Firefox, may apply all transitions on page load
-    const className = chrome.runtime.id + '-transition-bug-fix';
-    const docId = document.documentElement.id ? '#' + document.documentElement.id : '';
-    document.documentElement.classList.add(className);
     const el = styleInjector.createStyle('transition-patch');
     // FIXME: this will trigger docRootObserver and cause a resort. We should
     // move this function into style-injector.
     document.documentElement.appendChild(el);
     setStyleContent(el, `
-      ${docId}.${CSS.escape(className)}:root * {
+      :root:not(#\\0):not(#\\0) * {
         transition: none !important;
       }
     `)
+      .then(afterPaint)
       .then(() => {
-        setTimeout(() => {
-          el.remove();
-          document.documentElement.classList.remove(className);
-        });
+        el.remove();
       });
+  }
+
+  function afterPaint() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve);
+      });
+    });
   }
 
   function orphanCheck(e) {
