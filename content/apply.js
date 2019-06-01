@@ -89,17 +89,18 @@ const APPLY = (() => {
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
     let ready;
-    return (el, content) =>
+    return (el, content, disabled) =>
       checkPageScript().then(ok => {
         if (!ok) {
-          const disabled = el.disabled;
           el.textContent = content;
+          // https://github.com/openstyles/stylus/issues/693
           el.disabled = disabled;
         } else {
           const detail = pageObject({
             method: 'setStyleContent',
             id: el.id,
-            content
+            content,
+            disabled
           });
           window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
         }
@@ -119,13 +120,12 @@ const APPLY = (() => {
         const available = checkStyleApplied();
         if (available) {
           window.addEventListener(EVENT_NAME, function handler(e) {
-            const {method, id, content} = e.detail;
+            const {method, id, content, disabled} = e.detail;
             if (method === 'setStyleContent') {
               const el = document.getElementById(id);
               if (!el) {
                 return;
               }
-              const disabled = el.disabled;
               el.textContent = content;
               el.disabled = disabled;
             } else if (method === 'orphan') {

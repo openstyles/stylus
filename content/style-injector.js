@@ -68,7 +68,7 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       return update(style);
     }
     style.el = createStyle(style.id);
-    const pending = setStyleContent(style.el, style.code);
+    const pending = setStyleContent(style.el, style.code, !enabled);
     table.set(style.id, style);
     const nextIndex = list.findIndex(i => compare(i, style) > 0);
     if (nextIndex < 0) {
@@ -78,8 +78,6 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       document.documentElement.insertBefore(style.el, list[nextIndex].el);
       list.splice(nextIndex, 0, style);
     }
-    // disabled flag is read-only when not attached to a document
-    style.el.disabled = !enabled;
     return pending;
   }
 
@@ -110,7 +108,7 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
       style.el.disabled = !enabled;
     }
-    return setStyleContent(style.el, code)
+    return setStyleContent(style.el, code, !enabled)
       .then(() => oldEl && oldEl.remove());
   }
 
@@ -153,13 +151,12 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
   function sort() {
     list.sort(compare);
     for (const style of list) {
-      // moving an element resets its 'disabled' state
-      const disabled = style.el.disabled;
       // FIXME: do we need this?
       // const copy = document.importNode(el, true);
       // el.textContent += ' '; // invalidate CSSOM cache
       document.documentElement.appendChild(style.el);
-      style.el.disabled = disabled;
+      // moving an element resets its 'disabled' state
+      style.el.disabled = !enabled;
     }
   }
 
