@@ -93,9 +93,26 @@
       });
     }
 
+    function prepareInstallButton() {
+      return new Promise(resolve => {
+        const observer = new MutationObserver(check);
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+        });
+        check();
+
+        function check() {
+          if (document.querySelector('#install_style_button')) {
+            resolve();
+            observer.disconnect();
+          }
+        }
+      });
+    }
+
     function reportUpdatable(isUpdatable) {
-      // USO doesn't bind these listeners immediately
-      setTimeout(() => {
+      prepareInstallButton().then(() => {
         sendEvent({
           type: isUpdatable
             ? 'styleCanBeUpdatedChrome'
@@ -104,7 +121,7 @@
             updateUrl: installedStyle.updateUrl
           },
         });
-      }, 300);
+      });
     }
   }
 
@@ -130,8 +147,18 @@
       return;
     }
     onClick.processing = true;
-    (event.type.includes('Update') ? onUpdate() : onInstall())
-      .then(done, done);
+    doInstall()
+      .then(() => {
+        if (!event.type.includes('Update')) {
+          // FIXME: sometimes the button is broken i.e. the button sends
+          // 'install' instead of 'update' event while the style is already
+          // install.
+          // This triggers an incorrect install count but we don't really care.
+          return getResource(getMeta('stylish-install-ping-url-chrome'));
+        }
+      })
+      .catch(console.error)
+      .then(done);
     function done() {
       setTimeout(() => {
         onClick.processing = false;
@@ -139,25 +166,25 @@
     }
   }
 
-
-  function onInstall() {
-    return getResource(getMeta('stylish-description'))
-      .then(name => saveStyleCode('styleInstall', name))
-      .then(() => getResource(getMeta('stylish-install-ping-url-chrome')));
-  }
-
-
-  function onUpdate() {
-    return new Promise((resolve, reject) => {
-      API.findStyle({
-        md5Url: getMeta('stylish-md5-url') || location.href
-      }, true).then(style => {
-        saveStyleCode('styleUpdate', style.name, {id: style.id})
-          .then(resolve, reject);
+  function doInstall() {
+    let oldStyle;
+    return API.findStyle({
+      md5Url: getMeta('stylish-md5-url') || location.href
+    }, true)
+      .then(_oldStyle => {
+        oldStyle = _oldStyle;
+        return oldStyle ?
+          oldStyle.name :
+          getResource(getMeta('stylish-description'));
+      })
+      .then(name => {
+        const props = {};
+        if (oldStyle) {
+          props.id = oldStyle.id;
+        }
+        return saveStyleCode(oldStyle ? 'styleUpdate' : 'styleInstall', name, props);
       });
-    });
   }
-
 
   function saveStyleCode(message, name, addProps = {}) {
     const isNew = message === 'styleInstall';
