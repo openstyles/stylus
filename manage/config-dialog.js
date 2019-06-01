@@ -433,8 +433,8 @@ function configDialog(style) {
     const MIN_HEIGHT = 250 + PADDING;
     colorpicker.remove();
 
-    width = constrain(MIN_WIDTH, 800, width + PADDING);
-    height = constrain(MIN_HEIGHT, 600, height + PADDING);
+    width = constrain(MIN_WIDTH, 798, width + PADDING);
+    height = constrain(MIN_HEIGHT, 598, height + PADDING);
     document.body.style.setProperty('min-width', width + 'px', 'important');
     document.body.style.setProperty('min-height', height + 'px', 'important');
   }
