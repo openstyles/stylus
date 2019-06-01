@@ -37,6 +37,7 @@
 
   prefs.subscribe(['updateInterval'], schedule);
   schedule();
+  chrome.alarms.onAlarm.addListener(onAlarm);
 
   return {checkAllStyles, checkStyle, STATES};
 
@@ -240,10 +241,8 @@
       chrome.alarms.create(ALARM_NAME, {
         when: Date.now() + Math.max(MIN_INTERVAL_MS, interval - elapsed),
       });
-      chrome.alarms.onAlarm.addListener(onAlarm);
     } else {
       chrome.alarms.clear(ALARM_NAME, ignoreChromeError);
-      chrome.alarms.onAlarm.removeListener(onAlarm);
     }
   }
 
