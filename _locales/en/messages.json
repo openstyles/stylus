@@ -321,9 +321,6 @@
   "excludeStyleByUrlLabel": {
     "message": "Exclude the current URL"
   },
-  "excludeStyleByUrlRedundant": {
-    "message": "The current URL is the domain page"
-  },
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
