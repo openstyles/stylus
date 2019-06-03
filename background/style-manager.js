@@ -43,7 +43,22 @@ const styleManager = (() => {
   const BAD_MATCHER = {test: () => false};
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
-  const compileExclusion = createCompiler(buildGlob);
+  const compileExclusion = createCompiler(buildExclusion);
+
+  const DUMMY_URL = {
+    hash: '',
+    host: '',
+    hostname: '',
+    href: '',
+    origin: '',
+    password: '',
+    pathname: '',
+    port: '',
+    protocol: '',
+    search: '',
+    searchParams: new URLSearchParams(),
+    username: ''
+  };
 
   handleLivePreviewConnections();
 
@@ -529,8 +544,22 @@ const styleManager = (() => {
     };
   }
 
-  function buildGlob(text) {
-    return '^' + escapeRegExp(text).replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*') + '$';
+  function compileGlob(text) {
+    return escapeRegExp(text).replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*');
+  }
+
+  function buildExclusion(text) {
+    // match pattern
+    const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/);
+    if (!match) {
+      return '^' + compileGlob(text) + '$';
+    }
+    return '^' +
+      (match[1] === '*' ? '[\\w-]+' : match[1]) +
+      '://' +
+      (match[2] ? '(?:[\\w.]+\\.)?' : '') +
+      compileGlob(match[3]) +
+      '$';
   }
 
   // The md5Url provided by USO includes a duplicate "update" subdomain (see #523),
@@ -555,18 +584,26 @@ const styleManager = (() => {
       },
       get urlWithoutParams() {
         if (!urlWithoutParams) {
-          const u = new URL(url);
+          const u = createURL(url);
           urlWithoutParams = u.origin + u.pathname;
         }
         return urlWithoutParams;
       },
       get domain() {
         if (!domain) {
-          const u = new URL(url);
+          const u = createURL(url);
           domain = u.hostname;
         }
         return domain;
       }
     };
+  }
+
+  function createURL(url) {
+    try {
+      return new URL(url);
+    } catch (err) {
+      return DUMMY_URL;
+    }
   }
 })();
