@@ -337,6 +337,9 @@ function createStyleElement(style) {
   $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
   $('.exclude-by-url-checkbox', entry).checked = styleExcluded(style, 'url');
 
+  $('.exclude-by-domain', entry).title = getExcludeRule('domain');
+  $('.exclude-by-url', entry).title = getExcludeRule('url');
+
   return entry;
 }
 
