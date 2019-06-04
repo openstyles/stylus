@@ -397,7 +397,6 @@ Object.assign(handleEvent, {
   },
 
   toggleMenu(event) {
-    document.documentElement.classList.toggle('menu-shown')
     const entry = handleEvent.getClickedStyleElement(event);
     entry.classList.toggle('menu-active');
     const menu = entry.querySelector('.menu');
