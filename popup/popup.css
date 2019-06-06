@@ -26,7 +26,7 @@ body {
   margin: 0;
 }
 
-.firefox, .firefox body:not(.search-results-shown) {
+html, body:not(.search-results-shown) {
   overflow: hidden;
 }
 
