@@ -311,6 +311,7 @@ function createStyleElement(style) {
     $('.main-controls', entry).appendChild(indicator);
 
     $('.menu-button', entry).onclick = handleEvent.toggleMenu;
+    $('.menu-close', entry).onclick = handleEvent.toggleMenu;
 
     $('.exclude-by-domain-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'domain');
     $('.exclude-by-url-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'url');
@@ -398,9 +399,37 @@ Object.assign(handleEvent, {
 
   toggleMenu(event) {
     const entry = handleEvent.getClickedStyleElement(event);
-    entry.classList.toggle('menu-active');
-    const menu = entry.querySelector('.menu');
-    menu.style.setProperty('--menu-height', menu.scrollHeight + 'px');
+    const menu = $('.menu', entry);
+    const menuActive = $('.menu[data-display=true]');
+    if (menuActive) {
+      // fade-out style menu
+      animateElement(menu, {
+        className: 'lights-on',
+        onComplete: () => (menu.dataset.display = false),
+      });
+      window.onkeydown = null;
+    } else {
+      $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
+      menu.dataset.display = true;
+      menu.style.cssText = '';
+      window.onkeydown = event => {
+        const close = $('.menu-close', entry);
+        const checkbox = $('.exclude-by-domain-checkbox', entry);
+        const keyCode = event.keyCode || event.which;
+        if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+          event.preventDefault();
+          checkbox.focus();
+        }
+        if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+          event.preventDefault();
+          close.focus();
+        }
+        if (keyCode === 27) {
+          event.preventDefault();
+          close.click();
+        }
+      };
+    }
     event.preventDefault();
   },
 
@@ -408,28 +437,55 @@ Object.assign(handleEvent, {
     const entry = handleEvent.getClickedStyleElement(event);
     const id = entry.styleId;
     const box = $('#confirm');
-    const cancel = $('[data-cmd="cancel"]');
+    const menu = $('.menu', entry);
+    const cancel = $('[data-cmd="cancel"]', box);
+    const affirm = $('[data-cmd="ok"]', box);
     box.dataset.display = true;
     box.style.cssText = '';
     $('b', box).textContent = $('.style-name', entry).textContent;
-    $('[data-cmd="ok"]', box).focus();
-    $('[data-cmd="ok"]', box).onclick = () => confirm(true);
-    $('[data-cmd="cancel"]', box).onclick = () => confirm(false);
+    affirm.focus();
+    affirm.onclick = () => confirm(true);
+    cancel.onclick = () => confirm(false);
     window.onkeydown = event => {
+      const close = $('.menu-close', entry);
+      const checkbox = $('.exclude-by-domain-checkbox', entry);
+      const confirmActive = $('#confirm[data-display="true"]');
       const keyCode = event.keyCode || event.which;
-      if (document.activeElement !== cancel && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
-      && (keyCode === 13 || keyCode === 27)) {
+      if (document.activeElement === cancel && (keyCode === 9)) {
         event.preventDefault();
-        confirm(keyCode === 13);
+        affirm.focus();
+      }
+      if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+        event.preventDefault();
+        checkbox.focus();
+      }
+      if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+        event.preventDefault();
+        close.focus();
+      }
+      if (keyCode === 27) {
+        event.preventDefault();
+        if (confirmActive) {
+          box.dataset.display = false;
+          menu.focus();
+        } else {
+          close.click();
+        }
       }
     };
     function confirm(ok) {
-      window.onkeydown = null;
-      animateElement(box, {
-        className: 'lights-on',
-        onComplete: () => (box.dataset.display = false),
-      });
-      if (ok) API.deleteStyle(id);
+      if (ok) {
+        // fade-out deletion confirmation dialog
+        animateElement(box, {
+          className: 'lights-on',
+          onComplete: () => (box.dataset.display = false),
+        });
+        window.onkeydown = null;
+        API.deleteStyle(id);
+      } else {
+        box.dataset.display = false;
+        menu.focus();
+      }
     }
   },
 
