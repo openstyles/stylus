@@ -26,6 +26,10 @@ body {
   margin: 0;
 }
 
+html, body:not(.search-results-shown) {
+  overflow: hidden;
+}
+
 .firefox body {
   color: #000;
   background-color: #fff;
@@ -327,8 +331,7 @@ a.configure[target="_blank"] .svg-icon.config {
   opacity: 0;
 }
 .entry.menu-active .menu {
-  /* FIXME: avoid hard coded height */
-  height: 72px;
+  height: var(--menu-height, 0px);
   opacity: 1;
 }
 /* accessibility */
@@ -336,12 +339,12 @@ a.configure[target="_blank"] .svg-icon.config {
   display: none;
   border: none;
   align-items: center;
-  padding: 0 0 0 20px;
-  height: 24px;
+  padding: 3px 0 3px 20px;
   background: none;
   text-decoration: none;
+  flex: none;
 }
-.entry.menu-active.accessible-items .menu-item {
+.entry.menu-active .menu-item {
   display: flex;
 }
 .entry .menu-item.delete {
@@ -360,6 +363,7 @@ a.configure[target="_blank"] .svg-icon.config {
 }
 .entry .menu-icon {
   width: 26px;
+  flex-shrink: 0;
 }
 .entry .menu-icon > * {
   display: block;
