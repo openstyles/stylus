@@ -107,10 +107,10 @@ function createSectionsEditor({style, onTitleChanged}) {
     if (available <= 0) {
       return;
     }
-    for (const section of sections) {
-      const cmHeight = section.cm.getWrapperElement().offsetHeight;
-      section.cm.setSize(null, cmHeight + Math.floor(available / sections.length));
-    }
+    const cmHeights = sections.map(s => s.cm.getWrapperElement().offsetHeight);
+    sections.forEach((section, i) => {
+      section.cm.setSize(null, cmHeights[i] + Math.floor(available / sections.length));
+    });
   }
 
   function genId() {
