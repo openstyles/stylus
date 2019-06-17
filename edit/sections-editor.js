@@ -48,12 +48,11 @@ function createSectionsEditor({style, onTitleChanged}) {
   const initializing = new Promise(resolve => initSection({
     sections: style.sections.slice(),
     done:() => {
-      // FIXME: implement this with CSS?
-      // https://github.com/openstyles/stylus/commit/2895ce11e271788df0e4f7314b3b981fde086574
       dirty.clear();
       rerouteHotkeys(true);
       resolve();
       updateHeader();
+      sections.forEach(fitToContent);
     }
   }));
 
@@ -79,6 +78,40 @@ function createSectionsEditor({style, onTitleChanged}) {
     closestVisible,
     getSearchableInputs,
   };
+
+  function fitToContent(section) {
+    if (section.cm.isRefreshed) {
+      resize();
+    } else {
+      section.cm.on('update', resize);
+    }
+
+    function resize() {
+      let contentHeight = section.el.querySelector('.CodeMirror-sizer').offsetHeight;
+      if (contentHeight < section.cm.defaultTextHeight()) {
+        return;
+      }
+      contentHeight += 9; // border & resize grip
+      section.cm.off('update', resize);
+      const cmHeight = section.cm.getWrapperElement().offsetHeight;
+      const maxHeight = cmHeight + window.innerHeight - section.el.offsetHeight;
+      section.cm.setSize(null, Math.min(contentHeight, maxHeight));
+      if (sections.every(s => s.cm.isRefreshed)) {
+        fitToAvailableSpace();
+      }
+    }
+  }
+
+  function fitToAvailableSpace() {
+    const available = window.innerHeight - container.offsetHeight;
+    if (available <= 0) {
+      return;
+    }
+    for (const section of sections) {
+      const cmHeight = section.cm.getWrapperElement().offsetHeight;
+      section.cm.setSize(null, cmHeight + Math.floor(available / sections.length));
+    }
+  }
 
   function genId() {
     return INC_ID++;

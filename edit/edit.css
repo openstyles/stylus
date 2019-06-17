@@ -311,6 +311,7 @@ input:invalid {
 }
 .section .CodeMirror {
   margin-bottom: .875rem;
+  box-sizing: border-box;
 }
 /* deleted section */
 .deleted-section {
