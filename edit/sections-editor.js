@@ -13,6 +13,8 @@ function createSectionsEditor({style, onTitleChanged}) {
   const container = $('#sections');
   const sections = [];
 
+  container.classList.add('section-editor');
+
   const nameEl = $('#name');
   nameEl.addEventListener('input', () => {
     dirty.modify('name', style.name, nameEl.value);
@@ -99,11 +101,16 @@ function createSectionsEditor({style, onTitleChanged}) {
       if (sections.every(s => s.cm.isRefreshed)) {
         fitToAvailableSpace();
       }
+      setTimeout(() => {
+        container.classList.add('section-editor-ready');
+      }, 50);
     }
   }
 
   function fitToAvailableSpace() {
-    const available = window.innerHeight - container.offsetHeight;
+    const available =
+      Math.floor(container.offsetHeight - sections.reduce((h, s) => h + s.el.offsetHeight, 0)) ||
+      window.innerHeight - container.offsetHeight;
     if (available <= 0) {
       return;
     }

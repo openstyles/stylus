@@ -263,13 +263,19 @@ input:invalid {
 #lint:not([open]) + #footer {
   margin-top: 4em;
 }
-/************ content ***********/
-#sections > * {
+/************ section editor ***********/
+.section-editor .section {
   margin: 0 0.7rem;
   padding: 1rem;
 }
-#sections > :not(:first-child) {
+.section-editor .section:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
+}
+.section-editor:not(.section-editor-ready) .section {
+  visibility: hidden;
+}
+.section-editor:not(.section-editor-ready) .CodeMirror {
+  height: 0;
 }
 .add-section:after {
   content: attr(short-text);
@@ -951,12 +957,8 @@ html:not(.usercss) .usercss-only,
     flex: 1;
   }
   #sections > * {
-    margin: 0 .5rem .5rem;
-    padding: .5rem 0 0;
-  }
-  #sections > *:first-child {
-    margin: .5rem;
-    padding: 0;
+    margin: 0 .5rem;
+    padding: .5rem 0;
   }
   .usercss .CodeMirror-scroll {
     max-height: calc(100vh - var(--header-narrow-min-height));
