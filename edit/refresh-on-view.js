@@ -10,6 +10,7 @@ CodeMirror.defineExtension('refreshOnView', function () {
   const cm = this;
   if (typeof IntersectionObserver === 'undefined') {
     // uh
+    cm.isRefreshed = true;
     cm.refresh();
     return;
   }
@@ -18,6 +19,7 @@ CodeMirror.defineExtension('refreshOnView', function () {
     for (const entry of entries) {
       if (entry.isIntersecting) {
         // wrapper.style.visibility = 'visible';
+        cm.isRefreshed = true;
         cm.refresh();
         observer.disconnect();
       }
