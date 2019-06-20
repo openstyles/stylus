@@ -777,8 +777,9 @@ html:not(.usercss) .usercss-only,
   color: #888;
 }
 
-#sections .single-editor,
-#sections > .single-editor:first-child {
+/* FIXME: remove the ID selector */
+#sections .single-editor {
+  height: 100%;
   margin: 0;
   padding: 0;
   display: flex;
