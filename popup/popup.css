@@ -26,10 +26,6 @@ body {
   margin: 0;
 }
 
-html, body:not(.search-results-shown) {
-  overflow: hidden;
-}
-
 .firefox body {
   color: #000;
   background-color: #fff;
@@ -319,42 +315,60 @@ a.configure[target="_blank"] .svg-icon.config {
 
 /* entry menu */
 .entry .menu {
-  display: flex;
-  flex-direction: column;
-  top: 100%;
-  width: 100%;
-  z-index: 1;
-  box-sizing: border-box;
-  height: 0;
-  transition: height .25s ease-out, opacity .5s ease-in;
-  overflow: hidden;
-  opacity: 0;
-}
-.entry.menu-active .menu {
-  height: var(--menu-height, 0px);
-  opacity: 1;
-}
-/* accessibility */
-.menu-item {
   display: none;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.4);
+  outline: none;
+  animation: lights-off .5s cubic-bezier(.03, .67, .08, .94);
+  animation-fill-mode: both;
+}
+.menu-title,
+#confirm > div > b {
+  padding-bottom: .5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.menu-items-wrapper {
+  width: 80%;
+  max-height: 80%;
+  min-height: 6em;
+  padding: 1em;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  background-color: #fff;
+  border: solid 2px rgba(0, 0, 0, 0.5);
+}
+.menu-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 0 0;
+}
+.menu-buttons-wrapper button {
+  margin: 0 .25em;
+}
+.menu-item {
+  display: flex;
   border: none;
   align-items: center;
-  padding: 3px 0 3px 20px;
+  padding: 3px 0;
   background: none;
   text-decoration: none;
   flex: none;
 }
-.entry.menu-active .menu-item {
-  display: flex;
-}
-.entry .menu-item.delete {
-  cursor: pointer;
-}
-.entry .menu-item.delete:hover {
-  color: #000;
-}
 .entry .menu-item > span {
-  margin-top: 1px;
+  margin: 1px 0 -1px;
 }
 .entry .menu-item:hover,
 .entry .menu-item:active {
@@ -594,22 +608,52 @@ body.blocked .actions > .main-controls {
   margin: 0 !important;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.4);
-  animation: lights-off .5s cubic-bezier(.03, .67, .08, .94);
-  animation-fill-mode: both;
 }
 
-#confirm.lights-on {
+#confirm.lights-on,
+.menu.lights-on {
   animation: lights-on .25s ease-in-out;
   animation-fill-mode: both;
 }
 
 #confirm.lights-on,
-#confirm.lights-on > div {
+#confirm.lights-on > div,
+.menu.lights-on > div {
   display: none;
 }
 
-#confirm[data-display=true] {
+#confirm[data-display=true],
+.menu[data-display=true] {
   display: flex;
+}
+
+#confirm[data-display=true] + #installed .menu[data-display=true] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#confirm > div {
+  width: 80%;
+  max-height: 80%;
+  min-height: 6em;
+  padding: 1em;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border: solid 2px rgba(0, 0, 0, 0.5);
+}
+
+#confirm > div > *:not(:last-child) {
+  padding-bottom: .5em;
+}
+
+#confirm > div > div {
+  text-align: center;
+}
+
+.non-windows #confirm > div > div {
+  direction: rtl;
+  text-align: right;
 }
 
 #confirm > div {

@@ -47,33 +47,32 @@
           </a>
         </div>
       </div>
-      <div class="menu">
-        <label class="menu-item exclude-by-domain button">
-          <div class="menu-icon">
-            <div class="checkbox-container">
-              <input type="checkbox" class="exclude-by-domain-checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+      <div class="menu" tabindex="-1">
+        <div class="menu-items-wrapper">
+          <b class="menu-title"></b>
+          <label class="menu-item exclude-by-domain button">
+            <div class="menu-icon">
+              <div class="checkbox-container">
+                <input type="checkbox" class="exclude-by-domain-checkbox">
+                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+              </div>
             </div>
-          </div>
-          <span i18n-text="excludeStyleByDomainLabel"></span>
-        </label>
-        <label class="menu-item exclude-by-url button">
-          <div class="menu-icon">
-            <div class="checkbox-container">
-              <input type="checkbox" class="exclude-by-url-checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+            <span i18n-text="excludeStyleByDomainLabel"></span>
+          </label>
+          <label class="menu-item exclude-by-url button">
+            <div class="menu-icon">
+              <div class="checkbox-container">
+                <input type="checkbox" class="exclude-by-url-checkbox">
+                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+              </div>
             </div>
+            <span i18n-text="excludeStyleByUrlLabel"></span>
+          </label>
+          <div class="menu-buttons-wrapper">
+            <button class="delete" i18n-text="deleteStyleLabel"></button>
+            <button class="menu-close" i18n-text="confirmClose"></button>
           </div>
-          <span i18n-text="excludeStyleByUrlLabel"></span>
-        </label>
-        <a href="#" class="menu-item delete">
-          <div class="menu-icon">
-            <svg class="svg-icon remove" viewBox="0 0 14 16">
-              <path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/>
-            </svg>
-          </div>
-          <span i18n-text="deleteStyleLabel"></span>
-        </a>
+        </div>
       </div>
     </div>
   </template>
