@@ -18,7 +18,7 @@ const db = (() => {
   };
 
   function prepare() {
-    return shouldUseIndexedDB().then(
+    return withPromise(shouldUseIndexedDB).then(
       ok => {
         if (ok) {
           useIndexedDB();
@@ -37,16 +37,18 @@ const db = (() => {
     // which, once detected on the first run, is remembered in chrome.storage.local
     // for reliablility and in localStorage for fast synchronous access
     // (FF may block localStorage depending on its privacy options)
+    // note that it may throw when accessing the variable
+    // https://github.com/openstyles/stylus/issues/615
     if (typeof indexedDB === 'undefined') {
-      return Promise.reject(new Error('indexedDB is undefined'));
+      throw new Error('indexedDB is undefined');
     }
     // test localStorage
     const fallbackSet = localStorage.dbInChromeStorage;
     if (fallbackSet === 'true') {
-      return Promise.resolve(false);
+      return false;
     }
     if (fallbackSet === 'false') {
-      return Promise.resolve(true);
+      return true;
     }
     // test storage.local
     return chromeLocal.get('dbInChromeStorage')
@@ -57,6 +59,14 @@ const db = (() => {
         return testDBSize()
           .then(ok => ok || testDBMutation());
       });
+  }
+
+  function withPromise(fn) {
+    try {
+      return Promise.resolve(fn());
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 
   function testDBSize() {

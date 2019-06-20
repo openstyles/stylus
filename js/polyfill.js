@@ -50,4 +50,22 @@
       }
     }
   }
+  try {
+    if (!localStorage) {
+      throw new Error('localStorage is null');
+    }
+    localStorage._access_check = 1;
+    delete localStorage._access_check;
+  } catch (err) {
+    Object.defineProperty(self, 'localStorage', {value: {}});
+  }
+  try {
+    if (!sessionStorage) {
+      throw new Error('sessionStorage is null');
+    }
+    sessionStorage._access_check = 1;
+    delete sessionStorage._access_check;
+  } catch (err) {
+    Object.defineProperty(self, 'sessionStorage', {value: {}});
+  }
 })();
