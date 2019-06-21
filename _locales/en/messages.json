@@ -92,6 +92,10 @@
     "message": "Select a file or drag and drop to this page.",
     "description": "Message for backup"
   },
+  "backupReminderMessage": {
+    "message": "It's about that time to backup (export) your styles!",
+    "description": "Tooltip shown to remind users to backup their styles"
+  },
   "bckpInstStyles": {
     "message": "Export styles"
   },

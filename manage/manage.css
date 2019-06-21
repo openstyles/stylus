@@ -1046,6 +1046,15 @@ input[id^="manage.newUI"] {
   text-overflow: ellipsis;
 }
 
+#backup.show-reminder[open] summary {
+  padding-bottom: 0;
+}
+
+#backup.show-reminder #backup-message,
+#backup:not(.show-reminder) #backup-reminder-tooltip {
+  display: none;
+}
+
 /* export/import buttons */
 #backup-buttons .dropbtn {
   padding: 3px 7px;
@@ -1070,6 +1079,14 @@ input[id^="manage.newUI"] {
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+#backup-reminder-tooltip {
+  display: block;
+  padding: 10px;
+  background: #cb4;
+  color: #000;
+  cursor: pointer;
 }
 
 #backup-buttons .dropdown-content a {

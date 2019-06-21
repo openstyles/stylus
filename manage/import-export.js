@@ -11,6 +11,10 @@ onDOMready().then(() => {
   $('#unfile-all-styles').onclick = () => {
     importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
   };
+  $('#backup-reminder-tooltip').onclick = () => {
+    setLastBackup({ update: false });
+  };
+  isItTimeToBackup();
 
   Object.assign(document.body, {
     ondragover(event) {
@@ -50,6 +54,40 @@ onDOMready().then(() => {
     },
   });
 });
+
+function showTimeToBackupTooltip() {
+  const wrap = $('#backup');
+  if (wrap) {
+    $('#backup').open = true;
+    wrap.classList.add('show-reminder');
+  }
+}
+
+function setLastBackup({ update = true }) {
+  const wrap = $('#backup');
+  if (update) {
+    localStorage['stylus-last-backup'] = Date.now();
+  }
+  if (wrap) {
+    wrap.classList.remove('show-reminder');
+  }
+  if (!prefs.get('manage.backup.expanded')) {
+    $('#backup').removeAttribute('open');
+  }
+}
+
+function isItTimeToBackup() {
+  // show message every 14 days
+  const timeSinceLastBackup = 14 * (24 * 60 * 60 * 1000);
+  const lastBackup = localStorage['stylus-last-backup'];
+  if (!lastBackup) {
+    // initial setting
+    return setLastBackup();
+  }
+  if (Date.now() > Number(lastBackup) + timeSinceLastBackup) {
+    showTimeToBackupTooltip();
+  }
+}
 
 function importFromFile({fileTypeFilter, file} = {}) {
   return new Promise(resolve => {
@@ -92,6 +130,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
             })
           ).then(numStyles => {
             document.body.style.cursor = '';
+            setLastBackup();
             resolve(numStyles);
           });
         };
@@ -299,6 +338,7 @@ function exportToFile() {
     document.documentElement.appendChild(
       $create('iframe', {
         onload() {
+          setLastBackup();
           const text = JSON.stringify(styles, null, '\t');
           const type = 'application/json';
           this.onload = null;
