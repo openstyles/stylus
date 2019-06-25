@@ -79,7 +79,8 @@ const styleManager = (() => {
     addExclusion,
     removeExclusion,
     addInclusion,
-    removeInclusion
+    removeInclusion,
+    setMeta
   });
 
   function handleColorScheme() {
@@ -256,6 +257,18 @@ const styleManager = (() => {
 
   function removeInclusion(id, rule) {
     return removeIncludeExclude(id, rule, 'inclusions');
+  }
+
+  function setMeta(id, key, value) {
+    // FIXME: it is pretty danger to expose an API to modify *any* property on the data.
+    const oldData = styles.get(id).data;
+    if (oldData[key] === value) {
+      return;
+    }
+    const data = Object.assign({}, oldData);
+    data[key] = value;
+    return saveStyle(data)
+      .then(newData => handleSave(newData, 'styleSettings'));
   }
 
   function deleteStyle(id) {
