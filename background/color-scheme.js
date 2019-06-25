@@ -38,18 +38,21 @@ const colorScheme = (() => {
   }
 
   function shouldIncludeStyle(style) {
-    if (style.preferScheme === 'always') {
+    const isDark = style.preferScheme === 'dark';
+    const isLight = style.preferScheme === 'light';
+    if (!isDark && !isLight) {
       return true;
     }
-    if (prefs.get('schemeSwitcher.enabled') === 'never') {
+    const switcherState = prefs.get('schemeSwitcher.enabled');
+    if (switcherState === 'never') {
       return true;
     }
-    if (prefs.get('schemeSwitcher.enabled') === 'system') {
-      return systemPreferDark && style.preferScheme === 'dark' ||
-        !systemPreferDark && style.preferScheme === 'light';
+    if (switcherState === 'system') {
+      return systemPreferDark && isDark ||
+        !systemPreferDark && isLight;
     }
-    return timePreferDark && style.preferScheme === 'dark' ||
-      !timePreferDark && style.preferScheme === 'light';
+    return timePreferDark && isDark ||
+      !timePreferDark && isLight;
   }
 
   function updateSystemPreferDark() {

@@ -61,6 +61,7 @@ const styleManager = (() => {
   };
 
   handleLivePreviewConnections();
+  handleColorScheme();
 
   return ensurePrepared({
     get,
@@ -80,6 +81,16 @@ const styleManager = (() => {
     addInclusion,
     removeInclusion
   });
+
+  function handleColorScheme() {
+    colorScheme.onChange(() => {
+      for (const {data} of styles.values()) {
+        if (data.preferScheme === 'dark' || data.preferScheme === 'light') {
+          broadcastStyleUpdated(data, 'colorScheme', undefined, false);
+        }
+      }
+    });
+  }
 
   function handleLivePreviewConnections() {
     chrome.runtime.onConnect.addListener(port => {
