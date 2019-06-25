@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg */
+  getStyleWithNoCode msg colorScheme */
 /* exported styleManager */
 'use strict';
 
@@ -478,6 +478,9 @@ const styleManager = (() => {
     }
     if (!style.enabled) {
       return 'disabled';
+    }
+    if (!colorScheme.shouldIncludeStyle(style)) {
+      return 'excludedScheme';
     }
     return true;
   }
