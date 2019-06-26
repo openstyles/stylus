@@ -457,15 +457,15 @@ function setupLivePrefs(
   }
   function setInputValue(input, value, force = false) {
     let oldValue, newValue;
-    const inputValue = input.dataset.valueType === 'number' ? Number(input.value) : input.value;
     if (input.type === 'radio') {
+      const inputValue = input.dataset.valueType === 'number' ? Number(input.value) : input.value;
       oldValue = input.checked;
       newValue = input.checked = value === inputValue;
     } else if (input.type === 'checkbox') {
       oldValue = input.checked;
       newValue = input.checked = value;
     } else {
-      oldValue = inputValue;
+      oldValue = input.value;
       newValue = input.value = value;
     }
     if (force || oldValue !== newValue) {
