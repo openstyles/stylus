@@ -20,6 +20,12 @@ const colorScheme = (() => {
 
   prefs.subscribe(['schemeSwitcher.enabled'], emitChange);
 
+  chrome.alarms.onAlarm.addListener(info => {
+    if (checkTime.includes(info.name)) {
+      updateTimePreferDark();
+    }
+  });
+
   updateSystemPreferDark();
   updateTimePreferDark();
 
