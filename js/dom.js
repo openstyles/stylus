@@ -404,10 +404,10 @@ function moveFocus(rootElement, step) {
 // and establishes a two-way connection between the document elements and the actual prefs
 function setupLivePrefs(
   IDs = Object.getOwnPropertyNames(prefs.defaults)
-    .filter(id => $('#' + id))
+    .filter(id => $(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`))
 ) {
   for (const id of IDs) {
-    const elements = [$('#' + id), ...$$(`[name=${id}]`)];
+    const elements = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`);
     for (const element of elements) {
       updateElement({id, elements: [element], force: true});
       element.addEventListener('change', onChange);
@@ -416,6 +416,9 @@ function setupLivePrefs(
   prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 
   function onChange() {
+    if (!this.checkValidity()) {
+      return;
+    }
     const key = this.id || this.name;
     const value = getInputValue(this);
     if (value !== undefined && prefs.get(key) !== value) {
@@ -425,7 +428,7 @@ function setupLivePrefs(
   function updateElement({
     id,
     value = prefs.get(id),
-    elements = [$('#' + id), ...$$(`[name=${id}]`)],
+    elements = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`),
     force,
   }) {
     // FIXME: this has no effect. `updateElement` is not a listener
@@ -447,13 +450,19 @@ function setupLivePrefs(
     if (input.type === 'radio' && !input.checked) {
       return undefined;
     }
+    // FIXME: use a string value for iconset
+    if (input.name === 'iconset') {
+      return Number(input.value);
+    }
     return input.value;
   }
   function setInputValue(input, value, force = false) {
     let oldValue, newValue;
     if (input.type === 'radio') {
       oldValue = input.checked;
-      newValue = input.checked = value === input.value;
+      // FIXME: use == because we use number value in iconset
+      newValue = input.checked = value == input.value;
+      console.log(value, input.value);
     } else if (input.type === 'checkbox') {
       oldValue = input.checked;
       newValue = input.checked = value;
