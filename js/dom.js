@@ -462,7 +462,6 @@ function setupLivePrefs(
       oldValue = input.checked;
       // FIXME: use == because we use number value in iconset
       newValue = input.checked = value == input.value;
-      console.log(value, input.value);
     } else if (input.type === 'checkbox') {
       oldValue = input.checked;
       newValue = input.checked = value;

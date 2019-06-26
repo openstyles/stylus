@@ -117,7 +117,8 @@ input[type=number] {
   text-align: right;
 }
 
-input[type=number]:invalid {
+input[type=number]:invalid,
+input[type=text]:invalid {
   background-color: rgba(255, 0, 0, 0.1);
   color: darkred;
 }
@@ -295,6 +296,44 @@ html:not(.firefox):not(.opera) #updates {
 .opera #message-box.note,
 .firefox #message-box.note {
   background-color: transparent;
+}
+
+/* radio group */
+.radio-group-item {
+  display: flex;
+  align-items: center;
+  min-height: 1.5em;
+}
+.radio-group-item > input {
+  margin: 0 8px 0 0;
+  flex-grow: 0;
+}
+.radio-group-label {
+  display: block;
+  margin: 0 0 .3em;
+}
+
+.input-sm {
+  width: 3em;
+}
+
+.option-item {
+  margin: .25ex 0;
+}
+
+/* pixel perfect radio */
+input[type="radio"].radio::after {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  height: auto;
+  width: auto;
+  transform: scale(0);
+}
+input[type="radio"].radio:checked::after {
+  transform: scale(.65);
 }
 
 @keyframes fadeinout {

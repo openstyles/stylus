@@ -950,6 +950,18 @@
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as usercss"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Toggle Light/Dark Mode styles automatically"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Never"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "By system preference"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "By night time:"
+  },
   "optionsBadgeDisabled": {
     "message": "Background color when disabled"
   },
