@@ -329,13 +329,14 @@ function createStyleElement(style) {
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.name;
   setTimeout(() => {
-    styleName.title = entry.styleMeta.sloppy ?
-      t('styleNotAppliedRegexpProblemTooltip') :
-        styleName.scrollWidth > styleName.clientWidth + 1 ?
-          styleName.textContent : '';
+    styleName.title =
+      entry.styleMeta.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
+      entry.styleMeta.excludedScheme ? t(`styleNotAppliedScheme${capitalize(entry.styleMeta.preferScheme)}`) :
+      styleName.scrollWidth > styleName.clientWidth + 1 ? styleName.textContent :
+      '';
   });
 
-  entry.classList.toggle('not-applied', style.excluded || style.sloppy);
+  entry.classList.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
   $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
@@ -345,6 +346,10 @@ function createStyleElement(style) {
   $('.exclude-by-url', entry).title = getExcludeRule('url');
 
   return entry;
+}
+
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
 }
 
 function styleExcluded({exclusions}, type) {

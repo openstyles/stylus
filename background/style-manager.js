@@ -390,6 +390,7 @@ const styleManager = (() => {
       let excluded = false;
       let sloppy = false;
       let sectionMatched = false;
+      let excludedScheme = false;
       const match = urlMatchStyle(query, data);
       // TODO: enable this when the function starts returning false
       // if (match === false) {
@@ -397,6 +398,9 @@ const styleManager = (() => {
       // }
       if (match === 'excluded') {
         excluded = true;
+      }
+      if (match === 'excludedScheme') {
+        excludedScheme = true;
       }
       for (const section of data.sections) {
         if (styleCodeEmpty(section.code)) {
@@ -415,7 +419,8 @@ const styleManager = (() => {
         result.push({
           data: getStyleWithNoCode(data),
           excluded,
-          sloppy
+          sloppy,
+          excludedScheme
         });
       }
     }

@@ -1301,6 +1301,12 @@
     "message": "Style was not applied due to its incorrect usage of 'regexp()'",
     "description": "Tooltip in the popup for styles that were not applied at all"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "This style is only applied in Dark Mode"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "This style is only applied in Light Mode"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Some 'regexp()' rules that could not be compiled at all."
   },
