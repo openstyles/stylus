@@ -450,23 +450,22 @@ function setupLivePrefs(
     if (input.type === 'radio' && !input.checked) {
       return undefined;
     }
-    // FIXME: use a string value for iconset
-    if (input.name === 'iconset') {
+    if (input.dataset.valueType === 'number') {
       return Number(input.value);
     }
     return input.value;
   }
   function setInputValue(input, value, force = false) {
     let oldValue, newValue;
+    const inputValue = input.dataset.valueType === 'number' ? Number(input.value) : input.value;
     if (input.type === 'radio') {
       oldValue = input.checked;
-      // FIXME: use == because we use number value in iconset
-      newValue = input.checked = value == input.value;
+      newValue = input.checked = value === inputValue;
     } else if (input.type === 'checkbox') {
       oldValue = input.checked;
       newValue = input.checked = value;
     } else {
-      oldValue = input.value;
+      oldValue = inputValue;
       newValue = input.value = value;
     }
     if (force || oldValue !== newValue) {
