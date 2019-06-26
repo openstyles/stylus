@@ -407,29 +407,35 @@ function setupLivePrefs(
     .filter(id => $('#' + id))
 ) {
   for (const id of IDs) {
-    const element = $('#' + id);
-    updateElement({id, element, force: true});
-    element.addEventListener('change', onChange);
+    const elements = [$('#' + id), ...$$(`[name=${id}]`)];
+    for (const element of elements) {
+      updateElement({id, elements: [element], force: true});
+      element.addEventListener('change', onChange);
+    }
   }
   prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 
   function onChange() {
+    const key = this.id || this.name;
     const value = getInputValue(this);
-    if (prefs.get(this.id) !== value) {
-      prefs.set(this.id, value);
+    if (value !== undefined && prefs.get(key) !== value) {
+      prefs.set(key, value);
     }
   }
   function updateElement({
     id,
     value = prefs.get(id),
-    element = $('#' + id),
+    elements = [$('#' + id), ...$$(`[name=${id}]`)],
     force,
   }) {
-    if (!element) {
-      prefs.unsubscribe(IDs, updateElement);
-      return;
+    // FIXME: this has no effect. `updateElement` is not a listener
+    // if (!element) {
+      // prefs.unsubscribe(IDs, updateElement);
+      // return;
+    // }
+    for (const element of elements) {
+      setInputValue(element, value, force);
     }
-    setInputValue(element, value, force);
   }
   function getInputValue(input) {
     if (input.type === 'checkbox') {
@@ -438,15 +444,24 @@ function setupLivePrefs(
     if (input.type === 'number') {
       return Number(input.value);
     }
+    if (input.type === 'radio' && !input.checked) {
+      return undefined;
+    }
     return input.value;
   }
   function setInputValue(input, value, force = false) {
-    if (force || getInputValue(input) !== value) {
-      if (input.type === 'checkbox') {
-        input.checked = value;
-      } else {
-        input.value = value;
-      }
+    let oldValue, newValue;
+    if (input.type === 'radio') {
+      oldValue = input.checked;
+      newValue = input.checked = value === input.value;
+    } else if (input.type === 'checkbox') {
+      oldValue = input.checked;
+      newValue = input.checked = value;
+    } else {
+      oldValue = input.value;
+      newValue = input.value = value;
+    }
+    if (force || oldValue !== newValue) {
       input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     }
   }
