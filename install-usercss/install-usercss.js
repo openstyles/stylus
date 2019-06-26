@@ -116,6 +116,11 @@
       versionTest > 0 ? 'update' :
       'reinstall');
     $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
+
+    $('.set-prefer-scheme select').value =
+      style.preferScheme === 'dark' ? 'dark' :
+      style.preferScheme === 'light' ? 'light' : 'none';
+
     $('.meta-name').textContent = data.name;
     $('.meta-version').textContent = data.version;
     $('.meta-description').textContent = data.description;
@@ -328,6 +333,12 @@
     checker.onchange();
     $('.set-update-url p').textContent = updateUrl.href.length < 300 ? updateUrl.href :
       updateUrl.href.slice(0, 300) + '...';
+
+    const preferScheme = $('.set-prefer-scheme select');
+    preferScheme.onchange = () => {
+      style.preferScheme = preferScheme.value;
+    };
+    preferScheme.onchange();
 
     if (!port) {
       return;

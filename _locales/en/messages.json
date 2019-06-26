@@ -513,6 +513,18 @@
     "message": "Update style",
     "description": "Label for update button"
   },
+  "installPreferSchemeLabel": {
+    "message": "The style should be applied:"
+  },
+  "installPreferSchemeNone": {
+    "message": "Always"
+  },
+  "installPreferSchemeDark": {
+    "message": "In Dark Mode"
+  },
+  "installPreferSchemeLight": {
+    "message": "In Light Mode"
+  },
   "installUpdate": {
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"

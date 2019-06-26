@@ -261,12 +261,15 @@ h2.installed.active {
 .set-update-url {
   flex-wrap: wrap;
 }
-
 .set-update-url p {
   word-break: break-all;
   opacity: .5;
   width: 100%;
   margin: .25em 0 .25em;
+}
+
+label.set-prefer-scheme:not(.unavailable) {
+  padding-left: 0;
 }
 
 .external {
@@ -317,6 +320,7 @@ li {
   user-select: auto;
 }
 
+/* FIXME: why do we want to give all labels a padding? */
 label:not(.unavailable) {
   padding-left: 16px;
   position: relative;
