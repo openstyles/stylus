@@ -309,6 +309,14 @@
     "message": "有効化",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "現在のドメインを除外",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "現在のURLを除外",
+    "description": ""
+  },
   "exportLabel": {
     "message": "エクスポート",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -935,7 +943,7 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "各iframeにトップサイトドメインを公開します。\n次のようにiframe用のCSSを書くことができるようになります:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "新しいスタイルを usercss として作成します",
@@ -1041,6 +1049,10 @@
     "message": "Stylusはusercssの解析に失敗しました: ",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "トグルによってポップアップのスタイルを並べ直します",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "横に白い境界線を追加する",
     "description": ""
@@ -1060,6 +1072,10 @@
   "popupManageTooltip": {
     "message": "シフトを押しながらクリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "アクションメニュー",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "新しいウィンドウでエディタを開く",

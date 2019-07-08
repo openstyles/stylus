@@ -33,7 +33,7 @@
     "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp": {
-    "message": "使用“应用于”控件来限制此部分中的代码所应用到的网址。",
+    "message": "使用“应用于”控件来限制此段代码所应用到的链接。",
     "description": "Help text for 'applies to' section"
   },
   "appliesLabel": {
@@ -41,11 +41,11 @@
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesLineWidgetLabel": {
-    "message": "显示应用对象的信息",
+    "message": "显示被应用对象的信息",
     "description": "Label for the checkbox to display applies-to information in the single editor"
   },
   "appliesLineWidgetWarning": {
-    "message": "无法与压缩过的CSS一起运作",
+    "message": "对经过压缩的 CSS 无效",
     "description": "A warning that applies-to information won't show properly with minified CSS"
   },
   "appliesRegexpOption": {
@@ -57,7 +57,7 @@
     "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesRemoveError": {
-    "message": "无法移除最后的适用项",
+    "message": "无法移除最后一个“应用于”项目",
     "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "appliesSpecify": {
@@ -65,15 +65,15 @@
     "description": "Label for the button to make a style apply only to specific sites"
   },
   "appliesToEverything": {
-    "message": "全部",
+    "message": "所有页面",
     "description": "Text displayed for styles that apply to all sites"
   },
   "appliesUrlOption": {
-    "message": "网址",
+    "message": "链接",
     "description": "Option to make the style apply to the entered string as a URL"
   },
   "appliesUrlPrefixOption": {
-    "message": "网址前缀",
+    "message": "链接前缀",
     "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "applyAllUpdates": {
@@ -89,7 +89,7 @@
     "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "拖放一个 JSON 备份文件到这个页面，即可导入",
+    "message": "选择备份文件，或将 JSON 备份文件拖放到本页面，即可导入备份。",
     "description": "Message for backup"
   },
   "bckpInstStyles": {
@@ -97,11 +97,11 @@
     "description": ""
   },
   "checkAllUpdates": {
-    "message": "检查所有样式更新",
+    "message": "全部检查更新",
     "description": "Label for the button to check all styles for updates"
   },
   "checkAllUpdatesForce": {
-    "message": "再检测一次，我没有修改过任何样式。",
+    "message": "我没有修改过任何样式，再检查一次！",
     "description": "Label for the button to apply all detected updates"
   },
   "checkForUpdate": {
@@ -133,7 +133,7 @@
     "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
   "cm_indentWithTabs": {
-    "message": "带智能缩进的标签页",
+    "message": "使用 Tab 智能缩进",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
   "cm_keyMap": {
@@ -153,7 +153,7 @@
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
   },
   "cm_matchHighlightToken": {
-    "message": "光标所在的位置",
+    "message": "光标所在 token 字段",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
   },
   "cm_resizeGripHint": {
@@ -161,15 +161,19 @@
     "description": "Tooltip for the resize grip in style editor"
   },
   "cm_selectByTokens": {
-    "message": "双击以选择 token",
+    "message": "双击选中 token 字段",
     "description": "Label for the checkbox in the editor."
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "token 字段示例：.foo-bar-2 #aabbcc 0.32 !important\n未启用时：会选中按空格或标点符号分隔的字词段，如 .foo-bar-2 中的 foo、bar 和 2。",
+    "description": ""
   },
   "cm_smartIndent": {
     "message": "智能缩进",
     "description": "Label for the checkbox controlling smart indentation option for the style editor."
   },
   "cm_tabSize": {
-    "message": "缩进尺寸",
+    "message": "缩进宽度",
     "description": "Label for the text box controlling tab size option for the style editor."
   },
   "cm_theme": {
@@ -177,7 +181,7 @@
     "description": "Label for the style editor's CSS theme."
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "转换格式: HEX -> RGB -> HSL 。\nShift + 单击 则反向执行。\n也可以使用 PgUp (PageUp) 与 PgDn (PageDown) 键。",
+    "message": "颜色格式转换：HEX -> RGB -> HSL 。\nShift + 单击则反向转换。\n也可以使用 PgUp (PageUp) 与 PgDn (PageDown) 键。",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
   },
   "colorpickerTooltip": {
@@ -313,6 +317,14 @@
     "message": "启用",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "排除当前域名",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "排除当前链接",
+    "description": ""
+  },
   "exportLabel": {
     "message": "导出",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -434,7 +446,7 @@
     "description": "Label for the button to import a style and append to the existing sections"
   },
   "importAppendTooltip": {
-    "message": "追加已导入样式到当前样式",
+    "message": "将被导入样式附加至当前样式",
     "description": "Tooltip for the button to import a style and append to the existing sections"
   },
   "importLabel": {
@@ -510,7 +522,7 @@
     "description": "Label for the button to install an update for a single style"
   },
   "installUpdateFrom": {
-    "message": "当前是从 $url$ 更新的样式",
+    "message": "当前样式更新自 $url$",
     "description": "Label to describe where the style gets update",
     "placeholders": {
       "url": {
@@ -523,7 +535,7 @@
     "description": "Label for the checkbox to save current URL for update check"
   },
   "installUpdateUnavailable": {
-    "message": "想检查更新，请将文件拖动到标签条上或在样式宏数据中声明 @updateURL。",
+    "message": "若想允许检查更新，请将文件拖动到标签栏上，或在样式的元数据中声明 @updateURL。",
     "description": ""
   },
   "license": {
@@ -565,7 +577,7 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "点击以配置此 linter",
+    "message": "点击以配置此 Linter",
     "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
   },
   "linterInvalidConfigError": {
@@ -577,7 +589,7 @@
     "description": "Label for the CSS linter issues block on the style edit page"
   },
   "linterIssuesHelp": {
-    "message": "$link$ 在已启用的这些规则中找到问题：",
+    "message": "$link$ 找到了这些问题：",
     "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
@@ -695,7 +707,7 @@
     }
   },
   "meta_invalidRange": {
-    "message": "无效 @var $type$：必须是一个数字或矩阵",
+    "message": "无效 @var $type$：必须是单个数字或数组",
     "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
@@ -829,7 +841,7 @@
     "description": "Error displayed when the value is expected to be a number"
   },
   "meta_invalidString": {
-    "message": "需要一个带引号的 string 变量",
+    "message": "需要一个带引号的字符串",
     "description": "Error displayed when the value is expected to be a quoted string"
   },
   "meta_invalidWord": {
@@ -850,7 +862,7 @@
     "description": "Error displayed when the value is expected to be an EOT list"
   },
   "meta_missingMandatory": {
-    "message": "缺少必要的宏数据：$keys$",
+    "message": "缺少必要的元数据：$keys$",
     "description": "Error displayed when mandatory keys are missing",
     "placeholders": {
       "keys": {
@@ -868,7 +880,7 @@
     }
   },
   "meta_unknownMeta": {
-    "message": "未知的元数据: $key$",
+    "message": "未知的元数据：$key$",
     "description": "Error displayed when unknown metadata is parsed",
     "placeholders": {
       "key": {
@@ -889,7 +901,7 @@
     }
   },
   "meta_unknownPreprocessor": {
-    "message": "未知的 @preprocessor: $preprocessor$",
+    "message": "未知的预处理器 @preprocessor：$preprocessor$",
     "description": "Error displayed when unknown @preprocessor is parsed",
     "placeholders": {
       "preprocessor": {
@@ -898,11 +910,11 @@
     }
   },
   "noStylesForSite": {
-    "message": "未对此网站安装任何样式。",
+    "message": "此网站没有样式。",
     "description": "Text displayed when no styles are installed for the current site"
   },
   "openManage": {
-    "message": "管理已安装的样式",
+    "message": "管理样式",
     "description": "Link to open the manage page."
   },
   "openOptionsManage": {
@@ -930,11 +942,15 @@
     "description": ""
   },
   "optionsAdvancedExposeIframes": {
-    "message": "通过 HTML[stylus-iframe] 方式改变 iframes 的 css",
+    "message": "通过 HTML[stylus-iframe] 确定 iframe 父页面",
     "description": ""
   },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "为每个 iframe 页面的 html 添加 stylus-iframe 属性，以便在 iframe 页面中暴露其顶级父页面的顶级域名。\n允许像这样编写针对属于特定页面的 iframe 的 CSS：\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }\n详见源代码：https://github.com/openstyles/stylus/blob/master/content/apply.js#L270",
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
+  },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "为新样式添加 Usercss",
+    "message": "将新样式的格式设为 UserCSS",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -946,11 +962,11 @@
     "description": ""
   },
   "optionsCheck": {
-    "message": "检测样式更新",
+    "message": "检查样式更新",
     "description": ""
   },
   "optionsCheckUpdate": {
-    "message": "检查所有样式更新",
+    "message": "检查并安装所有可用的更新",
     "description": ""
   },
   "optionsCustomizeBadge": {
@@ -1037,6 +1053,10 @@
     "message": "Stylus 未能成功解析 UserCSS：",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "切换后，在弹出窗口中重新排序样式",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "在两边增加白色边框",
     "description": ""
@@ -1050,19 +1070,23 @@
     "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
   },
   "popupHotkeysTooltip": {
-    "message": "单击以检视可用的快捷键",
+    "message": "单击查看可用的快捷键",
     "description": "Tooltip displayed when hovering the right edge of the extension popup"
   },
   "popupManageTooltip": {
     "message": "Shift + 左键单击 或 右键单击 以打开管理界面中当前页面适用的样式",
     "description": "Tooltip for the 'Manage' button in the popup."
   },
+  "popupMenuButtonTooltip": {
+    "message": "操作菜单",
+    "description": "Tooltip for menu button in popup."
+  },
   "popupOpenEditInWindow": {
-    "message": "在新的窗口中打开编辑器",
+    "message": "在新窗口中打开编辑器",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "可以通过从浏览器窗口中分离编辑器分页来启用，\n也可以通过单独的编辑器分页附加到其他窗口中来禁用。",
+    "message": "可以通过将编辑器标签页拖出为单独窗口来启用，\n将被拖出的编辑器标签页拖入其他窗口即可禁用。",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupStylesFirst": {
@@ -1090,7 +1114,7 @@
     "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
   },
   "replaceWith": {
-    "message": "替换用",
+    "message": "替换为",
     "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
   },
   "retrieveBckp": {
@@ -1114,15 +1138,15 @@
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
   },
   "searchRegexp": {
-    "message": "使用 /re/ 语法进行正则表达式搜索",
+    "message": "使用 JavaScript /re/ 语法（用“/”包裹正则表达式）进行正则表达式搜索",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
   },
   "searchResultInstallCount": {
-    "message": "总共被安装次数",
+    "message": "总安装次数",
     "description": "Text for label that shows the number of times a search result was installed"
   },
   "searchResultNoneFound": {
-    "message": "没有找到与此页面相关的样式.",
+    "message": "没有找到与此页面相关的样式。",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
   "searchResultRating": {
@@ -1134,7 +1158,7 @@
     "description": "Text for label that shows the search result's last update date"
   },
   "searchResultWeeklyCount": {
-    "message": "本周已被安装次数",
+    "message": "本周安装次数",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
   "searchStyles": {
@@ -1207,6 +1231,10 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "缩进 @media、@supports",
+    "description": "CSS-beautifier option"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "保留新增空行",
     "description": "CSS-beautifier option"
   },
   "styleCancelEditLabel": {
@@ -1291,7 +1319,7 @@
     "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
   },
   "styleRegexpTestFull": {
-    "message": "匹配的网页标签",
+    "message": "匹配的标签页",
     "description": "RegExp test report: label for the fully matching expressions"
   },
   "styleRegexpTestInvalid": {
@@ -1299,7 +1327,7 @@
     "description": "RegExp test report: label for the invalid expressions"
   },
   "styleRegexpTestNone": {
-    "message": "没有发现任何网页标签与正则表达式匹配",
+    "message": "没有匹配的标签页",
     "description": "RegExp test report: label for expressions that didn't match any tabs"
   },
   "styleRegexpTestNote": {
@@ -1311,7 +1339,7 @@
     "description": "RegExp test report: label for the partially matching expressions"
   },
   "styleRegexpTestTitle": {
-    "message": "列出当前正则表达式匹配的网页标签（点击网址 URL 可跳转到该页面）",
+    "message": "匹配的标签页列表（点击链接可切换到该标签）",
     "description": "RegExp test report: title of the report"
   },
   "styleSaveLabel": {
@@ -1319,7 +1347,7 @@
     "description": "Label for save button for style editing"
   },
   "styleToMozillaFormatHelp": {
-    "message": "FireFox(Mozilla) 格式的 CSS 代码导入后，会自动转换成适 Stylus 使用的 Chrome 格式的 CSS 代码。反过来，Chrome 格式的 CSS 也可以导出为适合 FireFox 使用的格式。需要注意的是，如果你要提交你的 CSS 代码到 userstyles.org，则必须使用 FireFox(Mozilla) 格式的 CSS 代码。",
+    "message": "导入 FireFox (Mozilla) 格式的 CSS 代码后，会自动转换成 Stylus 使用的分段式 CSS 代码。反过来，分段式的 CSS 也可以导出为 FireFox (Mozilla) 格式。需要注意的是，如果你要向 userstyles.org 提交你的代码，则必须使用 FireFox (Mozilla) 格式。",
     "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
   },
   "styleToMozillaFormatTitle": {
@@ -1327,7 +1355,7 @@
     "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
   },
   "styleUpdate": {
-    "message": "您确定要更新 '$stylename$'?",
+    "message": "是否更新 “$stylename$”？",
     "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
@@ -1387,8 +1415,12 @@
     "message": "如果需要改变 file:// 协议的样式，则需要在 chrome://extensions 页面中的 Stylus 扩展选项里面，打开 允许访问文件网址 的权限",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus 无法访问某些文件格式（例如 pdf 或 json 文件）。",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "没找到任何升级。",
+    "message": "没有找到更新。",
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateAllCheckSucceededSomeEdited": {
@@ -1437,7 +1469,7 @@
     "description": "Text that displays when an update completed"
   },
   "updatesCurrentlyInstalled": {
-    "message": "更新已安装",
+    "message": "更新已安装：",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
   "usercssAvoidOverwriting": {
@@ -1449,11 +1481,11 @@
     "description": ""
   },
   "usercssEditorNamePlaceholder": {
-    "message": "在代码中指定 @name",
+    "message": "在代码中指定 @name 来设置名称",
     "description": "Placeholder text for the empty name input field when creating a new Usercss style"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "使用新的 Usercss 样式替换默认的模板为当前的代码？",
+    "message": "使用这些代码替换新 UserCSS 样式的默认模板？",
     "description": ""
   },
   "usercssReplaceTemplateName": {
@@ -1473,7 +1505,7 @@
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
   },
   "writeStyleForURL": {
-    "message": "这个URL",
+    "message": "此 URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "syncDropboxStyles": {
@@ -1501,7 +1533,7 @@
     "description": ""
   },
   "connectingDropboxNotAllowed": {
-    "message": "正在连接到 Dropbox 仅适用于 Webstore 安装的应用程序",
+    "message": "连接到 Dropbox 功能仅适用于直接从 Webstore 安装的应用程序",
     "description": ""
   },
   "gettingStyles": {

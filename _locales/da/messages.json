@@ -1,1 +1,131 @@
-{}
+{
+  "addStyleLabel": {
+    "message": "Skriv ny stil",
+    "description": "Label for the button to go to the add style page"
+  },
+  "addStyleTitle": {
+    "message": "Tilføj stil",
+    "description": "Title of the page for adding styles"
+  },
+  "alphaChannel": {
+    "message": "Gennemsigtighed",
+    "description": "Label of color's opacity"
+  },
+  "appliesAdd": {
+    "message": "Tilføj",
+    "description": "Label for the button to add an 'applies' entry"
+  },
+  "appliesDisplay": {
+    "message": "Anvendes på: $applies$",
+    "description": "Text on the manage screen to describe what the style applies to",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "og mere",
+    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+  },
+  "appliesDomainOption": {
+    "message": "URL'er på domænet",
+    "description": "Option to make the style apply to the entered string as a domain"
+  },
+  "appliesHelp": {
+    "message": "Brug 'Anvendt på'-styring til at begrænse hvilke URL'er koden i denne sektion anvendes på.",
+    "description": "Help text for 'applies to' section"
+  },
+  "appliesLabel": {
+    "message": "Anvendes på",
+    "description": "Label for 'applies to' fields on the edit/add screen"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Vis 'Anvendes på'-info",
+    "description": "Label for the checkbox to display applies-to information in the single editor"
+  },
+  "appliesRegexpOption": {
+    "message": "URL'er der matcher regexp'en",
+    "description": "Option to make the style apply to the entered string as a regular expression"
+  },
+  "appliesRemove": {
+    "message": "Fjern",
+    "description": "Label for the button to remove an 'applies' entry"
+  },
+  "appliesRemoveError": {
+    "message": "Kan ikke fjerne sidste 'Anvendes på'-optegnelse",
+    "description": "Error displayed when the last 'applies' is going to be removed"
+  },
+  "appliesSpecify": {
+    "message": "Specificér",
+    "description": "Label for the button to make a style apply only to specific sites"
+  },
+  "appliesToEverything": {
+    "message": "Alt",
+    "description": "Text displayed for styles that apply to all sites"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL'er der starter med",
+    "description": "Option to make the style apply to the entered string as a URL prefix"
+  },
+  "applyAllUpdates": {
+    "message": "Anvend alle opdateringer",
+    "description": "Label for the button to apply all detected updates"
+  },
+  "author": {
+    "message": "Forfatter",
+    "description": "Label for the style author"
+  },
+  "backupMessage": {
+    "message": "Vælg en fil eller træk og slip til denne side.",
+    "description": "Message for backup"
+  },
+  "bckpInstStyles": {
+    "message": "Eksportér stil",
+    "description": ""
+  },
+  "checkAllUpdates": {
+    "message": "Tjek alle stiler for opdateringer",
+    "description": "Label for the button to check all styles for updates"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Tjek igen, jeg redigerede ikke nogen stil!",
+    "description": "Label for the button to apply all detected updates"
+  },
+  "checkForUpdate": {
+    "message": "Tjek efter opdatering",
+    "description": "Label for the button to check a single style for an update"
+  },
+  "checkingForUpdate": {
+    "message": "Tjekker...",
+    "description": "Text to display when checking a style for an update"
+  },
+  "clickToUninstall": {
+    "message": "Klik for at afinstallere",
+    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Luk automatisk paranteser og citationstegn",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Tilføj automatisk et lukket par når man åbner en af ()[]{}''\"\"",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Autoudfyld på indtastning",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_colorpicker": {
+    "message": "Farvevælgere for CSS-farver",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+  },
+  "cm_indentWithTabs": {
+    "message": "Brug tabs med smart indrykning",
+    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+  },
+  "cm_keyMap": {
+    "message": "Tastegenveje",
+    "description": "Label for the drop-down list controlling the keymap for the style editor."
+  }
+}

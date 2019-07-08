@@ -701,10 +701,6 @@
     "message": "Expor iframes via HTML[stylus-iframe]",
     "description": ""
   },
-  "optionsAdvancedExposeIframesNote": {
-    "message": "Expõe o domínio do site principal em cada iframe.\nPermite escrever CSS específico para iframe assim:\nhtml [stylus-iframe $ = \"twitter.com\"] h1 {display: none}",
-    "description": ""
-  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Escrever novo estilo como usercss",
     "description": ""

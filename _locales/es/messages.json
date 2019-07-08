@@ -925,10 +925,6 @@
     "message": "Visualizar marcos integrados (iframes) a través de HTML[stylus-iframe]",
     "description": ""
   },
-  "optionsAdvancedExposeIframesNote": {
-    "message": "Despliega el dominio superior del sitio en cada iframe.\nPermite definir CSS para un iframe específico de esta manera:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
-  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Escribir nuevo estilo como usercss",
     "description": ""

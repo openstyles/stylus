@@ -317,6 +317,14 @@
     "message": "Activer",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Exclure le domaine actuel",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Exclure l’URL actuelle",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Exporter",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -681,6 +689,222 @@
     "message": "Montrer le nombre de styles actifs",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Case à cocher @var invalide : la valeur doit être 0 ou 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "Couleur @var invalide : $color$ n’est pas une couleur",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "@var $type$ invalide : la valeur doit être un nombre ou un tableau",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "@var $type$ invalide : plusieurs unités sont définies",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "@var $type$ invalide : le tableau contient trop d’items",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "@var $type$ invalide : les items dans le tableau doivent être des nombres, chaines de caractères ou null",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "@var $type$ invalide : la valeur par défaut est null",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "@var $type$ invalide : la valeur par défaut est en dessous du minimum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "@var $type$ invalide : la valeur par défaut est au-dessus du maximum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "@var $type$ invalide : la valeur par défaut n’est pas un multiple du pas",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "@var $type$ invalide : '$units$' n’est pas une unité valide",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "@var select invalide : la valeur par défaut doit être un tableau ou un objet",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValue": {
+    "message": "@var select invalide : les valeurs dans le tableau/objet doivent être des chaines de caractères",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "@var select invalide : la liste d’options est vide",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "@var select invalide : le label de l’option est vide",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "@var select invalide : plusieurs options par défaut sont définies",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "@var select invalide : nom d’option dupliqué",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "@var select invalide : la valeur n’existe pas dans la liste d’options",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Protocole de l’URL invalide. Seuls http et https sont autorisés : $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Numéro de version invalide. La valeur ne correspond pas au motif SemVer : $version$",
+    "description": "Error displayed when @version is invalid",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Nombre attendu",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Chaine entre guillemets attendue",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Mot attendu",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Caractères attendus : $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Données EOT attendues",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
+  "meta_missingMandatory": {
+    "message": "Métadonnée obligatoire manquante: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "JSON invalide : $literal$ n’est pas une valeur JSON valide",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Métadonnée inconnue: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Type @$varkey$ inconnu : $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "@preprocessor inconnu: $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "noStylesForSite": {
     "message": "Aucun style n'est installé pour ce site.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -711,10 +935,6 @@
   },
   "optionsAdvancedExposeIframes": {
     "message": "Exposer les iframes via HTML[stylus-iframe]",
-    "description": ""
-  },
-  "optionsAdvancedExposeIframesNote": {
-    "message": "Expose le domaine principal de chaque iframe.\nPermet d’écrire du CSS spécifique à une iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": ""
   },
   "optionsAdvancedNewStyleAsUsercss": {
@@ -1163,6 +1383,10 @@
     "message": "Stylus peut accéder aux URL file:// uniquement si vous cochez la case correspondante pour l’extension Stylus sur la page chrome://extensions.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus ne peut pas accéder à certains types de fichiers (ex: fichiers .pdf et .json).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "All styles are up to date.",
     "description": "Text that displays when an update all check completed and no updates are available"
@@ -1251,5 +1475,53 @@
   "writeStyleForURL": {
     "message": "cette URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxStyles": {
+    "message": "Exporter vers Dropbox",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Importer depuis Dropbox",
+    "description": ""
+  },
+  "overwriteFileExport": {
+    "message": "Voulez-vous écraser un fichier existant ?",
+    "description": ""
+  },
+  "exportSavedSuccess": {
+    "message": "Fichier sauvegardé avec succès",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "Pour importer vos styles, vous devez d’abord les exporter.",
+    "description": ""
+  },
+  "connectingDropbox": {
+    "message": "Connexion à Dropbox…",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "La connexion à Dropbox est disponible uniquement dans les applications installées directement depuis le Web Store.",
+    "description": ""
+  },
+  "gettingStyles": {
+    "message": "Récupération de tous les styles…",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Compression des styles…",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Décompression des styles…",
+    "description": ""
+  },
+  "readingStyles": {
+    "message": "Lecture des styles…",
+    "description": ""
+  },
+  "uploadingFile": {
+    "message": "Envoi du fichier…",
+    "description": ""
   }
 }

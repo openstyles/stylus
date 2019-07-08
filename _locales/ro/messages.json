@@ -645,10 +645,6 @@
     "message": "Expuneți iframes via HTML[stylus-iframe]",
     "description": ""
   },
-  "optionsAdvancedExposeIframesNote": {
-    "message": "Expune domain-ul site-ului in fiecare iframe.\nActivează scrierea de CSS specific pentru iframe precum:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
-  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Scrieți temă nouă în formatul usercss",
     "description": ""

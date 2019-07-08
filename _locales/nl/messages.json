@@ -313,6 +313,14 @@
     "message": "Inschakelen",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Het huidige domein uitsluiten",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "De huidige URL uitsluiten",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Exporteren",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -701,7 +709,7 @@
     }
   },
   "meta_invalidRangeTooManyValues": {
-    "message": "Ongeldige @var $type$: de reeks bevat teveel items",
+    "message": "Ongeldige @var $type$: de reeks bevat te veel items",
     "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
@@ -923,7 +931,7 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Legt het bovenliggende domein van de website bloot in elk iframe.\nSchakelt schrijven in voor iframe-specifieke CSS, zoals:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Nieuwe stijl schrijven als usercss",
@@ -946,7 +954,7 @@
     "description": ""
   },
   "optionsCustomizeBadge": {
-    "message": "Badge op werkbalkpictogram",
+    "message": "Badge op het werkbalkpictogram",
     "description": ""
   },
   "optionsCustomizeIcon": {
@@ -1025,6 +1033,10 @@
     "message": "Stylus kan de usercss niet verwerken:",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "Stijlen opnieuw sorteren in pop-up na omschakelen",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "Witte randen toevoegen aan zijkanten",
     "description": ""
@@ -1044,6 +1056,10 @@
   "popupManageTooltip": {
     "message": "Shift-klik of rechtsklik opent de beheerder met stijlen die op de huidige website van toepassing zijn",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Actiemenu",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Editor openen in nieuw venster",
@@ -1376,7 +1392,7 @@
     "description": "Note in the toolbar popup for file:// URLs"
   },
   "InaccessibleFileHint": {
-    "message": "Stylus heeft geen toegang tot sommige bestandssoorten (bijv. pdf- en json-bestanden).",
+    "message": "Stylus heeft geen toegang tot sommige bestandstypen (bv. pdf- en json-bestanden).",
     "description": "Note in the toolbar popup for some file types that cannot be accessed"
   },
   "updateAllCheckSucceededNoUpdate": {
@@ -1469,15 +1485,15 @@
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "syncDropboxStyles": {
-    "message": "Dropbox - Export",
+    "message": "Dropbox - Exporteren",
     "description": ""
   },
   "retrieveDropboxSync": {
-    "message": "Dropbox - Import",
+    "message": "Dropbox - Importeren",
     "description": ""
   },
   "overwriteFileExport": {
-    "message": "Wil je een bestaand bestand overschrijven?",
+    "message": "Wilt u een bestaand bestand overschrijven?",
     "description": ""
   },
   "exportSavedSuccess": {
@@ -1485,35 +1501,35 @@
     "description": ""
   },
   "noFileToImport": {
-    "message": "Als je je stijlen wilt importeren, dan moet je ze eerst exporteren.",
+    "message": "Als u uw stijlen wilt importeren, dient u deze eerst te exporteren.",
     "description": ""
   },
   "connectingDropbox": {
-    "message": "Bezig met koppelen aan Dropbox...",
+    "message": "Dropbox koppelen...",
     "description": ""
   },
   "connectingDropboxNotAllowed": {
-    "message": "Koppelen met Dropbox is alleen beschikbaar in apps die direct vanuit de Chrome Web Store zijn geïnstalleerd",
+    "message": "Koppelen met Dropbox is alleen beschikbaar in apps die direct vanuit de webstore zijn geïnstalleerd",
     "description": ""
   },
   "gettingStyles": {
-    "message": "Bezig met ophalen van alle stijlen...",
+    "message": "Alle stijlen ophalen...",
     "description": ""
   },
   "zipStyles": {
-    "message": "Bezig met inpakken van stijlen...",
+    "message": "Stijlen inpakken...",
     "description": ""
   },
   "unzipStyles": {
-    "message": "Bezig met uitpakken van stijlen...",
+    "message": "Stijlen uitpakken...",
     "description": ""
   },
   "readingStyles": {
-    "message": "Bezig met uitlezen van stijlen...",
+    "message": "Stijlen lezen...",
     "description": ""
   },
   "uploadingFile": {
-    "message": "Bezig met uploaden van bestand...",
+    "message": "Bestand uploaden...",
     "description": ""
   }
 }

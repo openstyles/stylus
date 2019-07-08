@@ -317,6 +317,14 @@
     "message": "啟用",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "排除目前的網域",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "排除目前的 URL",
+    "description": ""
+  },
   "exportLabel": {
     "message": "匯出",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -939,7 +947,7 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "公開每個 iframe 中的頂級頁面網域。\n啟用編寫特別用於 iframe 的 CSS，如這個：\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "以 usercss 編寫新樣式",
@@ -1045,6 +1053,10 @@
     "message": "Stylus 解析 usercss 失敗：",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "復原在切換後的彈出式視窗樣式",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "在邊邊新增白色邊框",
     "description": ""
@@ -1064,6 +1076,10 @@
   "popupManageTooltip": {
     "message": "Shift + 點選或右鍵 + 點選以在管理員中開啟目前頁面可用的樣式",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "動作選單",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "在新視窗開啟編輯器",

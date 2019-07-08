@@ -309,6 +309,14 @@
     "message": "Luba",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Välista praegune domeen",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Välista praegune URL",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Ekspordi",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -609,6 +617,10 @@
     "message": "Reaalajas uuestilaadimine",
     "description": "The label of live-reload feature"
   },
+  "liveReloadUnavailable": {
+    "message": "Reaalajas uuestilaadimise lubamiseks lohista fail kaartide ribale (ala, kus näidatakse kaartide pealkirju).",
+    "description": ""
+  },
   "manageFavicons": {
     "message": "Lehe ikoonid rakendub-tulbas",
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -666,7 +678,7 @@
     "description": "Checkbox to show only non-Usercss (standard) styles"
   },
   "manageOnlyUpdates": {
-    "message": "Ainult uuenduste ja vigadega",
+    "message": "Ainult uuenduste või vigadega",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
@@ -676,6 +688,124 @@
   "menuShowBadge": {
     "message": "Kuva aktiivsete stiilide hulka",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Vigane @var märkeruut: väärtus peab olema 0 või 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "Vigane @var värv: $color$ pole värv",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "Vigane @var $type$: väärtus peab olema arv või massiiv",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Vigane @var $type$: määratletud on mitu ühikut",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Vigane @var $type$: massiiv sisaldab liiga palju elemente",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Vigane @var $type$: vaikimisi väärtus on miinimumist madalam",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Vigane @var $type$: vaikimisi väärtus on maksimumist suurem",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "Vigane @var $type$: '$units$' pole lubatud ühik",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Vigane URL protokoll. Lubatud on ainult http ja https: $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingMandatory": {
+    "message": "Kohustuslikud metaandmed puudu: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Tundmatud metaandmed: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Tundmatu @$varkey$ tüüp: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Tundmatu @preprocessor: $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
   },
   "noStylesForSite": {
     "message": "Sellele saidile pole stiile paigaldatud.",
@@ -715,7 +845,7 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Kirjuta uus stiil usercss-ina",
@@ -840,6 +970,10 @@
   "popupManageTooltip": {
     "message": "Shift+klõps või paremklõps avab halduri praeguse saidi kohta käivate stiilidega",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Tegevuste menüü",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Ava redaktor uues aknas",
@@ -1175,6 +1309,10 @@
     "message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus ei saa osadele failitüüpidele ligi pääseda (nt. pdf & json failid).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Uuendusi ei leitud.",
     "description": "Text that displays when an update all check completed and no updates are available"
@@ -1263,5 +1401,29 @@
   "writeStyleForURL": {
     "message": "see URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "overwriteFileExport": {
+    "message": "Kas tahad olemasoleva faili üle kirjutada?",
+    "description": ""
+  },
+  "exportSavedSuccess": {
+    "message": "Fail edukalt salvestatud",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "Oma stiilide importimiseks peaksid esmalt selle eksportima.",
+    "description": ""
+  },
+  "gettingStyles": {
+    "message": "Kõigi stiilide hankimine...",
+    "description": ""
+  },
+  "readingStyles": {
+    "message": "Stiilide lugemine...",
+    "description": ""
+  },
+  "uploadingFile": {
+    "message": "Faili üleslaadimine...",
+    "description": ""
   }
 }

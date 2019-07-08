@@ -317,6 +317,14 @@
     "message": "Включить",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Исключить текущий домен",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Исключить текущий URL",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Экспорт",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -689,6 +697,222 @@
     "message": "Число активных стилей",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Неверный флажок @var: значение должно быть 0 или 1",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "Неверный цвет @var: $color$ это не цвет",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "Неверный @var$type$: значение должно быть числом или массивом ",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Неверный @var $type$: несколько единиц определены",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Неверный @var $type$: массив содержит слишком много элементов",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Неверный @var $type$: элементы в массиве должны быть числом, строкой или нулем",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Неверный @var $type$: значение по умолчанию равно нулю",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Неверный @var $type$: значение по умолчанию ниже минимального",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Неверный @var $type$: значение по умолчанию больше максимального",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Неверный @var $type$: значение по умолчанию не является кратным шага",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "Неверный @var $type$: '$units$' не является действительной единицей",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Неверный @var select: значением по умолчанию должен быть массив или объект",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Неверный @var select: значения внутри массива/объекта должны быть строкой",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Неверный @var select: список опций пуст",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "Неверный @var select: ярлык опции пуст",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Неверный @var select: определены несколько параметров по умолчанию",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Неверный @var select: имя опции дублируется",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Неверный @var select: значение не существует в списке опций",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Неверный протокол URL. Разрешены только http и https: $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Неверный номер версии. Значение не соответствует шаблону SemVer: $version$",
+    "description": "Error displayed when @version is invalid",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Ожидание числа",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Ожидание строки в кавычках",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Ожидание слова",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Ожидание символа: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Ожидание данной EOT",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
+  "meta_missingMandatory": {
+    "message": "Отсутствуют обязательные метаданные: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Неверный JSON: $literal$ не является допустимым литералом JSON",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Неизвестные метаданные: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Неизвестый @$varkey$ тип: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Неизвестный @preprocessor: $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "noStylesForSite": {
     "message": "Для этого веб-сайта не установлено ни одного стиля.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -726,8 +950,8 @@
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Делает адрес главного сайта известным во всех iframe.\nПозволяет писать CSS для iframe, например, так:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": ""
+    "message": "Выставляет верхний домен сайта в каждом iframe.\nПозволяет писать iframe-specific CSS следующим образом:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Создавать стили в формате usercss",
@@ -833,6 +1057,10 @@
     "message": "Stylus не смог распарсить usercss:",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "Курортные стили в всплывающем окне после переключения",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "Добавить белый бордюр по бокам",
     "description": ""
@@ -852,6 +1080,10 @@
   "popupManageTooltip": {
     "message": "Shift-клик или правый клик откроет менеджер с стилями только для этого сайта.",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Меню действий",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Открывать редактор в новом окне",
@@ -1187,6 +1419,10 @@
     "message": "Доступ к адресам file:// возможен только если включить соответствующую опцию для Stylus на странице chrome://extensions.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "Stylus не может получить доступ к некоторым типам файлов (например, файлы PDF и JSON).",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Обновлений нет.",
     "description": "Text that displays when an update all check completed and no updates are available"
@@ -1275,5 +1511,53 @@
   "writeStyleForURL": {
     "message": "этого адреса",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxStyles": {
+    "message": "Экспорт Dropbox",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Импорт Dropbox",
+    "description": ""
+  },
+  "overwriteFileExport": {
+    "message": "Хотите перезаписать существующий файл?",
+    "description": ""
+  },
+  "exportSavedSuccess": {
+    "message": "Файл успешно сохранен",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "Чтобы импортировать ваши стили, вы должны сначала экспортировать их.",
+    "description": ""
+  },
+  "connectingDropbox": {
+    "message": "Подключение Dropbox...",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Подключение к Dropbox доступно только в приложениях, установленных прямо из интернет-магазина",
+    "description": ""
+  },
+  "gettingStyles": {
+    "message": "Получение всех стилей...",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Запаковка стилей...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Распаковка стилей...",
+    "description": ""
+  },
+  "readingStyles": {
+    "message": "Чтение стилей...",
+    "description": ""
+  },
+  "uploadingFile": {
+    "message": "Загрузка файла...",
+    "description": ""
   }
 }
