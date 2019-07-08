@@ -330,6 +330,21 @@ routes.filesCopy = function (arg) {
 
 /**
  * Copy multiple files or folders to different locations at once in the user's
+ * Dropbox. This route will replace copy_batch. The main difference is this
+ * route will return stutus for each entry, while copy_batch raises failure if
+ * any entry fails. This route will either finish synchronously, or return a job
+ * ID and do the async copy job in background. Please use copy_batch/check_v2 to
+ * check the job status.
+ * @function Dropbox#filesCopyBatchV2
+ * @arg {Object} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationBatchV2Launch, Error.<void>>}
+ */
+routes.filesCopyBatchV2 = function (arg) {
+  return this.request('files/copy_batch_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Copy multiple files or folders to different locations at once in the user's
  * Dropbox. If RelocationBatchArg.allow_shared_folder is false, this route is
  * atomic. If one entry fails, the whole transaction will abort. If
  * RelocationBatchArg.allow_shared_folder is true, atomicity is not guaranteed,
@@ -337,6 +352,7 @@ routes.filesCopy = function (arg) {
  * This route will return job ID immediately and do the async copy job in
  * background. Please use copy_batch/check to check the job status.
  * @function Dropbox#filesCopyBatch
+ * @deprecated
  * @arg {FilesRelocationBatchArg} arg - The request parameters.
  * @returns {Promise.<FilesRelocationBatchLaunch, Error.<void>>}
  */
@@ -345,9 +361,21 @@ routes.filesCopyBatch = function (arg) {
 };
 
 /**
+ * Returns the status of an asynchronous job for copy_batch_v2. It returns list
+ * of results for each entry.
+ * @function Dropbox#filesCopyBatchCheckV2
+ * @arg {AsyncPollArg} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationBatchV2JobStatus, Error.<AsyncPollError>>}
+ */
+routes.filesCopyBatchCheckV2 = function (arg) {
+  return this.request('files/copy_batch/check_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
  * Returns the status of an asynchronous job for copy_batch. If success, it
  * returns list of results for each entry.
  * @function Dropbox#filesCopyBatchCheck
+ * @deprecated
  * @arg {AsyncPollArg} arg - The request parameters.
  * @returns {Promise.<FilesRelocationBatchJobStatus, Error.<AsyncPollError>>}
  */
@@ -708,6 +736,21 @@ routes.filesMove = function (arg) {
 
 /**
  * Move multiple files or folders to different locations at once in the user's
+ * Dropbox. This route will replace move_batch_v2. The main difference is this
+ * route will return stutus for each entry, while move_batch raises failure if
+ * any entry fails. This route will either finish synchronously, or return a job
+ * ID and do the async move job in background. Please use move_batch/check_v2 to
+ * check the job status.
+ * @function Dropbox#filesMoveBatchV2
+ * @arg {FilesMoveBatchArg} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationBatchV2Launch, Error.<void>>}
+ */
+routes.filesMoveBatchV2 = function (arg) {
+  return this.request('files/move_batch_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Move multiple files or folders to different locations at once in the user's
  * Dropbox. This route is 'all or nothing', which means if one entry fails, the
  * whole transaction will abort. This route will return job ID immediately and
  * do the async moving job in background. Please use move_batch/check to check
@@ -718,6 +761,17 @@ routes.filesMove = function (arg) {
  */
 routes.filesMoveBatch = function (arg) {
   return this.request('files/move_batch', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Returns the status of an asynchronous job for move_batch_v2. It returns list
+ * of results for each entry.
+ * @function Dropbox#filesMoveBatchCheckV2
+ * @arg {AsyncPollArg} arg - The request parameters.
+ * @returns {Promise.<FilesRelocationBatchV2JobStatus, Error.<AsyncPollError>>}
+ */
+routes.filesMoveBatchCheckV2 = function (arg) {
+  return this.request('files/move_batch/check_v2', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -814,8 +868,10 @@ routes.filesRestore = function (arg) {
 };
 
 /**
- * Save a specified URL into a file in user's Dropbox. If the given path already
- * exists, the file will be renamed to avoid the conflict (e.g. myfile (1).txt).
+ * Save the data from a specified URL into a file in user's Dropbox. Note that
+ * the transfer from the URL must complete within 5 minutes, or the operation
+ * will time out and the job will fail. If the given path already exists, the
+ * file will be renamed to avoid the conflict (e.g. myfile (1).txt).
  * @function Dropbox#filesSaveUrl
  * @arg {FilesSaveUrlArg} arg - The request parameters.
  * @returns {Promise.<FilesSaveUrlResult, Error.<FilesSaveUrlError>>}
@@ -1169,7 +1225,7 @@ routes.sharingAddFileMember = function (arg) {
  * Allows an owner or editor (if the ACL update policy allows) of a shared
  * folder to add another member. For the new member to get access to all the
  * functionality for this folder, you will need to call mount_folder on their
- * behalf. Apps must have full Dropbox access to use this endpoint.
+ * behalf.
  * @function Dropbox#sharingAddFolderMember
  * @arg {SharingAddFolderMemberArg} arg - The request parameters.
  * @returns {Promise.<void, Error.<SharingAddFolderMemberError>>}
@@ -1190,8 +1246,7 @@ routes.sharingChangeFileMemberAccess = function (arg) {
 };
 
 /**
- * Returns the status of an asynchronous job. Apps must have full Dropbox access
- * to use this endpoint.
+ * Returns the status of an asynchronous job.
  * @function Dropbox#sharingCheckJobStatus
  * @arg {AsyncPollArg} arg - The request parameters.
  * @returns {Promise.<SharingJobStatus, Error.<AsyncPollError>>}
@@ -1201,8 +1256,7 @@ routes.sharingCheckJobStatus = function (arg) {
 };
 
 /**
- * Returns the status of an asynchronous job for sharing a folder. Apps must
- * have full Dropbox access to use this endpoint.
+ * Returns the status of an asynchronous job for sharing a folder.
  * @function Dropbox#sharingCheckRemoveMemberJobStatus
  * @arg {AsyncPollArg} arg - The request parameters.
  * @returns {Promise.<SharingRemoveMemberJobStatus, Error.<AsyncPollError>>}
@@ -1212,8 +1266,7 @@ routes.sharingCheckRemoveMemberJobStatus = function (arg) {
 };
 
 /**
- * Returns the status of an asynchronous job for sharing a folder. Apps must
- * have full Dropbox access to use this endpoint.
+ * Returns the status of an asynchronous job for sharing a folder.
  * @function Dropbox#sharingCheckShareJobStatus
  * @arg {AsyncPollArg} arg - The request parameters.
  * @returns {Promise.<SharingShareFolderJobStatus, Error.<AsyncPollError>>}
@@ -1273,8 +1326,7 @@ routes.sharingGetFileMetadataBatch = function (arg) {
 };
 
 /**
- * Returns shared folder metadata by its folder ID. Apps must have full Dropbox
- * access to use this endpoint.
+ * Returns shared folder metadata by its folder ID.
  * @function Dropbox#sharingGetFolderMetadata
  * @arg {SharingGetMetadataArgs} arg - The request parameters.
  * @returns {Promise.<SharingSharedFolderMetadata, Error.<SharingSharedFolderAccessError>>}
@@ -1357,8 +1409,7 @@ routes.sharingListFileMembersContinue = function (arg) {
 };
 
 /**
- * Returns shared folder membership by its folder ID. Apps must have full
- * Dropbox access to use this endpoint.
+ * Returns shared folder membership by its folder ID.
  * @function Dropbox#sharingListFolderMembers
  * @arg {SharingListFolderMembersArgs} arg - The request parameters.
  * @returns {Promise.<SharingSharedFolderMembers, Error.<SharingSharedFolderAccessError>>}
@@ -1369,8 +1420,7 @@ routes.sharingListFolderMembers = function (arg) {
 
 /**
  * Once a cursor has been retrieved from list_folder_members, use this to
- * paginate through all shared folder members. Apps must have full Dropbox
- * access to use this endpoint.
+ * paginate through all shared folder members.
  * @function Dropbox#sharingListFolderMembersContinue
  * @arg {SharingListFolderMembersContinueArg} arg - The request parameters.
  * @returns {Promise.<SharingSharedFolderMembers, Error.<SharingListFolderMembersContinueError>>}
@@ -1380,8 +1430,7 @@ routes.sharingListFolderMembersContinue = function (arg) {
 };
 
 /**
- * Return the list of all shared folders the current user has access to. Apps
- * must have full Dropbox access to use this endpoint.
+ * Return the list of all shared folders the current user has access to.
  * @function Dropbox#sharingListFolders
  * @arg {SharingListFoldersArgs} arg - The request parameters.
  * @returns {Promise.<SharingListFoldersResult, Error.<void>>}
@@ -1393,8 +1442,7 @@ routes.sharingListFolders = function (arg) {
 /**
  * Once a cursor has been retrieved from list_folders, use this to paginate
  * through all shared folders. The cursor must come from a previous call to
- * list_folders or list_folders/continue. Apps must have full Dropbox access to
- * use this endpoint.
+ * list_folders or list_folders/continue.
  * @function Dropbox#sharingListFoldersContinue
  * @arg {SharingListFoldersContinueArg} arg - The request parameters.
  * @returns {Promise.<SharingListFoldersResult, Error.<SharingListFoldersContinueError>>}
@@ -1405,7 +1453,6 @@ routes.sharingListFoldersContinue = function (arg) {
 
 /**
  * Return the list of all shared folders the current user can mount or unmount.
- * Apps must have full Dropbox access to use this endpoint.
  * @function Dropbox#sharingListMountableFolders
  * @arg {SharingListFoldersArgs} arg - The request parameters.
  * @returns {Promise.<SharingListFoldersResult, Error.<void>>}
@@ -1418,7 +1465,6 @@ routes.sharingListMountableFolders = function (arg) {
  * Once a cursor has been retrieved from list_mountable_folders, use this to
  * paginate through all mountable shared folders. The cursor must come from a
  * previous call to list_mountable_folders or list_mountable_folders/continue.
- * Apps must have full Dropbox access to use this endpoint.
  * @function Dropbox#sharingListMountableFoldersContinue
  * @arg {SharingListFoldersContinueArg} arg - The request parameters.
  * @returns {Promise.<SharingListFoldersResult, Error.<SharingListFoldersContinueError>>}
@@ -1481,8 +1527,7 @@ routes.sharingModifySharedLinkSettings = function (arg) {
 /**
  * The current user mounts the designated folder. Mount a shared folder for a
  * user after they have been added as a member. Once mounted, the shared folder
- * will appear in their Dropbox. Apps must have full Dropbox access to use this
- * endpoint.
+ * will appear in their Dropbox.
  * @function Dropbox#sharingMountFolder
  * @arg {SharingMountFolderArg} arg - The request parameters.
  * @returns {Promise.<SharingSharedFolderMetadata, Error.<SharingMountFolderError>>}
@@ -1494,7 +1539,7 @@ routes.sharingMountFolder = function (arg) {
 /**
  * The current user relinquishes their membership in the designated file. Note
  * that the current user may still have inherited access to this file through
- * the parent folder. Apps must have full Dropbox access to use this endpoint.
+ * the parent folder.
  * @function Dropbox#sharingRelinquishFileMembership
  * @arg {SharingRelinquishFileMembershipArg} arg - The request parameters.
  * @returns {Promise.<void, Error.<SharingRelinquishFileMembershipError>>}
@@ -1507,8 +1552,7 @@ routes.sharingRelinquishFileMembership = function (arg) {
  * The current user relinquishes their membership in the designated shared
  * folder and will no longer have access to the folder.  A folder owner cannot
  * relinquish membership in their own folder. This will run synchronously if
- * leave_a_copy is false, and asynchronously if leave_a_copy is true. Apps must
- * have full Dropbox access to use this endpoint.
+ * leave_a_copy is false, and asynchronously if leave_a_copy is true.
  * @function Dropbox#sharingRelinquishFolderMembership
  * @arg {SharingRelinquishFolderMembershipArg} arg - The request parameters.
  * @returns {Promise.<AsyncLaunchEmptyResult, Error.<SharingRelinquishFolderMembershipError>>}
@@ -1540,8 +1584,7 @@ routes.sharingRemoveFileMember2 = function (arg) {
 
 /**
  * Allows an owner or editor (if the ACL update policy allows) of a shared
- * folder to remove another member. Apps must have full Dropbox access to use
- * this endpoint.
+ * folder to remove another member.
  * @function Dropbox#sharingRemoveFolderMember
  * @arg {SharingRemoveFolderMemberArg} arg - The request parameters.
  * @returns {Promise.<AsyncLaunchResultBase, Error.<SharingRemoveFolderMemberError>>}
@@ -1583,7 +1626,7 @@ routes.sharingSetAccessInheritance = function (arg) {
  * testing the async case repeatable, set `ShareFolderArg.force_async`. If a
  * ShareFolderLaunch.async_job_id is returned, you'll need to call
  * check_share_job_status until the action completes to get the metadata for the
- * folder. Apps must have full Dropbox access to use this endpoint.
+ * folder.
  * @function Dropbox#sharingShareFolder
  * @arg {SharingShareFolderArg} arg - The request parameters.
  * @returns {Promise.<SharingShareFolderLaunch, Error.<SharingShareFolderError>>}
@@ -1595,7 +1638,7 @@ routes.sharingShareFolder = function (arg) {
 /**
  * Transfer ownership of a shared folder to a member of the shared folder. User
  * must have AccessLevel.owner access to the shared folder to perform a
- * transfer. Apps must have full Dropbox access to use this endpoint.
+ * transfer.
  * @function Dropbox#sharingTransferFolder
  * @arg {SharingTransferFolderArg} arg - The request parameters.
  * @returns {Promise.<void, Error.<SharingTransferFolderError>>}
@@ -1606,8 +1649,7 @@ routes.sharingTransferFolder = function (arg) {
 
 /**
  * The current user unmounts the designated folder. They can re-mount the folder
- * at a later time using mount_folder. Apps must have full Dropbox access to use
- * this endpoint.
+ * at a later time using mount_folder.
  * @function Dropbox#sharingUnmountFolder
  * @arg {SharingUnmountFolderArg} arg - The request parameters.
  * @returns {Promise.<void, Error.<SharingUnmountFolderError>>}
@@ -1628,8 +1670,7 @@ routes.sharingUnshareFile = function (arg) {
 
 /**
  * Allows a shared folder owner to unshare the folder. You'll need to call
- * check_job_status to determine if the action has completed successfully. Apps
- * must have full Dropbox access to use this endpoint.
+ * check_job_status to determine if the action has completed successfully.
  * @function Dropbox#sharingUnshareFolder
  * @arg {SharingUnshareFolderArg} arg - The request parameters.
  * @returns {Promise.<AsyncLaunchEmptyResult, Error.<SharingUnshareFolderError>>}
@@ -1650,7 +1691,7 @@ routes.sharingUpdateFileMember = function (arg) {
 
 /**
  * Allows an owner or editor of a shared folder to update another member's
- * permissions. Apps must have full Dropbox access to use this endpoint.
+ * permissions.
  * @function Dropbox#sharingUpdateFolderMember
  * @arg {SharingUpdateFolderMemberArg} arg - The request parameters.
  * @returns {Promise.<SharingMemberAccessLevelResult, Error.<SharingUpdateFolderMemberError>>}
@@ -1661,8 +1702,7 @@ routes.sharingUpdateFolderMember = function (arg) {
 
 /**
  * Update the sharing policies for a shared folder. User must have
- * AccessLevel.owner access to the shared folder to update its policies. Apps
- * must have full Dropbox access to use this endpoint.
+ * AccessLevel.owner access to the shared folder to update its policies.
  * @function Dropbox#sharingUpdateFolderPolicy
  * @arg {SharingUpdateFolderPolicyArg} arg - The request parameters.
  * @returns {Promise.<SharingSharedFolderMetadata, Error.<SharingUpdateFolderPolicyError>>}
@@ -1920,6 +1960,9 @@ function downloadRequest(fetch) {
       if (options.selectAdmin) {
         fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
       }
+      if (options.pathRoot) {
+        fetchOptions.headers['Dropbox-API-Path-Root'] = options.pathRoot;
+      }
     }
 
     return fetch(getBaseURL(host) + path, fetchOptions).then(function (res) {
@@ -1977,6 +2020,9 @@ function uploadRequest(fetch) {
       }
       if (options.selectAdmin) {
         fetchOptions.headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
+      }
+      if (options.pathRoot) {
+        fetchOptions.headers['Dropbox-API-Path-Root'] = options.pathRoot;
       }
     }
 
@@ -3982,6 +4028,9 @@ function rpcRequest(fetch) {
       if (options.selectAdmin) {
         headers['Dropbox-API-Select-Admin'] = options.selectAdmin;
       }
+      if (options.pathRoot) {
+        headers['Dropbox-API-Path-Root'] = options.pathRoot;
+      }
     }
 
     fetchOptions.headers = headers;
@@ -4111,6 +4160,8 @@ if (!Array.prototype.includes) {
  * to act as.
  * @arg {String} [options.selectAdmin] - Team admin that the team access token would like
  * to act as.
+ * @arg {String} [options.pathRoot] - root pass to access other namespaces
+ * Use to access team folders for example
  */
 
 function parseBodyToType(res) {
@@ -4139,6 +4190,7 @@ var DropboxBase = function () {
     this.selectUser = options.selectUser;
     this.selectAdmin = options.selectAdmin;
     this.fetch = options.fetch || fetch;
+    this.pathRoot = options.pathRoot;
     if (!options.fetch) {
       console.warn('Global fetch is deprecated and will be unsupported in a future version. Please pass fetch function as option when instantiating dropbox instance: new Dropbox({fetch})');
     } // eslint-disable-line no-console
@@ -4332,12 +4384,15 @@ var DropboxBase = function () {
       var removed = false;
       var browser = window.open(url, '_blank');
 
-      function onLoadError() {
-        // Try to avoid a browser crash on browser.close().
-        window.setTimeout(function () {
-          browser.close();
-        }, 10);
-        errorCallback();
+      function onLoadError(event) {
+        if (event.code !== -999) {
+          // Workaround to fix wrong behavior on cordova-plugin-inappbrowser
+          // Try to avoid a browser crash on browser.close().
+          window.setTimeout(function () {
+            browser.close();
+          }, 10);
+          errorCallback();
+        }
       }
 
       function onLoadStop(event) {
@@ -4402,7 +4457,8 @@ var DropboxBase = function () {
         selectUser: this.selectUser,
         selectAdmin: this.selectAdmin,
         clientId: this.getClientId(),
-        clientSecret: this.getClientSecret()
+        clientSecret: this.getClientSecret(),
+        pathRoot: this.pathRoot
       };
       return request(path, args, auth, host, this.getAccessToken(), options);
     }
@@ -4462,6 +4518,8 @@ var DropboxBase = function () {
  * authentication URL.
  * @arg {String} [options.selectUser] - Select user is only used by DropboxTeam.
  * It specifies which user the team access token should be acting as.
+ * @arg {String} [options.pathRoot] - root pass to access other namespaces
+ * Use to access team folders for example
  */
 var Dropbox = function (_DropboxBase) {
   inherits(Dropbox, _DropboxBase);
@@ -4504,7 +4562,7 @@ routes$1.teamDevicesListMemberDevices = function (arg) {
 };
 
 /**
- * List all device sessions of a team.
+ * List all device sessions of a team. Permission : Team member file access.
  * @function DropboxTeam#teamDevicesListMembersDevices
  * @arg {TeamListMembersDevicesArg} arg - The request parameters.
  * @returns {Promise.<TeamListMembersDevicesResult, Error.<TeamListMembersDevicesError>>}
@@ -4514,7 +4572,7 @@ routes$1.teamDevicesListMembersDevices = function (arg) {
 };
 
 /**
- * List all device sessions of a team.
+ * List all device sessions of a team. Permission : Team member file access.
  * @function DropboxTeam#teamDevicesListTeamDevices
  * @deprecated
  * @arg {TeamListTeamDevicesArg} arg - The request parameters.
@@ -5046,6 +5104,7 @@ routes$1.teamNamespacesListContinue = function (arg) {
 };
 
 /**
+ * Permission : Team member file access.
  * @function DropboxTeam#teamPropertiesTemplateAdd
  * @deprecated
  * @arg {FilePropertiesAddTemplateArg} arg - The request parameters.
@@ -5056,6 +5115,7 @@ routes$1.teamPropertiesTemplateAdd = function (arg) {
 };
 
 /**
+ * Permission : Team member file access.
  * @function DropboxTeam#teamPropertiesTemplateGet
  * @deprecated
  * @arg {FilePropertiesGetTemplateArg} arg - The request parameters.
@@ -5066,6 +5126,7 @@ routes$1.teamPropertiesTemplateGet = function (arg) {
 };
 
 /**
+ * Permission : Team member file access.
  * @function DropboxTeam#teamPropertiesTemplateList
  * @deprecated
  * @arg {void} arg - The request parameters.
@@ -5076,6 +5137,7 @@ routes$1.teamPropertiesTemplateList = function (arg) {
 };
 
 /**
+ * Permission : Team member file access.
  * @function DropboxTeam#teamPropertiesTemplateUpdate
  * @deprecated
  * @arg {FilePropertiesUpdateTemplateArg} arg - The request parameters.

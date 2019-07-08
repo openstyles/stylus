@@ -37,6 +37,7 @@ const CODEMIRROR_THEMES = [
   'neat',
   'neo',
   'night',
+  'nord',
   'oceanic-next',
   'panda-syntax',
   'paraiso-dark',
@@ -57,5 +58,6 @@ const CODEMIRROR_THEMES = [
   'xq-dark',
   'xq-light',
   'yeti',
+  'yonce',
   'zenburn'
 ];
