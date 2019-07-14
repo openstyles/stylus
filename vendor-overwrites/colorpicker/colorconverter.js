@@ -54,12 +54,14 @@ const colorConverter = (() => {
   }
 
   function validatePercentage(s) {
-    const match = s.match(/^(\d+|\d*\.\d+)%$/);
-    return match && Number(match[1]) >= 0 && Number(match[1]) <= 100;
+    if (!s.endsWith('%')) return false;
+    const n = Number(s.slice(0, -1));
+    return n >= 0 && n <= 100;
   }
 
   function validateNum(s) {
-    return /^\d+$/.test(s) && Number(s) >= 0 && Number(s) <= 255;
+    const n = Number(s);
+    return n >= 0 && n <= 255;
   }
 
   function validateHSL(nums) {
@@ -74,7 +76,8 @@ const colorConverter = (() => {
     if (alpha.endsWith('%')) {
       return validatePercentage(alpha);
     }
-    return Number(alpha) >= 0 && Number(alpha) <= 1;
+    const n = Number(alpha);
+    return n >= 0 && n <= 1;
   }
 
   function parse(str) {
