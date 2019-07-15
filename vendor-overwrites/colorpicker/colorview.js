@@ -363,7 +363,12 @@
 
     for (let i = styleIndex; i + 1 < styles.length; i += 2) {
       style = styles[i + 1];
-      const styleSupported = style && (style.includes('atom') || style.includes('keyword'));
+      const styleSupported = style && (
+        // old CodeMirror
+        style.includes('atom') || style.includes('keyword') ||
+        // new CodeMirror since 5.48
+        style.includes('variable callee')
+      );
       if (!styleSupported) continue;
 
       start = i > 2 ? styles[i - 2] : 0;
@@ -574,7 +579,7 @@
 
 
   function findNearestColor({styles, text}, pos) {
-    const ALLOWED_STYLES = ['atom', 'keyword', 'comment', 'string'];
+    const ALLOWED_STYLES = ['atom', 'keyword', 'callee', 'comment', 'string'];
     let start, color, prevStart, prevColor, m;
     RX_DETECT.lastIndex = Math.max(0, pos - 1000);
 
