@@ -172,8 +172,8 @@ preinit();
         $('#preview-label').classList.toggle('hidden', !style.id);
 
         $('#beautify').onclick = () => beautify(editor.getEditors());
-        $('#lint').addEventListener('scroll', hideLintHeaderOnScroll, {passive: true});
-        window.addEventListener('resize', () => debounce(rememberWindowSize, 100));
+        window.addEventListener('resize', () => { debounce(rememberWindowSize, 100); detectLayout(); });
+        detectLayout();
         editor = (usercss ? createSourceEditor : createSectionsEditor)({
           style,
           onTitleChanged: updateTitle
@@ -476,15 +476,6 @@ function showCodeMirrorPopup(title, html, options) {
   return popup;
 }
 
-function hideLintHeaderOnScroll() {
-  // workaround part2 for the <details> not showing its toggle icon: hide <summary> on scroll
-  const newOpacity = this.scrollTop === 0 ? '' : '0';
-  const style = this.firstElementChild.style;
-  if (style.opacity !== newOpacity) {
-    style.opacity = newOpacity;
-  }
-}
-
 function rememberWindowSize() {
   if (
     document.visibilityState === 'visible' &&
@@ -497,6 +488,63 @@ function rememberWindowSize() {
       width: window.outerWidth,
       height: window.outerHeight,
     });
+  }
+}
+
+prefs.subscribe(['editor.linter'], (key, value) => {
+  if(value === '') {
+    document.body.classList.add('linter-disabled');
+  } else {
+    document.body.classList.remove('linter-disabled');
+  }
+});
+
+function fixedHeader() {
+  const scrollPoint = $('#header').clientHeight - 40;
+  const linterEnabled = prefs.get('editor.linter') !== '';
+  if (window.scrollY >= scrollPoint && !document.body.classList.contains('fixed-header') && linterEnabled) {
+    document.body.classList.add('fixed-header');
+  } else if (window.scrollY < 40 && linterEnabled) {
+    document.body.classList.remove('fixed-header');
+  }
+}
+
+function detectLayout() {
+  const compact = window.innerWidth <= 850;
+  const shortViewportLinter = window.innerHeight < 692;
+  const shortViewportNoLinter = window.innerHeight < 554;
+  const linterEnabled = prefs.get('editor.linter') !== '';
+  if (compact) {
+    const scrollPoint = $('#header').clientHeight - 40;
+    if (window.scrollY >= scrollPoint && !document.body.classList.contains('fixed-header') && linterEnabled) {
+      document.body.classList.add('fixed-header');
+    }
+    document.body.classList.add('compact-layout');
+    $('#options').removeAttribute('open');
+    $('#options').classList.add('ignore-pref');
+    $('#lint').removeAttribute('open');
+    $('#lint').classList.add('ignore-pref');
+    window.addEventListener('scroll', fixedHeader);
+  } else {
+    document.body.classList.remove('compact-layout');
+    document.body.classList.remove('fixed-header');
+    window.removeEventListener('scroll', fixedHeader);
+    if (shortViewportLinter && linterEnabled || shortViewportNoLinter && !linterEnabled) {
+      $('#options').removeAttribute('open');
+      $('#options').classList.add('ignore-pref');
+      if (prefs.get('editor.lint.expanded')) {
+        $('#lint').setAttribute('open', '');
+      }
+    } else {
+      $('#options').classList.remove('ignore-pref');
+      $('#lint').classList.remove('ignore-pref');
+      if (prefs.get('editor.options.expanded')) {
+        $('#options').setAttribute('open', '');
+      }
+      if (prefs.get('editor.lint.expanded')) {
+        $('#lint').setAttribute('open', '');
+      }
+    }
   }
 }
 

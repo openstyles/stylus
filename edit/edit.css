@@ -195,6 +195,8 @@ input:invalid {
   border-bottom: 1px dotted transparent;
   margin-top: .1em;
   margin-bottom: .1em;
+  margin-left: -13px;
+  padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
 }
 
 #header summary:hover h2 {
@@ -272,7 +274,7 @@ input:invalid {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
 .section-editor:not(.section-editor-ready) .section {
-  visibility: hidden;
+  opacity: 0 !important;
 }
 .section-editor:not(.section-editor-ready) .CodeMirror {
   height: 0;
@@ -654,21 +656,48 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 
 /************ lint ************/
 #lint {
+  overflow: hidden;
+  margin: .5rem -1rem 0;
+  min-height: 30px;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+}
+#lint > summary {
+  position: relative;
+  margin-left: 0;
+  padding-left: 4px;
+}
+#lint[open]:not(.hidden-unless-compact) {
+  min-height: 130px;
+}
+#lint summary h2 {
+  margin-left: -16px;
+}
+#lint > .lint-scroll-container {
+  margin: 42px 1rem 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  }
-#lint > summary {
-  /* workaround for overflow:auto to show the toggle triangle */
-  position: absolute;
-}
-#lint > div {
-  margin-top: 2.75rem;
 }
 #lint table {
   font-size: 100%;
   border-spacing: 0;
   margin-bottom: 1rem;
   line-height: 1.0;
+  width: 100%;
+}
+#lint tr td:last-child {
+  width: 100%;
+}
+#lint td[role="line"] {
+  padding-left: 0.25rem;
 }
 #lint table:last-child {
   margin-bottom: 0;
@@ -679,6 +708,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint caption {
   text-align: left;
   font-weight: bold;
+  padding-bottom: 6px;
 }
 #lint tbody {
   font-size: 85%;
@@ -759,13 +789,13 @@ html:not(.usercss) .usercss-only,
   display: none !important; /* hide during page init */
 }
 
-#lint {
-  padding: 1rem 0 0;
-  box-sizing: border-box;
+body:not(.compact-layout) .hidden-unless-compact,
+body.linter-disabled .hidden-unless-compact {
+  display: none !important;
 }
 
 #options:not([open]) + #lint {
-  padding-top: 0;
+  margin-top: 0;
 }
 
 #options-wrapper .options-column:nth-child(2) {
@@ -846,6 +876,21 @@ html:not(.usercss) .usercss-only,
     border-bottom: 1px dashed #AAA;
     padding: 0;
   }
+  .fixed-header {
+    padding-top: 40px;
+  }
+  .fixed-header #header {
+    min-height: 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 0 0;
+    background-color: #fff;
+  }
+  .fixed-header #header > *:not(#lint) {
+    display: none !important;
+  }
   #actions {
     display: flex;
     flex-wrap: wrap;
@@ -898,16 +943,9 @@ html:not(.usercss) .usercss-only,
   #options:not([open]) + #lint:not([open]) {
     margin-top: 0;
   }
-  #lint {
-    overflow: initial;
-  }
   #lint summary {
     position: static;
     margin-bottom:  0;
-  }
-  #lint tbody {
-    display: flex;
-    flex-direction: column;
   }
   #options summary {
     margin-left: 0;
@@ -927,24 +965,16 @@ html:not(.usercss) .usercss-only,
     position: relative;
     top: 0.2rem;
   }
-  #lint > div {
-    margin-top: 0;
-    overflow: hidden;
+  #lint > .lint-scroll-container {
+    margin: 32px 1rem 0;
+    bottom: 6px;
   }
   #lint {
-    padding: 0 1rem .5rem;
+    padding: 0;
+    margin: 1rem 0 0;
   }
   #lint > summary {
     margin-top: 0;
-  }
-  #lint caption {
-    text-indent: 4px;
-  }
-  #lint table {
-    width: 100%;
-  }
-  #lint td[role="message"] {
-    max-width: none;
   }
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
