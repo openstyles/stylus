@@ -22,6 +22,8 @@ const CssToProperty = Object.entries(propertyToCss)
 
 let editor;
 
+let scrollPointTimer;
+
 document.addEventListener('visibilitychange', beforeUnload);
 window.addEventListener('beforeunload', beforeUnload);
 msg.onExtension(onRuntimeMessage);
@@ -492,7 +494,7 @@ function rememberWindowSize() {
 }
 
 prefs.subscribe(['editor.linter'], (key, value) => {
-  if(value === '') {
+  if (value === '') {
     document.body.classList.add('linter-disabled');
   } else {
     document.body.classList.remove('linter-disabled');
@@ -502,7 +504,7 @@ prefs.subscribe(['editor.linter'], (key, value) => {
 function fixedHeader() {
   const scrollPoint = $('#header').clientHeight - 40;
   const linterEnabled = prefs.get('editor.linter') !== '';
-  if (window.scrollY >= scrollPoint && !document.body.classList.contains('fixed-header') && linterEnabled) {
+  if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
     document.body.classList.add('fixed-header');
   } else if (window.scrollY < 40 && linterEnabled) {
     document.body.classList.remove('fixed-header');
@@ -515,16 +517,21 @@ function detectLayout() {
   const shortViewportNoLinter = window.innerHeight < 554;
   const linterEnabled = prefs.get('editor.linter') !== '';
   if (compact) {
-    const scrollPoint = $('#header').clientHeight - 40;
-    if (window.scrollY >= scrollPoint && !document.body.classList.contains('fixed-header') && linterEnabled) {
-      document.body.classList.add('fixed-header');
-    }
     document.body.classList.add('compact-layout');
     $('#options').removeAttribute('open');
     $('#options').classList.add('ignore-pref');
     $('#lint').removeAttribute('open');
     $('#lint').classList.add('ignore-pref');
-    window.addEventListener('scroll', fixedHeader);
+    if (!$('.usercss')) {
+      clearTimeout(scrollPointTimer);
+      scrollPointTimer = setTimeout(() => {
+        const scrollPoint = $('#header').clientHeight - 40;
+        if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
+          document.body.classList.add('fixed-header');
+        }
+      }, 250);
+      window.addEventListener('scroll', fixedHeader);
+    }
   } else {
     document.body.classList.remove('compact-layout');
     document.body.classList.remove('fixed-header');
