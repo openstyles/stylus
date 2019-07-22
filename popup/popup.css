@@ -274,7 +274,7 @@ html[style*="border"] .entry:nth-child(11):before {
 }
 
 .entry .actions > .menu-button {
-  width: 14px;
+  width: 16px;
 }
 
 .entry .actions > a.configure {
