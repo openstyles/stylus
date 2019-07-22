@@ -172,6 +172,10 @@ body.blocked > DIV {
   text-decoration: none;
 }
 
+#installed .actions > a {
+  min-width: 22px;
+}
+
 /* entry */
 .entry {
   position: relative;
