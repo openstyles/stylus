@@ -174,7 +174,10 @@ preinit();
         $('#preview-label').classList.toggle('hidden', !style.id);
 
         $('#beautify').onclick = () => beautify(editor.getEditors());
-        window.addEventListener('resize', () => { debounce(rememberWindowSize, 100); detectLayout(); });
+        window.addEventListener('resize', () => {
+          debounce(rememberWindowSize, 100);
+          detectLayout();
+        });
         detectLayout();
         editor = (usercss ? createSourceEditor : createSectionsEditor)({
           style,
@@ -494,62 +497,61 @@ function rememberWindowSize() {
 }
 
 prefs.subscribe(['editor.linter'], (key, value) => {
-  if (value === '') {
-    document.body.classList.add('linter-disabled');
-  } else {
-    document.body.classList.remove('linter-disabled');
-  }
+  $('body').classList.toggle('linter-disabled', value === '');
 });
 
 function fixedHeader() {
   const scrollPoint = $('#header').clientHeight - 40;
   const linterEnabled = prefs.get('editor.linter') !== '';
   if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
-    document.body.classList.add('fixed-header');
+    $('body').classList.add('fixed-header');
   } else if (window.scrollY < 40 && linterEnabled) {
-    document.body.classList.remove('fixed-header');
+    $('body').classList.remove('fixed-header');
   }
 }
 
 function detectLayout() {
+  const body = $('body');
+  const options = $('#options');
+  const lint = $('#lint');
   const compact = window.innerWidth <= 850;
   const shortViewportLinter = window.innerHeight < 692;
   const shortViewportNoLinter = window.innerHeight < 554;
   const linterEnabled = prefs.get('editor.linter') !== '';
   if (compact) {
-    document.body.classList.add('compact-layout');
-    $('#options').removeAttribute('open');
-    $('#options').classList.add('ignore-pref');
-    $('#lint').removeAttribute('open');
-    $('#lint').classList.add('ignore-pref');
+    body.classList.add('compact-layout');
+    options.removeAttribute('open');
+    options.classList.add('ignore-pref');
+    lint.removeAttribute('open');
+    lint.classList.add('ignore-pref');
     if (!$('.usercss')) {
       clearTimeout(scrollPointTimer);
       scrollPointTimer = setTimeout(() => {
         const scrollPoint = $('#header').clientHeight - 40;
         if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
-          document.body.classList.add('fixed-header');
+          body.classList.add('fixed-header');
         }
       }, 250);
       window.addEventListener('scroll', fixedHeader);
     }
   } else {
-    document.body.classList.remove('compact-layout');
-    document.body.classList.remove('fixed-header');
+    body.classList.remove('compact-layout');
+    body.classList.remove('fixed-header');
     window.removeEventListener('scroll', fixedHeader);
     if (shortViewportLinter && linterEnabled || shortViewportNoLinter && !linterEnabled) {
-      $('#options').removeAttribute('open');
-      $('#options').classList.add('ignore-pref');
+      options.removeAttribute('open');
+      options.classList.add('ignore-pref');
       if (prefs.get('editor.lint.expanded')) {
-        $('#lint').setAttribute('open', '');
+        lint.setAttribute('open', '');
       }
     } else {
-      $('#options').classList.remove('ignore-pref');
-      $('#lint').classList.remove('ignore-pref');
+      options.classList.remove('ignore-pref');
+      lint.classList.remove('ignore-pref');
       if (prefs.get('editor.options.expanded')) {
-        $('#options').setAttribute('open', '');
+        options.setAttribute('open', '');
       }
       if (prefs.get('editor.lint.expanded')) {
-        $('#lint').setAttribute('open', '');
+        lint.setAttribute('open', '');
       }
     }
   }
