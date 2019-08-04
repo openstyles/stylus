@@ -314,7 +314,9 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
   }
 
   function saveState(el) {
-    prefs.set(el.dataset.pref, el.open);
+    if (!el.classList.contains('ignore-pref')) {
+      prefs.set(el.dataset.pref, el.open);
+    }
   }
 }
 

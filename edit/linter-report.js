@@ -37,7 +37,7 @@ Object.assign(linter, (() => {
   function updateCount() {
     const issueCount = Array.from(tables.values())
       .reduce((sum, table) => sum + table.trs.length, 0);
-    $('#lint').classList.toggle('hidden', issueCount === 0);
+    $('#lint').classList.toggle('hidden-unless-compact', issueCount === 0);
     $('#issue-count').textContent = issueCount;
   }
 
@@ -148,7 +148,7 @@ Object.assign(linter, (() => {
         col.textContent = anno.from.ch + 1;
         message.title = clipString(anno.message, 1000) +
           (anno.rule ? `\n(${anno.rule})` : '');
-        message.textContent = clipString(anno.message, 100);
+        message.textContent = clipString(anno.message, 100).replace(/ at line.*/, '');
       }
     }
   }

@@ -429,7 +429,7 @@
           </div>
         </div>
       </details>
-      <details id="lint" class="hidden" data-pref="editor.lint.expanded">
+      <details id="lint" class="hidden-unless-compact" data-pref="editor.lint.expanded">
         <summary>
           <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
             <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click" tabindex="0">
@@ -437,7 +437,9 @@
             </a>
           </h2>
         </summary>
-        <div class="lint-report-container"></div>
+        <div class="lint-scroll-container">
+          <div class="lint-report-container"></div>
+        </div>
       </details>
       <div id="footer" class="hidden">
         <a href="https://github.com/openstyles/stylus/wiki/Usercss"
