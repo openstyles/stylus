@@ -88,6 +88,109 @@ body.search-results-shown {
   font-weight: 600;
 }
 
+.filter-results {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.filter-results span {
+  padding-left: 5px;
+  color: #333;
+  transition: color .2s;
+}
+
+.filter-results:hover span,
+.filter-results.show-menu span {
+  color: #000;
+}
+
+.filter-results .svg-icon {
+  fill: #666;
+  transition: fill .2s;
+}
+
+.filter-results:hover .svg-icon,
+.filter-results.show-menu .svg-icon {
+  fill: #111;
+}
+
+.filter-results .svg-icon.select-arrow {
+  position: relative;
+  top: -1px;
+  right: unset;
+  left: 1px;
+  transition: fill .2s;
+}
+
+.filter-menu {
+  background-color: #eee;
+  z-index: 10;
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: max-content;
+  flex-direction: column;
+  border-radius: 3px;
+  border: 1px solid #000;
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, .3);
+  display: none;
+}
+
+.filter-results.show-menu + .filter-menu {
+  display: flex;
+}
+
+.filter-item {
+  text-align: left;
+  text-decoration: none;
+  padding: 8px 24px 8px 16px;
+  transition: color .2s, background-color .2s;
+}
+
+.filter-item:hover {
+  background-color: hsla(0, 0%, 50%, .1)
+}
+
+.filter-radio-wrapper {
+  padding: 8px 16px 4px;
+}
+
+.filter-radio-wrapper input[type="radio"] {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+.filter-radio-wrapper .icon-wrapper {
+  padding-top: 2px;
+}
+
+.filter-radio-wrapper > label:first-child {
+  margin-right: 14px;
+}
+
+.filter-radio-wrapper > label:hover .svg-icon {
+  fill: #000;
+}
+
+.filter-radio-wrapper > label,
+.filter-radio-wrapper > label * {
+  cursor: pointer;
+}
+
+.filter-radio-wrapper,
+.filter-radio-wrapper label > div {
+  display: flex;
+}
+
+.filter-results .svg-icon,
+.svg-icon.ascending,
+.svg-icon.descending {
+  height: 16px;
+  width: 16px;
+}
+
 .search-result:hover .search-result-title {
   color: initial;
 }
@@ -223,7 +326,16 @@ body.search-results-shown {
 
 .search-results-nav[data-type="top"] {
   padding-top: 1em;
-  margin-bottom: 1em;
+}
+
+.current-filters {
+  padding: .5em 0 .75em;
+  text-align: center;
+  position: relative;
+}
+
+.current-filters > .svg-icon {
+  margin: 4px 0 -4px;
 }
 
 .search-results-nav[data-type="bottom"] {

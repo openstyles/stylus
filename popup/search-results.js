@@ -102,6 +102,26 @@ window.addEventListener('showStyles:done', function _() {
 
     $('#find-styles-inline-group').classList.add('hidden');
 
+    const filterResults = $('.filter-results');
+
+    function closeMenu(event) {
+      if (event.target.closest('.filter-menu') || event.target.closest('.filter-results')) return;
+      filterResults.classList.remove('show-menu');
+      document.removeEventListener('click', closeMenu, true);
+      document.body.removeEventListener('scroll', closeMenu);
+    }
+
+    filterResults.onclick = () => {
+      filterResults.classList.toggle('show-menu');
+      if (filterResults.classList.contains('show-menu')) {
+        document.addEventListener('click', closeMenu, true);
+        document.body.addEventListener('scroll', closeMenu);
+      } else {
+        document.removeEventListener('click', closeMenu, true);
+        document.body.removeEventListener('scroll', closeMenu);
+      }
+    }
+
     dom.container = $('#search-results');
     dom.container.dataset.empty = '';
 
