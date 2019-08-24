@@ -1,3 +1,5 @@
+# Stylus
+
 Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExtension
 
 ## Highlights
@@ -28,9 +30,9 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Help
 
-- [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
-- [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
-- Discord: [![Discord][chat-image]][chat-link]
+* [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
+* [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
+* Discord: [![Discord][chat-image]][chat-link]
 
 [chat-image]: https://img.shields.io/discord/379521691774353408.svg
 [chat-link]: https://discordapp.com/widget?id=379521691774353408
@@ -45,13 +47,16 @@ See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):<br>
+Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):  
+
 Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
-Current Stylus:<br>
+Current Stylus:  
+
 Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
-**[GNU GPLv3](./LICENSE)**<br>
+**[GNU GPLv3](./LICENSE)**  
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
