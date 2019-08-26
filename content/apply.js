@@ -88,10 +88,9 @@ const APPLY = (() => {
     // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
-    const usePageScript = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
-      Promise.resolve(false) : injectPageScript();
+    let ready;
     return (el, content, disabled) =>
-      usePageScript.then(ok => {
+      checkPageScript().then(ok => {
         if (!ok) {
           el.textContent = content;
           // https://github.com/openstyles/stylus/issues/693
@@ -106,6 +105,14 @@ const APPLY = (() => {
           window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
         }
       });
+
+    function checkPageScript() {
+      if (!ready) {
+        ready = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
+          Promise.resolve(false) : injectPageScript();
+      }
+      return ready;
+    }
 
     function injectPageScript() {
       const scriptContent = EVENT_NAME => {
@@ -149,7 +156,7 @@ const APPLY = (() => {
       script.onerror = resolveFalse;
       window.addEventListener('error', resolveFalse);
       window.addEventListener(EVENT_NAME, handleInit);
-      document.documentElement.appendChild(script);
+      (document.head || document.documentElement).appendChild(script);
       return promise.then(result => {
         script.remove();
         window.removeEventListener(EVENT_NAME, handleInit);
