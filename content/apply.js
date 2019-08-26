@@ -56,6 +56,16 @@ const APPLY = (() => {
     }
     updateCount();
     updateExposeIframes();
+    try {
+      // FIXME: use try-catch since accessing sessionStorage may throw?
+      if (styleInjector.list.length) {
+        sessionStorage.setItem('stylusStyleCount', styleInjector.list.length);
+      } else {
+        sessionStorage.removeItem('stylusStyleCount');
+      }
+    } catch (err) {
+      // pass
+    }
   }
 
   function init() {
@@ -89,6 +99,17 @@ const APPLY = (() => {
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
     let ready;
+    let styleCount;
+    try {
+      // FIXME: use try-catch since accessing sessionStorage may throw?
+      styleCount = sessionStorage.getItem('stylusStyleCount');
+    } catch (err) {
+      // pass
+    }
+    if (styleCount) {
+      checkPageScript();
+    }
+
     return (el, content, disabled) =>
       checkPageScript().then(ok => {
         if (!ok) {
