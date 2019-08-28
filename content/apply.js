@@ -57,11 +57,11 @@ const APPLY = (() => {
     updateCount();
     updateExposeIframes();
     try {
-      // FIXME: use try-catch since accessing sessionStorage may throw?
+      // FIXME: use try-catch since accessing localStorage may throw?
       if (styleInjector.list.length) {
-        sessionStorage.setItem('stylusStyleCount', styleInjector.list.length);
+        localStorage.setItem('stylusStyleCount', styleInjector.list.length);
       } else {
-        sessionStorage.removeItem('stylusStyleCount');
+        localStorage.removeItem('stylusStyleCount');
       }
     } catch (err) {
       // pass
@@ -101,8 +101,8 @@ const APPLY = (() => {
     let ready;
     let styleCount;
     try {
-      // FIXME: use try-catch since accessing sessionStorage may throw?
-      styleCount = sessionStorage.getItem('stylusStyleCount');
+      // FIXME: use try-catch since accessing localStorage may throw?
+      styleCount = localStorage.getItem('stylusStyleCount');
     } catch (err) {
       // pass
     }
