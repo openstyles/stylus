@@ -170,10 +170,12 @@ const APPLY = (() => {
         }
       };
       const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
-      const src = `data:application/javascript;base64,${btoa(code)}`;
-      const script = document.createElement('script');
+      // make sure it works in XML
+      const script = document.createElementNS('http://www.w3.org/1999/xhtml', 'script');
       const {resolve, promise} = deferred();
-      script.src = src;
+      // use inline script because using src is too slow
+      // https://github.com/openstyles/stylus/pull/766
+      script.text = code;
       script.onerror = resolveFalse;
       window.addEventListener('error', resolveFalse);
       window.addEventListener(EVENT_NAME, handleInit);
