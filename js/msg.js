@@ -41,11 +41,19 @@ const msg = (() => {
     if (isBg) {
       return Promise.resolve(window);
     }
-    if (!chrome.runtime.getBackgroundPage) {
-      return Promise.resolve();
+    // try using extension.getBackgroundPage because runtime.getBackgroundPage is too slow
+    // https://github.com/openstyles/stylus/issues/771
+    if (chrome.extension.getBackgroundPage) {
+      const bg = chrome.extension.getBackgroundPage();
+      if (bg && bg.document && bg.document.readyState !== 'loading') {
+        return Promise.resolve(bg);
+      }
     }
-    return promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
-      .catch(() => null);
+    if (chrome.runtime.getBackgroundPage) {
+      return promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
+        .catch(() => null);
+    }
+    return Promise.resolve(null);
   }
 
   function send(data, target = 'extension') {
