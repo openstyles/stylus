@@ -180,6 +180,8 @@ const APPLY = (() => {
       window.addEventListener('error', resolveFalse);
       window.addEventListener(EVENT_NAME, handleInit);
       (document.head || document.documentElement).appendChild(script);
+      // injection failed if handleInit is not called.
+      resolveFalse();
       return promise.then(result => {
         script.remove();
         window.removeEventListener(EVENT_NAME, handleInit);
