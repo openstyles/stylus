@@ -106,9 +106,11 @@ const APPLY = (() => {
     } catch (err) {
       // pass
     }
-    if (styleCount) {
-      checkPageScript();
-    }
+    // FIXME: temporarily? disable page script preload which is not reliable. See
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1579345
+    // if (styleCount) {
+      // checkPageScript();
+    // }
 
     return (el, content, disabled) =>
       checkPageScript().then(ok => {
