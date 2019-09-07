@@ -56,16 +56,6 @@ const APPLY = (() => {
     }
     updateCount();
     updateExposeIframes();
-    try {
-      // FIXME: use try-catch since accessing localStorage may throw?
-      if (styleInjector.list.length) {
-        localStorage.setItem('stylusStyleCount', styleInjector.list.length);
-      } else {
-        localStorage.removeItem('stylusStyleCount');
-      }
-    } catch (err) {
-      // pass
-    }
   }
 
   function init() {
@@ -99,19 +89,6 @@ const APPLY = (() => {
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
     let ready;
-    let styleCount;
-    try {
-      // FIXME: use try-catch since accessing localStorage may throw?
-      styleCount = localStorage.getItem('stylusStyleCount');
-    } catch (err) {
-      // pass
-    }
-    // FIXME: temporarily? disable page script preload which is not reliable. See
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1579345
-    // if (styleCount) {
-      // checkPageScript();
-    // }
-
     return (el, content, disabled) =>
       checkPageScript().then(ok => {
         if (!ok) {
@@ -162,6 +139,8 @@ const APPLY = (() => {
         }}));
 
         function checkStyleApplied() {
+          // FIXME: this is not reliable
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=1579345
           const style = document.createElement('style');
           style.textContent = ':root{--stylus-applied:1}';
           document.documentElement.appendChild(style);
