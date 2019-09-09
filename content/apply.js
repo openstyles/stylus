@@ -88,10 +88,9 @@ const APPLY = (() => {
     // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
     // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
     const EVENT_NAME = chrome.runtime.id;
-    const usePageScript = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
-      Promise.resolve(false) : injectPageScript();
+    let ready;
     return (el, content, disabled) =>
-      usePageScript.then(ok => {
+      checkPageScript().then(ok => {
         if (!ok) {
           el.textContent = content;
           // https://github.com/openstyles/stylus/issues/693
@@ -106,6 +105,14 @@ const APPLY = (() => {
           window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
         }
       });
+
+    function checkPageScript() {
+      if (!ready) {
+        ready = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
+          Promise.resolve(false) : injectPageScript();
+      }
+      return ready;
+    }
 
     function injectPageScript() {
       const scriptContent = EVENT_NAME => {
@@ -132,6 +139,8 @@ const APPLY = (() => {
         }}));
 
         function checkStyleApplied() {
+          // FIXME: this is not reliable
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=1579345
           const style = document.createElement('style');
           style.textContent = ':root{--stylus-applied:1}';
           document.documentElement.appendChild(style);
@@ -142,14 +151,18 @@ const APPLY = (() => {
         }
       };
       const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
-      const src = `data:application/javascript;base64,${btoa(code)}`;
-      const script = document.createElement('script');
+      // make sure it works in XML
+      const script = document.createElementNS('http://www.w3.org/1999/xhtml', 'script');
       const {resolve, promise} = deferred();
-      script.src = src;
+      // use inline script because using src is too slow
+      // https://github.com/openstyles/stylus/pull/766
+      script.text = code;
       script.onerror = resolveFalse;
       window.addEventListener('error', resolveFalse);
       window.addEventListener(EVENT_NAME, handleInit);
-      document.documentElement.appendChild(script);
+      (document.head || document.documentElement).appendChild(script);
+      // injection failed if handleInit is not called.
+      resolveFalse();
       return promise.then(result => {
         script.remove();
         window.removeEventListener(EVENT_NAME, handleInit);
