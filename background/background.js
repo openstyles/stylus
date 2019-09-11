@@ -1,5 +1,5 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
-  openEditor debounce URLS ignoreChromeError getTab
+  debounce URLS ignoreChromeError getTab
   styleManager msg navigatorUtil iconUtil workerUtil contentScripts */
 'use strict';
 

@@ -48,7 +48,8 @@ const prefs = (() => {
     'editor.tabSize': 4,            // tab width, in spaces
     'editor.keyMap': navigator.appVersion.indexOf('Windows') > 0 ? 'sublime' : 'default',
     'editor.theme': 'default',      // CSS theme
-    'editor.beautify': {            // CSS beautifier
+    // CSS beautifier
+    'editor.beautify': {
       selector_separator_newline: true,
       newline_before_open_brace: false,
       newline_after_open_brace: true,
