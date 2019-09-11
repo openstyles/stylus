@@ -139,15 +139,11 @@ const APPLY = (() => {
         }}));
 
         function checkStyleApplied() {
-          // FIXME: this is not reliable
-          // https://bugzilla.mozilla.org/show_bug.cgi?id=1579345
           const style = document.createElement('style');
-          style.textContent = ':root{--stylus-applied:1}';
           document.documentElement.appendChild(style);
-          const applied = getComputedStyle(document.documentElement)
-            .getPropertyValue('--stylus-applied');
+          const applied = Boolean(style.sheet);
           style.remove();
-          return Boolean(applied);
+          return applied;
         }
       };
       const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
