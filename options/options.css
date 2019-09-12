@@ -17,6 +17,7 @@ body {
   min-width: 480px;
   max-width: 800px;
   width: max-content;
+  overflow-x: hidden;
 }
 
 @supports (-moz-appearance:none) {
