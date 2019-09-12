@@ -33,7 +33,8 @@ body {
   }
 }
 
-.firefox .chromium-only {
+.firefox .chromium-only,
+.chromium-only.chrome-no-popup-border {
   display: none;
 }
 

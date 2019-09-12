@@ -8,6 +8,13 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
+if (CHROME >= 3167 && CHROME <= 3704) {
+  const borderOption = $('.chrome-no-popup-border');
+  if (borderOption) {
+    borderOption.classList.remove('chrome-no-popup-border');
+  }
+}
+
 // collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
 if (!FIREFOX && !OPERA && CHROME < 3343) {
   const block = $('#advanced');
