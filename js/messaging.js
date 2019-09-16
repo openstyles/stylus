@@ -10,6 +10,9 @@ const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
 // const ANDROID = !chrome.windows;
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
+// see PR #781
+const CHROME_HAS_BORDER_BUG = CHROME >= 3167 && CHROME <= 3704;
+
 if (!CHROME && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
   // until we know for sure in the async getBrowserInfo()

@@ -1,6 +1,7 @@
 /* global messageBox msg setupLivePrefs enforceInputRange
   $ $$ $create $createLink
-  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError */
+  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError
+  CHROME_HAS_BORDER_BUG */
 'use strict';
 
 setupLivePrefs();
@@ -8,7 +9,7 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
-if (CHROME >= 3167 && CHROME <= 3704) {
+if (CHROME_HAS_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {
     borderOption.classList.remove('chrome-no-popup-border');
