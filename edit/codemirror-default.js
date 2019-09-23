@@ -242,6 +242,20 @@
     CodeMirror.commands[name] = (...args) => editor[name](...args);
   }
 
+  // speedup: reuse the old folding marks
+  const {setGutterMarker} = CodeMirror.prototype;
+  CodeMirror.prototype.setGutterMarker = function (line, gutterID, value) {
+    const o = this.state.foldGutter.options;
+    if (typeof o.indicatorOpen === 'string' ||
+        typeof o.indicatorFolded === 'string') {
+      const old = line.gutterMarkers && line.gutterMarkers[gutterID];
+      if (old ? value && value.className === old.className : !value) {
+        return line;
+      }
+    }
+    return setGutterMarker.apply(this, arguments);
+  };
+
   // CodeMirror convenience commands
   Object.assign(CodeMirror.commands, {
     toggleEditorFocus,
