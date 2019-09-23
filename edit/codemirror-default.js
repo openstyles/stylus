@@ -243,6 +243,7 @@
   }
 
   // speedup: reuse the old folding marks
+  // TODO: remove when https://github.com/codemirror/CodeMirror/pull/6010 is shipped in /vendor
   const {setGutterMarker} = CodeMirror.prototype;
   CodeMirror.prototype.setGutterMarker = function (line, gutterID, value) {
     const o = this.state.foldGutter.options;
