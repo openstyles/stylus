@@ -318,6 +318,11 @@ function createAppliesToLineWidget(cm) {
         clearWidget(removed[i]);
         removedWidget = removed[++i];
       }
+      if (removedWidget && deepEqual(removedWidget.node.__applies, section.applies, ['mark'])) {
+        yield removedWidget;
+        i++;
+        continue;
+      }
       for (const a of section.applies) {
         setupApplyMarkers(a, lineIndexes);
       }
@@ -562,6 +567,30 @@ function createAppliesToLineWidget(cm) {
   function unescapeDoubleslash(s) {
     const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/.test(s);
     return hasSingleEscapes ? s : s.replace(/\\\\/g, '\\');
+  }
+
+  function deepEqual(a, b, ignoredKeys) {
+    if (!a || !b) return a === b;
+    const type = typeof a;
+    if (type !== typeof b) return false;
+    if (type !== 'object') return a === b;
+    if (Array.isArray(a)) {
+      return Array.isArray(b) &&
+             a.length === b.length &&
+             a.every((v, i) => deepEqual(v, b[i], ignoredKeys));
+    }
+    for (const key in a) {
+      if (!Object.hasOwnProperty.call(a, key) ||
+          ignoredKeys && ignoredKeys.includes(key)) continue;
+      if (!Object.hasOwnProperty.call(b, key)) return false;
+      if (!deepEqual(a[key], b[key], ignoredKeys)) return false;
+    }
+    for (const key in b) {
+      if (!Object.hasOwnProperty.call(b, key) ||
+          ignoredKeys && ignoredKeys.includes(key)) continue;
+      if (!Object.hasOwnProperty.call(a, key)) return false;
+    }
+    return true;
   }
 
   function showRegExpTester(item) {
