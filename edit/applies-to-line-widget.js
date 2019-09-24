@@ -5,7 +5,7 @@
 
 function createAppliesToLineWidget(cm) {
   const THROTTLE_DELAY = 400;
-  const RX_SPACE = /(?:\s+|\s*\/\*)+/y;
+  const RX_SPACE = /(?:\s+|\/\*)+/y;
   let TPL, EVENTS, CLICK_ROUTE;
   let widgets = [];
   let fromLine, toLine, actualStyle;
