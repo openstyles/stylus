@@ -250,7 +250,9 @@
     if (typeof o.indicatorOpen === 'string' ||
         typeof o.indicatorFolded === 'string') {
       const old = line.gutterMarkers && line.gutterMarkers[gutterID];
-      if (old ? value && value.className === old.className : !value) {
+      // old className can contain other names set by CodeMirror so we'll use classList
+      if (old && value && old.classList.contains(value.className) ||
+          !old && !value) {
         return line;
       }
     }
