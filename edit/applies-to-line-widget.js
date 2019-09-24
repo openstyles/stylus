@@ -494,7 +494,7 @@ function createAppliesToLineWidget(cm) {
     const eatToken = sticky => {
       if (!sticky) skipSpace(pos, posEnd);
       pos.ch++;
-      const token = cm.getTokenAt(pos);
+      const token = cm.getTokenAt(pos, true);
       pos.ch = token.end;
       return CodeMirror.cmpPos(pos, posEnd) <= 0 ? token : {};
     };
