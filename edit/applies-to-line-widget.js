@@ -501,7 +501,9 @@ function createAppliesToLineWidget(cm) {
     const docCur = cm.getSearchCursor('@-moz-document', posStart);
     while (docCur.findNext() &&
            CodeMirror.cmpPos(docCur.pos.to, posEnd) <= 0) {
-      if (/\b(string|comment)\b/.test(cm.getTokenTypeAt(docCur.pos.from))) continue;
+      // CM can be nitpicky at token boundary so we'll check the next character
+      const safePos = {line: docCur.pos.from.line, ch: docCur.pos.from.ch + 1};
+      if (/\b(string|comment)\b/.test(cm.getTokenTypeAt(safePos))) continue;
       const applies = [];
       pos = docCur.pos.to;
       do {
