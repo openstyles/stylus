@@ -1,7 +1,7 @@
 /* global configDialog hotkeys onTabReady msg
   getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
   setupLivePrefs template t $create tWordBreak animateElement
-  tryJSONparse debounce */
+  tryJSONparse debounce CHROME_HAS_BORDER_BUG */
 
 'use strict';
 
@@ -42,7 +42,10 @@ prefs.subscribe(['popup.stylesFirst'], (key, stylesFirst) => {
   document.body.insertBefore(installed, before);
 });
 prefs.subscribe(['popupWidth'], (key, value) => setPopupWidth(value));
-prefs.subscribe(['popup.borders'], (key, value) => toggleSideBorders(value));
+
+if (CHROME_HAS_BORDER_BUG) {
+  prefs.subscribe(['popup.borders'], (key, value) => toggleSideBorders(value));
+}
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -68,7 +71,7 @@ function setPopupWidth(width = prefs.get('popupWidth')) {
 function toggleSideBorders(state = prefs.get('popup.borders')) {
   // runs before <body> is parsed
   const style = document.documentElement.style;
-  if (CHROME >= 3167 && state) {
+  if (CHROME_HAS_BORDER_BUG && state) {
     style.cssText +=
       'border-left: 2px solid white !important;' +
       'border-right: 2px solid white !important;';
