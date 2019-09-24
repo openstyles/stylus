@@ -543,6 +543,11 @@ function createAppliesToLineWidget(cm) {
           ch++;
           lookForEnd = false;
         }
+        // EOL is a whitespace so we'll check the next line
+        if (ch >= text.length) {
+          ch = 0;
+          return;
+        }
         RX_SPACE.lastIndex = ch;
         const m = RX_SPACE.exec(text);
         if (!m) {
