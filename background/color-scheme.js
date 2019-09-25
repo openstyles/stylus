@@ -8,9 +8,6 @@ const colorScheme = (() => {
   let timePreferDark = false;
   const changeListeners = new Set();
 
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
-  media.addListener(updateSystemPreferDark);
-
   const checkTime = ['schemeSwitcher.nightStart', 'schemeSwitcher.nightEnd'];
   prefs.subscribe(checkTime, (key, value) => {
     updateTimePreferDark();
@@ -29,7 +26,7 @@ const colorScheme = (() => {
   updateSystemPreferDark();
   updateTimePreferDark();
 
-  return {shouldIncludeStyle, onChange};
+  return {shouldIncludeStyle, onChange, updateSystemPreferDark};
 
   function createAlarm(key, value) {
     const date = new Date();
@@ -63,10 +60,11 @@ const colorScheme = (() => {
 
   function updateSystemPreferDark() {
     const oldValue = systemPreferDark;
-    systemPreferDark = media.matches;
+    systemPreferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (systemPreferDark !== oldValue) {
       emitChange();
     }
+    return true;
   }
 
   function updateTimePreferDark() {
