@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg */
+  getStyleWithNoCode msg sync uuidv4 */
 /* exported styleManager */
 'use strict';
 
@@ -21,6 +21,7 @@ const styleManager = (() => {
     appliesTo: Set<url>
   } */
   const styles = new Map();
+  const uuidIndex = new Map();
 
   /* url => {
     maybeMatch: Set<styleId>,
@@ -163,12 +164,11 @@ const styleManager = (() => {
   }
 
   function importMany(items) {
+    items.forEach(beforeSave);
     return db.exec('putMany', items)
       .then(events => {
         for (let i = 0; i < items.length; i++) {
-          if (!items[i].id) {
-            items[i].id = events[i].target.result;
-          }
+          afterSave(items[i], events[i].target.result);
         }
         return Promise.all(items.map(i => handleSave(i, 'import')));
       });
@@ -249,8 +249,10 @@ const styleManager = (() => {
 
   function deleteStyle(id) {
     const style = styles.get(id);
+    beforeSave(style);
     return db.exec('delete', id)
       .then(() => {
+        sync.delete(style._id, style._rev);
         for (const url of style.appliesTo) {
           const cache = cachedStyleForUrl.get(url);
           if (cache) {
@@ -320,19 +322,33 @@ const styleManager = (() => {
     });
   }
 
-  function saveStyle(style) {
+  function beforeSave(style) {
     if (!style.name) {
       throw new Error('style name is empty');
     }
     if (style.id == null) {
       delete style.id;
     }
+    if (!style._id) {
+      style._id = uuidv4();
+    }
+    style._rev = Date.now();
     fixUsoMd5Issue(style);
+  }
+
+  function afterSave(style, newId) {
+    if (style.id == null) {
+      style.id = newId;
+    }
+    uuidIndex.set(style._id, style.id);
+    sync.put(style._id, style._rev);
+  }
+
+  function saveStyle(style) {
+    beforeSave();
     return db.exec('put', style)
       .then(event => {
-        if (style.id == null) {
-          style.id = event.target.result;
-        }
+        afterSave(style, event.target.result);
         return style;
       });
   }
@@ -450,23 +466,49 @@ const styleManager = (() => {
     return code.length && code;
   }
 
+  function addMissingProperties(style) {
+    let touched = false;
+    if (!style._id) {
+      style._id = uuidv4();
+      touched = true;
+    }
+    if (!style._rev) {
+      style._rev = Date.now();
+      touched = true;
+    }
+    return touched;
+  }
+
   function prepare() {
-    return db.exec('getAll').then(event => {
-      const styleList = event.target.result;
-      if (!styleList) {
-        return;
-      }
-      for (const style of styleList) {
-        fixUsoMd5Issue(style);
-        styles.set(style.id, {
-          appliesTo: new Set(),
-          data: style
-        });
-        if (!style.name) {
-          style.name = 'ID: ' + style.id;
+    return db.exec('getAll')
+      .then(event => event.target.result || [])
+      .then(styleList => {
+        // setup missing _id, _rev
+        const updated = [];
+        for (const style of styleList) {
+          if (addMissingProperties(style)) {
+            updated.push(style);
+          }
         }
-      }
-    });
+        if (updated.length) {
+          return db.exec('putMany', updated)
+            .then(() => styleList);
+        }
+        return styleList;
+      })
+      .then(styleList => {
+        for (const style of styleList) {
+          fixUsoMd5Issue(style);
+          styles.set(style.id, {
+            appliesTo: new Set(),
+            data: style
+          });
+          uuidIndex.set(style._id, style.id);
+          if (!style.name) {
+            style.name = 'ID: ' + style.id;
+          }
+        }
+      });
   }
 
   function urlMatchStyle(query, style) {
