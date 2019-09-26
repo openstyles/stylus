@@ -40,6 +40,9 @@ const files = {
     'vendor/inflate.js → inflate.js',
     'vendor/z-worker.js → z-worker.js',
     'vendor/zip.js → zip.js'
+  ],
+  'db-to-cloud': [
+    'dist/db-to-cloud.min.js → db-to-cloud.min.js'
   ]
 };
 

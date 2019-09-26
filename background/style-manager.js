@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg sync uuidv4 */
+  getStyleWithNoCode msg sync uuid */
 /* exported styleManager */
 'use strict';
 
@@ -63,11 +63,16 @@ const styleManager = (() => {
 
   handleLivePreviewConnections();
 
-  return ensurePrepared({
+  return Object.assign({
+    compareRevision
+  }, ensurePrepared({
     get,
+    getByUUID,
     getSectionsByUrl,
+    putByUUID,
     installStyle,
     deleteStyle,
+    deleteByUUID,
     editSave,
     findStyle,
     importStyle,
@@ -80,7 +85,7 @@ const styleManager = (() => {
     removeExclusion,
     addInclusion,
     removeInclusion
-  });
+  }));
 
   function handleLivePreviewConnections() {
     chrome.runtime.onConnect.addListener(port => {
@@ -121,9 +126,46 @@ const styleManager = (() => {
     return noCode ? getStyleWithNoCode(data) : data;
   }
 
+  function getByUUID(uuid) {
+    const id = uuidIndex.get(uuid);
+    if (id) {
+      return get(id);
+    }
+  }
+
   function getAllStyles(noCode = false) {
     const datas = [...styles.values()].map(s => s.data);
     return noCode ? datas.map(getStyleWithNoCode) : datas;
+  }
+
+  function compareRevision(rev1, rev2) {
+    return rev1 - rev2;
+  }
+
+  function putByUUID(doc) {
+    const id = uuidIndex.get(doc._id);
+    if (id) {
+      doc.id = id;
+    } else {
+      delete doc.id;
+    }
+    const oldDoc = id && styles.has(id) && styles.get(id).data;
+    let diff = -1;
+    if (oldDoc) {
+      diff = compareRevision(oldDoc._rev, doc._rev);
+      if (diff > 0) {
+        sync.put(oldDoc);
+        return;
+      }
+    }
+    if (diff < 0) {
+      return db.exec('put', doc)
+        .then(event => {
+          doc.id = event.target.result;
+          uuidIndex.set(doc._id, doc.id);
+          return handleSave(doc, 'sync');
+        });
+    }
   }
 
   function toggleStyle(id, enabled) {
@@ -247,12 +289,14 @@ const styleManager = (() => {
     return removeIncludeExclude(id, rule, 'inclusions');
   }
 
-  function deleteStyle(id) {
+  function deleteStyle(id, reason) {
     const style = styles.get(id);
-    beforeSave(style);
+    const rev = Date.now();
     return db.exec('delete', id)
       .then(() => {
-        sync.delete(style._id, style._rev);
+        if (reason !== 'sync') {
+          sync.delete(style.data._id, rev);
+        }
         for (const url of style.appliesTo) {
           const cache = cachedStyleForUrl.get(url);
           if (cache) {
@@ -260,12 +304,21 @@ const styleManager = (() => {
           }
         }
         styles.delete(id);
+        uuidIndex.delete(style.data._id);
         return msg.broadcast({
           method: 'styleDeleted',
           style: {id}
         });
       })
       .then(() => id);
+  }
+
+  function deleteByUUID(_id, rev) {
+    const id = uuidIndex.get(_id);
+    const oldDoc = id && styles.has(id) && styles.get(id).data;
+    if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+      return deleteStyle(id, 'sync');
+    }
   }
 
   function ensurePrepared(methods) {
@@ -330,7 +383,7 @@ const styleManager = (() => {
       delete style.id;
     }
     if (!style._id) {
-      style._id = uuidv4();
+      style._id = uuid();
     }
     style._rev = Date.now();
     fixUsoMd5Issue(style);
@@ -469,7 +522,7 @@ const styleManager = (() => {
   function addMissingProperties(style) {
     let touched = false;
     if (!style._id) {
-      style._id = uuidv4();
+      style._id = uuid();
       touched = true;
     }
     if (!style._rev) {

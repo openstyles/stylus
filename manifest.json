@@ -35,6 +35,11 @@
       "js/script-loader.js",
       "js/usercss.js",
       "js/cache.js",
+      "vendor/semver-bundle/semver.js",
+      "vendor/db-to-cloud/db-to-cloud.min.js",
+      "vendor/uuid/uuid.min.js",
+      "background/token-manager.js",
+      "background/sync.js",
       "background/content-scripts.js",
       "background/db.js",
       "background/style-manager.js",
@@ -45,8 +50,7 @@
       "background/style-via-api.js",
       "background/search-db.js",
       "background/update.js",
-      "background/openusercss-api.js",
-      "vendor/semver-bundle/semver.js"
+      "background/openusercss-api.js"
     ]
   },
   "commands": {

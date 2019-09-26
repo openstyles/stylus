@@ -88,6 +88,8 @@ const prefs = (() => {
     'hotkey.openManage': '',
     'hotkey.styleDisableAll': '',
 
+    'sync.enabled': 'none',
+
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 
