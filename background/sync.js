@@ -80,10 +80,10 @@ const sync = (() => {
   function getDrive(name) {
     if (name === 'dropbox') {
       return dbToCloud.drive.dropbox({
-        getAccessToken: () => tokenManager.getToken(name),
+        getAccessToken: dbx => tokenManager.getToken(name, dbx),
         getDropbox: () => loadScript('/vendor/dropbox/dropbox-sdk.js')
           .then(() => Dropbox.Dropbox), // eslint-disable-line no-undef
-        clientId: 'zg52vphuapvpng9'
+        clientId: tokenManager.getClientId('dropbox')
       });
     }
 
