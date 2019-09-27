@@ -5,8 +5,8 @@
 const tokenManager = (() => {
   const launchWebAuthFlow = promisify(chrome.identity.launchWebAuthFlow.bind(chrome.identity));
   const AUTH = {
-    // always use code flow?
     dropbox: {
+      flow: 'token',
       clientId: 'zg52vphuapvpng9',
       authURL: 'https://www.dropbox.com/oauth2/authorize',
       tokenURL: 'https://api.dropboxapi.com/oauth2/token'
@@ -14,12 +14,6 @@ const tokenManager = (() => {
   };
 
   return {getToken, revokeToken, getClientId};
-
-  function parseSearchParams(url) {
-    // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-    const search = new URL(url).search;
-    return new URLSearchParams(search[0] === '?' ? search.slice(1) : search);
-  }
 
   function getClientId(name) {
     return AUTH[name].clientId;
@@ -59,37 +53,65 @@ const tokenManager = (() => {
     return Promise.reject(new Error('not implemented yet'));
   }
 
+  function stringifyQuery(obj) {
+    const search = new URLSearchParams();
+    for (const key of Object.keys(obj)) {
+      search.set(key, obj[key]);
+    }
+    return search.toString();
+  }
+
   function authUser(name, k) {
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
+    const query = {
+      response_type: provider.flow,
+      client_id: provider.clientId,
+      redirect_uri: chrome.identity.getRedirectURL(),
+      state
+    };
+    const url = `${provider.authURL}?${stringifyQuery(query)}`;
     return launchWebAuthFlow({
-      url:
-      `${provider.authURL}?response_type=code&redirect_uri=${chrome.identity.getRedirectURL()}` +
-      `&state=${state}&client_id=${provider.clientId}`,
+      url,
       interactive: true
     })
       .then(url => {
-        const params = parseSearchParams(url);
+        const params = new URLSearchParams(
+          provider.flow === 'token' ?
+            new URL(url).hash.slice(1) :
+            new URL(url).search.slice(1)
+        );
         if (params.get('state') !== state) {
           throw new Error(`unexpected state: ${params.get('state')}, expected: ${state}`);
         }
+        if (provider.flow === 'token') {
+          const obj = {};
+          for (const [key, value] of params.entries()) {
+            obj[key] = value;
+          }
+          return obj;
+        }
         const code = params.get('code');
         return fetch(provider.tokenURL, {
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
           },
-          body:
-            `code=${code}&grant_type=authorization_code&client_id=${provider.clientId}` +
-            `&redirect_uri=${chrome.identity.getRedirectURL()}`
-        });
-      })
-      .then(r => {
-        if (r.ok) {
-          return r.json();
-        }
-        return r.text()
-          .then(body => {
-            throw new Error(`failed to fetch (${r.status}): ${body}`);
+          body: JSON.stringify({
+            code,
+            grant_type: 'authorization_code',
+            client_id: provider.clientId,
+            redirect_uri: chrome.identity.getRedirectURL()
+          })
+        })
+          .then(r => {
+            if (r.ok) {
+              return r.json();
+            }
+            return r.text()
+              .then(body => {
+                throw new Error(`failed to fetch (${r.status}): ${body}`);
+              });
           });
       })
       .then(result =>
