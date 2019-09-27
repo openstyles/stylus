@@ -398,7 +398,7 @@ const styleManager = (() => {
   }
 
   function saveStyle(style) {
-    beforeSave();
+    beforeSave(style);
     return db.exec('put', style)
       .then(event => {
         afterSave(style, event.target.result);
