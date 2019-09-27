@@ -87,10 +87,9 @@ const tokenManager = (() => {
         if (r.ok) {
           return r.json();
         }
-        return r.json()
-          .catch(console.warn)
-          .then(json => {
-            throw new Error(`failed to fetch (${r.status}): ${json && json.message}`);
+        return r.text()
+          .then(body => {
+            throw new Error(`failed to fetch (${r.status}): ${body}`);
           });
       })
       .then(result =>
