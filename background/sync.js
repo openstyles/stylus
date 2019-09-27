@@ -63,11 +63,6 @@ const sync = (() => {
   function start(name) {
     return (currentDrive ? stop() : Promise.resolve())
       .then(() => {
-        if (currentDrive) {
-          return chromeLocal.remove(`sync/state/${currentDrive.name}`);
-        }
-      })
-      .then(() => {
         currentDrive = getDrive(name);
         ctrl.use(currentDrive);
         return ctrl.start();
@@ -92,6 +87,14 @@ const sync = (() => {
 
   function stop() {
     chrome.alarms.clear('syncNow');
-    return ctrl.stop();
+    if (!currentDrive) {
+      return Promise.resolve();
+    }
+    return ctrl.stop()
+      .then(() => tokenManager.revokeToken(currentDrive.name))
+      .then(() => chromeLocal.remove(`sync/state/${currentDrive.name}`))
+      .then(() => {
+        currentDrive = null;
+      });
   }
 })();
