@@ -57,7 +57,8 @@ const sync = (() => {
     start,
     stop,
     put: ctrl.put,
-    delete: ctrl.delete
+    delete: ctrl.delete,
+    syncNow: ctrl.syncNow
   };
 
   function start(name) {
