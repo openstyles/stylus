@@ -107,7 +107,10 @@ const prefs = (() => {
     specific: new Map(),
   };
 
-  const initializing = promisify(chrome.storage.sync.get.bind(chrome.storage.sync))('settings')
+  const syncSet = promisify(chrome.storage.sync.set.bind(chrome.storage.sync));
+  const syncGet = promisify(chrome.storage.sync.get.bind(chrome.storage.sync));
+
+  const initializing = syncGet('settings')
     .then(result => {
       if (result.settings) {
         setAll(result.settings, true);
@@ -234,7 +237,7 @@ const prefs = (() => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         timer = null;
-        chrome.storage.sync.set({settings: values})
+        syncSet({settings: values})
           .then(resolve, reject);
       });
     });

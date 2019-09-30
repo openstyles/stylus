@@ -105,6 +105,9 @@ document.onclick = e => {
 
   connectButton.addEventListener('click', e => {
     if (validClick(e)) {
+      if (cloud.value === 'none') {
+        return;
+      }
       connectButton.disabled = true;
       cloud.disabled = true;
       prefs.set('sync.enabled', cloud.value)
@@ -124,7 +127,7 @@ document.onclick = e => {
         .then(() => API.syncStop())
         .catch(console.error)
         .then(() => {
-          connectButton.enabled = true;
+          connectButton.disabled = false;
         });
     }
   });
