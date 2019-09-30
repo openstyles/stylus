@@ -49,7 +49,9 @@ const sync = (() => {
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
-      syncNow().catch(console.error);
+      ctrl.syncNow()
+        .catch(handle401Error)
+        .catch(console.error);
     }
   });
 
@@ -58,20 +60,17 @@ const sync = (() => {
     stop,
     put: ctrl.put,
     delete: ctrl.delete,
-    syncNow
+    syncNow: () => ctrl.syncNow().then(handle401Error)
   };
 
-  function syncNow() {
-    return ctrl.syncNow()
-      .catch(err => {
-        if (err.code === 401) {
-          return tokenManager.revokeToken(currentDrive.name)
-            .then(() => {
-              throw err;
-            });
-        }
-        throw err;
-      });
+  function handle401Error(err) {
+    if (err.code === 401) {
+      return tokenManager.revokeToken(currentDrive.name)
+        .then(() => {
+          throw err;
+        });
+    }
+    throw err;
   }
 
   function start(name) {
@@ -81,10 +80,14 @@ const sync = (() => {
         ctrl.use(currentDrive);
         return ctrl.start()
           .catch(err => {
-            console.log(err.message);
+            if (/Authorization page could not be loaded/i.test(err.message)) {
+              // FIXME: Chrome always fail at the first login so we try again
+              return ctrl.syncNow();
+            }
             throw err;
           });
       })
+      .catch(handle401Error)
       .then(() => {
         chrome.alarms.create('syncNow', {periodInMinutes: 30});
       });
