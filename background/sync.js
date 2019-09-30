@@ -38,13 +38,7 @@ const sync = (() => {
   });
 
   prefs.initializing
-    .then(() => {
-      const provider = prefs.get('sync.enabled');
-      if (provider === 'none') {
-        return;
-      }
-      return start(provider);
-    })
+    .then(start)
     .catch(console.error);
 
   chrome.alarms.onAlarm.addListener(info => {
@@ -73,7 +67,11 @@ const sync = (() => {
     throw err;
   }
 
-  function start(name) {
+  function start() {
+    const name = prefs.get('sync.enabled');
+    if (name === 'none') {
+      return Promise.resolve();
+    }
     return (currentDrive ? stop() : Promise.resolve())
       .then(() => {
         currentDrive = getDrive(name);

@@ -1,6 +1,6 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
   debounce URLS ignoreChromeError getTab
-  styleManager msg navigatorUtil iconUtil workerUtil contentScripts */
+  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -63,7 +63,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
     return browser.runtime.openOptionsPage()
       .then(() => new Promise(resolve => setTimeout(resolve, 100)))
       .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
-  }
+  },
+
+  syncStart: sync.start,
+  syncStop: sync.stop,
+  syncNow: sync.syncNow
 });
 
 // eslint-disable-next-line no-var

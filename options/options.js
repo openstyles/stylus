@@ -74,6 +74,68 @@ document.onclick = e => {
   }
 };
 
+// sync to cloud
+(() => {
+  const cloud = document.querySelector('.sync-options .cloud-name');
+  const connectButton = document.querySelector('.sync-options .connect');
+  const disconnectButton = document.querySelector('.sync-options .disconnect');
+  const syncButton = document.querySelector('.sync-options .sync-now');
+
+  // init button state
+  prefs.initializing
+    .then(() => {
+      const name = prefs.get('sync.enabled');
+      if (name === 'none') {
+        connectButton.disabled = false;
+        disconnectButton.disabled = true;
+        syncButton.disabled = true;
+      } else {
+        connectButton.disabled = true;
+        disconnectButton.disabled = false;
+        syncButton.disabled = false;
+      }
+    });
+
+  function validClick(e) {
+    return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
+  }
+
+  connectButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      connectButton.disabled = true;
+      prefs.set('sync.enabled', cloud.value)
+        .then(() => API.syncStart())
+        .catch(console.error)
+        .then(() => {
+          disconnectButton.disabled = false;
+        });
+    }
+  });
+
+  disconnectButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      disconnectButton.disabled = true;
+      prefs.set('sync.enabled', 'none')
+        .then(() => API.syncStop())
+        .catch(console.error)
+        .then(() => {
+          connectButton.enabled = true;
+        });
+    }
+  });
+
+  syncButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      syncButton.disabled = true;
+      API.syncNow()
+        .catch(console.error)
+        .then(() => {
+          syncButton.disabled = false;
+        });
+    }
+  });
+})();
+
 function checkUpdates() {
   let total = 0;
   let checked = 0;
