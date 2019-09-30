@@ -81,26 +81,29 @@ document.onclick = e => {
   const disconnectButton = document.querySelector('.sync-options .disconnect');
   const syncButton = document.querySelector('.sync-options .sync-now');
 
+  let state;
+  let syncing = false;
+
   // init button state
   prefs.initializing
     .then(() => {
       const name = prefs.get('sync.enabled');
       cloud.value = name;
-      if (name === 'none') {
-        connectButton.disabled = false;
-        disconnectButton.disabled = true;
-        syncButton.disabled = true;
-        cloud.disabled = false;
-      } else {
-        connectButton.disabled = true;
-        disconnectButton.disabled = false;
-        syncButton.disabled = false;
-        cloud.disabled = true;
-      }
+      state = name === 'none' ? 'disconnected' : 'connected';
+      updateButtons();
     });
 
   function validClick(e) {
     return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
+  }
+
+  cloud.addEventListener('change', updateButtons);
+
+  function updateButtons() {
+    cloud.disabled = state !== 'disconnected';
+    connectButton.disabled = state !== 'disconnected' || cloud.value === 'none';
+    disconnectButton.disabled = state !== 'connected';
+    syncButton.disabled = state !== 'connected' || syncing;
   }
 
   connectButton.addEventListener('click', e => {
@@ -108,37 +111,43 @@ document.onclick = e => {
       if (cloud.value === 'none') {
         return;
       }
-      connectButton.disabled = true;
-      cloud.disabled = true;
+      state = 'connecting';
+      syncing = true;
+      updateButtons();
       prefs.set('sync.enabled', cloud.value)
         .then(() => API.syncStart())
         .catch(console.error)
         .then(() => {
-          disconnectButton.disabled = false;
+          state = 'connected';
+          syncing = false;
+          updateButtons();
         });
     }
   });
 
   disconnectButton.addEventListener('click', e => {
     if (validClick(e)) {
-      disconnectButton.disabled = true;
-      cloud.disabled = false;
+      state = 'disconnecting';
+      updateButtons();
       prefs.set('sync.enabled', 'none')
         .then(() => API.syncStop())
         .catch(console.error)
         .then(() => {
-          connectButton.disabled = false;
+          state = 'disconnected';
+          updateButtons();
         });
     }
   });
 
   syncButton.addEventListener('click', e => {
     if (validClick(e)) {
-      syncButton.disabled = true;
+      syncing = true;
+      updateButtons();
       API.syncNow()
         .catch(console.error)
         .then(() => {
-          syncButton.disabled = false;
+          syncing = false;
+          updateButtons();
         });
     }
   });
