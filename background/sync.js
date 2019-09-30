@@ -60,7 +60,7 @@ const sync = (() => {
     stop,
     put: ctrl.put,
     delete: ctrl.delete,
-    syncNow: () => ctrl.syncNow().then(handle401Error)
+    syncNow: () => ctrl.syncNow().catch(handle401Error)
   };
 
   function handle401Error(err) {
