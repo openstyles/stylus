@@ -106,6 +106,7 @@ document.onclick = e => {
   connectButton.addEventListener('click', e => {
     if (validClick(e)) {
       connectButton.disabled = true;
+      cloud.disabled = true;
       prefs.set('sync.enabled', cloud.value)
         .then(() => API.syncStart())
         .catch(console.error)
@@ -118,6 +119,7 @@ document.onclick = e => {
   disconnectButton.addEventListener('click', e => {
     if (validClick(e)) {
       disconnectButton.disabled = true;
+      cloud.disabled = false;
       prefs.set('sync.enabled', 'none')
         .then(() => API.syncStop())
         .catch(console.error)
