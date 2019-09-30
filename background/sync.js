@@ -1,4 +1,4 @@
-/* global dbToCloud styleManager chromeLocal prefs tokenManager loadScript */
+/* global dbToCloud styleManager chromeLocal prefs tokenManager */
 /* exported sync */
 
 'use strict';
@@ -49,7 +49,7 @@ const sync = (() => {
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
-      ctrl.syncNow().catch(console.error);
+      syncNow().catch(console.error);
     }
   });
 
@@ -58,15 +58,32 @@ const sync = (() => {
     stop,
     put: ctrl.put,
     delete: ctrl.delete,
-    syncNow: ctrl.syncNow
+    syncNow
   };
+
+  function syncNow() {
+    return ctrl.syncNow()
+      .catch(err => {
+        if (err.code === 401) {
+          return tokenManager.revokeToken(currentDrive.name)
+            .then(() => {
+              throw err;
+            });
+        }
+        throw err;
+      });
+  }
 
   function start(name) {
     return (currentDrive ? stop() : Promise.resolve())
       .then(() => {
         currentDrive = getDrive(name);
         ctrl.use(currentDrive);
-        return ctrl.start();
+        return ctrl.start()
+          .catch(err => {
+            console.log(err.message);
+            throw err;
+          });
       })
       .then(() => {
         chrome.alarms.create('syncNow', {periodInMinutes: 30});
@@ -76,10 +93,7 @@ const sync = (() => {
   function getDrive(name) {
     if (name === 'dropbox') {
       return dbToCloud.drive.dropbox({
-        getAccessToken: dbx => tokenManager.getToken(name, dbx),
-        getDropbox: () => loadScript('/vendor/dropbox/dropbox-sdk.js')
-          .then(() => Dropbox.Dropbox), // eslint-disable-line no-undef
-        clientId: tokenManager.getClientId('dropbox')
+        getAccessToken: () => tokenManager.getToken(name)
       });
     }
 
