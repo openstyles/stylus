@@ -85,14 +85,17 @@ document.onclick = e => {
   prefs.initializing
     .then(() => {
       const name = prefs.get('sync.enabled');
+      cloud.value = name;
       if (name === 'none') {
         connectButton.disabled = false;
         disconnectButton.disabled = true;
         syncButton.disabled = true;
+        cloud.disabled = false;
       } else {
         connectButton.disabled = true;
         disconnectButton.disabled = false;
         syncButton.disabled = false;
+        cloud.disabled = true;
       }
     });
 
