@@ -51,8 +51,13 @@
 
   function isFolded(cm, line) {
     var marks = cm.findMarks(Pos(line, 0), Pos(line + 1, 0));
-    for (var i = 0; i < marks.length; ++i)
-      if (marks[i].__isFold && marks[i].find().from.line == line) return marks[i];
+    for (var i = 0; i < marks.length; ++i) {
+      if (marks[i].__isFold) {
+        var fromPos = marks[i].find(-1);
+        if (fromPos && fromPos.line === line)
+          return marks[i];
+      }
+    }
   }
 
   function marker(spec) {
@@ -100,7 +105,7 @@
     if (gutter != opts.gutter) return;
     var folded = isFolded(cm, line);
     if (folded) folded.clear();
-    else cm.foldCode(Pos(line, 0), opts.rangeFinder);
+    else cm.foldCode(Pos(line, 0), opts);
   }
 
   function onChange(cm) {
