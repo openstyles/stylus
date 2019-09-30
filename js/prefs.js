@@ -210,10 +210,10 @@ const prefs = (() => {
     }
     values[key] = value;
     emitChange(key, value);
-    if (synced || timer) {
-      return;
+    if (!synced && !timer) {
+      timer = syncPrefsLater();
     }
-    timer = setTimeout(syncPrefs);
+    return timer;
   }
 
   function emitChange(key, value) {
@@ -230,10 +230,14 @@ const prefs = (() => {
     }
   }
 
-  function syncPrefs() {
-    // FIXME: we always set the entire object? Ideally, this should only use `changes`.
-    chrome.storage.sync.set({settings: values});
-    timer = null;
+  function syncPrefsLater() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        timer = null;
+        chrome.storage.sync.set({settings: values})
+          .then(resolve, reject);
+      });
+    });
   }
 
   function equal(a, b) {
