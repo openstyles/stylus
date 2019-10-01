@@ -37,9 +37,13 @@ const sync = (() => {
     }
   });
 
-  prefs.initializing
-    .then(start)
-    .catch(console.error);
+  prefs.subscribe(['sync.enabled'], (key, value) => {
+    if (value === 'none') {
+      stop().catch(console.error);
+    } else {
+      start(value).catch(console.error);
+    }
+  });
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
@@ -67,23 +71,20 @@ const sync = (() => {
     throw err;
   }
 
-  function start() {
-    const name = prefs.get('sync.enabled');
-    if (name === 'none') {
+  function start(name) {
+    if (currentDrive) {
       return Promise.resolve();
     }
-    return (currentDrive ? stop() : Promise.resolve())
-      .then(() => {
-        currentDrive = getDrive(name);
-        ctrl.use(currentDrive);
-        return ctrl.start()
-          .catch(err => {
-            if (/Authorization page could not be loaded/i.test(err.message)) {
-              // FIXME: Chrome always fail at the first login so we try again
-              return ctrl.syncNow();
-            }
-            throw err;
-          });
+    currentDrive = getDrive(name);
+    ctrl.use(currentDrive);
+    prefs.set('sync.enabled', name);
+    return ctrl.start()
+      .catch(err => {
+        if (/Authorization page could not be loaded/i.test(err.message)) {
+          // FIXME: Chrome always fail at the first login so we try again
+          return ctrl.syncNow();
+        }
+        throw err;
       })
       .catch(handle401Error)
       .then(() => {
@@ -102,15 +103,16 @@ const sync = (() => {
   }
 
   function stop() {
-    chrome.alarms.clear('syncNow');
     if (!currentDrive) {
       return Promise.resolve();
     }
+    chrome.alarms.clear('syncNow');
     return ctrl.stop()
       .then(() => tokenManager.revokeToken(currentDrive.name))
       .then(() => chromeLocal.remove(`sync/state/${currentDrive.name}`))
       .then(() => {
         currentDrive = null;
+        prefs.set('sync.enabled', 'none');
       });
   }
 })();
