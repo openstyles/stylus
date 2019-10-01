@@ -81,14 +81,20 @@ document.onclick = e => {
   const disconnectButton = document.querySelector('.sync-options .disconnect');
   const syncButton = document.querySelector('.sync-options .sync-now');
 
-  let connected = false;
-  let syncing = false;
+  let status = {};
 
-  prefs.subscribe(['sync.enabled'], (key, value) => {
-    cloud.value = value;
-    connected = value !== 'none';
-    updateButtons();
+  msg.onExtension(e => {
+    if (e.method === 'syncStatusUpdate') {
+      status = e.status;
+      updateButtons();
+    }
   });
+
+  API.getSyncStatus()
+    .then(_status => {
+      status = _status;
+      updateButtons();
+    });
 
   function validClick(e) {
     return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
@@ -97,48 +103,27 @@ document.onclick = e => {
   cloud.addEventListener('change', updateButtons);
 
   function updateButtons() {
-    cloud.disabled = connected;
-    connectButton.disabled = connected || cloud.value === 'none';
-    disconnectButton.disabled = !connected || syncing;
-    syncButton.disabled = !connected || syncing;
+    cloud.disabled = status.state !== 'disconnected';
+    connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
+    disconnectButton.disabled = status.state !== 'connected' || status.syncing;
+    syncButton.disabled = status.state !== 'connected' || status.syncing;
   }
 
   connectButton.addEventListener('click', e => {
     if (validClick(e)) {
-      syncing = true;
-      updateButtons();
-      API.syncStart(cloud.value)
-        .catch(console.error)
-        .then(() => {
-          syncing = false;
-          updateButtons();
-        });
+      API.syncStart(cloud.value).catch(console.error);
     }
   });
 
   disconnectButton.addEventListener('click', e => {
     if (validClick(e)) {
-      syncing = true;
-      updateButtons();
-      API.syncStop()
-        .catch(console.error)
-        .then(() => {
-          syncing = false;
-          updateButtons();
-        });
+      API.syncStop().catch(console.error);
     }
   });
 
   syncButton.addEventListener('click', e => {
     if (validClick(e)) {
-      syncing = true;
-      updateButtons();
-      API.syncNow()
-        .catch(console.error)
-        .then(() => {
-          syncing = false;
-          updateButtons();
-        });
+      API.syncNow().catch(console.error);
     }
   });
 })();

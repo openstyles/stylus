@@ -1,9 +1,13 @@
-/* global dbToCloud styleManager chromeLocal prefs tokenManager */
+/* global dbToCloud styleManager chromeLocal prefs tokenManager msg */
 /* exported sync */
 
 'use strict';
 
 const sync = (() => {
+  const status = {
+    state: 'disconnected',
+    syncing: false
+  };
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
     onGet(id) {
@@ -58,8 +62,36 @@ const sync = (() => {
     stop,
     put: ctrl.put,
     delete: ctrl.delete,
-    syncNow: () => ctrl.syncNow().catch(handle401Error)
+    syncNow
   };
+
+  function withFinally(p, cleanup) {
+    return p.then(
+      result => {
+        cleanup();
+        return result;
+      },
+      err => {
+        cleanup();
+        throw err;
+      }
+    );
+  }
+
+  function syncNow() {
+    if (status.syncing) {
+      return Promise.reject(new Error('still syncing'));
+    }
+    status.syncing = true;
+    emitChange();
+    return withFinally(
+      ctrl.syncNow().catch(handle401Error),
+      () => {
+        status.syncing = false;
+        emitChange();
+      }
+    );
+  }
 
   function handle401Error(err) {
     if (err.code === 401) {
@@ -71,6 +103,10 @@ const sync = (() => {
     throw err;
   }
 
+  function emitChange() {
+    msg.broadcastExtension({method: 'syncStatusUpdate', status});
+  }
+
   function start(name) {
     if (currentDrive) {
       return Promise.resolve();
@@ -78,18 +114,26 @@ const sync = (() => {
     currentDrive = getDrive(name);
     ctrl.use(currentDrive);
     prefs.set('sync.enabled', name);
-    return ctrl.start()
-      .catch(err => {
-        if (/Authorization page could not be loaded/i.test(err.message)) {
-          // FIXME: Chrome always fail at the first login so we try again
-          return ctrl.syncNow();
-        }
-        throw err;
-      })
-      .catch(handle401Error)
-      .then(() => {
+    status.state = 'connecting';
+    status.syncing = true;
+    emitChange();
+    return withFinally(
+      ctrl.start()
+        .catch(err => {
+          if (/Authorization page could not be loaded/i.test(err.message)) {
+            // FIXME: Chrome always fail at the first login so we try again
+            return ctrl.syncNow();
+          }
+          throw err;
+        })
+        .catch(handle401Error),
+      () => {
         chrome.alarms.create('syncNow', {periodInMinutes: 30});
-      });
+        status.state = 'connected';
+        status.syncing = false;
+        emitChange();
+      }
+    );
   }
 
   function getDrive(name) {
@@ -107,12 +151,18 @@ const sync = (() => {
       return Promise.resolve();
     }
     chrome.alarms.clear('syncNow');
-    return ctrl.stop()
-      .then(() => tokenManager.revokeToken(currentDrive.name))
-      .then(() => chromeLocal.remove(`sync/state/${currentDrive.name}`))
-      .then(() => {
+    status.state = 'disconnecting';
+    emitChange();
+    return withFinally(
+      ctrl.stop()
+        .then(() => tokenManager.revokeToken(currentDrive.name))
+        .then(() => chromeLocal.remove(`sync/state/${currentDrive.name}`)),
+      () => {
         currentDrive = null;
         prefs.set('sync.enabled', 'none');
-      });
+        status.state = 'disconnected';
+        emitChange();
+      }
+    );
   }
 })();
