@@ -6,7 +6,8 @@
 const sync = (() => {
   const status = {
     state: 'disconnected',
-    syncing: false
+    syncing: false,
+    currentDriveName: null
   };
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
@@ -41,13 +42,8 @@ const sync = (() => {
     }
   });
 
-  prefs.subscribe(['sync.enabled'], (key, value) => {
-    if (value === 'none') {
-      stop().catch(console.error);
-    } else {
-      start(value).catch(console.error);
-    }
-  });
+  prefs.subscribe(['sync.enabled'], onPrefChange);
+  onPrefChange(null, prefs.get('sync.enabled'));
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
@@ -62,8 +58,17 @@ const sync = (() => {
     stop,
     put: ctrl.put,
     delete: ctrl.delete,
-    syncNow
+    syncNow,
+    getStatus: () => status
   };
+
+  function onPrefChange(key, value) {
+    if (value === 'none') {
+      stop().catch(console.error);
+    } else {
+      start(value).catch(console.error);
+    }
+  }
 
   function withFinally(p, cleanup) {
     return p.then(
@@ -115,7 +120,7 @@ const sync = (() => {
     ctrl.use(currentDrive);
     prefs.set('sync.enabled', name);
     status.state = 'connecting';
-    status.syncing = true;
+    status.currentDriveName = currentDrive.name;
     emitChange();
     return withFinally(
       ctrl.start()
@@ -130,7 +135,6 @@ const sync = (() => {
       () => {
         chrome.alarms.create('syncNow', {periodInMinutes: 30});
         status.state = 'connected';
-        status.syncing = false;
         emitChange();
       }
     );
@@ -161,6 +165,7 @@ const sync = (() => {
         currentDrive = null;
         prefs.set('sync.enabled', 'none');
         status.state = 'disconnected';
+        status.currentDriveName = null;
         emitChange();
       }
     );

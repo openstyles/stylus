@@ -80,6 +80,7 @@ document.onclick = e => {
   const connectButton = document.querySelector('.sync-options .connect');
   const disconnectButton = document.querySelector('.sync-options .disconnect');
   const syncButton = document.querySelector('.sync-options .sync-now');
+  const statusText = document.querySelector('.sync-options .sync-status');
 
   let status = {};
 
@@ -103,10 +104,15 @@ document.onclick = e => {
   cloud.addEventListener('change', updateButtons);
 
   function updateButtons() {
+    if (status.currentDriveName) {
+      cloud.value = status.currentDriveName;
+    }
     cloud.disabled = status.state !== 'disconnected';
     connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
     disconnectButton.disabled = status.state !== 'connected' || status.syncing;
     syncButton.disabled = status.state !== 'connected' || status.syncing;
+    statusText.textContent = status.syncing ? 'syncing...' :
+      status.state.endsWith('ing') ? status.state + '...' : status.state;
   }
 
   connectButton.addEventListener('click', e => {

@@ -67,7 +67,8 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   syncStart: sync.start,
   syncStop: sync.stop,
-  syncNow: sync.syncNow
+  syncNow: sync.syncNow,
+  getSyncStatus: sync.getStatus
 });
 
 // eslint-disable-next-line no-var
