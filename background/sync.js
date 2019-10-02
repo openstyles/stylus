@@ -4,6 +4,9 @@
 'use strict';
 
 const sync = (() => {
+  const SYNC_DELAY = 1;
+  const SYNC_INTERVAL = 30;
+
   const status = {
     state: 'disconnected',
     syncing: false,
@@ -56,11 +59,24 @@ const sync = (() => {
   return {
     start,
     stop,
-    put: ctrl.put,
-    delete: ctrl.delete,
+    put: (...args) => {
+      schedule();
+      return ctrl.put(...args);
+    },
+    delete: (...args) => {
+      schedule();
+      return ctrl.delete(...args);
+    },
     syncNow,
     getStatus: () => status
   };
+
+  function schedule() {
+    chrome.alarms.create('syncNow', {
+      delayInMinutes: SYNC_DELAY,
+      periodInMinutes: SYNC_INTERVAL
+    });
+  }
 
   function onPrefChange(key, value) {
     if (value === 'none') {
@@ -133,7 +149,7 @@ const sync = (() => {
         })
         .catch(handle401Error),
       () => {
-        chrome.alarms.create('syncNow', {periodInMinutes: 30});
+        chrome.alarms.create('syncNow', {periodInMinutes: SYNC_INTERVAL});
         status.state = 'connected';
         emitChange();
       }
