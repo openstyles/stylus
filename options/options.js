@@ -111,8 +111,22 @@ document.onclick = e => {
     connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
     disconnectButton.disabled = status.state !== 'connected' || status.syncing;
     syncButton.disabled = status.state !== 'connected' || status.syncing;
-    statusText.textContent = status.syncing ? 'syncing...' :
-      status.state.endsWith('ing') ? status.state + '...' : status.state;
+    statusText.textContent = getStatusText();
+  }
+
+  function getStatusText() {
+    // FIXME: i18n
+    if (status.syncing) {
+      if (status.target) {
+        const [type, change] = status.target;
+        if (type === 'syncPull') {
+          return `pulling data ${change._id}`;
+        }
+        return `pushing data ${change._id}`;
+      }
+      return 'syncing...';
+    }
+    return status.state.endsWith('ing') ? status.state + '...' : status.state;
   }
 
   connectButton.addEventListener('click', e => {

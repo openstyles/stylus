@@ -138,6 +138,7 @@
     </div>
 
     <div class="block sync-options">
+      <!-- FIXME: i18n -->
       <h1>Sync to cloud</h1>
       <div class="items">
         <label>
@@ -147,11 +148,13 @@
             <option value="dropbox">Dropbox</option>
           </select>
         </label>
+        <div class="sync-status-wrapper">
+          Status: <span class="sync-status"></span>
+        </div>
         <div class="actions">
           <button type="button" class="connect">Connect</button>
           <button type="button" class="disconnect">Disconnect</button>
           <button type="button" class="sync-now">Sync now</button>
-          <span class="sync-status"></span>
         </div>
       </div>
     </div>
