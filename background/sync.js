@@ -10,6 +10,7 @@ const sync = (() => {
   const status = {
     state: 'disconnected',
     syncing: false,
+    syncTarget: null,
     currentDriveName: null
   };
   let currentDrive;
@@ -29,6 +30,7 @@ const sync = (() => {
           styles.forEach(i => ctrl.put(i._id, i._rev));
         });
     },
+    onProgress,
     compareRevision(a, b) {
       return styleManager.compareRevision(a, b);
     },
@@ -71,6 +73,18 @@ const sync = (() => {
     getStatus: () => status
   };
 
+  function onProgress(type, change) {
+    if (type === 'syncStart') {
+      status.syncing = true;
+    } else if (type === 'syncEnd') {
+      status.syncing = false;
+      status.syncTarget = null;
+    } else {
+      status.syncTarget = [type, change];
+    }
+    emitStatusChange();
+  }
+
   function schedule() {
     chrome.alarms.create('syncNow', {
       delayInMinutes: SYNC_DELAY,
@@ -100,18 +114,7 @@ const sync = (() => {
   }
 
   function syncNow() {
-    if (status.syncing) {
-      return Promise.reject(new Error('still syncing'));
-    }
-    status.syncing = true;
-    emitChange();
-    return withFinally(
-      ctrl.syncNow().catch(handle401Error),
-      () => {
-        status.syncing = false;
-        emitChange();
-      }
-    );
+    return ctrl.syncNow().catch(handle401Error);
   }
 
   function handle401Error(err) {
@@ -124,7 +127,7 @@ const sync = (() => {
     throw err;
   }
 
-  function emitChange() {
+  function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
   }
 
@@ -137,7 +140,7 @@ const sync = (() => {
     prefs.set('sync.enabled', name);
     status.state = 'connecting';
     status.currentDriveName = currentDrive.name;
-    emitChange();
+    emitStatusChange();
     return withFinally(
       ctrl.start()
         .catch(err => {
@@ -151,7 +154,7 @@ const sync = (() => {
       () => {
         chrome.alarms.create('syncNow', {periodInMinutes: SYNC_INTERVAL});
         status.state = 'connected';
-        emitChange();
+        emitStatusChange();
       }
     );
   }
@@ -172,7 +175,7 @@ const sync = (() => {
     }
     chrome.alarms.clear('syncNow');
     status.state = 'disconnecting';
-    emitChange();
+    emitStatusChange();
     return withFinally(
       ctrl.stop()
         .then(() => tokenManager.revokeToken(currentDrive.name))
@@ -182,7 +185,7 @@ const sync = (() => {
         prefs.set('sync.enabled', 'none');
         status.state = 'disconnected';
         status.currentDriveName = null;
-        emitChange();
+        emitStatusChange();
       }
     );
   }
