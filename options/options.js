@@ -118,7 +118,7 @@ document.onclick = e => {
     // FIXME: i18n
     if (status.syncing) {
       if (status.progress) {
-        const {phase, loaded, total} = status.syncTarget;
+        const {phase, loaded, total} = status.progress;
         return `${phase}ing style ${loaded + 1} of ${total}`;
       }
       return 'syncing...';
