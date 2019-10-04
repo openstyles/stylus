@@ -117,12 +117,9 @@ document.onclick = e => {
   function getStatusText() {
     // FIXME: i18n
     if (status.syncing) {
-      if (status.syncTarget) {
-        const [type, change] = status.syncTarget;
-        if (type === 'syncPull') {
-          return `pulling data ${change._id}`;
-        }
-        return `pushing data ${change._id}`;
+      if (status.progress) {
+        const {phase, loaded, total} = status.syncTarget;
+        return `${phase}ing style ${loaded + 1} of ${total}`;
       }
       return 'syncing...';
     }

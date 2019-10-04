@@ -10,7 +10,7 @@ const sync = (() => {
   const status = {
     state: 'disconnected',
     syncing: false,
-    syncTarget: null,
+    progress: null,
     currentDriveName: null
   };
   let currentDrive;
@@ -73,14 +73,14 @@ const sync = (() => {
     getStatus: () => status
   };
 
-  function onProgress(type, change) {
-    if (type === 'syncStart') {
+  function onProgress(e) {
+    if (e.phase === 'start') {
       status.syncing = true;
-    } else if (type === 'syncEnd') {
+    } else if (e.phase === 'end') {
       status.syncing = false;
-      status.syncTarget = null;
+      status.progress = null;
     } else {
-      status.syncTarget = [type, change];
+      status.progress = e;
     }
     emitStatusChange();
   }
