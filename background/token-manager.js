@@ -47,7 +47,7 @@ const tokenManager = (() => {
     const k = buildKeys(name);
     return chromeLocal.get(k.LIST)
       .then(obj => {
-        // console.log(obj, k);
+        console.log(obj, k, Date.now() > obj[k.EXPIRE]);
         if (!obj[k.TOKEN] || Date.now() > obj[k.EXPIRE]) {
           return refreshToken(name, k, obj)
             .catch(() => authUser(name, k));
@@ -135,7 +135,7 @@ const tokenManager = (() => {
       .then(result =>
         console.log(result) && 0 || chromeLocal.set({
           [k.TOKEN]: result.access_token,
-          [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 60 * 1000 : undefined,
+          [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 1000 : undefined,
           [k.REFRESH]: result.refresh_token
         })
           .then(() => result.access_token)
