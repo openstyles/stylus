@@ -10,6 +10,20 @@ const tokenManager = (() => {
       clientId: 'zg52vphuapvpng9',
       authURL: 'https://www.dropbox.com/oauth2/authorize',
       tokenURL: 'https://api.dropboxapi.com/oauth2/token'
+    },
+    google: {
+      flow: 'token',
+      clientId: '283762574871-v3fq18bmocd1fvo4co7pfad0rcb4bti8.apps.googleusercontent.com',
+      authURL: 'https://accounts.google.com/o/oauth2/v2/auth',
+      scopes: ['https://www.googleapis.com/auth/drive.appdata']
+    },
+    onedrive: {
+      flow: 'token',
+      clientId: '3864ce03-867c-4ad8-9856-371a097d47b1',
+      authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+      tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+      redirect_uri: 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/',
+      scopes: ['Files.ReadWrite.AppFolder']
     }
   };
 
@@ -67,9 +81,12 @@ const tokenManager = (() => {
     const query = {
       response_type: provider.flow,
       client_id: provider.clientId,
-      redirect_uri: chrome.identity.getRedirectURL(),
+      redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
       state
     };
+    if (provider.scopes) {
+      query.scope = provider.scopes.join(' ');
+    }
     const url = `${provider.authURL}?${stringifyQuery(query)}`;
     return launchWebAuthFlow({
       url,
@@ -95,13 +112,13 @@ const tokenManager = (() => {
         return fetch(provider.tokenURL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: JSON.stringify({
+          body: stringifyQuery({
             code,
             grant_type: 'authorization_code',
             client_id: provider.clientId,
-            redirect_uri: chrome.identity.getRedirectURL()
+            redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL()
           })
         })
           .then(r => {
@@ -115,9 +132,9 @@ const tokenManager = (() => {
           });
       })
       .then(result =>
-        chromeLocal.set({
+        console.log(result) && 0 || chromeLocal.set({
           [k.TOKEN]: result.access_token,
-          [k.EXPIRE]: result.expire_in ? Date.now() + result.expire_in * 60 * 1000 : undefined,
+          [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 60 * 1000 : undefined,
           [k.REFRESH]: result.refresh_token
         })
           .then(() => result.access_token)
