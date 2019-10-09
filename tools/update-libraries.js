@@ -42,7 +42,8 @@ const files = {
     'vendor/zip.js → zip.js'
   ],
   'db-to-cloud': [
-    'dist/db-to-cloud.min.js → db-to-cloud.min.js'
+    'dist/db-to-cloud.min.js → db-to-cloud.min.js',
+    'dist/db-to-cloud.min.js.map → db-to-cloud.min.js.map'
   ]
 };
 
