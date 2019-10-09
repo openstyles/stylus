@@ -47,7 +47,8 @@ const tokenManager = (() => {
     const k = buildKeys(name);
     return chromeLocal.get(k.LIST)
       .then(obj => {
-        if (!obj[k.TOKEN] || obj[k.EXPIRE] > Date.now()) {
+        // console.log(obj, k);
+        if (!obj[k.TOKEN] || Date.now() > obj[k.EXPIRE]) {
           return refreshToken(name, k, obj)
             .catch(() => authUser(name, k));
         }

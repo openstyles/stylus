@@ -160,11 +160,12 @@ const sync = (() => {
   }
 
   function getDrive(name) {
-    if (name === 'dropbox') {
-      return dbToCloud.drive.dropbox({
+    if (name === 'dropbox' || name === 'google' || name === 'onedrive') {
+      return dbToCloud.drive[name]({
         getAccessToken: () => tokenManager.getToken(name)
       });
     }
+
 
     throw new Error(`unknown cloud name: ${name}`);
   }
