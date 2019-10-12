@@ -24,9 +24,11 @@ const tokenManager = (() => {
       clientSecret: 'J0nc5TlR_0V_ex9-sZk-5faf',
       authURL: 'https://accounts.google.com/o/oauth2/v2/auth',
       authQuery: {
-        // FIXME: should we add 'prompt' parameter?
+        // NOTE: Google needs 'prompt' parameter to deliver multiple refresh
+        // tokens for multiple machines.
         // https://stackoverflow.com/q/18519185
-        access_type: 'offline'
+        access_type: 'offline',
+        prompt: 'consent'
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
       scopes: ['https://www.googleapis.com/auth/drive.appdata'],
