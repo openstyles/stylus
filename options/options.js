@@ -123,7 +123,13 @@ document.onclick = e => {
       }
       return 'syncing...';
     }
-    return status.state.endsWith('ing') ? status.state + '...' : status.state;
+    if (status.state.endsWith('ing')) {
+      return status.state + '...';
+    }
+    if (status.errorMessage) {
+      return status.errorMessage;
+    }
+    return status.state;
   }
 
   connectButton.addEventListener('click', e => {
