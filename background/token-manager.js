@@ -23,12 +23,12 @@ const tokenManager = (() => {
       scopes: ['https://www.googleapis.com/auth/drive.appdata']
     },
     onedrive: {
-      flow: 'token',
+      flow: 'code',
       clientId: '3864ce03-867c-4ad8-9856-371a097d47b1',
       authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
       tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
       redirect_uri: 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/',
-      scopes: ['Files.ReadWrite.AppFolder']
+      scopes: ['Files.ReadWrite.AppFolder', 'offline_access']
     }
   };
 
@@ -70,12 +70,16 @@ const tokenManager = (() => {
       return Promise.reject(new Error('no refresh token'));
     }
     const provider = AUTH[name];
-    return postQuery(provider.tokenURL, {
+    const body = {
       client_id: provider.clientId,
-      client_secret: provider.clientSecret,
       refresh_token: obj[k.REFRESH],
-      grant_type: 'refresh_token'
-    })
+      grant_type: 'refresh_token',
+      scope: provider.scopes.join(' ')
+    };
+    if (provider.clientSecret) {
+      body.client_secret = provider.clientSecret;
+    }
+    return postQuery(provider.tokenURL, body)
       .then(result => {
         if (!result.refresh_token) {
           result.refresh_token = obj[k.REFRESH];
