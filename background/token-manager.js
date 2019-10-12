@@ -25,6 +25,7 @@ const tokenManager = (() => {
     onedrive: {
       flow: 'code',
       clientId: '3864ce03-867c-4ad8-9856-371a097d47b1',
+      clientSecret: '9Pj=TpsrStq8K@1BiwB9PIWLppM:@s=w',
       authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
       tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
       redirect_uri: 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/',
@@ -151,7 +152,7 @@ const tokenManager = (() => {
   function handleTokenResult(result, k) {
     return chromeLocal.set({
       [k.TOKEN]: result.access_token,
-      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - 30) * 1000 : undefined,
+      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - LATENCY) * 1000 : undefined,
       [k.REFRESH]: result.refresh_token
     })
       .then(() => result.access_token);
