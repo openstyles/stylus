@@ -52,7 +52,6 @@ const tokenManager = (() => {
     const k = buildKeys(name);
     return chromeLocal.get(k.LIST)
       .then(obj => {
-        console.log(obj, k, Date.now() > obj[k.EXPIRE]);
         if (!obj[k.TOKEN] || Date.now() > obj[k.EXPIRE]) {
           return refreshToken(name, k, obj)
             .catch(() => authUser(name, k));
@@ -70,7 +69,19 @@ const tokenManager = (() => {
     if (!obj[k.REFRESH]) {
       return Promise.reject(new Error('no refresh token'));
     }
-    return Promise.reject(new Error('not implemented yet'));
+    const provider = AUTH[name];
+    return postQuery(provider.tokenURL, {
+      client_id: provider.clientId,
+      client_secret: provider.clientSecret,
+      refresh_token: obj[k.REFRESH],
+      grant_type: 'refresh_token'
+    })
+      .then(result => {
+        if (!result.refresh_token) {
+          result.refresh_token = obj[k.REFRESH];
+        }
+        return handleTokenResult(result, k);
+      });
   }
 
   function stringifyQuery(obj) {
@@ -127,30 +138,36 @@ const tokenManager = (() => {
         if (provider.clientSecret) {
           body.client_secret = provider.clientSecret;
         }
-        return fetch(provider.tokenURL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: stringifyQuery(body)
-        })
-          .then(r => {
-            if (r.ok) {
-              return r.json();
-            }
-            return r.text()
-              .then(body => {
-                throw new Error(`failed to fetch (${r.status}): ${body}`);
-              });
-          });
+        return postQuery(provider.tokenURL, body);
       })
-      .then(result =>
-        chromeLocal.set({
-          [k.TOKEN]: result.access_token,
-          [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 1000 : undefined,
-          [k.REFRESH]: result.refresh_token
-        })
-          .then(() => result.access_token)
-      );
+      .then(result => handleTokenResult(result, k));
+  }
+
+  function handleTokenResult(result, k) {
+    return chromeLocal.set({
+      [k.TOKEN]: result.access_token,
+      [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 1000 : undefined,
+      [k.REFRESH]: result.refresh_token
+    })
+      .then(() => result.access_token);
+  }
+
+  function postQuery(url, body) {
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: stringifyQuery(body)
+    })
+      .then(r => {
+        if (r.ok) {
+          return r.json();
+        }
+        return r.text()
+          .then(body => {
+            throw new Error(`failed to fetch (${r.status}): ${body}`);
+          });
+      });
   }
 })();
