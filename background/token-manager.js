@@ -32,7 +32,7 @@ const tokenManager = (() => {
     }
   };
 
-  return {getToken, revokeToken, getClientId};
+  return {getToken, revokeToken, getClientId, buildKeys};
 
   function getClientId(name) {
     return AUTH[name].clientId;

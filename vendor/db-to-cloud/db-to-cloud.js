@@ -500,7 +500,8 @@ var dbToCloud = (function (exports) {
       put,
       delete: delete_,
       syncNow,
-      drive: () => _drive2
+      drive: () => _drive2,
+      isInit: () => Boolean(state && state.enabled)
     };
 
     function use(newDrive) {
