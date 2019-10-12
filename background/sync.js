@@ -11,7 +11,8 @@ const sync = (() => {
     state: 'disconnected',
     syncing: false,
     progress: null,
-    currentDriveName: null
+    currentDriveName: null,
+    errorMessage: null
   };
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
@@ -52,9 +53,7 @@ const sync = (() => {
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
-      ctrl.syncNow()
-        .catch(handle401Error)
-        .catch(console.error);
+      syncNow().catch(console.error);
     }
   });
 
@@ -103,18 +102,25 @@ const sync = (() => {
   function withFinally(p, cleanup) {
     return p.then(
       result => {
-        cleanup();
+        cleanup(undefined, result);
         return result;
       },
       err => {
-        cleanup();
+        cleanup(err);
         throw err;
       }
     );
   }
 
   function syncNow() {
-    return ctrl.syncNow().catch(handle401Error);
+    return withFinally(
+      (ctrl.isInit() ? ctrl.syncNow() : ctrl.start())
+        .catch(handle401Error),
+      err => {
+        status.errorMessage = err ? err.message : null;
+        emitStatusChange();
+      }
+    );
   }
 
   function handle401Error(err) {
@@ -137,26 +143,28 @@ const sync = (() => {
     }
     currentDrive = getDrive(name);
     ctrl.use(currentDrive);
-    prefs.set('sync.enabled', name);
     status.state = 'connecting';
     status.currentDriveName = currentDrive.name;
     emitStatusChange();
-    return withFinally(
-      ctrl.start()
-        .catch(err => {
-          if (/Authorization page could not be loaded/i.test(err.message)) {
-            // FIXME: Chrome always fail at the first login so we try again
-            return ctrl.syncNow();
-          }
-          throw err;
-        })
-        .catch(handle401Error),
-      () => {
+    return tokenManager.getToken(name)
+      .catch(err => {
+        if (/Authorization page could not be loaded/i.test(err.message)) {
+          // FIXME: Chrome always fail at the first login so we try again
+          return tokenManager.getToken(name);
+        }
+        throw err;
+      })
+      .catch(handle401Error)
+      .then(() => syncNow())
+      .then(() => {
+        prefs.set('sync.enabled', name);
         chrome.alarms.create('syncNow', {periodInMinutes: SYNC_INTERVAL});
         status.state = 'connected';
         emitStatusChange();
-      }
-    );
+      }, err => {
+        console.error(err);
+        return stop();
+      });
   }
 
   function getDrive(name) {
