@@ -9,7 +9,14 @@ const tokenManager = (() => {
       flow: 'token',
       clientId: 'zg52vphuapvpng9',
       authURL: 'https://www.dropbox.com/oauth2/authorize',
-      tokenURL: 'https://api.dropboxapi.com/oauth2/token'
+      tokenURL: 'https://api.dropboxapi.com/oauth2/token',
+      revoke: token =>
+        fetch('https://api.dropboxapi.com/2/auth/token/revoke', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
     },
     google: {
       flow: 'code',
@@ -22,8 +29,11 @@ const tokenManager = (() => {
         access_type: 'offline'
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
-      revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
-      scopes: ['https://www.googleapis.com/auth/drive.appdata']
+      scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+      revoke: token => {
+        const params = {token};
+        return postQuery(`https://accounts.google.com/o/oauth2/revoke?${stringifyQuery(params)}`);
+      }
     },
     onedrive: {
       flow: 'code',
@@ -72,16 +82,12 @@ const tokenManager = (() => {
       .then(() => chromeLocal.remove(k.LIST));
 
     function revoke() {
-      if (!provider.revokeURL) {
+      if (!provider.revoke) {
         return Promise.resolve();
       }
       return chromeLocal.get(k.TOKEN)
-        .then(obj => {
-          const params = {
-            token: obj[k.TOKEN]
-          };
-          return postQuery(`${provider.revokeURL}?${stringifyQuery(params)}`);
-        });
+        .then(obj => provider.revoke(obj[k.TOKEN]))
+        .catch(console.error);
     }
   }
 
