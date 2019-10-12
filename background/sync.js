@@ -95,7 +95,7 @@ const sync = (() => {
     if (value === 'none') {
       stop().catch(console.error);
     } else {
-      start(value).catch(console.error);
+      start(value, true).catch(console.error);
     }
   }
 
