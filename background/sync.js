@@ -137,7 +137,7 @@ const sync = (() => {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
   }
 
-  function start(name) {
+  function start(name, fromPref = false) {
     if (currentDrive) {
       return Promise.resolve();
     }
@@ -146,25 +146,29 @@ const sync = (() => {
     status.state = 'connecting';
     status.currentDriveName = currentDrive.name;
     emitStatusChange();
-    return tokenManager.getToken(name)
-      .catch(err => {
-        if (/Authorization page could not be loaded/i.test(err.message)) {
-          // FIXME: Chrome always fail at the first login so we try again
-          return tokenManager.getToken(name);
+    return withFinally(
+      tokenManager.getToken(name)
+        .catch(err => {
+          if (/Authorization page could not be loaded/i.test(err.message)) {
+            // FIXME: Chrome always fails at the first login so we try again
+            return tokenManager.getToken(name);
+          }
+          throw err;
+        })
+        .catch(handle401Error)
+        .then(() => syncNow()),
+      err => {
+        // FIXME: should we move this logic to options.js?
+        if (err && !fromPref) {
+          console.error(err);
+          return stop();
         }
-        throw err;
-      })
-      .catch(handle401Error)
-      .then(() => syncNow())
-      .then(() => {
         prefs.set('sync.enabled', name);
         chrome.alarms.create('syncNow', {periodInMinutes: SYNC_INTERVAL});
         status.state = 'connected';
         emitStatusChange();
-      }, err => {
-        console.error(err);
-        return stop();
-      });
+      }
+    );
   }
 
   function getDrive(name) {
@@ -173,8 +177,6 @@ const sync = (() => {
         getAccessToken: () => tokenManager.getToken(name)
       });
     }
-
-
     throw new Error(`unknown cloud name: ${name}`);
   }
 
