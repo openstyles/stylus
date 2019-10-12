@@ -17,9 +17,12 @@ const tokenManager = (() => {
       clientSecret: 'J0nc5TlR_0V_ex9-sZk-5faf',
       authURL: 'https://accounts.google.com/o/oauth2/v2/auth',
       authQuery: {
+        // FIXME: should we add 'prompt' parameter?
+        // https://stackoverflow.com/q/18519185
         access_type: 'offline'
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
+      revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
       scopes: ['https://www.googleapis.com/auth/drive.appdata']
     },
     onedrive: {
@@ -63,8 +66,23 @@ const tokenManager = (() => {
   }
 
   function revokeToken(name) {
+    const provider = AUTH[name];
     const k = buildKeys(name);
-    return chromeLocal.remove(k.LIST);
+    return revoke()
+      .then(() => chromeLocal.remove(k.LIST));
+
+    function revoke() {
+      if (!provider.revokeURL) {
+        return Promise.resolve();
+      }
+      return chromeLocal.get(k.TOKEN)
+        .then(obj => {
+          const params = {
+            token: obj[k.TOKEN]
+          };
+          return postQuery(`${provider.revokeURL}?${stringifyQuery(params)}`);
+        });
+    }
   }
 
   function refreshToken(name, k, obj) {
@@ -159,13 +177,16 @@ const tokenManager = (() => {
   }
 
   function postQuery(url, body) {
-    return fetch(url, {
+    const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: stringifyQuery(body)
-    })
+      }
+    };
+    if (body) {
+      options.body = stringifyQuery(body);
+    }
+    return fetch(url, options)
       .then(r => {
         if (r.ok) {
           return r.json();
