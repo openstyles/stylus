@@ -31,6 +31,7 @@ const tokenManager = (() => {
       scopes: ['Files.ReadWrite.AppFolder', 'offline_access']
     }
   };
+  const LATENCY = 30;
 
   return {getToken, revokeToken, getClientId, buildKeys};
 
@@ -150,7 +151,7 @@ const tokenManager = (() => {
   function handleTokenResult(result, k) {
     return chromeLocal.set({
       [k.TOKEN]: result.access_token,
-      [k.EXPIRE]: result.expires_in ? Date.now() + result.expires_in * 1000 : undefined,
+      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - 30) * 1000 : undefined,
       [k.REFRESH]: result.refresh_token
     })
       .then(() => result.access_token);
