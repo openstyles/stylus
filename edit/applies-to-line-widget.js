@@ -173,6 +173,10 @@ function createAppliesToLineWidget(cm) {
   }
 
   function onRuntimeMessage(msg) {
+    if (msg.reason === 'editPreview' && !$(`#stylus-${msg.style.id}`)) {
+      // no style element with this id means the style doesn't apply to the editor URL
+      return;
+    }
     if (msg.style || msg.styles ||
         msg.prefs && 'disableAll' in msg.prefs ||
         msg.method === 'styleDeleted') {
