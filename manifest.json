@@ -36,7 +36,7 @@
       "js/usercss.js",
       "js/cache.js",
       "vendor/semver-bundle/semver.js",
-      "vendor/db-to-cloud/db-to-cloud.js",
+      "vendor/db-to-cloud/db-to-cloud.min.js",
       "vendor/uuid/uuid.min.js",
       "background/token-manager.js",
       "background/sync.js",
