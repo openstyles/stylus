@@ -154,7 +154,7 @@ const styleManager = (() => {
     if (oldDoc) {
       diff = compareRevision(oldDoc._rev, doc._rev);
       if (diff > 0) {
-        sync.put(oldDoc);
+        sync.put(oldDoc._id, oldDoc._rev);
         return;
       }
     }
