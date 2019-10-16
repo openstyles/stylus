@@ -61,10 +61,12 @@ const sync = (() => {
     start,
     stop,
     put: (...args) => {
+      if (!currentDrive) return;
       schedule();
       return ctrl.put(...args);
     },
     delete: (...args) => {
+      if (!currentDrive) return;
       schedule();
       return ctrl.delete(...args);
     },
@@ -84,9 +86,9 @@ const sync = (() => {
     emitStatusChange();
   }
 
-  function schedule() {
+  function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
-      delayInMinutes: SYNC_DELAY,
+      delayInMinutes: delay,
       periodInMinutes: SYNC_INTERVAL
     });
   }
@@ -113,6 +115,9 @@ const sync = (() => {
   }
 
   function syncNow() {
+    if (!currentDrive) {
+      return Promise.reject(new Error('cannot sync when disconnected'));
+    }
     return withFinally(
       (ctrl.isInit() ? ctrl.syncNow() : ctrl.start())
         .catch(handle401Error),
@@ -164,7 +169,7 @@ const sync = (() => {
           return stop();
         }
         prefs.set('sync.enabled', name);
-        chrome.alarms.create('syncNow', {periodInMinutes: SYNC_INTERVAL});
+        schedule(SYNC_INTERVAL);
         status.state = 'connected';
         emitStatusChange();
       }
