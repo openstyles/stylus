@@ -99,7 +99,11 @@ const tokenManager = (() => {
         return Promise.resolve();
       }
       return chromeLocal.get(k.TOKEN)
-        .then(obj => provider.revoke(obj[k.TOKEN]))
+        .then(obj => {
+          if (obj[k.TOKEN]) {
+            return provider.revoke(obj[k.TOKEN]);
+          }
+        })
         .catch(console.error);
     }
   }
