@@ -65,15 +65,26 @@ const tokenManager = (() => {
     return k;
   }
 
-  function getToken(name) {
+  function getToken(name, interactive) {
     const k = buildKeys(name);
     return chromeLocal.get(k.LIST)
       .then(obj => {
-        if (!obj[k.TOKEN] || Date.now() > obj[k.EXPIRE]) {
-          return refreshToken(name, k, obj)
-            .catch(() => authUser(name, k));
+        if (!obj[k.TOKEN]) {
+          return authUser(name, k, interactive);
         }
-        return obj[k.TOKEN];
+        if (Date.now() < obj[k.EXPIRE]) {
+          return obj[k.TOKEN];
+        }
+        if (obj[k.EXPIRE]) {
+          return refreshToken(name, k, obj)
+            .catch(err => {
+              if (err.code === 401) {
+                return authUser(name, k, interactive);
+              }
+              throw err;
+            });
+        }
+        return authUser(name, k, interactive);
       });
   }
 
@@ -124,7 +135,7 @@ const tokenManager = (() => {
     return search.toString();
   }
 
-  function authUser(name, k) {
+  function authUser(name, k, interactive = false) {
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
     const query = {
@@ -142,7 +153,7 @@ const tokenManager = (() => {
     const url = `${provider.authURL}?${stringifyQuery(query)}`;
     return launchWebAuthFlow({
       url,
-      interactive: true
+      interactive
     })
       .then(url => {
         const params = new URLSearchParams(
@@ -201,7 +212,9 @@ const tokenManager = (() => {
         }
         return r.text()
           .then(body => {
-            throw new Error(`failed to fetch (${r.status}): ${body}`);
+            const err = new Error(`failed to fetch (${r.status}): ${body}`);
+            err.code = r.status;
+            throw err;
           });
       });
   }

@@ -48,8 +48,10 @@ const sync = (() => {
     }
   });
 
-  prefs.subscribe(['sync.enabled'], onPrefChange);
-  onPrefChange(null, prefs.get('sync.enabled'));
+  const initializing = prefs.initializing.then(() => {
+    prefs.subscribe(['sync.enabled'], onPrefChange);
+    onPrefChange(null, prefs.get('sync.enabled'));
+  });
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
@@ -57,7 +59,7 @@ const sync = (() => {
     }
   });
 
-  return {
+  return ensurePrepared({
     start,
     stop,
     put: (...args) => {
@@ -72,7 +74,15 @@ const sync = (() => {
     },
     syncNow,
     getStatus: () => status
-  };
+  });
+
+  function ensurePrepared(obj) {
+    return Object.entries(obj).reduce((o, [key, fn]) => {
+      o[key] = (...args) =>
+        initializing.then(() => fn(...args));
+      return o;
+    }, {});
+  }
 
   function onProgress(e) {
     if (e.phase === 'start') {
@@ -152,7 +162,7 @@ const sync = (() => {
     status.currentDriveName = currentDrive.name;
     emitStatusChange();
     return withFinally(
-      tokenManager.getToken(name)
+      tokenManager.getToken(name, !fromPref)
         .catch(err => {
           if (/Authorization page could not be loaded/i.test(err.message)) {
             // FIXME: Chrome always fails at the first login so we try again
