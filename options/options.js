@@ -81,6 +81,7 @@ document.onclick = e => {
   const disconnectButton = document.querySelector('.sync-options .disconnect');
   const syncButton = document.querySelector('.sync-options .sync-now');
   const statusText = document.querySelector('.sync-options .sync-status');
+  const loginButton = document.querySelector('.sync-options .sync-login');
 
   let status = {};
 
@@ -112,6 +113,7 @@ document.onclick = e => {
     disconnectButton.disabled = status.state !== 'connected' || status.syncing;
     syncButton.disabled = status.state !== 'connected' || status.syncing;
     statusText.textContent = getStatusText();
+    loginButton.style.display = status.state === 'connected' && !status.login ? '' : 'none';
   }
 
   function getStatusText() {
@@ -147,6 +149,12 @@ document.onclick = e => {
   syncButton.addEventListener('click', e => {
     if (validClick(e)) {
       API.syncNow().catch(console.error);
+    }
+  });
+
+  loginButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      API.syncLogin().catch(console.error);
     }
   });
 })();

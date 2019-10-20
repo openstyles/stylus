@@ -12,7 +12,8 @@ const sync = (() => {
     syncing: false,
     progress: null,
     currentDriveName: null,
-    errorMessage: null
+    errorMessage: null,
+    login: false
   };
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
@@ -73,7 +74,8 @@ const sync = (() => {
       return ctrl.delete(...args);
     },
     syncNow,
-    getStatus: () => status
+    getStatus: () => status,
+    login
   });
 
   function ensurePrepared(obj) {
@@ -141,15 +143,37 @@ const sync = (() => {
   function handle401Error(err) {
     if (err.code === 401) {
       return tokenManager.revokeToken(currentDrive.name)
+        .catch(console.error)
         .then(() => {
+          status.login = false;
+          emitStatusChange();
           throw err;
         });
+    }
+    if (/User interaction required|Requires user interaction/i.test(err.message)) {
+      status.login = false;
+      emitStatusChange();
     }
     throw err;
   }
 
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
+  }
+
+  function login(name = prefs.get('sync.enabled')) {
+    return tokenManager.getToken(name, true)
+      .catch(err => {
+        if (/Authorization page could not be loaded/i.test(err.message)) {
+          // FIXME: Chrome always fails at the first login so we try again
+          return tokenManager.getToken(name);
+        }
+        throw err;
+      })
+      .then(() => {
+        status.login = true;
+        emitStatusChange();
+      });
   }
 
   function start(name, fromPref = false) {
@@ -160,16 +184,10 @@ const sync = (() => {
     ctrl.use(currentDrive);
     status.state = 'connecting';
     status.currentDriveName = currentDrive.name;
+    status.login = true;
     emitStatusChange();
     return withFinally(
-      tokenManager.getToken(name, !fromPref)
-        .catch(err => {
-          if (/Authorization page could not be loaded/i.test(err.message)) {
-            // FIXME: Chrome always fails at the first login so we try again
-            return tokenManager.getToken(name);
-          }
-          throw err;
-        })
+      (fromPref ? Promise.resolve() : login(name))
         .catch(handle401Error)
         .then(() => syncNow()),
       err => {
@@ -211,6 +229,7 @@ const sync = (() => {
         prefs.set('sync.enabled', 'none');
         status.state = 'disconnected';
         status.currentDriveName = null;
+        status.login = false;
         emitStatusChange();
       }
     );
