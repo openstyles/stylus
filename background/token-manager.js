@@ -125,6 +125,7 @@ const tokenManager = (() => {
     return postQuery(provider.tokenURL, body)
       .then(result => {
         if (!result.refresh_token) {
+          // reuse old refresh token
           result.refresh_token = obj[k.REFRESH];
         }
         return handleTokenResult(result, k);
