@@ -4,8 +4,8 @@
 'use strict';
 
 const sync = (() => {
-  const SYNC_DELAY = 1;
-  const SYNC_INTERVAL = 30;
+  const SYNC_DELAY = 1; // minutes
+  const SYNC_INTERVAL = 30; // minutes
 
   const status = {
     state: 'disconnected',
@@ -60,7 +60,9 @@ const sync = (() => {
     }
   });
 
-  return ensurePrepared({
+  return Object.assign({
+    getStatus: () => status
+  }, ensurePrepared({
     start,
     stop,
     put: (...args) => {
@@ -74,9 +76,8 @@ const sync = (() => {
       return ctrl.delete(...args);
     },
     syncNow,
-    getStatus: () => status,
     login
-  });
+  }));
 
   function ensurePrepared(obj) {
     return Object.entries(obj).reduce((o, [key, fn]) => {
