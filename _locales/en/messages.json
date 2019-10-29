@@ -974,6 +974,9 @@
   "optionsCustomizeUpdate": {
     "message": "Updates"
   },
+  "optionsCustomizeSync": {
+    "message": "Sync to cloud"
+  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."
@@ -1008,6 +1011,21 @@
   },
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
+  },
+  "optionsSyncNone": {
+    "message": "None"
+  },
+  "optionsSyncConnect": {
+    "message": "Connect"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Disconnect"
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sync now"
+  },
+  "optionsSyncLogin": {
+    "message": "Login"
   },
   "paginationCurrent": {
     "message": "Current page",

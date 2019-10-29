@@ -138,23 +138,22 @@
     </div>
 
     <div class="block sync-options">
-      <!-- FIXME: i18n -->
-      <h1>Sync to cloud</h1>
+      <h1 i18n-text="optionsCustomizeSync">Sync to cloud</h1>
       <div class="items">
         <label>
           <span class="sync-status"></span>
           <select class="cloud-name">
-            <option value="none">None</option>
+            <option value="none" i18n-text="optionsSyncNone"></option>
             <option value="dropbox">Dropbox</option>
             <option value="google">Google Drive</option>
             <option value="onedrive">OneDrive</option>
           </select>
         </label>
         <div class="actions">
-          <button type="button" class="connect">Connect</button>
-          <button type="button" class="disconnect">Disconnect</button>
-          <button type="button" class="sync-now">Sync now</button>
-          <button type="button" class="sync-login">Login</button>
+          <button type="button" class="connect" i18n-text="optionsSyncConnect"></button>
+          <button type="button" class="disconnect" i18n-text="optionsSyncDisconnect"></button>
+          <button type="button" class="sync-now" i18n-text="optionsSyncSyncNow"></button>
+          <button type="button" class="sync-login" i18n-text="optionsSyncLogin"></button>
         </div>
       </div>
     </div>
