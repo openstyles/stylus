@@ -1,5 +1,5 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
-  getStyleWithNoCode tryRegExp sessionStorageHash download
+  getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize */
 'use strict';
 
@@ -9,6 +9,9 @@ const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
 // FIXME: who use this?
 // const ANDROID = !chrome.windows;
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+
+// see PR #781
+const CHROME_HAS_BORDER_BUG = CHROME >= 3167 && CHROME <= 3704;
 
 if (!CHROME && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
@@ -354,6 +357,31 @@ function deepCopy(obj) {
     copy[k] = !v || typeof v !== 'object' ? v : deepCopy(v);
   }
   return copy;
+}
+
+
+function deepEqual(a, b, ignoredKeys) {
+  if (!a || !b) return a === b;
+  const type = typeof a;
+  if (type !== typeof b) return false;
+  if (type !== 'object') return a === b;
+  if (Array.isArray(a)) {
+    return Array.isArray(b) &&
+           a.length === b.length &&
+           a.every((v, i) => deepEqual(v, b[i], ignoredKeys));
+  }
+  for (const key in a) {
+    if (!Object.hasOwnProperty.call(a, key) ||
+        ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!Object.hasOwnProperty.call(b, key)) return false;
+    if (!deepEqual(a[key], b[key], ignoredKeys)) return false;
+  }
+  for (const key in b) {
+    if (!Object.hasOwnProperty.call(b, key) ||
+        ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!Object.hasOwnProperty.call(a, key)) return false;
+  }
+  return true;
 }
 
 

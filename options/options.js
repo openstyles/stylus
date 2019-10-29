@@ -1,12 +1,20 @@
 /* global messageBox msg setupLivePrefs enforceInputRange
   $ $$ $create $createLink
-  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError capitalize */
+  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError
+  CHROME_HAS_BORDER_BUG capitalize */
 'use strict';
 
 setupLivePrefs();
 setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
+
+if (CHROME_HAS_BORDER_BUG) {
+  const borderOption = $('.chrome-no-popup-border');
+  if (borderOption) {
+    borderOption.classList.remove('chrome-no-popup-border');
+  }
+}
 
 // collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
 if (!FIREFOX && !OPERA && CHROME < 3343) {

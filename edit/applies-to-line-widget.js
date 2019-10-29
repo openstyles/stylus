@@ -1,10 +1,11 @@
 /* global regExpTester debounce messageBox CodeMirror template colorMimicry msg
-  $ $create t prefs tryCatch */
+  $ $create t prefs tryCatch deepEqual */
 /* exported createAppliesToLineWidget */
 'use strict';
 
 function createAppliesToLineWidget(cm) {
   const THROTTLE_DELAY = 400;
+  const RX_SPACE = /(?:\s+|\/\*)+/y;
   let TPL, EVENTS, CLICK_ROUTE;
   let widgets = [];
   let fromLine, toLine, actualStyle;
@@ -172,6 +173,10 @@ function createAppliesToLineWidget(cm) {
   }
 
   function onRuntimeMessage(msg) {
+    if (msg.reason === 'editPreview' && !$(`#stylus-${msg.style.id}`)) {
+      // no style element with this id means the style doesn't apply to the editor URL
+      return;
+    }
     if (msg.style || msg.styles ||
         msg.prefs && 'disableAll' in msg.prefs ||
         msg.method === 'styleDeleted') {
@@ -294,21 +299,15 @@ function createAppliesToLineWidget(cm) {
     const toPos = {line: widgets[j] ? widgets[j].line.lineNo() : toLine + 1, ch: 0};
 
     // calc index->pos lookup table
-    let line = 0;
     let index = 0;
-    let fromIndex, toIndex;
-    const lineIndexes = [index];
-    cm.doc.iter(({text}) => {
-      fromIndex = line === fromPos.line ? index : fromIndex;
+    const lineIndexes = [0];
+    cm.doc.iter(0, toPos.line + 1, ({text}) => {
       lineIndexes.push((index += text.length + 1));
-      line++;
-      toIndex = line >= toPos.line ? index : toIndex;
-      return toIndex;
     });
 
     // splice
     i = Math.max(0, i);
-    widgets.splice(i, 0, ...createWidgets(fromIndex, toIndex, widgets.splice(i, j - i), lineIndexes));
+    widgets.splice(i, 0, ...createWidgets(fromPos, toPos, widgets.splice(i, j - i), lineIndexes));
 
     fromLine = null;
     toLine = null;
@@ -317,11 +316,16 @@ function createAppliesToLineWidget(cm) {
   function *createWidgets(start, end, removed, lineIndexes) {
     let i = 0;
     let itemHeight;
-    for (const section of findAppliesTo(start, end)) {
+    for (const section of findAppliesTo(start, end, lineIndexes)) {
       let removedWidget = removed[i];
       while (removedWidget && removedWidget.line.lineNo() < section.pos.line) {
         clearWidget(removed[i]);
         removedWidget = removed[++i];
+      }
+      if (removedWidget && deepEqual(removedWidget.node.__applies, section.applies, ['mark'])) {
+        yield removedWidget;
+        i++;
+        continue;
       }
       for (const a of section.applies) {
         setupApplyMarkers(a, lineIndexes);
@@ -488,38 +492,82 @@ function createAppliesToLineWidget(cm) {
     };
   }
 
-  function *findAppliesTo(posStart, posEnd) {
-    const text = cm.getValue();
-    const re = /^[\t ]*@-moz-document[\s\n]+/gm;
-    const applyRe = new RegExp([
-      /(?:\/\*[\s\S]*?(?:\*\/\s*|$))*/,
-      /(url|url-prefix|domain|regexp)/,
-      /\(((['"])(?:\\\\|\\\n|\\\3|[^\n])*?\3|[^)\n]*)\)\s*(,\s*)?/,
-    ].map(rx => rx.source).join(''), 'giy');
-    let match;
-    re.lastIndex = posStart;
-    while ((match = re.exec(text))) {
-      if (match.index >= posEnd) {
-        return;
-      }
+  function *findAppliesTo(posStart, posEnd, lineIndexes) {
+    const funcRe = /^(url|url-prefix|domain|regexp)$/i;
+    let pos;
+    const eatToken = sticky => {
+      if (!sticky) skipSpace(pos, posEnd);
+      pos.ch++;
+      const token = cm.getTokenAt(pos, true);
+      pos.ch = token.end;
+      return CodeMirror.cmpPos(pos, posEnd) <= 0 ? token : {};
+    };
+    const docCur = cm.getSearchCursor('@-moz-document', posStart);
+    while (docCur.findNext() &&
+           CodeMirror.cmpPos(docCur.pos.to, posEnd) <= 0) {
+      // CM can be nitpicky at token boundary so we'll check the next character
+      const safePos = {line: docCur.pos.from.line, ch: docCur.pos.from.ch + 1};
+      if (/\b(string|comment)\b/.test(cm.getTokenTypeAt(safePos))) continue;
       const applies = [];
-      let m;
-      applyRe.lastIndex = re.lastIndex;
-      while ((m = applyRe.exec(text))) {
+      pos = docCur.pos.to;
+      do {
+        skipSpace(pos, posEnd);
+        const funcIndex = lineIndexes[pos.line] + pos.ch;
+        const func = eatToken().string;
+        // no space allowed before the opening parenthesis
+        if (!funcRe.test(func) || eatToken(true).string !== '(') break;
+        const url = eatToken();
+        if (url.type !== 'string' || eatToken().string !== ')') break;
+        const unquotedUrl = unquote(url.string);
         const apply = createApply(
-          m.index,
-          m[1],
-          unquote(m[2]),
-          unquote(m[2]) !== m[2]
+          funcIndex,
+          func,
+          unquotedUrl,
+          unquotedUrl !== url.string
         );
         applies.push(apply);
-        re.lastIndex = applyRe.lastIndex;
-      }
+      } while (eatToken().string === ',');
       yield {
-        pos: cm.posFromIndex(match.index),
+        pos: docCur.pos.from,
         applies
       };
     }
+  }
+
+  function skipSpace(pos, posEnd) {
+    let {ch, line} = pos;
+    let lookForEnd;
+    line--;
+    cm.doc.iter(pos.line, posEnd.line + 1, ({text}) => {
+      line++;
+      while (true) {
+        if (lookForEnd) {
+          ch = text.indexOf('*/', ch) + 1;
+          if (!ch) {
+            return;
+          }
+          ch++;
+          lookForEnd = false;
+        }
+        // EOL is a whitespace so we'll check the next line
+        if (ch >= text.length) {
+          ch = 0;
+          return;
+        }
+        RX_SPACE.lastIndex = ch;
+        const m = RX_SPACE.exec(text);
+        if (!m) {
+          return true;
+        }
+        ch += m[0].length;
+        lookForEnd = m[0].includes('/*');
+        if (ch < text.length && !lookForEnd) {
+          return true;
+        }
+      }
+    });
+    pos.line = line;
+    pos.ch = ch;
   }
 
   function unquote(s) {
