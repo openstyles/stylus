@@ -317,6 +317,7 @@ const styleManager = (() => {
     const id = uuidIndex.get(_id);
     const oldDoc = id && styles.has(id) && styles.get(id).data;
     if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+      // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
       return deleteStyle(id, 'sync');
     }
   }
@@ -519,19 +520,6 @@ const styleManager = (() => {
     return code.length && code;
   }
 
-  function addMissingProperties(style) {
-    let touched = false;
-    if (!style._id) {
-      style._id = uuid();
-      touched = true;
-    }
-    if (!style._rev) {
-      style._rev = Date.now();
-      touched = true;
-    }
-    return touched;
-  }
-
   function prepare() {
     return db.exec('getAll')
       .then(event => event.target.result || [])
@@ -562,6 +550,19 @@ const styleManager = (() => {
           }
         }
       });
+
+    function addMissingProperties(style) {
+      let touched = false;
+      if (!style._id) {
+        style._id = uuid();
+        touched = true;
+      }
+      if (!style._rev) {
+        style._rev = Date.now();
+        touched = true;
+      }
+      return touched;
+    }
   }
 
   function urlMatchStyle(query, style) {
