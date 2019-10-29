@@ -1,6 +1,6 @@
 /* global messageBox msg setupLivePrefs enforceInputRange
   $ $$ $create $createLink
-  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError */
+  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError capitalize */
 'use strict';
 
 setupLivePrefs();
@@ -121,17 +121,15 @@ document.onclick = e => {
     if (status.syncing) {
       if (status.progress) {
         const {phase, loaded, total} = status.progress;
-        return `${phase}ing style ${loaded + 1} of ${total}`;
+        return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
+          `${phase} ${loaded} / ${total}`;
       }
-      return 'syncing...';
+      return chrome.i18n.getMessage('optionsSyncStatusSyncing') || 'syncing';
     }
-    if (status.state.endsWith('ing')) {
-      return status.state + '...';
-    }
-    if (status.errorMessage) {
+    if ((status.state === 'connected' || status.state === 'disconnected') && status.errorMessage) {
       return status.errorMessage;
     }
-    return status.state;
+    return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(status.state)}`) || status.state;
   }
 
   connectButton.addEventListener('click', e => {
