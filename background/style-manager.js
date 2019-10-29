@@ -521,6 +521,12 @@ const styleManager = (() => {
   }
 
   function prepare() {
+    const ADD_MISSING_PROPS = {
+      name: style => `ID: ${style.id}`,
+      _id: () => uuid(),
+      _rev: () => Date.now()
+    };
+
     return db.exec('getAll')
       .then(event => event.target.result || [])
       .then(styleList => {
@@ -545,21 +551,16 @@ const styleManager = (() => {
             data: style
           });
           uuidIndex.set(style._id, style.id);
-          if (!style.name) {
-            style.name = 'ID: ' + style.id;
-          }
         }
       });
 
     function addMissingProperties(style) {
       let touched = false;
-      if (!style._id) {
-        style._id = uuid();
-        touched = true;
-      }
-      if (!style._rev) {
-        style._rev = Date.now();
-        touched = true;
+      for (const key in ADD_MISSING_PROPS) {
+        if (!style[key]) {
+          style[key] = ADD_MISSING_PROPS[key](style);
+          touched = true;
+        }
       }
       return touched;
     }
