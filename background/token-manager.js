@@ -72,10 +72,10 @@ const tokenManager = (() => {
         if (!obj[k.TOKEN]) {
           return authUser(name, k, interactive);
         }
-        if (Date.now() < obj[k.EXPIRE]) {
+        if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
           return obj[k.TOKEN];
         }
-        if (obj[k.EXPIRE]) {
+        if (obj[k.REFRESH]) {
           return refreshToken(name, k, obj)
             .catch(err => {
               if (err.code === 401) {
