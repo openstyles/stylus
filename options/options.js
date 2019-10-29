@@ -117,7 +117,6 @@ document.onclick = e => {
   }
 
   function getStatusText() {
-    // FIXME: i18n
     if (status.syncing) {
       if (status.progress) {
         const {phase, loaded, total} = status.progress;
