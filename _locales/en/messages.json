@@ -1161,6 +1161,10 @@
     "message": "Restore removed section",
     "description": "Label for the button to restore a removed section"
   },
+  "sectionEmpty": {
+    "message": "Not saved due to lack of usercss sections.\n\nAdd at least one @-moz-document domain(\"example.com\") {} section",
+    "description": "Error shown when the user tries to save an empty usercss style"
+  },
   "shortcuts": {
     "message": "Shortcuts",
     "description": "Go to shortcut configuration"

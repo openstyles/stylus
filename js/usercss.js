@@ -71,6 +71,9 @@ const usercss = (() => {
       .then(({sections, errors}) => {
         if (!errors.length) errors = false;
         if (!sections.length || errors && !allowErrors) {
+          if (!errors) {
+            errors = chrome.i18n.getMessage('sectionEmpty');
+          }
           throw errors;
         }
         style.sections = sections;
