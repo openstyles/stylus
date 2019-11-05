@@ -313,3 +313,12 @@ html:not(.firefox):not(.opera) #updates {
     hyphens: auto;
   }
 }
+
+.sync-status {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sync-status::first-letter {
+  text-transform: uppercase;
+}

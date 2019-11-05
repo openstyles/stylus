@@ -1,7 +1,7 @@
 /* global messageBox msg setupLivePrefs enforceInputRange
   $ $$ $create $createLink
   FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError
-  CHROME_HAS_BORDER_BUG */
+  CHROME_HAS_BORDER_BUG capitalize */
 'use strict';
 
 setupLivePrefs();
@@ -81,6 +81,88 @@ document.onclick = e => {
     }
   }
 };
+
+// sync to cloud
+(() => {
+  const cloud = document.querySelector('.sync-options .cloud-name');
+  const connectButton = document.querySelector('.sync-options .connect');
+  const disconnectButton = document.querySelector('.sync-options .disconnect');
+  const syncButton = document.querySelector('.sync-options .sync-now');
+  const statusText = document.querySelector('.sync-options .sync-status');
+  const loginButton = document.querySelector('.sync-options .sync-login');
+
+  let status = {};
+
+  msg.onExtension(e => {
+    if (e.method === 'syncStatusUpdate') {
+      status = e.status;
+      updateButtons();
+    }
+  });
+
+  API.getSyncStatus()
+    .then(_status => {
+      status = _status;
+      updateButtons();
+    });
+
+  function validClick(e) {
+    return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
+  }
+
+  cloud.addEventListener('change', updateButtons);
+
+  function updateButtons() {
+    if (status.currentDriveName) {
+      cloud.value = status.currentDriveName;
+    }
+    cloud.disabled = status.state !== 'disconnected';
+    connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
+    disconnectButton.disabled = status.state !== 'connected' || status.syncing;
+    syncButton.disabled = status.state !== 'connected' || status.syncing;
+    statusText.textContent = getStatusText();
+    loginButton.style.display = status.state === 'connected' && !status.login ? '' : 'none';
+  }
+
+  function getStatusText() {
+    if (status.syncing) {
+      if (status.progress) {
+        const {phase, loaded, total} = status.progress;
+        return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
+          `${phase} ${loaded} / ${total}`;
+      }
+      return chrome.i18n.getMessage('optionsSyncStatusSyncing') || 'syncing';
+    }
+    if ((status.state === 'connected' || status.state === 'disconnected') && status.errorMessage) {
+      return status.errorMessage;
+    }
+    return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(status.state)}`) || status.state;
+  }
+
+  connectButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      API.syncStart(cloud.value).catch(console.error);
+    }
+  });
+
+  disconnectButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      API.syncStop().catch(console.error);
+    }
+  });
+
+  syncButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      API.syncNow().catch(console.error);
+    }
+  });
+
+  loginButton.addEventListener('click', e => {
+    if (validClick(e)) {
+      API.syncLogin().catch(console.error);
+    }
+  });
+})();
 
 function checkUpdates() {
   let total = 0;

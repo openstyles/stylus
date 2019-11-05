@@ -1,6 +1,6 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
-  closeCurrentTab */
+  closeCurrentTab capitalize */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
@@ -508,4 +508,8 @@ function closeCurrentTab() {
       chrome.tabs.remove(tab.id);
     }
   });
+}
+
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
 }

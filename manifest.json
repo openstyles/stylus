@@ -35,6 +35,11 @@
       "js/script-loader.js",
       "js/usercss.js",
       "js/cache.js",
+      "vendor/semver-bundle/semver.js",
+      "vendor/db-to-cloud/db-to-cloud.min.js",
+      "vendor/uuid/uuid.min.js",
+      "background/token-manager.js",
+      "background/sync.js",
       "background/content-scripts.js",
       "background/db.js",
       "background/style-manager.js",
@@ -45,8 +50,7 @@
       "background/style-via-api.js",
       "background/search-db.js",
       "background/update.js",
-      "background/openusercss-api.js",
-      "vendor/semver-bundle/semver.js"
+      "background/openusercss-api.js"
     ]
   },
   "commands": {
@@ -130,5 +134,6 @@
       "id": "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}",
       "strict_min_version": "53.0"
     }
-  }
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ypG+Z/beZtoYrxxwXYhMwQiAiwRVnSHqdpOSzJdjsXVWdvJjlgEuZcU8kte75w58P45LsRUrwvU6N9x12S6eW84KNEBC8rlZj0RGNoxuhSAcdxneYzjJ9tBkZKOidVedYHHsi3LeaXiLuTNTBR+2lf3uCNcP0ebaFML9uDLdYTGEW4eL3hnEKYPSmT1/xkh4bSGTToCg4YNuWWWoTA0beEOpBWYkPVMarLDQgPzMN5Byu5w3lOS2zL0PPJcmdyk3ez/ZsB4PZKU+h17fVA6+YTvUfxUqLde5i2RiuZhEb6Coo5/W90ZW1yCDC9osjWrxMGYeUMQWHPIgFtDhk4K6QIDAQAB"
 }

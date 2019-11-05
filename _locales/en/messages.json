@@ -974,6 +974,9 @@
   "optionsCustomizeUpdate": {
     "message": "Updates"
   },
+  "optionsCustomizeSync": {
+    "message": "Sync to cloud"
+  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."
@@ -1008,6 +1011,58 @@
   },
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
+  },
+  "optionsSyncNone": {
+    "message": "None"
+  },
+  "optionsSyncConnect": {
+    "message": "Connect"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Disconnect"
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sync now"
+  },
+  "optionsSyncLogin": {
+    "message": "Login"
+  },
+  "optionsSyncStatusPull": {
+    "message": "Pulling style $loaded$ of $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Pushing style $loaded$ of $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Syncing..."
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Connecting..."
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Connected"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Disconnecting..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Disconnected"
   },
   "paginationCurrent": {
     "message": "Current page",
