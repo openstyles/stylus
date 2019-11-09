@@ -1,7 +1,7 @@
 /* global configDialog hotkeys onTabReady msg
   getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
   setupLivePrefs template t $create tWordBreak animateElement
-  tryJSONparse debounce CHROME_HAS_BORDER_BUG */
+  tryJSONparse debounce CHROME_HAS_BORDER_BUG capitalize */
 
 'use strict';
 
@@ -346,10 +346,6 @@ function createStyleElement(style) {
   $('.exclude-by-url', entry).title = getExcludeRule('url');
 
   return entry;
-}
-
-function capitalize(s) {
-  return s[0].toUpperCase() + s.slice(1);
 }
 
 function styleExcluded({exclusions}, type) {
