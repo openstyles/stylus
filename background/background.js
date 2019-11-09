@@ -1,6 +1,6 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
   debounce URLS ignoreChromeError getTab
-  styleManager msg navigatorUtil iconUtil workerUtil contentScripts
+  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
   colorScheme */
 'use strict';
 
@@ -66,7 +66,13 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
       .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
   },
 
-  updateSystemPreferDark: colorScheme.updateSystemPreferDark
+  updateSystemPreferDark: colorScheme.updateSystemPreferDark,
+
+  syncStart: sync.start,
+  syncStop: sync.stop,
+  syncNow: sync.syncNow,
+  getSyncStatus: sync.getStatus,
+  syncLogin: sync.login
 });
 
 // eslint-disable-next-line no-var

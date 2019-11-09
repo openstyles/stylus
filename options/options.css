@@ -352,3 +352,12 @@ input[type="radio"].radio:checked::after {
     hyphens: auto;
   }
 }
+
+.sync-status {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sync-status::first-letter {
+  text-transform: uppercase;
+}

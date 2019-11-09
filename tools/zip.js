@@ -14,7 +14,8 @@ function createZip() {
     'package.json',
     'package-lock.json',
     'yarn.lock',
-    '*.zip'
+    '*.zip',
+    '*.map'
   ];
 
   const file = fs.createWriteStream(fileName);

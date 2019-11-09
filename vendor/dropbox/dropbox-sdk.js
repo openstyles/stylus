@@ -237,6 +237,17 @@ routes.filePropertiesTemplatesUpdateForUser = function (arg) {
 };
 
 /**
+ * Returns the total number of file requests owned by this user. Includes both
+ * open and closed file requests.
+ * @function Dropbox#fileRequestsCount
+ * @arg {void} arg - The request parameters.
+ * @returns {Promise.<FileRequestsCountFileRequestsResult, Error.<FileRequestsCountFileRequestsError>>}
+ */
+routes.fileRequestsCount = function (arg) {
+  return this.request('file_requests/count', arg, 'user', 'api', 'rpc');
+};
+
+/**
  * Creates a file request for this user.
  * @function Dropbox#fileRequestsCreate
  * @arg {FileRequestsCreateFileRequestArgs} arg - The request parameters.
@@ -244,6 +255,26 @@ routes.filePropertiesTemplatesUpdateForUser = function (arg) {
  */
 routes.fileRequestsCreate = function (arg) {
   return this.request('file_requests/create', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Delete a batch of closed file requests.
+ * @function Dropbox#fileRequestsDelete
+ * @arg {FileRequestsDeleteFileRequestArgs} arg - The request parameters.
+ * @returns {Promise.<FileRequestsDeleteFileRequestsResult, Error.<FileRequestsDeleteFileRequestError>>}
+ */
+routes.fileRequestsDelete = function (arg) {
+  return this.request('file_requests/delete', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Delete all closed file requests owned by this user.
+ * @function Dropbox#fileRequestsDeleteAllClosed
+ * @arg {void} arg - The request parameters.
+ * @returns {Promise.<FileRequestsDeleteAllClosedFileRequestsResult, Error.<FileRequestsDeleteAllClosedFileRequestsError>>}
+ */
+routes.fileRequestsDeleteAllClosed = function (arg) {
+  return this.request('file_requests/delete_all_closed', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -260,12 +291,36 @@ routes.fileRequestsGet = function (arg) {
  * Returns a list of file requests owned by this user. For apps with the app
  * folder permission, this will only return file requests with destinations in
  * the app folder.
+ * @function Dropbox#fileRequestsListV2
+ * @arg {FileRequestsListFileRequestsArg} arg - The request parameters.
+ * @returns {Promise.<FileRequestsListFileRequestsV2Result, Error.<FileRequestsListFileRequestsError>>}
+ */
+routes.fileRequestsListV2 = function (arg) {
+  return this.request('file_requests/list_v2', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Returns a list of file requests owned by this user. For apps with the app
+ * folder permission, this will only return file requests with destinations in
+ * the app folder.
  * @function Dropbox#fileRequestsList
  * @arg {void} arg - The request parameters.
  * @returns {Promise.<FileRequestsListFileRequestsResult, Error.<FileRequestsListFileRequestsError>>}
  */
 routes.fileRequestsList = function (arg) {
   return this.request('file_requests/list', arg, 'user', 'api', 'rpc');
+};
+
+/**
+ * Once a cursor has been retrieved from list_v2, use this to paginate through
+ * all file requests. The cursor must come from a previous call to list_v2 or
+ * list/continue.
+ * @function Dropbox#fileRequestsListContinue
+ * @arg {FileRequestsListFileRequestsContinueArg} arg - The request parameters.
+ * @returns {Promise.<FileRequestsListFileRequestsV2Result, Error.<FileRequestsListFileRequestsContinueError>>}
+ */
+routes.fileRequestsListContinue = function (arg) {
+  return this.request('file_requests/list/continue', arg, 'user', 'api', 'rpc');
 };
 
 /**
@@ -331,7 +386,7 @@ routes.filesCopy = function (arg) {
 /**
  * Copy multiple files or folders to different locations at once in the user's
  * Dropbox. This route will replace copy_batch. The main difference is this
- * route will return stutus for each entry, while copy_batch raises failure if
+ * route will return status for each entry, while copy_batch raises failure if
  * any entry fails. This route will either finish synchronously, or return a job
  * ID and do the async copy job in background. Please use copy_batch/check_v2 to
  * check the job status.
@@ -527,6 +582,18 @@ routes.filesDownloadZip = function (arg) {
 };
 
 /**
+ * Export a file from a user's Dropbox. This route only supports exporting files
+ * that cannot be downloaded directly  and whose ExportResult.file_metadata has
+ * ExportInfo.export_as populated.
+ * @function Dropbox#filesExport
+ * @arg {FilesExportArg} arg - The request parameters.
+ * @returns {Promise.<FilesExportResult, Error.<FilesExportError>>}
+ */
+routes.filesExport = function (arg) {
+  return this.request('files/export', arg, 'user', 'content', 'download');
+};
+
+/**
  * Returns the metadata for a file or folder. Note: Metadata for the root folder
  * is unsupported.
  * @function Dropbox#filesGetMetadata
@@ -539,10 +606,11 @@ routes.filesGetMetadata = function (arg) {
 
 /**
  * Get a preview for a file. Currently, PDF previews are generated for files
- * with the following extensions: .ai, .doc, .docm, .docx, .eps, .odp, .odt,
- * .pps, .ppsm, .ppsx, .ppt, .pptm, .pptx, .rtf. HTML previews are generated for
- * files with the following extensions: .csv, .ods, .xls, .xlsm, .xlsx. Other
- * formats will return an unsupported extension error.
+ * with the following extensions: .ai, .doc, .docm, .docx, .eps, .gdoc,
+ * .gslides, .odp, .odt, .pps, .ppsm, .ppsx, .ppt, .pptm, .pptx, .rtf. HTML
+ * previews are generated for files with the following extensions: .csv, .ods,
+ * .xls, .xlsm, .gsheet, .xlsx. Other formats will return an unsupported
+ * extension error.
  * @function Dropbox#filesGetPreview
  * @arg {FilesPreviewArg} arg - The request parameters.
  * @returns {Promise.<FilesFileMetadata, Error.<FilesPreviewError>>}
@@ -553,8 +621,8 @@ routes.filesGetPreview = function (arg) {
 
 /**
  * Get a temporary link to stream content of a file. This link will expire in
- * four hours and afterwards you will get 410 Gone. So this URL should not be
- * used to display content directly in the browser.  Content-Type of the link is
+ * four hours and afterwards you will get 410 Gone. This URL should not be used
+ * to display content directly in the browser. The Content-Type of the link is
  * determined automatically by the file's mime type.
  * @function Dropbox#filesGetTemporaryLink
  * @arg {FilesGetTemporaryLinkArg} arg - The request parameters.
@@ -736,8 +804,8 @@ routes.filesMove = function (arg) {
 
 /**
  * Move multiple files or folders to different locations at once in the user's
- * Dropbox. This route will replace move_batch_v2. The main difference is this
- * route will return stutus for each entry, while move_batch raises failure if
+ * Dropbox. This route will replace move_batch. The main difference is this
+ * route will return status for each entry, while move_batch raises failure if
  * any entry fails. This route will either finish synchronously, or return a job
  * ID and do the async move job in background. Please use move_batch/check_v2 to
  * check the job status.

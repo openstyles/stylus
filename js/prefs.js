@@ -92,6 +92,8 @@ const prefs = (() => {
     'hotkey.openManage': '',
     'hotkey.styleDisableAll': '',
 
+    'sync.enabled': 'none',
+
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 
@@ -109,7 +111,10 @@ const prefs = (() => {
     specific: new Map(),
   };
 
-  const initializing = promisify(chrome.storage.sync.get.bind(chrome.storage.sync))('settings')
+  const syncSet = promisify(chrome.storage.sync.set.bind(chrome.storage.sync));
+  const syncGet = promisify(chrome.storage.sync.get.bind(chrome.storage.sync));
+
+  const initializing = syncGet('settings')
     .then(result => {
       if (result.settings) {
         setAll(result.settings, true);
@@ -212,10 +217,10 @@ const prefs = (() => {
     }
     values[key] = value;
     emitChange(key, value);
-    if (synced || timer) {
-      return;
+    if (!synced && !timer) {
+      timer = syncPrefsLater();
     }
-    timer = setTimeout(syncPrefs);
+    return timer;
   }
 
   function emitChange(key, value) {
@@ -232,10 +237,14 @@ const prefs = (() => {
     }
   }
 
-  function syncPrefs() {
-    // FIXME: we always set the entire object? Ideally, this should only use `changes`.
-    chrome.storage.sync.set({settings: values});
-    timer = null;
+  function syncPrefsLater() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        timer = null;
+        syncSet({settings: values})
+          .then(resolve, reject);
+      });
+    });
   }
 
   function equal(a, b) {

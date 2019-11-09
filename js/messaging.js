@@ -1,6 +1,6 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
-  getStyleWithNoCode tryRegExp sessionStorageHash download
-  closeCurrentTab */
+  getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
+  closeCurrentTab capitalize */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
@@ -360,6 +360,31 @@ function deepCopy(obj) {
 }
 
 
+function deepEqual(a, b, ignoredKeys) {
+  if (!a || !b) return a === b;
+  const type = typeof a;
+  if (type !== typeof b) return false;
+  if (type !== 'object') return a === b;
+  if (Array.isArray(a)) {
+    return Array.isArray(b) &&
+           a.length === b.length &&
+           a.every((v, i) => deepEqual(v, b[i], ignoredKeys));
+  }
+  for (const key in a) {
+    if (!Object.hasOwnProperty.call(a, key) ||
+        ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!Object.hasOwnProperty.call(b, key)) return false;
+    if (!deepEqual(a[key], b[key], ignoredKeys)) return false;
+  }
+  for (const key in b) {
+    if (!Object.hasOwnProperty.call(b, key) ||
+        ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!Object.hasOwnProperty.call(a, key)) return false;
+  }
+  return true;
+}
+
+
 function sessionStorageHash(name) {
   return {
     name,
@@ -483,4 +508,8 @@ function closeCurrentTab() {
       chrome.tabs.remove(tab.id);
     }
   });
+}
+
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
 }

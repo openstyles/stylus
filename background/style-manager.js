@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg colorScheme */
+  getStyleWithNoCode msg sync uuid colorScheme */
 /* exported styleManager */
 'use strict';
 
@@ -21,6 +21,7 @@ const styleManager = (() => {
     appliesTo: Set<url>
   } */
   const styles = new Map();
+  const uuidIndex = new Map();
 
   /* url => {
     maybeMatch: Set<styleId>,
@@ -63,11 +64,16 @@ const styleManager = (() => {
   handleLivePreviewConnections();
   handleColorScheme();
 
-  return ensurePrepared({
+  return Object.assign({
+    compareRevision
+  }, ensurePrepared({
     get,
+    getByUUID,
     getSectionsByUrl,
+    putByUUID,
     installStyle,
     deleteStyle,
+    deleteByUUID,
     editSave,
     findStyle,
     importStyle,
@@ -79,9 +85,8 @@ const styleManager = (() => {
     addExclusion,
     removeExclusion,
     addInclusion,
-    removeInclusion,
-    setMeta
-  });
+    removeInclusion
+  }));
 
   function handleColorScheme() {
     colorScheme.onChange(() => {
@@ -132,9 +137,46 @@ const styleManager = (() => {
     return noCode ? getStyleWithNoCode(data) : data;
   }
 
+  function getByUUID(uuid) {
+    const id = uuidIndex.get(uuid);
+    if (id) {
+      return get(id);
+    }
+  }
+
   function getAllStyles(noCode = false) {
     const datas = [...styles.values()].map(s => s.data);
     return noCode ? datas.map(getStyleWithNoCode) : datas;
+  }
+
+  function compareRevision(rev1, rev2) {
+    return rev1 - rev2;
+  }
+
+  function putByUUID(doc) {
+    const id = uuidIndex.get(doc._id);
+    if (id) {
+      doc.id = id;
+    } else {
+      delete doc.id;
+    }
+    const oldDoc = id && styles.has(id) && styles.get(id).data;
+    let diff = -1;
+    if (oldDoc) {
+      diff = compareRevision(oldDoc._rev, doc._rev);
+      if (diff > 0) {
+        sync.put(oldDoc._id, oldDoc._rev);
+        return;
+      }
+    }
+    if (diff < 0) {
+      return db.exec('put', doc)
+        .then(event => {
+          doc.id = event.target.result;
+          uuidIndex.set(doc._id, doc.id);
+          return handleSave(doc, 'sync');
+        });
+    }
   }
 
   function toggleStyle(id, enabled) {
@@ -175,12 +217,11 @@ const styleManager = (() => {
   }
 
   function importMany(items) {
+    items.forEach(beforeSave);
     return db.exec('putMany', items)
       .then(events => {
         for (let i = 0; i < items.length; i++) {
-          if (!items[i].id) {
-            items[i].id = events[i].target.result;
-          }
+          afterSave(items[i], events[i].target.result);
         }
         return Promise.all(items.map(i => handleSave(i, 'import')));
       });
@@ -259,22 +300,14 @@ const styleManager = (() => {
     return removeIncludeExclude(id, rule, 'inclusions');
   }
 
-  function setMeta(id, key, value) {
-    // FIXME: it is pretty danger to expose an API to modify *any* property on the data.
-    const oldData = styles.get(id).data;
-    if (oldData[key] === value) {
-      return;
-    }
-    const data = Object.assign({}, oldData);
-    data[key] = value;
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'styleSettings'));
-  }
-
-  function deleteStyle(id) {
+  function deleteStyle(id, reason) {
     const style = styles.get(id);
+    const rev = Date.now();
     return db.exec('delete', id)
       .then(() => {
+        if (reason !== 'sync') {
+          sync.delete(style.data._id, rev);
+        }
         for (const url of style.appliesTo) {
           const cache = cachedStyleForUrl.get(url);
           if (cache) {
@@ -282,12 +315,22 @@ const styleManager = (() => {
           }
         }
         styles.delete(id);
+        uuidIndex.delete(style.data._id);
         return msg.broadcast({
           method: 'styleDeleted',
           style: {id}
         });
       })
       .then(() => id);
+  }
+
+  function deleteByUUID(_id, rev) {
+    const id = uuidIndex.get(_id);
+    const oldDoc = id && styles.has(id) && styles.get(id).data;
+    if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+      // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
+      return deleteStyle(id, 'sync');
+    }
   }
 
   function ensurePrepared(methods) {
@@ -344,19 +387,33 @@ const styleManager = (() => {
     });
   }
 
-  function saveStyle(style) {
+  function beforeSave(style) {
     if (!style.name) {
       throw new Error('style name is empty');
     }
     if (style.id == null) {
       delete style.id;
     }
+    if (!style._id) {
+      style._id = uuid();
+    }
+    style._rev = Date.now();
     fixUsoMd5Issue(style);
+  }
+
+  function afterSave(style, newId) {
+    if (style.id == null) {
+      style.id = newId;
+    }
+    uuidIndex.set(style._id, style.id);
+    sync.put(style._id, style._rev);
+  }
+
+  function saveStyle(style) {
+    beforeSave(style);
     return db.exec('put', style)
       .then(event => {
-        if (style.id == null) {
-          style.id = event.target.result;
-        }
+        afterSave(style, event.target.result);
         return style;
       });
   }
@@ -480,22 +537,49 @@ const styleManager = (() => {
   }
 
   function prepare() {
-    return db.exec('getAll').then(event => {
-      const styleList = event.target.result;
-      if (!styleList) {
-        return;
-      }
-      for (const style of styleList) {
-        fixUsoMd5Issue(style);
-        styles.set(style.id, {
-          appliesTo: new Set(),
-          data: style
-        });
-        if (!style.name) {
-          style.name = 'ID: ' + style.id;
+    const ADD_MISSING_PROPS = {
+      name: style => `ID: ${style.id}`,
+      _id: () => uuid(),
+      _rev: () => Date.now()
+    };
+
+    return db.exec('getAll')
+      .then(event => event.target.result || [])
+      .then(styleList => {
+        // setup missing _id, _rev
+        const updated = [];
+        for (const style of styleList) {
+          if (addMissingProperties(style)) {
+            updated.push(style);
+          }
+        }
+        if (updated.length) {
+          return db.exec('putMany', updated)
+            .then(() => styleList);
+        }
+        return styleList;
+      })
+      .then(styleList => {
+        for (const style of styleList) {
+          fixUsoMd5Issue(style);
+          styles.set(style.id, {
+            appliesTo: new Set(),
+            data: style
+          });
+          uuidIndex.set(style._id, style.id);
+        }
+      });
+
+    function addMissingProperties(style) {
+      let touched = false;
+      for (const key in ADD_MISSING_PROPS) {
+        if (!style[key]) {
+          style[key] = ADD_MISSING_PROPS[key](style);
+          touched = true;
         }
       }
-    });
+      return touched;
+    }
   }
 
   function urlMatchStyle(query, style) {
