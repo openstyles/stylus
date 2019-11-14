@@ -198,6 +198,11 @@ select[disabled] > option {
   color: graytext;
 }
 
+select:disabled + .select-arrow,
+select[disabled] + .select-arrow {
+  fill: hsl(0, 0%, 50%);
+}
+
 /* global stuff we use everywhere */
 .hidden {
   display: none !important;
