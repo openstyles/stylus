@@ -109,6 +109,10 @@ select,
   flex-shrink: 0;
 }
 
+select.cloud-name {
+  width: auto;
+}
+
 button {
   text-align: center;
 }
