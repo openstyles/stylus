@@ -712,6 +712,33 @@ body.blocked .actions > .main-controls {
   margin: 0;
 }
 
+.blocked-info strong {
+  position: relative;
+  cursor: copy;
+  transition: all .1s;
+}
+
+.blocked-info strong.copied {
+  background: rgb(145, 208, 198);
+  color: #000;
+}
+
+.blocked-info strong.copied:after {
+  position: absolute;
+  content: attr(title);
+  text-align: center;
+  padding: 4px;
+  border-radius: 2px;
+  width: auto;
+  min-width: 100px;
+  top: -4em;
+  left: 50%;
+  background: #fff;
+  color: #000;
+  transform: translate(-50%, 0);
+  z-index: 10;
+}
+
 /******************************************/
 
 #hotkey-info {

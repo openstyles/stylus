@@ -242,6 +242,10 @@
     "message": "Yes",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Copied to clipboard",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
   "dateInstalled": {
     "message": "Date installed",
     "description": "Option text for the user to sort the style by install date"
