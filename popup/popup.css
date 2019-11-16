@@ -697,6 +697,8 @@ body.blocked .actions > .main-controls {
 .blocked-info {
   hyphens: none;
   word-wrap: break-word;
+  line-height: 16px;
+  position: relative;
 }
 
 .blocked-info label {
@@ -713,30 +715,43 @@ body.blocked .actions > .main-controls {
 }
 
 .blocked-info strong {
-  position: relative;
-  cursor: copy;
+  cursor: pointer;
   transition: all .1s;
+  border-bottom: 1px dotted #000;
 }
 
 .blocked-info strong.copied {
-  background: rgb(145, 208, 198);
+  background: hsl(170, 40%, 80%);
   color: #000;
 }
 
-.blocked-info strong.copied:after {
+.copy-message {
+  white-space: nowrap;
   position: absolute;
-  content: attr(title);
+  display: none;
+  top: 0;
+  left: calc(var(--outer-padding) * -1);
+  right: calc(var(--outer-padding) * -1);
+  font-weight: bold;
+  font-size: 13px;
   text-align: center;
-  padding: 4px;
-  border-radius: 2px;
-  width: auto;
-  min-width: 100px;
-  top: -4em;
-  left: 50%;
-  background: #fff;
+  padding: 4px 0;
+  background: hsl(170, 40%, 80%);
   color: #000;
-  transform: translate(-50%, 0);
   z-index: 10;
+}
+
+.copy-message.show-message {
+  display: block;
+}
+
+.blocked-info strong:after{
+  content: '';
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAGUExURQAAAAAAAKVnuc8AAAABdFJOUwBA5thmAAAAIElEQVQI12NgYGCEAgYgkwEMGBFijEhixDMZkUSRLQAACpYALjrE2uIAAAAASUVORK5CYII=)center no-repeat;
+  height: 10px;
+  width: 10px;
+  display: inline-flex;
+  margin-left: 3px;
 }
 
 /******************************************/

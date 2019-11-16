@@ -146,6 +146,7 @@ function initPopup() {
               textContent: s.slice(1, -1),
               onclick: handleEvent.copyContent,
               tabIndex: -1,
+              title: t('copy'),
             })
             : s;
           const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
@@ -590,15 +591,14 @@ Object.assign(handleEvent, {
 
   copyContent(event) {
     const target = event.target;
+    const message = document.querySelector('.copy-message');
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');
-    target.title = t('copied');
+    message.classList.add('show-message');
     setTimeout(() => {
       target.classList.remove('copied');
+      message.classList.remove('show-message');
     }, 1000);
-    setTimeout(() => {
-      target.title = '';
-    }, 2000);
   },
 });
 
