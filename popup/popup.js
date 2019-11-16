@@ -591,7 +591,7 @@ Object.assign(handleEvent, {
 
   copyContent(event) {
     const target = event.target;
-    const message = document.querySelector('.copy-message');
+    const message = $('.copy-message');
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');
     message.classList.add('show-message');
