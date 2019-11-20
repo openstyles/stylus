@@ -142,10 +142,12 @@ function initPopup() {
           const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                        (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
           const renderToken = s => s[0] === '<'
-            ? $create('strong', {
+            ? $create('a', {
               textContent: s.slice(1, -1),
               onclick: handleEvent.copyContent,
-              tabIndex: -1,
+              href: '#',
+              className: 'copy',
+              tabIndex: 0,
               title: t('copy'),
             })
             : s;
@@ -590,7 +592,8 @@ Object.assign(handleEvent, {
   },
 
   copyContent(event) {
-    const target = event.target;
+    event.preventDefault();
+    const target = document.activeElement;
     const message = $('.copy-message');
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');
