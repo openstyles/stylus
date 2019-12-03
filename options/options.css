@@ -80,10 +80,16 @@ h1 {
   width: 70%;
 }
 
-label {
+label,
+.label {
   display: flex;
   margin: .25ex 0;
   align-items: center;
+}
+
+.label {
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 label > :first-child {
@@ -107,6 +113,10 @@ select,
   width: 60px;
   box-sizing: border-box;
   flex-shrink: 0;
+}
+
+select.cloud-name {
+  width: auto;
 }
 
 button {
@@ -354,10 +364,17 @@ input[type="radio"].radio:checked::after {
 }
 
 .sync-status {
+  flex-grow: 1;
+  padding-right: 8px;
+  box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .sync-status::first-letter {
   text-transform: uppercase;
+}
+
+.sync-options .actions {
+  padding-top: 6px;
 }

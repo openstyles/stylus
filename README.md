@@ -53,7 +53,7 @@ Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
 Current Stylus:  
 
-Copyright &copy; 2017-2018 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
+Copyright &copy; 2017-2019 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
 **[GNU GPLv3](./LICENSE)**  
 

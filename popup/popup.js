@@ -1,6 +1,6 @@
 /* global configDialog hotkeys onTabReady msg
   getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
-  setupLivePrefs template t $create tWordBreak animateElement
+  setupLivePrefs template t $create animateElement
   tryJSONparse debounce CHROME_HAS_BORDER_BUG capitalize */
 
 'use strict';
@@ -141,7 +141,14 @@ function initPopup() {
           $('label', info).textContent = t('unreachableAMO');
           const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                        (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-          const renderToken = s => s[0] === '<' ? $create('b', tWordBreak(s.slice(1, -1))) : s;
+          const renderToken = s => s[0] === '<'
+            ? $create('strong', {
+              textContent: s.slice(1, -1),
+              onclick: handleEvent.copyContent,
+              tabIndex: -1,
+              title: t('copy'),
+            })
+            : s;
           const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
           const noteNode = $create('fragment', note.split('\n').map(renderLine));
           info.appendChild(noteNode);
@@ -581,6 +588,18 @@ Object.assign(handleEvent, {
         '?url=' + encodeURIComponent(tabURL) : '';
       handleEvent.openURLandHide.call(this, event);
     }
+  },
+
+  copyContent(event) {
+    const target = event.target;
+    const message = $('.copy-message');
+    navigator.clipboard.writeText(target.textContent);
+    target.classList.add('copied');
+    message.classList.add('show-message');
+    setTimeout(() => {
+      target.classList.remove('copied');
+      message.classList.remove('show-message');
+    }, 1000);
   },
 });
 
