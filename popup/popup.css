@@ -714,13 +714,19 @@ body.blocked .actions > .main-controls {
   margin: 0;
 }
 
-.blocked-info strong {
+.blocked-info .copy {
   cursor: pointer;
   transition: all .1s;
   border-bottom: 1px dotted #000;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.blocked-info strong.copied {
+.blocked-info .copy:hover {
+  color: #000;
+}
+
+.blocked-info .copy.copied {
   background: hsl(170, 40%, 80%);
   color: #000;
 }
@@ -745,7 +751,7 @@ body.blocked .actions > .main-controls {
   display: block;
 }
 
-.blocked-info strong:after {
+.blocked-info .copy:after {
   content: '';
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAGUExURQAAAAAAAKVnuc8AAAABdFJOUwBA5thmAAAAIElEQVQI12NgYGCEAgYgkwEMGBFijEhixDMZkUSRLQAACpYALjrE2uIAAAAASUVORK5CYII=)center no-repeat;
   height: 10px;
