@@ -1,12 +1,9 @@
-html.opera {
+html {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-}
-
-html.opera body {
-  width: auto;
+  height: 100vh;
+  background-color: hsl(170, 30%, 92%);
 }
 
 body {
@@ -14,23 +11,46 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  min-width: 480px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
   max-width: 800px;
-  width: max-content;
-  overflow-x: hidden;
+  max-height: calc(100vh - 32px);
+  border: 1px solid #999;
+  box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
+  animation-name: scaleFadeIn;
+  animation-duration: .2s;
+  animation-fill-mode: both;
+  will-change: transform, opacity;
 }
 
-@supports (-moz-appearance:none) {
-  body {
-    --addons-page-left-padding: 6px;
-    /* compensate 'html.firefox .block' padding-left */
-    width: calc(100% - var(--addons-page-left-padding));
-    /* match the default FF theme */
-    background-color: #f9f9fa;
-  }
-  html.firefox .block {
-    padding-left: var(--addons-page-left-padding);
-  }
+#options {
+  overflow-y: auto;
+}
+
+#options-title {
+  font-weight: bold;
+  background-color: rgb(145, 208, 198);
+  padding: .75rem 0 .75rem calc(30% + 4px);
+  font-size: 22px;
+  letter-spacing: .5px;
+  position: relative;
+  min-height: 42px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #999;
+}
+
+#options-title::before {
+  content: "";
+  width: 0;
+  height: 0;
+  padding: 0 32px 32px 0;
+  background: url(/images/icon/32.png);
+  position: absolute;
+  left: 26px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 .firefox .chromium-only,
@@ -152,23 +172,20 @@ input[type="color"] {
 #actions {
   justify-content: space-around;
   align-items: stretch;
-  padding: 1em;
+  flex-wrap: wrap;
+  padding: .5em 1em 1em;
   white-space: nowrap;
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
 }
 
-.firefox #actions,
-.opera #actions {
-  background-color: transparent;
-}
-
 #actions button {
   width: auto;
+  margin-top: .5em;
 }
 
 #actions button:not(:last-child) {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 
 [data-cmd="check-updates"] button {
@@ -298,13 +315,16 @@ html:not(.firefox):not(.opera) #updates {
   fill: #000;
 }
 
-#message-box.note > div {
-  max-width: calc(100vw - 6rem);
+#message-box.note {
+  align-items: center;
+  justify-content: center;
 }
 
-.opera #message-box.note,
-.firefox #message-box.note {
-  background-color: transparent;
+#message-box.note > div {
+  max-width: calc(100% - 5rem);
+  top: unset;
+  right: unset;
+  position: relative;
 }
 
 @keyframes fadeinout {
@@ -336,6 +356,17 @@ html:not(.firefox):not(.opera) #updates {
   text-transform: uppercase;
 }
 
-.sync-options .actions {
-  padding-top: 6px;
+.sync-options .actions button {
+  margin-top: .5em;
+}
+
+@keyframes scaleFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale3d(.3, .3, .3)
+  }
+
+  50% {
+    opacity: 1
+  }
 }
