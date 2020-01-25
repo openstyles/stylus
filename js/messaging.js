@@ -223,9 +223,9 @@ function openURL({
   url = url.includes('://') ? url : chrome.runtime.getURL(url);
   // [some] chromium forks don't handle their fake branded protocols
   url = url.replace(/^(opera|vivaldi)/, 'chrome');
-  // ignore filtered manager URLs with params
-  const manageMatch = /manage\.html(\?#stylus-options)?$/.test(url);
   const editMatch = /edit\.html/.test(url);
+  // ignore filtered manager URLs with params & edit URLs created from popup on manager page
+  const manageMatch = !editMatch ? /manage\.html(\?#stylus-options)?$/.test(url) : null;
   // FF doesn't handle moz-extension:// URLs (bug)
   // FF decodes %2F in encoded parameters (bug)
   // API doesn't handle the hash-fragment part
