@@ -723,11 +723,7 @@
     "message": "Spravovat",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Možnosti rozhraní",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Možnosti",
     "description": "Go to Options UI"
   },

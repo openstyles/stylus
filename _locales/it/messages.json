@@ -639,11 +639,7 @@
     "message": "Gestisci gli stili installati",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Opzioni UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opzioni",
     "description": "Go to Options UI"
   },

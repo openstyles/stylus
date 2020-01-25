@@ -927,11 +927,7 @@
     "message": "Manage",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Options UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Options",
     "description": "Go to Options UI"
   },

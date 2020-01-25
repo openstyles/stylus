@@ -7,6 +7,7 @@
 
 let installed;
 let tabURL;
+let unsupportedURL;
 const handleEvent = {};
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
@@ -28,6 +29,8 @@ getActiveTab()
   .then(([results]) => {
     if (!results) {
       // unsupported URL;
+      unsupportedURL = true;
+      $('#popup-manage-button').removeAttribute('title');
       return;
     }
     showStyles(results.map(r => Object.assign(r.data, r)));
@@ -48,6 +51,10 @@ if (CHROME_HAS_BORDER_BUG) {
 }
 
 function onRuntimeMessage(msg) {
+  if (msg === 'close-popup') {
+    window.close();
+    return;
+  }
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
@@ -99,7 +106,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    chrome.runtime.openOptionsPage();
+    API.openURL({url: 'manage.html?#stylus-options'});
     window.close();
   };
 
@@ -142,10 +149,12 @@ function initPopup() {
           const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                        (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
           const renderToken = s => s[0] === '<'
-            ? $create('strong', {
+            ? $create('a', {
               textContent: s.slice(1, -1),
               onclick: handleEvent.copyContent,
-              tabIndex: -1,
+              href: '#',
+              className: 'copy',
+              tabIndex: 0,
               title: t('copy'),
             })
             : s;
@@ -527,17 +536,9 @@ Object.assign(handleEvent, {
   },
 
   openLink(event) {
-    if (!chrome.windows || !prefs.get('openEditInWindow', false)) {
-      handleEvent.openURLandHide.call(this, event);
-      return;
-    }
     event.preventDefault();
-    chrome.windows.create(
-      Object.assign({
-        url: this.href
-      }, prefs.get('windowPosition', {}))
-    );
-    close();
+    API.openURL({url: this.href});
+    if (!(FIREFOX && prefs.get('openEditInWindow'))) window.close();
   },
 
   maybeEdit(event) {
@@ -576,10 +577,18 @@ Object.assign(handleEvent, {
             .then(() => msg.sendTab(tab.id, message));
         }
       })
-      .then(window.close);
+      .then(() => {
+        // Chromium needs help closing popup when opening new windows, not same window tabs
+        // FF needs help closing popup when opening same window tabs, not new windows
+        // edit URLs are ignored by pref - manager URls are passed to openURL() to check if tab exists
+        // which sends a message to close popup after determining it's not a different FF window
+        // because closing popup interferes with activating different windows in FF
+        if (this.dataset.href !== 'manage.html') window.close();
+      });
   },
 
   openManager(event) {
+    if (event.button === 2 && unsupportedURL) return;
     event.preventDefault();
     if (!this.eventHandled) {
       this.eventHandled = true;
@@ -590,7 +599,8 @@ Object.assign(handleEvent, {
   },
 
   copyContent(event) {
-    const target = event.target;
+    event.preventDefault();
+    const target = document.activeElement;
     const message = $('.copy-message');
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');

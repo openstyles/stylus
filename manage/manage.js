@@ -58,6 +58,10 @@ Promise.all([
 msg.onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
+  if (msg === 'options-open' || msg === 'options-close') {
+    toggleOptions(msg);
+    return;
+  }
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
@@ -80,7 +84,7 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
+  $('#manage-options-button').onclick = () => history.replaceState('', document.title, location.href + '?#stylus-options');
   {
     const btn = $('#manage-shortcuts-button');
     btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
@@ -700,3 +704,53 @@ function highlightEditedStyle() {
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
 }
+
+
+function embedOptions() {
+  const options = $('#stylus-embedded-options');
+  if (!options) {
+    const iframe = document.createElement('iframe');
+    iframe.id = 'stylus-embedded-options';
+    iframe.src = '/options.html';
+    document.documentElement.appendChild(iframe);
+  }
+}
+
+
+function removeOptions() {
+  const options = $('#stylus-embedded-options');
+  if (options) options.remove()
+}
+
+// wait for possible filter params to be removed
+onDOMready().then(() => {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.url) {
+      if (location.hash === '#stylus-options') {
+        embedOptions();
+      } else {
+        const options = $('#stylus-embedded-options');
+        if (options) {
+          options.contentWindow.document.body.classList.add('scaleout');
+          options.classList.add('fadeout');
+          animateElement(options, {
+            className: 'fadeout',
+            onComplete: removeOptions,
+          });
+        }
+      }
+    }
+  });
+});
+
+
+function toggleOptions(msg) {
+  if (msg === 'options-open' && location.hash !== '#stylus-options') {
+    history.replaceState('', document.title, location.href + '?#stylus-options');
+  } else if (msg === 'options-close' && location.hash === '#stylus-options') {
+    history.replaceState('', document.title, location.origin + location.pathname);
+  }
+};
+
+
+if (location.hash === '#stylus-options') embedOptions();

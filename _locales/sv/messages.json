@@ -871,11 +871,7 @@
     "message": "Hantera installerade stilar",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Alternativ UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Alternativ",
     "description": "Go to Options UI"
   },

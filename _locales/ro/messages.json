@@ -617,11 +617,7 @@
     "message": "Managerul",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "UI cu opțiuni",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opțiuni",
     "description": "Go to Options UI"
   },

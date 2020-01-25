@@ -917,11 +917,7 @@
     "message": "管理样式",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "设置用户界面",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "设置用户界面",
     "description": "Go to Options UI"
   },

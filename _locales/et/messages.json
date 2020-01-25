@@ -815,11 +815,7 @@
     "message": "Halda",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Valikute liides",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Valikud",
     "description": "Go to Options UI"
   },

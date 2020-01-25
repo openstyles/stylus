@@ -177,6 +177,9 @@ browserCommands = {
   openManage() {
     openURL({url: 'manage.html'});
   },
+  openOptions() {
+    openURL({url: 'manage.html?#stylus-options'});
+  },
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
@@ -196,6 +199,10 @@ contextMenus = {
   'open-manager': {
     title: 'openStylesManager',
     click: browserCommands.openManage,
+  },
+  'open-options': {
+    title: 'openOptions',
+    click: browserCommands.openOptions,
   },
   'editor.contextDelete': {
     presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),

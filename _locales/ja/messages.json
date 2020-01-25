@@ -913,11 +913,7 @@
     "message": "管理",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "オプション UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "オプション",
     "description": "Go to Options UI"
   },

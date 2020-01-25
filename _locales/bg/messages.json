@@ -398,11 +398,7 @@
     "message": "Управление",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Прозорец за настройките",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Настройки",
     "description": "Go to Options UI"
   },

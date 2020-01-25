@@ -28,6 +28,7 @@ if (!CHROME && !chrome.browserAction.openPopup) {
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
+  // FIXME delete?
   optionsUI: [
     chrome.runtime.getURL('options.html'),
     'chrome://extensions/?options=' + chrome.runtime.id,
@@ -222,6 +223,9 @@ function openURL({
   url = url.includes('://') ? url : chrome.runtime.getURL(url);
   // [some] chromium forks don't handle their fake branded protocols
   url = url.replace(/^(opera|vivaldi)/, 'chrome');
+  // ignore filtered manager URLs with params
+  const manageMatch = /manage\.html(\?#stylus-options)?$/.test(url);
+  const editMatch = /edit\.html/.test(url);
   // FF doesn't handle moz-extension:// URLs (bug)
   // FF decodes %2F in encoded parameters (bug)
   // API doesn't handle the hash-fragment part
@@ -233,12 +237,42 @@ function openURL({
       url.replace(/%2F.*/, '*').replace(/#.*/, '') :
       url.replace(/#.*/, '');
 
-  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
+  return manageMatch || editMatch ? queryTabs().then(maybeSwitch) :
+  queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
 
   function maybeSwitch(tabs = []) {
     const urlWithSlash = url + '/';
     const urlFF = FIREFOX && url.replace(/%2F/g, '/');
-    const tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash);
+    const urlOptions = manageMatch ? URLS.ownOrigin + 'manage.html?#stylus-options' : null;
+    const urlManage = manageMatch ? URLS.ownOrigin + 'manage.html' : null;
+    let tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash || u === urlOptions || u === urlManage);
+    if (!tab && prefs.get('openEditInWindow') && chrome.windows && editMatch) {
+      chrome.windows.create(
+        Object.assign({
+          url: url
+        }, prefs.get('windowPosition', {}))
+      );
+      return;
+    }
+    if (manageMatch) {
+      if (tab) {
+        const toggleOptions = url === urlOptions ? 'options-open' : 'options-close';
+        chrome.tabs.sendMessage(tab.id, {
+          'name': 'options',
+          'data': toggleOptions
+        });
+      }
+      getActiveTab()
+        .then(currentTab => {
+          const closePopup = tab && FIREFOX && currentTab.windowId !== tab.windowId ? false : true;
+          if (closePopup) {
+            chrome.runtime.sendMessage({
+              'name': 'popup',
+              'data': 'close-popup'
+            });
+          }
+        });
+    }
     if (!tab) {
       return getActiveTab().then(maybeReplace);
     }

@@ -677,11 +677,7 @@
     "message": "Kezelés",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "A beállítások felülete",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Beállítások",
     "description": "Go to Options UI"
   },

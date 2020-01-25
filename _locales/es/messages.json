@@ -897,11 +897,7 @@
     "message": "Administrar",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Interfaz de opciones",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opciones",
     "description": "Go to Options UI"
   },
