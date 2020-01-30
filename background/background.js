@@ -178,7 +178,7 @@ browserCommands = {
     openURL({url: 'manage.html'});
   },
   openOptions() {
-    openURL({url: 'manage.html?#stylus-options'});
+    openURL({url: 'manage.html#stylus-options'});
   },
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));

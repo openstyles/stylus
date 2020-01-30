@@ -40,8 +40,8 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
 
 // actions
 $('#options-close-icon').onclick = () => {
-  window.top.history.replaceState('', window.top.document.title, window.top.location.origin + window.top.location.pathname);
-}
+  top.history.replaceState('', top.document.title, top.location.origin + top.location.pathname);
+};
 
 document.onclick = e => {
   const target = e.target.closest('[data-cmd]');
@@ -299,9 +299,9 @@ function customizeHotkeys() {
 
 window.onkeydown = event => {
   if (event.keyCode === 27) {
-    window.top.history.replaceState('', window.top.document.title, window.top.location.origin + window.top.location.pathname);
+    top.history.replaceState('', top.document.title, top.location.origin + top.location.pathname);
   }
-}
+};
 
 // FF is slow to allow focus, particularly when launched via manager button
 setTimeout(() => {

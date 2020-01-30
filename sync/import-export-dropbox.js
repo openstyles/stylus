@@ -48,7 +48,8 @@ function uploadFileDropbox(client, stylesText) {
   return client.filesUpload({path: '/' + DROPBOX_FILE, contents: stylesText});
 }
 
-$('#sync-dropbox-export').onclick = () => {
+$('#sync-dropbox-export').onclick = event => {
+  event.preventDefault();
   const mode = localStorage.installType;
   const title = t('syncDropboxStyles');
   const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');
@@ -122,7 +123,8 @@ $('#sync-dropbox-export').onclick = () => {
   });
 };
 
-$('#sync-dropbox-import').onclick = () => {
+$('#sync-dropbox-import').onclick = event => {
+  event.preventDefault();
   const mode = localStorage.installType;
   const title = t('retrieveDropboxSync');
   const text = mode === 'normal' ? t('connectingDropbox') : t('connectingDropboxNotAllowed');

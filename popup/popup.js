@@ -106,7 +106,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    API.openURL({url: 'manage.html?#stylus-options'});
+    API.openURL({url: 'manage.html#stylus-options'});
     window.close();
   };
 

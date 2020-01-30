@@ -1,6 +1,7 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize */
+/* global prefs */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
@@ -225,7 +226,7 @@ function openURL({
   url = url.replace(/^(opera|vivaldi)/, 'chrome');
   const editMatch = /edit\.html/.test(url);
   // ignore filtered manager URLs with params & edit URLs created from popup on manager page
-  const manageMatch = !editMatch ? /manage\.html(\?#stylus-options)?$/.test(url) : null;
+  const manageMatch = !editMatch ? /manage\.html(#stylus-options)?$/.test(url) : null;
   // FF doesn't handle moz-extension:// URLs (bug)
   // FF decodes %2F in encoded parameters (bug)
   // API doesn't handle the hash-fragment part
@@ -243,9 +244,10 @@ function openURL({
   function maybeSwitch(tabs = []) {
     const urlWithSlash = url + '/';
     const urlFF = FIREFOX && url.replace(/%2F/g, '/');
-    const urlOptions = manageMatch ? URLS.ownOrigin + 'manage.html?#stylus-options' : null;
+    const urlOptions = manageMatch ? URLS.ownOrigin + 'manage.html#stylus-options' : null;
     const urlManage = manageMatch ? URLS.ownOrigin + 'manage.html' : null;
-    let tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash || u === urlOptions || u === urlManage);
+    const tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash ||
+                          u === urlOptions || u === urlManage);
     if (!tab && prefs.get('openEditInWindow') && chrome.windows && editMatch) {
       chrome.windows.create(
         Object.assign({
@@ -264,8 +266,7 @@ function openURL({
       }
       getActiveTab()
         .then(currentTab => {
-          const closePopup = tab && FIREFOX && currentTab.windowId !== tab.windowId ? false : true;
-          if (closePopup) {
+          if (!(tab && FIREFOX && currentTab.windowId !== tab.windowId)) {
             chrome.runtime.sendMessage({
               'name': 'popup',
               'data': 'close-popup'

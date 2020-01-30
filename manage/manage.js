@@ -84,7 +84,8 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => history.replaceState('', document.title, location.href + '?#stylus-options');
+  $('#manage-options-button').onclick = () =>
+  history.replaceState('', document.title, location.href + '#stylus-options');
   {
     const btn = $('#manage-shortcuts-button');
     btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
@@ -719,7 +720,7 @@ function embedOptions() {
 
 function removeOptions() {
   const options = $('#stylus-embedded-options');
-  if (options) options.remove()
+  if (options) options.remove();
 }
 
 // wait for possible filter params to be removed
@@ -746,11 +747,11 @@ onDOMready().then(() => {
 
 function toggleOptions(msg) {
   if (msg === 'options-open' && location.hash !== '#stylus-options') {
-    history.replaceState('', document.title, location.href + '?#stylus-options');
+    history.replaceState('', document.title, location.href + '#stylus-options');
   } else if (msg === 'options-close' && location.hash === '#stylus-options') {
     history.replaceState('', document.title, location.origin + location.pathname);
   }
-};
+}
 
 
 if (location.hash === '#stylus-options') embedOptions();
