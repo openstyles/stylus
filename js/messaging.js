@@ -1,7 +1,7 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
-/* global promisify */
+/* global promisify msg */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
@@ -248,9 +248,17 @@ function openURL(options) {
       if (!tab) {
         return getActiveTab().then(maybeReplace);
       }
-      // update url if only hash is different
+      // update url if only hash is different?
       if (tab.url !== url && tab.url.split('#')[0] === url.split('#')[0]) {
-        return activateTab(tab, {url, index});
+        if (url.includes('#')) {
+          return activateTab(tab, {url, index});
+        } else {
+          // we can't update URL directly since it refresh the page
+          return Promise.all([
+            activateTab(tab, {index}),
+            msg.sendTab(tab.id, {method: 'trimHash'}).catch(console.warn)
+          ]);
+        }
       }
       return activateTab(tab, {index});
     });
