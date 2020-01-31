@@ -399,7 +399,6 @@ function onRuntimeMessage(msg, sender) {
   return fn.apply(context, msg.args);
 }
 
-// FIXME: popup.js also open editor but it doesn't use this API.
 function openEditor(params) {
   const searchParams = new URLSearchParams(); // FIXME: use url.searchParams when Chrome >= 51
   for (const key in params) {
@@ -408,6 +407,7 @@ function openEditor(params) {
   const search = searchParams.toString();
   const url = chrome.runtime.getURL('edit.html') + (search && `?${search}`);
   if (chrome.windows && prefs.get('openEditInWindow')) {
+    // FIXME: should we reuse the editor window?
     chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
   } else {
     openURL({url});
