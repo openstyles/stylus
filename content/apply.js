@@ -270,9 +270,6 @@ const APPLY = (() => {
   }
 
   function fetchParentDomain() {
-    if (/-extension/.test(location.protocol)) {
-      parentDomain = 'stylus';
-    }
     if (parentDomain) {
       return Promise.resolve();
     }

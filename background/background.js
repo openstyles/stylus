@@ -28,7 +28,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   removeExclusion: styleManager.removeExclusion,
 
   getTabUrlPrefix() {
-    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
+    const {url} = this.sender.tab;
+    if (url.startsWith(URLS.ownOrigin)) {
+      return 'stylus';
+    }
+    return url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
 
   download(msg) {
