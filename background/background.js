@@ -179,10 +179,10 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
 // browser commands
 browserCommands = {
   openManage() {
-    openURL({url: 'manage.html'});
+    openURL({url: 'manage.html', currentWindow: null});
   },
   openOptions() {
-    openURL({url: 'manage.html#stylus-options'});
+    openURL({url: 'manage.html#stylus-options', currentWindow: null});
   },
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
