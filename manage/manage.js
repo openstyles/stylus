@@ -706,13 +706,14 @@ function highlightEditedStyle() {
 
 
 function embedOptions() {
-  const options = $('#stylus-embedded-options');
+  let options = $('#stylus-embedded-options');
   if (!options) {
-    const iframe = document.createElement('iframe');
-    iframe.id = 'stylus-embedded-options';
-    iframe.src = '/options.html';
-    document.documentElement.appendChild(iframe);
+    options = document.createElement('iframe');
+    options.id = 'stylus-embedded-options';
+    options.src = '/options.html';
+    document.documentElement.appendChild(options);
   }
+  options.focus();
 }
 
 function unembedOptions() {

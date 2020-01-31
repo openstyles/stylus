@@ -302,8 +302,3 @@ window.onkeydown = event => {
     top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };
-
-// FF is slow to allow focus, particularly when launched via manager button
-setTimeout(() => {
-  window.focus();
-}, 100);
