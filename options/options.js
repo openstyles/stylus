@@ -40,7 +40,7 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
 
 // actions
 $('#options-close-icon').onclick = () => {
-  top.history.replaceState('', top.document.title, top.location.origin + top.location.pathname);
+  top.dispatchEvent(new CustomEvent('closeOptions'));
 };
 
 document.onclick = e => {
@@ -299,7 +299,7 @@ function customizeHotkeys() {
 
 window.onkeydown = event => {
   if (event.keyCode === 27) {
-    top.history.replaceState('', top.document.title, top.location.origin + top.location.pathname);
+    top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };
 

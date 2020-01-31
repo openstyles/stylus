@@ -1,13 +1,13 @@
 /*
 global messageBox getStyleWithNoCode
-  filterAndAppend urlFilterParam showFiltersStats
+  filterAndAppend showFiltersStats
   checkUpdate handleUpdateInstalled
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
   URLS enforceInputRange t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView CHROME VIVALDI FIREFOX
+  scrollElementIntoView CHROME VIVALDI FIREFOX router
 */
 'use strict';
 
@@ -35,7 +35,8 @@ const handleEvent = {};
 
 Promise.all([
   API.getAllStyles(true),
-  urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
+  // FIXME: integrate this into filter.js
+  router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
   Promise.all([
     onDOMready(),
     prefs.initializing,
@@ -58,10 +59,6 @@ Promise.all([
 msg.onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
-  if (msg === 'options-open' || msg === 'options-close') {
-    toggleOptions(msg);
-    return;
-  }
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
@@ -84,8 +81,9 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () =>
-  history.replaceState('', document.title, location.href + '#stylus-options');
+  $('#manage-options-button').onclick = () => {
+    router.updateHash('#stylus-options');
+  };
   {
     const btn = $('#manage-shortcuts-button');
     btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
@@ -717,41 +715,31 @@ function embedOptions() {
   }
 }
 
-
-function removeOptions() {
+function unembedOptions() {
   const options = $('#stylus-embedded-options');
-  if (options) options.remove();
-}
+  if (options) {
+    options.contentWindow.document.body.classList.add('scaleout');
+    options.classList.add('fadeout');
+    animateElement(options, {
+      className: 'fadeout',
+      onComplete: removeOptions,
+    });
+  }
 
-// wait for possible filter params to be removed
-onDOMready().then(() => {
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    if (changeInfo.url) {
-      if (location.hash === '#stylus-options') {
-        embedOptions();
-      } else {
-        const options = $('#stylus-embedded-options');
-        if (options) {
-          options.contentWindow.document.body.classList.add('scaleout');
-          options.classList.add('fadeout');
-          animateElement(options, {
-            className: 'fadeout',
-            onComplete: removeOptions,
-          });
-        }
-      }
-    }
-  });
-});
-
-
-function toggleOptions(msg) {
-  if (msg === 'options-open' && location.hash !== '#stylus-options') {
-    history.replaceState('', document.title, location.href + '#stylus-options');
-  } else if (msg === 'options-close' && location.hash === '#stylus-options') {
-    history.replaceState('', document.title, location.origin + location.pathname);
+  function removeOptions() {
+    const options = $('#stylus-embedded-options');
+    if (options) options.remove();
   }
 }
 
+router.watch({hash: '#stylus-options'}, state => {
+  if (state) {
+    embedOptions();
+  } else {
+    unembedOptions();
+  }
+});
 
-if (location.hash === '#stylus-options') embedOptions();
+window.addEventListener('closeOptions', () => {
+  router.updateHash('');
+});

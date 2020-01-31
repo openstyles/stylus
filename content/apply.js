@@ -265,7 +265,11 @@ const APPLY = (() => {
         if (IS_OWN_PAGE) {
           // FIXME: currently we only do this in our own page. Is it safe to do
           // it on all pages?
-          history.pushState({preUrl: location.href}, null, ' ');
+          try {
+            // history.replaceState(null, null, ' ');
+            // eslint-disable-next-line no-undef
+            router.updateHash('');
+          } catch (err) {}
         }
         break;
     }

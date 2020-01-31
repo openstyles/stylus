@@ -593,7 +593,7 @@ Object.assign(handleEvent, {
     if (!this.eventHandled) {
       this.eventHandled = true;
       this.dataset.href += event.shiftKey || event.button === 2 ?
-        '?url=' + encodeURIComponent(tabURL) : '';
+        '?search=' + encodeURIComponent(`url:${tabURL}`) : '';
       handleEvent.openURLandHide.call(this, event);
     }
   },
