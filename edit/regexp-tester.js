@@ -66,7 +66,7 @@ const regExpTester = (() => {
       return rxData;
     });
     const getMatchInfo = m => m && {text: m[0], pos: m.index};
-    queryTabs().then(tabs => {
+    queryTabs({}).then(tabs => {
       const supported = tabs.map(tab => tab.url)
         .filter(url => URLS.supported(url));
       const unique = [...new Set(supported).values()];

@@ -1,5 +1,5 @@
 /* global configDialog hotkeys onTabReady msg
-  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
   tryJSONparse debounce CHROME_HAS_BORDER_BUG */
 
@@ -187,7 +187,7 @@ function initPopup() {
       ? new URL(tabURL).pathname.slice(1)
       // this&nbsp;URL
       : t('writeStyleForURL').replace(/ /g, '\u00a0'),
-    onclick: handleEvent.openLink,
+    onclick: e => handleEvent.openEditor(e, {'url-prefix': tabURL}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -210,7 +210,7 @@ function initPopup() {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {domain}),
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     matchTargets.appendChild(domainLink);
@@ -296,7 +296,7 @@ function createStyleElement(style) {
     const editLink = $('.style-edit-link', entry);
     Object.assign(editLink, {
       href: editLink.getAttribute('href') + style.id,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {id: style.id}),
     });
     const styleName = $('.style-name', entry);
     Object.assign(styleName, {
@@ -535,9 +535,9 @@ Object.assign(handleEvent, {
     $('#regexp-explanation').remove();
   },
 
-  openLink(event) {
+  openEditor(event, options) {
     event.preventDefault();
-    API.openURL({url: this.href});
+    API.openEditor(options);
     if (!(FIREFOX && prefs.get('openEditInWindow'))) window.close();
   },
 

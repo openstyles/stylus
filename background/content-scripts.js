@@ -53,7 +53,7 @@ const contentScripts = (() => {
   }
 
   function injectToAllTabs() {
-    return queryTabs().then(tabs => {
+    return queryTabs({}).then(tabs => {
       for (const tab of tabs) {
         // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
         if (tab.width) {
