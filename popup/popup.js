@@ -102,8 +102,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    // FIXME: should we set currentWindow: null?
-    API.openURL({url: 'manage.html#stylus-options'});
+    API.openURL({url: 'manage.html#stylus-options', currentWindow: null});
     window.close();
   };
 
@@ -590,11 +589,12 @@ Object.assign(handleEvent, {
     if (event.button === 2 && unsupportedURL) return;
     event.preventDefault();
     if (!this.eventHandled) {
+      // FIXME: this only works if popup is closed
       this.eventHandled = true;
       this.dataset.href += event.shiftKey || event.button === 2 ?
         '?search=' + encodeURIComponent(`url:${tabURL}`) : '';
-      // FIXME: should we set currentWindow: null?
-      handleEvent.openURLandHide.call(this, event);
+      API.openURL({url: this.dataset.href, currentWindow: null});
+      window.close();
     }
   },
 
