@@ -102,7 +102,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    API.openURL({url: 'manage.html#stylus-options', currentWindow: null});
+    API.openManage({options: true});
     window.close();
   };
 
@@ -591,9 +591,10 @@ Object.assign(handleEvent, {
     if (!this.eventHandled) {
       // FIXME: this only works if popup is closed
       this.eventHandled = true;
-      this.dataset.href += event.shiftKey || event.button === 2 ?
-        '?search=' + encodeURIComponent(`url:${tabURL}`) : '';
-      API.openURL({url: this.dataset.href, currentWindow: null});
+      API.openManage({
+        search: event.shiftKey || event.button === 2 ?
+          `url:${tabURL}` : null
+      });
       window.close();
     }
   },

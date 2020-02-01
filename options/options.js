@@ -53,7 +53,7 @@ document.onclick = e => {
 
   switch (target.dataset.cmd) {
     case 'open-manage':
-      openURL({url: 'manage.html'});
+      API.openManage();
       break;
 
     case 'check-updates':

@@ -73,7 +73,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   syncStop: sync.stop,
   syncNow: sync.syncNow,
   getSyncStatus: sync.getStatus,
-  syncLogin: sync.login
+  syncLogin: sync.login,
+
+  openManage
 });
 
 // eslint-disable-next-line no-var
@@ -178,12 +180,8 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
 // *************************************************************************
 // browser commands
 browserCommands = {
-  openManage() {
-    openURL({url: 'manage.html', currentWindow: null});
-  },
-  openOptions() {
-    openURL({url: 'manage.html#stylus-options', currentWindow: null});
-  },
+  openManage,
+  openOptions: () => openManage({options: true}),
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
@@ -412,4 +410,15 @@ function openEditor(params) {
   } else {
     openURL({url});
   }
+}
+
+function openManage({options = false, search} = {}) {
+  let url = 'manage.html';
+  if (search) {
+    url += `?search=${encodeURIComponent(search)}`;
+  }
+  if (options) {
+    url += '#stylus-options';
+  }
+  return openURL({url, currentWindow: null});
 }
