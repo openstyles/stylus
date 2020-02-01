@@ -3,7 +3,6 @@
 'use strict';
 
 const router = (() => {
-  // FIXME: this only works with one history
   const buffer = [];
   const watchers = [];
   document.addEventListener('DOMContentLoaded', () => update());
