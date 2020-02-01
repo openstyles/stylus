@@ -723,13 +723,8 @@ function unembedOptions() {
     options.classList.add('fadeout');
     animateElement(options, {
       className: 'fadeout',
-      onComplete: removeOptions,
+      onComplete: () => options.remove(),
     });
-  }
-
-  function removeOptions() {
-    const options = $('#stylus-embedded-options');
-    if (options) options.remove();
   }
 }
 
