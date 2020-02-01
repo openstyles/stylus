@@ -15,6 +15,7 @@ router.watch({search: ['search']}, ([search]) => {
   $('#search').value = search || '';
   if (!initialized) {
     init();
+    initialized = true;
   } else {
     searchStyles();
   }
@@ -135,8 +136,6 @@ function init() {
       $$('select', el).forEach(select => select.adjustWidth());
     }
   });
-
-  initialized = true;
 
   filterOnChange({forceRefilter: true});
 }

@@ -267,6 +267,7 @@ function openURL(options) {
     if (tab) {
       // update url if only hash is different?
       // we can't update URL if !url.includes('#') since it refreshes the page
+      // FIXME: should we move the tab (i.e. specifying index)?
       if (tab.url !== url && tab.url.split('#')[0] === url.split('#')[0] &&
           url.includes('#')) {
         return activateTab(tab, {url, index});
@@ -278,7 +279,8 @@ function openURL(options) {
     }
     return getActiveTab().then(tab => {
       if (isTabReplaceable(tab, url)) {
-        return activateTab(tab, {url, index});
+        // don't move the tab in this case
+        return activateTab(tab, {url});
       }
       const options = {url, index, active};
       // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
@@ -298,7 +300,7 @@ function isTabReplaceable(tab, newUrl) {
   if (!tab || !URLS.emptyTab.includes(tab.url)) {
     return false;
   }
-  // FIXME: why?
+  // FIXME: but why?
   if (tab.incognito && newUrl.startsWith('chrome')) {
     return false;
   }

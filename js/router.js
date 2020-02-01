@@ -12,6 +12,7 @@ const router = (() => {
     if (e.method === 'pushState' && e.url !== location.href) {
       history.pushState(history.state, null, e.url);
       update();
+      return true;
     }
   });
   return {watch, updateSearch, getSearch, updateHash};

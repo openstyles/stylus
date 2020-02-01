@@ -400,7 +400,15 @@ function onRuntimeMessage(msg, sender) {
 }
 
 function openEditor(params) {
-  const searchParams = new URLSearchParams(); // FIXME: use url.searchParams when Chrome >= 51
+  /* Open the editor. Activate if it is already opened
+
+  params: {
+    id?: Number,
+    domain?: String,
+    'url-prefix'?: String
+  }
+  */
+  const searchParams = new URLSearchParams();
   for (const key in params) {
     searchParams.set(key, params[key]);
   }
@@ -432,7 +440,7 @@ function openManage({options = false, search} = {}) {
         return Promise.all([
           activateTab(tab),
           tab.url !== url && msg.sendTab(tab.id, {method: 'pushState', url})
-            .catch(console.warn)
+            .catch(console.error)
         ]);
       }
       return getActiveTab().then(tab => {
