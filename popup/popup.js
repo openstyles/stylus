@@ -51,10 +51,6 @@ if (CHROME_HAS_BORDER_BUG) {
 }
 
 function onRuntimeMessage(msg) {
-  if (msg === 'close-popup') {
-    window.close();
-    return;
-  }
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
