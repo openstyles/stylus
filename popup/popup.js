@@ -534,8 +534,7 @@ Object.assign(handleEvent, {
   openEditor(event, options) {
     event.preventDefault();
     API.openEditor(options);
-    // FIXME: why do we want to avoid window.close here?
-    if (!(FIREFOX && prefs.get('openEditInWindow'))) window.close();
+    window.close();
   },
 
   maybeEdit(event) {
@@ -574,15 +573,7 @@ Object.assign(handleEvent, {
             .then(() => msg.sendTab(tab.id, message));
         }
       })
-      .then(() => {
-        // Chromium needs help closing popup when opening new windows, not same window tabs
-        // FF needs help closing popup when opening same window tabs, not new windows
-        // edit URLs are ignored by pref - manager URls are passed to openURL() to check if tab exists
-        // which sends a message to close popup after determining it's not a different FF window
-        // because closing popup interferes with activating different windows in FF
-        // FIXME: the popup won't be closed after clicking "Open manager" button
-        if (this.dataset.href !== 'manage.html') window.close();
-      });
+      .then(window.close);
   },
 
   openManager(event) {
