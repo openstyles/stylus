@@ -46,7 +46,6 @@ const router = (() => {
     */
     if (buffer.length > 1) {
       if (!hash && !buffer[buffer.length - 2].includes('#') || buffer[buffer.length - 2].endsWith(hash)) {
-        buffer.pop();
         history.back();
         return;
       }
@@ -63,10 +62,16 @@ const router = (() => {
   }
 
   function update(replace) {
-    if (!buffer.length || buffer[buffer.length - 1] !== location.href && !replace) {
+    if (!buffer.length) {
       buffer.push(location.href);
-    } else if (buffer.length && replace) {
+    } else if (buffer[buffer.length - 1] === location.href) {
+      return;
+    } else if (replace) {
       buffer[buffer.length - 1] = location.href;
+    } else if (buffer.length > 1 && buffer[buffer.length - 2] === location.href) {
+      buffer.pop();
+    } else {
+      buffer.push(location.href);
     }
     for (const {options, callback} of watchers) {
       let state;
