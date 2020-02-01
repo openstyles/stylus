@@ -260,18 +260,6 @@ const APPLY = (() => {
       case 'updateCount':
         updateCount();
         break;
-
-      case 'trimHash':
-        if (IS_OWN_PAGE) {
-          // FIXME: currently we only do this in our own page. Is it safe to do
-          // it on all pages?
-          try {
-            // history.replaceState(null, null, ' ');
-            // eslint-disable-next-line no-undef
-            router.updateHash('');
-          } catch (err) {}
-        }
-        break;
     }
   }
 

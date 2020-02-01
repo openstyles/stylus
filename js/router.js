@@ -1,4 +1,4 @@
-/* global deepEqual */
+/* global deepEqual msg */
 /* exported router */
 'use strict';
 
@@ -8,6 +8,12 @@ const router = (() => {
   document.addEventListener('DOMContentLoaded', () => update());
   window.addEventListener('popstate', () => update());
   window.addEventListener('hashchange', () => update());
+  msg.on(e => {
+    if (e.method === 'pushState' && e.url !== location.href) {
+      history.pushState(history.state, null, e.url);
+      update();
+    }
+  });
   return {watch, updateSearch, getSearch, updateHash};
 
   function watch(options, callback) {

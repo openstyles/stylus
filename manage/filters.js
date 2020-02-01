@@ -12,9 +12,7 @@ const filtersSelector = {
 let initialized = false;
 
 router.watch({search: ['search']}, ([search]) => {
-  if (search != null) {
-    $('#search').value = search;
-  }
+  $('#search').value = search || '';
   if (!initialized) {
     init();
   } else {

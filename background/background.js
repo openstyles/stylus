@@ -1,6 +1,8 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
   debounce URLS ignoreChromeError getTab
-  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync */
+  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
+  findExistTab createTab activateTab isTabReplaceable getActiveTab */
+
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -412,12 +414,32 @@ function openEditor(params) {
 }
 
 function openManage({options = false, search} = {}) {
-  let url = 'manage.html';
+  let url = chrome.runtime.getURL('manage.html');
   if (search) {
     url += `?search=${encodeURIComponent(search)}`;
   }
   if (options) {
     url += '#stylus-options';
   }
-  return openURL({url, currentWindow: null});
+  return findExistTab({
+    url,
+    currentWindow: null,
+    ignoreHash: true,
+    ignoreSearch: true
+  })
+    .then(tab => {
+      if (tab) {
+        return Promise.all([
+          activateTab(tab),
+          tab.url !== url && msg.sendTab(tab.id, {method: 'pushState', url})
+            .catch(console.warn)
+        ]);
+      }
+      return getActiveTab().then(tab => {
+        if (isTabReplaceable(tab, url)) {
+          return activateTab(tab, {url});
+        }
+        return createTab({url});
+      });
+    });
 }
