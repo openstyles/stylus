@@ -106,6 +106,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
+    // FIXME: should we set currentWindow: null?
     API.openURL({url: 'manage.html#stylus-options'});
     window.close();
   };
@@ -538,6 +539,7 @@ Object.assign(handleEvent, {
   openEditor(event, options) {
     event.preventDefault();
     API.openEditor(options);
+    // FIXME: why do we want to avoid window.close here?
     if (!(FIREFOX && prefs.get('openEditInWindow'))) window.close();
   },
 
@@ -583,6 +585,7 @@ Object.assign(handleEvent, {
         // edit URLs are ignored by pref - manager URls are passed to openURL() to check if tab exists
         // which sends a message to close popup after determining it's not a different FF window
         // because closing popup interferes with activating different windows in FF
+        // FIXME: the popup won't be closed after clicking "Open manager" button
         if (this.dataset.href !== 'manage.html') window.close();
       });
   },
@@ -594,6 +597,7 @@ Object.assign(handleEvent, {
       this.eventHandled = true;
       this.dataset.href += event.shiftKey || event.button === 2 ?
         '?search=' + encodeURIComponent(`url:${tabURL}`) : '';
+      // FIXME: should we set currentWindow: null?
       handleEvent.openURLandHide.call(this, event);
     }
   },
