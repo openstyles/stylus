@@ -287,7 +287,11 @@ const APPLY = (() => {
     if (parentDomain) {
       return Promise.resolve();
     }
-    return API.getTabUrlPrefix()
+    return msg.send({
+      method: 'invokeAPI',
+      name: 'getTabUrlPrefix',
+      args: []
+    })
       .then(newDomain => {
         parentDomain = newDomain;
       });
