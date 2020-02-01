@@ -583,7 +583,7 @@ Object.assign(handleEvent, {
       // FIXME: this only works if popup is closed
       this.eventHandled = true;
       API.openManage({
-        search: event.shiftKey || event.button === 2 ?
+        search: tabURL && (event.shiftKey || event.button === 2) ?
           `url:${tabURL}` : null
       });
       window.close();
