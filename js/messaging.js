@@ -99,6 +99,7 @@ const updateTab = promisify(chrome.tabs.update.bind(chrome.tabs));
 const moveTabs = promisify(chrome.tabs.move.bind(chrome.tabs));
 // FIXME: is it possible that chrome.windows is undefined?
 const updateWindow = promisify(chrome.windows.update.bind(chrome.windows));
+const createWindow = promisify(chrome.windows.create.bind(chrome.windows));
 
 function getTab(id) {
   return new Promise(resolve =>
@@ -238,6 +239,8 @@ function openURL(options) {
     index,
     active,
     currentWindow = true,
+    newWindow = false,
+    windowPosition
   } = options;
 
   if (!url.includes('://')) {
@@ -270,6 +273,9 @@ function openURL(options) {
     const emptyTab = tab && URLS.emptyTab.includes(tab.url);
     if (emptyTab && !chromeInIncognito) {
       return activateTab(tab, {url, index}); // FIXME: should we move current empty tab?
+    }
+    if (newWindow) {
+      return createWindow(Object.assign({url}, windowPosition));
     }
     const options = {url, index, active};
     // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)

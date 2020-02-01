@@ -403,13 +403,12 @@ function openEditor(params) {
     searchParams.set(key, params[key]);
   }
   const search = searchParams.toString();
-  const url = chrome.runtime.getURL('edit.html') + (search && `?${search}`);
-  if (chrome.windows && prefs.get('openEditInWindow')) {
-    // FIXME: should we reuse the editor window?
-    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
-  } else {
-    openURL({url});
-  }
+  return openURL({
+    url: 'edit.html' + (search && `?${search}`),
+    newWindow: prefs.get('openEditInWindow'),
+    windowPosition: prefs.get('windowPosition'),
+    currentWindow: null
+  });
 }
 
 function openManage({options = false, search} = {}) {
