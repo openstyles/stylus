@@ -45,7 +45,8 @@ const router = (() => {
     Send an empty string to remove the hash.
     */
     if (buffer.length > 1) {
-      if (!hash && !buffer[buffer.length - 2].includes('#') || buffer[buffer.length - 2].endsWith(hash)) {
+      if (!hash && !buffer[buffer.length - 2].includes('#') ||
+          hash && buffer[buffer.length - 2].endsWith(hash)) {
         history.back();
         return;
       }
