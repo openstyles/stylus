@@ -11,6 +11,15 @@ const router = (() => {
   return {watch, updateSearch, getSearch, updateHash};
 
   function watch(options, callback) {
+    /* Watch search params or hash and get notified on change.
+
+    options: {search?: Array<key: String>, hash?: String}
+    callback: (Array<value: String | null> | Boolean) => void
+
+    `hash` should always start with '#'.
+    When watching search params, callback receives a list of values.
+    When watching hash, callback receives a boolean.
+    */
     watchers.push({options, callback});
   }
 
@@ -31,6 +40,10 @@ const router = (() => {
   }
 
   function updateHash(hash) {
+    /* hash: String
+
+    Send an empty string to remove the hash.
+    */
     if (buffer.length > 1) {
       if (!hash && !buffer[buffer.length - 2].includes('#') || buffer[buffer.length - 2].endsWith(hash)) {
         buffer.pop();
