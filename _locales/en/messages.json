@@ -1544,6 +1544,9 @@
   "syncDropboxStyles": {
     "message": "Dropbox Export"
   },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox import/export is replaced by a more advanced style sync in the options page."
+  },
   "retrieveDropboxSync": {
     "message": "Dropbox Import"
   },

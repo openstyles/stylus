@@ -1302,3 +1302,14 @@ input[id^="manage.newUI"] {
     margin-left: -2px;
   }
 }
+
+/* Deprecated dropbox backup (dropbox-sync) */
+#sync-dropbox-export,
+#sync-dropbox-import {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+#backup-buttons .dropdown-content #sync-dropbox-export:hover,
+#backup-buttons .dropdown-content #sync-dropbox-import:hover {
+  background: transparent;
+}
