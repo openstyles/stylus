@@ -913,11 +913,7 @@
     "message": "Gestion",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Paramètres d'interface graphique",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Paramètres",
     "description": "Go to Options UI"
   },

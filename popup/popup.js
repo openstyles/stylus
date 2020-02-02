@@ -1,5 +1,5 @@
 /* global configDialog hotkeys onTabReady msg
-  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
   tryJSONparse debounce CHROME_HAS_BORDER_BUG */
 
@@ -7,6 +7,7 @@
 
 let installed;
 let tabURL;
+let unsupportedURL;
 const handleEvent = {};
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
@@ -28,6 +29,8 @@ getActiveTab()
   .then(([results]) => {
     if (!results) {
       // unsupported URL;
+      unsupportedURL = true;
+      $('#popup-manage-button').removeAttribute('title');
       return;
     }
     showStyles(results.map(r => Object.assign(r.data, r)));
@@ -99,7 +102,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    chrome.runtime.openOptionsPage();
+    API.openManage({options: true});
     window.close();
   };
 
@@ -180,7 +183,7 @@ function initPopup() {
       ? new URL(tabURL).pathname.slice(1)
       // this&nbsp;URL
       : t('writeStyleForURL').replace(/ /g, '\u00a0'),
-    onclick: handleEvent.openLink,
+    onclick: e => handleEvent.openEditor(e, {'url-prefix': tabURL}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -203,7 +206,7 @@ function initPopup() {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {domain}),
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     matchTargets.appendChild(domainLink);
@@ -289,7 +292,7 @@ function createStyleElement(style) {
     const editLink = $('.style-edit-link', entry);
     Object.assign(editLink, {
       href: editLink.getAttribute('href') + style.id,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {id: style.id}),
     });
     const styleName = $('.style-name', entry);
     Object.assign(styleName, {
@@ -528,18 +531,10 @@ Object.assign(handleEvent, {
     $('#regexp-explanation').remove();
   },
 
-  openLink(event) {
-    if (!chrome.windows || !prefs.get('openEditInWindow', false)) {
-      handleEvent.openURLandHide.call(this, event);
-      return;
-    }
+  openEditor(event, options) {
     event.preventDefault();
-    chrome.windows.create(
-      Object.assign({
-        url: this.href
-      }, prefs.get('windowPosition', {}))
-    );
-    close();
+    API.openEditor(options);
+    window.close();
   },
 
   maybeEdit(event) {
@@ -582,12 +577,16 @@ Object.assign(handleEvent, {
   },
 
   openManager(event) {
+    if (event.button === 2 && unsupportedURL) return;
     event.preventDefault();
     if (!this.eventHandled) {
+      // FIXME: this only works if popup is closed
       this.eventHandled = true;
-      this.dataset.href += event.shiftKey || event.button === 2 ?
-        '?url=' + encodeURIComponent(tabURL) : '';
-      handleEvent.openURLandHide.call(this, event);
+      API.openManage({
+        search: tabURL && (event.shiftKey || event.button === 2) ?
+          `url:${tabURL}` : null
+      });
+      window.close();
     }
   },
 

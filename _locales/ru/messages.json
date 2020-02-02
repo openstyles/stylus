@@ -921,11 +921,7 @@
     "message": "Менеджер",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Настройки",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Настройки",
     "description": "Go to Options UI"
   },

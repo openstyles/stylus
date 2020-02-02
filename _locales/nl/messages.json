@@ -901,11 +901,7 @@
     "message": "Beheren",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Opties",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opties",
     "description": "Go to Options UI"
   },

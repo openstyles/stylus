@@ -673,11 +673,7 @@
     "message": "Gerir",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "interface de Opções",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opções",
     "description": "Go to Options UI"
   },

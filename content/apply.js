@@ -202,18 +202,20 @@ const APPLY = (() => {
   }
 
   function applyOnMessage(request) {
-    if (request.method === 'ping') {
-      return true;
-    }
     if (STYLE_VIA_API) {
       if (request.method === 'urlChanged') {
         request.method = 'styleReplaceAll';
       }
-      API.styleViaAPI(request);
-      return;
+      if (/^(style|updateCount)/.test(request.method)) {
+        API.styleViaAPI(request);
+        return;
+      }
     }
 
     switch (request.method) {
+      case 'ping':
+        return true;
+
       case 'styleDeleted':
         styleInjector.remove(request.style.id);
         break;
@@ -273,7 +275,11 @@ const APPLY = (() => {
     if (parentDomain) {
       return Promise.resolve();
     }
-    return API.getTabUrlPrefix()
+    return msg.send({
+      method: 'invokeAPI',
+      name: 'getTabUrlPrefix',
+      args: []
+    })
       .then(newDomain => {
         parentDomain = newDomain;
       });

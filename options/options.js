@@ -39,6 +39,10 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
 }
 
 // actions
+$('#options-close-icon').onclick = () => {
+  top.dispatchEvent(new CustomEvent('closeOptions'));
+};
+
 document.onclick = e => {
   const target = e.target.closest('[data-cmd]');
   if (!target) {
@@ -49,7 +53,7 @@ document.onclick = e => {
 
   switch (target.dataset.cmd) {
     case 'open-manage':
-      openURL({url: 'manage.html'});
+      API.openManage();
       break;
 
     case 'check-updates':
@@ -292,3 +296,9 @@ function customizeHotkeys() {
     }
   }
 }
+
+window.onkeydown = event => {
+  if (event.keyCode === 27) {
+    top.dispatchEvent(new CustomEvent('closeOptions'));
+  }
+};

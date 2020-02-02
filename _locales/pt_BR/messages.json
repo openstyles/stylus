@@ -241,11 +241,7 @@
     "message": "Nenhum estilo instalado para este site.",
     "description": "Text displayed when no styles are installed for the current site"
   },
-  "openManage": {
-    "message": "Gerenciar estilos instalados",
-    "description": "Link to open the manage page."
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opções",
     "description": "Go to Options UI"
   },

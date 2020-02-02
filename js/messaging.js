@@ -1,6 +1,7 @@
 /* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
-  closeCurrentTab capitalize */
+  closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
+/* global promisify */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
@@ -28,6 +29,7 @@ if (!CHROME && !chrome.browserAction.openPopup) {
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
+  // FIXME delete?
   optionsUI: [
     chrome.runtime.getURL('options.html'),
     'chrome://extensions/?options=' + chrome.runtime.id,
@@ -91,12 +93,13 @@ if (IS_BG) {
 // Object.defineProperty(window, 'localStorage', {value: {}});
 // Object.defineProperty(window, 'sessionStorage', {value: {}});
 
-function queryTabs(options = {}) {
-  return new Promise(resolve =>
-    chrome.tabs.query(options, tabs =>
-      resolve(tabs)));
-}
-
+const createTab = promisify(chrome.tabs.create.bind(chrome.tabs));
+const queryTabs = promisify(chrome.tabs.query.bind(chrome.tabs));
+const updateTab = promisify(chrome.tabs.update.bind(chrome.tabs));
+const moveTabs = promisify(chrome.tabs.move.bind(chrome.tabs));
+// FIXME: is it possible that chrome.windows is undefined?
+const updateWindow = promisify(chrome.windows.update.bind(chrome.windows));
+const createWindow = promisify(chrome.windows.create.bind(chrome.windows));
 
 function getTab(id) {
   return new Promise(resolve =>
@@ -192,6 +195,39 @@ function onTabReady(tabOrId) {
   });
 }
 
+function urlToMatchPattern(url, ignoreSearch) {
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
+  if (!/^(http|https|ws|wss|ftp|data|file)$/.test(url.protocol)) {
+    return undefined;
+  }
+  if (ignoreSearch) {
+    return [
+      `${url.protocol}//${url.hostname}/${url.pathname}`,
+      `${url.protocol}//${url.hostname}/${url.pathname}?*`
+    ];
+  }
+  // FIXME: is %2f allowed in pathname and search?
+  return `${url.protocol}//${url.hostname}/${url.pathname}${url.search}`;
+}
+
+function findExistTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
+  url = new URL(url);
+  return queryTabs({url: urlToMatchPattern(url, ignoreSearch), currentWindow})
+    // FIXME: is tab.url always normalized?
+    .then(tabs => tabs.find(matchTab));
+
+  function matchTab(tab) {
+    const tabUrl = new URL(tab.url);
+    return tabUrl.protocol === url.protocol &&
+      tabUrl.username === url.username &&
+      tabUrl.password === url.password &&
+      tabUrl.hostname === url.hostname &&
+      tabUrl.port === url.port &&
+      tabUrl.pathname === url.pathname &&
+      (ignoreSearch || tabUrl.search === url.search) &&
+      (ignoreHash || tabUrl.hash === url.hash);
+  }
+}
 
 /**
  * Opens a tab or activates an existing one,
@@ -211,72 +247,77 @@ function onTabReady(tabOrId) {
  *        JSONifiable data to be sent to the tab via sendMessage()
  * @returns {Promise<Tab>} Promise that resolves to the opened/activated tab
  */
-function openURL({
-  // https://github.com/eslint/eslint/issues/10639
-  // eslint-disable-next-line no-undef
-  url = arguments[0],
-  index,
-  active,
-  currentWindow = true,
-}) {
-  url = url.includes('://') ? url : chrome.runtime.getURL(url);
-  // [some] chromium forks don't handle their fake branded protocols
-  url = url.replace(/^(opera|vivaldi)/, 'chrome');
-  // FF doesn't handle moz-extension:// URLs (bug)
-  // FF decodes %2F in encoded parameters (bug)
-  // API doesn't handle the hash-fragment part
-  const urlQuery =
-    url.startsWith('moz-extension') ||
-    url.startsWith('chrome:') ?
-      undefined :
-    FIREFOX && url.includes('%2F') ?
-      url.replace(/%2F.*/, '*').replace(/#.*/, '') :
-      url.replace(/#.*/, '');
-
-  return queryTabs({url: urlQuery, currentWindow}).then(maybeSwitch);
-
-  function maybeSwitch(tabs = []) {
-    const urlWithSlash = url + '/';
-    const urlFF = FIREFOX && url.replace(/%2F/g, '/');
-    const tab = tabs.find(({url: u}) => u === url || u === urlFF || u === urlWithSlash);
-    if (!tab) {
-      return getActiveTab().then(maybeReplace);
-    }
-    if (index !== undefined && tab.index !== index) {
-      chrome.tabs.move(tab.id, {index});
-    }
-    return activateTab(tab);
+function openURL(options) {
+  if (typeof options === 'string') {
+    options = {url: options};
   }
+  let {
+    url,
+    index,
+    active,
+    currentWindow = true,
+    newWindow = false,
+    windowPosition
+  } = options;
 
-  // update current NTP or about:blank
-  // except when 'url' is chrome:// or chrome-extension:// in incognito
-  function maybeReplace(tab) {
-    const chromeInIncognito = tab && tab.incognito && url.startsWith('chrome');
-    const emptyTab = tab && URLS.emptyTab.includes(tab.url);
-    if (emptyTab && !chromeInIncognito) {
-      return new Promise(resolve =>
-        chrome.tabs.update({url}, resolve));
-    }
-    const options = {url, index, active};
-    // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
-    if (tab && (!FIREFOX || FIREFOX >= 57 && chrome.windows) && !chromeInIncognito) {
-      options.openerTabId = tab.id;
-    }
-    return new Promise(resolve =>
-      chrome.tabs.create(options, resolve));
+  if (!url.includes('://')) {
+    url = chrome.runtime.getURL(url);
   }
+  return findExistTab({url, currentWindow}).then(tab => {
+    if (tab) {
+      // update url if only hash is different?
+      // we can't update URL if !url.includes('#') since it refreshes the page
+      // FIXME: should we move the tab (i.e. specifying index)?
+      if (tab.url !== url && tab.url.split('#')[0] === url.split('#')[0] &&
+          url.includes('#')) {
+        return activateTab(tab, {url, index});
+      }
+      return activateTab(tab, {index});
+    }
+    if (newWindow) {
+      return createWindow(Object.assign({url}, windowPosition));
+    }
+    return getActiveTab().then(tab => {
+      if (isTabReplaceable(tab, url)) {
+        // don't move the tab in this case
+        return activateTab(tab, {url});
+      }
+      const options = {url, index, active};
+      // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
+      // FIXME: is it safe to assume that the current tab is the opener?
+      if (tab && !tab.incognito && (!FIREFOX || FIREFOX >= 57 && chrome.windows)) {
+        options.openerTabId = tab.id;
+      }
+      return createTab(options);
+    });
+  });
 }
 
+// replace empty tab (NTP or about:blank)
+// except when new URL is chrome:// or chrome-extension:// and the empty tab is
+// in incognito
+function isTabReplaceable(tab, newUrl) {
+  if (!tab || !URLS.emptyTab.includes(tab.url)) {
+    return false;
+  }
+  // FIXME: but why?
+  if (tab.incognito && newUrl.startsWith('chrome')) {
+    return false;
+  }
+  return true;
+}
 
-function activateTab(tab) {
+function activateTab(tab, {url, index} = {}) {
+  const options = {active: true};
+  if (url) {
+    options.url = url;
+  }
   return Promise.all([
-    new Promise(resolve => {
-      chrome.tabs.update(tab.id, {active: true}, resolve);
-    }),
-    chrome.windows && new Promise(resolve => {
-      chrome.windows.update(tab.windowId, {focused: true}, resolve);
-    }),
-  ]).then(([tab]) => tab);
+    updateTab(tab.id, options),
+    updateWindow(tab.windowId, {focused: true}),
+    index != null && moveTabs(tab.id, {index})
+  ])
+    .then(() => tab);
 }
 
 

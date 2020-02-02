@@ -591,11 +591,7 @@
     "message": "ניהול",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "אפשרויות UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "אפשרויות",
     "description": "Go to Options UI"
   },

@@ -1,6 +1,8 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
   debounce URLS ignoreChromeError getTab
-  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync */
+  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
+  findExistTab createTab activateTab isTabReplaceable getActiveTab */
+
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -28,7 +30,11 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   removeExclusion: styleManager.removeExclusion,
 
   getTabUrlPrefix() {
-    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
+    const {url} = this.sender.tab;
+    if (url.startsWith(URLS.ownOrigin)) {
+      return 'stylus';
+    }
+    return url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
 
   download(msg) {
@@ -69,7 +75,9 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   syncStop: sync.stop,
   syncNow: sync.syncNow,
   getSyncStatus: sync.getStatus,
-  syncLogin: sync.login
+  syncLogin: sync.login,
+
+  openManage
 });
 
 // eslint-disable-next-line no-var
@@ -174,9 +182,8 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
 // *************************************************************************
 // browser commands
 browserCommands = {
-  openManage() {
-    openURL({url: 'manage.html'});
-  },
+  openManage,
+  openOptions: () => openManage({options: true}),
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
@@ -196,6 +203,10 @@ contextMenus = {
   'open-manager': {
     title: 'openStylesManager',
     click: browserCommands.openManage,
+  },
+  'open-options': {
+    title: 'openOptions',
+    click: browserCommands.openOptions,
   },
   'editor.contextDelete': {
     presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
@@ -388,15 +399,55 @@ function onRuntimeMessage(msg, sender) {
   return fn.apply(context, msg.args);
 }
 
-// FIXME: popup.js also open editor but it doesn't use this API.
-function openEditor({id}) {
-  let url = '/edit.html';
-  if (id) {
-    url += `?id=${id}`;
+function openEditor(params) {
+  /* Open the editor. Activate if it is already opened
+
+  params: {
+    id?: Number,
+    domain?: String,
+    'url-prefix'?: String
   }
-  if (chrome.windows && prefs.get('openEditInWindow')) {
-    chrome.windows.create(Object.assign({url}, prefs.get('windowPosition')));
-  } else {
-    openURL({url});
+  */
+  const searchParams = new URLSearchParams();
+  for (const key in params) {
+    searchParams.set(key, params[key]);
   }
+  const search = searchParams.toString();
+  return openURL({
+    url: 'edit.html' + (search && `?${search}`),
+    newWindow: prefs.get('openEditInWindow'),
+    windowPosition: prefs.get('windowPosition'),
+    currentWindow: null
+  });
+}
+
+function openManage({options = false, search} = {}) {
+  let url = chrome.runtime.getURL('manage.html');
+  if (search) {
+    url += `?search=${encodeURIComponent(search)}`;
+  }
+  if (options) {
+    url += '#stylus-options';
+  }
+  return findExistTab({
+    url,
+    currentWindow: null,
+    ignoreHash: true,
+    ignoreSearch: true
+  })
+    .then(tab => {
+      if (tab) {
+        return Promise.all([
+          activateTab(tab),
+          tab.url !== url && msg.sendTab(tab.id, {method: 'pushState', url})
+            .catch(console.error)
+        ]);
+      }
+      return getActiveTab().then(tab => {
+        if (isTabReplaceable(tab, url)) {
+          return activateTab(tab, {url});
+        }
+        return createTab({url});
+      });
+    });
 }
