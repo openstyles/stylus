@@ -9,6 +9,13 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
+// TODO: add max version to re-enable once crbug.com/996859 is resolved
+if (!FIREFOX && CHROME >= 3809) {
+  const dropboxOption = $('option[value="dropbox"]');
+  dropboxOption.disabled = true;
+  dropboxOption.setAttribute('title', t('hostDisabled'));
+}
+
 if (CHROME_HAS_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {

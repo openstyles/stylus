@@ -9,7 +9,6 @@
     "archiver": "^3.1.1",
     "codemirror": "^5.48.4",
     "db-to-cloud": "^0.4.5",
-    "dropbox": "^4.0.30",
     "endent": "^1.3.0",
     "eslint": "^6.3.0",
     "fs-extra": "^8.1.0",
@@ -23,8 +22,7 @@
     "updates": "^9.0.0",
     "usercss-meta": "^0.9.0",
     "web-ext": "^3.1.1",
-    "webext-tx-fix": "^0.3.2",
-    "zipjs-browserify": "^1.0.1"
+    "webext-tx-fix": "^0.3.2"
   },
   "scripts": {
     "lint": "eslint **/*.js --cache || exit 0",

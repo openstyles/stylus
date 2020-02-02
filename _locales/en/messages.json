@@ -445,6 +445,10 @@
     "message": "Press a hotkey",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "This host has been disabled due to a bug in the current version of the browser being used",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Append to style",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -1539,6 +1543,9 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox Export"
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox import/export is replaced by a more advanced style sync in the options page."
   },
   "retrieveDropboxSync": {
     "message": "Dropbox Import"

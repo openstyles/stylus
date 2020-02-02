@@ -11,9 +11,6 @@ const files = {
     '*', // only update existing vendor files
     'theme' // update all theme files
   ],
-  'dropbox': [
-    'dist/Dropbox-sdk.js → dropbox-sdk.js'
-  ],
   'jsonlint': [
     'lib/jsonlint.js → jsonlint.js'
   ],
@@ -34,12 +31,6 @@ const files = {
   ],
   'usercss-meta': [
     'dist/usercss-meta.min.js → usercss-meta.min.js'
-  ],
-  'zipjs-browserify': [
-    'vendor/deflate.js → deflate.js',
-    'vendor/inflate.js → inflate.js',
-    'vendor/z-worker.js → z-worker.js',
-    'vendor/zip.js → zip.js'
   ],
   'db-to-cloud': [
     'dist/db-to-cloud.min.js → db-to-cloud.min.js'

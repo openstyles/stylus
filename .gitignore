@@ -2,7 +2,6 @@
 pull_locales_login.rb
 .vscode
 node_modules/
-package-lock.json
 yarn.lock
 *.zip
 .eslintcache
