@@ -169,7 +169,7 @@ const db = (() => {
           });
         }
         return chromeLocal.setValue(STYLE_KEY_PREFIX + data.id, data)
-          .then(() => (chrome.runtime.lastError ? Promise.reject() : data.id));
+          .then(() => ({target: {result: data.id}}));
 
       case 'putMany': {
         const newItems = data.filter(i => !i.id);
