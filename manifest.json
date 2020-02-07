@@ -41,6 +41,7 @@
       "background/token-manager.js",
       "background/sync.js",
       "background/content-scripts.js",
+      "background/db-chrome-storage.js",
       "background/db.js",
       "background/style-manager.js",
       "background/navigator-util.js",

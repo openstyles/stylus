@@ -1,4 +1,4 @@
-/* global chromeLocal ignoreChromeError workerUtil */
+/* global chromeLocal ignoreChromeError workerUtil createChromeStorageDB */
 /* exported db */
 /*
 Initialize a database. There are some problems using IndexedDB in Firefox:
@@ -94,7 +94,7 @@ const db = (() => {
   }
 
   function useChromeStorage(err) {
-    exec = dbExecChromeStorage;
+    exec = createChromeStorageDB().exec;
     chromeLocal.set({dbInChromeStorage: true}, ignoreChromeError);
     if (err) {
       chromeLocal.setValue('dbInChromeStorageReason', workerUtil.cloneError(err));
@@ -151,77 +151,6 @@ const db = (() => {
       const transaction = database.transaction(['styles'], 'readwrite');
       const store = transaction.objectStore('styles');
       return Promise.all(items.map(item => storeRequest(store, 'put', item)));
-    }
-  }
-
-  function dbExecChromeStorage(method, data) {
-    const STYLE_KEY_PREFIX = 'style-';
-    switch (method) {
-      case 'get':
-        return chromeLocal.getValue(STYLE_KEY_PREFIX + data)
-          .then(result => ({target: {result}}));
-
-      case 'put':
-        if (!data.id) {
-          return getMaxId().then(id => {
-            data.id = id + 1;
-            return dbExecChromeStorage('put', data);
-          });
-        }
-        return chromeLocal.setValue(STYLE_KEY_PREFIX + data.id, data)
-          .then(() => ({target: {result: data.id}}));
-
-      case 'putMany': {
-        const newItems = data.filter(i => !i.id);
-        const doPut = () =>
-          chromeLocal.set(data.reduce((o, item) => {
-            o[STYLE_KEY_PREFIX + item.id] = item;
-            return o;
-          }, {}))
-            .then(() => data.map(d => ({target: {result: d.id}})));
-        if (newItems.length) {
-          return getMaxId().then(id => {
-            for (const item of newItems) {
-              item.id = ++id;
-            }
-            return doPut();
-          });
-        }
-        return doPut();
-      }
-
-      case 'delete':
-        return chromeLocal.remove(STYLE_KEY_PREFIX + data);
-
-      case 'getAll':
-        return getAllStyles()
-          .then(styles => ({target: {result: styles}}));
-    }
-    return Promise.reject();
-
-    function getAllStyles() {
-      return chromeLocal.get(null).then(storage => {
-        const styles = [];
-        for (const key in storage) {
-          if (key.startsWith(STYLE_KEY_PREFIX) &&
-              Number(key.substr(STYLE_KEY_PREFIX.length))) {
-            styles.push(storage[key]);
-          }
-        }
-        return styles;
-      });
-    }
-
-    function getMaxId() {
-      return getAllStyles().then(styles => {
-        let result = 0;
-        for (const style of styles) {
-          if (style.id > result) {
-            result = style.id;
-          }
-        }
-        return result;
-      });
     }
   }
 })();
