@@ -14,13 +14,18 @@ function createChromeStorageDB() {
     // FIXME: we don't use this method at all. Should we remove this?
     get: id => get(PREFIX + id)
       .then(result => result[PREFIX + id]),
-    put: obj => Promise.resolve(obj && obj.id ? obj.id : prepareInc())
+    put: obj => Promise.resolve()
       .then(() => {
-        // FIXME: should we clone the object?
-        obj.id = INC++;
-        return set({[PREFIX + obj.id]: obj})
-          .then(() => obj.id);
-      }),
+        if (!obj.id) {
+          return prepareInc()
+            .then(() => {
+              // FIXME: should we clone the object?
+              obj.id = INC++;
+            });
+        }
+      })
+      .then(() => set({[PREFIX + obj.id]: obj}))
+      .then(() => obj.id),
     putMany: items => prepareInc()
       .then(() => {
         for (const item of items) {
@@ -52,7 +57,12 @@ function createChromeStorageDB() {
   function exec(method, ...args) {
     if (METHODS[method]) {
       return METHODS[method](...args)
-        .then(result => ({target: {result}}));
+        .then(result => {
+          if (method === 'putMany' && result.map) {
+            return result.map(r => ({target: {result: r}}));
+          }
+          return {target: {result}};
+        });
     }
     return Promise.reject(new Error(`unknown DB method ${method}`));
   }
