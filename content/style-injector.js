@@ -1,21 +1,27 @@
-/* exported createStyleInjector */
 'use strict';
 
-function createStyleInjector({compare, setStyleContent, onUpdate}) {
-  const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
+self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
+  compare,
+  onUpdate = () => {},
+}) => {
   const PREFIX = 'stylus-';
+  const PATCH_ID = 'transition-patch';
   // styles are out of order if any of these elements is injected between them
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
+  // detect Chrome 65 via a feature it added since browser version can be spoofed
+  const isChromePre65 = chrome.app && typeof Worklet !== 'function';
   const list = [];
   const table = new Map();
-  let enabled = true;
+  let isEnabled = true;
+  let isTransitionPatched;
+  // will store the original method refs because the page can override them
+  let creationDoc, createElement, createElementNS;
   return {
     // manipulation
-    add,
     addMany,
     remove,
-    update,
     clear,
+    clearOrphans,
     replaceAll,
 
     // method
@@ -30,12 +36,32 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     createStyle
   };
 
+  /*
+  FF59+ workaround: allow the page to read our sheets, https://github.com/openstyles/stylus/issues/461
+  First we're trying the page context document where inline styles may be forbidden by CSP
+  https://bugzilla.mozilla.org/show_bug.cgi?id=1579345#c3
+  and since userAgent.navigator can be spoofed via about:config or devtools,
+  we're checking for getPreventDefault that was removed in FF59
+  */
+  function _initCreationDoc() {
+    creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
+    if (creationDoc) {
+      ({createElement, createElementNS} = creationDoc);
+      const el = document.documentElement.appendChild(createStyle());
+      const isApplied = el.sheet;
+      el.remove();
+      if (isApplied) return;
+    }
+    creationDoc = document;
+    ({createElement, createElementNS} = document);
+  }
+
   function outOfOrder() {
     if (!list.length) {
       return false;
     }
     let el = list[0].el;
-    if (el.parentNode !== document.documentElement) {
+    if (el.parentNode !== creationDoc.documentElement) {
       return true;
     }
     let i = 0;
@@ -45,45 +71,59 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       } else if (ORDERED_TAGS.has(el.localName)) {
         return true;
       }
-      el = el.nextSibling;
+      el = el.nextElementSibling;
     }
     // some styles are not injected to the document
     return i < list.length;
   }
 
   function addMany(styles) {
-    const pending = Promise.all(styles.map(_add));
-    emitUpdate();
-    return pending;
-  }
-
-  function add(style) {
-    const pending = _add(style);
-    emitUpdate();
-    return pending;
+    if (!isTransitionPatched) _applyTransitionPatch(styles);
+    const els = styles.map(_add);
+    onUpdate();
+    return els;
   }
 
   function _add(style) {
     if (table.has(style.id)) {
-      return update(style);
+      return _update(style);
     }
-    style.el = createStyle(style.id);
-    const pending = setStyleContent(style.el, style.code, !enabled);
+    const el = style.el = createStyle(style.id, style.code);
     table.set(style.id, style);
     const nextIndex = list.findIndex(i => compare(i, style) > 0);
     if (nextIndex < 0) {
-      document.documentElement.appendChild(style.el);
+      document.documentElement.appendChild(el);
       list.push(style);
     } else {
-      document.documentElement.insertBefore(style.el, list[nextIndex].el);
+      document.documentElement.insertBefore(el, list[nextIndex].el);
       list.splice(nextIndex, 0, style);
     }
-    return pending;
+    // moving an element resets its 'disabled' state
+    el.disabled = !isEnabled;
+    return el;
+  }
+
+  // CSS transition bug workaround: since we insert styles asynchronously,
+  // the browsers, especially Firefox, may apply all transitions on page load
+  function _applyTransitionPatch(styles) {
+    isTransitionPatched = document.readyState === 'complete';
+    if (isTransitionPatched || !styles.some(s => s.code.includes('transition'))) {
+      return;
+    }
+    const el = createStyle(PATCH_ID, `
+      :root:not(#\\0):not(#\\0) * {
+        transition: none !important;
+      }
+    `);
+    document.documentElement.appendChild(el);
+    // wait for the next paint to complete
+    // note: requestAnimationFrame won't fire in inactive tabs
+    requestAnimationFrame(() => setTimeout(() => el.remove()));
   }
 
   function remove(id) {
     _remove(id);
-    emitUpdate();
+    onUpdate();
   }
 
   function _remove(id) {
@@ -94,40 +134,57 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     style.el.remove();
   }
 
-  function update({id, code}) {
+  function _update({id, code}) {
     const style = table.get(id);
     if (style.code === code) return;
     style.code = code;
     // workaround for Chrome devtools bug fixed in v65
-    // https://github.com/openstyles/stylus/commit/0fa391732ba8e35fa68f326a560fc04c04b8608b
-    let oldEl;
-    if (CHROME < 3321) {
-      oldEl = style.el;
-      oldEl.id = '';
-      style.el = createStyle(id);
+    if (isChromePre65) {
+      const oldEl = style.el;
+      style.el = createStyle(id, code);
       oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
-      style.el.disabled = !enabled;
+      oldEl.remove();
+    } else {
+      style.el.textContent = code;
     }
-    return setStyleContent(style.el, code, !enabled)
-      .then(() => oldEl && oldEl.remove());
+    // https://github.com/openstyles/stylus/issues/693
+    style.el.disabled = !isEnabled;
   }
 
-  function createStyle(id) {
+  function _supersede(domId) {
+    const el = document.getElementById(domId);
+    if (el) {
+      // remove if it looks like our style that wasn't cleaned up in orphanCheck
+      // (note, Firefox doesn't orphanize content scripts at all so orphanCheck will never run)
+      if (el.localName === 'style' && el.classList.contains('stylus')) {
+        el.remove();
+      } else {
+        el.id += ' superseded by Stylus';
+      }
+    }
+  }
+
+  function createStyle(id, code = '') {
+    if (!creationDoc) _initCreationDoc();
     let el;
     if (document.documentElement instanceof SVGSVGElement) {
       // SVG document style
-      el = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+      el = createElementNS.call(creationDoc, 'http://www.w3.org/2000/svg', 'style');
     } else if (document instanceof XMLDocument) {
       // XML document style
-      el = document.createElementNS('http://www.w3.org/1999/xhtml', 'style');
+      el = createElementNS.call(creationDoc, 'http://www.w3.org/1999/xhtml', 'style');
     } else {
       // HTML document style; also works on HTML-embedded SVG
-      el = document.createElement('style');
+      el = createElement.call(creationDoc, 'style');
     }
-    el.id = `${PREFIX}${id}`;
+    if (id) {
+      el.id = `${PREFIX}${id}`;
+      _supersede(el.id);
+    }
     el.type = 'text/css';
     // SVG className is not a string, but an instance of SVGAnimatedString
     el.classList.add('stylus');
+    el.textContent = code;
     return el;
   }
 
@@ -137,14 +194,23 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
     }
     list.length = 0;
     table.clear();
-    emitUpdate();
+    onUpdate();
+  }
+
+  function clearOrphans() {
+    for (const el of document.querySelectorAll(`style[id^="${PREFIX}-"].stylus`)) {
+      const id = el.id.slice(PREFIX.length + 1);
+      if (/^\d+$/.test(id) || id === PATCH_ID) {
+        el.remove();
+      }
+    }
   }
 
   function toggle(_enabled) {
-    if (enabled === _enabled) return;
-    enabled = _enabled;
+    if (isEnabled === _enabled) return;
+    isEnabled = _enabled;
     for (const style of list) {
-      style.el.disabled = !enabled;
+      style.el.disabled = !isEnabled;
     }
   }
 
@@ -156,13 +222,7 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
       // el.textContent += ' '; // invalidate CSSOM cache
       document.documentElement.appendChild(style.el);
       // moving an element resets its 'disabled' state
-      style.el.disabled = !enabled;
-    }
-  }
-
-  function emitUpdate() {
-    if (onUpdate) {
-      onUpdate();
+      style.el.disabled = !isEnabled;
     }
   }
 
@@ -174,11 +234,8 @@ function createStyleInjector({compare, setStyleContent, onUpdate}) {
         removed.push(style.id);
       }
     }
-    // FIXME: is it possible that `docRootObserver` breaks the process?
-    return Promise.all(styles.map(_add))
-      .then(() => {
-        removed.forEach(_remove);
-        emitUpdate();
-      });
+    styles.forEach(_add);
+    removed.forEach(_remove);
+    onUpdate();
   }
-}
+};

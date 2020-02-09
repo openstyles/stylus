@@ -1,6 +1,8 @@
 'use strict';
 
-(() => {
+// eslint-disable-next-line no-unused-expressions
+self.INJECTED !== 1 && (() => {
+
   if (!Object.entries) {
     Object.entries = obj => Object.keys(obj).map(k => [k, obj[k]]);
   }

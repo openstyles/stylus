@@ -1,18 +1,18 @@
-/* eslint no-var: 0 */
 /* global msg API prefs createStyleInjector */
-/* exported APPLY */
 'use strict';
 
-// some weird bug in new Chrome: the content script gets injected multiple times
-// define a constant so it throws when redefined
-const APPLY = (() => {
-  const CHROME = chrome.app ? parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]) : NaN;
+// Chrome reruns content script when documentElement is replaced.
+// Note, we're checking against a literal `1`, not just `if (truthy)`,
+// because <html id="INJECTED"> is exposed per HTML spec as a global variable and `window.INJECTED`.
+
+// eslint-disable-next-line no-unused-expressions
+self.INJECTED !== 1 && (() => {
+  self.INJECTED = 1;
+
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
-  const IS_OWN_PAGE = location.protocol.endsWith('-extension:');
-  const setStyleContent = createSetStyleContent();
+  const IS_OWN_PAGE = Boolean(chrome.tabs);
   const styleInjector = createStyleInjector({
     compare: (a, b) => a.id - b.id,
-    setStyleContent,
     onUpdate: onInjectorUpdate
   });
   const docRootObserver = createDocRootObserver({
@@ -29,14 +29,17 @@ const APPLY = (() => {
     }
   });
   const initializing = init();
+  // save it now because chrome.runtime will be unavailable in the orphaned script
+  const orphanEventId = chrome.runtime.id;
+  let isOrphaned;
+  // firefox doesn't orphanize content scripts so the old elements stay
+  if (!chrome.app) styleInjector.clearOrphans();
 
   msg.onTab(applyOnMessage);
 
   if (!IS_OWN_PAGE) {
-    window.dispatchEvent(new CustomEvent(chrome.runtime.id, {
-      detail: pageObject({method: 'orphan'})
-    }));
-    window.addEventListener(chrome.runtime.id, orphanCheck, true);
+    window.dispatchEvent(new CustomEvent(orphanEventId));
+    window.addEventListener(orphanEventId, orphanCheck, true);
   }
 
   let parentDomain;
@@ -54,141 +57,19 @@ const APPLY = (() => {
       docRewriteObserver.stop();
       docRootObserver.stop();
     }
+    if (isOrphaned) return;
     updateCount();
     updateExposeIframes();
   }
 
   function init() {
-    if (STYLE_VIA_API) {
-      return API.styleViaAPI({method: 'styleApply'});
-    }
-    return API.getSectionsByUrl(getMatchUrl())
-      .then(result =>
-        applyStyles(result)
-          .then(() => {
-            // CSS transition bug workaround: since we insert styles asynchronously,
-            // the browsers, especially Firefox, may apply all transitions on page load
-            if (styleInjector.list.some(s => s.code.includes('transition'))) {
-              applyTransitionPatch();
-            }
-          })
-      );
-  }
-
-  function pageObject(target) {
-    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
-    const obj = new window.Object();
-    Object.assign(obj, target);
-    return obj;
-  }
-
-  function createSetStyleContent() {
-    // FF59+ bug workaround
-    // See https://github.com/openstyles/stylus/issues/461
-    // Since it's easy to spoof the browser version in pre-Quantum FF we're checking
-    // for getPreventDefault which got removed in FF59 https://bugzil.la/691151
-    const EVENT_NAME = chrome.runtime.id;
-    let ready;
-    return (el, content, disabled) =>
-      checkPageScript().then(ok => {
-        if (!ok) {
-          el.textContent = content;
-          // https://github.com/openstyles/stylus/issues/693
-          el.disabled = disabled;
-        } else {
-          const detail = pageObject({
-            method: 'setStyleContent',
-            id: el.id,
-            content,
-            disabled
-          });
-          window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail}));
-        }
-      });
-
-    function checkPageScript() {
-      if (!ready) {
-        ready = CHROME || IS_OWN_PAGE || Event.prototype.getPreventDefault ?
-          Promise.resolve(false) : injectPageScript();
-      }
-      return ready;
-    }
-
-    function injectPageScript() {
-      const scriptContent = EVENT_NAME => {
-        document.currentScript.remove();
-        const available = checkStyleApplied();
-        if (available) {
-          window.addEventListener(EVENT_NAME, function handler(e) {
-            const {method, id, content, disabled} = e.detail;
-            if (method === 'setStyleContent') {
-              const el = document.getElementById(id);
-              if (!el) {
-                return;
-              }
-              el.textContent = content;
-              el.disabled = disabled;
-            } else if (method === 'orphan') {
-              window.removeEventListener(EVENT_NAME, handler);
-            }
-          }, true);
-        }
-        window.dispatchEvent(new CustomEvent(EVENT_NAME, {detail: {
-          method: 'init',
-          available
-        }}));
-
-        function checkStyleApplied() {
-          const style = document.createElement('style');
-          document.documentElement.appendChild(style);
-          const applied = Boolean(style.sheet);
-          style.remove();
-          return applied;
-        }
-      };
-      const code = `(${scriptContent})(${JSON.stringify(EVENT_NAME)})`;
-      // make sure it works in XML
-      const script = document.createElementNS('http://www.w3.org/1999/xhtml', 'script');
-      const {resolve, promise} = deferred();
-      // use inline script because using src is too slow
-      // https://github.com/openstyles/stylus/pull/766
-      script.text = code;
-      script.onerror = resolveFalse;
-      window.addEventListener('error', resolveFalse);
-      window.addEventListener(EVENT_NAME, handleInit);
-      (document.head || document.documentElement).appendChild(script);
-      // injection failed if handleInit is not called.
-      resolveFalse();
-      return promise.then(result => {
-        script.remove();
-        window.removeEventListener(EVENT_NAME, handleInit);
-        window.removeEventListener('error', resolveFalse);
-        return result;
-      });
-
-      function resolveFalse() {
-        resolve(false);
-      }
-
-      function handleInit(e) {
-        if (e.detail.method === 'init') {
-          resolve(e.detail.available);
-        }
-      }
-    }
-  }
-
-  function deferred() {
-    const o = {};
-    o.promise = new Promise((resolve, reject) => {
-      o.resolve = resolve;
-      o.reject = reject;
-    });
-    return o;
+    return STYLE_VIA_API ?
+      API.styleViaAPI({method: 'styleApply'}) :
+      API.getSectionsByUrl(getMatchUrl()).then(applyStyles);
   }
 
   function getMatchUrl() {
-    var matchUrl = location.href;
+    let matchUrl = location.href;
     if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
       // dynamic about: and javascript: iframes don't have an URL yet
       // so we'll try the parent frame which is guaranteed to have a real URL
@@ -316,78 +197,40 @@ const APPLY = (() => {
     }).catch(console.error);
   }
 
-  function rootReady() {
-    if (document.documentElement) {
-      return Promise.resolve();
-    }
-    return new Promise(resolve => {
-      new MutationObserver((mutations, observer) => {
-        if (document.documentElement) {
-          observer.disconnect();
-          resolve();
-        }
-      }).observe(document, {childList: true});
-    });
-  }
-
   function applyStyles(sections) {
-    const styles = Object.values(sections);
-    if (!styles.length) {
-      return Promise.resolve();
-    }
-    return rootReady().then(() =>
-      docRootObserver.evade(() =>
-        styleInjector.addMany(
-          styles.map(s => ({id: s.id, code: s.code.join('')}))
-        )
-      )
-    );
+    return new Promise(resolve => {
+      const styles = styleMapToArray(sections);
+      if (styles.length) {
+        docRootObserver.evade(() => {
+          styleInjector.addMany(styles);
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   function replaceAll(newStyles) {
-    styleInjector.replaceAll(
-      Object.values(newStyles)
-        .map(s => ({id: s.id, code: s.code.join('')}))
-    );
+    styleInjector.replaceAll(styleMapToArray(newStyles));
   }
 
-  function applyTransitionPatch() {
-    // CSS transition bug workaround: since we insert styles asynchronously,
-    // the browsers, especially Firefox, may apply all transitions on page load
-    const el = styleInjector.createStyle('transition-patch');
-    // FIXME: this will trigger docRootObserver and cause a resort. We should
-    // move this function into style-injector.
-    document.documentElement.appendChild(el);
-    setStyleContent(el, `
-      :root:not(#\\0):not(#\\0) * {
-        transition: none !important;
-      }
-    `)
-      .then(afterPaint)
-      .then(() => {
-        el.remove();
-      });
+  function styleMapToArray(styleMap) {
+    return Object.values(styleMap).map(s => ({
+      id: s.id,
+      code: s.code.join(''),
+    }));
   }
 
-  function afterPaint() {
-    return new Promise(resolve => {
-      requestAnimationFrame(() => {
-        setTimeout(resolve);
-      });
-    });
-  }
-
-  function orphanCheck(e) {
-    if (e && e.detail.method !== 'orphan') {
-      return;
-    }
-    if (chrome.i18n && chrome.i18n.getUILanguage()) {
-      return true;
-    }
+  function orphanCheck() {
+    try {
+      if (chrome.i18n.getUILanguage()) return;
+    } catch (e) {}
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
+    window.removeEventListener(orphanEventId, orphanCheck, true);
+    isOrphaned = true;
     styleInjector.clear();
-    window.removeEventListener(chrome.runtime.id, orphanCheck, true);
     try {
       msg.off(applyOnMessage);
     } catch (e) {}
@@ -459,13 +302,26 @@ const APPLY = (() => {
     }
 
     function evade(fn) {
-      if (!observing) {
-        return fn();
+      if (observing) {
+        stop();
+        _run(fn);
+        start();
+      } else {
+        _run(fn);
       }
-      stop();
-      const r = fn();
-      start();
-      return r;
+    }
+
+    function _run(fn) {
+      if (document.documentElement) {
+        fn();
+      } else {
+        new MutationObserver((mutations, observer) => {
+          if (document.documentElement) {
+            observer.disconnect();
+            fn();
+          }
+        }).observe(document, {childList: true});
+      }
     }
   }
 })();
