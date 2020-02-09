@@ -9,6 +9,11 @@ self.INJECTED !== 1 && (() => {
   if (!Object.values) {
     Object.values = obj => Object.keys(obj).map(k => obj[k]);
   }
+
+  // the above was shared by content scripts and workers,
+  // the rest is only needed for our extension pages
+  if (!self.chrome || !self.chrome.tabs) return;
+
   if (typeof document === 'object') {
     const ELEMENT_METH = {
       append: {
