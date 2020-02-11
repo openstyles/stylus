@@ -134,7 +134,7 @@ prefs.subscribe([
 
 prefs.subscribe([
   'show-badge'
-], () => debounce(refreshIconBadgeText));
+], () => debounce(refreshAllIconsBadgeText));
 
 prefs.subscribe([
   'disableAll',
