@@ -187,6 +187,7 @@ browserCommands = {
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
+  reload: () => chrome.runtime.reload(),
 };
 
 // *************************************************************************
@@ -207,6 +208,11 @@ contextMenus = {
   'open-options': {
     title: 'openOptions',
     click: browserCommands.openOptions,
+  },
+  'reload': {
+    presentIf: () => localStorage.installType !== 'normal',
+    title: 'reload',
+    click: browserCommands.reload,
   },
   'editor.contextDelete': {
     presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
