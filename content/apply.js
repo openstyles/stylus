@@ -10,25 +10,12 @@ self.INJECTED !== 1 && (() => {
   self.INJECTED = 1;
 
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
-  const IS_OWN_PAGE = Boolean(chrome.tabs);
   const styleInjector = createStyleInjector({
     compare: (a, b) => a.id - b.id,
-    onUpdate: onInjectorUpdate
-  });
-  const docRootObserver = createDocRootObserver({
-    onChange: () => {
-      if (styleInjector.outOfOrder()) {
-        styleInjector.sort();
-        return true;
-      }
-    }
-  });
-  const docRewriteObserver = createDocRewriteObserver({
-    onChange: () => {
-      docRootObserver.evade(styleInjector.sort);
-    }
+    onUpdate: onInjectorUpdate,
   });
   const initializing = init();
+
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
   let isOrphaned;
@@ -37,7 +24,7 @@ self.INJECTED !== 1 && (() => {
 
   msg.onTab(applyOnMessage);
 
-  if (!IS_OWN_PAGE) {
+  if (!chrome.tabs) {
     window.dispatchEvent(new CustomEvent(orphanEventId));
     window.addEventListener(orphanEventId, orphanCheck, true);
   }
@@ -50,22 +37,16 @@ self.INJECTED !== 1 && (() => {
   }
 
   function onInjectorUpdate() {
-    if (!IS_OWN_PAGE && styleInjector.list.length) {
-      docRewriteObserver.start();
-      docRootObserver.start();
-    } else {
-      docRewriteObserver.stop();
-      docRootObserver.stop();
+    if (!isOrphaned) {
+      updateCount();
+      updateExposeIframes();
     }
-    if (isOrphaned) return;
-    updateCount();
-    updateExposeIframes();
   }
 
   function init() {
     return STYLE_VIA_API ?
       API.styleViaAPI({method: 'styleApply'}) :
-      API.getSectionsByUrl(getMatchUrl()).then(applyStyles);
+      API.getSectionsByUrl(getMatchUrl()).then(styleInjector.apply);
   }
 
   function getMatchUrl() {
@@ -108,7 +89,7 @@ self.INJECTED !== 1 && (() => {
               if (!sections[request.style.id]) {
                 styleInjector.remove(request.style.id);
               } else {
-                applyStyles(sections);
+                styleInjector.apply(sections);
               }
             });
         } else {
@@ -119,13 +100,13 @@ self.INJECTED !== 1 && (() => {
       case 'styleAdded':
         if (request.style.enabled) {
           API.getSectionsByUrl(getMatchUrl(), request.style.id)
-            .then(applyStyles);
+            .then(styleInjector.apply);
         }
         break;
 
       case 'urlChanged':
         API.getSectionsByUrl(getMatchUrl())
-          .then(replaceAll);
+          .then(styleInjector.replace);
         break;
 
       case 'backgroundReady':
@@ -197,31 +178,6 @@ self.INJECTED !== 1 && (() => {
     }).catch(console.error);
   }
 
-  function applyStyles(sections) {
-    return new Promise(resolve => {
-      const styles = styleMapToArray(sections);
-      if (styles.length) {
-        docRootObserver.evade(() => {
-          styleInjector.addMany(styles);
-          resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
-  }
-
-  function replaceAll(newStyles) {
-    styleInjector.replaceAll(styleMapToArray(newStyles));
-  }
-
-  function styleMapToArray(styleMap) {
-    return Object.values(styleMap).map(s => ({
-      id: s.id,
-      code: s.code.join(''),
-    }));
-  }
-
   function orphanCheck() {
     try {
       if (chrome.i18n.getUILanguage()) return;
@@ -234,94 +190,5 @@ self.INJECTED !== 1 && (() => {
     try {
       msg.off(applyOnMessage);
     } catch (e) {}
-  }
-
-  function createDocRewriteObserver({onChange}) {
-    // detect documentElement being rewritten from inside the script
-    let root;
-    let observing = false;
-    let timer;
-    const observer = new MutationObserver(check);
-    return {start, stop};
-
-    function start() {
-      if (observing) return;
-      // detect dynamic iframes rewritten after creation by the embedder i.e. externally
-      root = document.documentElement;
-      timer = setTimeout(check);
-      observer.observe(document, {childList: true});
-      observing = true;
-    }
-
-    function stop() {
-      if (!observing) return;
-      clearTimeout(timer);
-      observer.disconnect();
-      observing = false;
-    }
-
-    function check() {
-      if (root !== document.documentElement) {
-        root = document.documentElement;
-        onChange();
-      }
-    }
-  }
-
-  function createDocRootObserver({onChange}) {
-    let digest = 0;
-    let lastCalledTime = NaN;
-    let observing = false;
-    const observer = new MutationObserver(() => {
-      if (digest) {
-        if (performance.now() - lastCalledTime > 1000) {
-          digest = 0;
-        } else if (digest > 5) {
-          throw new Error('The page keeps generating mutations. Skip the event.');
-        }
-      }
-      if (onChange()) {
-        digest++;
-        lastCalledTime = performance.now();
-      }
-    });
-    return {start, stop, evade};
-
-    function start() {
-      if (observing) return;
-      observer.observe(document.documentElement, {childList: true});
-      observing = true;
-    }
-
-    function stop() {
-      if (!observing) return;
-      // FIXME: do we need this?
-      observer.takeRecords();
-      observer.disconnect();
-      observing = false;
-    }
-
-    function evade(fn) {
-      if (observing) {
-        stop();
-        _run(fn);
-        start();
-      } else {
-        _run(fn);
-      }
-    }
-
-    function _run(fn) {
-      if (document.documentElement) {
-        fn();
-      } else {
-        new MutationObserver((mutations, observer) => {
-          if (document.documentElement) {
-            observer.disconnect();
-            fn();
-          }
-        }).observe(document, {childList: true});
-      }
-    }
   }
 })();
