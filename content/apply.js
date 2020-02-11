@@ -134,17 +134,12 @@ self.INJECTED !== 1 && (() => {
   }
 
   function fetchParentDomain() {
-    if (parentDomain) {
-      return Promise.resolve();
-    }
-    return msg.send({
-      method: 'invokeAPI',
-      name: 'getTabUrlPrefix',
-      args: []
-    })
-      .then(newDomain => {
-        parentDomain = newDomain;
-      });
+    return parentDomain ?
+      Promise.resolve() :
+      API.getTabUrlPrefix()
+        .then(newDomain => {
+          parentDomain = newDomain;
+        });
   }
 
   function updateExposeIframes() {
@@ -168,14 +163,9 @@ self.INJECTED !== 1 && (() => {
     }
     if (STYLE_VIA_API) {
       API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
-      return;
+    } else {
+      API.updateIconBadge(styleInjector.list.length).catch(console.error);
     }
-    // we have to send the tabId so we can't use `sendBg` that is used by `API`
-    msg.send({
-      method: 'invokeAPI',
-      name: 'updateIconBadge',
-      args: [styleInjector.list.length]
-    }).catch(console.error);
   }
 
   function orphanCheck() {

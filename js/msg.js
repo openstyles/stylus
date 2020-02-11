@@ -238,9 +238,15 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
   }
 })();
 
-self.API = self.INJECTED === 1 ? self.API : new Proxy({}, {
+self.API = self.INJECTED === 1 ? self.API : new Proxy({
+  // Handlers for these methods need sender.tab.id which is set by `send` as it uses messaging,
+  // unlike `sendBg` which invokes the background page directly in our own extension tabs
+  getTabUrlPrefix: true,
+  updateIconBadge: true,
+  styleViaAPI: true,
+}, {
   get: (target, name) =>
-    (...args) => Promise.resolve(self.msg.sendBg({
+    (...args) => Promise.resolve(self.msg[target[name] ? 'send' : 'sendBg']({
       method: 'invokeAPI',
       name,
       args
