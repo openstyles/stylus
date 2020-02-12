@@ -34,8 +34,11 @@ You can help us translate the extension on [Transifex](https://www.transifex.com
 * Make any changes within a branch of this repository (not the `master` branch).
 * Submit a pull request and include a reference to the initial issue with the discussion.
 
-## Scripts
+## Build scripts
 
+See [Build.md](../Build.md) for more information.
+
+* `npm test` - Run ESLint and web-ext lint test. Please run this command and ensure there is no syntax errors before sending a PR.
 * `npm run lint` - Run ESLint on all JavaScript files.
 * `npm run update` - Runs update-node & update-main scripts.
 * `npm run update-quick` - Updates development dependencies (uses `npm update`; does not include new dependencies).

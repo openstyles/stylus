@@ -36,7 +36,8 @@
     "zip": "node tools/zip.js",
     "start": "web-ext run",
     "preversion": "npm test",
-    "version": "sync-version manifest.json && git add ."
+    "version": "sync-version manifest.json && git add .",
+    "postversion": "npm run zip && git push --follow-tags"
   },
   "engines": {
     "node": ">=10.0.0"
