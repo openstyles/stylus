@@ -59,6 +59,9 @@
     "openManage": {
     "description": "__MSG_openManage__"
     },
+    "reload": {
+      "description": "__MSG_reload__"
+    },
     "styleDisableAll": {
     "description": "__MSG_disableAllStyles__"
     }
