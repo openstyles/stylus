@@ -163,6 +163,26 @@ navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
 });
 
 // *************************************************************************
+chrome.runtime.onInstalled.addListener(({reason}) => {
+  // save install type: "admin", "development", "normal", "sideload" or "other"
+  // "normal" = addon installed from webstore
+  chrome.management.getSelf(info => {
+    localStorage.installType = info.installType;
+    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
+      createContextMenus(['reload']);
+    }
+  });
+
+  if (reason !== 'update') return;
+  // translations may change
+  localStorage.L10N = JSON.stringify({
+    browserUIlanguage: chrome.i18n.getUILanguage(),
+  });
+  // themes may change
+  delete localStorage.codeMirrorThemes;
+});
+
+// *************************************************************************
 // browser commands
 browserCommands = {
   openManage,
@@ -209,7 +229,7 @@ contextMenus = {
   }
 };
 
-const createContextMenus = ids => {
+function createContextMenus(ids) {
   for (const id of ids) {
     let item = contextMenus[id];
     if (item.presentIf && !item.presentIf()) {
@@ -228,7 +248,7 @@ const createContextMenus = ids => {
     delete item.click;
     chrome.contextMenus.create(item, ignoreChromeError);
   }
-};
+}
 
 if (chrome.contextMenus) {
   // circumvent the bug with disabling check marks in Chrome 62-64
@@ -249,26 +269,6 @@ if (chrome.contextMenus) {
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
-
-// *************************************************************************
-chrome.runtime.onInstalled.addListener(({reason}) => {
-  // save install type: "admin", "development", "normal", "sideload" or "other"
-  // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => {
-    localStorage.installType = info.installType;
-    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
-      createContextMenus(['reload']);
-    }
-  });
-
-  if (reason !== 'update') return;
-  // translations may change
-  localStorage.L10N = JSON.stringify({
-    browserUIlanguage: chrome.i18n.getUILanguage(),
-  });
-  // themes may change
-  delete localStorage.codeMirrorThemes;
-});
 
 // reinject content scripts when the extension is reloaded/updated. Firefox
 // would handle this automatically.
@@ -307,7 +307,6 @@ function webNavUsercssInstallerFF(data) {
     }
   });
 }
-
 
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
