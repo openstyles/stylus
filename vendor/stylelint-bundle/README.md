@@ -1,5 +1,9 @@
-## Stylelint-bundle v8.0.0
+## stylelint-bundle v8.0.0
 
-stylelint-bundle installed via npm - source repo:
+Following files are downloaded from HTTP:
 
-https://github.com/openstyles/stylelint-bundle/blob/v8.0.0/stylelint-bundle.min.js
+* LICENSE: https://github.com/stylelint/stylelint/raw/8.0.0/LICENSE
+
+Following files are copied from npm (node_modules):
+
+* stylelint-bundle.min.js

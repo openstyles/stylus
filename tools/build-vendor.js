@@ -27,10 +27,16 @@ const files = {
     'addon/search/matchesonscrollbar.*',
     'addon/search/searchcursor.js',
     'addon/selection/active-line.js',
-    'theme'
+    'keymap/*',
+    'lib/*',
+    'mode/css',
+    'mode/javascript',
+    'mode/stylus',
+    'theme/*'
   ],
   'jsonlint': [
-    'lib/jsonlint.js → jsonlint.js'
+    'lib/jsonlint.js → jsonlint.js',
+    'README.md → LICENSE'
   ],
   'less-bundle': [
     'dist/less.min.js → less.min.js'
@@ -42,7 +48,8 @@ const files = {
     'dist/semver.js → semver.js'
   ],
   'stylelint-bundle': [
-    'stylelint-bundle.min.js'
+    'stylelint-bundle.min.js',
+    'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE → LICENSE'
   ],
   'stylus-lang-bundle': [
     'stylus.min.js'
@@ -68,7 +75,7 @@ async function main() {
     // README
     await fse.outputFile(`vendor/${pkg}/README.md`, generateReadme(pkg, fetched, copied));
     // LICENSE
-    await fse.copy(`node_modules/${pkg}/LICENSE`, `vendor/${pkg}/LICENSE`);
+    await copyLicense(pkg);
   }
   console.log('\x1b[32m%s\x1b[0m', 'updating codemirror themes list...');
   await fse.outputFile('edit/codemirror-themes.js', await generateThemeList());
@@ -88,6 +95,20 @@ async function generateThemeList() {
   `.replace(/"/g, "'") + '\n';
 }
 
+async function copyLicense(pkg) {
+  try {
+    await fse.access(`vendor/${pkg}/LICENSE`);
+    return;
+  } catch (err) {
+    // pass
+  }
+  for (const file of await glob(`node_modules/${pkg}/LICEN[SC]E*`)) {
+    await fse.copy(file, `vendor/${pkg}/LICENSE`);
+    return;
+  }
+  throw new Error(`cannot find license file for ${pkg}`);
+}
+
 async function buildFiles(pkg, patterns) {
   const fetchedFiles = [];
   const copiedFiles = [];
@@ -96,14 +117,14 @@ async function buildFiles(pkg, patterns) {
     const [src, dest] = pattern.split(/\s*→\s*/);
     if (src.startsWith('http')) {
       const content = await (await fetch(src)).text();
-      fse.outputFile(`vendor/${pkg}/${dest}`, content);
+      await fse.outputFile(`vendor/${pkg}/${dest}`, content);
       fetchedFiles.push([src, dest]);
     } else {
-      for (const file of glob(`node_modules/${pkg}/${src}`)) {
-        if (!dest) {
-          await fse.copy(file, path.join('vendor', path.relative('node_modules', file)));
+      for (const file of await glob(`node_modules/${pkg}/${src}`)) {
+        if (dest) {
+          await fse.copy(file, `vendor/${pkg}/${dest}`);
         } else {
-          await fse.copy(file, dest);
+          await fse.copy(file, path.join('vendor', path.relative('node_modules', file)));
         }
         copiedFiles.push([path.relative(`node_modules/${pkg}`, file), dest]);
       }

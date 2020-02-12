@@ -1,5 +1,5 @@
-## Stylus-lang-bundle v0.54.5
+## stylus-lang-bundle v0.54.5
 
-stylus-lang-bundle installed via npm - source repo:
+Following files are copied from npm (node_modules):
 
-https://github.com/openstyles/stylus-lang-bundle/blob/v0.54.5/stylus.min.js
+* stylus.min.js

@@ -1,9 +1,6 @@
-## uuid v3.3.3
+## uuid v3.4.0
 
-Installed via npm - source code:
+Following files are downloaded from HTTP:
 
-https://github.com/kelektiv/node-uuid/tree/v3.3.3
+* uuid.min.js: https://bundle.run/uuid@3.4.0/v4.js
 
-Bundled code:
-
-https://bundle.run/uuid@3.3.3/v4.js
