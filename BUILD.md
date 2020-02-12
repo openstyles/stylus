@@ -38,7 +38,7 @@ There are some scripts that will run automatically before/after tagging a versio
 
 ## Translation
 
-We host transalation files (`message.json`) on Transifex. To pull files from Transifex, run
+We host locale files (`message.json`) on Transifex. To pull files from Transifex, run
 
 ```
 npm run update-locales
@@ -49,6 +49,11 @@ To push files to Transifex:
 ```
 npm run update-transifex
 ```
+
+Before running these commands, you need:
+
+1. Transifex client. Follow the instructions on [this page](https://docs.transifex.com/client/installing-the-client).
+2. The `.transifexrc` file in the root folder. Contact another admin if you need one. It includes the API key to use Transifex's API.
 
 ## 3rd-party libraries
 

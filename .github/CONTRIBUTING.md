@@ -38,25 +38,6 @@ You can help us translate the extension on [Transifex](https://www.transifex.com
 
 See [Build.md](../Build.md) for more information.
 
-* `npm test` - Run ESLint and web-ext lint test. Please run this command and ensure there is no syntax errors before sending a PR.
-* `npm run lint` - Run ESLint on all JavaScript files.
-* `npm run update` - Runs update-node & update-main scripts.
-* `npm run update-quick` - Updates development dependencies (uses `npm update`; does not include new dependencies).
-* `npm run update-locales` (admin only)- Updates locale files from Transifex. See the [updating locale files section](#updating-locale-files-admin-only) for more details.
-* `npm run update-main` - Runs update-versions & update-codemirror.
-* `npm run update-node` - Update development dependencies, removes & reinstalls `node_modules` folder (slow).
-* `npm run update-transifex` (admin only) - Upload `en/messages.json` source to Transifex.
-* `npm run update-vendor` - Update codemirror, codemirror themes & other vendor libraries.
-* `npm run update-versions` - Update version of `manifest.json` to match `package.json`.
-* `npm run zip` - Run update-versions, then compress required files into a zip file.
-
-## Updating locale files (admin only)
-
-* Make sure you have the Transifex client installed. Follow the instructions on [this page](https://docs.transifex.com/client/installing-the-client).
-* Contact another admin if you need the `.transifexrc` file in the root folder. It includes the API key to use Transifex's API.
-* Use `npm run update-locales` in the command line to [update the language files](https://docs.transifex.com/client/pull) in the repo.
-* Use `npm run update-transifex` in the command line to [upload the source](https://docs.transifex.com/client/push) `en/messages.json` file to Transifex.
-
 ## Contact us
 
 If you prefer a more informal method of getting in touch or starting a conversation, please [join us on Discord](https://discordapp.com/widget?id=379521691774353408) or leave a comment in the [discussion section](https://add0n.com/stylus.html#reviews). We will monitor any discussions there and join in, and it may be a more appropriate venue for opinions and less urgent suggestions.
