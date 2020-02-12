@@ -1,4 +1,4 @@
-/* global msg queryTabs ignoreChromeError */
+/* global msg queryTabs ignoreChromeError URLS */
 /* exported contentScripts */
 'use strict';
 
@@ -15,6 +15,8 @@ const contentScripts = (() => {
       m === ALL_URLS ? m : wildcardAsRegExp(m)
     ));
   }
+  const busyTabs = new Set();
+  let busyTabsTimer;
   return {injectToTab, injectToAllTabs};
 
   function injectToTab({url, tabId, frameId = null}) {
@@ -54,13 +56,12 @@ const contentScripts = (() => {
 
   function injectToAllTabs() {
     return queryTabs({}).then(tabs => {
-      const busyTabs = new Set();
       for (const tab of tabs) {
-        // skip unloaded/discarded tabs
-        if (!tab.width || tab.discarded) continue;
+        // skip unloaded/discarded/chrome tabs
+        if (!tab.width || tab.discarded || !URLS.supported(tab.url)) continue;
         // our content scripts may still be pending injection at browser start so it's too early to ping them
         if (tab.status === 'loading') {
-          busyTabs.add(tab.id);
+          trackBusyTab(tab.id, true);
         } else {
           injectToTab({
             url: tab.url,
@@ -68,15 +69,38 @@ const contentScripts = (() => {
           });
         }
       }
-      if (busyTabs.size) {
-        chrome.tabs.onUpdated.addListener(function _(tabId, {status}, {url}) {
-          if (status === 'complete' && busyTabs.has(tabId)) {
-            busyTabs.delete(tabId);
-            if (!busyTabs.size) chrome.tabs.onUpdated.removeListener(_);
-            injectToTab({tabId, url});
-          }
-        });
-      }
     });
+  }
+
+  function toggleBusyTabListeners(state) {
+    const toggle = state ? 'addListener' : 'removeListener';
+    chrome.webNavigation.onCompleted[toggle](onBusyTabUpdated);
+    chrome.webNavigation.onErrorOccurred[toggle](onBusyTabUpdated);
+    chrome.webNavigation.onTabReplaced[toggle](onBusyTabUpdated);
+    chrome.tabs.onRemoved[toggle](onBusyTabRemoved);
+    if (state) {
+      busyTabsTimer = setTimeout(toggleBusyTabListeners, 15e3, false);
+    } else {
+      clearTimeout(busyTabsTimer);
+    }
+  }
+
+  function trackBusyTab(tabId, state) {
+    busyTabs[state ? 'add' : 'delete'](tabId);
+    if (state && busyTabs.size === 1) toggleBusyTabListeners(true);
+    if (!state && !busyTabs.size) toggleBusyTabListeners(false);
+  }
+
+  function onBusyTabUpdated({error, frameId, tabId, url}) {
+    if (!frameId && busyTabs.has(tabId)) {
+      trackBusyTab(tabId, false);
+      if (url && !error) {
+        injectToTab({tabId, url});
+      }
+    }
+  }
+
+  function onBusyTabRemoved(tabId) {
+    trackBusyTab(tabId, false);
   }
 })();
