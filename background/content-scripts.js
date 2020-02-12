@@ -54,14 +54,28 @@ const contentScripts = (() => {
 
   function injectToAllTabs() {
     return queryTabs({}).then(tabs => {
+      const busyTabs = new Set();
       for (const tab of tabs) {
-        // skip lazy-loaded aka unloaded tabs that seem to start loading on message in FF
-        if (tab.width) {
+        // skip unloaded/discarded tabs
+        if (!tab.width || tab.discarded) continue;
+        // our content scripts may still be pending injection at browser start so it's too early to ping them
+        if (tab.status === 'loading') {
+          busyTabs.add(tab.id);
+        } else {
           injectToTab({
             url: tab.url,
             tabId: tab.id
           });
         }
+      }
+      if (busyTabs.size) {
+        chrome.tabs.onUpdated.addListener(function _(tabId, {status}, {url}) {
+          if (status === 'complete' && busyTabs.has(tabId)) {
+            busyTabs.delete(tabId);
+            if (!busyTabs.size) chrome.tabs.onUpdated.removeListener(_);
+            injectToTab({tabId, url});
+          }
+        });
       }
     });
   }
