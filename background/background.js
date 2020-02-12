@@ -163,23 +163,6 @@ navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
 });
 
 // *************************************************************************
-chrome.runtime.onInstalled.addListener(({reason}) => {
-  // save install type: "admin", "development", "normal", "sideload" or "other"
-  // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => {
-    localStorage.installType = info.installType;
-  });
-
-  if (reason !== 'update') return;
-  // translations may change
-  localStorage.L10N = JSON.stringify({
-    browserUIlanguage: chrome.i18n.getUILanguage(),
-  });
-  // themes may change
-  delete localStorage.codeMirrorThemes;
-});
-
-// *************************************************************************
 // browser commands
 browserCommands = {
   openManage,
@@ -210,7 +193,7 @@ contextMenus = {
     click: browserCommands.openOptions,
   },
   'reload': {
-    presentIf: () => localStorage.installType !== 'normal',
+    presentIf: () => localStorage.installType === 'development',
     title: 'reload',
     click: browserCommands.reload,
   },
@@ -226,28 +209,28 @@ contextMenus = {
   }
 };
 
-if (chrome.contextMenus) {
-  const createContextMenus = ids => {
-    for (const id of ids) {
-      let item = contextMenus[id];
-      if (item.presentIf && !item.presentIf()) {
-        continue;
-      }
-      item = Object.assign({id}, item);
-      delete item.presentIf;
-      item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
-        item.type = 'checkbox';
-        item.checked = prefs.get(id);
-      }
-      if (!item.contexts) {
-        item.contexts = ['browser_action'];
-      }
-      delete item.click;
-      chrome.contextMenus.create(item, ignoreChromeError);
+const createContextMenus = ids => {
+  for (const id of ids) {
+    let item = contextMenus[id];
+    if (item.presentIf && !item.presentIf()) {
+      continue;
     }
-  };
+    item = Object.assign({id}, item);
+    delete item.presentIf;
+    item.title = chrome.i18n.getMessage(item.title);
+    if (!item.type && typeof prefs.defaults[id] === 'boolean') {
+      item.type = 'checkbox';
+      item.checked = prefs.get(id);
+    }
+    if (!item.contexts) {
+      item.contexts = ['browser_action'];
+    }
+    delete item.click;
+    chrome.contextMenus.create(item, ignoreChromeError);
+  }
+};
 
+if (chrome.contextMenus) {
   // circumvent the bug with disabling check marks in Chrome 62-64
   const toggleCheckmark = CHROME >= 3172 && CHROME <= 3288 ?
     (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
@@ -266,6 +249,26 @@ if (chrome.contextMenus) {
   prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
   createContextMenus(keys);
 }
+
+// *************************************************************************
+chrome.runtime.onInstalled.addListener(({reason}) => {
+  // save install type: "admin", "development", "normal", "sideload" or "other"
+  // "normal" = addon installed from webstore
+  chrome.management.getSelf(info => {
+    localStorage.installType = info.installType;
+    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
+      createContextMenus(['reload']);
+    }
+  });
+
+  if (reason !== 'update') return;
+  // translations may change
+  localStorage.L10N = JSON.stringify({
+    browserUIlanguage: chrome.i18n.getUILanguage(),
+  });
+  // themes may change
+  delete localStorage.codeMirrorThemes;
+});
 
 // reinject content scripts when the extension is reloaded/updated. Firefox
 // would handle this automatically.
