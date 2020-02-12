@@ -1,8 +1,7 @@
 /* global promisify */
-/* exported prefs */
 'use strict';
 
-const prefs = (() => {
+self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'windowPosition': {},           // detached window position

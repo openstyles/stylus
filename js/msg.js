@@ -1,9 +1,8 @@
 /* global promisify deepCopy */
-/* exported msg API */
 // deepCopy is only used if the script is executed in extension pages.
 'use strict';
 
-const msg = (() => {
+self.msg = self.INJECTED === 1 ? self.msg : (() => {
   const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
   const tabSend = chrome.tabs && promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
   const tabQuery = chrome.tabs && promisify(chrome.tabs.query.bind(chrome.tabs));
@@ -239,9 +238,15 @@ const msg = (() => {
   }
 })();
 
-const API = new Proxy({}, {
+self.API = self.INJECTED === 1 ? self.API : new Proxy({
+  // Handlers for these methods need sender.tab.id which is set by `send` as it uses messaging,
+  // unlike `sendBg` which invokes the background page directly in our own extension tabs
+  getTabUrlPrefix: true,
+  updateIconBadge: true,
+  styleViaAPI: true,
+}, {
   get: (target, name) =>
-    (...args) => Promise.resolve(msg.sendBg({
+    (...args) => Promise.resolve(self.msg[target[name] ? 'send' : 'sendBg']({
       method: 'invokeAPI',
       name,
       args
