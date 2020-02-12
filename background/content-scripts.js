@@ -76,7 +76,7 @@ const contentScripts = (() => {
     const toggle = state ? 'addListener' : 'removeListener';
     chrome.webNavigation.onCompleted[toggle](onBusyTabUpdated);
     chrome.webNavigation.onErrorOccurred[toggle](onBusyTabUpdated);
-    chrome.webNavigation.onTabReplaced[toggle](onBusyTabUpdated);
+    chrome.webNavigation.onTabReplaced[toggle](onBusyTabReplaced);
     chrome.tabs.onRemoved[toggle](onBusyTabRemoved);
     if (state) {
       busyTabsTimer = setTimeout(toggleBusyTabListeners, 15e3, false);
@@ -98,6 +98,10 @@ const contentScripts = (() => {
         injectToTab({tabId, url});
       }
     }
+  }
+
+  function onBusyTabReplaced({replacedTabId}) {
+    trackBusyTab(replacedTabId, false);
   }
 
   function onBusyTabRemoved(tabId) {
