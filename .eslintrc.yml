@@ -211,3 +211,12 @@ rules:
   wrap-iife: [2, inside]
   yield-star-spacing: [2, {before: true, after: false}]
   yoda: [2, never]
+
+overrides:
+  - files: [tools/*]
+    env:
+      node: true
+      browser: false
+      webextensions: false
+    parserOptions:
+      ecmaVersion: 2017
