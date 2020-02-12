@@ -107,10 +107,12 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   }
 
   function _applyTransitionPatch(styles) {
+    isTransitionPatched = true;
     // CSS transition bug workaround: since we insert styles asynchronously,
     // the browsers, especially Firefox, may apply all transitions on page load
-    isTransitionPatched = document.readyState === 'complete';
-    if (isTransitionPatched || !styles.some(s => s.code.includes('transition'))) {
+    if (document.readyState === 'complete' ||
+        document.visibilityState === 'hidden' ||
+        !styles.some(s => s.code.includes('transition'))) {
       return;
     }
     const el = _createStyle(PATCH_ID, `
