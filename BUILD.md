@@ -65,4 +65,4 @@ To add/update a library to the latest version, run `npm install PACKAGE_NAME@lat
 
 To remove a library, run `npm uninstall PACKAGE_NAME`.
 
-After the (un)installation, run `npm run build-vendor` to rebuild the vendor folder.
+After the (un)installation, specify files which should be copied in `tools/build-vendor.js` and run `npm run build-vendor` to rebuild the vendor folder.
