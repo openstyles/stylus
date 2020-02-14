@@ -1145,6 +1145,10 @@
     "message": "Temporarily applies the changes without saving.\nSave the style to make the changes permanent.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
   },
+  "reload": {
+    "message": "Reload Stylus extension",
+    "description": "Context menu reload"
+  },
   "replace": {
     "message": "Replace",
     "description": "Label before the replace input field in the editor shown on Ctrl-H"

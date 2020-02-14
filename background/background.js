@@ -168,6 +168,9 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   // "normal" = addon installed from webstore
   chrome.management.getSelf(info => {
     localStorage.installType = info.installType;
+    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
+      createContextMenus(['reload']);
+    }
   });
 
   if (reason !== 'update') return;
@@ -187,6 +190,7 @@ browserCommands = {
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
+  reload: () => chrome.runtime.reload(),
 };
 
 // *************************************************************************
@@ -208,6 +212,11 @@ contextMenus = {
     title: 'openOptions',
     click: browserCommands.openOptions,
   },
+  'reload': {
+    presentIf: () => localStorage.installType === 'development',
+    title: 'reload',
+    click: browserCommands.reload,
+  },
   'editor.contextDelete': {
     presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
     title: 'editDeleteText',
@@ -220,28 +229,28 @@ contextMenus = {
   }
 };
 
-if (chrome.contextMenus) {
-  const createContextMenus = ids => {
-    for (const id of ids) {
-      let item = contextMenus[id];
-      if (item.presentIf && !item.presentIf()) {
-        continue;
-      }
-      item = Object.assign({id}, item);
-      delete item.presentIf;
-      item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
-        item.type = 'checkbox';
-        item.checked = prefs.get(id);
-      }
-      if (!item.contexts) {
-        item.contexts = ['browser_action'];
-      }
-      delete item.click;
-      chrome.contextMenus.create(item, ignoreChromeError);
+function createContextMenus(ids) {
+  for (const id of ids) {
+    let item = contextMenus[id];
+    if (item.presentIf && !item.presentIf()) {
+      continue;
     }
-  };
+    item = Object.assign({id}, item);
+    delete item.presentIf;
+    item.title = chrome.i18n.getMessage(item.title);
+    if (!item.type && typeof prefs.defaults[id] === 'boolean') {
+      item.type = 'checkbox';
+      item.checked = prefs.get(id);
+    }
+    if (!item.contexts) {
+      item.contexts = ['browser_action'];
+    }
+    delete item.click;
+    chrome.contextMenus.create(item, ignoreChromeError);
+  }
+}
 
+if (chrome.contextMenus) {
   // circumvent the bug with disabling check marks in Chrome 62-64
   const toggleCheckmark = CHROME >= 3172 && CHROME <= 3288 ?
     (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
@@ -298,7 +307,6 @@ function webNavUsercssInstallerFF(data) {
     }
   });
 }
-
 
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;

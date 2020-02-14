@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "minimum_chrome_version": "49",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
@@ -58,6 +58,9 @@
     "_execute_browser_action": {},
     "openManage": {
     "description": "__MSG_openManage__"
+    },
+    "reload": {
+      "description": "__MSG_reload__"
     },
     "styleDisableAll": {
     "description": "__MSG_disableAllStyles__"
