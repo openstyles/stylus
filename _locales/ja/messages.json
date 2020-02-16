@@ -236,6 +236,14 @@
     "message": "はい",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "クリップボードへコピーしました",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "クリップボードへコピー",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "インストール日",
     "description": "Option text for the user to sort the style by install date"
@@ -432,6 +440,10 @@
   "helpKeyMapHotkey": {
     "message": "ホットキーを押す",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "使用中のブラウザの現在のバージョンの不具合のため、このホストは無効にされています",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "スタイルに追加",
@@ -638,7 +650,7 @@
     "description": "Label for filters container"
   },
   "manageHeading": {
-    "message": "インストール済みのスタイル",
+    "message": "インストール済みスタイル",
     "description": "Heading for the manage page"
   },
   "manageMaxTargets": {
@@ -930,11 +942,11 @@
     "description": ""
   },
   "optionsAdvancedContextDelete": {
-    "message": "エディタのコンテキストメニューに「削除」を追加します",
+    "message": "エディタのコンテキストメニューに「削除」を追加する",
     "description": ""
   },
   "optionsAdvancedExposeIframes": {
-    "message": "HTML[stylus-iframe] によってiframeへのアクセスを可能にします",
+    "message": "HTML[stylus-iframe] によってiframeへのアクセスを可能にする",
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
@@ -954,7 +966,7 @@
     "description": ""
   },
   "optionsCheck": {
-    "message": "スタイル更新",
+    "message": "スタイルを更新",
     "description": ""
   },
   "optionsCheckUpdate": {
@@ -962,7 +974,7 @@
     "description": ""
   },
   "optionsCustomizeBadge": {
-    "message": "ツールバーアイコンのバッジ",
+    "message": "アイコンの修飾",
     "description": ""
   },
   "optionsCustomizeIcon": {
@@ -974,7 +986,11 @@
     "description": ""
   },
   "optionsCustomizeUpdate": {
-    "message": "更新",
+    "message": "更新設定",
+    "description": ""
+  },
+  "optionsCustomizeSync": {
+    "message": "クラウドとの同期",
     "description": ""
   },
   "optionsHeading": {
@@ -994,7 +1010,7 @@
     "description": ""
   },
   "optionsOpenManager": {
-    "message": "スタイル管理",
+    "message": "スタイルを管理",
     "description": ""
   },
   "optionsPopupWidth": {
@@ -1019,6 +1035,70 @@
   },
   "optionsUpdateInterval": {
     "message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "未選択",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "接続",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "切断",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "すぐに同期",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "ログイン",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "スタイルをダウンロード中 ( $loaded$/ $total$)",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "スタイルをアップロード中( $loaded$/ $total$)",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "同期中...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "接続中...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "接続状態",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "切断中...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "切断状態",
     "description": ""
   },
   "paginationCurrent": {
@@ -1046,7 +1126,7 @@
     "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupAutoResort": {
-    "message": "トグルによってポップアップのスタイルを並べ直します",
+    "message": "ポップアップのスタイルをソートして表示",
     "description": "Label for the checkbox controlling popup resorting."
   },
   "popupBorders": {
@@ -1096,6 +1176,10 @@
   "previewTooltip": {
     "message": "変更を保存しないで一時的に適用します。\n変更を確定する場合には、スタイルを保存してください。",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Stylus拡張をリロードします",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "置換",
@@ -1498,6 +1582,10 @@
   },
   "syncDropboxStyles": {
     "message": "Dropboxにエクスポート",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropboxへのインポート/エクスポート機能は、オプションページにある より進歩したスタイル同期機能 へ移行しました。",
     "description": ""
   },
   "retrieveDropboxSync": {

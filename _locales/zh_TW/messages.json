@@ -244,6 +244,14 @@
     "message": "是",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "已複製到剪貼簿",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "複製到剪貼簿",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "安裝日期",
     "description": "Option text for the user to sort the style by install date"
@@ -440,6 +448,10 @@
   "helpKeyMapHotkey": {
     "message": "按下快速鍵",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "由於所用目前版本瀏覽器的臭蟲，此主機已被停用",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "追加到樣式",
@@ -981,6 +993,10 @@
     "message": "更新",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "同步到雲端",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "選項",
     "description": "Heading for options section on manage page."
@@ -1023,6 +1039,70 @@
   },
   "optionsUpdateInterval": {
     "message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "無",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "連線",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "斷線",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "立刻同步",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "登入",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "正在拉取樣式 $total$ 中的 $loaded$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "正在拉取樣式 $total$ 中的 $loaded$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "正在同步……",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "正在連線……",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "已連線",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "正在斷線……",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "已斷線",
     "description": ""
   },
   "paginationCurrent": {
@@ -1100,6 +1180,10 @@
   "previewTooltip": {
     "message": "不儲存而暫時套用變更。\n儲存樣式以永久變更。",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "重新載入 Stylus 附加元件",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "取代",
@@ -1506,6 +1590,10 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox 匯出",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox 匯入／匯出已被選項頁面中的更進階的樣式同步所取代。",
     "description": ""
   },
   "retrieveDropboxSync": {

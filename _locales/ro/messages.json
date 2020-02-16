@@ -617,10 +617,6 @@
     "message": "Managerul",
     "description": "Link to open the manage page."
   },
-  "openOptions": {
-    "message": "Opțiuni",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Deschideți managerul de teme",
     "description": "Label for the style maanger opener in the browser action context menu."

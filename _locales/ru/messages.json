@@ -921,10 +921,6 @@
     "message": "Менеджер",
     "description": "Link to open the manage page."
   },
-  "openOptions": {
-    "message": "Настройки",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Менеджер стилей",
     "description": "Label for the style maanger opener in the browser action context menu."

@@ -913,10 +913,6 @@
     "message": "Gestion",
     "description": "Link to open the manage page."
   },
-  "openOptions": {
-    "message": "Paramètres",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Ouvrir le gestionnaire de styles",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -932,6 +928,10 @@
   "optionsAdvancedExposeIframes": {
     "message": "Exposer les iframes via HTML[stylus-iframe]",
     "description": ""
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Expose le domaine principal dans chaque iframe.\nPermet d’écrire du CSS spécifique aux iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Écrire un nouveau style en tant que usercss",
@@ -1029,6 +1029,10 @@
     "message": "Stylus a échoué à parser le usercss :",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "Retrier les styles dans la popup à chaque (dés)activation",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "Ajouter des bordures blanches sur les côtés",
     "description": ""
@@ -1048,6 +1052,10 @@
   "popupManageTooltip": {
     "message": "Maj-clic ou clic droit ouvre le gestionnaire avec les styles applicables au site courant.",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Actions",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre",

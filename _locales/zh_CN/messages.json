@@ -917,10 +917,6 @@
     "message": "管理样式",
     "description": "Link to open the manage page."
   },
-  "openOptions": {
-    "message": "设置用户界面",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "打开样式管理器",
     "description": "Label for the style maanger opener in the browser action context menu."

@@ -236,6 +236,14 @@
     "message": "Jah",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Kopeeritud lõikelauale",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Kopeeri lõikelauale",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Paigaldamise kuupäev",
     "description": "Option text for the user to sort the style by install date"
@@ -432,6 +440,10 @@
   "helpKeyMapHotkey": {
     "message": "Vajuta kiirklahvi",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "See host on keelatud hetkel kasutatavas brauseri praeguses versioonis oleva vea tõttu",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "Lisa stiilile",
@@ -879,6 +891,10 @@
     "message": "Uuendused",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Sünkrooni pilve",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Valikud",
     "description": "Heading for options section on manage page."
@@ -921,6 +937,34 @@
   },
   "optionsUpdateInterval": {
     "message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Pole",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sünkrooni kohe",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sünkroonimine...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Ühendumine...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Ühendatud",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Lahtiühendamine...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Lahti ühendatud",
     "description": ""
   },
   "paginationCurrent": {
@@ -1398,6 +1442,18 @@
     "message": "see URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
+  "syncDropboxStyles": {
+    "message": "Dropboxi eksportimine",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropboxi importimine/eksportimine on asendatud edasijõudnuma stiilide sünkroonijaga valikute lehel.",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropboxi importimine",
+    "description": ""
+  },
   "overwriteFileExport": {
     "message": "Kas tahad olemasoleva faili üle kirjutada?",
     "description": ""
@@ -1410,8 +1466,24 @@
     "message": "Oma stiilide importimiseks peaksid esmalt selle eksportima.",
     "description": ""
   },
+  "connectingDropbox": {
+    "message": "Dropboxiga ühendumine...",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropboxiga ühendumine on saadaval ainult veebipoe kaudu installitud rakendustes",
+    "description": ""
+  },
   "gettingStyles": {
     "message": "Kõigi stiilide hankimine...",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Stiilide kokkupakkimine...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Stiilide lahtipakkimine...",
     "description": ""
   },
   "readingStyles": {

@@ -673,10 +673,6 @@
     "message": "Gerir",
     "description": "Link to open the manage page."
   },
-  "openOptions": {
-    "message": "Opções",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Abrir gestor de estilos",
     "description": "Label for the style maanger opener in the browser action context menu."

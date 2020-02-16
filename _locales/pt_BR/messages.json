@@ -241,9 +241,9 @@
     "message": "Nenhum estilo instalado para este site.",
     "description": "Text displayed when no styles are installed for the current site"
   },
-  "openOptions": {
-    "message": "Opções",
-    "description": "Go to Options UI"
+  "openManage": {
+    "message": "Gerenciar estilos instalados",
+    "description": "Link to open the manage page."
   },
   "optionsActions": {
     "message": "Ações",

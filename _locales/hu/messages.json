@@ -41,7 +41,7 @@
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesLineWidgetLabel": {
-    "message": "Információ megjelenítése arról, hogy mire van alkalmazva",
+    "message": "Információ arról, hogy mire érvényes",
     "description": "Label for the checkbox to display applies-to information in the single editor"
   },
   "appliesLineWidgetWarning": {
@@ -57,7 +57,7 @@
     "description": "Label for the button to remove an 'applies' entry"
   },
   "appliesRemoveError": {
-    "message": "Nem lehet eltávolítani az utolsó alkalmazási szabályt",
+    "message": "Nem lehet eltávolítani az utolsó 'érvényes erre' bejegyzést",
     "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "appliesSpecify": {
@@ -236,6 +236,14 @@
     "message": "Igen",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Vágólapra másolva",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Másolás vágólapra",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Telepítés dátuma",
     "description": "Option text for the user to sort the style by install date"
@@ -308,6 +316,14 @@
   "enableStyleLabel": {
     "message": "Engedélyezés",
     "description": "Label for the button to enable a style"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Aktuális tartományt kivéve",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Aktuális URL-t kivéve",
+    "description": ""
   },
   "exportLabel": {
     "message": "Exportálás",
@@ -634,7 +650,7 @@
     "description": "Label for the checkbox that toggles the new UI on manage page"
   },
   "manageOnlyDisabled": {
-    "message": "Csak letiltott stílusok",
+    "message": "Csak a letiltott stílusok",
     "description": "Checkbox to show only disabled styles"
   },
   "manageOnlyEnabled": {
@@ -669,6 +685,222 @@
     "message": "Aktív stílusok számlálójának mutatása",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Érvénytelen jelölő négyzet @var: az érték csak 0 vagy 1 lehet",
+    "description": "Error displayed when the value of @var checkbox is invalid"
+  },
+  "meta_invalidColor": {
+    "message": "Érvénytelen szín @var: a(z) $color$ nem szín",
+    "description": "Error displayed when the value of @var color is invalid",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRange": {
+    "message": "Érvénytelen változó @var (típus: $type$): az érték csak szám vagy tömb lehet",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Érvénytelen változó @var (típus: $type$): többféle egység van megadva",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Érvénytelen változó @var (típus: $type$): a tömb túl sok elemet tartalmaz",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Érvénytelen változó @var (típus: $type$): csak szám, karakterlánc vagy null típusú elem lehet a tömbben",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett értéke null",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték kisebb, mint a minimum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték nagyobb, mint a maximum",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték nem a lépésköz többszöröse",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "Érvénytelen változó @var (típus: $type$): a(z) '$units$' nem érvényes egység",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Érvénytelen kiválasztó lista @var: az alapértelmezett érték tömb vagy objektum lehet csak",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Érvénytelen kiválasztó lista @var: a tömbön/objektumon belüli érték csak karakterlánc lehet",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Érvénytelen kiválasztó lista @var: a lista üres",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "Érvénytelen kiválasztó lista @var: a listaelem címkéje üres",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Érvénytelen kiválasztó lista @var: egynél több alapértelmezett elem van megadva",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Érvénytelen kiválasztó lista @var: egy listaelem kétszer szerepel",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Érvénytelen kiválasztó lista @var: az érték nem található a listaelemek között",
+    "description": "Error displayed when the value of @var select is invalid"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Érvénytelen URL-protokoll. Csak 'http' vagy 'https' engedett: $protocol$",
+    "description": "Error displayed when the protocol of the URL is invalid",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Érvénytelen verziószám. Az érték nem illeszkedik a SemVer mintájához: $version$",
+    "description": "Error displayed when @version is invalid",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Várt elem: szám",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Várt elem: idézőjelek közti karakterlánc",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Várt elem: szó",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Várt karakterek: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Várt elem: EOT-adat",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
+  "meta_missingMandatory": {
+    "message": "Kötelező metaadat hiányzik: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Érvénytelen JSON: a(z) $literal$ nem érvényes JSON-karakterlánc (literális)",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Ismeretlen metaadat: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Ismeretlen @$varkey$ változó, típus: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Ismeretlen @preprocesszor (előfeldolgozó): $preprocessor$",
+    "description": "Error displayed when unknown @preprocessor is parsed",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "noStylesForSite": {
     "message": "Nincs telepítve stílus ehhez az oldalhoz.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -676,10 +908,6 @@
   "openManage": {
     "message": "Kezelés",
     "description": "Link to open the manage page."
-  },
-  "openOptions": {
-    "message": "Beállítások",
-    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "Stíluskezelő megnyitása",
@@ -700,6 +928,10 @@
   "optionsAdvancedExposeIframes": {
     "message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül",
     "description": ""
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Az oldal felső tartományának jelölése minden iframe-ben.\nLehetővé teszi az iframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Új stílus írása usercss-ként",
@@ -735,6 +967,10 @@
   },
   "optionsCustomizeUpdate": {
     "message": "Frissítések",
+    "description": ""
+  },
+  "optionsCustomizeSync": {
+    "message": "Szinkronizálás felhővel",
     "description": ""
   },
   "optionsHeading": {
@@ -778,7 +1014,71 @@
     "description": ""
   },
   "optionsUpdateInterval": {
-    "message": "Stílus automatikus frissítési intervalluma órában megadva (álltsd 0-ra a kikapcsoláshoz)",
+    "message": "Felhasználói stílus automatikus frissítési időköze órában (0=kikapcsolva)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Nincs",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Kapcsolódás",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Kapcsolat bontása",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Szinkronizálás most",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Bejelentkezés",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Stílusok helyi frissítése (pull): $loaded$/$total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Stílusok távoli frissítése (push): $loaded$/$total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Szinkronizálás...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Kapcsolódás...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Kapcsolódva",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Kapcsolat bontása...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Nincs kapcsolat",
     "description": ""
   },
   "paginationCurrent": {
@@ -805,6 +1105,10 @@
     "message": "A Stylus nem tudta elemezni a usercss-t",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "Stílusok újrarendezése a felugró ablakban átkapcsoláskor",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "Fehér szegély az oldalakon",
     "description": ""
@@ -824,6 +1128,10 @@
   "popupManageTooltip": {
     "message": "Shift+kattintás vagy jobb kattintás: a stíluskezelő megnyitása a jelenlegi oldalra érvényes stílusokkal",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Műveletmenü",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Szerkesztő megnyitása új ablakban",
@@ -914,7 +1222,7 @@
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
   "sectionAdd": {
-    "message": "Egy újabb szekció hozzáadása",
+    "message": "Új szakasz hozzáadása",
     "description": "Label for the button to add a section"
   },
   "sectionCode": {
@@ -1159,6 +1467,10 @@
     "message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon.",
     "description": "Note in the toolbar popup for file:// URLs"
   },
+  "InaccessibleFileHint": {
+    "message": "A Stylus nem tud bizonyos fájltípusokhoz hozzáférni (pl. PDF- & JSON-fájlokhoz)",
+    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nem találhatók frissítések.",
     "description": "Text that displays when an update all check completed and no updates are available"
@@ -1247,5 +1559,53 @@
   "writeStyleForURL": {
     "message": "ehhez az URL-hez",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxStyles": {
+    "message": "Exportálás Dropboxba",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Importálás Dropboxból",
+    "description": ""
+  },
+  "overwriteFileExport": {
+    "message": "Felülírjuk a létező fájlt?",
+    "description": ""
+  },
+  "exportSavedSuccess": {
+    "message": "A fájl sikeresen elmentve.",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "A stílusok importálásához előbb exportálni kell őket.",
+    "description": ""
+  },
+  "connectingDropbox": {
+    "message": "Kapcsolódás Dropboxhoz...",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropboxhoz csak közvetlenül a web-boltból telepített alkalmazásból lehet kapcsolódni.",
+    "description": ""
+  },
+  "gettingStyles": {
+    "message": "Minden stílus fogadása...",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Stílusok tömörítése...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Stílusok kibontása...",
+    "description": ""
+  },
+  "readingStyles": {
+    "message": "Stílusok olvasása...",
+    "description": ""
+  },
+  "uploadingFile": {
+    "message": "Fájl feltöltése...",
+    "description": ""
   }
 }

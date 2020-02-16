@@ -49,7 +49,7 @@
     "description": "A warning that applies-to information won't show properly with minified CSS"
   },
   "appliesRegexpOption": {
-    "message": "URLs coincidentes con la regexp",
+    "message": "URLs que coinciden con la regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
@@ -85,7 +85,7 @@
     "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "Seleccione un archivo o arrástrelo y suéltelo en esta página.",
+    "message": "Al exportar hará una copia de respaldo de TODOS los estilos instalados. Para restaurar una copia de respaldo, importe el archivo o arrástrelo a esta página.",
     "description": "Message for backup"
   },
   "bckpInstStyles": {
@@ -109,7 +109,7 @@
     "description": "Text to display when checking a style for an update"
   },
   "clickToUninstall": {
-    "message": "Pulse para desinstalar",
+    "message": "Haga clic para desinstalar",
     "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
   },
   "cm_autoCloseBrackets": {
@@ -139,6 +139,10 @@
   "cm_lineWrapping": {
     "message": "Ajuste de línea",
     "description": "Label for the checkbox controlling word wrap option for the style editor."
+  },
+  "cm_linter": {
+    "message": "Validador lint",
+    "description": "Select the linter to check for CSS issues"
   },
   "cm_matchHighlight": {
     "message": "Resaltar",
@@ -896,10 +900,6 @@
   "openManage": {
     "message": "Administrar",
     "description": "Link to open the manage page."
-  },
-  "openOptions": {
-    "message": "Opciones",
-    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "Abrir administrador de estilos",
