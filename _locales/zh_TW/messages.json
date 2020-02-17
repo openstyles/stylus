@@ -546,10 +546,6 @@
     "message": "檢查更新",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "要啟用檢查更新，將檔案拖放到分頁條上或是在樣式詮釋資料中指定 @updateURL。",
-    "description": ""
-  },
   "license": {
     "message": "授權條款",
     "description": "Label for the license"
@@ -625,17 +621,9 @@
     "message": "觀看檔案時發生錯誤",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "即時重新整理已啟用，以便在這個分頁與來源檔案分頁都開啟時自動於有外部變更時自動更新已安裝樣式。",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "即時重新整理",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "要啟用即時重新整理，將檔案托放到分頁條上（分頁標題顯示的區域）。",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons 要套用到的欄位",

@@ -92,30 +92,6 @@
       "run_at": "document_start",
       "all_frames": false,
       "js": ["content/install-hook-openusercss.js"]
-    },
-    {
-      "matches": [
-        "*://*/*.user.css",
-        "*://*/*.user.styl",
-
-        "file://*/*.user.css",
-        "file://*/*.user.styl",
-
-        "ftp://*/*.user.css",
-        "ftp://*/*.user.styl",
-
-        "*://*/*.user.css?*",
-        "*://*/*.user.styl?*",
-
-        "file://*/*.user.css?*",
-        "file://*/*.user.styl?*",
-
-        "ftp://*/*.user.css?*",
-        "ftp://*/*.user.styl?*"
-      ],
-      "run_at": "document_idle",
-      "all_frames": false,
-      "js": ["content/install-hook-usercss.js"]
     }
   ],
   "browser_action": {

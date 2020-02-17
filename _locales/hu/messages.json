@@ -609,10 +609,6 @@
     "message": "Hiba történt a fájl figyelése közben",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "A valós idejű újratöltés engedélyezve van, így a telepített stílus automatikusan frissül külső változások során, amíg ez a fül és a forrásfájlt tartalmazó fül nyitva van.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Valós idejű újratöltés",
     "description": "The label of live-reload feature"

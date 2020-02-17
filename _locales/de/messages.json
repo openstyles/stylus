@@ -526,10 +526,6 @@
     "message": "Nach Updates suchen",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Ziehe die Datei auf die Tableiste oder definiere @updateURL in den Metadaten des Styles, um automatisch nach Updates zu suchen.",
-    "description": ""
-  },
   "license": {
     "message": "Lizenz",
     "description": "Label for the license"
@@ -605,17 +601,9 @@
     "message": "Bei der Echtzeitaktualisierung der Datei ist ein Fehler aufgetreten",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Echtzeitaktualisierung ist aktiviert, sodass die Darstellung des jeweiligen Styles automatisch aktualisiert wird, wenn externe Änderungen erfolgen.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Echtzeitaktualisierung",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Ziehe die Datei auf die Tableiste, um die Echtzeitaktualisierung nutzen zu können.",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons in der \"Gilt für\" Spalte anzeigen",

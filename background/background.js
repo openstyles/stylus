@@ -1,5 +1,5 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
-  debounce URLS ignoreChromeError getTab
+  debounce URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
   findExistingTab createTab activateTab isTabReplaceable getActiveTab */
 
@@ -87,23 +87,7 @@ var browserCommands, contextMenus;
 // register all listeners
 msg.on(onRuntimeMessage);
 
-navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
-  if (type === 'committed') {
-    // styles would be updated when content script is injected.
-    return;
-  }
-  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
-    .catch(msg.ignoreError);
-});
-
 if (FIREFOX) {
-  // FF applies page CSP even to content scripts, https://bugzil.la/1267027
-  navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
-    url: [
-      {pathSuffix: '.user.css'},
-      {pathSuffix: '.user.styl'},
-    ]
-  });
   // FF misses some about:blank iframes so we inject our content script explicitly
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
     url: [
@@ -122,9 +106,14 @@ if (chrome.commands) {
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
 
-const tabIcons = new Map();
-chrome.tabs.onRemoved.addListener(tabId => tabIcons.delete(tabId));
-chrome.tabs.onReplaced.addListener((added, removed) => tabIcons.delete(removed));
+const tabData = new Map();
+const tabDataFor = tabId => {
+  let data = tabData.get(tabId);
+  if (!data) tabData.set(tabId, (data = {}));
+  return data;
+};
+chrome.tabs.onRemoved.addListener(tabId => tabData.delete(tabId));
+chrome.tabs.onReplaced.addListener((added, removed) => tabData.delete(removed));
 
 prefs.subscribe([
   'disableAll',
@@ -147,12 +136,19 @@ prefs.initializing.then(() => {
   refreshAllIcons();
 });
 
-navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
-  if (type === 'committed' && !frameId) {
+navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers, url}, type) => {
+  if (type !== 'committed') {
+    msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
+      .catch(msg.ignoreError);
+  } else if (!frameId) {
+    if (usercssHelper.testUrl(url) && !`${tabDataFor(tabId).url}`.startsWith(URLS.installUsercss)) {
+      usercssHelper.openInstallerPage(tabId, url).then(newUrl => {
+        tabDataFor(tabId).url = newUrl || url;
+      });
+    }
     // it seems that the tab icon would be reset by navigation. We
     // invalidate the cache here so it would be refreshed by `apply.js`.
-    tabIcons.delete(tabId);
-
+    tabData.set(tabId, {url});
     // however, if the tab was swapped in by forward/backward buttons,
     // `apply.js` doesn't notify the background to update the icon,
     // so we have to refresh it manually.
@@ -293,21 +289,6 @@ if (FIREFOX && browser.commands && browser.commands.update) {
 
 msg.broadcastTab({method: 'backgroundReady'});
 
-function webNavUsercssInstallerFF(data) {
-  const {tabId} = data;
-  Promise.all([
-    msg.sendTab(tabId, {method: 'ping'})
-      .catch(() => false),
-    // we need tab index to open the installer next to the original one
-    // and also to skip the double-invocation in FF which assigns tab url later
-    getTab(tabId),
-  ]).then(([pong, tab]) => {
-    if (pong !== true && tab.url !== 'about:blank') {
-      window.API_METHODS.openUsercssInstallPage({direct: true}, {tab});
-    }
-  });
-}
-
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
   msg.sendTab(tabId, {method: 'ping'}, {frameId})
@@ -327,8 +308,7 @@ function webNavIframeHelperFF({tabId, frameId}) {
 }
 
 function updateIconBadge(tabId, count) {
-  let tabIcon = tabIcons.get(tabId);
-  if (!tabIcon) tabIcons.set(tabId, (tabIcon = {}));
+  const tabIcon = tabDataFor(tabId);
   if (tabIcon.count === count) {
     return;
   }
@@ -383,15 +363,15 @@ function refreshIconBadgeColor() {
 }
 
 function refreshAllIcons() {
-  for (const [tabId, icon] of tabIcons) {
-    refreshIcon(tabId, icon);
+  for (const [tabId, data] of tabData) {
+    refreshIcon(tabId, data);
   }
   refreshIcon(null, {}); // default icon
 }
 
 function refreshAllIconsBadgeText() {
-  for (const [tabId, icon] of tabIcons) {
-    refreshIconBadgeText(tabId, icon);
+  for (const [tabId, data] of tabData) {
+    refreshIconBadgeText(tabId, data);
   }
 }
 

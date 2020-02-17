@@ -538,10 +538,6 @@
     "message": "更新をチェック",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "更新のチェックを有効にするには、ファイルをタブストリップにドロップするか、スタイルのメタデータで @updateURL を指定してください。",
-    "description": ""
-  },
   "license": {
     "message": "ライセンス",
     "description": "Label for the license"
@@ -621,17 +617,9 @@
     "message": "ファイルの監視中にエラーが発生しました",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "自動リロードが有効になっているため、このタブとソースファイルのタブの両方が開いている間に、外部変更によってインストール済みスタイルが自動更新されることがあります。",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "自動リロード",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "自動リロードを有効にするには、ファイルをタブストリップ（タブのタイトルが表示されている領域）にドロップしてください。",
-    "description": ""
   },
   "manageFavicons": {
     "message": "適用先欄のファビコン",

@@ -534,10 +534,6 @@
     "message": "Проверить обновления",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Для проверки обновлений перетяните файл на полоску вкладок или впишите @updateURL в мета-данных стиля.",
-    "description": ""
-  },
   "license": {
     "message": "Лицензия",
     "description": "Label for the license"
@@ -617,17 +613,9 @@
     "message": "Ошибка слежения за файлом",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Включена автозагрузка изменений – установленный стиль будет обновляться автоматически пока открыта эта вкладка и вкладка исходного файла.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Автозагрузка изменений",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Для автозагрузки изменений перетяните файл на полоску вкладок (область, где показываются названия вкладок).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Пиктограммы для целевых сайтов",

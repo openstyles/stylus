@@ -530,10 +530,6 @@
     "message": "Rechercher les mises à jour",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Pour activer la vérification des mises à jour, glissez le fichier sur la barre des onglets ou spécifiez @updateURL dans les métadonnées du style.",
-    "description": ""
-  },
   "license": {
     "message": "Licence",
     "description": "Label for the license"
@@ -609,17 +605,9 @@
     "message": "Une erreur est survenue durant la surveillance du fichier",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Le rechargement automatique est activé, donc le style installé sera mis à jour automatiquement après une modification externe quand à la fois cet onglet et l’onglet du fichier source sont ouverts.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Rechargement immédiat",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Pour activer le rechargement automatique, glisser le fichier sur la barre des onglets (la zone où les titres des onglets sont affichés).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons dans la colonne « s’applique à »",

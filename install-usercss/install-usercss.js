@@ -1,46 +1,25 @@
 /* global CodeMirror semverCompare closeCurrentTab messageBox download
-  $ $$ $create $createLink t prefs API getTab */
+  $ $$ $create $createLink t prefs API */
 'use strict';
 
 (() => {
-  const DUMMY_URL = 'foo:';
-
   // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
-  let liveReload = false;
+  const tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
+  const initialUrl = params.get('updateUrl');
+  if (!initialUrl) throw 'No updateUrl parameter';
+
   let installed = null;
   let installedDup = null;
+  let initialized = false;
+  let filePort;
 
-  const tabId = Number(params.get('tabId'));
-  let tabUrl;
-  let port;
+  const liveReload = initLiveReload();
 
-  if (params.has('direct')) {
-    setUnavailable('.live-reload');
-    getCodeDirectly();
-  } else {
-    port = chrome.tabs.connect(tabId);
-    port.postMessage({method: 'getSourceCode'});
-    port.onMessage.addListener(msg => {
-      switch (msg.method) {
-        case 'getSourceCodeResponse':
-          if (msg.error) {
-            messageBox.alert(msg.error, 'pre');
-          } else {
-            initSourceCode(msg.sourceCode);
-          }
-          break;
-        case 'sourceCodeChanged':
-          if (msg.error) {
-            messageBox.alert(msg.error, 'pre');
-          } else {
-            liveReloadUpdate(msg.sourceCode);
-          }
-          break;
-      }
-    });
-    port.onDisconnect.addListener(onPortDisconnected);
-  }
+  // when this tab is reloaded, bg may no longer have the code as it's kept only for a few seconds
+  API.getUsercssInstallCode(initialUrl)
+    .then(code => code || !filePort && download(initialUrl))
+    .then(code => (code || !filePort) && initSourceCode(code));
 
   const theme = prefs.get('editor.theme');
   const cm = CodeMirror($('.main'), {
@@ -54,8 +33,13 @@
       href: `vendor/codemirror/theme/${theme}.css`
     }));
   }
-  let liveReloadPending = Promise.resolve();
   window.addEventListener('resize', adjustCodeHeight);
+  // "History back" in Firefox (for now) restores the old DOM including the messagebox,
+  // which stays after installing since we don't want to wait for the fadeout animation before resolving.
+  document.addEventListener('visibilitychange', () => {
+    if (messageBox.element) messageBox.element.remove();
+    if (installed) liveReload.onToggled();
+  });
 
   setTimeout(() => {
     if (!installed) {
@@ -64,35 +48,6 @@
     }
   }, 200);
 
-  getTab(tabId).then(tab => (tabUrl = tab.url));
-  chrome.tabs.onUpdated.addListener((id, {url}) => {
-    if (id === tabId && url && url !== tabUrl) {
-      closeCurrentTab();
-    }
-  });
-  // close the tab in case the port didn't report onDisconnect
-  chrome.tabs.onRemoved.addListener(id => {
-    if (id === tabId) {
-      closeCurrentTab();
-    }
-  });
-
-  function liveReloadUpdate(sourceCode) {
-    liveReloadPending = liveReloadPending.then(() => {
-      const scrollInfo = cm.getScrollInfo();
-      const cursor = cm.getCursor();
-      cm.setValue(sourceCode);
-      cm.setCursor(cursor);
-      cm.scrollTo(scrollInfo.left, scrollInfo.top);
-
-      API.installUsercss({
-        id: (installed || installedDup).id,
-        sourceCode
-      }).then(style => {
-        updateMeta(style);
-      }).catch(showError);
-    });
-  }
 
   function updateMeta(style, dup = installedDup) {
     installedDup = dup;
@@ -204,7 +159,7 @@
     $$.remove('.warning');
     $('button.install').disabled = true;
     $('button.install').classList.add('installed');
-    $('#live-reload-install-hint').classList.toggle('hidden', !liveReload);
+    $('#live-reload-install-hint').classList.toggle('hidden', !liveReload.enabled);
     $('h2.installed').classList.add('active');
     $('.set-update-url input[type=checkbox]').disabled = true;
     $('.set-update-url').title = style.updateUrl ?
@@ -212,16 +167,18 @@
 
     updateMeta(style);
 
-    if (!liveReload && !prefs.get('openEditInWindow')) {
-      chrome.tabs.update({url: '/edit.html?id=' + style.id});
+    if (!liveReload.enabled && !prefs.get('openEditInWindow')) {
+      location.href = '/edit.html?id=' + style.id;
     } else {
       API.openEditor({id: style.id});
-      if (!liveReload) {
-        closeCurrentTab();
+      if (!liveReload.enabled) {
+        if (!filePort && history.length > 1) {
+          history.back();
+        } else {
+          closeCurrentTab();
+        }
       }
     }
-
-    window.dispatchEvent(new CustomEvent('installed'));
   }
 
   function initSourceCode(sourceCode) {
@@ -277,6 +234,8 @@
   }
 
   function init({style, dup}) {
+    initialized = true;
+
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
@@ -307,17 +266,11 @@
 
     // set updateUrl
     const checker = $('.set-update-url input[type=checkbox]');
-    // only use the installation URL if not specified in usercss
-    const installationUrl = (params.get('updateUrl') || '').replace(/^blob.+/, '');
-    const updateUrl = new URL(style.updateUrl || installationUrl || DUMMY_URL);
+    const updateUrl = new URL(style.updateUrl || initialUrl);
     if (dup && dup.updateUrl === updateUrl.href) {
       checker.checked = true;
       // there is no way to "unset" updateUrl, you can only overwrite it.
       checker.disabled = true;
-    } else if (updateUrl.href === DUMMY_URL) {
-      // drag'n'dropped on the manage page and the style doesn't have @updateURL
-      setUnavailable('.set-update-url');
-      return;
     } else if (updateUrl.protocol !== 'file:') {
       checker.checked = true;
       style.updateUrl = updateUrl.href;
@@ -329,38 +282,11 @@
     $('.set-update-url p').textContent = updateUrl.href.length < 300 ? updateUrl.href :
       updateUrl.href.slice(0, 300) + '...';
 
-    if (!port) {
-      return;
-    }
-
-    // live reload
-    const setLiveReload = $('.live-reload input[type=checkbox]');
-    if (!installationUrl || !installationUrl.startsWith('file:')) {
-      setLiveReload.parentNode.remove();
+    if (initialUrl.startsWith('file:')) {
+      $('.live-reload input').onchange = liveReload.onToggled;
     } else {
-      setLiveReload.addEventListener('change', () => {
-        liveReload = setLiveReload.checked;
-        if (installed || installedDup) {
-          const method = 'liveReload' + (liveReload ? 'Start' : 'Stop');
-          port.postMessage({method});
-          $('.install').disabled = liveReload;
-          $('#live-reload-install-hint').classList.toggle('hidden', !liveReload);
-        }
-      });
-      window.addEventListener('installed', () => {
-        if (liveReload) {
-          port.postMessage({method: 'liveReloadStart'});
-        }
-      });
+      $('.live-reload').remove();
     }
-  }
-
-  function setUnavailable(label) {
-    const el = $(label);
-    el.classList.add('unavailable');
-    const input = $('input', el);
-    input.disabled = true;
-    input.checked = false;
   }
 
   function getAppliesTo(style) {
@@ -391,47 +317,80 @@
     }
   }
 
-  function getCodeDirectly() {
-    // FF applies page CSP even to content scripts, https://bugzil.la/1267027
-    // To circumvent that, the bg process downloads the code directly
-    const key = 'tempUsercssCode' + tabId;
-    chrome.storage.local.get(key, data => {
-      const code = data && data[key];
-
-      // bg already downloaded the code
-      if (typeof code === 'string') {
+  function initLiveReload() {
+    const DELAY = 500;
+    let isEnabled = false;
+    let timer = 0;
+    let sequence = Promise.resolve();
+    if (tabId >= 0) {
+      filePort = chrome.tabs.connect(tabId, {name: 'downloadSelf'});
+      filePort.postMessage('init');
+      filePort.onMessage.addListener(onPortMessage);
+      filePort.onDisconnect.addListener(onPortDisconnect);
+    }
+    return {
+      get enabled() {
+        return isEnabled;
+      },
+      onToggled(e) {
+        if (e) isEnabled = e.target.checked;
+        if (installed || installedDup) {
+          (isEnabled ? start : stop)();
+          $('.install').disabled = isEnabled;
+          $('#live-reload-install-hint').hidden = !isEnabled;
+          $('#live-reload-install-hint-ff').hidden = !isEnabled || !filePort;
+        }
+      },
+    };
+    function onPortMessage({code, error}) {
+      if (error) {
+        messageBox.alert(error, 'pre');
+      } else if (!initialized) {
         initSourceCode(code);
-        chrome.storage.local.remove(key);
-        return;
+      } else {
+        update(code);
       }
-
-      // bg still downloads the code
-      if (code && code.loading) {
-        const waitForCodeInStorage = (changes, area) => {
-          if (area === 'local' && key in changes) {
-            initSourceCode(changes[key].newValue);
-            chrome.storage.onChanged.removeListener(waitForCodeInStorage);
-            chrome.storage.local.remove(key);
-          }
-        };
-        chrome.storage.onChanged.addListener(waitForCodeInStorage);
-        return;
+    }
+    function onPortDisconnect() {
+      chrome.tabs.get(tabId, tab => {
+        if (chrome.runtime.lastError) {
+          closeCurrentTab();
+        } else if (tab.url === initialUrl) {
+          location.reload();
+        }
+      });
+    }
+    function check() {
+      start(true);
+      if (filePort) {
+        filePort.postMessage('timer');
+      } else {
+        download(initialUrl).then(update, logError);
       }
-
-      // on the off-chance dbExecChromeStorage.getAll ran right after bg download was saved
-      download(params.get('updateUrl'))
-        .then(initSourceCode)
-        .catch(err => messageBox.alert(t('styleInstallFailed', String(err)), 'pre'));
-    });
-  }
-
-  function onPortDisconnected() {
-    chrome.tabs.get(tabId, tab => {
-      if (chrome.runtime.lastError) {
-        closeCurrentTab();
-      } else if (tab.url === tabUrl) {
-        location.reload();
-      }
-    });
+    }
+    function logError(error) {
+      console.warn(t('liveReloadError', error));
+    }
+    function start(reset) {
+      timer = !reset && timer || setTimeout(check, DELAY);
+    }
+    function stop() {
+      clearTimeout(check);
+      timer = 0;
+    }
+    function update(code) {
+      if (!code) return logError('EMPTY');
+      sequence = sequence.then(() => {
+        const {id} = installed || installedDup;
+        const scrollInfo = cm.getScrollInfo();
+        const cursor = cm.getCursor();
+        cm.setValue(code);
+        cm.setCursor(cursor);
+        cm.scrollTo(scrollInfo.left, scrollInfo.top);
+        return API.installUsercss({id, sourceCode: code})
+          .then(updateMeta)
+          .catch(showError);
+      });
+    }
   }
 })();
