@@ -1,7 +1,7 @@
 /* global download prefs openURL FIREFOX CHROME VIVALDI
   debounce URLS ignoreChromeError getTab
   styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
-  findExistTab createTab activateTab isTabReplaceable getActiveTab */
+  findExistingTab createTab activateTab isTabReplaceable getActiveTab */
 
 'use strict';
 
@@ -437,7 +437,7 @@ function openManage({options = false, search} = {}) {
   if (options) {
     url += '#stylus-options';
   }
-  return findExistTab({
+  return findExistingTab({
     url,
     currentWindow: null,
     ignoreHash: true,
