@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg sync uuid */
+  getStyleWithNoCode msg sync uuidv4 */
 /* exported styleManager */
 'use strict';
 
