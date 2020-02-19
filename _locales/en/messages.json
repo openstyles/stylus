@@ -626,12 +626,12 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "Keep this tab open to auto-update the installed style on external changes.",
+    "message": "Keep this tab open to auto-update the style on external changes.",
     "description": "The label of live-reload feature"
   },
   "liveReloadInstallHintFF": {
-    "message": "Keep the original tab open too as it's needed for local file:// URLs in Firefox 68 and newer.",
-    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox 68+"
+    "message": "Keep both this tab and the original tab open to auto-update the style on external changes.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Live reload",

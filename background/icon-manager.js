@@ -30,13 +30,13 @@ const iconManager = (() => {
 
   // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
   function updateIconBadge(tabId, count, force = true) {
-    tabManager.setMeta(tabId, 'count', count);
+    tabManager.set(tabId, 'count', count);
     refreshIconBadgeText(tabId);
     refreshIcon(tabId, force);
   }
 
   function refreshIconBadgeText(tabId) {
-    const count = tabManager.getMeta(tabId, 'count');
+    const count = tabManager.get(tabId, 'count');
     iconUtil.setBadgeText({
       text: prefs.get('show-badge') && count ? String(count) : '',
       tabId
@@ -50,13 +50,13 @@ const iconManager = (() => {
   }
 
   function refreshIcon(tabId, force = false) {
-    const oldIcon = tabManager.getMeta(tabId, 'icon');
-    const newIcon = getIconName(tabManager.getMeta(tabId, 'count'));
+    const oldIcon = tabManager.get(tabId, 'icon');
+    const newIcon = getIconName(tabManager.get(tabId, 'count'));
 
     if (!force && oldIcon === newIcon) {
       return;
     }
-    tabManager.setMeta(tabId, 'icon', newIcon);
+    tabManager.set(tabId, 'icon', newIcon);
     iconUtil.setIcon({
       path: getIconPath(newIcon),
       tabId

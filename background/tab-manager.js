@@ -9,40 +9,35 @@ const tabManager = (() => {
   chrome.tabs.onReplaced.addListener((added, removed) => cache.delete(removed));
   navigatorUtil.onUrlChange(({tabId, frameId, url}) => {
     if (frameId) return;
-    setMeta(tabId, 'url', url);
-    emitUpdate({tabId, url});
-  });
-
-  return {onUpdate, setMeta, getMeta, list};
-
-  function list() {
-    return cache.keys();
-  }
-
-  function onUpdate(callback) {
-    listeners.push(callback);
-  }
-
-  function emitUpdate(e) {
-    for (const callback of listeners) {
+    const oldUrl = tabManager.get(tabId, 'url');
+    tabManager.set(tabId, 'url', url);
+    for (const fn of listeners) {
       try {
-        callback(e);
+        fn({tabId, url, oldUrl});
       } catch (err) {
         console.error(err);
       }
     }
-  }
+  });
 
-  function setMeta(tabId, key, value) {
-    let meta = cache.get(tabId);
-    if (!meta) {
-      meta = new Map();
-      cache.set(tabId, meta);
-    }
-    meta.set(key, value);
-  }
-
-  function getMeta(tabId, key) {
-    return cache.get(tabId).get(key);
-  }
+  return {
+    onUpdate(fn) {
+      listeners.push(fn);
+    },
+    get(tabId, key) {
+      const meta = cache.get(tabId);
+      return meta && meta[key];
+    },
+    set(tabId, key, value) {
+      let meta = cache.get(tabId);
+      if (!meta) {
+        meta = {};
+        cache.set(tabId, meta);
+      }
+      meta[key] = value;
+    },
+    list() {
+      return cache.keys();
+    },
+  };
 })();

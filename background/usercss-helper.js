@@ -1,15 +1,15 @@
-/* global API_METHODS usercss styleManager deepCopy openURL download URLS getTab promisify */
+/* global API_METHODS usercss styleManager deepCopy openURL download URLS getTab */
 /* exports usercssHelper */
 'use strict';
 
 // eslint-disable-next-line no-unused-vars
 const usercssHelper = (() => {
-  // detecting FF68 by the added feature as navigator.ua may be spoofed via about:config or devtools
-  const tabExec = !chrome.app && chrome.storage.managed && promisify(chrome.tabs.executeScript.bind(chrome.tabs));
-  const downloadSelf = tabExec && {file: '/content/download-self.js'};
-  const installCodeCache = new Map();
-  const clearInstallCode = url => installCodeCache.delete(url);
-  const isPlainCssResponse = r => /^text\/(css|plain)(;.*?)?$/i.test(r.headers.get('content-type'));
+  const installCodeCache = {};
+  const clearInstallCode = url => delete installCodeCache[url];
+  const isResponseText = r => /^text\/(css|plain)(;.*?)?$/i.test(r.headers.get('content-type'));
+  // in Firefox we have to use a content script to read file://
+  const fileLoader = !chrome.app && // not relying on navigator.ua which can be spoofed
+    (tabId => browser.tabs.executeScript(tabId, {file: '/content/install-hook-usercss.js'}).then(r => r[0]));
 
   API_METHODS.installUsercss = installUsercss;
   API_METHODS.editSaveUsercss = editSaveUsercss;
@@ -19,10 +19,11 @@ const usercssHelper = (() => {
   API_METHODS.findUsercss = find;
 
   API_METHODS.getUsercssInstallCode = url => {
-    const {code, timer} = installCodeCache.get(url) || {};
+    // when the installer tab is reloaded after the cache is expired, this will throw intentionally
+    const {code, timer} = installCodeCache[url];
     clearInstallCode(url);
     clearTimeout(timer);
-    return code || '';
+    return code;
   };
 
   return {
@@ -30,35 +31,34 @@ const usercssHelper = (() => {
     testUrl(url) {
       return url.includes('.user.') &&
         /^(https?|file|ftps?):/.test(url) &&
-        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
-        !url.startsWith(URLS.installUsercss);
+        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]);
     },
 
-    openInstallerPage(tabId, url) {
+    /** @return {Promise<{ code:string, inTab:boolean } | false>} */
+    testContents(tabId, url) {
       const isFile = url.startsWith('file:');
-      const isFileFF = isFile && tabExec;
-      return Promise.resolve(isFile || fetch(url, {method: 'HEAD'}).then(isPlainCssResponse))
-        .then(ok => ok && (isFileFF ? tabExec(tabId, downloadSelf) : download(url)))
-        .then(code => {
-          if (Array.isArray(code)) code = code[0];
-          if (!/==userstyle==/i.test(code)) return;
-          const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
-          if (isFileFF) {
-            getTab(tabId).then(tab =>
-              openURL({
-                url: `${newUrl}&tabId=${tabId}`,
-                active: tab.active,
-                index: tab.index + 1,
-                openerTabId: tabId,
-                currentWindow: null,
-              }));
-          } else {
-            const timer = setTimeout(clearInstallCode, 10e3, url);
-            installCodeCache.set(url, {code, timer});
-            chrome.tabs.update(tabId, {url: newUrl});
-            return newUrl;
-          }
-        });
+      const inTab = isFile && Boolean(fileLoader);
+      return Promise.resolve(isFile || fetch(url, {method: 'HEAD'}).then(isResponseText))
+        .then(ok => ok && (inTab ? fileLoader(tabId) : download(url)))
+        .then(code => /==userstyle==/i.test(code) && {code, inTab});
+    },
+
+    openInstallerPage(tabId, url, {code, inTab} = {}) {
+      const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+      if (inTab) {
+        getTab(tabId).then(tab =>
+          openURL({
+            url: `${newUrl}&tabId=${tabId}`,
+            active: tab.active,
+            index: tab.index + 1,
+            openerTabId: tabId,
+            currentWindow: null,
+          }));
+      } else {
+        const timer = setTimeout(clearInstallCode, 10e3, url);
+        installCodeCache[url] = {code, timer};
+        chrome.tabs.update(tabId, {url: newUrl});
+      }
     },
   };
 

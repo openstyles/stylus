@@ -2,7 +2,7 @@
   URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab createTab activateTab isTabReplaceable getActiveTab
-  iconManager */
+  iconManager tabManager */
 
 'use strict';
 
@@ -89,6 +89,14 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
   }
 });
 
+tabManager.onUpdate(({tabId, url, oldUrl = ''}) => {
+  if (usercssHelper.testUrl(url) && !oldUrl.startsWith(URLS.installUsercss)) {
+    usercssHelper.testContents(tabId, url).then(data => {
+      if (data.code) usercssHelper.openInstallerPage(tabId, url, data);
+    });
+  }
+});
+
 if (FIREFOX) {
   // FF misses some about:blank iframes so we inject our content script explicitly
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
@@ -107,13 +115,6 @@ if (chrome.commands) {
   // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
-
-// detect usercss and open the installer page
-navigatorUtil.onCommitted(({tabId, frameId, url}) => {
-  if (!frameId && usercssHelper.testUrl(url)) {
-    usercssHelper.openInstallerPage(tabId, url);
-  }
-});
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {

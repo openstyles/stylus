@@ -7,19 +7,12 @@
   const params = new URLSearchParams(location.search.replace(/^\?/, ''));
   const tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
   const initialUrl = params.get('updateUrl');
-  if (!initialUrl) throw 'No updateUrl parameter';
 
   let installed = null;
   let installedDup = null;
-  let initialized = false;
-  let filePort;
 
   const liveReload = initLiveReload();
-
-  // when this tab is reloaded, bg may no longer have the code as it's kept only for a few seconds
-  API.getUsercssInstallCode(initialUrl)
-    .then(code => code || !filePort && download(initialUrl))
-    .then(code => (code || !filePort) && initSourceCode(code));
+  liveReload.ready.then(initSourceCode, error => messageBox.alert(error, 'pre'));
 
   const theme = prefs.get('editor.theme');
   const cm = CodeMirror($('.main'), {
@@ -172,7 +165,7 @@
     } else {
       API.openEditor({id: style.id});
       if (!liveReload.enabled) {
-        if (!filePort && history.length > 1) {
+        if (tabId < 0 && history.length > 1) {
           history.back();
         } else {
           closeCurrentTab();
@@ -234,8 +227,6 @@
   }
 
   function init({style, dup}) {
-    initialized = true;
-
     const data = style.usercssData;
     const dupData = dup && dup.usercssData;
     const versionTest = dup && semverCompare(data.version, dupData.version);
@@ -321,66 +312,55 @@
     const DELAY = 500;
     let isEnabled = false;
     let timer = 0;
-    let sequence = Promise.resolve();
-    if (tabId >= 0) {
-      filePort = chrome.tabs.connect(tabId, {name: 'downloadSelf'});
-      filePort.postMessage('init');
-      filePort.onMessage.addListener(onPortMessage);
-      filePort.onDisconnect.addListener(onPortDisconnect);
+    /** @type function(?options):Promise<string|null> */
+    let getData = null;
+    /** @type Promise */
+    let sequence = null;
+    if (tabId < 0) {
+      getData = DirectDownloader();
+      sequence = API.getUsercssInstallCode(initialUrl).catch(getData);
+    } else {
+      getData = PortDownloader();
+      sequence = getData({timer: false});
     }
     return {
       get enabled() {
         return isEnabled;
       },
+      ready: sequence,
       onToggled(e) {
         if (e) isEnabled = e.target.checked;
         if (installed || installedDup) {
           (isEnabled ? start : stop)();
           $('.install').disabled = isEnabled;
-          $('#live-reload-install-hint').hidden = !isEnabled;
-          $('#live-reload-install-hint-ff').hidden = !isEnabled || !filePort;
+          Object.assign($('#live-reload-install-hint'), {
+            hidden: !isEnabled,
+            textContent: t(`liveReloadInstallHint${tabId >= 0 ? 'FF' : ''}`),
+          });
         }
       },
     };
-    function onPortMessage({code, error}) {
-      if (error) {
-        messageBox.alert(error, 'pre');
-      } else if (!initialized) {
-        initSourceCode(code);
-      } else {
-        update(code);
-      }
-    }
-    function onPortDisconnect() {
-      chrome.tabs.get(tabId, tab => {
-        if (chrome.runtime.lastError) {
-          closeCurrentTab();
-        } else if (tab.url === initialUrl) {
-          location.reload();
-        }
-      });
-    }
     function check() {
-      start(true);
-      if (filePort) {
-        filePort.postMessage('timer');
-      } else {
-        download(initialUrl).then(update, logError);
-      }
+      getData()
+        .then(update, logError)
+        .then(() => {
+          timer = 0;
+          start();
+        });
     }
     function logError(error) {
       console.warn(t('liveReloadError', error));
     }
-    function start(reset) {
-      timer = !reset && timer || setTimeout(check, DELAY);
+    function start() {
+      timer = timer || setTimeout(check, DELAY);
     }
     function stop() {
-      clearTimeout(check);
+      clearTimeout(timer);
       timer = 0;
     }
     function update(code) {
-      if (!code) return logError('EMPTY');
-      sequence = sequence.then(() => {
+      if (code == null) return;
+      sequence = sequence.catch(console.error).then(() => {
         const {id} = installed || installedDup;
         const scrollInfo = cm.getScrollInfo();
         const cursor = cm.getCursor();
@@ -390,6 +370,42 @@
         return API.installUsercss({id, sourceCode: code})
           .then(updateMeta)
           .catch(showError);
+      });
+    }
+    function DirectDownloader() {
+      let oldCode = null;
+      const passChangedCode = code => {
+        const isSame = code === oldCode;
+        oldCode = code;
+        return isSame ? null : code;
+      };
+      return () => download(initialUrl).then(passChangedCode);
+    }
+    function PortDownloader() {
+      const resolvers = new Map();
+      const port = chrome.tabs.connect(tabId, {name: 'downloadSelf'});
+      port.onMessage.addListener(({id, code, error}) => {
+        const r = resolvers.get(id);
+        resolvers.delete(id);
+        if (error) {
+          r.reject(error);
+        } else {
+          r.resolve(code);
+        }
+      });
+      port.onDisconnect.addListener(() => {
+        chrome.tabs.get(tabId, tab => {
+          if (chrome.runtime.lastError) {
+            closeCurrentTab();
+          } else if (tab.url === initialUrl) {
+            location.reload();
+          }
+        });
+      });
+      return ({timer = true} = {}) => new Promise((resolve, reject) => {
+        const id = performance.now();
+        resolvers.set(id, {resolve, reject});
+        port.postMessage({id, timer});
       });
     }
   }
