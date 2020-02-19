@@ -30,7 +30,8 @@ const usercssHelper = (() => {
     testUrl(url) {
       return url.includes('.user.') &&
         /^(https?|file|ftps?):/.test(url) &&
-        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]);
+        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
+        !url.startsWith(URLS.installUsercss);
     },
 
     openInstallerPage(tabId, url) {
