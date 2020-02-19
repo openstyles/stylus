@@ -23,7 +23,7 @@
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.6",
     "usercss-meta": "^0.9.0",
-    "uuid": "^3.4.0",
+    "uuid": "^7.0.0-beta.0",
     "web-ext": "^4.1.0",
     "webext-tx-fix": "^0.3.3"
   },

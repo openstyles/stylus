@@ -1,6 +1,5 @@
-## uuid v3.4.0
+## uuid v7.0.0-beta.0
 
-Following files are downloaded from HTTP:
+Following files are copied from npm (node_modules):
 
-* uuid.min.js: https://bundle.run/uuid@3.4.0/v4.js
-
+* uuid.min.js: dist\umd\uuidv4.min.js

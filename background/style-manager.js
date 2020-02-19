@@ -384,7 +384,7 @@ const styleManager = (() => {
       delete style.id;
     }
     if (!style._id) {
-      style._id = uuid();
+      style._id = uuidv4();
     }
     style._rev = Date.now();
     fixUsoMd5Issue(style);
@@ -523,7 +523,7 @@ const styleManager = (() => {
   function prepare() {
     const ADD_MISSING_PROPS = {
       name: style => `ID: ${style.id}`,
-      _id: () => uuid(),
+      _id: () => uuidv4(),
       _rev: () => Date.now()
     };
 
