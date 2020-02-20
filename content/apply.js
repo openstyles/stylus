@@ -16,6 +16,10 @@ self.INJECTED !== 1 && (() => {
   });
   const initializing = init();
 
+  // if chrome.tabs is absent it's a web page, otherwise we'll check for popup/options as those aren't tabs
+  let isTab = !chrome.tabs;
+  if (chrome.tabs) chrome.tabs.getCurrent(tab => (isTab = Boolean(tab)));
+
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
   let isOrphaned;
@@ -153,18 +157,11 @@ self.INJECTED !== 1 && (() => {
   }
 
   function updateCount() {
-    if (window !== parent) {
-      // we don't care about iframes
-      return;
-    }
-    if (/^\w+?-extension:\/\/.+(popup|options)\.html$/.test(location.href)) {
-      // popup and the option page are not tabs
-      return;
-    }
-    if (STYLE_VIA_API) {
-      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
-    } else {
-      API.updateIconBadge(styleInjector.list.length).catch(console.error);
+    if (isTab) {
+      (STYLE_VIA_API ?
+        API.styleViaAPI({method: 'updateCount'}) :
+        API.updateIconBadge(styleInjector.list.map(style => style.id))
+      ).catch(msg.ignoreError);
     }
   }
 

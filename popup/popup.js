@@ -1,13 +1,14 @@
 /* global configDialog hotkeys onTabReady msg
-  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs
+  getActiveTab FIREFOX URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
-  tryJSONparse debounce CHROME_HAS_BORDER_BUG */
+  tryJSONparse CHROME_HAS_BORDER_BUG */
 
 'use strict';
 
+/** @type Element */
 let installed;
+/** @type string */
 let tabURL;
-let unsupportedURL;
 const handleEvent = {};
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
@@ -15,25 +16,21 @@ const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 toggleSideBorders();
 
-getActiveTab()
-  .then(tab =>
-    FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
-    ? getTabRealURLFirefox(tab)
-    : getTabRealURL(tab)
-  )
-  .then(url => Promise.all([
-    (tabURL = URLS.supported(url) ? url : '') &&
-      API.getStylesByUrl(tabURL),
-    onDOMready().then(initPopup),
-  ]))
-  .then(([results]) => {
-    if (!results) {
+initTabUrls()
+  .then(frames =>
+    Promise.all([
+      onDOMready().then(() => initPopup(frames)),
+      ...frames
+        .filter(f => !f.isDupe)
+        .map(({url}) => url && API.getStylesByUrl(url).then(styles => ({styles, url}))),
+    ]))
+  .then(([, ...results]) => {
+    if (results[0]) {
+      showStyles(results);
+    } else {
       // unsupported URL;
-      unsupportedURL = true;
       $('#popup-manage-button').removeAttribute('title');
-      return;
     }
-    showStyles(results.map(r => Object.assign(r.data, r)));
   })
   .catch(console.error);
 
@@ -83,8 +80,32 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   }
 }
 
+function initTabUrls() {
+  return getActiveTab()
+    .then((tab = {}) =>
+      FIREFOX && tab.status === 'loading' && tab.url === 'about:blank'
+        ? onTabReady(tab)
+        : tab)
+    .then(tab => new Promise(resolve =>
+      chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
+        resolve({frames, tab}))))
+    .then(({frames, tab}) => {
+      let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
+      frames = sortTabFrames(frames);
+      if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
+        url = frames[0].url || '';
+      }
+      if (!URLS.supported(url)) {
+        url = '';
+        frames.length = 1;
+      }
+      tabURL = frames[0].url = url;
+      return frames;
+    });
+}
 
-function initPopup() {
+/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
+function initPopup(frames) {
   installed = $('#installed');
 
   setPopupWidth();
@@ -118,6 +139,13 @@ function initPopup() {
     document.body.classList.add('blocked');
     document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
     return;
+  }
+
+  frames.forEach(createWriterElement);
+  if (frames.length > 1) {
+    const el = $('#write-for-frames');
+    el.hidden = false;
+    el.onclick = () => el.classList.toggle('expanded');
   }
 
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
@@ -166,24 +194,49 @@ function initPopup() {
         document.body.insertBefore(info, document.body.firstChild);
       });
   });
+}
 
-  // Write new style links
-  const writeStyle = $('#write-style');
-  const matchTargets = document.createElement('span');
-  const matchWrapper = document.createElement('span');
-  matchWrapper.id = 'match';
-  matchWrapper.appendChild(matchTargets);
+/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
+function sortTabFrames(frames) {
+  const unknown = new Map(frames.map(f => [f.frameId, f]));
+  const known = new Map([[0, {frameId: 0}]]);
+  let lastSize = -1;
+  while (unknown.size && unknown.size !== lastSize) {
+    for (const [frameId, f] of unknown) {
+      if (known.has(f.parentFrameId) || f.parentFrameId < 0) {
+        known.set(frameId, f);
+        unknown.delete(frameId);
+      }
+    }
+    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
+  }
+  const sortedFrames = [...known.values(), ...unknown.values()];
+  const urls = new Set(['about:blank']);
+  for (const f of sortedFrames) {
+    f.isDupe = urls.has(f.url);
+    urls.add(f.url);
+  }
+  return sortedFrames;
+}
+
+/** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
+function createWriterElement(frame) {
+  const {url, frameId, parentFrameId, isDupe} = frame;
+  const targets = $create('span');
 
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
+  const isAboutBlank = url === 'about:blank';
   Object.assign(urlLink, {
-    href: 'edit.html?url-prefix=' + encodeURIComponent(tabURL),
-    title: `url-prefix("${tabURL}")`,
+    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
+    title: `url-prefix("${url}")`,
+    tabIndex: isAboutBlank ? -1 : 0,
     textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? new URL(tabURL).pathname.slice(1)
-      // this&nbsp;URL
-      : t('writeStyleForURL').replace(/ /g, '\u00a0'),
-    onclick: e => handleEvent.openEditor(e, {'url-prefix': tabURL}),
+      ? new URL(url).pathname.slice(1)
+      : frameId
+        ? isAboutBlank ? url : 'URL'
+        : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+    onclick: e => handleEvent.openEditor(e, {'url-prefix': url}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -191,10 +244,10 @@ function initPopup() {
     urlLink.onmouseleave =
       urlLink.onblur = () => urlLink.parentNode.classList.remove('url()');
   }
-  matchTargets.appendChild(urlLink);
+  targets.appendChild(urlLink);
 
   // For domain
-  const domains = getDomains(tabURL);
+  const domains = getDomains(url);
   for (const domain of domains) {
     const numParts = domain.length - domain.replace(/\./g, '').length + 1;
     // Don't include TLD
@@ -209,64 +262,64 @@ function initPopup() {
       onclick: e => handleEvent.openEditor(e, {domain}),
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
-    matchTargets.appendChild(domainLink);
+    targets.appendChild(domainLink);
   }
 
   if (prefs.get('popup.breadcrumbs')) {
-    matchTargets.classList.add('breadcrumbs');
-    matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
+    targets.classList.add('breadcrumbs');
+    targets.appendChild(urlLink); // making it the last element
   }
-  writeStyle.appendChild(matchWrapper);
 
-  function getDomains(url) {
-    let d = /.*?:\/*([^/:]+)|$/.exec(url)[1];
-    if (!d || url.startsWith('file:')) {
-      return [];
-    }
-    const domains = [d];
-    while (d.indexOf('.') !== -1) {
-      d = d.substring(d.indexOf('.') + 1);
-      domains.push(d);
-    }
-    return domains;
-  }
+  const root = $('#write-style');
+  const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
+  const child = $create({
+    tag: 'span',
+    className: `match${isDupe ? ' dupe' : ''}${isAboutBlank ? ' about-blank' : ''}`,
+    dataset: {frameId},
+    appendChild: targets,
+  });
+  parent.appendChild(child);
+  parent.dataset.children = (Number(parent.dataset.children) || 0) + 1;
 }
 
+function getDomains(url) {
+  let d = url.split(/[/:]+/, 2)[1];
+  if (!d || url.startsWith('file:')) {
+    return [];
+  }
+  const domains = [d];
+  while (d.includes('.')) {
+    d = d.substring(d.indexOf('.') + 1);
+    domains.push(d);
+  }
+  return domains;
+}
 
 function sortStyles(entries) {
   const enabledFirst = prefs.get('popup.enabledFirst');
-  entries.sort((a, b) =>
-    enabledFirst && a.styleMeta.enabled !== b.styleMeta.enabled ?
-      (a.styleMeta.enabled ? -1 : 1) :
-      a.styleMeta.name.localeCompare(b.styleMeta.name)
-  );
+  return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
+    Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
+    enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
+    a.name.localeCompare(b.name));
 }
 
-function showStyles(styles) {
-  if (!styles) {
-    return;
-  }
-  if (!styles.length) {
+function showStyles(frameResults) {
+  const entries = new Map();
+  frameResults.forEach(({styles, url}, index) => {
+    styles.forEach(style => {
+      const {id} = style.data;
+      if (!entries.has(id)) {
+        style.frameUrl = index === 0 ? '' : url;
+        entries.set(id, createStyleElement(Object.assign(style.data, style)));
+      }
+    });
+  });
+  if (entries.size) {
+    installed.append(...sortStyles([...entries.values()]));
+  } else {
     installed.appendChild(template.noStyles.cloneNode(true));
-    window.dispatchEvent(new Event('showStyles:done'));
-    return;
   }
-  const entries = styles.map(createStyleElement);
-  sortStyles(entries);
-  entries.forEach(e => installed.appendChild(e));
   window.dispatchEvent(new Event('showStyles:done'));
-}
-
-function sortStylesInPlace() {
-  if (!prefs.get('popup.autoResort')) {
-    return;
-  }
-  const entries = $$('.entry', installed);
-  if (!entries.length) {
-    return;
-  }
-  sortStyles(entries);
-  entries.forEach(e => installed.appendChild(e));
 }
 
 
@@ -356,6 +409,14 @@ function createStyleElement(style) {
   $('.exclude-by-domain', entry).title = getExcludeRule('domain');
   $('.exclude-by-url', entry).title = getExcludeRule('url');
 
+  const {frameUrl} = style;
+  if (frameUrl) {
+    const sel = 'span.frame-url';
+    const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
+    frameEl.title = frameUrl;
+  }
+  entry.classList.toggle('frame', Boolean(frameUrl));
+
   return entry;
 }
 
@@ -400,7 +461,11 @@ Object.assign(handleEvent, {
     event.stopPropagation();
     API
       .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
-      .then(sortStylesInPlace);
+      .then(() => {
+        if (prefs.get('popup.autoResort')) {
+          installed.append(...sortStyles($$('.entry', installed)));
+        }
+      });
   },
 
   toggleExclude(event, type) {
@@ -577,7 +642,7 @@ Object.assign(handleEvent, {
   },
 
   openManager(event) {
-    if (event.button === 2 && unsupportedURL) return;
+    if (event.button === 2 && !tabURL) return;
     event.preventDefault();
     if (!this.eventHandled) {
       // FIXME: this only works if popup is closed
@@ -638,34 +703,4 @@ function handleDelete(id) {
   if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
-}
-
-function getTabRealURLFirefox(tab) {
-  // wait for FF tab-on-demand to get a real URL (initially about:blank), 5 sec max
-  return new Promise(resolve => {
-    function onNavigation({tabId, url, frameId}) {
-      if (tabId === tab.id && frameId === 0) {
-        detach();
-        resolve(url);
-      }
-    }
-
-    function detach(timedOut) {
-      if (timedOut) {
-        resolve(tab.url);
-      } else {
-        debounce.unregister(detach);
-      }
-      chrome.webNavigation.onBeforeNavigate.removeListener(onNavigation);
-      chrome.webNavigation.onCommitted.removeListener(onNavigation);
-      chrome.tabs.onRemoved.removeListener(detach);
-      chrome.tabs.onReplaced.removeListener(detach);
-    }
-
-    chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);
-    chrome.webNavigation.onCommitted.addListener(onNavigation);
-    chrome.tabs.onRemoved.addListener(detach);
-    chrome.tabs.onReplaced.addListener(detach);
-    debounce(detach, 5000, {timedOut: true});
-  });
 }

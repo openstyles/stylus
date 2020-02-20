@@ -2,7 +2,7 @@
   URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab createTab activateTab isTabReplaceable getActiveTab
-  iconManager tabManager */
+  tabManager */
 
 'use strict';
 
@@ -48,11 +48,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getPrefs: prefs.getAll,
 
   openEditor,
-
-  updateIconBadge(count) {
-    iconManager.updateIconBadge(this.sender.tab.id, count);
-    return true;
-  },
 
   // exposed for stuff that requires followup sendMessage() like popup::openSettings
   // that would fail otherwise if another extension forced the tab to open

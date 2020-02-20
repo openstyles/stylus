@@ -1,4 +1,4 @@
-/* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
+/* exported getActiveTab onTabReady stringAsRegExp openURL
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
 /* global promisify */
@@ -123,18 +123,6 @@ function getOwnTab() {
 function getActiveTab() {
   return queryTabs({currentWindow: true, active: true})
     .then(tabs => tabs[0]);
-}
-
-function getTabRealURL(tab) {
-  return new Promise(resolve => {
-    if (tab.url !== 'chrome://newtab/' || URLS.chromeProtectsNTP) {
-      resolve(tab.url);
-    } else {
-      chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
-        resolve(frame && frame.url || '');
-      });
-    }
-  });
 }
 
 /**

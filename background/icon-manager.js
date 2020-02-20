@@ -1,4 +1,4 @@
-/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager */
+/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager API_METHODS */
 /* exported iconManager */
 'use strict';
 
@@ -26,32 +26,32 @@ const iconManager = (() => {
     refreshAllIcons();
   });
 
-  return {updateIconBadge};
-
-  // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-  function updateIconBadge(tabId, count, force = true) {
-    tabManager.set(tabId, 'count', count);
-    refreshIconBadgeText(tabId);
-    refreshIcon(tabId, force);
-  }
+  Object.assign(API_METHODS, {
+    /** @param {(number|string)[]} styleIds */
+    updateIconBadge(styleIds) {
+      // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
+      const {frameId, tab: {id: tabId}} = this.sender;
+      tabManager.set(tabId, 'styleIds', frameId, styleIds.length ? styleIds.map(Number) : undefined);
+      refreshIconBadgeText(tabId);
+      if (!frameId) refreshIcon(tabId, true);
+    },
+  });
 
   function refreshIconBadgeText(tabId) {
-    const count = tabManager.get(tabId, 'count');
-    iconUtil.setBadgeText({
-      text: prefs.get('show-badge') && count ? String(count) : '',
-      tabId
-    });
+    const text = prefs.get('show-badge') ? `${getStyleCount(tabId)}` : '';
+    iconUtil.setBadgeText({tabId, text});
   }
 
-  function getIconName(count = 0) {
+  function getIconName(hasStyles = false) {
     const iconset = prefs.get('iconset') === 1 ? 'light/' : '';
-    const postfix = prefs.get('disableAll') ? 'x' : !count ? 'w' : '';
+    const postfix = prefs.get('disableAll') ? 'x' : !hasStyles ? 'w' : '';
     return `${iconset}$SIZE$${postfix}`;
   }
 
   function refreshIcon(tabId, force = false) {
     const oldIcon = tabManager.get(tabId, 'icon');
-    const newIcon = getIconName(tabManager.get(tabId, 'count'));
+    const newIcon = getIconName(tabManager.get(tabId, 'styleIds', 0));
+    // (changing the icon only for the main page, frameId = 0)
 
     if (!force && oldIcon === newIcon) {
       return;
@@ -71,6 +71,14 @@ const iconManager = (() => {
       },
       {}
     );
+  }
+
+  /** @return {number | ''} */
+  function getStyleCount(tabId) {
+    const allIds = new Set();
+    const data = tabManager.get(tabId, 'styleIds') || {};
+    Object.values(data).forEach(frameIds => frameIds.forEach(id => allIds.add(id)));
+    return allIds.size || '';
   }
 
   function refreshGlobalIcon() {
