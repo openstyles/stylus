@@ -97,9 +97,13 @@ const createTab = promisify(chrome.tabs.create.bind(chrome.tabs));
 const queryTabs = promisify(chrome.tabs.query.bind(chrome.tabs));
 const updateTab = promisify(chrome.tabs.update.bind(chrome.tabs));
 const moveTabs = promisify(chrome.tabs.move.bind(chrome.tabs));
-// FIXME: is it possible that chrome.windows is undefined?
-const updateWindow = promisify(chrome.windows.update.bind(chrome.windows));
-const createWindow = promisify(chrome.windows.create.bind(chrome.windows));
+
+// Android doesn't have chrome.windows
+const updateWindow = chrome.windows && promisify(chrome.windows.update.bind(chrome.windows));
+const createWindow = chrome.windows && promisify(chrome.windows.create.bind(chrome.windows));
+// FF57+ supports openerTabId, but not in Android
+// (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
+const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;
 
 function getTab(id) {
   return new Promise(resolve =>
@@ -210,7 +214,7 @@ function urlToMatchPattern(url, ignoreSearch) {
   return `${url.protocol}//${url.hostname}/${url.pathname}${url.search}`;
 }
 
-function findExistTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
+function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
   url = new URL(url);
   return queryTabs({url: urlToMatchPattern(url, ignoreSearch), currentWindow})
     // FIXME: is tab.url always normalized?
@@ -232,65 +236,53 @@ function findExistTab({url, currentWindow, ignoreHash = true, ignoreSearch = fal
 /**
  * Opens a tab or activates an existing one,
  * reuses the New Tab page or about:blank if it's focused now
- * @param {Object} params
- *        or just a string e.g. openURL('foo')
- * @param {string} params.url
- *        if relative, it's auto-expanded to the full extension URL
- * @param {number} [params.index]
- *        move the tab to this index in the tab strip, -1 = last
- * @param {Boolean} [params.active]
- *        true to activate the tab (this is the default value in the extensions API),
- *        false to open in background
- * @param {?Boolean} [params.currentWindow]
- *        pass null to check all windows
- * @param {any} [params.message]
- *        JSONifiable data to be sent to the tab via sendMessage()
- * @returns {Promise<Tab>} Promise that resolves to the opened/activated tab
+ * @param {Object} _
+ * @param {string} _.url - if relative, it's auto-expanded to the full extension URL
+ * @param {number} [_.index] move the tab to this index in the tab strip, -1 = last
+ * @param {number} [_.openerTabId] defaults to the active tab
+ * @param {Boolean} [_.active=true] `true` to activate the tab
+ * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
+ * @param {Boolean} [_.newWindow=false] `true` to open a new window
+ * @param {chrome.windows.CreateData} [_.windowPosition] options for chrome.windows.create
+ * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
-function openURL(options) {
-  if (typeof options === 'string') {
-    options = {url: options};
-  }
-  let {
-    url,
-    index,
-    active,
-    currentWindow = true,
-    newWindow = false,
-    windowPosition
-  } = options;
-
+function openURL({
+  url,
+  index,
+  openerTabId,
+  active = true,
+  currentWindow = true,
+  newWindow = false,
+  windowPosition,
+}) {
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
-  return findExistTab({url, currentWindow}).then(tab => {
+  return findExistingTab({url, currentWindow}).then(tab => {
     if (tab) {
-      // update url if only hash is different?
-      // we can't update URL if !url.includes('#') since it refreshes the page
-      // FIXME: should we move the tab (i.e. specifying index)?
-      if (tab.url !== url && tab.url.split('#')[0] === url.split('#')[0] &&
-          url.includes('#')) {
-        return activateTab(tab, {url, index});
-      }
-      return activateTab(tab, {index});
+      return activateTab(tab, {
+        index,
+        openerTabId,
+        // when hash is different we can only set `url` if it has # otherwise the tab would reload
+        url: url !== tab.url && url.includes('#') ? url : undefined,
+      });
     }
-    if (newWindow) {
-      return createWindow(Object.assign({url}, windowPosition));
+    if (newWindow && createWindow) {
+      return createWindow(Object.assign({url}, windowPosition))
+        .then(wnd => wnd.tabs[0]);
     }
-    return getActiveTab().then(tab => {
-      if (isTabReplaceable(tab, url)) {
-        // don't move the tab in this case
-        return activateTab(tab, {url});
-      }
-      const options = {url, index, active};
-      // FF57+ supports openerTabId, but not in Android (indicated by the absence of chrome.windows)
-      // FIXME: is it safe to assume that the current tab is the opener?
-      if (tab && !tab.incognito && (!FIREFOX || FIREFOX >= 57 && chrome.windows)) {
-        options.openerTabId = tab.id;
-      }
-      return createTab(options);
-    });
+    return getActiveTab().then((activeTab = {url: ''}) =>
+      isTabReplaceable(activeTab, url) ?
+        activateTab(activeTab, {url, openerTabId}) : // not moving the tab
+        createTabWithOpener(activeTab, {url, index, active}));
   });
+  function createTabWithOpener(openerTab, options) {
+    const id = openerTabId == null ? openerTab.id : openerTabId;
+    if (id != null && !openerTab.incognito && openerTabIdSupported) {
+      options.openerTabId = id;
+    }
+    return createTab(options);
+  }
 }
 
 // replace empty tab (NTP or about:blank)
@@ -307,14 +299,17 @@ function isTabReplaceable(tab, newUrl) {
   return true;
 }
 
-function activateTab(tab, {url, index} = {}) {
+function activateTab(tab, {url, index, openerTabId} = {}) {
   const options = {active: true};
   if (url) {
     options.url = url;
   }
+  if (openerTabId != null && openerTabIdSupported) {
+    options.openerTabId = openerTabId;
+  }
   return Promise.all([
     updateTab(tab.id, options),
-    updateWindow(tab.windowId, {focused: true}),
+    updateWindow && updateWindow(tab.windowId, {focused: true}),
     index != null && moveTabs(tab.id, {index})
   ])
     .then(() => tab);
