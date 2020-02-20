@@ -61,7 +61,7 @@ const files = {
     'dist/db-to-cloud.min.js → db-to-cloud.min.js'
   ],
   'uuid': [
-    'https://bundle.run/uuid@{VERSION}/v4.js → uuid.min.js'
+    'dist/umd/uuidv4.min.js → uuid.min.js'
   ]
 };
 
@@ -120,6 +120,7 @@ async function buildFiles(pkg, patterns) {
       await fse.outputFile(`vendor/${pkg}/${dest}`, content);
       fetchedFiles.push([src, dest]);
     } else {
+      let dirty = false;
       for (const file of await glob(`node_modules/${pkg}/${src}`)) {
         if (dest) {
           await fse.copy(file, `vendor/${pkg}/${dest}`);
@@ -127,6 +128,10 @@ async function buildFiles(pkg, patterns) {
           await fse.copy(file, path.join('vendor', path.relative('node_modules', file)));
         }
         copiedFiles.push([path.relative(`node_modules/${pkg}`, file), dest]);
+        dirty = true;
+      }
+      if (!dirty) {
+        throw new Error(`Pattern ${src} matches no files`);
       }
     }
   }
