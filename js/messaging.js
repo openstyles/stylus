@@ -264,9 +264,10 @@ function openURL({
         index,
         openerTabId,
         // when hash is different we can only set `url` if it has # otherwise the tab would reload
-        url: url !== tab.url && url.includes('#') && url,
+        url: url !== tab.url && url.includes('#') ? url : undefined,
       });
-    } else if (newWindow && createWindow) {
+    }
+    if (newWindow && createWindow) {
       return createWindow(Object.assign({url}, windowPosition))
         .then(wnd => wnd.tabs[0]);
     }
@@ -276,8 +277,9 @@ function openURL({
         createTabWithOpener(activeTab, {url, index, active}));
   });
   function createTabWithOpener(openerTab, options) {
-    if (openerTabIdSupported && !openerTab.incognito) {
-      options.openerTabId = openerTabId == null ? openerTab.id : openerTabId;
+    const id = openerTabId == null ? openerTab.id : openerTabId;
+    if (id !== null && !openerTab.incognito && openerTabIdSupported) {
+      options.openerTabId = id;
     }
     return createTab(options);
   }
@@ -299,8 +301,12 @@ function isTabReplaceable(tab, newUrl) {
 
 function activateTab(tab, {url, index, openerTabId} = {}) {
   const options = {active: true};
-  if (url) options.url = url;
-  if (openerTabId != null) options.openerTabId = openerTabId;
+  if (url) {
+    options.url = url;
+  }
+  if (openerTabId != null && openerTabIdSupported) {
+    options.openerTabId = openerTabId;
+  }
   return Promise.all([
     updateTab(tab.id, options),
     updateWindow && updateWindow(tab.windowId, {focused: true}),
