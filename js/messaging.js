@@ -278,7 +278,7 @@ function openURL({
   });
   function createTabWithOpener(openerTab, options) {
     const id = openerTabId == null ? openerTab.id : openerTabId;
-    if (id !== null && !openerTab.incognito && openerTabIdSupported) {
+    if (id != null && !openerTab.incognito && openerTabIdSupported) {
       options.openerTabId = id;
     }
     return createTab(options);
