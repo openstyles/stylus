@@ -623,7 +623,7 @@ window.addEventListener('showStyles:done', function _() {
         fourth ||
         third && third !== 'www' && third !== 'm'
       );
-      return (keepThird && `${third}.` || '') + main + (keepTld ? `.${tld}` : '');
+      return (keepThird && `${third}.` || '') + main + (keepTld || keepThird ? `.${tld}` : '');
     }
   }
 
@@ -632,7 +632,7 @@ window.addEventListener('showStyles:done', function _() {
       result.subcategory &&
       !processedResults.some(pr => pr.id === result.id) &&
       (category !== STYLUS_CATEGORY || /\bStylus\b/i.test(result.name + result.description)) &&
-      category.split('.')[0] === result.subcategory.split('.')[0]
+      category.split('.').includes(result.subcategory.split('.')[0])
     );
   }
 
