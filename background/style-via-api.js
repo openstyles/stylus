@@ -1,4 +1,4 @@
-/* global API_METHODS styleManager CHROME prefs updateIconBadge */
+/* global API_METHODS styleManager CHROME prefs iconManager */
 'use strict';
 
 API_METHODS.styleViaAPI = !CHROME && (() => {
@@ -36,7 +36,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       throw new Error('we do not count styles for frames');
     }
     const {frameStyles} = getCachedData(tab.id, frameId);
-    updateIconBadge(tab.id, Object.keys(frameStyles).length);
+    iconManager.updateIconBadge(tab.id, Object.keys(frameStyles).length);
   }
 
   function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
