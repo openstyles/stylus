@@ -1,4 +1,4 @@
-/* global configDialog hotkeys onTabReady msg
+/* global configDialog hotkeys msg
   getActiveTab FIREFOX URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
   tryJSONparse CHROME_HAS_BORDER_BUG */
@@ -84,7 +84,7 @@ function initTabUrls() {
   return getActiveTab()
     .then((tab = {}) =>
       FIREFOX && tab.status === 'loading' && tab.url === 'about:blank'
-        ? onTabReady(tab)
+        ? waitForTabUrlFF(tab)
         : tab)
     .then(tab => new Promise(resolve =>
       chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
@@ -626,18 +626,12 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
-    const message = tryJSONparse(this.dataset.sendMessage);
     getActiveTab()
       .then(activeTab => API.openURL({
         url: this.href || this.dataset.href,
-        index: activeTab.index + 1
+        index: activeTab.index + 1,
+        message: tryJSONparse(this.dataset.sendMessage),
       }))
-      .then(tab => {
-        if (message) {
-          return onTabReady(tab)
-            .then(() => msg.sendTab(tab.id, message));
-        }
-      })
       .then(window.close);
   },
 
@@ -703,4 +697,19 @@ function handleDelete(id) {
   if (!$('.entry')) {
     installed.appendChild(template.noStyles.cloneNode(true));
   }
+}
+
+function waitForTabUrlFF(tab) {
+  return new Promise(resolve => {
+    browser.tabs.onUpdated.addListener(...[
+      function onUpdated(tabId, info, updatedTab) {
+        if (info.url && tabId === tab.id) {
+          chrome.tabs.onUpdated.removeListener(onUpdated);
+          resolve(updatedTab);
+        }
+      },
+      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [],
+      // TODO: remove both spreads and tabId check when strict_min_version >= 61
+    ]);
+  });
 }
