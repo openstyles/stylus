@@ -1,7 +1,8 @@
-/* global download prefs openURL FIREFOX CHROME VIVALDI
-  debounce URLS ignoreChromeError getTab
-  styleManager msg navigatorUtil iconUtil workerUtil contentScripts sync
-  findExistingTab createTab activateTab isTabReplaceable getActiveTab */
+/* global download prefs openURL FIREFOX CHROME
+  URLS ignoreChromeError usercssHelper
+  styleManager msg navigatorUtil workerUtil contentScripts sync
+  findExistingTab createTab activateTab isTabReplaceable getActiveTab
+  iconManager tabManager */
 
 'use strict';
 
@@ -49,14 +50,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   openEditor,
 
   updateIconBadge(count) {
-    // TODO: remove once our manifest's minimum_chrome_version is 50+
-    // Chrome 49 doesn't report own extension pages in webNavigation apparently
-    // so we do a force update which doesn't use the cache.
-    if (CHROME && CHROME < 2661 && this.sender.tab.url.startsWith(URLS.ownOrigin)) {
-      updateIconBadgeForce(this.sender.tab.id, count);
-    } else {
-      updateIconBadge(this.sender.tab.id, count);
-    }
+    iconManager.updateIconBadge(this.sender.tab.id, count);
     return true;
   },
 
@@ -87,23 +81,23 @@ var browserCommands, contextMenus;
 // register all listeners
 msg.on(onRuntimeMessage);
 
+// tell apply.js to refresh styles for non-committed navigation
 navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
-  if (type === 'committed') {
-    // styles would be updated when content script is injected.
-    return;
+  if (type !== 'committed') {
+    msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
+      .catch(msg.ignoreError);
   }
-  msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
-    .catch(msg.ignoreError);
+});
+
+tabManager.onUpdate(({tabId, url, oldUrl = ''}) => {
+  if (usercssHelper.testUrl(url) && !oldUrl.startsWith(URLS.installUsercss)) {
+    usercssHelper.testContents(tabId, url).then(data => {
+      if (data.code) usercssHelper.openInstallerPage(tabId, url, data);
+    });
+  }
 });
 
 if (FIREFOX) {
-  // FF applies page CSP even to content scripts, https://bugzil.la/1267027
-  navigatorUtil.onCommitted(webNavUsercssInstallerFF, {
-    url: [
-      {pathSuffix: '.user.css'},
-      {pathSuffix: '.user.styl'},
-    ]
-  });
   // FF misses some about:blank iframes so we inject our content script explicitly
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
     url: [
@@ -121,46 +115,6 @@ if (chrome.commands) {
   // Not available in Firefox - https://bugzilla.mozilla.org/show_bug.cgi?id=1240350
   chrome.commands.onCommand.addListener(command => browserCommands[command]());
 }
-
-const tabIcons = new Map();
-chrome.tabs.onRemoved.addListener(tabId => tabIcons.delete(tabId));
-chrome.tabs.onReplaced.addListener((added, removed) => tabIcons.delete(removed));
-
-prefs.subscribe([
-  'disableAll',
-  'badgeDisabled',
-  'badgeNormal',
-], () => debounce(refreshIconBadgeColor));
-
-prefs.subscribe([
-  'show-badge'
-], () => debounce(refreshAllIconsBadgeText));
-
-prefs.subscribe([
-  'disableAll',
-  'iconset',
-], () => debounce(refreshAllIcons));
-
-prefs.initializing.then(() => {
-  refreshIconBadgeColor();
-  refreshAllIconsBadgeText();
-  refreshAllIcons();
-});
-
-navigatorUtil.onUrlChange(({tabId, frameId, transitionQualifiers}, type) => {
-  if (type === 'committed' && !frameId) {
-    // it seems that the tab icon would be reset by navigation. We
-    // invalidate the cache here so it would be refreshed by `apply.js`.
-    tabIcons.delete(tabId);
-
-    // however, if the tab was swapped in by forward/backward buttons,
-    // `apply.js` doesn't notify the background to update the icon,
-    // so we have to refresh it manually.
-    if (transitionQualifiers.includes('forward_back')) {
-      msg.sendTab(tabId, {method: 'updateCount'}).catch(msg.ignoreError);
-    }
-  }
-});
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason}) => {
@@ -293,21 +247,6 @@ if (FIREFOX && browser.commands && browser.commands.update) {
 
 msg.broadcastTab({method: 'backgroundReady'});
 
-function webNavUsercssInstallerFF(data) {
-  const {tabId} = data;
-  Promise.all([
-    msg.sendTab(tabId, {method: 'ping'})
-      .catch(() => false),
-    // we need tab index to open the installer next to the original one
-    // and also to skip the double-invocation in FF which assigns tab url later
-    getTab(tabId),
-  ]).then(([pong, tab]) => {
-    if (pong !== true && tab.url !== 'about:blank') {
-      window.API_METHODS.openUsercssInstallPage({direct: true}, {tab});
-    }
-  });
-}
-
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;
   msg.sendTab(tabId, {method: 'ping'}, {frameId})
@@ -324,75 +263,6 @@ function webNavIframeHelperFF({tabId, frameId}) {
         }, ignoreChromeError);
       }
     });
-}
-
-function updateIconBadge(tabId, count) {
-  let tabIcon = tabIcons.get(tabId);
-  if (!tabIcon) tabIcons.set(tabId, (tabIcon = {}));
-  if (tabIcon.count === count) {
-    return;
-  }
-  const oldCount = tabIcon.count;
-  tabIcon.count = count;
-  refreshIconBadgeText(tabId, tabIcon);
-  if (Boolean(oldCount) !== Boolean(count)) {
-    refreshIcon(tabId, tabIcon);
-  }
-}
-
-function updateIconBadgeForce(tabId, count) {
-  refreshIconBadgeText(tabId, {count});
-  refreshIcon(tabId, {count});
-}
-
-function refreshIconBadgeText(tabId, icon) {
-  iconUtil.setBadgeText({
-    text: prefs.get('show-badge') && icon.count ? String(icon.count) : '',
-    tabId
-  });
-}
-
-function refreshIcon(tabId, icon) {
-  const disableAll = prefs.get('disableAll');
-  const iconset = prefs.get('iconset') === 1 ? 'light/' : '';
-  const postfix = disableAll ? 'x' : !icon.count ? 'w' : '';
-  const iconType = iconset + postfix;
-
-  if (icon.iconType === iconType) {
-    return;
-  }
-  icon.iconType = iconset + postfix;
-  const sizes = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
-  iconUtil.setIcon({
-    path: sizes.reduce(
-      (obj, size) => {
-        obj[size] = `/images/icon/${iconset}${size}${postfix}.png`;
-        return obj;
-      },
-      {}
-    ),
-    tabId
-  });
-}
-
-function refreshIconBadgeColor() {
-  const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
-  iconUtil.setBadgeBackgroundColor({
-    color
-  });
-}
-
-function refreshAllIcons() {
-  for (const [tabId, icon] of tabIcons) {
-    refreshIcon(tabId, icon);
-  }
-  refreshIcon(null, {}); // default icon
-}
-
-function refreshAllIconsBadgeText() {
-  for (const [tabId, icon] of tabIcons) {
-    refreshIconBadgeText(tabId, icon);
-  }
 }
 
 function onRuntimeMessage(msg, sender) {

@@ -518,10 +518,6 @@
     "message": "Buscar actualizaciones",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Para habilitar la búsqueda de actualizaciones, suelte el archivo en la pestaña o especifique @updateURL en los metadatos del estilo.",
-    "description": ""
-  },
   "license": {
     "message": "Licencia",
     "description": "Label for the license"
@@ -597,17 +593,9 @@
     "message": "Se ha producido un error al visualizar el archivo",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "La recarga en tiempo real está habilitada, por lo que el estilo instalado se actualizará automáticamente con los cambios externos mientras estén abiertas esta pestaña y la pestaña del archivo de origen.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Recarga en tiempo real",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Para habilitar la recarga en tiempo real, suelte el archivo en la pestaña (el área donde se muestran los títulos de las pestañas).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons en la columna 'Se aplica a'",

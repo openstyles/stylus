@@ -449,10 +449,6 @@
     "message": "בדוק עדכונים",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "על־מנת לאפשר בדיקת עדכונים, אנא שחרר את הקובץ על רצועת הכרטיסיות או ציין @updateURL ב־metadata של העיצוב.",
-    "description": ""
-  },
   "license": {
     "message": "רישיון",
     "description": "Label for the license"
@@ -518,10 +514,6 @@
   "liveReloadLabel": {
     "message": "רענון לייב (live)",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "על־מנת לאפשר רענון לייב (live), אנא שחרר את הקובץ על רצועת הכרטיסיות (האזור בו כותרות הכרטיסיות מוצגות).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "הצגת אייקונים בעמודת 'חל על'",

@@ -546,10 +546,6 @@
     "message": "Sprawdź aktualizacje",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Aby włączyć sprawdzanie aktualizacji, upuść plik na pasku kart lub określ @updateURL w metadanych stylu.",
-    "description": ""
-  },
   "license": {
     "message": "Licencja",
     "description": "Label for the license"
@@ -625,17 +621,9 @@
     "message": "Wystąpił błąd podczas oglądania pliku",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Przeładowanie na żywo jest włączone, więc zainstalowany styl zostanie automatycznie zaktualizowany w przypadku zmian zewnętrznych, gdy ta karta i karta pliku źródłowego są otwarte.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Przeładuj na żywo",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Aby włączyć przeładowanie na żywo, upuść plik na pasku kart (obszar, w którym wyświetlane są tytuły kart).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Ikony ulubionych w kolumnie dotyczących",

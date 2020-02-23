@@ -538,10 +538,6 @@
     "message": "Kontrolli uuendusi",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Uuenduste kontrollimise lubamiseks lohista failid kaartide ribale või määratle stiili metaandmetes @updateURL.",
-    "description": ""
-  },
   "license": {
     "message": "Litsents",
     "description": "Label for the license"
@@ -621,17 +617,9 @@
     "message": "Faili vaatamisel esines viga",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Reaalajas uuestilaadimine on lubatud, seega paigaldatud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Reaalajas uuestilaadimine",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Reaalajas uuestilaadimise lubamiseks lohista fail kaartide ribale (ala, kus näidatakse kaartide pealkirju).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Lehe ikoonid rakendub-tulbas",

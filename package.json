@@ -34,8 +34,8 @@
     "update-transifex": "tx push -s",
     "build-vendor": "shx rm -rf vendor/* && node tools/build-vendor",
     "zip": "node tools/zip.js",
-    "start": "web-ext run --bc",
-    "start-chrome": "web-ext run -t chromium --bc",
+    "start": "web-ext run",
+    "start-chrome": "web-ext run -t chromium",
     "preversion": "npm test",
     "version": "sync-version manifest.json && git add .",
     "postversion": "npm run zip && git push --follow-tags"

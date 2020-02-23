@@ -522,10 +522,6 @@
     "message": "Sök efter uppdateringar",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "För att aktivera sök efter uppdateringar, släpp filen på flikremsan eller ange @updateURL i stilmetadatan.",
-    "description": ""
-  },
   "license": {
     "message": "Licens",
     "description": "Label for the license"
@@ -597,17 +593,9 @@
     "message": "Ett fel uppstod medan du tittade på filen",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Uppdatering i realtid är aktiverat så att den installerade stilen automatiskt uppdateras vid externa ändringar medan både den här fliken och fliken för källfilen är öppna.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Uppdaterar i realtid",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "För att aktivera uppdatering i realtid, släpp filen på fliken strip (det område där fliktitlar visas).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Ikoner i 'Tillämpad för' kolumnen",

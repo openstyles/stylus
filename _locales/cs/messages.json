@@ -597,10 +597,6 @@
     "message": "Při sledování souboru došlo k chybě",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Živá aktualizace je povolena, takže nainstalovaný styl bude automaticky aktualizován při externích změnách, dokud budou tento list a list zdrojového souboru otevřeny.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Živá aktualizace",
     "description": "The label of live-reload feature"

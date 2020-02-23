@@ -1,4 +1,4 @@
-/* global messageBox styleSectionsEqual getOwnTab API onDOMready
+/* global messageBox styleSectionsEqual API onDOMready
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement
   styleJSONseemsValid */
 'use strict';
@@ -87,14 +87,11 @@ function importFromFile({fileTypeFilter, file} = {}) {
           const text = event.target.result;
           const maybeUsercss = !/^[\s\r\n]*\[/.test(text) &&
             (text.includes('==UserStyle==') || /==UserStyle==/i.test(text));
-          (!maybeUsercss ?
-            importFromString(text) :
-            getOwnTab().then(tab => {
-              tab.url = URL.createObjectURL(new Blob([text], {type: 'text/css'}));
-              return API.openUsercssInstallPage({direct: true, tab})
-                .then(() => URL.revokeObjectURL(tab.url));
-            })
-          ).then(numStyles => {
+          if (maybeUsercss) {
+            messageBox.alert(t('dragDropUsercssTabstrip'));
+            return;
+          }
+          importFromString(text).then(numStyles => {
             document.body.style.cursor = '';
             resolve(numStyles);
           });

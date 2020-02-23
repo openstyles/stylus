@@ -534,10 +534,6 @@
     "message": "Controleren op updates",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Als u controle op updates wilt inschakelen, sleep dan het bestand naar de tabbladenstrook of geef een @updateURL op in de metagegevens van de stijl.",
-    "description": ""
-  },
   "license": {
     "message": "Licentie",
     "description": "Label for the license"
@@ -613,17 +609,9 @@
     "message": "Er is een fout opgetreden tijdens het bekijken van het bestand",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Live herladen is ingeschakeld. De geïnstalleerde stijl zal bij externe wijzigingen automatisch worden bijgewerkt als zowel dit tabblad als het tabblad van het bronbestand zijn geopend.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Live herladen",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Als u live herladen wilt inschakelen, sleep dan het bestand naar de tabbladenstrook (het gebied waar de tabbladtitels worden getoond).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons in kolom ‘Van toepassing op’",

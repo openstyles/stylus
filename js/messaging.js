@@ -39,6 +39,8 @@ const URLS = {
     OPERA ? 'opera://settings/configureCommands'
           : 'chrome://extensions/configureCommands',
 
+  installUsercss: chrome.runtime.getURL('install-usercss.html'),
+
   // CWS cannot be scripted in chromium, see ChromeExtensionsClient::IsScriptableURL
   // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
   browserWebStore:

@@ -35,10 +35,6 @@
     "message": "Edit style",
     "description": "Title of the page for editing styles"
   },
-  "installUpdateUnavailable": {
-    "message": "To enable checking for updates, drop the file on the tab strip or specify @updateURL in the style metadata.",
-    "description": ""
-  },
   "license": {
     "message": "Licence",
     "description": "Label for the license"
