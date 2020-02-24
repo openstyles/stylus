@@ -1,4 +1,4 @@
-/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager API_METHODS */
+/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager navigatorUtil API_METHODS */
 /* exported iconManager */
 'use strict';
 
@@ -35,6 +35,10 @@ const iconManager = (() => {
       refreshIconBadgeText(tabId);
       if (!frameId) refreshIcon(tabId, true);
     },
+  });
+
+  navigatorUtil.onCommitted(({tabId, frameId}) => {
+    if (!frameId) tabManager.set(tabId, 'styleIds', undefined);
   });
 
   function refreshIconBadgeText(tabId) {
