@@ -312,7 +312,7 @@ function sortStyles(entries) {
 
 function showStyles(frameResults) {
   const entries = new Map();
-  frameResults.forEach(({styles, url}, index) => {
+  frameResults.forEach(({styles = [], url}, index) => {
     styles.forEach(style => {
       const {id} = style.data;
       if (!entries.has(id)) {
