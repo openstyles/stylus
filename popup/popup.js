@@ -26,8 +26,8 @@ initTabUrls()
     Promise.all([
       onDOMready().then(() => initPopup(frames)),
       ...frames
-        .filter(f => !f.isDupe)
-        .map(({url}) => url && API.getStylesByUrl(url).then(styles => ({styles, url}))),
+        .filter(f => f.url && !f.isDupe)
+        .map(({url}) => API.getStylesByUrl(url).then(styles => ({styles, url}))),
     ]))
   .then(([, ...results]) => {
     if (results[0]) {
@@ -204,11 +204,12 @@ function initPopup(frames) {
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
 function sortTabFrames(frames) {
   const unknown = new Map(frames.map(f => [f.frameId, f]));
-  const known = new Map([[0, {frameId: 0}]]);
-  let lastSize = -1;
-  while (unknown.size && unknown.size !== lastSize) {
+  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
+  unknown.delete(0);
+  let lastSize = 0;
+  while (unknown.size !== lastSize) {
     for (const [frameId, f] of unknown) {
-      if (known.has(f.parentFrameId) || f.parentFrameId < 0) {
+      if (known.has(f.parentFrameId)) {
         known.set(frameId, f);
         unknown.delete(frameId);
         if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
@@ -219,7 +220,7 @@ function sortTabFrames(frames) {
   const sortedFrames = [...known.values(), ...unknown.values()];
   const urls = new Set([ABOUT_BLANK]);
   for (const f of sortedFrames) {
-    f.url = f.url || '';
+    if (!f.url) f.url = '';
     f.isDupe = urls.has(f.url);
     urls.add(f.url);
   }
