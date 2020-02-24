@@ -219,6 +219,7 @@ function sortTabFrames(frames) {
   const sortedFrames = [...known.values(), ...unknown.values()];
   const urls = new Set([ABOUT_BLANK]);
   for (const f of sortedFrames) {
+    f.url = f.url || '';
     f.isDupe = urls.has(f.url);
     urls.add(f.url);
   }
