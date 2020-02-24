@@ -210,8 +210,8 @@ function sortTabFrames(frames) {
   while (unknown.size !== lastSize) {
     for (const [frameId, f] of unknown) {
       if (known.has(f.parentFrameId)) {
-        known.set(frameId, f);
         unknown.delete(frameId);
+        if (!f.errorOccurred) known.set(frameId, f);
         if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
       }
     }
