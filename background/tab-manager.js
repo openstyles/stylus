@@ -24,17 +24,28 @@ const tabManager = (() => {
     onUpdate(fn) {
       listeners.push(fn);
     },
-    get(tabId, key) {
-      const meta = cache.get(tabId);
-      return meta && meta[key];
+    get(tabId, ...keys) {
+      return keys.reduce((meta, key) => meta && meta[key], cache.get(tabId));
     },
-    set(tabId, key, value) {
+    /**
+     * number of keys is arbitrary, last arg is value, `undefined` will delete the last key from meta
+     * (tabId, 'foo', 123) will set tabId's meta to {foo: 123},
+     * (tabId, 'foo', 'bar', 'etc', 123) will set tabId's meta to {foo: {bar: {etc: 123}}}
+     */
+    set(tabId, ...args) {
       let meta = cache.get(tabId);
       if (!meta) {
         meta = {};
         cache.set(tabId, meta);
       }
-      meta[key] = value;
+      const value = args.pop();
+      const lastKey = args.pop();
+      for (const key of args) meta = meta[key] || (meta[key] = {});
+      if (value === undefined) {
+        delete meta[lastKey];
+      } else {
+        meta[lastKey] = value;
+      }
     },
     list() {
       return cache.keys();

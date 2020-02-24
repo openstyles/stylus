@@ -1,4 +1,4 @@
-/* exported getActiveTab onTabReady stringAsRegExp getTabRealURL openURL
+/* exported getTab getActiveTab onTabReady stringAsRegExp openURL ignoreChromeError
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
 /* global promisify */
@@ -123,82 +123,6 @@ function getOwnTab() {
 function getActiveTab() {
   return queryTabs({currentWindow: true, active: true})
     .then(tabs => tabs[0]);
-}
-
-function getTabRealURL(tab) {
-  return new Promise(resolve => {
-    if (tab.url !== 'chrome://newtab/' || URLS.chromeProtectsNTP) {
-      resolve(tab.url);
-    } else {
-      chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0, processId: -1}, frame => {
-        resolve(frame && frame.url || '');
-      });
-    }
-  });
-}
-
-/**
- * Resolves when the [just created] tab is ready for communication.
- * @param {Number|Tab} tabOrId
- * @returns {Promise<?Tab>}
- */
-function onTabReady(tabOrId) {
-  let tabId, tab;
-  if (Number.isInteger(tabOrId)) {
-    tabId = tabOrId;
-  } else {
-    tab = tabOrId;
-    tabId = tab && tab.id;
-  }
-  if (!tab) {
-    return getTab(tabId).then(onTabReady);
-  }
-  if (tab.status === 'complete') {
-    if (!FIREFOX || tab.url !== 'about:blank') {
-      return Promise.resolve(tab);
-    } else {
-      return new Promise(resolve => {
-        chrome.webNavigation.getFrame({tabId, frameId: 0}, frame => {
-          ignoreChromeError();
-          if (frame) {
-            onTabReady(tab).then(resolve);
-          } else {
-            setTimeout(() => onTabReady(tabId).then(resolve));
-          }
-        });
-      });
-    }
-  }
-  return new Promise((resolve, reject) => {
-    chrome.webNavigation.onCommitted.addListener(onCommitted);
-    chrome.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
-    chrome.tabs.onRemoved.addListener(onTabRemoved);
-    chrome.tabs.onReplaced.addListener(onTabReplaced);
-    function onCommitted(info) {
-      if (info.tabId !== tabId) return;
-      unregister();
-      getTab(tab.id).then(resolve);
-    }
-    function onErrorOccurred(info) {
-      if (info.tabId !== tabId) return;
-      unregister();
-      reject();
-    }
-    function onTabRemoved(removedTabId) {
-      if (removedTabId !== tabId) return;
-      unregister();
-      reject();
-    }
-    function onTabReplaced(addedTabId, removedTabId) {
-      onTabRemoved(removedTabId);
-    }
-    function unregister() {
-      chrome.webNavigation.onCommitted.removeListener(onCommitted);
-      chrome.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
-      chrome.tabs.onRemoved.removeListener(onTabRemoved);
-      chrome.tabs.onReplaced.removeListener(onTabReplaced);
-    }
-  });
 }
 
 function urlToMatchPattern(url, ignoreSearch) {

@@ -9,12 +9,25 @@
 self.INJECTED !== 1 && (() => {
   self.INJECTED = 1;
 
+  let IS_TAB = !chrome.tabs || location.pathname !== '/popup.html';
+  const IS_FRAME = window !== parent;
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
   const styleInjector = createStyleInjector({
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
   const initializing = init();
+  /** @type chrome.runtime.Port */
+  let port;
+  let lazyBadge = IS_FRAME;
+
+  // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
+  if (!IS_TAB) {
+    chrome.tabs.getCurrent(tab => {
+      IS_TAB = Boolean(tab);
+      if (tab && styleInjector.list.length) updateCount();
+    });
+  }
 
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
@@ -32,7 +45,7 @@ self.INJECTED !== 1 && (() => {
   let parentDomain;
 
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
-  if (window !== parent) {
+  if (IS_FRAME) {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
   }
 
@@ -55,7 +68,7 @@ self.INJECTED !== 1 && (() => {
       // dynamic about: and javascript: iframes don't have an URL yet
       // so we'll try the parent frame which is guaranteed to have a real URL
       try {
-        if (window !== parent) {
+        if (IS_FRAME) {
           matchUrl = parent.location.href;
         }
       } catch (e) {}
@@ -153,19 +166,19 @@ self.INJECTED !== 1 && (() => {
   }
 
   function updateCount() {
-    if (window !== parent) {
-      // we don't care about iframes
-      return;
+    if (!IS_TAB) return;
+    if (IS_FRAME) {
+      if (!port && styleInjector.list.length) {
+        port = chrome.runtime.connect({name: 'iframe'});
+      } else if (port && !styleInjector.list.length) {
+        port.disconnect();
+      }
+      if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
-    if (/^\w+?-extension:\/\/.+(popup|options)\.html$/.test(location.href)) {
-      // popup and the option page are not tabs
-      return;
-    }
-    if (STYLE_VIA_API) {
-      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
-    } else {
-      API.updateIconBadge(styleInjector.list.length).catch(console.error);
-    }
+    (STYLE_VIA_API ?
+      API.styleViaAPI({method: 'updateCount'}) :
+      API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge})
+    ).catch(msg.ignoreError);
   }
 
   function orphanCheck() {

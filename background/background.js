@@ -2,7 +2,7 @@
   URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab createTab activateTab isTabReplaceable getActiveTab
-  iconManager tabManager */
+  tabManager */
 
 'use strict';
 
@@ -49,15 +49,26 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   openEditor,
 
-  updateIconBadge(count) {
-    iconManager.updateIconBadge(this.sender.tab.id, count);
-    return true;
+  /* Same as openURL, the only extra prop in `opts` is `message` - it'll be sent when the tab is ready,
+  which is needed in the popup, otherwise another extension could force the tab to open in foreground
+  thus auto-closing the popup (in Chrome at least) and preventing the sendMessage code from running */
+  openURL(opts) {
+    const {message} = opts;
+    return openURL(opts) // will pass the resolved value untouched when `message` is absent or falsy
+      .then(message && (tab => tab.status === 'complete' ? tab : onTabReady(tab)))
+      .then(message && (tab => msg.sendTab(tab.id, opts.message)));
+    function onTabReady(tab) {
+      return new Promise((resolve, reject) =>
+        setTimeout(function ping(numTries = 10, delay = 100) {
+          msg.sendTab(tab.id, {method: 'ping'})
+            .catch(() => false)
+            .then(pong => pong
+              ? resolve(tab)
+              : numTries && setTimeout(ping, delay, numTries - 1, delay * 1.5) ||
+                reject('timeout'));
+        }));
+    }
   },
-
-  // exposed for stuff that requires followup sendMessage() like popup::openSettings
-  // that would fail otherwise if another extension forced the tab to open
-  // in the foreground thus auto-closing the popup (in Chrome)
-  openURL,
 
   optionsCustomizeHotkeys() {
     return browser.runtime.openOptionsPage()
