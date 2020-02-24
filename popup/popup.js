@@ -201,32 +201,6 @@ function initPopup(frames) {
   });
 }
 
-/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-function sortTabFrames(frames) {
-  const unknown = new Map(frames.map(f => [f.frameId, f]));
-  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
-  unknown.delete(0);
-  let lastSize = 0;
-  while (unknown.size !== lastSize) {
-    for (const [frameId, f] of unknown) {
-      if (known.has(f.parentFrameId)) {
-        unknown.delete(frameId);
-        if (!f.errorOccurred) known.set(frameId, f);
-        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
-      }
-    }
-    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
-  }
-  const sortedFrames = [...known.values(), ...unknown.values()];
-  const urls = new Set([ABOUT_BLANK]);
-  for (const f of sortedFrames) {
-    if (!f.url) f.url = '';
-    f.isDupe = urls.has(f.url);
-    urls.add(f.url);
-  }
-  return sortedFrames;
-}
-
 /** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
 function createWriterElement(frame) {
   const {url, frameId, parentFrameId, isDupe} = frame;
@@ -301,6 +275,32 @@ function getDomains(url) {
     domains.push(d);
   }
   return domains;
+}
+
+/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
+function sortTabFrames(frames) {
+  const unknown = new Map(frames.map(f => [f.frameId, f]));
+  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
+  unknown.delete(0);
+  let lastSize = 0;
+  while (unknown.size !== lastSize) {
+    for (const [frameId, f] of unknown) {
+      if (known.has(f.parentFrameId)) {
+        unknown.delete(frameId);
+        if (!f.errorOccurred) known.set(frameId, f);
+        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
+      }
+    }
+    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
+  }
+  const sortedFrames = [...known.values(), ...unknown.values()];
+  const urls = new Set([ABOUT_BLANK]);
+  for (const f of sortedFrames) {
+    if (!f.url) f.url = '';
+    f.isDupe = urls.has(f.url);
+    urls.add(f.url);
+  }
+  return sortedFrames;
 }
 
 function sortStyles(entries) {
