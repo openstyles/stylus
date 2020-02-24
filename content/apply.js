@@ -18,7 +18,12 @@ self.INJECTED !== 1 && (() => {
 
   // if chrome.tabs is absent it's a web page, otherwise we'll check for popup/options as those aren't tabs
   let isTab = !chrome.tabs;
-  if (chrome.tabs) chrome.tabs.getCurrent(tab => (isTab = Boolean(tab)));
+  if (chrome.tabs) {
+    chrome.tabs.getCurrent(tab => {
+      isTab = Boolean(tab);
+      if (tab && styleInjector.list.length) updateCount();
+    });
+  }
 
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
