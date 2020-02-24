@@ -28,13 +28,14 @@ const iconManager = (() => {
   });
 
   Object.assign(API_METHODS, {
-    /** @param {(number|string)[]} styleIds */
-    updateIconBadge(styleIds) {
+    /** @param {(number|string)[]} styleIds
+     * @param {boolean} [lazyBadge=false] preventing flicker during page load */
+    updateIconBadge(styleIds, {lazyBadge} = {}) {
       // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
       const {frameId, tab: {id: tabId}} = this.sender;
       const value = styleIds.length ? styleIds.map(Number) : undefined;
       tabManager.set(tabId, 'styleIds', frameId, value);
-      debounce(refreshStaleBadges, frameId ? 250 : 0);
+      debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
       staleBadges.add(tabId);
       if (!frameId) refreshIcon(tabId, true);
     },
@@ -52,7 +53,7 @@ const iconManager = (() => {
 
   function onPortDisconnected({sender}) {
     if (tabManager.get(sender.tab.id, 'styleIds')) {
-      API_METHODS.updateIconBadge.call({sender}, []);
+      API_METHODS.updateIconBadge.call({sender}, [], {lazyBadge: true});
     }
   }
 

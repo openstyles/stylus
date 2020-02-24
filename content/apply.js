@@ -19,6 +19,7 @@ self.INJECTED !== 1 && (() => {
   const initializing = init();
   /** @type chrome.runtime.Port */
   let port;
+  let lazyBadge = IS_FRAME;
 
   // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
   if (!IS_TAB) {
@@ -166,18 +167,18 @@ self.INJECTED !== 1 && (() => {
 
   function updateCount() {
     if (!IS_TAB) return;
-    if (STYLE_VIA_API) {
-      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
-    } else {
-      API.updateIconBadge(styleInjector.list.map(style => style.id)).catch(msg.ignoreError);
-    }
     if (IS_FRAME) {
       if (!port && styleInjector.list.length) {
         port = chrome.runtime.connect({name: 'iframe'});
       } else if (port && !styleInjector.list.length) {
         port.disconnect();
       }
+      if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
+    (STYLE_VIA_API ?
+      API.styleViaAPI({method: 'updateCount'}) :
+      API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge})
+    ).catch(msg.ignoreError);
   }
 
   function orphanCheck() {
