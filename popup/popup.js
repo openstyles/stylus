@@ -11,6 +11,7 @@ let installed;
 let tabURL;
 const handleEvent = {};
 
+const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
@@ -83,7 +84,7 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
 function initTabUrls() {
   return getActiveTab()
     .then((tab = {}) =>
-      FIREFOX && tab.status === 'loading' && tab.url === 'about:blank'
+      FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK
         ? waitForTabUrlFF(tab)
         : tab)
     .then(tab => new Promise(resolve =>
@@ -159,7 +160,7 @@ function initPopup(frames) {
         // so we'll wait a bit to handle popup being invoked right after switching
         if (retryCountdown > 0 && (
             tab.status !== 'complete' ||
-            FIREFOX && tab.url === 'about:blank')) {
+            FIREFOX && tab.url === ABOUT_BLANK)) {
           setTimeout(ping, 100, tab, --retryCountdown);
           return;
         }
@@ -206,12 +207,13 @@ function sortTabFrames(frames) {
       if (known.has(f.parentFrameId) || f.parentFrameId < 0) {
         known.set(frameId, f);
         unknown.delete(frameId);
+        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
       }
     }
     lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
   }
   const sortedFrames = [...known.values(), ...unknown.values()];
-  const urls = new Set(['about:blank']);
+  const urls = new Set([ABOUT_BLANK]);
   for (const f of sortedFrames) {
     f.isDupe = urls.has(f.url);
     urls.add(f.url);
@@ -226,7 +228,7 @@ function createWriterElement(frame) {
 
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
-  const isAboutBlank = url === 'about:blank';
+  const isAboutBlank = url === ABOUT_BLANK;
   Object.assign(urlLink, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
     title: `url-prefix("${url}")`,
