@@ -547,6 +547,10 @@ body.blocked .actions > .main-controls {
   margin-top: .25em;
 }
 
+.match:not([data-frame-id="0"]) a {
+  text-decoration: none; /* not underlining iframe links until hovered to reduce visual noise */
+}
+
 .match .match {
   margin-left: .5rem;
 }
