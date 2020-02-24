@@ -4,6 +4,7 @@
 
 const iconManager = (() => {
   const ICON_SIZES = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+  const staleBadges = new Set();
 
   prefs.subscribe([
     'disableAll',
@@ -31,8 +32,10 @@ const iconManager = (() => {
     updateIconBadge(styleIds) {
       // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
       const {frameId, tab: {id: tabId}} = this.sender;
-      tabManager.set(tabId, 'styleIds', frameId, styleIds.length ? styleIds.map(Number) : undefined);
-      refreshIconBadgeText(tabId);
+      const value = styleIds.length ? styleIds.map(Number) : undefined;
+      tabManager.set(tabId, 'styleIds', frameId, value);
+      debounce(refreshStaleBadges, frameId ? 250 : 0);
+      staleBadges.add(tabId);
       if (!frameId) refreshIcon(tabId, true);
     },
   });
@@ -40,6 +43,18 @@ const iconManager = (() => {
   navigatorUtil.onCommitted(({tabId, frameId}) => {
     if (!frameId) tabManager.set(tabId, 'styleIds', undefined);
   });
+
+  chrome.runtime.onConnect.addListener(port => {
+    if (port.name === 'iframe') {
+      port.onDisconnect.addListener(onPortDisconnected);
+    }
+  });
+
+  function onPortDisconnected({sender}) {
+    if (tabManager.get(sender.tab.id, 'styleIds')) {
+      API_METHODS.updateIconBadge.call({sender}, []);
+    }
+  }
 
   function refreshIconBadgeText(tabId) {
     const text = prefs.get('show-badge') ? `${getStyleCount(tabId)}` : '';
@@ -109,5 +124,10 @@ const iconManager = (() => {
     for (const tabId of tabManager.list()) {
       refreshIconBadgeText(tabId);
     }
+  }
+
+  function refreshStaleBadges() {
+    for (const tabId of staleBadges) refreshIconBadgeText(tabId);
+    staleBadges.clear();
   }
 })();

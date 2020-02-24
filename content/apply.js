@@ -9,18 +9,21 @@
 self.INJECTED !== 1 && (() => {
   self.INJECTED = 1;
 
+  let IS_TAB = !chrome.tabs || location.pathname !== '/popup.html';
+  const IS_FRAME = window !== parent;
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
   const styleInjector = createStyleInjector({
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
   const initializing = init();
+  /** @type chrome.runtime.Port */
+  let port;
 
-  // if chrome.tabs is absent it's a web page, otherwise we'll check for popup/options as those aren't tabs
-  let isTab = !chrome.tabs;
-  if (chrome.tabs) {
+  // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
+  if (!IS_TAB) {
     chrome.tabs.getCurrent(tab => {
-      isTab = Boolean(tab);
+      IS_TAB = Boolean(tab);
       if (tab && styleInjector.list.length) updateCount();
     });
   }
@@ -41,7 +44,7 @@ self.INJECTED !== 1 && (() => {
   let parentDomain;
 
   prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
-  if (window !== parent) {
+  if (IS_FRAME) {
     prefs.subscribe(['exposeIframes'], updateExposeIframes);
   }
 
@@ -64,7 +67,7 @@ self.INJECTED !== 1 && (() => {
       // dynamic about: and javascript: iframes don't have an URL yet
       // so we'll try the parent frame which is guaranteed to have a real URL
       try {
-        if (window !== parent) {
+        if (IS_FRAME) {
           matchUrl = parent.location.href;
         }
       } catch (e) {}
@@ -162,11 +165,18 @@ self.INJECTED !== 1 && (() => {
   }
 
   function updateCount() {
-    if (isTab) {
-      (STYLE_VIA_API ?
-        API.styleViaAPI({method: 'updateCount'}) :
-        API.updateIconBadge(styleInjector.list.map(style => style.id))
-      ).catch(msg.ignoreError);
+    if (!IS_TAB) return;
+    if (STYLE_VIA_API) {
+      API.styleViaAPI({method: 'updateCount'}).catch(msg.ignoreError);
+    } else {
+      API.updateIconBadge(styleInjector.list.map(style => style.id)).catch(msg.ignoreError);
+    }
+    if (IS_FRAME) {
+      if (!port && styleInjector.list.length) {
+        port = chrome.runtime.connect({name: 'iframe'});
+      } else if (port && !styleInjector.list.length) {
+        port.disconnect();
+      }
     }
   }
 
