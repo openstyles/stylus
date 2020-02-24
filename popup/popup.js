@@ -1,5 +1,5 @@
 /* global configDialog hotkeys msg
-  getActiveTab FIREFOX URLS API onDOMready $ $$ prefs
+  getActiveTab CHROME FIREFOX URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
   tryJSONparse CHROME_HAS_BORDER_BUG */
 
@@ -14,6 +14,10 @@ const handleEvent = {};
 const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+
+if (CHROME >= 3345 && CHROME < 3533) { // Chrome 66-69 adds a gap, https://crbug.com/821143
+  document.head.appendChild($create('style', 'html { overflow: overlay }'));
+}
 
 toggleSideBorders();
 
