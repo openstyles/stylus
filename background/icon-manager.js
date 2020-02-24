@@ -128,7 +128,9 @@ const iconManager = (() => {
   }
 
   function refreshStaleBadges() {
-    for (const tabId of staleBadges) refreshIconBadgeText(tabId);
+    for (const tabId of staleBadges) {
+      refreshIconBadgeText(tabId);
+    }
     staleBadges.clear();
   }
 })();
