@@ -1,8 +1,7 @@
 /* global API_METHODS usercss styleManager deepCopy openURL download URLS */
-/* exports usercssHelper */
+/* exported usercssHelper */
 'use strict';
 
-// eslint-disable-next-line no-unused-vars
 const usercssHelper = (() => {
   const installCodeCache = {};
   const clearInstallCode = url => delete installCodeCache[url];
