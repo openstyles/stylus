@@ -1,4 +1,4 @@
-/* global API_METHODS usercss styleManager deepCopy openURL download URLS getTab */
+/* global API_METHODS usercss styleManager deepCopy openURL download URLS */
 /* exports usercssHelper */
 'use strict';
 
