@@ -1,4 +1,4 @@
-/* global showHelp $ $create tryRegExp queryTabs URLS t template openURL */
+/* global showHelp $ $create tryRegExp URLS t template openURL */
 /* exported regExpTester */
 'use strict';
 
@@ -66,7 +66,7 @@ const regExpTester = (() => {
       return rxData;
     });
     const getMatchInfo = m => m && {text: m[0], pos: m.index};
-    queryTabs({}).then(tabs => {
+    browser.tabs.query({}).then(tabs => {
       const supported = tabs.map(tab => tab.url)
         .filter(url => URLS.supported(url));
       const unique = [...new Set(supported).values()];

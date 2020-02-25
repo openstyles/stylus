@@ -26,7 +26,6 @@
   "background": {
     "scripts": [
       "js/polyfill.js",
-      "js/promisify.js",
       "js/messaging.js",
       "js/msg.js",
       "js/storage-util.js",
@@ -77,7 +76,6 @@
       "match_about_blank": true,
       "js": [
         "js/polyfill.js",
-        "js/promisify.js",
         "js/msg.js",
         "js/prefs.js",
         "content/style-injector.js",

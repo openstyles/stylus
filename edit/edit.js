@@ -1,5 +1,5 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
-  createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
+  createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce workerUtil
   initBeautifyButton ignoreChromeError
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
@@ -215,7 +215,7 @@ function preinit() {
   }).observe(document, {subtree: true, childList: true});
 
   if (chrome.windows) {
-    queryTabs({currentWindow: true}).then(tabs => {
+    browser.tabs.query({currentWindow: true}).then(tabs => {
       const windowId = tabs[0].windowId;
       if (prefs.get('openEditInWindow')) {
         if (

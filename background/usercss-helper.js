@@ -46,7 +46,7 @@ const usercssHelper = (() => {
     openInstallerPage(tabId, url, {code, inTab} = {}) {
       const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
       if (inTab) {
-        getTab(tabId).then(tab =>
+        browser.tabs.get(tabId).then(tab =>
           openURL({
             url: `${newUrl}&tabId=${tabId}`,
             active: tab.active,

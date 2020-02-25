@@ -1,7 +1,7 @@
 /* exported getTab getActiveTab onTabReady stringAsRegExp openURL ignoreChromeError
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
-/* global promisify */
+/* global promisifyChrome */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
@@ -93,33 +93,20 @@ if (IS_BG) {
 // Object.defineProperty(window, 'localStorage', {value: {}});
 // Object.defineProperty(window, 'sessionStorage', {value: {}});
 
-const createTab = promisify(chrome.tabs.create.bind(chrome.tabs));
-const queryTabs = promisify(chrome.tabs.query.bind(chrome.tabs));
-const updateTab = promisify(chrome.tabs.update.bind(chrome.tabs));
-const moveTabs = promisify(chrome.tabs.move.bind(chrome.tabs));
-
-// Android doesn't have chrome.windows
-const updateWindow = chrome.windows && promisify(chrome.windows.update.bind(chrome.windows));
-const createWindow = chrome.windows && promisify(chrome.windows.create.bind(chrome.windows));
+promisifyChrome({
+  tabs: ['create', 'get', 'getCurrent', 'move', 'query', 'update'],
+  windows: ['create', 'update'], // Android doesn't have chrome.windows
+});
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
 const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;
 
-function getTab(id) {
-  return new Promise(resolve =>
-    chrome.tabs.get(id, tab =>
-      !chrome.runtime.lastError && resolve(tab)));
-}
-
-
 function getOwnTab() {
-  return new Promise(resolve =>
-    chrome.tabs.getCurrent(tab => resolve(tab)));
+  return browser.tabs.getCurrent();
 }
-
 
 function getActiveTab() {
-  return queryTabs({currentWindow: true, active: true})
+  return browser.tabs.query({currentWindow: true, active: true})
     .then(tabs => tabs[0]);
 }
 
@@ -140,7 +127,7 @@ function urlToMatchPattern(url, ignoreSearch) {
 
 function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
   url = new URL(url);
-  return queryTabs({url: urlToMatchPattern(url, ignoreSearch), currentWindow})
+  return browser.tabs.query({url: urlToMatchPattern(url, ignoreSearch), currentWindow})
     // FIXME: is tab.url always normalized?
     .then(tabs => tabs.find(matchTab));
 
@@ -191,8 +178,8 @@ function openURL({
         url: url !== tab.url && url.includes('#') ? url : undefined,
       });
     }
-    if (newWindow && createWindow) {
-      return createWindow(Object.assign({url}, windowPosition))
+    if (newWindow && browser.windows) {
+      return browser.windows.create(Object.assign({url}, windowPosition))
         .then(wnd => wnd.tabs[0]);
     }
     return getActiveTab().then((activeTab = {url: ''}) =>
@@ -205,7 +192,7 @@ function openURL({
     if (id != null && !openerTab.incognito && openerTabIdSupported) {
       options.openerTabId = id;
     }
-    return createTab(options);
+    return browser.tabs.create(options);
   }
 }
 
@@ -232,9 +219,9 @@ function activateTab(tab, {url, index, openerTabId} = {}) {
     options.openerTabId = openerTabId;
   }
   return Promise.all([
-    updateTab(tab.id, options),
-    updateWindow && updateWindow(tab.windowId, {focused: true}),
-    index != null && moveTabs(tab.id, {index})
+    browser.tabs.update(tab.id, options),
+    browser.windows && browser.windows.update(tab.windowId, {focused: true}),
+    index != null && browser.tabs.move(tab.id, {index})
   ])
     .then(() => tab);
 }

@@ -1,4 +1,4 @@
-/* global CodeMirror focusAccessibility colorMimicry editor
+/* global CodeMirror focusAccessibility colorMimicry editor chromeLocal
   onDOMready $ $$ $create t debounce tryRegExp stringAsRegExp template */
 'use strict';
 
@@ -915,7 +915,7 @@ onDOMready().then(() => {
 
 
   function readStorage() {
-    chrome.storage.local.get('editor', ({editor = {}}) => {
+    chromeLocal.getValue('editor').then((editor = {}) => {
       state.find = editor.find || '';
       state.replace = editor.replace || '';
       state.icase = editor.icase || state.icase;
@@ -924,14 +924,12 @@ onDOMready().then(() => {
 
 
   function writeStorage() {
-    chrome.storage.local.get('editor', ({editor}) =>
-      chrome.storage.local.set({
-        editor: Object.assign(editor || {}, {
-          find: state.find,
-          replace: state.replace,
-          icase: state.icase,
-        })
-      }));
+    chromeLocal.getValue('editor').then((editor = {}) =>
+      chromeLocal.setValue('editor', Object.assign(editor, {
+        find: state.find,
+        replace: state.replace,
+        icase: state.icase,
+      })));
   }
 
 

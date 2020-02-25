@@ -1,6 +1,6 @@
 /* global tabURL handleEvent $ $$ prefs template FIREFOX chromeLocal debounce
   $create t API tWordBreak formatDate tryCatch tryJSONparse LZString
-  ignoreChromeError download */
+  promisifyChrome download */
 'use strict';
 
 window.addEventListener('showStyles:done', function _() {
@@ -88,6 +88,9 @@ window.addEventListener('showStyles:done', function _() {
   return;
 
   function init() {
+    promisifyChrome({
+      'storage.local': ['getBytesInUse'], // FF doesn't implement it
+    });
     setTimeout(() => document.body.classList.add(BODY_CLASS));
 
     $('#find-styles-inline-group').classList.add('hidden');
@@ -711,7 +714,7 @@ window.addEventListener('showStyles:done', function _() {
         return chromeLocal.loadLZStringScript().then(() =>
           tryJSONparse(LZString.decompressFromUTF16(item.payload)));
       } else if (item) {
-        chrome.storage.local.remove(key);
+        chromeLocal.remove(key);
       }
     });
   }
@@ -742,16 +745,8 @@ window.addEventListener('showStyles:done', function _() {
 
   function cleanupCache() {
     chromeLocal.remove(CACHE_CLEANUP_NEEDED);
-    if (chrome.storage.local.getBytesInUse) {
-      chrome.storage.local.getBytesInUse(null, size => {
-        if (size > CACHE_SIZE) {
-          chrome.storage.local.get(null, cleanupCacheInternal);
-        }
-        ignoreChromeError();
-      });
-    } else {
-      chrome.storage.local.get(null, cleanupCacheInternal);
-    }
+    Promise.resolve(!browser.storage.local.getBytesInUse ? 1e99 : browser.storage.local.getBytesInUse())
+      .then(size => size > CACHE_SIZE && chromeLocal.get().then(cleanupCacheInternal));
   }
 
   function cleanupCacheInternal(storage) {
@@ -764,9 +759,8 @@ window.addEventListener('showStyles:done', function _() {
       sortedByTime.slice(0, sortedByTime.length / 2);
     const toRemove = expired.length ? expired : sortedByTime;
     if (toRemove.length) {
-      chrome.storage.local.remove(toRemove.map(item => item.key), ignoreChromeError);
+      chromeLocal.remove(toRemove.map(item => item.key));
     }
-    ignoreChromeError();
   }
 
   //endregion
