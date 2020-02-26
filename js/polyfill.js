@@ -15,6 +15,11 @@ self.INJECTED !== 1 && (() => {
   if (!self.chrome) return;
   // the rest is for content scripts and our extension pages
 
+  /* Promisifies the specified `chrome` methods into `browser`.
+    The definitions is an object like this: {
+      'storage.sync': ['get', 'set'], // if deeper than one level, combine the path via `.`
+      windows: ['create', 'update'], // items and sub-objects will only be created if present in `chrome`
+    } */
   self.promisifyChrome = definitions => {
     // a web page may have <html id="browser"> which creates a global variable `browser` pointing to this element
     if (!self.browser || !self.browser.runtime && !self.browser.promisifyChrome) {
