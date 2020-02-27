@@ -244,6 +244,14 @@
     "message": "Oui",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Copié dans le presse-papier",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Copier dans le presse-papier",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Date d'installation",
     "description": "Option text for the user to sort the style by install date"
@@ -436,6 +444,10 @@
   "helpKeyMapHotkey": {
     "message": "Pressez un raccourci clavier",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "Cet hôte a été désactivé en raison d'un bogue dans la version actuelle du navigateur utilisé",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "Ajouter au style",
@@ -953,6 +965,10 @@
     "message": "Mises à jour",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Synchroniser dans le nuage",
+    "description": ""
+  },
   "optionsIconDark": {
     "message": "Thème foncé",
     "description": ""
@@ -991,6 +1007,70 @@
   },
   "optionsUpdateInterval": {
     "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Aucun",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Connecter",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Disconnecter",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synchroniser maintenant",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Se connecter",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Récupération du style  $loaded$de $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Application du style $loaded$ de $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchronisation...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Connection...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Connecté",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Disconnection...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Disconnecté",
     "description": ""
   },
   "paginationCurrent": {
@@ -1068,6 +1148,10 @@
   "previewTooltip": {
     "message": "Applique temporairement les changements sans sauvegarder.\nSauvegarde le style pour rendre les changements permanents.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Recharger l´extension Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Remplacer",
@@ -1470,6 +1554,10 @@
   },
   "syncDropboxStyles": {
     "message": "Exporter vers Dropbox",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "L´import/export Dropbox est remplacé par une méthode de synchronisation de styles plus avancés dans la page des options",
     "description": ""
   },
   "retrieveDropboxSync": {

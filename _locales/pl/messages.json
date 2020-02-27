@@ -292,6 +292,10 @@
     "message": "Upuść twój plik kopii zapasowej gdziekolwiek na tej stronie, aby zaimportować.",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "Aby zainstalować plik, upuść go na pasku kart (obszar, w którym wyświetlane są tytuły kart).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "Usuń",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -620,6 +624,14 @@
   "liveReloadError": {
     "message": "Wystąpił błąd podczas oglądania pliku",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "Pozostaw tę kartę otwartą, aby automatycznie aktualizować styl w przypadku zmian zewnętrznych.",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Pozostaw zarówno tę kartę, jak i kartę pierwotną otwarte, aby automatycznie aktualizować styl w przypadku zmian zewnętrznych.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Przeładuj na żywo",

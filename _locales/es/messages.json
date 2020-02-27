@@ -240,6 +240,14 @@
     "message": "Sí",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Copiado al portapapeles",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Copiar al portapapeles",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Fecha de instalación",
     "description": "Option text for the user to sort the style by install date"
@@ -312,6 +320,14 @@
   "enableStyleLabel": {
     "message": "Activar",
     "description": "Label for the button to enable a style"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Excluir el dominio Actual",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Excluir la URL actual",
+    "description": ""
   },
   "exportLabel": {
     "message": "Exportar",
@@ -889,6 +905,10 @@
     "message": "Administrar",
     "description": "Link to open the manage page."
   },
+  "openOptions": {
+    "message": "Opciones",
+    "description": "Go to Options UI"
+  },
   "openStylesManager": {
     "message": "Abrir administrador de estilos",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -989,6 +1009,42 @@
     "message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
     "description": ""
   },
+  "optionsSyncConnect": {
+    "message": "Conectar",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Desconectar",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sincronizar ahora",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Iniciar Sesión",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sincronizando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Conectando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Conectado",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Desconectando...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Desconectado",
+    "description": ""
+  },
   "paginationCurrent": {
     "message": "Página actual",
     "description": "Tooltip for the current page index in search results"
@@ -1032,6 +1088,10 @@
   "popupManageTooltip": {
     "message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual.",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Acciones",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Abrir editor en una nueva ventana",

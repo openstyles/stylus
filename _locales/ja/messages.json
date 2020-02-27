@@ -284,6 +284,10 @@
     "message": "このページの任意の場所にバックアップファイルをドロップしてインポートします。",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "ファイルをインストールするときは、タブ（タイトルが表示されている領域）にドロップしてください。",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "削除",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -616,6 +620,14 @@
   "liveReloadError": {
     "message": "ファイルの監視中にエラーが発生しました",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "外部の変更時にスタイルを自動更新する場合は、このタブを開いたままにしておいてください。",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "外部の変更時にスタイルを自動更新する場合は、このタブと元のタブを開いたままにしておいてください。",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "自動リロード",
@@ -1166,7 +1178,7 @@
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
   },
   "reload": {
-    "message": "Stylus拡張をリロードします",
+    "message": "Stylus拡張をリロードする",
     "description": "Context menu reload"
   },
   "replace": {

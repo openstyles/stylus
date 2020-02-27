@@ -284,6 +284,10 @@
     "message": "Lohista importimiseks oma varundusfail kuskile siia lehele.",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "Faili installimiseks lohista see kaartide ribale (ala, kus näidatakse kaartide pealkirju).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "Kustuta",
     "description": "Label for the context menu item in the editor to delete selected text"

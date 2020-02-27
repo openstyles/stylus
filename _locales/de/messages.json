@@ -280,6 +280,10 @@
     "message": "Ziehe die Backup Datei zum importieren an irgendeinen Ort auf dieser Seite.",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "Ziehe die Datei auf die Tableiste, um sie zu installieren.",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "Löschen",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -600,6 +604,14 @@
   "liveReloadError": {
     "message": "Bei der Echtzeitaktualisierung der Datei ist ein Fehler aufgetreten",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "Lasse diesen Tab geöffnet, um den Style bei externen Änderungen automatisch zu aktualisieren.",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Lasse diesen und den Originaltab offen, um den Style bei externen Änderungen automatisch zu aktualisieren.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Echtzeitaktualisierung",

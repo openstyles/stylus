@@ -288,6 +288,10 @@
     "message": "Sleep uw back-upbestand naar deze pagina om het te importeren.",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "Sleep het bestand naar de tabbladenstrook (het gebied waar de tabbladtitels worden getoond) om het te installeren.",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "Verwijderen",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -608,6 +612,14 @@
   "liveReloadError": {
     "message": "Er is een fout opgetreden tijdens het bekijken van het bestand",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "Houd dit tabblad geopend om de stijl automatisch bij te werken bij externe wijzigingen.",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Houd zowel dit tabblad als het oorspronkelijke tabblad geopend om de stijl automatisch bij te werken bij externe wijzigingen.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Live herladen",

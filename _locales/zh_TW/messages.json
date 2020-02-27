@@ -292,6 +292,10 @@
     "message": "將您的備份檔拖曳到此頁面的任何地方以匯入。",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "要安裝檔案，請將其放到分頁上（顯示分頁標題的區域）。",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "删除",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -620,6 +624,14 @@
   "liveReloadError": {
     "message": "觀看檔案時發生錯誤",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "保持此分頁開啟以根據外部變更自動更新樣式。",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "保持此分頁與原始分頁開啟以根據外部變更自動更新樣式。",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "即時重新整理",
