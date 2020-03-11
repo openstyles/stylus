@@ -1,13 +1,13 @@
 /*
 global messageBox getStyleWithNoCode
-  filterAndAppend urlFilterParam showFiltersStats
+  filterAndAppend showFiltersStats
   checkUpdate handleUpdateInstalled
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ setupLivePrefs
   URLS enforceInputRange t
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView FIREFOX
+  scrollElementIntoView CHROME VIVALDI FIREFOX router
   UI bulk
 */
 'use strict';
@@ -18,18 +18,23 @@ const handleEvent = {};
 
 Promise.all([
   API.getAllStyles(true),
-  urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
+  // FIXME: integrate this into filter.js
+  router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
   Promise.all([
     onDOMready(),
     prefs.initializing,
-  ]).then(() => {
-    initGlobalEvents();
-    if (FIREFOX && 'update' in (chrome.commands || {})) {
-      const btn = $('#manage-shortcuts-button');
-      btn.classList.remove('chromium-only');
-      btn.onclick = API.optionsCustomizeHotkeys;
-    }
-  }),
+  ])
+    .then(() => {
+      initGlobalEvents();
+      if (!VIVALDI) {
+        $$('#header select').forEach(el => el.adjustWidth());
+      }
+      if (FIREFOX && 'update' in (chrome.commands || {})) {
+        const btn = $('#manage-shortcuts-button');
+        btn.classList.remove('chromium-only');
+        btn.onclick = API.optionsCustomizeHotkeys;
+      }
+    }),
 ]).then(args => {
   UI.init();
   UI.showStyles(...args);
@@ -42,7 +47,8 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
-      API.getStyle(msg.style.id, true).then(style => handleUpdate(style, msg));
+      API.getStyle(msg.style.id, true)
+        .then(style => handleUpdate(style, msg));
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
@@ -64,7 +70,7 @@ function initGlobalEvents() {
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = event => {
     event.preventDefault();
-    chrome.runtime.openOptionsPage();
+    router.updateHash('#stylus-options');
   };
 
   $('#manage-shortcuts-button').onclick = event => {
