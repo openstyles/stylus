@@ -8,23 +8,31 @@
   --entry-height: 30px;
   --onoffswitch-width: 60px;
 
-  --header-bg-color: #333;
+  --header-bg-color: #2c2c2c;
   --header-text-color: #ddd;
-  --header-text-hover-color: hsla(180, 100%, 20%, 1);
+  --header-text-hover-color: #066;
   --header-icon-color: #888;
-  --header-icon-hover-color: hsla(180, 99%, 58%, 1);
+  --header-icon-hover-color: #2afefe;
 
   --tools-bg-color: #ccc;
 
   --entry-header-bg-color: #ddd;
   --entry-header-text-color: #111;
-
-  --checked-count-bg-color: hsla(180, 100%, 20%, 1);
-  --checked-bg-color: hsla(180, 100%, 24%, 1);
-  --checked-mark-color: #fff;
+  --entry-text-hover: #007a7a;
+  --entry-text-disabled: #3c3c3c;
   --entry-icon-color: #666;
-  --entry-icon-hover-color: hsla(180, 100%, 24%, 1);
+  --entry-icon-hover-color: #007a7a;
+  --entry-border-color: #ddd;
   --delete-icon-hover-color: #d40000;
+
+  --label-usercss-bg-color: #066;
+  --label-usercss-text-color: #fff;
+
+  --checked-count-bg-color: #066;
+  --checked-count-text-color: #fff;
+
+  --checkbox-bg-color: #007a7a;
+  --checkbox-icon-color: #fff;
 }
 
 html {
@@ -42,14 +50,16 @@ body {
   height: 100%;
 }
 
+/*
 body.dark {
   background: #181818;
   color: #ddd;
 }
+*/
 
 a,
 .disabled a:hover {
-  color: #3c3c3c;
+  color: var(--entry-text-disabled);
   transition: color .5s;
 }
 
@@ -58,7 +68,7 @@ a {
 }
 
 a:hover {
-  color: #000;
+  color: var(--entry-text-hover);
 }
 
 .invisible {
@@ -225,7 +235,7 @@ body.all-styles-hidden-by-filters #installed:after {
 .entry {
   margin: 0;
   padding: 4px 8px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--entry-border-color);
 }
 
 .entry-col {
@@ -258,6 +268,10 @@ body.all-styles-hidden-by-filters #installed:after {
 /* keep all icons on the same row */
 .entry-actions {
   white-space: pre;
+}
+
+.header-state {
+  min-width: 65px;
 }
 
 .header-version,
@@ -328,7 +342,7 @@ body.all-styles-hidden-by-filters #installed:after {
 
 .header-filter span:before {
   content: '►';
-  color: #666;
+  color: var(--entry-icon-color);
   position: relative;
   left: 7px;
 }
@@ -337,13 +351,13 @@ body.all-styles-hidden-by-filters #installed:after {
 .header-filter:hover .svg-icon,
 .header-filter.active svg {
   transition: all .5s;
-  color: #000;
-  fill: #000;
+  color: var(--entry-text-hover);
+  fill: var(--entry-text-hover);
 }
 
 .header-filter.active span:before {
   content: '▲';
-  color: #000;
+  color: var(--entry-text-hover);
 }
 
 .targets {
@@ -400,12 +414,10 @@ body.all-styles-hidden-by-filters #installed:after {
   pointer-events: none;
 }
 
-.entry.enabled .entry-name:hover .style-name {
-  color: hsla(180, 100%, 15%, 1);
-}
-
+.entry.enabled:hover .entry-name,
 .entry:hover .svg-icon:hover {
-  fill: #000;
+  color: var(--entry-text-hover);
+  fill: var(--entry-text-hover);
 }
 
 .header-labels {
@@ -422,10 +434,14 @@ body.all-styles-hidden-by-filters #installed:after {
   text-transform: lowercase;
 }
 
+.entry-label {
+  margin-left: 1em;
+}
+
 .header-label[data-type="usercss"],
 .entry-label[data-type="usercss"] {
-  background-color: hsla(180, 100%, 20%, 1);
-  color: white;
+  background-color: var(--label-usercss-bg-color);
+  color: var(--label-usercss-text-color);
   text-transform: lowercase;
 }
 
@@ -458,7 +474,7 @@ a svg, .svg-icon.sort {
 
 /* Checkbox */
 .checkmate input:checked + svg.checkbox .filled-circle {
-  fill: var(--checked-bg-color);
+  fill: var(--checkbox-bg-color);
   display: block;
 }
 
@@ -471,7 +487,7 @@ a svg, .svg-icon.sort {
 }
 
 .checkmate input:checked + svg.checkbox .checkmark {
-  fill: var(--checked-mark-color);
+  fill: var(--checkbox-icon-color);
 }
 
 .checking-update .check-update {
@@ -852,6 +868,11 @@ a svg, .svg-icon.sort {
   display: block;
   right: -20px;
   top: 100%;
+}
+
+/* make the popup on hover a little easier to use */
+.new-style {
+  padding-left: 20px;
 }
 
 /* sort font */
