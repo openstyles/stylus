@@ -513,3 +513,38 @@ function lazyLoad() {
     });
   }, 500);
 }
+
+function embedOptions() {
+  let options = $('#stylus-embedded-options');
+  if (!options) {
+    options = document.createElement('iframe');
+    options.id = 'stylus-embedded-options';
+    options.src = '/options.html';
+    document.documentElement.appendChild(options);
+  }
+  options.focus();
+}
+
+function unembedOptions() {
+  const options = $('#stylus-embedded-options');
+  if (options) {
+    options.contentWindow.document.body.classList.add('scaleout');
+    options.classList.add('fadeout');
+    animateElement(options, {
+      className: 'fadeout',
+      onComplete: () => options.remove(),
+    });
+  }
+}
+
+router.watch({hash: '#stylus-options'}, state => {
+  if (state) {
+    embedOptions();
+  } else {
+    unembedOptions();
+  }
+});
+
+window.addEventListener('closeOptions', () => {
+  router.updateHash('');
+});
