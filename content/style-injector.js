@@ -11,14 +11,15 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   const IS_OWN_PAGE = Boolean(chrome.tabs);
   // detect Chrome 65 via a feature it added since browser version can be spoofed
   const isChromePre65 = chrome.app && typeof Worklet !== 'function';
-  const docRewriteObserver = RewriteObserver(_sort);
   const docRootObserver = RootObserver(_sortIfNeeded);
+  const docRewriteObserver = RewriteObserver(() => docRootObserver.evade(_sort));
   const list = [];
   const table = new Map();
   let isEnabled = true;
   let isTransitionPatched;
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
+  let container;
   return {
     apply,
     clear,
@@ -45,6 +46,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     for (const style of list) {
       style.el.remove();
     }
+    container.remove();
     list.length = 0;
     table.clear();
     _emitUpdate();
@@ -54,6 +56,10 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     for (const el of document.querySelectorAll(`style[id^="${PREFIX}"].stylus`)) {
       const id = el.id.slice(PREFIX.length);
       if (/^\d+$/.test(id) || id === PATCH_ID) {
+        if (el.parentNode.parentNode === document.documentElement) {
+          el.parentNode.remove();
+          return;
+        }
         el.remove();
       }
     }
@@ -91,14 +97,12 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     table.set(style.id, style);
     const nextIndex = list.findIndex(i => compare(i, style) > 0);
     if (nextIndex < 0) {
-      document.documentElement.appendChild(el);
+      _insertElement(el);
       list.push(style);
     } else {
-      document.documentElement.insertBefore(el, list[nextIndex].el);
+      _insertElement(el, list[nextIndex].el);
       list.splice(nextIndex, 0, style);
     }
-    // moving an element resets its 'disabled' state
-    el.disabled = !isEnabled;
     return el;
   }
 
@@ -120,7 +124,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
         transition: none !important;
       }
     `);
-    document.documentElement.appendChild(el);
+    _insertElement(el);
     // wait for the next paint to complete
     // note: requestAnimationFrame won't fire in inactive tabs
     requestAnimationFrame(() => setTimeout(() => el.remove()));
@@ -171,9 +175,10 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   */
   function _initCreationDoc() {
     creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
+    container = (creationDoc || document).createElement('div');
     if (creationDoc) {
       ({createElement, createElementNS} = creationDoc);
-      const el = document.documentElement.appendChild(_createStyle());
+      const el = _insertElement(_createStyle());
       const isApplied = el.sheet;
       el.remove();
       if (isApplied) return;
@@ -182,36 +187,55 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     ({createElement, createElementNS} = document);
   }
 
+  function _insertElement(el, beforeEl) {
+    // beforeEl being `null` or `undefined` or absent is identical to appendChild
+    container.insertBefore(el, beforeEl);
+    if (container.parentNode !== creationDoc.documentElement) {
+      creationDoc.documentElement.appendChild(container);
+    }
+    // moving an element resets its 'disabled' state
+    el.disabled = !isEnabled;
+    return el;
+  }
+
   function _remove(id) {
     const style = table.get(id);
     if (!style) return;
     table.delete(id);
     list.splice(list.indexOf(style), 1);
     style.el.remove();
+    if (!container.firstElementChild) container.remove();
   }
 
   function _sort() {
-    docRootObserver.evade(() => {
-      list.sort(compare);
-      for (const style of list) {
-        // moving an element resets its 'disabled' state
-        document.documentElement.appendChild(style.el);
-        style.el.disabled = !isEnabled;
-      }
-    });
+    list.sort(compare);
+    for (const style of list) {
+      _insertElement(style.el);
+    }
   }
 
   function _sortIfNeeded() {
     let needsSort;
-    let el = list.length && list[0].el;
-    if (!el) {
+    let el;
+    if (!list.length) {
       needsSort = false;
-    } else if (el.parentNode !== creationDoc.documentElement) {
+    } else if (container.parentNode !== creationDoc.documentElement) {
       needsSort = true;
     } else {
+      for (el = container; el; el = el.nextElementSibling) {
+        if (ORDERED_TAGS.has(el.localName)) {
+          docRootObserver.stop();
+          creationDoc.documentElement.appendChild(container);
+          needsSort = true;
+          break;
+        }
+      }
+      el = list[0].el;
       let i = 0;
-      while (el) {
-        if (i < list.length && el === list[i].el) {
+      while (!needsSort && el) {
+        if (el.parentNode !== container) {
+          needsSort = true;
+        } else if (i < list.length && el === list[i].el) {
           i++;
         } else if (ORDERED_TAGS.has(el.localName)) {
           needsSort = true;
@@ -222,7 +246,10 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
       // some styles are not injected to the document
       if (i < list.length) needsSort = true;
     }
-    if (needsSort) _sort();
+    if (needsSort) {
+      docRootObserver.evade(_sort);
+      docRootObserver.start();
+    }
     return needsSort;
   }
 
@@ -241,7 +268,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     if (isChromePre65) {
       const oldEl = style.el;
       style.el = _createStyle(id, code);
-      oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
+      oldEl.insertAdjacentElement('afterend', style.el);
       oldEl.remove();
     } else {
       style.el.textContent = code;
@@ -291,7 +318,8 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
         if (performance.now() - lastCalledTime > 1000) {
           digest = 0;
         } else if (digest > 5) {
-          throw new Error('The page keeps generating mutations. Skip the event.');
+          console.debug('The page keeps generating mutations. Skipping the event.');
+          return;
         }
       }
       if (onChange()) {
@@ -311,6 +339,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     function start() {
       if (observing) return;
       observer.observe(document.documentElement, {childList: true});
+      observer.observe(container, {childList: true});
       observing = true;
     }
 
