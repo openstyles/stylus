@@ -313,7 +313,11 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     let digest = 0;
     let lastCalledTime = NaN;
     let observing = false;
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver(onMutation);
+    const innerObserver = new MutationObserver(onMutation);
+    return {evade, start, stop};
+
+    function onMutation() {
       if (digest) {
         if (performance.now() - lastCalledTime > 1000) {
           digest = 0;
@@ -326,8 +330,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
         digest++;
         lastCalledTime = performance.now();
       }
-    });
-    return {evade, start, stop};
+    }
 
     function evade(fn) {
       const restore = observing && start;
@@ -339,14 +342,13 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     function start() {
       if (observing) return;
       observer.observe(document.documentElement, {childList: true});
-      observer.observe(container, {childList: true});
+      innerObserver.observe(container, {childList: true});
       observing = true;
     }
 
     function stop() {
       if (!observing) return;
-      // FIXME: do we need this?
-      observer.takeRecords();
+      innerObserver.disconnect();
       observer.disconnect();
       observing = false;
     }
