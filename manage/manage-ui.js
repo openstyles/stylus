@@ -40,6 +40,11 @@ const UI = {
         content: "${t('filteredStylesAllHidden')}";
       }
     `));
+    // remove update filter on init
+    const search = $('#search');
+    search.value = search.value.replace(UI.searchFilters.updatable.query, '');
+    // update filter labels to match location.search
+    UI.updateFilterLabels();
   },
 
   showStyles: (styles = [], matchUrlIds) => {
@@ -178,6 +183,24 @@ const UI = {
       : '';
   },
 
+  updateFilterLabels: () => {
+    const filterLabels = $$('#filters-wrapper .search-filter input');
+    filterLabels.forEach(cb => {
+      cb.checked = false;
+      cb.parentElement.classList.remove('checked');
+    });
+    const filters = Object.values(UI.searchFilters);
+    $('#search').value.split(' ').forEach(part => {
+      const filter = filters.find(entry => entry.query === part);
+      if (filter) {
+        const button = filterLabels.filter(btn => btn.id === filter.id);
+        if (button.length) {
+          button[0].checked = true;
+          button[0].parentElement.classList.add('checked');
+        }
+      }
+    });
+  },
 
   createStyleTargetsElement: ({entry, style}) => {
     const parts = UI._parts;
@@ -226,6 +249,48 @@ const UI = {
     entry.classList.toggle('global', !numTargets);
   },
 
+  // This order matters
+  searchFilters: {
+    enabled: {
+      id: 'manage.onlyEnabled',
+      query: 'is:enabled',
+      invert: 'disabled'
+    },
+    disabled: {
+      id: 'manage.onlyEnabled.invert',
+      query: 'is:disabled',
+      invert: 'enabled'
+    },
+    usercss: {
+      id: 'manage.onlyUsercss',
+      query: 'is:usercss',
+      invert: 'original'
+    },
+    original: {
+      id: 'manage.onlyUsercss.invert',
+      query: 'is:nonusercss',
+      invert: 'usercss'
+    },
+    local: {
+      id: 'manage.onlyLocal',
+      query: 'is:local',
+      invert: 'external'
+    },
+    external: {
+      id: 'manage.onlyLocal.invert',
+      query: 'is:external',
+      invert: 'local'
+    },
+    // only checkbox; all others are radio buttons
+    updatable: {
+      id: 'only-updates',
+      query: '', // 'has:updates',
+    },
+    reset: {
+      id: 'reset-filters',
+      query: ''
+    }
+  },
 
   getFaviconImgSrc: (container = installed) => {
     if (!UI.favicons) return;

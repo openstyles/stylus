@@ -1,5 +1,6 @@
 /* global messageBox styleSectionsEqual API onDOMready
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement
+  handleEvent
   styleJSONseemsValid */
 'use strict';
 
@@ -46,8 +47,9 @@ onDOMready().then(() => {
       this.ondragend();
       if (event.dataTransfer.files.length) {
         event.preventDefault();
-        if ($('#only-updates input').checked) {
-          $('#only-updates input').click();
+        const updates = $('#only-updates');
+        if (updates.checked) {
+          handleEvent.checkFilterSelectors(updates);
         }
         importFromFile({file: event.dataTransfer.files[0]});
       }

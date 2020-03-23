@@ -1,4 +1,4 @@
-/* global installed messageBox sorter $ $$ $create t debounce prefs API router */
+/* global installed messageBox sorter $ $$ $create t debounce prefs API UI router resetUpdates */
 /* exported filterAndAppend */
 'use strict';
 
@@ -37,8 +37,9 @@ HTMLSelectElement.prototype.adjustWidth = function () {
 };
 
 function init() {
-  $('#search').oninput = e => {
-    router.updateSearch('search', e.target.value);
+  $('#search').oninput = event => {
+    router.updateSearch('search', event.target.value);
+    UI.updateFilterLabels();
   };
 
   $('#search-help').onclick = event => {
@@ -57,47 +58,12 @@ function init() {
               } else {
                 return s;
               }
-            })))),
+            }))
+          )
+        ),
       buttons: [t('confirmOK')],
     });
   };
-
-  $$('select[id$=".invert"]').forEach(el => {
-    const slave = $('#' + el.id.replace('.invert', ''));
-    const slaveData = slave.dataset;
-    const valueMap = new Map([
-      [false, slaveData.filter],
-      [true, slaveData.filterHide],
-    ]);
-    // enable slave control when user switches the value
-    el.oninput = () => {
-      if (!slave.checked) {
-        // oninput occurs before onchange
-        setTimeout(() => {
-          if (!slave.checked) {
-            slave.checked = true;
-            slave.dispatchEvent(new Event('change', {bubbles: true}));
-          }
-        });
-      }
-    };
-    // swap slave control's filtering rules
-    el.onchange = event => {
-      const value = el.value === 'true';
-      const filter = valueMap.get(value);
-      if (slaveData.filter === filter) {
-        return;
-      }
-      slaveData.filter = filter;
-      slaveData.filterHide = valueMap.get(!value);
-      debounce(filterOnChange, 0, event);
-      // avoid triggering MutationObserver during page load
-      if (document.readyState === 'complete') {
-        el.adjustWidth();
-      }
-    };
-    el.onchange({target: el});
-  });
 
   $$('[data-filter]').forEach(el => {
     el.onchange = filterOnChange;
@@ -108,9 +74,9 @@ function init() {
 
   $('#reset-filters').onclick = event => {
     event.preventDefault();
-    if (!filtersSelector.hide) {
-      return;
-    }
+    // if (!filtersSelector.hide) {
+    //   return;
+    // }
     for (const el of $$('#tools-wrapper [data-filter]')) {
       let value;
       if (el.type === 'checkbox' && el.checked) {
@@ -127,6 +93,8 @@ function init() {
     }
     filterOnChange({forceRefilter: true});
     router.updateSearch('search', '');
+    resetUpdates();
+    UI.updateFilterLabels();
   };
 
   filterOnChange({forceRefilter: true});
@@ -134,7 +102,7 @@ function init() {
 
 
 function filterOnChange({target: el, forceRefilter}) {
-  const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
+  const getValue = elm => (elm.type === 'search') ? elm.value.trim() : elm.checked;
   if (!forceRefilter) {
     const value = getValue(el);
     if (value === el.lastValue) {
@@ -155,6 +123,7 @@ function filterOnChange({target: el, forceRefilter}) {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
+  console.log('filter on change', filtersSelector, installed)
   if (installed) {
     reapplyFilter().then(sorter.updateStripes);
   }
@@ -283,6 +252,7 @@ function searchStyles({immediately, container} = {}) {
   el.lastValue = query;
 
   const entries = container && container.children || container || installed.children;
+  console.log('search?', query)
   return API.searchDB({
     query,
     ids: [...entries].map(el => el.styleId),

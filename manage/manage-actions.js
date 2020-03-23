@@ -1,7 +1,7 @@
 /*
 global messageBox getStyleWithNoCode
   filterAndAppend showFiltersStats
-  checkUpdate handleUpdateInstalled
+  checkUpdate handleUpdateInstalled resetUpdates
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ setupLivePrefs
@@ -80,8 +80,19 @@ function initGlobalEvents() {
 
   $('#update-all').onclick = event => {
     event.preventDefault();
-    handleEvent.toggleBulkActions({hidden: false});
     bulk.updateAll();
+  };
+
+  $('#filters-wrapper').onclick = event => {
+    event.preventDefault();
+    handleEvent.toggleFilter(event.target);
+  };
+
+  $('#search').onsearch = event => {
+    if (event.target.value === '') {
+      console.log('search empty')
+      handleEvent.resetFilters();
+    }
   }
 
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
@@ -95,26 +106,10 @@ function initGlobalEvents() {
       $$('.applies-to-extra[open]').forEach(el => {
         el.removeAttribute('open');
       });
-      // Close bulk actions
-      handleEvent.toggleBulkActions({hidden: true});
     } else if (event.which === 32 && event.target.classList.contains('checkmate')) {
       // pressing space toggles the containing checkbox
       $('input[type="checkbox"]', event.target).click();
     }
-  });
-
-  $$('[data-toggle-on-click]').forEach(el => {
-    // dataset on SVG doesn't work in Chrome 49-??, works in 57+
-    const target = $(el.getAttribute('data-toggle-on-click'));
-    el.onclick = event => {
-      event.preventDefault();
-      target.classList.toggle('hidden');
-      if (target.classList.contains('hidden')) {
-        el.removeAttribute('open');
-      } else {
-        el.setAttribute('open', '');
-      }
-    };
   });
 
   // triggered automatically by setupLivePrefs() below
@@ -146,7 +141,6 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.entry-delete': 'delete',
     '.entry-configure-usercss': 'config',
-    '.header-filter': 'toggleBulkActions',
     '.sortable': 'updateSort',
     '#applies-to-config': 'appliesConfig',
     '.applies-to-extra-expander': 'toggleExtraAppliesTo'
@@ -215,12 +209,6 @@ Object.assign(handleEvent, {
     UI.addLabels(entry);
   },
 
-  toggleBulkActions({hidden}) {
-    const tools = $('#tools-wrapper');
-    tools.classList.toggle('hidden', hidden);
-    $('.header-filter').classList.toggle('active', !tools.classList.contains('hidden'));
-  },
-
   toggleExtraAppliesTo(event, entry) {
     event.preventDefault();
     entry.classList.toggle('hide-extra');
@@ -228,6 +216,59 @@ Object.assign(handleEvent, {
       const state = entry.classList.contains('hide-extra');
       $$('.entry').forEach(entry => entry.classList.toggle('hide-extra', state));
     }
+  },
+
+  resetFilters() {
+    $('#reset-filters').click();
+    // TODO: figure out why we need to press this twice
+    $('#reset-filters').click();
+    resetUpdates();
+  },
+
+  toggleFilter(el) {
+    if (el.classList.contains('reset-filters')) {
+      return handleEvent.resetFilters();
+    }
+
+    const target = (el.nodeName === 'LABEL') ? $('input', el) : el;
+    const type = Object.values(UI.searchFilters).find(filter => filter.id === target.id);
+    const filterQuery = type && type.query || '';
+    const remove = type && type.invert ? UI.searchFilters[type.invert].query : '';
+    const len = filterQuery.length + 1;
+    const search = $('#search');
+
+    let {selectionStart, selectionEnd, value} = search;
+    if (value.includes(filterQuery)) {
+      value = ` ${value} `.replace(` ${filterQuery} `, ' ').trim();
+      if (selectionEnd > value.length) {
+        selectionStart -= len;
+        selectionEnd -= len;
+      }
+    } else {
+      if (selectionEnd === value.length) {
+        selectionStart += len;
+        selectionEnd += len;
+      }
+      value = (` ${value} ${filterQuery} `.replace(` ${remove} `, ' ')).trim();
+    }
+    search.value = value;
+    search.selectionStart = selectionStart;
+    search.selectionEnd = selectionEnd;
+    search.focus();
+    router.updateSearch('search', value);
+    UI.updateFilterLabels();
+    // updates or issues (special case)
+    if (target.dataset.filterSelectors) {
+      handleEvent.checkFilterSelectors(target);
+    }
+  },
+
+  checkFilterSelectors(target) {
+    const selectors = target.dataset.filterSelectors;
+    const checked = target.classList.contains('checked');
+    $$('.entry').forEach(entry => {
+      entry.classList.toggle('hidden', checked && !entry.matches(selectors));
+    });
   },
 
   check(event, entry) {

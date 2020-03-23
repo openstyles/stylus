@@ -4,7 +4,7 @@
   --favicon-size: 16px;
   --narrow-column: 60px;
   --header-height: 40px;
-  --toolbar-height: 60px;
+  --toolbar-height: 40px;
   --entry-height: 30px;
   --onoffswitch-width: 60px;
 
@@ -15,6 +15,7 @@
   --header-icon-hover-color: #2afefe;
 
   --tools-bg-color: #ccc;
+  --tools-bg-hover: #eee;
 
   --entry-header-bg-color: #ddd;
   --entry-header-text-color: #111;
@@ -71,18 +72,26 @@ a:hover {
   color: var(--entry-text-hover);
 }
 
+body a[disabled],
+body button[disabled] {
+  cursor: default;
+}
+
 .invisible {
   visibility: hidden;
   pointer-events: none;
 }
 
 .svg-icon {
-  cursor: pointer;
   width: var(--entry-icon-size);
   height: var(--entry-icon-size);
   vertical-align: middle;
   transition: fill .5s;
   fill: var(--entry-icon-color);
+}
+
+.svg-icon:not(.no-pointer) {
+  cursor: pointer;
 }
 
 #main-header .svg-icon {
@@ -122,6 +131,7 @@ a:hover {
 
 #bulk-actions {
   justify-content: flex-start;
+  align-items: center;
 }
 
 #bulk-info > span,
@@ -147,9 +157,9 @@ a:hover {
   100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
 }
 
-.entry-header a:hover .svg-icon,
-.entry a:hover .svg-icon,
-.svg-icon:hover {
+.entry-header a:hover .svg-icon:not(.no-pointer),
+.entry a:hover .svg-icon:not(.no-pointer),
+.svg-icon:not(.no-pointer):hover {
   fill: var(--entry-icon-hover-color);
 }
 
@@ -340,24 +350,11 @@ body.all-styles-hidden-by-filters #installed:after {
   content: '▾';
 }
 
-.header-filter span:before {
-  content: '►';
-  color: var(--entry-icon-color);
-  position: relative;
-  left: 7px;
-}
-
-.header-filter:hover span:before,
 .header-filter:hover .svg-icon,
 .header-filter.active svg {
   transition: all .5s;
   color: var(--entry-text-hover);
   fill: var(--entry-text-hover);
-}
-
-.header-filter.active span:before {
-  content: '▲';
-  color: var(--entry-text-hover);
 }
 
 .targets {
@@ -473,7 +470,8 @@ a svg, .svg-icon.sort {
 }
 
 /* Checkbox */
-.checkmate input:checked + svg.checkbox .filled-circle {
+.checkmate input:checked + svg.checkbox .filled-circle,
+svg.checkbox-enabled .filled-circle {
   fill: var(--checkbox-bg-color);
   display: block;
 }
@@ -486,7 +484,8 @@ a svg, .svg-icon.sort {
   display: none;
 }
 
-.checkmate input:checked + svg.checkbox .checkmark {
+.checkmate input:checked + svg.checkbox .checkmark,
+svg.checkbox-enabled .checkmark {
   fill: var(--checkbox-icon-color);
 }
 
@@ -693,6 +692,9 @@ a svg, .svg-icon.sort {
   height: var(--toolbar-height);
   padding: 4px 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #tools-wrapper:not(.hidden) + #installed {
@@ -702,20 +704,85 @@ a svg, .svg-icon.sort {
   top: calc(var(--header-height) + var(--toolbar-height));
 }
 
-#tools-wrapper .select-resizer {
-  background: #fff;
-}
-
 .manage-row {
   padding: 2px 18px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  width: 50%;
 }
 
 #filters-wrapper,
 #bulk-filter-count {
+  display: flex;
+  align-items: center;
   margin-right: 20px;
+  padding-left: 5px;
+}
+
+#filters-wrapper input {
+  display: none;
+}
+
+#filters-wrapper svg {
+  height: 16px;
+}
+
+.manage-row label,
+.manage-row button,
+.manage-row select {
+  min-width: 2em;
+  height: 24px;
+  max-height: 24px;
+  line-height: 24px;
+  padding: 0 6px;
+  margin: 0 2px;
+  vertical-align: middle;
+  align-items: center;
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+#filters-wrapper label:not(.checked):hover {
+  background-color: var(--tools-bg-hover);
+}
+
+.manage-row select {
+  padding-right: 20px;
+}
+
+.search-filter .svg-icon,
+.search-filter span {
+  pointer-events: none;
+  fill: currentColor;  
+}
+
+.button-group {
+  display: inline-flex;
+}
+
+.button-group label:first-child {
+  margin-right: 0;
+  border-right-width: 1px;
+}
+
+.button-group label:last-child {
+  margin-left: 0;
+  border-left-width: 0;
+}
+
+.manage-row button,
+.search-filter {
+  background: #e0e1e2;
+  border: 1px #9e9e9e solid;
+}
+
+.search-filter.checked,
+.search-filter.checked:hover {
+  background-color: var(--label-usercss-bg-color);
+  color: #fff;
+  fill: #fff;
 }
 
 #search-wrapper {
@@ -723,7 +790,8 @@ a svg, .svg-icon.sort {
 }
 
 #search {
-  width: calc(100% - var(--entry-icon-size) * 1.4);
+  width: 100%;
+  height: 2.2em;
 }
 
 #search-help {
@@ -751,7 +819,7 @@ a svg, .svg-icon.sort {
   display: none !important;
 }
 
-.active #filters-stats,
+#filters-stats,
 #bulk-filter-count:not(:empty) {
   background-color: var(--checked-count-bg-color);
   border-color: var(--checked-count-bg-color);

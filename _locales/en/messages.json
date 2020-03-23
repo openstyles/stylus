@@ -1253,8 +1253,8 @@
     "description": "Text for button to apply the selected action"
   },
   "bulkActionsTooltip": {
-    "message": "Click to open the filter, search and bulk actions panel",
-    "description": "Text for button to apply the selected action"
+    "message": "Bulk actions can be applied to selected styles in this column",
+    "description": "Select style for bulk action header tooltip"
   },
   "bulkActionsError": {
     "message": "Choose at least one style",

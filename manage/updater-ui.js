@@ -1,6 +1,6 @@
-/* global messageBox UI filtersSelector filterAndAppend
+/* global messageBox UI handleEvent filtersSelector filterAndAppend
   sorter $ $$ $create API onDOMready scrollElementIntoView t chromeLocal */
-/* exported handleUpdateInstalled */
+/* exported handleUpdateInstalled resetUpdates */
 'use strict';
 
 let updateTimer;
@@ -25,6 +25,15 @@ function applyUpdateAll() {
     scrollElementIntoView(button);
     button.click();
   });
+}
+
+function resetUpdates() {
+  $('#check-all-updates-force').classList.add('hidden');
+  $('#apply-all-updates').classList.add('hidden');
+  $('#update-history').classList.add('hidden');
+  const checkbox = $('#only-updates');
+  checkbox.checked = false;
+  checkbox.parentElement.classList.add('hidden');
 }
 
 
@@ -120,6 +129,7 @@ function checkUpdate(entry, {single} = {}) {
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
   const entry = $(UI.ENTRY_ID_PREFIX + style.id);
+  if (!entry) return;
   const newClasses = new Map([
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
@@ -138,7 +148,10 @@ function reportUpdateState({updated, style, error, STATES}) {
   if (updated) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
-    $('#only-updates').classList.remove('hidden');
+    const onlyUpdates = $('#only-updates');
+    onlyUpdates.parentElement.classList.remove('hidden');
+    onlyUpdates.checked = true;
+    onlyUpdates.change();
   } else if (!entry.classList.contains('can-update')) {
     const same = (
       error === STATES.SAME_MD5 ||
@@ -202,16 +215,15 @@ function reportUpdateState({updated, style, error, STATES}) {
   }
 }
 
-
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
   const mightUpdate = numUpdatable > 0 || $('.update-problem');
-  const checkbox = $('#only-updates input');
+  const checkbox = $('#only-updates');
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  $('#only-updates').classList.toggle('hidden', !show);
-  checkbox.checked = check && show;
+  checkbox.checked = check;
+  checkbox.parentElement.classList.toggle('hidden', !show);
   checkbox.dispatchEvent(new Event('change'));
 
   const btnApply = $('#apply-all-updates');

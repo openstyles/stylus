@@ -221,10 +221,7 @@
     <span class="filter-stats-wrapper">
       <span id="filters-stats"></span>
       <a id="reset-filters" class="tt-e" href="#" tabindex="0" i18n-data-title="genericResetLabel">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-            5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
-        </svg>
+        <svg class="svg-icon" viewBox="0 0 20 20"><use xlink:href="#svg-icon-x"/></svg>
       </a>
     </span>
   </div>
@@ -255,12 +252,6 @@
     </a>
 
     <span class="spacer"></span>
-
-    <a href="#" id="update-all" class="tt-w" i18n-data-title="checkAllUpdates">
-      <svg class="svg-icon" viewBox="0 0 24 24">
-        <path d="M11 8v5l4.25 2.52.77-1.28-3.52-2.09V8zm10 2V3l-2.64 2.64A9 9 0 1 0 21 12h-2a7 7 0 1 1-2.05-4.95L14 10h7z"/>
-      </svg>
-    </a>
 
     <div class="manage-backups tt-w" i18n-data-title="backupImport">
       <svg class="svg-icon" viewBox="0 0 24 24">
@@ -329,98 +320,7 @@
 
 </h1>
 
-<div id="tools-wrapper" class="hidden">
-
-  <div class="manage-row">
-      <span id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
-            data-filter=":not(.not-matching)"
-            data-filter-hide=".not-matching">
-          <a href="#" id="search-help" tabindex="0">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </a>
-        </span>
-
-        <span id="filters-wrapper">
-          <strong i18n-text="manageFilters"></strong>
-          <span class="filter-selection">
-            <label class="checkmate" tabindex="0">
-              <input id="manage.onlyEnabled" type="checkbox"
-                data-filter=".enabled"
-                data-filter-hide=".disabled">
-              <svg class="svg-icon checkbox"viewBox="0 0 10 10">
-                <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
-                <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
-                <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
-              </svg>
-            </label>
-            <span class="select-resizer">
-              <select id="manage.onlyEnabled.invert">
-                <option i18n-text="manageOnlyEnabled" value="false"></option>
-                <option i18n-text="manageOnlyDisabled" value="true"></option>
-              </select>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-            </span>
-          </span>
-
-          <span class="filter-selection">
-            <label class="checkmate" tabindex="0">
-              <input id="manage.onlyLocal" type="checkbox"
-                data-filter=":not(.updatable):not(.update-done)"
-                data-filter-hide=".updatable, .update-done">
-              <svg class="svg-icon checkbox"viewBox="0 0 10 10">
-                <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
-                <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
-                <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
-              </svg>
-            </label>
-            <span class="select-resizer">
-              <select id="manage.onlyLocal.invert" class="tt-s" i18n-data-title="manageOnlyLocalTooltip">
-                <option i18n-text="manageOnlyLocal" value="false"></option>
-                <option i18n-text="manageOnlyExternal" value="true"></option>
-              </select>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-            </span>
-          </span>
-
-          <span class="filter-selection">
-            <label class="checkmate" tabindex="0">
-              <input id="manage.onlyUsercss" type="checkbox"
-                data-filter=".usercss"
-                data-filter-hide=":not(.usercss)">
-              <svg class="svg-icon checkbox"viewBox="0 0 10 10">
-                <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
-                <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
-                <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
-              </svg>
-            </label>
-            <span class="select-resizer">
-              <select id="manage.onlyUsercss.invert">
-                <option i18n-text="manageOnlyUsercss" value="false"></option>
-                <option i18n-text="manageOnlyNonUsercss" value="true"></option>
-              </select>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-            </span>
-          </span>
-
-          <span class="filter-selection">
-            <label id="only-updates" class="hidden checkmate" tabindex="0">
-              <input type="checkbox"
-                data-filter=".can-update, .update-problem, .update-done"
-                data-filter-hide=":not(.updatable):not(.update-done),
-                                  .no-update:not(.update-problem),
-                                  .updatable:not(.can-update):not(.update-problem):not(.update-done)">
-              <svg class="svg-icon checkbox"viewBox="0 0 10 10">
-                <path class="filled-circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86z"/>
-                <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
-                <path class="checkmark" d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
-              </svg>
-              <span i18n-text="manageOnlyUpdates"></span>
-            </label>
-          </span>
-
-        </span>
-  </div>
+<div id="tools-wrapper">
 
   <div id="bulk-actions" class="manage-row">
     <label class="checkmate toggle-all" tabindex="0">
@@ -450,6 +350,13 @@
     <button id="bulk-actions-apply" i18n-text="bulkActionsApply" class="tt-e" disabled>
       <span id="update-progress"></span>
     </button>
+
+    <button href="#" id="update-all" class="tt-w" i18n-data-title="checkAllUpdates" type="button">
+      <svg class="svg-icon" viewBox="0 0 24 24">
+        <path d="M11 8v5l4.25 2.52.77-1.28-3.52-2.09V8zm10 2V3l-2.64 2.64A9 9 0 1 0 21 12h-2a7 7 0 1 1-2.05-4.95L14 10h7z"/>
+      </svg>
+    </button>
+
     <span id="bulk-info">
       <!-- Bulk update -->
       <span data-bulk="update">
@@ -485,13 +392,96 @@
     </svg>
   </div>
 
+  <div class="manage-row">
+    <div id="search-wrapper">
+      <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+        data-filter=":not(.not-matching)"
+        data-filter-hide=".not-matching">
+    </div>
+    <div id="filters-wrapper">
+      <button
+        class="reset-filters search-filter tt-w"
+        type="button"
+        i18n-data-title="genericResetLabel"
+        data-filter=".entry"
+        data-filter-hide=".disabled"
+      >
+        <svg class="svg-icon"><use xlink:href="#svg-icon-x"/></svg>
+      </button>
+      <span class="button-group">
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyEnabled">
+          <input
+            id="manage.onlyEnabled"
+            name="enabled"
+            type="radio"
+            data-filter=".enabled"
+            data-filter-hide=".disabled"
+          />
+          <svg class="svg-icon checkbox-enabled" viewBox="0 0 10 10">
+            <path d="M6.86 3.21L4.14 5.93 3.07 4.86l-.57.57 1.64 1.71L7.5 3.8l-.64-.58z"/>
+          </svg>
+        </label>
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyDisabled">
+          <input id="manage.onlyEnabled.invert" name="enabled" type="radio" />
+          <svg class="svg-icon checkbox"viewBox="0 0 10 10">
+            <path class="circle" d="M5 .86a4.14 4.14 0 0 0 0 8.28A4.14 4.14 0 1 0 5 .86zm0 7.5a3.36 3.36 0 1 1 0-6.72 3.36 3.36 0 0 1 0 6.72z"/>
+          </svg>
+        </label>
+      </span>
+      <span class="button-group">
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyUsercss">
+          <input
+            id="manage.onlyUsercss"
+            name="usercss"
+            type="radio"
+            data-filter=".usercss"
+            data-filter-hide=":not(.usercss)"
+          />
+          <span>usercss</span> <!-- TODO: localize -->
+        </label>
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyNonUsercss">
+          <input type="radio" id="manage.onlyUsercss.invert" name="usercss" />
+          <span>non-usercss</span> <!-- TODO: localize -->
+        </label>
+      </span>
+      <span class="button-group">
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyLocal">
+          <input
+            id="manage.onlyLocal"
+            name="local"
+            type="radio"
+            data-filter=":not(.updatable):not(.update-done)"
+            data-filter-hide=".updatable, .update-done"
+          />
+          <span>local</span> <!-- TODO: localize -->
+        </label>
+        <label class="search-filter tt-w" i18n-data-title="manageOnlyExternal">
+          <input id="manage.onlyLocal.invert" name="local" type="radio" />
+          <span>external</span> <!-- TODO: localize -->
+        </label>
+      </span>
+      <label class="search-filter hidden">
+        <input
+          id="only-updates"
+          type="checkbox"
+          data-filter=".can-update, .update-problem, .update-done"
+          data-filter-hide=":not(.updatable):not(.update-done),
+                          .no-update:not(.update-problem),
+                          .updatable:not(.can-update):not(.update-problem):not(.update-done)"
+        />
+        <span i18n-text="manageOnlyUpdates"></span>
+      </label>
+      <a href="#" id="search-help">
+        <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+      </a>
+    </div>
+  </div>
 </div>
 
 <div id="installed" class="manage-col-entries">
   <header class="entry-header">
     <div class="entry-col header-filter center-text tt-se" i18n-data-title="bulkActionsTooltip">
-      <span></span>
-      <svg class="svg-icon" width="20" height="20" viewBox="0 0 14 14">
+      <svg class="svg-icon no-pointer" width="20" height="20" viewBox="0 0 14 14">
         <path d="M6.42 7.58L2.92 3.5h8.75l-3.5 4.08v4.09c-1 0-1.75-.76-1.75-1.75V7.58z"/>
       </svg>
     </div>
@@ -563,125 +553,6 @@
     </div>
   </div>
 
-  <!-- <div id="manage-settings">
-    <div class="settings-column">
-
-      <div id="style-actions">
-
-
-        <div id="add-style-wrapper">
-          <a href="edit.html">
-            <button id="add-style-label" i18n-text="addStyleLabel" tabindex="-1"></button>
-          </a>
-          <label id="add-style-as-usercss-wrapper">
-            <input type="checkbox" id="newStyleAsUsercss">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
-            <a id="usercss-wiki"
-              href="https://github.com/openstyles/stylus/wiki/Usercss"
-              i18n-title="externalUsercssDocument"
-              tabindex="0">
-              <svg class="svg-icon" viewBox="0 0 20 20">
-                <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-              </svg>
-            </a>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-column">
-      <details id="options" data-pref="manage.options.expanded">
-
-        <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
-
-        <label>
-          <input id="manage.newUI" type="checkbox">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n-text="manageNewUI"></span>
-        </label>
-
-        <div id="newUIoptions">
-          <div>
-            <label for="manage.newUI.favicons" i18n-text="manageFavicons">
-              <input id="manage.newUI.favicons" type="checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              <a href="#" data-toggle-on-click="#faviconsHelp" tabindex="0">
-                <svg class="svg-icon select-arrow">
-                  <title i18n-text="optionsSubheading"></title>
-                  <use xlink:href="#svg-icon-select-arrow"/>
-                </svg>
-              </a>
-            </label>
-            <div id="faviconsHelp" class="hidden" i18n-text="manageFaviconsHelp">
-              <div>
-                <label for="manage.newUI.faviconsGray" i18n-text="manageFaviconsGray">
-                  <input id="manage.newUI.faviconsGray" type="checkbox">
-                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-                </label>
-              </div>
-            </div>
-          </div>
-          <label><input id="manage.newUI.targets" type="number" min="1" max="99"><span i18n-text="manageMaxTargets"></span></label>
-        </div>
-
-        <div id="options-buttons">
-          <button id="manage-options-button" i18n-text="openOptions"></button>
-          <button id="manage-shortcuts-button" class="chromium-only"
-                  i18n-text="shortcuts"
-                  i18n-title="shortcutsNote"></button>
-          <a id="find-editor-styles"
-            href="https://userstyles.org/styles/browse/chrome-extension"
-            i18n-title="editorStylesButton"
-            target="_blank"><button i18n-text="cm_theme" tabindex="-1"></button></a>
-        </div>
-
-      </details>
-
-      <details id="backup" data-pref="manage.backup.expanded">
-        <summary><h2 id="backup-title" i18n-text="backupButtons"></h2></summary>
-        <span id="backup-message" i18n-text="backupMessage"></span>
-        <div id="backup-buttons">
-          <div class="dropdown">
-            <button class="dropbtn">
-              <span>Export</span>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-            </button>
-
-            <div class="dropdown-content">
-              <a href="#" id="file-all-styles" i18n-text="bckpInstStyles"></a>
-              <a id="sync-dropbox-export" i18n-text="syncDropboxStyles" i18n-title="syncDropboxDeprecated"></a>
-            </div>
-          </div>
-
-          <div class="dropdown">
-            <button class="dropbtn">
-              <span>Import</span>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-            </button>
-
-            <div class="dropdown-content">
-              <a href="#" id="unfile-all-styles" i18n-text="retrieveBckp"></a>
-              <a id="sync-dropbox-import" i18n-text="retrieveDropboxSync" i18n-title="syncDropboxDeprecated"></a>
-            </div>
-          </div>
-
-        </div>
-      </details>
-
-      <div id="manage-text">
-        <span><a href="https://userstyles.org" target="_blank" i18n-text="linkGetStyles"></a></span>
-        <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n-text="linkGetHelp"></a></span>
-        <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n-text="linkStylusWiki"></a></span>
-        <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n-text="linkTranslate"></a></span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<div id="installed"></div> -->
-
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
   <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
     <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,
@@ -723,6 +594,10 @@
       1.13zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
   </symbol>
 
+  <symbol id="svg-icon-x" viewBox="0 0 20 20">
+    <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+      5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+  </symbol>
 </svg>
 
 </body>

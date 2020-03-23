@@ -104,7 +104,6 @@ const bulk = {
     if (installed.dataset.total) {
       // ignore filter checkboxes
       if (target.type === 'checkbox' && target.closest('.toggle-all, .entry-filter')) {
-        handleEvent.toggleBulkActions({hidden: false});
         const bulk = $('#toggle-all-filters');
         const state = target.checked;
         const visibleEntries = $$('.entry-filter-toggle')
