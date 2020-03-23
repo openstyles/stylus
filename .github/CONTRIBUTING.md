@@ -36,7 +36,7 @@ You can help us translate the extension on [Transifex](https://www.transifex.com
 
 ## Build scripts
 
-See [Build.md](../Build.md) for more information.
+See [BUILD.md](../BUILD.md) for more information.
 
 ## Contact us
 
